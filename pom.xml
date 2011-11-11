@@ -45,11 +45,11 @@
                         <target>1.6</target>
                     </configuration>
                 </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>2.3.1</version>
-            </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>2.3.1</version>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>
@@ -57,8 +57,8 @@
     <modules>
         <module>branding</module>
         <module>application</module>
-    <module>GUI-login</module>
-  </modules>
+        <module>GUI-login</module>
+    </modules>
 
     <properties>
         <netbeans.version>RELEASE701</netbeans.version>
