@@ -8,10 +8,9 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import org.openide.util.Exceptions;
 import org.openide.util.NbPreferences;
 
-final class MGXserverPanel extends javax.swing.JPanel implements DocumentListener {
+public class MGXserverPanel extends javax.swing.JPanel implements DocumentListener {
 
     private final MGXserverOptionsPanelController controller;
 
