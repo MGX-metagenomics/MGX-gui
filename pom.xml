@@ -32,7 +32,7 @@
                     <configuration>
                         <brandingToken>${brandingToken}</brandingToken>
                         <cluster>${brandingToken}</cluster>
-                        <useOSGiDependencies>true</useOSGiDependencies>
+                        <useOSGiDependencies>false</useOSGiDependencies>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -58,7 +58,10 @@
         <module>branding</module>
         <module>application</module>
         <module>GUI-login</module>
-    </modules>
+    <module>MGXClient-Wrapper</module>
+    <module>DTO-Wrapper</module>
+    <module>Jersey-Wrapper</module>
+  </modules>
 
     <properties>
         <netbeans.version>RELEASE701</netbeans.version>
