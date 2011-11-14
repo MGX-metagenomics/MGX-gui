@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.login.dialog;
 
+import de.cebitec.gpms.rest.GPMSClientI;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -9,6 +10,7 @@ import org.openide.DialogDisplayer;
 import org.openide.NotificationLineSupport;
 import org.openide.util.NbPreferences;
 import de.cebitec.mgx.gui.login.configuration.MGXserverPanel;
+import de.cebitec.mgx.restgpms.GPMS;
 
 /**
  *
@@ -41,9 +43,9 @@ public class LoginHandler implements ActionListener {
                 }
             }
         });
-        
+
         panel.setUser(NbPreferences.forModule(MGXserverPanel.class).get("lastLogin", ""));
-        
+
         server = NbPreferences.forModule(MGXserverPanel.class).get("server", "");
         if ("".equals(server)) {
             nline.setErrorMessage("No server configured!");
@@ -53,8 +55,6 @@ public class LoginHandler implements ActionListener {
         }
 
         DialogDisplayer.getDefault().notify(dialog);
-
-
     }
 
     @Override
@@ -63,7 +63,10 @@ public class LoginHandler implements ActionListener {
             String user = panel.getUser();
             String password = panel.getPassword();
             NbPreferences.forModule(MGXserverPanel.class).put("lastLogin", user);
-            System.err.println("user is " + user);
+            GPMSClientI gpms = new GPMS(server);
+            if (!gpms.login(user, password)) {
+                dialog.getNotificationLineSupport().setErrorMessage("Login failed.");
+            }
         }
     }
 }
