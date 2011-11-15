@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.login.dialog;
 
 import de.cebitec.gpms.rest.GPMSClientI;
+import de.cebitec.mgx.gui.explorer.ProjectExplorerTopComponent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -64,7 +65,11 @@ public class LoginHandler implements ActionListener {
             String password = panel.getPassword();
             NbPreferences.forModule(MGXserverPanel.class).put("lastLogin", user);
             GPMSClientI gpms = new GPMS(server);
-            if (!gpms.login(user, password)) {
+            if (gpms.login(user, password)) {
+                ProjectExplorerTopComponent pe = new ProjectExplorerTopComponent();
+                pe.setGPMSInstance(gpms);
+                pe.setVisible(true);
+            } else {
                 dialog.getNotificationLineSupport().setErrorMessage("Login failed.");
             }
         }
