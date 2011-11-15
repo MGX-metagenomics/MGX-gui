@@ -1,7 +1,7 @@
 package de.cebitec.mgx.gui.explorer;
 
 import de.cebitec.gpms.rest.GPMSClientI;
-import de.cebitec.mgx.gui.nodes.ServerNode;
+import de.cebitec.mgx.gui.nodefactory.ServerNodeFactory;
 import java.awt.BorderLayout;
 import javax.swing.JScrollPane;
 import org.openide.util.NbBundle;
@@ -34,7 +34,6 @@ public final class ProjectExplorerTopComponent extends TopComponent implements E
 
     public ProjectExplorerTopComponent() {
         initComponents();
-        initTree();
         setName(NbBundle.getMessage(ProjectExplorerTopComponent.class, "CTL_ProjectExplorerTopComponent"));
         setToolTipText(NbBundle.getMessage(ProjectExplorerTopComponent.class, "HINT_ProjectExplorerTopComponent"));
         putClientProperty(TopComponent.PROP_DRAGGING_DISABLED, Boolean.TRUE);
@@ -47,6 +46,7 @@ public final class ProjectExplorerTopComponent extends TopComponent implements E
 
     public void setGPMSInstance(GPMSClientI gpms) {
         this.gpms = gpms;
+        initTree();
     }
 
     private void initComponents() {
@@ -56,9 +56,8 @@ public final class ProjectExplorerTopComponent extends TopComponent implements E
     }
 
     private void initTree() {
-        ServerNode server = new ServerNode();
-        exmngr.setRootContext(server);
-        // FIXME
+        AbstractNode root = new AbstractNode(Children.create(new ServerNodeFactory(gpms), true));
+        exmngr.setRootContext(root);
     }
 
     @Override
