@@ -1,0 +1,3 @@
+Manifest-Version: 1.0
+OpenIDE-Module-Localizing-Bundle: de/cebitec/mgx/gui/nodes/Bundle.properties
+OpenIDE-Module-Layer: de/cebitec/mgx/gui/nodes/layer.xml
