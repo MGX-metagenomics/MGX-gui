@@ -57,7 +57,7 @@ public final class ProjectExplorerTopComponent extends TopComponent implements E
 
     private void initTree() {
         ServerNode server = new ServerNode();
-        exmngr.setRootContext(new AbstractNode(Children.create(new MyChildren(), true)));
+        exmngr.setRootContext(server);
         // FIXME
     }
 
