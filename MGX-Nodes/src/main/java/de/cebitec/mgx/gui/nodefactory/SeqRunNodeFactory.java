@@ -9,8 +9,8 @@ import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.DNAExtractDTO;
 import de.cebitec.mgx.dto.SeqRunDTO;
+import de.cebitec.mgx.gui.nodes.SeqRunNode;
 import java.util.List;
-import org.openide.nodes.AbstractNode;
 import org.openide.nodes.ChildFactory;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
@@ -44,7 +44,7 @@ public class SeqRunNodeFactory extends ChildFactory<SeqRunDTO> {
 
     @Override
     protected Node createNodeForKey(SeqRunDTO key) {
-        AbstractNode seqrun = new AbstractNode(Children.LEAF);
+        SeqRunNode seqrun = new SeqRunNode(Children.LEAF);
         seqrun.setDisplayName(key.getSequencingMethod() + "run");
         return seqrun;
     }

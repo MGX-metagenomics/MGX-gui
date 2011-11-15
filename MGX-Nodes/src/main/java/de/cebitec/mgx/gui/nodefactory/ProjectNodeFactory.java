@@ -1,11 +1,10 @@
 package de.cebitec.mgx.gui.nodefactory;
 
 import de.cebitec.gpms.core.MembershipI;
-import de.cebitec.gpms.core.ProjectI;
 import de.cebitec.gpms.rest.GPMSClientI;
 import de.cebitec.mgx.client.MGXMaster;
+import de.cebitec.mgx.gui.nodes.ProjectNode;
 import java.util.List;
-import org.openide.nodes.AbstractNode;
 import org.openide.nodes.ChildFactory;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
@@ -34,7 +33,7 @@ public class ProjectNodeFactory extends ChildFactory<MembershipI> {
 
     @Override
     protected Node createNodeForKey(MembershipI m) {
-        AbstractNode project = new AbstractNode(Children.create(new HabitatNodeFactory(new MGXMaster(gpms, m)), true));
+        ProjectNode project = new ProjectNode(Children.create(new HabitatNodeFactory(new MGXMaster(gpms, m)), true));
         String name = new StringBuilder(m.getProject().getName()).append(" (").append(m.getRole().getName()).append(")").toString();
         project.setDisplayName(name);
         return project;

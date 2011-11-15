@@ -4,8 +4,8 @@ import de.cebitec.mgx.client.MGXMaster;
 import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.HabitatDTO;
+import de.cebitec.mgx.gui.nodes.HabitatNode;
 import java.util.List;
-import org.openide.nodes.AbstractNode;
 import org.openide.nodes.ChildFactory;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
@@ -37,7 +37,7 @@ public class HabitatNodeFactory extends ChildFactory<HabitatDTO> {
 
     @Override
     protected Node createNodeForKey(HabitatDTO key) {
-        AbstractNode habitat = new AbstractNode(Children.create(new SampleNodeFactory(master, key), true));
+        HabitatNode habitat = new HabitatNode(Children.create(new SampleNodeFactory(master, key), true));
         habitat.setDisplayName(key.getName());
         return habitat;
     }

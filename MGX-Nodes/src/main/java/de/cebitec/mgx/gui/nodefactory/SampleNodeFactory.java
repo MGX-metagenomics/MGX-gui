@@ -4,8 +4,8 @@ import de.cebitec.mgx.client.MGXMaster;
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.HabitatDTO;
 import de.cebitec.mgx.dto.SampleDTO;
+import de.cebitec.mgx.gui.nodes.SampleNode;
 import java.util.List;
-import org.openide.nodes.AbstractNode;
 import org.openide.nodes.ChildFactory;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
@@ -37,7 +37,7 @@ public class SampleNodeFactory extends ChildFactory<SampleDTO> {
 
     @Override
     protected Node createNodeForKey(SampleDTO key) {
-        AbstractNode sample = new AbstractNode(Children.create(new DNAExtractNodeFactory(master, key), true));
+        SampleNode sample = new SampleNode(Children.create(new DNAExtractNodeFactory(master, key), true));
         sample.setDisplayName(key.getMaterial());
         return sample;
     }
