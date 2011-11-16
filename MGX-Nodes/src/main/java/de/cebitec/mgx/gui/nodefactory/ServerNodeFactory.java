@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.nodefactory;
 
 import de.cebitec.gpms.rest.GPMSClientI;
 import de.cebitec.mgx.gui.nodes.ServerNode;
+import de.cebitec.mgx.restgpms.GPMS;
 import java.util.List;
 import org.openide.nodes.ChildFactory;
 import org.openide.nodes.Children;
@@ -13,9 +14,9 @@ import org.openide.nodes.Node;
  */
 public class ServerNodeFactory extends ChildFactory<GPMSClientI> {
 
-    private GPMSClientI gpms;
+    private GPMS gpms;
 
-    public ServerNodeFactory(GPMSClientI gpms) {
+    public ServerNodeFactory(GPMS gpms) {
         this.gpms = gpms;
     }
 
@@ -27,6 +28,8 @@ public class ServerNodeFactory extends ChildFactory<GPMSClientI> {
 
     @Override
     protected Node createNodeForKey(GPMSClientI key) {
-        return new ServerNode(Children.create(new ProjectNodeFactory(gpms), true));
+        Node n = new ServerNode(Children.create(new ProjectNodeFactory(gpms), true));
+        n.setDisplayName(gpms.getServerNamer());
+        return n;
     }
 }
