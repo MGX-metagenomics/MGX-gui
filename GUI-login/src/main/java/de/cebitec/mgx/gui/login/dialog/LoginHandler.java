@@ -12,6 +12,8 @@ import org.openide.NotificationLineSupport;
 import org.openide.util.NbPreferences;
 import de.cebitec.mgx.gui.login.configuration.MGXserverPanel;
 import de.cebitec.mgx.restgpms.GPMS;
+import org.openide.windows.Mode;
+import org.openide.windows.WindowManager;
 
 /**
  *
@@ -22,7 +24,10 @@ public class LoginHandler implements ActionListener {
     private static LoginHandler instance = new LoginHandler();
     private LoginPanel panel = new LoginPanel();
     private DialogDescriptor dialog = null;
-    private String server = null;
+    private NotificationLineSupport nline;
+    //
+    private String servername = null;
+    private String serveruri = null;
 
     private LoginHandler() {
     }
@@ -32,27 +37,32 @@ public class LoginHandler implements ActionListener {
     }
 
     public void showDialog() {
+
         dialog = new DialogDescriptor(panel, "Login", true, this);
-        dialog.setClosingOptions(new Object[]{DialogDescriptor.CANCEL_OPTION});
-        NotificationLineSupport nline = dialog.createNotificationLineSupport();
+        dialog.setClosingOptions(new Object[]{DialogDescriptor.CANCEL_OPTION, DialogDescriptor.OK_OPTION});
+        nline = dialog.createNotificationLineSupport();
         dialog.addPropertyChangeListener(new PropertyChangeListener() {
 
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
-                if (evt.getNewValue().equals(DialogDescriptor.CLOSED_OPTION)) {
-                    dialog = null;
+                if (evt.getPropertyName().equals(DialogDescriptor.PROP_VALUE) &&
+                    evt.getNewValue().equals(DialogDescriptor.CLOSED_OPTION)) {
+                    dialog.setClosingOptions(null);
                 }
             }
         });
 
         panel.setUser(NbPreferences.forModule(MGXserverPanel.class).get("lastLogin", ""));
+        panel.setPassword("");
 
-        server = NbPreferences.forModule(MGXserverPanel.class).get("server", "");
-        if ("".equals(server)) {
+
+        servername = NbPreferences.forModule(MGXserverPanel.class).get("servername", "scooter");
+        serveruri = NbPreferences.forModule(MGXserverPanel.class).get("serveruri", "http://scooter.cebitec.uni-bielefeld.de:8080/MGX-maven-web/webresources/");
+        if ("".equals(serveruri)) {
             nline.setErrorMessage("No server configured!");
             dialog.setValid(false);
         } else {
-            nline.setInformationMessage("Current server is "+server);
+            nline.setInformationMessage("Current server is "+servername);
         }
 
         DialogDisplayer.getDefault().notify(dialog);
@@ -61,16 +71,28 @@ public class LoginHandler implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent ae) {
         if (ae.getSource() == DialogDescriptor.OK_OPTION) {
+            nline.clearMessages();
+            nline.setInformationMessage("Current server is "+serveruri);
             String user = panel.getUser();
             String password = panel.getPassword();
             NbPreferences.forModule(MGXserverPanel.class).put("lastLogin", user);
-            GPMSClientI gpms = new GPMS(server);
+            GPMS gpms = new GPMS(servername, serveruri);
+            System.err.println("logging in as "+user);
             if (gpms.login(user, password)) {
-                ProjectExplorerTopComponent pe = new ProjectExplorerTopComponent();
+                System.err.println("logged in");
+                ProjectExplorerTopComponent pe = ProjectExplorerTopComponent.getInstance();
                 pe.setGPMSInstance(gpms);
                 pe.setVisible(true);
+                Mode m = WindowManager.getDefault().findMode("explorer");
+                if (m != null) {
+                    m.dockInto(pe);
+                } else {
+                    System.err.println("explorer mode not found");
+                }
+                pe.open();
+                pe.requestActive();
             } else {
-                dialog.getNotificationLineSupport().setErrorMessage("Login failed.");
+                nline.setErrorMessage("Login failed.");
             }
         }
     }

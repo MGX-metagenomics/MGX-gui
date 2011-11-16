@@ -16,15 +16,19 @@ public class LoginPanel extends javax.swing.JPanel {
     public LoginPanel() {
         initComponents();
     }
-    
+
     public void setUser(String name) {
         user.setText(name);
     }
-    
+
     public String getUser() {
         return user.getText();
     }
-    
+
+    public void setPassword(String password) {
+        this.password.setText(password);
+    }
+
     public String getPassword() {
         return new String(password.getPassword());
     }

@@ -18,6 +18,7 @@ public class MGXserverPanel extends javax.swing.JPanel implements DocumentListen
         this.controller = controller;
         initComponents();
         // TODO listen to changes in form fields and call controller.changed()
+        site.getDocument().addDocumentListener(this);
         server.getDocument().addDocumentListener(this);
     }
 
@@ -31,10 +32,16 @@ public class MGXserverPanel extends javax.swing.JPanel implements DocumentListen
 
         jLabel1 = new javax.swing.JLabel();
         server = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
+        site = new javax.swing.JTextField();
 
         org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(MGXserverPanel.class, "MGXserverPanel.jLabel1.text")); // NOI18N
 
         server.setText(org.openide.util.NbBundle.getMessage(MGXserverPanel.class, "MGXserverPanel.server.text")); // NOI18N
+
+        org.openide.awt.Mnemonics.setLocalizedText(jLabel2, org.openide.util.NbBundle.getMessage(MGXserverPanel.class, "MGXserverPanel.jLabel2.text")); // NOI18N
+
+        site.setText(org.openide.util.NbBundle.getMessage(MGXserverPanel.class, "MGXserverPanel.site.text")); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -42,31 +49,44 @@ public class MGXserverPanel extends javax.swing.JPanel implements DocumentListen
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(37, 37, 37)
-                .addComponent(jLabel1)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel2)
+                    .addComponent(jLabel1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(server, javax.swing.GroupLayout.PREFERRED_SIZE, 373, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(32, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(server, javax.swing.GroupLayout.PREFERRED_SIZE, 373, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(site, javax.swing.GroupLayout.PREFERRED_SIZE, 373, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(36, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(124, 124, 124)
+                .addGap(80, 80, 80)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(site, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(29, 29, 29)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(server, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel1))
-                .addContainerGap(184, Short.MAX_VALUE))
+                .addContainerGap(180, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     void load() {
-        server.setText(NbPreferences.forModule(MGXserverPanel.class).get("server", ""));
+        site.setText(NbPreferences.forModule(MGXserverPanel.class).get("servername", ""));
+        server.setText(NbPreferences.forModule(MGXserverPanel.class).get("serveruri", ""));
     }
 
     void store() {
-        NbPreferences.forModule(MGXserverPanel.class).put("server", server.getText());
+        NbPreferences.forModule(MGXserverPanel.class).put("servername", site.getText());
+        NbPreferences.forModule(MGXserverPanel.class).put("serveruri", server.getText());
     }
 
     boolean valid() {
+        if (site.getText().isEmpty())
+            return false;
+
         String content = server.getText();
         boolean ret = false;
         if (content.startsWith("http://") || content.startsWith("https://")) {
@@ -81,14 +101,14 @@ public class MGXserverPanel extends javax.swing.JPanel implements DocumentListen
             if (content.length() == 0) {
                 return false;
             }
-            
+
             //
             // remove port
             //
             if (content.contains(":")) {
                 content = content.split(":")[0];
             }
-            
+
             //
             // try to resolve server name
             //
@@ -100,10 +120,12 @@ public class MGXserverPanel extends javax.swing.JPanel implements DocumentListen
         }
         return ret;
     }
-    
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JTextField server;
+    private javax.swing.JTextField site;
     // End of variables declaration//GEN-END:variables
 
     @Override
