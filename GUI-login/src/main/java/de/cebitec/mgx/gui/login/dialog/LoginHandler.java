@@ -1,6 +1,5 @@
 package de.cebitec.mgx.gui.login.dialog;
 
-import de.cebitec.gpms.rest.GPMSClientI;
 import de.cebitec.mgx.gui.explorer.ProjectExplorerTopComponent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -45,8 +44,8 @@ public class LoginHandler implements ActionListener {
 
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
-                if (evt.getPropertyName().equals(DialogDescriptor.PROP_VALUE) &&
-                    evt.getNewValue().equals(DialogDescriptor.CLOSED_OPTION)) {
+                if (evt.getPropertyName().equals(DialogDescriptor.PROP_VALUE)
+                        && evt.getNewValue().equals(DialogDescriptor.CLOSED_OPTION)) {
                     dialog.setClosingOptions(null);
                 }
             }
@@ -62,7 +61,7 @@ public class LoginHandler implements ActionListener {
             nline.setErrorMessage("No server configured!");
             dialog.setValid(false);
         } else {
-            nline.setInformationMessage("Current server is "+servername);
+            nline.setInformationMessage("Current server is " + servername);
         }
 
         DialogDisplayer.getDefault().notify(dialog);
@@ -72,28 +71,31 @@ public class LoginHandler implements ActionListener {
     public void actionPerformed(ActionEvent ae) {
         if (ae.getSource() == DialogDescriptor.OK_OPTION) {
             nline.clearMessages();
-            nline.setInformationMessage("Current server is "+serveruri);
+            nline.setInformationMessage("Current server is " + serveruri);
             String user = panel.getUser();
             String password = panel.getPassword();
             NbPreferences.forModule(MGXserverPanel.class).put("lastLogin", user);
             GPMS gpms = new GPMS(servername, serveruri);
-            System.err.println("logging in as "+user);
             if (gpms.login(user, password)) {
-                System.err.println("logged in");
-                ProjectExplorerTopComponent pe = ProjectExplorerTopComponent.getInstance();
-                pe.setGPMSInstance(gpms);
-                pe.setVisible(true);
-                Mode m = WindowManager.getDefault().findMode("explorer");
-                if (m != null) {
-                    m.dockInto(pe);
-                } else {
-                    System.err.println("explorer mode not found");
-                }
-                pe.open();
-                pe.requestActive();
+                openProjectExplorer(gpms);
+                // TODO: disable 'login' menu entry and shortcut
             } else {
                 nline.setErrorMessage("Login failed.");
             }
         }
+    }
+
+    private void openProjectExplorer(GPMS gpms) {
+        ProjectExplorerTopComponent pe = ProjectExplorerTopComponent.getInstance();
+        pe.setGPMSInstance(gpms);
+        pe.setVisible(true);
+        Mode m = WindowManager.getDefault().findMode("explorer");
+        if (m != null) {
+            m.dockInto(pe);
+        } else {
+            System.err.println("explorer mode not found");
+        }
+        pe.open();
+        pe.requestActive();
     }
 }
