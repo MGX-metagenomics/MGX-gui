@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.explorer;
 
 import de.cebitec.gpms.rest.GPMSClientI;
 import de.cebitec.mgx.gui.nodefactory.ServerNodeFactory;
+import de.cebitec.mgx.restgpms.GPMS;
 import java.awt.BorderLayout;
 import javax.swing.JScrollPane;
 import org.openide.util.NbBundle;
@@ -28,11 +29,13 @@ persistenceType = TopComponent.PERSISTENCE_ALWAYS)
 preferredID = "ProjectExplorerTopComponent")
 public final class ProjectExplorerTopComponent extends TopComponent implements ExplorerManager.Provider {
 
-    private GPMSClientI gpms = null;
+    private static ProjectExplorerTopComponent instance = new ProjectExplorerTopComponent();
+
+    private GPMS gpms = null;
     private ExplorerManager exmngr = new ExplorerManager();
     private JScrollPane jscr;
 
-    public ProjectExplorerTopComponent() {
+    private ProjectExplorerTopComponent() {
         initComponents();
         setName(NbBundle.getMessage(ProjectExplorerTopComponent.class, "CTL_ProjectExplorerTopComponent"));
         setToolTipText(NbBundle.getMessage(ProjectExplorerTopComponent.class, "HINT_ProjectExplorerTopComponent"));
@@ -40,11 +43,16 @@ public final class ProjectExplorerTopComponent extends TopComponent implements E
         putClientProperty(TopComponent.PROP_MAXIMIZATION_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_SLIDING_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.TRUE);
+        putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_KEEP_PREFERRED_SIZE_WHEN_SLIDED_IN, Boolean.TRUE);
         associateLookup(ExplorerUtils.createLookup(exmngr, getActionMap()));
     }
 
-    public void setGPMSInstance(GPMSClientI gpms) {
+    public static ProjectExplorerTopComponent getInstance() {
+        return instance;
+    }
+
+    public void setGPMSInstance(GPMS gpms) {
         this.gpms = gpms;
         initTree();
     }
