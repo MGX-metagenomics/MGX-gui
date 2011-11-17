@@ -2,8 +2,8 @@ package de.cebitec.mgx.gui.nodefactory;
 
 import de.cebitec.mgx.client.MGXMaster;
 import de.cebitec.mgx.client.exception.MGXServerException;
-import de.cebitec.mgx.dto.DNAExtractDTO;
-import de.cebitec.mgx.dto.SampleDTO;
+import de.cebitec.mgx.dto.dto.DNAExtractDTO;
+import de.cebitec.mgx.dto.dto.SampleDTO;
 import de.cebitec.mgx.gui.nodes.DNAExtractNode;
 import java.util.List;
 import org.openide.nodes.ChildFactory;

@@ -7,7 +7,7 @@
     <version>1.0-SNAPSHOT</version>
   </parent>
 
-    <groupId>de.cebitec.mgx</groupId>
+    <groupId>de.cebitec.mgx.gui</groupId>
     <artifactId>MGX-Nodes</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>nbm</packaging>
@@ -57,22 +57,15 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <artifactId>MGX-DTO</artifactId>
-            <groupId>de.cebitec.mgx</groupId>
-            <type>jar</type>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <artifactId>Jersey-Wrapper</artifactId>
-            <groupId>de.cebitec.mgx</groupId>
-            <type>jar</type>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
             <artifactId>org-openide-util</artifactId>
             <groupId>org.netbeans.api</groupId>
             <type>jar</type>
             <version>RELEASE701</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>DTO-Wrapper</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 
