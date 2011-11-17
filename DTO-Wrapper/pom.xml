@@ -57,7 +57,7 @@
                 <configuration>
                     <useOSGiDependencies>true</useOSGiDependencies>
                     <publicPackages>
-                        <publicPackage>de.cebitec.mgx</publicPackage>
+                        <publicPackage>de.cebitec.mgx.dto</publicPackage>
                         <publicPackage>de.cebitec.mgx.dtoserializer</publicPackage>
                     </publicPackages>
                 </configuration>
