@@ -1,6 +1,5 @@
 package de.cebitec.mgx.gui.explorer;
 
-import de.cebitec.gpms.rest.GPMSClientI;
 import de.cebitec.mgx.gui.nodefactory.ServerNodeFactory;
 import de.cebitec.mgx.restgpms.GPMS;
 import java.awt.BorderLayout;
@@ -14,6 +13,8 @@ import org.openide.explorer.ExplorerUtils;
 import org.openide.explorer.view.BeanTreeView;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
+import org.openide.util.LookupListener;
+import org.openide.util.lookup.ServiceProvider;
 
 /**
  * Top component which displays something.
@@ -27,15 +28,13 @@ persistenceType = TopComponent.PERSISTENCE_ALWAYS)
 @ActionID(category = "Window", id = "de.cebitec.mgx.gui.explorer.ProjectExplorerTopComponent")
 @TopComponent.OpenActionRegistration(displayName = "#CTL_ProjectExplorerAction",
 preferredID = "ProjectExplorerTopComponent")
+@ServiceProvider(service = ProjectExplorerTopComponent.class)
 public final class ProjectExplorerTopComponent extends TopComponent implements ExplorerManager.Provider {
 
-    private static ProjectExplorerTopComponent instance = new ProjectExplorerTopComponent();
-
-    private GPMS gpms = null;
     private ExplorerManager exmngr = new ExplorerManager();
     private JScrollPane jscr;
 
-    private ProjectExplorerTopComponent() {
+    public ProjectExplorerTopComponent() {
         initComponents();
         setName(NbBundle.getMessage(ProjectExplorerTopComponent.class, "CTL_ProjectExplorerTopComponent"));
         setToolTipText(NbBundle.getMessage(ProjectExplorerTopComponent.class, "HINT_ProjectExplorerTopComponent"));
@@ -48,24 +47,10 @@ public final class ProjectExplorerTopComponent extends TopComponent implements E
         associateLookup(ExplorerUtils.createLookup(exmngr, getActionMap()));
     }
 
-    public static ProjectExplorerTopComponent getInstance() {
-        return instance;
-    }
-
-    public void setGPMSInstance(GPMS gpms) {
-        this.gpms = gpms;
-        initTree();
-    }
-
     private void initComponents() {
         jscr = new BeanTreeView();
         setLayout(new BorderLayout());
         add(jscr, BorderLayout.CENTER);
-    }
-
-    private void initTree() {
-        AbstractNode root = new AbstractNode(Children.create(new ServerNodeFactory(gpms), true));
-        exmngr.setRootContext(root);
     }
 
     @Override
@@ -101,5 +86,11 @@ public final class ProjectExplorerTopComponent extends TopComponent implements E
     @Override
     public ExplorerManager getExplorerManager() {
         return exmngr;
+    }
+
+    public void setGPMS(GPMS gpms) {
+        AbstractNode root = new AbstractNode(Children.create(new ServerNodeFactory(gpms), true));
+        root.setDisplayName("Servers");
+        exmngr.setRootContext(root);
     }
 }
