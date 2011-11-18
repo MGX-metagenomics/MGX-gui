@@ -7,7 +7,7 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <groupId>de.cebitec.mgx</groupId>
+    <groupId>de.cebitec.mgx.gui</groupId>
     <artifactId>Jersey-Wrapper</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>nbm</packaging>
@@ -49,6 +49,32 @@
                         <publicPackage>com.sun.jersey.api.provider.jaxb</publicPackage>
                         <publicPackage>com.sun.jersey.api.representation</publicPackage>
                         <publicPackage>com.sun.jersey.api.uri</publicPackage>
+                        <publicPackage>com.sun.jersey.client.impl</publicPackage>
+                        <publicPackage>com.sun.jersey.client.impl.async</publicPackage>
+                        <publicPackage>com.sun.jersey.client.proxy</publicPackage>
+                        <publicPackage>com.sun.jersey.client.urlconnection</publicPackage>
+                        <publicPackage>com.sun.jersey.core.header</publicPackage>
+                        <publicPackage>com.sun.jersey.core.header.reader</publicPackage>
+                        <publicPackage>com.sun.jersey.core.impl.provider.entity</publicPackage>
+                        <publicPackage>com.sun.jersey.core.impl.provider.header</publicPackage>
+                        <publicPackage>com.sun.jersey.core.impl.provider.xml</publicPackage>
+                        <publicPackage>com.sun.jersey.core.provider</publicPackage>
+                        <publicPackage>com.sun.jersey.core.provider.jaxb</publicPackage>
+                        <publicPackage>com.sun.jersey.core.reflection</publicPackage>
+                        <publicPackage>com.sun.jersey.core.spi.component</publicPackage>
+                        <publicPackage>com.sun.jersey.core.spi.component.ioc</publicPackage>
+                        <publicPackage>com.sun.jersey.core.spi.factory</publicPackage>
+                        <publicPackage>com.sun.jersey.core.spi.scanning</publicPackage>
+                        <publicPackage>com.sun.jersey.core.spi.scanning.uri</publicPackage>
+                        <publicPackage>com.sun.jersey.core.util</publicPackage>
+                        <publicPackage>com.sun.jersey.impl</publicPackage>
+                        <publicPackage>com.sun.jersey.localization</publicPackage>
+                        <publicPackage>com.sun.jersey.spi</publicPackage>
+                        <publicPackage>com.sun.jersey.spi.inject</publicPackage>
+                        <publicPackage>com.sun.jersey.spi.service</publicPackage>
+                        <publicPackage>com.sun.ws.rs.ext</publicPackage>
+                        <publicPackage>javax.annotation</publicPackage>
+                        <publicPackage>javax.annotation.meta</publicPackage>
                         <publicPackage>javax.ws.rs</publicPackage>
                         <publicPackage>javax.ws.rs.core</publicPackage>
                         <publicPackage>javax.ws.rs.ext</publicPackage>
