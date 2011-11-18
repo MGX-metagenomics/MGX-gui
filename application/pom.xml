@@ -30,6 +30,12 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>branding</artifactId>
             <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>org-netbeans-api-annotations-common</artifactId>
+                    <groupId>org.netbeans.api</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!-- To run NbModuleSuite functional tests in src/test/java, use nbjunit (assumes RELEASE70 or later):
         <dependency>
@@ -53,19 +59,83 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <artifactId>MGX-DTO</artifactId>
-            <groupId>de.cebitec.mgx</groupId>
+            <artifactId>org-netbeans-modules-queries</artifactId>
+            <groupId>org.netbeans.api</groupId>
+            <type>jar</type>
+            <version>RELEASE701</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>org-netbeans-modules-queries</artifactId>
+                    <groupId>org.netbeans.api</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <artifactId>org-openide-util-lookup</artifactId>
+            <groupId>org.netbeans.api</groupId>
+            <type>jar</type>
+            <version>RELEASE701</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>org-openide-util-lookup</artifactId>
+                    <groupId>org.netbeans.api</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <artifactId>org-openide-text</artifactId>
+            <groupId>org.netbeans.api</groupId>
+            <type>jar</type>
+            <version>RELEASE701</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>org-openide-util-lookup</artifactId>
+                    <groupId>org.netbeans.api</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>org-netbeans-modules-editor-mimelookup</artifactId>
+                    <groupId>org.netbeans.api</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>org-openide-modules</artifactId>
+                    <groupId>org.netbeans.api</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <artifactId>org-openide-filesystems</artifactId>
+            <groupId>org.netbeans.api</groupId>
+            <type>jar</type>
+            <version>RELEASE701</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>org-openide-filesystems</artifactId>
+                    <groupId>org.netbeans.api</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <artifactId>DTO-Wrapper</artifactId>
+            <groupId>de.cebitec.mgx.gui</groupId>
             <type>jar</type>
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>de.cebitec.mgx</groupId>
-            <artifactId>MGX-Nodes</artifactId>
+            <artifactId>MGX-Explorer</artifactId>
+            <groupId>de.cebitec.mgx.gui</groupId>
+            <type>jar</type>
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>de.cebitec.mgx</groupId>
-            <artifactId>MGX-Explorer</artifactId>
+            <artifactId>MGX-Nodes</artifactId>
+            <groupId>de.cebitec.mgx.gui</groupId>
+            <type>jar</type>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <artifactId>MGXClient-Wrapper</artifactId>
+            <groupId>de.cebitec.mgx.gui</groupId>
+            <type>jar</type>
             <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
