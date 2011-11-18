@@ -7,7 +7,7 @@
     <version>1.0-SNAPSHOT</version>
   </parent>
 
-    <groupId>de.cebitec.mgx</groupId>
+    <groupId>de.cebitec.mgx.gui</groupId>
     <artifactId>DTO-Wrapper</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>nbm</packaging>
@@ -41,8 +41,13 @@
             <version>RELEASE701</version>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
+            <groupId>de.cebitec.mgx</groupId>
             <artifactId>MGX-DTO</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>Jersey-Wrapper</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
@@ -55,7 +60,6 @@
                 <version>3.5</version>
                 <extensions>true</extensions>
                 <configuration>
-                    <useOSGiDependencies>true</useOSGiDependencies>
                     <publicPackages>
                         <publicPackage>de.cebitec.mgx.dto</publicPackage>
                         <publicPackage>de.cebitec.mgx.dtoserializer</publicPackage>
