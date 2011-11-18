@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.nodefactory;
 
 import de.cebitec.mgx.client.MGXMaster;
+import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.HabitatDTO;
 import de.cebitec.mgx.dto.dto.SampleDTO;
@@ -30,6 +31,8 @@ public class SampleNodeFactory extends ChildFactory<SampleDTO> {
         try {
             toPopulate.addAll(master.Sample().ByHabitat(hab_id));
         } catch (MGXServerException ex) {
+            Exceptions.printStackTrace(ex);
+        } catch (MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
         return true;
