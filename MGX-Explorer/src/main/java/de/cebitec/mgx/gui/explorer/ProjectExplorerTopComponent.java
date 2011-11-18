@@ -13,7 +13,6 @@ import org.openide.explorer.ExplorerUtils;
 import org.openide.explorer.view.BeanTreeView;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
-import org.openide.util.LookupListener;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -92,5 +91,10 @@ public final class ProjectExplorerTopComponent extends TopComponent implements E
         AbstractNode root = new AbstractNode(Children.create(new ServerNodeFactory(gpms), true));
         root.setDisplayName("Servers");
         exmngr.setRootContext(root);
+    }
+
+    @Override
+    public int getPersistenceType() {
+        return PERSISTENCE_NEVER;
     }
 }
