@@ -58,12 +58,12 @@
         <module>branding</module>
         <module>application</module>
         <module>GUI-login</module>
-    <module>MGXClient-Wrapper</module>
-    <module>DTO-Wrapper</module>
-    <module>Jersey-Wrapper</module>
-    <module>MGX-Explorer</module>
-    <module>MGX-Nodes</module>
-  </modules>
+        <module>MGXClient-Wrapper</module>
+        <module>DTO-Wrapper</module>
+        <module>Jersey-Wrapper</module>
+        <module>MGX-Explorer</module>
+        <module>MGX-Nodes</module>
+    </modules>
 
     <properties>
         <netbeans.version>RELEASE701</netbeans.version>
