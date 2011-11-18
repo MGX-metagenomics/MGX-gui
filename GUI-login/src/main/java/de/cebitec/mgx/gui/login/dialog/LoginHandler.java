@@ -11,6 +11,7 @@ import org.openide.NotificationLineSupport;
 import org.openide.util.NbPreferences;
 import de.cebitec.mgx.gui.login.configuration.MGXserverPanel;
 import de.cebitec.mgx.restgpms.GPMS;
+import org.openide.util.Lookup;
 import org.openide.windows.Mode;
 import org.openide.windows.WindowManager;
 
@@ -21,6 +22,7 @@ import org.openide.windows.WindowManager;
 public class LoginHandler implements ActionListener {
 
     private static LoginHandler instance = new LoginHandler();
+    //
     private LoginPanel panel = new LoginPanel();
     private DialogDescriptor dialog = null;
     private NotificationLineSupport nline;
@@ -36,7 +38,6 @@ public class LoginHandler implements ActionListener {
     }
 
     public void showDialog() {
-
         dialog = new DialogDescriptor(panel, "Login", true, this);
         dialog.setClosingOptions(new Object[]{DialogDescriptor.CANCEL_OPTION, DialogDescriptor.OK_OPTION});
         nline = dialog.createNotificationLineSupport();
@@ -53,7 +54,6 @@ public class LoginHandler implements ActionListener {
 
         panel.setUser(NbPreferences.forModule(MGXserverPanel.class).get("lastLogin", ""));
         panel.setPassword("");
-
 
         servername = NbPreferences.forModule(MGXserverPanel.class).get("servername", "scooter");
         serveruri = NbPreferences.forModule(MGXserverPanel.class).get("serveruri", "http://scooter.cebitec.uni-bielefeld.de:8080/MGX-maven-web/webresources/");
@@ -86,9 +86,9 @@ public class LoginHandler implements ActionListener {
     }
 
     private void openProjectExplorer(GPMS gpms) {
-        ProjectExplorerTopComponent pe = ProjectExplorerTopComponent.getInstance();
-        pe.setGPMSInstance(gpms);
+        ProjectExplorerTopComponent pe = Lookup.getDefault().lookup(ProjectExplorerTopComponent.class);
         pe.setVisible(true);
+        pe.setGPMS(gpms);
         Mode m = WindowManager.getDefault().findMode("explorer");
         if (m != null) {
             m.dockInto(pe);
@@ -98,4 +98,5 @@ public class LoginHandler implements ActionListener {
         pe.open();
         pe.requestActive();
     }
+
 }
