@@ -1,16 +1,20 @@
 package de.cebitec.mgx.gui.nodes;
 
-import org.openide.nodes.AbstractNode;
+import de.cebitec.mgx.dto.dto.SampleDTO;
 import org.openide.nodes.Children;
+import org.openide.util.Lookup;
 
 /**
  *
  * @author sj
  */
-public class SampleNode extends AbstractNode {
+public class SampleNode extends MGXNodeBase<SampleDTO> {
 
     public SampleNode(Children children) {
         super(children);
     }
-    
+
+    public SampleNode(Children children, Lookup lookup) {
+        super(children, lookup);
+    }
 }

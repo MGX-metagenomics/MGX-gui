@@ -1,16 +1,21 @@
 package de.cebitec.mgx.gui.nodes;
 
-import org.openide.nodes.AbstractNode;
+import de.cebitec.mgx.dto.dto.SeqRunDTO;
 import org.openide.nodes.Children;
+import org.openide.util.Lookup;
 
 /**
  *
  * @author sj
  */
-public class SeqRunNode extends AbstractNode {
+public class SeqRunNode extends MGXNodeBase<SeqRunDTO> {
 
     public SeqRunNode(Children children) {
         super(children);
+    }
+
+    public SeqRunNode(Children childen, Lookup lookup) {
+        super(childen, lookup);
     }
     
 }

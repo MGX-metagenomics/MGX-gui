@@ -11,6 +11,7 @@ import org.openide.nodes.ChildFactory;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
 import org.openide.util.Exceptions;
+import org.openide.util.lookup.Lookups;
 
 /**
  *
@@ -40,8 +41,10 @@ public class SampleNodeFactory extends ChildFactory<SampleDTO> {
 
     @Override
     protected Node createNodeForKey(SampleDTO key) {
-        SampleNode sample = new SampleNode(Children.create(new DNAExtractNodeFactory(master, key), true));
-        sample.setDisplayName(key.getMaterial());
-        return sample;
+        SampleNode node = new SampleNode(Children.create(new DNAExtractNodeFactory(master, key), true), Lookups.singleton(key));
+        node.setMaster(master);
+        node.setDTO(key);
+        node.setDisplayName(key.getMaterial());
+        return node;
     }
 }

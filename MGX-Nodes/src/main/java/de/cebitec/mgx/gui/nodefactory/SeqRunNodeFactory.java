@@ -11,6 +11,7 @@ import org.openide.nodes.ChildFactory;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
 import org.openide.util.Exceptions;
+import org.openide.util.lookup.Lookups;
 
 /**
  *
@@ -40,8 +41,10 @@ public class SeqRunNodeFactory extends ChildFactory<SeqRunDTO> {
 
     @Override
     protected Node createNodeForKey(SeqRunDTO key) {
-        SeqRunNode seqrun = new SeqRunNode(Children.LEAF);
-        seqrun.setDisplayName(key.getSequencingMethod() + "run");
-        return seqrun;
+        SeqRunNode node = new SeqRunNode(Children.LEAF, Lookups.singleton(key));
+        node.setMaster(master);
+        node.setDTO(key);
+        node.setDisplayName(key.getSequencingMethod() + "run");
+        return node;
     }
 }

@@ -11,6 +11,7 @@ import org.openide.nodes.ChildFactory;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
 import org.openide.util.Exceptions;
+import org.openide.util.lookup.Lookups;
 
 /**
  *
@@ -40,8 +41,10 @@ public class DNAExtractNodeFactory extends ChildFactory<DNAExtractDTO> {
 
     @Override
     protected Node createNodeForKey(DNAExtractDTO key) {
-        DNAExtractNode sample = new DNAExtractNode(Children.create(new SeqRunNodeFactory(master, key), true));
-        sample.setDisplayName(key.getProtocolName());
-        return sample;
+        DNAExtractNode node = new DNAExtractNode(Children.create(new SeqRunNodeFactory(master, key), true), Lookups.singleton(key));
+        node.setMaster(master);
+        node.setDTO(key);
+        node.setDisplayName(key.getProtocolName());
+        return node;
     }
 }

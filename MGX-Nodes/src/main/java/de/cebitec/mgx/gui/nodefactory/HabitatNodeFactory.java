@@ -10,6 +10,7 @@ import org.openide.nodes.ChildFactory;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
 import org.openide.util.Exceptions;
+import org.openide.util.lookup.Lookups;
 
 /**
  *
@@ -37,7 +38,9 @@ public class HabitatNodeFactory extends ChildFactory<HabitatDTO> {
 
     @Override
     protected Node createNodeForKey(HabitatDTO key) {
-        HabitatNode habitat = new HabitatNode(Children.create(new SampleNodeFactory(master, key), true));
+        HabitatNode habitat = new HabitatNode(Children.create(new SampleNodeFactory(master, key), true), Lookups.singleton(key));
+        habitat.setMaster(master);
+        habitat.setDTO(key);
         habitat.setDisplayName(key.getName());
         return habitat;
     }

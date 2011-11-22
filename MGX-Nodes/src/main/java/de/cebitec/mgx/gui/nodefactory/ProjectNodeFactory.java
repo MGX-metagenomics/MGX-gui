@@ -37,10 +37,10 @@ public class ProjectNodeFactory extends ChildFactory<MembershipI> {
 
     @Override
     protected Node createNodeForKey(MembershipI m) {
-        ProjectNode pnode = new ProjectNode(Children.create(new ProjectStructureNodeFactory(gpms, m), false));
+        ProjectNode node = new ProjectNode(Children.create(new ProjectStructureNodeFactory(gpms, m), false));
         String name = new StringBuilder(m.getProject().getName()).append(" (").append(m.getRole().getName()).append(")").toString();
-        pnode.setDisplayName(name);
-        return pnode;
+        node.setDisplayName(name);
+        return node;
     }
     
     
