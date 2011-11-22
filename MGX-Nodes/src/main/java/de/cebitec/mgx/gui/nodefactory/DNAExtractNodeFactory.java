@@ -41,7 +41,7 @@ public class DNAExtractNodeFactory extends ChildFactory<DNAExtractDTO> {
     @Override
     protected Node createNodeForKey(DNAExtractDTO key) {
         DNAExtractNode sample = new DNAExtractNode(Children.create(new SeqRunNodeFactory(master, key), true));
-        sample.setDisplayName(key.getMethod());
+        sample.setDisplayName(key.getProtocolName());
         return sample;
     }
 }
