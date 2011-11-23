@@ -48,6 +48,7 @@
                         <publicPackage>org.jdesktop.swingx</publicPackage>
                         <publicPackage>org.jdesktop.swingx.event</publicPackage>
                         <publicPackage>org.jdesktop.swingx.mapviewer.*</publicPackage>
+                        <publicPackage>org.jdesktop.swingx.painter</publicPackage>
                         <publicPackage>org.jdesktop.swingx.ws.yahoo.search.*</publicPackage>
                         <publicPackage>org.jdesktop.ws</publicPackage>
                         <publicPackage>org.jdesktop.ws.events</publicPackage>
