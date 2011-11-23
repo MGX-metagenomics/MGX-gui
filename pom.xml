@@ -65,6 +65,7 @@
         <module>MGX-Nodes</module>
     <module>SwingX-WS-Wrapper</module>
     <module>Habitat-Wizard</module>
+    <module>MGX-Datamodel</module>
   </modules>
 
     <properties>
