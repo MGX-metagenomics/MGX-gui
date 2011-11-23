@@ -88,7 +88,7 @@ public final class ProjectExplorerTopComponent extends TopComponent implements E
     }
 
     public void setGPMS(GPMS gpms) {
-        AbstractNode root = new AbstractNode(Children.create(new ServerNodeFactory(gpms, getLookup()), true), getLookup());
+        AbstractNode root = new AbstractNode(Children.create(new ServerNodeFactory(gpms), true));
         root.setDisplayName("Servers");
         exmngr.setRootContext(root);
     }
