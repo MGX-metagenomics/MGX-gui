@@ -1,7 +1,5 @@
 package de.cebitec.mgx.gui.nodefactory;
 
-import de.cebitec.gpms.core.MembershipI;
-import de.cebitec.gpms.rest.GPMSClientI;
 import de.cebitec.mgx.client.MGXMaster;
 import de.cebitec.mgx.gui.nodes.ProjectAnalysisTasksNode;
 import de.cebitec.mgx.gui.nodes.ProjectDataNode;
@@ -24,9 +22,9 @@ public class ProjectStructureNodeFactory extends ChildFactory<Node> {
 
     public ProjectStructureNodeFactory(MGXMaster master, Lookup lookup) {
         this.lookup = lookup;
-        ProjectDataNode data = new ProjectDataNode(Children.create(new HabitatNodeFactory(master), true), lookup);
-        ProjectFilesNode files = new ProjectFilesNode(Children.LEAF, lookup);  // FIXME
-        ProjectAnalysisTasksNode tasks = new ProjectAnalysisTasksNode(Children.LEAF, lookup); // FIXME
+        ProjectDataNode data = new ProjectDataNode(Children.create(new HabitatNodeFactory(master), true));
+        ProjectFilesNode files = new ProjectFilesNode(Children.LEAF);  // FIXME
+        ProjectAnalysisTasksNode tasks = new ProjectAnalysisTasksNode(Children.LEAF); // FIXME
 
         project_structure = new ArrayList<Node>();
         project_structure.add(data);

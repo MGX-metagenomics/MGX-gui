@@ -3,8 +3,9 @@ package de.cebitec.mgx.gui.nodefactory;
 import de.cebitec.mgx.client.MGXMaster;
 import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
-import de.cebitec.mgx.dto.dto.DNAExtractDTO;
 import de.cebitec.mgx.dto.dto.SeqRunDTO;
+import de.cebitec.mgx.gui.datamodel.DNAExtract;
+import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.nodes.SeqRunNode;
 import java.util.List;
 import org.openide.nodes.ChildFactory;
@@ -17,20 +18,22 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sj
  */
-public class SeqRunNodeFactory extends ChildFactory<SeqRunDTO> {
+public class SeqRunNodeFactory extends ChildFactory<SeqRun> {
 
     private MGXMaster master;
     private long ex_id;
 
-    SeqRunNodeFactory(MGXMaster master, DNAExtractDTO key) {
+    SeqRunNodeFactory(MGXMaster master, DNAExtract key) {
         this.master = master;
-        ex_id = key.getId();
+        ex_id = key.getDTO().getId();
     }
 
     @Override
-    protected boolean createKeys(List<SeqRunDTO> toPopulate) {
+    protected boolean createKeys(List<SeqRun> toPopulate) {
         try {
-            toPopulate.addAll(master.SeqRun().ByExtract(ex_id));
+            for (SeqRunDTO dto : master.SeqRun().ByExtract(ex_id)) {
+                toPopulate.add(new SeqRun(master, dto));
+            }
         } catch (MGXServerException ex) {
             Exceptions.printStackTrace(ex);
         } catch (MGXClientException ex) {
@@ -40,11 +43,10 @@ public class SeqRunNodeFactory extends ChildFactory<SeqRunDTO> {
     }
 
     @Override
-    protected Node createNodeForKey(SeqRunDTO key) {
+    protected Node createNodeForKey(SeqRun key) {
         SeqRunNode node = new SeqRunNode(Children.LEAF, Lookups.singleton(key));
         node.setMaster(master);
-        node.setDTO(key);
-        node.setDisplayName(key.getSequencingMethod() + "run");
+        node.setDisplayName(key.getDTO().getSequencingMethod() + "run");
         return node;
     }
 }

@@ -4,6 +4,7 @@ import de.cebitec.mgx.client.MGXMaster;
 import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.HabitatDTO;
+import de.cebitec.mgx.gui.datamodel.Habitat;
 import de.cebitec.mgx.gui.nodes.HabitatNode;
 import java.util.List;
 import org.openide.nodes.ChildFactory;
@@ -16,7 +17,7 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sj
  */
-public class HabitatNodeFactory extends ChildFactory<HabitatDTO> {
+public class HabitatNodeFactory extends ChildFactory<Habitat> {
 
     private MGXMaster master;
 
@@ -25,9 +26,11 @@ public class HabitatNodeFactory extends ChildFactory<HabitatDTO> {
     }
 
     @Override
-    protected boolean createKeys(List<HabitatDTO> toPopulate) {
+    protected boolean createKeys(List<Habitat> toPopulate) {
         try {
-            toPopulate.addAll(master.Habitat().fetchall());
+            for (HabitatDTO dto : master.Habitat().fetchall()) {
+                toPopulate.add(new Habitat(master, dto));
+            }
         } catch (MGXServerException ex) {
             Exceptions.printStackTrace(ex);
         } catch (MGXClientException ex) {
@@ -37,11 +40,9 @@ public class HabitatNodeFactory extends ChildFactory<HabitatDTO> {
     }
 
     @Override
-    protected Node createNodeForKey(HabitatDTO key) {
-        HabitatNode habitat = new HabitatNode(Children.create(new SampleNodeFactory(master, key), true), Lookups.singleton(key));
-        habitat.setMaster(master);
-        habitat.setDTO(key);
-        habitat.setDisplayName(key.getName());
-        return habitat;
+    protected Node createNodeForKey(Habitat key) {
+        HabitatNode node = new HabitatNode(Children.create(new SampleNodeFactory(master, key), true), Lookups.singleton(key));
+        node.setDisplayName(key.getDTO().getName());
+        return node;
     }
 }

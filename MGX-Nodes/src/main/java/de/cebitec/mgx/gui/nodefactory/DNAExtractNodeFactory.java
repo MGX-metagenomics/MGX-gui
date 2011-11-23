@@ -4,7 +4,8 @@ import de.cebitec.mgx.client.MGXMaster;
 import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.DNAExtractDTO;
-import de.cebitec.mgx.dto.dto.SampleDTO;
+import de.cebitec.mgx.gui.datamodel.DNAExtract;
+import de.cebitec.mgx.gui.datamodel.Sample;
 import de.cebitec.mgx.gui.nodes.DNAExtractNode;
 import java.util.List;
 import org.openide.nodes.ChildFactory;
@@ -17,20 +18,22 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sj
  */
-public class DNAExtractNodeFactory extends ChildFactory<DNAExtractDTO> {
+public class DNAExtractNodeFactory extends ChildFactory<DNAExtract> {
 
     private MGXMaster master;
     private long sample_id;
 
-    DNAExtractNodeFactory(MGXMaster master, SampleDTO key) {
+    DNAExtractNodeFactory(MGXMaster master, Sample key) {
         this.master = master;
-        sample_id = key.getId();
+        sample_id = key.getDTO().getId();
     }
 
     @Override
-    protected boolean createKeys(List<DNAExtractDTO> toPopulate) {
+    protected boolean createKeys(List<DNAExtract> toPopulate) {
         try {
-            toPopulate.addAll(master.DNAExtract().BySample(sample_id));
+            for (DNAExtractDTO dto : master.DNAExtract().BySample(sample_id)) {
+                toPopulate.add(new DNAExtract(master, dto));
+            }
         } catch (MGXServerException ex) {
             Exceptions.printStackTrace(ex);
         } catch (MGXClientException ex) {
@@ -40,11 +43,10 @@ public class DNAExtractNodeFactory extends ChildFactory<DNAExtractDTO> {
     }
 
     @Override
-    protected Node createNodeForKey(DNAExtractDTO key) {
+    protected Node createNodeForKey(DNAExtract key) {
         DNAExtractNode node = new DNAExtractNode(Children.create(new SeqRunNodeFactory(master, key), true), Lookups.singleton(key));
         node.setMaster(master);
-        node.setDTO(key);
-        node.setDisplayName(key.getProtocolName());
+        node.setDisplayName(key.getDTO().getProtocolName());
         return node;
     }
 }

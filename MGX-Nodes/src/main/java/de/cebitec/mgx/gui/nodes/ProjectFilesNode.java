@@ -10,8 +10,8 @@ import org.openide.util.Lookup;
  */
 public class ProjectFilesNode extends AbstractNode {
 
-    public ProjectFilesNode(Children children, Lookup lookup) {
-        super(children, lookup);
+    public ProjectFilesNode(Children children) {
+        super(children, Lookup.EMPTY);
         setDisplayName("Project Files");
     }
 }
