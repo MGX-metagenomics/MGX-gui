@@ -63,7 +63,9 @@
         <module>Jersey-Wrapper</module>
         <module>MGX-Explorer</module>
         <module>MGX-Nodes</module>
-    </modules>
+    <module>SwingX-WS-Wrapper</module>
+    <module>Habitat-Wizard</module>
+  </modules>
 
     <properties>
         <netbeans.version>RELEASE701</netbeans.version>
