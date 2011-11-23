@@ -65,6 +65,11 @@
             <artifactId>org-openide-awt</artifactId>
             <version>RELEASE701</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>MGX-Datamodel</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

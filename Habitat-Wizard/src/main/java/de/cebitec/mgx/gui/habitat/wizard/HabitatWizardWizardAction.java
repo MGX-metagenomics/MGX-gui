@@ -1,6 +1,6 @@
-
 package de.cebitec.mgx.gui.habitat.wizard;
 
+import de.cebitec.mgx.gui.datamodel.Habitat;
 import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.event.ActionEvent;
@@ -9,6 +9,7 @@ import java.text.MessageFormat;
 import javax.swing.JComponent;
 import org.openide.DialogDisplayer;
 import org.openide.WizardDescriptor;
+import org.openide.util.Lookup;
 
 // An example action demonstrating how the wizard could be called from within
 // your code. You can move the code below wherever you need, or register an action:
@@ -18,7 +19,13 @@ import org.openide.WizardDescriptor;
 public final class HabitatWizardWizardAction implements ActionListener {
 
     private WizardDescriptor.Panel[] panels;
+    private Habitat habitat;
 
+    public HabitatWizardWizardAction() {
+        habitat = Lookup.getDefault().lookup(Habitat.class); // FIXME: use dto to preset fields
+    }
+
+    
     public @Override
     void actionPerformed(ActionEvent e) {
         WizardDescriptor wizardDescriptor = new WizardDescriptor(getPanels());
