@@ -90,6 +90,7 @@
                     <publicPackages>
                         <publicPackage>de.cebitec.mgx.gui.nodefactory</publicPackage>
                         <publicPackage>de.cebitec.mgx.gui.nodes</publicPackage>
+                        <publicPackage>de.cebitec.mgx.gui.nodes.actions</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>
