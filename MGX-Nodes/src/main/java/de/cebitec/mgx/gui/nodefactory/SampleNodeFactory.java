@@ -4,7 +4,6 @@ import de.cebitec.mgx.client.MGXMaster;
 import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.SampleDTO;
-import de.cebitec.mgx.gui.datamodel.Habitat;
 import de.cebitec.mgx.gui.datamodel.Sample;
 import de.cebitec.mgx.gui.nodes.SampleNode;
 import java.util.List;
@@ -23,9 +22,9 @@ public class SampleNodeFactory extends ChildFactory<Sample> {
     private MGXMaster master;
     private long hab_id;
 
-    SampleNodeFactory(MGXMaster master, Habitat key) {
+    SampleNodeFactory(MGXMaster master, long hab_id) {
         this.master = master;
-        hab_id = key.getDTO().getId();
+        this.hab_id = hab_id;
     }
 
     @Override
@@ -44,7 +43,7 @@ public class SampleNodeFactory extends ChildFactory<Sample> {
 
     @Override
     protected Node createNodeForKey(Sample key) {
-        SampleNode node = new SampleNode(Children.create(new DNAExtractNodeFactory(master, key), true), Lookups.singleton(key));
+        SampleNode node = new SampleNode(Children.create(new DNAExtractNodeFactory(master, key.getDTO().getId()), true), Lookups.singleton(key));
         node.setMaster(master);
         node.setDisplayName(key.getDTO().getMaterial());
         return node;

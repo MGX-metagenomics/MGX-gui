@@ -17,11 +17,9 @@ import org.openide.util.lookup.Lookups;
 public class ServerNodeFactory extends ChildFactory<GPMSClientI> {
 
     private GPMS gpms;
-    private Lookup lookup;
 
-    public ServerNodeFactory(GPMS gpms, Lookup lookup) {
+    public ServerNodeFactory(GPMS gpms) {
         this.gpms = gpms;
-        this.lookup = lookup;
     }
 
     @Override
@@ -32,7 +30,7 @@ public class ServerNodeFactory extends ChildFactory<GPMSClientI> {
 
     @Override
     protected Node createNodeForKey(GPMSClientI key) {
-        Node n = new ServerNode(Children.create(new ProjectNodeFactory(gpms, lookup), true), Lookups.singleton(key));
+        Node n = new ServerNode(Children.create(new ProjectNodeFactory(key), true), Lookups.singleton(key));
         n.setDisplayName(gpms.getServerName());
         return n;
     }

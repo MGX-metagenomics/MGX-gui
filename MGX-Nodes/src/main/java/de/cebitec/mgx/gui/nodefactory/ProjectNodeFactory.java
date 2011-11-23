@@ -8,7 +8,7 @@ import java.util.List;
 import org.openide.nodes.ChildFactory;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
-import org.openide.util.Lookup;
+import org.openide.util.lookup.Lookups;
 
 /**
  *
@@ -17,11 +17,9 @@ import org.openide.util.Lookup;
 public class ProjectNodeFactory extends ChildFactory<MembershipI> {
 
     private GPMSClientI gpms;
-    private Lookup lookup;
 
-    public ProjectNodeFactory(GPMSClientI gpms, Lookup lookup) {
+    public ProjectNodeFactory(GPMSClientI gpms) {
         this.gpms = gpms;
-        this.lookup = lookup;
     }
 
     @Override
@@ -37,7 +35,7 @@ public class ProjectNodeFactory extends ChildFactory<MembershipI> {
     @Override
     protected Node createNodeForKey(MembershipI m) {
         MGXMaster master = new MGXMaster(gpms, m);
-        ProjectNode node = new ProjectNode(Children.create(new ProjectStructureNodeFactory(master, lookup), false), lookup);
+        ProjectNode node = new ProjectNode(Children.create(new ProjectStructureNodeFactory(master), false), Lookups.singleton(master));
         String name = new StringBuilder(m.getProject().getName()).append(" (").append(m.getRole().getName()).append(")").toString();
         node.setDisplayName(name);
         node.setMaster(master);

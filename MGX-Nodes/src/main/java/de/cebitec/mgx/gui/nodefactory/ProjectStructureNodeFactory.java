@@ -9,7 +9,6 @@ import java.util.List;
 import org.openide.nodes.ChildFactory;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
-import org.openide.util.Lookup;
 
 /**
  *
@@ -18,10 +17,8 @@ import org.openide.util.Lookup;
 public class ProjectStructureNodeFactory extends ChildFactory<Node> {
 
     private List<Node> project_structure;
-    private Lookup lookup;
 
-    public ProjectStructureNodeFactory(MGXMaster master, Lookup lookup) {
-        this.lookup = lookup;
+    public ProjectStructureNodeFactory(MGXMaster master) {
         ProjectDataNode data = new ProjectDataNode(Children.create(new HabitatNodeFactory(master), true));
         ProjectFilesNode files = new ProjectFilesNode(Children.LEAF);  // FIXME
         ProjectAnalysisTasksNode tasks = new ProjectAnalysisTasksNode(Children.LEAF); // FIXME

@@ -5,7 +5,6 @@ import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.DNAExtractDTO;
 import de.cebitec.mgx.gui.datamodel.DNAExtract;
-import de.cebitec.mgx.gui.datamodel.Sample;
 import de.cebitec.mgx.gui.nodes.DNAExtractNode;
 import java.util.List;
 import org.openide.nodes.ChildFactory;
@@ -23,9 +22,9 @@ public class DNAExtractNodeFactory extends ChildFactory<DNAExtract> {
     private MGXMaster master;
     private long sample_id;
 
-    DNAExtractNodeFactory(MGXMaster master, Sample key) {
+    DNAExtractNodeFactory(MGXMaster master, long sample_id) {
         this.master = master;
-        sample_id = key.getDTO().getId();
+        this.sample_id = sample_id;
     }
 
     @Override

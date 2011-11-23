@@ -41,7 +41,7 @@ public class HabitatNodeFactory extends ChildFactory<Habitat> {
 
     @Override
     protected Node createNodeForKey(Habitat key) {
-        HabitatNode node = new HabitatNode(Children.create(new SampleNodeFactory(master, key), true), Lookups.singleton(key));
+        HabitatNode node = new HabitatNode(Children.create(new SampleNodeFactory(master, key.getDTO().getId()), true), Lookups.singleton(key));
         node.setDisplayName(key.getDTO().getName());
         return node;
     }
