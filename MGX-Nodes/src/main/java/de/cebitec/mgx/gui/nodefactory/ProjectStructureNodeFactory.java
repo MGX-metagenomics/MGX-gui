@@ -22,9 +22,9 @@ public class ProjectStructureNodeFactory extends ChildFactory<Node> {
     private List<Node> project_structure;
     private Lookup lookup;
 
-    public ProjectStructureNodeFactory(GPMSClientI gpms, MembershipI m, Lookup lookup) {
+    public ProjectStructureNodeFactory(MGXMaster master, Lookup lookup) {
         this.lookup = lookup;
-        ProjectDataNode data = new ProjectDataNode(Children.create(new HabitatNodeFactory(new MGXMaster(gpms, m)), true), lookup);
+        ProjectDataNode data = new ProjectDataNode(Children.create(new HabitatNodeFactory(master), true), lookup);
         ProjectFilesNode files = new ProjectFilesNode(Children.LEAF, lookup);  // FIXME
         ProjectAnalysisTasksNode tasks = new ProjectAnalysisTasksNode(Children.LEAF, lookup); // FIXME
 
