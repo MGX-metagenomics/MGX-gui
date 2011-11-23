@@ -10,11 +10,6 @@ import org.openide.util.Lookup;
  */
 public class ProjectDataNode extends AbstractNode {
 
-    public ProjectDataNode(Children children) {
-        super(children);
-        setDisplayName("Project Data");
-    }
-
     public ProjectDataNode(Children children, Lookup lookup) {
         super(children, lookup);
         setDisplayName("Project Data");

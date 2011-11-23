@@ -10,10 +10,6 @@ import org.openide.util.Lookup;
  */
 public class ServerNode extends AbstractNode {
 
-    public ServerNode(Children children) {
-        super(children);
-    }
-
     public ServerNode(Children children, Lookup lookup) {
         super(children, lookup);
     }

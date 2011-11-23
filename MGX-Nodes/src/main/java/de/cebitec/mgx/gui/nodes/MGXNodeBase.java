@@ -18,10 +18,6 @@ public abstract class MGXNodeBase<T> extends AbstractNode {
     private T dto;
     protected List<Action> actions = new ArrayList<Action>();
 
-    public MGXNodeBase(Children children) {
-        super(children);
-    }
-
     public MGXNodeBase(Children children, Lookup lookup) {
         super(children, lookup);
     }

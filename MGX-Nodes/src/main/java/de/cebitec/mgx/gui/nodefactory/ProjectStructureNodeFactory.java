@@ -11,6 +11,7 @@ import java.util.List;
 import org.openide.nodes.ChildFactory;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
+import org.openide.util.Lookup;
 
 /**
  *
@@ -19,22 +20,19 @@ import org.openide.nodes.Node;
 public class ProjectStructureNodeFactory extends ChildFactory<Node> {
 
     private List<Node> project_structure;
+    private Lookup lookup;
 
-    public ProjectStructureNodeFactory(GPMSClientI gpms, MembershipI m) {
-        ProjectDataNode data = new ProjectDataNode(Children.create(new HabitatNodeFactory(new MGXMaster(gpms, m)), true));
-        ProjectFilesNode files = new ProjectFilesNode(Children.LEAF);  // FIXME
-        ProjectAnalysisTasksNode tasks = new ProjectAnalysisTasksNode(Children.LEAF); // FIXME
-        
+    public ProjectStructureNodeFactory(GPMSClientI gpms, MembershipI m, Lookup lookup) {
+        this.lookup = lookup;
+        ProjectDataNode data = new ProjectDataNode(Children.create(new HabitatNodeFactory(new MGXMaster(gpms, m)), true), lookup);
+        ProjectFilesNode files = new ProjectFilesNode(Children.LEAF, lookup);  // FIXME
+        ProjectAnalysisTasksNode tasks = new ProjectAnalysisTasksNode(Children.LEAF, lookup); // FIXME
+
         project_structure = new ArrayList<Node>();
         project_structure.add(data);
         project_structure.add(files);
         project_structure.add(tasks);
     }
-
-//    @Override
-//    protected Node[] createNodes(MembershipI key) {
-//        return project_structure;
-//    }
 
     @Override
     protected boolean createKeys(List<Node> toPopulate) {
@@ -46,8 +44,4 @@ public class ProjectStructureNodeFactory extends ChildFactory<Node> {
     protected Node createNodeForKey(Node key) {
         return key;
     }
-    
-    
-    
-    
 }

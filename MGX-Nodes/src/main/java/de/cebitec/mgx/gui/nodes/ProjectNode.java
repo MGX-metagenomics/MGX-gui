@@ -11,10 +11,6 @@ import org.openide.util.Lookup;
  */
 public class ProjectNode extends AbstractNode {
 
-    public ProjectNode(Children c) {
-        super(c);
-    }
-
     public ProjectNode(Children children, Lookup lookup) {
         super(children, lookup);
     }

@@ -16,19 +16,14 @@ import org.openide.util.Lookup;
  */
 public class HabitatNode extends MGXNodeBase<HabitatDTO> {
 
-    public HabitatNode(Children children) {
-        super(children);
-        actions.add(new DeleteAction());
-    }
-
     public HabitatNode(Children children, Lookup lookup) {
         super(children, lookup);
-        actions.add(new DeleteAction());
+        actions.add(new HabitatDeleteAction());
     }
 
-    private class DeleteAction extends AbstractAction {
+    private class HabitatDeleteAction extends AbstractAction {
 
-        public DeleteAction() {
+        public HabitatDeleteAction() {
             putValue(NAME, "Delete");
         }
 

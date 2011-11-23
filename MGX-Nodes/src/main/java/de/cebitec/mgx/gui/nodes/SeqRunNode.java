@@ -10,12 +10,7 @@ import org.openide.util.Lookup;
  */
 public class SeqRunNode extends MGXNodeBase<SeqRunDTO> {
 
-    public SeqRunNode(Children children) {
-        super(children);
-    }
-
     public SeqRunNode(Children childen, Lookup lookup) {
         super(childen, lookup);
     }
-    
 }

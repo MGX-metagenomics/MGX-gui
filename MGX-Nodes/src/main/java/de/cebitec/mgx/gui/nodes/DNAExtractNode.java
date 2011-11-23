@@ -10,10 +10,6 @@ import org.openide.util.Lookup;
  */
 public class DNAExtractNode extends MGXNodeBase<DNAExtractDTO> {
 
-    public DNAExtractNode(Children children) {
-        super(children);
-    }
-
     public DNAExtractNode(Children children, Lookup lookup) {
         super(children, lookup);
     }

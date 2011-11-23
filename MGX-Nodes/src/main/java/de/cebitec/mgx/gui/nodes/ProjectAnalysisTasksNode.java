@@ -10,11 +10,6 @@ import org.openide.util.Lookup;
  */
 public class ProjectAnalysisTasksNode extends AbstractNode {
 
-    public ProjectAnalysisTasksNode(Children children) {
-        super(children);
-        setDisplayName("Analysis Tasks");
-    }
-
     public ProjectAnalysisTasksNode(Children children, Lookup lookup) {
         super(children, lookup);
         setDisplayName("Analysis Tasks");
