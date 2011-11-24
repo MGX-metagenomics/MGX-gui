@@ -77,6 +77,17 @@
             <artifactId>MGX-Datamodel</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-actions</artifactId>
+            <version>RELEASE701</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>Habitat-Wizard</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

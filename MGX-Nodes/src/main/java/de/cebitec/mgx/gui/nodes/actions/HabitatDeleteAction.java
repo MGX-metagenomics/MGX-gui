@@ -1,13 +1,8 @@
 package de.cebitec.mgx.gui.nodes.actions;
 
-import de.cebitec.mgx.client.exception.MGXClientException;
-import de.cebitec.mgx.client.exception.MGXServerException;
-import de.cebitec.mgx.dto.dto.HabitatDTO;
 import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.SwingUtilities;
-import org.openide.util.Exceptions;
-import org.openide.util.Lookup;
 
 /**
  *
