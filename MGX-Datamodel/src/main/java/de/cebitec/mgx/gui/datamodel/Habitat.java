@@ -18,6 +18,8 @@ public class Habitat extends ModelBase<HabitatDTO> {
 
     public Habitat(MGXMaster master, HabitatDTO dto) {
         super(master, dto);
+        this.id = dto.getId();
+        this.name = dto.getName();
     }
 
     @Override
