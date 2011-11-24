@@ -31,7 +31,7 @@ preferredID = "ProjectExplorerTopComponent")
 public final class ProjectExplorerTopComponent extends TopComponent implements ExplorerManager.Provider {
 
     private ExplorerManager exmngr = new ExplorerManager();
-    private JScrollPane jscr;
+    private BeanTreeView btv;
 
     public ProjectExplorerTopComponent() {
         initComponents();
@@ -47,9 +47,10 @@ public final class ProjectExplorerTopComponent extends TopComponent implements E
     }
 
     private void initComponents() {
-        jscr = new BeanTreeView();
+        btv = new BeanTreeView();
+        btv.setRootVisible(false);
         setLayout(new BorderLayout());
-        add(jscr, BorderLayout.CENTER);
+        add(btv, BorderLayout.CENTER);
     }
 
     @Override
@@ -89,7 +90,7 @@ public final class ProjectExplorerTopComponent extends TopComponent implements E
 
     public void setGPMS(GPMS gpms) {
         AbstractNode root = new AbstractNode(Children.create(new ServerNodeFactory(gpms), true));
-        root.setDisplayName("Servers");
+        //root.setDisplayName("Servers");
         exmngr.setRootContext(root);
     }
 
