@@ -2,10 +2,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-    <artifactId>MGX-gui</artifactId>
-    <groupId>de.cebitec.mgx.gui</groupId>
-    <version>1.0-SNAPSHOT</version>
-  </parent>
+        <artifactId>MGX-gui</artifactId>
+        <groupId>de.cebitec.mgx.gui</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
 
     <groupId>de.cebitec.mgx.gui</groupId>
     <artifactId>Habitat-Wizard</artifactId>
@@ -57,6 +57,11 @@
         </dependency>
         <dependency>
             <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-util-lookup</artifactId>
+            <version>RELEASE701</version>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-dialogs</artifactId>
             <version>RELEASE701</version>
         </dependency>
@@ -70,6 +75,11 @@
             <artifactId>MGX-Datamodel</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>MGXClient-Wrapper</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -79,6 +89,11 @@
                 <artifactId>nbm-maven-plugin</artifactId>
                 <version>3.5</version>
                 <extensions>true</extensions>
+                <configuration>
+                    <publicPackages>
+                        <publicPackage>de.cebitec.mgx.gui.habitat.wizard</publicPackage>
+                    </publicPackages>
+                </configuration>
             </plugin>
 
             <plugin>

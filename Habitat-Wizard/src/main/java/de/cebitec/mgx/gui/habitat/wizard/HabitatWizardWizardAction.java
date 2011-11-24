@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.habitat.wizard;
 
+import de.cebitec.mgx.client.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.Habitat;
 import java.awt.Component;
 import java.awt.Dialog;
@@ -9,23 +10,41 @@ import java.text.MessageFormat;
 import javax.swing.JComponent;
 import org.openide.DialogDisplayer;
 import org.openide.WizardDescriptor;
-import org.openide.util.Lookup;
+import org.openide.util.Utilities;
 
 // An example action demonstrating how the wizard could be called from within
 // your code. You can move the code below wherever you need, or register an action:
 // @ActionID(category="...", id="de.cebitec.mgx.gui.habitat.wizard.HabitatWizardWizardAction")
 // @ActionRegistration(displayName="Open HabitatWizard Wizard")
 // @ActionReference(path="Menu/Tools", position=...)
-public final class HabitatWizardWizardAction implements ActionListener {
+public class HabitatWizardWizardAction implements ActionListener {
 
     private WizardDescriptor.Panel[] panels;
-    private Habitat habitat;
+    private Habitat habitat = null;
+    private MGXMaster master = null;
 
     public HabitatWizardWizardAction() {
-        habitat = Lookup.getDefault().lookup(Habitat.class); // FIXME: use dto to preset fields
+        // fetch currently selected habitat from lookup
+        habitat = Utilities.actionsGlobalContext().lookup(Habitat.class);
+
+        // if we have a habitat, we're an "update" operation; otherwise
+        // we're creating a new habitat, which means we have to obtain the 
+        // corresponding MGXmaster
+        master = (habitat == null)
+                ? Utilities.actionsGlobalContext().lookup(MGXMaster.class)
+                : habitat.getMaster();
+        
+        if (habitat == null) {
+            System.err.println("No habitat in habitat wizard - must be new?");
+            //habitat = new Habitat(master, ??);
+        }
+
+        // still no master? something's wrong..
+        if (master == null) {
+            System.err.println("No master in Habitat wizard");
+        }
     }
 
-    
     public @Override
     void actionPerformed(ActionEvent e) {
         WizardDescriptor wizardDescriptor = new WizardDescriptor(getPanels());
