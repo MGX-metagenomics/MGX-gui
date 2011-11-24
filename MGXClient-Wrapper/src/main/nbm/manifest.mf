@@ -1,3 +1,2 @@
 Manifest-Version: 1.0
 OpenIDE-Module-Localizing-Bundle: de/cebitec/mgx/clientwrapper/Bundle.properties
-OpenIDE-Module-Layer: de/cebitec/mgx/clientwrapper/layer.xml
