@@ -8,8 +8,8 @@ import de.cebitec.mgx.client.MGXMaster;
  */
 public abstract class ModelBase<T> {
 
-    private MGXMaster master;
-    private T dto;
+    private MGXMaster master = null;
+    private T dto = null;
 
     public ModelBase(MGXMaster master, T dto) {
         this.master = master;
@@ -27,4 +27,6 @@ public abstract class ModelBase<T> {
     public T getDTO() {
         return dto;
     }
+
+    public abstract void delete();
 }
