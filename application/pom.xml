@@ -63,95 +63,30 @@
             <groupId>org.netbeans.api</groupId>
             <type>jar</type>
             <version>RELEASE701</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>org-netbeans-modules-queries</artifactId>
-                    <groupId>org.netbeans.api</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <artifactId>org-openide-util-lookup</artifactId>
             <groupId>org.netbeans.api</groupId>
             <type>jar</type>
             <version>RELEASE701</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>org-openide-util-lookup</artifactId>
-                    <groupId>org.netbeans.api</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <artifactId>org-openide-text</artifactId>
             <groupId>org.netbeans.api</groupId>
             <type>jar</type>
             <version>RELEASE701</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>org-openide-util-lookup</artifactId>
-                    <groupId>org.netbeans.api</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>org-netbeans-modules-editor-mimelookup</artifactId>
-                    <groupId>org.netbeans.api</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>org-openide-modules</artifactId>
-                    <groupId>org.netbeans.api</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <artifactId>org-openide-filesystems</artifactId>
             <groupId>org.netbeans.api</groupId>
             <type>jar</type>
             <version>RELEASE701</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>org-openide-filesystems</artifactId>
-                    <groupId>org.netbeans.api</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
-            <artifactId>DTO-Wrapper</artifactId>
-            <groupId>de.cebitec.mgx.gui</groupId>
+            <artifactId>org-openide-explorer</artifactId>
+            <groupId>org.netbeans.api</groupId>
             <type>jar</type>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <artifactId>MGX-Explorer</artifactId>
-            <groupId>de.cebitec.mgx.gui</groupId>
-            <type>jar</type>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <artifactId>MGX-Nodes</artifactId>
-            <groupId>de.cebitec.mgx.gui</groupId>
-            <type>jar</type>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <artifactId>MGXClient-Wrapper</artifactId>
-            <groupId>de.cebitec.mgx.gui</groupId>
-            <type>jar</type>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>SwingX-WS-Wrapper</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>Habitat-Wizard</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>MGX-Datamodel</artifactId>
-            <version>${project.version}</version>
+            <version>RELEASE701</version>
         </dependency>
     </dependencies>
 
