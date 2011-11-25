@@ -51,4 +51,8 @@ public class DNAExtract extends Identifiable {
         }
         return true;
     }
+
+    public String getProtocolName() {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
 }
