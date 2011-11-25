@@ -60,12 +60,12 @@
         <module>GUI-login</module>
         <module>MGXClient-Wrapper</module>
         <module>DTO-Wrapper</module>
-        <module>Jersey-Wrapper</module>
         <module>MGX-Explorer</module>
         <module>MGX-Nodes</module>
     <module>SwingX-WS-Wrapper</module>
     <module>Habitat-Wizard</module>
     <module>MGX-Datamodel</module>
+    <module>MGX-ClientDTOAdapter</module>
   </modules>
 
     <properties>
