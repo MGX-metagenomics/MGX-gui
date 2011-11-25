@@ -1,6 +1,6 @@
 package de.cebitec.mgx.gui.habitat.wizard;
 
-import de.cebitec.mgx.client.MGXMaster;
+import de.cebitec.mgx.gui.access.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.Habitat;
 import java.awt.Component;
 import java.awt.Dialog;
