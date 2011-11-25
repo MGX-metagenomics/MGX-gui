@@ -27,13 +27,7 @@ public class HabitatNode extends MGXNodeBase<Habitat> {
     }
 
     @Override
-    public SystemAction[] getActions() {
-        return super.getActions();
-    }
-
-    @Override
     public void destroy() throws IOException {
-        getLookup().lookup(Habitat.class).delete();
         super.destroy();
         fireNodeDestroyed();
     }
@@ -52,7 +46,7 @@ public class HabitatNode extends MGXNodeBase<Habitat> {
 
             @Override
             public String getName() {
-                return "It works - New Action!";
+                return "sample";
             }
 
             @Override

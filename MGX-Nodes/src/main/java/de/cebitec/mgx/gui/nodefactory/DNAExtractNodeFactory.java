@@ -1,9 +1,6 @@
 package de.cebitec.mgx.gui.nodefactory;
 
-import de.cebitec.mgx.client.MGXMaster;
-import de.cebitec.mgx.client.exception.MGXClientException;
-import de.cebitec.mgx.client.exception.MGXServerException;
-import de.cebitec.mgx.dto.dto.DNAExtractDTO;
+import de.cebitec.mgx.gui.access.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.DNAExtract;
 import de.cebitec.mgx.gui.nodes.DNAExtractNode;
 import java.beans.PropertyChangeEvent;
@@ -34,14 +31,8 @@ public class DNAExtractNodeFactory extends ChildFactory<DNAExtract> implements N
 
     @Override
     protected boolean createKeys(List<DNAExtract> toPopulate) {
-        try {
-            for (DNAExtractDTO dto : master.DNAExtract().BySample(sample_id)) {
-                toPopulate.add(new DNAExtract(master, dto));
-            }
-        } catch (MGXServerException ex) {
-            Exceptions.printStackTrace(ex);
-        } catch (MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+        for (DNAExtract d : master.DNAExtract().BySample(sample_id)) {
+            toPopulate.add(d);
         }
         return true;
     }
@@ -50,7 +41,7 @@ public class DNAExtractNodeFactory extends ChildFactory<DNAExtract> implements N
     protected Node createNodeForKey(DNAExtract key) {
         DNAExtractNode node = new DNAExtractNode(Children.create(new SeqRunNodeFactory(master, key), true), Lookups.singleton(key));
         node.setMaster(master);
-        node.setDisplayName(key.getDTO().getProtocolName());
+        node.setDisplayName(key.getProtocolName());
         node.addNodeListener(this);
         return node;
     }

@@ -1,9 +1,6 @@
 package de.cebitec.mgx.gui.nodefactory;
 
-import de.cebitec.mgx.client.MGXMaster;
-import de.cebitec.mgx.client.exception.MGXClientException;
-import de.cebitec.mgx.client.exception.MGXServerException;
-import de.cebitec.mgx.dto.dto.SampleDTO;
+import de.cebitec.mgx.gui.access.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.Sample;
 import de.cebitec.mgx.gui.nodes.SampleNode;
 import java.beans.PropertyChangeEvent;
@@ -34,23 +31,17 @@ public class SampleNodeFactory extends ChildFactory<Sample> implements NodeListe
 
     @Override
     protected boolean createKeys(List<Sample> toPopulate) {
-        try {
-            for (SampleDTO dto : master.Sample().ByHabitat(hab_id)) {
-                toPopulate.add(new Sample(master, dto));
-            }
-        } catch (MGXServerException ex) {
-            Exceptions.printStackTrace(ex);
-        } catch (MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+        for (Sample s : master.Sample().ByHabitat(hab_id)) {
+            toPopulate.add(s);
         }
         return true;
     }
 
     @Override
     protected Node createNodeForKey(Sample key) {
-        SampleNode node = new SampleNode(Children.create(new DNAExtractNodeFactory(master, key.getDTO().getId()), true), Lookups.singleton(key));
+        SampleNode node = new SampleNode(Children.create(new DNAExtractNodeFactory(master, key.getId()), true), Lookups.singleton(key));
         node.setMaster(master);
-        node.setDisplayName(key.getDTO().getMaterial());
+        node.setDisplayName(key.getMaterial());
         node.addNodeListener(this);
         return node;
     }

@@ -2,7 +2,8 @@ package de.cebitec.mgx.gui.nodefactory;
 
 import de.cebitec.gpms.core.MembershipI;
 import de.cebitec.gpms.rest.GPMSClientI;
-import de.cebitec.mgx.client.MGXMaster;
+import de.cebitec.mgx.client.MGXDTOMaster;
+import de.cebitec.mgx.gui.access.MGXMaster;
 import de.cebitec.mgx.gui.nodes.ProjectNode;
 import java.beans.PropertyChangeEvent;
 import java.util.List;
@@ -39,7 +40,8 @@ public class ProjectNodeFactory extends ChildFactory<MembershipI> implements Nod
 
     @Override
     protected Node createNodeForKey(MembershipI m) {
-        MGXMaster master = new MGXMaster(gpms, m);
+        MGXDTOMaster dtomaster = new MGXDTOMaster(gpms, m);
+        MGXMaster master = new MGXMaster(dtomaster);
         ProjectNode node = new ProjectNode(Children.create(new ProjectStructureNodeFactory(master), false), Lookups.singleton(master));
         String name = new StringBuilder(m.getProject().getName()).append(" (").append(m.getRole().getName()).append(")").toString();
         node.setDisplayName(name);

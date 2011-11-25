@@ -1,6 +1,6 @@
 package de.cebitec.mgx.gui.nodefactory;
 
-import de.cebitec.mgx.client.MGXMaster;
+import de.cebitec.mgx.gui.access.MGXMaster;
 import de.cebitec.mgx.gui.nodes.ProjectAnalysisTasksNode;
 import de.cebitec.mgx.gui.nodes.ProjectDataNode;
 import de.cebitec.mgx.gui.nodes.ProjectFilesNode;
