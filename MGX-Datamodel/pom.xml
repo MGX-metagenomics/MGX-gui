@@ -50,11 +50,6 @@
             <artifactId>DTO-Wrapper</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>MGXClient-Wrapper</artifactId>
-            <version>${project.version}</version>
-        </dependency>
     </dependencies>
 
     <build>
