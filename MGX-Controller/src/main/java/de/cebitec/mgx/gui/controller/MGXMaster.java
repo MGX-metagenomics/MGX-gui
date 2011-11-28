@@ -4,6 +4,7 @@ import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.gui.datamodel.MGXMasterI;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,6 +21,7 @@ public class MGXMaster implements MGXMasterI {
 
     public MGXMaster(MGXDTOMaster dtomaster) {
         this.dtomaster = dtomaster;
+        accessors = new HashMap<Class, AccessBase>();
     }
 
     public String getProject() {
