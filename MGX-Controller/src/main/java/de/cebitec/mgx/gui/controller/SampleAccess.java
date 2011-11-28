@@ -31,7 +31,7 @@ public class SampleAccess extends AccessBase<Sample> {
     }
 
     @Override
-    public Sample fetch(long id) {
+    public Sample fetch(Long id) {
         SampleDTO dto = null;
         try {
             dto = getDTOmaster().Sample().fetch(id);
@@ -71,7 +71,7 @@ public class SampleAccess extends AccessBase<Sample> {
     }
 
     @Override
-    public void delete(long id) {
+    public void delete(Long id) {
         try {
             getDTOmaster().Sample().delete(id);
         } catch (MGXServerException ex) {

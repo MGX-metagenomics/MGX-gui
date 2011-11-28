@@ -31,7 +31,7 @@ public class DNAExtractAccess extends AccessBase<DNAExtract> {
     }
     
     @Override
-    public DNAExtract fetch(long id) {
+    public DNAExtract fetch(Long id) {
         DNAExtractDTO dto = null;
         try {
             dto = getDTOmaster().DNAExtract().fetch(id);
@@ -71,7 +71,7 @@ public class DNAExtractAccess extends AccessBase<DNAExtract> {
     }
     
     @Override
-    public void delete(long id) {
+    public void delete(Long id) {
         try {
             getDTOmaster().DNAExtract().delete(id);
         } catch (MGXServerException ex) {

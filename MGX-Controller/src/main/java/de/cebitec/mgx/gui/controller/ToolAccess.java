@@ -24,7 +24,7 @@ public class ToolAccess extends AccessBase<Tool> {
     }
 
     @Override
-    public Tool fetch(long id) {
+    public Tool fetch(Long id) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -39,7 +39,7 @@ public class ToolAccess extends AccessBase<Tool> {
     }
 
     @Override
-    public void delete(long id) {
+    public void delete(Long id) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 }

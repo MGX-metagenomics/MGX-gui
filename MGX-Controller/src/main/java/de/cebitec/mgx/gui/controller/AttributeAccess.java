@@ -47,7 +47,7 @@ public class AttributeAccess extends AccessBase<Attribute> {
     }
 
     @Override
-    public Attribute fetch(long id) {
+    public Attribute fetch(Long id) {
         throw new UnsupportedOperationException("Not supported.");
     }
 
@@ -62,7 +62,7 @@ public class AttributeAccess extends AccessBase<Attribute> {
     }
 
     @Override
-    public void delete(long id) {
+    public void delete(Long id) {
         return;
     }
 }

@@ -31,7 +31,7 @@ public class SeqRunAccess extends AccessBase<SeqRun> {
     }
 
     @Override
-    public SeqRun fetch(long id) {
+    public SeqRun fetch(Long id) {
         SeqRunDTO h = null;
         try {
             h = getDTOmaster().SeqRun().fetch(id);
@@ -71,7 +71,7 @@ public class SeqRunAccess extends AccessBase<SeqRun> {
     }
 
     @Override
-    public void delete(long id) {
+    public void delete(Long id) {
         try {
             getDTOmaster().SeqRun().delete(id);
         } catch (MGXServerException ex) {

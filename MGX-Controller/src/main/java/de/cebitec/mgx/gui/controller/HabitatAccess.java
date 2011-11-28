@@ -31,7 +31,7 @@ public class HabitatAccess extends AccessBase<Habitat> {
     }
 
     @Override
-    public Habitat fetch(long id) {
+    public Habitat fetch(Long id) {
         HabitatDTO h = null;
         try {
             h = getDTOmaster().Habitat().fetch(id);
@@ -71,7 +71,7 @@ public class HabitatAccess extends AccessBase<Habitat> {
     }
 
     @Override
-    public void delete(long id) {
+    public void delete(Long id) {
         try {
             getDTOmaster().Habitat().delete(id);
         } catch (MGXServerException ex) {

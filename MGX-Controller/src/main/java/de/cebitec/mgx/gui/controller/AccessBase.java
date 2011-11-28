@@ -24,13 +24,13 @@ public abstract class AccessBase<T> {
 
     public abstract Long create(T obj);
 
-    public abstract T fetch(long id);
+    public abstract T fetch(Long id);
 
     public abstract List<T> fetchall();
     
     public abstract void update(T obj);
 
-    public abstract void delete(long id);
+    public abstract void delete(Long id);
 
     /*
      * from http://snippets.dzone.com/posts/show/91

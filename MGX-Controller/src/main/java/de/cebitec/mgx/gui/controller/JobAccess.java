@@ -43,7 +43,7 @@ public class JobAccess extends AccessBase<Job> {
     }
 
     @Override
-    public Job fetch(long id) {
+    public Job fetch(Long id) {
         JobDTO h = null;
         try {
             h = getDTOmaster().Job().fetch(id);
@@ -83,7 +83,7 @@ public class JobAccess extends AccessBase<Job> {
     }
 
     @Override
-    public void delete(long id) {
+    public void delete(Long id) {
         try {
             getDTOmaster().Job().delete(id);
         } catch (MGXServerException ex) {
