@@ -1,7 +1,7 @@
 package de.cebitec.mgx.gui.habitat.wizard;
 
-import de.cebitec.mgx.gui.access.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.Habitat;
+import de.cebitec.mgx.gui.datamodel.MGXMasterI;
 import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.event.ActionEvent;
@@ -21,7 +21,7 @@ public class HabitatWizardWizardAction implements ActionListener {
 
     private WizardDescriptor.Panel[] panels;
     private Habitat habitat = null;
-    private MGXMaster master = null;
+    private MGXMasterI master = null;
 
     public HabitatWizardWizardAction() {
         // fetch currently selected habitat from lookup
@@ -31,7 +31,7 @@ public class HabitatWizardWizardAction implements ActionListener {
         // we're creating a new habitat, which means we have to obtain the 
         // corresponding MGXmaster
         master = (habitat == null)
-                ? Utilities.actionsGlobalContext().lookup(MGXMaster.class)
+                ? Utilities.actionsGlobalContext().lookup(MGXMasterI.class)
                 : habitat.getMaster();
         
         if (habitat == null) {
