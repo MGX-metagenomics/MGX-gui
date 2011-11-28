@@ -4,7 +4,7 @@ package de.cebitec.mgx.gui.datamodel;
  *
  * @author sjaenick
  */
-public class Tool extends Identifiable {
+public class Tool extends ModelBase {
 
     protected String name;
     protected String description;

@@ -1,13 +1,10 @@
-
 package de.cebitec.mgx.gui.datamodel;
-
-import java.io.Serializable;
 
 /**
  *
  * @author sjaenick
  */
-public class Sequence extends Identifiable {
+public class Sequence extends ModelBase {
 
     protected String name;
     //

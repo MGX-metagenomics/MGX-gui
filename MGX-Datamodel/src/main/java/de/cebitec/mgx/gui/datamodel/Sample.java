@@ -1,6 +1,5 @@
 package de.cebitec.mgx.gui.datamodel;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 
@@ -8,7 +7,7 @@ import java.util.Date;
  *
  * @author sjaenick
  */
-public class Sample extends Identifiable {
+public class Sample extends ModelBase {
 
     protected Date collectiondate;
     protected String material;

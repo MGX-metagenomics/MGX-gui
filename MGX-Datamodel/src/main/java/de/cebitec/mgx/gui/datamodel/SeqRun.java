@@ -6,7 +6,7 @@ import java.util.Collection;
  *
  * @author sjaenick
  */
-public class SeqRun extends Identifiable {
+public class SeqRun extends ModelBase {
 
     protected String DBFile;
     protected String database_accession;
