@@ -4,7 +4,7 @@ import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.DNAExtractDTO;
 import de.cebitec.mgx.gui.datamodel.DNAExtract;
-import de.cebitec.mgx.gui.dtoadapter.DNAExtractDTOFactory;
+import de.cebitec.mgx.gui.dtoconversion.DNAExtractDTOFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;

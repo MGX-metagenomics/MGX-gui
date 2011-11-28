@@ -4,7 +4,7 @@ import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.JobDTO;
 import de.cebitec.mgx.gui.datamodel.Job;
-import de.cebitec.mgx.gui.dtoadapter.JobDTOFactory;
+import de.cebitec.mgx.gui.dtoconversion.JobDTOFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;

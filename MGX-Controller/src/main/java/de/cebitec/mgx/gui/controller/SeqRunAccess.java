@@ -4,7 +4,7 @@ import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.SeqRunDTO;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
-import de.cebitec.mgx.gui.dtoadapter.SeqRunDTOFactory;
+import de.cebitec.mgx.gui.dtoconversion.SeqRunDTOFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;

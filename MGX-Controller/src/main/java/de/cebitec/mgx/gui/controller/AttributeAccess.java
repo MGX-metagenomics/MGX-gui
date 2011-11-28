@@ -4,7 +4,7 @@ import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.AttributeCount;
 import de.cebitec.mgx.dto.dto.AttributeDTO;
 import de.cebitec.mgx.gui.datamodel.Attribute;
-import de.cebitec.mgx.gui.dtoadapter.AttributeDTOFactory;
+import de.cebitec.mgx.gui.dtoconversion.AttributeDTOFactory;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;

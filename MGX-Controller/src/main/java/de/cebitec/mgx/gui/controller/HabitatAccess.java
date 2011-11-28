@@ -4,7 +4,7 @@ import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.HabitatDTO;
 import de.cebitec.mgx.gui.datamodel.Habitat;
-import de.cebitec.mgx.gui.dtoadapter.HabitatDTOFactory;
+import de.cebitec.mgx.gui.dtoconversion.HabitatDTOFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;

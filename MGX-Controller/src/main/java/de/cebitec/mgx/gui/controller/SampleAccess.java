@@ -4,7 +4,7 @@ import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.SampleDTO;
 import de.cebitec.mgx.gui.datamodel.Sample;
-import de.cebitec.mgx.gui.dtoadapter.SampleDTOFactory;
+import de.cebitec.mgx.gui.dtoconversion.SampleDTOFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
