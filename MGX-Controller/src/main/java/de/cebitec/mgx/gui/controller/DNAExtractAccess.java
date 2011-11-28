@@ -1,0 +1,97 @@
+package de.cebitec.mgx.gui.controller;
+
+import de.cebitec.mgx.client.exception.MGXClientException;
+import de.cebitec.mgx.client.exception.MGXServerException;
+import de.cebitec.mgx.dto.dto.DNAExtractDTO;
+import de.cebitec.mgx.gui.datamodel.DNAExtract;
+import de.cebitec.mgx.gui.dtoadapter.DNAExtractDTOFactory;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+/**
+ *
+ * @author sjaenick
+ */
+public class DNAExtractAccess extends AccessBase<DNAExtract> {
+    
+    @Override
+    public Long create(DNAExtract obj) {
+        DNAExtractDTO dto = DNAExtractDTOFactory.getInstance().toDTO(obj);
+        Long id = null;
+        try {
+            id = getDTOmaster().DNAExtract().create(dto);
+        } catch (MGXServerException ex) {
+            Logger.getLogger(DNAExtractAccess.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (MGXClientException ex) {
+            Logger.getLogger(DNAExtractAccess.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return id;
+    }
+    
+    @Override
+    public DNAExtract fetch(long id) {
+        DNAExtractDTO dto = null;
+        try {
+            dto = getDTOmaster().DNAExtract().fetch(id);
+        } catch (MGXServerException ex) {
+            Logger.getLogger(DNAExtractAccess.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (MGXClientException ex) {
+            Logger.getLogger(DNAExtractAccess.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return DNAExtractDTOFactory.getInstance().toModel(dto);
+    }
+    
+    @Override
+    public List<DNAExtract> fetchall() {
+        List<DNAExtract> all = new ArrayList<DNAExtract>();
+        try {
+            for (DNAExtractDTO dto : getDTOmaster().DNAExtract().fetchall()) {
+                all.add(DNAExtractDTOFactory.getInstance().toModel(dto));
+            }
+        } catch (MGXServerException ex) {
+            Logger.getLogger(DNAExtractAccess.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (MGXClientException ex) {
+            Logger.getLogger(DNAExtractAccess.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return all;
+    }
+    
+    @Override
+    public void update(DNAExtract obj) {
+        DNAExtractDTO dto = DNAExtractDTOFactory.getInstance().toDTO(obj);
+        try {
+            getDTOmaster().DNAExtract().update(dto);
+        } catch (MGXServerException ex) {
+            Logger.getLogger(DNAExtractAccess.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (MGXClientException ex) {
+            Logger.getLogger(DNAExtractAccess.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    @Override
+    public void delete(long id) {
+        try {
+            getDTOmaster().DNAExtract().delete(id);
+        } catch (MGXServerException ex) {
+            Logger.getLogger(DNAExtractAccess.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (MGXClientException ex) {
+            Logger.getLogger(DNAExtractAccess.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public Iterable<DNAExtract> BySample(long sample_id) {
+        List<DNAExtract> all = new ArrayList<DNAExtract>();
+        try {
+            for (DNAExtractDTO dto : getDTOmaster().DNAExtract().BySample(sample_id)) {
+                all.add(DNAExtractDTOFactory.getInstance().toModel(dto));
+            }
+        } catch (MGXServerException ex) {
+            Logger.getLogger(DNAExtractAccess.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (MGXClientException ex) {
+            Logger.getLogger(DNAExtractAccess.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return all;
+    }
+}
