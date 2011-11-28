@@ -40,7 +40,7 @@ public class DNAExtractNodeFactory extends ChildFactory<DNAExtract> implements N
     protected Node createNodeForKey(DNAExtract key) {
         DNAExtractNode node = new DNAExtractNode(Children.create(new SeqRunNodeFactory(master, key), true), Lookups.singleton(key));
         node.setMaster(master);
-        node.setDisplayName(key.getProtocolName());
+        node.setDisplayName(key.getMethod());
         node.addNodeListener(this);
         return node;
     }
