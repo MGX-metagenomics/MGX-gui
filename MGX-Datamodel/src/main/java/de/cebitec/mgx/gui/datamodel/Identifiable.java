@@ -1,6 +1,5 @@
 package de.cebitec.mgx.gui.datamodel;
 
-import de.cebitec.mgx.gui.access.MGXMaster;
 
 
 /**
@@ -10,7 +9,7 @@ import de.cebitec.mgx.gui.access.MGXMaster;
 public abstract class Identifiable {
 
     protected Long id;
-    protected MGXMaster master;
+    protected MGXMasterI master;
 
     public void setId(long id) {
         this.id = id;
@@ -20,11 +19,11 @@ public abstract class Identifiable {
         return id;
     }
 
-    public MGXMaster getMaster() {
+    public MGXMasterI getMaster() {
         return master;
     }
 
-    public void setMaster(MGXMaster master) {
-        this.master = master;
-    }
+//    public void setMaster(MGXMasterI master) {
+//        this.master = master;
+//    }
 }
