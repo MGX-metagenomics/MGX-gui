@@ -59,7 +59,7 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>DTO-Wrapper</artifactId>
             <version>${project.version}</version>
-            <exclusions>
+          <!--  <exclusions>
                 <exclusion>
                     <artifactId>Jersey-Wrapper</artifactId>
                     <groupId>de.cebitec.mgx.gui</groupId>
@@ -68,19 +68,12 @@
                     <artifactId>protobuf-java</artifactId>
                     <groupId>com.google.protobuf</groupId>
                 </exclusion>
-            </exclusions>
+            </exclusions> -->
         </dependency>
         <dependency>
-            <artifactId>jersey-client</artifactId>
-            <groupId>com.sun.jersey</groupId>
-            <type>jar</type>
-            <version>1.9.1</version>
-        </dependency>
-        <dependency>
-            <artifactId>jersey-core</artifactId>
-            <groupId>com.sun.jersey</groupId>
-            <type>jar</type>
-            <version>1.9.1</version>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>Jersey-Wrapper</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 
