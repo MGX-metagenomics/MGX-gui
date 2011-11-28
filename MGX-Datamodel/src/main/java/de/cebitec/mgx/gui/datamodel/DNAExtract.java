@@ -10,6 +10,7 @@ public class DNAExtract extends ModelBase {
 
     protected Collection<SeqRun> seqruns;
     protected Sample sample;
+    protected String method;
 
     public Sample getSample() {
         return sample;
@@ -32,6 +33,14 @@ public class DNAExtract extends ModelBase {
         s.setExtract(this);
     }
 
+    public String getMethod() {
+        return method;
+    }
+
+    public void setMethod(String method) {
+        this.method = method;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -49,9 +58,5 @@ public class DNAExtract extends ModelBase {
             return false;
         }
         return true;
-    }
-
-    public String getProtocolName() {
-        throw new UnsupportedOperationException("Not yet implemented");
     }
 }
