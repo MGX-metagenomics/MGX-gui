@@ -6,10 +6,9 @@ import java.util.Collection;
  *
  * @author sjaenick
  */
-public class DNAExtract extends Identifiable {
+public class DNAExtract extends ModelBase {
 
     protected Collection<SeqRun> seqruns;
-    //
     protected Sample sample;
 
     public Sample getSample() {
