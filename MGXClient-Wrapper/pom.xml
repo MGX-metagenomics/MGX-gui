@@ -99,6 +99,7 @@
                         <publicPackage>de.cebitec.mgx.client.access.rest</publicPackage>
                         <publicPackage>de.cebitec.mgx.client.exception</publicPackage>
                         <publicPackage>de.cebitec.mgx.restgpms</publicPackage>
+                        <publicPackage>de.cebitec.mgx.sequence</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>
