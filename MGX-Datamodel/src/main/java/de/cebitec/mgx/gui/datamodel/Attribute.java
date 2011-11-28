@@ -5,7 +5,7 @@ package de.cebitec.mgx.gui.datamodel;
  *
  * @author sjaenick
  */
-public class Attribute extends Identifiable {
+public class Attribute extends ModelBase {
 
     protected String type;
     protected String value;
