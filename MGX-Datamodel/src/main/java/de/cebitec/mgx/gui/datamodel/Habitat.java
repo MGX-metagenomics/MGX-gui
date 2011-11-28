@@ -6,7 +6,7 @@ import java.util.Collection;
  *
  * @author sjaenick
  */
-public class Habitat extends Identifiable {
+public class Habitat extends ModelBase {
 
     protected String name;
     /* GPS location of habitat */
