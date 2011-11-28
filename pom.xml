@@ -66,7 +66,8 @@
         <module>Habitat-Wizard</module>
         <module>MGX-Datamodel</module>
         <module>MGX-Controller</module>
-    </modules>
+    <module>DTO-Wrapper</module>
+  </modules>
 
     <properties>
         <netbeans.version>RELEASE701</netbeans.version>
