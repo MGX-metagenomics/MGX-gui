@@ -1,6 +1,6 @@
 package de.cebitec.mgx.gui.nodes;
 
-import de.cebitec.mgx.gui.access.MGXMaster;
+import de.cebitec.mgx.gui.datamodel.MGXMasterI;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.util.Lookup;
@@ -11,25 +11,17 @@ import org.openide.util.Lookup;
  */
 public abstract class MGXNodeBase<T> extends AbstractNode {
 
-    private MGXMaster master;
+    private MGXMasterI master;
 
     public MGXNodeBase(Children children, Lookup lookup) {
         super(children, lookup);
     }
 
-    public void setMaster(MGXMaster m) {
+    public void setMaster(MGXMasterI m) {
         master = m;
     }
 
-    public MGXMaster getMaster() {
+    public MGXMasterI getMaster() {
         return master;
     }
-
-//    public void setDTO(T dto) {
-//        this.dto = dto;
-//    }
-//
-//    public T getDTO() {
-//        return dto;
-//    }
 }

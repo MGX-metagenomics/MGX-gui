@@ -1,6 +1,6 @@
 package de.cebitec.mgx.gui.nodefactory;
 
-import de.cebitec.mgx.gui.access.MGXMaster;
+import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.Habitat;
 import de.cebitec.mgx.gui.nodes.HabitatNode;
 import java.beans.PropertyChangeEvent;
