@@ -1,12 +1,10 @@
 package de.cebitec.mgx.gui.datamodel;
 
-import java.io.Serializable;
-
 /**
  *
  * @author sjaenick
  */
-public class Observation implements Serializable {
+public class Observation extends ModelBase {
 
     private Sequence seq;
     private Job job;
