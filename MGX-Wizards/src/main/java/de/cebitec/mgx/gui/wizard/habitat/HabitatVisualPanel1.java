@@ -35,11 +35,14 @@ public final class HabitatVisualPanel1 extends JPanel implements DocumentListene
 
     public static final String PROP_NAME = "name";
     public static final String PROP_BIOME = "biome";
-    public static final String PROP_LOCATION = "location";
+    public static final String PROP_LATITUDE = "latitude";
+    public static final String PROP_LONGITUDE = "longitude";
     public static final String PROP_ALTITUDE = "altitude";
     private static final int MAX_LOCATION_RESULTS = 10;
     private Location[] foundLocations;
     private Set<Waypoint> waypoints;
+    private double latitude;
+    private double longitude;
 
     /** Creates new form HabitatVisualPanel1 */
     public HabitatVisualPanel1() {
@@ -194,7 +197,7 @@ public final class HabitatVisualPanel1 extends JPanel implements DocumentListene
     public void setHabitatName(String name) {
         habitatname.setText(name);
     }
-    
+
     public String getHabitatName() {
         return habitatname.getText();
     }
@@ -202,23 +205,32 @@ public final class HabitatVisualPanel1 extends JPanel implements DocumentListene
     public void setBiome(String biome) {
         biomename.setText(biome);
     }
-    
+
     public String getBiome() {
         return biomename.getText();
     }
 
-    public void setGPSLocation(String location) {
-        gpslocation.setText(location);
-        // FIXME: jXMapKit1.setCenterPosition();
+    public void setGPSLongitude(double longitude) {
+        this.longitude = longitude;
+        rebuildGPSLocation();
     }
     
-    public String getGPSLocation() {
-        return gpslocation.getText();
+    public double getGPSLongitude() {
+        return longitude;
     }
 
+    public void setGPSLatitude(double latitude) {
+        this.latitude = latitude;
+        rebuildGPSLocation();
+    }
+    
+    public double getGPSLatitude() {
+        return latitude;
+    }
+    
     private void initMapKit() {
         final JXMapKit kit = jXMapKit1;
-        
+
         //
         // remove current set of mouse listeners from both main and mini map
         //
@@ -352,7 +364,7 @@ public final class HabitatVisualPanel1 extends JPanel implements DocumentListene
             public void valueChanged(ListSelectionEvent e) {
                 int index = ((JList) e.getSource()).getSelectedIndex();
                 jXMapKit1.setCenterPosition(foundLocations[index].getGeoLoc());
-                jXMapKit1.setZoom(8); 
+                jXMapKit1.setZoom(8);
             }
         });
     }
@@ -385,7 +397,19 @@ public final class HabitatVisualPanel1 extends JPanel implements DocumentListene
         } else if (biomename.getDocument() == d) {
             firePropertyChange(PROP_BIOME, 0, 1);
         } else if (gpslocation.getDocument() == d) {
-            firePropertyChange(PROP_LOCATION, 0, 1);
+            firePropertyChange(PROP_LATITUDE, 0, 1);
+            firePropertyChange(PROP_LONGITUDE, 0, 1);
         }
+    }
+
+    private void rebuildGPSLocation() {
+        Double lat = new Double(latitude);
+        Double lon = new Double(longitude);
+        String gpsloc = new StringBuilder(lat.toString())
+                .append(" ")
+                .append(lon.toString())
+                .toString();
+        gpslocation.setText(gpsloc);
+        // FIXME: jXMapKit1.setCenterPosition();
     }
 }
