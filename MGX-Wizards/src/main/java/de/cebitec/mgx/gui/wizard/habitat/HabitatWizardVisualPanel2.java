@@ -1,4 +1,4 @@
-package de.cebitec.mgx.gui.habitat.wizard;
+package de.cebitec.mgx.gui.wizard.habitat;
 
 import javax.swing.JPanel;
 import javax.swing.event.DocumentEvent;

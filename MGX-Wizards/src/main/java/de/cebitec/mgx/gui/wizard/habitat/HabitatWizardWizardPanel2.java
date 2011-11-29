@@ -1,4 +1,4 @@
-package de.cebitec.mgx.gui.habitat.wizard;
+package de.cebitec.mgx.gui.wizard.habitat;
 
 import java.awt.Component;
 import java.beans.PropertyChangeEvent;

@@ -42,7 +42,7 @@ public class ProjectDataNode extends AbstractNode {
 
             @Override
             public String getName() {
-                return "Add habitat";
+                return "habitat";
             }
 
             @Override
@@ -53,5 +53,4 @@ public class ProjectDataNode extends AbstractNode {
         };
         return new NewType[]{newType};
     }
-    // FIXME: "new habitat" wizard action
 }

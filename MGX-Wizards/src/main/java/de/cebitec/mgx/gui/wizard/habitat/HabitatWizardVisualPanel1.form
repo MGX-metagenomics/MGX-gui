@@ -82,7 +82,7 @@
     <Component class="javax.swing.JTextField" name="jTextField_searchLoc">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="de/cebitec/mgx/gui/habitat/wizard/Bundle.properties" key="habitatVisualPanel1.jTextField_searchLoc.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+          <ResourceString bundle="de/cebitec/mgx/gui/wizard/habitat/Bundle.properties" key="habitatVisualPanel1.jTextField_searchLoc.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
         </Property>
       </Properties>
       <Events>
@@ -102,14 +102,14 @@
     <Component class="javax.swing.JLabel" name="jLabel_mapCenterPos">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="de/cebitec/mgx/gui/habitat/wizard/Bundle.properties" key="habitatVisualPanel1.jLabel_mapCenterPos.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+          <ResourceString bundle="de/cebitec/mgx/gui/wizard/habitat/Bundle.properties" key="habitatVisualPanel1.jLabel_mapCenterPos.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
         </Property>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel_inputHeight">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="de/cebitec/mgx/gui/habitat/wizard/Bundle.properties" key="habitatVisualPanel1.jLabel_inputHeight.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+          <ResourceString bundle="de/cebitec/mgx/gui/wizard/habitat/Bundle.properties" key="habitatVisualPanel1.jLabel_inputHeight.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
         </Property>
       </Properties>
     </Component>
@@ -133,7 +133,7 @@
     <Component class="javax.swing.JButton" name="jButton_searchLoc">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="de/cebitec/mgx/gui/habitat/wizard/Bundle.properties" key="habitatVisualPanel1.jButton_searchLoc.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+          <ResourceString bundle="de/cebitec/mgx/gui/wizard/habitat/Bundle.properties" key="habitatVisualPanel1.jButton_searchLoc.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
         </Property>
       </Properties>
       <Events>
@@ -143,28 +143,28 @@
     <Component class="javax.swing.JLabel" name="jLabel_foundLocations">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="de/cebitec/mgx/gui/habitat/wizard/Bundle.properties" key="habitatVisualPanel1.jLabel_foundLocations.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+          <ResourceString bundle="de/cebitec/mgx/gui/wizard/habitat/Bundle.properties" key="habitatVisualPanel1.jLabel_foundLocations.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
         </Property>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel_searchLoc">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="de/cebitec/mgx/gui/habitat/wizard/Bundle.properties" key="habitatVisualPanel1.jLabel_searchLoc.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+          <ResourceString bundle="de/cebitec/mgx/gui/wizard/habitat/Bundle.properties" key="habitatVisualPanel1.jLabel_searchLoc.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
         </Property>
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="height">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="de/cebitec/mgx/gui/habitat/wizard/Bundle.properties" key="habitatVisualPanel1.jTextField_inputHeight.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+          <ResourceString bundle="de/cebitec/mgx/gui/wizard/habitat/Bundle.properties" key="habitatVisualPanel1.jTextField_inputHeight.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
         </Property>
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="geoPos">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="de/cebitec/mgx/gui/habitat/wizard/Bundle.properties" key="HabitatWizardVisualPanel1.geoPos.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+          <ResourceString bundle="de/cebitec/mgx/gui/wizard/habitat/Bundle.properties" key="HabitatWizardVisualPanel1.geoPos.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
         </Property>
       </Properties>
     </Component>
