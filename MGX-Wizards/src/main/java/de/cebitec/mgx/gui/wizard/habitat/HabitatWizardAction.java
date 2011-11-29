@@ -1,7 +1,9 @@
-package de.cebitec.mgx.gui.wizard.habitatold;
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package de.cebitec.mgx.gui.wizard.habitat;
 
-import de.cebitec.mgx.gui.datamodel.Habitat;
-import de.cebitec.mgx.gui.datamodel.MGXMasterI;
 import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.event.ActionEvent;
@@ -10,40 +12,15 @@ import java.text.MessageFormat;
 import javax.swing.JComponent;
 import org.openide.DialogDisplayer;
 import org.openide.WizardDescriptor;
-import org.openide.util.Utilities;
 
 // An example action demonstrating how the wizard could be called from within
 // your code. You can move the code below wherever you need, or register an action:
-// @ActionID(category="...", id="de.cebitec.mgx.gui.habitat.wizard.HabitatWizardWizardAction")
-// @ActionRegistration(displayName="Open HabitatWizard Wizard")
+// @ActionID(category="...", id="de.cebitec.mgx.gui.wizard.habitat.HabitatWizardAction")
+// @ActionRegistration(displayName="Open Habitat Wizard")
 // @ActionReference(path="Menu/Tools", position=...)
-public class HabitatWizardWizardAction implements ActionListener {
+public final class HabitatWizardAction implements ActionListener {
 
     private WizardDescriptor.Panel[] panels;
-    private Habitat habitat = null;
-    private MGXMasterI master = null;
-
-    public HabitatWizardWizardAction() {
-        // fetch currently selected habitat from lookup
-        habitat = Utilities.actionsGlobalContext().lookup(Habitat.class);
-
-        // if we have a habitat, we're an "update" operation; otherwise
-        // we're creating a new habitat, which means we have to obtain the 
-        // corresponding MGXmaster
-        master = (habitat == null)
-                ? Utilities.actionsGlobalContext().lookup(MGXMasterI.class)
-                : habitat.getMaster();
-        
-        if (habitat == null) {
-            System.err.println("No habitat in habitat wizard - must be new?");
-            //habitat = new Habitat(master, ??);
-        }
-
-        // still no master? something's wrong..
-        if (master == null) {
-            System.err.println("No master in Habitat wizard");
-        }
-    }
 
     public @Override
     void actionPerformed(ActionEvent e) {
@@ -67,8 +44,8 @@ public class HabitatWizardWizardAction implements ActionListener {
     private WizardDescriptor.Panel[] getPanels() {
         if (panels == null) {
             panels = new WizardDescriptor.Panel[]{
-                new HabitatWizardWizardPanel1(),
-                new HabitatWizardWizardPanel2()
+                new HabitatWizardPanel1(),
+                new HabitatWizardPanel2()
             };
             String[] steps = new String[panels.length];
             for (int i = 0; i < panels.length; i++) {

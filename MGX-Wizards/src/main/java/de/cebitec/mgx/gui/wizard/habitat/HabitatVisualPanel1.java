@@ -1,4 +1,4 @@
-package de.cebitec.mgx.gui.wizard.habitatold;
+package de.cebitec.mgx.gui.wizard.habitat;
 
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -15,6 +15,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.text.Document;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
@@ -30,28 +31,30 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
-public final class HabitatWizardVisualPanel1 extends JPanel implements DocumentListener {
+public final class HabitatVisualPanel1 extends JPanel implements DocumentListener {
 
-    public static final String PROP_ALTITUDE = "altitude";
+    public static final String PROP_NAME = "name";
+    public static final String PROP_BIOME = "biome";
     public static final String PROP_LOCATION = "location";
-    // max number of results
-    private static final int LIST_SIZE_LOCATIONS = 10;
+    public static final String PROP_ALTITUDE = "altitude";
+    private static final int MAX_LOCATION_RESULTS = 10;
     private Location[] foundLocations;
     private Set<Waypoint> waypoints;
 
-    /** Creates new form mzWizardVisualPanel1 */
-    public HabitatWizardVisualPanel1() {
+    /** Creates new form HabitatVisualPanel1 */
+    public HabitatVisualPanel1() {
         initComponents();
         initMapKit();
         initMashup();
-        height.getDocument().addDocumentListener(this);
-        geoPos.getDocument().addDocumentListener(this);
-        geoPos.setEditable(false);
+        habitatname.getDocument().addDocumentListener(this);
+        biomename.getDocument().addDocumentListener(this);
+        gpslocation.getDocument().addDocumentListener(this);
+        gpslocation.setEditable(false);
     }
 
     @Override
     public String getName() {
-        return "Geographical location";
+        return "Habitat location";
     }
 
     /** This method is called from within the constructor to
@@ -62,22 +65,23 @@ public final class HabitatWizardVisualPanel1 extends JPanel implements DocumentL
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jTextField_searchLoc = new javax.swing.JTextField();
+        searchLocation = new javax.swing.JTextField();
         jXMapKit1 = new org.jdesktop.swingx.JXMapKit();
-        jLabel_mapCenterPos = new javax.swing.JLabel();
-        jLabel_inputHeight = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jList_foundLocations = new javax.swing.JList();
+        foundLocationList = new javax.swing.JList();
         jButton_searchLoc = new javax.swing.JButton();
         jLabel_foundLocations = new javax.swing.JLabel();
-        jLabel_searchLoc = new javax.swing.JLabel();
-        height = new javax.swing.JTextField();
-        geoPos = new javax.swing.JTextField();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        habitatname = new javax.swing.JTextField();
+        biomename = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
+        gpslocation = new javax.swing.JTextField();
 
-        jTextField_searchLoc.setText(org.openide.util.NbBundle.getMessage(HabitatWizardVisualPanel1.class, "habitatVisualPanel1.jTextField_searchLoc.text")); // NOI18N
-        jTextField_searchLoc.addActionListener(new java.awt.event.ActionListener() {
+        searchLocation.setText(org.openide.util.NbBundle.getMessage(HabitatVisualPanel1.class, "habitatVisualPanel1.jTextField_searchLoc.text")); // NOI18N
+        searchLocation.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField_searchLocActionPerformed(evt);
+                searchLocationActionPerformed(evt);
             }
         });
 
@@ -88,107 +92,116 @@ public final class HabitatWizardVisualPanel1 extends JPanel implements DocumentL
             }
         });
 
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel_mapCenterPos, org.openide.util.NbBundle.getMessage(HabitatWizardVisualPanel1.class, "habitatVisualPanel1.jLabel_mapCenterPos.text")); // NOI18N
+        foundLocationList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jScrollPane2.setViewportView(foundLocationList);
 
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel_inputHeight, org.openide.util.NbBundle.getMessage(HabitatWizardVisualPanel1.class, "habitatVisualPanel1.jLabel_inputHeight.text")); // NOI18N
-
-        jList_foundLocations.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        jScrollPane2.setViewportView(jList_foundLocations);
-
-        org.openide.awt.Mnemonics.setLocalizedText(jButton_searchLoc, org.openide.util.NbBundle.getMessage(HabitatWizardVisualPanel1.class, "habitatVisualPanel1.jButton_searchLoc.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(jButton_searchLoc, org.openide.util.NbBundle.getMessage(HabitatVisualPanel1.class, "habitatVisualPanel1.jButton_searchLoc.text")); // NOI18N
         jButton_searchLoc.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton_searchLocActionPerformed(evt);
             }
         });
 
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel_foundLocations, org.openide.util.NbBundle.getMessage(HabitatWizardVisualPanel1.class, "habitatVisualPanel1.jLabel_foundLocations.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(jLabel_foundLocations, org.openide.util.NbBundle.getMessage(HabitatVisualPanel1.class, "habitatVisualPanel1.jLabel_foundLocations.text")); // NOI18N
 
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel_searchLoc, org.openide.util.NbBundle.getMessage(HabitatWizardVisualPanel1.class, "habitatVisualPanel1.jLabel_searchLoc.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(HabitatVisualPanel1.class, "HabitatVisualPanel1.jLabel1.text_1")); // NOI18N
 
-        height.setText(org.openide.util.NbBundle.getMessage(HabitatWizardVisualPanel1.class, "habitatVisualPanel1.jTextField_inputHeight.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(jLabel2, org.openide.util.NbBundle.getMessage(HabitatVisualPanel1.class, "HabitatVisualPanel1.jLabel2.text_1")); // NOI18N
 
-        geoPos.setText(org.openide.util.NbBundle.getMessage(HabitatWizardVisualPanel1.class, "HabitatWizardVisualPanel1.geoPos.text")); // NOI18N
+        habitatname.setText(org.openide.util.NbBundle.getMessage(HabitatVisualPanel1.class, "HabitatVisualPanel1.habitatname.text")); // NOI18N
+
+        biomename.setText(org.openide.util.NbBundle.getMessage(HabitatVisualPanel1.class, "HabitatVisualPanel1.biomename.text")); // NOI18N
+
+        org.openide.awt.Mnemonics.setLocalizedText(jLabel3, org.openide.util.NbBundle.getMessage(HabitatVisualPanel1.class, "HabitatVisualPanel1.jLabel3.text")); // NOI18N
+
+        gpslocation.setText(org.openide.util.NbBundle.getMessage(HabitatVisualPanel1.class, "HabitatVisualPanel1.gpslocation.text")); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jXMapKit1, javax.swing.GroupLayout.PREFERRED_SIZE, 374, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 102, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel_mapCenterPos)
-                            .addComponent(jLabel_inputHeight))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(height, javax.swing.GroupLayout.DEFAULT_SIZE, 103, Short.MAX_VALUE)
-                            .addComponent(geoPos))))
-                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 169, Short.MAX_VALUE)
-                    .addComponent(jButton_searchLoc, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 169, Short.MAX_VALUE)
-                    .addComponent(jTextField_searchLoc, javax.swing.GroupLayout.DEFAULT_SIZE, 169, Short.MAX_VALUE)
-                    .addComponent(jLabel_searchLoc)
-                    .addComponent(jLabel_foundLocations))
-                .addGap(25, 25, 25))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel1))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(biomename, javax.swing.GroupLayout.DEFAULT_SIZE, 412, Short.MAX_VALUE)
+                            .addComponent(habitatname, javax.swing.GroupLayout.DEFAULT_SIZE, 412, Short.MAX_VALUE))
+                        .addGap(27, 27, 27))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jXMapKit1, javax.swing.GroupLayout.DEFAULT_SIZE, 493, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(gpslocation)
+                    .addComponent(jScrollPane2, 0, 0, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(searchLocation, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton_searchLoc))
+                    .addComponent(jLabel_foundLocations)
+                    .addComponent(jLabel3))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel_searchLoc)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField_searchLoc, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton_searchLoc)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(25, 25, 25)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(habitatname, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(biomename, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(15, 15, 15)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(searchLocation, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButton_searchLoc, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addComponent(jLabel_foundLocations)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 207, Short.MAX_VALUE))
-                    .addComponent(jXMapKit1, javax.swing.GroupLayout.PREFERRED_SIZE, 317, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel_mapCenterPos, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(geoPos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(9, 9, 9)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(height, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel_inputHeight))
-                .addContainerGap(18, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 267, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel3)
+                        .addGap(18, 18, 18)
+                        .addComponent(gpslocation, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jXMapKit1, javax.swing.GroupLayout.PREFERRED_SIZE, 423, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18))
         );
     }// </editor-fold>//GEN-END:initComponents
-
-    private void jXMapKit1PropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_jXMapKit1PropertyChange
-        // TODO add your handling code here:
-}//GEN-LAST:event_jXMapKit1PropertyChange
-
-    private void jButton_searchLocActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_searchLocActionPerformed
-        searchLocation(jTextField_searchLoc.getText());
-    }//GEN-LAST:event_jButton_searchLocActionPerformed
-
-    private void jTextField_searchLocActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField_searchLocActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField_searchLocActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextField geoPos;
-    private javax.swing.JTextField height;
+    private javax.swing.JTextField biomename;
+    private javax.swing.JList foundLocationList;
+    private javax.swing.JTextField gpslocation;
+    private javax.swing.JTextField habitatname;
     private javax.swing.JButton jButton_searchLoc;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel_foundLocations;
-    private javax.swing.JLabel jLabel_inputHeight;
-    private javax.swing.JLabel jLabel_mapCenterPos;
-    private javax.swing.JLabel jLabel_searchLoc;
-    private javax.swing.JList jList_foundLocations;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTextField jTextField_searchLoc;
     private org.jdesktop.swingx.JXMapKit jXMapKit1;
+    private javax.swing.JTextField searchLocation;
     // End of variables declaration//GEN-END:variables
 
+    public String getHabitatName() {
+        return habitatname.getText();
+    }
+
+    public String getBiome() {
+        return biomename.getText();
+    }
+
+    public String getGPSLocation() {
+        return gpslocation.getText();
+    }
 
     private void initMapKit() {
         final JXMapKit kit = jXMapKit1;
@@ -218,7 +231,7 @@ public final class HabitatWizardVisualPanel1 extends JPanel implements DocumentL
 
                 String tmpText = twoPlaces.format(((GeoPosition) evt.getNewValue()).getLatitude()) + " | "
                         + twoPlaces.format(((GeoPosition) evt.getNewValue()).getLongitude());
-                geoPos.setText(tmpText);
+                gpslocation.setText(tmpText);
             }
         });
         final int max = 17;
@@ -279,7 +292,7 @@ public final class HabitatWizardVisualPanel1 extends JPanel implements DocumentL
     private void searchLocation(String loc) {
         try {
             // FIXME - username?
-            URL url = new URL("http://api.geonames.org/search?q=" + loc + "&featureClass=P&maxRows=" + LIST_SIZE_LOCATIONS + "&username=habitatwizard");
+            URL url = new URL("http://api.geonames.org/search?q=" + loc + "&featureClass=P&maxRows=" + MAX_LOCATION_RESULTS + "&username=habitatwizard");
             XPath xpath = XPathFactory.newInstance().newXPath();
             NodeList list = (NodeList) xpath.evaluate("//geoname",
                     new InputSource(url.openStream()),
@@ -300,7 +313,7 @@ public final class HabitatWizardVisualPanel1 extends JPanel implements DocumentL
             }
 
             // update result list
-            jList_foundLocations.setModel(new javax.swing.AbstractListModel() {
+            foundLocationList.setModel(new javax.swing.AbstractListModel() {
 
                 @Override
                 public int getSize() {
@@ -319,8 +332,8 @@ public final class HabitatWizardVisualPanel1 extends JPanel implements DocumentL
 
     // listener on selectionList to change mapcenter and zoomlevel
     private void initMashup() {
-        foundLocations = new Location[LIST_SIZE_LOCATIONS];
-        jList_foundLocations.addListSelectionListener(new ListSelectionListener() {
+        foundLocations = new Location[MAX_LOCATION_RESULTS];
+        foundLocationList.addListSelectionListener(new ListSelectionListener() {
 
             @Override
             public void valueChanged(ListSelectionEvent e) {
@@ -331,26 +344,16 @@ public final class HabitatWizardVisualPanel1 extends JPanel implements DocumentL
         });
     }
 
-    public String getSelectedLocation() {
-        GeoPosition pos = jXMapKit1.getAddressLocation();  // FIXME - check if this is correct
-        Double latitude = pos.getLatitude();
-        Double longitude = pos.getLongitude();
-        return new StringBuilder(latitude.toString()).append(" ").append(longitude.toString()).toString();
+    private void jXMapKit1PropertyChange(java.beans.PropertyChangeEvent evt) {
+        // TODO add your handling code here:
     }
 
-    /**
-     * @return geographical height
-     */
-    public Long getAltitude() {
-        return Long.parseLong(height.getText());
+    private void jButton_searchLocActionPerformed(java.awt.event.ActionEvent evt) {
+        searchLocation(searchLocation.getText());
     }
 
-    @Override
-    public void changedUpdate(DocumentEvent e) {
-        if (height.getDocument() == e.getDocument())
-            firePropertyChange(PROP_ALTITUDE, 0, 1);
-        if (geoPos.getDocument() == e.getDocument())
-            firePropertyChange(PROP_LOCATION, 0, 1);
+    private void searchLocationActionPerformed(java.awt.event.ActionEvent evt) {
+        searchLocation(searchLocation.getText());
     }
 
     @Override
@@ -359,5 +362,17 @@ public final class HabitatWizardVisualPanel1 extends JPanel implements DocumentL
 
     @Override
     public void removeUpdate(DocumentEvent e) {
+    }
+
+    @Override
+    public void changedUpdate(DocumentEvent e) {
+        Document d = e.getDocument();
+        if (habitatname.getDocument() == d) {
+            firePropertyChange(PROP_NAME, 0, 1);
+        } else if (biomename.getDocument() == d) {
+            firePropertyChange(PROP_BIOME, 0, 1);
+        } else if (gpslocation.getDocument() == d) {
+            firePropertyChange(PROP_BIOME, 0, 1);
+        }
     }
 }

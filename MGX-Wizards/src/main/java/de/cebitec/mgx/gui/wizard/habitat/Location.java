@@ -1,4 +1,4 @@
-package de.cebitec.mgx.gui.wizard.habitatold;
+package de.cebitec.mgx.gui.wizard.habitat;
 
 import org.jdesktop.swingx.mapviewer.GeoPosition;
 
