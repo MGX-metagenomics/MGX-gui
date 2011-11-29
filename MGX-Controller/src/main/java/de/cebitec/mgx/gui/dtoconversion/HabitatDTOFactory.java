@@ -23,12 +23,30 @@ public class HabitatDTOFactory extends DTOConversionBase<Habitat, HabitatDTO> {
 
     @Override
     public final HabitatDTO toDTO(Habitat h) {
-        return HabitatDTO.newBuilder().setId(h.getId()).setName(h.getName()).setGPSlocation(h.getLocation()).setAltitude(h.getAltitude()).setBiome(h.getBiome()).setDescription(h.getDescription()).setId(h.getId()).build();
+        return HabitatDTO.newBuilder()
+                .setId(h.getId())
+                .setName(h.getName())
+                .setGpsLatitude(h.getLatitude())
+                .setGpsLongitude(h.getLongitude())
+                .setAltitude(h.getAltitude())
+                .setBiome(h.getBiome())
+                .setDescription(h.getDescription())
+                .setId(h.getId())
+                .build();
     }
 
     @Override
     public final Habitat toModel(HabitatDTO dto) {
-        Habitat h = new Habitat().setName(dto.getName()).setLocation(dto.getGPSlocation()).setAltitude(dto.getAltitude()).setBiome(dto.getBiome()).setDescription(dto.getDescription());
+        Habitat h = new Habitat()
+                .setName(dto.getName())
+                .setLatitude(dto.getGpsLatitude())
+                .setLongitude(dto.getGpsLongitude())
+                .setAltitude(dto.getAltitude())
+                .setBiome(dto.getBiome());
+        
+        if (dto.hasDescription()) {
+                h.setDescription(dto.getDescription());
+        }
 
         if (dto.hasId()) {
             h.setId(dto.getId());
