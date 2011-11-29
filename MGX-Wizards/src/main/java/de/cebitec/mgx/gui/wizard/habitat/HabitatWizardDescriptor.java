@@ -32,7 +32,8 @@ public class HabitatWizardDescriptor extends WizardDescriptor {
         this();
         putProperty(HabitatVisualPanel1.PROP_NAME, h.getName());
         putProperty(HabitatVisualPanel1.PROP_BIOME, h.getBiome());
-        putProperty(HabitatVisualPanel1.PROP_LOCATION, h.getLocation());
+        putProperty(HabitatVisualPanel1.PROP_LATITUDE, h.getLatitude());
+        putProperty(HabitatVisualPanel1.PROP_LONGITUDE, h.getLongitude());
         //
         putProperty(HabitatVisualPanel2.PROP_DESCRIPTION, h.getDescription());
     }

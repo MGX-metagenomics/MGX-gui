@@ -6,7 +6,6 @@ import java.awt.geom.Point2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.net.URL;
-import java.text.DecimalFormat;
 import java.util.HashSet;
 import java.util.Set;
 import javax.swing.JList;
@@ -41,8 +40,8 @@ public final class HabitatVisualPanel1 extends JPanel implements DocumentListene
     private static final int MAX_LOCATION_RESULTS = 10;
     private Location[] foundLocations;
     private Set<Waypoint> waypoints;
-    private double latitude;
-    private double longitude;
+    private Double latitude = null;
+    private Double longitude = null;
 
     /** Creates new form HabitatVisualPanel1 */
     public HabitatVisualPanel1() {
@@ -214,8 +213,8 @@ public final class HabitatVisualPanel1 extends JPanel implements DocumentListene
         this.longitude = longitude;
         rebuildGPSLocation();
     }
-    
-    public double getGPSLongitude() {
+
+    public Double getGPSLongitude() {
         return longitude;
     }
 
@@ -223,11 +222,11 @@ public final class HabitatVisualPanel1 extends JPanel implements DocumentListene
         this.latitude = latitude;
         rebuildGPSLocation();
     }
-    
-    public double getGPSLatitude() {
+
+    public Double getGPSLatitude() {
         return latitude;
     }
-    
+
     private void initMapKit() {
         final JXMapKit kit = jXMapKit1;
 
@@ -252,11 +251,9 @@ public final class HabitatVisualPanel1 extends JPanel implements DocumentListene
 
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
-                DecimalFormat twoPlaces = new DecimalFormat("0.00");
-
-                String tmpText = twoPlaces.format(((GeoPosition) evt.getNewValue()).getLatitude()) + " "
-                        + twoPlaces.format(((GeoPosition) evt.getNewValue()).getLongitude());
-                setGPSLocation(tmpText);
+                latitude = ((GeoPosition) evt.getNewValue()).getLatitude();
+                longitude = ((GeoPosition) evt.getNewValue()).getLongitude();
+                rebuildGPSLocation();
             }
         });
         final int max = 17;
@@ -309,7 +306,13 @@ public final class HabitatVisualPanel1 extends JPanel implements DocumentListene
                 kit.getMiniMap().repaint();
             }
         });
-        kit.getMainMap().setCenterPosition(new GeoPosition(51.5, 0));
+        GeoPosition gp;
+        if (latitude == null || longitude == null) {
+            gp = new GeoPosition(51.5, 0);
+        } else {
+            gp = new GeoPosition(latitude, longitude);
+        }
+        kit.getMainMap().setCenterPosition(gp);
         waypoints.add(new Waypoint(kit.getMainMap().getCenterPosition()));
     }
 
@@ -403,13 +406,7 @@ public final class HabitatVisualPanel1 extends JPanel implements DocumentListene
     }
 
     private void rebuildGPSLocation() {
-        Double lat = new Double(latitude);
-        Double lon = new Double(longitude);
-        String gpsloc = new StringBuilder(lat.toString())
-                .append(" ")
-                .append(lon.toString())
-                .toString();
+        String gpsloc = new StringBuilder(latitude.toString()).append(" / ").append(longitude.toString()).toString();
         gpslocation.setText(gpsloc);
-        // FIXME: jXMapKit1.setCenterPosition();
     }
 }

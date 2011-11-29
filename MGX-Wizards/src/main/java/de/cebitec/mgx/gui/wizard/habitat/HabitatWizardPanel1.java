@@ -83,7 +83,8 @@ public class HabitatWizardPanel1 implements WizardDescriptor.Panel<WizardDescrip
         HabitatVisualPanel1 c = getComponent();
         model.putProperty(HabitatVisualPanel1.PROP_NAME, c.getHabitatName());
         model.putProperty(HabitatVisualPanel1.PROP_BIOME, c.getBiome());
-        model.putProperty(HabitatVisualPanel1.PROP_LOCATION, c.getGPSLocation());
+        model.putProperty(HabitatVisualPanel1.PROP_LATITUDE, c.getGPSLatitude());
+        model.putProperty(HabitatVisualPanel1.PROP_LONGITUDE, c.getGPSLongitude());
     }
 
     @Override
@@ -105,8 +106,13 @@ public class HabitatWizardPanel1 implements WizardDescriptor.Panel<WizardDescrip
             isValid = false;
         }
 
-        test = c.getGPSLocation();
-        if (test == null || "".equals(test)) {
+        Double d = c.getGPSLatitude();
+        if (d == null) {
+            isValid = false;
+        }
+        
+        d = c.getGPSLongitude();
+        if (d == null) {
             isValid = false;
         }
 
