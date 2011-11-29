@@ -1,4 +1,4 @@
-package de.cebitec.mgx.gui.wizard.habitat;
+package de.cebitec.mgx.gui.wizard.habitatold;
 
 import de.cebitec.mgx.gui.datamodel.Habitat;
 import de.cebitec.mgx.gui.datamodel.MGXMasterI;

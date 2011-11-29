@@ -1,4 +1,4 @@
-package de.cebitec.mgx.gui.wizard.habitat;
+package de.cebitec.mgx.gui.wizard.habitatold;
 
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;

@@ -35,9 +35,9 @@
               </Group>
               <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jScrollPane2" pref="169" max="32767" attributes="1"/>
-                  <Component id="jButton_searchLoc" alignment="1" pref="169" max="32767" attributes="1"/>
-                  <Component id="jTextField_searchLoc" alignment="0" pref="169" max="32767" attributes="1"/>
+                  <Component id="jScrollPane2" pref="313" max="32767" attributes="1"/>
+                  <Component id="jButton_searchLoc" alignment="1" pref="313" max="32767" attributes="1"/>
+                  <Component id="jTextField_searchLoc" alignment="0" pref="313" max="32767" attributes="1"/>
                   <Component id="jLabel_searchLoc" alignment="0" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabel_foundLocations" alignment="0" min="-2" max="-2" attributes="0"/>
               </Group>
