@@ -63,11 +63,11 @@
         <module>MGX-Nodes</module>
         <module>Jersey-Wrapper</module>
         <module>SwingX-WS-Wrapper</module>
-        <module>Habitat-Wizard</module>
+        <module>MGX-Wizards</module>
         <module>MGX-Datamodel</module>
         <module>MGX-Controller</module>
-    <module>DTO-Wrapper</module>
-  </modules>
+        <module>DTO-Wrapper</module>
+    </modules>
 
     <properties>
         <netbeans.version>RELEASE701</netbeans.version>
