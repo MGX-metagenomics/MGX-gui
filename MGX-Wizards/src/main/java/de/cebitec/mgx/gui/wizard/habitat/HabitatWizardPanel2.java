@@ -35,6 +35,10 @@ public class HabitatWizardPanel2 implements WizardDescriptor.Panel<WizardDescrip
         return component;
     }
 
+    public String getName() {
+        return "Panel2 name";
+    }
+
     @Override
     public HelpCtx getHelp() {
         return HelpCtx.DEFAULT_HELP;
@@ -63,6 +67,7 @@ public class HabitatWizardPanel2 implements WizardDescriptor.Panel<WizardDescrip
             }
         }
     }
+
     @Override
     public void readSettings(WizardDescriptor settings) {
         model = settings;
@@ -71,8 +76,7 @@ public class HabitatWizardPanel2 implements WizardDescriptor.Panel<WizardDescrip
 
     @Override
     public void storeSettings(WizardDescriptor settings) {
-        HabitatVisualPanel2 c = getComponent();
-        model.putProperty(HabitatVisualPanel2.PROP_DESCRIPTION, c.getHabitatDescription());
+        model.putProperty(HabitatVisualPanel2.PROP_DESCRIPTION, getComponent().getHabitatDescription());
     }
 
     @Override

@@ -65,6 +65,10 @@ public final class HabitatVisualPanel2 extends JPanel implements DocumentListene
     private javax.swing.JScrollPane jScrollPane1;
     // End of variables declaration//GEN-END:variables
 
+    public void setHabitatDescription(String description) {
+        habdescription.setText(description);
+    }
+    
     public String getHabitatDescription() {
         return habdescription.getText();
     }

@@ -34,6 +34,10 @@ public class HabitatWizardPanel1 implements WizardDescriptor.Panel<WizardDescrip
         }
         return component;
     }
+    
+    public String getName() {
+        return "Panel1 name";
+    }
 
     @Override
     public HelpCtx getHelp() {

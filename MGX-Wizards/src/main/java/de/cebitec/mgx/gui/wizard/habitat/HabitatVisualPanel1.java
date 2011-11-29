@@ -191,14 +191,26 @@ public final class HabitatVisualPanel1 extends JPanel implements DocumentListene
     private javax.swing.JTextField searchLocation;
     // End of variables declaration//GEN-END:variables
 
+    public void setHabitatName(String name) {
+        habitatname.setText(name);
+    }
+    
     public String getHabitatName() {
         return habitatname.getText();
     }
 
+    public void setBiome(String biome) {
+        biomename.setText(biome);
+    }
+    
     public String getBiome() {
         return biomename.getText();
     }
 
+    public void setGPSLocation(String location) {
+        gpslocation.setText(location);
+    }
+    
     public String getGPSLocation() {
         return gpslocation.getText();
     }
@@ -229,9 +241,9 @@ public final class HabitatVisualPanel1 extends JPanel implements DocumentListene
             public void propertyChange(PropertyChangeEvent evt) {
                 DecimalFormat twoPlaces = new DecimalFormat("0.00");
 
-                String tmpText = twoPlaces.format(((GeoPosition) evt.getNewValue()).getLatitude()) + " | "
+                String tmpText = twoPlaces.format(((GeoPosition) evt.getNewValue()).getLatitude()) + " "
                         + twoPlaces.format(((GeoPosition) evt.getNewValue()).getLongitude());
-                gpslocation.setText(tmpText);
+                setGPSLocation(tmpText);
             }
         });
         final int max = 17;
