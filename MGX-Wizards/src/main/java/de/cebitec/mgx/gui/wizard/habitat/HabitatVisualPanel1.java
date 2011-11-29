@@ -45,7 +45,7 @@ public final class HabitatVisualPanel1 extends JPanel implements DocumentListene
     public HabitatVisualPanel1() {
         initComponents();
         initMapKit();
-        initMashup();
+        createSearchListListener();
         habitatname.getDocument().addDocumentListener(this);
         biomename.getDocument().addDocumentListener(this);
         gpslocation.getDocument().addDocumentListener(this);
@@ -209,6 +209,7 @@ public final class HabitatVisualPanel1 extends JPanel implements DocumentListene
 
     public void setGPSLocation(String location) {
         gpslocation.setText(location);
+        // FIXME: jXMapKit1.setCenterPosition();
     }
     
     public String getGPSLocation() {
@@ -217,20 +218,20 @@ public final class HabitatVisualPanel1 extends JPanel implements DocumentListene
 
     private void initMapKit() {
         final JXMapKit kit = jXMapKit1;
-        MouseListener[] ml2 = kit.getMainMap().getMouseListeners();
-        MouseMotionListener[] mml2 = kit.getMainMap().getMouseMotionListeners();
-        for (MouseListener mouseListener : ml2) {
+        
+        //
+        // remove current set of mouse listeners from both main and mini map
+        //
+        for (MouseListener mouseListener : kit.getMainMap().getMouseListeners()) {
             kit.removeMouseListener(mouseListener);
         }
-        for (MouseMotionListener mouseMotionListener : mml2) {
+        for (MouseMotionListener mouseMotionListener : kit.getMainMap().getMouseMotionListeners()) {
             kit.removeMouseMotionListener(mouseMotionListener);
         }
-        MouseListener[] ml = kit.getMiniMap().getMouseListeners();
-        MouseMotionListener[] mml = kit.getMiniMap().getMouseMotionListeners();
-        for (MouseListener mouseListener : ml) {
+        for (MouseListener mouseListener : kit.getMiniMap().getMouseListeners()) {
             kit.removeMouseListener(mouseListener);
         }
-        for (MouseMotionListener mouseMotionListener : mml) {
+        for (MouseMotionListener mouseMotionListener : kit.getMiniMap().getMouseMotionListeners()) {
             kit.removeMouseMotionListener(mouseMotionListener);
         }
 
@@ -343,7 +344,7 @@ public final class HabitatVisualPanel1 extends JPanel implements DocumentListene
     }
 
     // listener on selectionList to change mapcenter and zoomlevel
-    private void initMashup() {
+    private void createSearchListListener() {
         foundLocations = new Location[MAX_LOCATION_RESULTS];
         foundLocationList.addListSelectionListener(new ListSelectionListener() {
 
@@ -351,7 +352,7 @@ public final class HabitatVisualPanel1 extends JPanel implements DocumentListene
             public void valueChanged(ListSelectionEvent e) {
                 int index = ((JList) e.getSource()).getSelectedIndex();
                 jXMapKit1.setCenterPosition(foundLocations[index].getGeoLoc());
-                jXMapKit1.setZoom(8);
+                jXMapKit1.setZoom(8); 
             }
         });
     }
@@ -384,7 +385,7 @@ public final class HabitatVisualPanel1 extends JPanel implements DocumentListene
         } else if (biomename.getDocument() == d) {
             firePropertyChange(PROP_BIOME, 0, 1);
         } else if (gpslocation.getDocument() == d) {
-            firePropertyChange(PROP_BIOME, 0, 1);
+            firePropertyChange(PROP_LOCATION, 0, 1);
         }
     }
 }
