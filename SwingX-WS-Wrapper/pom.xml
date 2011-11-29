@@ -2,10 +2,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-    <artifactId>MGX-gui</artifactId>
-    <groupId>de.cebitec.mgx.gui</groupId>
-    <version>1.0-SNAPSHOT</version>
-  </parent>
+        <artifactId>MGX-gui</artifactId>
+        <groupId>de.cebitec.mgx.gui</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
 
     <groupId>de.cebitec.mgx.gui</groupId>
     <artifactId>SwingX-WS-Wrapper</artifactId>
@@ -26,6 +26,60 @@
             <artifactId>org-netbeans-api-annotations-common</artifactId>
             <version>RELEASE701</version>
         </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>3.8.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.external</groupId>
+            <artifactId>xerces-2.8.0</artifactId>
+            <version>RELEASE70</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.external</groupId>
+            <artifactId>swingx-0.9.5</artifactId>
+            <version>RELEASE69</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.external</groupId>
+            <artifactId>commons-httpclient-3.1</artifactId>
+            <version>RELEASE69</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.external</groupId>
+            <artifactId>swing-worker-1.1</artifactId>
+            <version>RELEASE70</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.external</groupId>
+            <artifactId>jtidy-r8-20060801</artifactId>
+            <version>RELEASE70</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.external</groupId>
+            <artifactId>rome-0.9</artifactId>
+            <version>RELEASE67</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.external</groupId>
+            <artifactId>json-2</artifactId>
+            <version>RELEASE65</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.external</groupId>
+            <artifactId>jdom-1.0</artifactId>
+            <version>RELEASE69</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -54,7 +108,33 @@
                     </publicPackages>
                 </configuration>
             </plugin>
-
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.5</version>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+            <!-- here the phase you need -->
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/target/classes/org/jdesktop/swingx/mapviewer/resources</outputDirectory>
+                            <resources>          
+                                <resource>
+                                    <directory>src/main/java/org/jdesktop/swingx/mapviewer/resources</directory>
+                                    <filtering>true</filtering>
+                                </resource>
+                                <resource>
+                                    <directory>src/main/java/org/jdesktop/http/resources</directory>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>              
+                        </configuration>            
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <!-- NetBeans 6.9+ requires JDK 6 -->
                 <groupId>org.apache.maven.plugins</groupId>
