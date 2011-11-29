@@ -10,7 +10,8 @@ public class Habitat extends ModelBase {
 
     protected String name;
     /* GPS location of habitat */
-    protected String location;
+    protected double latitude;
+    protected double longitude;
     protected String description;
     protected int altitude;
     protected String biome;
@@ -40,12 +41,21 @@ public class Habitat extends ModelBase {
         return this;
     }
 
-    public String getLocation() {
-        return location;
+    public double getLatitude() {
+        return latitude;
     }
 
-    public Habitat setLocation(String location) {
-        this.location = location;
+    public Habitat setLatitude(double latitude) {
+        this.latitude = latitude;
+        return this;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public Habitat setLongitude(double longitude) {
+        this.longitude = longitude;
         return this;
     }
 
