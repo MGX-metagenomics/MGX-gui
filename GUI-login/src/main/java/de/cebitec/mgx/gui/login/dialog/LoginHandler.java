@@ -3,6 +3,7 @@ package de.cebitec.mgx.gui.login.dialog;
 import de.cebitec.mgx.gui.explorer.ProjectExplorerTopComponent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.EventQueue;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import org.openide.DialogDescriptor;
@@ -86,6 +87,9 @@ public class LoginHandler implements ActionListener {
     }
 
     private void openProjectExplorer(GPMS gpms) {
+        if (EventQueue.isDispatchThread()) {
+            System.err.println("Login opening Exlorer window in EDT!");
+        }
         ProjectExplorerTopComponent pe = Lookup.getDefault().lookup(ProjectExplorerTopComponent.class);
         pe.setVisible(true);
         pe.setGPMS(gpms);
