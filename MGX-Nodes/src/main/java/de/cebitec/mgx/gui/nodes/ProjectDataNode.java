@@ -1,15 +1,13 @@
 package de.cebitec.mgx.gui.nodes;
 
-import java.io.IOException;
+import de.cebitec.mgx.gui.controller.MGXMaster;
+import de.cebitec.mgx.gui.datamodel.Habitat;
+import java.awt.event.ActionEvent;
+import javax.swing.AbstractAction;
 import javax.swing.Action;
-import org.openide.actions.DeleteAction;
-import org.openide.actions.EditAction;
-import org.openide.actions.NewAction;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.util.Lookup;
-import org.openide.util.actions.SystemAction;
-import org.openide.util.datatransfer.NewType;
 
 /**
  *
@@ -27,28 +25,20 @@ public class ProjectDataNode extends AbstractNode {
         return false;
     }
 
-    @Override  
+    @Override
     public Action[] getActions(boolean context) {
-        NewAction newa = SystemAction.get(NewAction.class);
-        EditAction edit = SystemAction.get(EditAction.class);
-        DeleteAction delete = SystemAction.get(DeleteAction.class);
-        return new Action[]{newa, edit, delete};
+        return new Action[]{new AddHabitat()};
     }
 
-    @Override
-    public NewType[] getNewTypes() {
-        NewType newType = new NewType() {
+    private class AddHabitat extends AbstractAction {
 
-            @Override
-            public String getName() {
-                return "habitat";
-            }
+        public AddHabitat() {
+            putValue(NAME, "Add habitat");
+        }
 
-            @Override
-            public void create() throws IOException {
-                System.err.println("doing stuff");
-            }
-        };
-        return new NewType[]{newType};
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            MGXMaster master = getLookup().lookup(MGXMaster.class);
+        }
     }
 }

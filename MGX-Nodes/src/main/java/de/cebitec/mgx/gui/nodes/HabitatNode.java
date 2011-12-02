@@ -13,38 +13,37 @@ import org.openide.util.Lookup;
  * @author sj
  */
 public class HabitatNode extends MGXNodeBase<Habitat> {
-
+    
     public HabitatNode(Children children, Lookup lookup) {
         super(children, lookup);
     }
-
+    
     @Override
     public boolean canDestroy() {
         return true;
     }
-
+    
     @Override
     public void destroy() throws IOException {
         super.destroy();
         fireNodeDestroyed();
     }
-
+    
     @Override
     public Action[] getActions(boolean context) {
-        return new Action[]{ new DeleteHabitat() };
+        return new Action[]{new DeleteHabitat()};
     }
     
     private class DeleteHabitat extends AbstractAction {
-
-    public DeleteHabitat () {
-        putValue (NAME, "Delete");
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        Habitat obj = getLookup().lookup(Habitat.class);
-        getMaster().Habitat().delete(obj.getId());
-    }
-
-} 
+        
+        public DeleteHabitat() {
+            putValue(NAME, "Delete");
+        }
+        
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            Habitat hab = getLookup().lookup(Habitat.class);
+            getMaster().Habitat().delete(hab.getId());
+        }
+    }    
 }
