@@ -20,10 +20,7 @@ public final class HabitatWizardAction implements ActionListener {
 
     public @Override
     void actionPerformed(ActionEvent e) {
-        WizardDescriptor wizardDescriptor = new WizardDescriptor(getPanels());
-        // {0} will be replaced by WizardDesriptor.Panel.getComponent().getName()
-        wizardDescriptor.setTitleFormat(new MessageFormat("{0}"));
-        wizardDescriptor.setTitle("Your wizard dialog title here");
+        WizardDescriptor wizardDescriptor = new HabitatWizardDescriptor();
         Dialog dialog = DialogDisplayer.getDefault().createDialog(wizardDescriptor);
         dialog.setVisible(true);
         dialog.toFront();
