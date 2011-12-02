@@ -1,15 +1,12 @@
 package de.cebitec.mgx.gui.nodes;
 
 import de.cebitec.mgx.gui.datamodel.Habitat;
+import java.awt.event.ActionEvent;
 import java.io.IOException;
+import javax.swing.AbstractAction;
 import javax.swing.Action;
-import org.openide.actions.DeleteAction;
-import org.openide.actions.EditAction;
-import org.openide.actions.NewAction;
 import org.openide.nodes.Children;
 import org.openide.util.Lookup;
-import org.openide.util.actions.SystemAction;
-import org.openide.util.datatransfer.NewType;
 
 /**
  *
@@ -34,27 +31,20 @@ public class HabitatNode extends MGXNodeBase<Habitat> {
 
     @Override
     public Action[] getActions(boolean context) {
-        NewAction newa = SystemAction.get(NewAction.class);
-        EditAction edit = SystemAction.get(EditAction.class);
-        DeleteAction delete = SystemAction.get(DeleteAction.class);
-        return new Action[] {newa, edit, delete};
+        return new Action[]{ new DeleteHabitat() };
+    }
+    
+    private class DeleteHabitat extends AbstractAction {
+
+    public DeleteHabitat () {
+        putValue (NAME, "Delete");
     }
 
     @Override
-    public NewType[] getNewTypes() {
-        NewType newType = new NewType() {
-
-            @Override
-            public String getName() {
-                return "sample";
-            }
-
-            @Override
-            public void create() throws IOException {
-                System.err.println("doing stuff");
-                //Do Something
-            }
-        };
-        return new NewType[]{newType};
+    public void actionPerformed(ActionEvent e) {
+        Habitat obj = getLookup().lookup(Habitat.class);
+        getMaster().Habitat().delete(obj.getId());
     }
+
+} 
 }

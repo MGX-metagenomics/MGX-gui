@@ -1,6 +1,5 @@
 package de.cebitec.mgx.gui.nodes;
 
-import de.cebitec.mgx.gui.habitat.wizard.HabitatWizardWizardAction;
 import java.io.IOException;
 import javax.swing.Action;
 import org.openide.actions.DeleteAction;
@@ -48,7 +47,6 @@ public class ProjectDataNode extends AbstractNode {
             @Override
             public void create() throws IOException {
                 System.err.println("doing stuff");
-                new HabitatWizardWizardAction();
             }
         };
         return new NewType[]{newType};
