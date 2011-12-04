@@ -26,12 +26,13 @@ import java.io.InputStream;
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.commons.codec.binary.Base64;
 import org.jdesktop.beans.AbstractBean;
 import org.jdesktop.http.Header.Element;
 import org.jdesktop.xpath.XPathUtils;
 import org.w3c.dom.Document;
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
+//import sun.misc.BASE64Decoder;
+//import sun.misc.BASE64Encoder;
 
 /**
  * <p>Represents an http request. A <code>Request</code> is constructed and then
@@ -601,9 +602,11 @@ public class Request extends AbstractBean {
     }
     
     @Override public String toString() {
-        StringBuffer buffer = new StringBuffer();
-        buffer.append(getMethod());
-        buffer.append(" " + getUrl() + "\n");
+        StringBuilder buffer = new StringBuilder()
+                .append(getMethod())
+                .append(" ")
+                .append(getUrl())
+                .append("\n");
         for (Header h : getHeaders()) {
             buffer.append("  ").append(h.getName()).append(": ").append(h.getValue());
             buffer.append("\n");
@@ -613,10 +616,12 @@ public class Request extends AbstractBean {
     }
 
     private static String base64Encode(String s) throws Exception {
-        return new String(new BASE64Encoder().encode(s.getBytes()));
+        return new String(new Base64().decode(s.getBytes()));
+        //return new String(new BASE64Encoder().encode(s.getBytes()));
     }
     
     private static String base64Decode(String s) throws Exception {
-        return new String(new BASE64Decoder().decodeBuffer(s));
+        return new String(new Base64().decode(s));
+        //return new String(new BASE64Decoder().decodeBuffer(s));
     }
 }
