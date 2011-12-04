@@ -12,6 +12,7 @@ import org.openide.NotificationLineSupport;
 import org.openide.util.NbPreferences;
 import de.cebitec.mgx.gui.login.configuration.MGXserverPanel;
 import de.cebitec.mgx.restgpms.GPMS;
+import javax.swing.SwingWorker;
 import org.openide.util.Lookup;
 import org.openide.windows.Mode;
 import org.openide.windows.WindowManager;
@@ -86,21 +87,28 @@ public class LoginHandler implements ActionListener {
         }
     }
 
-    private void openProjectExplorer(GPMS gpms) {
-        if (EventQueue.isDispatchThread()) {
-            System.err.println("Login opening Exlorer window in EDT!");
-        }
-        ProjectExplorerTopComponent pe = Lookup.getDefault().lookup(ProjectExplorerTopComponent.class);
-        pe.setVisible(true);
-        pe.setGPMS(gpms);
-        Mode m = WindowManager.getDefault().findMode("explorer");
-        if (m != null) {
-            m.dockInto(pe);
-        } else {
-            System.err.println("explorer mode not found");
-        }
-        pe.open();
-        pe.requestActive();
-    }
+    private void openProjectExplorer(final GPMS gpms) {
+        SwingWorker worker = new SwingWorker<Void, Void>() {
 
+            @Override
+            protected Void doInBackground() throws Exception {
+                if (EventQueue.isDispatchThread()) {
+                    System.err.println("Login opening Exlorer window in EDT!");
+                }
+                ProjectExplorerTopComponent pe = Lookup.getDefault().lookup(ProjectExplorerTopComponent.class);
+                pe.setVisible(true);
+                pe.setGPMS(gpms);
+                Mode m = WindowManager.getDefault().findMode("explorer");
+                if (m != null) {
+                    m.dockInto(pe);
+                } else {
+                    System.err.println("explorer mode not found");
+                }
+                pe.open();
+                pe.requestActive();
+                return null;
+            }
+        };
+        worker.execute();
+    }
 }

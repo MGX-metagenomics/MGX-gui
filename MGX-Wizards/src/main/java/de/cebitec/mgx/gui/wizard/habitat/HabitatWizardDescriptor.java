@@ -14,6 +14,8 @@ public class HabitatWizardDescriptor extends WizardDescriptor {
 
     private HabitatWizardPanel1 p1 = new HabitatWizardPanel1();
     private HabitatWizardPanel2 p2 = new HabitatWizardPanel2();
+    
+    private Habitat habitat = null;
 
     public HabitatWizardDescriptor() {
         List<Panel<WizardDescriptor>> panels = new ArrayList<Panel<WizardDescriptor>>();
@@ -30,11 +32,24 @@ public class HabitatWizardDescriptor extends WizardDescriptor {
     
     public HabitatWizardDescriptor(Habitat h) {
         this();
+        this.habitat = h;
         putProperty(HabitatVisualPanel1.PROP_NAME, h.getName());
         putProperty(HabitatVisualPanel1.PROP_BIOME, h.getBiome());
         putProperty(HabitatVisualPanel1.PROP_LATITUDE, h.getLatitude());
         putProperty(HabitatVisualPanel1.PROP_LONGITUDE, h.getLongitude());
         //
         putProperty(HabitatVisualPanel2.PROP_DESCRIPTION, h.getDescription());
+    }
+    
+    public Habitat getHabitat() {
+        if (habitat == null) {
+            habitat = new Habitat();
+        }
+        habitat.setName(HabitatVisualPanel1.PROP_NAME)
+                .setBiome(HabitatVisualPanel1.PROP_BIOME)
+                .setLatitude(Double.parseDouble(HabitatVisualPanel1.PROP_LATITUDE))
+                .setLongitude(Double.parseDouble(HabitatVisualPanel1.PROP_LONGITUDE))
+                .setDescription(HabitatVisualPanel2.PROP_DESCRIPTION);
+        return habitat;
     }
 }

@@ -81,7 +81,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <publicPackages>
-                        <publicPackage>de.cebitec.mgx.gui.habitat.wizard</publicPackage>
+                        <publicPackage>de.cebitec.mgx.gui.wizard.habitat</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>

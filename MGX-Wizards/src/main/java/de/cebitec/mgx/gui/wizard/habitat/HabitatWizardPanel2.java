@@ -36,7 +36,7 @@ public class HabitatWizardPanel2 implements WizardDescriptor.Panel<WizardDescrip
     }
 
     public String getName() {
-        return "Panel2 name";
+        return "Description";
     }
 
     @Override

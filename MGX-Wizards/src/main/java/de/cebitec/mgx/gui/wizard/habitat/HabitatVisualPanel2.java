@@ -75,16 +75,20 @@ public final class HabitatVisualPanel2 extends JPanel implements DocumentListene
 
     @Override
     public void insertUpdate(DocumentEvent e) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        handleUpdate(e);
     }
 
     @Override
     public void removeUpdate(DocumentEvent e) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        handleUpdate(e);
     }
 
     @Override
     public void changedUpdate(DocumentEvent e) {
+        handleUpdate(e);
+    }
+    
+    private void handleUpdate(DocumentEvent e) {
         Document d = e.getDocument();
         if (habdescription.getDocument() == d) {
             firePropertyChange(PROP_DESCRIPTION, 0, 1);

@@ -36,7 +36,7 @@ public class HabitatWizardPanel1 implements WizardDescriptor.Panel<WizardDescrip
     }
     
     public String getName() {
-        return "Panel1 name";
+        return "Type and location";
     }
 
     @Override
@@ -95,6 +95,8 @@ public class HabitatWizardPanel1 implements WizardDescriptor.Panel<WizardDescrip
     }
 
     private boolean checkValidity() {
+        isValid = true;
+        
         HabitatVisualPanel1 c = getComponent();
         String test = c.getHabitatName();
         if (test == null || "".equals(test)) {
@@ -115,6 +117,7 @@ public class HabitatWizardPanel1 implements WizardDescriptor.Panel<WizardDescrip
         if (d == null) {
             isValid = false;
         }
+        System.out.println("returning "+isValid);
 
         return isValid;
     }

@@ -6,6 +6,7 @@ import java.awt.geom.Point2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.util.HashSet;
 import java.util.Set;
 import javax.swing.JList;
@@ -319,7 +320,7 @@ public final class HabitatVisualPanel1 extends JPanel implements DocumentListene
     //search by name for geolocation and put them into selectionList
     private void searchLocation(String loc) {
         try {
-            // FIXME - username?
+            // FIXME - "only available in the US; registration required!
             URL url = new URL("http://api.geonames.org/search?q=" + loc + "&featureClass=P&maxRows=" + MAX_LOCATION_RESULTS + "&username=habitatwizard");
             XPath xpath = XPathFactory.newInstance().newXPath();
             NodeList list = (NodeList) xpath.evaluate("//geoname",
@@ -386,14 +387,20 @@ public final class HabitatVisualPanel1 extends JPanel implements DocumentListene
 
     @Override
     public void insertUpdate(DocumentEvent e) {
+        handleUpdate(e);
     }
 
     @Override
     public void removeUpdate(DocumentEvent e) {
+        handleUpdate(e);
     }
 
     @Override
     public void changedUpdate(DocumentEvent e) {
+        handleUpdate(e);
+    }
+    
+    private void handleUpdate(DocumentEvent e) {
         Document d = e.getDocument();
         if (habitatname.getDocument() == d) {
             firePropertyChange(PROP_NAME, 0, 1);
@@ -406,7 +413,11 @@ public final class HabitatVisualPanel1 extends JPanel implements DocumentListene
     }
 
     private void rebuildGPSLocation() {
-        String gpsloc = new StringBuilder(latitude.toString()).append(" / ").append(longitude.toString()).toString();
+        DecimalFormat f = new DecimalFormat("#0.00000"); 
+        String gpsloc = new StringBuilder(f.format(latitude))
+                .append(" / ")
+                .append(f.format(longitude))
+                .toString();
         gpslocation.setText(gpsloc);
     }
 }
