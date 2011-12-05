@@ -11,7 +11,6 @@ import org.jdesktop.http.Request;
 import org.jdesktop.http.Response;
 import org.jdesktop.http.Session;
 import org.jdesktop.swingworker.SwingWorker;
-import static org.jdesktop.http.State.*;
 
 /**
  * An HTTP based REST web service.
@@ -115,6 +114,7 @@ public class HttpService extends AbstractHttpService {
         setResponse(null);
     }
     
+    @Override
     protected SwingWorker createWorker() {
         return new HttpWorker(this);
     }

@@ -35,6 +35,7 @@ public class SLMapServerInfo extends TileFactoryInfo {
         return midpoint;
     }
     
+    @Override
     public int getTileSize(int zoom) {
         int size = super.getTileSize(zoom);
         if(zoom < midpoint) {
@@ -48,6 +49,7 @@ public class SLMapServerInfo extends TileFactoryInfo {
     }
     
     
+    @Override
     public int getMapWidthInTilesAtZoom(int zoom) {
         if(zoom < midpoint) {
             return (int)Math.pow(2,midpoint-zoom);
@@ -56,6 +58,7 @@ public class SLMapServerInfo extends TileFactoryInfo {
         }
     }
     
+    @Override
     public String getTileUrl(int x, int y, int zoom) {
         int ty = y;
         int tx = x;

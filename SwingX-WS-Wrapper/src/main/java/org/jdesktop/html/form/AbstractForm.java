@@ -89,6 +89,7 @@ public abstract class AbstractForm extends AbstractBean implements Form {
     /**
      * @inheritDoc
      */
+    @Override
     public Input[] getInputs() {
         return inputs.toArray(new Input[0]);
     }
@@ -96,6 +97,7 @@ public abstract class AbstractForm extends AbstractBean implements Form {
     /**
      * @inheritDoc
      */
+    @Override
     public Input getInput(String name) {
         for (Input i : inputs) {
             if (name.equals(i.getName())) {
@@ -122,6 +124,7 @@ public abstract class AbstractForm extends AbstractBean implements Form {
     /**
      * @inheritDoc
      */
+    @Override
     public String getBaseUrl() {
         return baseUrl;
     }
@@ -129,6 +132,7 @@ public abstract class AbstractForm extends AbstractBean implements Form {
     /**
      * @inheritDoc
      */
+    @Override
     public Encoding getEncoding() {
         return encoding;
     }

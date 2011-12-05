@@ -10,7 +10,6 @@
 package org.jdesktop.xpath.function;
 
 import java.util.List;
-import javax.xml.xpath.XPathFunction;
 import javax.xml.xpath.XPathFunctionException;
 
 /**
@@ -24,6 +23,7 @@ public class UpperCase extends AbstractFunction {
         super("upper-case", 1);
     }
 
+    @Override
     public Object evaluate(List args) throws XPathFunctionException {
         return getStringParam(args.get(0)).toUpperCase();
     }

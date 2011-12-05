@@ -332,6 +332,7 @@ public class JXHtmlForm extends JPanel {
             return value;
         }
         
+        @Override
         public String toString() {
             return display;
         }

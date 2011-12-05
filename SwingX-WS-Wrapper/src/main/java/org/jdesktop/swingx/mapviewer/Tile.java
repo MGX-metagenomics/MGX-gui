@@ -188,6 +188,7 @@ public class Tile extends AbstractBean {
     void firePropertyChangeOnEDT(final String propertyName, final Object oldValue, final Object newValue) {
         if (!EventQueue.isDispatchThread()) {
             SwingUtilities.invokeLater(new Runnable() {
+                @Override
                 public void run() {
                     firePropertyChange(propertyName, oldValue, newValue);
                 }

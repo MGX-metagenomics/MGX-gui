@@ -24,7 +24,6 @@ import javax.imageio.ImageIO;
 import javax.swing.SwingUtilities;
 
 import org.jdesktop.swingx.mapviewer.util.GeoUtil;
-import org.jdesktop.swingx.util.PaintUtils;
 
 /**
  * The <code>AbstractTileFactory</code> provides a basic implementation for the TileFactory.
@@ -69,6 +68,7 @@ public abstract class AbstractTileFactory extends TileFactory {
      * @param zoom
      * @return
      */
+    @Override
     public Tile getTile(int x, int y, int zoom) {
         return getTile(x, y , zoom, true);
     }
@@ -164,6 +164,7 @@ public abstract class AbstractTileFactory extends TileFactory {
      */
     private static BlockingQueue<Tile> tileQueue = new PriorityBlockingQueue<Tile>(5,
             new Comparator<Tile>() {
+        @Override
         public int compare(Tile o1, Tile o2) {
             if(o1.getPriority() == Tile.Priority.Low && o2.getPriority() == Tile.Priority.High) {
                 return 1;
@@ -193,6 +194,7 @@ public abstract class AbstractTileFactory extends TileFactory {
             service = Executors.newFixedThreadPool(threadPoolSize, new ThreadFactory() {
                 private int count = 0;
                 
+                @Override
                 public Thread newThread(Runnable r) {
                     Thread t = new Thread(r, "tile-pool-" + count++);
                     t.setPriority(Thread.MIN_PRIORITY);
@@ -288,6 +290,7 @@ public abstract class AbstractTileFactory extends TileFactory {
         /**
          * implementation of the Runnable interface.
          */
+        @Override
         public void run() {
             /*
              * 3 strikes and you're out. Attempt to load the url. If it fails,
@@ -313,11 +316,12 @@ public abstract class AbstractTileFactory extends TileFactory {
                     }
                     if(img == null) {
                         System.out.println("error loading: " + uri);
-                        LOG.log(Level.INFO, "Failed to load: " + uri);
+                        LOG.log(Level.INFO, "Failed to load: {0}", uri);
                         trys--;
                     } else {
                         final BufferedImage i = img;
                         SwingUtilities.invokeAndWait(new Runnable() {
+                            @Override
                             public void run() {
                                 tile.image = new SoftReference<BufferedImage>(i);
                                 tile.setLoaded(true);

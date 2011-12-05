@@ -35,31 +35,36 @@
         <dependency>
             <groupId>org.netbeans.external</groupId>
             <artifactId>xerces-2.8.0</artifactId>
-            <version>RELEASE70</version>
+            <version>RELEASE701</version>
             <type>jar</type>
         </dependency>
-        <dependency>
+    <!--    <dependency>
             <groupId>org.netbeans.external</groupId>
             <artifactId>swingx-0.9.5</artifactId>
             <version>RELEASE69</version>
             <type>jar</type>
-        </dependency>
+        </dependency> -->
         <dependency>
+            <groupId>org.swinglabs</groupId>
+            <artifactId>swingx</artifactId>
+            <version>1.6.1</version>
+        </dependency>
+    <!--    <dependency>
             <groupId>org.netbeans.external</groupId>
             <artifactId>commons-httpclient-3.1</artifactId>
             <version>RELEASE69</version>
             <type>jar</type>
-        </dependency>
+        </dependency> -->
         <dependency>
             <groupId>org.netbeans.external</groupId>
             <artifactId>swing-worker-1.1</artifactId>
-            <version>RELEASE70</version>
+            <version>RELEASE701</version>
             <type>jar</type>
         </dependency>
         <dependency>
             <groupId>org.netbeans.external</groupId>
             <artifactId>jtidy-r8-20060801</artifactId>
-            <version>RELEASE70</version>
+            <version>RELEASE701</version>
             <type>jar</type>
         </dependency>
         <dependency>
@@ -84,6 +89,11 @@
             <artifactId>commons-codec</artifactId>
             <version>1.5</version>
         </dependency>
+        <dependency>
+            <groupId>commons-httpclient</groupId>
+            <artifactId>commons-httpclient</artifactId>
+            <version>3.1</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -104,7 +114,6 @@
                         <publicPackage>org.jdesktop.swingx.event</publicPackage>
                         <publicPackage>org.jdesktop.swingx.mapviewer.*</publicPackage>
                         <publicPackage>org.jdesktop.swingx.painter</publicPackage>
-                        <publicPackage>org.jdesktop.swingx.ws.yahoo.search.*</publicPackage>
                         <publicPackage>org.jdesktop.ws</publicPackage>
                         <publicPackage>org.jdesktop.ws.events</publicPackage>
                         <publicPackage>org.jdesktop.xpath</publicPackage>
@@ -118,7 +127,6 @@
                 <executions>
                     <execution>
                         <id>copy-resources</id>
-            <!-- here the phase you need -->
                         <phase>validate</phase>
                         <goals>
                             <goal>copy-resources</goal>

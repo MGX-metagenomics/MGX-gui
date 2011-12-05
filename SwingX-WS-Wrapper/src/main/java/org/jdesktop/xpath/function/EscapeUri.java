@@ -23,6 +23,7 @@ public class EscapeUri extends AbstractFunction {
         super("escape-uri", 2);
     }
 
+    @Override
     public Object evaluate(List args) throws XPathFunctionException {
         try {
             return URLEncoder.encode(getStringParam(args.get(0)), "UTF-8");

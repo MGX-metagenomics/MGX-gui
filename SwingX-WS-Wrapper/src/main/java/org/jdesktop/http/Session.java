@@ -361,7 +361,7 @@ public class Session extends AbstractBean {
             setState(State.CONNECTING);
             
             // 0. Create the URL
-            StringBuffer surl = new StringBuffer(req.getUrl());
+            StringBuilder surl = new StringBuilder(req.getUrl());
             if (surl.length() == 0) {
                 setState(State.FAILED);
                 throw new IllegalStateException("Cannot excecute a request that has no URL specified");
@@ -373,7 +373,7 @@ public class Session extends AbstractBean {
                 delim = '&';
                 String name = URLEncoder.encode(p.getName(), "UTF-8");
                 String value = URLEncoder.encode(p.getValue(), "UTF-8");
-                surl.append(name + "=" + value);
+                surl.append(name).append("=").append(value);
             }
             
             // 1. Create the HttpURLConnection

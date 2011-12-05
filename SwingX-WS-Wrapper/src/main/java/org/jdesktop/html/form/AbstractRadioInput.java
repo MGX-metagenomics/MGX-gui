@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import org.jdesktop.beans.AbstractBean;
-import org.jdesktop.http.Parameter;
 
 /**
  * Abstract implementation of the {@link RadioInput} interface.
@@ -51,6 +50,7 @@ public class AbstractRadioInput extends AbstractBean implements RadioInput {
     /**
      * @inheritDoc
      */
+    @Override
     public String[] getValues() {
         return values.toArray(new String[0]);
     }
@@ -58,6 +58,7 @@ public class AbstractRadioInput extends AbstractBean implements RadioInput {
     /**
      * @inheritDoc
      */
+    @Override
     public String getName() {
         return name;
     }
@@ -65,6 +66,7 @@ public class AbstractRadioInput extends AbstractBean implements RadioInput {
     /**
      * @inheritDoc
      */
+    @Override
     public String getValue() {
         return selected;
     }
@@ -72,6 +74,7 @@ public class AbstractRadioInput extends AbstractBean implements RadioInput {
     /**
      * @inheritDoc
      */
+    @Override
     public void setValue(String value) {
         if (values.contains(value)) {
             selected = value;

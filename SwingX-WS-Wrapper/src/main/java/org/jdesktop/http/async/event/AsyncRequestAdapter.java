@@ -14,9 +14,14 @@ package org.jdesktop.http.async.event;
  * @author rbair
  */
 public class AsyncRequestAdapter implements AsyncRequestListener {
+    @Override
     public void onLoad() {}
+    @Override
     public void onError() {}
+    @Override
     public void onProgress() {}
+    @Override
     public void onAbort() {}
+    @Override
     public void onTimeout() {}
 }

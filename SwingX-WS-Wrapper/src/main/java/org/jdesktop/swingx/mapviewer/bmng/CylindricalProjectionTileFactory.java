@@ -13,6 +13,7 @@ public class CylindricalProjectionTileFactory extends DefaultTileFactory {
         super(info);
     }
 
+    @Override
     public Dimension getMapSize(int zoom) {
         int midpoint = ((SLMapServerInfo)getInfo()).getMidpoint();
         if(zoom < midpoint) {
@@ -23,6 +24,7 @@ public class CylindricalProjectionTileFactory extends DefaultTileFactory {
         return new Dimension(2,1);
     }
     
+    @Override
     public Point2D geoToPixel(GeoPosition c, int zoom) {
         // calc the pixels per degree
         Dimension mapSizeInTiles = getMapSize(zoom);
@@ -41,6 +43,7 @@ public class CylindricalProjectionTileFactory extends DefaultTileFactory {
         return new Point2D.Double(x, y);
     }
 
+    @Override
     public GeoPosition pixelToGeo(Point2D pix, int zoom) {
         // calc the pixels per degree
         Dimension mapSizeInTiles = getMapSize(zoom);

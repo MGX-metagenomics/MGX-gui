@@ -33,8 +33,6 @@ import org.apache.commons.httpclient.HttpClientError;
 import org.apache.commons.httpclient.params.HttpConnectionParams;
 import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.apache.commons.httpclient.protocol.SecureProtocolSocketFactory;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.net.SocketFactory;
 import javax.net.ssl.SSLContext;
@@ -83,6 +81,7 @@ class SSLProtocolSocketFactory implements SecureProtocolSocketFactory, ProtocolS
     /**
      * @see SecureProtocolSocketFactory#createSocket(java.lang.String,int,java.net.InetAddress,int)
      */
+    @Override
     public Socket createSocket(
         String host,
         int port,
@@ -119,6 +118,7 @@ class SSLProtocolSocketFactory implements SecureProtocolSocketFactory, ProtocolS
      * @throws UnknownHostException if the IP address of the host cannot be
      * determined
      */
+    @Override
     public Socket createSocket(
         final String host,
         final int port,
@@ -146,6 +146,7 @@ class SSLProtocolSocketFactory implements SecureProtocolSocketFactory, ProtocolS
     /**
      * @see SecureProtocolSocketFactory#createSocket(java.lang.String,int)
      */
+    @Override
     public Socket createSocket(String host, int port)
         throws IOException, UnknownHostException {
         return getSSLContext(host).getSocketFactory().createSocket(
@@ -157,6 +158,7 @@ class SSLProtocolSocketFactory implements SecureProtocolSocketFactory, ProtocolS
     /**
      * @see SecureProtocolSocketFactory#createSocket(java.net.Socket,java.lang.String,int,boolean)
      */
+    @Override
     public Socket createSocket(
         Socket socket,
         String host,
@@ -171,10 +173,12 @@ class SSLProtocolSocketFactory implements SecureProtocolSocketFactory, ProtocolS
         );
     }
 
+    @Override
     public boolean equals(Object obj) {
         return ((obj != null) && obj.getClass().equals(SSLProtocolSocketFactory.class));
     }
 
+    @Override
     public int hashCode() {
         return SSLProtocolSocketFactory.class.hashCode();
     }

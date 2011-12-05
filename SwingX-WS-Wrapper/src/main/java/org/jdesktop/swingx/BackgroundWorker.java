@@ -408,6 +408,7 @@ public class BackgroundWorker extends AbstractBean {
          * Fires the doInBackgroundEvent. This method must be called on a
          * background thread.
          */
+        @Override
         protected Object doInBackground() throws Exception {
             fireDoInBackgroundEvent();
             return null;
@@ -416,6 +417,7 @@ public class BackgroundWorker extends AbstractBean {
         /**
          * Fires the done event. This must be called on the EDT.
          */
+        @Override
         protected void done() {
             fireDoneEvent();
             running = false;
@@ -434,6 +436,7 @@ public class BackgroundWorker extends AbstractBean {
          * Propogates (and if necessary mutates) property change events from
          * SwingWorker to BackgroundWorker. This must be called on the EDT.
          */
+        @Override
         public void propertyChange(PropertyChangeEvent evt) {
             //all property change events are on the EDT
             if ("progress".equals(evt.getPropertyName())) {

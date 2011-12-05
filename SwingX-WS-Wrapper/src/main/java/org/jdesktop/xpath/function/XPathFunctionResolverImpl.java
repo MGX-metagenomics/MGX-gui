@@ -38,6 +38,7 @@ public class XPathFunctionResolverImpl implements XPathFunctionResolver, Namespa
         installFunction(new EqualsIgnoreCase());
     }
     
+    @Override
     public XPathFunction resolveFunction(QName functionName, int arity) {
         return functions.get(new Signature(functionName, arity));
     }
@@ -47,6 +48,7 @@ public class XPathFunctionResolverImpl implements XPathFunctionResolver, Namespa
                 function.getArity()), function);
     }
     
+    @Override
     public String getNamespaceURI(String prefix) {
         if (prefix == null) throw new NullPointerException("Null prefix");
         else if ("fn".equals(prefix)) return NAMESPACE;
@@ -68,11 +70,13 @@ public class XPathFunctionResolverImpl implements XPathFunctionResolver, Namespa
     }
     
     // This method isn't necessary for XPath processing.
+    @Override
     public String getPrefix(String uri) {
         throw new UnsupportedOperationException();
     }
     
     // This method isn't necessary for XPath processing either.
+    @Override
     public Iterator getPrefixes(String uri) {
         throw new UnsupportedOperationException();
     }
@@ -94,6 +98,7 @@ public class XPathFunctionResolverImpl implements XPathFunctionResolver, Namespa
             this.arity = arity;
         }
         
+        @Override
         public boolean equals(Object o) {
             if (o instanceof Signature) {
                 Signature s = (Signature)o;
@@ -102,6 +107,7 @@ public class XPathFunctionResolverImpl implements XPathFunctionResolver, Namespa
             return false;
         }
         
+        @Override
         public int hashCode() {
             return functionName.hashCode() + arity;
         }

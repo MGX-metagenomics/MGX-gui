@@ -22,7 +22,6 @@ import org.jdesktop.http.Request;
 import org.jdesktop.http.Response;
 import org.jdesktop.swingworker.SwingWorker;
 import org.w3c.dom.Document;
-import static org.jdesktop.http.State.*;
 
 /**
  * <p>Represents a SOAP web service client. This client is useful for working with
@@ -136,6 +135,7 @@ public class WebService extends AbstractBean {
         public final String getName() { return name; }
         public final WebService getWebService() { return svc; }
 
+        @Override
         protected SwingWorker createWorker() {
             return new SoapWorker(this);
         }

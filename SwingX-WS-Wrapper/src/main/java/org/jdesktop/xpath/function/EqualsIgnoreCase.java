@@ -10,7 +10,6 @@
 package org.jdesktop.xpath.function;
 
 import java.util.List;
-import javax.xml.xpath.XPathFunction;
 import javax.xml.xpath.XPathFunctionException;
 import org.w3c.dom.NodeList;
 
@@ -25,6 +24,7 @@ public class EqualsIgnoreCase extends AbstractFunction {
         super("equals-ignore-case", 2);
     }
 
+    @Override
     public Object evaluate(List args) throws XPathFunctionException {
         NodeList nodes = (NodeList)args.get(0);
         String s1 = nodes.getLength() > 0 ? nodes.item(0).getLocalName() : "";

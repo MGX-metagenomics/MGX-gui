@@ -283,6 +283,7 @@ public abstract class BaseService extends AbstractBean {
             // still be correct.
             if (events.size() > 0 && eventInProgress.compareAndSet(false, true)) {
                 SwingUtilities.invokeLater(new Runnable() {
+                    @Override
                     public void run() {
                         final List<Event> copy = new ArrayList<Event>();
                         events.drainTo(copy);
@@ -366,6 +367,7 @@ public abstract class BaseService extends AbstractBean {
         final DoneEvent evt = new DoneEvent(this);
         final DoneListener[] all = listeners.getListeners(DoneListener.class);
         Runnable r = new Runnable() {
+            @Override
             public void run() {
                 for (int i=0; i<all.length; i++) {
                     all[i].done(evt);
@@ -397,6 +399,7 @@ public abstract class BaseService extends AbstractBean {
         final AbortEvent evt = new AbortEvent(this);
         final AbortListener[] all = listeners.getListeners(AbortListener.class);
         Runnable r = new Runnable() {
+            @Override
             public void run() {
                 for (int i=0; i<all.length; i++) {
                     all[i].aborted(evt);
@@ -428,6 +431,7 @@ public abstract class BaseService extends AbstractBean {
         final FailureEvent evt = new FailureEvent(this, th);
         final FailureListener[] all = listeners.getListeners(FailureListener.class);
         Runnable r = new Runnable() {
+            @Override
             public void run() {
                 for (int i=0; i<all.length; i++) {
                     all[i].failure(evt);

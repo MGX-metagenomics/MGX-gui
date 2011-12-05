@@ -9,8 +9,6 @@
 
 package org.jdesktop.http.async;
 
-import java.net.URL;
-import javax.xml.namespace.QName;
 //import javax.xml.soap.MessageFactory;
 //import javax.xml.soap.SOAPMessage;
 //import javax.xml.ws.Dispatch;
@@ -35,17 +33,20 @@ public class SoapHttpRequest extends XmlHttpRequest {
     public SoapHttpRequest() {
     }
 
+    @Override
     public void send(Document dom) {
         sendDom = dom;
         //convert the dom to a String, and send that
         send((String)null);
     }
     
+    @Override
     protected AsyncHttpRequest.AsyncWorker createAsyncWorker(String content) {
         return new SoapAsyncWorker();
     }
     
     private final class SoapAsyncWorker extends AsyncWorker {
+        @Override
         protected Object doInBackground() throws Exception {
             try {
                 Session session = new Session();

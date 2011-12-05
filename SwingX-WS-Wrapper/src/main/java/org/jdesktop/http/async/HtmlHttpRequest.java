@@ -51,11 +51,13 @@ public final class HtmlHttpRequest extends AsyncHttpRequest {
         }
     }
 
+    @Override
     protected void reset() {
         setResponseHtml(null);
         super.reset();
     }
 
+    @Override
     protected void handleResponse(String responseText) throws Exception {
         if (responseText == null) {
             setResponseHtml(null);
@@ -63,7 +65,7 @@ public final class HtmlHttpRequest extends AsyncHttpRequest {
             try {
                 //apparently JTidy isn't escaping content within <script> blocks.
                 //time to get a little dirty
-                StringBuffer buffer = new StringBuffer(responseText);
+                StringBuilder buffer = new StringBuilder(responseText);
                 int startIndex = 0;
                 while ((startIndex = buffer.indexOf("<script", startIndex)) != -1) {
                     startIndex = buffer.indexOf(">", startIndex) + 1;

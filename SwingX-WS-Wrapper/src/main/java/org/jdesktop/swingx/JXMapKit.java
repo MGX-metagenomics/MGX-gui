@@ -114,6 +114,7 @@ public class JXMapKit extends JXPanel {
         
         
         mainMap.addPropertyChangeListener("center", new PropertyChangeListener() {
+            @Override
             public void propertyChange(PropertyChangeEvent evt) {
                 Point2D mapCenter = (Point2D)evt.getNewValue();
                 TileFactory tf = mainMap.getTileFactory();
@@ -124,6 +125,7 @@ public class JXMapKit extends JXPanel {
         
         
         mainMap.addPropertyChangeListener("centerPosition", new PropertyChangeListener() {
+            @Override
             public void propertyChange(PropertyChangeEvent evt) {
                 mapCenterPosition = (GeoPosition)evt.getNewValue();
                 miniMap.setCenterPosition(mapCenterPosition);
@@ -143,6 +145,7 @@ public class JXMapKit extends JXPanel {
         
         // an overlay for the mini-map which shows a rectangle representing the main map
         miniMap.setOverlayPainter(new Painter<JXMapViewer>() {
+            @Override
             public void paint(Graphics2D g, JXMapViewer map, int width, int height) {
                 // get the viewport rect of the main map
                 Rectangle mainMapBounds = mainMap.getViewportBounds();
@@ -217,6 +220,7 @@ public class JXMapKit extends JXPanel {
      */
     public Action getZoomOutAction() {
         Action act = new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 setZoom(mainMap.getZoom()-1);
             }
@@ -232,6 +236,7 @@ public class JXMapKit extends JXPanel {
      */
     public Action getZoomInAction() {
         Action act = new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 setZoom(mainMap.getZoom()+1);
             }
@@ -555,6 +560,7 @@ public class JXMapKit extends JXPanel {
                     256, true, true, // tile size is 256 and x/y orientation is normal
                     "http://tile.openstreetmap.org",//5/15/10.png",
                     "x","y","z") {
+                @Override
                 public String getTileUrl(int x, int y, int zoom) {
                     zoom = max-zoom;
                     String url = this.baseURL +"/"+zoom+"/"+x+"/"+y+".png";
@@ -578,6 +584,7 @@ public class JXMapKit extends JXPanel {
     
     
     private AbstractPainter dataProviderCreditPainter = new AbstractPainter<JXMapViewer>(false) {
+        @Override
         protected void doPaint(Graphics2D g, JXMapViewer map, int width, int height) {
             g.setPaint(Color.WHITE);
             g.drawString("data ",50,
@@ -586,6 +593,7 @@ public class JXMapKit extends JXPanel {
     };
     
     private WaypointPainter addressLocationPainter = new WaypointPainter() {
+        @Override
         public Set<Waypoint> getWaypoints() {
             Set set = new HashSet();
             if(getAddressLocation() != null) {
@@ -599,6 +607,7 @@ public class JXMapKit extends JXPanel {
     
     public static void main(String ... args) {
         SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 JXMapKit kit = new JXMapKit();
                 kit.setDefaultProvider(DefaultProviders.OpenStreetMaps);
@@ -609,6 +618,7 @@ public class JXMapKit extends JXPanel {
                         256, true, true, // tile size is 256 and x/y orientation is normal
                         "http://tile.openstreetmap.org",//5/15/10.png",
                         "x","y","z") {
+                    @Override
                     public String getTileUrl(int x, int y, int zoom) {
                         zoom = max-zoom;
                         String url = this.baseURL +"/"+zoom+"/"+x+"/"+y+".png";

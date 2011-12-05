@@ -23,10 +23,7 @@ package org.jdesktop.http.async;
 
 import java.beans.PropertyChangeListener;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 import javax.swing.SwingUtilities;
-import javax.swing.event.EventListenerList;
 import org.jdesktop.http.Method;
 import org.jdesktop.http.Parameter;
 import org.jdesktop.http.Request;
@@ -36,7 +33,6 @@ import org.jdesktop.swingworker.SwingWorker;
 import org.w3c.dom.Document;
 import org.jdesktop.beans.AbstractBean;
 import org.jdesktop.http.Header;
-import org.jdesktop.http.async.event.AsyncRequestListener;
 import org.jdesktop.xpath.XPathUtils;
 
 //attributes?
@@ -445,7 +441,7 @@ public class AsyncHttpRequest extends AbstractBean {
      */
     public String getAllResponseHeaders() {
         if (readyState == ReadyState.RECEIVING || readyState == ReadyState.LOADED) {
-            StringBuffer buffer = new StringBuffer();
+            StringBuilder buffer = new StringBuilder();
             for (Header header : worker.response.getHeaders()) {
                 buffer.append(header.toString());
                 buffer.append("\r\n");
@@ -472,7 +468,7 @@ public class AsyncHttpRequest extends AbstractBean {
      */
     public String getResponseHeader(String headerLabel) {
         if (readyState == ReadyState.RECEIVING || readyState == ReadyState.LOADED) {
-            StringBuffer buffer = new StringBuffer();
+            StringBuilder buffer = new StringBuilder();
             Header header = worker.response.getHeader(headerLabel);
             return header == null ? null : header.getValue();
         } else {
@@ -782,6 +778,7 @@ public class AsyncHttpRequest extends AbstractBean {
             }
         }
         
+        @Override
         protected Object doInBackground() throws Exception {
             try {
                 //TODO!!!
@@ -817,6 +814,7 @@ public class AsyncHttpRequest extends AbstractBean {
         protected void safeSetReadyState(final ReadyState state) {
             if (!SwingUtilities.isEventDispatchThread()) {
                 SwingUtilities.invokeLater(new Runnable() {
+                    @Override
                     public void run() {
                         AsyncHttpRequest.this.setReadyState(state);
                     }

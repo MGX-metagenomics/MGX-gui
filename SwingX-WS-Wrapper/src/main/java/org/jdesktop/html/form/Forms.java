@@ -20,12 +20,8 @@
  */
 package org.jdesktop.html.form;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -33,11 +29,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.jdesktop.dom.SimpleDocument;
-import org.jdesktop.http.Header;
 import org.jdesktop.http.Method;
 import org.jdesktop.http.Response;
 import org.jdesktop.http.Parameter;
-import org.jdesktop.http.Request;
 import org.jdesktop.http.Session;
 import org.w3c.dom.Node;
 

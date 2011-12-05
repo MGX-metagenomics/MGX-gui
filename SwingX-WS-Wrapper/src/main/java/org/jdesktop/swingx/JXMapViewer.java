@@ -188,10 +188,10 @@ public class JXMapViewer extends JXPanel implements DesignMode {
         if (isDesignTime()) {
             
         } else {
-            int zoom = getZoom();
+            int zoom2 = getZoom();
             Rectangle viewportBounds = getViewportBounds();
-            drawMapTiles(g, zoom, viewportBounds);
-            drawOverlays(zoom, g, viewportBounds);
+            drawMapTiles(g, zoom2, viewportBounds);
+            drawOverlays(zoom2, g, viewportBounds);
         }
         
         super.paintBorder(g);
@@ -202,6 +202,7 @@ public class JXMapViewer extends JXPanel implements DesignMode {
      * editor like NetBeans' Matisse
      * @param b indicates if the component is being used at design time
      */
+    @Override
     public void setDesignTime(boolean b) {
         this.designTime = b;
     }
@@ -211,6 +212,7 @@ public class JXMapViewer extends JXPanel implements DesignMode {
      * a visual editor like NetBeans' Matisse
      * @return boolean indicating if the component is being used at design time
      */
+    @Override
     public boolean isDesignTime() {
         return designTime;
     }
@@ -640,16 +642,16 @@ public class JXMapViewer extends JXPanel implements DesignMode {
             return;
         }
         
-        int zoom = getZoom();
-        Rectangle2D rect = generateBoundingRect(positions, zoom);
+        int zoom3 = getZoom();
+        Rectangle2D rect = generateBoundingRect(positions, zoom3);
         //Rectangle2D viewport = map.getViewportBounds();
         int count = 0;
         while(!getViewportBounds().contains(rect)) {
             //u.p("not contained");
-            Point2D center = new Point2D.Double(
+            Point2D center2 = new Point2D.Double(
                     rect.getX() + rect.getWidth()/2,
                     rect.getY() + rect.getHeight()/2);
-            GeoPosition px = getTileFactory().pixelToGeo(center,zoom);
+            GeoPosition px = getTileFactory().pixelToGeo(center2,zoom3);
             //u.p("new geo = " + px);
             setCenterPosition(px);
             count++;
@@ -659,12 +661,12 @@ public class JXMapViewer extends JXPanel implements DesignMode {
                 //u.p("did it finally");
                 break;
             }
-            zoom = zoom + 1;
-            if(zoom > 15) {
+            zoom3 = zoom3 + 1;
+            if(zoom3 > 15) {
                 break;
             }
-            setZoom(zoom);
-            rect = generateBoundingRect(positions, zoom);
+            setZoom(zoom3);
+            rect = generateBoundingRect(positions, zoom3);
         }
     }
     
@@ -684,6 +686,7 @@ public class JXMapViewer extends JXPanel implements DesignMode {
     // a property change listener which forces repaints when tiles finish loading
     private TileLoadListener tileLoadListener = new TileLoadListener();
     private final class TileLoadListener implements PropertyChangeListener {
+        @Override
         public void propertyChange(PropertyChangeEvent evt) {
             if ("loaded".equals(evt.getPropertyName()) &&
                     Boolean.TRUE.equals(evt.getNewValue())) {
@@ -748,6 +751,7 @@ public class JXMapViewer extends JXPanel implements DesignMode {
     private class PanMouseInputListener implements MouseInputListener {
         Point prev;
         
+        @Override
         public void mousePressed(MouseEvent evt) {
             //if the middle mouse button is clicked, recenter the view
             if (isRecenterOnClickEnabled() && (SwingUtilities.isMiddleMouseButton(evt) ||
@@ -767,6 +771,7 @@ public class JXMapViewer extends JXPanel implements DesignMode {
             repaint();
         }
         
+        @Override
         public void mouseDragged(MouseEvent evt) {
             if(isPanEnabled()) {
                 Point current = evt.getPoint();
@@ -791,25 +796,31 @@ public class JXMapViewer extends JXPanel implements DesignMode {
             }
         }
         
+        @Override
         public void mouseReleased(MouseEvent evt) {
             prev = null;
             setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         }
         
+        @Override
         public void mouseMoved(MouseEvent e) {
             SwingUtilities.invokeLater(new Runnable() {
+                @Override
                 public void run() {
                     requestFocusInWindow();
                 }
             });
         }
         
+        @Override
         public void mouseClicked(MouseEvent e) {
         }
         
+        @Override
         public void mouseEntered(MouseEvent e) {
         }
         
+        @Override
         public void mouseExited(MouseEvent e) {
         }
     }
@@ -817,6 +828,7 @@ public class JXMapViewer extends JXPanel implements DesignMode {
     
     // zooms using the mouse wheel
     private class ZoomMouseWheelListener implements MouseWheelListener {
+        @Override
         public void mouseWheelMoved(MouseWheelEvent e) {
             if(isZoomEnabled()) {
                 setZoom(getZoom()+e.getWheelRotation());

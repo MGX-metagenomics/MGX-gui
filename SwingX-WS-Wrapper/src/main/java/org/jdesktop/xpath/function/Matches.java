@@ -10,7 +10,6 @@
 package org.jdesktop.xpath.function;
 
 import java.util.List;
-import javax.xml.xpath.XPathFunction;
 import javax.xml.xpath.XPathFunctionException;
 
 /**
@@ -24,6 +23,7 @@ public class Matches extends AbstractFunction {
         super("matches", 2);
     }
 
+    @Override
     public Object evaluate(List args) throws XPathFunctionException {
         String s = getStringParam(args.get(0));
         String pattern = getStringParam(args.get(1));

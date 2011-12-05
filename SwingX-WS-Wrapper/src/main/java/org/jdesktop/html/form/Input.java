@@ -21,8 +21,6 @@
 
 package org.jdesktop.html.form;
 
-import org.jdesktop.http.Parameter;
-
 /**
  * <p>An input value on a {@link Form}. This corrosponds to an &lt;input&gt; sub
  * element of a &lt;form&gt; element.</p>

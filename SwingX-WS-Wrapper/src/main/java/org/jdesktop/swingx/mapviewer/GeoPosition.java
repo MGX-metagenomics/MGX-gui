@@ -82,6 +82,7 @@ public class GeoPosition {
      * @param obj a GeoPosition to compare this GeoPosition to
      * @return returns true if the specified GeoPosition is equal to this one
      */
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof GeoPosition) {
             GeoPosition coord = (GeoPosition)obj;
@@ -89,11 +90,20 @@ public class GeoPosition {
         }
         return false;
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 61 * hash + (int) (Double.doubleToLongBits(this.latitude) ^ (Double.doubleToLongBits(this.latitude) >>> 32));
+        hash = 61 * hash + (int) (Double.doubleToLongBits(this.longitude) ^ (Double.doubleToLongBits(this.longitude) >>> 32));
+        return hash;
+    }
     
     /**
      * {@inheritDoc}
      * @return 
      */
+    @Override
     public String toString() {
         return "[" + latitude + ", " + longitude + "]";
     }

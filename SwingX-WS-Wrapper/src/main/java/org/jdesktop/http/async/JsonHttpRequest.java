@@ -23,7 +23,6 @@ package org.jdesktop.http.async;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -60,12 +59,14 @@ public final class JsonHttpRequest extends AsyncHttpRequest {
         }
     }
     
+    @Override
     protected void reset() {
         setResponseJSON(null);
         setResponseMap(null);
         super.reset();
     }
     
+    @Override
     protected void handleResponse(String responseText) throws Exception {
         if (responseText == null) {
             setResponseJSON(null);
@@ -150,6 +151,7 @@ public final class JsonHttpRequest extends AsyncHttpRequest {
     public static void main(String[] args) {
         final JsonHttpRequest req = new JsonHttpRequest();
         req.addReadyStateChangeListener(new PropertyChangeListener() {
+            @Override
             public void propertyChange(PropertyChangeEvent evt) {
                 if (evt.getNewValue() == ReadyState.LOADED) {
 //                    JSONObject json = req.getResponseJSON();

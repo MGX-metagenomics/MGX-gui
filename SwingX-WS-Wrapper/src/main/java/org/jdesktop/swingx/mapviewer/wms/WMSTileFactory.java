@@ -9,7 +9,9 @@
 
 package org.jdesktop.swingx.mapviewer.wms;
 
-import org.jdesktop.swingx.mapviewer.*;
+import org.jdesktop.swingx.mapviewer.DefaultTileFactory;
+import org.jdesktop.swingx.mapviewer.TileFactoryInfo;
+
 
 /**
  * A tile factory that uses a WMS service.
@@ -26,6 +28,7 @@ public class WMSTileFactory extends DefaultTileFactory {
         super(new TileFactoryInfo(0,15,17, 
                     500, true, true, // tile size and x/y orientation is r2l & t2b
                 "","x","y","zoom") {
+            @Override
                     public String getTileUrl(int x, int y, int zoom) {
                         int zz = 17-zoom;
                         int z = 4;

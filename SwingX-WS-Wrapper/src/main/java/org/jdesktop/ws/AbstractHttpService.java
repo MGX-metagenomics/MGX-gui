@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 
 package org.jdesktop.ws;
 
@@ -63,6 +59,7 @@ public abstract class AbstractHttpService extends BaseService {
          * the progress and state property change events are forwarded
          */
         session.addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
             public void propertyChange(PropertyChangeEvent evt) {
                 String property = evt.getPropertyName();
                 if ("progress".equals(property)) {
