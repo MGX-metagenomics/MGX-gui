@@ -117,7 +117,6 @@ public class HabitatWizardPanel1 implements WizardDescriptor.Panel<WizardDescrip
         if (d == null) {
             isValid = false;
         }
-        System.out.println("returning "+isValid);
 
         return isValid;
     }
