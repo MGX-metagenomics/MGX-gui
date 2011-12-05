@@ -88,27 +88,17 @@ public class LoginHandler implements ActionListener {
     }
 
     private void openProjectExplorer(final GPMS gpms) {
-        SwingWorker worker = new SwingWorker<Void, Void>() {
+        ProjectExplorerTopComponent pe = Lookup.getDefault().lookup(ProjectExplorerTopComponent.class);
+        pe.setVisible(true);
+        pe.setGPMS(gpms);
 
-            @Override
-            protected Void doInBackground() throws Exception {
-                if (EventQueue.isDispatchThread()) {
-                    System.err.println("Login opening Exlorer window in EDT!");
-                }
-                ProjectExplorerTopComponent pe = Lookup.getDefault().lookup(ProjectExplorerTopComponent.class);
-                pe.setVisible(true);
-                pe.setGPMS(gpms);
-                Mode m = WindowManager.getDefault().findMode("explorer");
-                if (m != null) {
-                    m.dockInto(pe);
-                } else {
-                    System.err.println("explorer mode not found");
-                }
-                pe.open();
-                pe.requestActive();
-                return null;
-            }
-        };
-        worker.execute();
+        Mode m = WindowManager.getDefault().findMode("explorer");
+        if (m != null) {
+            m.dockInto(pe);
+        } else {
+            System.err.println("explorer mode not found");
+        }
+        pe.open();
+        pe.requestActive();
     }
 }
