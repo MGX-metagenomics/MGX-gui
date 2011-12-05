@@ -45,11 +45,12 @@ public class HabitatWizardDescriptor extends WizardDescriptor {
         if (habitat == null) {
             habitat = new Habitat();
         }
-        habitat.setName(HabitatVisualPanel1.PROP_NAME)
-                .setBiome(HabitatVisualPanel1.PROP_BIOME)
-                .setLatitude(Double.parseDouble(HabitatVisualPanel1.PROP_LATITUDE))
-                .setLongitude(Double.parseDouble(HabitatVisualPanel1.PROP_LONGITUDE))
-                .setDescription(HabitatVisualPanel2.PROP_DESCRIPTION);
+        
+        habitat.setName((String)getProperty(HabitatVisualPanel1.PROP_NAME))
+                .setBiome((String)getProperty(HabitatVisualPanel1.PROP_BIOME))
+                .setLatitude((Double)getProperty(HabitatVisualPanel1.PROP_LATITUDE))
+                .setLongitude((Double)getProperty(HabitatVisualPanel1.PROP_LONGITUDE))
+                .setDescription((String)getProperty(HabitatVisualPanel2.PROP_DESCRIPTION));
         return habitat;
     }
 }
