@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.dtoconversion;
 
 import de.cebitec.mgx.dto.dto.HabitatDTO;
+import de.cebitec.mgx.dto.dto.HabitatDTO.Builder;
 import de.cebitec.mgx.gui.datamodel.Habitat;
 
 /**
@@ -23,15 +24,17 @@ public class HabitatDTOFactory extends DTOConversionBase<Habitat, HabitatDTO> {
 
     @Override
     public final HabitatDTO toDTO(Habitat h) {
-        return HabitatDTO.newBuilder()
-                .setId(h.getId())
-                .setName(h.getName())
+        Builder b = HabitatDTO.newBuilder();
+        if (h.getId() != null) {
+            b.setId(h.getId());
+        }
+        
+        return b.setName(h.getName())
                 .setGpsLatitude(h.getLatitude())
                 .setGpsLongitude(h.getLongitude())
                 .setAltitude(h.getAltitude())
                 .setBiome(h.getBiome())
                 .setDescription(h.getDescription())
-                .setId(h.getId())
                 .build();
     }
 
