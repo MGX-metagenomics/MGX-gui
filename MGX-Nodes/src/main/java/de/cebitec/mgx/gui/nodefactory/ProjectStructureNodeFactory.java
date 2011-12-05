@@ -8,9 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.openide.nodes.ChildFactory;
-import org.openide.nodes.Children;
 import org.openide.nodes.Node;
-import org.openide.util.lookup.Lookups;
 
 /**
  *
@@ -26,9 +24,10 @@ public class ProjectStructureNodeFactory extends ChildFactory<String> {
         // since creation of the "top-level" data objects require a master
         // to access the server
         //
-        ProjectDataNode data = new ProjectDataNode(Children.create(new HabitatNodeFactory(master), true), Lookups.singleton(master));
-        ProjectFilesNode files = new ProjectFilesNode(Children.LEAF, Lookups.singleton(master));  // FIXME
-        ProjectAnalysisTasksNode tasks = new ProjectAnalysisTasksNode(Children.LEAF, Lookups.singleton(master)); // FIXME
+        //ProjectDataNode data = new ProjectDataNode(Children.create(new HabitatNodeFactory(master), true), Lookups.singleton(master));
+        ProjectDataNode data = new ProjectDataNode(master);
+        ProjectFilesNode files = new ProjectFilesNode(master);
+        ProjectAnalysisTasksNode tasks = new ProjectAnalysisTasksNode(master); // FIXME
 
         project_structure = new HashMap<String, Node>();
         project_structure.put("data", data);

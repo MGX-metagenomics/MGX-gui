@@ -9,16 +9,12 @@ import org.openide.util.Lookup;
  *
  * @author sj
  */
-public abstract class MGXNodeBase<T> extends AbstractNode {
+public abstract class MGXNodeBase extends AbstractNode {
 
-    private MGXMaster master;
+    protected MGXMaster master;
 
-    public MGXNodeBase(Children children, Lookup lookup) {
+    protected MGXNodeBase(Children children, Lookup lookup) {
         super(children, lookup);
-    }
-
-    public void setMaster(MGXMaster m) {
-        master = m;
     }
 
     public MGXMaster getMaster() {

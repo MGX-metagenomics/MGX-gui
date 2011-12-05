@@ -45,7 +45,6 @@ public class ProjectNodeFactory extends ChildFactory<MembershipI> implements Nod
         ProjectNode node = new ProjectNode(Children.create(new ProjectStructureNodeFactory(master), false), Lookups.singleton(master));
         String name = new StringBuilder(m.getProject().getName()).append(" (").append(m.getRole().getName()).append(")").toString();
         node.setDisplayName(name);
-        node.setMaster(master);
         node.addNodeListener(this);
         return node;
     }

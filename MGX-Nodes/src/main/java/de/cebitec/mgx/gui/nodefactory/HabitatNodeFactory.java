@@ -6,13 +6,11 @@ import de.cebitec.mgx.gui.nodes.HabitatNode;
 import java.beans.PropertyChangeEvent;
 import java.util.List;
 import org.openide.nodes.ChildFactory;
-import org.openide.nodes.Children;
 import org.openide.nodes.Node;
 import org.openide.nodes.NodeEvent;
 import org.openide.nodes.NodeListener;
 import org.openide.nodes.NodeMemberEvent;
 import org.openide.nodes.NodeReorderEvent;
-import org.openide.util.lookup.Lookups;
 
 /**
  *
@@ -22,7 +20,7 @@ public class HabitatNodeFactory extends ChildFactory<Habitat> implements NodeLis
 
     private MGXMaster master;
 
-    HabitatNodeFactory(MGXMaster m) {
+    public HabitatNodeFactory(MGXMaster m) {
         this.master = m;
     }
 
@@ -33,21 +31,26 @@ public class HabitatNodeFactory extends ChildFactory<Habitat> implements NodeLis
         }
         return true;
     }
-
+    
     @Override
     protected Node createNodeForKey(Habitat key) {
-        HabitatNode node = new HabitatNode(Children.create(new SampleNodeFactory(master, key.getId()), true), Lookups.singleton(key));
-        node.setDisplayName(key.getName());
+        HabitatNode node = new HabitatNode(master, key);
         node.addNodeListener(this);
         return node;
+    }
+    
+    public void refreshChildren() {
+        this.refresh(true);
     }
 
     @Override
     public void childrenAdded(NodeMemberEvent ev) {
+        refresh(true);
     }
 
     @Override
     public void childrenRemoved(NodeMemberEvent ev) {
+        refresh(true);
     }
 
     @Override
@@ -56,10 +59,11 @@ public class HabitatNodeFactory extends ChildFactory<Habitat> implements NodeLis
 
     @Override
     public void nodeDestroyed(NodeEvent ev) {
-        this.refresh(true);
+        refresh(true);
     }
 
     @Override
-    public void propertyChange(PropertyChangeEvent pce) {
+    public void propertyChange(PropertyChangeEvent evt) {
+        refresh(true);
     }
 }

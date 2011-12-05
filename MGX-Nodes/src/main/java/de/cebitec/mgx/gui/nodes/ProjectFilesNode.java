@@ -1,18 +1,20 @@
 package de.cebitec.mgx.gui.nodes;
 
+import de.cebitec.mgx.gui.controller.MGXMaster;
 import javax.swing.Action;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
-import org.openide.util.Lookup;
+import org.openide.util.lookup.Lookups;
 
 /**
  *
  * @author sj
  */
-public class ProjectFilesNode extends AbstractNode {
+public class ProjectFilesNode extends MGXNodeBase {
 
-    public ProjectFilesNode(Children children, Lookup lookup) {
-        super(children, lookup);
+    public ProjectFilesNode(MGXMaster m) {
+        super(Children.LEAF, Lookups.singleton(m));
+        master = m;
         setDisplayName("Project Files");
     }
 

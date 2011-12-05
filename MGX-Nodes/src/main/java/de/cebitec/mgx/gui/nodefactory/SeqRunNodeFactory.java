@@ -7,13 +7,11 @@ import de.cebitec.mgx.gui.nodes.SeqRunNode;
 import java.beans.PropertyChangeEvent;
 import java.util.List;
 import org.openide.nodes.ChildFactory;
-import org.openide.nodes.Children;
 import org.openide.nodes.Node;
 import org.openide.nodes.NodeEvent;
 import org.openide.nodes.NodeListener;
 import org.openide.nodes.NodeMemberEvent;
 import org.openide.nodes.NodeReorderEvent;
-import org.openide.util.lookup.Lookups;
 
 /**
  *
@@ -22,16 +20,16 @@ import org.openide.util.lookup.Lookups;
 public class SeqRunNodeFactory extends ChildFactory<SeqRun> implements NodeListener {
 
     private MGXMaster master;
-    private long ex_id;
+    private DNAExtract extract;
 
-    SeqRunNodeFactory(MGXMaster master, DNAExtract key) {
+    public SeqRunNodeFactory(MGXMaster master, DNAExtract key) {
         this.master = master;
-        ex_id = key.getId();
+        extract = key;
     }
 
     @Override
     protected boolean createKeys(List<SeqRun> toPopulate) {
-        for (SeqRun sr : master.SeqRun().ByExtract(ex_id)) {
+        for (SeqRun sr : master.SeqRun().ByExtract(extract.getId())) {
             toPopulate.add(sr);
         }
         return true;
@@ -39,9 +37,7 @@ public class SeqRunNodeFactory extends ChildFactory<SeqRun> implements NodeListe
 
     @Override
     protected Node createNodeForKey(SeqRun key) {
-        SeqRunNode node = new SeqRunNode(Children.LEAF, Lookups.singleton(key));
-        node.setMaster(master);
-        node.setDisplayName(key.getSequencingMethod() + "run");
+        SeqRunNode node = new SeqRunNode(master, key);
         node.addNodeListener(this);
         return node;
     }

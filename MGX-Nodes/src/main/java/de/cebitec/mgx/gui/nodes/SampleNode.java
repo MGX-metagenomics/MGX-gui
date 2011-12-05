@@ -1,19 +1,29 @@
 package de.cebitec.mgx.gui.nodes;
 
+import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.Sample;
-import java.io.IOException;
+import de.cebitec.mgx.gui.nodefactory.DNAExtractNodeFactory;
 import org.openide.nodes.Children;
-import org.openide.util.Lookup;
 import org.openide.util.actions.SystemAction;
+import org.openide.util.lookup.Lookups;
 
 /**
  *
  * @author sj
  */
-public class SampleNode extends MGXNodeBase<Sample> {
+public class SampleNode extends MGXNodeBase {
 
-    public SampleNode(Children children, Lookup lookup) {
-        super(children, lookup);
+    private DNAExtractNodeFactory nf = null;
+
+    public SampleNode(MGXMaster m, Sample s) {
+        this(s, new DNAExtractNodeFactory(m, s));
+        master = m;
+        setDisplayName(s.getMaterial());
+    }
+
+    private SampleNode(Sample s, DNAExtractNodeFactory snf) {
+        super(Children.create(snf, true), Lookups.singleton(s));
+        this.nf = snf;
     }
 
     @Override
@@ -24,11 +34,5 @@ public class SampleNode extends MGXNodeBase<Sample> {
     @Override
     public SystemAction[] getActions() {
         return super.getActions();
-    }
-
-    @Override
-    public void destroy() throws IOException {
-        super.destroy();
-        fireNodeDestroyed();
     }
 }

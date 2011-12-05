@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.nodefactory;
 
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.DNAExtract;
+import de.cebitec.mgx.gui.datamodel.Sample;
 import de.cebitec.mgx.gui.nodes.DNAExtractNode;
 import java.beans.PropertyChangeEvent;
 import java.util.List;
@@ -21,16 +22,16 @@ import org.openide.util.lookup.Lookups;
 public class DNAExtractNodeFactory extends ChildFactory<DNAExtract> implements NodeListener {
 
     private MGXMaster master;
-    private long sample_id;
+    private Sample sample;
 
-    DNAExtractNodeFactory(MGXMaster master, long sample_id) {
+    public DNAExtractNodeFactory(MGXMaster master, Sample s) {
         this.master = master;
-        this.sample_id = sample_id;
+        this.sample = s;
     }
 
     @Override
     protected boolean createKeys(List<DNAExtract> toPopulate) {
-        for (DNAExtract d : master.DNAExtract().BySample(sample_id)) {
+        for (DNAExtract d : master.DNAExtract().BySample(sample.getId())) {
             toPopulate.add(d);
         }
         return true;
@@ -38,9 +39,7 @@ public class DNAExtractNodeFactory extends ChildFactory<DNAExtract> implements N
 
     @Override
     protected Node createNodeForKey(DNAExtract key) {
-        DNAExtractNode node = new DNAExtractNode(Children.create(new SeqRunNodeFactory(master, key), true), Lookups.singleton(key));
-        node.setMaster(master);
-        node.setDisplayName(key.getMethod());
+        DNAExtractNode node = new DNAExtractNode(master, key);
         node.addNodeListener(this);
         return node;
     }

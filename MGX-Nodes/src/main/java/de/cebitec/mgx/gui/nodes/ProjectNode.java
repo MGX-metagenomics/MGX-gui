@@ -2,30 +2,18 @@ package de.cebitec.mgx.gui.nodes;
 
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import javax.swing.Action;
-import org.openide.nodes.AbstractNode;
-import org.openide.nodes.Children;
-import org.openide.util.Lookup;
 
 /**
  *
  * @author sj
  */
-public class ProjectNode extends AbstractNode {
+public class ProjectNode extends MGXNodeBase {
 
-    private MGXMaster master;
-
-    public ProjectNode(Children children, Lookup lookup) {
+    public ProjectNode(MGXMaster m) {
         super(children, lookup);
-    }
-
-    public void setMaster(MGXMaster m) {
         master = m;
     }
     
-    public MGXMaster getMaster() {
-        return master;
-    }
-
     @Override
     public boolean canDestroy() {
         return false;

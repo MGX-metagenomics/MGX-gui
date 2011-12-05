@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.nodefactory;
 
 import de.cebitec.mgx.gui.controller.MGXMaster;
+import de.cebitec.mgx.gui.datamodel.Habitat;
 import de.cebitec.mgx.gui.datamodel.Sample;
 import de.cebitec.mgx.gui.nodes.SampleNode;
 import java.beans.PropertyChangeEvent;
@@ -21,16 +22,16 @@ import org.openide.util.lookup.Lookups;
 public class SampleNodeFactory extends ChildFactory<Sample> implements NodeListener {
 
     private MGXMaster master;
-    private long hab_id;
+    private Habitat habitat;
 
-    SampleNodeFactory(MGXMaster master, long hab_id) {
+    public SampleNodeFactory(MGXMaster master, Habitat h) {
         this.master = master;
-        this.hab_id = hab_id;
+        this.habitat = h;
     }
 
     @Override
     protected boolean createKeys(List<Sample> toPopulate) {
-        for (Sample s : master.Sample().ByHabitat(hab_id)) {
+        for (Sample s : master.Sample().ByHabitat(habitat.getId())) {
             toPopulate.add(s);
         }
         return true;
@@ -38,9 +39,7 @@ public class SampleNodeFactory extends ChildFactory<Sample> implements NodeListe
 
     @Override
     protected Node createNodeForKey(Sample key) {
-        SampleNode node = new SampleNode(Children.create(new DNAExtractNodeFactory(master, key.getId()), true), Lookups.singleton(key));
-        node.setMaster(master);
-        node.setDisplayName(key.getMaterial());
+        SampleNode node = new SampleNode(master, key);
         node.addNodeListener(this);
         return node;
     }
