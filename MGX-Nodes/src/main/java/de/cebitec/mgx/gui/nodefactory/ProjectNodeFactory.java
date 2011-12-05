@@ -8,13 +8,11 @@ import de.cebitec.mgx.gui.nodes.ProjectNode;
 import java.beans.PropertyChangeEvent;
 import java.util.List;
 import org.openide.nodes.ChildFactory;
-import org.openide.nodes.Children;
 import org.openide.nodes.Node;
 import org.openide.nodes.NodeEvent;
 import org.openide.nodes.NodeListener;
 import org.openide.nodes.NodeMemberEvent;
 import org.openide.nodes.NodeReorderEvent;
-import org.openide.util.lookup.Lookups;
 
 /**
  *
@@ -42,9 +40,7 @@ public class ProjectNodeFactory extends ChildFactory<MembershipI> implements Nod
     protected Node createNodeForKey(MembershipI m) {
         MGXDTOMaster dtomaster = new MGXDTOMaster(gpms, m);
         MGXMaster master = new MGXMaster(dtomaster);
-        ProjectNode node = new ProjectNode(Children.create(new ProjectStructureNodeFactory(master), false), Lookups.singleton(master));
-        String name = new StringBuilder(m.getProject().getName()).append(" (").append(m.getRole().getName()).append(")").toString();
-        node.setDisplayName(name);
+        ProjectNode node = new ProjectNode(master, m); 
         node.addNodeListener(this);
         return node;
     }

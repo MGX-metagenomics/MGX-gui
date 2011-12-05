@@ -40,7 +40,7 @@ public class HabitatNodeFactory extends ChildFactory<Habitat> implements NodeLis
     }
     
     public void refreshChildren() {
-        this.refresh(true);
+        refresh(true);
     }
 
     @Override
@@ -64,6 +64,6 @@ public class HabitatNodeFactory extends ChildFactory<Habitat> implements NodeLis
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        refresh(true);
+        //refresh(true);
     }
 }

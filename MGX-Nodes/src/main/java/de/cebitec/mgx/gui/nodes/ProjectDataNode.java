@@ -10,7 +10,6 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import org.openide.DialogDisplayer;
 import org.openide.WizardDescriptor;
-import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.util.lookup.Lookups;
 
@@ -58,8 +57,7 @@ public class ProjectDataNode extends MGXNodeBase {
             boolean cancelled = hwd.getValue() != WizardDescriptor.FINISH_OPTION;
             if (!cancelled) {
                 Habitat h = hwd.getHabitat();
-                MGXMaster master = getLookup().lookup(MGXMaster.class);
-                master.Habitat().create(h);
+                getMaster().Habitat().create(h);
                 hnf.refreshChildren();
             }
         }
