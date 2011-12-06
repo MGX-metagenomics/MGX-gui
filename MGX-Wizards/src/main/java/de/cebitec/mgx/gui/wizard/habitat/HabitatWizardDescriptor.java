@@ -37,7 +37,7 @@ public class HabitatWizardDescriptor extends WizardDescriptor {
         putProperty(HabitatVisualPanel1.PROP_BIOME, h.getBiome());
         putProperty(HabitatVisualPanel1.PROP_LATITUDE, h.getLatitude());
         putProperty(HabitatVisualPanel1.PROP_LONGITUDE, h.getLongitude());
-        //
+        putProperty(HabitatVisualPanel1.PROP_ALTITUDE, h.getAltitude());
         putProperty(HabitatVisualPanel2.PROP_DESCRIPTION, h.getDescription());
     }
     
@@ -50,6 +50,7 @@ public class HabitatWizardDescriptor extends WizardDescriptor {
                 .setBiome((String)getProperty(HabitatVisualPanel1.PROP_BIOME))
                 .setLatitude((Double)getProperty(HabitatVisualPanel1.PROP_LATITUDE))
                 .setLongitude((Double)getProperty(HabitatVisualPanel1.PROP_LONGITUDE))
+                .setAltitude((Integer)getProperty(HabitatVisualPanel1.PROP_ALTITUDE))
                 .setDescription((String)getProperty(HabitatVisualPanel2.PROP_DESCRIPTION));
         return habitat;
     }

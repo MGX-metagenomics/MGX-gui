@@ -41,11 +41,6 @@
             <version>RELEASE701</version>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>SwingX-WS-Wrapper</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-util</artifactId>
             <version>RELEASE701</version>
@@ -70,6 +65,16 @@
             <artifactId>MGX-Datamodel</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>SwingX-Wrapper</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>SwingX-WS-Wrapper</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -82,6 +87,7 @@
                 <configuration>
                     <publicPackages>
                         <publicPackage>de.cebitec.mgx.gui.wizard.habitat</publicPackage>
+                        <publicPackage>de.cebitec.mgx.gui.wizard.sample</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>

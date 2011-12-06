@@ -320,7 +320,7 @@ public final class HabitatVisualPanel1 extends JPanel implements DocumentListene
     //search by name for geolocation and put them into selectionList
     private void searchLocation(String loc) {
         try {
-            // FIXME - "only available in the US; registration required!
+            // FIXME - registration required!
             URL url = new URL("http://api.geonames.org/search?q=" + loc + "&featureClass=P&maxRows=" + MAX_LOCATION_RESULTS + "&username=habitatwizard");
             XPath xpath = XPathFactory.newInstance().newXPath();
             NodeList list = (NodeList) xpath.evaluate("//geoname",
@@ -399,7 +399,7 @@ public final class HabitatVisualPanel1 extends JPanel implements DocumentListene
     public void changedUpdate(DocumentEvent e) {
         handleUpdate(e);
     }
-    
+
     private void handleUpdate(DocumentEvent e) {
         Document d = e.getDocument();
         if (habitatname.getDocument() == d) {
@@ -413,11 +413,15 @@ public final class HabitatVisualPanel1 extends JPanel implements DocumentListene
     }
 
     private void rebuildGPSLocation() {
-        DecimalFormat f = new DecimalFormat("#0.00000"); 
-        String gpsloc = new StringBuilder(f.format(latitude))
-                .append(" / ")
-                .append(f.format(longitude))
-                .toString();
+        DecimalFormat f = new DecimalFormat("#0.00000");
+        String gpsloc = new StringBuilder(f.format(latitude)).append(" / ").append(f.format(longitude)).toString();
         gpslocation.setText(gpsloc);
+    }
+
+    public int getGPSAltitude() {
+        //
+        // FIXME: find elevation, use http://www.earthtools.org/webservices.htm#height ?
+        //
+        return 42;
     }
 }
