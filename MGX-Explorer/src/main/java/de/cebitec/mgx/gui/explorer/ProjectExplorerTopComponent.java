@@ -73,15 +73,11 @@ public final class ProjectExplorerTopComponent extends TopComponent implements E
     }
 
     void writeProperties(java.util.Properties p) {
-        // better to version settings since initial version as advocated at
-        // http://wiki.apidesign.org/wiki/PropertyFiles
         p.setProperty("version", "1.0");
-        // TODO store your settings
     }
 
     void readProperties(java.util.Properties p) {
         String version = p.getProperty("version");
-        // TODO read your settings according to their version
     }
 
     @Override
@@ -91,8 +87,7 @@ public final class ProjectExplorerTopComponent extends TopComponent implements E
 
     public void setGPMS(GPMS gpms) {
         AbstractNode root = new AbstractNode(Children.create(new ServerNodeFactory(gpms), true));
-        //root.setDisplayName("Servers");
-        exmngr.setRootContext(root);
+        getExplorerManager().setRootContext(root);
     }
 
     @Override
