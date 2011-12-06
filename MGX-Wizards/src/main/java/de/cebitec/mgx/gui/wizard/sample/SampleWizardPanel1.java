@@ -22,6 +22,10 @@ public class SampleWizardPanel1 implements WizardDescriptor.Panel<WizardDescript
     public SampleVisualPanel1 getComponent() {
         if (component == null) {
             component = new SampleVisualPanel1();
+            component.putClientProperty(WizardDescriptor.PROP_AUTO_WIZARD_STYLE, Boolean.TRUE);
+            component.putClientProperty(WizardDescriptor.PROP_CONTENT_DISPLAYED, Boolean.TRUE);
+            component.putClientProperty(WizardDescriptor.PROP_CONTENT_NUMBERED, Boolean.TRUE);
+            component.putClientProperty(WizardDescriptor.PROP_CONTENT_SELECTED_INDEX, new Integer(1));
         }
         return component;
     }

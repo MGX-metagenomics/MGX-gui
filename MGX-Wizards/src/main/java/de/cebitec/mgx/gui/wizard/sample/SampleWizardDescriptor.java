@@ -48,7 +48,7 @@ public class SampleWizardDescriptor extends WizardDescriptor {
         
         sample.setCollectionDate((Date)getProperty(SampleVisualPanel1.PROP_COLLECTIONDATE))
                 .setMaterial((String)getProperty(SampleVisualPanel2.PROP_MATERIAL))
-                .setTemperature((Integer)getProperty(SampleVisualPanel2.PROP_TEMPERATURE))
+                .setTemperature((Double)getProperty(SampleVisualPanel2.PROP_TEMPERATURE))
                 .setVolume((Integer)getProperty(SampleVisualPanel2.PROP_VOLUME))
                 .setVolumeUnit((String)getProperty(SampleVisualPanel2.PROP_VOLUME_UNIT));
         return sample;

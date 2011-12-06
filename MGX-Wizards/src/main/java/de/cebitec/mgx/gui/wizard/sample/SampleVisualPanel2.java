@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.wizard.sample;
 
+import java.awt.event.ActionListener;
 import javax.swing.JPanel;
 
 public final class SampleVisualPanel2 extends JPanel {
@@ -8,19 +9,17 @@ public final class SampleVisualPanel2 extends JPanel {
     public static final String PROP_TEMPERATURE = "temperature";
     public static final String PROP_VOLUME = "volume";
     public static final String PROP_VOLUME_UNIT = "volume_unit";
+    //
+    private final static String[] temps = { "°F", "°C", "K" };
+    private final static String[] vols = { "ml", "l", "g", "kg" };
 
     /** Creates new form SampleVisualPanel2 */
     public SampleVisualPanel2() {
         initComponents();
-        tempUnit.addItem("F");
-        tempUnit.addItem("C");
-        tempUnit.addItem("K");
+        tempUnit.setModel(new javax.swing.DefaultComboBoxModel(temps));
         tempUnit.setEditable(false);
-        tempUnit.setSelectedItem("C");
-        volUnit.addItem("ml");
-        volUnit.addItem("l");
-        volUnit.addItem("g");
-        volUnit.addItem("kg");
+        tempUnit.setSelectedItem("K");
+        volUnit.setModel(new javax.swing.DefaultComboBoxModel(vols));
         volUnit.setEditable(false);
         volUnit.setSelectedItem("ml");
     }
@@ -33,19 +32,22 @@ public final class SampleVisualPanel2 extends JPanel {
         material.setText(m);
     }
 
-    public int getTemperature() {
-        int t = Integer.parseInt(temperature.getText());
-        // FIXME: convert to K, depending on tempUnit
-        return t;
+    public String getTemperature() {
+        return temperature.getText();
     }
     
-    public void setTemperature(Integer t) {
+    public String getTemperatureUnit() {
+        return (String) tempUnit.getSelectedItem();
+    }
+    
+    public void setTemperature(Double t) {
+        // input is always in Kelvin
         temperature.setText(t.toString());
+        tempUnit.setSelectedItem("K");
     }
 
-    public int getVolume() {
-        int vol = Integer.parseInt(volume.getText());
-        return vol;
+    public String getVolume() {
+        return volume.getText();
     }
     
     public void setVolume(Integer vol) {
@@ -57,7 +59,7 @@ public final class SampleVisualPanel2 extends JPanel {
     }
     
     public void setVolumeUnit(String vu) {
-        // FIXME
+        volUnit.setSelectedItem(vu);
     }
 
     @Override
@@ -119,7 +121,7 @@ public final class SampleVisualPanel2 extends JPanel {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(tempUnit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(volUnit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(82, Short.MAX_VALUE))
+                .addContainerGap(35, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
