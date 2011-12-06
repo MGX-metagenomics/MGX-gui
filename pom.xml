@@ -67,6 +67,7 @@
         <module>MGX-Datamodel</module>
         <module>MGX-Controller</module>
         <module>DTO-Wrapper</module>
+        <module>SwingX-Wrapper</module>
     </modules>
 
     <properties>
