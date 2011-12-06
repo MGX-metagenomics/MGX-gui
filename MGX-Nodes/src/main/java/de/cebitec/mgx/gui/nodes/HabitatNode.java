@@ -2,10 +2,16 @@ package de.cebitec.mgx.gui.nodes;
 
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.Habitat;
+import de.cebitec.mgx.gui.datamodel.Sample;
 import de.cebitec.mgx.gui.nodefactory.SampleNodeFactory;
+import de.cebitec.mgx.gui.wizard.sample.SampleWizardDescriptor;
+import java.awt.Dialog;
 import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import org.openide.DialogDisplayer;
+import org.openide.NotifyDescriptor;
+import org.openide.WizardDescriptor;
 import org.openide.nodes.Children;
 import org.openide.util.lookup.Lookups;
 
@@ -16,7 +22,7 @@ import org.openide.util.lookup.Lookups;
 public class HabitatNode extends MGXNodeBase {
 
     private SampleNodeFactory snf = null;
-    
+
     public HabitatNode(MGXMaster m, Habitat h) {
         this(h, new SampleNodeFactory(m, h));
         master = m;
@@ -35,7 +41,7 @@ public class HabitatNode extends MGXNodeBase {
 
     @Override
     public Action[] getActions(boolean context) {
-        return new Action[]{new DeleteHabitat()};
+        return new Action[]{new DeleteHabitat(), new AddSample()};
     }
 
     private class DeleteHabitat extends AbstractAction {
@@ -47,8 +53,38 @@ public class HabitatNode extends MGXNodeBase {
         @Override
         public void actionPerformed(ActionEvent e) {
             Habitat hab = getLookup().lookup(Habitat.class);
-            getMaster().Habitat().delete(hab.getId());
-            fireNodeDestroyed();
+            NotifyDescriptor d = new NotifyDescriptor("Really delete habitat " + hab.getName() + "?",
+                    "Delete habitat",
+                    NotifyDescriptor.YES_NO_OPTION,
+                    NotifyDescriptor.QUESTION_MESSAGE,
+                    null,
+                    null);
+            Object ret = DialogDisplayer.getDefault().notify(d);
+            if (NotifyDescriptor.YES_OPTION.equals(ret)) {
+                getMaster().Habitat().delete(hab.getId());
+                fireNodeDestroyed();
+            }
+        }
+    }
+    
+    private class AddSample extends AbstractAction {
+
+        public AddSample() {
+            putValue(NAME, "Add sample");
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            SampleWizardDescriptor wd = new SampleWizardDescriptor();
+            Dialog dialog = DialogDisplayer.getDefault().createDialog(wd);
+            dialog.setVisible(true);
+            dialog.toFront();
+            boolean cancelled = wd.getValue() != WizardDescriptor.FINISH_OPTION;
+            if (!cancelled) {
+                Sample s = wd.getSample();
+                getMaster().Sample().create(s);
+                snf.refreshChildren();
+            }
         }
     }
 }

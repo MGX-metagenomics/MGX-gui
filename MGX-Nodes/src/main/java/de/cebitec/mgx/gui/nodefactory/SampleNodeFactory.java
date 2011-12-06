@@ -44,12 +44,18 @@ public class SampleNodeFactory extends ChildFactory<Sample> implements NodeListe
         return node;
     }
 
+    public void refreshChildren() {
+        refresh(true);
+    }
+
     @Override
     public void childrenAdded(NodeMemberEvent ev) {
+        refresh(true);
     }
 
     @Override
     public void childrenRemoved(NodeMemberEvent ev) {
+        refresh(true);
     }
 
     @Override
@@ -58,10 +64,11 @@ public class SampleNodeFactory extends ChildFactory<Sample> implements NodeListe
 
     @Override
     public void nodeDestroyed(NodeEvent ev) {
-        this.refresh(true);
+        refresh(true);
     }
 
     @Override
-    public void propertyChange(PropertyChangeEvent pce) {
+    public void propertyChange(PropertyChangeEvent evt) {
+        //refresh(true);
     }
 }

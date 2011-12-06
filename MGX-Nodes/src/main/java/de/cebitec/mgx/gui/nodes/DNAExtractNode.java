@@ -3,7 +3,12 @@ package de.cebitec.mgx.gui.nodes;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.DNAExtract;
 import de.cebitec.mgx.gui.nodefactory.SeqRunNodeFactory;
+import java.awt.event.ActionEvent;
 import java.io.IOException;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import org.openide.DialogDisplayer;
+import org.openide.NotifyDescriptor;
 import org.openide.nodes.Children;
 import org.openide.util.actions.SystemAction;
 import org.openide.util.lookup.Lookups;
@@ -33,13 +38,30 @@ public class DNAExtractNode extends MGXNodeBase {
     }
 
     @Override
-    public SystemAction[] getActions() {
-        return super.getActions();
+    public Action[] getActions(boolean context) {
+        return new Action[]{new DeleteDNAExtract()};
     }
 
-    @Override
-    public void destroy() throws IOException {
-        super.destroy();
-        fireNodeDestroyed();
+    private class DeleteDNAExtract extends AbstractAction {
+
+        public DeleteDNAExtract() {
+            putValue(NAME, "Delete");
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            DNAExtract dna = getLookup().lookup(DNAExtract.class);
+            NotifyDescriptor d = new NotifyDescriptor("Really delete DNA extract " + dna.getMethod() + "?",
+                    "Delete DNA extract",
+                    NotifyDescriptor.YES_NO_OPTION,
+                    NotifyDescriptor.QUESTION_MESSAGE,
+                    null,
+                    null);
+            Object ret = DialogDisplayer.getDefault().notify(d);
+            if (NotifyDescriptor.YES_OPTION.equals(ret)) {
+                getMaster().DNAExtract().delete(dna.getId());
+                fireNodeDestroyed();
+            }
+        }
     }
 }
