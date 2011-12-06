@@ -56,9 +56,13 @@
                 <extensions>true</extensions>
                 <configuration>
                     <publicPackages>
+                        <publicPackage>com.jhlabs.composite</publicPackage>
+                        <publicPackage>com.jhlabs.image</publicPackage>
+                        <publicPackage>com.jhlabs.math</publicPackage>
+                        <publicPackage>com.jhlabs.vecmath</publicPackage>
                         <publicPackage>org.jdesktop.beans</publicPackage>
-                        <publicPackage>org.jdesktop.swingx</publicPackage>
-                        <publicPackage>org.jdesktop.swingx.painter</publicPackage>
+                        <publicPackage>org.jdesktop.swingworker</publicPackage>
+                        <publicPackage>org.jdesktop.swingx.*</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>
