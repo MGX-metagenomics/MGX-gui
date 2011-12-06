@@ -11,7 +11,7 @@ public class Sample extends ModelBase {
 
     protected Date collectiondate;
     protected String material;
-    protected int temperature;
+    protected double temperature;
     protected int volume;
     protected String volume_unit;
     protected Collection<DNAExtract> extracts;
@@ -44,11 +44,11 @@ public class Sample extends ModelBase {
         return this;
     }
 
-    public int getTemperature() {
+    public double getTemperature() {
         return temperature;
     }
 
-    public Sample setTemperature(int temperature) {
+    public Sample setTemperature(double temperature) {
         this.temperature = temperature;
         return this;
     }
