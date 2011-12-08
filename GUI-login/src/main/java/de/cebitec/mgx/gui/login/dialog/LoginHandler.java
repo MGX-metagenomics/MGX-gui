@@ -70,8 +70,6 @@ public class LoginHandler implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent ae) {
         if (ae.getSource() == DialogDescriptor.OK_OPTION) {
-            nline.clearMessages();
-            nline.setInformationMessage("Current server is " + serveruri);
             String user = panel.getUser();
             String password = panel.getPassword();
             NbPreferences.forModule(MGXserverPanel.class).put("lastLogin", user);
