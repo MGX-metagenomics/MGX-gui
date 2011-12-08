@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.dtoconversion;
 
 import de.cebitec.mgx.dto.dto.SampleDTO;
+import de.cebitec.mgx.dto.dto.SampleDTO.Builder;
 import de.cebitec.mgx.gui.datamodel.Sample;
 
 /**
@@ -22,10 +23,11 @@ public class SampleDTOFactory extends DTOConversionBase<Sample, SampleDTO> {
 
     @Override
     public final SampleDTO toDTO(Sample s) {
-
-        return SampleDTO.newBuilder()
-                .setId(s.getId())
-                .setHabitatId(s.getHabitat().getId())
+        Builder b = SampleDTO.newBuilder();
+        if (s.getId() != null) {
+            b.setId(s.getId());
+        }
+        return b.setHabitatId(s.getHabitat().getId())
                 .setTemperature(s.getTemperature())
                 .setMaterial(s.getMaterial())
                 .setVolume(s.getVolume())
