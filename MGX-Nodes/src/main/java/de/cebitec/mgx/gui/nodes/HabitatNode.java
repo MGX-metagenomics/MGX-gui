@@ -4,6 +4,7 @@ import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.Habitat;
 import de.cebitec.mgx.gui.datamodel.Sample;
 import de.cebitec.mgx.gui.nodefactory.SampleNodeFactory;
+import de.cebitec.mgx.gui.wizard.habitat.HabitatWizardDescriptor;
 import de.cebitec.mgx.gui.wizard.sample.SampleWizardDescriptor;
 import java.awt.Dialog;
 import java.awt.event.ActionEvent;
@@ -41,7 +42,31 @@ public class HabitatNode extends MGXNodeBase {
 
     @Override
     public Action[] getActions(boolean context) {
-        return new Action[]{new DeleteHabitat(), new AddSample()};
+        return new Action[]{new EditHabitat(), new DeleteHabitat(), new AddSample()};
+    }
+
+    private class EditHabitat extends AbstractAction {
+
+        public EditHabitat() {
+            putValue(NAME, "Edit");
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            Habitat habitat = getLookup().lookup(Habitat.class);
+            HabitatWizardDescriptor hwd = new HabitatWizardDescriptor(habitat);
+            Dialog dialog = DialogDisplayer.getDefault().createDialog(hwd);
+            dialog.setVisible(true);
+            dialog.toFront();
+            boolean cancelled = hwd.getValue() != WizardDescriptor.FINISH_OPTION;
+            if (!cancelled) {
+                String oldDisplayName = habitat.getName();
+                habitat = hwd.getHabitat();
+                getMaster().Habitat().update(habitat);
+                fireDisplayNameChange(oldDisplayName, habitat.getName());
+                setDisplayName(habitat.getName());
+            }
+        }
     }
 
     private class DeleteHabitat extends AbstractAction {
@@ -66,7 +91,7 @@ public class HabitatNode extends MGXNodeBase {
             }
         }
     }
-    
+
     private class AddSample extends AbstractAction {
 
         public AddSample() {
@@ -81,7 +106,10 @@ public class HabitatNode extends MGXNodeBase {
             dialog.toFront();
             boolean cancelled = wd.getValue() != WizardDescriptor.FINISH_OPTION;
             if (!cancelled) {
+                Habitat hab = getLookup().lookup(Habitat.class);
                 Sample s = wd.getSample();
+                s.setHabitat(hab); 
+                hab.addSample(s);
                 getMaster().Sample().create(s);
                 snf.refreshChildren();
             }

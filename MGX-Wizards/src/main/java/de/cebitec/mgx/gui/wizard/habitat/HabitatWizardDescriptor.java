@@ -16,7 +16,7 @@ public class HabitatWizardDescriptor extends WizardDescriptor {
     private HabitatWizardPanel2 p2 = new HabitatWizardPanel2();
     
     private Habitat habitat = null;
-
+    
     public HabitatWizardDescriptor() {
         List<Panel<WizardDescriptor>> panels = new ArrayList<Panel<WizardDescriptor>>();
         panels.add(p1);
@@ -33,12 +33,14 @@ public class HabitatWizardDescriptor extends WizardDescriptor {
     public HabitatWizardDescriptor(Habitat h) {
         this();
         this.habitat = h;
-        putProperty(HabitatVisualPanel1.PROP_NAME, h.getName());
-        putProperty(HabitatVisualPanel1.PROP_BIOME, h.getBiome());
-        putProperty(HabitatVisualPanel1.PROP_LATITUDE, h.getLatitude());
-        putProperty(HabitatVisualPanel1.PROP_LONGITUDE, h.getLongitude());
-        putProperty(HabitatVisualPanel1.PROP_ALTITUDE, h.getAltitude());
-        putProperty(HabitatVisualPanel2.PROP_DESCRIPTION, h.getDescription());
+        putProperty(HabitatVisualPanel1.PROP_NAME, habitat.getName());
+        putProperty(HabitatVisualPanel1.PROP_BIOME, habitat.getBiome());
+        putProperty(HabitatVisualPanel1.PROP_LATITUDE, habitat.getLatitude());
+        putProperty(HabitatVisualPanel1.PROP_LONGITUDE, habitat.getLongitude());
+        putProperty(HabitatVisualPanel1.PROP_ALTITUDE, habitat.getAltitude());
+        putProperty(HabitatVisualPanel2.PROP_DESCRIPTION, habitat.getDescription());
+        p1.readSettings(this);
+        p2.readSettings(this);
     }
     
     public Habitat getHabitat() {

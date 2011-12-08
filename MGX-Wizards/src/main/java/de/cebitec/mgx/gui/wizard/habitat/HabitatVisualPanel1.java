@@ -228,6 +228,17 @@ public final class HabitatVisualPanel1 extends JPanel implements DocumentListene
         return latitude;
     }
 
+    public int getGPSAltitude() {
+        //
+        // FIXME: find elevation, use http://www.earthtools.org/webservices.htm#height ?
+        //
+        return 42;
+    }
+
+    public void setGPSAltitude(int altitude) {
+        // FIXME
+    }
+
     private void initMapKit() {
         final JXMapKit kit = jXMapKit1;
 
@@ -413,15 +424,11 @@ public final class HabitatVisualPanel1 extends JPanel implements DocumentListene
     }
 
     private void rebuildGPSLocation() {
-        DecimalFormat f = new DecimalFormat("#0.00000");
-        String gpsloc = new StringBuilder(f.format(latitude)).append(" / ").append(f.format(longitude)).toString();
-        gpslocation.setText(gpsloc);
-    }
-
-    public int getGPSAltitude() {
-        //
-        // FIXME: find elevation, use http://www.earthtools.org/webservices.htm#height ?
-        //
-        return 42;
+        if (latitude != null && longitude != null) {
+            DecimalFormat f = new DecimalFormat("#0.00000");
+            String gpsloc = new StringBuilder(f.format(latitude)).append(" / ").append(f.format(longitude)).toString();
+            gpslocation.setText(gpsloc);
+            jXMapKit1.setCenterPosition(new GeoPosition(latitude, longitude));
+        }
     }
 }
