@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.datamodel;
 
 import java.util.Collection;
+import java.util.HashSet;
 
 /**
  *
@@ -15,7 +16,7 @@ public class Habitat extends ModelBase {
     protected String description;
     protected int altitude;
     protected String biome;
-    protected Collection<Sample> samples;
+    protected Collection<Sample> samples = new HashSet<Sample>();
 
     public Collection<Sample> getSamples() {
         return samples;
