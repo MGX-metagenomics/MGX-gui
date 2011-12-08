@@ -1,9 +1,11 @@
 package de.cebitec.mgx.gui.wizard.sample;
 
-import java.awt.event.ActionListener;
 import javax.swing.JPanel;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.Document;
 
-public final class SampleVisualPanel2 extends JPanel {
+public final class SampleVisualPanel2 extends JPanel implements DocumentListener {
 
     public static final String PROP_MATERIAL = "material";
     public static final String PROP_TEMPERATURE = "temperature";
@@ -16,6 +18,9 @@ public final class SampleVisualPanel2 extends JPanel {
     /** Creates new form SampleVisualPanel2 */
     public SampleVisualPanel2() {
         initComponents();
+        material.getDocument().addDocumentListener(this);
+        temperature.getDocument().addDocumentListener(this);
+        volume.getDocument().addDocumentListener(this);
         tempUnit.setModel(new javax.swing.DefaultComboBoxModel(temps));
         tempUnit.setEditable(false);
         tempUnit.setSelectedItem("K");
@@ -153,4 +158,30 @@ public final class SampleVisualPanel2 extends JPanel {
     private javax.swing.JComboBox volUnit;
     private javax.swing.JTextField volume;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void insertUpdate(DocumentEvent e) {
+        handleUpdate(e);
+    }
+
+    @Override
+    public void removeUpdate(DocumentEvent e) {
+        handleUpdate(e);
+    }
+
+    @Override
+    public void changedUpdate(DocumentEvent e) {
+        handleUpdate(e);
+    }
+
+    private void handleUpdate(DocumentEvent e) {
+        Document d = e.getDocument();
+        if (material.getDocument() == d) {
+            firePropertyChange(PROP_MATERIAL, 0, 1);
+        } else if (temperature.getDocument() == d) {
+            firePropertyChange(PROP_TEMPERATURE, 0, 1);
+        } else if (volume.getDocument() == d) {
+            firePropertyChange(PROP_VOLUME, 0, 1);
+        }
+    }
 }

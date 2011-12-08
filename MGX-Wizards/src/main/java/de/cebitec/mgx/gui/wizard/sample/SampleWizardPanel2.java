@@ -82,17 +82,7 @@ public class SampleWizardPanel2 implements WizardDescriptor.Panel<WizardDescript
         model.putProperty(SampleVisualPanel2.PROP_VOLUME, StringToInt(c.getVolume()));
         model.putProperty(SampleVisualPanel2.PROP_VOLUME_UNIT, c.getVolumeUnit());
         //
-        Double temp = StringToDouble(c.getTemperature());
-        String tempunit = c.getTemperatureUnit();
-        if ("°C".equals(tempunit)) {
-            temp = temp + 273.15;
-        } else if ("°F".equals(tempunit)) {
-            temp = (temp - 32) * 5 / 9 + 273.15;
-        } else if ("K".equals(tempunit)) {
-        } else {
-            throw new RuntimeException("Dont know about temperature in " + tempunit);
-        }
-
+        Double temp = ConvertToKelvin();
         DecimalFormat f = new DecimalFormat("#0.00");
         String format = f.format(temp);
         temp = Double.parseDouble(format);
@@ -125,7 +115,10 @@ public class SampleWizardPanel2 implements WizardDescriptor.Panel<WizardDescript
             isValid = false;
         } else {
             try {
-                Integer.parseInt(test);
+                int parseInt = Integer.parseInt(test);
+                if (parseInt <= 0) {
+                    isValid = false;
+                }
             } catch (NumberFormatException nfe) {
                 isValid = false;
             }
@@ -137,11 +130,16 @@ public class SampleWizardPanel2 implements WizardDescriptor.Panel<WizardDescript
         } else {
             try {
                 Double.parseDouble(test);
+                Double temp = ConvertToKelvin();
+                // temperature below 0 K or above 573 K (== 300°C)
+                if (temp <= 0 || temp > 573) {
+                    System.err.println(temp + " is unlikely.");
+                    isValid = false;
+                }
             } catch (NumberFormatException nfe) {
                 isValid = false;
             }
         }
-
         return isValid;
     }
 
@@ -151,5 +149,20 @@ public class SampleWizardPanel2 implements WizardDescriptor.Panel<WizardDescript
 
     private Integer StringToInt(String s) {
         return Integer.parseInt(s);
+    }
+
+    private Double ConvertToKelvin() {
+        SampleVisualPanel2 c = getComponent();
+        Double temp = StringToDouble(c.getTemperature());
+        String tempunit = c.getTemperatureUnit();
+        if ("°C".equals(tempunit)) {
+            temp = temp + 273.15;
+        } else if ("°F".equals(tempunit)) {
+            temp = (temp - 32) * 5 / 9 + 273.15;
+        } else if ("K".equals(tempunit)) {
+        } else {
+            throw new RuntimeException("Dont know about temperature in " + tempunit);
+        }
+        return temp;
     }
 }
