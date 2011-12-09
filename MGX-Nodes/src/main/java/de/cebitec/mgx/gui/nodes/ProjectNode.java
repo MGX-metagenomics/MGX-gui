@@ -3,6 +3,7 @@ package de.cebitec.mgx.gui.nodes;
 import de.cebitec.gpms.core.MembershipI;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.nodefactory.ProjectStructureNodeFactory;
+import java.awt.EventQueue;
 import javax.swing.Action;
 import org.openide.nodes.Children;
 import org.openide.util.lookup.Lookups;
@@ -13,26 +14,19 @@ import org.openide.util.lookup.Lookups;
  */
 public class ProjectNode extends MGXNodeBase {
 
-//    public ProjectNode(MGXMaster m) {
-//        super(children, lookup);
-//        master = m;
-//    }
     private ProjectStructureNodeFactory nf = null;
 
     public ProjectNode(MGXMaster m, MembershipI mbr) {
         this(m, new ProjectStructureNodeFactory(m));
         master = m;
-        String name = new StringBuilder(mbr.getProject().getName())
-                .append(" (")
-                .append(mbr.getRole().getName())
-                .append(")")
-                .toString();
+        String name = new StringBuilder(mbr.getProject().getName()).append(" (").append(mbr.getRole().getName()).append(")").toString();
         setDisplayName(name);
     }
 
     private ProjectNode(MGXMaster m, ProjectStructureNodeFactory nf) {
         super(Children.create(nf, false), Lookups.singleton(m));
         this.nf = nf;
+        preopenMGXProject(m);
     }
 
     @Override
@@ -43,5 +37,17 @@ public class ProjectNode extends MGXNodeBase {
     @Override
     public Action[] getActions(boolean popup) {
         return new Action[0]; // disables context menu
+    }
+
+    private void preopenMGXProject(final MGXMaster master) {
+        EventQueue.invokeLater(new Runnable() {
+
+            @Override
+            public void run() {
+                // trigger creation of the hibernate instance on the 
+                // server side to speed up access
+                master.Habitat().fetchall();
+            }
+        });
     }
 }
