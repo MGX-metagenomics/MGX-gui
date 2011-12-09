@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.wizard.sample;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Date;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
@@ -66,7 +67,13 @@ public class SampleWizardPanel1 implements WizardDescriptor.Panel<WizardDescript
     @Override
     public void readSettings(WizardDescriptor settings) {
         model = settings;
-        getComponent().addPropertyChangeListener(this);
+        SampleVisualPanel1 c = getComponent();
+        c.addPropertyChangeListener(this);
+    }
+    
+    public void setProperties(WizardDescriptor settings) {
+        SampleVisualPanel1 c = getComponent();
+        c.setCollectionDate((Date)model.getProperty(SampleVisualPanel1.PROP_COLLECTIONDATE));
     }
 
     @Override

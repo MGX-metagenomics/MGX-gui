@@ -39,6 +39,8 @@ public class SampleWizardDescriptor extends WizardDescriptor {
         putProperty(SampleVisualPanel2.PROP_TEMPERATURE, s.getTemperature());
         putProperty(SampleVisualPanel2.PROP_VOLUME, s.getVolume());
         putProperty(SampleVisualPanel2.PROP_VOLUME_UNIT, s.getVolumeUnit());
+        p1.setProperties(this);
+        p2.setProperties(this);
     }
     
     public Sample getSample() {

@@ -77,6 +77,10 @@ public class HabitatWizardPanel1 implements WizardDescriptor.Panel<WizardDescrip
         model = settings;
         HabitatVisualPanel1 c = getComponent();
         c.addPropertyChangeListener(this);
+    }
+    
+    public void setProperties(WizardDescriptor settings) {
+        HabitatVisualPanel1 c = getComponent();
         c.setHabitatName((String)model.getProperty(HabitatVisualPanel1.PROP_NAME));
         c.setBiome((String)model.getProperty(HabitatVisualPanel1.PROP_BIOME));
         if (model.getProperty(HabitatVisualPanel1.PROP_LATITUDE) != null) {

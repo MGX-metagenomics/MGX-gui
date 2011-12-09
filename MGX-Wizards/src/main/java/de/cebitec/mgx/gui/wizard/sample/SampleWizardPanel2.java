@@ -72,7 +72,16 @@ public class SampleWizardPanel2 implements WizardDescriptor.Panel<WizardDescript
     @Override
     public void readSettings(WizardDescriptor settings) {
         model = settings;
-        getComponent().addPropertyChangeListener(this);
+        SampleVisualPanel2 c = getComponent();
+        c.addPropertyChangeListener(this);
+    }
+
+    public void setProperties(WizardDescriptor settings) {
+        SampleVisualPanel2 c = getComponent();
+        c.setMaterial((String) model.getProperty(SampleVisualPanel2.PROP_MATERIAL));
+        c.setVolume((Integer) model.getProperty(SampleVisualPanel2.PROP_VOLUME));
+        c.setVolumeUnit((String) model.getProperty(SampleVisualPanel2.PROP_VOLUME_UNIT));
+        c.setTemperature((Double) model.getProperty(SampleVisualPanel2.PROP_TEMPERATURE));
     }
 
     @Override
@@ -83,9 +92,6 @@ public class SampleWizardPanel2 implements WizardDescriptor.Panel<WizardDescript
         model.putProperty(SampleVisualPanel2.PROP_VOLUME_UNIT, c.getVolumeUnit());
         //
         Double temp = ConvertToKelvin();
-        DecimalFormat f = new DecimalFormat("#0.00");
-        String format = f.format(temp);
-        temp = Double.parseDouble(format);
         model.putProperty(SampleVisualPanel2.PROP_TEMPERATURE, temp);
     }
 
@@ -133,7 +139,7 @@ public class SampleWizardPanel2 implements WizardDescriptor.Panel<WizardDescript
                 Double temp = ConvertToKelvin();
                 // temperature below 0 K or above 573 K (== 300°C)
                 if (temp <= 0 || temp > 573) {
-                    System.err.println(temp + " is unlikely.");
+                    // exclude unlikey temperatures
                     isValid = false;
                 }
             } catch (NumberFormatException nfe) {

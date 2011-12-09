@@ -39,8 +39,8 @@ public class HabitatWizardDescriptor extends WizardDescriptor {
         putProperty(HabitatVisualPanel1.PROP_LONGITUDE, habitat.getLongitude());
         putProperty(HabitatVisualPanel1.PROP_ALTITUDE, habitat.getAltitude());
         putProperty(HabitatVisualPanel2.PROP_DESCRIPTION, habitat.getDescription());
-        p1.readSettings(this);
-        p2.readSettings(this);
+        p1.setProperties(this);
+        p2.setProperties(this);
     }
     
     public Habitat getHabitat() {
