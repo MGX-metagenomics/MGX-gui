@@ -44,7 +44,7 @@ public class Sample extends ModelBase {
         return this;
     }
 
-    public double getTemperature() {
+    public Double getTemperature() {
         return temperature;
     }
 
@@ -53,7 +53,7 @@ public class Sample extends ModelBase {
         return this;
     }
 
-    public int getVolume() {
+    public Integer getVolume() {
         return volume;
     }
 
