@@ -58,6 +58,7 @@ public class LoginHandler implements ActionListener {
         servername = NbPreferences.forModule(MGXserverPanel.class).get("servername", "scooter");
         serveruri = NbPreferences.forModule(MGXserverPanel.class).get("serveruri", "http://scooter.cebitec.uni-bielefeld.de:8080/MGX-maven-web/webresources/");
         if ("".equals(serveruri)) {
+            dialog.setClosingOptions(new Object[]{DialogDescriptor.CANCEL_OPTION});
             nline.setErrorMessage("No server configured!");
             dialog.setValid(false);
         } else {
@@ -75,16 +76,18 @@ public class LoginHandler implements ActionListener {
             NbPreferences.forModule(MGXserverPanel.class).put("lastLogin", user);
             GPMS gpms = new GPMS(servername, serveruri);
             if (gpms.login(user, password)) {
+                dialog.setClosingOptions(new Object[]{DialogDescriptor.CANCEL_OPTION, DialogDescriptor.OK_OPTION});
                 openProjectExplorer(gpms);
-                // TODO: disable 'login' menu entry and shortcut
             } else {
-                nline.setErrorMessage("Login failed.");
+                dialog.setClosingOptions(new Object[]{DialogDescriptor.CANCEL_OPTION});
+                nline.setErrorMessage("Login failed: " + gpms.getError());
             }
         }
     }
 
     private void openProjectExplorer(final GPMS gpms) {
         ProjectExplorerTopComponent pe = Lookup.getDefault().lookup(ProjectExplorerTopComponent.class);
+        System.err.println("opening PE");
         pe.setVisible(true);
         pe.setGPMS(gpms);
 
