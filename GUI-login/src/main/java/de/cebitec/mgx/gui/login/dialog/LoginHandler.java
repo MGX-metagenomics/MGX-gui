@@ -87,7 +87,6 @@ public class LoginHandler implements ActionListener {
 
     private void openProjectExplorer(final GPMS gpms) {
         ProjectExplorerTopComponent pe = Lookup.getDefault().lookup(ProjectExplorerTopComponent.class);
-        System.err.println("opening PE");
         pe.setVisible(true);
         pe.setGPMS(gpms);
 
