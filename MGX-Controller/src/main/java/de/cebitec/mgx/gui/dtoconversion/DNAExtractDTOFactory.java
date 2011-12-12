@@ -1,7 +1,9 @@
 package de.cebitec.mgx.gui.dtoconversion;
 
 import de.cebitec.mgx.dto.dto.DNAExtractDTO;
+import de.cebitec.mgx.dto.dto.DNAExtractDTO.Builder;
 import de.cebitec.mgx.gui.datamodel.DNAExtract;
+
 /**
  *
  * @author sjaenick
@@ -13,7 +15,8 @@ public class DNAExtractDTOFactory extends DTOConversionBase<DNAExtract, DNAExtra
     }
     protected static DNAExtractDTOFactory instance;
 
-    private DNAExtractDTOFactory() {}
+    private DNAExtractDTOFactory() {
+    }
 
     public static DNAExtractDTOFactory getInstance() {
         return instance;
@@ -21,8 +24,11 @@ public class DNAExtractDTOFactory extends DTOConversionBase<DNAExtract, DNAExtra
 
     @Override
     public final DNAExtractDTO toDTO(DNAExtract d) {
-        return DNAExtractDTO.newBuilder()
-                .setId(d.getId())
+        Builder b = DNAExtractDTO.newBuilder();
+        if (d.getId() != null) {
+            b.setId(d.getId());
+        }
+        return b.setDescription(d.getDescription())
                 .setSampleId(d.getSample().getId())
                 .build();
     }
@@ -31,8 +37,13 @@ public class DNAExtractDTOFactory extends DTOConversionBase<DNAExtract, DNAExtra
     public final DNAExtract toModel(DNAExtractDTO dto) {
         DNAExtract d = new DNAExtract();
 
-        if (dto.hasId())
+        if (dto.hasDescription()) {
+            d.setDescription(dto.getDescription());
+        }
+
+        if (dto.hasId()) {
             d.setId(dto.getId());
+        }
 
         return d;
     }
