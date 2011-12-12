@@ -11,6 +11,7 @@ public class DNAExtract extends ModelBase {
     protected Collection<SeqRun> seqruns;
     protected Sample sample;
     protected String method;
+    protected String description;
 
     public Sample getSample() {
         return sample;
@@ -39,6 +40,15 @@ public class DNAExtract extends ModelBase {
 
     public void setMethod(String method) {
         this.method = method;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public DNAExtract setDescription(String description) {
+        this.description = description;
+        return this;
     }
 
     @Override
