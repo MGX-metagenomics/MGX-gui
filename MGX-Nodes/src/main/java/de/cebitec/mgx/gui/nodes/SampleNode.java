@@ -1,8 +1,10 @@
 package de.cebitec.mgx.gui.nodes;
 
 import de.cebitec.mgx.gui.controller.MGXMaster;
+import de.cebitec.mgx.gui.datamodel.DNAExtract;
 import de.cebitec.mgx.gui.datamodel.Sample;
 import de.cebitec.mgx.gui.nodefactory.DNAExtractNodeFactory;
+import de.cebitec.mgx.gui.wizard.extract.DNAExtractWizardDescriptor;
 import de.cebitec.mgx.gui.wizard.sample.SampleWizardDescriptor;
 import java.awt.Dialog;
 import java.awt.event.ActionEvent;
@@ -40,7 +42,7 @@ public class SampleNode extends MGXNodeBase {
 
     @Override
     public Action[] getActions(boolean context) {
-        return new Action[]{new EditSample(), new DeleteSample()};
+        return new Action[]{new EditSample(), new DeleteSample(), new AddExtract()};
     }
     private class EditSample extends AbstractAction {
 
@@ -84,6 +86,30 @@ public class SampleNode extends MGXNodeBase {
             if (NotifyDescriptor.YES_OPTION.equals(ret)) {
                 getMaster().Habitat().delete(s.getId());
                 fireNodeDestroyed();
+            }
+        }
+    }
+    
+        private class AddExtract extends AbstractAction {
+
+        public AddExtract() {
+            putValue(NAME, "Add DNA extract");
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            DNAExtractWizardDescriptor wd = new DNAExtractWizardDescriptor();
+            Dialog dialog = DialogDisplayer.getDefault().createDialog(wd);
+            dialog.setVisible(true);
+            dialog.toFront();
+            boolean cancelled = wd.getValue() != WizardDescriptor.FINISH_OPTION;
+            if (!cancelled) {
+                Sample s = getLookup().lookup(Sample.class);
+                DNAExtract extract = wd.getDNAExtract();
+                extract.setSample(s);
+                s.addDNAExtract(extract);
+                getMaster().DNAExtract().create(extract);
+                nf.refreshChildren();
             }
         }
     }

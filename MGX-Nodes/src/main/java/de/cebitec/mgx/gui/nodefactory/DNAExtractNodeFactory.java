@@ -43,13 +43,19 @@ public class DNAExtractNodeFactory extends ChildFactory<DNAExtract> implements N
         node.addNodeListener(this);
         return node;
     }
-
-    @Override
+    
+    public void refreshChildren() {
+        refresh(true);
+    }
+    
+        @Override
     public void childrenAdded(NodeMemberEvent ev) {
+        refresh(true);
     }
 
     @Override
     public void childrenRemoved(NodeMemberEvent ev) {
+        refresh(true);
     }
 
     @Override
@@ -58,10 +64,11 @@ public class DNAExtractNodeFactory extends ChildFactory<DNAExtract> implements N
 
     @Override
     public void nodeDestroyed(NodeEvent ev) {
-        this.refresh(true);
+        refresh(true);
     }
 
     @Override
-    public void propertyChange(PropertyChangeEvent pce) {
+    public void propertyChange(PropertyChangeEvent evt) {
+        //refresh(true);
     }
 }

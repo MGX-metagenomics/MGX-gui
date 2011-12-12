@@ -28,21 +28,46 @@ public class DNAExtractDTOFactory extends DTOConversionBase<DNAExtract, DNAExtra
         if (d.getId() != null) {
             b.setId(d.getId());
         }
-        return b.setDescription(d.getDescription())
-                .setSampleId(d.getSample().getId())
-                .build();
+        b = b.setSampleId(d.getSample().getId());
+
+        b = b.setMethod(d.getMethod());
+        b = b.setProtocolName(d.getProtocol());
+
+        // optional fields
+        b = b.setFivePrimePrimer(d.getFivePrimer());
+        b = b.setThreePrimePrimer(d.getThreePrimer());
+        b = b.setTargetGene(d.getTargetGene());
+        b = b.setTargetFragment(d.getTargetFragment());
+        b = b.setDescription(d.getDescription());
+
+        return b.build();
     }
 
     @Override
     public final DNAExtract toModel(DNAExtractDTO dto) {
         DNAExtract d = new DNAExtract();
 
-        if (dto.hasDescription()) {
-            d.setDescription(dto.getDescription());
-        }
-
         if (dto.hasId()) {
             d.setId(dto.getId());
+        }
+
+        d.setMethod(dto.getMethod());
+        d.setProtocol(dto.getProtocolName());
+
+        if (dto.hasFivePrimePrimer()) {
+            d.setFivePrimer(dto.getFivePrimePrimer());
+        }
+        if (dto.hasThreePrimePrimer()) {
+            d.setThreePrimer(dto.getThreePrimePrimer());
+        }
+        if (dto.hasTargetGene()) {
+            d.setTargetGene(dto.getTargetGene());
+        }
+        if (dto.hasTargetFragment()) {
+            d.setTargetFragment(dto.getTargetFragment());
+        }
+        if (dto.hasDescription()) {
+            d.setDescription(dto.getDescription());
         }
 
         return d;

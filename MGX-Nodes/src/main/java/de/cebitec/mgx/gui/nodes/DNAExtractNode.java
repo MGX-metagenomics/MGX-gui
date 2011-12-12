@@ -3,14 +3,15 @@ package de.cebitec.mgx.gui.nodes;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.DNAExtract;
 import de.cebitec.mgx.gui.nodefactory.SeqRunNodeFactory;
+import de.cebitec.mgx.gui.wizard.extract.DNAExtractWizardDescriptor;
+import java.awt.Dialog;
 import java.awt.event.ActionEvent;
-import java.io.IOException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
+import org.openide.WizardDescriptor;
 import org.openide.nodes.Children;
-import org.openide.util.actions.SystemAction;
 import org.openide.util.lookup.Lookups;
 
 /**
@@ -39,9 +40,31 @@ public class DNAExtractNode extends MGXNodeBase {
 
     @Override
     public Action[] getActions(boolean context) {
-        return new Action[]{new DeleteDNAExtract()};
+        return new Action[]{new EditDNAExtract(), new DeleteDNAExtract()};
     }
+    private class EditDNAExtract extends AbstractAction {
 
+        public EditDNAExtract() {
+            putValue(NAME, "Edit");
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            DNAExtract extract = getLookup().lookup(DNAExtract.class);
+            DNAExtractWizardDescriptor wd = new DNAExtractWizardDescriptor(extract);
+            Dialog dialog = DialogDisplayer.getDefault().createDialog(wd);
+            dialog.setVisible(true);
+            dialog.toFront();
+            boolean cancelled = wd.getValue() != WizardDescriptor.FINISH_OPTION;
+            if (!cancelled) {
+                String oldDisplayName = extract.getMethod();
+                extract = wd.getDNAExtract();
+                getMaster().DNAExtract().update(extract);
+                fireDisplayNameChange(oldDisplayName, extract.getMethod());
+            }
+        }
+    }
+    
     private class DeleteDNAExtract extends AbstractAction {
 
         public DeleteDNAExtract() {

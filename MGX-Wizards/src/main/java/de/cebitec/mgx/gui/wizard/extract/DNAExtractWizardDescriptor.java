@@ -43,7 +43,7 @@ public class DNAExtractWizardDescriptor extends WizardDescriptor {
         p2.setProperties(this);
     }
 
-    public DNAExtract getHabitat() {
+    public DNAExtract getDNAExtract() {
         if (extract == null) {
             extract = new DNAExtract();
         }
