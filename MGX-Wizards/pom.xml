@@ -90,6 +90,7 @@
                         <publicPackage>de.cebitec.mgx.gui.wizard.habitat</publicPackage>
                         <publicPackage>de.cebitec.mgx.gui.wizard.job</publicPackage>
                         <publicPackage>de.cebitec.mgx.gui.wizard.sample</publicPackage>
+                        <publicPackage>de.cebitec.mgx.gui.wizard.seqrun</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>
