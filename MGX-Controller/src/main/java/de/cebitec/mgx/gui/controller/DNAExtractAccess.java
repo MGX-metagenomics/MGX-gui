@@ -4,6 +4,7 @@ import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.DNAExtractDTO;
 import de.cebitec.mgx.gui.datamodel.DNAExtract;
+import de.cebitec.mgx.gui.datamodel.Sample;
 import de.cebitec.mgx.gui.dtoconversion.DNAExtractDTOFactory;
 import java.util.ArrayList;
 import java.util.List;
@@ -81,11 +82,13 @@ public class DNAExtractAccess extends AccessBase<DNAExtract> {
         }
     }
     
-    public Iterable<DNAExtract> BySample(long sample_id) {
+    public Iterable<DNAExtract> BySample(Sample s) {
         List<DNAExtract> all = new ArrayList<DNAExtract>();
         try {
-            for (DNAExtractDTO dto : getDTOmaster().DNAExtract().BySample(sample_id)) {
-                all.add(DNAExtractDTOFactory.getInstance().toModel(dto));
+            for (DNAExtractDTO dto : getDTOmaster().DNAExtract().BySample(s.getId())) {
+                DNAExtract extract = DNAExtractDTOFactory.getInstance().toModel(dto);
+                extract.setSample(s);
+                all.add(extract);
             }
         } catch (MGXServerException ex) {
             Logger.getLogger(DNAExtractAccess.class.getName()).log(Level.SEVERE, null, ex);

@@ -3,6 +3,7 @@ package de.cebitec.mgx.gui.controller;
 import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.SeqRunDTO;
+import de.cebitec.mgx.gui.datamodel.DNAExtract;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.dtoconversion.SeqRunDTOFactory;
 import java.util.ArrayList;
@@ -81,11 +82,13 @@ public class SeqRunAccess extends AccessBase<SeqRun> {
         }
     }
 
-    public Iterable<SeqRun> ByExtract(long ex_id) {
+    public Iterable<SeqRun> ByExtract(DNAExtract extract) {
         List<SeqRun> all = new ArrayList<SeqRun>();
         try {
-            for (SeqRunDTO dto : getDTOmaster().SeqRun().ByExtract(ex_id)) {
-                all.add(SeqRunDTOFactory.getInstance().toModel(dto));
+            for (SeqRunDTO dto : getDTOmaster().SeqRun().ByExtract(extract.getId())) {
+                SeqRun sr = SeqRunDTOFactory.getInstance().toModel(dto);
+                sr.setExtract(extract);
+                all.add(sr);
             }
         } catch (MGXServerException ex) {
             Logger.getLogger(SeqRunAccess.class.getName()).log(Level.SEVERE, null, ex);

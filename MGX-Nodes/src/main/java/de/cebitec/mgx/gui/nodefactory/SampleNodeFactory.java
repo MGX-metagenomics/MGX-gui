@@ -31,7 +31,7 @@ public class SampleNodeFactory extends ChildFactory<Sample> implements NodeListe
 
     @Override
     protected boolean createKeys(List<Sample> toPopulate) {
-        for (Sample s : master.Sample().ByHabitat(habitat.getId())) {
+        for (Sample s : master.Sample().ByHabitat(habitat)) {
             toPopulate.add(s);
         }
         return true;

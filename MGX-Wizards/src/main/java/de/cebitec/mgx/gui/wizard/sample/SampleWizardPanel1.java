@@ -72,12 +72,14 @@ public class SampleWizardPanel1 implements WizardDescriptor.Panel<WizardDescript
     }
     
     public void setProperties(WizardDescriptor settings) {
+        model = settings;
         SampleVisualPanel1 c = getComponent();
         c.setCollectionDate((Date)model.getProperty(SampleVisualPanel1.PROP_COLLECTIONDATE));
     }
 
     @Override
     public void storeSettings(WizardDescriptor settings) {
+        model = settings;
         SampleVisualPanel1 c = getComponent();
         model.putProperty(SampleVisualPanel1.PROP_COLLECTIONDATE, c.getCollectionDate());
     }

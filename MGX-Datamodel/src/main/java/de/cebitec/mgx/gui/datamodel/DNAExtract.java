@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.datamodel;
 
 import java.util.Collection;
+import java.util.HashSet;
 
 /**
  *
@@ -8,7 +9,7 @@ import java.util.Collection;
  */
 public class DNAExtract extends ModelBase {
 
-    protected Collection<SeqRun> seqruns;
+    protected Collection<SeqRun> seqruns = new HashSet<SeqRun>();
     protected Sample sample;
     protected String method;
     protected String protocol;

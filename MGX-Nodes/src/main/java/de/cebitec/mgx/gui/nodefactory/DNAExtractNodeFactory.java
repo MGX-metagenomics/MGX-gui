@@ -31,7 +31,7 @@ public class DNAExtractNodeFactory extends ChildFactory<DNAExtract> implements N
 
     @Override
     protected boolean createKeys(List<DNAExtract> toPopulate) {
-        for (DNAExtract d : master.DNAExtract().BySample(sample.getId())) {
+        for (DNAExtract d : master.DNAExtract().BySample(sample)) {
             toPopulate.add(d);
         }
         return true;

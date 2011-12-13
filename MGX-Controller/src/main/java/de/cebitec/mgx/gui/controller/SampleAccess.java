@@ -3,6 +3,7 @@ package de.cebitec.mgx.gui.controller;
 import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.SampleDTO;
+import de.cebitec.mgx.gui.datamodel.Habitat;
 import de.cebitec.mgx.gui.datamodel.Sample;
 import de.cebitec.mgx.gui.dtoconversion.SampleDTOFactory;
 import java.util.ArrayList;
@@ -81,11 +82,13 @@ public class SampleAccess extends AccessBase<Sample> {
         }
     }
 
-    public Iterable<Sample> ByHabitat(long hab_id) {
+    public Iterable<Sample> ByHabitat(Habitat h) {
         List<Sample> all = new ArrayList<Sample>();
         try {
-            for (SampleDTO dto : getDTOmaster().Sample().ByHabitat(hab_id)) {
-                all.add(SampleDTOFactory.getInstance().toModel(dto));
+            for (SampleDTO dto : getDTOmaster().Sample().ByHabitat(h.getId())) {
+                Sample s = SampleDTOFactory.getInstance().toModel(dto);
+                s.setHabitat(h);
+                all.add(s);
             }
         } catch (MGXServerException ex) {
             Logger.getLogger(SampleAccess.class.getName()).log(Level.SEVERE, null, ex);

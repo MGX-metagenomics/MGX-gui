@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.datamodel;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 
 /**
  *
@@ -14,7 +15,7 @@ public class Sample extends ModelBase {
     protected double temperature;
     protected int volume;
     protected String volume_unit;
-    protected Collection<DNAExtract> extracts;
+    protected Collection<DNAExtract> extracts = new HashSet<DNAExtract>();
     protected Habitat habitat;
 
     public Habitat getHabitat() {

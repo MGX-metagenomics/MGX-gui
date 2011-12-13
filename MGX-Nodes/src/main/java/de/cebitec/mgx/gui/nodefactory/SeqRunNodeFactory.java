@@ -29,7 +29,7 @@ public class SeqRunNodeFactory extends ChildFactory<SeqRun> implements NodeListe
 
     @Override
     protected boolean createKeys(List<SeqRun> toPopulate) {
-        for (SeqRun sr : master.SeqRun().ByExtract(extract.getId())) {
+        for (SeqRun sr : master.SeqRun().ByExtract(extract)) {
             toPopulate.add(sr);
         }
         return true;

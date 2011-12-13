@@ -77,6 +77,7 @@ public class SampleWizardPanel2 implements WizardDescriptor.Panel<WizardDescript
     }
 
     public void setProperties(WizardDescriptor settings) {
+        model = settings;
         SampleVisualPanel2 c = getComponent();
         c.setMaterial((String) model.getProperty(SampleVisualPanel2.PROP_MATERIAL));
         c.setVolume((Integer) model.getProperty(SampleVisualPanel2.PROP_VOLUME));
@@ -86,6 +87,7 @@ public class SampleWizardPanel2 implements WizardDescriptor.Panel<WizardDescript
 
     @Override
     public void storeSettings(WizardDescriptor settings) {
+        model = settings;
         SampleVisualPanel2 c = getComponent();
         model.putProperty(SampleVisualPanel2.PROP_MATERIAL, c.getMaterial());
         model.putProperty(SampleVisualPanel2.PROP_VOLUME, StringToInt(c.getVolume()));

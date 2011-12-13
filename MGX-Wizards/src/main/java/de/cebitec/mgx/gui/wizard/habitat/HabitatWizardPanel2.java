@@ -74,15 +74,18 @@ public class HabitatWizardPanel2 implements WizardDescriptor.Panel<WizardDescrip
         HabitatVisualPanel2 c = getComponent();
         c.addPropertyChangeListener(this);
     }
-    
-    public void setProperties(WizardDescriptor settings) {
-        HabitatVisualPanel2 c = getComponent();
-        c.setHabitatDescription((String)model.getProperty(HabitatVisualPanel2.PROP_DESCRIPTION));
-    }
 
     @Override
     public void storeSettings(WizardDescriptor settings) {
+        model = settings;
         model.putProperty(HabitatVisualPanel2.PROP_DESCRIPTION, getComponent().getHabitatDescription());
+    }
+
+    public void setProperties(WizardDescriptor settings) {
+        model = settings;
+        HabitatVisualPanel2 c = getComponent();
+        Object description = model.getProperty(HabitatVisualPanel2.PROP_DESCRIPTION);
+        c.setHabitatDescription(description != null ? (String) description : "");
     }
 
     @Override

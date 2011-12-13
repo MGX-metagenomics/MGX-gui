@@ -1,7 +1,12 @@
 package de.cebitec.mgx.gui.wizard.extract;
 
+import java.awt.CardLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.JComboBox;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.Document;
@@ -14,16 +19,38 @@ public final class DNAExtractVisualPanel1 extends JPanel implements DocumentList
     public static final String PROP_THREEPRIMER = "3' primer";
     public static final String PROP_GENE = "targetgene";
     public static final String PROP_FRAGMENT = "targetfragment";
+    //
+    private final static String[] methods = {"metagenome", "metatranscriptome", "amplicon"};
+    //
+    private final AmpliconDetailPanel adp = new AmpliconDetailPanel();
+    private final MetatranscriptomeDetailPanel mtdp = new MetatranscriptomeDetailPanel();
 
     /** Creates new form DNAExtractVisualPanel1 */
     public DNAExtractVisualPanel1() {
         initComponents();
-        method.getDocument().addDocumentListener(this);
+        initDetailPanels();
+        method.setModel(new javax.swing.DefaultComboBoxModel(methods));
+        method.setEditable(false);
+        method.addActionListener(new MethodListener());
         protocol.getDocument().addDocumentListener(this);
-        fiveprimer.getDocument().addDocumentListener(this);
-        threeprimer.getDocument().addDocumentListener(this);
-        targetgene.getDocument().addDocumentListener(this);
-        targetfragment.getDocument().addDocumentListener(this);
+
+        placeholder.add(new JPanel(), "metagenome");
+        placeholder.add(adp, "amplicon");
+        placeholder.add(mtdp, "metatranscriptome");
+
+        // amplicon-specific attributes
+        adp.getFiveprimer().getDocument().addDocumentListener(this);
+        adp.getThreeprimer().getDocument().addDocumentListener(this);
+        adp.getTargetgene().getDocument().addDocumentListener(this);
+        adp.getTargetfragment().getDocument().addDocumentListener(this);
+    }
+    
+    private void initDetailPanels() {
+        List<String> treatments = new ArrayList<String>();
+        treatments.add("none");
+        treatments.add("Ribo Zero");
+        treatments.add("other");
+        mtdp.setDepletionOptions(treatments);
     }
 
     @Override
@@ -32,19 +59,19 @@ public final class DNAExtractVisualPanel1 extends JPanel implements DocumentList
     }
 
     public String getFiveprimer() {
-        return fiveprimer.getText();
+        return adp.getFiveprimer().getText();
     }
 
     public void setFiveprimer(String fiveprimer) {
-        this.fiveprimer.setText(fiveprimer);
+        adp.getFiveprimer().setText(fiveprimer);
     }
 
     public String getMethod() {
-        return method.getText();
+        return (String) method.getSelectedItem();
     }
 
     public void setMethod(String method) {
-        this.method.setText(method);
+        this.method.setSelectedItem(method);
     }
 
     public String getProtocol() {
@@ -56,27 +83,27 @@ public final class DNAExtractVisualPanel1 extends JPanel implements DocumentList
     }
 
     public String getTargetfragment() {
-        return targetfragment.getText();
+        return adp.getTargetfragment().getText();
     }
 
     public void setTargetfragment(String targetfragment) {
-        this.targetfragment.setText(targetfragment);
+        adp.getTargetfragment().setText(targetfragment);
     }
 
     public String getTargetgene() {
-        return targetgene.getText();
+        return adp.getTargetgene().getText();
     }
 
     public void setTargetgene(String targetgene) {
-        this.targetgene.setText(targetgene);
+        adp.getTargetgene().setText(targetgene);
     }
 
     public String getThreeprimer() {
-        return threeprimer.getText();
+        return adp.getThreeprimer().getText();
     }
 
     public void setThreeprimer(String threeprimer) {
-        this.threeprimer.setText(threeprimer);
+        adp.getThreeprimer().setText(threeprimer);
     }
 
     @Override
@@ -96,17 +123,15 @@ public final class DNAExtractVisualPanel1 extends JPanel implements DocumentList
 
     private void handleUpdate(DocumentEvent e) {
         Document d = e.getDocument();
-        if (method.getDocument() == d) {
-            firePropertyChange(PROP_METHOD, 0, 1);
-        } else if (protocol.getDocument() == d) {
+        if (protocol.getDocument() == d) {
             firePropertyChange(PROP_PROTOCOL, 0, 1);
-        } else if (fiveprimer.getDocument() == d) {
+        } else if (adp.getFiveprimer().getDocument() == d) {
             firePropertyChange(PROP_FIVEPRIMER, 0, 1);
-        } else if (threeprimer.getDocument() == d) {
+        } else if (adp.getThreeprimer().getDocument() == d) {
             firePropertyChange(PROP_THREEPRIMER, 0, 1);
-        } else if (targetgene.getDocument() == d) {
+        } else if (adp.getTargetgene().getDocument() == d) {
             firePropertyChange(PROP_GENE, 0, 1);
-        } else if (targetfragment.getDocument() == d) {
+        } else if (adp.getTargetfragment().getDocument() == d) {
             firePropertyChange(PROP_FRAGMENT, 0, 1);
         }
     }
@@ -121,111 +146,43 @@ public final class DNAExtractVisualPanel1 extends JPanel implements DocumentList
 
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        method = new javax.swing.JTextField();
         protocol = new javax.swing.JTextField();
-        jPanel1 = new javax.swing.JPanel();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
-        fiveprimer = new javax.swing.JTextField();
-        threeprimer = new javax.swing.JTextField();
-        targetgene = new javax.swing.JTextField();
-        targetfragment = new javax.swing.JTextField();
+        method = new javax.swing.JComboBox();
+        placeholder = new javax.swing.JPanel();
 
         org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(DNAExtractVisualPanel1.class, "DNAExtractVisualPanel1.jLabel1.text")); // NOI18N
 
         org.openide.awt.Mnemonics.setLocalizedText(jLabel2, org.openide.util.NbBundle.getMessage(DNAExtractVisualPanel1.class, "DNAExtractVisualPanel1.jLabel2.text")); // NOI18N
 
-        method.setText(org.openide.util.NbBundle.getMessage(DNAExtractVisualPanel1.class, "DNAExtractVisualPanel1.method.text")); // NOI18N
-
         protocol.setText(org.openide.util.NbBundle.getMessage(DNAExtractVisualPanel1.class, "DNAExtractVisualPanel1.protocol.text")); // NOI18N
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(DNAExtractVisualPanel1.class, "DNAExtractVisualPanel1.jPanel1.border.title"))); // NOI18N
+        method.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel3, org.openide.util.NbBundle.getMessage(DNAExtractVisualPanel1.class, "DNAExtractVisualPanel1.jLabel3.text")); // NOI18N
-
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel4, org.openide.util.NbBundle.getMessage(DNAExtractVisualPanel1.class, "DNAExtractVisualPanel1.jLabel4.text")); // NOI18N
-
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel5, org.openide.util.NbBundle.getMessage(DNAExtractVisualPanel1.class, "DNAExtractVisualPanel1.jLabel5.text")); // NOI18N
-
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel6, org.openide.util.NbBundle.getMessage(DNAExtractVisualPanel1.class, "DNAExtractVisualPanel1.jLabel6.text")); // NOI18N
-
-        fiveprimer.setText(org.openide.util.NbBundle.getMessage(DNAExtractVisualPanel1.class, "DNAExtractVisualPanel1.fiveprimer.text")); // NOI18N
-
-        threeprimer.setText(org.openide.util.NbBundle.getMessage(DNAExtractVisualPanel1.class, "DNAExtractVisualPanel1.threeprimer.text")); // NOI18N
-
-        targetgene.setText(org.openide.util.NbBundle.getMessage(DNAExtractVisualPanel1.class, "DNAExtractVisualPanel1.targetgene.text")); // NOI18N
-
-        targetfragment.setText(org.openide.util.NbBundle.getMessage(DNAExtractVisualPanel1.class, "DNAExtractVisualPanel1.targetfragment.text")); // NOI18N
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(85, 85, 85)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel5)
-                    .addComponent(jLabel3)
-                    .addComponent(jLabel4)
-                    .addComponent(jLabel6))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(fiveprimer, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 153, Short.MAX_VALUE)
-                    .addComponent(threeprimer, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 153, Short.MAX_VALUE)
-                    .addComponent(targetgene, javax.swing.GroupLayout.DEFAULT_SIZE, 153, Short.MAX_VALUE)
-                    .addComponent(targetfragment, javax.swing.GroupLayout.DEFAULT_SIZE, 153, Short.MAX_VALUE))
-                .addContainerGap())
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(fiveprimer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(threeprimer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel4))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel5)
-                    .addComponent(targetgene, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(targetfragment, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel6))
-                .addContainerGap(17, Short.MAX_VALUE))
-        );
+        placeholder.setLayout(new java.awt.CardLayout());
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(36, 36, 36)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addComponent(jLabel2)
-                                .addGap(43, 43, 43)
-                                .addComponent(protocol, javax.swing.GroupLayout.DEFAULT_SIZE, 217, Short.MAX_VALUE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addComponent(jLabel1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(method, javax.swing.GroupLayout.DEFAULT_SIZE, 217, Short.MAX_VALUE)))))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(22, 22, 22)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel2)
+                    .addComponent(jLabel1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(method, 0, 248, Short.MAX_VALUE)
+                    .addComponent(protocol, javax.swing.GroupLayout.DEFAULT_SIZE, 248, Short.MAX_VALUE))
+                .addGap(26, 26, 26))
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(placeholder, javax.swing.GroupLayout.DEFAULT_SIZE, 376, Short.MAX_VALUE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(25, 25, 25)
+                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(method, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -233,24 +190,27 @@ public final class DNAExtractVisualPanel1 extends JPanel implements DocumentList
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(protocol, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(27, 27, 27)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(placeholder, javax.swing.GroupLayout.DEFAULT_SIZE, 206, Short.MAX_VALUE)
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextField fiveprimer;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JTextField method;
+    private javax.swing.JComboBox method;
+    private javax.swing.JPanel placeholder;
     private javax.swing.JTextField protocol;
-    private javax.swing.JTextField targetfragment;
-    private javax.swing.JTextField targetgene;
-    private javax.swing.JTextField threeprimer;
     // End of variables declaration//GEN-END:variables
+
+    private final class MethodListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            JComboBox cb = (JComboBox) e.getSource();
+            String methodName = (String) cb.getSelectedItem();
+            CardLayout cl = (CardLayout) (placeholder.getLayout());
+            cl.show(placeholder, methodName);
+        }
+    }
 }

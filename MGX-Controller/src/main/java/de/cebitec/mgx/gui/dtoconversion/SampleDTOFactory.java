@@ -27,13 +27,14 @@ public class SampleDTOFactory extends DTOConversionBase<Sample, SampleDTO> {
         if (s.getId() != null) {
             b.setId(s.getId());
         }
-        return b.setHabitatId(s.getHabitat().getId())
+        b = b.setHabitatId(s.getHabitat().getId())
                 .setTemperature(s.getTemperature())
                 .setMaterial(s.getMaterial())
-                .setVolume(s.getVolume())
-                .setVolumeUnit(s.getVolumeUnit())
-                .setCollectiondate(toUnixTimeStamp(s.getCollectionDate()))
-                .build();
+                .setVolume(s.getVolume());
+        
+        b =    b.setVolumeUnit(s.getVolumeUnit())
+                .setCollectiondate(toUnixTimeStamp(s.getCollectionDate()));
+        return b.build();
     }
 
     @Override

@@ -68,10 +68,6 @@ public class HabitatWizardPanel1 implements WizardDescriptor.Panel<WizardDescrip
         }
     }
 
-    // You can use a settings object to keep track of state. Normally the
-    // settings object will be the WizardDescriptor, so you can use
-    // WizardDescriptor.getProperty & putProperty to store information entered
-    // by the user.
     @Override
     public void readSettings(WizardDescriptor settings) {
         model = settings;
@@ -80,6 +76,7 @@ public class HabitatWizardPanel1 implements WizardDescriptor.Panel<WizardDescrip
     }
     
     public void setProperties(WizardDescriptor settings) {
+        model = settings;
         HabitatVisualPanel1 c = getComponent();
         c.setHabitatName((String)model.getProperty(HabitatVisualPanel1.PROP_NAME));
         c.setBiome((String)model.getProperty(HabitatVisualPanel1.PROP_BIOME));
@@ -92,6 +89,7 @@ public class HabitatWizardPanel1 implements WizardDescriptor.Panel<WizardDescrip
 
     @Override
     public void storeSettings(WizardDescriptor settings) {
+        model = settings;
         HabitatVisualPanel1 c = getComponent();
         model.putProperty(HabitatVisualPanel1.PROP_NAME, c.getHabitatName());
         model.putProperty(HabitatVisualPanel1.PROP_BIOME, c.getBiome());

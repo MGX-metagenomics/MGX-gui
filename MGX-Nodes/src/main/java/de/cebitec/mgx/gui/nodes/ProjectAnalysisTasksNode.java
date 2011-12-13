@@ -14,6 +14,7 @@ public class ProjectAnalysisTasksNode extends MGXNodeBase {
     public ProjectAnalysisTasksNode(MGXMaster m) {
         super(Children.LEAF, Lookups.singleton(m));
         setDisplayName("Analysis Tasks");
+        setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/AnalysisTasks.png");
     }
 
     @Override
@@ -25,4 +26,5 @@ public class ProjectAnalysisTasksNode extends MGXNodeBase {
     public Action[] getActions(boolean popup) {
         return new Action[0]; // disables context menu
     }
+    
 }
