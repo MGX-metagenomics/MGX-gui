@@ -23,6 +23,7 @@ public class ProjectAnalysisTasksNode extends MGXNodeBase {
         super(Children.create(nf, false), Lookups.singleton(m));
         this.nf = nf;
         setDisplayName("Data Analysis");
+        setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/AnalysisTasks.png");
     }
 
     @Override
