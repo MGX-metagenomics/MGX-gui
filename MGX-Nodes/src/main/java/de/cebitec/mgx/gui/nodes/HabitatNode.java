@@ -32,6 +32,8 @@ public class HabitatNode extends MGXNodeBase {
 
     private HabitatNode(Habitat h, SampleNodeFactory snf) {
         super(Children.create(snf, true), Lookups.singleton(h));
+        setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/Habitat.png");
+        setShortDescription("<html>"+h.getBiome() + "<br>" + h.getDescription() + "</html>");
         this.snf = snf;
     }
 
@@ -39,7 +41,7 @@ public class HabitatNode extends MGXNodeBase {
     public boolean canDestroy() {
         return true;
     }
-
+    
     @Override
     public Action[] getActions(boolean context) {
         return new Action[]{new EditHabitat(), new DeleteHabitat(), new AddSample()};

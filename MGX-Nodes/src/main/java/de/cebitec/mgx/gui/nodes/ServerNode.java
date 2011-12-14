@@ -13,6 +13,7 @@ public class ServerNode extends AbstractNode {
 
     public ServerNode(Children children, Lookup lookup) {
         super(children, lookup);
+        setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/Server.png");
     }
     
     @Override

@@ -15,6 +15,7 @@ public class ProjectFilesNode extends MGXNodeBase {
         super(Children.LEAF, Lookups.singleton(m));
         master = m;
         setDisplayName("Project Files");
+        setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/ProjectFiles.png");
     }
 
     @Override

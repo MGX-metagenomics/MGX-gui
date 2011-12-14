@@ -30,6 +30,7 @@ public class ProjectDataNode extends MGXNodeBase {
         super(Children.create(hnf, true), Lookups.singleton(m));
         this.hnf = hnf;
         setDisplayName("Project Data");
+        setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/ProjectData.png");
     }
     
     @Override

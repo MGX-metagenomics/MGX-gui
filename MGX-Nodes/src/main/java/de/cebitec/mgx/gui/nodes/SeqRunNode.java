@@ -2,7 +2,6 @@ package de.cebitec.mgx.gui.nodes;
 
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
-import java.io.IOException;
 import org.openide.nodes.Children;
 import org.openide.util.actions.SystemAction;
 import org.openide.util.lookup.Lookups;
@@ -21,6 +20,7 @@ public class SeqRunNode extends MGXNodeBase {
 
     private SeqRunNode(SeqRun s) {
         super(Children.LEAF, Lookups.singleton(s));
+        setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/SeqRun.png");
     }
 
     @Override

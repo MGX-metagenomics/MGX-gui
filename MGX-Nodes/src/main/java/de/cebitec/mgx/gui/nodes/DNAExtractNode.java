@@ -30,6 +30,7 @@ public class DNAExtractNode extends MGXNodeBase {
 
     private DNAExtractNode(DNAExtract d, SeqRunNodeFactory snf) {
         super(Children.create(snf, true), Lookups.singleton(d));
+        setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/DNAExtract.png");
         this.snf = snf;
     }
 
@@ -42,6 +43,7 @@ public class DNAExtractNode extends MGXNodeBase {
     public Action[] getActions(boolean context) {
         return new Action[]{new EditDNAExtract(), new DeleteDNAExtract()};
     }
+
     private class EditDNAExtract extends AbstractAction {
 
         public EditDNAExtract() {
@@ -64,7 +66,7 @@ public class DNAExtractNode extends MGXNodeBase {
             }
         }
     }
-    
+
     private class DeleteDNAExtract extends AbstractAction {
 
         public DeleteDNAExtract() {
