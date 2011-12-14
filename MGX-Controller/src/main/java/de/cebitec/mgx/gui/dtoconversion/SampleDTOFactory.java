@@ -32,7 +32,7 @@ public class SampleDTOFactory extends DTOConversionBase<Sample, SampleDTO> {
                 .setMaterial(s.getMaterial())
                 .setVolume(s.getVolume());
         
-        b =    b.setVolumeUnit(s.getVolumeUnit())
+        b = b.setVolumeUnit(s.getVolumeUnit())
                 .setCollectiondate(toUnixTimeStamp(s.getCollectionDate()));
         return b.build();
     }
