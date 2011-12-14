@@ -54,7 +54,6 @@ public class HabitatNode extends MGXNodeBase {
                 .append(new Integer(h.getAltitude()).toString())
                 .append("</html>")
                 .toString();
-        //"<html>"+h.getBiome() + "<br>" + h.getDescription() + "</html>"
     }
 
     @Override
