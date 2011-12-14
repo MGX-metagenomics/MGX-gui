@@ -72,12 +72,14 @@ public class DNAExtractWizardPanel2 implements WizardDescriptor.Panel<WizardDesc
     }
 
     public void setProperties(WizardDescriptor settings) {
+        model = settings;
         DNAExtractVisualPanel2 c = getComponent();
         c.setExtractDescription((String) model.getProperty(DNAExtractVisualPanel2.PROP_DESCRIPTION));
     }
 
     @Override
     public void storeSettings(WizardDescriptor settings) {
+        model = settings;
         model.putProperty(DNAExtractVisualPanel2.PROP_DESCRIPTION, getComponent().getExtractDescription());
     }
 
