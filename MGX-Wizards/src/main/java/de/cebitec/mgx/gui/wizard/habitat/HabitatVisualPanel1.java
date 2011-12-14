@@ -282,12 +282,11 @@ public final class HabitatVisualPanel1 extends JPanel implements DocumentListene
             }
         };
         TileFactory tf = new DefaultTileFactory(info);
-
         kit.setTileFactory(tf);
         kit.getMainMap().setZoom(15);
         kit.getMiniMap().setZoom(10);
         kit.setAddressLocation(new GeoPosition(51.5, 0));
-        kit.getMainMap().setDrawTileBorders(true);
+        kit.getMainMap().setDrawTileBorders(false);
         kit.getMainMap().setRestrictOutsidePanning(true);
         kit.getMainMap().setRecenterOnClickEnabled(true);
         ((DefaultTileFactory) kit.getMainMap().getTileFactory()).setThreadPoolSize(8);

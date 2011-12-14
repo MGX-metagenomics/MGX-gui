@@ -1,9 +1,9 @@
 package de.cebitec.mgx.gui.wizard.sample;
 
-import java.util.Calendar;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Date;
 import javax.swing.JPanel;
-import org.jdesktop.swingx.calendar.DateSelectionModel.SelectionMode;
 
 public final class SampleVisualPanel1 extends JPanel {
 
@@ -12,9 +12,17 @@ public final class SampleVisualPanel1 extends JPanel {
     /** Creates new form SampleVisualPanel1 */
     public SampleVisualPanel1() {
         initComponents();
-        jXMonthView1.setTraversable(true);
-        jXMonthView1.setFirstDayOfWeek(Calendar.MONDAY);
-        jXMonthView1.setSelectionMode(SelectionMode.SINGLE_SELECTION);
+        //jXMonthView1.setFirstDayOfWeek(Calendar.MONDAY);
+        //jXMonthView1.setSelectionMode(SelectionMode.SINGLE_SELECTION);
+        jXMonthView1.setUpperBound(new Date(System.currentTimeMillis()));
+        jXMonthView1.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //Date selectionDate = ((JXMonthView) e.getSource()).getSelectionDate();
+                firePropertyChange(PROP_COLLECTIONDATE, 0, 1);
+            }
+        });
     }
 
     @Override
@@ -23,7 +31,7 @@ public final class SampleVisualPanel1 extends JPanel {
     }
 
     public Date getCollectionDate() {
-        return jXMonthView1.getSelectionDate(); 
+        return jXMonthView1.getSelectionDate();
     }
 
     public void setCollectionDate(Date d) {
@@ -41,6 +49,9 @@ public final class SampleVisualPanel1 extends JPanel {
         jXMonthView1 = new org.jdesktop.swingx.JXMonthView();
         jLabel1 = new javax.swing.JLabel();
 
+        jXMonthView1.setPreferredColumnCount(3);
+        jXMonthView1.setTraversable(true);
+
         org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(SampleVisualPanel1.class, "SampleVisualPanel1.jLabel1.text")); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -48,23 +59,20 @@ public final class SampleVisualPanel1 extends JPanel {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addGap(42, 42, 42)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(42, 42, 42)
-                        .addComponent(jLabel1))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(118, 118, 118)
-                        .addComponent(jXMonthView1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(141, Short.MAX_VALUE))
+                    .addComponent(jXMonthView1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1))
+                .addContainerGap(25, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(19, 19, 19)
                 .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(18, 18, 18)
                 .addComponent(jXMonthView1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(32, Short.MAX_VALUE))
+                .addContainerGap(14, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables

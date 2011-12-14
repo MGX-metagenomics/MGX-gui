@@ -17,6 +17,7 @@ public class SampleWizardPanel1 implements WizardDescriptor.Panel<WizardDescript
      */
     private SampleVisualPanel1 component;
     private WizardDescriptor model = null;
+    private boolean isValid = false;
     private final EventListenerList listeners = new EventListenerList();
 
     @Override
@@ -38,7 +39,7 @@ public class SampleWizardPanel1 implements WizardDescriptor.Panel<WizardDescript
 
     @Override
     public boolean isValid() {
-        return true;
+        return isValid;
     }
 
     @Override
@@ -70,11 +71,11 @@ public class SampleWizardPanel1 implements WizardDescriptor.Panel<WizardDescript
         SampleVisualPanel1 c = getComponent();
         c.addPropertyChangeListener(this);
     }
-    
+
     public void setProperties(WizardDescriptor settings) {
         model = settings;
         SampleVisualPanel1 c = getComponent();
-        c.setCollectionDate((Date)model.getProperty(SampleVisualPanel1.PROP_COLLECTIONDATE));
+        c.setCollectionDate((Date) model.getProperty(SampleVisualPanel1.PROP_COLLECTIONDATE));
     }
 
     @Override
@@ -86,6 +87,16 @@ public class SampleWizardPanel1 implements WizardDescriptor.Panel<WizardDescript
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        fireChangeEvent(this, true, true);
+        boolean oldState = isValid;
+        isValid = checkValidity();
+        fireChangeEvent(this, oldState, isValid);
+    }
+
+    private boolean checkValidity() {
+        Date now = new Date(System.currentTimeMillis());
+        Date selectedDate = getComponent().getCollectionDate();
+        isValid = ((selectedDate != null)
+                && (now.compareTo(selectedDate) >= 0));
+        return isValid;
     }
 }

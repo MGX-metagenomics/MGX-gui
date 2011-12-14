@@ -90,11 +90,15 @@ public class SampleWizardPanel2 implements WizardDescriptor.Panel<WizardDescript
         model = settings;
         SampleVisualPanel2 c = getComponent();
         model.putProperty(SampleVisualPanel2.PROP_MATERIAL, c.getMaterial());
-        model.putProperty(SampleVisualPanel2.PROP_VOLUME, StringToInt(c.getVolume()));
+        if (!"".equals(c.getVolume())) {
+            model.putProperty(SampleVisualPanel2.PROP_VOLUME, Integer.parseInt(c.getVolume()));
+        }
         model.putProperty(SampleVisualPanel2.PROP_VOLUME_UNIT, c.getVolumeUnit());
         //
         Double temp = ConvertToKelvin();
-        model.putProperty(SampleVisualPanel2.PROP_TEMPERATURE, temp);
+        if (temp != null) {
+            model.putProperty(SampleVisualPanel2.PROP_TEMPERATURE, temp);
+        }
     }
 
     @Override
@@ -140,8 +144,8 @@ public class SampleWizardPanel2 implements WizardDescriptor.Panel<WizardDescript
                 Double.parseDouble(test);
                 Double temp = ConvertToKelvin();
                 // temperature below 0 K or above 573 K (== 300°C)
-                if (temp <= 0 || temp > 573) {
-                    // exclude unlikey temperatures
+                if (temp == null || temp <= 0 || temp > 573) {
+                    // exclude unlikely temperatures
                     isValid = false;
                 }
             } catch (NumberFormatException nfe) {
@@ -151,17 +155,13 @@ public class SampleWizardPanel2 implements WizardDescriptor.Panel<WizardDescript
         return isValid;
     }
 
-    private Double StringToDouble(String s) {
-        return Double.parseDouble(s);
-    }
-
-    private Integer StringToInt(String s) {
-        return Integer.parseInt(s);
-    }
-
     private Double ConvertToKelvin() {
         SampleVisualPanel2 c = getComponent();
-        Double temp = StringToDouble(c.getTemperature());
+        String t = c.getTemperature();
+        if ("".equals(t)) {
+            return null;
+        }
+        Double temp = Double.parseDouble(t);
         String tempunit = c.getTemperatureUnit();
         if ("°C".equals(tempunit)) {
             temp = temp + 273.15;
