@@ -3,8 +3,6 @@ package de.cebitec.mgx.gui.explorer;
 import de.cebitec.mgx.gui.nodefactory.ServerNodeFactory;
 import de.cebitec.mgx.restgpms.GPMS;
 import java.awt.BorderLayout;
-import java.awt.EventQueue;
-import javax.swing.JScrollPane;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
@@ -14,6 +12,7 @@ import org.openide.explorer.ExplorerUtils;
 import org.openide.explorer.view.BeanTreeView;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
+import org.openide.nodes.Node;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -88,6 +87,9 @@ public final class ProjectExplorerTopComponent extends TopComponent implements E
     public void setGPMS(GPMS gpms) {
         AbstractNode root = new AbstractNode(Children.create(new ServerNodeFactory(gpms), true));
         getExplorerManager().setRootContext(root);
+        for (Node n : root.getChildren().getNodes()) {
+            btv.expandNode(n);
+        }
     }
 
     @Override
