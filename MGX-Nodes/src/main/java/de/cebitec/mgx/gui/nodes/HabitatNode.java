@@ -33,8 +33,28 @@ public class HabitatNode extends MGXNodeBase {
     private HabitatNode(Habitat h, SampleNodeFactory snf) {
         super(Children.create(snf, true), Lookups.singleton(h));
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/Habitat.png");
-        setShortDescription("<html>"+h.getBiome() + "<br>" + h.getDescription() + "</html>");
+        setShortDescription(getToolTipText(h));
         this.snf = snf;
+    }
+    
+    private String getToolTipText(Habitat h) {
+        return new StringBuilder("<html>")
+                .append("<b>Habitat: </b>")
+                .append(h.getName())
+                .append("<br><hr><br>")
+                .append("biome: ")
+                .append(h.getBiome())
+                .append("<br>")
+                .append("location: ")
+                .append(new Double(h.getLatitude()).toString())
+                .append(" / ")
+                .append(new Double(h.getLongitude()).toString())
+                .append("<br>")
+                .append("altitude: ")
+                .append(new Integer(h.getAltitude()).toString())
+                .append("</html>")
+                .toString();
+        //"<html>"+h.getBiome() + "<br>" + h.getDescription() + "</html>"
     }
 
     @Override
