@@ -10,7 +10,7 @@ import org.openide.util.NbBundle.Messages;
 
 @ActionID(category = "File",
 id = "de.cebitec.mgx.gui.login.dialog.LoginAction")
-@ActionRegistration(iconBase = "de/cebitec/mgx/gui/login/dialog/login.png",
+@ActionRegistration(iconBase = "de/cebitec/mgx/gui/login/dialog/Login.png",
 displayName = "#CTL_LoginAction")
 @ActionReferences({
     @ActionReference(path = "Menu/File", position = 1100),
