@@ -26,19 +26,17 @@ public class HabitatNodeFactory extends ChildFactory<Habitat> implements NodeLis
 
     @Override
     protected boolean createKeys(List<Habitat> toPopulate) {
-        for (Habitat h : master.Habitat().fetchall()) {
-            toPopulate.add(h);
-        }
+        toPopulate.addAll(master.Habitat().fetchall());
         return true;
     }
-    
+
     @Override
     protected Node createNodeForKey(Habitat key) {
         HabitatNode node = new HabitatNode(master, key);
         node.addNodeListener(this);
         return node;
     }
-    
+
     public void refreshChildren() {
         refresh(true);
     }
