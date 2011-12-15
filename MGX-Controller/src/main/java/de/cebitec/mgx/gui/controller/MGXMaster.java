@@ -31,8 +31,8 @@ public class MGXMaster implements MGXMasterI {
     public String getLogin() {
         return dtomaster.getLogin();
     }
-    
-      public HabitatAccess Habitat() {
+
+    public HabitatAccess Habitat() {
         return getAccessor(HabitatAccess.class);
     }
 
@@ -62,6 +62,10 @@ public class MGXMaster implements MGXMasterI {
 
     public JobAccess Job() {
         return getAccessor(JobAccess.class);
+    }
+
+    public FileAccess File() {
+        return getAccessor(FileAccess.class);
     }
 
     void log(Level lvl, String msg) {
