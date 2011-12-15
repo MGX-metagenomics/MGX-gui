@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.nodes;
 
 import de.cebitec.mgx.gui.controller.MGXMaster;
+import de.cebitec.mgx.gui.nodefactory.DirEntryNodeFactory;
 import javax.swing.Action;
 import org.openide.nodes.Children;
 import org.openide.util.lookup.Lookups;
@@ -12,7 +13,7 @@ import org.openide.util.lookup.Lookups;
 public class ProjectFilesNode extends MGXNodeBase {
 
     public ProjectFilesNode(MGXMaster m) {
-        super(Children.LEAF, Lookups.singleton(m));
+        super(Children.create(new DirEntryNodeFactory(m), true), Lookups.singleton(m));
         master = m;
         setDisplayName("Project Files");
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/ProjectFiles.png");
