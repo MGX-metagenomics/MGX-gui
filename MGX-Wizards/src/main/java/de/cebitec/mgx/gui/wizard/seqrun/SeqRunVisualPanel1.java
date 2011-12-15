@@ -9,6 +9,7 @@ public final class SeqRunVisualPanel1 extends JPanel {
     /** Creates new form SeqRunVisualPanel1 */
     public SeqRunVisualPanel1() {
         initComponents();
+        submitted.addItemListener(new CheckBoxListener());
     }
 
     @Override
