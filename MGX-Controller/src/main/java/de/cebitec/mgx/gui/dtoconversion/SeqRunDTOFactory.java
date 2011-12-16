@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.dtoconversion;
 
 import de.cebitec.mgx.dto.dto.SeqRunDTO;
+import de.cebitec.mgx.dto.dto.SeqRunDTO.Builder;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
 
 /**
@@ -14,7 +15,8 @@ public class SeqRunDTOFactory extends DTOConversionBase<SeqRun, SeqRunDTO> {
     }
     protected static SeqRunDTOFactory instance;
 
-    private SeqRunDTOFactory() {}
+    private SeqRunDTOFactory() {
+    }
 
     public static SeqRunDTOFactory getInstance() {
         return instance;
@@ -22,28 +24,40 @@ public class SeqRunDTOFactory extends DTOConversionBase<SeqRun, SeqRunDTO> {
 
     @Override
     public final SeqRunDTO toDTO(SeqRun s) {
-        return SeqRunDTO.newBuilder()
-                .setId(s.getId())
+        Builder b = SeqRunDTO.newBuilder()
                 .setExtractId(s.getExtract().getId())
-                .setAccession(s.getAccession())
-                .setSubmittedToInsdc(s.getSubmittedToINSDC())
-                .setSequencingMethod(s.getSequencingMethod())
                 .setSequencingTechnology(s.getSequencingTechnology())
-                .build();
+                .setSequencingMethod(s.getSequencingMethod())
+                .setSubmittedToInsdc(s.getSubmittedToINSDC());
+
+        // optional fields
+        if (s.getId() != null) {
+            b.setId(s.getId());
+        }
+
+        if (s.getSubmittedToINSDC()) {
+            b.setAccession(s.getAccession());
+        }
+
+        return b.build();
     }
 
     @Override
     public final SeqRun toModel(SeqRunDTO dto) {
         SeqRun s = new SeqRun()
-                .setAccession(dto.getAccession())
-                .setSubmittedToINSDC(dto.getSubmittedToInsdc())
+                .setSequencingTechnology(dto.getSequencingTechnology())
                 .setSequencingMethod(dto.getSequencingMethod())
-                .setSequencingTechnology(dto.getSequencingTechnology());
+                .setSubmittedToINSDC(dto.getSubmittedToInsdc());
 
-        if (dto.hasId())
+        if (dto.getSubmittedToInsdc()) {
+            s.setAccession(dto.getAccession());
+        }
+
+        if (dto.hasId()) {
             s.setId(dto.getId());
+        }
 
         return s;
-        // cannot set sample here
+        // cannot set extract here
     }
 }
