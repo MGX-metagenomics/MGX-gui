@@ -8,14 +8,11 @@ import java.util.Collection;
  */
 public class SeqRun extends ModelBase {
 
-    protected String DBFile;
-    protected String database_accession;
-    protected Boolean submitted_to_insdc;
+    protected DNAExtract dnaextract;
     protected String sequencing_technology;
     protected String sequencing_method;
-    protected Collection<Sequence> sequences;
-    protected DNAExtract dnaextract;
-    protected Collection<Job> jobs;
+    protected Boolean submitted_to_insdc;
+    protected String database_accession;
 
     public DNAExtract getExtract() {
         return dnaextract;
@@ -26,30 +23,12 @@ public class SeqRun extends ModelBase {
         return this;
     }
 
-    public String getDBFile() {
-        return DBFile;
-    }
-
-    public SeqRun setDBFile(String DBFile) {
-        this.DBFile = DBFile;
-        return this;
-    }
-
     public String getAccession() {
         return database_accession;
     }
 
     public SeqRun setAccession(String database_accession) {
         this.database_accession = database_accession;
-        return this;
-    }
-
-    public Collection<Sequence> getSequences() {
-        return sequences;
-    }
-
-    public SeqRun setSequences(Collection<Sequence> sequences) {
-        this.sequences = sequences;
         return this;
     }
 
