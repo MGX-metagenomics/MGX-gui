@@ -42,6 +42,10 @@ public class SeqRunNodeFactory extends ChildFactory<SeqRun> implements NodeListe
         return node;
     }
 
+    public void refreshChildren() {
+        refresh(true);
+    }
+
     @Override
     public void childrenAdded(NodeMemberEvent ev) {
     }

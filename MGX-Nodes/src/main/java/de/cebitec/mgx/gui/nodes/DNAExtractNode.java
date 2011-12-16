@@ -2,16 +2,20 @@ package de.cebitec.mgx.gui.nodes;
 
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.DNAExtract;
+import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.nodefactory.SeqRunNodeFactory;
 import de.cebitec.mgx.gui.wizard.extract.DNAExtractWizardDescriptor;
+import de.cebitec.mgx.gui.wizard.seqrun.SeqRunWizardDescriptor;
 import java.awt.Dialog;
 import java.awt.event.ActionEvent;
+import java.io.IOException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.WizardDescriptor;
 import org.openide.nodes.Children;
+import org.openide.util.Exceptions;
 import org.openide.util.lookup.Lookups;
 
 /**
@@ -41,7 +45,7 @@ public class DNAExtractNode extends MGXNodeBase {
 
     @Override
     public Action[] getActions(boolean context) {
-        return new Action[]{new EditDNAExtract(), new DeleteDNAExtract()};
+        return new Action[]{new EditDNAExtract(), new DeleteDNAExtract(), new AddSeqRun()};
     }
 
     private class EditDNAExtract extends AbstractAction {
@@ -86,6 +90,39 @@ public class DNAExtractNode extends MGXNodeBase {
             if (NotifyDescriptor.YES_OPTION.equals(ret)) {
                 getMaster().DNAExtract().delete(dna.getId());
                 fireNodeDestroyed();
+            }
+        }
+    }
+
+    private class AddSeqRun extends AbstractAction {
+
+        public AddSeqRun() {
+            putValue(NAME, "Add sequencing run");
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            SeqRunWizardDescriptor wd = new SeqRunWizardDescriptor();
+            Dialog dialog = DialogDisplayer.getDefault().createDialog(wd);
+            dialog.setVisible(true);
+            dialog.toFront();
+            boolean cancelled = wd.getValue() != WizardDescriptor.FINISH_OPTION;
+            if (!cancelled) {
+                DNAExtract extract = getLookup().lookup(DNAExtract.class);
+                SeqRun seqrun = wd.getSeqRun();
+                seqrun.setExtract(extract);
+                extract.addSeqRun(seqrun);
+                getMaster().SeqRun().create(seqrun);
+                snf.refreshChildren();
+
+                // now, we need to create a sequence upload task
+                String canonicalPath;
+                try {
+                    canonicalPath = wd.getSequenceFile().getCanonicalPath();
+                    System.err.println("UPLOAD: " + canonicalPath);
+                } catch (IOException ex) {
+                    Exceptions.printStackTrace(ex);
+                }
             }
         }
     }
