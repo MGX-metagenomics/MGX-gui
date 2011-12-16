@@ -72,6 +72,7 @@ public class DNAExtractWizardPanel1 implements WizardDescriptor.Panel<WizardDesc
     }
 
     public void setProperties(WizardDescriptor settings) {
+        model = settings;
         DNAExtractVisualPanel1 c = getComponent();
         c.setMethod((String) model.getProperty(DNAExtractVisualPanel1.PROP_METHOD));
         c.setProtocol((String) model.getProperty(DNAExtractVisualPanel1.PROP_PROTOCOL));
@@ -83,6 +84,7 @@ public class DNAExtractWizardPanel1 implements WizardDescriptor.Panel<WizardDesc
 
     @Override
     public void storeSettings(WizardDescriptor settings) {
+        model = settings;
         DNAExtractVisualPanel1 c = getComponent();
         model.putProperty(DNAExtractVisualPanel1.PROP_METHOD, c.getMethod());
         model.putProperty(DNAExtractVisualPanel1.PROP_PROTOCOL, c.getProtocol());

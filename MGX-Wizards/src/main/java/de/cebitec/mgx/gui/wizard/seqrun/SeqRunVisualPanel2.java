@@ -2,33 +2,28 @@ package de.cebitec.mgx.gui.wizard.seqrun;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.io.IOException;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.filechooser.FileFilter;
 
 public final class SeqRunVisualPanel2 extends JPanel {
 
+    public static final String PROP_SEQFILE = "seqfile";
+    private File file = null;
+
     /** Creates new form SeqRunVisualPanel2 */
     public SeqRunVisualPanel2() {
         initComponents();
-        seqfilechoosebutton.addActionListener(new ActionListener() {
+        fchooser.addChoosableFileFilter(new SeqFileFilter());
+        fchooser.addPropertyChangeListener(new PropertyChangeListener() {
 
             @Override
-            public void actionPerformed(ActionEvent ae) {
-                JFileChooser fc = new JFileChooser();
-                fc.addChoosableFileFilter(new SeqFileFilter());
-                int returnVal = fc.showOpenDialog(new JFrame());
-                if (returnVal == JFileChooser.APPROVE_OPTION) {
-                    File file = fc.getSelectedFile();
-                    try {
-                        seqfilename.setText(file.getCanonicalPath().toString());
-                    } catch (IOException ex) {
-                    }
+            public void propertyChange(PropertyChangeEvent evt) {
+                if ("SelectedFileChangedProperty".equals(evt.getPropertyName())) {
+                    file = fchooser.getSelectedFile();
+                    firePropertyChange(PROP_SEQFILE, 0, 1);
                 }
             }
         });
@@ -36,7 +31,11 @@ public final class SeqRunVisualPanel2 extends JPanel {
 
     @Override
     public String getName() {
-        return "Upload sequence data";
+        return "Select sequence data";
+    }
+
+    public File getSelectedFile() {
+        return file;
     }
 
     /** This method is called from within the constructor to
@@ -47,15 +46,9 @@ public final class SeqRunVisualPanel2 extends JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel1 = new javax.swing.JLabel();
-        seqfilename = new javax.swing.JTextField();
-        seqfilechoosebutton = new javax.swing.JButton();
+        fchooser = new javax.swing.JFileChooser();
 
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(SeqRunVisualPanel2.class, "SeqRunVisualPanel2.jLabel1.text")); // NOI18N
-
-        seqfilename.setText(org.openide.util.NbBundle.getMessage(SeqRunVisualPanel2.class, "SeqRunVisualPanel2.seqfilename.text")); // NOI18N
-
-        org.openide.awt.Mnemonics.setLocalizedText(seqfilechoosebutton, org.openide.util.NbBundle.getMessage(SeqRunVisualPanel2.class, "SeqRunVisualPanel2.seqfilechoosebutton.text")); // NOI18N
+        fchooser.setControlButtonsAreShown(false);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -63,44 +56,20 @@ public final class SeqRunVisualPanel2 extends JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(seqfilename, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(seqfilechoosebutton)
-                .addContainerGap(25, Short.MAX_VALUE))
+                .addComponent(fchooser, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(36, 36, 36)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(seqfilename, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(seqfilechoosebutton))
-                .addContainerGap(239, Short.MAX_VALUE))
+                .addContainerGap()
+                .addComponent(fchooser, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JButton seqfilechoosebutton;
-    private javax.swing.JTextField seqfilename;
+    private javax.swing.JFileChooser fchooser;
     // End of variables declaration//GEN-END:variables
-
-//    private final class CheckBoxListener implements ItemListener {
-//
-//        @Override
-//        public void itemStateChanged(ItemEvent ie) {
-//            if (ie.getStateChange() == ItemEvent.DESELECTED) {
-//                qualfilename.setEnabled(false);
-//                qualfilename.setText("");
-//                qualfilechoosebutton.setEnabled(false);
-//            } else {
-//                qualfilename.setEnabled(true);
-//                qualfilechoosebutton.setEnabled(true);
-//            }
-//        }
-//    }
 
     private final class SeqFileFilter extends FileFilter {
 
@@ -128,7 +97,7 @@ public final class SeqRunVisualPanel2 extends JPanel {
 
         @Override
         public String getDescription() {
-            return "Sequence files";
+            return "Sequence files (*.fas, *.fsa, *.fasta, *.fastq, *.fq)";
         }
     }
 

@@ -1,20 +1,72 @@
 package de.cebitec.mgx.gui.wizard.seqrun;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import javax.swing.JComboBox;
 import javax.swing.JPanel;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.Document;
 
-public final class SeqRunVisualPanel1 extends JPanel {
+public final class SeqRunVisualPanel1 extends JPanel implements DocumentListener {
+
+    public static final String PROP_SUBMITTED = "submitted_to_INSDC";
+    public static final String PROP_ACCESSION = "accession";
+    public static final String PROP_PLATFORM = "seqPlatform";
+    public static final String PROP_METHOD = "seqMethod";
+    private final static String[] platforms = {"Roche GS FLX/GS FLX Titanium", "Illumina GAIIx", "IonTorrent PGM"};
+    private final static String[] methods = {"WGS", "Paired-End", "Mate-Pair"};
 
     /** Creates new form SeqRunVisualPanel1 */
     public SeqRunVisualPanel1() {
         initComponents();
+        accession.getDocument().addDocumentListener(this);
         submitted.addItemListener(new CheckBoxListener());
+        method.setModel(new javax.swing.DefaultComboBoxModel(methods));
+        method.setEditable(false);
+        method.addActionListener(new MethodListener());
+        platform.setModel(new javax.swing.DefaultComboBoxModel(platforms));
+        platform.setEditable(false);
+        platform.addActionListener(new PlatformListener());
     }
 
     @Override
     public String getName() {
-        return "Step #1";
+        return "Sequencing run";
+    }
+
+    public boolean getSubmittedState() {
+        return submitted.isSelected();
+    }
+
+    public void setSubmittedState(boolean state) {
+        submitted.setSelected(state);
+    }
+
+    public String getAccession() {
+        return accession.getText();
+    }
+
+    public void setAccession(String acc) {
+        accession.setText(acc);
+    }
+
+    public String getPlatform() {
+        return (String) platform.getSelectedItem();
+    }
+
+    public void setPlatform(String p) {
+        platform.setSelectedItem(p);
+    }
+
+    public String getMethod() {
+        return (String) method.getSelectedItem();
+    }
+
+    public void setMethod(String m) {
+        method.setSelectedItem(m);
     }
 
     /** This method is called from within the constructor to
@@ -100,16 +152,59 @@ public final class SeqRunVisualPanel1 extends JPanel {
     private javax.swing.JCheckBox submitted;
     // End of variables declaration//GEN-END:variables
 
+    @Override
+    public void insertUpdate(DocumentEvent e) {
+        handleUpdate(e);
+    }
+
+    @Override
+    public void removeUpdate(DocumentEvent e) {
+        handleUpdate(e);
+    }
+
+    @Override
+    public void changedUpdate(DocumentEvent e) {
+        handleUpdate(e);
+    }
+
+    private void handleUpdate(DocumentEvent e) {
+        Document d = e.getDocument();
+        if (accession.getDocument() == d) {
+            firePropertyChange(PROP_ACCESSION, 0, 1);
+        }
+    }
+
     private final class CheckBoxListener implements ItemListener {
 
         @Override
         public void itemStateChanged(ItemEvent ie) {
             if (ie.getStateChange() == ItemEvent.DESELECTED) {
-                accession.setEnabled(false);
                 accession.setText("");
+                accession.setEditable(false);
             } else {
-                accession.setEnabled(true);
+                accession.setEditable(true);
             }
+            firePropertyChange(PROP_SUBMITTED, 0, 1);
+        }
+    }
+
+    private final class MethodListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            JComboBox cb = (JComboBox) e.getSource();
+            String methodName = (String) cb.getSelectedItem();
+            firePropertyChange(PROP_METHOD, 0, 1);
+        }
+    }
+
+    private final class PlatformListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            JComboBox cb = (JComboBox) e.getSource();
+            String methodName = (String) cb.getSelectedItem();
+            firePropertyChange(PROP_PLATFORM, 0, 1);
         }
     }
 }
