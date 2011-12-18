@@ -129,8 +129,7 @@ public class HabitatNode extends MGXNodeBase {
             if (!cancelled) {
                 Habitat hab = getLookup().lookup(Habitat.class);
                 Sample s = wd.getSample();
-                s.setHabitat(hab); 
-                hab.addSample(s);
+                s.setHabitatId(hab.getId()); 
                 getMaster().Sample().create(s);
                 snf.refreshChildren();
             }

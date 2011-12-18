@@ -110,8 +110,7 @@ public class DNAExtractNode extends MGXNodeBase {
             if (!cancelled) {
                 DNAExtract extract = getLookup().lookup(DNAExtract.class);
                 SeqRun seqrun = wd.getSeqRun();
-                seqrun.setExtract(extract);
-                extract.addSeqRun(seqrun);
+                seqrun.setDNAExtractId(extract.getId());
                 getMaster().SeqRun().create(seqrun);
                 snf.refreshChildren();
 

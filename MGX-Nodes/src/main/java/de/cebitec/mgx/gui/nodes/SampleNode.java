@@ -107,8 +107,7 @@ public class SampleNode extends MGXNodeBase {
             if (!cancelled) {
                 Sample s = getLookup().lookup(Sample.class);
                 DNAExtract extract = wd.getDNAExtract();
-                extract.setSample(s);
-                s.addDNAExtract(extract);
+                extract.setSampleId(s.getId());
                 getMaster().DNAExtract().create(extract);
                 nf.refreshChildren();
             }
