@@ -27,7 +27,7 @@ public class SampleDTOFactory extends DTOConversionBase<Sample, SampleDTO> {
         if (s.getId() != null) {
             b.setId(s.getId());
         }
-        b = b.setHabitatId(s.getHabitat().getId())
+        b = b.setHabitatId(s.getHabitatId())
                 .setTemperature(s.getTemperature())
                 .setMaterial(s.getMaterial())
                 .setVolume(s.getVolume());
@@ -40,16 +40,14 @@ public class SampleDTOFactory extends DTOConversionBase<Sample, SampleDTO> {
     @Override
     public final Sample toModel(SampleDTO dto) {
         Sample s = new Sample()
+                .setHabitatId(dto.getHabitatId())
                 .setCollectionDate(toDate(dto.getCollectiondate()))
                 .setMaterial(dto.getMaterial())
                 .setTemperature(dto.getTemperature())
                 .setVolume(dto.getVolume())
                 .setVolumeUnit(dto.getVolumeUnit());
-
-        if (dto.hasId())
-            s.setId(dto.getId());
-
+        
+        s.setId(dto.getId());
         return s;
-        // cannot set habitat here
     }
 }

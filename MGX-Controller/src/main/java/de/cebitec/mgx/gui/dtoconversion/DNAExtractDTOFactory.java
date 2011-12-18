@@ -28,7 +28,7 @@ public class DNAExtractDTOFactory extends DTOConversionBase<DNAExtract, DNAExtra
         if (d.getId() != null) {
             b.setId(d.getId());
         }
-        b = b.setSampleId(d.getSample().getId());
+        b = b.setSampleId(d.getSampleId());
 
         b = b.setMethod(d.getMethod());
         b = b.setProtocolName(d.getProtocol());
@@ -47,12 +47,9 @@ public class DNAExtractDTOFactory extends DTOConversionBase<DNAExtract, DNAExtra
     public final DNAExtract toModel(DNAExtractDTO dto) {
         DNAExtract d = new DNAExtract();
 
-        if (dto.hasId()) {
-            d.setId(dto.getId());
-        }
-
-        d.setMethod(dto.getMethod());
-        d.setProtocol(dto.getProtocolName());
+        d.setSampleId(dto.getSampleId())
+                .setMethod(dto.getMethod())
+                .setProtocol(dto.getProtocolName());
 
         if (dto.hasFivePrimePrimer()) {
             d.setFivePrimer(dto.getFivePrimePrimer());
@@ -70,6 +67,7 @@ public class DNAExtractDTOFactory extends DTOConversionBase<DNAExtract, DNAExtra
             d.setDescription(dto.getDescription());
         }
 
+        d.setId(dto.getId());
         return d;
     }
 }

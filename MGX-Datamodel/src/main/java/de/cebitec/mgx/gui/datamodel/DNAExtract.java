@@ -1,16 +1,13 @@
 package de.cebitec.mgx.gui.datamodel;
 
-import java.util.Collection;
-import java.util.HashSet;
-
 /**
  *
  * @author sjaenick
  */
 public class DNAExtract extends ModelBase {
 
-    protected Collection<SeqRun> seqruns = new HashSet<SeqRun>();
-    protected Sample sample;
+//    protected Collection<SeqRun> seqruns = new HashSet<SeqRun>();
+//    protected Sample sample;
     protected String method;
     protected String protocol;
     protected String fivePrimer;
@@ -18,26 +15,15 @@ public class DNAExtract extends ModelBase {
     protected String targetGene;
     protected String targetFragment;
     protected String description;
+    protected long sample_id;
 
-    public Sample getSample() {
-        return sample;
+    public DNAExtract setSampleId(long sampleId) {
+        sample_id = sampleId;
+        return this;
     }
 
-    public void setSample(Sample sample) {
-        this.sample = sample;
-    }
-
-    public Collection<SeqRun> getSeqruns() {
-        return seqruns;
-    }
-
-    public void setSeqruns(Collection<SeqRun> seqruns) {
-        this.seqruns = seqruns;
-    }
-
-    public void addSeqRun(SeqRun s) {
-        getSeqruns().add(s);
-        s.setExtract(this);
+    public long getSampleId() {
+        return sample_id;
     }
 
     public String getMethod() {
@@ -93,7 +79,7 @@ public class DNAExtract extends ModelBase {
         this.threePrimer = threePrimer;
         return this;
     }
-    
+
     public String getDescription() {
         return description;
     }

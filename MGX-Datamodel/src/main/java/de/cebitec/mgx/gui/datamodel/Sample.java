@@ -1,8 +1,6 @@
 package de.cebitec.mgx.gui.datamodel;
 
-import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 
 /**
  *
@@ -15,16 +13,26 @@ public class Sample extends ModelBase {
     protected double temperature;
     protected int volume;
     protected String volume_unit;
-    protected Collection<DNAExtract> extracts = new HashSet<DNAExtract>();
-    protected Habitat habitat;
-
-    public Habitat getHabitat() {
-        return habitat;
+    protected long habitat_id;
+//    protected Collection<DNAExtract> extracts = new HashSet<DNAExtract>();
+//    protected Habitat habitat;
+//
+//    public Habitat getHabitat() {
+//        return habitat;
+//    }
+//
+//    public Sample setHabitat(Habitat h) {
+//        habitat = h;
+//        return this;
+//    }
+    
+    public Sample setHabitatId(long habId) {
+        habitat_id = habId;
+        return this;
     }
 
-    public Sample setHabitat(Habitat h) {
-        habitat = h;
-        return this;
+    public long getHabitatId() {
+        return habitat_id;
     }
 
     public Date getCollectionDate() {
@@ -72,20 +80,20 @@ public class Sample extends ModelBase {
         return this;
     }
 
-    public Collection<DNAExtract> getDNAExtracts() {
-        return extracts;
-    }
-
-    public Sample setDNAExtracts(Collection<DNAExtract> extracts) {
-        this.extracts = extracts;
-        return this;
-    }
-
-    public Sample addDNAExtract(DNAExtract d) {
-        getDNAExtracts().add(d);
-        d.setSample(this);
-        return this;
-    }
+//    public Collection<DNAExtract> getDNAExtracts() {
+//        return extracts;
+//    }
+//
+//    public Sample setDNAExtracts(Collection<DNAExtract> extracts) {
+//        this.extracts = extracts;
+//        return this;
+//    }
+//
+//    public Sample addDNAExtract(DNAExtract d) {
+//        getDNAExtracts().add(d);
+//        d.setSample(this);
+//        return this;
+//    }
 
     @Override
     public int hashCode() {

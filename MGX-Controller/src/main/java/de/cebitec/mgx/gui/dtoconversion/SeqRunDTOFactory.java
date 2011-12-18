@@ -25,7 +25,7 @@ public class SeqRunDTOFactory extends DTOConversionBase<SeqRun, SeqRunDTO> {
     @Override
     public final SeqRunDTO toDTO(SeqRun s) {
         Builder b = SeqRunDTO.newBuilder()
-                .setExtractId(s.getExtract().getId())
+                .setExtractId(s.getExtractId())
                 .setSequencingTechnology(s.getSequencingTechnology())
                 .setSequencingMethod(s.getSequencingMethod())
                 .setSubmittedToInsdc(s.getSubmittedToINSDC());
@@ -45,6 +45,7 @@ public class SeqRunDTOFactory extends DTOConversionBase<SeqRun, SeqRunDTO> {
     @Override
     public final SeqRun toModel(SeqRunDTO dto) {
         SeqRun s = new SeqRun()
+                .setDNAExtractId(dto.getExtractId())
                 .setSequencingTechnology(dto.getSequencingTechnology())
                 .setSequencingMethod(dto.getSequencingMethod())
                 .setSubmittedToINSDC(dto.getSubmittedToInsdc());
@@ -53,11 +54,7 @@ public class SeqRunDTOFactory extends DTOConversionBase<SeqRun, SeqRunDTO> {
             s.setAccession(dto.getAccession());
         }
 
-        if (dto.hasId()) {
-            s.setId(dto.getId());
-        }
-
+        s.setId(dto.getId());
         return s;
-        // cannot set extract here
     }
 }

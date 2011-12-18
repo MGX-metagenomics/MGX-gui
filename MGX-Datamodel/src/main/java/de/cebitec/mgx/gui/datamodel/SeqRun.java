@@ -1,26 +1,24 @@
 package de.cebitec.mgx.gui.datamodel;
 
-import java.util.Collection;
-
 /**
  *
  * @author sjaenick
  */
 public class SeqRun extends ModelBase {
 
-    protected DNAExtract dnaextract;
     protected String sequencing_technology;
     protected String sequencing_method;
     protected Boolean submitted_to_insdc;
     protected String database_accession;
+    protected long extract_id;
 
-    public DNAExtract getExtract() {
-        return dnaextract;
+    public SeqRun setDNAExtractId(long extractId) {
+        extract_id = extractId;
+        return this;
     }
 
-    public SeqRun setExtract(DNAExtract dnaextract) {
-        this.dnaextract = dnaextract;
-        return this;
+    public long getExtractId() {
+        return extract_id;
     }
 
     public String getAccession() {

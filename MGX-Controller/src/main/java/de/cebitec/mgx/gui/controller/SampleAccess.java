@@ -87,7 +87,6 @@ public class SampleAccess extends AccessBase<Sample> {
         try {
             for (SampleDTO dto : getDTOmaster().Sample().ByHabitat(h.getId())) {
                 Sample s = SampleDTOFactory.getInstance().toModel(dto);
-                s.setHabitat(h);
                 all.add(s);
             }
         } catch (MGXServerException ex) {

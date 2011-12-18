@@ -48,9 +48,7 @@ public class JobDTOFactory extends DTOConversionBase<Job, JobDTO> {
                 .setStartDate(toDate(dto.getStartDate()))
                 .setFinishDate(toDate(dto.getFinishDate()));
 
-        if (dto.hasId())
-            j.setId(dto.getId());
-
+        j.setId(dto.getId());
         return j;
     }
 }

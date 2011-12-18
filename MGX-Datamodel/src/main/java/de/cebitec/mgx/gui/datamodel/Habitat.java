@@ -16,22 +16,22 @@ public class Habitat extends ModelBase {
     protected String description;
     protected int altitude;
     protected String biome;
-    protected Collection<Sample> samples = new HashSet<Sample>();
-
-    public Collection<Sample> getSamples() {
-        return samples;
-    }
-
-    public Habitat addSample(Sample s) {
-        getSamples().add(s);
-        s.setHabitat(this);
-        return this;
-    }
-
-    public Habitat setSamples(Collection<Sample> samples) {
-        this.samples = samples;
-        return this;
-    }
+//    protected Collection<Sample> samples = new HashSet<Sample>();
+//
+//    public Collection<Sample> getSamples() {
+//        return samples;
+//    }
+//
+//    public Habitat addSample(Sample s) {
+//        getSamples().add(s);
+//        s.setHabitat(this);
+//        return this;
+//    }
+//
+//    public Habitat setSamples(Collection<Sample> samples) {
+//        this.samples = samples;
+//        return this;
+//    }
 
     public String getName() {
         return name;

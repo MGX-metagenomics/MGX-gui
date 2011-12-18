@@ -51,10 +51,7 @@ public class HabitatDTOFactory extends DTOConversionBase<Habitat, HabitatDTO> {
                 h.setDescription(dto.getDescription());
         }
 
-        if (dto.hasId()) {
-            h.setId(dto.getId());
-        }
-
+        h.setId(dto.getId());
         return h;
     }
 }

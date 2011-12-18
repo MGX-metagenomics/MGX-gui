@@ -7,8 +7,6 @@ package de.cebitec.mgx.gui.datamodel;
 public class Sequence extends ModelBase {
 
     protected String name;
-    //
-    protected SeqRun seqrun;
 
     public String getName() {
         return name;

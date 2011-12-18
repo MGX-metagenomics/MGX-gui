@@ -87,7 +87,6 @@ public class SeqRunAccess extends AccessBase<SeqRun> {
         try {
             for (SeqRunDTO dto : getDTOmaster().SeqRun().ByExtract(extract.getId())) {
                 SeqRun sr = SeqRunDTOFactory.getInstance().toModel(dto);
-                sr.setExtract(extract);
                 all.add(sr);
             }
         } catch (MGXServerException ex) {

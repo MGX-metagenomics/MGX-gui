@@ -87,7 +87,6 @@ public class DNAExtractAccess extends AccessBase<DNAExtract> {
         try {
             for (DNAExtractDTO dto : getDTOmaster().DNAExtract().BySample(s.getId())) {
                 DNAExtract extract = DNAExtractDTOFactory.getInstance().toModel(dto);
-                extract.setSample(s);
                 all.add(extract);
             }
         } catch (MGXServerException ex) {
