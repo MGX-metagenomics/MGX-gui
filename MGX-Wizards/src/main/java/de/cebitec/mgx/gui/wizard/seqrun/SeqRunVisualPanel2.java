@@ -1,7 +1,5 @@
 package de.cebitec.mgx.gui.wizard.seqrun;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -23,6 +21,7 @@ public final class SeqRunVisualPanel2 extends JPanel {
             public void propertyChange(PropertyChangeEvent evt) {
                 if ("SelectedFileChangedProperty".equals(evt.getPropertyName())) {
                     file = fchooser.getSelectedFile();
+                    System.err.println("FILE: "+file.getName());
                     firePropertyChange(PROP_SEQFILE, 0, 1);
                 }
             }
