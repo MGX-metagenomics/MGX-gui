@@ -68,7 +68,8 @@
         <module>MGX-Controller</module>
         <module>DTO-Wrapper</module>
         <module>SwingX-Wrapper</module>
-    </modules>
+    <module>MGX-TaskView</module>
+  </modules>
 
     <properties>
         <netbeans.version>RELEASE701</netbeans.version>
