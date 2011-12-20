@@ -28,6 +28,7 @@ public class SampleAccess extends AccessBase<Sample> {
         } catch (MGXClientException ex) {
             Logger.getLogger(SampleAccess.class.getName()).log(Level.SEVERE, null, ex);
         }
+        obj.setId(id);
         return id;
     }
 

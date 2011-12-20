@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.controller;
 
 import de.cebitec.mgx.client.exception.MGXServerException;
+import de.cebitec.mgx.client.upload.SeqUploader;
 import de.cebitec.mgx.gui.datamodel.Sequence;
 import de.cebitec.mgx.sequence.SeqReaderI;
 import java.util.List;
@@ -19,6 +20,10 @@ public class SequenceAccess extends AccessBase<Sequence> {
         } catch (MGXServerException ex) {
             Logger.getLogger(SequenceAccess.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    public SeqUploader createUploader(long seqrun_id, SeqReaderI reader) {
+        return getDTOmaster().Sequence().createUploader(seqrun_id, reader);
     }
 
     @Override

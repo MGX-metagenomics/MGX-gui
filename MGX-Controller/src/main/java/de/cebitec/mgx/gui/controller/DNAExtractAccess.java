@@ -28,6 +28,7 @@ public class DNAExtractAccess extends AccessBase<DNAExtract> {
         } catch (MGXClientException ex) {
             Logger.getLogger(DNAExtractAccess.class.getName()).log(Level.SEVERE, null, ex);
         }
+        obj.setId(id);
         return id;
     }
     

@@ -28,6 +28,7 @@ public class SeqRunAccess extends AccessBase<SeqRun> {
         } catch (MGXClientException ex) {
             Logger.getLogger(SeqRunAccess.class.getName()).log(Level.SEVERE, null, ex);
         }
+        obj.setId(id);
         return id;
     }
 

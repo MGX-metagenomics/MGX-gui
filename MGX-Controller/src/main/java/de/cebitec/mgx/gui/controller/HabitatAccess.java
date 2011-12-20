@@ -27,6 +27,7 @@ public class HabitatAccess extends AccessBase<Habitat> {
         } catch (MGXClientException ex) {
             Logger.getLogger(HabitatAccess.class.getName()).log(Level.SEVERE, null, ex);
         }
+        obj.setId(id);
         return id;
     }
 
