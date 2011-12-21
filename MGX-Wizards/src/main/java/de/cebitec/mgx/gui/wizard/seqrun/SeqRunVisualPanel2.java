@@ -21,7 +21,6 @@ public final class SeqRunVisualPanel2 extends JPanel {
             public void propertyChange(PropertyChangeEvent evt) {
                 if ("SelectedFileChangedProperty".equals(evt.getPropertyName())) {
                     file = fchooser.getSelectedFile();
-                    System.err.println("FILE: "+file.getName());
                     firePropertyChange(PROP_SEQFILE, 0, 1);
                 }
             }
@@ -75,7 +74,7 @@ public final class SeqRunVisualPanel2 extends JPanel {
         @Override
         public boolean accept(File f) {
             if (f.isDirectory()) {
-                return false;
+                return true;
             }
 
             String extension = Utils.getExtension(f);
