@@ -11,6 +11,7 @@ import org.openide.NotificationLineSupport;
 import org.openide.util.NbPreferences;
 import de.cebitec.mgx.gui.login.configuration.MGXserverPanel;
 import de.cebitec.mgx.restgpms.GPMS;
+import java.awt.EventQueue;
 import org.openide.util.Lookup;
 import org.openide.windows.Mode;
 import org.openide.windows.WindowManager;
@@ -74,10 +75,16 @@ public class LoginHandler implements ActionListener {
             String user = panel.getUser();
             String password = panel.getPassword();
             NbPreferences.forModule(MGXserverPanel.class).put("lastLogin", user);
-            GPMS gpms = new GPMS(servername, serveruri);
+            final GPMS gpms = new GPMS(servername, serveruri);
             if (gpms.login(user, password)) {
                 dialog.setClosingOptions(new Object[]{DialogDescriptor.CANCEL_OPTION, DialogDescriptor.OK_OPTION});
-                openProjectExplorer(gpms);
+                EventQueue.invokeLater(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        openProjectExplorer(gpms);
+                    }
+                });
             } else {
                 dialog.setClosingOptions(new Object[]{DialogDescriptor.CANCEL_OPTION});
                 nline.setErrorMessage("Login failed: " + gpms.getError());
