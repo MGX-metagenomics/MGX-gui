@@ -5,17 +5,17 @@ import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.DNAExtract;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.nodefactory.SeqRunNodeFactory;
+import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
 import de.cebitec.mgx.gui.wizard.extract.DNAExtractWizardDescriptor;
 import de.cebitec.mgx.gui.wizard.seqrun.SeqRunWizardDescriptor;
 import de.cebitec.mgx.sequence.SeqReaderFactory;
 import de.cebitec.mgx.sequence.SeqReaderI;
-import de.cebitec.mgx.sequence.SeqStoreException;
 import java.awt.Dialog;
 import java.awt.event.ActionEvent;
-import java.io.IOException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.SwingWorker;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.WizardDescriptor;
@@ -107,32 +107,70 @@ public class DNAExtractNode extends MGXNodeBase {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            SeqRunWizardDescriptor wd = new SeqRunWizardDescriptor();
+            final SeqRunWizardDescriptor wd = new SeqRunWizardDescriptor();
             Dialog dialog = DialogDisplayer.getDefault().createDialog(wd);
             dialog.setVisible(true);
             dialog.toFront();
             boolean cancelled = wd.getValue() != WizardDescriptor.FINISH_OPTION;
             if (!cancelled) {
                 DNAExtract extract = getLookup().lookup(DNAExtract.class);
-                SeqRun seqrun = wd.getSeqRun();
+                final SeqRun seqrun = wd.getSeqRun();
                 seqrun.setDNAExtractId(extract.getId());
-                getMaster().SeqRun().create(seqrun);
-                snf.refreshChildren();
 
-                // now, we need to create a sequence upload task
-                SeqReaderI reader = null;
-                try {
-                    String canonicalPath = wd.getSequenceFile().getCanonicalPath();
-                    reader = SeqReaderFactory.getReader(canonicalPath);
-                } catch (IOException ex) {
-                    Exceptions.printStackTrace(ex);
-                } catch (SeqStoreException ex) {
-                    Exceptions.printStackTrace(ex);
-                }
+                SwingWorker<Void, Void> sw = new SwingWorker<Void, Void>() {
 
-                final SeqUploader uploader = getMaster().Sequence().createUploader(seqrun.getId(), reader);
-                TaskManager.getInstance().addUploadTask(uploader);
-                //TopComponent findTopComponent = WindowManager.getDefault().findTopComponent("TaskViewTopComponent");
+                    @Override
+                    protected Void doInBackground() throws Exception {
+
+                        getMaster().SeqRun().create(seqrun);
+
+                        // create a sequence reader
+                        String canonicalPath = null;
+                        SeqReaderI reader = null;
+                        try {
+                            canonicalPath = wd.getSequenceFile().getCanonicalPath();
+                            reader = SeqReaderFactory.getReader(canonicalPath);
+                        } catch (Exception ex) {
+                            Exceptions.printStackTrace(ex);
+                        }
+                        final SeqUploader uploader = getMaster().Sequence().createUploader(seqrun.getId(), reader);
+//                        uploader.setProgressCallback(new CallbackI() {
+//
+//                            @Override
+//                            public void callback(int i) {
+//                                System.err.println("sent " + i + " sequences");
+//                            }
+//                        });
+                        MGXTask run = new MGXTask() {
+
+                            @Override
+                            public void process() {
+                                uploader.upload();
+                            }
+
+                            @Override
+                            public void finished() {
+                                snf.refreshChildren();
+                            }
+
+                            @Override
+                            public String getStatus() {
+                                return uploader.getNumSequencesSent() + " sequences sent";
+                            }
+
+                            @Override
+                            public void failed() {
+                                getMaster().SeqRun().delete(seqrun.getId());
+                                snf.refreshChildren();
+                            }
+                        };
+                        uploader.addPropertyChangeListener(run);
+
+                        TaskManager.getInstance().addTask("Upload " + canonicalPath, run);
+                        return null;
+                    }
+                };
+                sw.execute();
             }
         }
     }

@@ -2,12 +2,15 @@ package de.cebitec.mgx.gui.nodes;
 
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
+import de.cebitec.mgx.gui.taskview.MGXTask;
+import de.cebitec.mgx.gui.taskview.TaskManager;
 import de.cebitec.mgx.gui.wizard.seqrun.SeqRunWizardDescriptor;
 import java.awt.Dialog;
 import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import org.openide.DialogDisplayer;
+import org.openide.NotifyDescriptor;
 import org.openide.WizardDescriptor;
 import org.openide.nodes.Children;
 import org.openide.util.lookup.Lookups;
@@ -36,7 +39,7 @@ public class SeqRunNode extends MGXNodeBase {
 
     @Override
     public Action[] getActions(boolean context) {
-        return new Action[]{new EditSeqRun()};
+        return new Action[]{new EditSeqRun(), new DeleteSeqRun()};
     }
 
     private class EditSeqRun extends AbstractAction {
@@ -58,6 +61,56 @@ public class SeqRunNode extends MGXNodeBase {
                 seqrun = wd.getSeqRun();
                 getMaster().SeqRun().update(seqrun);
                 fireDisplayNameChange(oldDisplayName, seqrun.getSequencingMethod() + " run");
+            }
+        }
+    }
+
+    private class DeleteSeqRun extends AbstractAction {
+
+        public DeleteSeqRun() {
+            putValue(NAME, "Delete");
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            final SeqRun sr = getLookup().lookup(SeqRun.class);
+            NotifyDescriptor d = new NotifyDescriptor("Really delete sequencing run " + sr.getSequencingMethod() + "?",
+                    "Delete sequencing run",
+                    NotifyDescriptor.YES_NO_OPTION,
+                    NotifyDescriptor.QUESTION_MESSAGE,
+                    null,
+                    null);
+            Object ret = DialogDisplayer.getDefault().notify(d);
+            if (NotifyDescriptor.YES_OPTION.equals(ret)) {
+                // update display name to indicate this object is currently being modified
+                String oldDisplayName = sr.getSequencingMethod() + " run";
+                String newName = new StringBuilder("<html><s>")
+                        .append(sr.getSequencingMethod())
+                        .append(" run</s></html>")
+                        .toString();
+                fireDisplayNameChange(oldDisplayName, newName);
+                // FIXME disable actions?
+                
+                MGXTask deleteTask = new MGXTask() {
+
+                    @Override
+                    public void process() {
+                        getMaster().SeqRun().delete(sr.getId());
+                    }
+
+                    @Override
+                    public void finished() {
+                        fireNodeDestroyed();
+                    }
+
+                    @Override
+                    public String getStatus() {
+                        return "Deleting..";
+                    }
+
+                };
+                
+                TaskManager.getInstance().addTask("Delete "+sr.getSequencingMethod(), deleteTask);
             }
         }
     }
