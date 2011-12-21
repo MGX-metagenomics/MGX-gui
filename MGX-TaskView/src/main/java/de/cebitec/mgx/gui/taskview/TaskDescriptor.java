@@ -1,57 +1,79 @@
 package de.cebitec.mgx.gui.taskview;
 
-import de.cebitec.mgx.client.upload.SeqUploader;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import javax.swing.JComponent;
-import org.netbeans.api.progress.ProgressHandle;
-import org.netbeans.api.progress.ProgressHandleFactory;
 
 /**
  *
  * @author sjaenick
  */
-public class TaskDescriptor extends TaskBase {
+public class TaskDescriptor implements Comparable<TaskDescriptor>, PropertyChangeListener {
 
-    private Runnable run;
-    private ProgressHandle ph;
-    private TaskEntry te;
+    private MGXTask run;
+//    private ProgressHandle ph;
+    private TaskListEntry te;
     private long startTime;
+    private final PropertyChangeSupport pcs;
 
-    public TaskDescriptor(final SeqUploader su) {
+    public TaskDescriptor(String tName, final MGXTask r) {
         startTime = System.currentTimeMillis();
-        this.run = new Runnable() {
+        pcs = new PropertyChangeSupport(this);
+        this.run = r;
+        run.addPropertyChangeListener(this);
 
-            @Override
-            public void run() {
-                su.upload();
-            }
-        };
-        te = new TaskEntry();
-        ph = ProgressHandleFactory.createHandle("myName");
-        ph.switchToIndeterminate();
-        ph.start();
+        //
+//        ph = ProgressHandleFactory.createHandle(tName);
+        te = new TaskListEntry();
+        te.setMainText(tName);
+//        te.setDetailText(r.getStatus());
+
+//        te.setMainText(ProgressHandleFactory.createMainLabelComponent(ph));
+//        //te.setDetailText(ProgressHandleFactory.createDetailLabelComponent(ph));
+//        te.setDetailText(new JLabel(run.getStatus()));
+//        te.setProgressBar(ProgressHandleFactory.createProgressComponent(ph));
+//        te.build();
+        //
+//        ph.start();
+//        ph.switchToIndeterminate();
     }
 
-    @Override
-    public void run() {
-        run.run();
-        ph.finish();
-    }
-
-    @Override
-    public ProgressHandle getProgressHandle() {
-        return ph;
-    }
-    
     public JComponent getTaskEntry() {
-        te.setMainText(ProgressHandleFactory.createMainLabelComponent(ph));
-        te.setDetailText(ProgressHandleFactory.createDetailLabelComponent(ph));
-        te.setProgressBar(ProgressHandleFactory.createProgressComponent(ph));
-        te.build();
-        return te; 
+        te.setDetailText(run.getStatus());
+        return te;
+    }
+
+    public void finished() {
+//        ph.finish();
+        run.finished();
+    }
+
+    private long getStartTime() {
+        return startTime;
     }
 
     @Override
-    public long getStartTime() {
-        return startTime;
+    public int compareTo(TaskDescriptor compareObject) {
+        if (getStartTime() < compareObject.getStartTime()) {
+            return -1;
+        } else if (getStartTime() == compareObject.getStartTime()) {
+            return 0;
+        } else {
+            return 1;
+        }
+    }
+
+    public void addPropertyChangeListener(PropertyChangeListener p) {
+        pcs.addPropertyChangeListener(p);
+    }
+
+    public void removePropertyChangeListener(PropertyChangeListener p) {
+        pcs.removePropertyChangeListener(p);
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent pce) {
+        pcs.firePropertyChange(pce);
     }
 }

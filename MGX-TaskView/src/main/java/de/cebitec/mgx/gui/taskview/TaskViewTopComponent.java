@@ -8,13 +8,17 @@ import java.util.List;
 import javax.swing.AbstractListModel;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
+import javax.swing.ListSelectionModel;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.util.lookup.ServiceProvider;
 
 /**
  * Top component which displays something.
@@ -29,6 +33,7 @@ persistenceType = TopComponent.PERSISTENCE_ALWAYS)
 @ActionReference(path = "Menu/Window" /*, position = 333 */)
 @TopComponent.OpenActionRegistration(displayName = "#CTL_TaskViewAction",
 preferredID = "TaskViewTopComponent")
+@ServiceProvider(service = TaskViewTopComponent.class)
 public final class TaskViewTopComponent extends TopComponent {
 
     public TaskViewTopComponent() {
@@ -38,7 +43,14 @@ public final class TaskViewTopComponent extends TopComponent {
         putClientProperty(TopComponent.PROP_MAXIMIZATION_DISABLED, Boolean.TRUE);
         tasklist.setCellRenderer(new TaskListRenderer());
         tasklist.setModel(new AbstractListModelImpl());
+//        tasklist.setListData(TaskManager.getInstance().getActiveTasks().toArray());
+       // tasklist.addListSelectionListener(new MyListSelectionListener());
     }
+
+//    public void refreshList() {
+//        List<TaskDescriptor> activeTasks = TaskManager.getInstance().getActiveTasks();
+//        tasklist.setListData(activeTasks.toArray());
+//    }
 
     /** This method is called from within the constructor to
      * initialize the form.
@@ -52,13 +64,17 @@ public final class TaskViewTopComponent extends TopComponent {
         tasklist = new javax.swing.JList();
 
         jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        jScrollPane1.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 
+        tasklist.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(TaskViewTopComponent.class, "TaskViewTopComponent.tasklist.border.title"))); // NOI18N
         tasklist.setModel(new javax.swing.AbstractListModel() {
             String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });
+        tasklist.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jScrollPane1.setViewportView(tasklist);
+        tasklist.getAccessibleContext().setAccessibleName(org.openide.util.NbBundle.getMessage(TaskViewTopComponent.class, "TaskViewTopComponent.tasklist.AccessibleContext.accessibleName")); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -106,7 +122,6 @@ public final class TaskViewTopComponent extends TopComponent {
             return td.getTaskEntry();
         }
     }
-
     private class AbstractListModelImpl extends AbstractListModel implements PropertyChangeListener {
 
         private List<ListDataListener> listeners = null;
@@ -143,6 +158,27 @@ public final class TaskViewTopComponent extends TopComponent {
             ListDataEvent lde = new ListDataEvent(this, ListDataEvent.CONTENTS_CHANGED, 0, getSize());
             for (ListDataListener l : listeners) {
                 l.contentsChanged(lde);
+            }
+        }
+    }
+
+    private final class MyListSelectionListener implements ListSelectionListener {
+
+        @Override
+        public void valueChanged(ListSelectionEvent e) {
+            JList l = (JList) e.getSource();
+            ListSelectionModel lsm = l.getSelectionModel();
+
+            int firstIndex = e.getFirstIndex();
+            int lastIndex = e.getLastIndex();
+            boolean isAdjusting = e.getValueIsAdjusting();
+
+            // Find out which indexes are selected.
+            int idx = lsm.getMinSelectionIndex();
+            System.err.println("selected idx "+idx);
+            if (idx != -1) {
+                TaskDescriptor td = TaskManager.getInstance().getActiveTasks().get(idx);
+                //TaskManager.getInstance().removeTask(td);
             }
         }
     }
