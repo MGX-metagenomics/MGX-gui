@@ -1,19 +1,11 @@
 package de.cebitec.mgx.gui.taskview;
 
-import java.awt.Component;
+import java.awt.BorderLayout;
 import java.awt.EventQueue;
+import java.awt.GridLayout;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
 import java.util.List;
-import javax.swing.AbstractListModel;
-import javax.swing.JList;
-import javax.swing.ListCellRenderer;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.ListDataEvent;
-import javax.swing.event.ListDataListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
@@ -58,7 +50,7 @@ public final class TaskViewTopComponent extends TopComponent implements Property
 
         scrollpane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
-        tasklistpanel.setLayout(new javax.swing.BoxLayout(tasklistpanel, javax.swing.BoxLayout.Y_AXIS));
+        tasklistpanel.setLayout(new java.awt.GridLayout(1, 1));
         scrollpane.setViewportView(tasklistpanel);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -104,12 +96,17 @@ public final class TaskViewTopComponent extends TopComponent implements Property
     }
 
     private void refreshList() {
+        if (EventQueue.isDispatchThread()) {
+            System.err.println("refreshList() in EDT");
+        }
         EventQueue.invokeLater(new Runnable() {
 
             @Override
             public void run() {
                 tasklistpanel.removeAll();
-                for (TaskDescriptor td : TaskManager.getInstance().getActiveTasks()) {
+                List<TaskDescriptor> activeTasks = TaskManager.getInstance().getActiveTasks();
+                tasklistpanel.setLayout(new GridLayout(1, activeTasks.size() < 10 ? 10 : activeTasks.size()));
+                for (TaskDescriptor td : activeTasks) {
                     tasklistpanel.add(td.getTaskEntry());
                 }
             }
