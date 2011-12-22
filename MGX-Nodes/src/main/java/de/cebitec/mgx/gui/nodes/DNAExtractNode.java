@@ -13,6 +13,7 @@ import de.cebitec.mgx.sequence.SeqReaderFactory;
 import de.cebitec.mgx.sequence.SeqReaderI;
 import java.awt.Dialog;
 import java.awt.event.ActionEvent;
+import java.beans.PropertyChangeEvent;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.SwingWorker;
@@ -134,13 +135,6 @@ public class DNAExtractNode extends MGXNodeBase {
                             Exceptions.printStackTrace(ex);
                         }
                         final SeqUploader uploader = getMaster().Sequence().createUploader(seqrun.getId(), reader);
-//                        uploader.setProgressCallback(new CallbackI() {
-//
-//                            @Override
-//                            public void callback(int i) {
-//                                System.err.println("sent " + i + " sequences");
-//                            }
-//                        });
                         MGXTask run = new MGXTask() {
 
                             @Override
@@ -154,15 +148,19 @@ public class DNAExtractNode extends MGXNodeBase {
                             }
 
                             @Override
-                            public String getStatus() {
-                                return uploader.getNumSequencesSent() + " sequences sent";
-                            }
-
-                            @Override
                             public void failed() {
                                 getMaster().SeqRun().delete(seqrun.getId());
                                 snf.refreshChildren();
                             }
+
+                            @Override
+                            public void propertyChange(PropertyChangeEvent pce) {
+                                //super.propertyChange(pce);
+                                if (pce.getPropertyName().equals(SeqUploader.NUM_SEQUENCES)) {
+                                    setStatus(String.format("%1$d sequences sent", pce.getNewValue()));
+                                }
+                            }
+                            
                         };
                         uploader.addPropertyChangeListener(run);
 
