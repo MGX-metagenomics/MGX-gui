@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import org.openide.util.Lookup;
 import org.openide.util.RequestProcessor;
 import org.openide.util.RequestProcessor.Task;
@@ -23,6 +22,7 @@ import org.openide.windows.WindowManager;
  */
 public class TaskManager implements PropertyChangeListener {
 
+    public static final String TASKMANAGER_CHANGE = "tmChange";
     private static TaskManager instance;
     private RequestProcessor reqProcessor = null;
     private Map<Task, TaskDescriptor> currentTasks = new HashMap<Task, TaskDescriptor>();
@@ -48,12 +48,16 @@ public class TaskManager implements PropertyChangeListener {
     }
 
     public void removeTask(TaskDescriptor td) {
+        boolean found = false;
         for (Entry<Task, TaskDescriptor> e : currentTasks.entrySet()) {
             if (e.getValue() == td) {
                 currentTasks.remove(e.getKey());
+                found = true;
             }
         }
-        fireTaskChange();
+        if (found) {
+            fireTaskChange();
+        }
     }
 
     public void addTask(String taskName, final MGXTask run) {
@@ -73,15 +77,10 @@ public class TaskManager implements PropertyChangeListener {
                 if (!taskViewer.isOpened()) {
                     taskViewer.open();
                     taskViewer.requestActive();
-                    //taskViewer.refreshList();
                     fireTaskChange();
-                    //pcs.firePropertyChange("TASK", 0, 1);
                 }
             }
         });
-
-        fireTaskChange();
-
     }
 
     public void addPropertyChangeListener(PropertyChangeListener p) {
@@ -93,8 +92,7 @@ public class TaskManager implements PropertyChangeListener {
     }
 
     private void fireTaskChange() {
-        //taskViewer.refreshList();
-        pcs.firePropertyChange("TASK", 0, 1);
+        pcs.firePropertyChange(TASKMANAGER_CHANGE, 0, 1);
     }
 
     private TaskViewTopComponent getTaskViewer() {
@@ -116,7 +114,6 @@ public class TaskManager implements PropertyChangeListener {
         public void taskFinished(org.openide.util.Task task) {
             TaskDescriptor td = currentTasks.get(task);
             if (task.isFinished()) {
-                System.err.println("task finished");
                 td.finished();
             } else {
                 System.err.println("task NOT finished");

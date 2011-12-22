@@ -1,9 +1,9 @@
 package de.cebitec.mgx.gui.taskview;
 
+import java.awt.EventQueue;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import javax.swing.JComponent;
 
 /**
  *
@@ -11,10 +11,11 @@ import javax.swing.JComponent;
  */
 public class TaskDescriptor implements Comparable<TaskDescriptor>, PropertyChangeListener {
 
+    public static final String TASKDESCRIPTOR_CHANGE = "tdChanged";
     private MGXTask run;
-//    private ProgressHandle ph;
     private TaskListEntry te;
     private long startTime;
+    private long endTime;
     private final PropertyChangeSupport pcs;
 
     public TaskDescriptor(String tName, final MGXTask r) {
@@ -23,30 +24,22 @@ public class TaskDescriptor implements Comparable<TaskDescriptor>, PropertyChang
         this.run = r;
         run.addPropertyChangeListener(this);
 
-        //
-//        ph = ProgressHandleFactory.createHandle(tName);
         te = new TaskListEntry();
         te.setMainText(tName);
-//        te.setDetailText(r.getStatus());
-
-//        te.setMainText(ProgressHandleFactory.createMainLabelComponent(ph));
-//        //te.setDetailText(ProgressHandleFactory.createDetailLabelComponent(ph));
-//        te.setDetailText(new JLabel(run.getStatus()));
-//        te.setProgressBar(ProgressHandleFactory.createProgressComponent(ph));
-//        te.build();
-        //
-//        ph.start();
-//        ph.switchToIndeterminate();
     }
 
-    public JComponent getTaskEntry() {
-        te.setDetailText(run.getStatus());
+    public TaskListEntry getTaskEntry() {
         return te;
     }
 
     public void finished() {
-//        ph.finish();
+        endTime = System.currentTimeMillis();
+        te.finished();
         run.finished();
+    }
+    
+    long getEndTime() {
+        return endTime;
     }
 
     private long getStartTime() {
@@ -73,7 +66,18 @@ public class TaskDescriptor implements Comparable<TaskDescriptor>, PropertyChang
     }
 
     @Override
-    public void propertyChange(PropertyChangeEvent pce) {
-        pcs.firePropertyChange(pce);
+    public void propertyChange(final PropertyChangeEvent pce) {
+        if (pce.getPropertyName().equals(MGXTask.TASK_STATUSLINE_CHANGED)) {
+            EventQueue.invokeLater(new Runnable() {
+
+                @Override
+                public void run() {
+                    getTaskEntry().setDetailText((String) pce.getNewValue());
+                    pcs.firePropertyChange(TASKDESCRIPTOR_CHANGE, 0, 1);
+                }
+            });
+        } else if (pce.getPropertyName().equals(MGXTask.TASK_CHANGED)) {
+            pcs.firePropertyChange(TASKDESCRIPTOR_CHANGE, 0, 1);
+        }
     }
 }

@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.taskview;
 
 import java.awt.Component;
+import java.awt.EventQueue;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -34,23 +35,15 @@ persistenceType = TopComponent.PERSISTENCE_ALWAYS)
 @TopComponent.OpenActionRegistration(displayName = "#CTL_TaskViewAction",
 preferredID = "TaskViewTopComponent")
 @ServiceProvider(service = TaskViewTopComponent.class)
-public final class TaskViewTopComponent extends TopComponent {
+public final class TaskViewTopComponent extends TopComponent implements PropertyChangeListener {
 
     public TaskViewTopComponent() {
         initComponents();
         setName(NbBundle.getMessage(TaskViewTopComponent.class, "CTL_TaskViewTopComponent"));
         setToolTipText(NbBundle.getMessage(TaskViewTopComponent.class, "HINT_TaskViewTopComponent"));
         putClientProperty(TopComponent.PROP_MAXIMIZATION_DISABLED, Boolean.TRUE);
-        tasklist.setCellRenderer(new TaskListRenderer());
-        tasklist.setModel(new AbstractListModelImpl());
-//        tasklist.setListData(TaskManager.getInstance().getActiveTasks().toArray());
-       // tasklist.addListSelectionListener(new MyListSelectionListener());
+        // FIXME: add mouse listener to clear finished/failed tasks
     }
-
-//    public void refreshList() {
-//        List<TaskDescriptor> activeTasks = TaskManager.getInstance().getActiveTasks();
-//        tasklist.setListData(activeTasks.toArray());
-//    }
 
     /** This method is called from within the constructor to
      * initialize the form.
@@ -60,126 +53,67 @@ public final class TaskViewTopComponent extends TopComponent {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jScrollPane1 = new javax.swing.JScrollPane();
-        tasklist = new javax.swing.JList();
+        scrollpane = new javax.swing.JScrollPane();
+        tasklistpanel = new javax.swing.JPanel();
 
-        jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        jScrollPane1.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        scrollpane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
-        tasklist.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(TaskViewTopComponent.class, "TaskViewTopComponent.tasklist.border.title"))); // NOI18N
-        tasklist.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public Object getElementAt(int i) { return strings[i]; }
-        });
-        tasklist.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        jScrollPane1.setViewportView(tasklist);
-        tasklist.getAccessibleContext().setAccessibleName(org.openide.util.NbBundle.getMessage(TaskViewTopComponent.class, "TaskViewTopComponent.tasklist.AccessibleContext.accessibleName")); // NOI18N
+        tasklistpanel.setLayout(new javax.swing.BoxLayout(tasklistpanel, javax.swing.BoxLayout.Y_AXIS));
+        scrollpane.setViewportView(tasklistpanel);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 273, Short.MAX_VALUE)
+            .addComponent(scrollpane, javax.swing.GroupLayout.DEFAULT_SIZE, 273, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
+            .addComponent(scrollpane, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JList tasklist;
+    private javax.swing.JScrollPane scrollpane;
+    private javax.swing.JPanel tasklistpanel;
     // End of variables declaration//GEN-END:variables
 
     @Override
     public void componentOpened() {
-        // TODO add custom code on component opening
+        TaskManager.getInstance().addPropertyChangeListener(this);
+        refreshList();
     }
 
     @Override
     public void componentClosed() {
-        // TODO add custom code on component closing
+        TaskManager.getInstance().removePropertyChangeListener(this);
     }
 
     void writeProperties(java.util.Properties p) {
-        // better to version settings since initial version as advocated at
-        // http://wiki.apidesign.org/wiki/PropertyFiles
         p.setProperty("version", "1.0");
-        // TODO store your settings
     }
 
     void readProperties(java.util.Properties p) {
         String version = p.getProperty("version");
-        // TODO read your settings according to their version
     }
 
-    private final class TaskListRenderer implements ListCellRenderer {
-
-        @Override
-        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-            TaskDescriptor td = (TaskDescriptor) value;
-            return td.getTaskEntry();
-        }
-    }
-    private class AbstractListModelImpl extends AbstractListModel implements PropertyChangeListener {
-
-        private List<ListDataListener> listeners = null;
-
-        public AbstractListModelImpl() {
-            TaskManager.getInstance().addPropertyChangeListener(this);
-        }
-
-        @Override
-        public int getSize() {
-            return TaskManager.getInstance().getActiveTasks().size();
-        }
-
-        @Override
-        public Object getElementAt(int index) {
-            return TaskManager.getInstance().getActiveTasks().get(index);
-        }
-
-        @Override
-        public void addListDataListener(ListDataListener l) {
-            if (listeners == null) {
-                listeners = new ArrayList<ListDataListener>();
-            }
-            listeners.add(l);
-        }
-
-        @Override
-        public void removeListDataListener(ListDataListener l) {
-            listeners.remove(l);
-        }
-
-        @Override
-        public void propertyChange(PropertyChangeEvent evt) {
-            ListDataEvent lde = new ListDataEvent(this, ListDataEvent.CONTENTS_CHANGED, 0, getSize());
-            for (ListDataListener l : listeners) {
-                l.contentsChanged(lde);
-            }
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (evt.getPropertyName().equals(TaskManager.TASKMANAGER_CHANGE)) {
+            refreshList();
         }
     }
 
-    private final class MyListSelectionListener implements ListSelectionListener {
+    private void refreshList() {
+        EventQueue.invokeLater(new Runnable() {
 
-        @Override
-        public void valueChanged(ListSelectionEvent e) {
-            JList l = (JList) e.getSource();
-            ListSelectionModel lsm = l.getSelectionModel();
-
-            int firstIndex = e.getFirstIndex();
-            int lastIndex = e.getLastIndex();
-            boolean isAdjusting = e.getValueIsAdjusting();
-
-            // Find out which indexes are selected.
-            int idx = lsm.getMinSelectionIndex();
-            System.err.println("selected idx "+idx);
-            if (idx != -1) {
-                TaskDescriptor td = TaskManager.getInstance().getActiveTasks().get(idx);
-                //TaskManager.getInstance().removeTask(td);
+            @Override
+            public void run() {
+                tasklistpanel.removeAll();
+                for (TaskDescriptor td : TaskManager.getInstance().getActiveTasks()) {
+                    tasklistpanel.add(td.getTaskEntry());
+                }
             }
-        }
+        });
+
     }
 }
