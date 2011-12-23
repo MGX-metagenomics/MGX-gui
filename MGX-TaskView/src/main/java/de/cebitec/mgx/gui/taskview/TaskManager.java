@@ -47,18 +47,34 @@ public class TaskManager implements PropertyChangeListener {
         return ret;
     }
 
-    public void removeTask(TaskDescriptor td) {
-        boolean found = false;
+    public void clearFinished() {
         for (Entry<Task, TaskDescriptor> e : currentTasks.entrySet()) {
-            if (e.getValue() == td) {
+            boolean modified = false;
+            // check if task is finished
+            TaskDescriptor td = e.getValue();
+            if (td.getEndTime() != null) {
                 currentTasks.remove(e.getKey());
-                found = true;
+                modified = true;
             }
-        }
-        if (found) {
-            fireTaskChange();
+            if (modified) {
+                fireTaskManagerChange();
+            }
+            System.err.println("clearFinished(): "+modified);
         }
     }
+
+//    public void removeTask(TaskDescriptor td) {
+//        boolean found = false;
+//        for (Entry<Task, TaskDescriptor> e : currentTasks.entrySet()) {
+//            if (e.getValue() == td) {
+//                currentTasks.remove(e.getKey());
+//                found = true;
+//            }
+//        }
+//        if (found) {
+//            fireTaskManagerChange();
+//        }
+//    }
 
     public void addTask(String taskName, final MGXTask run) {
         TaskDescriptor td = new TaskDescriptor(taskName, run);
@@ -77,8 +93,8 @@ public class TaskManager implements PropertyChangeListener {
                 if (!taskViewer.isOpened()) {
                     taskViewer.open();
                     taskViewer.requestActive();
-                    fireTaskChange();
                 }
+                fireTaskManagerChange();
             }
         });
     }
@@ -91,7 +107,7 @@ public class TaskManager implements PropertyChangeListener {
         pcs.removePropertyChangeListener(p);
     }
 
-    private void fireTaskChange() {
+    private void fireTaskManagerChange() {
         pcs.firePropertyChange(TASKMANAGER_CHANGE, 0, 1);
     }
 
@@ -105,7 +121,7 @@ public class TaskManager implements PropertyChangeListener {
 
     @Override
     public void propertyChange(PropertyChangeEvent pce) {
-        fireTaskChange();
+        pcs.firePropertyChange(pce);
     }
 
     private final class MyTaskListener implements TaskListener {
@@ -118,7 +134,6 @@ public class TaskManager implements PropertyChangeListener {
             } else {
                 System.err.println("task NOT finished");
             }
-            fireTaskChange();
         }
     }
 }

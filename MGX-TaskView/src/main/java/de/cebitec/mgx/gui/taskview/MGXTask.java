@@ -10,10 +10,9 @@ import java.beans.PropertyChangeSupport;
  */
 public abstract class MGXTask implements Runnable, PropertyChangeListener {
     
-    public static final String TASK_CHANGED = "taskChanged";
-    public static final String TASK_STATUSLINE_CHANGED = "taskStatusChanged";
+    public static final String TASK_CHANGED = "MGXTaskChanged";
     private final PropertyChangeSupport pcs;
-    private String status;
+    private String status = "";
 
     public MGXTask() {
         pcs = new PropertyChangeSupport(this);
@@ -21,6 +20,7 @@ public abstract class MGXTask implements Runnable, PropertyChangeListener {
 
     @Override
     public void run() {
+        fireTaskChanged();
         process();
     }
 
@@ -31,16 +31,20 @@ public abstract class MGXTask implements Runnable, PropertyChangeListener {
     protected void setStatus(String s) {
         final String old = status;
         status = s;
-        pcs.firePropertyChange(TASK_STATUSLINE_CHANGED, old, status);
+        fireTaskChanged();
     }
 
     public abstract void process();
 
     public void finished() {
-        pcs.firePropertyChange(TASK_CHANGED, 0, 1);
+        fireTaskChanged();
     }
 
     public void failed() {
+        fireTaskChanged();
+    }
+    
+    private void fireTaskChanged() {
         pcs.firePropertyChange(TASK_CHANGED, 0, 1);
     }
 

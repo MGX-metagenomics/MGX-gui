@@ -3,9 +3,13 @@ package de.cebitec.mgx.gui.taskview;
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
@@ -34,7 +38,24 @@ public final class TaskViewTopComponent extends TopComponent implements Property
         setName(NbBundle.getMessage(TaskViewTopComponent.class, "CTL_TaskViewTopComponent"));
         setToolTipText(NbBundle.getMessage(TaskViewTopComponent.class, "HINT_TaskViewTopComponent"));
         putClientProperty(TopComponent.PROP_MAXIMIZATION_DISABLED, Boolean.TRUE);
-        // FIXME: add mouse listener to clear finished/failed tasks
+        //
+        // add menu to clear finished/failed tasks
+        final JPopupMenu contextMenu = new JPopupMenu("Edit");
+        contextMenu.add(makeMenuItem("Clear finished tasks"));
+        tasklistpanel.setComponentPopupMenu(contextMenu);
+        tasklistpanel.setInheritsPopupMenu(true);
+    }
+
+    private JMenuItem makeMenuItem(String label) {
+        JMenuItem item = new JMenuItem(label);
+        item.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                TaskManager.getInstance().clearFinished();
+            }
+        });
+        return item;
     }
 
     /** This method is called from within the constructor to
@@ -50,6 +71,8 @@ public final class TaskViewTopComponent extends TopComponent implements Property
 
         scrollpane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
+        tasklistpanel.setAlignmentX(0.0F);
+        tasklistpanel.setAlignmentY(0.0F);
         tasklistpanel.setLayout(new java.awt.GridLayout(1, 1));
         scrollpane.setViewportView(tasklistpanel);
 
@@ -71,6 +94,7 @@ public final class TaskViewTopComponent extends TopComponent implements Property
 
     @Override
     public void componentOpened() {
+        System.err.println("adding PCL");
         TaskManager.getInstance().addPropertyChangeListener(this);
         refreshList();
     }
@@ -91,26 +115,31 @@ public final class TaskViewTopComponent extends TopComponent implements Property
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals(TaskManager.TASKMANAGER_CHANGE)) {
+            System.err.println("refreshing list..");
             refreshList();
+        } else {
+            System.err.println("TopComponent received " + evt.getPropertyName());
         }
     }
 
     private void refreshList() {
-        if (EventQueue.isDispatchThread()) {
-            System.err.println("refreshList() in EDT");
+//        if (EventQueue.isDispatchThread()) {
+//            System.err.println("refreshList() in EDT");
+//        }
+//        EventQueue.invokeLater(new Runnable() {
+//
+//            @Override
+//            public void run() {
+        tasklistpanel.removeAll();
+        List<TaskDescriptor> activeTasks = TaskManager.getInstance().getActiveTasks();
+        int rows = activeTasks.size() < 10 ? 10 : activeTasks.size();
+        System.err.println("using " + rows + " rows");
+        tasklistpanel.setLayout(new GridLayout(rows, 1));
+        for (TaskDescriptor td : activeTasks) {
+            tasklistpanel.add(td.getTaskEntry());
         }
-        EventQueue.invokeLater(new Runnable() {
-
-            @Override
-            public void run() {
-                tasklistpanel.removeAll();
-                List<TaskDescriptor> activeTasks = TaskManager.getInstance().getActiveTasks();
-                tasklistpanel.setLayout(new GridLayout(1, activeTasks.size() < 10 ? 10 : activeTasks.size()));
-                for (TaskDescriptor td : activeTasks) {
-                    tasklistpanel.add(td.getTaskEntry());
-                }
-            }
-        });
-
+//            }
+//        });
+//
     }
 }

@@ -11,18 +11,18 @@ import java.beans.PropertyChangeSupport;
  */
 public class TaskDescriptor implements Comparable<TaskDescriptor>, PropertyChangeListener {
 
-    public static final String TASKDESCRIPTOR_CHANGE = "tdChanged";
-    private MGXTask run;
+    public static final String TASKDESCRIPTOR_CHANGE = "TaskDescriptorChanged";
+    private MGXTask mgxTask;
     private TaskListEntry te;
     private long startTime;
-    private long endTime;
+    private Long endTime = null;
     private final PropertyChangeSupport pcs;
 
-    public TaskDescriptor(String tName, final MGXTask r) {
+    public TaskDescriptor(String tName, final MGXTask t) {
         startTime = System.currentTimeMillis();
         pcs = new PropertyChangeSupport(this);
-        this.run = r;
-        run.addPropertyChangeListener(this);
+        this.mgxTask = t;
+        mgxTask.addPropertyChangeListener(this);
 
         te = new TaskListEntry();
         te.setMainText(tName);
@@ -31,17 +31,17 @@ public class TaskDescriptor implements Comparable<TaskDescriptor>, PropertyChang
     public TaskListEntry getTaskEntry() {
         return te;
     }
-
+    
     public void finished() {
         endTime = System.currentTimeMillis();
         te.finished();
-        run.finished();
-    }
-    
-    long getEndTime() {
-        return endTime;
+        mgxTask.finished();
     }
 
+    public Long getEndTime() {
+        return endTime;
+    }
+    
     private long getStartTime() {
         return startTime;
     }
@@ -57,6 +57,10 @@ public class TaskDescriptor implements Comparable<TaskDescriptor>, PropertyChang
         }
     }
 
+    private void fireTaskDescriptorChanged() {
+        pcs.firePropertyChange(TASKDESCRIPTOR_CHANGE, 0, 1);
+    }
+
     public void addPropertyChangeListener(PropertyChangeListener p) {
         pcs.addPropertyChangeListener(p);
     }
@@ -67,17 +71,16 @@ public class TaskDescriptor implements Comparable<TaskDescriptor>, PropertyChang
 
     @Override
     public void propertyChange(final PropertyChangeEvent pce) {
-        if (pce.getPropertyName().equals(MGXTask.TASK_STATUSLINE_CHANGED)) {
+        if (pce.getPropertyName().equals(MGXTask.TASK_CHANGED)) {
             EventQueue.invokeLater(new Runnable() {
 
                 @Override
                 public void run() {
-                    getTaskEntry().setDetailText((String) pce.getNewValue());
-                    pcs.firePropertyChange(TASKDESCRIPTOR_CHANGE, 0, 1);
+                    getTaskEntry().setDetailText(mgxTask.getStatus());
                 }
             });
-        } else if (pce.getPropertyName().equals(MGXTask.TASK_CHANGED)) {
-            pcs.firePropertyChange(TASKDESCRIPTOR_CHANGE, 0, 1);
+        } else {
+            pcs.firePropertyChange(pce);
         }
     }
 }
