@@ -3,6 +3,11 @@ package de.cebitec.mgx.gui.explorer;
 import de.cebitec.mgx.gui.nodefactory.ServerNodeFactory;
 import de.cebitec.mgx.restgpms.GPMS;
 import java.awt.BorderLayout;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import javax.swing.SwingWorker;
+import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
@@ -85,11 +90,32 @@ public final class ProjectExplorerTopComponent extends TopComponent implements E
     }
 
     public void setGPMS(final GPMS gpms) {
-        AbstractNode root = new AbstractNode(Children.create(new ServerNodeFactory(gpms), true));
-        getExplorerManager().setRootContext(root);
-        for (Node n : root.getChildren().getNodes()) {
-            btv.expandNode(n);
-        }
+        final AbstractNode root = new AbstractNode(Children.create(new ServerNodeFactory(gpms), true));
+        exmngr.setRootContext(root);
+        SwingWorker<List<Node>, Node> sw = new SwingWorker<List<Node>, Node>() {
+
+            @Override
+            protected List<Node> doInBackground() throws Exception {
+                List<Node> ret = new ArrayList<Node>();
+                for (Node server : root.getChildren().getNodes()) {
+                    ret.add(server);
+                    publish(server);
+                    for (Node project : server.getChildren().getNodes()) {
+                        ret.add(project);
+                        publish(project);
+                    }
+                }
+                return ret;
+            }
+
+            @Override
+            protected void process(List<Node> chunks) {
+                for (Node n : chunks) {
+                    btv.expandNode(n);
+                }
+            }
+        };
+        sw.execute();
     }
 
     @Override
