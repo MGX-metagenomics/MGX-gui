@@ -69,7 +69,7 @@ public final class SeqRunVisualPanel2 extends JPanel {
     private javax.swing.JFileChooser fchooser;
     // End of variables declaration//GEN-END:variables
 
-    private final class SeqFileFilter extends FileFilter {
+    private final static class SeqFileFilter extends FileFilter {
 
         @Override
         public boolean accept(File f) {

@@ -136,6 +136,7 @@ public class JXMapKit extends JXPanel {
         });
         
         mainMap.addPropertyChangeListener("zoom",new PropertyChangeListener() {
+            @Override
             public void propertyChange(PropertyChangeEvent evt) {
                 zoomSlider.setValue(mainMap.getZoom());
                 miniMap.setZoom(mainMap.getZoom()+4);

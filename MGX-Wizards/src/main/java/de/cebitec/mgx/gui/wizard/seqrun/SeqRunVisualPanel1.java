@@ -192,8 +192,6 @@ public final class SeqRunVisualPanel1 extends JPanel implements DocumentListener
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            JComboBox cb = (JComboBox) e.getSource();
-            String methodName = (String) cb.getSelectedItem();
             firePropertyChange(PROP_METHOD, 0, 1);
         }
     }
@@ -202,8 +200,6 @@ public final class SeqRunVisualPanel1 extends JPanel implements DocumentListener
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            JComboBox cb = (JComboBox) e.getSource();
-            String methodName = (String) cb.getSelectedItem();
             firePropertyChange(PROP_PLATFORM, 0, 1);
         }
     }

@@ -7,6 +7,7 @@ import de.cebitec.mgx.gui.datamodel.Attribute;
 import de.cebitec.mgx.gui.dtoconversion.AttributeDTOFactory;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -19,10 +20,26 @@ import java.util.logging.Logger;
 public class AttributeAccess extends AccessBase<Attribute> {
 
     public Collection<Attribute> listTypes() throws MGXServerException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Collection<Attribute> ret = new HashSet<Attribute>();
+        Collection<AttributeDTO> dtolist = getDTOmaster().Attribute().listTypes();
+        for (AttributeDTO adto : dtolist) {
+            Attribute attr = AttributeDTOFactory.getInstance().toModel(adto);
+            ret.add(attr);
+        }
+        return ret;
     }
 
     public Collection<Attribute> listTypesByJob(Long jobId) throws MGXServerException {
+        Collection<Attribute> ret = new HashSet<Attribute>();
+        Collection<AttributeDTO> dtolist = getDTOmaster().Attribute().listTypesByJob(jobId);
+        for (AttributeDTO adto : dtolist) {
+            Attribute attr = AttributeDTOFactory.getInstance().toModel(adto);
+            ret.add(attr);
+        }
+        return ret;
+    }
+
+    public Collection<Attribute> listTypesBySeqRun(Long seqrunId) throws MGXServerException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

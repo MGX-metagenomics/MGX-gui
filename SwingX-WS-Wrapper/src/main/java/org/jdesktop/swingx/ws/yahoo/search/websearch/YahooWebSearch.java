@@ -23,24 +23,17 @@ package org.jdesktop.swingx.ws.yahoo.search.websearch;
 
 import java.io.InputStream;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import org.jdesktop.swingx.ws.yahoo.search.Country;
 import org.jdesktop.swingx.ws.yahoo.search.Format;
 import org.jdesktop.swingx.ws.yahoo.search.Language;
 import org.jdesktop.swingx.ws.yahoo.search.License;
-import org.jdesktop.swingx.ws.yahoo.search.PagedResultsArrayList;
 import org.jdesktop.swingx.ws.yahoo.search.Region;
 import org.jdesktop.swingx.ws.yahoo.search.ResultsArrayList;
 import org.jdesktop.swingx.ws.yahoo.search.ResultsList;
@@ -84,6 +77,7 @@ public final class YahooWebSearch extends YahooWebSearchService<YahooWebSearch.R
     /**
      * @inheritDoc
      */
+    @Override
     protected final String getMethod() {
         return "webSearch";
     }
@@ -91,6 +85,7 @@ public final class YahooWebSearch extends YahooWebSearchService<YahooWebSearch.R
     /**
      * @inheritDoc
      */
+    @Override
     protected final Map getParameters() {
         Map params = new HashMap();
         params.put("appid", appId);
@@ -149,6 +144,7 @@ public final class YahooWebSearch extends YahooWebSearchService<YahooWebSearch.R
     /**
      * @inheritDoc
      */
+    @Override
     protected ResultsList<Result> readResults(InputStream in) throws Exception {
         SAXParserFactory factory = SAXParserFactory.newInstance();
         SAXParser p;
@@ -377,6 +373,7 @@ public final class YahooWebSearch extends YahooWebSearchService<YahooWebSearch.R
         private ResultsList<Result> results = null;
         private Result result;
 
+        @Override
         public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
             if ("ResultSet".equals(qName)) {
                 results = new ResultsArrayList<Result>(YahooWebSearch.this,
@@ -391,6 +388,7 @@ public final class YahooWebSearch extends YahooWebSearchService<YahooWebSearch.R
             }
         }
 
+        @Override
         public void endElement(String uri, String localName, String qName) throws SAXException {
             try {
                 if ("Title".equals(qName)) {
@@ -417,6 +415,7 @@ public final class YahooWebSearch extends YahooWebSearchService<YahooWebSearch.R
             }
         }
 
+        @Override
         public void characters(char[] chars, int start, int offset) throws SAXException {
             if (buffer != null) {
                 buffer.append(chars, start, offset);

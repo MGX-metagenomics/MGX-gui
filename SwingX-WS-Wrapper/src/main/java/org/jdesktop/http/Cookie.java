@@ -29,7 +29,7 @@ package org.jdesktop.http;
 public class Cookie extends NameValuePair {
     private String comment;
     private String domain;
-    private int maxAge=-1; //TODO not sure if this is the right way to indicate no expiration
+    private int maxAge=-1;
     private String path;
     private boolean secure;
     private int version;
@@ -94,6 +94,7 @@ public class Cookie extends NameValuePair {
         return version;
     }
 
+    @Override
     public String toString() {
         return "Cookie [" +
                 getName() + "=" + getValue() + ", " +

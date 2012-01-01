@@ -15,9 +15,9 @@ import java.util.logging.Logger;
  */
 public class MGXMaster implements MGXMasterI {
 
-    private MGXDTOMaster dtomaster;
+    private final MGXDTOMaster dtomaster;
     private static final Logger logger = Logger.getLogger("MGX");
-    private Map<Class, AccessBase> accessors;
+    private final Map<Class, AccessBase> accessors;
 
     public MGXMaster(MGXDTOMaster dtomaster) {
         this.dtomaster = dtomaster;

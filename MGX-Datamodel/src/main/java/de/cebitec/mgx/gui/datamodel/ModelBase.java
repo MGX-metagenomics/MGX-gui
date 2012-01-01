@@ -20,4 +20,8 @@ public abstract class ModelBase {
     public MGXMasterI getMaster() {
         return master;
     }
+    
+    public void setMaster(MGXMasterI m) {
+        master = m;
+    }
 }

@@ -88,6 +88,11 @@
             <type>jar</type>
             <version>RELEASE701</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>MGX-AttributeVisualization</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

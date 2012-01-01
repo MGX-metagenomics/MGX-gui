@@ -384,7 +384,6 @@ public final class HabitatVisualPanel1 extends JPanel implements DocumentListene
     }
 
     private void jXMapKit1PropertyChange(java.beans.PropertyChangeEvent evt) {
-        // TODO add your handling code here:
     }
 
     private void jButton_searchLocActionPerformed(java.awt.event.ActionEvent evt) {

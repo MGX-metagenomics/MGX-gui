@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package de.cebitec.mgx.gui.login.configuration;
 
 import java.net.InetAddress;
@@ -17,7 +13,6 @@ public class MGXserverPanel extends javax.swing.JPanel implements DocumentListen
     MGXserverPanel(MGXserverOptionsPanelController controller) {
         this.controller = controller;
         initComponents();
-        // TODO listen to changes in form fields and call controller.changed()
         site.getDocument().addDocumentListener(this);
         server.getDocument().addDocumentListener(this);
     }
@@ -84,8 +79,9 @@ public class MGXserverPanel extends javax.swing.JPanel implements DocumentListen
     }
 
     boolean valid() {
-        if (site.getText().isEmpty())
+        if (site.getText().isEmpty()) {
             return false;
+        }
 
         String content = server.getText();
         boolean ret = false;
@@ -120,7 +116,6 @@ public class MGXserverPanel extends javax.swing.JPanel implements DocumentListen
         }
         return ret;
     }
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

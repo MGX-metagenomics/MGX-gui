@@ -1,6 +1,5 @@
 package de.cebitec.mgx.gui.taskview;
 
-import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -123,23 +122,13 @@ public final class TaskViewTopComponent extends TopComponent implements Property
     }
 
     private void refreshList() {
-//        if (EventQueue.isDispatchThread()) {
-//            System.err.println("refreshList() in EDT");
-//        }
-//        EventQueue.invokeLater(new Runnable() {
-//
-//            @Override
-//            public void run() {
         tasklistpanel.removeAll();
         List<TaskDescriptor> activeTasks = TaskManager.getInstance().getActiveTasks();
         int rows = activeTasks.size() < 10 ? 10 : activeTasks.size();
-        System.err.println("using " + rows + " rows");
         tasklistpanel.setLayout(new GridLayout(rows, 1));
         for (TaskDescriptor td : activeTasks) {
             tasklistpanel.add(td.getTaskEntry());
         }
-//            }
-//        });
-//
+        tasklistpanel.revalidate();
     }
 }

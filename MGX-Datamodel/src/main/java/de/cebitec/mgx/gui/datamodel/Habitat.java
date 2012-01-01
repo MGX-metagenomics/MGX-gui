@@ -1,14 +1,11 @@
 package de.cebitec.mgx.gui.datamodel;
 
-import java.util.Collection;
-import java.util.HashSet;
-
 /**
  *
  * @author sjaenick
  */
 public class Habitat extends ModelBase {
-
+    
     protected String name;
     /* GPS location of habitat */
     protected double latitude;

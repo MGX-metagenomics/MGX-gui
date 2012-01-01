@@ -27,7 +27,7 @@ public class ProjectStructureNodeFactory extends ChildFactory<String> {
         //ProjectDataNode data = new ProjectDataNode(Children.create(new HabitatNodeFactory(master), true), Lookups.singleton(master));
         ProjectDataNode data = new ProjectDataNode(master);
         ProjectFilesNode files = new ProjectFilesNode(master);
-        ProjectAnalysisTasksNode tasks = new ProjectAnalysisTasksNode(master); // FIXME
+        ProjectAnalysisTasksNode tasks = new ProjectAnalysisTasksNode(master); // FIXME implement this
 
         project_structure = new HashMap<String, Node>();
         project_structure.put("data", data);

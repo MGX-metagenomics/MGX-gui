@@ -21,7 +21,6 @@
 
 package org.jdesktop.http;
 
-import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -68,6 +67,7 @@ class DefaultSecurityHandler implements SecurityHandler {
         messagePane.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
         
         Action continueAction = new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 accepted = true;
                 dlg.setVisible(false);
@@ -76,6 +76,7 @@ class DefaultSecurityHandler implements SecurityHandler {
         continueAction.putValue(Action.NAME, "Continue");
         
         Action cancelAction = new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 accepted = false;
                 dlg.setVisible(false);
@@ -84,6 +85,7 @@ class DefaultSecurityHandler implements SecurityHandler {
         cancelAction.putValue(Action.NAME, "Cancel");
         
         Action showCertAction = new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 //TODO!!!
             }
@@ -125,6 +127,7 @@ class DefaultSecurityHandler implements SecurityHandler {
         return dlg;
     }
     
+    @Override
     public boolean isServerTrusted(String host, X509Certificate cert) {
         accepted = false;
         

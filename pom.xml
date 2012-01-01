@@ -69,6 +69,7 @@
         <module>DTO-Wrapper</module>
         <module>SwingX-Wrapper</module>
     <module>MGX-TaskView</module>
+    <module>MGX-AttributeVisualization</module>
   </modules>
 
     <properties>

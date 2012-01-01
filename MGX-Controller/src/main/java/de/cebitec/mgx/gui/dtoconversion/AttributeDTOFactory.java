@@ -12,7 +12,7 @@ public class AttributeDTOFactory extends DTOConversionBase<Attribute, AttributeD
     static {
         instance = new AttributeDTOFactory();
     }
-    protected static AttributeDTOFactory instance;
+    protected final static AttributeDTOFactory instance;
 
     private AttributeDTOFactory() {
     }
