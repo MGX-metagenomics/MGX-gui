@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+OpenIDE-Module-Localizing-Bundle: de/cebitec/mgx/gui/attributevisualization/Bundle.properties
+OpenIDE-Module-Layer: de/cebitec/mgx/gui/attributevisualization/layer.xml
+OpenIDE-Module-Requires: org.openide.windows.WindowManager
