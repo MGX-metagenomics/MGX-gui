@@ -17,13 +17,13 @@ public class DirEntryNode extends MGXNodeBase {
     public DirEntryNode(DirEntry d, DirEntryNodeFactory nf) {
         super(Children.create(nf, true), Lookups.singleton(d));
         this.nf = nf;
-        setDisplayName(d.getDirectory().getName());
+        setDisplayName(stripPath(d.getDirectory().getName()));
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/Directory.png");
     }
 
     public DirEntryNode(DirEntry d) {
         super(Children.LEAF, Lookups.singleton(d));
-        setDisplayName(d.getFile().getName());
+        setDisplayName(stripPath(d.getFile().getName()));
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/File.png");
     }
 
@@ -35,5 +35,10 @@ public class DirEntryNode extends MGXNodeBase {
     @Override
     public Action[] getActions(boolean context) {
         return new Action[]{};
+    }
+    
+    private String stripPath(String in) {
+        String[] split = in.split("/");
+        return split[split.length-1];
     }
 }

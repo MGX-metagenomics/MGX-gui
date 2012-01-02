@@ -6,9 +6,7 @@ import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
 import de.cebitec.mgx.gui.wizard.seqrun.SeqRunWizardDescriptor;
 import java.awt.Dialog;
-import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 import javax.swing.AbstractAction;
@@ -23,9 +21,8 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sj
  */
-public class SeqRunNode extends MGXNodeBase implements Transferable {
+public class SeqRunNode extends MGXNodeBase {
 
-    public static final DataFlavor DATA_FLAVOR = new DataFlavor(SeqRun.class, "SeqRun");
     private SeqRun seqrun;
 
     public SeqRunNode(MGXMaster m, SeqRun s) {
@@ -42,22 +39,8 @@ public class SeqRunNode extends MGXNodeBase implements Transferable {
     }
 
     @Override
-    public DataFlavor[] getTransferDataFlavors() {
-        return new DataFlavor[]{DATA_FLAVOR};
-    }
-
-    @Override
-    public boolean isDataFlavorSupported(DataFlavor df) {
-        return df == DATA_FLAVOR;
-    }
-
-    @Override
-    public Object getTransferData(DataFlavor df) throws UnsupportedFlavorException, IOException {
-        if (df == DATA_FLAVOR) {
-            return seqrun;
-        } else {
-            throw new UnsupportedFlavorException(df);
-        }
+    public Transferable drag() throws IOException {
+        return seqrun;
     }
 
     @Override
@@ -69,6 +52,7 @@ public class SeqRunNode extends MGXNodeBase implements Transferable {
     public Action[] getActions(boolean context) {
         return new Action[]{new EditSeqRun(), new DeleteSeqRun()};
     }
+
 
     private class EditSeqRun extends AbstractAction {
 
@@ -89,6 +73,7 @@ public class SeqRunNode extends MGXNodeBase implements Transferable {
                 seqrun = wd.getSeqRun();
                 getMaster().SeqRun().update(seqrun);
                 fireDisplayNameChange(oldDisplayName, seqrun.getSequencingMethod() + " run");
+                setDisplayName(seqrun.getSequencingMethod() + " run");
             }
         }
     }

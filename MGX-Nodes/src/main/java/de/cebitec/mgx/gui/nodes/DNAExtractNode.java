@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.nodes;
 
+import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.upload.SeqUploader;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.DNAExtract;
@@ -14,6 +15,7 @@ import de.cebitec.mgx.sequence.SeqReaderI;
 import java.awt.Dialog;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
+import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.SwingWorker;
@@ -118,7 +120,7 @@ public class DNAExtractNode extends MGXNodeBase {
                 final SeqRun seqrun = wd.getSeqRun();
                 seqrun.setDNAExtractId(extract.getId());
 
-                SwingWorker<Void, Void> sw = new SwingWorker<Void, Void>() {
+                SwingWorker<Void, Exception> sw = new SwingWorker<Void, Exception>() {
 
                     @Override
                     protected Void doInBackground() throws Exception {
@@ -132,14 +134,20 @@ public class DNAExtractNode extends MGXNodeBase {
                             canonicalPath = wd.getSequenceFile().getCanonicalPath();
                             reader = SeqReaderFactory.getReader(canonicalPath);
                         } catch (Exception ex) {
-                            Exceptions.printStackTrace(ex);
+                            getMaster().SeqRun().delete(seqrun.getId());
+                            snf.refreshChildren();
+                            publish(ex);
+                            return null;
                         }
                         final SeqUploader uploader = getMaster().Sequence().createUploader(seqrun.getId(), reader);
                         MGXTask run = new MGXTask() {
-
+                            
                             @Override
                             public void process() {
-                                uploader.upload();
+                                boolean success = uploader.upload();
+                                if (!success) {
+                                    publish(new MGXClientException(uploader.getErrorMessage()));
+                                }
                             }
 
                             @Override
@@ -160,12 +168,26 @@ public class DNAExtractNode extends MGXNodeBase {
                                     setStatus(String.format("%1$d sequences sent", pce.getNewValue()));
                                 }
                             }
-                            
                         };
                         uploader.addPropertyChangeListener(run);
 
                         TaskManager.getInstance().addTask("Upload " + canonicalPath, run);
                         return null;
+                    }
+
+                    @Override
+                    protected void process(List<Exception> chunks) {
+                        StringBuilder sb = new StringBuilder();
+                        for (Exception e : chunks) {
+                            sb.append(e.getMessage());
+                        }
+                        NotifyDescriptor nd = new NotifyDescriptor(sb.toString(),
+                                "Error",
+                                NotifyDescriptor.OK_CANCEL_OPTION,
+                                NotifyDescriptor.ERROR_MESSAGE,
+                                null,
+                                null);
+                        Object ret = DialogDisplayer.getDefault().notify(nd);
                     }
                 };
                 sw.execute();
