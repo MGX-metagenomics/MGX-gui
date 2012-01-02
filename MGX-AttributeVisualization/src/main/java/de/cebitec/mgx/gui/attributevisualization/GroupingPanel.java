@@ -6,6 +6,7 @@
 package de.cebitec.mgx.gui.attributevisualization;
 
 import de.cebitec.mgx.gui.attributevisualization.data.VisualizationGroup;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ public class GroupingPanel extends javax.swing.JPanel implements ActionListener 
 
     private int groupCount = 1;
     private List<GroupFrame> groupFrames = new ArrayList<GroupFrame>();
+    private static Color colors[] = {Color.RED, Color.BLUE, Color.YELLOW, Color.PINK, Color.GREEN};
 
     /** Creates new form GroupingPanel */
     public GroupingPanel() {
@@ -39,10 +41,12 @@ public class GroupingPanel extends javax.swing.JPanel implements ActionListener 
 
     private void addGroupFrame() {
         GroupFrame gf = new GroupFrame();
-        gf.setGroupName("Group " + groupCount++);
+        gf.setGroupName("Group " + groupCount);
+        gf.setColor(colors[(groupCount - 1) % colors.length]);
         gf.setParent(this);
         groupFrames.add(gf);
         scrollpanel.add(gf);
+        groupCount++;
     }
 
     void removeGroupFrame(GroupFrame gf) {

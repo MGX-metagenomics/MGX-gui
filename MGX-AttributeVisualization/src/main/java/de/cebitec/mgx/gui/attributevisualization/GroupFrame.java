@@ -6,8 +6,8 @@
 package de.cebitec.mgx.gui.attributevisualization;
 
 import de.cebitec.mgx.gui.attributevisualization.data.VisualizationGroup;
+import de.cebitec.mgx.gui.datamodel.ModelBase;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
-import de.cebitec.mgx.gui.nodes.SeqRunNode;
 import java.awt.Color;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetAdapter;
@@ -41,7 +41,6 @@ public class GroupFrame extends javax.swing.JInternalFrame {
         list.setModel(lm);
         setVisible(true);
         displayName.getDocument().addDocumentListener(new DisplayNameChanger());
-        color.setBackground(data.getColor());
         color.addActionListener(new ColorActionListener());
     }
 
@@ -66,6 +65,11 @@ public class GroupFrame extends javax.swing.JInternalFrame {
     public VisualizationGroup getGroup() {
         return data;
     }
+    
+    public void setColor(Color c) {
+        data.setColor(c);
+        color.setBackground(c);
+    }
 
     private void addSeqRun(SeqRun sr) {
         data.getSeqRuns().add(sr);
@@ -83,15 +87,28 @@ public class GroupFrame extends javax.swing.JInternalFrame {
 
             @Override
             public void dragEnter(DropTargetDragEvent dtde) {
-                if (!dtde.isDataFlavorSupported(SeqRunNode.DATA_FLAVOR)) {
+                if (!dtde.isDataFlavorSupported(ModelBase.getNodeFlavor())) {
                     dtde.rejectDrag();
+                } else {
+                    try {
+                        SeqRun sr = (SeqRun) dtde.getTransferable().getTransferData(ModelBase.getNodeFlavor());
+                        if (sr == null || data.getSeqRuns().contains(sr)) {
+                            dtde.rejectDrag();
+                        }
+                    } catch (Exception ex) {
+                        Exceptions.printStackTrace(ex);
+                        dtde.rejectDrag();
+                    }
                 }
             }
 
             @Override
             public void drop(DropTargetDropEvent dtde) {
                 try {
-                    SeqRun sr = (SeqRun) dtde.getTransferable().getTransferData(SeqRunNode.DATA_FLAVOR);
+                    SeqRun sr = (SeqRun) dtde.getTransferable().getTransferData(ModelBase.getNodeFlavor());
+                    if (data.getSeqRuns().contains(sr)) {
+                        dtde.rejectDrop();
+                    }
                     addSeqRun(sr);
                 } catch (Exception ex) {
                     Exceptions.printStackTrace(ex);
@@ -120,8 +137,8 @@ public class GroupFrame extends javax.swing.JInternalFrame {
         list = new javax.swing.JList();
 
         setClosable(true);
-        setMinimumSize(new java.awt.Dimension(130, 160));
-        setPreferredSize(new java.awt.Dimension(130, 160));
+        setMinimumSize(new java.awt.Dimension(160, 180));
+        setPreferredSize(new java.awt.Dimension(160, 180));
 
         jPanel1.setLayout(new java.awt.BorderLayout());
 
@@ -132,9 +149,10 @@ public class GroupFrame extends javax.swing.JInternalFrame {
         jPanel2.add(active, java.awt.BorderLayout.WEST);
 
         displayName.setText("jTextField1");
+        displayName.setToolTipText("Group name");
         jPanel2.add(displayName, java.awt.BorderLayout.CENTER);
 
-        color.setLabel("");
+        color.setToolTipText("Choose color");
         color.setMaximumSize(new java.awt.Dimension(16, 16));
         color.setMinimumSize(new java.awt.Dimension(16, 16));
         color.setPreferredSize(new java.awt.Dimension(16, 16));

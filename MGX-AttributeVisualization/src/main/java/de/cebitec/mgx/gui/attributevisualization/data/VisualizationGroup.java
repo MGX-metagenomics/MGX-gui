@@ -20,7 +20,7 @@ import org.openide.util.Exceptions;
 public class VisualizationGroup {
 
     private String name;
-    private Color color = Color.RED;
+    private Color color;
     private Set<SeqRun> seqruns = new HashSet<SeqRun>();
     private final Set<Attribute> attributes = Collections.synchronizedSet(new HashSet<Attribute>());
     private List<Thread> threads = new ArrayList<Thread>();
@@ -54,14 +54,18 @@ public class VisualizationGroup {
 
     public Set<Attribute> getAttributes() {
         while (threads.size() > 0) {
+            List<Thread> remove = new ArrayList<Thread>();
+            List<Thread> unfinished = new ArrayList<Thread>();
             for (Thread t : threads) {
                 try {
                     t.join();
-                    threads.remove(t);
+                    remove.add(t);
                 } catch (InterruptedException ex) {
-                    threads.add(t);
+                    unfinished.add(t);
                 }
             }
+            threads.removeAll(remove);
+            threads.addAll(unfinished);
         }
         return attributes;
     }

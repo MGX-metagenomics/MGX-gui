@@ -4,10 +4,10 @@
   <Properties>
     <Property name="closable" type="boolean" value="true"/>
     <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-      <Dimension value="[130, 160]"/>
+      <Dimension value="[160, 180]"/>
     </Property>
     <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-      <Dimension value="[130, 160]"/>
+      <Dimension value="[160, 180]"/>
     </Property>
   </Properties>
   <SyntheticProperties>
@@ -60,6 +60,7 @@
             <Component class="javax.swing.JTextField" name="displayName">
               <Properties>
                 <Property name="text" type="java.lang.String" value="jTextField1"/>
+                <Property name="toolTipText" type="java.lang.String" value="Group name"/>
               </Properties>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
@@ -69,7 +70,7 @@
             </Component>
             <Component class="javax.swing.JButton" name="color">
               <Properties>
-                <Property name="label" type="java.lang.String" value=""/>
+                <Property name="toolTipText" type="java.lang.String" value="Choose color"/>
                 <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                   <Dimension value="[16, 16]"/>
                 </Property>
