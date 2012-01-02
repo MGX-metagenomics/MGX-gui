@@ -1,6 +1,5 @@
 package de.cebitec.mgx.gui.taskview;
 
-import java.awt.EventQueue;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -93,7 +92,6 @@ public final class TaskViewTopComponent extends TopComponent implements Property
 
     @Override
     public void componentOpened() {
-        System.err.println("adding PCL");
         TaskManager.getInstance().addPropertyChangeListener(this);
         refreshList();
     }
@@ -114,7 +112,6 @@ public final class TaskViewTopComponent extends TopComponent implements Property
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals(TaskManager.TASKMANAGER_CHANGE)) {
-            System.err.println("refreshing list..");
             refreshList();
         } else {
             System.err.println("TopComponent received " + evt.getPropertyName());

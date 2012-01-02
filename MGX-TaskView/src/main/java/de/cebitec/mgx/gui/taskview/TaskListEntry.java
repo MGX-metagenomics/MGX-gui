@@ -5,6 +5,14 @@
  */
 package de.cebitec.mgx.gui.taskview;
 
+import java.awt.BorderLayout;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.io.IOException;
+import javax.swing.JPanel;
+import org.openide.util.Exceptions;
+import org.openide.util.ImageUtilities;
+
 /**
  *
  * @author sj
@@ -15,7 +23,7 @@ public class TaskListEntry extends javax.swing.JPanel {
     public TaskListEntry() {
         initComponents();
     }
-    
+
     public void setMainText(String t) {
         maintext.setText(t);
     }
@@ -23,11 +31,13 @@ public class TaskListEntry extends javax.swing.JPanel {
     public void setDetailText(String t) {
         detailtext.setText(t);
     }
-    
+
     public void finished() {
         jProgressBar1.setIndeterminate(false);
         jProgressBar1.setValue(jProgressBar1.getMaximum());
+        imagepanel.add(new ImagePanel("de/cebitec/mgx/gui/taskview/ok.png"), BorderLayout.CENTER);
     }
+
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -44,27 +54,17 @@ public class TaskListEntry extends javax.swing.JPanel {
 
         setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
-        maintext.setFont(new java.awt.Font("Dialog", 1, 14));
         maintext.setText(org.openide.util.NbBundle.getMessage(TaskListEntry.class, "TaskListEntry.maintext.text")); // NOI18N
 
-        detailtext.setFont(new java.awt.Font("Dialog", 1, 10));
+        detailtext.setFont(new java.awt.Font("Dialog", 0, 10));
         detailtext.setText(org.openide.util.NbBundle.getMessage(TaskListEntry.class, "TaskListEntry.detailtext.text")); // NOI18N
 
         jProgressBar1.setIndeterminate(true);
 
         imagepanel.setMaximumSize(new java.awt.Dimension(48, 48));
+        imagepanel.setMinimumSize(new java.awt.Dimension(48, 48));
         imagepanel.setPreferredSize(new java.awt.Dimension(48, 48));
-
-        javax.swing.GroupLayout imagepanelLayout = new javax.swing.GroupLayout(imagepanel);
-        imagepanel.setLayout(imagepanelLayout);
-        imagepanelLayout.setHorizontalGroup(
-            imagepanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 50, Short.MAX_VALUE)
-        );
-        imagepanelLayout.setVerticalGroup(
-            imagepanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 42, Short.MAX_VALUE)
-        );
+        imagepanel.setLayout(new java.awt.BorderLayout());
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -73,13 +73,13 @@ public class TaskListEntry extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 324, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(maintext, javax.swing.GroupLayout.DEFAULT_SIZE, 262, Short.MAX_VALUE)
                             .addComponent(detailtext, javax.swing.GroupLayout.DEFAULT_SIZE, 262, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(imagepanel, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 324, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(imagepanel, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -91,10 +91,10 @@ public class TaskListEntry extends javax.swing.JPanel {
                         .addComponent(maintext)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(detailtext))
-                    .addComponent(imagepanel, javax.swing.GroupLayout.DEFAULT_SIZE, 42, Short.MAX_VALUE))
+                    .addComponent(imagepanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18))
+                .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
