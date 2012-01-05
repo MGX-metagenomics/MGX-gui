@@ -114,15 +114,8 @@ public class SeqRunNode extends MGXNodeBase {
 
                     @Override
                     public void finished() {
-                        setStatus("Done");
                         super.finished();
                         fireNodeDestroyed();
-                    }
-
-                    @Override
-                    public void failed() {
-                        setStatus("Failed");
-                        super.failed();
                     }
                 };
 

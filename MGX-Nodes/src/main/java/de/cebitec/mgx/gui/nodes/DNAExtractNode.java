@@ -87,7 +87,7 @@ public class DNAExtractNode extends MGXNodeBase {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            DNAExtract dna = getLookup().lookup(DNAExtract.class);
+            final DNAExtract dna = getLookup().lookup(DNAExtract.class);
             NotifyDescriptor d = new NotifyDescriptor("Really delete DNA extract " + dna.getMethod() + "?",
                     "Delete DNA extract",
                     NotifyDescriptor.YES_NO_OPTION,
@@ -96,8 +96,23 @@ public class DNAExtractNode extends MGXNodeBase {
                     null);
             Object ret = DialogDisplayer.getDefault().notify(d);
             if (NotifyDescriptor.YES_OPTION.equals(ret)) {
-                getMaster().DNAExtract().delete(dna.getId());
-                fireNodeDestroyed();
+                MGXTask deleteTask = new MGXTask() {
+
+                    @Override
+                    public void process() {
+                        setStatus("Deleting..");
+                        getMaster().DNAExtract().delete(dna.getId());
+                    }
+
+                    @Override
+                    public void finished() {
+                        super.finished();
+                        fireNodeDestroyed();
+                    }
+                };
+
+                TaskManager.getInstance().addTask("Delete " + dna.getMethod(), deleteTask);
+
             }
         }
     }
@@ -141,7 +156,7 @@ public class DNAExtractNode extends MGXNodeBase {
                         }
                         final SeqUploader uploader = getMaster().Sequence().createUploader(seqrun.getId(), reader);
                         MGXTask run = new MGXTask() {
-                            
+
                             @Override
                             public void process() {
                                 boolean success = uploader.upload();

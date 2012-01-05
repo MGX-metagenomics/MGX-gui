@@ -4,6 +4,8 @@ import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.DNAExtract;
 import de.cebitec.mgx.gui.datamodel.Sample;
 import de.cebitec.mgx.gui.nodefactory.DNAExtractNodeFactory;
+import de.cebitec.mgx.gui.taskview.MGXTask;
+import de.cebitec.mgx.gui.taskview.TaskManager;
 import de.cebitec.mgx.gui.wizard.extract.DNAExtractWizardDescriptor;
 import de.cebitec.mgx.gui.wizard.sample.SampleWizardDescriptor;
 import java.awt.Dialog;
@@ -45,6 +47,7 @@ public class SampleNode extends MGXNodeBase {
     public Action[] getActions(boolean context) {
         return new Action[]{new EditSample(), new DeleteSample(), new AddExtract()};
     }
+
     private class EditSample extends AbstractAction {
 
         public EditSample() {
@@ -67,7 +70,7 @@ public class SampleNode extends MGXNodeBase {
             }
         }
     }
-    
+
     private class DeleteSample extends AbstractAction {
 
         public DeleteSample() {
@@ -76,8 +79,8 @@ public class SampleNode extends MGXNodeBase {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            Sample s = getLookup().lookup(Sample.class);
-            NotifyDescriptor d = new NotifyDescriptor("Really delete sample " + s.getMaterial() + "?",
+            final Sample sample = getLookup().lookup(Sample.class);
+            NotifyDescriptor d = new NotifyDescriptor("Really delete sample " + sample.getMaterial() + "?",
                     "Delete sample",
                     NotifyDescriptor.YES_NO_OPTION,
                     NotifyDescriptor.QUESTION_MESSAGE,
@@ -85,13 +88,27 @@ public class SampleNode extends MGXNodeBase {
                     null);
             Object ret = DialogDisplayer.getDefault().notify(d);
             if (NotifyDescriptor.YES_OPTION.equals(ret)) {
-                getMaster().Habitat().delete(s.getId());
-                fireNodeDestroyed();
+                MGXTask deleteTask = new MGXTask() {
+
+                    @Override
+                    public void process() {
+                        setStatus("Deleting..");
+                        getMaster().Sample().delete(sample.getId());
+                    }
+
+                    @Override
+                    public void finished() {
+                        super.finished();
+                        fireNodeDestroyed();
+                    }
+                };
+
+                TaskManager.getInstance().addTask("Delete " + sample.getMaterial(), deleteTask);
             }
         }
     }
-    
-        private class AddExtract extends AbstractAction {
+
+    private class AddExtract extends AbstractAction {
 
         public AddExtract() {
             putValue(NAME, "Add DNA extract");

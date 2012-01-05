@@ -18,21 +18,21 @@ import org.openide.util.lookup.Lookups;
  * @author sj
  */
 public class ProjectDataNode extends MGXNodeBase {
-    
+
     private HabitatNodeFactory hnf = null;
-    
+
     public ProjectDataNode(MGXMaster m) {
         this(m, new HabitatNodeFactory(m));
         master = m;
     }
-    
+
     private ProjectDataNode(MGXMaster m, HabitatNodeFactory hnf) {
         super(Children.create(hnf, true), Lookups.singleton(m));
         this.hnf = hnf;
         setDisplayName("Project Data");
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/ProjectData.png");
     }
-    
+
     @Override
     public boolean canDestroy() {
         return false;
@@ -40,7 +40,7 @@ public class ProjectDataNode extends MGXNodeBase {
 
     @Override
     public Action[] getActions(boolean context) {
-        return new Action[]{new AddHabitat()};
+        return new Action[]{new AddHabitat(), new Refresh()};
     }
 
     private class AddHabitat extends AbstractAction {
@@ -61,6 +61,18 @@ public class ProjectDataNode extends MGXNodeBase {
                 getMaster().Habitat().create(h);
                 hnf.refreshChildren();
             }
+        }
+    }
+
+    private class Refresh extends AbstractAction {
+
+        public Refresh() {
+            putValue(NAME, "Refresh");
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            hnf.refreshChildren();
         }
     }
 }
