@@ -6,15 +6,12 @@
 package de.cebitec.mgx.gui.attributevisualization;
 
 import de.cebitec.mgx.gui.attributevisualization.data.VisualizationGroup;
-import java.awt.Color;
+import de.cebitec.mgx.gui.attributevisualization.data.VisualizationGroups;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.Collection;
 
 /**
  *
@@ -22,44 +19,29 @@ import java.util.Map;
  */
 public class GroupingPanel extends javax.swing.JPanel implements ActionListener, PropertyChangeListener {
 
-    public static final String VISGROUP_NUM_CHANGED = "vgNumChanged";
-    private int groupCount = 1;
-    private Map<String, GroupFrame> groupFrames = new HashMap<String, GroupFrame>();
-    private static Color colors[] = {Color.RED, Color.BLUE, Color.YELLOW, Color.PINK, Color.GREEN};
+    private VisualizationGroups groups;
 
     /** Creates new form GroupingPanel */
     public GroupingPanel() {
         initComponents();
-        addGroup.addActionListener(this);
+        groups = VisualizationGroups.getInstance();
+        groups.addPropertyChangeListener(this);
+        addGroup(); // create initial group
+        addGroupButton.addActionListener(this);
     }
 
-    public List<VisualizationGroup> getVisualizationGroups() {
-        List<VisualizationGroup> ret = new ArrayList<VisualizationGroup>();
-        for (GroupFrame g : groupFrames.values()) {
-            if (g.isActive()) {
-                ret.add(g.getGroup());
-            }
-        }
-        return ret;
+    public Collection<VisualizationGroup> getVisualizationGroups() {
+        return groups.getGroups();
     }
 
-    void addGroupFrame() {
-        String newName = "Group " + groupCount;
-        while (groupFrames.containsKey(newName)) {
-            newName = "Group " + ++groupCount;
-        }
-        GroupFrame gf = new GroupFrame(newName, this);
-        gf.setColor(colors[(groupCount - 1) % colors.length]);
-        gf.addPropertyChangeListener(this);
-        firePropertyChange(VISGROUP_NUM_CHANGED, 0, gf.getGroupName());
-        groupFrames.put(gf.getGroupName(), gf);
+    private void addGroup() {
+        VisualizationGroup newGroup = groups.createGroup();
+        GroupFrame gf = new GroupFrame(newGroup, this);
         scrollpanel.add(gf);
-        groupCount++;
     }
 
-    void removeGroupFrame(GroupFrame gf) {
-        groupFrames.remove(gf.getGroupName());
-        firePropertyChange(VISGROUP_NUM_CHANGED, 0, gf.getGroupName());
+    void removeGroup(VisualizationGroup group) {
+        groups.removeGroup(group.getName());
     }
 
     /** This method is called from within the constructor to
@@ -72,7 +54,7 @@ public class GroupingPanel extends javax.swing.JPanel implements ActionListener,
     private void initComponents() {
 
         jToolBar1 = new javax.swing.JToolBar();
-        addGroup = new javax.swing.JButton();
+        addGroupButton = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         scrollpanel = new javax.swing.JPanel();
 
@@ -81,12 +63,12 @@ public class GroupingPanel extends javax.swing.JPanel implements ActionListener,
 
         jToolBar1.setRollover(true);
 
-        addGroup.setFont(new java.awt.Font("Dialog", 1, 10)); // NOI18N
-        addGroup.setText("Add group");
-        addGroup.setFocusable(false);
-        addGroup.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        addGroup.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar1.add(addGroup);
+        addGroupButton.setFont(new java.awt.Font("Dialog", 1, 10)); // NOI18N
+        addGroupButton.setText("Add group");
+        addGroupButton.setFocusable(false);
+        addGroupButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        addGroupButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(addGroupButton);
 
         add(jToolBar1, java.awt.BorderLayout.PAGE_START);
 
@@ -96,7 +78,7 @@ public class GroupingPanel extends javax.swing.JPanel implements ActionListener,
         add(jScrollPane1, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton addGroup;
+    private javax.swing.JButton addGroupButton;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JPanel scrollpanel;
@@ -104,17 +86,23 @@ public class GroupingPanel extends javax.swing.JPanel implements ActionListener,
 
     @Override
     public void actionPerformed(ActionEvent ae) {
-        addGroupFrame();
+        addGroup();
     }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals(VisualizationGroup.VISGROUP_CHANGED)) {
-            firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue()); 
+            firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
         } else if (evt.getPropertyName().equals(VisualizationGroup.VISGROUP_ACTIVATED)) {
-            firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue()); 
+            firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
         } else if (evt.getPropertyName().equals(VisualizationGroup.VISGROUP_DEACTIVATED)) {
-            firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue()); 
+            firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
+        } else if (evt.getPropertyName().equals(VisualizationGroups.VISGROUP_NUM_CHANGED)) {
+            firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
+        } else if (evt.getPropertyName().equals(VisualizationGroup.VISGROUP_RENAMED)) {
+            firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
+        } else {
+            System.err.println("panel: unknown event " + evt.getPropertyName() + " " + evt.getOldValue() + " "+ evt.getNewValue());
         }
     }
 }

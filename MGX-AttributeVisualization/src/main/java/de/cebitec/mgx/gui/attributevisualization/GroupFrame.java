@@ -17,8 +17,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import javax.swing.DefaultListModel;
 import javax.swing.JColorChooser;
 import javax.swing.JDialog;
@@ -32,17 +30,20 @@ import org.openide.util.Exceptions;
  *
  * @author sj
  */
-public class GroupFrame extends javax.swing.JInternalFrame implements PropertyChangeListener {
+public class GroupFrame extends javax.swing.JInternalFrame {
 
     private GroupingPanel parent;
     private VisualizationGroup vGroup;
     private DefaultListModel lm = new DefaultListModel();
-    
-    public GroupFrame(String name, GroupingPanel parent) {
+
+    public GroupFrame(VisualizationGroup group, GroupingPanel parent) {
         this();
-        vGroup = new VisualizationGroup(name);
-        vGroup.addPropertyChangeListener(this);
+        this.vGroup = group;
+        color.setBackground(vGroup.getColor());
+        setTitle(vGroup.getName());
+        displayName.setText(vGroup.getName());
         this.parent = parent;
+        setVisible(true);
     }
 
     /** Creates new form GroupFrame */
@@ -50,45 +51,20 @@ public class GroupFrame extends javax.swing.JInternalFrame implements PropertyCh
         initComponents();
         setDropTarget();
         list.setModel(lm);
-        setVisible(true);
         displayName.getDocument().addDocumentListener(new DisplayNameChanger());
         color.addActionListener(new ColorActionListener());
         active.addItemListener(new ActivateItemListener());
     }
 
-    public boolean isActive() {
-        return vGroup.isActive();
-    }
-
-    public String getGroupName() {
-        return vGroup.getName();
-    }
-
-    public void setGroupName(String groupName) {
-        System.err.println("group renamed to " + displayName.getText());
-        setTitle(groupName);
-        displayName.setText(groupName);
-        vGroup.setName(groupName);
-    }
-
-    public VisualizationGroup getGroup() {
-        return vGroup;
-    }
-
-    public void setColor(Color c) {
-        vGroup.setColor(c);
-        color.setBackground(c);
-    }
-
-    private void addSeqRun(SeqRun sr) {
-        vGroup.addSeqRun(sr);
-        lm.addElement(sr);
-    }
-
     @Override
     public void dispose() {
-        parent.removeGroupFrame(this);
+        parent.removeGroup(vGroup);
         super.dispose();
+    }
+
+    private void setColor(Color c) {
+        vGroup.setColor(c);
+        color.setBackground(c);
     }
 
     private void setDropTarget() {
@@ -118,7 +94,8 @@ public class GroupFrame extends javax.swing.JInternalFrame implements PropertyCh
                     if (vGroup.getSeqRuns().contains(sr)) {
                         dtde.rejectDrop();
                     }
-                    addSeqRun(sr);
+                    vGroup.addSeqRun(sr);
+                    lm.addElement(sr);
                 } catch (Exception ex) {
                     Exceptions.printStackTrace(ex);
                     dtde.rejectDrop();
@@ -192,16 +169,11 @@ public class GroupFrame extends javax.swing.JInternalFrame implements PropertyCh
     private javax.swing.JList list;
     // End of variables declaration//GEN-END:variables
 
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-        firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
-    }
-
     private final class ActivateItemListener implements ItemListener {
 
         @Override
         public void itemStateChanged(ItemEvent e) {
-            vGroup.setActive(isActive());
+            vGroup.setActive(active.isSelected());
         }
     }
 

@@ -28,7 +28,6 @@ public final class AttributeVisualizationTopComponent extends TopComponent imple
         setName(NbBundle.getMessage(AttributeVisualizationTopComponent.class, "CTL_AttributeVisualizationTopComponent"));
         setToolTipText(NbBundle.getMessage(AttributeVisualizationTopComponent.class, "HINT_AttributeVisualizationTopComponent"));
         groupingPanel1.addPropertyChangeListener(this);
-        groupingPanel1.addGroupFrame();
     }
 
     /** This method is called from within the constructor to
@@ -75,7 +74,7 @@ public final class AttributeVisualizationTopComponent extends TopComponent imple
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         if (evt.getPropertyName() != null) {
-            System.err.println("received event "+evt.getPropertyName());
+            System.err.println("TC received event "+evt.getPropertyName() + " " + evt.getOldValue() + " " + evt.getNewValue());
         }
     }
 }

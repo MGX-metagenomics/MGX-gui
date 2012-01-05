@@ -22,7 +22,7 @@ public class VisualizationGroup {
 
     public static final String VISGROUP_ACTIVATED = "vgActivated";
     public static final String VISGROUP_DEACTIVATED = "vgDeactivated";
-    public static final String VISGROUP_CHANGED = "vgChanged";
+    public static final String VISGROUP_CHANGED = "vgModified";
     public static final String VISGROUP_RENAMED = "vgRenamed";
     private String name;
     private Color color;
@@ -32,8 +32,9 @@ public class VisualizationGroup {
     private boolean is_active = true;
     private final PropertyChangeSupport pcs;
 
-    public VisualizationGroup(String groupName) {
+    public VisualizationGroup(String groupName, Color color) {
         this.name = groupName;
+        this.color = color;
         pcs = new PropertyChangeSupport(this);
     }
 
@@ -44,7 +45,7 @@ public class VisualizationGroup {
     public void setName(String name) {
         String oldName = this.name;
         this.name = name;
-        pcs.firePropertyChange(VISGROUP_RENAMED, oldName, this.name);
+        pcs.firePropertyChange(VISGROUP_RENAMED, oldName, name);
     }
 
     public boolean isActive() {
@@ -53,7 +54,7 @@ public class VisualizationGroup {
 
     public void setActive(boolean is_active) {
         this.is_active = is_active;
-        pcs.firePropertyChange(is_active ? VISGROUP_ACTIVATED : VISGROUP_DEACTIVATED, 0, getName());
+        pcs.firePropertyChange(is_active ? VISGROUP_ACTIVATED : VISGROUP_DEACTIVATED, !is_active, is_active);
     }
 
     public Color getColor() {
