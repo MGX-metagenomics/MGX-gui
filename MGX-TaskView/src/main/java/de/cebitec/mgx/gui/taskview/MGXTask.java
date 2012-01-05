@@ -29,7 +29,6 @@ public abstract class MGXTask implements Runnable, PropertyChangeListener {
     }
 
     protected void setStatus(String s) {
-        final String old = status;
         status = s;
         fireTaskChanged();
     }
@@ -37,10 +36,12 @@ public abstract class MGXTask implements Runnable, PropertyChangeListener {
     public abstract void process();
 
     public void finished() {
+        setStatus("Done");
         fireTaskChanged();
     }
 
     public void failed() {
+        setStatus("Failed");
         fireTaskChanged();
     }
     
