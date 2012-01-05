@@ -9,29 +9,33 @@ import de.cebitec.mgx.gui.attributevisualization.data.VisualizationGroup;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
  * @author sj
  */
-public class GroupingPanel extends javax.swing.JPanel implements ActionListener {
+public class GroupingPanel extends javax.swing.JPanel implements ActionListener, PropertyChangeListener {
 
+    public static final String VISGROUP_NUM_CHANGED = "vgNumChanged";
     private int groupCount = 1;
-    private List<GroupFrame> groupFrames = new ArrayList<GroupFrame>();
+    private Map<String, GroupFrame> groupFrames = new HashMap<String, GroupFrame>();
     private static Color colors[] = {Color.RED, Color.BLUE, Color.YELLOW, Color.PINK, Color.GREEN};
 
     /** Creates new form GroupingPanel */
     public GroupingPanel() {
         initComponents();
         addGroup.addActionListener(this);
-        addGroupFrame(); // create initial group
     }
 
     public List<VisualizationGroup> getVisualizationGroups() {
         List<VisualizationGroup> ret = new ArrayList<VisualizationGroup>();
-        for (GroupFrame g : groupFrames) {
+        for (GroupFrame g : groupFrames.values()) {
             if (g.isActive()) {
                 ret.add(g.getGroup());
             }
@@ -39,18 +43,23 @@ public class GroupingPanel extends javax.swing.JPanel implements ActionListener 
         return ret;
     }
 
-    private void addGroupFrame() {
-        GroupFrame gf = new GroupFrame();
-        gf.setGroupName("Group " + groupCount);
+    void addGroupFrame() {
+        String newName = "Group " + groupCount;
+        while (groupFrames.containsKey(newName)) {
+            newName = "Group " + ++groupCount;
+        }
+        GroupFrame gf = new GroupFrame(newName, this);
         gf.setColor(colors[(groupCount - 1) % colors.length]);
-        gf.setParent(this);
-        groupFrames.add(gf);
+        gf.addPropertyChangeListener(this);
+        firePropertyChange(VISGROUP_NUM_CHANGED, 0, gf.getGroupName());
+        groupFrames.put(gf.getGroupName(), gf);
         scrollpanel.add(gf);
         groupCount++;
     }
 
     void removeGroupFrame(GroupFrame gf) {
-        groupFrames.remove(gf);
+        groupFrames.remove(gf.getGroupName());
+        firePropertyChange(VISGROUP_NUM_CHANGED, 0, gf.getGroupName());
     }
 
     /** This method is called from within the constructor to
@@ -96,5 +105,16 @@ public class GroupingPanel extends javax.swing.JPanel implements ActionListener 
     @Override
     public void actionPerformed(ActionEvent ae) {
         addGroupFrame();
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (evt.getPropertyName().equals(VisualizationGroup.VISGROUP_CHANGED)) {
+            firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue()); 
+        } else if (evt.getPropertyName().equals(VisualizationGroup.VISGROUP_ACTIVATED)) {
+            firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue()); 
+        } else if (evt.getPropertyName().equals(VisualizationGroup.VISGROUP_DEACTIVATED)) {
+            firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue()); 
+        }
     }
 }

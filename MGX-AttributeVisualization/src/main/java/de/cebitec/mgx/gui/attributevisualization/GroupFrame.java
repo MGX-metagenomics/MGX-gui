@@ -15,6 +15,10 @@ import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import javax.swing.DefaultListModel;
 import javax.swing.JColorChooser;
 import javax.swing.JDialog;
@@ -28,51 +32,56 @@ import org.openide.util.Exceptions;
  *
  * @author sj
  */
-public class GroupFrame extends javax.swing.JInternalFrame {
+public class GroupFrame extends javax.swing.JInternalFrame implements PropertyChangeListener {
 
     private GroupingPanel parent;
-    private VisualizationGroup data = new VisualizationGroup();
+    private VisualizationGroup vGroup;
     private DefaultListModel lm = new DefaultListModel();
+    
+    public GroupFrame(String name, GroupingPanel parent) {
+        this();
+        vGroup = new VisualizationGroup(name);
+        vGroup.addPropertyChangeListener(this);
+        this.parent = parent;
+    }
 
     /** Creates new form GroupFrame */
-    public GroupFrame() {
+    private GroupFrame() {
         initComponents();
         setDropTarget();
         list.setModel(lm);
         setVisible(true);
         displayName.getDocument().addDocumentListener(new DisplayNameChanger());
         color.addActionListener(new ColorActionListener());
-    }
-
-    public void setParent(GroupingPanel parent) {
-        this.parent = parent;
+        active.addItemListener(new ActivateItemListener());
     }
 
     public boolean isActive() {
-        return active.isSelected();
+        return vGroup.isActive();
     }
 
     public String getGroupName() {
-        return data.getName();
+        return vGroup.getName();
     }
 
     public void setGroupName(String groupName) {
+        System.err.println("group renamed to " + displayName.getText());
         setTitle(groupName);
         displayName.setText(groupName);
-        data.setName(groupName);
+        vGroup.setName(groupName);
     }
 
     public VisualizationGroup getGroup() {
-        return data;
+        return vGroup;
     }
-    
+
     public void setColor(Color c) {
-        data.setColor(c);
+        vGroup.setColor(c);
         color.setBackground(c);
     }
 
     private void addSeqRun(SeqRun sr) {
-        data.getSeqRuns().add(sr);
+        vGroup.addSeqRun(sr);
         lm.addElement(sr);
     }
 
@@ -92,7 +101,7 @@ public class GroupFrame extends javax.swing.JInternalFrame {
                 } else {
                     try {
                         SeqRun sr = (SeqRun) dtde.getTransferable().getTransferData(ModelBase.getNodeFlavor());
-                        if (sr == null || data.getSeqRuns().contains(sr)) {
+                        if (sr == null || vGroup.getSeqRuns().contains(sr)) {
                             dtde.rejectDrag();
                         }
                     } catch (Exception ex) {
@@ -106,7 +115,7 @@ public class GroupFrame extends javax.swing.JInternalFrame {
             public void drop(DropTargetDropEvent dtde) {
                 try {
                     SeqRun sr = (SeqRun) dtde.getTransferable().getTransferData(ModelBase.getNodeFlavor());
-                    if (data.getSeqRuns().contains(sr)) {
+                    if (vGroup.getSeqRuns().contains(sr)) {
                         dtde.rejectDrop();
                     }
                     addSeqRun(sr);
@@ -183,6 +192,19 @@ public class GroupFrame extends javax.swing.JInternalFrame {
     private javax.swing.JList list;
     // End of variables declaration//GEN-END:variables
 
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
+    }
+
+    private final class ActivateItemListener implements ItemListener {
+
+        @Override
+        public void itemStateChanged(ItemEvent e) {
+            vGroup.setActive(isActive());
+        }
+    }
+
     private final class DisplayNameChanger implements DocumentListener {
 
         @Override
@@ -203,7 +225,8 @@ public class GroupFrame extends javax.swing.JInternalFrame {
         private void handleUpdate(DocumentEvent e) {
             Document d = e.getDocument();
             if (displayName.getDocument() == d) {
-                data.setName(displayName.getText());
+                setTitle(displayName.getText());
+                vGroup.setName(displayName.getText());
             }
         }
     }
@@ -212,7 +235,7 @@ public class GroupFrame extends javax.swing.JInternalFrame {
 
         @Override
         public void actionPerformed(ActionEvent ae) {
-            final JColorChooser jcc = new JColorChooser(data.getColor());
+            final JColorChooser jcc = new JColorChooser(vGroup.getColor());
             //jcc.setChooserPanels(new AbstractColorChooserPanel[]{});
             JDialog dialog = JColorChooser.createDialog(new JFrame(), "Choose color", false, jcc, new ActionListener() {
 
@@ -221,7 +244,7 @@ public class GroupFrame extends javax.swing.JInternalFrame {
                     Color newColor = jcc.getColor();
                     if (newColor != null) {
                         color.setBackground(newColor);
-                        data.setColor(newColor);
+                        vGroup.setColor(newColor);
                     }
                 }
             }, null);

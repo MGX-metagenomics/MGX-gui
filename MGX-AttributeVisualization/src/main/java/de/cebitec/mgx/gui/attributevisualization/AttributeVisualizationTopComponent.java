@@ -1,5 +1,7 @@
 package de.cebitec.mgx.gui.attributevisualization;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
@@ -19,12 +21,14 @@ persistenceType = TopComponent.PERSISTENCE_ALWAYS)
 @ActionReference(path = "Menu/Window" /*, position = 333 */)
 @TopComponent.OpenActionRegistration(displayName = "#CTL_AttributeVisualizationAction",
 preferredID = "AttributeVisualizationTopComponent")
-public final class AttributeVisualizationTopComponent extends TopComponent {
+public final class AttributeVisualizationTopComponent extends TopComponent implements PropertyChangeListener {
 
     public AttributeVisualizationTopComponent() {
         initComponents();
         setName(NbBundle.getMessage(AttributeVisualizationTopComponent.class, "CTL_AttributeVisualizationTopComponent"));
         setToolTipText(NbBundle.getMessage(AttributeVisualizationTopComponent.class, "HINT_AttributeVisualizationTopComponent"));
+        groupingPanel1.addPropertyChangeListener(this);
+        groupingPanel1.addGroupFrame();
     }
 
     /** This method is called from within the constructor to
@@ -66,5 +70,12 @@ public final class AttributeVisualizationTopComponent extends TopComponent {
 
     void readProperties(java.util.Properties p) {
         String version = p.getProperty("version");
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (evt.getPropertyName() != null) {
+            System.err.println("received event "+evt.getPropertyName());
+        }
     }
 }
