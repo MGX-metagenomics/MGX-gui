@@ -29,6 +29,7 @@ public class AttributeDTOFactory extends DTOConversionBase<Attribute, AttributeD
     @Override
     public final Attribute toModel(AttributeDTO dto) {
         Attribute a = new Attribute();
+        a.setId(dto.getId());
         a.setType(dto.getType());
         // FIXME: value!
         return a;

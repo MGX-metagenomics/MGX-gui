@@ -3,6 +3,7 @@ package de.cebitec.mgx.gui.controller;
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.AttributeCount;
 import de.cebitec.mgx.dto.dto.AttributeDTO;
+import de.cebitec.mgx.dto.dto.MGXString;
 import de.cebitec.mgx.gui.datamodel.Attribute;
 import de.cebitec.mgx.gui.dtoconversion.AttributeDTOFactory;
 import java.util.Collection;
@@ -19,28 +20,31 @@ import java.util.logging.Logger;
  */
 public class AttributeAccess extends AccessBase<Attribute> {
 
-    public Collection<Attribute> listTypes() throws MGXServerException {
-        Collection<Attribute> ret = new HashSet<Attribute>();
-        Collection<AttributeDTO> dtolist = getDTOmaster().Attribute().listTypes();
-        for (AttributeDTO adto : dtolist) {
-            Attribute attr = AttributeDTOFactory.getInstance().toModel(adto);
-            ret.add(attr);
+    public Collection<String> listTypes() throws MGXServerException {
+        Collection<String> ret = new HashSet<String>();
+        Collection<MGXString> dtolist = getDTOmaster().Attribute().listTypes();
+        for (MGXString adto : dtolist) {
+            ret.add(adto.getValue());
         }
         return ret;
     }
 
-    public Collection<Attribute> listTypesByJob(Long jobId) throws MGXServerException {
-        Collection<Attribute> ret = new HashSet<Attribute>();
-        Collection<AttributeDTO> dtolist = getDTOmaster().Attribute().listTypesByJob(jobId);
-        for (AttributeDTO adto : dtolist) {
-            Attribute attr = AttributeDTOFactory.getInstance().toModel(adto);
-            ret.add(attr);
+    public Collection<String> listTypesByJob(Long jobId) throws MGXServerException {
+        Collection<String> ret = new HashSet<String>();
+        Collection<MGXString> dtolist = getDTOmaster().Attribute().listTypesByJob(jobId);
+        for (MGXString adto : dtolist) {
+            ret.add(adto.getValue());
         }
         return ret;
     }
 
-    public Collection<Attribute> listTypesBySeqRun(Long seqrunId) throws MGXServerException {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public Collection<String> listTypesBySeqRun(Long seqrunId) throws MGXServerException {
+        Collection<String> ret = new HashSet<String>();
+        Collection<MGXString> dtolist = getDTOmaster().Attribute().listTypesBySeqRun(seqrunId);
+        for (MGXString adto : dtolist) {
+            ret.add(adto.getValue());
+        }
+        return ret;
     }
 
     public Map<Attribute, Long> getDistribution(String attributeName, Long jobId, List<Long> seqrun_ids) {
