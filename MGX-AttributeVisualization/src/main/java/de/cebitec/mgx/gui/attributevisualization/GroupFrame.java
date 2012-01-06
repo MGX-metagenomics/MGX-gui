@@ -5,6 +5,7 @@
  */
 package de.cebitec.mgx.gui.attributevisualization;
 
+import de.cebitec.mgx.gui.attributevisualization.data.VGroupManager;
 import de.cebitec.mgx.gui.attributevisualization.data.VisualizationGroup;
 import de.cebitec.mgx.gui.datamodel.ModelBase;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
@@ -39,21 +40,28 @@ public class GroupFrame extends javax.swing.JInternalFrame {
     public GroupFrame(VisualizationGroup group, GroupingPanel parent) {
         this();
         this.vGroup = group;
-        color.setBackground(vGroup.getColor());
+        this.parent = parent;
+        //
+        // set initial properties
+        //
         setTitle(vGroup.getName());
         displayName.setText(vGroup.getName());
-        this.parent = parent;
+        color.setBackground(vGroup.getColor());
+        //
+        // add listeners _after_ setting initial values
+        //
+        displayName.getDocument().addDocumentListener(new DisplayNameChanger());
+        color.addActionListener(new ColorActionListener());
+        active.addItemListener(new ActivateItemListener());
+        //
+        list.setModel(lm);
+        setDropTarget();
         setVisible(true);
     }
 
     /** Creates new form GroupFrame */
     private GroupFrame() {
         initComponents();
-        setDropTarget();
-        list.setModel(lm);
-        displayName.getDocument().addDocumentListener(new DisplayNameChanger());
-        color.addActionListener(new ColorActionListener());
-        active.addItemListener(new ActivateItemListener());
     }
 
     @Override
@@ -197,8 +205,14 @@ public class GroupFrame extends javax.swing.JInternalFrame {
         private void handleUpdate(DocumentEvent e) {
             Document d = e.getDocument();
             if (displayName.getDocument() == d) {
-                setTitle(displayName.getText());
-                vGroup.setName(displayName.getText());
+                String newTitle = displayName.getText();
+                if (!VGroupManager.getInstance().hasGroup(newTitle)) {
+                    setTitle(displayName.getText());
+                    vGroup.setName(displayName.getText());
+                    displayName.setBackground(Color.WHITE);
+                } else {
+                    displayName.setBackground(Color.RED);
+                }
             }
         }
     }

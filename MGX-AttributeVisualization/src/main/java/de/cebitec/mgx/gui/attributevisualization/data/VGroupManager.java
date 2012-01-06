@@ -14,25 +14,29 @@ import java.util.Map;
  *
  * @author sj
  */
-public class VisualizationGroups implements PropertyChangeListener {
+public class VGroupManager implements PropertyChangeListener {
 
     public static final String VISGROUP_NUM_CHANGED = "vgNumChanged";
-    private static VisualizationGroups instance = null;
+    private static VGroupManager instance = null;
     private Map<String, VisualizationGroup> groups = new HashMap<String, VisualizationGroup>();
     private int groupCount = 1;
     private PropertyChangeSupport pcs = null;
     //
     private static Color colors[] = {Color.RED, Color.BLUE, Color.YELLOW, Color.PINK, Color.GREEN};
 
-    private VisualizationGroups() {
+    private VGroupManager() {
         pcs = new PropertyChangeSupport(this);
     }
 
-    public static VisualizationGroups getInstance() {
+    public static VGroupManager getInstance() {
         if (instance == null) {
-            instance = new VisualizationGroups();
+            instance = new VGroupManager();
         }
         return instance;
+    }
+    
+    public boolean hasGroup(String name) {
+        return groups.containsKey(name);
     }
 
     public Collection<VisualizationGroup> getGroups() {
@@ -67,6 +71,11 @@ public class VisualizationGroups implements PropertyChangeListener {
 
     @Override
     public void propertyChange(PropertyChangeEvent pce) {
+        // rename group
+        if (pce.getPropertyName().equals(VisualizationGroup.VISGROUP_RENAMED)) {
+            VisualizationGroup g = groups.remove((String)pce.getOldValue());
+            groups.put((String)pce.getNewValue(), g);
+        }
         firePropertyChange(pce.getPropertyName(), pce.getOldValue(), pce.getNewValue());
     }
 

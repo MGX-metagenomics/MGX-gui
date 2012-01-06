@@ -6,7 +6,7 @@
 package de.cebitec.mgx.gui.attributevisualization;
 
 import de.cebitec.mgx.gui.attributevisualization.data.VisualizationGroup;
-import de.cebitec.mgx.gui.attributevisualization.data.VisualizationGroups;
+import de.cebitec.mgx.gui.attributevisualization.data.VGroupManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -19,29 +19,28 @@ import java.util.Collection;
  */
 public class GroupingPanel extends javax.swing.JPanel implements ActionListener, PropertyChangeListener {
 
-    private VisualizationGroups groups;
+    private VGroupManager groupmgr;
 
     /** Creates new form GroupingPanel */
     public GroupingPanel() {
         initComponents();
-        groups = VisualizationGroups.getInstance();
-        groups.addPropertyChangeListener(this);
-        addGroup(); // create initial group
+        groupmgr = VGroupManager.getInstance();
+        groupmgr.addPropertyChangeListener(this);
         addGroupButton.addActionListener(this);
     }
 
     public Collection<VisualizationGroup> getVisualizationGroups() {
-        return groups.getGroups();
+        return groupmgr.getGroups();
     }
 
-    private void addGroup() {
-        VisualizationGroup newGroup = groups.createGroup();
+    public void addGroup() {
+        VisualizationGroup newGroup = groupmgr.createGroup();
         GroupFrame gf = new GroupFrame(newGroup, this);
         scrollpanel.add(gf);
     }
 
     void removeGroup(VisualizationGroup group) {
-        groups.removeGroup(group.getName());
+        groupmgr.removeGroup(group.getName());
     }
 
     /** This method is called from within the constructor to
@@ -97,12 +96,12 @@ public class GroupingPanel extends javax.swing.JPanel implements ActionListener,
             firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
         } else if (evt.getPropertyName().equals(VisualizationGroup.VISGROUP_DEACTIVATED)) {
             firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
-        } else if (evt.getPropertyName().equals(VisualizationGroups.VISGROUP_NUM_CHANGED)) {
+        } else if (evt.getPropertyName().equals(VGroupManager.VISGROUP_NUM_CHANGED)) {
             firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
         } else if (evt.getPropertyName().equals(VisualizationGroup.VISGROUP_RENAMED)) {
             firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
         } else {
-            System.err.println("panel: unknown event " + evt.getPropertyName() + " " + evt.getOldValue() + " "+ evt.getNewValue());
+            // filtered
         }
     }
 }

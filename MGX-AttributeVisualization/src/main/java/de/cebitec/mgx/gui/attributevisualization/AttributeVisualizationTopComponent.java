@@ -28,6 +28,7 @@ public final class AttributeVisualizationTopComponent extends TopComponent imple
         setName(NbBundle.getMessage(AttributeVisualizationTopComponent.class, "CTL_AttributeVisualizationTopComponent"));
         setToolTipText(NbBundle.getMessage(AttributeVisualizationTopComponent.class, "HINT_AttributeVisualizationTopComponent"));
         groupingPanel1.addPropertyChangeListener(this);
+        groupingPanel1.addGroup();
     }
 
     /** This method is called from within the constructor to
