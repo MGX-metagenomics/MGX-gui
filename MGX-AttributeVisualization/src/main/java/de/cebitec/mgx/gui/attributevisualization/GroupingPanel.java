@@ -62,7 +62,7 @@ public class GroupingPanel extends javax.swing.JPanel implements ActionListener,
 
         jToolBar1.setRollover(true);
 
-        addGroupButton.setFont(new java.awt.Font("Dialog", 1, 10)); // NOI18N
+        addGroupButton.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         addGroupButton.setText("Add group");
         addGroupButton.setFocusable(false);
         addGroupButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);

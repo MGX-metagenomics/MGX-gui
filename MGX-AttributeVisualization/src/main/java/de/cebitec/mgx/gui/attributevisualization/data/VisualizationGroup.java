@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import javax.swing.SwingWorker;
 import org.openide.util.Exceptions;
 
 /**
@@ -28,7 +29,7 @@ public class VisualizationGroup {
     private Color color;
     private Set<SeqRun> seqruns = new HashSet<SeqRun>();
     private final Set<String> attributes = Collections.synchronizedSet(new HashSet<String>());
-    private List<Thread> threads = new ArrayList<Thread>();
+    private List<SwingWorker> workers = new ArrayList<SwingWorker>();
     private boolean is_active = true;
     private final PropertyChangeSupport pcs;
 
@@ -78,44 +79,41 @@ public class VisualizationGroup {
     }
 
     public Set<String> getAttributes() {
-        while (threads.size() > 0) {
-            List<Thread> removeList = new ArrayList<Thread>();
-            List<Thread> unfinished = new ArrayList<Thread>();
-            for (Thread t : threads) {
-                try {
-                    t.join();
-                    removeList.add(t);
-                } catch (InterruptedException ex) {
-                    unfinished.add(t);
+        while (workers.size() > 0) {
+            List<SwingWorker> removeList = new ArrayList<SwingWorker>();
+            for (SwingWorker sw : workers) {
+                if (sw.isDone()) {
+                    removeList.add(sw);
                 }
             }
-            threads.removeAll(removeList);
-            threads.addAll(unfinished);
+            workers.removeAll(removeList);
         }
         return attributes;
     }
 
     private void prefetchAttributes(final SeqRun sr) {
         assert sr.getMaster() != null;
-        Runnable r = new Runnable() {
+
+        SwingWorker<Void, Void> sw = new SwingWorker<Void, Void>() {
 
             @Override
-            public void run() {
-                try {
-                    MGXMaster master = (MGXMaster) sr.getMaster();
-                    Collection<String> types = master.Attribute().listTypesBySeqRun(sr.getId());
-                    synchronized (attributes) {
-                        attributes.addAll(types);
-                    }
-                    fireVGroupChanged(VISGROUP_CHANGED);
-                } catch (MGXServerException ex) {
-                    Exceptions.printStackTrace(ex);
+            protected Void doInBackground() throws Exception {
+                MGXMaster master = (MGXMaster) sr.getMaster();
+                Collection<String> types = master.Attribute().listTypesBySeqRun(sr.getId());
+                synchronized (attributes) {
+                    attributes.addAll(types);
                 }
+                return null;
+            }
+
+            @Override
+            protected void done() {
+                super.done();
+                fireVGroupChanged(VISGROUP_CHANGED);
             }
         };
-        Thread t = new Thread(r, "attribute-prefetch " + sr.getSequencingMethod());
-        t.start();
-        threads.add(t);
+        sw.execute();
+        workers.add(sw);
     }
 
     private void fireVGroupChanged(String name) {

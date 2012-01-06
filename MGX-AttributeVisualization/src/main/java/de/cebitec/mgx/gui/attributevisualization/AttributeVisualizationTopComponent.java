@@ -21,13 +21,15 @@ persistenceType = TopComponent.PERSISTENCE_ALWAYS)
 @ActionReference(path = "Menu/Window" /*, position = 333 */)
 @TopComponent.OpenActionRegistration(displayName = "#CTL_AttributeVisualizationAction",
 preferredID = "AttributeVisualizationTopComponent")
-public final class AttributeVisualizationTopComponent extends TopComponent implements PropertyChangeListener {
+public final class AttributeVisualizationTopComponent extends TopComponent {
 
     public AttributeVisualizationTopComponent() {
         initComponents();
         setName(NbBundle.getMessage(AttributeVisualizationTopComponent.class, "CTL_AttributeVisualizationTopComponent"));
         setToolTipText(NbBundle.getMessage(AttributeVisualizationTopComponent.class, "HINT_AttributeVisualizationTopComponent"));
-        groupingPanel1.addPropertyChangeListener(this);
+        // forward group change events to the control panel
+        groupingPanel1.addPropertyChangeListener(controlPanel1);
+        // create initial group
         groupingPanel1.addGroup();
     }
 
@@ -41,18 +43,46 @@ public final class AttributeVisualizationTopComponent extends TopComponent imple
 
         jPanel1 = new javax.swing.JPanel();
         groupingPanel1 = new de.cebitec.mgx.gui.attributevisualization.GroupingPanel();
+        jSplitPane1 = new javax.swing.JSplitPane();
+        controlPanel1 = new de.cebitec.mgx.gui.attributevisualization.ControlPanel();
+        jPanel2 = new javax.swing.JPanel();
 
         setLayout(new java.awt.BorderLayout());
 
         jPanel1.setLayout(new java.awt.BorderLayout());
-        jPanel1.add(groupingPanel1, java.awt.BorderLayout.PAGE_END);
+        jPanel1.add(groupingPanel1, java.awt.BorderLayout.SOUTH);
+
+        jSplitPane1.setDividerLocation(564);
+        jSplitPane1.setDividerSize(5);
+        jSplitPane1.setRightComponent(controlPanel1);
+
+        jPanel2.setMinimumSize(new java.awt.Dimension(400, 100));
+        jPanel2.setPreferredSize(new java.awt.Dimension(400, 270));
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 10, Short.MAX_VALUE)
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 270, Short.MAX_VALUE)
+        );
+
+        jSplitPane1.setLeftComponent(jPanel2);
+
+        jPanel1.add(jSplitPane1, java.awt.BorderLayout.CENTER);
 
         add(jPanel1, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private de.cebitec.mgx.gui.attributevisualization.ControlPanel controlPanel1;
     private de.cebitec.mgx.gui.attributevisualization.GroupingPanel groupingPanel1;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JSplitPane jSplitPane1;
     // End of variables declaration//GEN-END:variables
     @Override
     public void componentOpened() {
@@ -70,12 +100,5 @@ public final class AttributeVisualizationTopComponent extends TopComponent imple
 
     void readProperties(java.util.Properties p) {
         String version = p.getProperty("version");
-    }
-
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getPropertyName() != null) {
-            System.err.println("TC received event "+evt.getPropertyName() + " " + evt.getOldValue() + " " + evt.getNewValue());
-        }
     }
 }
