@@ -70,6 +70,7 @@
         <module>SwingX-Wrapper</module>
     <module>MGX-TaskView</module>
     <module>MGX-AttributeVisualization</module>
+    <module>JFreeChart-Wrapper</module>
   </modules>
 
     <properties>
