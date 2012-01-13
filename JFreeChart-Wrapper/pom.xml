@@ -54,6 +54,18 @@
                 <artifactId>nbm-maven-plugin</artifactId>
                 <version>3.5</version>
                 <extensions>true</extensions>
+                <configuration>
+                    <publicPackages>
+                        <publicPackage>org.jfree.chart</publicPackage>
+                        <publicPackage>org.jfree.chart.axis</publicPackage>
+                        <publicPackage>org.jfree.chart.labels</publicPackage>
+                        <publicPackage>org.jfree.chart.plot</publicPackage>
+                        <publicPackage>org.jfree.chart.renderer</publicPackage>
+                        <publicPackage>org.jfree.chart.renderer.category</publicPackage>
+                        <publicPackage>org.jfree.data</publicPackage>
+                        <publicPackage>org.jfree.data.category</publicPackage>
+                    </publicPackages>
+                </configuration>
             </plugin>
 
             <plugin>
