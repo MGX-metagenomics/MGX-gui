@@ -1,13 +1,13 @@
 package de.cebitec.mgx.gui.attributevisualization.viewer;
 
-import de.cebitec.mgx.gui.attributevisualization.filter.VisFilter;
+import de.cebitec.mgx.gui.attributevisualization.filter.VisFilterI;
 import javax.swing.JComponent;
 
 /**
  *
  * @author sjaenick
  */
-public abstract class ViewerI implements VisFilter {
+public abstract class ViewerI implements VisFilterI {
 
     public abstract JComponent getComponent();
     

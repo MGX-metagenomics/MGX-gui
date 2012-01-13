@@ -17,10 +17,7 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.*;
-import javax.swing.AbstractListModel;
-import javax.swing.ComboBoxModel;
-import javax.swing.event.ListDataEvent;
-import javax.swing.event.ListDataListener;
+import javax.swing.SwingWorker;
 import org.openide.util.Lookup;
 
 /**
@@ -31,7 +28,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
 
     private VGroupManager vgmgr = VGroupManager.getInstance();
     private AttributeListListener attrListener = new AttributeListListener();
-    private UpdateListener vCreator = new UpdateListener();
+    private ButtonListener vCreator = new ButtonListener();
     private AttributeVisualizationTopComponent topComponent;
     //
     private String currentAttribute = null;
@@ -59,12 +56,17 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        sortOrderGroup = new javax.swing.ButtonGroup();
         attributeList = new javax.swing.JComboBox();
         jLabel1 = new javax.swing.JLabel();
         visTypeList = new javax.swing.JComboBox();
         jLabel2 = new javax.swing.JLabel();
         updateButton = new javax.swing.JButton();
         fractions = new javax.swing.JCheckBox();
+        jLabel3 = new javax.swing.JLabel();
+        sortCriteria = new javax.swing.JComboBox();
+        sortAscending = new javax.swing.JRadioButton();
+        sortDescending = new javax.swing.JRadioButton();
 
         attributeList.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Loading attributes" }));
         attributeList.setEnabled(false);
@@ -83,6 +85,18 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
         fractions.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         fractions.setText(org.openide.util.NbBundle.getMessage(ControlPanel.class, "ControlPanel.fractions.text")); // NOI18N
 
+        jLabel3.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
+        jLabel3.setText(org.openide.util.NbBundle.getMessage(ControlPanel.class, "ControlPanel.jLabel3.text")); // NOI18N
+
+        sortOrderGroup.add(sortAscending);
+        sortAscending.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
+        sortAscending.setText(org.openide.util.NbBundle.getMessage(ControlPanel.class, "ControlPanel.sortAscending.text")); // NOI18N
+
+        sortOrderGroup.add(sortDescending);
+        sortDescending.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
+        sortDescending.setSelected(true);
+        sortDescending.setText(org.openide.util.NbBundle.getMessage(ControlPanel.class, "ControlPanel.sortDescending.text")); // NOI18N
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -90,12 +104,16 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(sortDescending)
+                    .addComponent(fractions)
+                    .addComponent(sortAscending)
                     .addComponent(attributeList, 0, 129, Short.MAX_VALUE)
                     .addComponent(jLabel1)
                     .addComponent(jLabel2)
                     .addComponent(visTypeList, 0, 129, Short.MAX_VALUE)
                     .addComponent(updateButton, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(fractions))
+                    .addComponent(jLabel3)
+                    .addComponent(sortCriteria, 0, 129, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -109,9 +127,17 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(visTypeList, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jLabel3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(sortCriteria, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(sortAscending)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(sortDescending)
+                .addGap(52, 52, 52)
                 .addComponent(fractions)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 320, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 165, Short.MAX_VALUE)
                 .addComponent(updateButton)
                 .addContainerGap())
         );
@@ -121,6 +147,11 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
     private javax.swing.JCheckBox fractions;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JRadioButton sortAscending;
+    private javax.swing.JComboBox sortCriteria;
+    private javax.swing.JRadioButton sortDescending;
+    private javax.swing.ButtonGroup sortOrderGroup;
     private javax.swing.JButton updateButton;
     private javax.swing.JComboBox visTypeList;
     // End of variables declaration//GEN-END:variables
@@ -130,19 +161,23 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
         if (evt.getPropertyName() != null) {
             System.err.println("control received event " + evt.getPropertyName() + " " + evt.getOldValue() + " " + evt.getNewValue());
         }
+
+        //
+        //
+        //
         String propName = evt.getPropertyName();
 
         if (propName.equals(VisualizationGroup.VISGROUP_CHANGED) || propName.equals(VGroupManager.VISGROUP_NUM_CHANGED)
                 || propName.equals(VisualizationGroup.VISGROUP_ACTIVATED) || propName.equals(VisualizationGroup.VISGROUP_DEACTIVATED)) {
             AttributeListModel aModel = new AttributeListModel();
-            aModel.updateAttributes();
+            aModel.update();
             String lastSelectedAttribute = currentAttribute;
             attributeList.setModel(aModel);
             if (aModel.getSize() > 0) {
                 attributeList.setSelectedIndex(0);
 
                 // if possible, keep the last selected entry
-                if (lastSelectedAttribute != null && aModel.attributes.contains(lastSelectedAttribute)) {
+                if (lastSelectedAttribute != null && aModel.content.contains(lastSelectedAttribute)) {
                     attributeList.setSelectedItem(lastSelectedAttribute);
                 }
                 attributeList.setEnabled(true);
@@ -155,127 +190,63 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
         }
     }
 
-    private final class AttributeListModel extends AbstractListModel implements ComboBoxModel {
-
-        private List<String> attributes = new ArrayList<String>();
-        // index of selected entry
-        int index = -1;
+    private final class AttributeListModel extends BaseModel {
 
         @Override
-        public void setSelectedItem(Object anItem) {
-            for (int i = 0; i < attributes.size(); i++) {
-                if (attributes.get(i) == anItem) {
-                    index = i;
-                    break;
-                }
-            }
-        }
-
-        @Override
-        public Object getSelectedItem() {
-            if (index >= 0) {
-                return attributes.get(index);
-            } else {
-                return "";
-            }
-        }
-
-        @Override
-        public int getSize() {
-            return attributes.size();
-        }
-
-        @Override
-        public Object getElementAt(int index) {
-            return attributes.get(index);
-        }
-
-        @Override
-        public void addListDataListener(ListDataListener l) {
-            listenerList.add(ListDataListener.class, l);
-        }
-
-        protected void fireContentsChanged() {
-            ListDataEvent e = new ListDataEvent(this,
-                    ListDataEvent.CONTENTS_CHANGED, -1, -1);
-            EventListener[] listeners = getListeners(
-                    ListDataListener.class);
-            for (int i = 0; i > listeners.length; i++) {
-                ((ListDataListener) listeners[i]).contentsChanged(e);
-            }
-        }
-
-        public void updateAttributes() {
+        public void update() {
             Set<String> ret = new HashSet<String>();
             for (VisualizationGroup vg : vgmgr.getGroups()) {
                 ret.addAll(vg.getAttributes());
             }
             List<String> tmp = new ArrayList<String>(ret);
             Collections.sort(tmp);
-            attributes.clear();
-            attributes.addAll(tmp);
+            content.clear();
+            content.addAll(tmp);
             fireContentsChanged();
         }
     }
 
-    private final class VisTypeListModel extends AbstractListModel implements ComboBoxModel {
-
-        private List<String> visTypes = new ArrayList<String>();
-        // index of selected entry
-        int index = -1;
+    private final class VisTypeListModel extends BaseModel {
 
         @Override
-        public void setSelectedItem(Object anItem) {
-            for (int i = 0; i < visTypes.size(); i++) {
-                if (visTypes.get(i) == anItem) {
-                    index = i;
-                    break;
-                }
-            }
-        }
-
-        @Override
-        public Object getSelectedItem() {
-            if (index >= 0) {
-                return visTypes.get(index);
-            } else {
-                return "";
-            }
-        }
-
-        @Override
-        public int getSize() {
-            return visTypes.size();
-        }
-
-        @Override
-        public Object getElementAt(int index) {
-            return visTypes.get(index);
-        }
-
-        @Override
-        public void addListDataListener(ListDataListener l) {
-            listenerList.add(ListDataListener.class, l);
-        }
-
-        protected void fireContentsChanged() {
-            ListDataEvent e = new ListDataEvent(this,
-                    ListDataEvent.CONTENTS_CHANGED, -1, -1);
-            EventListener[] listeners = getListeners(
-                    ListDataListener.class);
-            for (int i = 0; i > listeners.length; i++) {
-                ((ListDataListener) listeners[i]).contentsChanged(e);
-            }
-        }
-
         public void update() {
             List<String> tmp = new ArrayList<String>();
             for (ViewerI viewer : Lookup.getDefault().lookupAll(ViewerI.class)) {
                 tmp.add(viewer.getName());
             }
             Collections.sort(tmp);
-            visTypes.clear();
-            visTypes.addAll(tmp);
+            content.clear();
+            content.addAll(tmp);
+            fireContentsChanged();
+        }
+    }
+
+    private final class SortTypeListModel extends BaseModel {
+
+        @Override
+        public void update() {
+            boolean allDoubles = true;
+            for (Pair<VisualizationGroup, Distribution> pair : currentDistributions) {
+                for (Pair<Attribute, Number> e : pair.getSecond().get()) {
+                    try {
+                        Double.parseDouble(e.getFirst().getType());
+                    } catch (NumberFormatException nfe) {
+                        System.err.println("not all doubles: " + e.getFirst().getType());
+                        allDoubles = false;
+                    }
+                }
+            }
+
+            List<String> tmp = new ArrayList<String>();
+            tmp.add(SortOrder.BY_VALUE);
+
+            if (allDoubles) {
+                tmp.add(SortOrder.BY_TYPE);
+            }
+
+            Collections.sort(tmp);
+            content.clear();
+            content.addAll(tmp);
             fireContentsChanged();
         }
     }
@@ -289,8 +260,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
             System.err.println("fetching dist for " + currentAttribute);
             currentDistributions = vgmgr.getDistributions(currentAttribute);
 
-            // Check available viewers here
-
+            // Check available viewers
             String lastSelectedVisType = (String) visTypeList.getSelectedItem();
             VisTypeListModel vtm = new VisTypeListModel();
             vtm.update();
@@ -298,7 +268,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
             visTypeList.setSelectedIndex(0);
 
             if (vtm.getSize() > 0) {
-                if (vtm.visTypes.contains(lastSelectedVisType)) {
+                if (vtm.content.contains(lastSelectedVisType)) {
                     visTypeList.setSelectedItem(lastSelectedVisType);
                 }
                 visTypeList.setEnabled(true);
@@ -307,36 +277,68 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
                 visTypeList.setEnabled(false);
                 updateButton.setEnabled(false);
             }
+
+            // check available sort orders here
+            String lastSelectedSortType = (String) sortCriteria.getSelectedItem();
+            SortTypeListModel stm = new SortTypeListModel();
+            stm.update();
+            sortCriteria.setModel(stm);
+            sortCriteria.setSelectedIndex(0);
+            if (stm.getSize() > 0) {
+                if (stm.content.contains(lastSelectedSortType)) {
+                    visTypeList.setSelectedItem(lastSelectedSortType);
+                }
+                sortCriteria.setEnabled(true);
+                updateButton.setEnabled(true);
+            } else {
+                sortCriteria.setEnabled(false);
+                updateButton.setEnabled(false);
+            }
+
         }
     }
 
-    private final class UpdateListener implements ActionListener {
+    private final class ButtonListener implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
             String vizType = (String) visTypeList.getSelectedItem();
 
+            SwingWorker sw = new SwingWorker<Void, Void>() {
+                
+                private VisFilterI filterChain;
+                private ViewerI view;
 
+                @Override
+                protected Void doInBackground() throws Exception {
+                    view = new BarChartViewer();
+                    view.setTitle("Distribution of " + currentAttribute);
 
-            ViewerI view = new BarChartViewer();
-            view.setTitle("Distribution of " + currentAttribute);
+                    filterChain = view;
 
+                    if (fractions.isSelected()) {
+                        VisFilterI fracFilter = new ToFractionFilter();
+                        filterChain = VisFilterSupport.append(fracFilter, filterChain);
+                    }
 
-            VisFilter filterChain = view;
+                    // sort filter
+                    SortOrder sorter = new SortOrder();
+                    sorter.setSortCriteria((String) sortCriteria.getSelectedItem());
+                    sorter.setSortOrder(sortAscending.isSelected() ? SortOrder.ASCENDING : SortOrder.DESCENDING);
+                    filterChain = VisFilterSupport.append(sorter, filterChain);
 
+                    return null;
+                }
 
-            if (fractions.isSelected()) {
-                VisFilter fracFilter = new ToFractionFilter();
-                filterChain = VisFilterSupport.append(fracFilter, filterChain);
-            }
-
-            // sort by abundance
-            VisFilter abSorter = new AbundanceSortFilter();
-            filterChain = VisFilterSupport.append(abSorter, filterChain);
-
-
-            filterChain.filter(currentDistributions);
-            topComponent.setVisualization(view.getComponent());
+                @Override
+                protected void done() {
+                    super.done();
+                    filterChain.filter(currentDistributions);
+                    topComponent.setVisualization(view.getComponent());
+                }
+            };
+            
+            sw.execute();
         }
     }
 }

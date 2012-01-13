@@ -9,7 +9,7 @@ import java.util.List;
  *
  * @author sjaenick
  */
-public interface VisFilter {
+public interface VisFilterI {
     
     public List<Pair<VisualizationGroup, Distribution>> filter(List<Pair<VisualizationGroup, Distribution>> dists);
     

@@ -10,7 +10,7 @@ import java.util.*;
  *
  * @author sjaenick
  */
-public class ToFractionFilter implements VisFilter {
+public class ToFractionFilter implements VisFilterI {
 
     @Override
     public List<Pair<VisualizationGroup, Distribution>> filter(List<Pair<VisualizationGroup, Distribution>> dists) {

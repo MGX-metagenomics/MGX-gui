@@ -9,7 +9,6 @@ import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 /**
  *
@@ -93,9 +92,12 @@ public class VGroupManager implements PropertyChangeListener {
     public void propertyChange(PropertyChangeEvent pce) {
         // rename group
         if (pce.getPropertyName().equals(VisualizationGroup.VISGROUP_RENAMED)) {
+            System.err.println("fetching vizGroup " + (String) pce.getOldValue());
             VisualizationGroup vg = getGroup((String) pce.getOldValue());
-            assert vg != null;
-            vg.setName((String) pce.getNewValue());
+            if (vg != null) {
+                System.err.println("renaming group twice?");
+                vg.setName((String) pce.getNewValue());
+            }
         }
         firePropertyChange(pce.getPropertyName(), pce.getOldValue(), pce.getNewValue());
     }
@@ -106,6 +108,7 @@ public class VGroupManager implements PropertyChangeListener {
                 return vg;
             }
         }
+
         return null;
     }
 

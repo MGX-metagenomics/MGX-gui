@@ -14,16 +14,16 @@ public final class VisFilterSupport {
     private VisFilterSupport() {
     }
 
-    public static <V, T, U> VisFilter append(VisFilter first, VisFilter second) {
+    public static <V, T, U> VisFilterI append(VisFilterI first, VisFilterI second) {
         return new VFCombinedImpl(first, second);
     }
     
-    private final static class VFCombinedImpl implements VisFilter {
+    private final static class VFCombinedImpl implements VisFilterI {
 
-    VisFilter first;
-    VisFilter second;
+    VisFilterI first;
+    VisFilterI second;
 
-    public VFCombinedImpl(VisFilter first, VisFilter second) {
+    public VFCombinedImpl(VisFilterI first, VisFilterI second) {
         this.first = first;
         this.second = second;
     }
