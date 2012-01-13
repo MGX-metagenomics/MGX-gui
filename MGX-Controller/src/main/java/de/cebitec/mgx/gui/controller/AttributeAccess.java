@@ -47,6 +47,21 @@ public class AttributeAccess extends AccessBase<Attribute> {
         return ret;
     }
 
+    public Map<Attribute, Long> getDistributionByRuns(String attributeName, List<Long> seqrun_ids) {
+        Map<Attribute, Long> res = new HashMap<Attribute, Long>();
+        try {
+            for (AttributeCount ac : getDTOmaster().Attribute().getDistributionByRuns(attributeName, seqrun_ids)) {
+                AttributeDTO adto = ac.getAttribute();
+                Attribute attr = AttributeDTOFactory.getInstance().toModel(adto);
+                Long count = ac.getCount();
+                res.put(attr, count);
+            }
+        } catch (MGXServerException ex) {
+            Logger.getLogger(AttributeAccess.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return res;
+    }
+
     public Map<Attribute, Long> getDistribution(String attributeName, Long jobId, List<Long> seqrun_ids) {
         Map<Attribute, Long> res = new HashMap<Attribute, Long>();
         try {
