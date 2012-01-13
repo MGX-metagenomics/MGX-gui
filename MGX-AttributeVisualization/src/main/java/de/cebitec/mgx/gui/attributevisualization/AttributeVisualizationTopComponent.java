@@ -1,7 +1,6 @@
 package de.cebitec.mgx.gui.attributevisualization;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
+import javax.swing.JComponent;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
@@ -31,6 +30,7 @@ public final class AttributeVisualizationTopComponent extends TopComponent {
         groupingPanel1.addPropertyChangeListener(controlPanel1);
         // create initial group
         groupingPanel1.addGroup();
+        controlPanel1.setTopComponent(this);
     }
 
     /** This method is called from within the constructor to
@@ -45,7 +45,7 @@ public final class AttributeVisualizationTopComponent extends TopComponent {
         groupingPanel1 = new de.cebitec.mgx.gui.attributevisualization.GroupingPanel();
         jSplitPane1 = new javax.swing.JSplitPane();
         controlPanel1 = new de.cebitec.mgx.gui.attributevisualization.ControlPanel();
-        jPanel2 = new javax.swing.JPanel();
+        chartpane = new javax.swing.JScrollPane();
 
         setLayout(new java.awt.BorderLayout());
 
@@ -56,21 +56,9 @@ public final class AttributeVisualizationTopComponent extends TopComponent {
         jSplitPane1.setDividerSize(5);
         jSplitPane1.setRightComponent(controlPanel1);
 
-        jPanel2.setMinimumSize(new java.awt.Dimension(400, 100));
-        jPanel2.setPreferredSize(new java.awt.Dimension(400, 270));
-
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 10, Short.MAX_VALUE)
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 270, Short.MAX_VALUE)
-        );
-
-        jSplitPane1.setLeftComponent(jPanel2);
+        chartpane.setMinimumSize(new java.awt.Dimension(800, 500));
+        chartpane.setPreferredSize(new java.awt.Dimension(500, 500));
+        jSplitPane1.setLeftComponent(chartpane);
 
         jPanel1.add(jSplitPane1, java.awt.BorderLayout.CENTER);
 
@@ -78,10 +66,10 @@ public final class AttributeVisualizationTopComponent extends TopComponent {
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JScrollPane chartpane;
     private de.cebitec.mgx.gui.attributevisualization.ControlPanel controlPanel1;
     private de.cebitec.mgx.gui.attributevisualization.GroupingPanel groupingPanel1;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JSplitPane jSplitPane1;
     // End of variables declaration//GEN-END:variables
     @Override
@@ -100,5 +88,9 @@ public final class AttributeVisualizationTopComponent extends TopComponent {
 
     void readProperties(java.util.Properties p) {
         String version = p.getProperty("version");
+    }
+    
+    void setVisualization(JComponent p) {
+        chartpane.setViewportView(p);
     }
 }
