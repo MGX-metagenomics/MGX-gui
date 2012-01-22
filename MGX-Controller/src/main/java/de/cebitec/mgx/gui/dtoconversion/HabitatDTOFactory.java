@@ -10,10 +10,7 @@ import de.cebitec.mgx.gui.datamodel.Habitat;
  */
 public class HabitatDTOFactory extends DTOConversionBase<Habitat, HabitatDTO> {
 
-    static {
-        instance = new HabitatDTOFactory();
-    }
-    protected static HabitatDTOFactory instance;
+    protected final static HabitatDTOFactory instance = new HabitatDTOFactory();
 
     private HabitatDTOFactory() {
     }

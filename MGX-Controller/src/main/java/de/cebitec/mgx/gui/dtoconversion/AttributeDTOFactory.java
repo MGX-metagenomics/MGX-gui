@@ -9,10 +9,7 @@ import de.cebitec.mgx.gui.datamodel.Attribute;
  */
 public class AttributeDTOFactory extends DTOConversionBase<Attribute, AttributeDTO> {
 
-    static {
-        instance = new AttributeDTOFactory();
-    }
-    protected final static AttributeDTOFactory instance;
+    protected final static AttributeDTOFactory instance = new AttributeDTOFactory();
 
     private AttributeDTOFactory() {
     }
@@ -30,8 +27,9 @@ public class AttributeDTOFactory extends DTOConversionBase<Attribute, AttributeD
     public final Attribute toModel(AttributeDTO dto) {
         Attribute a = new Attribute();
         a.setId(dto.getId());
-        a.setType(dto.getType());
-        // FIXME: value!
+        a.setJobId(dto.getJobid());
+        a.setType(AttributeTypeDTOFactory.getInstance().toModel(dto.getType()));
+        a.setValue(dto.getValue());
         return a;
     }
 }
