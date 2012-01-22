@@ -30,7 +30,7 @@ public class VisualizationGroup {
     private String name;
     private Color color;
     private Set<SeqRun> seqruns = new HashSet<SeqRun>();
-    private final Set<String> attributes = Collections.synchronizedSet(new HashSet<String>());
+    private final Map<SeqRun, List<Attribute>> attributes = Collections.synchronizedMap(new HashMap<SeqRun, List<Attribute>>());
     private List<SwingWorker> attributePrefetchers = new ArrayList<SwingWorker>();
     private boolean is_active = true;
     private final PropertyChangeSupport pcs;
@@ -124,7 +124,7 @@ public class VisualizationGroup {
         return ret;
     }
 
-    public Set<String> getAttributes() {
+    public Set<Attribute> getAttributes() {
         while (attributePrefetchers.size() > 0) {
             List<SwingWorker> removeList = new ArrayList<SwingWorker>();
             for (SwingWorker sw : attributePrefetchers) {
@@ -144,10 +144,8 @@ public class VisualizationGroup {
             @Override
             protected Void doInBackground() throws Exception {
                 MGXMaster master = (MGXMaster) sr.getMaster();
-                Collection<String> types = master.Attribute().listTypesBySeqRun(sr.getId());
-                synchronized (attributes) {
-                    attributes.addAll(types);
-                }
+                List<Attribute> attributeList = master.Attribute().BySeqRun(sr.getId());
+                attributes.put(sr, attributeList);
                 return null;
             }
 
