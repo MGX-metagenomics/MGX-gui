@@ -34,7 +34,7 @@ public class SortOrder implements VisFilterI {
         // summary distribution over all groups
         Map<Attribute, Long> summary = new HashMap<Attribute, Long>();
         for (Pair<VisualizationGroup, Distribution> pair : dists) {
-            for (Pair<Attribute, Number> e : pair.getSecond().get()) {
+            for (Pair<Attribute, ? extends Number> e : pair.getSecond().get()) {
                 if (summary.containsKey(e.getFirst())) {
                     Long get = summary.get(e.getFirst());
                     get += e.getSecond().longValue();
@@ -91,8 +91,8 @@ public class SortOrder implements VisFilterI {
 
         @Override
         public int compare(Attribute a1, Attribute a2) {
-            Double d1 = Double.parseDouble(a1.getType());
-            Double d2 = Double.parseDouble(a2.getType());
+            Double d1 = Double.parseDouble(a1.getValue());
+            Double d2 = Double.parseDouble(a2.getValue());
             if (d1 < d2) {
                 return 1;
             } else if (d1.doubleValue() == d2.doubleValue()) {

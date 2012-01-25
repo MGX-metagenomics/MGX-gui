@@ -40,6 +40,10 @@ public class MGXMaster implements MGXMasterI {
         return getAccessor(AttributeAccess.class);
     }
 
+    public AttributeTypeAccess AttributeType() {
+        return getAccessor(AttributeTypeAccess.class);
+    }
+
     public SampleAccess Sample() {
         return getAccessor(SampleAccess.class);
     }
@@ -84,6 +88,7 @@ public class MGXMaster implements MGXMasterI {
             Constructor<T> ctor = clazz.getConstructor();
             T instance = ctor.newInstance();
             instance.setDTOmaster(dtomaster);
+            instance.setMaster(this);
             return instance;
         } catch (InstantiationException ex) {
             logger.log(Level.SEVERE, null, ex);

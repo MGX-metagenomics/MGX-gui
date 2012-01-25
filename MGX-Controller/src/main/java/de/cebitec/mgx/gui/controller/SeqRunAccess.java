@@ -29,20 +29,23 @@ public class SeqRunAccess extends AccessBase<SeqRun> {
             Logger.getLogger(SeqRunAccess.class.getName()).log(Level.SEVERE, null, ex);
         }
         obj.setId(id);
+        obj.setMaster(this.getMaster());
         return id;
     }
 
     @Override
     public SeqRun fetch(Long id) {
-        SeqRunDTO h = null;
+        SeqRunDTO dto = null;
         try {
-            h = getDTOmaster().SeqRun().fetch(id);
+            dto = getDTOmaster().SeqRun().fetch(id);
         } catch (MGXServerException ex) {
             Logger.getLogger(SeqRunAccess.class.getName()).log(Level.SEVERE, null, ex);
         } catch (MGXClientException ex) {
             Logger.getLogger(SeqRunAccess.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return SeqRunDTOFactory.getInstance().toModel(h);
+        SeqRun ret = SeqRunDTOFactory.getInstance().toModel(dto);
+        ret.setMaster(this.getMaster());
+        return ret;
     }
 
     @Override
@@ -50,7 +53,9 @@ public class SeqRunAccess extends AccessBase<SeqRun> {
         List<SeqRun> all = new ArrayList<SeqRun>();
         try {
             for (SeqRunDTO dto : getDTOmaster().SeqRun().fetchall()) {
-                all.add(SeqRunDTOFactory.getInstance().toModel(dto));
+                SeqRun sr = SeqRunDTOFactory.getInstance().toModel(dto);
+                sr.setMaster(this.getMaster());
+                all.add(sr);
             }
         } catch (MGXServerException ex) {
             Logger.getLogger(SeqRunAccess.class.getName()).log(Level.SEVERE, null, ex);
@@ -88,6 +93,7 @@ public class SeqRunAccess extends AccessBase<SeqRun> {
         try {
             for (SeqRunDTO dto : getDTOmaster().SeqRun().ByExtract(extract.getId())) {
                 SeqRun sr = SeqRunDTOFactory.getInstance().toModel(dto);
+                sr.setMaster(this.getMaster());
                 all.add(sr);
             }
         } catch (MGXServerException ex) {

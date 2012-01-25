@@ -6,7 +6,6 @@ import de.cebitec.mgx.gui.attributevisualization.data.VisualizationGroup;
 import de.cebitec.mgx.gui.datamodel.Attribute;
 import java.awt.Color;
 import java.util.List;
-import java.util.Map;
 import javax.swing.JComponent;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -60,8 +59,8 @@ public class BarChartViewer extends ViewerI {
             VisualizationGroup vg = groupDistribution.getFirst();
             Distribution dist = groupDistribution.getSecond();
 
-            for (Pair<Attribute, Number> entry : dist.get()) {
-                dataset.addValue(entry.getSecond(), vg.getName(), entry.getFirst().getType());
+            for (Pair<Attribute, ? extends Number> entry : dist.get()) {
+                dataset.addValue(entry.getSecond(), vg.getName(), entry.getFirst().getValue());
 
                 // if we encounter any double values here, we are in fraction mode
                 if (entry.getSecond() instanceof Double) {

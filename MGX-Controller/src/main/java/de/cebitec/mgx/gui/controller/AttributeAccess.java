@@ -4,6 +4,8 @@ import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.AttributeCount;
 import de.cebitec.mgx.dto.dto.AttributeDTO;
 import de.cebitec.mgx.gui.datamodel.Attribute;
+import de.cebitec.mgx.gui.datamodel.AttributeType;
+import de.cebitec.mgx.gui.datamodel.Job;
 import de.cebitec.mgx.gui.dtoconversion.AttributeDTOFactory;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,6 +25,7 @@ public class AttributeAccess extends AccessBase<Attribute> {
         try {
             for (AttributeDTO adto : getDTOmaster().Attribute().BySeqRun(id)) {
                 Attribute attr = AttributeDTOFactory.getInstance().toModel(adto);
+                attr.setMaster(this.getMaster());
                 attrs.add(attr);
             }
         } catch (MGXServerException ex) {
@@ -72,14 +75,13 @@ public class AttributeAccess extends AccessBase<Attribute> {
 //        return res;
 //    }
 
-    public Map<Attribute, Long> getDistribution(String attributeName, Long jobId, List<Long> seqrun_ids) {
+    public Map<Attribute, Long> getDistribution(AttributeType attributeType, Job job) {
         Map<Attribute, Long> res = new HashMap<Attribute, Long>();
         try {
-            for (AttributeCount ac : getDTOmaster().Attribute().getDistribution(attributeName, jobId, seqrun_ids)) {
-                AttributeDTO adto = ac.getAttribute();
-                Attribute attr = AttributeDTOFactory.getInstance().toModel(adto);
-                Long count = ac.getCount();
-                res.put(attr, count);
+            for (AttributeCount ac : getDTOmaster().Attribute().getDistribution(attributeType.getId(), job.getId())) {
+                Attribute attr = AttributeDTOFactory.getInstance().toModel(ac.getAttribute());
+                attr.setMaster(this.getMaster());
+                res.put(attr, ac.getCount());
             }
         } catch (MGXServerException ex) {
             Logger.getLogger(AttributeAccess.class.getName()).log(Level.SEVERE, null, ex);
@@ -99,7 +101,7 @@ public class AttributeAccess extends AccessBase<Attribute> {
 
     @Override
     public List<Attribute> fetchall() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException("Not supported.");
     }
 
     @Override

@@ -6,17 +6,17 @@ package de.cebitec.mgx.gui.datamodel;
  */
 public class Attribute extends ModelBase {
     
-    protected AttributeType type;
+    protected Long atype_id;
     protected String value;
     protected Long job_id;
 
     
-    public AttributeType getTypeId() {
-        return type;
+    public Long getTypeId() {
+        return atype_id;
     }
 
-    public Attribute setType(AttributeType type) {
-        this.type = type;
+    public Attribute setTypeId(Long atype_id) {
+        this.atype_id = atype_id;
         return this;
     }
 
@@ -42,4 +42,25 @@ public class Attribute extends ModelBase {
         return value;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Attribute other = (Attribute) obj;
+        if ((this.value == null) ? (other.value != null) : !this.value.equals(other.value)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 47 * hash + (this.value != null ? this.value.hashCode() : 0);
+        return hash;
+    }
 }

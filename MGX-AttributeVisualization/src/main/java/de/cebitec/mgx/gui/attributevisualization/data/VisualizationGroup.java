@@ -2,12 +2,13 @@ package de.cebitec.mgx.gui.attributevisualization.data;
 
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.Attribute;
+import de.cebitec.mgx.gui.datamodel.AttributeType;
+import de.cebitec.mgx.gui.datamodel.Job;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
 import java.awt.Color;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -27,11 +28,12 @@ public class VisualizationGroup {
     public static final String VISGROUP_DEACTIVATED = "vgDeactivated";
     public static final String VISGROUP_CHANGED = "vgModified";
     public static final String VISGROUP_RENAMED = "vgRenamed";
+    //
     private String name;
     private Color color;
     private Set<SeqRun> seqruns = new HashSet<SeqRun>();
-    private final Map<SeqRun, List<Attribute>> attributes = Collections.synchronizedMap(new HashMap<SeqRun, List<Attribute>>());
-    private List<SwingWorker> attributePrefetchers = new ArrayList<SwingWorker>();
+    private final Map<SeqRun, Map<Job, List<AttributeType>>> attributeTypes = Collections.synchronizedMap(new HashMap<SeqRun, Map<Job, List<AttributeType>>>());
+    private List<SwingWorker> attributeTypePrefetchers = new ArrayList<SwingWorker>();
     private boolean is_active = true;
     private final PropertyChangeSupport pcs;
 
@@ -76,76 +78,123 @@ public class VisualizationGroup {
     public void addSeqRun(SeqRun sr) {
         if (!seqruns.contains(sr)) {
             seqruns.add(sr);
-            prefetchAttributes(sr);
+            SwingWorker prefetcher = prefetchJobsAndAttributeTypes(sr);
+            attributeTypePrefetchers.add(prefetcher);
         }
     }
 
-    public Map<Attribute, Number> getDistribution(String attrName) {
-        Map<Attribute, Number> ret = Collections.synchronizedMap(new HashMap<Attribute, Number>());
-
-        // we pre-group the seqrun based on their MGXMaster, i.e. based on project,
-        // since we can then merge them into a single fetchDistribution() request
-        Map<MGXMaster, List<Long>> fetchGroups = new HashMap<MGXMaster, List<Long>>();
-        for (SeqRun sr : getSeqRuns()) {
-            MGXMaster master = (MGXMaster) sr.getMaster();
-            if (fetchGroups.containsKey(master)) {
-                List<Long> srList = fetchGroups.get(master);
-                srList.add(sr.getId());
-            } else {
-                List<Long> srList = new ArrayList<Long>();
-                srList.add(sr.getId());
-                fetchGroups.put(master, srList);
-            }
-        }
+    public Map<Attribute, Long> getDistribution(String attrTypeName) {
+        List<Map<Attribute, Long>> results = Collections.synchronizedList(new ArrayList<Map<Attribute, Long>>());
 
         // start distribution retrieval workers in background
         //
         List<SwingWorker> distFetchers = new ArrayList<SwingWorker>();
-        for (Entry<MGXMaster, List<Long>> entry : fetchGroups.entrySet()) {
-            MGXMaster master = entry.getKey();
-            List<Long> runIdList = entry.getValue();
-            SwingWorker sw = fetchDistributionInBackground(master, runIdList, attrName, ret);
-            distFetchers.add(sw);
-        }
 
+        for (SeqRun run : getSeqRuns()) {
+
+            //
+            // process all jobs for this seqrun and keep only those
+            // which provide the requested attribute type
+            //
+            List<Job> validJobs = new ArrayList<Job>();
+            for (Entry<Job, List<AttributeType>> entrySet : attributeTypes.get(run).entrySet()) {
+                boolean job_provides_this_attribute = false;
+                for (AttributeType atype : entrySet.getValue()) {
+                    if (atype.getName().equals(attrTypeName)) {
+                        job_provides_this_attribute = true;
+                    }
+                }
+                if (job_provides_this_attribute) {
+                    validJobs.add(entrySet.getKey());
+                }
+            }
+
+            //
+            // select the job to use - either we can automatically determine
+            // the correct job or we have to ask the user
+            //
+            Job selectedJob = null;
+            switch (validJobs.size()) {
+                case 0:
+                    // nothing to do, no job provides this attribute type
+                    break;
+                case 1:
+                    selectedJob = validJobs.get(0);
+                    //SwingWorker sw = fetchDistributionInBackground(matchingAttrType, validJobs.get(0), ret);
+                    //distFetchers.add(sw);
+                    break;
+                default:
+                    selectedJob = askUser(validJobs);
+                    //SwingWorker sw1 = fetchDistributionInBackground(matchingAttrType, userSelectedJob, ret);
+                    //distFetchers.add(sw1);
+                    break;
+            }
+
+            //
+            // there should only be one valid attribute type left that matches the
+            // request attribute type name; however, we better check..
+            //
+            AttributeType selectedAttributeType = null;
+            List<AttributeType> validTypes = new ArrayList<AttributeType>();
+            for (AttributeType atype : attributeTypes.get(run).get(selectedJob)) {
+                if (atype.getName().equals(attrTypeName)) {
+                    validTypes.add(atype);
+                }
+            }
+            assert validTypes.size() == 1;
+            selectedAttributeType = validTypes.get(0);
+
+            // 
+            // start background worker to fetch distribution
+            //
+            SwingWorker worker = fetchDistributionInBackground(selectedAttributeType, selectedJob, results);
+            distFetchers.add(worker);
+        }
 
         // wait for completion of workers
         //
-        while (distFetchers.size() > 0) {
-            List<SwingWorker> removeList = new ArrayList<SwingWorker>();
-            for (SwingWorker sw : distFetchers) {
-                if (sw.isDone()) {
-                    removeList.add(sw);
-                }
-            }
-            distFetchers.removeAll(removeList);
-        }
+        waitForWorkers(distFetchers);
 
+        //
+        // merge results
+        //
+        Map<Attribute, Long> ret = new HashMap<Attribute, Long>();
+        for (Map<Attribute, Long> d : results) {
+            for (Entry<Attribute, Long> e : d.entrySet()) {
+                Attribute attr = e.getKey();
+                Long count = e.getValue();
+                if (ret.containsKey(attr)) {
+                    count += ret.get(attr);
+                }
+                ret.put(attr, count);
+            }
+        }
         return ret;
     }
 
-    public Set<Attribute> getAttributes() {
-        while (attributePrefetchers.size() > 0) {
-            List<SwingWorker> removeList = new ArrayList<SwingWorker>();
-            for (SwingWorker sw : attributePrefetchers) {
-                if (sw.isDone()) {
-                    removeList.add(sw);
-                }
+    public List<AttributeType> getAttributeTypes() {
+        waitForWorkers(attributeTypePrefetchers);
+        List<AttributeType> ret = new ArrayList<AttributeType>();
+        for (Map<Job, List<AttributeType>> l : attributeTypes.values()) {
+            for (List<AttributeType> atypes : l.values()) {
+                ret.addAll(atypes);
             }
-            attributePrefetchers.removeAll(removeList);
         }
-        return attributes;
+        return ret;
     }
 
-    private void prefetchAttributes(final SeqRun sr) {
+    private SwingWorker prefetchJobsAndAttributeTypes(final SeqRun sr) {
 
         SwingWorker<Void, Void> sw = new SwingWorker<Void, Void>() {
 
             @Override
             protected Void doInBackground() throws Exception {
                 MGXMaster master = (MGXMaster) sr.getMaster();
-                List<Attribute> attributeList = master.Attribute().BySeqRun(sr.getId());
-                attributes.put(sr, attributeList);
+                Map<Job, List<AttributeType>> attrTypes = new HashMap<Job, List<AttributeType>>();
+                for (Job job : master.Job().BySeqRun(sr)) {
+                    attrTypes.put(job, master.AttributeType().ByJob(job));
+                }
+                attributeTypes.put(sr, attrTypes);
                 return null;
             }
 
@@ -156,21 +205,19 @@ public class VisualizationGroup {
             }
         };
         sw.execute();
-        attributePrefetchers.add(sw);
+
+        return sw;
     }
 
-    private SwingWorker fetchDistributionInBackground(final MGXMaster master, final List<Long> runs, final String attr, final Map<Attribute, Number> ret) {
+    private SwingWorker fetchDistributionInBackground(final AttributeType aType, final Job job, final List<Map<Attribute, Long>> ret) {
 
         SwingWorker<Void, Void> sw = new SwingWorker<Void, Void>() {
 
             @Override
             protected Void doInBackground() throws Exception {
-                Map<Attribute, Long> dist = master.Attribute().getDistributionByRuns(attr, runs);
-                synchronized (ret) {
-                    for (Attribute a : dist.keySet()) {
-                        ret.put(a, dist.get(a));
-                    }
-                }
+                MGXMaster master = (MGXMaster) aType.getMaster();
+                Map<Attribute, Long> dist = master.Attribute().getDistribution(aType, job);
+                ret.add(dist);
                 return null;
             }
 
@@ -181,6 +228,23 @@ public class VisualizationGroup {
         };
         sw.execute();
         return sw;
+    }
+
+    private Job askUser(List<Job> jobs) {
+        // FIXME
+        return jobs.get(0);
+    }
+
+    private void waitForWorkers(List<SwingWorker> workerList) {
+        while (workerList.size() > 0) {
+            List<SwingWorker> removeList = new ArrayList<SwingWorker>();
+            for (SwingWorker sw : workerList) {
+                if (sw.isDone()) {
+                    removeList.add(sw);
+                }
+            }
+            workerList.removeAll(removeList);
+        }
     }
 
     private void fireVGroupChanged(String name) {

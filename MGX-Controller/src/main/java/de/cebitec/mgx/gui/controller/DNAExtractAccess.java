@@ -16,7 +16,7 @@ import java.util.logging.Logger;
  * @author sjaenick
  */
 public class DNAExtractAccess extends AccessBase<DNAExtract> {
-    
+
     @Override
     public Long create(DNAExtract obj) {
         DNAExtractDTO dto = DNAExtractDTOFactory.getInstance().toDTO(obj);
@@ -29,9 +29,10 @@ public class DNAExtractAccess extends AccessBase<DNAExtract> {
             Logger.getLogger(DNAExtractAccess.class.getName()).log(Level.SEVERE, null, ex);
         }
         obj.setId(id);
+        obj.setMaster(this.getMaster());
         return id;
     }
-    
+
     @Override
     public DNAExtract fetch(Long id) {
         DNAExtractDTO dto = null;
@@ -42,15 +43,19 @@ public class DNAExtractAccess extends AccessBase<DNAExtract> {
         } catch (MGXClientException ex) {
             Logger.getLogger(DNAExtractAccess.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return DNAExtractDTOFactory.getInstance().toModel(dto);
+        DNAExtract ret = DNAExtractDTOFactory.getInstance().toModel(dto);
+        ret.setMaster(this.getMaster());
+        return ret;
     }
-    
+
     @Override
     public List<DNAExtract> fetchall() {
         List<DNAExtract> all = new ArrayList<DNAExtract>();
         try {
             for (DNAExtractDTO dto : getDTOmaster().DNAExtract().fetchall()) {
-                all.add(DNAExtractDTOFactory.getInstance().toModel(dto));
+                DNAExtract ret = DNAExtractDTOFactory.getInstance().toModel(dto);
+                ret.setMaster(this.getMaster());
+                all.add(ret);
             }
         } catch (MGXServerException ex) {
             Logger.getLogger(DNAExtractAccess.class.getName()).log(Level.SEVERE, null, ex);
@@ -59,7 +64,7 @@ public class DNAExtractAccess extends AccessBase<DNAExtract> {
         }
         return all;
     }
-    
+
     @Override
     public void update(DNAExtract obj) {
         DNAExtractDTO dto = DNAExtractDTOFactory.getInstance().toDTO(obj);
@@ -71,7 +76,7 @@ public class DNAExtractAccess extends AccessBase<DNAExtract> {
             Logger.getLogger(DNAExtractAccess.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     @Override
     public void delete(Long id) {
         try {
@@ -82,12 +87,13 @@ public class DNAExtractAccess extends AccessBase<DNAExtract> {
             Logger.getLogger(DNAExtractAccess.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     public Iterable<DNAExtract> BySample(Sample s) {
         List<DNAExtract> all = new ArrayList<DNAExtract>();
         try {
             for (DNAExtractDTO dto : getDTOmaster().DNAExtract().BySample(s.getId())) {
                 DNAExtract extract = DNAExtractDTOFactory.getInstance().toModel(dto);
+                extract.setMaster(this.getMaster());
                 all.add(extract);
             }
         } catch (MGXServerException ex) {

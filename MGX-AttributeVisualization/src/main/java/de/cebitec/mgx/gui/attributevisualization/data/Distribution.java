@@ -13,19 +13,19 @@ import java.util.Map.Entry;
  */
 public class Distribution {
 
-    Map<Attribute, Number> dist = null;
+    Map<Attribute, ? extends Number> dist = null;
     List<Attribute> sortOrder = null;
 
-    public Distribution(Map<Attribute, Number> dist) {
+    public Distribution(Map<Attribute, ? extends Number> dist) {
         this.dist = dist;
     }
 
-    public List<Pair<Attribute, Number>> get() {
-        List<Pair<Attribute, Number>> ret = new ArrayList<Pair<Attribute, Number>>();
+    public List<Pair<Attribute, ? extends Number>> get() {
+        List<Pair<Attribute, ? extends Number>> ret = new ArrayList<Pair<Attribute, ? extends Number>>();
 
         if (sortOrder == null) {
             System.err.println("using defined sort order");
-            for (Entry<Attribute, Number> e : dist.entrySet()) {
+            for (Entry<Attribute, ? extends Number> e : dist.entrySet()) {
                 ret.add(new Pair<Attribute, Number>(e.getKey(), e.getValue()));
             }
         } else {
@@ -40,7 +40,7 @@ public class Distribution {
         return ret;
     }
 
-    public Map<Attribute, Number> getMap() {
+    public Map<Attribute, ? extends Number> getMap() {
         return dist;
     }
 

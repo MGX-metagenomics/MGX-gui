@@ -12,6 +12,7 @@ import de.cebitec.mgx.gui.attributevisualization.viewer.ViewerI;
 import de.cebitec.mgx.gui.attributevisualization.data.VisualizationGroup;
 import de.cebitec.mgx.gui.attributevisualization.filter.*;
 import de.cebitec.mgx.gui.datamodel.Attribute;
+import de.cebitec.mgx.gui.datamodel.AttributeType;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -196,7 +197,9 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
         public void update() {
             Set<String> ret = new HashSet<String>();
             for (VisualizationGroup vg : vgmgr.getGroups()) {
-                ret.addAll(vg.getAttributes());
+                for (AttributeType at : vg.getAttributeTypes()) {
+                    ret.add(at.getName());
+                }
             }
             List<String> tmp = new ArrayList<String>(ret);
             Collections.sort(tmp);
@@ -227,11 +230,11 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
         public void update() {
             boolean allDoubles = true;
             for (Pair<VisualizationGroup, Distribution> pair : currentDistributions) {
-                for (Pair<Attribute, Number> e : pair.getSecond().get()) {
+                for (Pair<Attribute, ? extends Number> e : pair.getSecond().get()) {
                     try {
-                        Double.parseDouble(e.getFirst().getType());
+                        Double.parseDouble(e.getFirst().getValue());
                     } catch (NumberFormatException nfe) {
-                        System.err.println("not all doubles: " + e.getFirst().getType());
+                        System.err.println("not all doubles: " + e.getFirst().getValue());
                         allDoubles = false;
                     }
                 }

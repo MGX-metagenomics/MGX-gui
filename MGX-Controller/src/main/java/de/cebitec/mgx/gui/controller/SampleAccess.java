@@ -29,6 +29,7 @@ public class SampleAccess extends AccessBase<Sample> {
             Logger.getLogger(SampleAccess.class.getName()).log(Level.SEVERE, null, ex);
         }
         obj.setId(id);
+        obj.setMaster(this.getMaster());
         return id;
     }
 
@@ -42,7 +43,9 @@ public class SampleAccess extends AccessBase<Sample> {
         } catch (MGXClientException ex) {
             Logger.getLogger(SampleAccess.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return SampleDTOFactory.getInstance().toModel(dto);
+        Sample s = SampleDTOFactory.getInstance().toModel(dto);
+        s.setMaster(this.getMaster());
+        return s;
     }
 
     @Override
@@ -50,7 +53,9 @@ public class SampleAccess extends AccessBase<Sample> {
         List<Sample> all = new ArrayList<Sample>();
         try {
             for (SampleDTO dto : getDTOmaster().Sample().fetchall()) {
-                all.add(SampleDTOFactory.getInstance().toModel(dto));
+                Sample s = SampleDTOFactory.getInstance().toModel(dto);
+                s.setMaster(this.getMaster());
+                all.add(s);
             }
         } catch (MGXServerException ex) {
             Logger.getLogger(SampleAccess.class.getName()).log(Level.SEVERE, null, ex);
@@ -88,6 +93,7 @@ public class SampleAccess extends AccessBase<Sample> {
         try {
             for (SampleDTO dto : getDTOmaster().Sample().ByHabitat(h.getId())) {
                 Sample s = SampleDTOFactory.getInstance().toModel(dto);
+                s.setMaster(this.getMaster());
                 all.add(s);
             }
         } catch (MGXServerException ex) {

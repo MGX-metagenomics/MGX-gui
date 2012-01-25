@@ -12,6 +12,7 @@ import java.util.List;
  */
 public abstract class AccessBase<T> {
 
+    private MGXMaster master;
     private MGXDTOMaster dtomaster;
 
     public MGXDTOMaster getDTOmaster() {
@@ -20,6 +21,14 @@ public abstract class AccessBase<T> {
 
     public void setDTOmaster(MGXDTOMaster dtomaster) {
         this.dtomaster = dtomaster;
+    }
+
+    public MGXMaster getMaster() {
+        return master;
+    }
+
+    public void setMaster(MGXMaster master) {
+        this.master = master;
     }
 
     public abstract Long create(T obj);

@@ -28,13 +28,13 @@ public class ToFractionFilter implements VisFilterI {
 
         // sum up
         long sum = 0;
-        for (Pair<Attribute, Number> p : dist.get()) {
+        for (Pair<Attribute, ? extends Number> p : dist.get()) {
             sum += p.getSecond().longValue();
         }
         assert sum > 0;
 
         Map<Attribute, Number> tmp = new HashMap<Attribute, Number>();
-        for (Pair<Attribute, Number> p : dist.get()) {
+        for (Pair<Attribute, ? extends Number> p : dist.get()) {
             tmp.put(p.getFirst(), (double)p.getSecond().longValue() / sum);
         }
         Distribution d =  new Distribution(tmp);

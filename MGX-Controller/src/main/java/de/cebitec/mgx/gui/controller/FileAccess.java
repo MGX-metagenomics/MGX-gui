@@ -32,6 +32,7 @@ public class FileAccess extends AccessBase<DirEntry> {
         try {
             for (FileOrDirectory fod : getDTOmaster().File().fetchall()) {
                 DirEntry dirEntry = DirEntryDTOFactory.getInstance().toModel(fod);
+                dirEntry.setMaster(this.getMaster());
                 ret.add(dirEntry);
             }
         } catch (MGXServerException ex) {

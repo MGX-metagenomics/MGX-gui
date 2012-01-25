@@ -15,7 +15,7 @@ public abstract class ModelBase implements Transferable {
     protected MGXMasterI master;
     private static DataFlavor nodeFlavor = null;
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

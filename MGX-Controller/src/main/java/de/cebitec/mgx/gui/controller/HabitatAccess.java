@@ -41,7 +41,9 @@ public class HabitatAccess extends AccessBase<Habitat> {
         } catch (MGXClientException ex) {
             Logger.getLogger(HabitatAccess.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return HabitatDTOFactory.getInstance().toModel(h);
+        Habitat ret = HabitatDTOFactory.getInstance().toModel(h);
+        ret.setMaster(this.getMaster());
+        return ret;
     }
 
     @Override
@@ -49,7 +51,9 @@ public class HabitatAccess extends AccessBase<Habitat> {
         List<Habitat> all = new ArrayList<Habitat>();
         try {
             for (HabitatDTO dto : getDTOmaster().Habitat().fetchall()) {
-                all.add(HabitatDTOFactory.getInstance().toModel(dto));
+                Habitat h = HabitatDTOFactory.getInstance().toModel(dto);
+                h.setMaster(this.getMaster());
+                all.add(h);
             }
         } catch (MGXServerException ex) {
             Logger.getLogger(HabitatAccess.class.getName()).log(Level.SEVERE, null, ex);

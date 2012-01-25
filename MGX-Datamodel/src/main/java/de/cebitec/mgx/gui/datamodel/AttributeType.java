@@ -4,19 +4,10 @@ package de.cebitec.mgx.gui.datamodel;
  *
  * @author sjaenick
  */
-public class AttributeType {
+public class AttributeType extends ModelBase {
     
-    protected Long id;
     protected String name;
     protected String value_type;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;
