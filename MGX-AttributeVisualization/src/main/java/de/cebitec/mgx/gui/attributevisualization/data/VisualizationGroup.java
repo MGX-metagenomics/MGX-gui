@@ -36,6 +36,8 @@ public class VisualizationGroup {
     private List<SwingWorker> attributeTypePrefetchers = new ArrayList<SwingWorker>();
     private boolean is_active = true;
     private final PropertyChangeSupport pcs;
+    //
+    private Map<String, Distribution> cache = new HashMap<String, Distribution>();
 
     public VisualizationGroup(String groupName, Color color) {
         this.name = groupName;
@@ -76,15 +78,22 @@ public class VisualizationGroup {
     }
 
     public void addSeqRun(SeqRun sr) {
+        
         if (!seqruns.contains(sr)) {
+            cache.clear(); // invalidate cache
             seqruns.add(sr);
             SwingWorker prefetcher = prefetchJobsAndAttributeTypes(sr);
             attributeTypePrefetchers.add(prefetcher);
         }
     }
 
-    public Map<Attribute, Long> getDistribution(String attrTypeName) {
-        List<Map<Attribute, Long>> results = Collections.synchronizedList(new ArrayList<Map<Attribute, Long>>());
+    public Distribution getDistribution(String attrTypeName) {
+        
+        if (cache.containsKey(attrTypeName)) {
+            return cache.get(attrTypeName);
+        }
+        
+        List<Distribution> results = Collections.synchronizedList(new ArrayList<Distribution>());
 
         // start distribution retrieval workers in background
         //
@@ -158,17 +167,24 @@ public class VisualizationGroup {
         //
         // merge results
         //
-        Map<Attribute, Long> ret = new HashMap<Attribute, Long>();
-        for (Map<Attribute, Long> d : results) {
-            for (Entry<Attribute, Long> e : d.entrySet()) {
+        Map<Attribute, Long> summary = new HashMap<Attribute, Long>();
+        for (Distribution d : results) {
+            for (Entry<Attribute, ? extends Number> e : d.getMap().entrySet()) {
                 Attribute attr = e.getKey();
-                Long count = e.getValue();
-                if (ret.containsKey(attr)) {
-                    count += ret.get(attr);
+                Long count = e.getValue().longValue();
+                if (summary.containsKey(attr)) {
+                    count += summary.get(attr);
                 }
-                ret.put(attr, count);
+                summary.put(attr, count);
             }
         }
+        
+        Distribution ret = new Distribution(summary);
+        //
+        // save to cache
+        //
+        cache.put(attrTypeName, ret);
+        
         return ret;
     }
 
@@ -209,7 +225,7 @@ public class VisualizationGroup {
         return sw;
     }
 
-    private SwingWorker fetchDistributionInBackground(final AttributeType aType, final Job job, final List<Map<Attribute, Long>> ret) {
+    private SwingWorker fetchDistributionInBackground(final AttributeType aType, final Job job, final List<Distribution> ret) {
 
         SwingWorker<Void, Void> sw = new SwingWorker<Void, Void>() {
 
@@ -217,7 +233,7 @@ public class VisualizationGroup {
             protected Void doInBackground() throws Exception {
                 MGXMaster master = (MGXMaster) aType.getMaster();
                 Map<Attribute, Long> dist = master.Attribute().getDistribution(aType, job);
-                ret.add(dist);
+                ret.add(new Distribution(dist));
                 return null;
             }
 
@@ -236,8 +252,9 @@ public class VisualizationGroup {
     }
 
     private void waitForWorkers(List<SwingWorker> workerList) {
+        List<SwingWorker> removeList = new ArrayList<SwingWorker>();
         while (workerList.size() > 0) {
-            List<SwingWorker> removeList = new ArrayList<SwingWorker>();
+            removeList.clear();
             for (SwingWorker sw : workerList) {
                 if (sw.isDone()) {
                     removeList.add(sw);

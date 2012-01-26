@@ -20,11 +20,10 @@ public class Distribution {
         this.dist = dist;
     }
 
-    public List<Pair<Attribute, ? extends Number>> get() {
+    public List<Pair<Attribute, ? extends Number>> getSorted() {
         List<Pair<Attribute, ? extends Number>> ret = new ArrayList<Pair<Attribute, ? extends Number>>();
 
         if (sortOrder == null) {
-            System.err.println("using defined sort order");
             for (Entry<Attribute, ? extends Number> e : dist.entrySet()) {
                 ret.add(new Pair<Attribute, Number>(e.getKey(), e.getValue()));
             }

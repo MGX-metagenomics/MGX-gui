@@ -33,8 +33,9 @@ public class Attribute extends ModelBase {
         return job_id;
     }
 
-    public void setJobId(Long job_id) {
+    public Attribute setJobId(Long job_id) {
         this.job_id = job_id;
+        return this;
     }
 
     @Override

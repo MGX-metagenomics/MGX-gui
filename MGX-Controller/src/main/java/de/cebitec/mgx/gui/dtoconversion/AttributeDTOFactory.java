@@ -27,9 +27,9 @@ public class AttributeDTOFactory extends DTOConversionBase<Attribute, AttributeD
     public final Attribute toModel(AttributeDTO dto) {
         Attribute a = new Attribute();
         a.setId(dto.getId());
-        a.setJobId(dto.getJobid());
-        a.setTypeId(dto.getAttrTypeId());
-        a.setValue(dto.getValue());
+        a.setJobId(dto.getJobid())
+            .setTypeId(dto.getAttrTypeId())
+            .setValue(dto.getValue());
         return a;
     }
 }

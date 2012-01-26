@@ -230,7 +230,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
         public void update() {
             boolean allDoubles = true;
             for (Pair<VisualizationGroup, Distribution> pair : currentDistributions) {
-                for (Pair<Attribute, ? extends Number> e : pair.getSecond().get()) {
+                for (Pair<Attribute, ? extends Number> e : pair.getSecond().getSorted()) {
                     try {
                         Double.parseDouble(e.getFirst().getValue());
                     } catch (NumberFormatException nfe) {

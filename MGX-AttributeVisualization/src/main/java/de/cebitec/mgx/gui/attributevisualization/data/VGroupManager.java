@@ -57,9 +57,9 @@ public class VGroupManager implements PropertyChangeListener {
     public List<Pair<VisualizationGroup, Distribution>> getDistributions(String attrName) {
         List<Pair<VisualizationGroup, Distribution>> ret = new ArrayList<Pair<VisualizationGroup, Distribution>>();
         for (VisualizationGroup vg : getGroups()) {
-            Map<Attribute, Long> dist = vg.getDistribution(attrName);
-            if (!dist.isEmpty()) {
-                ret.add(new Pair<VisualizationGroup, Distribution>(vg, new Distribution(dist)));
+            Distribution dist = vg.getDistribution(attrName);
+            if (!dist.getMap().isEmpty()) {
+                ret.add(new Pair<VisualizationGroup, Distribution>(vg, dist));
             }
         }
         return ret;

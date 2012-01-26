@@ -59,7 +59,7 @@ public class BarChartViewer extends ViewerI {
             VisualizationGroup vg = groupDistribution.getFirst();
             Distribution dist = groupDistribution.getSecond();
 
-            for (Pair<Attribute, ? extends Number> entry : dist.get()) {
+            for (Pair<Attribute, ? extends Number> entry : dist.getSorted()) {
                 dataset.addValue(entry.getSecond(), vg.getName(), entry.getFirst().getValue());
 
                 // if we encounter any double values here, we are in fraction mode
