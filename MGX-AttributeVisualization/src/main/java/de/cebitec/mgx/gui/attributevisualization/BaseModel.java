@@ -14,7 +14,7 @@ import javax.swing.event.ListDataListener;
  */
 abstract class BaseModel extends AbstractListModel implements ComboBoxModel {
 
-    protected List<String> content = new ArrayList<String>();
+    protected List<Object> content = new ArrayList<Object>();
     // index of selected entry
     int index = -1;
 

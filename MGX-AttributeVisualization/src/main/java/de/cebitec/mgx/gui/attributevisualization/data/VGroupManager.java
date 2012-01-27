@@ -1,14 +1,14 @@
 package de.cebitec.mgx.gui.attributevisualization.data;
 
 import de.cebitec.mgx.gui.attributevisualization.Pair;
-import de.cebitec.mgx.gui.datamodel.Attribute;
 import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 /**
  *
@@ -18,7 +18,7 @@ public class VGroupManager implements PropertyChangeListener {
 
     public static final String VISGROUP_NUM_CHANGED = "vgNumChanged";
     private static VGroupManager instance = null;
-    private List<VisualizationGroup> groups = new ArrayList<VisualizationGroup>();
+    private Set<VisualizationGroup> groups = new LinkedHashSet<VisualizationGroup>();
     private int groupCount = 1;
     private PropertyChangeSupport pcs = null;
     //

@@ -28,11 +28,11 @@ import org.openide.util.Lookup;
 public class ControlPanel extends javax.swing.JPanel implements PropertyChangeListener {
 
     private VGroupManager vgmgr = VGroupManager.getInstance();
-    private AttributeListListener attrListener = new AttributeListListener();
+    private AttributeTypeListListener attrListener = new AttributeTypeListListener();
     private ButtonListener vCreator = new ButtonListener();
     private AttributeVisualizationTopComponent topComponent;
     //
-    private String currentAttribute = null;
+    private AttributeType currentAttributeType = null;
     private List<Pair<VisualizationGroup, Distribution>> currentDistributions = null;
 
     /**
@@ -40,7 +40,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
      */
     public ControlPanel() {
         initComponents();
-        attributeList.addActionListener(attrListener);
+        attributeTypeList.addActionListener(attrListener);
         updateButton.addActionListener(vCreator);
     }
 
@@ -58,7 +58,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
     private void initComponents() {
 
         sortOrderGroup = new javax.swing.ButtonGroup();
-        attributeList = new javax.swing.JComboBox();
+        attributeTypeList = new javax.swing.JComboBox();
         jLabel1 = new javax.swing.JLabel();
         visTypeList = new javax.swing.JComboBox();
         jLabel2 = new javax.swing.JLabel();
@@ -69,8 +69,11 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
         sortAscending = new javax.swing.JRadioButton();
         sortDescending = new javax.swing.JRadioButton();
 
-        attributeList.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Loading attributes" }));
-        attributeList.setEnabled(false);
+        setMaximumSize(new java.awt.Dimension(300, 32767));
+        setPreferredSize(new java.awt.Dimension(300, 504));
+
+        attributeTypeList.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Loading attributes" }));
+        attributeTypeList.setEnabled(false);
 
         jLabel1.setFont(new java.awt.Font("Dialog", 0, 10));
         jLabel1.setText(org.openide.util.NbBundle.getMessage(ControlPanel.class, "ControlPanel.jLabel1.text")); // NOI18N
@@ -83,18 +86,18 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
         updateButton.setText(org.openide.util.NbBundle.getMessage(ControlPanel.class, "ControlPanel.updateButton.text")); // NOI18N
         updateButton.setEnabled(false);
 
-        fractions.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
+        fractions.setFont(new java.awt.Font("Dialog", 0, 10));
         fractions.setText(org.openide.util.NbBundle.getMessage(ControlPanel.class, "ControlPanel.fractions.text")); // NOI18N
 
-        jLabel3.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
+        jLabel3.setFont(new java.awt.Font("Dialog", 0, 10));
         jLabel3.setText(org.openide.util.NbBundle.getMessage(ControlPanel.class, "ControlPanel.jLabel3.text")); // NOI18N
 
         sortOrderGroup.add(sortAscending);
-        sortAscending.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
+        sortAscending.setFont(new java.awt.Font("Dialog", 0, 10));
         sortAscending.setText(org.openide.util.NbBundle.getMessage(ControlPanel.class, "ControlPanel.sortAscending.text")); // NOI18N
 
         sortOrderGroup.add(sortDescending);
-        sortDescending.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
+        sortDescending.setFont(new java.awt.Font("Dialog", 0, 10));
         sortDescending.setSelected(true);
         sortDescending.setText(org.openide.util.NbBundle.getMessage(ControlPanel.class, "ControlPanel.sortDescending.text")); // NOI18N
 
@@ -108,7 +111,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
                     .addComponent(sortDescending)
                     .addComponent(fractions)
                     .addComponent(sortAscending)
-                    .addComponent(attributeList, 0, 129, Short.MAX_VALUE)
+                    .addComponent(attributeTypeList, 0, 129, Short.MAX_VALUE)
                     .addComponent(jLabel1)
                     .addComponent(jLabel2)
                     .addComponent(visTypeList, 0, 129, Short.MAX_VALUE)
@@ -123,7 +126,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
                 .addContainerGap()
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(attributeList, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(attributeTypeList, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(20, 20, 20)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -144,7 +147,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
         );
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JComboBox attributeList;
+    private javax.swing.JComboBox attributeTypeList;
     private javax.swing.JCheckBox fractions;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -172,18 +175,18 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
                 || propName.equals(VisualizationGroup.VISGROUP_ACTIVATED) || propName.equals(VisualizationGroup.VISGROUP_DEACTIVATED)) {
             AttributeListModel aModel = new AttributeListModel();
             aModel.update();
-            String lastSelectedAttribute = currentAttribute;
-            attributeList.setModel(aModel);
+            AttributeType lastSelectedAttribute = currentAttributeType;
+            attributeTypeList.setModel(aModel);
             if (aModel.getSize() > 0) {
-                attributeList.setSelectedIndex(0);
+                attributeTypeList.setSelectedIndex(0);
 
                 // if possible, keep the last selected entry
                 if (lastSelectedAttribute != null && aModel.content.contains(lastSelectedAttribute)) {
-                    attributeList.setSelectedItem(lastSelectedAttribute);
+                    attributeTypeList.setSelectedItem(lastSelectedAttribute);
                 }
-                attributeList.setEnabled(true);
+                attributeTypeList.setEnabled(true);
             } else {
-                attributeList.setEnabled(false);
+                attributeTypeList.setEnabled(false);
                 updateButton.setEnabled(false);
             }
         } else if (propName.equals(VisualizationGroup.VISGROUP_RENAMED)) {
@@ -195,13 +198,12 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
 
         @Override
         public void update() {
-            Set<String> ret = new HashSet<String>();
+            // FIXME - is there an ordered set?
+            Set<AttributeType> ret = new HashSet<AttributeType>();
             for (VisualizationGroup vg : vgmgr.getGroups()) {
-                for (AttributeType at : vg.getAttributeTypes()) {
-                    ret.add(at.getName());
-                }
+                ret.addAll(vg.getAttributeTypes());
             }
-            List<String> tmp = new ArrayList<String>(ret);
+            List<AttributeType> tmp = new ArrayList<AttributeType>(ret);
             Collections.sort(tmp);
             content.clear();
             content.addAll(tmp);
@@ -228,22 +230,22 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
 
         @Override
         public void update() {
-            boolean allDoubles = true;
-            for (Pair<VisualizationGroup, Distribution> pair : currentDistributions) {
-                for (Pair<Attribute, ? extends Number> e : pair.getSecond().getSorted()) {
-                    try {
-                        Double.parseDouble(e.getFirst().getValue());
-                    } catch (NumberFormatException nfe) {
-                        System.err.println("not all doubles: " + e.getFirst().getValue());
-                        allDoubles = false;
-                    }
-                }
-            }
+//            boolean allDoubles = true;
+//            for (Pair<VisualizationGroup, Distribution> pair : currentDistributions) {
+//                for (Pair<Attribute, ? extends Number> e : pair.getSecond().getSorted()) {
+//                    try {
+//                        Double.parseDouble(e.getFirst().getValue());
+//                    } catch (NumberFormatException nfe) {
+//                        System.err.println("not all doubles: " + e.getFirst().getValue());
+//                        allDoubles = false;
+//                    }
+//                }
+//            }
 
             List<String> tmp = new ArrayList<String>();
             tmp.add(SortOrder.BY_VALUE);
-
-            if (allDoubles) {
+            
+            if (currentAttributeType.getValueType().equals("NUMERICAL")) {
                 tmp.add(SortOrder.BY_TYPE);
             }
 
@@ -254,14 +256,14 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
         }
     }
 
-    private final class AttributeListListener implements ActionListener {
+    private final class AttributeTypeListListener implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
 
-            currentAttribute = (String) attributeList.getSelectedItem();
-            System.err.println("fetching dist for " + currentAttribute);
-            currentDistributions = vgmgr.getDistributions(currentAttribute);
+            currentAttributeType =  (AttributeType) attributeTypeList.getSelectedItem();
+            System.err.println("fetching dist for " + currentAttributeType);
+            currentDistributions = vgmgr.getDistributions(currentAttributeType.getName());
 
             // Check available viewers
             String lastSelectedVisType = (String) visTypeList.getSelectedItem();
@@ -308,14 +310,14 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
             String vizType = (String) visTypeList.getSelectedItem();
 
             SwingWorker sw = new SwingWorker<Void, Void>() {
-                
+
                 private VisFilterI filterChain;
                 private ViewerI view;
 
                 @Override
                 protected Void doInBackground() throws Exception {
                     view = new BarChartViewer();
-                    view.setTitle("Distribution of " + currentAttribute);
+                    view.setTitle("Distribution of " + currentAttributeType);
 
                     filterChain = view;
 
@@ -340,7 +342,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
                     topComponent.setVisualization(view.getComponent());
                 }
             };
-            
+
             sw.execute();
         }
     }
