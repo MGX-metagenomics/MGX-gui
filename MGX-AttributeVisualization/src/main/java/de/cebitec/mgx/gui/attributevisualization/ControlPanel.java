@@ -6,7 +6,7 @@
 package de.cebitec.mgx.gui.attributevisualization;
 
 import de.cebitec.mgx.gui.attributevisualization.data.Distribution;
-import de.cebitec.mgx.gui.attributevisualization.viewer.BarChartViewer;
+import de.cebitec.mgx.gui.attributevisualization.viewer.impl.BarChartViewer;
 import de.cebitec.mgx.gui.attributevisualization.data.VGroupManager;
 import de.cebitec.mgx.gui.attributevisualization.viewer.ViewerI;
 import de.cebitec.mgx.gui.attributevisualization.data.VisualizationGroup;
@@ -215,9 +215,10 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
 
         @Override
         public void update() {
-            List<String> tmp = new ArrayList<String>();
+            List<ViewerI> tmp = new ArrayList<ViewerI>();
             for (ViewerI viewer : Lookup.getDefault().lookupAll(ViewerI.class)) {
-                tmp.add(viewer.getName());
+                if (viewer.canHandle(currentAttributeType))
+                    tmp.add(viewer);
             }
             Collections.sort(tmp);
             content.clear();
@@ -230,17 +231,6 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
 
         @Override
         public void update() {
-//            boolean allDoubles = true;
-//            for (Pair<VisualizationGroup, Distribution> pair : currentDistributions) {
-//                for (Pair<Attribute, ? extends Number> e : pair.getSecond().getSorted()) {
-//                    try {
-//                        Double.parseDouble(e.getFirst().getValue());
-//                    } catch (NumberFormatException nfe) {
-//                        System.err.println("not all doubles: " + e.getFirst().getValue());
-//                        allDoubles = false;
-//                    }
-//                }
-//            }
 
             List<String> tmp = new ArrayList<String>();
             tmp.add(SortOrder.BY_VALUE);
@@ -266,15 +256,15 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
             currentDistributions = vgmgr.getDistributions(currentAttributeType.getName());
 
             // Check available viewers
-            String lastSelectedVisType = (String) visTypeList.getSelectedItem();
+            ViewerI lastSelectedViewer = (ViewerI) visTypeList.getSelectedItem();
             VisTypeListModel vtm = new VisTypeListModel();
             vtm.update();
             visTypeList.setModel(vtm);
             visTypeList.setSelectedIndex(0);
 
             if (vtm.getSize() > 0) {
-                if (vtm.content.contains(lastSelectedVisType)) {
-                    visTypeList.setSelectedItem(lastSelectedVisType);
+                if (vtm.content.contains(lastSelectedViewer)) {
+                    visTypeList.setSelectedItem(lastSelectedViewer);
                 }
                 visTypeList.setEnabled(true);
                 updateButton.setEnabled(true);
@@ -307,19 +297,17 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            String vizType = (String) visTypeList.getSelectedItem();
+            final ViewerI viewer = (ViewerI) visTypeList.getSelectedItem();
 
             SwingWorker sw = new SwingWorker<Void, Void>() {
 
                 private VisFilterI filterChain;
-                private ViewerI view;
 
                 @Override
                 protected Void doInBackground() throws Exception {
-                    view = new BarChartViewer();
-                    view.setTitle("Distribution of " + currentAttributeType);
+                    viewer.setTitle("Distribution of " + currentAttributeType);
 
-                    filterChain = view;
+                    filterChain = viewer;
 
                     if (fractions.isSelected()) {
                         VisFilterI fracFilter = new ToFractionFilter();
@@ -329,7 +317,10 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
                     // sort filter
                     SortOrder sorter = new SortOrder();
                     sorter.setSortCriteria((String) sortCriteria.getSelectedItem());
-                    sorter.setSortOrder(sortAscending.isSelected() ? SortOrder.ASCENDING : SortOrder.DESCENDING);
+                    //sorter.setSortOrder(sortAscending.isSelected() ? SortOrder.ASCENDING : SortOrder.DESCENDING);
+                    
+                    viewer.sortAscending(sortAscending.isSelected());
+                    
                     filterChain = VisFilterSupport.append(sorter, filterChain);
 
                     return null;
@@ -339,7 +330,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
                 protected void done() {
                     super.done();
                     filterChain.filter(currentDistributions);
-                    topComponent.setVisualization(view.getComponent());
+                    topComponent.setVisualization(viewer.getComponent());
                 }
             };
 

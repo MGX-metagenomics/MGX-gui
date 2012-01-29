@@ -34,13 +34,13 @@
                   <Component id="sortDescending" alignment="0" min="-2" max="-2" attributes="0"/>
                   <Component id="fractions" alignment="0" min="-2" max="-2" attributes="0"/>
                   <Component id="sortAscending" alignment="0" min="-2" max="-2" attributes="0"/>
-                  <Component id="attributeTypeList" alignment="0" pref="129" max="32767" attributes="0"/>
+                  <Component id="attributeTypeList" alignment="0" pref="276" max="32767" attributes="0"/>
                   <Component id="jLabel1" alignment="0" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabel2" alignment="0" min="-2" max="-2" attributes="0"/>
-                  <Component id="visTypeList" alignment="0" pref="129" max="32767" attributes="0"/>
+                  <Component id="visTypeList" alignment="0" pref="276" max="32767" attributes="0"/>
                   <Component id="updateButton" alignment="1" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabel3" alignment="0" min="-2" max="-2" attributes="0"/>
-                  <Component id="sortCriteria" alignment="0" pref="129" max="32767" attributes="0"/>
+                  <Component id="sortCriteria" alignment="0" pref="276" max="32767" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>

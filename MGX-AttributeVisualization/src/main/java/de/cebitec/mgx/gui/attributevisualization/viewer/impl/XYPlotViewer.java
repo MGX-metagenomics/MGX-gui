@@ -1,8 +1,10 @@
-package de.cebitec.mgx.gui.attributevisualization.viewer;
+package de.cebitec.mgx.gui.attributevisualization.viewer.impl;
 
 import de.cebitec.mgx.gui.attributevisualization.Pair;
 import de.cebitec.mgx.gui.attributevisualization.data.Distribution;
 import de.cebitec.mgx.gui.attributevisualization.data.VisualizationGroup;
+import de.cebitec.mgx.gui.attributevisualization.viewer.NumericalViewerI;
+import de.cebitec.mgx.gui.attributevisualization.viewer.ViewerI;
 import de.cebitec.mgx.gui.datamodel.Attribute;
 import java.awt.Color;
 import java.util.List;
@@ -13,34 +15,23 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.CategoryLabelPositions;
 import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.category.CategoryItemRenderer;
-import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
- * @author sjaenick
+ * @author sj
  */
 @ServiceProvider(service = ViewerI.class)
-public class BarChartViewer extends ViewerI {
+public class XYPlotViewer extends NumericalViewerI {
 
-    private String chartTitle;
     private ChartPanel cPanel = null;
-
-    public BarChartViewer() {
-    }
-
-    @Override
-    public String getName() {
-        return "Bar Chart";
-    }
-    
-    @Override
-    public void setTitle(String title) {
-        chartTitle = title;
-    }
 
     @Override
     public JComponent getComponent() {
@@ -48,38 +39,40 @@ public class BarChartViewer extends ViewerI {
     }
 
     @Override
-    public List<Pair<VisualizationGroup, Distribution>> filter(List<Pair<VisualizationGroup, Distribution>> dists) {
+    public String getName() {
+        return "XY Plot";
+    }
 
-        System.err.println("barChart.filter()");
+    @Override
+    public List<Pair<VisualizationGroup, Distribution>> filter(List<Pair<VisualizationGroup, Distribution>> dists) {
         boolean fractionMode = false;
 
-        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+        XYSeriesCollection dataset = new XYSeriesCollection();
 
         for (Pair<VisualizationGroup, Distribution> groupDistribution : dists) {
-            VisualizationGroup vg = groupDistribution.getFirst();
-            Distribution dist = groupDistribution.getSecond();
+            XYSeries series = new XYSeries(groupDistribution.getFirst().getName());
 
-            for (Pair<Attribute, ? extends Number> entry : dist.getSorted()) {
-                dataset.addValue(entry.getSecond(), vg.getName(), entry.getFirst().getValue());
+            for (Pair<Attribute, ? extends Number> entry : groupDistribution.getSecond().getSorted()) {
+                series.add(Double.parseDouble(entry.getFirst().getValue()), entry.getSecond());
 
                 // if we encounter any double values here, we are in fraction mode
-                if (entry.getSecond() instanceof Double) {
-                    fractionMode = fractionMode || true;
-                }
-
+                fractionMode = entry.getSecond() instanceof Double || fractionMode;
             }
+            dataset.addSeries(series);
         }
-
+        
         String xAxisLabel = "";
         String yAxisLabel = fractionMode ? "Fraction" : "Count";
 
-        JFreeChart chart = ChartFactory.createBarChart(chartTitle, xAxisLabel, yAxisLabel, dataset, PlotOrientation.VERTICAL, true, true, false);
+        JFreeChart chart = ChartFactory.createXYLineChart(getTitle(), xAxisLabel, yAxisLabel, dataset, PlotOrientation.VERTICAL, true, true, false);
         chart.setBorderPaint(Color.WHITE);
         cPanel = new ChartPanel(chart);
-        CategoryPlot plot = chart.getCategoryPlot();
+        XYPlot plot = (XYPlot) chart.getPlot();
         plot.setBackgroundPaint(Color.WHITE);
-        CategoryAxis domainAxis = plot.getDomainAxis();
-        domainAxis.setCategoryLabelPositions(CategoryLabelPositions.createUpRotationLabelPositions(Math.PI / 6));
+        
+        ValueAxis valueAxis = plot.getDomainAxis();
+        valueAxis.setInverted(!sortAscending());
+        //valueAxis.    //setCategoryLabelPositions(CategoryLabelPositions.createUpRotationLabelPositions(Math.PI / 6));
 
         NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
         if (fractionMode) {
@@ -87,13 +80,14 @@ public class BarChartViewer extends ViewerI {
         } else {
             rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
         }
-
+        
         // set the colors
         int i = 0;
-        CategoryItemRenderer renderer = chart.getCategoryPlot().getRenderer();
+        XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) plot.getRenderer();
         for (Pair<VisualizationGroup, Distribution> groupDistribution : dists) {
             renderer.setSeriesPaint(i++, groupDistribution.getFirst().getColor());
         }
+
         return null;
     }
 }

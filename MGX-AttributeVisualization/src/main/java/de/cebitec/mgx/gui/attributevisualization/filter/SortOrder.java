@@ -22,9 +22,9 @@ public class SortOrder implements VisFilterI {
     public final static String BY_TYPE = "Type";
     private String currentCriteria = BY_VALUE;
     //
-    public final static String ASCENDING = "ascending";
-    public final static String DESCENDING = "descending";
-    private String currentOrder = DESCENDING;
+//    public final static String ASCENDING = "ascending";
+//    public final static String DESCENDING = "descending";
+//    private String currentOrder = DESCENDING;
     
     
     @Override
@@ -63,14 +63,14 @@ public class SortOrder implements VisFilterI {
             assert(false);
         }
         
-        // sort ascending/descending
-        if (currentOrder.equals(ASCENDING)) {
-            Collections.reverse(sortList);
-        } else if (currentOrder.equals(DESCENDING)) {
-            
-        } else {
-            assert(false);
-        }
+//        // sort ascending/descending
+//        if (currentOrder.equals(ASCENDING)) {
+//            Collections.reverse(sortList);
+//        } else if (currentOrder.equals(DESCENDING)) {
+//            
+//        } else {
+//            assert(false);
+//        }
 
         for (Pair<VisualizationGroup, Distribution> p : dists) {
             p.getSecond().setSortOrder(sortList);
@@ -82,12 +82,12 @@ public class SortOrder implements VisFilterI {
     public void setSortCriteria(String criteria) {
         currentCriteria = criteria;
     }
-    
-    public void setSortOrder(String order) {
-        currentOrder = order;
-    }
+//    
+//    public void setSortOrder(String order) {
+//        currentOrder = order;
+//    }
 
-    private final class SortNumerically implements Comparator<Attribute> {
+    private final static class SortNumerically implements Comparator<Attribute> {
 
         @Override
         public int compare(Attribute a1, Attribute a2) {
@@ -103,7 +103,7 @@ public class SortOrder implements VisFilterI {
         }
     }
 
-    private final class SortByValue implements Comparator<Attribute> {
+    private final static class SortByValue implements Comparator<Attribute> {
 
         Map<Attribute, Long> base;
 
