@@ -1,4 +1,4 @@
-package de.cebitec.mgx.gui.attributevisualization;
+package de.cebitec.mgx.gui.datamodel;
 
 /**
  *

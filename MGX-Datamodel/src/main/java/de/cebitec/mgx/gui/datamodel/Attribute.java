@@ -9,7 +9,16 @@ public class Attribute extends ModelBase {
     protected Long atype_id;
     protected String value;
     protected Long job_id;
+    private Long parent_id = null;
 
+    
+    public Long getParentID() {
+        return parent_id;
+    }
+
+    public void setParentID(Long parent_id) {
+        this.parent_id = parent_id;
+    }
     
     public Long getTypeId() {
         return atype_id;

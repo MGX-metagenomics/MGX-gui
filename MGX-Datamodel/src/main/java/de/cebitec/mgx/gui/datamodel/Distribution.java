@@ -1,7 +1,5 @@
-package de.cebitec.mgx.gui.attributevisualization.data;
+package de.cebitec.mgx.gui.datamodel;
 
-import de.cebitec.mgx.gui.attributevisualization.Pair;
-import de.cebitec.mgx.gui.datamodel.Attribute;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +12,7 @@ import java.util.Map.Entry;
 public class Distribution {
 
     Map<Attribute, ? extends Number> dist = null;
-    List<Attribute> sortOrder = null;
+    Attribute[] sortOrder;
 
     public Distribution(Map<Attribute, ? extends Number> dist) {
         this.dist = dist;
@@ -43,11 +41,11 @@ public class Distribution {
         return dist;
     }
 
-    public void setSortOrder(List<Attribute> sortOrder) {
+    public void setSortOrder(Attribute[] sortOrder) {
         this.sortOrder = sortOrder;
     }
     
-    public List<Attribute> getSortOrder() {
+    public Attribute[] getSortOrder() {
         return sortOrder;
     }
 }
