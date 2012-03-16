@@ -25,10 +25,6 @@ public class AttributeTypeDTOFactory extends DTOConversionBase<AttributeType, At
 
     @Override
     public AttributeType toModel(AttributeTypeDTO dto) {
-        AttributeType at = new AttributeType();
-        at.setId(dto.getId());
-        at.setName(dto.getName());
-        at.setValueType(dto.getValueType());
-        return at;
+        return new AttributeType(dto.getId(), dto.getName(), dto.getValueType().charAt(0), dto.getStructure().charAt(0));
     }
 }

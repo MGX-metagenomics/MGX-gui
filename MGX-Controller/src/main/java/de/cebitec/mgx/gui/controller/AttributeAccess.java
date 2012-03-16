@@ -74,7 +74,6 @@ public class AttributeAccess extends AccessBase<Attribute> {
 //        }
 //        return res;
 //    }
-
     public Map<Attribute, Long> getDistribution(AttributeType attributeType, Job job) {
         Map<Attribute, Long> res = new HashMap<Attribute, Long>();
         try {
@@ -106,11 +105,23 @@ public class AttributeAccess extends AccessBase<Attribute> {
 
     @Override
     public void update(Attribute obj) {
-        return;
     }
 
     @Override
     public void delete(Long id) {
-        return;
+    }
+
+    public Map<Attribute, Long> getHierarchy(AttributeType attributeType, Job job) {
+        Map<Attribute, Long> res = new HashMap<Attribute, Long>();
+        try {
+            for (AttributeCount ac : getDTOmaster().Attribute().getHierarchy(attributeType.getId(), job.getId())) {
+                Attribute attr = AttributeDTOFactory.getInstance().toModel(ac.getAttribute());
+                attr.setMaster(this.getMaster());
+                res.put(attr, ac.getCount());
+            }
+        } catch (MGXServerException ex) {
+            Logger.getLogger(AttributeAccess.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return res;
     }
 }
