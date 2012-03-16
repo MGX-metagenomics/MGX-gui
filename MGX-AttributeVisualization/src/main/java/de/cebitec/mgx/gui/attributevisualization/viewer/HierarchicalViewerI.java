@@ -4,12 +4,12 @@ import de.cebitec.mgx.gui.datamodel.AttributeType;
 
 /**
  *
- * @author sj
+ * @author sjaenick
  */
-public abstract class NumericalViewerI extends ViewerI {
+public abstract class HierarchicalViewerI extends ViewerI {
 
     @Override
     public boolean canHandle(AttributeType valueType) {
-        return valueType.getValueType() == AttributeType.VALUE_NUMERIC;
+        return valueType.getValueType() == AttributeType.STRUCTURE_HIERARCHICAL;
     }
 }

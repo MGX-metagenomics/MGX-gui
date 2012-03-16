@@ -1,7 +1,7 @@
 package de.cebitec.mgx.gui.attributevisualization.filter;
 
-import de.cebitec.mgx.gui.attributevisualization.Pair;
-import de.cebitec.mgx.gui.attributevisualization.data.Distribution;
+import de.cebitec.mgx.gui.datamodel.Pair;
+import de.cebitec.mgx.gui.datamodel.Distribution;
 import de.cebitec.mgx.gui.attributevisualization.data.VisualizationGroup;
 import java.util.List;
 

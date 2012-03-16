@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.attributevisualization.data;
 
-import de.cebitec.mgx.gui.attributevisualization.Pair;
+import de.cebitec.mgx.gui.datamodel.Distribution;
+import de.cebitec.mgx.gui.datamodel.Pair;
 import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;

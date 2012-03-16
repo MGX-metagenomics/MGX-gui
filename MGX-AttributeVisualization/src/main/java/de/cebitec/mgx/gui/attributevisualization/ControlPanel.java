@@ -5,14 +5,16 @@
  */
 package de.cebitec.mgx.gui.attributevisualization;
 
-import de.cebitec.mgx.gui.attributevisualization.data.Distribution;
-import de.cebitec.mgx.gui.attributevisualization.viewer.impl.BarChartViewer;
 import de.cebitec.mgx.gui.attributevisualization.data.VGroupManager;
-import de.cebitec.mgx.gui.attributevisualization.viewer.ViewerI;
 import de.cebitec.mgx.gui.attributevisualization.data.VisualizationGroup;
-import de.cebitec.mgx.gui.attributevisualization.filter.*;
-import de.cebitec.mgx.gui.datamodel.Attribute;
+import de.cebitec.mgx.gui.attributevisualization.filter.SortOrder;
+import de.cebitec.mgx.gui.attributevisualization.filter.ToFractionFilter;
+import de.cebitec.mgx.gui.attributevisualization.filter.VisFilterI;
+import de.cebitec.mgx.gui.attributevisualization.filter.VisFilterSupport;
+import de.cebitec.mgx.gui.attributevisualization.viewer.ViewerI;
 import de.cebitec.mgx.gui.datamodel.AttributeType;
+import de.cebitec.mgx.gui.datamodel.Distribution;
+import de.cebitec.mgx.gui.datamodel.Pair;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -60,7 +62,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
         sortOrderGroup = new javax.swing.ButtonGroup();
         attributeTypeList = new javax.swing.JComboBox();
         jLabel1 = new javax.swing.JLabel();
-        visTypeList = new javax.swing.JComboBox();
+        visualizationTypeList = new javax.swing.JComboBox();
         jLabel2 = new javax.swing.JLabel();
         updateButton = new javax.swing.JButton();
         fractions = new javax.swing.JCheckBox();
@@ -72,32 +74,33 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
         setMaximumSize(new java.awt.Dimension(300, 32767));
         setPreferredSize(new java.awt.Dimension(300, 504));
 
-        attributeTypeList.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Loading attributes" }));
+        attributeTypeList.setModel(new AttributeTypeListModel());
         attributeTypeList.setEnabled(false);
 
-        jLabel1.setFont(new java.awt.Font("Dialog", 0, 10));
+        jLabel1.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         jLabel1.setText(org.openide.util.NbBundle.getMessage(ControlPanel.class, "ControlPanel.jLabel1.text")); // NOI18N
 
-        visTypeList.setEnabled(false);
+        visualizationTypeList.setModel(new VisualizationTypeListModel());
+        visualizationTypeList.setEnabled(false);
 
-        jLabel2.setFont(new java.awt.Font("Dialog", 0, 10));
+        jLabel2.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         jLabel2.setText(org.openide.util.NbBundle.getMessage(ControlPanel.class, "ControlPanel.jLabel2.text")); // NOI18N
 
         updateButton.setText(org.openide.util.NbBundle.getMessage(ControlPanel.class, "ControlPanel.updateButton.text")); // NOI18N
         updateButton.setEnabled(false);
 
-        fractions.setFont(new java.awt.Font("Dialog", 0, 10));
+        fractions.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         fractions.setText(org.openide.util.NbBundle.getMessage(ControlPanel.class, "ControlPanel.fractions.text")); // NOI18N
 
-        jLabel3.setFont(new java.awt.Font("Dialog", 0, 10));
+        jLabel3.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         jLabel3.setText(org.openide.util.NbBundle.getMessage(ControlPanel.class, "ControlPanel.jLabel3.text")); // NOI18N
 
         sortOrderGroup.add(sortAscending);
-        sortAscending.setFont(new java.awt.Font("Dialog", 0, 10));
+        sortAscending.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         sortAscending.setText(org.openide.util.NbBundle.getMessage(ControlPanel.class, "ControlPanel.sortAscending.text")); // NOI18N
 
         sortOrderGroup.add(sortDescending);
-        sortDescending.setFont(new java.awt.Font("Dialog", 0, 10));
+        sortDescending.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         sortDescending.setSelected(true);
         sortDescending.setText(org.openide.util.NbBundle.getMessage(ControlPanel.class, "ControlPanel.sortDescending.text")); // NOI18N
 
@@ -111,13 +114,13 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
                     .addComponent(sortDescending)
                     .addComponent(fractions)
                     .addComponent(sortAscending)
-                    .addComponent(attributeTypeList, 0, 129, Short.MAX_VALUE)
+                    .addComponent(attributeTypeList, 0, 276, Short.MAX_VALUE)
                     .addComponent(jLabel1)
                     .addComponent(jLabel2)
-                    .addComponent(visTypeList, 0, 129, Short.MAX_VALUE)
+                    .addComponent(visualizationTypeList, 0, 276, Short.MAX_VALUE)
                     .addComponent(updateButton, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel3)
-                    .addComponent(sortCriteria, 0, 129, Short.MAX_VALUE))
+                    .addComponent(sortCriteria, 0, 276, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -130,7 +133,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
                 .addGap(20, 20, 20)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(visTypeList, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(visualizationTypeList, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -157,7 +160,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
     private javax.swing.JRadioButton sortDescending;
     private javax.swing.ButtonGroup sortOrderGroup;
     private javax.swing.JButton updateButton;
-    private javax.swing.JComboBox visTypeList;
+    private javax.swing.JComboBox visualizationTypeList;
     // End of variables declaration//GEN-END:variables
 
     @Override
@@ -166,64 +169,90 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
             System.err.println("control received event " + evt.getPropertyName() + " " + evt.getOldValue() + " " + evt.getNewValue());
         }
 
-        //
-        //
-        //
         String propName = evt.getPropertyName();
 
         if (propName.equals(VisualizationGroup.VISGROUP_CHANGED) || propName.equals(VGroupManager.VISGROUP_NUM_CHANGED)
                 || propName.equals(VisualizationGroup.VISGROUP_ACTIVATED) || propName.equals(VisualizationGroup.VISGROUP_DEACTIVATED)) {
-            AttributeListModel aModel = new AttributeListModel();
-            aModel.update();
-            AttributeType lastSelectedAttribute = currentAttributeType;
-            attributeTypeList.setModel(aModel);
-            if (aModel.getSize() > 0) {
-                attributeTypeList.setSelectedIndex(0);
-
-                // if possible, keep the last selected entry
-                if (lastSelectedAttribute != null && aModel.content.contains(lastSelectedAttribute)) {
-                    attributeTypeList.setSelectedItem(lastSelectedAttribute);
-                }
-                attributeTypeList.setEnabled(true);
-            } else {
-                attributeTypeList.setEnabled(false);
-                updateButton.setEnabled(false);
-            }
+            // update attribute list model
+            ((AttributeTypeListModel) attributeTypeList.getModel()).update();
         } else if (propName.equals(VisualizationGroup.VISGROUP_RENAMED)) {
             firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
         }
     }
 
-    private final class AttributeListModel extends BaseModel {
+    private final class AttributeTypeListModel extends BaseModel {
 
         @Override
         public void update() {
-            // FIXME - is there an ordered set?
-            Set<AttributeType> ret = new HashSet<AttributeType>();
-            for (VisualizationGroup vg : vgmgr.getGroups()) {
-                ret.addAll(vg.getAttributeTypes());
-            }
-            List<AttributeType> tmp = new ArrayList<AttributeType>(ret);
-            Collections.sort(tmp);
-            content.clear();
-            content.addAll(tmp);
-            fireContentsChanged();
+            // disable all downstream elements
+            attributeTypeList.setEnabled(false);
+            sortCriteria.setEnabled(false);
+            visualizationTypeList.setEnabled(false);
+            updateButton.setEnabled(false);
+
+            SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+
+                @Override
+                protected Void doInBackground() throws Exception {
+                    // FIXME - is there an ordered set?
+                    Set<AttributeType> ret = new HashSet<AttributeType>();
+                    for (VisualizationGroup vg : vgmgr.getGroups()) {
+                        ret.addAll(vg.getAttributeTypes());
+                    }
+                    List<AttributeType> tmp = new ArrayList<AttributeType>(ret);
+                    Collections.sort(tmp);
+                    content.clear();
+                    content.addAll(tmp);
+
+                    // if possible, keep the last selected entry
+                    if (currentAttributeType != null && content.contains(currentAttributeType)) {
+                        attributeTypeList.setSelectedItem(currentAttributeType);
+                    }
+
+                    return null;
+                }
+
+                @Override
+                protected void done() {
+                    attributeTypeList.setEnabled(true);
+                    fireContentsChanged();
+                    super.done();
+                }
+            };
+            worker.execute();
         }
     }
 
-    private final class VisTypeListModel extends BaseModel {
+    private final class VisualizationTypeListModel extends BaseModel {
 
         @Override
         public void update() {
-            List<ViewerI> tmp = new ArrayList<ViewerI>();
-            for (ViewerI viewer : Lookup.getDefault().lookupAll(ViewerI.class)) {
-                if (viewer.canHandle(currentAttributeType))
-                    tmp.add(viewer);
-            }
-            Collections.sort(tmp);
-            content.clear();
-            content.addAll(tmp);
-            fireContentsChanged();
+            ViewerI lastSelectedViewer = (ViewerI) visualizationTypeList.getSelectedItem();
+            
+            SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+
+                @Override
+                protected Void doInBackground() throws Exception {
+                    List<ViewerI> tmp = new ArrayList<ViewerI>();
+                    for (ViewerI viewer : Lookup.getDefault().lookupAll(ViewerI.class)) {
+                        if (viewer.canHandle(currentAttributeType)) {
+                            tmp.add(viewer);
+                        }
+                    }
+                    Collections.sort(tmp);
+                    content.clear();
+                    content.addAll(tmp);
+                    return null;
+                }
+
+                @Override
+                protected void done() {
+                    visualizationTypeList.setEnabled(true);
+                    fireContentsChanged();
+                    super.done();
+                }
+            };
+            worker.execute();
         }
     }
 
@@ -231,18 +260,32 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
 
         @Override
         public void update() {
+            SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
 
-            List<String> tmp = new ArrayList<String>();
-            tmp.add(SortOrder.BY_VALUE);
-            
-            if (currentAttributeType.getValueType().equals("NUMERICAL")) {
-                tmp.add(SortOrder.BY_TYPE);
-            }
+                @Override
+                protected Void doInBackground() throws Exception {
+                    List<String> tmp = new ArrayList<String>();
+                    tmp.add(SortOrder.BY_VALUE);
 
-            Collections.sort(tmp);
-            content.clear();
-            content.addAll(tmp);
-            fireContentsChanged();
+                    if (currentAttributeType.getValueType() == AttributeType.VALUE_NUMERIC) {
+                        tmp.add(SortOrder.BY_TYPE);
+                    }
+
+                    Collections.sort(tmp);
+                    content.clear();
+                    content.addAll(tmp);
+                    return null;
+                }
+
+                @Override
+                protected void done() {
+                    sortCriteria.setEnabled(true);
+                    updateButton.setEnabled(true);
+                    fireContentsChanged();
+                    super.done();
+                }
+            };
+            worker.execute();
         }
     }
 
@@ -250,46 +293,64 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
 
         @Override
         public void actionPerformed(ActionEvent e) {
+            // disable all downstream elements
+            attributeTypeList.setEnabled(false);
+            sortCriteria.setEnabled(false);
+            visualizationTypeList.setEnabled(false);
+            updateButton.setEnabled(false);
 
-            currentAttributeType =  (AttributeType) attributeTypeList.getSelectedItem();
+            currentAttributeType = (AttributeType) attributeTypeList.getSelectedItem();
             System.err.println("fetching dist for " + currentAttributeType);
-            currentDistributions = vgmgr.getDistributions(currentAttributeType.getName());
 
-            // Check available viewers
-            ViewerI lastSelectedViewer = (ViewerI) visTypeList.getSelectedItem();
-            VisTypeListModel vtm = new VisTypeListModel();
-            vtm.update();
-            visTypeList.setModel(vtm);
-            visTypeList.setSelectedIndex(0);
+            SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
 
-            if (vtm.getSize() > 0) {
-                if (vtm.content.contains(lastSelectedViewer)) {
-                    visTypeList.setSelectedItem(lastSelectedViewer);
+                @Override
+                protected Void doInBackground() throws Exception {
+                    currentDistributions = vgmgr.getDistributions(currentAttributeType.getName());
+                    return null;
                 }
-                visTypeList.setEnabled(true);
-                updateButton.setEnabled(true);
-            } else {
-                visTypeList.setEnabled(false);
-                updateButton.setEnabled(false);
-            }
 
-            // check available sort orders here
-            String lastSelectedSortType = (String) sortCriteria.getSelectedItem();
-            SortTypeListModel stm = new SortTypeListModel();
-            stm.update();
-            sortCriteria.setModel(stm);
-            sortCriteria.setSelectedIndex(0);
-            if (stm.getSize() > 0) {
-                if (stm.content.contains(lastSelectedSortType)) {
-                    visTypeList.setSelectedItem(lastSelectedSortType);
+                @Override
+                protected void done() {
+                    // Check available viewers
+                    ViewerI lastSelectedViewer = (ViewerI) visualizationTypeList.getSelectedItem();
+                    VisTypeListModel vtm = new VisTypeListModel();
+                    vtm.update();
+                    visualizationTypeList.setModel(vtm);
+                    visualizationTypeList.setSelectedIndex(0);
+
+                    if (vtm.getSize() > 0) {
+                        if (vtm.content.contains(lastSelectedViewer)) {
+                            visualizationTypeList.setSelectedItem(lastSelectedViewer);
+                        }
+                        visualizationTypeList.setEnabled(true);
+                        updateButton.setEnabled(true);
+                    } else {
+                        visualizationTypeList.setEnabled(false);
+                        updateButton.setEnabled(false);
+                    }
+
+                    // check available sort orders here
+                    String lastSelectedSortType = (String) sortCriteria.getSelectedItem();
+                    SortTypeListModel stm = new SortTypeListModel();
+                    stm.update();
+                    sortCriteria.setModel(stm);
+                    sortCriteria.setSelectedIndex(0);
+                    if (stm.getSize() > 0) {
+                        if (stm.content.contains(lastSelectedSortType)) {
+                            visualizationTypeList.setSelectedItem(lastSelectedSortType);
+                        }
+                        sortCriteria.setEnabled(true);
+                        updateButton.setEnabled(true);
+                    } else {
+                        sortCriteria.setEnabled(false);
+                        updateButton.setEnabled(false);
+                    }
+                    
+                    super.done();
                 }
-                sortCriteria.setEnabled(true);
-                updateButton.setEnabled(true);
-            } else {
-                sortCriteria.setEnabled(false);
-                updateButton.setEnabled(false);
-            }
-
+            };
+            worker.execute();
         }
     }
 
@@ -297,7 +358,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            final ViewerI viewer = (ViewerI) visTypeList.getSelectedItem();
+            final ViewerI viewer = (ViewerI) visualizationTypeList.getSelectedItem();
 
             SwingWorker sw = new SwingWorker<Void, Void>() {
 
@@ -318,9 +379,9 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
                     SortOrder sorter = new SortOrder();
                     sorter.setSortCriteria((String) sortCriteria.getSelectedItem());
                     //sorter.setSortOrder(sortAscending.isSelected() ? SortOrder.ASCENDING : SortOrder.DESCENDING);
-                    
+
                     viewer.sortAscending(sortAscending.isSelected());
-                    
+
                     filterChain = VisFilterSupport.append(sorter, filterChain);
 
                     return null;

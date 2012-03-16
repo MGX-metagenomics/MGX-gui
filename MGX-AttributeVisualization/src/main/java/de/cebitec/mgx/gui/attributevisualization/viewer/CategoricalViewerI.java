@@ -10,7 +10,7 @@ public abstract class CategoricalViewerI extends ViewerI {
 
     @Override
     public boolean canHandle(AttributeType valueType) {
-        return valueType.getValueType().equals("DISCRETE");
+        return valueType.getValueType() == AttributeType.VALUE_DISCRETE;
     }
     
 }

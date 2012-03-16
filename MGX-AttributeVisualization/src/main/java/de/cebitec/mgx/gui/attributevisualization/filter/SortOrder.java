@@ -1,16 +1,10 @@
 package de.cebitec.mgx.gui.attributevisualization.filter;
 
-import de.cebitec.mgx.gui.attributevisualization.Pair;
-import de.cebitec.mgx.gui.attributevisualization.data.Distribution;
+import de.cebitec.mgx.gui.datamodel.Pair;
+import de.cebitec.mgx.gui.datamodel.Distribution;
 import de.cebitec.mgx.gui.attributevisualization.data.VisualizationGroup;
 import de.cebitec.mgx.gui.datamodel.Attribute;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  *
@@ -73,7 +67,7 @@ public class SortOrder implements VisFilterI {
 //        }
 
         for (Pair<VisualizationGroup, Distribution> p : dists) {
-            p.getSecond().setSortOrder(sortList);
+            p.getSecond().setSortOrder(sortList.toArray(new Attribute[0]));
         }
 
         return dists;
