@@ -25,13 +25,13 @@ public class AttributeDTOFactory extends DTOConversionBase<Attribute, AttributeD
 
     @Override
     public final Attribute toModel(AttributeDTO dto) {
-        Attribute a = new Attribute();
-        a.setId(dto.getId());
-        a.setJobId(dto.getJobid())
+        Attribute a = new Attribute()
+            .setJobId(dto.getJobid())
             .setTypeId(dto.getAttrTypeId())
             .setValue(dto.getValue());
         if (dto.hasParentId())
             a.setParentID(dto.getParentId());
+        a.setId(dto.getId());
         return a;
     }
 }

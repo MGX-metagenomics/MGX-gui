@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import org.jdesktop.dom.SimpleDocument;
 import org.jdesktop.http.Method;
@@ -128,7 +129,6 @@ public final class Forms {
                         inputs.add(select);
                     }
                 }
-
                 //now add all the form inputs for the radios
                 for (String radName : radioInputs.keySet()) {
                     inputs.add(new AbstractRadioInput(radName, radioInputs.get(radName)));

@@ -79,7 +79,7 @@ public class AttributeType extends ModelBase implements Comparable<AttributeType
 
     @Override
     public String toString() {
-        return "AttributeType{" + "name=" + name + ", value_type=" + value_type + ", structure=" + structure + '}';
+        return name; // "AttributeType{" + "name=" + name + ", value_type=" + value_type + ", structure=" + structure + '}';
     }
 
     @Override

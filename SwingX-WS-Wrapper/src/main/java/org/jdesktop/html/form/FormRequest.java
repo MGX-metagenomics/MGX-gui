@@ -303,7 +303,7 @@ public class FormRequest extends Request {
             return new MultipartInputStream(chunks);
         } else {
             //default to UrlEncoded
-            StringBuffer b = new StringBuffer();
+            StringBuilder b = new StringBuilder();
             for (int i=0; i<params.length; i++) {
                 if (i > 0) b.append("&");
                 Parameter p = params[i];
@@ -323,7 +323,7 @@ public class FormRequest extends Request {
             return s + "\nMultipart Form Data Encoded";
         } else {
             try {
-                StringBuffer b = new StringBuffer();
+                StringBuilder b = new StringBuilder();
                 Parameter[] params = getFormParameters();
                 for (int i=0; i<params.length; i++) {
                     if (i > 0) b.append("&");

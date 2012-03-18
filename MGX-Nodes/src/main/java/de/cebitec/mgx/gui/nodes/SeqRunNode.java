@@ -29,7 +29,6 @@ public class SeqRunNode extends MGXNodeBase {
         this(s);
         master = m;
         seqrun = s;
-        seqrun.setMaster(m);
         setDisplayName(s.getSequencingMethod() + " run");
     }
 

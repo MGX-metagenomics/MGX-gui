@@ -56,7 +56,7 @@ import org.w3c.dom.UserDataHandler;
  */
 public class SimpleDocument implements Document {
     private Document dom;
-    private XPath xpath;
+    //private XPath xpath;
     //save compiled expressions to hopefully improve performance. These cached
     //expressions are saved in SoftReferences, so if memory gets tight they will
     //be released.

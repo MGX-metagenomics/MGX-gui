@@ -68,10 +68,10 @@
         <module>MGX-Controller</module>
         <module>DTO-Wrapper</module>
         <module>SwingX-Wrapper</module>
-    <module>MGX-TaskView</module>
-    <module>MGX-AttributeVisualization</module>
-    <module>JFreeChart-Wrapper</module>
-  </modules>
+        <module>MGX-TaskView</module>
+        <module>MGX-AttributeVisualization</module>
+        <module>JFreeChart-Wrapper</module>
+    </modules>
 
     <properties>
         <netbeans.version>RELEASE701</netbeans.version>

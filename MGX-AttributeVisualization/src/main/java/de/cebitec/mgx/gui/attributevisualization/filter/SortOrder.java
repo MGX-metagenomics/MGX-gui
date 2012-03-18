@@ -4,6 +4,7 @@ import de.cebitec.mgx.gui.datamodel.Pair;
 import de.cebitec.mgx.gui.datamodel.Distribution;
 import de.cebitec.mgx.gui.attributevisualization.data.VisualizationGroup;
 import de.cebitec.mgx.gui.datamodel.Attribute;
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -81,7 +82,7 @@ public class SortOrder implements VisFilterI {
 //        currentOrder = order;
 //    }
 
-    private final static class SortNumerically implements Comparator<Attribute> {
+    private final static class SortNumerically implements Comparator<Attribute>, Serializable {
 
         @Override
         public int compare(Attribute a1, Attribute a2) {

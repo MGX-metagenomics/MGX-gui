@@ -5,6 +5,7 @@ import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.nodefactory.ProjectStructureNodeFactory;
 import java.awt.EventQueue;
 import javax.swing.Action;
+import javax.swing.SwingWorker;
 import org.openide.nodes.Children;
 import org.openide.util.lookup.Lookups;
 
@@ -40,14 +41,16 @@ public class ProjectNode extends MGXNodeBase {
     }
 
     private void preopenMGXProject(final MGXMaster master) {
-        EventQueue.invokeLater(new Runnable() {
+        SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
 
             @Override
-            public void run() {
+            protected Void doInBackground() throws Exception {
                 // trigger creation of the hibernate instance on the 
                 // server side to speed up access
                 master.Habitat().fetchall();
+                return null;
             }
-        });
+        };
+        worker.execute();
     }
 }

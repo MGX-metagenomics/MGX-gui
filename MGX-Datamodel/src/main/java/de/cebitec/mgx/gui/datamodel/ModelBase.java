@@ -16,6 +16,7 @@ public abstract class ModelBase implements Transferable {
     private static DataFlavor nodeFlavor = null;
 
     public void setId(Long id) {
+        assert this.id == null; // prevent changing of internal ID field
         this.id = id;
     }
 
@@ -28,6 +29,7 @@ public abstract class ModelBase implements Transferable {
     }
 
     public void setMaster(MGXMasterI m) {
+        assert master == null; // prevent duplicate setting
         master = m;
     }
 

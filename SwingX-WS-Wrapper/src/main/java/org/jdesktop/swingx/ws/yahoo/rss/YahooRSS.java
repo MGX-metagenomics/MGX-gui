@@ -28,6 +28,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Map;
+import java.util.Set;
 import org.jdesktop.beans.AbstractBean;
 
 /**
@@ -57,7 +58,7 @@ public abstract class YahooRSS extends AbstractBean {
      * will be called on each key and value in order to construct the param list. They will
      * be URL encoded by YahooRSS, so you need not worry about url encoding the param ahead of time
      */
-    protected abstract Map getParameters();
+    protected abstract Map<Object, Object> getParameters();
 
     /**
      * Constructs the URL to return

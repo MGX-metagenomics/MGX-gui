@@ -224,6 +224,7 @@ public abstract class AbstractTileFactory extends TileFactory {
     
     
     @SuppressWarnings("unchecked")
+    @Override
     protected synchronized void startLoading(Tile tile) {
         if(tile.isLoading()) {
             System.out.println("already loading. bailing");

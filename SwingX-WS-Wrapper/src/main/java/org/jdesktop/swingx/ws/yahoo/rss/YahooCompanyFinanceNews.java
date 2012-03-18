@@ -130,7 +130,7 @@ public class YahooCompanyFinanceNews extends YahooRSS {
     @Override
     protected Map getParameters() {
         HashMap map = new HashMap();
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
         for (String symbol : getSymbols()) {
             if (s.length() > 0) {
                 s.append(",");

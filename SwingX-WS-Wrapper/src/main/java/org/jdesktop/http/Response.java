@@ -229,7 +229,7 @@ public class Response {
      */
     @Override
     public String toString() {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         buffer.append("  ").append(statusCode).append("\n");
         for (Header h : getHeaders()) {
             buffer.append("  ").append(h.getName()).append(": ").append(h.getValue());

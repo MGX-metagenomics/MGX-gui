@@ -40,39 +40,39 @@ public class VisualizationGroup {
         pcs = new PropertyChangeSupport(this);
     }
 
-    public String getName() {
+    public final String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public final void setName(String name) {
         String oldName = this.name;
         this.name = name;
         pcs.firePropertyChange(VISGROUP_RENAMED, oldName, name);
     }
 
-    public boolean isActive() {
+    public final boolean isActive() {
         return is_active && seqruns.size() > 0;
     }
 
-    public void setActive(boolean is_active) {
+    public final void setActive(boolean is_active) {
         this.is_active = is_active;
         pcs.firePropertyChange(is_active ? VISGROUP_ACTIVATED : VISGROUP_DEACTIVATED, !is_active, is_active);
     }
 
-    public Color getColor() {
+    public final Color getColor() {
         return color;
     }
 
-    public void setColor(Color color) {
+    public final void setColor(Color color) {
         this.color = color;
         fireVGroupChanged(VISGROUP_CHANGED);
     }
 
-    public Set<SeqRun> getSeqRuns() {
+    public final Set<SeqRun> getSeqRuns() {
         return seqruns;
     }
 
-    public void addSeqRun(SeqRun sr) {
+    public final void addSeqRun(SeqRun sr) {
         if (!seqruns.contains(sr)) {
             distCache.clear(); // invalidate cache
             seqruns.add(sr);
@@ -82,12 +82,12 @@ public class VisualizationGroup {
         }
     }
 
-    public Distribution getHierarchy(String attrTypeName) {
+    public final Distribution getHierarchy(String attrTypeName) {
         assert !EventQueue.isDispatchThread();
         return null;
     }
 
-    public Distribution getDistribution(String attrTypeName) {
+    public final Distribution getDistribution(String attrTypeName) {
         
         assert !EventQueue.isDispatchThread();
 
@@ -144,7 +144,8 @@ public class VisualizationGroup {
         return ret;
     }
 
-    public List<AttributeType> getAttributeTypes() {
+    public final List<AttributeType> getAttributeTypes() {
+        System.err.println("vgroup getAttributeTypes");
         waitForWorkers(attributeTypePrefetchers);
         List<AttributeType> ret = new ArrayList<AttributeType>();
         for (Map<Job, List<AttributeType>> l : attributeTypes.values()) {
@@ -152,10 +153,11 @@ public class VisualizationGroup {
                 ret.addAll(atypes);
             }
         }
+        System.err.println("vgroup has attrtypes "+ ret.toString());
         return ret;
     }
 
-    private Job selectJob(SeqRun run, String attrTypeName) {
+    private final Job selectJob(SeqRun run, String attrTypeName) {
         //
         // process all jobs for this seqrun and keep only those
         // which provide the requested attribute type

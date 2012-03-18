@@ -33,7 +33,7 @@ abstract class BaseModel extends AbstractListModel implements ComboBoxModel {
         if (index >= 0) {
             return content.get(index);
         } else {
-            return "";
+            return null;
         }
     }
 

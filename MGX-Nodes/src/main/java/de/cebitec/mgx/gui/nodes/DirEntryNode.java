@@ -37,7 +37,7 @@ public class DirEntryNode extends MGXNodeBase {
         return new Action[]{};
     }
     
-    private String stripPath(String in) {
+    private static String stripPath(String in) {
         String[] split = in.split("/");
         return split[split.length-1];
     }

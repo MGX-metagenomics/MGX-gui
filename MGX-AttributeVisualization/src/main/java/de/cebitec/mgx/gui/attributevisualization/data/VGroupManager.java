@@ -19,6 +19,7 @@ public class VGroupManager implements PropertyChangeListener {
 
     public static final String VISGROUP_NUM_CHANGED = "vgNumChanged";
     private static VGroupManager instance = null;
+    // LinkedHashSet keeps the order elements are added
     private Set<VisualizationGroup> groups = new LinkedHashSet<VisualizationGroup>();
     private int groupCount = 1;
     private PropertyChangeSupport pcs = null;
@@ -29,7 +30,7 @@ public class VGroupManager implements PropertyChangeListener {
         pcs = new PropertyChangeSupport(this);
     }
 
-    public static VGroupManager getInstance() {
+    public synchronized static VGroupManager getInstance() {
         if (instance == null) {
             instance = new VGroupManager();
         }
@@ -46,8 +47,10 @@ public class VGroupManager implements PropertyChangeListener {
     }
 
     public List<VisualizationGroup> getGroups() {
+        System.err.println("in getGroups()");
         List<VisualizationGroup> ret = new ArrayList<VisualizationGroup>();
         for (VisualizationGroup g : groups) {
+            System.err.println("getGroups() has a group named "+g.getName());
             if (g.isActive()) {
                 ret.add(g);
             }
@@ -83,6 +86,7 @@ public class VGroupManager implements PropertyChangeListener {
     public void removeGroup(String name) {
         VisualizationGroup vg = getGroup(name);
         if (vg == null) {
+            assert false; // shouldn't happen
             return;
         }
         groups.remove(vg);
@@ -109,7 +113,7 @@ public class VGroupManager implements PropertyChangeListener {
                 return vg;
             }
         }
-
+        assert false; // shouldn't happen
         return null;
     }
 

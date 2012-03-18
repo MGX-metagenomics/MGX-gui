@@ -468,7 +468,7 @@ public class AsyncHttpRequest extends AbstractBean {
      */
     public String getResponseHeader(String headerLabel) {
         if (readyState == ReadyState.RECEIVING || readyState == ReadyState.LOADED) {
-            StringBuilder buffer = new StringBuilder();
+//            StringBuilder buffer = new StringBuilder();
             Header header = worker.response.getHeader(headerLabel);
             return header == null ? null : header.getValue();
         } else {

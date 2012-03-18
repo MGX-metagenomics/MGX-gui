@@ -69,7 +69,7 @@ public class CookieManager extends CookieHandler {
                     }
 
                     Cookie c = w.cookie;
-                    StringBuffer buffer = new StringBuffer();
+                    StringBuilder buffer = new StringBuilder();
                     buffer.append(c.getName()).append("=").append(c.getValue());
 //                    buffer.append(";$Version=" + c.getVersion());
 //                    if (c.getPath() != null) {
