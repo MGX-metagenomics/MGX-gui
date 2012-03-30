@@ -71,6 +71,8 @@
         <module>MGX-TaskView</module>
         <module>MGX-AttributeVisualization</module>
         <module>JFreeChart-Wrapper</module>
+    <module>MGX-Prefuse</module>
+        <module>MGX-Treeview</module>
     </modules>
 
     <properties>
