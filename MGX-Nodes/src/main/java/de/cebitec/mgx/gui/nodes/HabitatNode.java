@@ -40,7 +40,8 @@ public class HabitatNode extends MGXNodeBase {
     }
 
     private String getToolTipText(Habitat h) {
-        return new StringBuilder("<html>").append("<b>Habitat: </b>").append(h.getName()).append("<br><hr><br>").append("biome: ").append(h.getBiome()).append("<br>").append("location: ").append(new Double(h.getLatitude()).toString()).append(" / ").append(new Double(h.getLongitude()).toString()).append("<br>").append("altitude: ").append(Integer.valueOf(h.getAltitude()).toString()).append("</html>").toString();
+        return new StringBuilder("<html>").append("<b>Habitat: </b>").
+                append(h.getName()).append("<br><hr><br>").append("biome: ").append(h.getBiome()).append("<br>").append("location: ").append(new Double(h.getLatitude()).toString()).append(" / ").append(new Double(h.getLongitude()).toString()).append("<br>").append("altitude: ").append(Integer.valueOf(h.getAltitude()).toString()).append("</html>").toString();
     }
 
     @Override

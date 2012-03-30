@@ -35,11 +35,17 @@ public class SeqRunNode extends MGXNodeBase {
     private SeqRunNode(SeqRun s) {
         super(Children.LEAF, Lookups.singleton(s));
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/SeqRun.png");
+        setShortDescription(getToolTipText(s));
     }
 
     @Override
     public Transferable drag() throws IOException {
         return seqrun;
+    }
+
+    private String getToolTipText(SeqRun run) {
+        return new StringBuilder("<html><b>").append(run.getSequencingTechnology()).append(" sequencing run </b>(")
+                .append(run.getNumSequences()).append(" reads)").toString();
     }
 
     @Override
@@ -51,7 +57,6 @@ public class SeqRunNode extends MGXNodeBase {
     public Action[] getActions(boolean context) {
         return new Action[]{new EditSeqRun(), new DeleteSeqRun()};
     }
-
 
     private class EditSeqRun extends AbstractAction {
 
