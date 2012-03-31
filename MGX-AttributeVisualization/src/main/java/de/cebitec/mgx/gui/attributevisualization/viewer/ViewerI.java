@@ -8,7 +8,7 @@ import javax.swing.JComponent;
  *
  * @author sjaenick
  */
-public abstract class ViewerI implements VisFilterI, Comparable<ViewerI> {
+public abstract class ViewerI<T> implements VisFilterI<T>, Comparable<ViewerI<T>> {
 
     private boolean ascending = true;
     private String chartTitle;
@@ -18,6 +18,8 @@ public abstract class ViewerI implements VisFilterI, Comparable<ViewerI> {
     public abstract String getName();
 
     public abstract boolean canHandle(AttributeType valueType);
+    
+    public abstract Class getInputType();
 
     public void sortAscending(boolean ascending) {
         this.ascending = ascending;
@@ -41,7 +43,7 @@ public abstract class ViewerI implements VisFilterI, Comparable<ViewerI> {
     }
 
     @Override
-    public int compareTo(ViewerI t) {
+    public int compareTo(ViewerI<T> t) {
         return getName().compareTo(t.getName());
     }
 }

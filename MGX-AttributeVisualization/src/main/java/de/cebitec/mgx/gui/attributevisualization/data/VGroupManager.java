@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.attributevisualization.data;
 
 import de.cebitec.mgx.gui.datamodel.Distribution;
 import de.cebitec.mgx.gui.datamodel.Pair;
+import de.cebitec.mgx.gui.datamodel.tree.Tree;
 import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -47,10 +48,8 @@ public class VGroupManager implements PropertyChangeListener {
     }
 
     public List<VisualizationGroup> getGroups() {
-        System.err.println("in getGroups()");
         List<VisualizationGroup> ret = new ArrayList<VisualizationGroup>();
         for (VisualizationGroup g : groups) {
-            System.err.println("getGroups() has a group named "+g.getName());
             if (g.isActive()) {
                 ret.add(g);
             }
@@ -64,6 +63,17 @@ public class VGroupManager implements PropertyChangeListener {
             Distribution dist = vg.getDistribution(attrName);
             if (!dist.getMap().isEmpty()) {
                 ret.add(new Pair<VisualizationGroup, Distribution>(vg, dist));
+            }
+        }
+        return ret;
+    }
+
+    public List<Pair<VisualizationGroup, Tree<Long>>> getHierarchies(String attrName) {
+        List<Pair<VisualizationGroup, Tree<Long>>> ret = new ArrayList<Pair<VisualizationGroup, Tree<Long>>>();
+        for (VisualizationGroup vg : getGroups()) {
+            Tree<Long> tree = vg.getHierarchy(attrName);
+            if (!tree.isEmpty()) {
+                ret.add(new Pair<VisualizationGroup, Tree<Long>>(vg, tree));
             }
         }
         return ret;

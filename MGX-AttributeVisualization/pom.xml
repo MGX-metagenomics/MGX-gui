@@ -104,6 +104,8 @@
                 <configuration>
                     <publicPackages>
                         <publicPackage>de.cebitec.mgx.gui.attributevisualization</publicPackage>
+                        <publicPackage>de.cebitec.mgx.gui.attributevisualization.data</publicPackage>
+                        <publicPackage>de.cebitec.mgx.gui.attributevisualization.viewer</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>

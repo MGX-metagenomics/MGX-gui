@@ -1,9 +1,9 @@
 package de.cebitec.mgx.gui.attributevisualization.filter;
 
-import de.cebitec.mgx.gui.datamodel.Pair;
-import de.cebitec.mgx.gui.datamodel.Distribution;
 import de.cebitec.mgx.gui.attributevisualization.data.VisualizationGroup;
 import de.cebitec.mgx.gui.datamodel.Attribute;
+import de.cebitec.mgx.gui.datamodel.Distribution;
+import de.cebitec.mgx.gui.datamodel.Pair;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,7 +13,7 @@ import java.util.Map;
  *
  * @author sjaenick
  */
-public class ToFractionFilter implements VisFilterI {
+public class ToFractionFilter implements VisFilterI<Distribution> {
 
     @Override
     public List<Pair<VisualizationGroup, Distribution>> filter(List<Pair<VisualizationGroup, Distribution>> dists) {

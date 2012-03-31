@@ -1,24 +1,21 @@
 package de.cebitec.mgx.gui.attributevisualization.viewer.impl;
 
-import de.cebitec.mgx.gui.datamodel.Pair;
-import de.cebitec.mgx.gui.datamodel.Distribution;
 import de.cebitec.mgx.gui.attributevisualization.data.VisualizationGroup;
 import de.cebitec.mgx.gui.attributevisualization.viewer.NumericalViewerI;
 import de.cebitec.mgx.gui.attributevisualization.viewer.ViewerI;
 import de.cebitec.mgx.gui.datamodel.Attribute;
+import de.cebitec.mgx.gui.datamodel.Distribution;
+import de.cebitec.mgx.gui.datamodel.Pair;
 import java.awt.Color;
 import java.util.List;
 import javax.swing.JComponent;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.CategoryAxis;
-import org.jfree.chart.axis.CategoryLabelPositions;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.category.CategoryItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
@@ -89,5 +86,10 @@ public class XYPlotViewer extends NumericalViewerI {
         }
 
         return null;
+    }
+
+    @Override
+    public Class getInputType() {
+        return Distribution.class;
     }
 }

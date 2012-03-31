@@ -1,11 +1,11 @@
 package de.cebitec.mgx.gui.attributevisualization.viewer.impl;
 
-import de.cebitec.mgx.gui.datamodel.Pair;
-import de.cebitec.mgx.gui.datamodel.Distribution;
 import de.cebitec.mgx.gui.attributevisualization.data.VisualizationGroup;
 import de.cebitec.mgx.gui.attributevisualization.viewer.CategoricalViewerI;
 import de.cebitec.mgx.gui.attributevisualization.viewer.ViewerI;
 import de.cebitec.mgx.gui.datamodel.Attribute;
+import de.cebitec.mgx.gui.datamodel.Distribution;
+import de.cebitec.mgx.gui.datamodel.Pair;
 import java.awt.Color;
 import java.util.Collections;
 import java.util.List;
@@ -13,12 +13,15 @@ import javax.swing.JComponent;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.StandardChartTheme;
 import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.CategoryLabelPositions;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.CategoryItemRenderer;
+import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -38,7 +41,7 @@ public class BarChartViewer extends CategoricalViewerI {
     public String getName() {
         return "Bar Chart";
     }
-    
+
     @Override
     public JComponent getComponent() {
         return cPanel;
@@ -47,13 +50,12 @@ public class BarChartViewer extends CategoricalViewerI {
     @Override
     public List<Pair<VisualizationGroup, Distribution>> filter(List<Pair<VisualizationGroup, Distribution>> dists) {
 
-        System.err.println("barChart.filter()");
         boolean fractionMode = false;
 
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
         for (Pair<VisualizationGroup, Distribution> groupDistribution : dists) {
-            
+
             List<Pair<Attribute, ? extends Number>> sorted = groupDistribution.getSecond().getSorted();
             if (sortAscending()) {
                 Collections.reverse(sorted);
@@ -69,6 +71,11 @@ public class BarChartViewer extends CategoricalViewerI {
 
         String xAxisLabel = "";
         String yAxisLabel = fractionMode ? "Fraction" : "Count";
+
+        // disable the stupid glossy effect
+        ChartFactory.setChartTheme(StandardChartTheme.createLegacyTheme());
+        BarRenderer.setDefaultShadowsVisible(false);
+        XYBarRenderer.setDefaultShadowsVisible(false);
 
         JFreeChart chart = ChartFactory.createBarChart(getTitle(), xAxisLabel, yAxisLabel, dataset, PlotOrientation.VERTICAL, true, true, false);
         chart.setBorderPaint(Color.WHITE);
@@ -92,5 +99,10 @@ public class BarChartViewer extends CategoricalViewerI {
             renderer.setSeriesPaint(i++, groupDistribution.getFirst().getColor());
         }
         return null;
+    }
+
+    @Override
+    public Class getInputType() {
+        return Distribution.class;
     }
 }

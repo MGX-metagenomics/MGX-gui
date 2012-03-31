@@ -1,9 +1,9 @@
 package de.cebitec.mgx.gui.attributevisualization.filter;
 
-import de.cebitec.mgx.gui.datamodel.Pair;
-import de.cebitec.mgx.gui.datamodel.Distribution;
 import de.cebitec.mgx.gui.attributevisualization.data.VisualizationGroup;
 import de.cebitec.mgx.gui.datamodel.Attribute;
+import de.cebitec.mgx.gui.datamodel.Distribution;
+import de.cebitec.mgx.gui.datamodel.Pair;
 import java.io.Serializable;
 import java.util.*;
 
@@ -11,7 +11,7 @@ import java.util.*;
  *
  * @author sjaenick
  */
-public class SortOrder implements VisFilterI {
+public class SortOrder implements VisFilterI<Distribution> {
 
     public final static String BY_VALUE = "Value";
     public final static String BY_TYPE = "Type";

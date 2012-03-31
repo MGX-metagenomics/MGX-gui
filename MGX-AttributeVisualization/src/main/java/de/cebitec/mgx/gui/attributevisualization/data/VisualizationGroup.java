@@ -2,6 +2,9 @@ package de.cebitec.mgx.gui.attributevisualization.data;
 
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.*;
+import de.cebitec.mgx.gui.datamodel.tree.Node;
+import de.cebitec.mgx.gui.datamodel.tree.Tree;
+import de.cebitec.mgx.gui.datamodel.tree.TreeFactory;
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.beans.PropertyChangeListener;
@@ -9,6 +12,9 @@ import java.beans.PropertyChangeSupport;
 import java.util.Map.Entry;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.SwingWorker;
 import org.openide.util.Exceptions;
 
@@ -33,6 +39,7 @@ public class VisualizationGroup {
     private final PropertyChangeSupport pcs;
     //
     private Map<String, Distribution> distCache = new HashMap<String, Distribution>();
+    private Map<String, Tree<Long>> hierarchyCache = new HashMap<String, Tree<Long>>();
 
     public VisualizationGroup(String groupName, Color color) {
         this.name = groupName;
@@ -67,6 +74,14 @@ public class VisualizationGroup {
         this.color = color;
         fireVGroupChanged(VISGROUP_CHANGED);
     }
+    
+    public final long getNumSequences() {
+        long ret = 0;
+        for (SeqRun sr : seqruns) {
+            ret += sr.getNumSequences();
+        }
+        return ret;
+    }
 
     public final Set<SeqRun> getSeqRuns() {
         return seqruns;
@@ -82,13 +97,65 @@ public class VisualizationGroup {
         }
     }
 
-    public final Distribution getHierarchy(String attrTypeName) {
+    public final Tree<Long> getHierarchy(String attrTypeName) {
         assert !EventQueue.isDispatchThread();
-        return null;
+
+        if (hierarchyCache.containsKey(attrTypeName)) {
+            return hierarchyCache.get(attrTypeName);
+        }
+
+        List<Tree<Long>> results = Collections.synchronizedList(new ArrayList<Tree<Long>>());
+        int numExpectedTrees = 0;
+
+
+        // start distribution retrieval workers in background
+        //
+        CountDownLatch allDone = new CountDownLatch(seqruns.size());
+
+        for (SeqRun run : seqruns) {
+            //
+            // select the job to use - either we can automatically determine
+            // the correct job or we have to ask the user
+            //
+            Job selectedJob = selectJob(run, attrTypeName);
+
+            //
+            // there should only be one valid attribute type left that matches the
+            // request attribute type name; however, we better check..
+            //
+            AttributeType selectedAttributeType = selectAttributeType(run, selectedJob, attrTypeName);
+
+            // 
+            // start background worker to fetch distribution
+            //
+            if (selectedJob == null || selectedAttributeType == null) {
+                allDone.countDown();
+            } else {
+                HierarchyFetcher fetcher = new HierarchyFetcher(selectedAttributeType, selectedJob, allDone, results);
+                numExpectedTrees++;
+                fetcher.execute();
+            }
+        }
+
+        // wait for completion of workers
+        //
+        try {
+            allDone.await();
+        } catch (InterruptedException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+        //
+        // merge results
+        //
+        
+        Tree<Long> ret = TreeFactory.mergeTrees(results);
+        
+        hierarchyCache.put(attrTypeName, ret);
+        return ret;
     }
 
     public final Distribution getDistribution(String attrTypeName) {
-        
+
         assert !EventQueue.isDispatchThread();
 
         if (distCache.containsKey(attrTypeName)) {
@@ -100,7 +167,6 @@ public class VisualizationGroup {
         // start distribution retrieval workers in background
         //
         CountDownLatch allDone = new CountDownLatch(seqruns.size());
-        System.err.println("starting " + seqruns.size() + " dist fetchers");
 
         for (SeqRun run : seqruns) {
             //
@@ -128,24 +194,21 @@ public class VisualizationGroup {
 
         // wait for completion of workers
         //
-        System.err.println("waiting for dist fetchers");
         try {
             allDone.await();
         } catch (InterruptedException ex) {
             Exceptions.printStackTrace(ex);
         }
-        System.err.println("dist fetchers done");
         //
         // merge results
         //
         Distribution ret = mergeDistributions(results);
         distCache.put(attrTypeName, ret);
-
+        
         return ret;
     }
 
     public final List<AttributeType> getAttributeTypes() {
-        System.err.println("vgroup getAttributeTypes");
         waitForWorkers(attributeTypePrefetchers);
         List<AttributeType> ret = new ArrayList<AttributeType>();
         for (Map<Job, List<AttributeType>> l : attributeTypes.values()) {
@@ -153,11 +216,10 @@ public class VisualizationGroup {
                 ret.addAll(atypes);
             }
         }
-        System.err.println("vgroup has attrtypes "+ ret.toString());
         return ret;
     }
 
-    private final Job selectJob(SeqRun run, String attrTypeName) {
+    private Job selectJob(SeqRun run, String attrTypeName) {
         //
         // process all jobs for this seqrun and keep only those
         // which provide the requested attribute type
@@ -249,10 +311,10 @@ public class VisualizationGroup {
         pcs.removePropertyChangeListener(p);
     }
 
-    private abstract class Fetcher extends SwingWorker<Void, Void> {
+    private abstract class Fetcher<T> extends SwingWorker<T, Void> {
     }
 
-    private class AttributeTypeFetcher extends Fetcher {
+    private class AttributeTypeFetcher extends Fetcher<Void> {
 
         protected SeqRun run;
 
@@ -278,7 +340,7 @@ public class VisualizationGroup {
         }
     }
 
-    private class DistributionFetcher extends Fetcher {
+    private class DistributionFetcher extends Fetcher<Void> {
 
         protected AttributeType attrType;
         protected Job job;
@@ -294,34 +356,58 @@ public class VisualizationGroup {
 
         @Override
         protected Void doInBackground() throws Exception {
-            System.err.println("distfetcher beginning work..");
             MGXMaster master = (MGXMaster) attrType.getMaster();
             Map<Attribute, Long> dist = master.Attribute().getDistribution(attrType, job);
             result.add(dist);
-            System.err.println("distfetcher done with work..");
             return null;
         }
 
         @Override
         protected void done() {
             //super.done();
-            System.err.println("distfetcher done, decreasing latch");
             latch.countDown();
         }
     }
 
-    private final class HierarchyFetcher extends DistributionFetcher {
+    private final class HierarchyFetcher extends Fetcher<Tree<Long>> {
 
-        public HierarchyFetcher(AttributeType attrType, Job job, CountDownLatch latch, List<Map<Attribute, ? extends Number>> ret) {
-            super(attrType, job, latch, ret);
+        protected AttributeType attrType;
+        protected Job job;
+        protected CountDownLatch latch;
+        protected final List<Tree<Long>> result;
+
+        public HierarchyFetcher(AttributeType attrType, Job job, CountDownLatch latch, List<Tree<Long>> ret) {
+            this.attrType = attrType;
+            this.job = job;
+            this.latch = latch;
+            this.result = ret;
         }
 
         @Override
-        protected Void doInBackground() throws Exception {
+        protected Tree<Long> doInBackground() throws Exception {
             MGXMaster master = (MGXMaster) attrType.getMaster();
-            Map<Attribute, Long> dist = master.Attribute().getHierarchy(attrType, job);
-            result.add(dist);
-            return null;
+            Tree<Long> tree = master.Attribute().getHierarchy(attrType, job);
+            
+            assert tree != null;
+            Node<Long> root = tree.getRoot();
+            assert root != null;
+            
+            return tree;
+        }
+
+        
+        @Override
+        protected void done() {
+            Tree<Long> get = null;
+            try {
+                get = get();
+            } catch (Exception ex) {
+                Exceptions.printStackTrace(ex);
+            }
+            Logger.getLogger("HFetcher").log(Level.INFO, "   hierarchy fetched");
+            assert get != null;
+            result.add(get);
+            latch.countDown();
         }
     }
 }
