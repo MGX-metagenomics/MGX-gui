@@ -6,6 +6,8 @@ import de.cebitec.mgx.dto.dto.AttributeDTO;
 import de.cebitec.mgx.gui.datamodel.Attribute;
 import de.cebitec.mgx.gui.datamodel.AttributeType;
 import de.cebitec.mgx.gui.datamodel.Job;
+import de.cebitec.mgx.gui.datamodel.tree.Tree;
+import de.cebitec.mgx.gui.datamodel.tree.TreeFactory;
 import de.cebitec.mgx.gui.dtoconversion.AttributeDTOFactory;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -111,7 +113,7 @@ public class AttributeAccess extends AccessBase<Attribute> {
     public void delete(Long id) {
     }
 
-    public Map<Attribute, Long> getHierarchy(AttributeType attributeType, Job job) {
+    public Tree<Long> getHierarchy(AttributeType attributeType, Job job) {
         Map<Attribute, Long> res = new HashMap<Attribute, Long>();
         try {
             for (AttributeCount ac : getDTOmaster().Attribute().getHierarchy(attributeType.getId(), job.getId())) {
@@ -122,6 +124,11 @@ public class AttributeAccess extends AccessBase<Attribute> {
         } catch (MGXServerException ex) {
             Logger.getLogger(AttributeAccess.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return res;
+
+        Tree<Long> ret = TreeFactory.createTree(res);
+
+        //assert ret.getRoot() != null;
+
+        return ret;
     }
 }

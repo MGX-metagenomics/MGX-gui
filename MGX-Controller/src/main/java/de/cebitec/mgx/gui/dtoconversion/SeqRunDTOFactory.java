@@ -53,6 +53,10 @@ public class SeqRunDTOFactory extends DTOConversionBase<SeqRun, SeqRunDTO> {
         if (dto.getSubmittedToInsdc()) {
             s.setAccession(dto.getAccession());
         }
+        
+        if (dto.hasNumSequences()) {
+            s.setNumSequences(dto.getNumSequences());
+        }
 
         s.setId(dto.getId());
         return s;
