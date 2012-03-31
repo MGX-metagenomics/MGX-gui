@@ -11,6 +11,7 @@ public class SeqRun extends ModelBase {
     protected Boolean submitted_to_insdc;
     protected String database_accession;
     protected long extract_id;
+    protected long numSequences = 0;
 
     public SeqRun setDNAExtractId(long extractId) {
         extract_id = extractId;
@@ -55,6 +56,14 @@ public class SeqRun extends ModelBase {
     public SeqRun setSubmittedToINSDC(Boolean submitted_to_insdc) {
         this.submitted_to_insdc = submitted_to_insdc;
         return this;
+    }
+
+    public long getNumSequences() {
+        return numSequences;
+    }
+
+    public void setNumSequences(long numSequences) {
+        this.numSequences = numSequences;
     }
 
     @Override

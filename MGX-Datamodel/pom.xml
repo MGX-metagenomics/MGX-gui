@@ -52,6 +52,7 @@
                 <configuration>
                     <publicPackages>
                         <publicPackage>de.cebitec.mgx.gui.datamodel</publicPackage>
+                        <publicPackage>de.cebitec.mgx.gui.datamodel.tree</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>
