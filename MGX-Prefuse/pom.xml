@@ -57,15 +57,14 @@
                         <publicPackage>prefuse.controls</publicPackage>
                         <publicPackage>prefuse.data</publicPackage>
                         <publicPackage>prefuse.data.event</publicPackage>
+                        <publicPackage>prefuse.data.expression</publicPackage>
                         <publicPackage>prefuse.data.search</publicPackage>
                         <publicPackage>prefuse.data.tuple</publicPackage>
                         <publicPackage>prefuse.render</publicPackage>
                         <publicPackage>prefuse.util</publicPackage>
                         <publicPackage>prefuse.util.display</publicPackage>
                         <publicPackage>prefuse.util.ui</publicPackage>
-                        <publicPackage>prefuse.visual</publicPackage>
-                        <publicPackage>prefuse.visual.sort</publicPackage>
-                        <publicPackage>prefuse.visual.tuple</publicPackage>
+                        <publicPackage>prefuse.visual.*</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>
