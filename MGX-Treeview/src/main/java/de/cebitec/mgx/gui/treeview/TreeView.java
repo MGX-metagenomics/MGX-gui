@@ -4,6 +4,7 @@ import de.cebitec.mgx.gui.attributevisualization.data.VisualizationGroup;
 import de.cebitec.mgx.gui.attributevisualization.viewer.HierarchicalViewerI;
 import de.cebitec.mgx.gui.attributevisualization.viewer.ViewerI;
 import de.cebitec.mgx.gui.datamodel.Attribute;
+import de.cebitec.mgx.gui.datamodel.AttributeType;
 import de.cebitec.mgx.gui.datamodel.Pair;
 import de.cebitec.mgx.gui.datamodel.tree.Node;
 import de.cebitec.mgx.gui.datamodel.tree.Tree;
@@ -80,12 +81,6 @@ public class TreeView extends HierarchicalViewerI {
 
 
     @Override
-    public void setTitle(String t) {
-        super.setTitle(t);
-        
-    }
-
-    @Override
     public JComponent getComponent() {
         return display;
     }
@@ -96,7 +91,14 @@ public class TreeView extends HierarchicalViewerI {
     }
 
     @Override
-    public List<Pair<VisualizationGroup, Tree<Long>>> filter(List<Pair<VisualizationGroup, Tree<Long>>> trees) {
+    public void setAttributeType(AttributeType aType) {
+        super.setAttributeType(aType);
+        super.setTitle("Hierarchy view with "+ aType.getName());
+    }
+
+    
+    @Override
+    public void show(List<Pair<VisualizationGroup, Tree<Long>>> trees) {
         assert trees != null;
         // merge hierarchies into consensus tree
         Tree<Map<VisualizationGroup, Long>> combinedTree = TreeFactory.combineTrees(trees);
@@ -118,13 +120,11 @@ public class TreeView extends HierarchicalViewerI {
         for (Node<Map<VisualizationGroup, Long>> child : root.getChildren()) {
             addWithChildren(pTree, rootNode, child);
         }
-
+        
         visualization.reset();
         visualization.add(tree, pTree);
 
         initRenderers();
-
-        return null;
     }
 
     private void addWithChildren(prefuse.data.Tree pTree, prefuse.data.Node parent, Node<Map<VisualizationGroup, Long>> node) {
