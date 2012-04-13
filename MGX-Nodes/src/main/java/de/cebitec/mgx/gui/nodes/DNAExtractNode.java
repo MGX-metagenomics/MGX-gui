@@ -23,7 +23,6 @@ import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.WizardDescriptor;
 import org.openide.nodes.Children;
-import org.openide.util.Exceptions;
 import org.openide.util.lookup.Lookups;
 
 /**
@@ -71,10 +70,23 @@ public class DNAExtractNode extends MGXNodeBase {
             dialog.toFront();
             boolean cancelled = wd.getValue() != WizardDescriptor.FINISH_OPTION;
             if (!cancelled) {
-                String oldDisplayName = extract.getMethod();
-                extract = wd.getDNAExtract();
-                getMaster().DNAExtract().update(extract);
-                fireDisplayNameChange(oldDisplayName, extract.getMethod());
+                final String oldDisplayName = extract.getMethod();
+                final DNAExtract updatedExtract = wd.getDNAExtract();
+                SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+
+                    @Override
+                    protected Void doInBackground() throws Exception {
+                        getMaster().DNAExtract().update(updatedExtract);
+                        return null;
+                    }
+
+                    @Override
+                    protected void done() {
+                        fireDisplayNameChange(oldDisplayName, updatedExtract.getMethod());
+                        super.done();
+                    }
+                };
+                worker.execute();
             }
         }
     }

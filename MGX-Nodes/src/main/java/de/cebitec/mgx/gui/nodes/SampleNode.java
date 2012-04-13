@@ -12,6 +12,7 @@ import java.awt.Dialog;
 import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.SwingWorker;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.WizardDescriptor;
@@ -123,10 +124,23 @@ public class SampleNode extends MGXNodeBase {
             boolean cancelled = wd.getValue() != WizardDescriptor.FINISH_OPTION;
             if (!cancelled) {
                 Sample s = getLookup().lookup(Sample.class);
-                DNAExtract extract = wd.getDNAExtract();
+                final DNAExtract extract = wd.getDNAExtract();
                 extract.setSampleId(s.getId());
-                getMaster().DNAExtract().create(extract);
-                nf.refreshChildren();
+                SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+
+                    @Override
+                    protected Void doInBackground() throws Exception {
+                        getMaster().DNAExtract().create(extract);
+                        return null;
+                    }
+
+                    @Override
+                    protected void done() {
+                        nf.refreshChildren();
+                        super.done();
+                    }
+                };
+                worker.execute();
             }
         }
     }

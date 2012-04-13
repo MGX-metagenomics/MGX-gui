@@ -12,6 +12,7 @@ import java.awt.Dialog;
 import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.SwingWorker;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.WizardDescriptor;
@@ -131,10 +132,23 @@ public class HabitatNode extends MGXNodeBase {
             boolean cancelled = wd.getValue() != WizardDescriptor.FINISH_OPTION;
             if (!cancelled) {
                 Habitat hab = getLookup().lookup(Habitat.class);
-                Sample s = wd.getSample();
+                final Sample s = wd.getSample();
                 s.setHabitatId(hab.getId());
-                getMaster().Sample().create(s);
-                snf.refreshChildren();
+                SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+
+                    @Override
+                    protected void done() {
+                        snf.refreshChildren();
+                        super.done();
+                    }
+
+                    @Override
+                    protected Void doInBackground() throws Exception {
+                        getMaster().Sample().create(s);
+                        return null;
+                    }
+                };
+                worker.execute();
             }
         }
     }

@@ -5,12 +5,7 @@ import de.cebitec.mgx.gui.datamodel.Habitat;
 import de.cebitec.mgx.gui.nodes.HabitatNode;
 import java.beans.PropertyChangeEvent;
 import java.util.List;
-import org.openide.nodes.ChildFactory;
-import org.openide.nodes.Node;
-import org.openide.nodes.NodeEvent;
-import org.openide.nodes.NodeListener;
-import org.openide.nodes.NodeMemberEvent;
-import org.openide.nodes.NodeReorderEvent;
+import org.openide.nodes.*;
 
 /**
  *

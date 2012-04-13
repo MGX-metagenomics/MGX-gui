@@ -5,9 +5,11 @@ import de.cebitec.mgx.gui.datamodel.Habitat;
 import de.cebitec.mgx.gui.nodefactory.HabitatNodeFactory;
 import de.cebitec.mgx.gui.wizard.habitat.HabitatWizardDescriptor;
 import java.awt.Dialog;
+import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.SwingWorker;
 import org.openide.DialogDisplayer;
 import org.openide.WizardDescriptor;
 import org.openide.nodes.Children;
@@ -57,9 +59,22 @@ public class ProjectDataNode extends MGXNodeBase {
             dialog.toFront();
             boolean cancelled = hwd.getValue() != WizardDescriptor.FINISH_OPTION;
             if (!cancelled) {
-                Habitat h = hwd.getHabitat();
-                getMaster().Habitat().create(h);
-                hnf.refreshChildren();
+                final Habitat h = hwd.getHabitat();
+                SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+
+                    @Override
+                    protected Void doInBackground() throws Exception {
+                        getMaster().Habitat().create(h);
+                        return null;
+                    }
+
+                    @Override
+                    protected void done() {
+                        hnf.refreshChildren();
+                        super.done();
+                    }
+                };
+                worker.execute();
             }
         }
     }

@@ -24,6 +24,7 @@ import org.openide.util.lookup.Lookups;
 public class SeqRunNode extends MGXNodeBase {
 
     private SeqRun seqrun;
+    private Action[] actions = new Action[]{new EditSeqRun(), new DeleteSeqRun()};
 
     public SeqRunNode(MGXMaster m, SeqRun s) {
         this(s);
@@ -55,7 +56,7 @@ public class SeqRunNode extends MGXNodeBase {
 
     @Override
     public Action[] getActions(boolean context) {
-        return new Action[]{new EditSeqRun(), new DeleteSeqRun()};
+        return actions;
     }
 
     private class EditSeqRun extends AbstractAction {
