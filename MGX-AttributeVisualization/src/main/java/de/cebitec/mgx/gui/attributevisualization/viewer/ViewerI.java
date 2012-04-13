@@ -2,6 +2,9 @@ package de.cebitec.mgx.gui.attributevisualization.viewer;
 
 import de.cebitec.mgx.gui.attributevisualization.filter.VisFilterI;
 import de.cebitec.mgx.gui.datamodel.AttributeType;
+import de.cebitec.mgx.gui.datamodel.Pair;
+import de.cebitec.mgx.gui.groups.VisualizationGroup;
+import java.util.List;
 import javax.swing.JComponent;
 
 /**
@@ -11,6 +14,7 @@ import javax.swing.JComponent;
 public abstract class ViewerI<T> implements VisFilterI<T>, Comparable<ViewerI<T>> {
 
     private boolean ascending = true;
+    private AttributeType attrType;
     private String chartTitle;
 
     public abstract JComponent getComponent();
@@ -20,6 +24,14 @@ public abstract class ViewerI<T> implements VisFilterI<T>, Comparable<ViewerI<T>
     public abstract boolean canHandle(AttributeType valueType);
     
     public abstract Class getInputType();
+    
+    public abstract void show(List<Pair<VisualizationGroup, T>> dists);
+
+    @Override
+    public List<Pair<VisualizationGroup, T>> filter(List<Pair<VisualizationGroup, T>> dists) {
+        show(dists);
+        return null;
+    }
 
     public void sortAscending(boolean ascending) {
         this.ascending = ascending;
@@ -27,6 +39,14 @@ public abstract class ViewerI<T> implements VisFilterI<T>, Comparable<ViewerI<T>
 
     protected boolean sortAscending() {
         return ascending;
+    }
+    
+    public void setAttributeType(AttributeType aType) {
+        this.attrType = aType;
+    }
+    
+    protected AttributeType getAttributeType() {
+        return attrType;
     }
 
     public void setTitle(String title) {

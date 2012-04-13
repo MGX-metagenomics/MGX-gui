@@ -5,11 +5,12 @@
  */
 package de.cebitec.mgx.gui.attributevisualization;
 
-import de.cebitec.mgx.gui.attributevisualization.data.VGroupManager;
-import de.cebitec.mgx.gui.attributevisualization.data.VisualizationGroup;
 import de.cebitec.mgx.gui.datamodel.ModelBase;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
+import de.cebitec.mgx.gui.groups.VisualizationGroup;
+import de.cebitec.mgx.gui.nodefactory.VisualizationGroupNodeFactory;
 import java.awt.Color;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetAdapter;
 import java.awt.dnd.DropTargetDragEvent;
@@ -18,29 +19,30 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import javax.swing.DefaultListModel;
+import java.io.IOException;
 import javax.swing.JColorChooser;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.Document;
-import org.openide.util.Exceptions;
+import org.openide.explorer.ExplorerManager;
+import org.openide.nodes.AbstractNode;
+import org.openide.nodes.Children;
 
 /**
  *
  * @author sj
  */
-public class GroupFrame extends javax.swing.JInternalFrame {
+public class GroupFrame extends javax.swing.JInternalFrame implements ExplorerManager.Provider, ItemListener, ActionListener, DocumentListener {
 
-    private GroupingPanel parent;
-    private VisualizationGroup vGroup;
-    private DefaultListModel lm = new DefaultListModel();
+    private VisualizationGroup vGroup = null;
+    private ExplorerManager exmngr = new ExplorerManager();
+    private VisualizationGroupNodeFactory vgnf;
 
-    public GroupFrame(VisualizationGroup group, GroupingPanel parent) {
+    public GroupFrame(VisualizationGroup group) {
         this();
         this.vGroup = group;
-        this.parent = parent;
         //
         // set initial properties
         //
@@ -50,33 +52,33 @@ public class GroupFrame extends javax.swing.JInternalFrame {
         //
         // add listeners _after_ setting initial values
         //
-        displayName.getDocument().addDocumentListener(new DisplayNameChanger());
-        color.addActionListener(new ColorActionListener());
-        active.addItemListener(new ActivateItemListener());
+        displayName.getDocument().addDocumentListener(this);
+        color.addActionListener(this);
+        active.addItemListener(this);
         //
-        list.setModel(lm);
+        vgnf = new VisualizationGroupNodeFactory(vGroup);
+        final AbstractNode root = new AbstractNode(Children.create(vgnf, true));
+        exmngr.setRootContext(root);
+        
         setDropTarget();
         setVisible(true);
     }
 
-    /** Creates new form GroupFrame */
+    /**
+     * Creates new form GroupFrame
+     */
     private GroupFrame() {
         initComponents();
     }
 
     @Override
     public void dispose() {
-        parent.removeGroup(vGroup);
+        VGroupManager.getInstance().removeGroup(vGroup);
         super.dispose();
     }
 
-    private void setColor(Color c) {
-        vGroup.setColor(c);
-        color.setBackground(c);
-    }
-
     private void setDropTarget() {
-        DropTarget dt = new DropTarget(list, new DropTargetAdapter() {
+        DropTarget dt = new DropTarget(this, new DropTargetAdapter() {
 
             @Override
             public void dragEnter(DropTargetDragEvent dtde) {
@@ -88,8 +90,7 @@ public class GroupFrame extends javax.swing.JInternalFrame {
                         if (sr == null || vGroup.getSeqRuns().contains(sr)) {
                             dtde.rejectDrag();
                         }
-                    } catch (Exception ex) {
-                        Exceptions.printStackTrace(ex);
+                    } catch (UnsupportedFlavorException | IOException ex) {
                         dtde.rejectDrag();
                     }
                 }
@@ -101,11 +102,11 @@ public class GroupFrame extends javax.swing.JInternalFrame {
                     SeqRun sr = (SeqRun) dtde.getTransferable().getTransferData(ModelBase.getNodeFlavor());
                     if (vGroup.getSeqRuns().contains(sr)) {
                         dtde.rejectDrop();
+                        return;
                     }
                     vGroup.addSeqRun(sr);
-                    lm.addElement(sr);
-                } catch (Exception ex) {
-                    Exceptions.printStackTrace(ex);
+                    vgnf.refreshChildren();
+                } catch (UnsupportedFlavorException | IOException ex) {
                     dtde.rejectDrop();
                 }
             }
@@ -113,10 +114,10 @@ public class GroupFrame extends javax.swing.JInternalFrame {
         setDropTarget(dt);
     }
 
-    /** This method is called from within the constructor to
-     * initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is
-     * always regenerated by the Form Editor.
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
      */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -127,8 +128,7 @@ public class GroupFrame extends javax.swing.JInternalFrame {
         active = new javax.swing.JCheckBox();
         displayName = new javax.swing.JTextField();
         color = new javax.swing.JButton();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        list = new javax.swing.JList();
+        listView = new org.openide.explorer.view.ListView();
 
         setClosable(true);
         setMinimumSize(new java.awt.Dimension(160, 180));
@@ -153,15 +153,7 @@ public class GroupFrame extends javax.swing.JInternalFrame {
         jPanel2.add(color, java.awt.BorderLayout.EAST);
 
         jPanel1.add(jPanel2, java.awt.BorderLayout.NORTH);
-
-        list.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public Object getElementAt(int i) { return strings[i]; }
-        });
-        jScrollPane1.setViewportView(list);
-
-        jPanel1.add(jScrollPane1, java.awt.BorderLayout.CENTER);
+        jPanel1.add(listView, java.awt.BorderLayout.CENTER);
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
 
@@ -173,68 +165,58 @@ public class GroupFrame extends javax.swing.JInternalFrame {
     private javax.swing.JTextField displayName;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JList list;
+    private org.openide.explorer.view.ListView listView;
     // End of variables declaration//GEN-END:variables
 
-    private final class ActivateItemListener implements ItemListener {
+    @Override
+    public ExplorerManager getExplorerManager() {
+        return exmngr;
+    }
 
-        @Override
-        public void itemStateChanged(ItemEvent e) {
-            vGroup.setActive(active.isSelected());
+    @Override
+    public void itemStateChanged(ItemEvent e) {
+        vGroup.setActive(active.isSelected());
+    }
+
+    @Override
+    public void insertUpdate(DocumentEvent e) {
+        handleUpdate(e);
+    }
+
+    @Override
+    public void removeUpdate(DocumentEvent e) {
+        handleUpdate(e);
+    }
+
+    @Override
+    public void changedUpdate(DocumentEvent e) {
+        handleUpdate(e);
+    }
+
+    private void handleUpdate(DocumentEvent e) {
+        Document d = e.getDocument();
+        if (displayName.getDocument() == d) {
+            setTitle(displayName.getText());
+            vGroup.setName(displayName.getText());
+            displayName.setBackground(Color.WHITE);
         }
     }
 
-    private final class DisplayNameChanger implements DocumentListener {
+    @Override
+    public void actionPerformed(ActionEvent ae) {
+        final JColorChooser jcc = new JColorChooser(vGroup.getColor());
+        //jcc.setChooserPanels(new AbstractColorChooserPanel[]{});
+        JDialog dialog = JColorChooser.createDialog(new JFrame(), "Choose color", false, jcc, new ActionListener() {
 
-        @Override
-        public void insertUpdate(DocumentEvent e) {
-            handleUpdate(e);
-        }
-
-        @Override
-        public void removeUpdate(DocumentEvent e) {
-            handleUpdate(e);
-        }
-
-        @Override
-        public void changedUpdate(DocumentEvent e) {
-            handleUpdate(e);
-        }
-
-        private void handleUpdate(DocumentEvent e) {
-            Document d = e.getDocument();
-            if (displayName.getDocument() == d) {
-                String newTitle = displayName.getText();
-                if (!VGroupManager.getInstance().hasGroup(newTitle)) {
-                    setTitle(displayName.getText());
-                    vGroup.setName(displayName.getText());
-                    displayName.setBackground(Color.WHITE);
-                } else {
-                    displayName.setBackground(Color.RED);
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                Color newColor = jcc.getColor();
+                if (newColor != null) {
+                    color.setBackground(newColor);
+                    vGroup.setColor(newColor);
                 }
             }
-        }
-    }
-
-    private final class ColorActionListener implements ActionListener {
-
-        @Override
-        public void actionPerformed(ActionEvent ae) {
-            final JColorChooser jcc = new JColorChooser(vGroup.getColor());
-            //jcc.setChooserPanels(new AbstractColorChooserPanel[]{});
-            JDialog dialog = JColorChooser.createDialog(new JFrame(), "Choose color", false, jcc, new ActionListener() {
-
-                @Override
-                public void actionPerformed(ActionEvent ae) {
-                    Color newColor = jcc.getColor();
-                    if (newColor != null) {
-                        color.setBackground(newColor);
-                        vGroup.setColor(newColor);
-                    }
-                }
-            }, null);
-            dialog.setVisible(true);
-        }
+        }, null);
+        dialog.setVisible(true);
     }
 }

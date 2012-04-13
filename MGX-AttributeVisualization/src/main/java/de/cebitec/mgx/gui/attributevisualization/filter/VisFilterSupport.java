@@ -1,6 +1,6 @@
 package de.cebitec.mgx.gui.attributevisualization.filter;
 
-import de.cebitec.mgx.gui.attributevisualization.data.VisualizationGroup;
+import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import de.cebitec.mgx.gui.datamodel.Pair;
 import java.util.List;
 

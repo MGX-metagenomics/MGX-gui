@@ -1,9 +1,9 @@
 package de.cebitec.mgx.gui.attributevisualization.filter;
 
-import de.cebitec.mgx.gui.attributevisualization.data.VisualizationGroup;
 import de.cebitec.mgx.gui.datamodel.Attribute;
 import de.cebitec.mgx.gui.datamodel.Distribution;
 import de.cebitec.mgx.gui.datamodel.Pair;
+import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import java.io.Serializable;
 import java.util.*;
 
@@ -16,18 +16,12 @@ public class SortOrder implements VisFilterI<Distribution> {
     public final static String BY_VALUE = "Value";
     public final static String BY_TYPE = "Type";
     private String currentCriteria = BY_VALUE;
-    //
-//    public final static String ASCENDING = "ascending";
-//    public final static String DESCENDING = "descending";
-//    private String currentOrder = DESCENDING;
-    
     
     @Override
     public List<Pair<VisualizationGroup, Distribution>> filter(List<Pair<VisualizationGroup, Distribution>> dists) {
 
-        System.err.println("SortOrder.filter()");
         // summary distribution over all groups
-        Map<Attribute, Long> summary = new HashMap<Attribute, Long>();
+        Map<Attribute, Long> summary = new HashMap<>();
         for (Pair<VisualizationGroup, Distribution> pair : dists) {
             for (Pair<Attribute, ? extends Number> e : pair.getSecond().getSorted()) {
                 if (summary.containsKey(e.getFirst())) {
@@ -40,33 +34,25 @@ public class SortOrder implements VisFilterI<Distribution> {
             }
         }
 
-        List<Attribute> sortList = new ArrayList<Attribute>();
-
+        List<Attribute> sortList = new ArrayList<>();
         // sort by selected criteria
-        if ((currentCriteria.equals(BY_VALUE)) )  {
-            // we use a TreeMap to sort by abundance, descending
-            SortByValue bvc = new SortByValue(summary);
-            TreeMap<Attribute, Long> sorted_map = new TreeMap<Attribute, Long>(bvc);
-            sorted_map.putAll(summary);
-
-            sortList.addAll(sorted_map.keySet());
-
-        } else if (currentCriteria.equals(BY_TYPE)) {
-            sortList.addAll(summary.keySet());
-            Collections.sort(sortList, new SortNumerically());
-        } else {
-            assert(false);
+        switch (currentCriteria) {
+            case BY_VALUE:
+                // we use a TreeMap to sort by abundance, descending
+                SortByValue bvc = new SortByValue(summary);
+                TreeMap<Attribute, Long> sorted_map = new TreeMap<>(bvc);
+                sorted_map.putAll(summary);
+                sortList.addAll(sorted_map.keySet());
+                break;
+            case BY_TYPE:
+                sortList.addAll(summary.keySet());
+                Collections.sort(sortList, new SortNumerically());
+                break;
+            default:
+                assert(false);
+                break;
         }
         
-//        // sort ascending/descending
-//        if (currentOrder.equals(ASCENDING)) {
-//            Collections.reverse(sortList);
-//        } else if (currentOrder.equals(DESCENDING)) {
-//            
-//        } else {
-//            assert(false);
-//        }
-
         for (Pair<VisualizationGroup, Distribution> p : dists) {
             p.getSecond().setSortOrder(sortList.toArray(new Attribute[0]));
         }
@@ -77,10 +63,6 @@ public class SortOrder implements VisFilterI<Distribution> {
     public void setSortCriteria(String criteria) {
         currentCriteria = criteria;
     }
-//    
-//    public void setSortOrder(String order) {
-//        currentOrder = order;
-//    }
 
     private final static class SortNumerically implements Comparator<Attribute>, Serializable {
 
@@ -108,7 +90,6 @@ public class SortOrder implements VisFilterI<Distribution> {
 
         @Override
         public int compare(Attribute a, Attribute b) {
-
             if (base.get(a).longValue() < base.get(b).longValue()) {
                 return 1;
             } else if (base.get(a).longValue() == base.get(b).longValue()) {

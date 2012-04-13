@@ -12,9 +12,9 @@ import javax.swing.event.ListDataListener;
  *
  * @author sjaenick
  */
-abstract class BaseModel extends AbstractListModel implements ComboBoxModel {
+public abstract class BaseModel<T> extends AbstractListModel implements ComboBoxModel {
 
-    protected List<Object> content = new ArrayList<Object>();
+    protected List<T> content = new ArrayList<>();
     // index of selected entry
     int index = -1;
 
@@ -29,8 +29,8 @@ abstract class BaseModel extends AbstractListModel implements ComboBoxModel {
     }
 
     @Override
-    public Object getSelectedItem() {
-        if (index >= 0) {
+    public T getSelectedItem() {
+        if ((index >= 0) && (content.size() > index)) {
             return content.get(index);
         } else {
             return null;
@@ -43,7 +43,7 @@ abstract class BaseModel extends AbstractListModel implements ComboBoxModel {
     }
 
     @Override
-    public Object getElementAt(int index) {
+    public T getElementAt(int index) {
         return content.get(index);
     }
 

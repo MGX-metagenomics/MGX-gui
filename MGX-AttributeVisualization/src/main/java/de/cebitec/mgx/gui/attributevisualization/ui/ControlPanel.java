@@ -3,10 +3,10 @@
  *
  * Created on 06.01.2012, 14:12:52
  */
-package de.cebitec.mgx.gui.attributevisualization;
+package de.cebitec.mgx.gui.attributevisualization.ui;
 
-import de.cebitec.mgx.gui.attributevisualization.data.VGroupManager;
-import de.cebitec.mgx.gui.attributevisualization.data.VisualizationGroup;
+import de.cebitec.mgx.gui.attributevisualization.BaseModel;
+import de.cebitec.mgx.gui.attributevisualization.VGroupManager;
 import de.cebitec.mgx.gui.attributevisualization.filter.SortOrder;
 import de.cebitec.mgx.gui.attributevisualization.filter.ToFractionFilter;
 import de.cebitec.mgx.gui.attributevisualization.filter.VisFilterI;
@@ -17,6 +17,7 @@ import de.cebitec.mgx.gui.datamodel.AttributeType;
 import de.cebitec.mgx.gui.datamodel.Distribution;
 import de.cebitec.mgx.gui.datamodel.Pair;
 import de.cebitec.mgx.gui.datamodel.tree.Tree;
+import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -25,7 +26,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.ExecutionException;
 import javax.swing.SwingWorker;
+import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 
 /**
@@ -38,12 +41,14 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
     private AttributeVisualizationTopComponent topComponent;
     //
     //private AttributeType currentAttributeType = null;
-    private List<Pair<VisualizationGroup, Distribution>> currentDistributions = new ArrayList<Pair<VisualizationGroup, Distribution>>();
-    private List<Pair<VisualizationGroup, Tree<Long>>> currentHierarchies = new ArrayList<Pair<VisualizationGroup, Tree<Long>>>();
+    private List<Pair<VisualizationGroup, Distribution>> currentDistributions = new ArrayList<>();
+    private List<Pair<VisualizationGroup, Tree<Long>>> currentHierarchies = new ArrayList<>();
     //
     private AttributeTypeListModel attrListModel = new AttributeTypeListModel();
     private VisualizationTypeListModel vizListModel = new VisualizationTypeListModel();
-    private SortTypeListModel sortListModel = new SortTypeListModel();
+    //
+    private AttributeType currentAttributeType;
+    private ViewerI currentViewer;
 
     /**
      * Creates new form ControlPanel
@@ -53,14 +58,20 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
         attributeTypeList.addActionListener(attrListModel);
         visualizationTypeList.addActionListener(vizListModel);
         updateButton.addActionListener(this);
+
+        VGroupManager.getInstance().addPropertyChangeListener(this);
     }
 
     public final void setTopComponent(AttributeVisualizationTopComponent tc) {
         this.topComponent = tc;
     }
-    
+
+    public final void updateAttributeTypeList() {
+        attrListModel.update();
+    }
+
     public final void updateViewerList() {
-        ((VisualizationTypeListModel)visualizationTypeList.getModel()).update();
+        vizListModel.update();
     }
 
     /**
@@ -80,7 +91,6 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
         updateButton = new javax.swing.JButton();
         fractions = new javax.swing.JCheckBox();
         jLabel3 = new javax.swing.JLabel();
-        sortCriteria = new javax.swing.JComboBox();
         sortAscending = new javax.swing.JRadioButton();
         sortDescending = new javax.swing.JRadioButton();
 
@@ -90,32 +100,30 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
         attributeTypeList.setModel(attrListModel);
         attributeTypeList.setEnabled(false);
 
-        jLabel1.setFont(new java.awt.Font("Dialog", 0, 10));
+        jLabel1.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         jLabel1.setText(org.openide.util.NbBundle.getMessage(ControlPanel.class, "ControlPanel.jLabel1.text")); // NOI18N
 
         visualizationTypeList.setModel(vizListModel);
         visualizationTypeList.setEnabled(false);
 
-        jLabel2.setFont(new java.awt.Font("Dialog", 0, 10));
+        jLabel2.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         jLabel2.setText(org.openide.util.NbBundle.getMessage(ControlPanel.class, "ControlPanel.jLabel2.text")); // NOI18N
 
         updateButton.setText(org.openide.util.NbBundle.getMessage(ControlPanel.class, "ControlPanel.updateButton.text")); // NOI18N
         updateButton.setEnabled(false);
 
-        fractions.setFont(new java.awt.Font("Dialog", 0, 10));
+        fractions.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         fractions.setText(org.openide.util.NbBundle.getMessage(ControlPanel.class, "ControlPanel.fractions.text")); // NOI18N
 
-        jLabel3.setFont(new java.awt.Font("Dialog", 0, 10));
+        jLabel3.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         jLabel3.setText(org.openide.util.NbBundle.getMessage(ControlPanel.class, "ControlPanel.jLabel3.text")); // NOI18N
 
-        sortCriteria.setModel(sortListModel);
-
         sortOrderGroup.add(sortAscending);
-        sortAscending.setFont(new java.awt.Font("Dialog", 0, 10));
+        sortAscending.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         sortAscending.setText(org.openide.util.NbBundle.getMessage(ControlPanel.class, "ControlPanel.sortAscending.text")); // NOI18N
 
         sortOrderGroup.add(sortDescending);
-        sortDescending.setFont(new java.awt.Font("Dialog", 0, 10));
+        sortDescending.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         sortDescending.setSelected(true);
         sortDescending.setText(org.openide.util.NbBundle.getMessage(ControlPanel.class, "ControlPanel.sortDescending.text")); // NOI18N
 
@@ -126,16 +134,22 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(sortDescending)
-                    .addComponent(fractions)
-                    .addComponent(sortAscending)
                     .addComponent(attributeTypeList, 0, 276, Short.MAX_VALUE)
-                    .addComponent(jLabel1)
-                    .addComponent(jLabel2)
                     .addComponent(visualizationTypeList, 0, 276, Short.MAX_VALUE)
-                    .addComponent(updateButton, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel3)
-                    .addComponent(sortCriteria, 0, 276, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(updateButton))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel1)
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel3)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(sortAscending)
+                                .addGap(18, 18, 18)
+                                .addComponent(sortDescending))
+                            .addComponent(fractions))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -151,15 +165,13 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
                 .addComponent(visualizationTypeList, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jLabel3)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(sortCriteria, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(sortAscending)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(sortDescending)
-                .addGap(52, 52, 52)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(sortAscending)
+                    .addComponent(sortDescending))
+                .addGap(18, 18, 18)
                 .addComponent(fractions)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 165, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 250, Short.MAX_VALUE)
                 .addComponent(updateButton)
                 .addContainerGap())
         );
@@ -171,7 +183,6 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JRadioButton sortAscending;
-    private javax.swing.JComboBox sortCriteria;
     private javax.swing.JRadioButton sortDescending;
     private javax.swing.ButtonGroup sortOrderGroup;
     private javax.swing.JButton updateButton;
@@ -186,53 +197,65 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
 
         String propName = evt.getPropertyName();
 
-        if (propName.equals(VisualizationGroup.VISGROUP_CHANGED) || propName.equals(VGroupManager.VISGROUP_NUM_CHANGED)
-                || propName.equals(VisualizationGroup.VISGROUP_ACTIVATED) || propName.equals(VisualizationGroup.VISGROUP_DEACTIVATED)) {
-            // update attribute list model
-            ((AttributeTypeListModel) attributeTypeList.getModel()).update();
-        } else if (propName.equals(VisualizationGroup.VISGROUP_RENAMED)) {
-            firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
+        switch (propName) {
+            case VisualizationGroup.VISGROUP_CHANGED:
+                updateAttributeTypeList();
+                break;
+            case VGroupManager.VISGROUP_NUM_CHANGED:
+                updateAttributeTypeList();
+                break;
+            case VisualizationGroup.VISGROUP_ACTIVATED:
+                updateAttributeTypeList();
+                break;
+            case VisualizationGroup.VISGROUP_DEACTIVATED:
+                updateAttributeTypeList();
+                break;
+            default:
+                System.err.println("unknown event " + propName);
         }
     }
 
-    private final class AttributeTypeListModel extends BaseModel implements ActionListener {
+    private final class AttributeTypeListModel extends BaseModel<AttributeType> implements ActionListener {
 
         @Override
         public void update() {
             // disable all downstream elements, including self
             attributeTypeList.setEnabled(false);
             visualizationTypeList.setEnabled(false);
-            sortCriteria.setEnabled(false);
             updateButton.setEnabled(false);
 
-            SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+            SwingWorker<SortedSet<AttributeType>, Void> worker = new SwingWorker<SortedSet<AttributeType>, Void>() {
 
                 @Override
-                protected Void doInBackground() throws Exception {
-                    // remember selected attribute type
-                    Object currentAttributeType = attributeTypeList.getSelectedItem();
-
-                    // refresh the model
-                    SortedSet<AttributeType> types = new TreeSet<AttributeType>();
+                protected SortedSet<AttributeType> doInBackground() throws Exception {
+                    SortedSet<AttributeType> types = new TreeSet<>();
                     for (VisualizationGroup vg : vgmgr.getGroups()) {
                         types.addAll(vg.getAttributeTypes());
                     }
-                    content.clear();
-                    content.addAll(types);
-
-                    // if previously selected attribute type still exists, restore selection
-                    if (currentAttributeType != null && content.contains(currentAttributeType)) {
-                        setSelectedItem(currentAttributeType);
-                    } else {
-                        attributeTypeList.setSelectedIndex(0);
-                    }
-                    //attributeTypeList.setEnabled(true);
-                    return null;
+                    return types;
                 }
 
                 @Override
                 protected void done() {
-                    attributeTypeList.setEnabled(true);
+                    SortedSet<AttributeType> types = null;
+                    try {
+                        types = get();
+                    } catch (InterruptedException | ExecutionException ex) {
+                        Exceptions.printStackTrace(ex);
+                    }
+                    content.clear();
+                    content.addAll(types);
+
+                    if (attrListModel.getSize() > 0) {
+                        // if previously selected attribute type still exists, restore selection
+                        if (currentAttributeType != null && content.contains(currentAttributeType)) {
+                            setSelectedItem(currentAttributeType);
+                        } else {
+                            attributeTypeList.setSelectedIndex(0);
+                        }
+
+                        attributeTypeList.setEnabled(true);
+                    }
                     fireContentsChanged();
                     super.done();
                 }
@@ -242,60 +265,70 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
 
         @Override
         public void actionPerformed(ActionEvent e) {
+            currentAttributeType = attrListModel.getSelectedItem();
+            if (currentViewer != null) {
+                currentViewer.setAttributeType(currentAttributeType);
+            }
+
             // disable all downstream elements, excluding self
             visualizationTypeList.setEnabled(false);
-            sortCriteria.setEnabled(false);
             updateButton.setEnabled(false);
 
-            final AttributeType currentAttributeType = (AttributeType) attributeTypeList.getSelectedItem();
-            
             ResultCollector rc = new ResultCollector(currentAttributeType, currentDistributions, currentHierarchies, ControlPanel.this);
             rc.execute();
         }
     }
 
-    private final class VisualizationTypeListModel extends BaseModel implements ActionListener {
+    private final class VisualizationTypeListModel extends BaseModel<ViewerI> implements ActionListener {
 
         @Override
         public void update() {
             // disable all downstream elements
             visualizationTypeList.setEnabled(false);
-            sortCriteria.setEnabled(false);
             updateButton.setEnabled(false);
 
-            // remember selected viewer
-            final ViewerI lastSelectedViewer = (ViewerI) visualizationTypeList.getSelectedItem();
-
-            SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+            SwingWorker<SortedSet<ViewerI>, Void> worker = new SwingWorker<SortedSet<ViewerI>, Void>() {
 
                 @Override
-                protected Void doInBackground() throws Exception {
-                    AttributeType currentAttributeType = (AttributeType) attributeTypeList.getSelectedItem();
-
-                    SortedSet<ViewerI> tmp = new TreeSet<ViewerI>();
+                protected SortedSet<ViewerI> doInBackground() throws Exception {
+                    SortedSet<ViewerI> viewers = new TreeSet<>();
                     for (ViewerI viewer : Lookup.getDefault().lookupAll(ViewerI.class)) {
                         if (viewer.canHandle(currentAttributeType)) {
-                            tmp.add(viewer);
+                            viewers.add(viewer);
                         }
                     }
-                    content.clear();
-                    content.addAll(tmp);
-
-                    // if previously selected attribute type still exists, restore selection
-                    if (lastSelectedViewer != null && content.contains(lastSelectedViewer)) {
-                        setSelectedItem(lastSelectedViewer);
-                    } else {
-                        visualizationTypeList.setSelectedIndex(0);
-                    }
-
-                    return null;
+                    return viewers;
                 }
 
                 @Override
                 protected void done() {
-                    visualizationTypeList.setEnabled(true);
+                    SortedSet<ViewerI> viewers = null;
+                    try {
+                        viewers = get();
+                    } catch (InterruptedException | ExecutionException ex) {
+                        Exceptions.printStackTrace(ex);
+                    }
+                    content.clear();
+                    content.addAll(viewers);
+
+                    if (vizListModel.getSize() > 0) {
+                        // if previously selected attribute type still exists, restore selection
+                        if (currentViewer != null && content.contains(currentViewer)) {
+                            setSelectedItem(currentViewer);
+                        } else {
+                            visualizationTypeList.setSelectedIndex(0);
+                        }
+
+                        visualizationTypeList.setEnabled(true);
+                        updateButton.setEnabled(true);
+                    }
+//                    System.err.print("viewers: ");
+//                    for (ViewerI v : content) {
+//                        System.err.print(v.getName() + ", ");
+//                    }
+//                    System.err.println();
+
                     fireContentsChanged();
-                    ((SortTypeListModel) sortCriteria.getModel()).update();
                     super.done();
                 }
             };
@@ -303,63 +336,18 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
         }
 
         @Override
-        public void actionPerformed(ActionEvent ae) {
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
-    }
-
-    private final class SortTypeListModel extends BaseModel {
-
-        @Override
-        public void update() {
-            final Object lastSortOrder = visualizationTypeList.getSelectedItem();
-
-            SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
-
-                @Override
-                protected Void doInBackground() throws Exception {
-                    AttributeType currentAttributeType = (AttributeType) attributeTypeList.getSelectedItem();
-
-                    SortedSet<String> tmp = new TreeSet<String>();
-                    tmp.add(SortOrder.BY_VALUE);
-
-                    if (currentAttributeType.getValueType() == AttributeType.VALUE_NUMERIC) {
-                        tmp.add(SortOrder.BY_TYPE);
-                    }
-
-                    content.clear();
-                    content.addAll(tmp);
-
-                    // if previously selected element still exists, restore selection
-                    if (lastSortOrder != null && content.contains(lastSortOrder)) {
-                        setSelectedItem(lastSortOrder);
-                    } else {
-                        sortCriteria.setSelectedIndex(0);
-                    }
-
-                    return null;
-                }
-
-                @Override
-                protected void done() {
-                    sortCriteria.setEnabled(true);
-                    updateButton.setEnabled(true);
-                    fireContentsChanged();
-                    super.done();
-                }
-            };
-            worker.execute();
+        public void actionPerformed(ActionEvent e) {
+            currentViewer = vizListModel.getSelectedItem();
+            currentViewer.setAttributeType(currentAttributeType);
         }
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        final ViewerI viewer = (ViewerI) visualizationTypeList.getSelectedItem();
-        viewer.setTitle("Distribution of " + (AttributeType) attributeTypeList.getSelectedItem());
 
         SwingWorker worker;
 
-        if (viewer.getInputType().equals(Distribution.class)) {
+        if (currentViewer.getInputType().equals(Distribution.class)) {
 
             worker = new SwingWorker<Void, Void>() {
 
@@ -368,7 +356,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
                 @Override
                 protected Void doInBackground() throws Exception {
 
-                    filterChain = viewer;
+                    filterChain = currentViewer;
 
                     if (fractions.isSelected()) {
                         VisFilterI fracFilter = new ToFractionFilter();
@@ -377,9 +365,10 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
 
                     // sort filter
                     SortOrder sorter = new SortOrder();
-                    sorter.setSortCriteria((String) sortCriteria.getSelectedItem());
+                    sorter.setSortCriteria(currentAttributeType.getValueType() == AttributeType.VALUE_NUMERIC
+                            ? SortOrder.BY_TYPE : SortOrder.BY_VALUE);
 
-                    viewer.sortAscending(sortAscending.isSelected());
+                    currentViewer.sortAscending(sortAscending.isSelected());
 
                     filterChain = VisFilterSupport.append(sorter, filterChain);
 
@@ -389,7 +378,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
                 @Override
                 protected void done() {
                     filterChain.filter(currentDistributions);
-                    topComponent.setVisualization(viewer.getComponent());
+                    topComponent.setVisualization(currentViewer.getComponent());
                     super.done();
                 }
             };
@@ -398,9 +387,8 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
 
         } else {
             // hierarchy
-            System.err.println("gogogogo!");
-            viewer.filter(currentHierarchies);
-            topComponent.setVisualization(viewer.getComponent());
+            currentViewer.filter(currentHierarchies);
+            topComponent.setVisualization(currentViewer.getComponent());
         }
     }
 }

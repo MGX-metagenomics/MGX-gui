@@ -1,13 +1,14 @@
 package de.cebitec.mgx.gui.attributevisualization.util;
 
-import de.cebitec.mgx.gui.attributevisualization.ControlPanel;
-import de.cebitec.mgx.gui.attributevisualization.data.VGroupManager;
-import de.cebitec.mgx.gui.attributevisualization.data.VisualizationGroup;
+import de.cebitec.mgx.gui.attributevisualization.VGroupManager;
+import de.cebitec.mgx.gui.attributevisualization.ui.ControlPanel;
 import de.cebitec.mgx.gui.datamodel.AttributeType;
 import de.cebitec.mgx.gui.datamodel.Distribution;
 import de.cebitec.mgx.gui.datamodel.Pair;
 import de.cebitec.mgx.gui.datamodel.tree.Tree;
+import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import javax.swing.SwingWorker;
 import org.openide.util.Exceptions;
 
@@ -47,10 +48,9 @@ public class ResultCollector extends SwingWorker<Pair<List<Pair<VisualizationGro
         Pair<List<Pair<VisualizationGroup, Distribution>>, List<Pair<VisualizationGroup, Tree<Long>>>> p = null;
         try {
              p = get();
-        } catch (Exception ex) {
+        } catch (InterruptedException | ExecutionException ex) {
             Exceptions.printStackTrace(ex);
         }
-        assert p != null;
         distHolder.clear();
         hierarchyHolder.clear();
         distHolder.addAll(p.getFirst());
@@ -58,7 +58,6 @@ public class ResultCollector extends SwingWorker<Pair<List<Pair<VisualizationGro
         if (p.getSecond() != null)
             hierarchyHolder.addAll(p.getSecond());
 
-        assert distHolder != null;
         if (aType.getStructure() == AttributeType.STRUCTURE_HIERARCHICAL) {
             assert hierarchyHolder != null;
         }

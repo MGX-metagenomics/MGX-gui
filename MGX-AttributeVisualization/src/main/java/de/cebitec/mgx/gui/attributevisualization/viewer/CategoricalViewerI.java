@@ -13,5 +13,13 @@ public abstract class CategoricalViewerI extends ViewerI<Distribution> {
     public boolean canHandle(AttributeType valueType) {
         return valueType.getValueType() == AttributeType.VALUE_DISCRETE;
     }
+
+    @Override
+    public void setAttributeType(AttributeType aType) {
+        super.setAttributeType(aType);
+        super.setTitle("Distribution of "+ aType.getName());
+    }
+    
+    
     
 }
