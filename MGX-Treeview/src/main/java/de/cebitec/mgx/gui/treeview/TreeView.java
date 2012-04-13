@@ -1,6 +1,5 @@
 package de.cebitec.mgx.gui.treeview;
 
-import de.cebitec.mgx.gui.attributevisualization.data.VisualizationGroup;
 import de.cebitec.mgx.gui.attributevisualization.viewer.HierarchicalViewerI;
 import de.cebitec.mgx.gui.attributevisualization.viewer.ViewerI;
 import de.cebitec.mgx.gui.datamodel.Attribute;
@@ -9,6 +8,7 @@ import de.cebitec.mgx.gui.datamodel.Pair;
 import de.cebitec.mgx.gui.datamodel.tree.Node;
 import de.cebitec.mgx.gui.datamodel.tree.Tree;
 import de.cebitec.mgx.gui.datamodel.tree.TreeFactory;
+import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -93,13 +93,12 @@ public class TreeView extends HierarchicalViewerI {
     @Override
     public void setAttributeType(AttributeType aType) {
         super.setAttributeType(aType);
-        super.setTitle("Hierarchy view with "+ aType.getName());
+        super.setTitle("Hierarchy view based on "+ aType.getName());
     }
 
     
     @Override
     public void show(List<Pair<VisualizationGroup, Tree<Long>>> trees) {
-        assert trees != null;
         // merge hierarchies into consensus tree
         Tree<Map<VisualizationGroup, Long>> combinedTree = TreeFactory.combineTrees(trees);
         Node<Map<VisualizationGroup, Long>> root = combinedTree.getRoot();
@@ -108,14 +107,14 @@ public class TreeView extends HierarchicalViewerI {
 
         prefuse.data.Tree pTree = new prefuse.data.Tree();
         pTree.getNodeTable().addColumn(nodeLabel, Attribute.class);
-        pTree.getNodeTable().addColumn(nodeTotalCount, String.class); // sucks.
+        pTree.getNodeTable().addColumn(nodeTotalCount, long.class);
         pTree.getNodeTable().addColumn(nodeContent, Map.class);
 
 
         prefuse.data.Node rootNode = pTree.addRoot();
         rootNode.set(nodeLabel, root.getAttribute());
+        rootNode.set(nodeTotalCount, calculateNodeCount(root.getContent()));
         rootNode.set(nodeContent, root.getContent());
-        rootNode.set(nodeTotalCount, calculateNodeCount(root.getContent()).toString());
 
         for (Node<Map<VisualizationGroup, Long>> child : root.getChildren()) {
             addWithChildren(pTree, rootNode, child);
@@ -131,7 +130,7 @@ public class TreeView extends HierarchicalViewerI {
         prefuse.data.Node self = pTree.addChild(parent);
         self.set(nodeLabel, node.getAttribute());
         self.set(nodeContent, node.getContent());
-        self.set(nodeTotalCount, calculateNodeCount(node.getContent()).toString());
+        self.set(nodeTotalCount, calculateNodeCount(node.getContent()));
         for (Node<Map<VisualizationGroup, Long>> child : node.getChildren()) {
             addWithChildren(pTree, self, child);
         }
@@ -287,10 +286,10 @@ public class TreeView extends HierarchicalViewerI {
         });
     }
 
-    private Long calculateNodeCount(Map<VisualizationGroup, Long> content) {
+    private long calculateNodeCount(Map<VisualizationGroup, Long> content) {
         long total = 0;
-        for (Long l : content.values()) {
-            total += l.longValue();
+        for (long l : content.values()) {
+            total += l;
         }
         return total;
     }

@@ -1,6 +1,6 @@
 package de.cebitec.mgx.gui.treeview.renderer;
 
-import de.cebitec.mgx.gui.attributevisualization.data.VisualizationGroup;
+import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.Point2D;

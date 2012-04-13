@@ -55,6 +55,12 @@
             <artifactId>MGX-AttributeVisualization</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <artifactId>MGX-Controller</artifactId>
+            <groupId>de.cebitec.mgx.gui</groupId>
+            <type>jar</type>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>
