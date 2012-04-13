@@ -73,7 +73,8 @@
         <module>JFreeChart-Wrapper</module>
     <module>MGX-Prefuse</module>
         <module>MGX-Treeview</module>
-    </modules>
+    <module>MGX-BasicCharts</module>
+  </modules>
 
     <properties>
         <netbeans.version>RELEASE701</netbeans.version>
