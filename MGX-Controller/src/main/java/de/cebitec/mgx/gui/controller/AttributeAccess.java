@@ -3,12 +3,15 @@ package de.cebitec.mgx.gui.controller;
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.AttributeCount;
 import de.cebitec.mgx.dto.dto.AttributeDTO;
+import de.cebitec.mgx.dto.dto.AttributeDistribution;
+import de.cebitec.mgx.dto.dto.AttributeTypeDTO;
 import de.cebitec.mgx.gui.datamodel.Attribute;
 import de.cebitec.mgx.gui.datamodel.AttributeType;
 import de.cebitec.mgx.gui.datamodel.Job;
 import de.cebitec.mgx.gui.datamodel.tree.Tree;
 import de.cebitec.mgx.gui.datamodel.tree.TreeFactory;
 import de.cebitec.mgx.gui.dtoconversion.AttributeDTOFactory;
+import de.cebitec.mgx.gui.dtoconversion.AttributeTypeDTOFactory;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +26,7 @@ import java.util.logging.Logger;
 public class AttributeAccess extends AccessBase<Attribute> {
 
     public List<Attribute> BySeqRun(Long id) {
-        List<Attribute> attrs = new ArrayList<Attribute>();
+        List<Attribute> attrs = new ArrayList<>();
         try {
             for (AttributeDTO adto : getDTOmaster().Attribute().BySeqRun(id)) {
                 Attribute attr = AttributeDTOFactory.getInstance().toModel(adto);
@@ -77,10 +80,20 @@ public class AttributeAccess extends AccessBase<Attribute> {
 //        return res;
 //    }
     public Map<Attribute, Long> getDistribution(AttributeType attributeType, Job job) {
-        Map<Attribute, Long> res = new HashMap<Attribute, Long>();
+        Map<Attribute, Long> res = new HashMap<>();
         try {
-            for (AttributeCount ac : getDTOmaster().Attribute().getDistribution(attributeType.getId(), job.getId())) {
+            AttributeDistribution distribution = getDTOmaster().Attribute().getDistribution(attributeType.getId(), job.getId());
+
+            // convert and save types first
+            Map<Long, AttributeType> types = new HashMap<>();
+            for (AttributeTypeDTO at : distribution.getAttributeTypesList()) {
+                types.put(at.getId(), AttributeTypeDTOFactory.getInstance().toModel(at));
+            }
+
+            // convert attribute and fill in the attributetypes
+            for (AttributeCount ac : distribution.getAttributeCountsList()) {
                 Attribute attr = AttributeDTOFactory.getInstance().toModel(ac.getAttribute());
+                attr.setAttributeType(types.get(ac.getAttribute().getAttributeTypeId()));
                 attr.setMaster(this.getMaster());
                 res.put(attr, ac.getCount());
             }
@@ -114,20 +127,29 @@ public class AttributeAccess extends AccessBase<Attribute> {
     }
 
     public Tree<Long> getHierarchy(AttributeType attributeType, Job job) {
-        Map<Attribute, Long> res = new HashMap<Attribute, Long>();
+        Map<Attribute, Long> res = new HashMap<>();
         try {
-            for (AttributeCount ac : getDTOmaster().Attribute().getHierarchy(attributeType.getId(), job.getId())) {
+            AttributeDistribution distribution = getDTOmaster().Attribute().getHierarchy(attributeType.getId(), job.getId());
+            
+            // convert and save types first
+            Map<Long, AttributeType> types = new HashMap<>();
+            for (AttributeTypeDTO at : distribution.getAttributeTypesList()) {
+                types.put(at.getId(), AttributeTypeDTOFactory.getInstance().toModel(at));
+            }
+
+            // convert attribute and fill in the attributetypes
+            for (AttributeCount ac : distribution.getAttributeCountsList()) {
                 Attribute attr = AttributeDTOFactory.getInstance().toModel(ac.getAttribute());
+                attr.setAttributeType(types.get(ac.getAttribute().getAttributeTypeId()));
                 attr.setMaster(this.getMaster());
                 res.put(attr, ac.getCount());
             }
+
         } catch (MGXServerException ex) {
             Logger.getLogger(AttributeAccess.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         Tree<Long> ret = TreeFactory.createTree(res);
-
-        //assert ret.getRoot() != null;
 
         return ret;
     }

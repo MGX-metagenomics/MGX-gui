@@ -4,8 +4,6 @@ import de.cebitec.mgx.gui.datamodel.Attribute;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -26,21 +24,17 @@ public class Tree<T> {
     }
 
     public Node<T> createNode(Attribute attr, T content) {
-        assert content != null;
         Node<T> node = new Node<T>(this, id++, attr, content);
         if (nodes.containsValue(node)) {
             Node<T> tmp = getNode(content);
-            assert tmp != null;
             return tmp;
         }
         attrs.put(attr, node);
         nodes.put(node.getId(), node);
-        assert node != null;
         return node;
     }
 
     public void setRoot(Node<T> n) {
-        assert n != null;
         root = n;
     }
 
@@ -49,19 +43,16 @@ public class Tree<T> {
     }
 
     public Node<T> byAttribute(Attribute attr) {
-        assert attr != null;
         return attrs.get(attr);
     }
 
     public void addEdge(Long child, Long parent) {
-        assert nodes.containsKey(child);
-        assert nodes.containsKey(parent);
+        //assert nodes.containsKey(child);
+        //assert nodes.containsKey(parent);
         edges.put(child, parent);
     }
 
     public Node<T> getParent(long nodeId) {
-        assert edges.containsKey(nodeId);
-        
         return byId(edges.get(nodeId));
     }
 
@@ -77,7 +68,6 @@ public class Tree<T> {
 //    }
 
     public Node<T> getRoot() {
-        assert root != null;
         return root;
     }
 
@@ -86,7 +76,6 @@ public class Tree<T> {
     }
 
     public Node<T> getNode(T content) {
-        assert content != null;
         for (Node<T> n : nodes.values()) {
             if (n.getContent().equals(content)) {
                 return n;
@@ -96,7 +85,6 @@ public class Tree<T> {
     }
 
     public boolean containsNode(T content) {
-        assert content != null;
         for (Node<T> n : nodes.values()) {
             if (n.getContent().equals(content)) {
                 return true;
@@ -110,10 +98,9 @@ public class Tree<T> {
     }
 
     public void build() {
-        Logger.getLogger("Tree").log(Level.INFO, "building tree with {0} nodes and {1} edges", new Object[]{nodes.entrySet().size(), edges.entrySet().size()});
-        assert root != null;
+        //Logger.getLogger("Tree").log(Level.INFO, "building tree with {0} nodes and {1} edges", new Object[]{nodes.entrySet().size(), edges.entrySet().size()});
         for (Node<T> node : nodes.values()) {
-            assert (node == root) || edges.keySet().contains(node.getId());
+            //assert (node == root) || edges.keySet().contains(node.getId());
             node.build();
         }
     }

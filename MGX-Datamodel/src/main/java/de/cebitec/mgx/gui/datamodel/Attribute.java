@@ -20,11 +20,11 @@ public class Attribute extends ModelBase {
         this.parent_id = parent_id;
     }
     
-    public AttributeType getType() {
+    public AttributeType getAttributeType() {
         return atype;
     }
 
-    public Attribute setType(AttributeType atype) {
+    public Attribute setAttributeType(AttributeType atype) {
         this.atype = atype;
         return this;
     }

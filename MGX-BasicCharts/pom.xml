@@ -8,11 +8,11 @@
     </parent>
 
     <groupId>de.cebitec.mgx.gui</groupId>
-    <artifactId>MGX-Controller</artifactId>
+    <artifactId>MGX-BasicCharts</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>nbm</packaging>
 
-    <name>MGX-Controller NetBeans Module</name>
+    <name>MGX-BasicCharts</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -41,14 +41,13 @@
             <version>RELEASE701</version>
         </dependency>
         <dependency>
-            <artifactId>org-openide-util</artifactId>
-            <groupId>org.netbeans.api</groupId>
-            <type>jar</type>
-            <version>RELEASE701</version>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>JFreeChart-Wrapper</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>MGXClient-Wrapper</artifactId>
+            <artifactId>MGX-AttributeVisualization</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -57,7 +56,7 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <artifactId>DTO-Wrapper</artifactId>
+            <artifactId>MGX-Controller</artifactId>
             <groupId>de.cebitec.mgx.gui</groupId>
             <type>jar</type>
             <version>1.0-SNAPSHOT</version>
@@ -69,14 +68,8 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>nbm-maven-plugin</artifactId>
-                <version>3.5</version>
+                <version>3.7</version>
                 <extensions>true</extensions>
-                <configuration>
-                    <publicPackages>
-                        <publicPackage>de.cebitec.mgx.gui.controller</publicPackage>
-                        <publicPackage>de.cebitec.mgx.gui.groups</publicPackage>
-                    </publicPackages>
-                </configuration>
             </plugin>
 
             <plugin>
@@ -85,15 +78,15 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>2.3.2</version>
                 <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
+                    <source>1.6</source>
+                    <target>1.6</target>
                 </configuration>
             </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>2.3.1</version>
+                <version>2.3.2</version>
                 <configuration>
                     <!-- to have the jar plugin pickup the nbm generated manifest -->
                     <useDefaultManifestFile>true</useDefaultManifestFile>

@@ -15,13 +15,9 @@ public class Node<T> {
     private Attribute attr;
     private T value;
     private Tree<T> tree;
-    private int depth = -1;
     private Set<Node<T>> children = null;
 
     public Node(Tree<T> tree, long id, Attribute attr, T content) {
-        assert tree != null;
-        assert attr != null;
-        assert content != null;
         this.tree = tree;
         this.id = id;
         this.attr = attr;
@@ -41,7 +37,6 @@ public class Node<T> {
     }
 
     public void setContent(T value) {
-        assert value != null;
         this.value = value;
     }
 
@@ -56,13 +51,6 @@ public class Node<T> {
     public Set<Node<T>> getChildren() {
         return children;
     }
-
-//    public int getDepth() {
-//        if (depth == -1) {
-//            depth = tree.getDepth(this);
-//        }
-//        return depth;
-//    }
     
     void build() {
         children = new HashSet<Node<T>>();

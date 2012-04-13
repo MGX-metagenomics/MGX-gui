@@ -2,8 +2,11 @@ package de.cebitec.mgx.gui.datamodel.tree;
 
 import de.cebitec.mgx.gui.datamodel.Attribute;
 import de.cebitec.mgx.gui.datamodel.Pair;
-import java.awt.EventQueue;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -33,17 +36,17 @@ public class TreeFactory {
 
         for (Entry<Attribute, Long> entry : map.entrySet()) {
             Attribute attr = entry.getKey();
-            assert attr != null;
-            assert attr.getId() != null;
+            //assert attr != null;
+            //assert attr.getId() != null;
 
             Long count = entry.getValue();
 
             Node<Long> node = tree.createNode(attr, count);
-            assert node != null;
+            //assert node != null;
             idmap.put(attr.getId(), node.getId());
 
             if (attr.getParentID() == null) {
-                Logger.getLogger("createTree").log(Level.INFO, "found a root node");
+                //Logger.getLogger("createTree").log(Level.INFO, "found a root node");
                 tree.setRoot(node);
             } else {
                 // remember the outgoing edge (based on original ids)
@@ -58,13 +61,11 @@ public class TreeFactory {
             tree.addEdge(child, parent);
         }
 
-        Logger.getLogger("createTree").log(Level.INFO, "done");
+        //Logger.getLogger("createTree").log(Level.INFO, "done");
 
         tree.build();
 
-        assert tree.getRoot() != null;
-
-
+        //assert tree.getRoot() != null;
 
         return tree;
     }
@@ -73,7 +74,7 @@ public class TreeFactory {
     // contained within a group
     //
     public static Tree<Long> mergeTrees(Collection<Tree<Long>> trees) {
-        Logger.getLogger("mergeTrees").log(Level.INFO, "mergeTrees merging {0} trees", trees.size());
+        //Logger.getLogger("mergeTrees").log(Level.INFO, "mergeTrees merging {0} trees", trees.size());
         //assert trees.size() > 0;
         Tree<Long> consensus = new Tree<Long>();
 
@@ -116,14 +117,13 @@ public class TreeFactory {
 
         consensus.build();
 
-        assert consensus.getRoot() != null;
-
+        //assert consensus.getRoot() != null;
 
         return consensus;
     }
 
     public static <T> Tree<Map<T, Long>> combineTrees(List<Pair<T, Tree<Long>>> trees) {
-        Logger.getLogger("combineTrees").log(Level.INFO, "combining {0} trees", trees.size());
+        //Logger.getLogger("combineTrees").log(Level.INFO, "combining {0} trees", trees.size());
         Tree<Map<T, Long>> combined = new Tree<Map<T, Long>>();
 
         for (Pair<T, Tree<Long>> pair : trees) {
@@ -139,7 +139,7 @@ public class TreeFactory {
             for (Node<Long> node : tree.getNodes()) {
                 Node<Map<T, Long>> consNode = combined.byAttribute(node.getAttribute());
                 if (consNode == null) {
-                    consNode = combined.createNode(node.getAttribute(), new HashMap<T, Long>());
+                    consNode = combined.createNode(node.getAttribute(), new LinkedHashMap<T, Long>());
 
                     if (node.isRoot()) {
                         combined.setRoot(consNode);
@@ -163,7 +163,7 @@ public class TreeFactory {
 
         }
 
-        assert combined.getRoot() != null;
+        //assert combined.getRoot() != null;
         
         combined.build();
         
@@ -171,48 +171,4 @@ public class TreeFactory {
 
         return combined;
     }
-//    public static <T> Tree<Pair<Attribute, List<T>>> combineTrees(Collection<Tree<Pair<Attribute, T>>> trees) {
-//        Tree<Pair<Attribute, List<T>>> consensus = new Tree<Pair<Attribute, List<T>>>();
-//        int numTrees = trees.size();
-//
-//        int currentTreeIdx = 0;
-//        for (Tree<Pair<Attribute, T>> t : trees) {
-//            for (Node<Pair<Attribute, T>> node : t.getNodes()) {
-//                Node<Pair<Attribute, List<T>>> buildNode = getNodeByAttribute(consensus, node.getContent().getFirst());
-//                if (buildNode == null) {
-//                    buildNode = consensus.createNode(new Pair<Attribute, List<T>>(node.getContent().getFirst(), new ArrayList<T>(numTrees)));
-//                }
-//
-//                // update node data
-//                List<T> content = buildNode.getContent().getSecond();
-//                content.add(currentTreeIdx, node.getContent().getSecond());
-//            }
-//            currentTreeIdx++;
-//        }
-//
-//        consensus.build();
-//        return consensus;
-//    }
-//    public static <T extends Number> Tree<Pair<Attribute, Long>> sumTree(Tree<Pair<Attribute, List<T>>> tree) {
-//        Tree<Pair<Attribute, Long>> sumTree = new Tree<Pair<Attribute, Long>>();
-//
-//        for (Node<Pair<Attribute, List<T>>> node : tree.getNodes()) {
-//
-//            // compute sum of counts
-//            List<T> data = node.getContent().getSecond();
-//            long sum = 0;
-//            for (T n : data) {
-//                sum += n.longValue();
-//            }
-//            Pair<Attribute, Long> content = new Pair<Attribute, Long>(node.getContent().getFirst(), sum);
-//
-//            //buildNode(sumTree, content);
-//            sumTree.createNode(content);
-//
-//        }
-//
-//        sumTree.build();
-//
-//        return sumTree;
-//    }
 }
