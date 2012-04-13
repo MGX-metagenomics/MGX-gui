@@ -6,8 +6,6 @@ import java.awt.BorderLayout;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.SwingWorker;
-import org.openide.util.NbBundle;
-import org.openide.windows.TopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.explorer.ExplorerManager;
@@ -16,7 +14,9 @@ import org.openide.explorer.view.BeanTreeView;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
+import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
+import org.openide.windows.TopComponent;
 
 /**
  * Top component which displays something.
@@ -25,7 +25,7 @@ import org.openide.util.lookup.ServiceProvider;
 autostore = false)
 @TopComponent.Description(preferredID = "ProjectExplorerTopComponent",
 //iconBase="SET/PATH/TO/ICON/HERE",
-persistenceType = TopComponent.PERSISTENCE_ALWAYS)
+persistenceType = TopComponent.PERSISTENCE_NEVER)
 @TopComponent.Registration(mode = "explorer", openAtStartup = false)
 @ActionID(category = "Window", id = "de.cebitec.mgx.gui.explorer.ProjectExplorerTopComponent")
 @TopComponent.OpenActionRegistration(displayName = "#CTL_ProjectExplorerAction",
@@ -116,8 +116,8 @@ public final class ProjectExplorerTopComponent extends TopComponent implements E
         sw.execute();
     }
 
-    @Override
-    public int getPersistenceType() {
-        return PERSISTENCE_NEVER;
-    }
+//    @Override
+//    public int getPersistenceType() {
+//        return PERSISTENCE_NEVER;
+//    }
 }
