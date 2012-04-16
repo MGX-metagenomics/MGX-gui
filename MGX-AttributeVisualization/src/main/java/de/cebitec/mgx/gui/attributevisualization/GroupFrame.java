@@ -10,16 +10,15 @@ import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import de.cebitec.mgx.gui.nodefactory.VisualizationGroupNodeFactory;
 import java.awt.Color;
+import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.dnd.DropTarget;
-import java.awt.dnd.DropTargetAdapter;
-import java.awt.dnd.DropTargetDragEvent;
-import java.awt.dnd.DropTargetDropEvent;
+import java.awt.dnd.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.IOException;
+import java.util.List;
 import javax.swing.JColorChooser;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -29,6 +28,11 @@ import javax.swing.text.Document;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
+import org.openide.nodes.Node;
+import org.openide.nodes.NodeTransfer;
+import org.openide.util.Exceptions;
+import org.openide.util.Lookup;
+import org.openide.util.datatransfer.PasteType;
 
 /**
  *
@@ -57,9 +61,14 @@ public class GroupFrame extends javax.swing.JInternalFrame implements ExplorerMa
         active.addItemListener(this);
         //
         vgnf = new VisualizationGroupNodeFactory(vGroup);
-        final AbstractNode root = new AbstractNode(Children.create(vgnf, true));
+        final InvisibleRoot root = new InvisibleRoot(Children.create(vgnf, true));
         exmngr.setRootContext(root);
+        //
+        //listView.setDropTarget(true);
+        //listView.setShowParentNode(true);
+        //listView.setAllowedDropActions(DnDConstants.ACTION_COPY);
         
+
         setDropTarget();
         setVisible(true);
     }
@@ -78,7 +87,7 @@ public class GroupFrame extends javax.swing.JInternalFrame implements ExplorerMa
     }
 
     private void setDropTarget() {
-        DropTarget dt = new DropTarget(this, new DropTargetAdapter() {
+        DropTarget dt = new DropTarget(listView, new DropTargetAdapter() {
 
             @Override
             public void dragEnter(DropTargetDragEvent dtde) {
@@ -111,7 +120,7 @@ public class GroupFrame extends javax.swing.JInternalFrame implements ExplorerMa
                 }
             }
         });
-        setDropTarget(dt);
+        listView.setDropTarget(dt);
     }
 
     /**
@@ -218,5 +227,50 @@ public class GroupFrame extends javax.swing.JInternalFrame implements ExplorerMa
             }
         }, null);
         dialog.setVisible(true);
+    }
+
+    private class InvisibleRoot extends AbstractNode {
+
+        public InvisibleRoot(Children children, Lookup lookup) {
+            super(children, lookup);
+        }
+
+        public InvisibleRoot(Children children) {
+            super(children);
+        }
+
+        @Override
+        public PasteType getDropType(final Transferable t, int arg1, int arg2) {
+            if (t.isDataFlavorSupported(ModelBase.getNodeFlavor())) {
+                return new PasteType() {
+
+                    @Override
+                    public Transferable paste() throws IOException {
+                        try {
+                            SeqRun sr = (SeqRun) t.getTransferData(ModelBase.getNodeFlavor());
+                            vGroup.addSeqRun(sr);
+                            final Node node = NodeTransfer.node(t, NodeTransfer.DND_MOVE + NodeTransfer.CLIPBOARD_CUT);
+                            if (node != null) {
+                                node.destroy();
+                            }
+                        } catch (UnsupportedFlavorException ex) {
+                            Exceptions.printStackTrace(ex);
+                        }
+                        return null;
+                    }
+                };
+            } else {
+                return null;
+            }
+        }
+
+        @Override
+        protected void createPasteTypes(Transferable t, List<PasteType> s) {
+            super.createPasteTypes(t, s);
+            PasteType p = getDropType(t, 0, 0);
+            if (p != null) {
+                s.add(p);
+            }
+        }
     }
 }
