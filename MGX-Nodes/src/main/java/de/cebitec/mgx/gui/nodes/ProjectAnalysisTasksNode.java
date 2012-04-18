@@ -10,7 +10,7 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sj
  */
-public class ProjectAnalysisTasksNode extends MGXNodeBase {
+public class ProjectAnalysisTasksNode extends MGXNodeBase<MGXMaster> {
 
     private TaskStructureNodeFactory nf = null;
 
@@ -20,7 +20,7 @@ public class ProjectAnalysisTasksNode extends MGXNodeBase {
     }
 
     private ProjectAnalysisTasksNode(MGXMaster m, TaskStructureNodeFactory nf) {
-        super(Children.create(nf, false), Lookups.singleton(m));
+        super(Children.create(nf, false), Lookups.singleton(m), m);
         this.nf = nf;
         setDisplayName("Data Analysis");
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/AnalysisTasks.png");

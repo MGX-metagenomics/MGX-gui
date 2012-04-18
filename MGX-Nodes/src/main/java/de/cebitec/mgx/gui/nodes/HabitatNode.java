@@ -23,7 +23,7 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sj
  */
-public class HabitatNode extends MGXNodeBase {
+public class HabitatNode extends MGXNodeBase<Habitat> {
 
     private SampleNodeFactory snf = null;
 
@@ -34,7 +34,7 @@ public class HabitatNode extends MGXNodeBase {
     }
 
     private HabitatNode(Habitat h, SampleNodeFactory snf) {
-        super(Children.create(snf, true), Lookups.singleton(h));
+        super(Children.create(snf, true), Lookups.singleton(h), h);
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/Habitat.png");
         setShortDescription(getToolTipText(h));
         this.snf = snf;

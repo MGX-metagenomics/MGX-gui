@@ -23,7 +23,7 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sj
  */
-public class SampleNode extends MGXNodeBase {
+public class SampleNode extends MGXNodeBase<Sample> {
 
     private DNAExtractNodeFactory nf = null;
 
@@ -34,7 +34,7 @@ public class SampleNode extends MGXNodeBase {
     }
 
     private SampleNode(Sample s, DNAExtractNodeFactory snf) {
-        super(Children.create(snf, true), Lookups.singleton(s));
+        super(Children.create(snf, true), Lookups.singleton(s), s);
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/Sample.png");
         this.nf = snf;
     }

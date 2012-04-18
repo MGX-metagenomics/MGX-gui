@@ -6,7 +6,9 @@ import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
 import de.cebitec.mgx.gui.wizard.seqrun.SeqRunWizardDescriptor;
 import java.awt.Dialog;
+import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 import javax.swing.AbstractAction;
@@ -21,10 +23,12 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sj
  */
-public class SeqRunNode extends MGXNodeBase {
+public class SeqRunNode extends MGXNodeBase<SeqRun> implements Transferable {
 
     private SeqRun seqrun;
     private Action[] actions = new Action[]{new EditSeqRun(), new DeleteSeqRun()};
+    //
+    public static final DataFlavor DATA_FLAVOR = new DataFlavor(SeqRunNode.class, "SeqRunNode");
 
     public SeqRunNode(MGXMaster m, SeqRun s) {
         this(s);
@@ -34,29 +38,42 @@ public class SeqRunNode extends MGXNodeBase {
     }
 
     private SeqRunNode(SeqRun s) {
-        super(Children.LEAF, Lookups.singleton(s));
+        super(Children.LEAF, Lookups.singleton(s), s);
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/SeqRun.png");
         setShortDescription(getToolTipText(s));
     }
 
     @Override
     public Transferable drag() throws IOException {
-        return seqrun;
+        return this;
     }
 
     private String getToolTipText(SeqRun run) {
-        return new StringBuilder("<html><b>").append(run.getSequencingTechnology()).append(" sequencing run </b>(")
-                .append(run.getNumSequences()).append(" reads)").toString();
-    }
-
-    @Override
-    public boolean canDestroy() {
-        return true;
+        return new StringBuilder("<html><b>").append(run.getSequencingTechnology()).append(" sequencing run </b>(").append(run.getNumSequences()).append(" reads)").toString();
     }
 
     @Override
     public Action[] getActions(boolean context) {
         return actions;
+    }
+
+    @Override
+    public DataFlavor[] getTransferDataFlavors() {
+        return new DataFlavor[]{DATA_FLAVOR};
+    }
+
+    @Override
+    public boolean isDataFlavorSupported(DataFlavor flavor) {
+        return flavor == DATA_FLAVOR;
+    }
+
+    @Override
+    public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
+        if (flavor == DATA_FLAVOR) {
+            return this;
+        } else {
+            throw new UnsupportedFlavorException(flavor);
+        }
     }
 
     private class EditSeqRun extends AbstractAction {

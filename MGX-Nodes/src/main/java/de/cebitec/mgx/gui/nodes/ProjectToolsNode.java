@@ -9,9 +9,10 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sj
  */
-public class ProjectToolsNode extends MGXNodeBase {
-        public ProjectToolsNode(MGXMaster m) {
-        super(Children.LEAF, Lookups.singleton(m));
+public class ProjectToolsNode extends MGXNodeBase<MGXMaster> {
+
+    public ProjectToolsNode(MGXMaster m) {
+        super(Children.LEAF, Lookups.singleton(m), m);
         master = m;
         setDisplayName("Tools");
     }
@@ -20,7 +21,7 @@ public class ProjectToolsNode extends MGXNodeBase {
     public boolean canDestroy() {
         return false;
     }
-        
+
     @Override
     public Action[] getActions(boolean popup) {
         return new Action[0]; // disables context menu

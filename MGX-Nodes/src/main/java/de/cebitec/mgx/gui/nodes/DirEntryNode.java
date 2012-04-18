@@ -10,19 +10,19 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sjaenick
  */
-public class DirEntryNode extends MGXNodeBase {
+public class DirEntryNode extends MGXNodeBase<DirEntry> {
 
     private DirEntryNodeFactory nf = null;
 
     public DirEntryNode(DirEntry d, DirEntryNodeFactory nf) {
-        super(Children.create(nf, true), Lookups.singleton(d));
+        super(Children.create(nf, true), Lookups.singleton(d), d);
         this.nf = nf;
         setDisplayName(stripPath(d.getDirectory().getName()));
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/Directory.png");
     }
 
     public DirEntryNode(DirEntry d) {
-        super(Children.LEAF, Lookups.singleton(d));
+        super(Children.LEAF, Lookups.singleton(d), d);
         setDisplayName(stripPath(d.getFile().getName()));
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/File.png");
     }

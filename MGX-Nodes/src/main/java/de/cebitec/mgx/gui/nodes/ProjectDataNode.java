@@ -5,7 +5,6 @@ import de.cebitec.mgx.gui.datamodel.Habitat;
 import de.cebitec.mgx.gui.nodefactory.HabitatNodeFactory;
 import de.cebitec.mgx.gui.wizard.habitat.HabitatWizardDescriptor;
 import java.awt.Dialog;
-import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -19,7 +18,7 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sj
  */
-public class ProjectDataNode extends MGXNodeBase {
+public class ProjectDataNode extends MGXNodeBase<MGXMaster> {
 
     private HabitatNodeFactory hnf = null;
 
@@ -29,7 +28,7 @@ public class ProjectDataNode extends MGXNodeBase {
     }
 
     private ProjectDataNode(MGXMaster m, HabitatNodeFactory hnf) {
-        super(Children.create(hnf, true), Lookups.singleton(m));
+        super(Children.create(hnf, true), Lookups.singleton(m), m);
         this.hnf = hnf;
         setDisplayName("Project Data");
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/ProjectData.png");
