@@ -5,20 +5,20 @@
  */
 package de.cebitec.mgx.gui.attributevisualization;
 
-import de.cebitec.mgx.gui.datamodel.ModelBase;
-import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import de.cebitec.mgx.gui.nodefactory.VisualizationGroupNodeFactory;
+import de.cebitec.mgx.gui.nodes.SeqRunNode;
+import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
-import java.util.List;
 import javax.swing.JColorChooser;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -26,19 +26,16 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.Document;
 import org.openide.explorer.ExplorerManager;
+import org.openide.explorer.view.TreeTableView;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
-import org.openide.nodes.Node;
-import org.openide.nodes.NodeTransfer;
-import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
-import org.openide.util.datatransfer.PasteType;
 
 /**
  *
  * @author sj
  */
-public class GroupFrame extends javax.swing.JInternalFrame implements ExplorerManager.Provider, ItemListener, ActionListener, DocumentListener {
+public class GroupFrame extends javax.swing.JInternalFrame implements ExplorerManager.Provider, ItemListener, ActionListener, DocumentListener, PropertyChangeListener {
 
     private VisualizationGroup vGroup = null;
     private ExplorerManager exmngr = new ExplorerManager();
@@ -46,11 +43,12 @@ public class GroupFrame extends javax.swing.JInternalFrame implements ExplorerMa
 
     public GroupFrame(VisualizationGroup group) {
         this();
-        this.vGroup = group;
+        vGroup = group;
+        vGroup.addPropertyChangeListener(this);
         //
         // set initial properties
         //
-        setTitle(vGroup.getName());
+        setTitle(vGroup.getName() + " (" + vGroup.getNumSequences() + " sequences)");
         displayName.setText(vGroup.getName());
         color.setBackground(vGroup.getColor());
         //
@@ -63,13 +61,9 @@ public class GroupFrame extends javax.swing.JInternalFrame implements ExplorerMa
         vgnf = new VisualizationGroupNodeFactory(vGroup);
         final InvisibleRoot root = new InvisibleRoot(Children.create(vgnf, true));
         exmngr.setRootContext(root);
-        //
-        //listView.setDropTarget(true);
-        //listView.setShowParentNode(true);
-        //listView.setAllowedDropActions(DnDConstants.ACTION_COPY);
-        
 
-        setDropTarget();
+        panel.add(new MyListView(), BorderLayout.CENTER);
+
         setVisible(true);
     }
 
@@ -82,45 +76,9 @@ public class GroupFrame extends javax.swing.JInternalFrame implements ExplorerMa
 
     @Override
     public void dispose() {
+        vGroup.removePropertyChangeListener(this);
         VGroupManager.getInstance().removeGroup(vGroup);
         super.dispose();
-    }
-
-    private void setDropTarget() {
-        DropTarget dt = new DropTarget(listView, new DropTargetAdapter() {
-
-            @Override
-            public void dragEnter(DropTargetDragEvent dtde) {
-                if (!dtde.isDataFlavorSupported(ModelBase.getNodeFlavor())) {
-                    dtde.rejectDrag();
-                } else {
-                    try {
-                        SeqRun sr = (SeqRun) dtde.getTransferable().getTransferData(ModelBase.getNodeFlavor());
-                        if (sr == null || vGroup.getSeqRuns().contains(sr)) {
-                            dtde.rejectDrag();
-                        }
-                    } catch (UnsupportedFlavorException | IOException ex) {
-                        dtde.rejectDrag();
-                    }
-                }
-            }
-
-            @Override
-            public void drop(DropTargetDropEvent dtde) {
-                try {
-                    SeqRun sr = (SeqRun) dtde.getTransferable().getTransferData(ModelBase.getNodeFlavor());
-                    if (vGroup.getSeqRuns().contains(sr)) {
-                        dtde.rejectDrop();
-                        return;
-                    }
-                    vGroup.addSeqRun(sr);
-                    vgnf.refreshChildren();
-                } catch (UnsupportedFlavorException | IOException ex) {
-                    dtde.rejectDrop();
-                }
-            }
-        });
-        listView.setDropTarget(dt);
     }
 
     /**
@@ -132,18 +90,18 @@ public class GroupFrame extends javax.swing.JInternalFrame implements ExplorerMa
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel1 = new javax.swing.JPanel();
+        panel = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         active = new javax.swing.JCheckBox();
         displayName = new javax.swing.JTextField();
         color = new javax.swing.JButton();
-        listView = new org.openide.explorer.view.ListView();
 
         setClosable(true);
-        setMinimumSize(new java.awt.Dimension(160, 180));
-        setPreferredSize(new java.awt.Dimension(160, 180));
+        setResizable(true);
+        setMinimumSize(new java.awt.Dimension(180, 200));
+        setPreferredSize(new java.awt.Dimension(180, 200));
 
-        jPanel1.setLayout(new java.awt.BorderLayout());
+        panel.setLayout(new java.awt.BorderLayout());
 
         jPanel2.setLayout(new java.awt.BorderLayout());
 
@@ -161,10 +119,9 @@ public class GroupFrame extends javax.swing.JInternalFrame implements ExplorerMa
         color.setPreferredSize(new java.awt.Dimension(16, 16));
         jPanel2.add(color, java.awt.BorderLayout.EAST);
 
-        jPanel1.add(jPanel2, java.awt.BorderLayout.NORTH);
-        jPanel1.add(listView, java.awt.BorderLayout.CENTER);
+        panel.add(jPanel2, java.awt.BorderLayout.NORTH);
 
-        getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
+        getContentPane().add(panel, java.awt.BorderLayout.CENTER);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -172,9 +129,8 @@ public class GroupFrame extends javax.swing.JInternalFrame implements ExplorerMa
     private javax.swing.JCheckBox active;
     private javax.swing.JButton color;
     private javax.swing.JTextField displayName;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private org.openide.explorer.view.ListView listView;
+    private javax.swing.JPanel panel;
     // End of variables declaration//GEN-END:variables
 
     @Override
@@ -205,8 +161,9 @@ public class GroupFrame extends javax.swing.JInternalFrame implements ExplorerMa
     private void handleUpdate(DocumentEvent e) {
         Document d = e.getDocument();
         if (displayName.getDocument() == d) {
-            setTitle(displayName.getText());
+            //setTitle(displayName.getText());
             vGroup.setName(displayName.getText());
+            setTitle(vGroup.getName() + " (" + vGroup.getNumSequences() + " sequences)");
             displayName.setBackground(Color.WHITE);
         }
     }
@@ -227,6 +184,65 @@ public class GroupFrame extends javax.swing.JInternalFrame implements ExplorerMa
             }
         }, null);
         dialog.setVisible(true);
+
+
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (VisualizationGroup.VISGROUP_CHANGED.equals(evt.getPropertyName())) {
+            setTitle(vGroup.getName() + " (" + vGroup.getNumSequences() + " sequences)");
+        }
+    }
+
+    private class MyListView extends TreeTableView {
+
+        public MyListView() {
+            super();
+            setRootVisible(false);
+            setDropTarget(true);
+            //setShowParentNode(true);
+            setAllowedDropActions(DnDConstants.ACTION_COPY + DnDConstants.ACTION_REFERENCE);
+            setDropTarget();
+        }
+
+        private void setDropTarget() {
+            DropTarget dt = new DropTarget(this, new DropTargetAdapter() {
+
+                @Override
+                public void dragEnter(DropTargetDragEvent dtde) {
+                    if (!dtde.isDataFlavorSupported(SeqRunNode.DATA_FLAVOR)) {
+                        dtde.rejectDrag();
+                    } else {
+                        try {
+                            SeqRunNode srn = (SeqRunNode) dtde.getTransferable().getTransferData(SeqRunNode.DATA_FLAVOR);
+                            if (srn == null || vGroup.getSeqRuns().contains(srn.getContent())) {
+                                dtde.rejectDrag();
+                            }
+                        } catch (UnsupportedFlavorException | IOException ex) {
+                            dtde.rejectDrag();
+                        }
+                    }
+                }
+
+                @Override
+                public void drop(DropTargetDropEvent dtde) {
+                    try {
+                        SeqRunNode srn = (SeqRunNode) dtde.getTransferable().getTransferData(SeqRunNode.DATA_FLAVOR);
+                        if (vGroup.getSeqRuns().contains(srn.getContent())) {
+                            dtde.rejectDrop();
+                            return;
+                        }
+                        vGroup.addSeqRun(srn.getContent());
+                        vgnf.refreshChildren();
+                    } catch (UnsupportedFlavorException | IOException ex) {
+                        dtde.rejectDrop();
+                    }
+                }
+            });
+            setDropTarget(dt);
+
+        }
     }
 
     private class InvisibleRoot extends AbstractNode {
@@ -238,39 +254,38 @@ public class GroupFrame extends javax.swing.JInternalFrame implements ExplorerMa
         public InvisibleRoot(Children children) {
             super(children);
         }
-
-        @Override
-        public PasteType getDropType(final Transferable t, int arg1, int arg2) {
-            if (t.isDataFlavorSupported(ModelBase.getNodeFlavor())) {
-                return new PasteType() {
-
-                    @Override
-                    public Transferable paste() throws IOException {
-                        try {
-                            SeqRun sr = (SeqRun) t.getTransferData(ModelBase.getNodeFlavor());
-                            vGroup.addSeqRun(sr);
-                            final Node node = NodeTransfer.node(t, NodeTransfer.DND_MOVE + NodeTransfer.CLIPBOARD_CUT);
-                            if (node != null) {
-                                node.destroy();
-                            }
-                        } catch (UnsupportedFlavorException ex) {
-                            Exceptions.printStackTrace(ex);
-                        }
-                        return null;
-                    }
-                };
-            } else {
-                return null;
-            }
-        }
-
-        @Override
-        protected void createPasteTypes(Transferable t, List<PasteType> s) {
-            super.createPasteTypes(t, s);
-            PasteType p = getDropType(t, 0, 0);
-            if (p != null) {
-                s.add(p);
-            }
-        }
+//        @Override
+//        public PasteType getDropType(final Transferable t, int arg1, int arg2) {
+//            if (t.isDataFlavorSupported(ModelBase.getNodeFlavor())) {
+//                return new PasteType() {
+//
+//                    @Override
+//                    public Transferable paste() throws IOException {
+//                        try {
+//                            SeqRun sr = (SeqRun) t.getTransferData(ModelBase.getNodeFlavor());
+//                            vGroup.addSeqRun(sr);
+////                            final Node node = NodeTransfer.node(t, NodeTransfer.DND_COPY + NodeTransfer.CLIPBOARD_COPY);
+////                            if (node != null) {
+////                                node.destroy();
+////                            }
+//                        } catch (UnsupportedFlavorException ex) {
+//                            Exceptions.printStackTrace(ex);
+//                        }
+//                        return null;
+//                    }
+//                };
+//            } else {
+//                return null;
+//            }
+//        }
+//
+//        @Override
+//        protected void createPasteTypes(Transferable t, List<PasteType> s) {
+//            super.createPasteTypes(t, s);
+//            PasteType p = getDropType(t, 0, 0);
+//            if (p != null) {
+//                s.add(p);
+//            }
+//        }
     }
 }
