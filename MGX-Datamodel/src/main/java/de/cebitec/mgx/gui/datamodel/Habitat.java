@@ -5,9 +5,11 @@ package de.cebitec.mgx.gui.datamodel;
  * @author sjaenick
  */
 public class Habitat extends ModelBase {
-    
+
     protected String name;
-    /* GPS location of habitat */
+    /*
+     * GPS location of habitat
+     */
     protected double latitude;
     protected double longitude;
     protected String description;
@@ -85,21 +87,21 @@ public class Habitat extends ModelBase {
     }
 
     @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
     public boolean equals(Object object) {
         if (!(object instanceof Habitat)) {
             return false;
         }
         Habitat other = (Habitat) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if ((this.id == INVALID_IDENTIFIER && other.id != INVALID_IDENTIFIER) || (this.id != INVALID_IDENTIFIER && this.id != other.id)) {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = (int) ((int) 31 * hash + this.id);
+        return hash;
     }
 }

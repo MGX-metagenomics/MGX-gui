@@ -67,10 +67,10 @@ public class Tool extends ModelBase {
         return this;
     }
 
-    @Override
+   @Override
     public int hashCode() {
         int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
+        hash = (int) ((int) 31 * hash + this.id);
         return hash;
     }
 
@@ -80,7 +80,7 @@ public class Tool extends ModelBase {
             return false;
         }
         Tool other = (Tool) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if ((this.id == INVALID_IDENTIFIER && other.id != INVALID_IDENTIFIER) || (this.id != INVALID_IDENTIFIER && this.id != other.id)) {
             return false;
         }
         return true;

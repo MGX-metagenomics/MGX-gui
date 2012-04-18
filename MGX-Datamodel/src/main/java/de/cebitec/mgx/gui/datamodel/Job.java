@@ -86,7 +86,7 @@ public class Job extends ModelBase {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
+        hash = (int) ((int) 31 * hash + this.id);
         return hash;
     }
 
@@ -96,7 +96,7 @@ public class Job extends ModelBase {
             return false;
         }
         Job other = (Job) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if ((this.id == INVALID_IDENTIFIER && other.id != INVALID_IDENTIFIER) || (this.id != INVALID_IDENTIFIER && this.id != other.id)) {
             return false;
         }
         return true;

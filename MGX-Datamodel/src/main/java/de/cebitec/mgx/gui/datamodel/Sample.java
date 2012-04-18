@@ -25,7 +25,7 @@ public class Sample extends ModelBase {
 //        habitat = h;
 //        return this;
 //    }
-    
+
     public Sample setHabitatId(long habId) {
         habitat_id = habId;
         return this;
@@ -94,11 +94,10 @@ public class Sample extends ModelBase {
 //        d.setSample(this);
 //        return this;
 //    }
-
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
+        hash = (int) ((int) 31 * hash + this.id);
         return hash;
     }
 
@@ -108,7 +107,7 @@ public class Sample extends ModelBase {
             return false;
         }
         Sample other = (Sample) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if ((this.id == INVALID_IDENTIFIER && other.id != INVALID_IDENTIFIER) || (this.id != INVALID_IDENTIFIER && this.id != other.id)) {
             return false;
         }
         return true;
