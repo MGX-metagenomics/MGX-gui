@@ -35,9 +35,7 @@ public class JobAccess extends AccessBase<Job> {
         Long id = null;
         try {
             id = getDTOmaster().Job().create(dto);
-        } catch (MGXServerException ex) {
-            Logger.getLogger(JobAccess.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (MGXClientException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             Logger.getLogger(JobAccess.class.getName()).log(Level.SEVERE, null, ex);
         }
         obj.setId(id);
@@ -50,9 +48,7 @@ public class JobAccess extends AccessBase<Job> {
         JobDTO h = null;
         try {
             h = getDTOmaster().Job().fetch(id);
-        } catch (MGXServerException ex) {
-            Logger.getLogger(JobAccess.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (MGXClientException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             Logger.getLogger(JobAccess.class.getName()).log(Level.SEVERE, null, ex);
         }
         Job j = JobDTOFactory.getInstance().toModel(h);
@@ -62,16 +58,14 @@ public class JobAccess extends AccessBase<Job> {
 
     @Override
     public List<Job> fetchall() {
-        List<Job> all = new ArrayList<Job>();
+        List<Job> all = new ArrayList<>();
         try {
             for (JobDTO dto : getDTOmaster().Job().fetchall()) {
                 Job j = JobDTOFactory.getInstance().toModel(dto);
                 j.setMaster(this.getMaster());
                 all.add(j);
             }
-        } catch (MGXServerException ex) {
-            Logger.getLogger(JobAccess.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (MGXClientException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             Logger.getLogger(JobAccess.class.getName()).log(Level.SEVERE, null, ex);
         }
         return all;
@@ -82,9 +76,7 @@ public class JobAccess extends AccessBase<Job> {
         JobDTO dto = JobDTOFactory.getInstance().toDTO(obj);
         try {
             getDTOmaster().Job().update(dto);
-        } catch (MGXServerException ex) {
-            Logger.getLogger(JobAccess.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (MGXClientException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             Logger.getLogger(JobAccess.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -93,15 +85,13 @@ public class JobAccess extends AccessBase<Job> {
     public void delete(Long id) {
         try {
             getDTOmaster().Job().delete(id);
-        } catch (MGXServerException ex) {
-            Logger.getLogger(JobAccess.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (MGXClientException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             Logger.getLogger(JobAccess.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     public List<Job> ByAttributeTypeAndSeqRun(Long atype_id, Long seqrun_id) {
-        List<Job> all = new ArrayList<Job>();
+        List<Job> all = new ArrayList<>();
         try {
             for (JobDTO dto : getDTOmaster().Job().ByAttributeTypeAndSeqRun(atype_id, seqrun_id)) {
                 Job j = JobDTOFactory.getInstance().toModel(dto);
@@ -115,7 +105,7 @@ public class JobAccess extends AccessBase<Job> {
     }
 
     public List<Job> BySeqRun(SeqRun sr) {
-        List<Job> all = new ArrayList<Job>();
+        List<Job> all = new ArrayList<>();
         try {
             for (JobDTO dto : getDTOmaster().Job().BySeqRun(sr.getId())) {
                 Job j = JobDTOFactory.getInstance().toModel(dto);

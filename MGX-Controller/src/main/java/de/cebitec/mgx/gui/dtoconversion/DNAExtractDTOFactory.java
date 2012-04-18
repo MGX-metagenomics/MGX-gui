@@ -3,6 +3,7 @@ package de.cebitec.mgx.gui.dtoconversion;
 import de.cebitec.mgx.dto.dto.DNAExtractDTO;
 import de.cebitec.mgx.dto.dto.DNAExtractDTO.Builder;
 import de.cebitec.mgx.gui.datamodel.DNAExtract;
+import de.cebitec.mgx.gui.datamodel.ModelBase;
 
 /**
  *
@@ -25,7 +26,7 @@ public class DNAExtractDTOFactory extends DTOConversionBase<DNAExtract, DNAExtra
     @Override
     public final DNAExtractDTO toDTO(DNAExtract d) {
         Builder b = DNAExtractDTO.newBuilder();
-        if (d.getId() != null) {
+        if (d.getId() != ModelBase.INVALID_IDENTIFIER) {
             b.setId(d.getId());
         }
         b = b.setSampleId(d.getSampleId());

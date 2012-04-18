@@ -3,6 +3,7 @@ package de.cebitec.mgx.gui.dtoconversion;
 import de.cebitec.mgx.dto.dto.HabitatDTO;
 import de.cebitec.mgx.dto.dto.HabitatDTO.Builder;
 import de.cebitec.mgx.gui.datamodel.Habitat;
+import de.cebitec.mgx.gui.datamodel.ModelBase;
 
 /**
  *
@@ -22,7 +23,7 @@ public class HabitatDTOFactory extends DTOConversionBase<Habitat, HabitatDTO> {
     @Override
     public final HabitatDTO toDTO(Habitat h) {
         Builder b = HabitatDTO.newBuilder();
-        if (h.getId() != null) {
+        if (h.getId() != ModelBase.INVALID_IDENTIFIER) {
             b.setId(h.getId());
         }
         

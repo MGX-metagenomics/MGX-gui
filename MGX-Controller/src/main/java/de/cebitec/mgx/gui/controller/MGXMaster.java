@@ -21,7 +21,7 @@ public class MGXMaster implements MGXMasterI {
 
     public MGXMaster(MGXDTOMaster dtomaster) {
         this.dtomaster = dtomaster;
-        accessors = new HashMap<Class, AccessBase>();
+        accessors = new HashMap<>();
     }
 
     public String getProject() {
@@ -90,17 +90,7 @@ public class MGXMaster implements MGXMasterI {
             instance.setDTOmaster(dtomaster);
             instance.setMaster(this);
             return instance;
-        } catch (InstantiationException ex) {
-            logger.log(Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            logger.log(Level.SEVERE, null, ex);
-        } catch (IllegalArgumentException ex) {
-            logger.log(Level.SEVERE, null, ex);
-        } catch (InvocationTargetException ex) {
-            logger.log(Level.SEVERE, null, ex);
-        } catch (NoSuchMethodException ex) {
-            logger.log(Level.SEVERE, null, ex);
-        } catch (SecurityException ex) {
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException ex) {
             logger.log(Level.SEVERE, null, ex);
         }
         throw new UnsupportedOperationException("Could not create accessor for " + clazz);

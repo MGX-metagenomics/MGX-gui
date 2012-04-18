@@ -22,9 +22,7 @@ public class HabitatAccess extends AccessBase<Habitat> {
         Long id = null;
         try {
             id = getDTOmaster().Habitat().create(dto);
-        } catch (MGXServerException ex) {
-            Logger.getLogger(HabitatAccess.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (MGXClientException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             Logger.getLogger(HabitatAccess.class.getName()).log(Level.SEVERE, null, ex);
         }
         obj.setId(id);
@@ -36,9 +34,7 @@ public class HabitatAccess extends AccessBase<Habitat> {
         HabitatDTO h = null;
         try {
             h = getDTOmaster().Habitat().fetch(id);
-        } catch (MGXServerException ex) {
-            Logger.getLogger(HabitatAccess.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (MGXClientException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             Logger.getLogger(HabitatAccess.class.getName()).log(Level.SEVERE, null, ex);
         }
         Habitat ret = HabitatDTOFactory.getInstance().toModel(h);
@@ -48,16 +44,14 @@ public class HabitatAccess extends AccessBase<Habitat> {
 
     @Override
     public List<Habitat> fetchall() {
-        List<Habitat> all = new ArrayList<Habitat>();
+        List<Habitat> all = new ArrayList<>();
         try {
             for (HabitatDTO dto : getDTOmaster().Habitat().fetchall()) {
                 Habitat h = HabitatDTOFactory.getInstance().toModel(dto);
                 h.setMaster(this.getMaster());
                 all.add(h);
             }
-        } catch (MGXServerException ex) {
-            Logger.getLogger(HabitatAccess.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (MGXClientException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             Logger.getLogger(HabitatAccess.class.getName()).log(Level.SEVERE, null, ex);
         }
         return all;
@@ -68,9 +62,7 @@ public class HabitatAccess extends AccessBase<Habitat> {
         HabitatDTO dto = HabitatDTOFactory.getInstance().toDTO(obj);
         try {
             getDTOmaster().Habitat().update(dto);
-        } catch (MGXServerException ex) {
-            Logger.getLogger(HabitatAccess.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (MGXClientException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             Logger.getLogger(HabitatAccess.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -79,9 +71,7 @@ public class HabitatAccess extends AccessBase<Habitat> {
     public void delete(Long id) {
         try {
             getDTOmaster().Habitat().delete(id);
-        } catch (MGXServerException ex) {
-            Logger.getLogger(HabitatAccess.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (MGXClientException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             Logger.getLogger(HabitatAccess.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.dtoconversion;
 
 import de.cebitec.mgx.dto.dto.SeqRunDTO;
 import de.cebitec.mgx.dto.dto.SeqRunDTO.Builder;
+import de.cebitec.mgx.gui.datamodel.ModelBase;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
 
 /**
@@ -31,7 +32,7 @@ public class SeqRunDTOFactory extends DTOConversionBase<SeqRun, SeqRunDTO> {
                 .setSubmittedToInsdc(s.getSubmittedToINSDC());
 
         // optional fields
-        if (s.getId() != null) {
+        if (s.getId() != ModelBase.INVALID_IDENTIFIER) {
             b.setId(s.getId());
         }
 

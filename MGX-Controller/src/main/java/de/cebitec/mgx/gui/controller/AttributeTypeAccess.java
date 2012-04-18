@@ -44,7 +44,7 @@ public class AttributeTypeAccess extends AccessBase<AttributeType> {
 
     public List<AttributeType> BySeqRun(Long id) {
         System.err.println("fetch atypes ");
-        List<AttributeType> all = new ArrayList<AttributeType>();
+        List<AttributeType> all = new ArrayList<>();
         try {
             for (AttributeTypeDTO dto : getDTOmaster().AttributeType().BySeqRun(id)) {
                 AttributeType aType = AttributeTypeDTOFactory.getInstance().toModel(dto);
@@ -53,20 +53,19 @@ public class AttributeTypeAccess extends AccessBase<AttributeType> {
 
                 System.err.println("recv " + aType.getName());
             }
-        } catch (MGXServerException ex) {
-            Logger.getLogger(DNAExtractAccess.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (MGXClientException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             Logger.getLogger(DNAExtractAccess.class.getName()).log(Level.SEVERE, null, ex);
         }
         return all;
     }
 
     public List<AttributeType> ByJob(Job job) {
-        List<AttributeType> all = new ArrayList<AttributeType>();
+        List<AttributeType> all = new ArrayList<>();
+        MGXMaster master = getMaster();
         try {
             for (AttributeTypeDTO dto : getDTOmaster().AttributeType().ByJob(job.getId())) {
                 AttributeType aType = AttributeTypeDTOFactory.getInstance().toModel(dto);
-                aType.setMaster(getMaster());
+                aType.setMaster(master);
                 all.add(aType);
             }
         } catch (MGXServerException ex) {

@@ -272,7 +272,7 @@ public class VisualizationGroup {
     }
 
     private static Distribution mergeDistributions(List<Map<Attribute, ? extends Number>> dists) {
-        Map<Attribute, Long> summary = new HashMap<Attribute, Long>();
+        Map<Attribute, Long> summary = new HashMap<>();
         for (Map<Attribute, ? extends Number> d : dists) {
             for (Entry<Attribute, ? extends Number> e : d.entrySet()) {
                 Attribute attr = e.getKey();
@@ -293,7 +293,7 @@ public class VisualizationGroup {
     }
 
     private void waitForWorkers(List<Fetcher> workerList) {
-        List<Fetcher> removeList = new ArrayList<Fetcher>();
+        List<Fetcher> removeList = new ArrayList<>();
         while (workerList.size() > 0) {
             removeList.clear();
             for (Fetcher sw : workerList) {
@@ -333,12 +333,12 @@ public class VisualizationGroup {
         @Override
         protected Map<Job, List<AttributeType>> doInBackground() throws Exception {
             MGXMaster master = (MGXMaster) run.getMaster();
-            Map<Job, List<AttributeType>> attrTypes = new HashMap<Job, List<AttributeType>>();
-            // FIXME: too many server queries here; combine this into a single one
-            for (Job job : master.Job().BySeqRun(run)) {
-                attrTypes.put(job, master.AttributeType().ByJob(job));
-            }
-            return attrTypes;
+//            Map<Job, List<AttributeType>> attrTypes = new HashMap<>();
+//            // FIXME: too many server queries here; combine this into a single one
+//            for (Job job : master.Job().BySeqRun(run)) {
+//                attrTypes.put(job, master.AttributeType().ByJob(job));
+//            }
+            return master.SeqRun().getJobsAndAttributeTypes(run);
         }
 
         @Override
@@ -346,7 +346,7 @@ public class VisualizationGroup {
             Map<Job, List<AttributeType>> get = null;
             try {
                 get = get();
-            } catch (Exception ex) {
+            } catch (InterruptedException | ExecutionException ex) {
                 Exceptions.printStackTrace(ex);
             }
             result.put(run, get);

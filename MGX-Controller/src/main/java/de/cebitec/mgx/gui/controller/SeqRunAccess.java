@@ -2,14 +2,23 @@ package de.cebitec.mgx.gui.controller;
 
 import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
+import de.cebitec.mgx.dto.dto.AttributeTypeDTO;
+import de.cebitec.mgx.dto.dto.JobAndAttributeTypes;
 import de.cebitec.mgx.dto.dto.SeqRunDTO;
+import de.cebitec.mgx.gui.datamodel.AttributeType;
 import de.cebitec.mgx.gui.datamodel.DNAExtract;
+import de.cebitec.mgx.gui.datamodel.Job;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
+import de.cebitec.mgx.gui.dtoconversion.AttributeTypeDTOFactory;
+import de.cebitec.mgx.gui.dtoconversion.JobDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.SeqRunDTOFactory;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -23,10 +32,8 @@ public class SeqRunAccess extends AccessBase<SeqRun> {
         Long id = null;
         try {
             id = getDTOmaster().SeqRun().create(dto);
-        } catch (MGXServerException ex) {
-            Logger.getLogger(SeqRunAccess.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (MGXClientException ex) {
-            Logger.getLogger(SeqRunAccess.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (MGXServerException | MGXClientException ex) {
+            Exceptions.printStackTrace(ex);
         }
         obj.setId(id);
         obj.setMaster(this.getMaster());
@@ -38,10 +45,8 @@ public class SeqRunAccess extends AccessBase<SeqRun> {
         SeqRunDTO dto = null;
         try {
             dto = getDTOmaster().SeqRun().fetch(id);
-        } catch (MGXServerException ex) {
-            Logger.getLogger(SeqRunAccess.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (MGXClientException ex) {
-            Logger.getLogger(SeqRunAccess.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (MGXServerException | MGXClientException ex) {
+            Exceptions.printStackTrace(ex);
         }
         SeqRun ret = SeqRunDTOFactory.getInstance().toModel(dto);
         ret.setMaster(this.getMaster());
@@ -50,17 +55,15 @@ public class SeqRunAccess extends AccessBase<SeqRun> {
 
     @Override
     public List<SeqRun> fetchall() {
-        List<SeqRun> all = new ArrayList<SeqRun>();
+        List<SeqRun> all = new ArrayList<>();
         try {
             for (SeqRunDTO dto : getDTOmaster().SeqRun().fetchall()) {
                 SeqRun sr = SeqRunDTOFactory.getInstance().toModel(dto);
                 sr.setMaster(this.getMaster());
                 all.add(sr);
             }
-        } catch (MGXServerException ex) {
-            Logger.getLogger(SeqRunAccess.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (MGXClientException ex) {
-            Logger.getLogger(SeqRunAccess.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (MGXServerException | MGXClientException ex) {
+            Exceptions.printStackTrace(ex);
         }
         return all;
     }
@@ -70,10 +73,8 @@ public class SeqRunAccess extends AccessBase<SeqRun> {
         SeqRunDTO dto = SeqRunDTOFactory.getInstance().toDTO(obj);
         try {
             getDTOmaster().SeqRun().update(dto);
-        } catch (MGXServerException ex) {
-            Logger.getLogger(SeqRunAccess.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (MGXClientException ex) {
-            Logger.getLogger(SeqRunAccess.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (MGXServerException | MGXClientException ex) {
+            Exceptions.printStackTrace(ex);
         }
     }
 
@@ -81,26 +82,45 @@ public class SeqRunAccess extends AccessBase<SeqRun> {
     public void delete(Long id) {
         try {
             getDTOmaster().SeqRun().delete(id);
-        } catch (MGXServerException ex) {
-            Logger.getLogger(SeqRunAccess.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (MGXClientException ex) {
-            Logger.getLogger(SeqRunAccess.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (MGXServerException | MGXClientException ex) {
+            Exceptions.printStackTrace(ex);
         }
     }
 
     public Iterable<SeqRun> ByExtract(DNAExtract extract) {
-        List<SeqRun> all = new ArrayList<SeqRun>();
+        List<SeqRun> all = new ArrayList<>();
         try {
             for (SeqRunDTO dto : getDTOmaster().SeqRun().ByExtract(extract.getId())) {
                 SeqRun sr = SeqRunDTOFactory.getInstance().toModel(dto);
                 sr.setMaster(this.getMaster());
                 all.add(sr);
             }
-        } catch (MGXServerException ex) {
-            Logger.getLogger(SeqRunAccess.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (MGXClientException ex) {
-            Logger.getLogger(SeqRunAccess.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (MGXServerException | MGXClientException ex) {
+            Exceptions.printStackTrace(ex);
         }
         return all;
+    }
+
+    public Map<Job, List<AttributeType>> getJobsAndAttributeTypes(SeqRun run) {
+        Map<Job, List<AttributeType>> ret = new HashMap<>();
+        try {
+            for (JobAndAttributeTypes jat : getDTOmaster().SeqRun().getJobsAndAttributeTypes(run.getId())) {
+                Job job = JobDTOFactory.getInstance().toModel(jat.getJob());
+                job.setMaster(run.getMaster());
+
+                List<AttributeType> all = new ArrayList<>();
+                for (AttributeTypeDTO atDTO : jat.getAttributeTypes().getAttributeTypeList()) {
+                    AttributeType aType = AttributeTypeDTOFactory.getInstance().toModel(atDTO);
+                    aType.setMaster(run.getMaster());
+                    all.add(aType);
+                }
+
+                ret.put(job, all);
+            }
+        } catch (MGXServerException | MGXClientException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+
+        return ret;
     }
 }
