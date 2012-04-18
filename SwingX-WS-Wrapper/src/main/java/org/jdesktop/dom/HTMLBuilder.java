@@ -23,7 +23,6 @@ package org.jdesktop.dom;
 
 import java.util.Vector;
 import org.apache.html.dom.HTMLDocumentImpl;
-
 import org.apache.xerces.dom.ElementImpl;
 import org.apache.xerces.dom.ProcessingInstructionImpl;
 import org.apache.xerces.dom.TextImpl;
