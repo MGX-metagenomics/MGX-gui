@@ -19,6 +19,7 @@ import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import javax.swing.JColorChooser;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -59,6 +60,7 @@ public class GroupFrame extends javax.swing.JInternalFrame implements ExplorerMa
         active.addItemListener(this);
         //
         vgnf = new VisualizationGroupNodeFactory(vGroup);
+        
         final InvisibleRoot root = new InvisibleRoot(Children.create(vgnf, true));
         exmngr.setRootContext(root);
 
@@ -161,9 +163,9 @@ public class GroupFrame extends javax.swing.JInternalFrame implements ExplorerMa
     private void handleUpdate(DocumentEvent e) {
         Document d = e.getDocument();
         if (displayName.getDocument() == d) {
-            //setTitle(displayName.getText());
             vGroup.setName(displayName.getText());
-            setTitle(vGroup.getName() + " (" + vGroup.getNumSequences() + " sequences)");
+            DecimalFormat df = new DecimalFormat(",###"); // FIXME
+            setTitle(vGroup.getName() + " (" + df.format(vGroup.getNumSequences()) + " sequences)");
             displayName.setBackground(Color.WHITE);
         }
     }
@@ -233,8 +235,7 @@ public class GroupFrame extends javax.swing.JInternalFrame implements ExplorerMa
                             dtde.rejectDrop();
                             return;
                         }
-                        vGroup.addSeqRun(srn.getContent());
-                        vgnf.refreshChildren();
+                        vgnf.addNode(srn);
                     } catch (UnsupportedFlavorException | IOException ex) {
                         dtde.rejectDrop();
                     }

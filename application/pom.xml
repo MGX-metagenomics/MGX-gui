@@ -56,52 +56,38 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>GUI-login</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <artifactId>org-netbeans-modules-queries</artifactId>
             <groupId>org.netbeans.api</groupId>
-            <type>jar</type>
-            <version>RELEASE701</version>
         </dependency>
         <dependency>
             <artifactId>org-openide-util-lookup</artifactId>
             <groupId>org.netbeans.api</groupId>
-            <type>jar</type>
-            <version>RELEASE701</version>
         </dependency>
         <dependency>
             <artifactId>org-openide-text</artifactId>
             <groupId>org.netbeans.api</groupId>
-            <type>jar</type>
-            <version>RELEASE701</version>
         </dependency>
         <dependency>
             <artifactId>org-openide-filesystems</artifactId>
             <groupId>org.netbeans.api</groupId>
-            <type>jar</type>
-            <version>RELEASE701</version>
         </dependency>
         <dependency>
             <artifactId>org-openide-explorer</artifactId>
             <groupId>org.netbeans.api</groupId>
-            <type>jar</type>
-            <version>RELEASE701</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>MGX-AttributeVisualization</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>MGX-Treeview</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>MGX-BasicCharts</artifactId>
-            <version>${project.version}</version>
         </dependency>
     </dependencies>
 

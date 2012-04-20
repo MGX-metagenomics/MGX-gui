@@ -24,76 +24,47 @@
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-netbeans-api-annotations-common</artifactId>
-            <version>RELEASE701</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>3.8.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.netbeans.external</groupId>
             <artifactId>xerces-2.8.0</artifactId>
-            <version>RELEASE701</version>
-            <type>jar</type>
         </dependency>
-    <!--    <dependency>
-            <groupId>org.netbeans.external</groupId>
-            <artifactId>swingx-0.9.5</artifactId>
-            <version>RELEASE69</version>
-            <type>jar</type>
-        </dependency> -->
-
-    <!--    <dependency>
-            <groupId>org.netbeans.external</groupId>
-            <artifactId>commons-httpclient-3.1</artifactId>
-            <version>RELEASE69</version>
-            <type>jar</type>
-        </dependency> -->
         <dependency>
             <groupId>org.netbeans.external</groupId>
             <artifactId>swing-worker-1.1</artifactId>
-            <version>RELEASE701</version>
-            <type>jar</type>
         </dependency>
         <dependency>
             <groupId>org.netbeans.external</groupId>
             <artifactId>jtidy-r8-20060801</artifactId>
-            <version>RELEASE701</version>
-            <type>jar</type>
         </dependency>
         <dependency>
             <groupId>org.netbeans.external</groupId>
             <artifactId>rome-0.9</artifactId>
-            <version>RELEASE67</version>
-            <type>jar</type>
         </dependency>
         <dependency>
             <groupId>org.netbeans.external</groupId>
             <artifactId>json-2</artifactId>
-            <version>RELEASE65</version>
-            <type>jar</type>
         </dependency>
         <dependency>
             <groupId>org.netbeans.external</groupId>
             <artifactId>jdom-1.0</artifactId>
-            <version>RELEASE69</version>
         </dependency>
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
-            <version>1.5</version>
         </dependency>
         <dependency>
             <groupId>commons-httpclient</groupId>
             <artifactId>commons-httpclient</artifactId>
-            <version>3.1</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>SwingX-Wrapper</artifactId>
-            <version>${project.version}</version>
         </dependency>
     </dependencies>
 
@@ -102,7 +73,6 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>nbm-maven-plugin</artifactId>
-                <version>3.5</version>
                 <extensions>true</extensions>
                 <configuration>
                     <publicPackages>
@@ -148,22 +118,20 @@
                 </executions>
             </plugin>
             <plugin>
-                <!-- NetBeans 6.9+ requires JDK 6 -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>2.3.2</version>
                 <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <source>1.7</source>
+                    <target>1.7</target>
                 </configuration>
             </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>2.3.1</version>
+                <version>2.3.2</version>
                 <configuration>
-                    <!-- to have the jar plugin pickup the nbm generated manifest -->
                     <useDefaultManifestFile>true</useDefaultManifestFile>
                 </configuration>
             </plugin>

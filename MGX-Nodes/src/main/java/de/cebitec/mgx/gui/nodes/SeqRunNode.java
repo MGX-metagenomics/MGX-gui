@@ -25,7 +25,6 @@ import org.openide.util.lookup.Lookups;
  */
 public class SeqRunNode extends MGXNodeBase<SeqRun> implements Transferable {
 
-    private SeqRun seqrun;
     private Action[] actions = new Action[]{new EditSeqRun(), new DeleteSeqRun()};
     //
     public static final DataFlavor DATA_FLAVOR = new DataFlavor(SeqRunNode.class, "SeqRunNode");
@@ -33,7 +32,6 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> implements Transferable {
     public SeqRunNode(MGXMaster m, SeqRun s) {
         this(s);
         master = m;
-        seqrun = s;
         setDisplayName(s.getSequencingMethod() + " run");
     }
 
@@ -51,7 +49,7 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> implements Transferable {
     private String getToolTipText(SeqRun run) {
         return new StringBuilder("<html><b>").append(run.getSequencingTechnology()).append(" sequencing run </b>(").append(run.getNumSequences()).append(" reads)").toString();
     }
-
+    
     @Override
     public Action[] getActions(boolean context) {
         return actions;

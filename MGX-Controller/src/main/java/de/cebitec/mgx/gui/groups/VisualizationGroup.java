@@ -102,6 +102,12 @@ public class VisualizationGroup {
             attributeTypePrefetchers.add(fetcher);
         }
     }
+    
+    
+    public void removeSeqRun(SeqRun sr) {
+        seqruns.remove(sr);
+        fireVGroupChanged(VISGROUP_CHANGED);
+    }
 
     public final Tree<Long> getHierarchy(String attrTypeName) {
         assert !EventQueue.isDispatchThread();
@@ -316,6 +322,7 @@ public class VisualizationGroup {
     public void removePropertyChangeListener(PropertyChangeListener p) {
         pcs.removePropertyChangeListener(p);
     }
+
 
     public abstract class Fetcher<T> extends SwingWorker<T, Void> {
     }

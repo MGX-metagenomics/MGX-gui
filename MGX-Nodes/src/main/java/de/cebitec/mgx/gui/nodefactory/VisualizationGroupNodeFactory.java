@@ -1,10 +1,14 @@
 package de.cebitec.mgx.gui.nodefactory;
 
 import de.cebitec.mgx.gui.controller.MGXMaster;
-import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
+import de.cebitec.mgx.gui.nodes.SeqRunNode;
+import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
+import java.util.ArrayList;
 import java.util.List;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import org.openide.nodes.*;
 import org.openide.util.lookup.Lookups;
 
@@ -12,31 +16,41 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sjaenick
  */
-public class VisualizationGroupNodeFactory extends ChildFactory<SeqRun> implements NodeListener {
-    
-    private VisualizationGroup vg;
-    
-    public VisualizationGroupNodeFactory(VisualizationGroup vg) {
-        this.vg = vg;
-    }
+public class VisualizationGroupNodeFactory extends ChildFactory<SeqRunNode> implements NodeListener {
 
+    private VisualizationGroup group;
+    private List<SeqRunNode> nodes = new ArrayList<SeqRunNode>();
+
+    public VisualizationGroupNodeFactory(VisualizationGroup group) {
+        this.group = group;
+    }
+    
     @Override
-    protected boolean createKeys(List<SeqRun> toPopulate) {
-        toPopulate.addAll(vg.getSeqRuns());
+    protected boolean createKeys(List<SeqRunNode> toPopulate) {
+        toPopulate.addAll(nodes);
         return true;
     }
 
+    public void addNode(SeqRunNode node) {
+        nodes.add(node);
+        group.addSeqRun(node.getContent());
+        refreshChildren();
+    }
+    
+    public void removeNode(SeqRunNode node) {
+        nodes.remove(node);
+        group.removeSeqRun(node.getContent());
+        refreshChildren();
+    }
+
     @Override
-    protected Node createNodeForKey(SeqRun key) {
-        Node node = new AbstractNode(Children.LEAF, Lookups.singleton(key));
+    protected Node createNodeForKey(SeqRunNode n) {
+        FilterNode node = new DisplayNode(n, this);
         node.addNodeListener(this);
-        
-        MGXMaster m = (MGXMaster)key.getMaster();
-        node.setDisplayName(m.getProject() + " " + key.getSequencingTechnology());
         return node;
     }
 
-    public void refreshChildren() {
+    public final void refreshChildren() {
         refresh(true);
     }
 
@@ -62,5 +76,43 @@ public class VisualizationGroupNodeFactory extends ChildFactory<SeqRun> implemen
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         //refresh(true);
+    }
+
+    private class DisplayNode extends FilterNode {
+        
+        private SeqRunNode n;
+        private VisualizationGroupNodeFactory nf;
+
+        public DisplayNode(SeqRunNode node, VisualizationGroupNodeFactory nodef) {
+            super(node, Children.LEAF, Lookups.singleton(node.getContent()));
+            disableDelegation(DELEGATE_SET_DISPLAY_NAME + DELEGATE_GET_ACTIONS);
+            n = node;
+            nf = nodef;
+            
+        }
+
+        @Override
+        public String getDisplayName() {
+            MGXMaster m = (MGXMaster) n.getContent().getMaster();
+            return m.getProject() + " " + n.getContent().getSequencingTechnology();
+        }
+        
+        @Override
+        public Action[] getActions(boolean context) {
+            return new Action[]{new RemoveAction()};
+        }
+
+        private class RemoveAction extends AbstractAction {
+
+            public RemoveAction() {
+                putValue(NAME, "Remove");
+            }
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                nf.removeNode(n);
+                fireNodeDestroyed();
+            }
+        }
     }
 }

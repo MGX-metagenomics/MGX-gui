@@ -18,7 +18,7 @@ import prefuse.visual.VisualItem;
 public class PieNodeRenderer extends LabelRenderer {
 
     private final static int MIN_CIRCLE_SIZE = 30;
-    private Map<VisualItem, Image> cache = new HashMap<VisualItem, Image>();
+    private Map<VisualItem, Image> cache = new HashMap<>();
 
     public PieNodeRenderer() {
         setImagePosition(Constants.TOP);
