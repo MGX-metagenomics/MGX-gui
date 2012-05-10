@@ -18,10 +18,10 @@ public class SeqRunWizardDescriptor extends WizardDescriptor {
     private SeqRun seqrun = null;
 
     public SeqRunWizardDescriptor() {
-        List<Panel<WizardDescriptor>> panels = new ArrayList<Panel<WizardDescriptor>>();
+        List<Panel<WizardDescriptor>> panels = new ArrayList<>();
         panels.add(p1);
         panels.add(p2);
-        this.setPanelsAndSettings(new ArrayIterator<WizardDescriptor>(panels), this);
+        this.setPanelsAndSettings(new ArrayIterator<>(panels), this);
         this.setTitleFormat(new MessageFormat("{0}"));
         this.setTitle("Sequencing run wizard");
         putProperty(WizardDescriptor.PROP_CONTENT_DATA, new String[]{p1.getName(), p2.getName()});
@@ -31,9 +31,9 @@ public class SeqRunWizardDescriptor extends WizardDescriptor {
     }
 
     public SeqRunWizardDescriptor(SeqRun d) {
-        List<Panel<WizardDescriptor>> panels = new ArrayList<Panel<WizardDescriptor>>();
+        List<Panel<WizardDescriptor>> panels = new ArrayList<>();
         panels.add(p1);
-        this.setPanelsAndSettings(new ArrayIterator<WizardDescriptor>(panels), this);
+        this.setPanelsAndSettings(new ArrayIterator<>(panels), this);
         this.setTitleFormat(new MessageFormat("{0}"));
         this.setTitle("Sequencing run wizard");
         putProperty(WizardDescriptor.PROP_CONTENT_DATA, new String[]{p1.getName()});
