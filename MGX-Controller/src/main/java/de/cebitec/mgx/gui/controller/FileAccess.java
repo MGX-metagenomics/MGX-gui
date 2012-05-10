@@ -17,27 +17,25 @@ import java.util.logging.Logger;
 public class FileAccess extends AccessBase<DirEntry> {
 
     @Override
-    public Long create(DirEntry obj) {
+    public long create(DirEntry obj) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public DirEntry fetch(Long id) {
+    public DirEntry fetch(long id) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public List<DirEntry> fetchall() {
-        List<DirEntry> ret = new ArrayList<DirEntry>();
+        List<DirEntry> ret = new ArrayList<>();
         try {
             for (FileOrDirectory fod : getDTOmaster().File().fetchall()) {
                 DirEntry dirEntry = DirEntryDTOFactory.getInstance().toModel(fod);
                 dirEntry.setMaster(this.getMaster());
                 ret.add(dirEntry);
             }
-        } catch (MGXServerException ex) {
-            Logger.getLogger(FileAccess.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (MGXClientException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             Logger.getLogger(FileAccess.class.getName()).log(Level.SEVERE, null, ex);
         }
         return ret;
@@ -49,7 +47,7 @@ public class FileAccess extends AccessBase<DirEntry> {
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(long id) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 }

@@ -25,7 +25,7 @@ import java.util.logging.Logger;
  */
 public class AttributeAccess extends AccessBase<Attribute> {
 
-    public List<Attribute> BySeqRun(Long id) {
+    public List<Attribute> BySeqRun(long id) {
         List<Attribute> attrs = new ArrayList<>();
         try {
             for (AttributeDTO adto : getDTOmaster().Attribute().BySeqRun(id)) {
@@ -104,12 +104,12 @@ public class AttributeAccess extends AccessBase<Attribute> {
     }
 
     @Override
-    public Long create(Attribute obj) {
+    public long create(Attribute obj) {
         throw new UnsupportedOperationException("Not supported.");
     }
 
     @Override
-    public Attribute fetch(Long id) {
+    public Attribute fetch(long id) {
         throw new UnsupportedOperationException("Not supported.");
     }
 
@@ -123,7 +123,7 @@ public class AttributeAccess extends AccessBase<Attribute> {
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(long id) {
     }
 
     public Tree<Long> getHierarchy(AttributeType attributeType, Job job) {

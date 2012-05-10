@@ -3,6 +3,7 @@ package de.cebitec.mgx.gui.controller;
 import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.ToolDTO;
+import de.cebitec.mgx.gui.datamodel.ModelBase;
 import de.cebitec.mgx.gui.datamodel.Tool;
 import de.cebitec.mgx.gui.dtoconversion.ToolDTOFactory;
 import java.util.ArrayList;
@@ -27,17 +28,17 @@ public class ToolAccess extends AccessBase<Tool> {
     }
 
     public long installTool(long global_id) throws MGXServerException {
-        assert global_id != -1;
+        assert global_id != ModelBase.INVALID_IDENTIFIER;
         return getDTOmaster().Tool().installTool(global_id);
     }
 
     @Override
-    public Long create(Tool obj) {
+    public long create(Tool obj) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public Tool fetch(Long id) {
+    public Tool fetch(long id) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -62,7 +63,7 @@ public class ToolAccess extends AccessBase<Tool> {
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(long id) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 }

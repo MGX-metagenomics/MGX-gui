@@ -4,6 +4,7 @@ import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.HabitatDTO;
 import de.cebitec.mgx.gui.datamodel.Habitat;
+import de.cebitec.mgx.gui.datamodel.ModelBase;
 import de.cebitec.mgx.gui.dtoconversion.HabitatDTOFactory;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,9 +18,9 @@ import java.util.logging.Logger;
 public class HabitatAccess extends AccessBase<Habitat> {
 
     @Override
-    public Long create(Habitat obj) {
+    public long create(Habitat obj) {
         HabitatDTO dto = HabitatDTOFactory.getInstance().toDTO(obj);
-        Long id = null;
+        long id = ModelBase.INVALID_IDENTIFIER;
         try {
             id = getDTOmaster().Habitat().create(dto);
         } catch (MGXServerException | MGXClientException ex) {
@@ -30,7 +31,7 @@ public class HabitatAccess extends AccessBase<Habitat> {
     }
 
     @Override
-    public Habitat fetch(Long id) {
+    public Habitat fetch(long id) {
         HabitatDTO h = null;
         try {
             h = getDTOmaster().Habitat().fetch(id);
@@ -68,7 +69,7 @@ public class HabitatAccess extends AccessBase<Habitat> {
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(long id) {
         try {
             getDTOmaster().Habitat().delete(id);
         } catch (MGXServerException | MGXClientException ex) {

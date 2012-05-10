@@ -4,6 +4,7 @@ import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.SampleDTO;
 import de.cebitec.mgx.gui.datamodel.Habitat;
+import de.cebitec.mgx.gui.datamodel.ModelBase;
 import de.cebitec.mgx.gui.datamodel.Sample;
 import de.cebitec.mgx.gui.dtoconversion.SampleDTOFactory;
 import java.util.ArrayList;
@@ -18,9 +19,9 @@ import java.util.logging.Logger;
 public class SampleAccess extends AccessBase<Sample> {
 
     @Override
-    public Long create(Sample obj) {
+    public long create(Sample obj) {
         SampleDTO dto = SampleDTOFactory.getInstance().toDTO(obj);
-        Long id = null;
+        long id = ModelBase.INVALID_IDENTIFIER;
         try {
             id = getDTOmaster().Sample().create(dto);
         } catch (MGXServerException ex) {
@@ -34,7 +35,7 @@ public class SampleAccess extends AccessBase<Sample> {
     }
 
     @Override
-    public Sample fetch(Long id) {
+    public Sample fetch(long id) {
         SampleDTO dto = null;
         try {
             dto = getDTOmaster().Sample().fetch(id);
@@ -50,16 +51,14 @@ public class SampleAccess extends AccessBase<Sample> {
 
     @Override
     public List<Sample> fetchall() {
-        List<Sample> all = new ArrayList<Sample>();
+        List<Sample> all = new ArrayList<>();
         try {
             for (SampleDTO dto : getDTOmaster().Sample().fetchall()) {
                 Sample s = SampleDTOFactory.getInstance().toModel(dto);
                 s.setMaster(this.getMaster());
                 all.add(s);
             }
-        } catch (MGXServerException ex) {
-            Logger.getLogger(SampleAccess.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (MGXClientException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             Logger.getLogger(SampleAccess.class.getName()).log(Level.SEVERE, null, ex);
         }
         return all;
@@ -70,35 +69,29 @@ public class SampleAccess extends AccessBase<Sample> {
         SampleDTO dto = SampleDTOFactory.getInstance().toDTO(obj);
         try {
             getDTOmaster().Sample().update(dto);
-        } catch (MGXServerException ex) {
-            Logger.getLogger(SampleAccess.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (MGXClientException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             Logger.getLogger(SampleAccess.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(long id) {
         try {
             getDTOmaster().Sample().delete(id);
-        } catch (MGXServerException ex) {
-            Logger.getLogger(SampleAccess.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (MGXClientException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             Logger.getLogger(SampleAccess.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     public Iterable<Sample> ByHabitat(Habitat h) {
-        List<Sample> all = new ArrayList<Sample>();
+        List<Sample> all = new ArrayList<>();
         try {
             for (SampleDTO dto : getDTOmaster().Sample().ByHabitat(h.getId())) {
                 Sample s = SampleDTOFactory.getInstance().toModel(dto);
                 s.setMaster(this.getMaster());
                 all.add(s);
             }
-        } catch (MGXServerException ex) {
-            Logger.getLogger(SampleAccess.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (MGXClientException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             Logger.getLogger(SampleAccess.class.getName()).log(Level.SEVERE, null, ex);
         }
         return all;

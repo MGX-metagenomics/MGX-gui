@@ -27,12 +27,12 @@ public class SequenceAccess extends AccessBase<Sequence> {
     }
 
     @Override
-    public Long create(Sequence obj) {
+    public long create(Sequence obj) {
         throw new UnsupportedOperationException("Not supported.");
     }
 
     @Override
-    public Sequence fetch(Long id) {
+    public Sequence fetch(long id) {
         throw new UnsupportedOperationException("Not supported.");
     }
 
@@ -47,7 +47,7 @@ public class SequenceAccess extends AccessBase<Sequence> {
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(long id) {
         throw new UnsupportedOperationException("Not supported.");
     }
 }

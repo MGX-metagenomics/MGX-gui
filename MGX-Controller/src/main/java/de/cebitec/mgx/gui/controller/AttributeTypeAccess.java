@@ -18,12 +18,12 @@ import java.util.logging.Logger;
 public class AttributeTypeAccess extends AccessBase<AttributeType> {
 
     @Override
-    public Long create(AttributeType obj) {
+    public long create(AttributeType obj) {
         throw new UnsupportedOperationException("Not supported.");
     }
 
     @Override
-    public AttributeType fetch(Long id) {
+    public AttributeType fetch(long id) {
         throw new UnsupportedOperationException("Not supported.");
     }
 
@@ -38,11 +38,11 @@ public class AttributeTypeAccess extends AccessBase<AttributeType> {
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(long id) {
         throw new UnsupportedOperationException("Not supported.");
     }
 
-    public List<AttributeType> BySeqRun(Long id) {
+    public List<AttributeType> BySeqRun(long id) {
         System.err.println("fetch atypes ");
         List<AttributeType> all = new ArrayList<>();
         try {

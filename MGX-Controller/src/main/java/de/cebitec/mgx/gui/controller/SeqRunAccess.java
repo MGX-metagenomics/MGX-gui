@@ -5,10 +5,7 @@ import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.AttributeTypeDTO;
 import de.cebitec.mgx.dto.dto.JobAndAttributeTypes;
 import de.cebitec.mgx.dto.dto.SeqRunDTO;
-import de.cebitec.mgx.gui.datamodel.AttributeType;
-import de.cebitec.mgx.gui.datamodel.DNAExtract;
-import de.cebitec.mgx.gui.datamodel.Job;
-import de.cebitec.mgx.gui.datamodel.SeqRun;
+import de.cebitec.mgx.gui.datamodel.*;
 import de.cebitec.mgx.gui.dtoconversion.AttributeTypeDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.JobDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.SeqRunDTOFactory;
@@ -16,8 +13,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.openide.util.Exceptions;
 
 /**
@@ -27,9 +22,9 @@ import org.openide.util.Exceptions;
 public class SeqRunAccess extends AccessBase<SeqRun> {
 
     @Override
-    public Long create(SeqRun obj) {
+    public long create(SeqRun obj) {
         SeqRunDTO dto = SeqRunDTOFactory.getInstance().toDTO(obj);
-        Long id = null;
+        long id = ModelBase.INVALID_IDENTIFIER;
         try {
             id = getDTOmaster().SeqRun().create(dto);
         } catch (MGXServerException | MGXClientException ex) {
@@ -41,7 +36,7 @@ public class SeqRunAccess extends AccessBase<SeqRun> {
     }
 
     @Override
-    public SeqRun fetch(Long id) {
+    public SeqRun fetch(long id) {
         SeqRunDTO dto = null;
         try {
             dto = getDTOmaster().SeqRun().fetch(id);
@@ -79,7 +74,7 @@ public class SeqRunAccess extends AccessBase<SeqRun> {
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(long id) {
         try {
             getDTOmaster().SeqRun().delete(id);
         } catch (MGXServerException | MGXClientException ex) {

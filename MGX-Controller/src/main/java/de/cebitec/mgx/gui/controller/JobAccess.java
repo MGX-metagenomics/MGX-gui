@@ -2,10 +2,17 @@ package de.cebitec.mgx.gui.controller;
 
 import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
+import de.cebitec.mgx.dto.dto;
 import de.cebitec.mgx.dto.dto.JobDTO;
+import de.cebitec.mgx.dto.dto.JobParameterDTO;
+import de.cebitec.mgx.dto.dto.JobParameterListDTO;
+import de.cebitec.mgx.dto.dto.JobParameterListDTO.Builder;
 import de.cebitec.mgx.gui.datamodel.Job;
+import de.cebitec.mgx.gui.datamodel.JobParameter;
+import de.cebitec.mgx.gui.datamodel.ModelBase;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.dtoconversion.JobDTOFactory;
+import de.cebitec.mgx.gui.dtoconversion.JobParameterDTOFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -17,22 +24,38 @@ import java.util.logging.Logger;
  */
 public class JobAccess extends AccessBase<Job> {
 
-    public boolean verify(Long jobId) throws MGXServerException {
+    public boolean verify(long jobId) throws MGXServerException {
         return getDTOmaster().Job().verify(jobId);
     }
 
-    public boolean execute(Long jobId) throws MGXServerException {
+    public boolean execute(long jobId) throws MGXServerException {
         return getDTOmaster().Job().execute(jobId);
     }
 
-    public boolean cancel(Long jobId) throws MGXServerException {
+    public boolean cancel(long jobId) throws MGXServerException {
         return getDTOmaster().Job().cancel(jobId);
     }
 
+    public Iterable<JobParameter> getParameters(long jobId) throws MGXServerException {
+        List<JobParameter> ret = new ArrayList<>();
+        for (JobParameterDTO dto : getDTOmaster().Job().getParameters(jobId)) {
+            ret.add(JobParameterDTOFactory.getInstance().toModel(dto));
+        }
+        return ret;
+    }
+
+    public void setParameters(long jobId, Iterable<JobParameter> params) throws MGXServerException {
+        Builder b = JobParameterListDTO.newBuilder();
+        for (JobParameter jp : params) {
+            b.addParameter(JobParameterDTOFactory.getInstance().toDTO(jp));
+        }
+        getDTOmaster().Job().setParameters(jobId, b.build());
+    }
+
     @Override
-    public Long create(Job obj) {
+    public long create(Job obj) {
         JobDTO dto = JobDTOFactory.getInstance().toDTO(obj);
-        Long id = null;
+        long id = ModelBase.INVALID_IDENTIFIER;
         try {
             id = getDTOmaster().Job().create(dto);
         } catch (MGXServerException | MGXClientException ex) {
@@ -44,7 +67,7 @@ public class JobAccess extends AccessBase<Job> {
     }
 
     @Override
-    public Job fetch(Long id) {
+    public Job fetch(long id) {
         JobDTO h = null;
         try {
             h = getDTOmaster().Job().fetch(id);
@@ -82,7 +105,7 @@ public class JobAccess extends AccessBase<Job> {
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(long id) {
         try {
             getDTOmaster().Job().delete(id);
         } catch (MGXServerException | MGXClientException ex) {

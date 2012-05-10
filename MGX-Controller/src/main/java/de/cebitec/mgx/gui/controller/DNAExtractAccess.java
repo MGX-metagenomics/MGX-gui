@@ -4,6 +4,7 @@ import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.DNAExtractDTO;
 import de.cebitec.mgx.gui.datamodel.DNAExtract;
+import de.cebitec.mgx.gui.datamodel.ModelBase;
 import de.cebitec.mgx.gui.datamodel.Sample;
 import de.cebitec.mgx.gui.dtoconversion.DNAExtractDTOFactory;
 import java.util.ArrayList;
@@ -18,9 +19,9 @@ import java.util.logging.Logger;
 public class DNAExtractAccess extends AccessBase<DNAExtract> {
 
     @Override
-    public Long create(DNAExtract obj) {
+    public long create(DNAExtract obj) {
         DNAExtractDTO dto = DNAExtractDTOFactory.getInstance().toDTO(obj);
-        Long id = null;
+        long id = ModelBase.INVALID_IDENTIFIER;
         try {
             id = getDTOmaster().DNAExtract().create(dto);
         } catch (MGXServerException | MGXClientException ex) {
@@ -32,7 +33,7 @@ public class DNAExtractAccess extends AccessBase<DNAExtract> {
     }
 
     @Override
-    public DNAExtract fetch(Long id) {
+    public DNAExtract fetch(long id) {
         DNAExtractDTO dto = null;
         try {
             dto = getDTOmaster().DNAExtract().fetch(id);
@@ -70,7 +71,7 @@ public class DNAExtractAccess extends AccessBase<DNAExtract> {
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(long id) {
         try {
             getDTOmaster().DNAExtract().delete(id);
         } catch (MGXServerException | MGXClientException ex) {
