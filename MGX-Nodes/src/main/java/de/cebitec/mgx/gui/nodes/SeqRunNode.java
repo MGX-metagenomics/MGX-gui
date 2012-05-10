@@ -25,7 +25,7 @@ import org.openide.util.lookup.Lookups;
  */
 public class SeqRunNode extends MGXNodeBase<SeqRun> implements Transferable {
 
-    private Action[] actions = new Action[]{new EditSeqRun(), new DeleteSeqRun()};
+    private Action[] actions = new Action[]{new ExecuteAnalysis(), new EditSeqRun(), new DeleteSeqRun()};
     //
     public static final DataFlavor DATA_FLAVOR = new DataFlavor(SeqRunNode.class, "SeqRunNode");
 
@@ -49,7 +49,7 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> implements Transferable {
     private String getToolTipText(SeqRun run) {
         return new StringBuilder("<html><b>").append(run.getSequencingTechnology()).append(" sequencing run </b>(").append(run.getNumSequences()).append(" reads)").toString();
     }
-    
+
     @Override
     public Action[] getActions(boolean context) {
         return actions;
@@ -71,6 +71,19 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> implements Transferable {
             return this;
         } else {
             throw new UnsupportedFlavorException(flavor);
+        }
+    }
+
+    private class ExecuteAnalysis extends AbstractAction {
+
+        public ExecuteAnalysis() {
+            putValue(NAME, "Analyze");
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            SeqRun seqrun = getLookup().lookup(SeqRun.class);
+            throw new UnsupportedOperationException("Not supported yet.");
         }
     }
 

@@ -12,9 +12,11 @@ import de.cebitec.mgx.gui.wizard.extract.DNAExtractWizardDescriptor;
 import de.cebitec.mgx.gui.wizard.seqrun.SeqRunWizardDescriptor;
 import de.cebitec.mgx.sequence.SeqReaderFactory;
 import de.cebitec.mgx.sequence.SeqReaderI;
+import de.cebitec.mgx.sequence.SeqStoreException;
 import java.awt.Dialog;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
+import java.io.IOException;
 import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -160,7 +162,7 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
                         try {
                             canonicalPath = wd.getSequenceFile().getCanonicalPath();
                             reader = SeqReaderFactory.getReader(canonicalPath);
-                        } catch (Exception ex) {
+                        } catch (IOException | SeqStoreException ex) {
                             getMaster().SeqRun().delete(seqrun.getId());
                             snf.refreshChildren();
                             publish(ex);
@@ -190,9 +192,9 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
 
                             @Override
                             public void propertyChange(PropertyChangeEvent pce) {
-                                //super.propertyChange(pce);
                                 if (pce.getPropertyName().equals(SeqUploader.NUM_SEQUENCES)) {
                                     setStatus(String.format("%1$d sequences sent", pce.getNewValue()));
+                                    seqrun.setNumSequences((Long)pce.getNewValue());
                                 }
                             }
                         };
