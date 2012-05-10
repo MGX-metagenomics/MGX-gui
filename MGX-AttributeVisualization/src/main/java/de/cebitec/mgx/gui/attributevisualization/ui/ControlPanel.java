@@ -18,8 +18,11 @@ import de.cebitec.mgx.gui.datamodel.Distribution;
 import de.cebitec.mgx.gui.datamodel.Pair;
 import de.cebitec.mgx.gui.datamodel.tree.Tree;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
+import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -40,7 +43,6 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
     private VGroupManager vgmgr = VGroupManager.getInstance();
     private AttributeVisualizationTopComponent topComponent;
     //
-    //private AttributeType currentAttributeType = null;
     private List<Pair<VisualizationGroup, Distribution>> currentDistributions = new ArrayList<>();
     private List<Pair<VisualizationGroup, Tree<Long>>> currentHierarchies = new ArrayList<>();
     //
@@ -55,8 +57,8 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
      */
     public ControlPanel() {
         initComponents();
-        attributeTypeList.addActionListener(attrListModel);
-        visualizationTypeList.addActionListener(vizListModel);
+        attributeTypeList.addItemListener(attrListModel);
+        visualizationTypeList.addItemListener(vizListModel);
         updateButton.addActionListener(this);
 
         VGroupManager.getInstance().addPropertyChangeListener(this);
@@ -98,6 +100,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
         setPreferredSize(new java.awt.Dimension(300, 504));
 
         attributeTypeList.setModel(attrListModel);
+        attributeTypeList.setActionCommand(org.openide.util.NbBundle.getMessage(ControlPanel.class, "ControlPanel.attributeTypeList.actionCommand")); // NOI18N
         attributeTypeList.setEnabled(false);
 
         jLabel1.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
@@ -176,6 +179,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox attributeTypeList;
     private javax.swing.JCheckBox fractions;
@@ -215,11 +219,12 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
         }
     }
 
-    private final class AttributeTypeListModel extends BaseModel<AttributeType> implements ActionListener {
+    private final class AttributeTypeListModel extends BaseModel<AttributeType> implements ItemListener { //implements ActionListener {
 
         @Override
         public void update() {
             // disable all downstream elements, including self
+            content.clear();
             attributeTypeList.setEnabled(false);
             visualizationTypeList.setEnabled(false);
             updateButton.setEnabled(false);
@@ -243,7 +248,6 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
                     } catch (InterruptedException | ExecutionException ex) {
                         Exceptions.printStackTrace(ex);
                     }
-                    content.clear();
                     content.addAll(types);
 
                     if (attrListModel.getSize() > 0) {
@@ -264,8 +268,12 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
         }
 
         @Override
-        public void actionPerformed(ActionEvent e) {
-            currentAttributeType = attrListModel.getSelectedItem();
+        public void itemStateChanged(ItemEvent e) {
+            if (e.getStateChange() != ItemEvent.SELECTED) {
+                return;
+            }
+
+            currentAttributeType = getSelectedItem();
             if (currentViewer != null) {
                 currentViewer.setAttributeType(currentAttributeType);
             }
@@ -274,69 +282,90 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
             visualizationTypeList.setEnabled(false);
             updateButton.setEnabled(false);
 
+            // fetch distribution (and hierarchy) in background
             ResultCollector rc = new ResultCollector(currentAttributeType, currentDistributions, currentHierarchies, ControlPanel.this);
             rc.execute();
         }
     }
 
-    private final class VisualizationTypeListModel extends BaseModel<ViewerI> implements ActionListener {
+    private final class VisualizationTypeListModel extends BaseModel<ViewerI> implements ItemListener {
 
         @Override
         public void update() {
             // disable all downstream elements
+            content.clear();
             visualizationTypeList.setEnabled(false);
             updateButton.setEnabled(false);
 
-            SwingWorker<SortedSet<ViewerI>, Void> worker = new SwingWorker<SortedSet<ViewerI>, Void>() {
+            SortedSet<ViewerI> viewers = new TreeSet<>();
+            for (ViewerI viewer : Lookup.getDefault().lookupAll(ViewerI.class)) {
+                if (viewer.canHandle(currentAttributeType)) {
+                    viewers.add(viewer);
+                }
+            }
 
-                @Override
-                protected SortedSet<ViewerI> doInBackground() throws Exception {
-                    SortedSet<ViewerI> viewers = new TreeSet<>();
-                    for (ViewerI viewer : Lookup.getDefault().lookupAll(ViewerI.class)) {
-                        if (viewer.canHandle(currentAttributeType)) {
-                            viewers.add(viewer);
-                        }
-                    }
-                    return viewers;
+            content.addAll(viewers);
+
+            if (vizListModel.getSize() > 0) {
+                // if previously selected attribute type still exists, restore selection
+                if (currentViewer != null && content.contains(currentViewer)) {
+                    setSelectedItem(currentViewer);
+                } else {
+                    visualizationTypeList.setSelectedIndex(0);
                 }
 
-                @Override
-                protected void done() {
-                    SortedSet<ViewerI> viewers = null;
-                    try {
-                        viewers = get();
-                    } catch (InterruptedException | ExecutionException ex) {
-                        Exceptions.printStackTrace(ex);
-                    }
-                    content.clear();
-                    content.addAll(viewers);
-
-                    if (vizListModel.getSize() > 0) {
-                        // if previously selected attribute type still exists, restore selection
-                        if (currentViewer != null && content.contains(currentViewer)) {
-                            setSelectedItem(currentViewer);
-                        } else {
-                            visualizationTypeList.setSelectedIndex(0);
-                        }
-
-                        visualizationTypeList.setEnabled(true);
-                        updateButton.setEnabled(true);
-                    }
-//                    System.err.print("viewers: ");
-//                    for (ViewerI v : content) {
-//                        System.err.print(v.getName() + ", ");
+                visualizationTypeList.setEnabled(true);
+                updateButton.setEnabled(true);
+            }
+            fireContentsChanged();
+            
+//            SwingWorker<SortedSet<ViewerI>, Void> worker = new SwingWorker<SortedSet<ViewerI>, Void>() {
+//
+//                @Override
+//                protected SortedSet<ViewerI> doInBackground() throws Exception {
+//                    SortedSet<ViewerI> viewers = new TreeSet<>();
+//                    for (ViewerI viewer : Lookup.getDefault().lookupAll(ViewerI.class)) {
+//                        if (viewer.canHandle(currentAttributeType)) {
+//                            viewers.add(viewer);
+//                        }
 //                    }
-//                    System.err.println();
-
-                    fireContentsChanged();
-                    super.done();
-                }
-            };
-            worker.execute();
+//                    return viewers;
+//                }
+//
+//                @Override
+//                protected void done() {
+//                    SortedSet<ViewerI> viewers = null;
+//                    try {
+//                        viewers = get();
+//                    } catch (InterruptedException | ExecutionException ex) {
+//                        Exceptions.printStackTrace(ex);
+//                    }
+//                    content.clear();
+//                    content.addAll(viewers);
+//
+//                    if (vizListModel.getSize() > 0) {
+//                        // if previously selected attribute type still exists, restore selection
+//                        if (currentViewer != null && content.contains(currentViewer)) {
+//                            setSelectedItem(currentViewer);
+//                        } else {
+//                            visualizationTypeList.setSelectedIndex(0);
+//                        }
+//
+//                        visualizationTypeList.setEnabled(true);
+//                        updateButton.setEnabled(true);
+//                    }
+//                    fireContentsChanged();
+//                    super.done();
+//                }
+//            };
+//            worker.execute();
         }
 
         @Override
-        public void actionPerformed(ActionEvent e) {
+        public void itemStateChanged(ItemEvent e) {
+            if (e.getStateChange() != ItemEvent.SELECTED) {
+                return;
+            }
             currentViewer = vizListModel.getSelectedItem();
             currentViewer.setAttributeType(currentAttributeType);
         }

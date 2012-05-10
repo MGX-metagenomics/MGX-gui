@@ -31,7 +31,7 @@ public class PieNodeRenderer extends LabelRenderer {
         if (cache.containsKey(item)) {
             return cache.get(item);
         }
-        long totalCount = item.getLong(TreeView.nodeTotalCount); //Long.parseLong(item.getString(TreeView.nodeTotalCount));
+        long totalCount = item.getLong(TreeView.nodeTotalCount);
         String nodeLabel = item.getString(TreeView.nodeLabel);
 
         // create image and g2d object
