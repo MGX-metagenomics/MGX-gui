@@ -1,9 +1,15 @@
 package de.cebitec.mgx.gui.nodes;
 
+import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.gui.controller.MGXMaster;
+import de.cebitec.mgx.gui.datamodel.Job;
+import de.cebitec.mgx.gui.datamodel.JobParameter;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
+import de.cebitec.mgx.gui.datamodel.Tool;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
+import de.cebitec.mgx.gui.wizard.configurations.action.MenuAction;
+import de.cebitec.mgx.gui.wizard.configurations.data.util.Transform;
 import de.cebitec.mgx.gui.wizard.seqrun.SeqRunWizardDescriptor;
 import java.awt.Dialog;
 import java.awt.datatransfer.DataFlavor;
@@ -11,12 +17,16 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.WizardDescriptor;
 import org.openide.nodes.Children;
+import org.openide.util.Exceptions;
 import org.openide.util.lookup.Lookups;
 
 /**
@@ -82,8 +92,94 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> implements Transferable {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            SeqRun seqrun = getLookup().lookup(SeqRun.class);
-            throw new UnsupportedOperationException("Not supported yet.");
+            
+             SeqRun seqrun = getLookup().lookup(SeqRun.class);
+             
+          
+                Tool tool = null;
+             
+           MenuAction action  = new MenuAction();
+          //  try {
+             
+//                master.Tool().listGlobalTools();
+               
+                List<Tool>  tools= new ArrayList<Tool>();
+                
+                Tool testTool = new Tool();
+                testTool.setAuthor("author");
+                testTool.setDescription("Bla Bla bla");
+                testTool.setName("yeaaah");
+                float f = 11;
+                testTool.setVersion(f);
+                
+                tools.add(testTool);
+//                master.Tool().fetchall()
+                
+                //erzeugung der moeglichen tools
+                action.setTools(tools, tools );
+              //anzeige der moeglichen tools
+                action.actionPerformed(e); 
+              
+              //rueckgabe welches tool gewaehlt wurde
+              tool = action.startWizardTools();
+           // } catch (MGXServerException ex) {
+              //  Exceptions.printStackTrace(ex);
+            //}     
+           
+
+                  
+                  Job job = new Job(); 
+                  job.setTool(tool);
+                  List<JobParameter> jobList = null ;
+
+                  
+                  //parsen
+                  try {
+                      List<JobParameter> list= new ArrayList<JobParameter>();
+                     Iterator iterator = master.Job().getParameters(job.getId()).iterator();
+                      
+                     while (iterator.hasNext()){
+                      list.add((JobParameter)iterator.next());
+                      }
+                  
+              action.setStore(Transform.getFromJobParameterNodeStore(list)); 
+              //eigentlicher wizard start
+              action.actionPerformed(e);
+              jobList = new ArrayList<JobParameter>();
+              
+              jobList = Transform.getFromNodeStoreJobParameter(action.startWizardConfigurations());
+              
+            } catch (MGXServerException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+                  
+                  String parameter = "";
+                   // muster: nodeid.configname "wert"
+                  for(JobParameter jobParameter: jobList){
+                      String answer = jobParameter.getConfigItemValue().replaceAll("\n", " ");
+                      answer = answer.replaceAll("\r\n", " ");
+                      
+                      
+                      parameter = parameter+jobParameter.getNodeId()+"."+
+                              jobParameter.getConfigItemName()+"\""+
+                              answer+"\"";
+                  
+                  }
+                   //parameter liste an job weitergeben  
+                  job.setParameters(parameter);
+                  job.setSeqrun(seqrun);
+            long jobid = master.Job().create(job);
+         
+            boolean job_is_ok = false;
+            try {
+                job_is_ok = master.Job().verify(jobid);
+                if (job_is_ok){
+                master.Job().execute(jobid);
+            }
+            } catch (MGXServerException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+            
         }
     }
 
