@@ -6,11 +6,6 @@
 package de.cebitec.mgx.gui.wizard.configurations.action;
 
 //~--- non-JDK imports --------------------------------------------------------
-
-
-
-
-
 import de.cebitec.mgx.gui.datamodel.JobParameter;
 import de.cebitec.mgx.gui.datamodel.Tool;
 import de.cebitec.mgx.gui.wizard.configurations.data.Impl.Node;
@@ -27,6 +22,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.*;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.logging.Logger;
@@ -38,6 +34,7 @@ import org.openide.WizardDescriptor;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
+import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 
 //An example action demonstrating how the wizard could be called from within
@@ -48,91 +45,92 @@ import org.openide.util.Lookup;
 //@ActionReference(path = "Menu/Tools")
 public final class MenuAction implements ActionListener {
 
-   private final static Logger LOGGER =
-	 Logger.getLogger(MenuView.class.getName());
-   /**
-    * Der Store in dem die konfigurierbaren Nodes enthalten sind.
-    */
-   private Store store;
-   /**
-    * In diesem Parser werden die XML Dateien bearbeitet.
-    */
-   //private Parser parser;
-   private JButton button;
+    private final static Logger LOGGER =
+            Logger.getLogger(MenuView.class.getName());
+    /**
+     * Der Store in dem die konfigurierbaren Nodes enthalten sind.
+     */
+    private Store store;
+    /**
+     * In diesem Parser werden die XML Dateien bearbeitet.
+     */
+    //private Parser parser;
+    private JButton button;
+    private HashMap<String, Tool> tools;
+    private List<Tool> globalTools;
+    private List<Tool> projectTools;
 
-   private HashMap<String,Tool> tools;
-   private List<Tool> globalTools;
-   private List<Tool> projectTools;
-   /**
-    * Der Konstruktor, der für die initialisation des Parsers verantwortlich
-    * ist.
-    */
-   public MenuAction() { 
-	//parser = Lookup.getDefault().lookup(Parser.class);
-   }
-boolean showTools;
-   public void setTools(Collection<Tool> lGlobalTools,List<Tool> lProjectTools){
-       showTools = true;
-       
-       tools = new HashMap<String, Tool>();
-       
-       projectTools = lProjectTools;
-     // store = Transform.getFromJobParameterNodeStore(lParameter);
-       globalTools = new ArrayList<>();
-       
-       for(Tool tool : lGlobalTools){
-       
-       tools.put("Global-Tools"+";"+tool.getName(), tool);
-       globalTools.add(tool);
-       
-       }
-       for(Tool tool : lProjectTools){
-       
-       tools.put("Project-Tools"+";"+tool.getName(), tool);
-       }
-   }
-   
-   public void setStore(Store lStore){
-   showTools = false;
-   this.store = lStore;
-   
-   }
-   
-   
-   /**
-    * Sobald der Wizard gestartet wird, wird diese Methode aufgerufen.
-    *
-    *
-    * @param e Das Event zum starten des Wizards
-    */
-   @Override
-   public void actionPerformed(ActionEvent e) {
-      
-       if(showTools){
-       showTools();
-       }else {
-       showConfigurations(); 
-       }
-   }
+    /**
+     * Der Konstruktor, der für die initialisation des Parsers verantwortlich
+     * ist.
+     */
+    public MenuAction() {
+        //parser = Lookup.getDefault().lookup(Parser.class);
+    }
+    boolean showTools;
+
+    public void setTools(Collection<Tool> lGlobalTools, List<Tool> lProjectTools) {
+        showTools = true;
+
+        tools = new HashMap<String, Tool>();
+
+        projectTools = lProjectTools;
+        // store = Transform.getFromJobParameterNodeStore(lParameter);
+        globalTools = new ArrayList<>();
+
+        for (Tool tool : lGlobalTools) {
+
+            tools.put("Global-Tools" + ";" + tool.getId(), tool);
+            globalTools.add(tool);
+
+        }
+        for (Tool tool : lProjectTools) {
+
+            tools.put("Project-Tools" + ";" + tool.getId(), tool);
+        }
+    }
+
+    public void setStore(Store lStore) {
+        LOGGER.info("setStore");
+        showTools = false;
+        this.store = lStore;
+
+    }
+
+    /**
+     * Sobald der Wizard gestartet wird, wird diese Methode aufgerufen.
+     *
+     *
+     * @param e Das Event zum starten des Wizards
+     */
+    @Override
+    public void actionPerformed(ActionEvent e) {
+
+        if (showTools) {
+            showTools();
+        } else {
+            showConfigurations();
+        }
+    }
 
     private void showConfigurations() {
         List<WizardDescriptor.Panel<WizardDescriptor>> panels =
-            new ArrayList<WizardDescriptor.Panel<WizardDescriptor>>();
+                new ArrayList<WizardDescriptor.Panel<WizardDescriptor>>();
 
         Iterator iterator =
-            store.getIterator();
+                store.getIterator();
 
         Map.Entry me;
         int nodeIndex = 1;
 
         while (iterator.hasNext()) {
-           me = (Map.Entry) iterator.next();
-           panels.add(
-                 new MenuController(nodeIndex,
-                 store.getNode((String) me.getKey())));
-           nodeIndex++;
+            me = (Map.Entry) iterator.next();
+            panels.add(
+                    new MenuController(nodeIndex,
+                    store.getNode((String) me.getKey())));
+            nodeIndex++;
         }
-        JobParameter parameter  = new JobParameter();
+        JobParameter parameter = new JobParameter();
 
         panels.add(new MenuSummaryController(store));
 
@@ -140,27 +138,27 @@ boolean showTools;
         String[] steps = new String[panels.size()];
 
         for (int i = 0; i < panels.size(); i++) {
-           Component c = panels.get(i).getComponent();
+            Component c = panels.get(i).getComponent();
 
-           steps[i] = c.getName();
+            steps[i] = c.getName();
 
-           if (c instanceof JComponent) {
+            if (c instanceof JComponent) {
                 JComponent jc = (JComponent) c;
                 jc.putClientProperty(
-                    WizardDescriptor.PROP_CONTENT_SELECTED_INDEX, i);
+                        WizardDescriptor.PROP_CONTENT_SELECTED_INDEX, i);
                 jc.putClientProperty(WizardDescriptor.PROP_CONTENT_DATA, steps);
                 jc.putClientProperty(WizardDescriptor.PROP_AUTO_WIZARD_STYLE,
-                    true);
+                        true);
                 jc.putClientProperty(WizardDescriptor.PROP_CONTENT_DISPLAYED,
-                    true);
+                        true);
                 jc.putClientProperty(WizardDescriptor.PROP_CONTENT_NUMBERED,
-                    true);
-           }
+                        true);
+            }
         }
 
         final WizardDescriptor wiz =
-            new WizardDescriptor(
-            new WizardDescriptor.ArrayIterator<WizardDescriptor>(panels));
+                new WizardDescriptor(
+                new WizardDescriptor.ArrayIterator<WizardDescriptor>(panels));
 
 
 
@@ -176,170 +174,226 @@ boolean showTools;
         wiz.setTitle("Configurations");
 
         Object[] objects = wiz.getOptions();
+        button = new JButton();
+//        button = (JButton) objects[2];
+//        button.setText("mein Text");
 
-        button = (JButton) objects[2];
-        button.setText("mein Text");
+        Action previousClickAction = new AbstractAction() {
 
-Action previousClickAction = new AbstractAction() {
-           @Override
-    public void actionPerformed(ActionEvent e) {
+            @Override
+            public void actionPerformed(ActionEvent e) {
                 wiz.doPreviousClick();
-           }
-};
-button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("F2"),
-                            "PreviousKey");
-button.getActionMap().put("PreviousKey",
-                             previousClickAction);
-      //  startWizardConfigurations(wiz);
-   this.wiz = wiz;
-    
+            }
+        };
+        button.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("F2"),
+                "PreviousKey");
+        button.getActionMap().put("PreviousKey",
+                previousClickAction);
+        //  startWizardConfigurations(wiz);
+        this.wiz = wiz;
+
     }
-WizardDescriptor wiz;
+    WizardDescriptor wiz;
+
     public Tool startWizardTools() {
+        LOGGER.info("Tools start.");
         if (DialogDisplayer.getDefault().notify(wiz)
-            == WizardDescriptor.FINISH_OPTION) {
-      
-       return tools.get(wiz.getProperty("TOOL"));	    
+                == WizardDescriptor.FINISH_OPTION) {
+            if (((String) (wiz.getProperty("TOOL"))).startsWith("Local-Tools")) {
+
+
+                String[] stringArray = ((String) (wiz.getProperty("TOOL"))).split(";");
+                String url = stringArray[1];
+                Tool tool = new Tool();
+                tool.setXMLFile(readFile(url));
+                tool.setUrl(url);
+                tool.setAuthor("hallo");
+                tool.setDescription("hallo");
+                tool.setName("Test");
+                float flo = 12;
+                tool.setVersion(flo);
+                //@TODO
+                return tool;
+            }
+            
+            
+            return tools.get(wiz.getProperty("TOOL"));
         }
-        
+
         return null;
     }
-
 
     public Store startWizardConfigurations() {
+        LOGGER.info("Configurations start");
         if (DialogDisplayer.getDefault().notify(wiz)
-            == WizardDescriptor.FINISH_OPTION) {
-           removeNodesAndConfigItems(wiz);
-       return store;
+                == WizardDescriptor.FINISH_OPTION) {
+            removeNodesAndConfigItems(wiz);
+            return store;
         }
-        
+
         return null;
+    }
+
+    private String readFile(String path) {
+
+        // Erzeuge ein File-Objekt
+        File file = new File(path);
+        String content = "";
+        try {
+            // FileReader zum Lesen aus Datei
+            FileReader fr = new FileReader(file);
+
+            // Der String, der am Ende ausgegeben wird
+
+
+            // char-Array als Puffer fuer das Lesen. Die
+            // Laenge ergibt sich aus der Groesse der Datei
+            char[] temp = new char[(int) file.length()];
+
+            // Lesevorgang
+            fr.read(temp);
+
+            // Umwandlung des char-Arrays in einen String
+            content = new String(temp);
+
+            //Ausgabe des Strings
+//          System.out.println(content);
+
+            // Ressourcen freigeben
+            fr.close();
+        } catch (FileNotFoundException e1) {
+            // die Datei existiert nicht
+            System.err.println("File not Found: "
+                    + file);
+        } catch (IOException e2) {
+            // andere IOExceptions abfangen.
+            e2.printStackTrace();
+        }
+        return content;
     }
 
     private void showTools() {
         List<WizardDescriptor.Panel<WizardDescriptor>> panels =
-            new ArrayList<WizardDescriptor.Panel<WizardDescriptor>>();
-        
+                new ArrayList<WizardDescriptor.Panel<WizardDescriptor>>();
+
         panels.add(new StartController(globalTools, projectTools));
-        
+
 
         String[] steps = new String[panels.size()];
 
         for (int i = 0; i < panels.size(); i++) {
-           Component c = panels.get(i).getComponent();
+            Component c = panels.get(i).getComponent();
 
-           steps[i] = c.getName();
+            steps[i] = c.getName();
 
-           if (c instanceof JComponent) {
+            if (c instanceof JComponent) {
                 JComponent jc = (JComponent) c;
                 jc.putClientProperty(
-                    WizardDescriptor.PROP_CONTENT_SELECTED_INDEX, i);
+                        WizardDescriptor.PROP_CONTENT_SELECTED_INDEX, i);
                 jc.putClientProperty(WizardDescriptor.PROP_CONTENT_DATA, steps);
                 jc.putClientProperty(WizardDescriptor.PROP_AUTO_WIZARD_STYLE,
-                    true);
+                        true);
                 jc.putClientProperty(WizardDescriptor.PROP_CONTENT_DISPLAYED,
-                    true);
+                        true);
                 jc.putClientProperty(WizardDescriptor.PROP_CONTENT_NUMBERED,
-                    true);
-           }
+                        true);
+            }
         }
 
-      
-         final WizardDescriptor wiz =
-            new WizardDescriptor(
-            new WizardDescriptor.ArrayIterator<WizardDescriptor>(panels));
 
-         Object[] optionButtons = {WizardDescriptor.PREVIOUS_OPTION,  WizardDescriptor.FINISH_OPTION,
-              WizardDescriptor.CANCEL_OPTION};
-         
-         wiz.setOptions(optionButtons);
-         Object[] objects = wiz.getOptions();
-         JButton button = (JButton) objects[1];
-         button.setText("Next >");
-         button.setMnemonic(KeyEvent.VK_N);
+        final WizardDescriptor wiz =
+                new WizardDescriptor(
+                new WizardDescriptor.ArrayIterator<WizardDescriptor>(panels));
+
+        Object[] optionButtons = {WizardDescriptor.PREVIOUS_OPTION, WizardDescriptor.FINISH_OPTION,
+            WizardDescriptor.CANCEL_OPTION};
+
+        wiz.setOptions(optionButtons);
+        Object[] objects = wiz.getOptions();
+        JButton button = (JButton) objects[1];
+        button.setText("Next >");
+        button.setMnemonic(KeyEvent.VK_N);
         wiz.setTitleFormat(new MessageFormat("{0}"));
         wiz.setTitle("Configurations");
-       this.wiz = wiz;
+        this.wiz = wiz;
     }
 
-    
-    
-   /**
-    * Nach dem Beenden des Wizards werden, alle Antworten in den Store zu den
-    * jeweiligen Nodes und ConfigItems gegeben und dann alle Nodes und
-    * configItems entfernt, die keine Antworten des Users enthalten.
-    *
-    * @param lWiz WizardDescriptor
-    */
-   private void removeNodesAndConfigItems(WizardDescriptor lWiz) {
+    /**
+     * Nach dem Beenden des Wizards werden, alle Antworten in den Store zu den
+     * jeweiligen Nodes und ConfigItems gegeben und dann alle Nodes und
+     * configItems entfernt, die keine Antworten des Users enthalten.
+     *
+     * @param lWiz WizardDescriptor
+     */
+    private void removeNodesAndConfigItems(WizardDescriptor lWiz) {
 
 
-	LOGGER.info("StoreSize: " + Integer.toString(store.storeSize()));
+        LOGGER.info("StoreSize: " + Integer.toString(store.storeSize()));
 
 
-	Iterator nodeIterator = store.getIterator();
-	Map.Entry nodeME;
-	String nodeId;
-	Iterator configItemIterator;
-	while (nodeIterator.hasNext()) {
+        Iterator nodeIterator = store.getIterator();
+        Map.Entry nodeME;
+        String nodeId;
+        Iterator configItemIterator;
+        while (nodeIterator.hasNext()) {
 
 
 
-	   nodeME = (Map.Entry) nodeIterator.next();
-	   nodeId = (String) nodeME.getKey();
-	   configItemIterator = ((Node) nodeME.getValue()).getIterator();
-	   Map.Entry configItemME;
+            nodeME = (Map.Entry) nodeIterator.next();
+            nodeId = (String) nodeME.getKey();
+            configItemIterator = ((Node) nodeME.getValue()).getIterator();
+            Map.Entry configItemME;
 
-	   String localProperty;
-	   String configItemName;
-	   String nodeClassName;
+            String localProperty;
+            String configItemName;
+            String nodeClassName;
 
-	   while (configItemIterator.hasNext()) {
+            while (configItemIterator.hasNext()) {
 
-		configItemME = (Map.Entry) configItemIterator.next();
-		configItemName = (String) configItemME.getKey();
-		nodeClassName = store.getNode(nodeId).getClassName();
-
-
-		localProperty =
-		    (String) lWiz.getProperty(
-		    nodeId
-		    + nodeClassName
-		    + configItemName);
-
-		store.getNode(nodeId).getConfigItem(configItemName).setAnswer(localProperty);
-	   }
-	}
-	store.deleteEmptyNodes();
-	test(lWiz);
-   }
-
-   private void test(WizardDescriptor wiz) {
-	LOGGER.info("StoreSize After: "
-	    + Integer.toString(store.storeSize()));
-
-	ArrayList<ArrayList<String>> propertys =
-	    new ArrayList<ArrayList<String>>();
+                configItemME = (Map.Entry) configItemIterator.next();
+                configItemName = (String) configItemME.getKey();
+                nodeClassName = store.getNode(nodeId).getClassName();
 
 
-	HashMap<String, HashMap<String, String>> nodeMap = store.getAllAnswers();
+                localProperty =
+                        (String) lWiz.getProperty(
+                        nodeId
+                        + nodeClassName
+                        + configItemName);
 
-	for (String nodeKey : nodeMap.keySet()) {
+                store.getNode(nodeId).getConfigItem(configItemName).setAnswer(localProperty);
+            }
+        }
+        store.deleteEmptyNodes();
+        test(lWiz);
+    }
 
-	   ArrayList<String> property = new ArrayList<String>();
+    private void test(WizardDescriptor wiz) {
+        LOGGER.info("StoreSize After: "
+                + Integer.toString(store.storeSize()));
 
-	   HashMap<String, String> map = nodeMap.get(nodeKey);
+        ArrayList<ArrayList<String>> propertys =
+                new ArrayList<ArrayList<String>>();
 
-	   for (String s : map.keySet()) {
-		property.add(map.get(s));
-	   }
 
-	   DialogDisplayer.getDefault().notify(
-		 new NotifyDescriptor.Message(
-		 store.getNode(nodeKey).getDisplayName() + " "
-		 + property));
-	}
-   }
+        HashMap<String, HashMap<String, String>> nodeMap = store.getAllAnswers();
+
+        for (String nodeKey : nodeMap.keySet()) {
+
+            ArrayList<String> property = new ArrayList<String>();
+
+            HashMap<String, String> map = nodeMap.get(nodeKey);
+
+            for (String s : map.keySet()) {
+                property.add(map.get(s));
+            }
+
+            DialogDisplayer.getDefault().notify(
+                    new NotifyDescriptor.Message(
+                    store.getNode(nodeKey).getDisplayName() + " "
+                    + property));
+        }
+    }
 }
 
 

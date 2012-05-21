@@ -431,6 +431,7 @@ public class StartView extends JPanel implements DocumentListener {
 		   String tool = (String) projectTable.getValueAt(projectTable.getSelectedRow(), 0);
 		   toolField.setText(tool);
 		   toolField.setToolTipText(tool);
+                   currentID = projectTable.getSelectedRow();
 		}
 	   }
 	});
@@ -469,7 +470,7 @@ public class StartView extends JPanel implements DocumentListener {
 	});
 	return borderLayoutPanel;
    }
-
+int currentID = 3;
    /**
     *
     * Malt den FileChooser neu, sobald der Benutzer den Scrollbalken betätigt.

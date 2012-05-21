@@ -96,7 +96,16 @@ public class StartController implements WizardDescriptor.Panel<WizardDescriptor>
 
     @Override
     public void storeSettings(WizardDescriptor settings) {
+        if(getComponent().getToolLocation().equals("Local-Tools")){
+        
         settings.putProperty("TOOL", getComponent().getToolLocation() + ";" + getComponent().getFileFieldText());
+        }else if(getComponent().getToolLocation().equals("Global-Tools (Server)")){
+        
+        settings.putProperty("TOOL", getComponent().getToolLocation() + ";" + global.get(getComponent().currentID).getId());
+        } else if(getComponent().getToolLocation().equals("Project-Tools")){
+        settings.putProperty("TOOL", getComponent().getToolLocation() + ";" + project.get(getComponent().currentID).getId());
+        
+        }
 
     }
     boolean isValid = false;
