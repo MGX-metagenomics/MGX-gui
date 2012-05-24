@@ -1,5 +1,7 @@
 package de.cebitec.mgx.gui.datamodel;
 
+import java.util.Map;
+
 /**
  *
  * @author sjaenick
@@ -9,6 +11,9 @@ public class JobParameter {
     long node_id;
     String user_name;
     String user_desc;
+    String displayName;
+    String className;
+    Map<String, String> choices;
     String configitem_name;
     String configitem_value;
     String type;
@@ -21,6 +26,30 @@ public class JobParameter {
 
     public void setConfigItemName(String configitem_name) {
         this.configitem_name = configitem_name;
+    }
+
+    public void setDisplayName(String lDisplayName) {
+        displayName = lDisplayName;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setClassName(String lClassName) {
+        className = lClassName;
+    }
+
+    public String getClassName() {
+        return className;
+    }
+
+    public void setChoices(Map<String, String> lChoices) {
+        choices = lChoices;
+    }
+
+    public Map<String, String> getChoices() {
+        return choices;
     }
 
     public String getConfigItemValue() {
