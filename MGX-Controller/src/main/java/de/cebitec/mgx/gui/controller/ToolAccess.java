@@ -34,7 +34,17 @@ public class ToolAccess extends AccessBase<Tool> {
 
     @Override
     public long create(Tool obj) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        assert obj.getId() == ModelBase.INVALID_IDENTIFIER;
+        ToolDTO dto = ToolDTOFactory.getInstance().toDTO(obj);
+        long id = ModelBase.INVALID_IDENTIFIER;
+        try {
+            id = getDTOmaster().Tool().create(dto);
+        } catch (MGXServerException | MGXClientException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+        obj.setId(id);
+        obj.setMaster(this.getMaster());
+        return id;
     }
 
     @Override
@@ -48,7 +58,7 @@ public class ToolAccess extends AccessBase<Tool> {
         try {
             for (ToolDTO dto : getDTOmaster().Tool().fetchall()) {
                 Tool tool = ToolDTOFactory.getInstance().toModel(dto);
-                // FIXME cannot set master
+                tool.setMaster(this.getMaster());
                 ret.add(tool);
             }
         } catch (MGXServerException | MGXClientException ex) {

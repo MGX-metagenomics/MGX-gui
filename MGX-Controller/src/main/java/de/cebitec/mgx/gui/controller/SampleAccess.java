@@ -24,9 +24,7 @@ public class SampleAccess extends AccessBase<Sample> {
         long id = ModelBase.INVALID_IDENTIFIER;
         try {
             id = getDTOmaster().Sample().create(dto);
-        } catch (MGXServerException ex) {
-            Logger.getLogger(SampleAccess.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (MGXClientException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             Logger.getLogger(SampleAccess.class.getName()).log(Level.SEVERE, null, ex);
         }
         obj.setId(id);
