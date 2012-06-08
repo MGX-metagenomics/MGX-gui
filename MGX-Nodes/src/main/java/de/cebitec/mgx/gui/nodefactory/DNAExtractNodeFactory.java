@@ -6,14 +6,7 @@ import de.cebitec.mgx.gui.datamodel.Sample;
 import de.cebitec.mgx.gui.nodes.DNAExtractNode;
 import java.beans.PropertyChangeEvent;
 import java.util.List;
-import org.openide.nodes.ChildFactory;
-import org.openide.nodes.Children;
-import org.openide.nodes.Node;
-import org.openide.nodes.NodeEvent;
-import org.openide.nodes.NodeListener;
-import org.openide.nodes.NodeMemberEvent;
-import org.openide.nodes.NodeReorderEvent;
-import org.openide.util.lookup.Lookups;
+import org.openide.nodes.*;
 
 /**
  *
@@ -22,16 +15,16 @@ import org.openide.util.lookup.Lookups;
 public class DNAExtractNodeFactory extends ChildFactory<DNAExtract> implements NodeListener {
 
     private MGXMaster master;
-    private Sample sample;
+    private long sample_id;
 
     public DNAExtractNodeFactory(MGXMaster master, Sample s) {
         this.master = master;
-        this.sample = s;
+        this.sample_id = s.getId();
     }
 
     @Override
     protected boolean createKeys(List<DNAExtract> toPopulate) {
-        for (DNAExtract d : master.DNAExtract().BySample(sample)) {
+        for (DNAExtract d : master.DNAExtract().BySample(sample_id)) {
             toPopulate.add(d);
         }
         return true;

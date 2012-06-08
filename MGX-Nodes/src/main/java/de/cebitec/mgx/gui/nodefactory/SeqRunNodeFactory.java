@@ -15,16 +15,16 @@ import org.openide.nodes.*;
 public class SeqRunNodeFactory extends ChildFactory<SeqRun> implements NodeListener {
 
     private MGXMaster master;
-    private DNAExtract extract;
+    private long extract_id;
 
     public SeqRunNodeFactory(MGXMaster master, DNAExtract key) {
         this.master = master;
-        extract = key;
+        extract_id = key.getId();
     }
 
     @Override
     protected boolean createKeys(List<SeqRun> toPopulate) {
-        for (SeqRun sr : master.SeqRun().ByExtract(extract)) {
+        for (SeqRun sr : master.SeqRun().ByExtract(extract_id)) {
             toPopulate.add(sr);
         }
         return true;
