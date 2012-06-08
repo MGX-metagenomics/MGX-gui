@@ -1,11 +1,11 @@
 package de.cebitec.mgx.gui.charts.basic;
 
-import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import de.cebitec.mgx.gui.attributevisualization.viewer.NumericalViewerI;
 import de.cebitec.mgx.gui.attributevisualization.viewer.ViewerI;
 import de.cebitec.mgx.gui.datamodel.Attribute;
 import de.cebitec.mgx.gui.datamodel.Distribution;
 import de.cebitec.mgx.gui.datamodel.Pair;
+import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import java.awt.Color;
 import java.util.List;
 import javax.swing.JComponent;
