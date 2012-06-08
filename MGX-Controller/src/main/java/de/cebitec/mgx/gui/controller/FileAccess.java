@@ -7,8 +7,7 @@ import de.cebitec.mgx.gui.datamodel.DirEntry;
 import de.cebitec.mgx.gui.dtoconversion.DirEntryDTOFactory;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -36,7 +35,7 @@ public class FileAccess extends AccessBase<DirEntry> {
                 ret.add(dirEntry);
             }
         } catch (MGXServerException | MGXClientException ex) {
-            Logger.getLogger(FileAccess.class.getName()).log(Level.SEVERE, null, ex);
+            Exceptions.printStackTrace(ex);
         }
         return ret;
     }

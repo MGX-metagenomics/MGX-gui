@@ -8,8 +8,7 @@ import de.cebitec.mgx.gui.datamodel.ModelBase;
 import de.cebitec.mgx.gui.dtoconversion.HabitatDTOFactory;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -24,7 +23,7 @@ public class HabitatAccess extends AccessBase<Habitat> {
         try {
             id = getDTOmaster().Habitat().create(dto);
         } catch (MGXServerException | MGXClientException ex) {
-            Logger.getLogger(HabitatAccess.class.getName()).log(Level.SEVERE, null, ex);
+            Exceptions.printStackTrace(ex);
         }
         obj.setId(id);
         return id;
@@ -36,7 +35,7 @@ public class HabitatAccess extends AccessBase<Habitat> {
         try {
             h = getDTOmaster().Habitat().fetch(id);
         } catch (MGXServerException | MGXClientException ex) {
-            Logger.getLogger(HabitatAccess.class.getName()).log(Level.SEVERE, null, ex);
+            Exceptions.printStackTrace(ex);
         }
         Habitat ret = HabitatDTOFactory.getInstance().toModel(h);
         ret.setMaster(this.getMaster());
@@ -53,7 +52,7 @@ public class HabitatAccess extends AccessBase<Habitat> {
                 all.add(h);
             }
         } catch (MGXServerException | MGXClientException ex) {
-            Logger.getLogger(HabitatAccess.class.getName()).log(Level.SEVERE, null, ex);
+            Exceptions.printStackTrace(ex);
         }
         return all;
     }
@@ -64,7 +63,7 @@ public class HabitatAccess extends AccessBase<Habitat> {
         try {
             getDTOmaster().Habitat().update(dto);
         } catch (MGXServerException | MGXClientException ex) {
-            Logger.getLogger(HabitatAccess.class.getName()).log(Level.SEVERE, null, ex);
+            Exceptions.printStackTrace(ex);
         }
     }
 
@@ -73,7 +72,7 @@ public class HabitatAccess extends AccessBase<Habitat> {
         try {
             getDTOmaster().Habitat().delete(id);
         } catch (MGXServerException | MGXClientException ex) {
-            Logger.getLogger(HabitatAccess.class.getName()).log(Level.SEVERE, null, ex);
+            Exceptions.printStackTrace(ex);
         }
     }
 }

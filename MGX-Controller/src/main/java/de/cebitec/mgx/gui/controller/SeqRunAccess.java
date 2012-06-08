@@ -82,10 +82,10 @@ public class SeqRunAccess extends AccessBase<SeqRun> {
         }
     }
 
-    public Iterable<SeqRun> ByExtract(DNAExtract extract) {
+    public Iterable<SeqRun> ByExtract(long extract_id) {
         List<SeqRun> all = new ArrayList<>();
         try {
-            for (SeqRunDTO dto : getDTOmaster().SeqRun().ByExtract(extract.getId())) {
+            for (SeqRunDTO dto : getDTOmaster().SeqRun().ByExtract(extract_id)) {
                 SeqRun sr = SeqRunDTOFactory.getInstance().toModel(dto);
                 sr.setMaster(this.getMaster());
                 all.add(sr);
@@ -96,17 +96,17 @@ public class SeqRunAccess extends AccessBase<SeqRun> {
         return all;
     }
 
-    public Map<Job, List<AttributeType>> getJobsAndAttributeTypes(SeqRun run) {
+    public Map<Job, List<AttributeType>> getJobsAndAttributeTypes(long run_id) {
         Map<Job, List<AttributeType>> ret = new HashMap<>();
         try {
-            for (JobAndAttributeTypes jat : getDTOmaster().SeqRun().getJobsAndAttributeTypes(run.getId())) {
+            for (JobAndAttributeTypes jat : getDTOmaster().SeqRun().getJobsAndAttributeTypes(run_id)) {
                 Job job = JobDTOFactory.getInstance().toModel(jat.getJob());
-                job.setMaster(run.getMaster());
+                job.setMaster(this.getMaster());
 
                 List<AttributeType> all = new ArrayList<>();
                 for (AttributeTypeDTO atDTO : jat.getAttributeTypes().getAttributeTypeList()) {
                     AttributeType aType = AttributeTypeDTOFactory.getInstance().toModel(atDTO);
-                    aType.setMaster(run.getMaster());
+                    aType.setMaster(this.getMaster());
                     all.add(aType);
                 }
 

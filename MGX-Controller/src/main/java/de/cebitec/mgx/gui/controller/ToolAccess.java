@@ -49,7 +49,15 @@ public class ToolAccess extends AccessBase<Tool> {
 
     @Override
     public Tool fetch(long id) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Tool t = null;
+        try {
+            ToolDTO dto = getDTOmaster().Tool().fetch(id);
+            t = ToolDTOFactory.getInstance().toModel(dto);
+        } catch (MGXServerException | MGXClientException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+        t.setMaster(this.getMaster());
+        return t;
     }
 
     @Override
@@ -74,6 +82,22 @@ public class ToolAccess extends AccessBase<Tool> {
 
     @Override
     public void delete(long id) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        try {
+            getDTOmaster().Tool().delete(id);
+        } catch (MGXServerException | MGXClientException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+    }
+
+    public Tool ByJob(long id) {
+        Tool t = null;
+        try {
+            ToolDTO dto = getDTOmaster().Tool().ByJob(id);
+            t = ToolDTOFactory.getInstance().toModel(dto);
+        } catch (MGXServerException | MGXClientException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+        t.setMaster(this.getMaster());
+        return t;
     }
 }

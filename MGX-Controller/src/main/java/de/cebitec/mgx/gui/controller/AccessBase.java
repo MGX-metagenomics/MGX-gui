@@ -57,6 +57,7 @@ public abstract class AccessBase<T> {
     }
 
     protected static List<String> split(String message, String separator) {
-        return new ArrayList<String>(Arrays.asList(message.split(separator)));
+        return Arrays.asList(message.split(separator));
+        //return new ArrayList<>(Arrays.asList(message.split(separator)));
     }
 }

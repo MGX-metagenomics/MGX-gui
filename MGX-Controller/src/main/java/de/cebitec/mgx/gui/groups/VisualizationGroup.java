@@ -32,6 +32,10 @@ public class VisualizationGroup {
     private boolean is_active = true;
     private Set<SeqRun> seqruns = new HashSet<>();
     //
+    private String selectedAttributeType;
+    private Map<SeqRun, Job> uniqueJobs = new HashMap<>();
+    private Map<SeqRun, List<Job>> needsResolval = new HashMap<>();
+    //
     private final Map<SeqRun, Map<Job, List<AttributeType>>> attributeTypes = Collections.synchronizedMap(new HashMap<SeqRun, Map<Job, List<AttributeType>>>());
     private List<Fetcher> attributeTypePrefetchers = new ArrayList<>();
     private final PropertyChangeSupport pcs;
@@ -55,9 +59,7 @@ public class VisualizationGroup {
     }
 
     public final void setName(String name) {
-        String oldName = this.name;
         this.name = name;
-        //pcs.firePropertyChange(VISGROUP_RENAMED, oldName, name);
     }
 
     public final boolean isActive() {
@@ -77,7 +79,7 @@ public class VisualizationGroup {
         this.color = color;
         //fireVGroupChanged(VISGROUP_CHANGED);
     }
-    
+
     public final long getNumSequences() {
         long ret = 0;
         for (SeqRun sr : seqruns) {
@@ -90,35 +92,78 @@ public class VisualizationGroup {
         return seqruns;
     }
 
+    public final void selectAttributeType(String attrType) throws ConflictingJobsException {
+
+        selectedAttributeType = attrType;
+        uniqueJobs.clear();
+        needsResolval.clear();
+
+        for (SeqRun run : seqruns) {
+
+            List<Job> validJobs = getJobsProvidingAttributeType(run, selectedAttributeType);
+            //
+            // select the job to use - either we can automatically determine
+            // the correct job or we have to ask the user
+            //
+            switch (validJobs.size()) {
+                case 0:
+                    // nothing to do, no job provides this attribute type
+                    break;
+                case 1:
+                    uniqueJobs.put(run, validJobs.get(0));
+                    break;
+                default:
+                    needsResolval.put(run, validJobs);
+                    break;
+            }
+        }
+
+        if (!needsResolval.isEmpty()) {
+            throw new ConflictingJobsException(this);
+        }
+    }
+
+    public final Map<SeqRun, List<Job>> getConflicts() {
+        return needsResolval;
+    }
+
+    public final void resolveConflict(SeqRun sr, Job j) {
+        assert needsResolval.containsKey(sr);
+        needsResolval.remove(sr);
+        uniqueJobs.put(sr, j);
+        System.err.println("VG "+getName()+" resolved to "+j.getId());
+    }
+
     public final void addSeqRun(SeqRun sr) {
         if (!seqruns.contains(sr)) {
             distCache.clear(); // invalidate caches
             hierarchyCache.clear();
-            
+
             seqruns.add(sr);
-            
+
             AttributeTypeFetcher fetcher = new AttributeTypeFetcher(sr, attributeTypes);
             fetcher.execute();
             attributeTypePrefetchers.add(fetcher);
         }
     }
-    
-    
+
     public void removeSeqRun(SeqRun sr) {
         seqruns.remove(sr);
+        distCache.clear(); // invalidate caches
+        hierarchyCache.clear();
         fireVGroupChanged(VISGROUP_CHANGED);
     }
 
-    public final Tree<Long> getHierarchy(String attrTypeName) {
+    public final Tree<Long> getHierarchy() {
         assert !EventQueue.isDispatchThread();
+        assert selectedAttributeType != null;
+        assert needsResolval.isEmpty();
 
-        if (hierarchyCache.containsKey(attrTypeName)) {
-            return hierarchyCache.get(attrTypeName);
+        if (hierarchyCache.containsKey(selectedAttributeType)) {
+            return hierarchyCache.get(selectedAttributeType);
         }
 
         List<Tree<Long>> results = Collections.synchronizedList(new ArrayList<Tree<Long>>());
-        int numExpectedTrees = 0;
-
 
         // start distribution retrieval workers in background
         //
@@ -129,22 +174,21 @@ public class VisualizationGroup {
             // select the job to use - either we can automatically determine
             // the correct job or we have to ask the user
             //
-            Job selectedJob = selectJob(run, attrTypeName);
-
+            Job selectedJob = uniqueJobs.get(run);
             //
             // there should only be one valid attribute type left that matches the
             // request attribute type name; however, we better check..
             //
-            AttributeType selectedAttributeType = selectAttributeType(run, selectedJob, attrTypeName);
+            AttributeType currentAttributeType = selectAttributeType(run, selectedJob, selectedAttributeType);
 
             // 
             // start background worker to fetch distribution
             //
-            if (selectedJob == null || selectedAttributeType == null) {
+            if (selectedJob == null || currentAttributeType == null) {
                 allDone.countDown();
             } else {
-                HierarchyFetcher fetcher = new HierarchyFetcher(selectedAttributeType, selectedJob, allDone, results);
-                numExpectedTrees++;
+                System.err.println("fetching hierarchy for group "+getName()+" and job "+selectedJob.getId());
+                HierarchyFetcher fetcher = new HierarchyFetcher(currentAttributeType, selectedJob, allDone, results);
                 fetcher.execute();
             }
         }
@@ -159,19 +203,21 @@ public class VisualizationGroup {
         //
         // merge results
         //
-        
+
         Tree<Long> ret = TreeFactory.mergeTrees(results);
-        
-        hierarchyCache.put(attrTypeName, ret);
+
+        hierarchyCache.put(selectedAttributeType, ret);
         return ret;
     }
 
-    public final Distribution getDistribution(String attrTypeName) {
+    public final Distribution getDistribution() {
 
         assert !EventQueue.isDispatchThread();
+        assert selectedAttributeType != null;
+        assert needsResolval.isEmpty();
 
-        if (distCache.containsKey(attrTypeName)) {
-            return distCache.get(attrTypeName);
+        if (distCache.containsKey(selectedAttributeType)) {
+            return distCache.get(selectedAttributeType);
         }
 
         List<Map<Attribute, ? extends Number>> results = Collections.synchronizedList(new ArrayList<Map<Attribute, ? extends Number>>());
@@ -181,17 +227,13 @@ public class VisualizationGroup {
         CountDownLatch allDone = new CountDownLatch(seqruns.size());
 
         for (SeqRun run : seqruns) {
-            //
-            // select the job to use - either we can automatically determine
-            // the correct job or we have to ask the user
-            //
-            Job selectedJob = selectJob(run, attrTypeName);
 
+            Job selectedJob = uniqueJobs.get(run);
             //
             // there should only be one valid attribute type left that matches the
             // request attribute type name; however, we better check..
             //
-            AttributeType selectedAttributeType = selectAttributeType(run, selectedJob, attrTypeName);
+            AttributeType currentAttributeType = selectAttributeType(run, selectedJob, selectedAttributeType);
 
             // 
             // start background worker to fetch distribution
@@ -199,7 +241,7 @@ public class VisualizationGroup {
             if (selectedJob == null || selectedAttributeType == null) {
                 allDone.countDown();
             } else {
-                DistributionFetcher distFetcher = new DistributionFetcher(selectedAttributeType, selectedJob, allDone, results);
+                DistributionFetcher distFetcher = new DistributionFetcher(currentAttributeType, selectedJob, allDone, results);
                 distFetcher.execute();
             }
         }
@@ -215,14 +257,14 @@ public class VisualizationGroup {
         // merge results
         //
         Distribution ret = mergeDistributions(results);
-        distCache.put(attrTypeName, ret);
-        
+        distCache.put(selectedAttributeType, ret);
+
         return ret;
     }
 
     public final List<AttributeType> getAttributeTypes() {
         waitForWorkers(attributeTypePrefetchers);
-        List<AttributeType> ret = new ArrayList<AttributeType>();
+        List<AttributeType> ret = new ArrayList<>();
         for (Map<Job, List<AttributeType>> l : attributeTypes.values()) {
             for (List<AttributeType> atypes : l.values()) {
                 ret.addAll(atypes);
@@ -231,12 +273,12 @@ public class VisualizationGroup {
         return ret;
     }
 
-    private Job selectJob(SeqRun run, String attrTypeName) {
+    public List<Job> getJobsProvidingAttributeType(SeqRun run, String attrTypeName) {
         //
         // process all jobs for this seqrun and keep only those
         // which provide the requested attribute type
         //
-        List<Job> validJobs = new ArrayList<Job>();
+        List<Job> validJobs = new ArrayList<>();
         for (Entry<Job, List<AttributeType>> entrySet : attributeTypes.get(run).entrySet()) {
             for (AttributeType atype : entrySet.getValue()) {
                 if (atype.getName().equals(attrTypeName)) {
@@ -245,35 +287,17 @@ public class VisualizationGroup {
                 }
             }
         }
-
-        //
-        // select the job to use - either we can automatically determine
-        // the correct job or we have to ask the user
-        //
-        Job selectedJob = null;
-        switch (validJobs.size()) {
-            case 0:
-                // nothing to do, no job provides this attribute type
-                break;
-            case 1:
-                selectedJob = validJobs.get(0);
-                break;
-            default:
-                selectedJob = askUser(validJobs);
-                break;
-        }
-
-        return selectedJob;
+        return validJobs;
     }
 
     private AttributeType selectAttributeType(SeqRun run, Job job, String attrTypeName) {
-        List<AttributeType> validTypes = new ArrayList<AttributeType>();
+        List<AttributeType> validTypes = new ArrayList<>();
         for (AttributeType atype : attributeTypes.get(run).get(job)) {
             if (atype.getName().equals(attrTypeName)) {
                 validTypes.add(atype);
             }
         }
-        assert validTypes.size() == 1;
+        assert validTypes.size() == 1; // shouldn't happen
         return validTypes.get(0);
     }
 
@@ -291,11 +315,6 @@ public class VisualizationGroup {
         }
 
         return new Distribution(summary);
-    }
-
-    private static Job askUser(List<Job> jobs) {
-        // FIXME
-        return jobs.get(0);
     }
 
     private void waitForWorkers(List<Fetcher> workerList) {
@@ -323,7 +342,6 @@ public class VisualizationGroup {
         pcs.removePropertyChangeListener(p);
     }
 
-
     public abstract class Fetcher<T> extends SwingWorker<T, Void> {
     }
 
@@ -340,12 +358,7 @@ public class VisualizationGroup {
         @Override
         protected Map<Job, List<AttributeType>> doInBackground() throws Exception {
             MGXMaster master = (MGXMaster) run.getMaster();
-//            Map<Job, List<AttributeType>> attrTypes = new HashMap<>();
-//            // FIXME: too many server queries here; combine this into a single one
-//            for (Job job : master.Job().BySeqRun(run)) {
-//                attrTypes.put(job, master.AttributeType().ByJob(job));
-//            }
-            return master.SeqRun().getJobsAndAttributeTypes(run);
+            return master.SeqRun().getJobsAndAttributeTypes(run.getId());
         }
 
         @Override
@@ -379,7 +392,7 @@ public class VisualizationGroup {
         @Override
         protected Map<Attribute, Long> doInBackground() throws Exception {
             MGXMaster master = (MGXMaster) attrType.getMaster();
-            return master.Attribute().getDistribution(attrType, job);
+            return master.Attribute().getDistribution(attrType.getId(), job.getId());
         }
 
         @Override
@@ -387,7 +400,7 @@ public class VisualizationGroup {
             Map<Attribute, Long> dist = null;
             try {
                 dist = get();
-            } catch (Exception ex) {
+            } catch (InterruptedException | ExecutionException ex) {
                 Exceptions.printStackTrace(ex);
             }
             result.add(dist);
@@ -412,10 +425,9 @@ public class VisualizationGroup {
         @Override
         protected Tree<Long> doInBackground() throws Exception {
             MGXMaster master = (MGXMaster) attrType.getMaster();
-            return master.Attribute().getHierarchy(attrType, job);
+            return master.Attribute().getHierarchy(attrType.getId(), job.getId());
         }
 
-        
         @Override
         protected void done() {
             Tree<Long> tree = null;
@@ -424,7 +436,6 @@ public class VisualizationGroup {
             } catch (InterruptedException | ExecutionException ex) {
                 Exceptions.printStackTrace(ex);
             }
-            //Logger.getLogger("HFetcher").log(Level.INFO, "   hierarchy fetched");
             result.add(tree);
             latch.countDown();
         }

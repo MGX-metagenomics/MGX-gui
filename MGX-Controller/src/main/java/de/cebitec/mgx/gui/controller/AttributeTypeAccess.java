@@ -8,8 +8,7 @@ import de.cebitec.mgx.gui.datamodel.Job;
 import de.cebitec.mgx.gui.dtoconversion.AttributeTypeDTOFactory;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -54,7 +53,7 @@ public class AttributeTypeAccess extends AccessBase<AttributeType> {
                 System.err.println("recv " + aType.getName());
             }
         } catch (MGXServerException | MGXClientException ex) {
-            Logger.getLogger(DNAExtractAccess.class.getName()).log(Level.SEVERE, null, ex);
+            Exceptions.printStackTrace(ex);
         }
         return all;
     }
@@ -69,7 +68,7 @@ public class AttributeTypeAccess extends AccessBase<AttributeType> {
                 all.add(aType);
             }
         } catch (MGXServerException ex) {
-            Logger.getLogger(DNAExtractAccess.class.getName()).log(Level.SEVERE, null, ex);
+            Exceptions.printStackTrace(ex);
         }
         return all;
     }

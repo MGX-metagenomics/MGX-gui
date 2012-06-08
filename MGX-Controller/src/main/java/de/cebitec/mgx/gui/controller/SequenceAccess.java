@@ -5,8 +5,7 @@ import de.cebitec.mgx.client.upload.SeqUploader;
 import de.cebitec.mgx.gui.datamodel.Sequence;
 import de.cebitec.mgx.sequence.SeqReaderI;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -18,7 +17,7 @@ public class SequenceAccess extends AccessBase<Sequence> {
         try {
             getDTOmaster().Sequence().sendSequences(seqrun_id, reader);
         } catch (MGXServerException ex) {
-            Logger.getLogger(SequenceAccess.class.getName()).log(Level.SEVERE, null, ex);
+            Exceptions.printStackTrace(ex);
         }
     }
     
