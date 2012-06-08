@@ -19,7 +19,4 @@ public abstract class CategoricalViewerI extends ViewerI<Distribution> {
         super.setAttributeType(aType);
         super.setTitle("Distribution of "+ aType.getName());
     }
-    
-    
-    
 }

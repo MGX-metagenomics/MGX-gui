@@ -32,12 +32,12 @@ public class ResultCollector extends SwingWorker<Pair<List<Pair<VisualizationGro
 
     @Override
     protected Pair<List<Pair<VisualizationGroup, Distribution>>, List<Pair<VisualizationGroup, Tree<Long>>>> doInBackground() throws Exception {
-
-        List<Pair<VisualizationGroup, Distribution>> distributions = VGroupManager.getInstance().getDistributions(aType.getName());
+        
+        List<Pair<VisualizationGroup, Distribution>> distributions = VGroupManager.getInstance().getDistributions();
         List<Pair<VisualizationGroup, Tree<Long>>> hierarchies = null;
         
         if (aType.getStructure() == AttributeType.STRUCTURE_HIERARCHICAL) {
-            hierarchies = VGroupManager.getInstance().getHierarchies(aType.getName());
+            hierarchies = VGroupManager.getInstance().getHierarchies();
         }
 
         return new Pair(distributions, hierarchies);

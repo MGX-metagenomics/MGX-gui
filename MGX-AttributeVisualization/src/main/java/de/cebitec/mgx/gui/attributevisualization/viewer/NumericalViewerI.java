@@ -13,4 +13,10 @@ public abstract class NumericalViewerI extends ViewerI<Distribution> {
     public boolean canHandle(AttributeType valueType) {
         return valueType.getValueType() == AttributeType.VALUE_NUMERIC;
     }
+
+    @Override
+    public void setAttributeType(AttributeType aType) {
+        super.setAttributeType(aType);
+        super.setTitle("Distribution of " + aType.getName());
+    }
 }

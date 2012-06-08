@@ -51,7 +51,7 @@ public final class VisualizationGroupTopComponent extends TopComponent implement
     }
 
     public Collection<VisualizationGroup> getVisualizationGroups() {
-        return groupmgr.getGroups();
+        return groupmgr.getActiveGroups();
     }
 
 

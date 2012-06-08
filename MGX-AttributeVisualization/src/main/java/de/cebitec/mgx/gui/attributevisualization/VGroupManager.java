@@ -3,6 +3,7 @@ package de.cebitec.mgx.gui.attributevisualization;
 import de.cebitec.mgx.gui.datamodel.Distribution;
 import de.cebitec.mgx.gui.datamodel.Pair;
 import de.cebitec.mgx.gui.datamodel.tree.Tree;
+import de.cebitec.mgx.gui.groups.ConflictingJobsException;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import java.awt.Color;
 import java.beans.PropertyChangeEvent;
@@ -22,9 +23,11 @@ public class VGroupManager implements PropertyChangeListener {
     public static final String VISGROUP_NUM_CHANGED = "vgNumChanged";
     private static VGroupManager instance = null;
     // LinkedHashSet keeps the order elements are added
-    private Map<Integer, VisualizationGroup> groups = new LinkedHashMap<Integer, VisualizationGroup>();
+    private Map<Integer, VisualizationGroup> groups = new LinkedHashMap<>();
     private int groupCount = 1;
     private PropertyChangeSupport pcs = null;
+    private String currentAttributeType = null;
+    private ConflictResolver resolver = null;
     //
     private static Color colors[] = {Color.RED, Color.BLUE, Color.YELLOW, Color.PINK, Color.GREEN};
 
@@ -39,6 +42,10 @@ public class VGroupManager implements PropertyChangeListener {
         return instance;
     }
 
+    public void registerResolver(ConflictResolver cr) {
+        resolver = cr;
+    }
+
     public boolean hasGroup(String name) {
         for (VisualizationGroup vg : groups.values()) {
             if (name.equals(vg.getName())) {
@@ -48,8 +55,8 @@ public class VGroupManager implements PropertyChangeListener {
         return false;
     }
 
-    public List<VisualizationGroup> getGroups() {
-        List<VisualizationGroup> ret = new ArrayList<VisualizationGroup>();
+    public List<VisualizationGroup> getActiveGroups() {
+        List<VisualizationGroup> ret = new ArrayList<>();
         for (VisualizationGroup g : groups.values()) {
             if (g.isActive()) {
                 ret.add(g);
@@ -58,10 +65,38 @@ public class VGroupManager implements PropertyChangeListener {
         return ret;
     }
 
-    public List<Pair<VisualizationGroup, Distribution>> getDistributions(String attrName) {
+    public boolean selectAttributeType(String aType) {
+        if (aType == null) {
+            return false;
+        }
+
+        assert resolver != null;
+
+        if (!aType.equals(currentAttributeType)) {
+            List<VisualizationGroup> conflicts = new ArrayList<>();
+            for (VisualizationGroup vg : getActiveGroups()) {
+                try {
+                    vg.selectAttributeType(aType);
+                } catch (ConflictingJobsException ex) {
+                    conflicts.add(vg);
+                }
+            }
+
+            if (!conflicts.isEmpty()) {
+                resolver.resolve(conflicts);
+            }
+            
+            return conflicts.isEmpty();
+        }
+        
+        return true;
+    }
+
+    public List<Pair<VisualizationGroup, Distribution>> getDistributions() throws ConflictingJobsException {
+        System.err.println("getting distributions");
         List<Pair<VisualizationGroup, Distribution>> ret = new ArrayList<>();
-        for (VisualizationGroup vg : getGroups()) {
-            Distribution dist = vg.getDistribution(attrName);
+        for (VisualizationGroup vg : getActiveGroups()) {
+            Distribution dist = vg.getDistribution();
             if (!dist.getMap().isEmpty()) {
                 ret.add(new Pair<>(vg, dist));
             }
@@ -69,10 +104,10 @@ public class VGroupManager implements PropertyChangeListener {
         return ret;
     }
 
-    public List<Pair<VisualizationGroup, Tree<Long>>> getHierarchies(String attrName) {
+    public List<Pair<VisualizationGroup, Tree<Long>>> getHierarchies() {
         List<Pair<VisualizationGroup, Tree<Long>>> ret = new ArrayList<>();
-        for (VisualizationGroup vg : getGroups()) {
-            Tree<Long> tree = vg.getHierarchy(attrName);
+        for (VisualizationGroup vg : getActiveGroups()) {
+            Tree<Long> tree = vg.getHierarchy();
             if (!tree.isEmpty()) {
                 ret.add(new Pair<>(vg, tree));
             }
@@ -98,7 +133,7 @@ public class VGroupManager implements PropertyChangeListener {
         groups.remove(vg.getId());
         firePropertyChange(VISGROUP_NUM_CHANGED, 0, vg.getName());
     }
-    
+
     @Override
     public void propertyChange(PropertyChangeEvent pce) {
         // rename group
@@ -119,7 +154,7 @@ public class VGroupManager implements PropertyChangeListener {
                 return vg;
             }
         }
-        System.err.println("group "+name+" not found");
+        System.err.println("group " + name + " not found");
         assert false; // shouldn't happen
         return null;
     }
@@ -134,5 +169,10 @@ public class VGroupManager implements PropertyChangeListener {
 
     public void removePropertyChangeListener(PropertyChangeListener p) {
         pcs.removePropertyChangeListener(p);
+    }
+
+    public interface ConflictResolver {
+
+        public boolean resolve(List<VisualizationGroup> vg);
     }
 }

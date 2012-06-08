@@ -7,30 +7,31 @@ package de.cebitec.mgx.gui.attributevisualization.ui;
 
 import de.cebitec.mgx.gui.attributevisualization.BaseModel;
 import de.cebitec.mgx.gui.attributevisualization.VGroupManager;
+import de.cebitec.mgx.gui.attributevisualization.conflictwizard.ConflictResolverWizardIterator;
 import de.cebitec.mgx.gui.attributevisualization.filter.SortOrder;
 import de.cebitec.mgx.gui.attributevisualization.filter.ToFractionFilter;
 import de.cebitec.mgx.gui.attributevisualization.filter.VisFilterI;
 import de.cebitec.mgx.gui.attributevisualization.filter.VisFilterSupport;
 import de.cebitec.mgx.gui.attributevisualization.util.ResultCollector;
 import de.cebitec.mgx.gui.attributevisualization.viewer.ViewerI;
-import de.cebitec.mgx.gui.datamodel.AttributeType;
-import de.cebitec.mgx.gui.datamodel.Distribution;
-import de.cebitec.mgx.gui.datamodel.Pair;
+import de.cebitec.mgx.gui.datamodel.*;
 import de.cebitec.mgx.gui.datamodel.tree.Tree;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
-import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.ExecutionException;
 import javax.swing.SwingWorker;
+import org.openide.DialogDisplayer;
+import org.openide.WizardDescriptor;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 
@@ -61,7 +62,31 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
         visualizationTypeList.addItemListener(vizListModel);
         updateButton.addActionListener(this);
 
-        VGroupManager.getInstance().addPropertyChangeListener(this);
+        vgmgr.addPropertyChangeListener(this);
+        vgmgr.registerResolver(new VGroupManager.ConflictResolver() {
+
+            @Override
+            public boolean resolve(List<VisualizationGroup> groups) {
+                ConflictResolverWizardIterator iter = new ConflictResolverWizardIterator(groups);
+                //iter.setGroups(groups);
+                WizardDescriptor wiz = new WizardDescriptor(iter);
+                //             // {0} will be replaced by WizardDescriptor.Panel.getComponent().getName()
+                //             // {1} will be replaced by WizardDescriptor.Iterator.name()
+                wiz.setTitleFormat(new MessageFormat("{0}"));
+                wiz.setTitle("Tool selection");
+                if (DialogDisplayer.getDefault().notify(wiz) == WizardDescriptor.FINISH_OPTION) {
+                    for (Pair<VisualizationGroup, Pair<SeqRun, Job>> p : iter.getSelection()) {
+                        VisualizationGroup vg = p.getFirst();
+                        vg.resolveConflict(p.getSecond().getFirst(), p.getSecond().getSecond());
+                        groups.remove(vg);
+                    }
+                    return true;
+                } else {
+                    // FIXME - cancel?
+                    return false;
+                }
+            }
+        });
     }
 
     public final void setTopComponent(AttributeVisualizationTopComponent tc) {
@@ -179,7 +204,6 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox attributeTypeList;
     private javax.swing.JCheckBox fractions;
@@ -219,7 +243,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
         }
     }
 
-    private final class AttributeTypeListModel extends BaseModel<AttributeType> implements ItemListener { //implements ActionListener {
+    private final class AttributeTypeListModel extends BaseModel<AttributeType> implements ItemListener {
 
         @Override
         public void update() {
@@ -234,7 +258,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
                 @Override
                 protected SortedSet<AttributeType> doInBackground() throws Exception {
                     SortedSet<AttributeType> types = new TreeSet<>();
-                    for (VisualizationGroup vg : vgmgr.getGroups()) {
+                    for (VisualizationGroup vg : vgmgr.getActiveGroups()) {
                         types.addAll(vg.getAttributeTypes());
                     }
                     return types;
@@ -254,6 +278,10 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
                         // if previously selected attribute type still exists, restore selection
                         if (currentAttributeType != null && content.contains(currentAttributeType)) {
                             setSelectedItem(currentAttributeType);
+                            AttributeTypeListModel.this.itemStateChanged(new ItemEvent(attributeTypeList,
+                                    ItemEvent.ITEM_STATE_CHANGED,
+                                    getSelectedItem(),
+                                    ItemEvent.SELECTED));
                         } else {
                             attributeTypeList.setSelectedIndex(0);
                         }
@@ -282,9 +310,15 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
             visualizationTypeList.setEnabled(false);
             updateButton.setEnabled(false);
 
-            // fetch distribution (and hierarchy) in background
-            ResultCollector rc = new ResultCollector(currentAttributeType, currentDistributions, currentHierarchies, ControlPanel.this);
-            rc.execute();
+            if (vgmgr.selectAttributeType(currentAttributeType.getName())) {
+                // fetch distribution (and hierarchy) in background
+                System.err.println("fetching data for "+currentAttributeType.getName());
+                ResultCollector rc = new ResultCollector(currentAttributeType, currentDistributions, currentHierarchies, ControlPanel.this);
+                rc.execute();
+            } else {
+                // unresolved conflicts remain
+                //assert false;
+            }
         }
     }
 
@@ -310,6 +344,10 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
                 // if previously selected attribute type still exists, restore selection
                 if (currentViewer != null && content.contains(currentViewer)) {
                     setSelectedItem(currentViewer);
+                    itemStateChanged(new ItemEvent(visualizationTypeList,
+                            ItemEvent.ITEM_STATE_CHANGED,
+                            getSelectedItem(),
+                            ItemEvent.SELECTED));
                 } else {
                     visualizationTypeList.setSelectedIndex(0);
                 }
@@ -318,47 +356,6 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
                 updateButton.setEnabled(true);
             }
             fireContentsChanged();
-            
-//            SwingWorker<SortedSet<ViewerI>, Void> worker = new SwingWorker<SortedSet<ViewerI>, Void>() {
-//
-//                @Override
-//                protected SortedSet<ViewerI> doInBackground() throws Exception {
-//                    SortedSet<ViewerI> viewers = new TreeSet<>();
-//                    for (ViewerI viewer : Lookup.getDefault().lookupAll(ViewerI.class)) {
-//                        if (viewer.canHandle(currentAttributeType)) {
-//                            viewers.add(viewer);
-//                        }
-//                    }
-//                    return viewers;
-//                }
-//
-//                @Override
-//                protected void done() {
-//                    SortedSet<ViewerI> viewers = null;
-//                    try {
-//                        viewers = get();
-//                    } catch (InterruptedException | ExecutionException ex) {
-//                        Exceptions.printStackTrace(ex);
-//                    }
-//                    content.clear();
-//                    content.addAll(viewers);
-//
-//                    if (vizListModel.getSize() > 0) {
-//                        // if previously selected attribute type still exists, restore selection
-//                        if (currentViewer != null && content.contains(currentViewer)) {
-//                            setSelectedItem(currentViewer);
-//                        } else {
-//                            visualizationTypeList.setSelectedIndex(0);
-//                        }
-//
-//                        visualizationTypeList.setEnabled(true);
-//                        updateButton.setEnabled(true);
-//                    }
-//                    fireContentsChanged();
-//                    super.done();
-//                }
-//            };
-//            worker.execute();
         }
 
         @Override
