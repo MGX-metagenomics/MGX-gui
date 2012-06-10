@@ -417,6 +417,9 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
 
         } else {
             // hierarchy
+            if (fractions.isSelected()) {
+                // FIXME
+            }
             currentViewer.filter(currentHierarchies);
             topComponent.setVisualization(currentViewer.getComponent());
         }
