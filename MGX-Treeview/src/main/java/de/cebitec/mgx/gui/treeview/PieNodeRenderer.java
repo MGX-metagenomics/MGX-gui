@@ -33,7 +33,7 @@ public class PieNodeRenderer extends LabelRenderer {
         }
         long totalCount = item.getLong(TreeView.nodeTotalCount);
         String nodeLabel = item.getString(TreeView.nodeLabel);
-
+        
         // create image and g2d object
         int size = MIN_CIRCLE_SIZE + 10 * (int) Math.log(Math.round(2 * totalCount));
         BufferedImage img = new BufferedImage(size + 1, size + 1, BufferedImage.TYPE_INT_ARGB);
@@ -45,6 +45,7 @@ public class PieNodeRenderer extends LabelRenderer {
         Map<VisualizationGroup, Long> content = (Map<VisualizationGroup, Long>) item.get(TreeView.nodeContent);
         PieSlice[] slices = new PieSlice[content.size()];
         int i = 0;
+        // FIXME - use fraction of total classified items for pie slice size
         for (Map.Entry<VisualizationGroup, Long> e : content.entrySet()) {
             slices[i++] = new PieSlice(e.getValue(), e.getKey().getColor());
         }

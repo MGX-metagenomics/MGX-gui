@@ -72,6 +72,7 @@ public class TreeView extends HierarchicalViewerI {
     public static final String nodeContent = "content";
     public static final String nodeTotalCount = "count";
     //
+    private prefuse.data.Tree pTree = null;
     private LabelRenderer m_nodeRenderer;
     private EdgeRenderer m_edgeRenderer;
     private int orientation = Constants.ORIENT_LEFT_RIGHT;
@@ -99,13 +100,14 @@ public class TreeView extends HierarchicalViewerI {
     
     @Override
     public void show(List<Pair<VisualizationGroup, Tree<Long>>> trees) {
+        dispose();
         // merge hierarchies into consensus tree
         Tree<Map<VisualizationGroup, Long>> combinedTree = TreeFactory.combineTrees(trees);
         Node<Map<VisualizationGroup, Long>> root = combinedTree.getRoot();
         
         initDisplay();
 
-        prefuse.data.Tree pTree = new prefuse.data.Tree();
+        pTree = new prefuse.data.Tree();
         pTree.getNodeTable().addColumn(nodeLabel, Attribute.class);
         pTree.getNodeTable().addColumn(nodeTotalCount, long.class);
         pTree.getNodeTable().addColumn(nodeContent, Map.class);
@@ -125,8 +127,22 @@ public class TreeView extends HierarchicalViewerI {
 
         initRenderers();
     }
+    
+    @Override
+    public void dispose() {
+        if (pTree != null) {
+            pTree.clear();
+            pTree.dispose();
+        }
+        visualization = null;
+        display = null;
+        m_edgeRenderer = null;
+        m_nodeRenderer = null;
+        super.dispose();
+    }
+    
 
-    private void addWithChildren(prefuse.data.Tree pTree, prefuse.data.Node parent, Node<Map<VisualizationGroup, Long>> node) {
+    private static void addWithChildren(prefuse.data.Tree pTree, prefuse.data.Node parent, Node<Map<VisualizationGroup, Long>> node) {
         prefuse.data.Node self = pTree.addChild(parent);
         self.set(nodeLabel, node.getAttribute());
         self.set(nodeContent, node.getContent());
@@ -286,7 +302,7 @@ public class TreeView extends HierarchicalViewerI {
         });
     }
 
-    private long calculateNodeCount(Map<VisualizationGroup, Long> content) {
+    private static long calculateNodeCount(Map<VisualizationGroup, Long> content) {
         long total = 0;
         for (long l : content.values()) {
             total += l;
