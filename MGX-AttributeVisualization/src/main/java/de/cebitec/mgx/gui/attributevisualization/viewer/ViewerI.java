@@ -26,6 +26,8 @@ public abstract class ViewerI<T> implements VisFilterI<T>, Comparable<ViewerI<T>
     public abstract Class getInputType();
     
     public abstract void show(List<Pair<VisualizationGroup, T>> dists);
+    
+    public void dispose() {};
 
     @Override
     public List<Pair<VisualizationGroup, T>> filter(List<Pair<VisualizationGroup, T>> dists) {

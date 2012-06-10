@@ -84,6 +84,7 @@ public final class AttributeVisualizationTopComponent extends TopComponent {
 
     @Override
     public void componentClosed() {
+        controlPanel1.dispose();
     }
 
     void writeProperties(java.util.Properties p) {

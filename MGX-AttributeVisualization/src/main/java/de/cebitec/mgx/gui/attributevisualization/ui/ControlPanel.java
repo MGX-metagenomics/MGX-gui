@@ -341,7 +341,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
             content.addAll(viewers);
 
             if (vizListModel.getSize() > 0) {
-                // if previously selected attribute type still exists, restore selection
+                // if previously selected element still exists, restore selection
                 if (currentViewer != null && content.contains(currentViewer)) {
                     setSelectedItem(currentViewer);
                     itemStateChanged(new ItemEvent(visualizationTypeList,
@@ -363,6 +363,10 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
             if (e.getStateChange() != ItemEvent.SELECTED) {
                 return;
             }
+            
+            if (currentViewer != null)
+                currentViewer.dispose();
+            
             currentViewer = vizListModel.getSelectedItem();
             currentViewer.setAttributeType(currentAttributeType);
         }
@@ -416,5 +420,10 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
             currentViewer.filter(currentHierarchies);
             topComponent.setVisualization(currentViewer.getComponent());
         }
+    }
+    
+    public void dispose() {
+        if (currentViewer != null)
+            currentViewer.dispose();
     }
 }
