@@ -55,6 +55,10 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>MGX-Controller</artifactId>
         </dependency>
+        <dependency>
+            <artifactId>org-openide-util</artifactId>
+            <groupId>org.netbeans.api</groupId>
+        </dependency>
     </dependencies>
 
     <build>
