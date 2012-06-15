@@ -66,7 +66,7 @@ public class GroupFrame extends javax.swing.JInternalFrame implements ExplorerMa
 
         panel.add(new MyListView(), BorderLayout.CENTER);
 
-        setVisible(true);
+        setVisible(true); 
     }
 
     /**
@@ -74,6 +74,12 @@ public class GroupFrame extends javax.swing.JInternalFrame implements ExplorerMa
      */
     private GroupFrame() {
         initComponents();
+    }
+
+    @Override
+    public void setTitle(String title) {
+        setToolTipText(title);
+        super.setTitle(title);
     }
 
     @Override

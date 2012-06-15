@@ -1,13 +1,14 @@
 package de.cebitec.mgx.gui.attributevisualization.filter;
 
-import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import de.cebitec.mgx.gui.datamodel.Attribute;
 import de.cebitec.mgx.gui.datamodel.Distribution;
 import de.cebitec.mgx.gui.datamodel.Pair;
+import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  *
@@ -17,13 +18,13 @@ public class ToFractionFilter implements VisFilterI<Distribution> {
 
     @Override
     public List<Pair<VisualizationGroup, Distribution>> filter(List<Pair<VisualizationGroup, Distribution>> dists) {
-        System.err.println("toFraction.filter()");
-        List<Pair<VisualizationGroup, Distribution>> ret = new ArrayList<Pair<VisualizationGroup, Distribution>>();
+        List<Pair<VisualizationGroup, Distribution>> ret = new ArrayList<>();
         for (Pair<VisualizationGroup, Distribution> pair : dists) {
             VisualizationGroup vg = pair.getFirst();
             Distribution dist = pair.getSecond();
-            ret.add(new Pair<VisualizationGroup, Distribution>(vg, convertSingleDistribution(dist)));
+            ret.add(new Pair<>(vg, convertSingleDistribution(dist)));
         }
+        
         return ret;
     }
 
@@ -31,17 +32,14 @@ public class ToFractionFilter implements VisFilterI<Distribution> {
 
         // sum up
         long sum = 0;
-        for (Pair<Attribute, ? extends Number> p : dist.getSorted()) {
-            sum += p.getSecond().longValue();
+        for (Entry<Attribute, ? extends Number> p : dist.entrySet()) {
+            sum += p.getValue().longValue();
         }
-        assert sum > 0;
 
-        Map<Attribute, Number> tmp = new HashMap<Attribute, Number>();
-        for (Pair<Attribute, ? extends Number> p : dist.getSorted()) {
-            tmp.put(p.getFirst(), (double)p.getSecond().longValue() / sum);
+        for (Entry<Attribute, Number> e : dist.entrySet()) {
+            e.setValue((double)e.getValue().longValue() / sum);
         }
-        Distribution d =  new Distribution(tmp);
-        d.setSortOrder(dist.getSortOrder());
-        return d;
+        
+        return dist;
     }
 }

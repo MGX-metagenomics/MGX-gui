@@ -1,11 +1,13 @@
 package de.cebitec.mgx.gui.attributevisualization.filter;
 
 import de.cebitec.mgx.gui.datamodel.Attribute;
+import de.cebitec.mgx.gui.datamodel.AttributeType;
 import de.cebitec.mgx.gui.datamodel.Distribution;
 import de.cebitec.mgx.gui.datamodel.Pair;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import java.io.Serializable;
 import java.util.*;
+import java.util.Map.Entry;
 
 /**
  *
@@ -13,90 +15,104 @@ import java.util.*;
  */
 public class SortOrder implements VisFilterI<Distribution> {
 
-    public final static String BY_VALUE = "Value";
-    public final static String BY_TYPE = "Type";
-    private String currentCriteria = BY_VALUE;
+    public final static int BY_VALUE = 0;
+    public final static int BY_TYPE = 1;
     
+    public final static int ASCENDING = 0;
+    public final static int DESCENDING = 1;
+    
+    private final int currentCriteria;
+    private final int order;
+
+    public SortOrder(AttributeType aType, int order) {
+        assert aType != null;
+        currentCriteria = aType.getValueType() == AttributeType.VALUE_NUMERIC
+                ? SortOrder.BY_TYPE : SortOrder.BY_VALUE;
+        this.order = order;
+    }
+
     @Override
     public List<Pair<VisualizationGroup, Distribution>> filter(List<Pair<VisualizationGroup, Distribution>> dists) {
 
         // summary distribution over all groups
-        Map<Attribute, Long> summary = new HashMap<>();
+        Map<Attribute, Double> summary = new HashMap<>();
         for (Pair<VisualizationGroup, Distribution> pair : dists) {
-            for (Pair<Attribute, ? extends Number> e : pair.getSecond().getSorted()) {
-                if (summary.containsKey(e.getFirst())) {
-                    Long get = summary.get(e.getFirst());
-                    get += e.getSecond().longValue();
-                    summary.put(e.getFirst(), get);
+//            for (Attribute a : pair.getSecond().getSortOrder()) {
+//                if (summary.containsKey(a)) {
+//                    Double old = summary.get(a);
+//                    summary.put(a, old + pair.getSecond().getMap().get(a).doubleValue());
+//                } else {
+//                    summary.put(a, pair.getSecond().getMap().get(a).doubleValue());
+//                }
+//            }
+            for (Entry<Attribute, ? extends Number> p : pair.getSecond().entrySet()) {
+                if (summary.containsKey(p.getKey())) {
+                    Double old = summary.get(p.getKey());
+                    summary.put(p.getKey(), old + p.getValue().doubleValue());
                 } else {
-                    summary.put(e.getFirst(), e.getSecond().longValue());
+                    summary.put(p.getKey(), p.getValue().doubleValue());
                 }
             }
+
+//            }
         }
+
 
         List<Attribute> sortList = new ArrayList<>();
         // sort by selected criteria
         switch (currentCriteria) {
             case BY_VALUE:
-                // we use a TreeMap to sort by abundance, descending
-                SortByValue bvc = new SortByValue(summary);
-                TreeMap<Attribute, Long> sorted_map = new TreeMap<>(bvc);
-                sorted_map.putAll(summary);
-                sortList.addAll(sorted_map.keySet());
+                sortList.addAll(summary.keySet());
+                Collections.sort(sortList, new SortByValue(summary));
                 break;
             case BY_TYPE:
                 sortList.addAll(summary.keySet());
                 Collections.sort(sortList, new SortNumerically());
                 break;
             default:
-                assert(false);
+                assert (false);
                 break;
         }
+
+        assert summary.size() == sortList.size();
         
+        if (order == ASCENDING) {
+            Collections.reverse(sortList);
+        }
+
         for (Pair<VisualizationGroup, Distribution> p : dists) {
-            p.getSecond().setSortOrder(sortList.toArray(new Attribute[0]));
+            Distribution d = p.getSecond();
+
+            // set the sort order
+            d.setOrder(sortList);
         }
 
         return dists;
     }
-    
-    public void setSortCriteria(String criteria) {
-        currentCriteria = criteria;
-    }
 
-    private final static class SortNumerically implements Comparator<Attribute>, Serializable {
+    public final static class SortNumerically implements Comparator<Attribute>, Serializable {
 
         @Override
         public int compare(Attribute a1, Attribute a2) {
             Double d1 = Double.parseDouble(a1.getValue());
             Double d2 = Double.parseDouble(a2.getValue());
-            if (d1 < d2) {
-                return 1;
-            } else if (d1.doubleValue() == d2.doubleValue()) {
-                return 0;
-            } else {
-                return -1;
-            }
+            return d2.compareTo(d1);
         }
     }
 
-    private final static class SortByValue implements Comparator<Attribute> {
+    public final static class SortByValue implements Comparator<Attribute> {
 
-        Map<Attribute, Long> base;
+        Map<Attribute, Double> base;
 
-        public SortByValue(Map<Attribute, Long> base) {
+        public SortByValue(Map<Attribute, Double> base) {
             this.base = base;
         }
 
         @Override
         public int compare(Attribute a, Attribute b) {
-            if (base.get(a).longValue() < base.get(b).longValue()) {
-                return 1;
-            } else if (base.get(a).longValue() == base.get(b).longValue()) {
-                return 0;
-            } else {
-                return -1;
-            }
+            Double d1 = base.get(a);
+            Double d2 = base.get(b);
+            return d2.compareTo(d1);
         }
     }
 }

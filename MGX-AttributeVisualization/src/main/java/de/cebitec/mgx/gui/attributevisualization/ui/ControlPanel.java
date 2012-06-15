@@ -8,10 +8,6 @@ package de.cebitec.mgx.gui.attributevisualization.ui;
 import de.cebitec.mgx.gui.attributevisualization.BaseModel;
 import de.cebitec.mgx.gui.attributevisualization.VGroupManager;
 import de.cebitec.mgx.gui.attributevisualization.conflictwizard.ConflictResolverWizardIterator;
-import de.cebitec.mgx.gui.attributevisualization.filter.SortOrder;
-import de.cebitec.mgx.gui.attributevisualization.filter.ToFractionFilter;
-import de.cebitec.mgx.gui.attributevisualization.filter.VisFilterI;
-import de.cebitec.mgx.gui.attributevisualization.filter.VisFilterSupport;
 import de.cebitec.mgx.gui.attributevisualization.util.ResultCollector;
 import de.cebitec.mgx.gui.attributevisualization.viewer.ViewerI;
 import de.cebitec.mgx.gui.datamodel.*;
@@ -110,16 +106,12 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        sortOrderGroup = new javax.swing.ButtonGroup();
         attributeTypeList = new javax.swing.JComboBox();
         jLabel1 = new javax.swing.JLabel();
         visualizationTypeList = new javax.swing.JComboBox();
         jLabel2 = new javax.swing.JLabel();
         updateButton = new javax.swing.JButton();
-        fractions = new javax.swing.JCheckBox();
-        jLabel3 = new javax.swing.JLabel();
-        sortAscending = new javax.swing.JRadioButton();
-        sortDescending = new javax.swing.JRadioButton();
+        customPane = new javax.swing.JScrollPane();
 
         setMaximumSize(new java.awt.Dimension(300, 32767));
         setPreferredSize(new java.awt.Dimension(300, 504));
@@ -140,21 +132,6 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
         updateButton.setText(org.openide.util.NbBundle.getMessage(ControlPanel.class, "ControlPanel.updateButton.text")); // NOI18N
         updateButton.setEnabled(false);
 
-        fractions.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
-        fractions.setText(org.openide.util.NbBundle.getMessage(ControlPanel.class, "ControlPanel.fractions.text")); // NOI18N
-
-        jLabel3.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
-        jLabel3.setText(org.openide.util.NbBundle.getMessage(ControlPanel.class, "ControlPanel.jLabel3.text")); // NOI18N
-
-        sortOrderGroup.add(sortAscending);
-        sortAscending.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
-        sortAscending.setText(org.openide.util.NbBundle.getMessage(ControlPanel.class, "ControlPanel.sortAscending.text")); // NOI18N
-
-        sortOrderGroup.add(sortDescending);
-        sortDescending.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
-        sortDescending.setSelected(true);
-        sortDescending.setText(org.openide.util.NbBundle.getMessage(ControlPanel.class, "ControlPanel.sortDescending.text")); // NOI18N
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -162,6 +139,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(customPane)
                     .addComponent(attributeTypeList, 0, 276, Short.MAX_VALUE)
                     .addComponent(visualizationTypeList, 0, 276, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
@@ -170,14 +148,8 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel1)
-                            .addComponent(jLabel2)
-                            .addComponent(jLabel3)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(sortAscending)
-                                .addGap(18, 18, 18)
-                                .addComponent(sortDescending))
-                            .addComponent(fractions))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                            .addComponent(jLabel2))
+                        .addGap(0, 189, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -192,27 +164,17 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(visualizationTypeList, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jLabel3)
+                .addComponent(customPane, javax.swing.GroupLayout.DEFAULT_SIZE, 319, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(sortAscending)
-                    .addComponent(sortDescending))
-                .addGap(18, 18, 18)
-                .addComponent(fractions)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 250, Short.MAX_VALUE)
                 .addComponent(updateButton)
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox attributeTypeList;
-    private javax.swing.JCheckBox fractions;
+    private javax.swing.JScrollPane customPane;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JRadioButton sortAscending;
-    private javax.swing.JRadioButton sortDescending;
-    private javax.swing.ButtonGroup sortOrderGroup;
     private javax.swing.JButton updateButton;
     private javax.swing.JComboBox visualizationTypeList;
     // End of variables declaration//GEN-END:variables
@@ -369,6 +331,13 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
             
             currentViewer = vizListModel.getSelectedItem();
             currentViewer.setAttributeType(currentAttributeType);
+            
+//            JComponent customizer = currentViewer.getCustomizer();
+//            if (customizer != null) {
+//                customPane.setViewportView(customizer);
+//            }
+            customPane.setViewportView(currentViewer.getCustomizer());
+            
         }
     }
 
@@ -378,49 +347,14 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
         SwingWorker worker;
 
         if (currentViewer.getInputType().equals(Distribution.class)) {
-
-            worker = new SwingWorker<Void, Void>() {
-
-                private VisFilterI filterChain;
-
-                @Override
-                protected Void doInBackground() throws Exception {
-
-                    filterChain = currentViewer;
-
-                    if (fractions.isSelected()) {
-                        VisFilterI fracFilter = new ToFractionFilter();
-                        filterChain = VisFilterSupport.append(fracFilter, filterChain);
-                    }
-
-                    // sort filter
-                    SortOrder sorter = new SortOrder();
-                    sorter.setSortCriteria(currentAttributeType.getValueType() == AttributeType.VALUE_NUMERIC
-                            ? SortOrder.BY_TYPE : SortOrder.BY_VALUE);
-
-                    currentViewer.sortAscending(sortAscending.isSelected());
-
-                    filterChain = VisFilterSupport.append(sorter, filterChain);
-
-                    return null;
-                }
-
-                @Override
-                protected void done() {
-                    filterChain.filter(currentDistributions);
-                    topComponent.setVisualization(currentViewer.getComponent());
-                    super.done();
-                }
-            };
-
-            worker.execute();
-
-        } else {
-            // hierarchy
-            if (fractions.isSelected()) {
-                // FIXME
+            // reset previous settings 
+            for (Pair<VisualizationGroup, Distribution> p: currentDistributions) {
+                p.getSecond().reset();
             }
-            currentViewer.filter(currentHierarchies);
+            currentViewer.show(currentDistributions);
+            topComponent.setVisualization(currentViewer.getComponent());
+        } else {
+            currentViewer.show(currentHierarchies);
             topComponent.setVisualization(currentViewer.getComponent());
         }
     }
