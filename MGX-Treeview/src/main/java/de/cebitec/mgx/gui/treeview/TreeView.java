@@ -15,8 +15,10 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.geom.Point2D;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
@@ -70,7 +72,9 @@ public class TreeView extends HierarchicalViewerI {
     private static final String treeEdges = "tree.edges";
     public static final String nodeLabel = "label";
     public static final String nodeContent = "content";
-    public static final String nodeTotalCount = "count";
+    public static final String nodeTotalElements = "totalElements"; //number of sequences assigned to this node
+    public static final String sameRankCount = "rankCount"; // total number of sequences assigned at same rank
+
     //
     private prefuse.data.Tree pTree = null;
     private LabelRenderer m_nodeRenderer;
@@ -79,7 +83,6 @@ public class TreeView extends HierarchicalViewerI {
     private Display display;
     private Visualization visualization;
     private JFastLabel title;
-
 
     @Override
     public JComponent getComponent() {
@@ -94,10 +97,9 @@ public class TreeView extends HierarchicalViewerI {
     @Override
     public void setAttributeType(AttributeType aType) {
         super.setAttributeType(aType);
-        super.setTitle("Hierarchy view based on "+ aType.getName());
+        super.setTitle("Hierarchy view based on " + aType.getName());
     }
 
-    
     @Override
     public void show(List<Pair<VisualizationGroup, Tree<Long>>> trees) {
         dispose();
@@ -105,29 +107,33 @@ public class TreeView extends HierarchicalViewerI {
         Tree<Map<VisualizationGroup, Long>> combinedTree = TreeFactory.combineTrees(trees);
         Node<Map<VisualizationGroup, Long>> root = combinedTree.getRoot();
         
+        Map<String, Long[]> rankCounts = calculateRankCounts(combinedTree);
+
         initDisplay();
 
         pTree = new prefuse.data.Tree();
         pTree.getNodeTable().addColumn(nodeLabel, Attribute.class);
-        pTree.getNodeTable().addColumn(nodeTotalCount, long.class);
+        pTree.getNodeTable().addColumn(nodeTotalElements, long.class);
+        pTree.getNodeTable().addColumn(sameRankCount, Map.class);
         pTree.getNodeTable().addColumn(nodeContent, Map.class);
 
 
         prefuse.data.Node rootNode = pTree.addRoot();
         rootNode.set(nodeLabel, root.getAttribute());
-        rootNode.set(nodeTotalCount, calculateNodeCount(root.getContent()));
         rootNode.set(nodeContent, root.getContent());
+        rootNode.set(nodeTotalElements, calculateNodeCount(root.getContent()));
+        rootNode.set(sameRankCount, rankCounts);
 
         for (Node<Map<VisualizationGroup, Long>> child : root.getChildren()) {
-            addWithChildren(pTree, rootNode, child);
+            addWithChildren(pTree, rootNode, child, rankCounts);
         }
-        
+
         visualization.reset();
         visualization.add(tree, pTree);
 
         initRenderers();
     }
-    
+
     @Override
     public void dispose() {
         if (pTree != null) {
@@ -140,15 +146,16 @@ public class TreeView extends HierarchicalViewerI {
         m_nodeRenderer = null;
         super.dispose();
     }
-    
 
-    private static void addWithChildren(prefuse.data.Tree pTree, prefuse.data.Node parent, Node<Map<VisualizationGroup, Long>> node) {
+    private static void addWithChildren(prefuse.data.Tree pTree, prefuse.data.Node parent, Node<Map<VisualizationGroup, Long>> node, Map<String, Long[]> rankCounts) {
         prefuse.data.Node self = pTree.addChild(parent);
         self.set(nodeLabel, node.getAttribute());
         self.set(nodeContent, node.getContent());
-        self.set(nodeTotalCount, calculateNodeCount(node.getContent()));
+        self.set(nodeTotalElements, calculateNodeCount(node.getContent()));
+        self.set(sameRankCount, rankCounts);
+
         for (Node<Map<VisualizationGroup, Long>> child : node.getChildren()) {
-            addWithChildren(pTree, self, child);
+            addWithChildren(pTree, self, child, rankCounts);
         }
     }
 
@@ -309,6 +316,28 @@ public class TreeView extends HierarchicalViewerI {
         }
         return total;
     }
+    
+    private static Map<String, Long[]> calculateRankCounts(Tree<Map<VisualizationGroup, Long>> tree) {
+        Map<String, Long[]> ret = new HashMap<>();
+        
+        for (Node<Map<VisualizationGroup, Long>> node: tree.getNodes()) {
+            if (!ret.containsKey(node.getAttribute().getAttributeType().getName())) {
+                ret.put(node.getAttribute().getAttributeType().getName(), new Long[node.getContent().size()]);
+                
+                Long[] current = new Long[node.getContent().size()];
+                for (int i=0; i < node.getContent().size(); i++) {
+                    current[i] = Long.valueOf(0);
+                }
+                ret.put(node.getAttribute().getAttributeType().getName(), current);
+            }
+            Long[] current = ret.get(node.getAttribute().getAttributeType().getName());
+            int i=0;
+            for (Entry<VisualizationGroup, Long> e :node.getContent().entrySet()) {
+                current[i++] += e.getValue().longValue();
+            }
+        }
+        return ret;
+    }
 
     public void setOrientation(int orientation) {
         NodeLinkTreeLayout rtl = (NodeLinkTreeLayout) visualization.getAction("treeLayout");
@@ -353,6 +382,11 @@ public class TreeView extends HierarchicalViewerI {
 
     public int getOrientation() {
         return orientation;
+    }
+
+    @Override
+    public JComponent getCustomizer() {
+        return null;
     }
 
     // FIXME display#saveImage

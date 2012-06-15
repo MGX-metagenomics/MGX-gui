@@ -18,7 +18,7 @@ import prefuse.visual.VisualItem;
 public class PieNodeRenderer extends LabelRenderer {
 
     private final static int MIN_CIRCLE_SIZE = 30;
-    private Map<VisualItem, Image> cache = new HashMap<>();
+    //private Map<VisualItem, Image> cache = new HashMap<>();
 
     public PieNodeRenderer() {
         setImagePosition(Constants.TOP);
@@ -28,10 +28,10 @@ public class PieNodeRenderer extends LabelRenderer {
     @Override
     protected Image getImage(VisualItem item) {
         
-        if (cache.containsKey(item)) {
-            return cache.get(item);
-        }
-        long totalCount = item.getLong(TreeView.nodeTotalCount);
+//        if (cache.containsKey(item)) {
+//            return cache.get(item);
+//        }
+        long totalCount = item.getLong(TreeView.nodeTotalElements);
         String nodeLabel = item.getString(TreeView.nodeLabel);
         
         // create image and g2d object
@@ -84,7 +84,7 @@ public class PieNodeRenderer extends LabelRenderer {
         TextLayout textlayout = new TextLayout(String.valueOf(totalCount), g2.getFont(), frc);
         textlayout.draw(g2, size / 2 - width / 2, size / 2 + height / 2 - 1);
         
-        cache.put(item, img);
+        //cache.put(item, img);
         return img;
     }
 
