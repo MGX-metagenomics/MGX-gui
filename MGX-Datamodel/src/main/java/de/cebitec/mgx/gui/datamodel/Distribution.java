@@ -1,51 +1,105 @@
 package de.cebitec.mgx.gui.datamodel;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.*;
 
 /**
  *
  * @author sjaenick
  */
-public class Distribution {
+public class Distribution implements Map<Attribute, Number> {
 
-    Map<Attribute, ? extends Number> dist = null;
-    Attribute[] sortOrder;
+    private final Map<Attribute, Number> _data;
+    private Set<Attribute> keys = new LinkedHashSet<>();
+    private final Map<Attribute, Number> filtered = new HashMap<>();
 
-    public Distribution(Map<Attribute, ? extends Number> dist) {
-        this.dist = dist;
+    public Distribution(Map<Attribute, Number> data) {
+        this._data = data;
+        keys.addAll(_data.keySet());
+        filtered.putAll(_data);
     }
 
-    public List<Pair<Attribute, ? extends Number>> getSorted() {
-        List<Pair<Attribute, ? extends Number>> ret = new ArrayList<Pair<Attribute, ? extends Number>>();
+    @Override
+    public int size() {
+        return keys.size();
+    }
 
-        if (sortOrder == null) {
-            for (Entry<Attribute, ? extends Number> e : dist.entrySet()) {
-                ret.add(new Pair<Attribute, Number>(e.getKey(), e.getValue()));
-            }
-        } else {
-            for (Attribute attr : sortOrder) {
-                Number n = dist.get(attr);
-                if (n != null) {
-                    ret.add(new Pair<Attribute, Number>(attr, n));
-                }
-            }
+    @Override
+    public boolean isEmpty() {
+        return keys.isEmpty();
+    }
+
+    @Override
+    public boolean containsKey(Object key) {
+        return filtered.containsKey((Attribute) key);
+    }
+
+    @Override
+    public boolean containsValue(Object value) {
+        return filtered.containsValue(value);
+    }
+
+    @Override
+    public Number get(Object key) {
+        return filtered.get(key);
+    }
+
+    @Override
+    public Number put(Attribute key, Number value) {
+        keys.add(key);
+        return filtered.put(key, value);
+    }
+
+    @Override
+    public Number remove(Object key) {
+        keys.remove(key);
+        return filtered.remove(key);
+    }
+
+    @Override
+    public void putAll(Map<? extends Attribute, ? extends Number> m) {
+        keys.addAll(m.keySet());
+        filtered.putAll(m);
+    }
+
+    @Override
+    public void clear() {
+        keys.clear();
+        filtered.clear();
+    }
+
+    @Override
+    public Set<Attribute> keySet() {
+        return keys;
+    }
+
+    @Override
+    public Collection<Number> values() {
+        return filtered.values();
+    }
+
+    @Override
+    public Set<Entry<Attribute, Number>> entrySet() {
+        Set<Entry<Attribute, Number>> ret = new LinkedHashSet<>();
+        for (Attribute a : keys) {
+            ret.add(new AbstractMap.SimpleEntry<>(a, filtered.get(a)));
         }
-
         return ret;
     }
 
-    public Map<Attribute, ? extends Number> getMap() {
-        return dist;
+    public void setOrder(List<Attribute> o) {
+        List<Attribute> present = new ArrayList<>();
+        for (Attribute a : o) {
+            if (filtered.containsKey(a)) {
+                present.add(a);
+            }
+        }
+        keys.clear(); keys.addAll(present);
     }
 
-    public void setSortOrder(Attribute[] sortOrder) {
-        this.sortOrder = sortOrder;
-    }
-    
-    public Attribute[] getSortOrder() {
-        return sortOrder;
+    public void reset() {
+        keys.clear();
+        filtered.clear();
+        keys.addAll(_data.keySet());
+        filtered.putAll(_data);
     }
 }

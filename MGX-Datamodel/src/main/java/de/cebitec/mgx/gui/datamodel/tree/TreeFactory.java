@@ -1,15 +1,10 @@
 package de.cebitec.mgx.gui.datamodel.tree;
 
 import de.cebitec.mgx.gui.datamodel.Attribute;
+import de.cebitec.mgx.gui.datamodel.ModelBase;
 import de.cebitec.mgx.gui.datamodel.Pair;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -29,24 +24,19 @@ public class TreeFactory {
 
     public static Tree<Long> createTree(Map<Attribute, Long> map) {
 
-        Map<Long, Long> edges = new HashMap<Long, Long>();
-        Map<Long, Long> idmap = new HashMap<Long, Long>();
+        Map<Long, Long> edges = new HashMap<>();
+        Map<Long, Long> idmap = new HashMap<>();
 
-        Tree<Long> tree = new Tree<Long>();
+        Tree<Long> tree = new Tree<>();
 
         for (Entry<Attribute, Long> entry : map.entrySet()) {
             Attribute attr = entry.getKey();
-            //assert attr != null;
-            //assert attr.getId() != null;
-
             Long count = entry.getValue();
 
             Node<Long> node = tree.createNode(attr, count);
-            //assert node != null;
             idmap.put(attr.getId(), node.getId());
 
-            if (attr.getParentID() == null) {
-                //Logger.getLogger("createTree").log(Level.INFO, "found a root node");
+            if (attr.getParentID() == ModelBase.INVALID_IDENTIFIER) {
                 tree.setRoot(node);
             } else {
                 // remember the outgoing edge (based on original ids)
@@ -61,11 +51,7 @@ public class TreeFactory {
             tree.addEdge(child, parent);
         }
 
-        //Logger.getLogger("createTree").log(Level.INFO, "done");
-
         tree.build();
-
-        //assert tree.getRoot() != null;
 
         return tree;
     }
@@ -76,12 +62,13 @@ public class TreeFactory {
     public static Tree<Long> mergeTrees(Collection<Tree<Long>> trees) {
         //Logger.getLogger("mergeTrees").log(Level.INFO, "mergeTrees merging {0} trees", trees.size());
         //assert trees.size() > 0;
-        Tree<Long> consensus = new Tree<Long>();
+        Tree<Long> consensus = new Tree<>();
+
 
         for (Tree<Long> t : trees) {
 
-            Map<Long, Long> origEdges = new HashMap<Long, Long>();
-            Map<Long, Long> idmap = new HashMap<Long, Long>();
+            Map<Long, Long> origEdges = new HashMap<>();
+            Map<Long, Long> idmap = new HashMap<>();
 
             // insert all missing nodes into the consensus tree first
             //
@@ -117,22 +104,19 @@ public class TreeFactory {
 
         consensus.build();
 
-        //assert consensus.getRoot() != null;
-
         return consensus;
     }
 
     public static <T> Tree<Map<T, Long>> combineTrees(List<Pair<T, Tree<Long>>> trees) {
-        //Logger.getLogger("combineTrees").log(Level.INFO, "combining {0} trees", trees.size());
-        Tree<Map<T, Long>> combined = new Tree<Map<T, Long>>();
+        Tree<Map<T, Long>> combined = new Tree<>();
 
         for (Pair<T, Tree<Long>> pair : trees) {
 
             T t = pair.getFirst(); // a vizgroup, typically
             Tree<Long> tree = pair.getSecond();
 
-            Map<Long, Long> origEdges = new HashMap<Long, Long>();
-            Map<Long, Long> idmap = new HashMap<Long, Long>();
+            Map<Long, Long> origEdges = new HashMap<>();
+            Map<Long, Long> idmap = new HashMap<>();
 
             // insert all missing nodes into the consensus tree first
             //
@@ -163,11 +147,7 @@ public class TreeFactory {
 
         }
 
-        //assert combined.getRoot() != null;
-        
         combined.build();
-        
-        //dumpNode(combined.getRoot(), 2);
 
         return combined;
     }

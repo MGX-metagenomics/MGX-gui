@@ -8,15 +8,15 @@ public class Attribute extends ModelBase {
     
     protected AttributeType atype;
     protected String value;
-    protected Long job_id;
-    private Long parent_id = null;
+    protected long job_id;
+    private long parent_id = ModelBase.INVALID_IDENTIFIER;
 
     
-    public Long getParentID() {
+    public long getParentID() {
         return parent_id;
     }
 
-    public void setParentID(Long parent_id) {
+    public void setParentID(long parent_id) {
         this.parent_id = parent_id;
     }
     
@@ -38,11 +38,11 @@ public class Attribute extends ModelBase {
         return this;
     }
 
-    public Long getJobId() {
+    public long getJobId() {
         return job_id;
     }
 
-    public Attribute setJobId(Long job_id) {
+    public Attribute setJobId(long job_id) {
         this.job_id = job_id;
         return this;
     }

@@ -1,9 +1,8 @@
 package de.cebitec.mgx.gui.datamodel.tree;
 
 import de.cebitec.mgx.gui.datamodel.Attribute;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import de.cebitec.mgx.gui.datamodel.AttributeType;
+import java.util.*;
 
 /**
  *
@@ -14,17 +13,19 @@ public class Tree<T> {
     Map<Long, Node<T>> nodes;
     Map<Long, Long> edges; // pointing upwards, from child to parent
     Map<Attribute, Node<T>> attrs;
+    Map<String, List<Node<T>>> byRank;
     long id = 1;
     private Node<T> root = null;
 
     Tree() {
-        edges = new HashMap<Long, Long>();
-        nodes = new HashMap<Long, Node<T>>();
-        attrs = new HashMap<Attribute, Node<T>>();
+        edges = new HashMap<>();
+        nodes = new HashMap<>();
+        attrs = new HashMap<>();
+        byRank = new HashMap<>();
     }
 
     public Node<T> createNode(Attribute attr, T content) {
-        Node<T> node = new Node<T>(this, id++, attr, content);
+        Node<T> node = new Node<>(this, id++, attr, content);
         if (nodes.containsValue(node)) {
             Node<T> tmp = getNode(content);
             return tmp;
@@ -66,13 +67,16 @@ public class Tree<T> {
 //            return 1 + getDepth(node.getParent());
 //        }
 //    }
-
     public Node<T> getRoot() {
         return root;
     }
 
     public Collection<Node<T>> getNodes() {
         return nodes.values();
+    }
+
+    public Collection<Node<T>> getNodesByAttributeType(AttributeType aType) {
+        return byRank.get(aType.getName());
     }
 
     public Node<T> getNode(T content) {
@@ -98,10 +102,14 @@ public class Tree<T> {
     }
 
     public void build() {
-        //Logger.getLogger("Tree").log(Level.INFO, "building tree with {0} nodes and {1} edges", new Object[]{nodes.entrySet().size(), edges.entrySet().size()});
         for (Node<T> node : nodes.values()) {
-            //assert (node == root) || edges.keySet().contains(node.getId());
             node.build();
+            
+            String rank = node.getAttribute().getAttributeType().getName();
+            if (!byRank.containsKey(rank)) {
+                byRank.put(rank, new ArrayList<Node<T>>());
+            }
+            byRank.get(rank).add(node);
         }
     }
 }
