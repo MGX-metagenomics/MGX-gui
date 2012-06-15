@@ -302,13 +302,13 @@ public class VisualizationGroup {
     }
 
     private static Distribution mergeDistributions(List<Map<Attribute, ? extends Number>> dists) {
-        Map<Attribute, Long> summary = new HashMap<>();
+        Map<Attribute, Number> summary = new HashMap<>();
         for (Map<Attribute, ? extends Number> d : dists) {
             for (Entry<Attribute, ? extends Number> e : d.entrySet()) {
                 Attribute attr = e.getKey();
                 Long count = e.getValue().longValue();
                 if (summary.containsKey(attr)) {
-                    count += summary.get(attr);
+                    count += summary.get(attr).longValue();
                 }
                 summary.put(attr, count);
             }
