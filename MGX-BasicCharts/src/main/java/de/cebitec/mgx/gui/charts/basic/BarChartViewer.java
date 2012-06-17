@@ -7,19 +7,15 @@ import de.cebitec.mgx.gui.datamodel.Distribution;
 import de.cebitec.mgx.gui.datamodel.Pair;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import java.awt.Color;
-import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map.Entry;
-import java.util.Set;
 import javax.swing.JComponent;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.StandardChartTheme;
-import org.jfree.chart.axis.CategoryAxis;
-import org.jfree.chart.axis.CategoryLabelPositions;
-import org.jfree.chart.axis.LogarithmicAxis;
-import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.*;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.BarRenderer;
@@ -63,7 +59,6 @@ public class BarChartViewer extends CategoricalViewerI {
 //
 //        return dists;
 //    }
-
     @Override
     public void show(List<Pair<VisualizationGroup, Distribution>> dists) {
 
@@ -73,14 +68,14 @@ public class BarChartViewer extends CategoricalViewerI {
         for (Pair<VisualizationGroup, Distribution> groupDistribution : dists) {
             Distribution d = groupDistribution.getSecond();
             //Set<Entry<Attribute, Number>> sorted = groupDistribution.getSecond().entrySet();
-            
+
 //            if (getCustomizer().getSortAscending()) {
 //                Collections.reverse(d.keySet());
 //            }
 
             for (Entry<Attribute, ? extends Number> entry : d.entrySet()) {
                 if (entry.getValue().doubleValue() <= 0.0) {
-                    System.err.println("error at "+entry.getKey().getValue());
+                    System.err.println("error at " + entry.getKey().getValue());
                 }
                 dataset.addValue(entry.getValue(), groupDistribution.getFirst().getName(), entry.getKey().getValue());
             }
@@ -104,24 +99,31 @@ public class BarChartViewer extends CategoricalViewerI {
         CategoryPlot plot = chart.getCategoryPlot();
 
         plot.setBackgroundPaint(Color.WHITE);
-        CategoryAxis domainAxis = plot.getDomainAxis();
 
+        // x axis
+        CategoryAxis domainAxis = plot.getDomainAxis();
         domainAxis.setCategoryLabelPositions(CategoryLabelPositions.createUpRotationLabelPositions(Math.PI / 6));
 
+        // y axis
+        final NumberAxis rangeAxis;
+        final TickUnitSource tus;
         if (getCustomizer().logY()) {
-            final NumberAxis rangeAxis = new LogarithmicAxis("log("+ yAxisLabel +")");
-            plot.setRangeAxis(rangeAxis);
-        }
-        
-        NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
-        //plot.setRangeAxis(rangeAxis);
-        
-        if (getCustomizer().useFractions()) {
-            rangeAxis.setStandardTickUnits(NumberAxis.createStandardTickUnits());
+            rangeAxis = new LogarithmicAxis("log(" + yAxisLabel + ")");
+            ((LogarithmicAxis) rangeAxis).setStrictValuesFlag(false);
+            tus = LogAxis.createLogTickUnits(Locale.getDefault());
+
         } else {
-            rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+            rangeAxis = (NumberAxis) plot.getRangeAxis();
+            if (getCustomizer().useFractions()) {
+                tus = NumberAxis.createStandardTickUnits();
+            } else {
+                tus = NumberAxis.createIntegerTickUnits();
+            }
         }
-        // set the colors
+        rangeAxis.setStandardTickUnits(tus);
+        plot.setRangeAxis(rangeAxis);
+
+        // colors
         int i = 0;
         CategoryItemRenderer renderer = chart.getCategoryPlot().getRenderer();
         for (Pair<VisualizationGroup, Distribution> groupDistribution : dists) {
