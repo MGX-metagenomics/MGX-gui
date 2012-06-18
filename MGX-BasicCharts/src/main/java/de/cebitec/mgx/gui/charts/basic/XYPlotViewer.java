@@ -8,13 +8,13 @@ import de.cebitec.mgx.gui.datamodel.Pair;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import java.awt.Color;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map.Entry;
 import javax.swing.JComponent;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.axis.*;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
@@ -44,7 +44,7 @@ public class XYPlotViewer extends NumericalViewerI {
 
     @Override
     public void show(List<Pair<VisualizationGroup, Distribution>> dists) {
-        
+
         dists = getCustomizer().filter(dists);
 
         XYSeriesCollection dataset = new XYSeriesCollection();
@@ -68,16 +68,42 @@ public class XYPlotViewer extends NumericalViewerI {
         XYPlot plot = (XYPlot) chart.getPlot();
         plot.setBackgroundPaint(Color.WHITE);
 
-        ValueAxis valueAxis = plot.getDomainAxis();
-        valueAxis.setInverted(!getCustomizer().getSortAscending());
-        //valueAxis.    //setCategoryLabelPositions(CategoryLabelPositions.createUpRotationLabelPositions(Math.PI / 6));
+        // x axis
+        ValueAxis valueAxis;
+        final TickUnitSource tusX;
+        if (getCustomizer().logX()) {
+            valueAxis = new LogarithmicAxis("log(" + xAxisLabel + ")");
+            ((LogarithmicAxis) valueAxis).setStrictValuesFlag(false);
+            tusX = LogAxis.createLogTickUnits(Locale.getDefault());
 
-        NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
-        if (getCustomizer().useFractions()) {
-            rangeAxis.setStandardTickUnits(NumberAxis.createStandardTickUnits());
         } else {
-            rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+            valueAxis = (NumberAxis) plot.getDomainAxis();
+            tusX = NumberAxis.createIntegerTickUnits();
         }
+        valueAxis.setStandardTickUnits(tusX);
+        valueAxis.setInverted(!getCustomizer().getSortAscending());
+        plot.setDomainAxis(valueAxis);
+
+
+        // y axis
+        final NumberAxis rangeAxis;
+        final TickUnitSource tus;
+        if (getCustomizer().logY()) {
+            rangeAxis = new LogarithmicAxis("log(" + yAxisLabel + ")");
+            ((LogarithmicAxis) rangeAxis).setStrictValuesFlag(false);
+            tus = LogAxis.createLogTickUnits(Locale.getDefault());
+
+        } else {
+            rangeAxis = (NumberAxis) plot.getRangeAxis();
+            if (getCustomizer().useFractions()) {
+                tus = NumberAxis.createStandardTickUnits();
+            } else {
+                tus = NumberAxis.createIntegerTickUnits();
+            }
+        }
+        rangeAxis.setStandardTickUnits(tus);
+        plot.setRangeAxis(rangeAxis);
+
 
         // set the colors
         int i = 0;

@@ -36,6 +36,14 @@ public class XYPlotCustomizer extends javax.swing.JPanel implements VisFilterI<D
         return sortAscending.isSelected();
     }
 
+    public boolean logX() {
+        return logX.isSelected();
+    }
+
+    public boolean logY() {
+        return logY.isSelected();
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -51,6 +59,8 @@ public class XYPlotCustomizer extends javax.swing.JPanel implements VisFilterI<D
         sortAscending = new javax.swing.JRadioButton();
         sortDescending = new javax.swing.JRadioButton();
         useFractions = new javax.swing.JCheckBox();
+        logY = new javax.swing.JCheckBox();
+        logX = new javax.swing.JCheckBox();
 
         jLabel1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         jLabel1.setText(org.openide.util.NbBundle.getMessage(XYPlotCustomizer.class, "XYPlotCustomizer.jLabel1.text")); // NOI18N
@@ -67,6 +77,12 @@ public class XYPlotCustomizer extends javax.swing.JPanel implements VisFilterI<D
         useFractions.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         useFractions.setText(org.openide.util.NbBundle.getMessage(XYPlotCustomizer.class, "XYPlotCustomizer.useFractions.text")); // NOI18N
 
+        logY.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
+        logY.setText(org.openide.util.NbBundle.getMessage(XYPlotCustomizer.class, "XYPlotCustomizer.logY.text")); // NOI18N
+
+        logX.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
+        logX.setText(org.openide.util.NbBundle.getMessage(XYPlotCustomizer.class, "XYPlotCustomizer.logX.text")); // NOI18N
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -74,12 +90,12 @@ public class XYPlotCustomizer extends javax.swing.JPanel implements VisFilterI<D
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel1)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(sortAscending)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(sortDescending))
-                    .addComponent(useFractions))
-                .addGap(0, 22, Short.MAX_VALUE))
+                    .addComponent(sortAscending)
+                    .addComponent(useFractions)
+                    .addComponent(logY)
+                    .addComponent(logX)
+                    .addComponent(sortDescending))
+                .addGap(0, 69, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -87,12 +103,16 @@ public class XYPlotCustomizer extends javax.swing.JPanel implements VisFilterI<D
                 .addGap(6, 6, 6)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(sortAscending)
-                    .addComponent(sortDescending))
-                .addGap(18, 18, 18)
+                .addComponent(sortAscending)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(sortDescending)
+                .addGap(19, 19, 19)
                 .addComponent(useFractions)
-                .addContainerGap(188, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(logX)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(logY)
+                .addContainerGap(106, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -114,6 +134,8 @@ public class XYPlotCustomizer extends javax.swing.JPanel implements VisFilterI<D
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JCheckBox logX;
+    private javax.swing.JCheckBox logY;
     private javax.swing.JRadioButton sortAscending;
     private javax.swing.JRadioButton sortDescending;
     private javax.swing.JCheckBox useFractions;
