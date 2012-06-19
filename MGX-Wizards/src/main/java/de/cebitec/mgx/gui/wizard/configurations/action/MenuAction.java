@@ -6,36 +6,33 @@
 package de.cebitec.mgx.gui.wizard.configurations.action;
 
 //~--- non-JDK imports --------------------------------------------------------
+import de.cebitec.mgx.gui.datamodel.DirEntry;
 import de.cebitec.mgx.gui.datamodel.JobParameter;
 import de.cebitec.mgx.gui.datamodel.Tool;
-import de.cebitec.mgx.gui.wizard.configurations.data.Impl.Node;
-import de.cebitec.mgx.gui.wizard.configurations.data.Impl.Store;
-import de.cebitec.mgx.gui.wizard.configurations.data.interf.NodeStore;
-import de.cebitec.mgx.gui.wizard.configurations.data.util.Transform;
+import de.cebitec.mgx.gui.wizard.configurations.data.impl.ConfigItem;
+import de.cebitec.mgx.gui.wizard.configurations.data.impl.Node;
+import de.cebitec.mgx.gui.wizard.configurations.data.impl.Store;
 import de.cebitec.mgx.gui.wizard.configurations.menu.MenuController;
 import de.cebitec.mgx.gui.wizard.configurations.menu.MenuView;
-import de.cebitec.mgx.gui.wizard.configurations.start.StartController;
+import de.cebitec.mgx.gui.wizard.configurations.progressScreen.ProgressBar;
+import de.cebitec.mgx.gui.wizard.configurations.start.ToolViewController;
 import de.cebitec.mgx.gui.wizard.configurations.summary.MenuSummaryController;
 import de.cebitec.mgx.gui.wizard.configurations.utilities.ActionCommands;
 import java.awt.Component;
+import java.awt.Dialog;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.event.WindowEvent;
 import java.io.*;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.logging.Logger;
 import javax.swing.*;
-import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.WizardDescriptor;
-import org.openide.awt.ActionID;
-import org.openide.awt.ActionReference;
-import org.openide.awt.ActionRegistration;
-import org.openide.util.Exceptions;
-import org.openide.util.Lookup;
 
 //An example action demonstrating how the wizard could be called from within
 //your code. You can move the code below wherever you need, or register an action:
@@ -46,7 +43,7 @@ import org.openide.util.Lookup;
 public final class MenuAction implements ActionListener {
 
     private final static Logger LOGGER =
-            Logger.getLogger(MenuView.class.getName());
+            Logger.getLogger(MenuAction.class.getName());
     /**
      * Der Store in dem die konfigurierbaren Nodes enthalten sind.
      */
@@ -69,6 +66,10 @@ public final class MenuAction implements ActionListener {
     }
     boolean showTools;
 
+    public void startFileChooser(List<DirEntry> entries) {
+//        FileChooserTest test = new FileChooserTest(entries);
+    }
+
     public void setTools(Collection<Tool> lGlobalTools, List<Tool> lProjectTools) {
         showTools = true;
 
@@ -80,7 +81,7 @@ public final class MenuAction implements ActionListener {
 
         for (Tool tool : lGlobalTools) {
 
-            tools.put("Global-Tools" + ";" + tool.getId(), tool);
+            tools.put("Global-Tools (Server)" + ";" + tool.getId(), tool);
             globalTools.add(tool);
 
         }
@@ -94,6 +95,45 @@ public final class MenuAction implements ActionListener {
         LOGGER.info("setStore");
         showTools = false;
         this.store = lStore;
+
+
+        Iterator nodeIterator = store.getIterator();
+        Map.Entry nodeME;
+        String nodeId;
+        Iterator configItemIterator;
+        while (nodeIterator.hasNext()) {
+
+            nodeME = (Map.Entry) nodeIterator.next();
+            nodeId = (String) nodeME.getKey();
+            Node node = (Node) nodeME.getValue();
+            configItemIterator = (node).getIterator();
+            Map.Entry configItemME;
+
+
+            String configItemName;
+            LOGGER.info("NodeId: " + nodeId);
+            LOGGER.info(node.getDisplayName());
+            while (configItemIterator.hasNext()) {
+
+                configItemME = (Map.Entry) configItemIterator.next();
+                ConfigItem configItem = (ConfigItem) configItemME.getValue();
+                configItemName = (String) configItemME.getKey();
+
+
+                LOGGER.info(nodeId + " "
+                        + configItemName);
+                LOGGER.info(nodeId + " " + configItem.getAnswer());
+                LOGGER.info(nodeId + " " + node.getClassName());
+                LOGGER.info(nodeId + " " + configItem.getDefaultValue());
+                LOGGER.info(nodeId + " " + Boolean.toString(configItem.isOptional()));
+                LOGGER.info(nodeId + " " + configItem.getConfigType());
+                LOGGER.info(nodeId + " " + configItem.getUserDescription());
+                LOGGER.info(nodeId + " " + configItem.getUserName());
+//                jobParameter.setChoices(configItem.getChoice().getChoices());
+            }
+        }
+
+
 
     }
 
@@ -113,7 +153,60 @@ public final class MenuAction implements ActionListener {
         }
     }
 
+    private void showTools() {
+        List<WizardDescriptor.Panel<WizardDescriptor>> panels =
+                new ArrayList<WizardDescriptor.Panel<WizardDescriptor>>();
+
+        panels.add(new ToolViewController(globalTools, projectTools));
+
+
+        String[] steps = new String[panels.size()];
+
+        for (int i = 0; i < panels.size(); i++) {
+            Component c = panels.get(i).getComponent();
+
+            steps[i] = c.getName();
+
+            if (c instanceof JComponent) {
+                JComponent jc = (JComponent) c;
+                jc.putClientProperty(
+                        WizardDescriptor.PROP_CONTENT_SELECTED_INDEX, i);
+                jc.putClientProperty(WizardDescriptor.PROP_CONTENT_DATA, steps);
+                jc.putClientProperty(WizardDescriptor.PROP_AUTO_WIZARD_STYLE,
+                        true);
+                jc.putClientProperty(WizardDescriptor.PROP_CONTENT_DISPLAYED,
+                        true);
+                jc.putClientProperty(WizardDescriptor.PROP_CONTENT_NUMBERED,
+                        true);
+            }
+        }
+
+
+        final WizardDescriptor wiz =
+                new WizardDescriptor(
+                new WizardDescriptor.ArrayIterator<WizardDescriptor>(panels));
+
+        Object[] optionButtons = {WizardDescriptor.PREVIOUS_OPTION, WizardDescriptor.FINISH_OPTION,
+            WizardDescriptor.CANCEL_OPTION};
+
+        wiz.setOptions(optionButtons);
+        Object[] objects = wiz.getOptions();
+        JButton button = (JButton) objects[1];
+        button.setText("Next >");
+        button.setMnemonic(KeyEvent.VK_N);
+        wiz.setTitleFormat(new MessageFormat("{0}"));
+        wiz.setTitle("Configurations");
+
+        this.wiz = wiz;
+    }
+    int status = 0;
+    public static final int cancel = 0;
+    public static final int finish = 1;
+    public static final int again = 2;
+    private List<DirEntry> entries;
+
     private void showConfigurations() {
+        status = 0;
         List<WizardDescriptor.Panel<WizardDescriptor>> panels =
                 new ArrayList<WizardDescriptor.Panel<WizardDescriptor>>();
 
@@ -127,11 +220,9 @@ public final class MenuAction implements ActionListener {
             me = (Map.Entry) iterator.next();
             panels.add(
                     new MenuController(nodeIndex,
-                    store.getNode((String) me.getKey())));
+                    store.getNode((String) me.getKey()), entries));
             nodeIndex++;
         }
-        JobParameter parameter = new JobParameter();
-
         panels.add(new MenuSummaryController(store));
 
 
@@ -160,14 +251,35 @@ public final class MenuAction implements ActionListener {
                 new WizardDescriptor(
                 new WizardDescriptor.ArrayIterator<WizardDescriptor>(panels));
 
-
-
         JButton setAllDefaultbutton = new JButton("Set default");
         setAllDefaultbutton.setToolTipText("Sets available default values.");
         setAllDefaultbutton.setActionCommand(ActionCommands.Default);
 
 
-        Object[] optionButtons = {setAllDefaultbutton, WizardDescriptor.PREVIOUS_OPTION, WizardDescriptor.NEXT_OPTION, WizardDescriptor.FINISH_OPTION, WizardDescriptor.CANCEL_OPTION};
+        JButton chooseToolButton = new JButton("Choose a Tool");
+        chooseToolButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Object[] options = {"Yes",
+                    "No",};
+                int value = JOptionPane.showOptionDialog(null,
+                        "Do you really want to close the Configuration window "
+                        + "and return back to the tool selection window?\n"
+                        + "Already entered parameters will be deleted.", "",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
+                if (value == JOptionPane.YES_OPTION) {
+                    status = again;
+                    wiz.doCancelClick();
+                } else if (value == JOptionPane.NO_OPTION) {
+                }
+            }
+        });
+
+        Object[] optionButtons = {chooseToolButton, setAllDefaultbutton,
+            WizardDescriptor.PREVIOUS_OPTION, WizardDescriptor.NEXT_OPTION,
+            WizardDescriptor.FINISH_OPTION, WizardDescriptor.CANCEL_OPTION};
 
         wiz.setOptions(optionButtons);
         wiz.setTitleFormat(new MessageFormat("{0}"));
@@ -175,8 +287,6 @@ public final class MenuAction implements ActionListener {
 
         Object[] objects = wiz.getOptions();
         button = new JButton();
-//        button = (JButton) objects[2];
-//        button.setText("mein Text");
 
         Action previousClickAction = new AbstractAction() {
 
@@ -194,44 +304,55 @@ public final class MenuAction implements ActionListener {
 
     }
     WizardDescriptor wiz;
+    ProgressBar bar;
 
     public Tool startWizardTools() {
         LOGGER.info("Tools start.");
+
         if (DialogDisplayer.getDefault().notify(wiz)
                 == WizardDescriptor.FINISH_OPTION) {
+//            bar = new ProgressBar("", 200, 100);
+//            ProgressScreen progress = new ProgressScreen();
             if (((String) (wiz.getProperty("TOOL"))).startsWith("Local-Tools")) {
-
-
+                LOGGER.info("Local-Tools");
                 String[] stringArray = ((String) (wiz.getProperty("TOOL"))).split(";");
                 String url = stringArray[1];
                 Tool tool = new Tool();
+                LOGGER.info("Local-Tools Path: " + url);
                 tool.setXMLFile(readFile(url));
+                tool.setAuthor((String) (wiz.getProperty("LOCALAUTHOR")));
+                tool.setDescription((String) (wiz.getProperty("LOCALDESCRIPTION")));
+                tool.setName((String) (wiz.getProperty("LOCALNAME")));
+                tool.setId(-1);
                 tool.setUrl(url);
-                tool.setAuthor("hallo");
-                tool.setDescription("hallo");
-                tool.setName("Test");
-                float flo = 12;
-                tool.setVersion(flo);
-                //@TODO
+                tool.setVersion(Float.parseFloat((String) (wiz.getProperty("LOCALVERSION"))));
                 return tool;
             }
-            
-            
-            return tools.get(wiz.getProperty("TOOL"));
+            Tool tool = tools.get(wiz.getProperty("TOOL"));
+            LOGGER.info("TOOLName " + tool.getName());
+            LOGGER.info("TOOLAuthor " + tool.getAuthor());
+            LOGGER.info("TOOLDescription " + tool.getDescription());
+            LOGGER.info("TOOLId " + tool.getId());
+            return tool;
         }
-
         return null;
     }
 
     public Store startWizardConfigurations() {
         LOGGER.info("Configurations start");
-        if (DialogDisplayer.getDefault().notify(wiz)
+        bar.dispose();
+        Object object = DialogDisplayer.getDefault().notify(wiz);
+        if (object
                 == WizardDescriptor.FINISH_OPTION) {
+            status = finish;
             removeNodesAndConfigItems(wiz);
             return store;
         }
-
         return null;
+    }
+
+    public int getStatus() {
+        return status;
     }
 
     private String readFile(String path) {
@@ -272,52 +393,6 @@ public final class MenuAction implements ActionListener {
         return content;
     }
 
-    private void showTools() {
-        List<WizardDescriptor.Panel<WizardDescriptor>> panels =
-                new ArrayList<WizardDescriptor.Panel<WizardDescriptor>>();
-
-        panels.add(new StartController(globalTools, projectTools));
-
-
-        String[] steps = new String[panels.size()];
-
-        for (int i = 0; i < panels.size(); i++) {
-            Component c = panels.get(i).getComponent();
-
-            steps[i] = c.getName();
-
-            if (c instanceof JComponent) {
-                JComponent jc = (JComponent) c;
-                jc.putClientProperty(
-                        WizardDescriptor.PROP_CONTENT_SELECTED_INDEX, i);
-                jc.putClientProperty(WizardDescriptor.PROP_CONTENT_DATA, steps);
-                jc.putClientProperty(WizardDescriptor.PROP_AUTO_WIZARD_STYLE,
-                        true);
-                jc.putClientProperty(WizardDescriptor.PROP_CONTENT_DISPLAYED,
-                        true);
-                jc.putClientProperty(WizardDescriptor.PROP_CONTENT_NUMBERED,
-                        true);
-            }
-        }
-
-
-        final WizardDescriptor wiz =
-                new WizardDescriptor(
-                new WizardDescriptor.ArrayIterator<WizardDescriptor>(panels));
-
-        Object[] optionButtons = {WizardDescriptor.PREVIOUS_OPTION, WizardDescriptor.FINISH_OPTION,
-            WizardDescriptor.CANCEL_OPTION};
-
-        wiz.setOptions(optionButtons);
-        Object[] objects = wiz.getOptions();
-        JButton button = (JButton) objects[1];
-        button.setText("Next >");
-        button.setMnemonic(KeyEvent.VK_N);
-        wiz.setTitleFormat(new MessageFormat("{0}"));
-        wiz.setTitle("Configurations");
-        this.wiz = wiz;
-    }
-
     /**
      * Nach dem Beenden des Wizards werden, alle Antworten in den Store zu den
      * jeweiligen Nodes und ConfigItems gegeben und dann alle Nodes und
@@ -329,8 +404,6 @@ public final class MenuAction implements ActionListener {
 
 
         LOGGER.info("StoreSize: " + Integer.toString(store.storeSize()));
-
-
         Iterator nodeIterator = store.getIterator();
         Map.Entry nodeME;
         String nodeId;
@@ -393,6 +466,13 @@ public final class MenuAction implements ActionListener {
                     store.getNode(nodeKey).getDisplayName() + " "
                     + property));
         }
+    }
+
+    /**
+     * @param entries the entries to set
+     */
+    public void setEntries(List<DirEntry> entries) {
+        this.entries = entries;
     }
 }
 

@@ -165,7 +165,8 @@ public class MenuSummaryView extends JPanel {
 	JPanel panel = new JPanel();
 	panel.add(table);
 	JScrollPane scrollPane = new JScrollPane(table);
-	scrollPane.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
+	scrollPane.getVerticalScrollBar().addAdjustmentListener(
+                new AdjustmentListener() {
 
 	   @Override
 	   public void adjustmentValueChanged(AdjustmentEvent e) {
@@ -186,6 +187,8 @@ public class MenuSummaryView extends JPanel {
 	   int width = table.getColumnModel().getColumn(columnIndex).getWidth();
 	   for (int row = 0; row < table.getRowCount(); row++) {
 		JTextArea area = new JTextArea();
+                Font fontFields = new Font(Font.DIALOG, Font.BOLD, 14);
+		area.setFont(fontFields);
 		area.setLineWrap(true);
 		area.setWrapStyleWord(true);
 		area.setSize(width, Short.MAX_VALUE);
