@@ -3,7 +3,7 @@ package de.cebitec.mgx.gui.nodefactory;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.DNAExtract;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
-import de.cebitec.mgx.gui.nodes.SeqRunNode;
+import de.cebitec.mgx.gui.nodes.SeqRunNode.SeqRunNode;
 import java.beans.PropertyChangeEvent;
 import java.util.List;
 import org.openide.nodes.*;

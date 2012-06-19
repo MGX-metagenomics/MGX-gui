@@ -2,7 +2,7 @@ package de.cebitec.mgx.gui.nodefactory;
 
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
-import de.cebitec.mgx.gui.nodes.SeqRunNode;
+import de.cebitec.mgx.gui.nodes.SeqRunNode.SeqRunNode;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;

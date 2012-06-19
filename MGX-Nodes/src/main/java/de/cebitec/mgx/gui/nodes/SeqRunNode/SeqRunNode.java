@@ -1,16 +1,18 @@
-package de.cebitec.mgx.gui.nodes;
+package de.cebitec.mgx.gui.nodes.SeqRunNode;
 
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto;
 import de.cebitec.mgx.gui.controller.MGXMaster;
-import de.cebitec.mgx.gui.datamodel.Job;
-import de.cebitec.mgx.gui.datamodel.JobParameter;
-import de.cebitec.mgx.gui.datamodel.JobState;
-import de.cebitec.mgx.gui.datamodel.SeqRun;
-import de.cebitec.mgx.gui.datamodel.Tool;
+import de.cebitec.mgx.gui.datamodel.*;
+import de.cebitec.mgx.gui.nodefactory.DirEntryNodeFactory;
+import de.cebitec.mgx.gui.nodes.MGXNodeBase;
+import de.cebitec.mgx.gui.nodes.SeqRunNode.ExecuteAnalysisWorker.GetToolsWorker;
+import de.cebitec.mgx.gui.nodes.SeqRunNode.ExecuteAnalysisWorker.ShowParameterWorker;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
 import de.cebitec.mgx.gui.wizard.configurations.action.MenuAction;
+import de.cebitec.mgx.gui.wizard.configurations.action.WizardController;
+import de.cebitec.mgx.gui.wizard.configurations.data.impl.Store;
 import de.cebitec.mgx.gui.wizard.configurations.data.util.Transform;
 import de.cebitec.mgx.gui.wizard.seqrun.SeqRunWizardDescriptor;
 import java.awt.Dialog;
@@ -20,11 +22,13 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.JFileChooser;
 import javax.swing.SwingWorker;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
@@ -87,8 +91,11 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> implements Transferable {
             throw new UnsupportedFlavorException(flavor);
         }
     }
-  private final static Logger LOGGER =
+    private final static Logger LOGGER =
             Logger.getLogger(SeqRunNode.class.getName());
+
+
+
     private class ExecuteAnalysis extends AbstractAction {
 
         public ExecuteAnalysis() {
@@ -97,147 +104,10 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> implements Transferable {
 
         @Override
         public void actionPerformed(final ActionEvent e) {
-
-            
-
-
-
-            SwingWorker worker = new SwingWorker() {
-                private MenuAction action;
-                private long jobid;
-                private Job job;
-                private Tool tool;
-                private SeqRun seqrun;
-                private List<JobParameter>  toolList;
-
-
-                @Override
-                protected Object doInBackground() throws Exception {
-                  action = new MenuAction();
-                   tool = null;
-                    seqrun = getLookup().lookup(SeqRun.class);
-                    
-                    try {
-
-                     
-
-                        List<Tool> tools = new ArrayList<Tool>();
-
-//                Tool testTool = new Tool();
-//                testTool.setAuthor("author");
-//                testTool.setDescription("Bla Bla bla");
-//                testTool.setName("yeaaah");
-//                float f = 11;
-//                testTool.setVersion(f);
-
-//                tools.add(testTool);
-
-                        //erzeugung der moeglichen tools
-                        action.setTools( master.Tool().listGlobalTools(), master.Tool().fetchall());
-                        //anzeige der moeglichen tools
-                        action.actionPerformed(e);
-                                LOGGER.info("tools set");
-                        //rueckgabe welches tool gewaehlt wurde
-                        tool = action.startWizardTools();
-                    } catch (MGXServerException ex) {
-                        Exceptions.printStackTrace(ex);
-
-
-                    }
-                    
-                    
-                    
-                   LOGGER.info(tool.getId()+"");
-            job = new Job();
-     
-            job.setTool(tool);
-            job.setSeqrun(seqrun);      
-            job.setCreator(master.getLogin());
-            job.setStatus(JobState.PENDING);
- LOGGER.info("Before create");
- 
- 
-             jobid = master.Job().create(job);
-          
-             LOGGER.info("After create "+jobid);
- 
-                      toolList = null;
-              //parsen
-            try {
-                List<JobParameter> list = new ArrayList<JobParameter>();
-                      
-                Iterator iterator = master.Job().getParameters(jobid).iterator();
-                                LOGGER.info("After Get Parameters");
-
-                while (iterator.hasNext()) {
-                    list.add((JobParameter) iterator.next());
-                }
-
-                action.setStore(Transform.getFromJobParameterNodeStore(list));
-                //eigentlicher wizard start
-                action.actionPerformed(e);
-                toolList = new ArrayList<JobParameter>();
-
-                toolList = Transform.getFromNodeStoreJobParameter(action.startWizardConfigurations());
-
-            } catch (MGXServerException ex) {
-                Exceptions.printStackTrace(ex);
-            }
-            
-            return null;
-                }
-                
-                
-                @Override
-                protected void done() {
-                    super.done();
-                    
-             //                 .setId(j.getId())
-//                .setSeqrunId(j.getSeqrun().getId())
-//                .setToolId(j.getTool().getId())
-//                .setCreator(j.getCreator())
-//                .setState(dto.JobDTO.JobState.valueOf(j.getStatus().getValue()));
-
-             
-
-
-            String parameter = "";
-            // muster: nodeid.configname "wert"
-            for (JobParameter jobParameter : toolList) {
-                String answer = jobParameter.getConfigItemValue().replaceAll("\n", " ");
-                answer = answer.replaceAll("\r\n", " ");
-
-                parameter = parameter + jobParameter.getNodeId() + "."
-                        + jobParameter.getConfigItemName() + "\""
-                        + answer + "\"";
-
-            }
-            //parameter liste an job weitergeben  
-            job.setParameters(parameter);
-
-            boolean job_is_ok = false;
-            try {
-                job_is_ok = master.Job().verify(jobid);
-                if (job_is_ok) {
-                    master.Job().execute(jobid);
-                }
-            } catch (MGXServerException ex) {
-                Exceptions.printStackTrace(ex);
-            }       
-                    
-                    
-                }
-                
-                
-            };
-
-
-
-worker.execute();
-
-
-           
-
+            SeqRun seqrun = getLookup().lookup(SeqRun.class);
+            WizardController startUp = new WizardController();
+            GetToolsWorker getTools = new GetToolsWorker(startUp, master, seqrun);
+            getTools.execute();
         }
     }
 
