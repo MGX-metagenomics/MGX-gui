@@ -154,7 +154,6 @@ public class ToolView extends JPanel implements DocumentListener {
      * nicht.
      */
     private final ArrayList<Boolean> containsTool;
-    
     /**
      * CurrentRow fuer die Zeile des derzeit ausgewaehlten tools.
      */
@@ -257,9 +256,11 @@ public class ToolView extends JPanel implements DocumentListener {
                 new GridBagConstraints();
         questionToolBoxConstraints.insets = new Insets(5, 0, 5, 0);
         questionToolBoxConstraints.gridy = 0;
-        questionToolBox.add(
-                new JLabel("Select the location from "
-                + "where you want to load your Tools."),
+        Font font = new Font(Font.DIALOG, Font.BOLD, 13);
+        JLabel label = new JLabel("Select the location from "
+                + "where you want to load your Tools.");
+        label.setFont(font);
+        questionToolBox.add(label,
                 questionToolBoxConstraints);
         questionToolBoxConstraints.gridy = 1;
         questionToolBox.add(toolLocationBox, questionToolBoxConstraints);
@@ -778,15 +779,16 @@ public class ToolView extends JPanel implements DocumentListener {
         } else {
             localRowHeight = rowsHeightGlobal;
         }
-
+        Font fontFields = new Font(Font.DIALOG, Font.BOLD, 14);
         for (int columnIndex = 0; columnIndex < columnsCounter; columnIndex++) {
 
             int width = table.getColumnModel().getColumn(columnIndex).
                     getWidth();
             for (int row = 0; row < table.getRowCount(); row++) {
                 JTextArea area = new JTextArea();
-                Font fontFields = new Font(Font.DIALOG, Font.BOLD, 14);
-                area.setFont(fontFields);
+                if (columnIndex == 0) {
+                    area.setFont(fontFields);
+                }
                 area.setLineWrap(true);
                 area.setWrapStyleWord(true);
                 area.setSize(width, Short.MAX_VALUE);
@@ -907,7 +909,7 @@ public class ToolView extends JPanel implements DocumentListener {
 
     /**
      * Gibt die derzeitig ausgewaehlte Zeile wieder.
-     * 
+     *
      * @return the currentRow
      */
     public int getCurrentRow() {

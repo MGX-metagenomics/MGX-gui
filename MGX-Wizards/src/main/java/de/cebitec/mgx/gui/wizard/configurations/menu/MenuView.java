@@ -68,7 +68,7 @@ public final class MenuView extends JPanel implements DocumentListener {
      * Der ActionListener für die Buttons.
      */
     private ActionListener listener;
-    private DocumentListener docListener;
+   
     private List<DirEntry> entries;
 
     /**
@@ -94,11 +94,10 @@ public final class MenuView extends JPanel implements DocumentListener {
             ArrayList<ArrayList<String>> lUserChoicesValues,
             ArrayList<ArrayList<String>> lUserChoicesDescriptions,
             ArrayList<String> lDefaultValues, int lMandatoryComponentsCounter,
-            ActionListener lListener, DocumentListener ldocListener, List<DirEntry> lEntries) {
+            ActionListener lListener,
+            List<DirEntry> lEntries) {
 
         this.entries = lEntries;
-
-        docListener = ldocListener;
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         listener = lListener;
         displayName = lDisplayName;
@@ -166,14 +165,27 @@ public final class MenuView extends JPanel implements DocumentListener {
             JPanel lComponentPanel, int lMandatoryComponentsCounter,
             GridBagConstraints lAllInOneConstraints, int lAddToConfigIndex,
             JPanel lRightComponentPanel, JLabel lOptionalLabel, int lFieldCounter) {
+//        lRightComponentPanel.setAlignmentX(JComponent.LEFT_ALIGNMENT);
         Font font = new Font(Font.DIALOG, Font.BOLD, 14);
+        lComponentPanel.setAlignmentX(JComponent.LEFT_ALIGNMENT);
+        lComponentPanel.setAlignmentY(JComponent.LEFT_ALIGNMENT);
+//        lComponentPanel.setBorder(BorderFactory.createLineBorder(Color.GREEN));
+//        lDescriptionPanel.setBorder(BorderFactory.createLineBorder(Color.GREEN));
+        lDescriptionPanel.setAlignmentX(JComponent.LEFT_ALIGNMENT);
+        lDescriptionPanel.setAlignmentY(JComponent.LEFT_ALIGNMENT);
+
+        lComponentDescriptionPanel.setAlignmentY(JComponent.LEFT_ALIGNMENT);
+        lComponentDescriptionPanel.setAlignmentX(JComponent.LEFT_ALIGNMENT);
+        lComponentDescriptionPanel.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
+//        lComponentDescriptionPanel.setBorder(BorderFactory.createLineBorder(Color.GREEN));
+
         lComponentDescriptionPanel.setBorder(
                 BorderFactory.createTitledBorder(null, lUserNames.get(configIndex),
                 TitledBorder.CENTER, TitledBorder.DEFAULT_JUSTIFICATION, font,
                 Color.BLACK));
 
         lDescriptionPanel.add(lDescriptionLabel);
-
+        lComponentConstraints.fill = GridBagConstraints.BOTH;
         if (lStartLabel == 0) {
             lComponentConstraints.gridy = lStartLabel;
             lStartLabel++;
@@ -183,13 +195,18 @@ public final class MenuView extends JPanel implements DocumentListener {
 
         lComponentConstraints.gridy = lStartLabel;
         lStartLabel++;
-        lComponentConstraints.anchor = GridBagConstraints.LINE_START;
+        lComponentConstraints.anchor = GridBagConstraints.WEST;
+        lComponentConstraints.weightx = 20;
+        lComponentConstraints.weighty = 20;
+
+//        lComponentConstraints.
         lComponentDescriptionPanel.add(lComponentPanel, lComponentConstraints);
         lComponentConstraints.gridy = lStartLabel;
         lComponentDescriptionPanel.add(lDescriptionPanel, lComponentConstraints);
-
+        lAllInOneConstraints.anchor = GridBagConstraints.WEST;
         if (configIndex != 0 && configIndex == lMandatoryComponentsCounter
                 && lMandatoryComponentsCounter != lUserNames.size()) {
+
             lAllInOneConstraints.gridx = 0;
             lAllInOneConstraints.gridy = configIndex + 1;
             lAllInOneConstraints.insets = new Insets(10, 0, 10, 0);
@@ -299,7 +316,8 @@ public final class MenuView extends JPanel implements DocumentListener {
      * @param docListener
      */
     private void setUpPanelForm(ArrayList<String> lConfigTypes,
-            ArrayList<String> lUserDescriptions, ArrayList<String> lUserNames, ArrayList<ArrayList<String>> lUserChoiceDescriptions,
+            ArrayList<String> lUserDescriptions, ArrayList<String> lUserNames,
+            ArrayList<ArrayList<String>> lUserChoiceDescriptions,
             ArrayList<ArrayList<String>> lUserChoiceValues,
             int lMandatoryComponentsCounter, int lFieldCounter) {
 
@@ -390,7 +408,7 @@ public final class MenuView extends JPanel implements DocumentListener {
 
                 initializeComboBox(lUserChoiceValues, choiceIndex,
                         lUserChoiceDescriptions, defaultValue,
-                        choicesCounter, componentPanel, orderFont);
+                        choicesCounter, componentPanel, orderFont, configIndex);
 
                 choiceIndex++;
                 startLabel = 0;
@@ -434,7 +452,8 @@ public final class MenuView extends JPanel implements DocumentListener {
 
         Boolean old = UIManager.getBoolean("FileChooser.readOnly");
         UIManager.put("FileChooser.readOnly", Boolean.TRUE);
-        JFileChooser fileChooser = new JFileChooser(new ProjectFileSystemView(entries));
+        JFileChooser fileChooser =
+                new JFileChooser(new ProjectFileSystemView(entries));
         UIManager.put("FileChooser.readOnly", old);
         textFieldFileChooser(fileChooser, fileChooser);
 
@@ -591,7 +610,7 @@ public final class MenuView extends JPanel implements DocumentListener {
     private void initializeComboBox(ArrayList<ArrayList<String>> lUserChoiceValues,
             int lChoiceIndex, ArrayList<ArrayList<String>> lUserChoiceDescriptions,
             String lDefaultValue, int lChoicesCounter, JPanel lComponentPanel,
-            Font lMessageFont) {
+            Font lMessageFont, int lConfigIndex) {
         JComboBox comboBox;
 
         String[] choicesValues = new String[lUserChoiceValues.get(lChoiceIndex).size() + 1];
@@ -631,6 +650,12 @@ public final class MenuView extends JPanel implements DocumentListener {
         if (!lDefaultValue.isEmpty()) {
             comboBox.setToolTipText(toolTip);
             comboBox.setSelectedIndex(selectedIndex);
+            JButton defaultButton = new JButton("set default value");
+            defaultButton.setToolTipText("Default: " + lDefaultValue);
+            defaultButton.setActionCommand(ActionCommands.Default + ":"
+                    + Integer.toString(lConfigIndex));
+            defaultButton.addActionListener(listener);
+            lComponentPanel.add(defaultButton);
         }
         messageLabel = new JLabel("<html><table><td width=400>"
                 + Messages.getInformation(Messages.Enumeration)
@@ -741,11 +766,17 @@ public final class MenuView extends JPanel implements DocumentListener {
         if (allComponentsList.get(lIndex) instanceof JTextField) {
             int returnVal;
             JTextField filedField = ((JTextField) allComponentsList.get(lIndex));
+
+            Boolean old = UIManager.getBoolean("FileChooser.readOnly");
+            UIManager.put("FileChooser.readOnly", Boolean.TRUE);
             JFileChooser fileChooser = chooser.get(lIndex);
+            UIManager.put("FileChooser.readOnly", old);
 
             if (filedField.getText().isEmpty()) {
-
+              
+                UIManager.put("FileChooser.readOnly", Boolean.TRUE);
                 fileChooser = new JFileChooser(new ProjectFileSystemView(entries));
+                UIManager.put("FileChooser.readOnly", old);
                 repaintFileChooser(fileChooser, fileChooser);
                 returnVal = fileChooser.showOpenDialog(this);
 

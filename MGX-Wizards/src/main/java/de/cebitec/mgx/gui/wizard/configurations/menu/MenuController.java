@@ -178,7 +178,7 @@ public class MenuController
                 userChoicesDescriptions,
                 defaultValues,
                 mandatoryComponents, this,
-                new WizardDocumentListener(this), entries);
+                 entries);
 
 
         listenerbutton = new ActionListener() {

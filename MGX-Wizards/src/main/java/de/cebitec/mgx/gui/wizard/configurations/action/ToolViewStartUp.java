@@ -93,24 +93,15 @@ public class ToolViewStartUp {
         panels.add(new ToolViewController(globalTools, projectTools));
 
 
-        String[] steps = new String[panels.size()];
-
         for (int i = 0; i < panels.size(); i++) {
             Component c = panels.get(i).getComponent();
 
-            steps[i] = "";
-
             if (c instanceof JComponent) {
                 JComponent jc = (JComponent) c;
-//                jc.putClientProperty(
-//                        WizardDescriptor.PROP_CONTENT_SELECTED_INDEX, i);
-                jc.putClientProperty(WizardDescriptor.PROP_CONTENT_DATA, steps);
                 jc.putClientProperty(WizardDescriptor.PROP_AUTO_WIZARD_STYLE,
                         true);
                 jc.putClientProperty(WizardDescriptor.PROP_CONTENT_DISPLAYED,
                         true);
-//                jc.putClientProperty(WizardDescriptor.PROP_CONTENT_NUMBERED,
-//                        true);
             }
         }
 
@@ -120,6 +111,7 @@ public class ToolViewStartUp {
                 new WizardDescriptor.ArrayIterator<WizardDescriptor>(panels));
 
         JButton delete = new JButton("Delete");
+        delete.setMnemonic(KeyEvent.VK_D);
 
         Object[] optionButtons = {delete, WizardDescriptor.PREVIOUS_OPTION,
             WizardDescriptor.FINISH_OPTION,
@@ -127,9 +119,14 @@ public class ToolViewStartUp {
 
         wiz.setOptions(optionButtons);
         Object[] objects = wiz.getOptions();
-        JButton button = (JButton) objects[2];
-        button.setText("Next >");
-        button.setMnemonic(KeyEvent.VK_N);
+        JButton buttonNext = (JButton) objects[2];
+        buttonNext.setText("Next >");
+        buttonNext.setMnemonic(KeyEvent.VK_N);
+        JButton buttonCancel = (JButton) objects[3];
+        buttonCancel.setMnemonic(KeyEvent.VK_C);
+
+
+
         wiz.setTitleFormat(new MessageFormat("{0}"));
         wiz.setTitle("Toolview");
         this.wiz = wiz;

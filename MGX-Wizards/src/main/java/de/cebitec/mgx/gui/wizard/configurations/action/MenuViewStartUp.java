@@ -15,6 +15,7 @@ import de.cebitec.mgx.gui.wizard.configurations.utilities.ActionCommands;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.logging.Logger;
@@ -198,11 +199,13 @@ public class MenuViewStartUp {
                 new WizardDescriptor.ArrayIterator<WizardDescriptor>(panels));
 
         JButton setAllDefaultbutton = new JButton("Set default");
+        setAllDefaultbutton.setMnemonic(KeyEvent.VK_S);
         setAllDefaultbutton.setToolTipText("Sets available default values.");
         setAllDefaultbutton.setActionCommand(ActionCommands.Default);
 
 
         JButton chooseToolButton = new JButton("Choose a Tool");
+        chooseToolButton.setMnemonic(KeyEvent.VK_T);
         chooseToolButton.addActionListener(new ActionListener() {
 
             @Override
@@ -227,8 +230,18 @@ public class MenuViewStartUp {
         Object[] optionButtons = {chooseToolButton, setAllDefaultbutton,
             WizardDescriptor.PREVIOUS_OPTION, WizardDescriptor.NEXT_OPTION,
             WizardDescriptor.FINISH_OPTION, WizardDescriptor.CANCEL_OPTION};
-
+        
         wiz.setOptions(optionButtons);
+        
+         Object[] objects = wiz.getOptions();
+        JButton buttonNext = (JButton) objects[3];
+        LOGGER.info(buttonNext.getName());
+        buttonNext.setMnemonic(KeyEvent.VK_N);
+        JButton buttonCancel = (JButton) objects[5];
+        buttonCancel.setMnemonic(KeyEvent.VK_C);
+        
+        
+        
         wiz.setTitleFormat(new MessageFormat("{0}"));
         wiz.setTitle("Configuration of the tool: \"" + toolName + "\" ");
         this.wiz = wiz;
