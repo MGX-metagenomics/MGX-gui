@@ -1,4 +1,4 @@
-package de.cebitec.mgx.gui.nodes.analysisaction.ExecuteAnalysisWorker;
+package de.cebitec.mgx.gui.nodes.analysisaction;
 
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.gui.controller.MGXMaster;
@@ -62,7 +62,7 @@ public class ShowParameterWorker extends SwingWorker {
         LOGGER.info("After create JobID: " + jobid);
         jobParameterList = null;
         //parsen
-        list = new ArrayList<JobParameter>();
+        list = new ArrayList<>();
         Iterator iterator = null;
 
         try {
@@ -100,7 +100,6 @@ public class ShowParameterWorker extends SwingWorker {
                         seqrun);
                 worker.execute();
             } else if (startUp.getStatus() == MenuAction.finish) {
-                jobParameterList = new ArrayList<JobParameter>();
                 jobParameterList =
                         Transform.getFromNodeStoreJobParameter(store);
                 JobWorker worker = new JobWorker(jobParameterList, jobid, job, 

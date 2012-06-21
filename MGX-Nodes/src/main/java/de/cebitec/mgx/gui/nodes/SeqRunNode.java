@@ -2,7 +2,7 @@ package de.cebitec.mgx.gui.nodes;
 
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
-import de.cebitec.mgx.gui.nodes.analysisaction.ExecuteAnalysisWorker.GetToolsWorker;
+import de.cebitec.mgx.gui.nodes.analysisaction.GetToolsWorker;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
 import de.cebitec.mgx.gui.wizard.configurations.action.WizardController;
@@ -76,12 +76,8 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> implements Transferable {
             throw new UnsupportedFlavorException(flavor);
         }
     }
-    private final static Logger LOGGER =
-            Logger.getLogger(SeqRunNode.class.getName());
 
-
-
-    private class ExecuteAnalysis extends AbstractAction {
+    private final class ExecuteAnalysis extends AbstractAction {
 
         public ExecuteAnalysis() {
             putValue(NAME, "Analyze");

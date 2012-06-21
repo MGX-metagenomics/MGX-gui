@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.cebitec.mgx.gui.nodes.analysisaction.ExecuteAnalysisWorker;
+package de.cebitec.mgx.gui.nodes.analysisaction;
 
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.gui.controller.MGXMaster;

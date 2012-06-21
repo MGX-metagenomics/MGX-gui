@@ -1,4 +1,4 @@
-package de.cebitec.mgx.gui.nodes.analysisaction.ExecuteAnalysisWorker;
+package de.cebitec.mgx.gui.nodes.analysisaction;
 
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.gui.controller.MGXMaster;
@@ -48,7 +48,7 @@ public class GetToolsWorker extends SwingWorker {
     /**
      * Tooltypen.
      */
-    private int toolType;
+    private int toolType = 3;
     /**
      * Der GuiController.
      */
@@ -61,7 +61,7 @@ public class GetToolsWorker extends SwingWorker {
      * Der Sequenzierlauf.
      */
     private SeqRun seqRun;
-    private boolean isDelete;
+    private boolean isDelete = false;
 
     /**
      * Konstruktor fuer den Worker, der die Tools anzeigt.
@@ -71,9 +71,7 @@ public class GetToolsWorker extends SwingWorker {
      * @param lSeqrun Sequenzierlauf.
      */
     public GetToolsWorker(WizardController startup, MGXMaster master, SeqRun lSeqrun) {
-        toolType = 3;
         startUp = startup;
-        isDelete = false;
         this.master = master;
         seqRun = lSeqrun;
     }
@@ -89,7 +87,7 @@ public class GetToolsWorker extends SwingWorker {
         toolType = 5;
 
         try {
-            List<Tool> tools = new ArrayList<Tool>();
+            List<Tool> tools = new ArrayList<>();
             globalTools = master.Tool().listGlobalTools();
             projectTools = master.Tool().fetchall();
 
@@ -102,9 +100,7 @@ public class GetToolsWorker extends SwingWorker {
             Exceptions.printStackTrace(ex);
         }
 
-
         isDelete = startUp.isToolDelete();
-
 
         if (globalTools.contains(tool)) {
             LOGGER.info("GlobalTool");

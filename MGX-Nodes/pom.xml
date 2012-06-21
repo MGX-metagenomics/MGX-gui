@@ -95,7 +95,7 @@
                 <configuration>
                     <publicPackages>
                         <publicPackage>de.cebitec.mgx.gui.nodefactory</publicPackage>
-                        <publicPackage>de.cebitec.mgx.gui.nodes.*</publicPackage>
+                        <publicPackage>de.cebitec.mgx.gui.nodes</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>
