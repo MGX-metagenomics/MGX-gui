@@ -5,17 +5,11 @@
 package de.cebitec.mgx.gui.wizard.configurations.action;
 
 import de.cebitec.mgx.gui.datamodel.Tool;
-import de.cebitec.mgx.gui.wizard.configurations.data.impl.Store;
-import de.cebitec.mgx.gui.wizard.configurations.progressScreen.ProgressBar;
 import de.cebitec.mgx.gui.wizard.configurations.start.ToolViewController;
 import de.cebitec.mgx.gui.wizard.configurations.utilities.ActionCommands;
 import de.cebitec.mgx.gui.wizard.configurations.utilities.Util;
 import java.awt.Component;
 import java.awt.event.KeyEvent;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;

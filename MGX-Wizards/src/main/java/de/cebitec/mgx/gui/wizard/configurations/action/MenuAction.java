@@ -7,25 +7,23 @@ package de.cebitec.mgx.gui.wizard.configurations.action;
 
 //~--- non-JDK imports --------------------------------------------------------
 import de.cebitec.mgx.gui.datamodel.DirEntry;
-import de.cebitec.mgx.gui.datamodel.JobParameter;
 import de.cebitec.mgx.gui.datamodel.Tool;
 import de.cebitec.mgx.gui.wizard.configurations.data.impl.ConfigItem;
 import de.cebitec.mgx.gui.wizard.configurations.data.impl.Node;
 import de.cebitec.mgx.gui.wizard.configurations.data.impl.Store;
 import de.cebitec.mgx.gui.wizard.configurations.menu.MenuController;
-import de.cebitec.mgx.gui.wizard.configurations.menu.MenuView;
-import de.cebitec.mgx.gui.wizard.configurations.progressScreen.ProgressBar;
+import de.cebitec.mgx.gui.wizard.configurations.progressscreen.ProgressBar;
 import de.cebitec.mgx.gui.wizard.configurations.start.ToolViewController;
 import de.cebitec.mgx.gui.wizard.configurations.summary.MenuSummaryController;
 import de.cebitec.mgx.gui.wizard.configurations.utilities.ActionCommands;
 import java.awt.Component;
-import java.awt.Dialog;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.WindowEvent;
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.logging.Logger;
@@ -73,7 +71,7 @@ public final class MenuAction implements ActionListener {
     public void setTools(Collection<Tool> lGlobalTools, List<Tool> lProjectTools) {
         showTools = true;
 
-        tools = new HashMap<String, Tool>();
+        tools = new HashMap<>();
 
         projectTools = lProjectTools;
         // store = Transform.getFromJobParameterNodeStore(lParameter);
@@ -155,7 +153,7 @@ public final class MenuAction implements ActionListener {
 
     private void showTools() {
         List<WizardDescriptor.Panel<WizardDescriptor>> panels =
-                new ArrayList<WizardDescriptor.Panel<WizardDescriptor>>();
+                new ArrayList<>();
 
         panels.add(new ToolViewController(globalTools, projectTools));
 
@@ -184,7 +182,7 @@ public final class MenuAction implements ActionListener {
 
         final WizardDescriptor wiz =
                 new WizardDescriptor(
-                new WizardDescriptor.ArrayIterator<WizardDescriptor>(panels));
+                new WizardDescriptor.ArrayIterator<>(panels));
 
         Object[] optionButtons = {WizardDescriptor.PREVIOUS_OPTION, WizardDescriptor.FINISH_OPTION,
             WizardDescriptor.CANCEL_OPTION};
@@ -208,7 +206,7 @@ public final class MenuAction implements ActionListener {
     private void showConfigurations() {
         status = 0;
         List<WizardDescriptor.Panel<WizardDescriptor>> panels =
-                new ArrayList<WizardDescriptor.Panel<WizardDescriptor>>();
+                new ArrayList<>();
 
         Iterator iterator =
                 store.getIterator();

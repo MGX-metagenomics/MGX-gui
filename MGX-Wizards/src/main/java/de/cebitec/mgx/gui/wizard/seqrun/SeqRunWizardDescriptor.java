@@ -41,6 +41,7 @@ public class SeqRunWizardDescriptor extends WizardDescriptor {
         putProperty(WizardDescriptor.PROP_CONTENT_DISPLAYED, Boolean.TRUE);
         putProperty(WizardDescriptor.PROP_CONTENT_NUMBERED, Boolean.TRUE);
         this.seqrun = d;
+        putProperty(SeqRunVisualPanel1.PROP_NAME, d.getName());
         putProperty(SeqRunVisualPanel1.PROP_METHOD, d.getSequencingMethod());
         putProperty(SeqRunVisualPanel1.PROP_PLATFORM, d.getSequencingTechnology());
         putProperty(SeqRunVisualPanel1.PROP_SUBMITTED, d.getSubmittedToINSDC());
@@ -55,7 +56,8 @@ public class SeqRunWizardDescriptor extends WizardDescriptor {
 
         seqrun.setSequencingMethod((String) getProperty(SeqRunVisualPanel1.PROP_METHOD))
                 .setSequencingTechnology((String) getProperty(SeqRunVisualPanel1.PROP_PLATFORM))
-                .setSubmittedToINSDC((Boolean) getProperty(SeqRunVisualPanel1.PROP_SUBMITTED));
+                .setSubmittedToINSDC((Boolean) getProperty(SeqRunVisualPanel1.PROP_SUBMITTED))
+                .setName((String) getProperty(SeqRunVisualPanel1.PROP_NAME));
 
         if (seqrun.getSubmittedToINSDC()) {
             seqrun.setAccession((String) getProperty(SeqRunVisualPanel1.PROP_ACCESSION));

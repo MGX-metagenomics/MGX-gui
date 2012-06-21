@@ -7,7 +7,7 @@ package de.cebitec.mgx.gui.wizard.configurations.action;
 import de.cebitec.mgx.gui.datamodel.DirEntry;
 import de.cebitec.mgx.gui.datamodel.Tool;
 import de.cebitec.mgx.gui.wizard.configurations.data.impl.Store;
-import de.cebitec.mgx.gui.wizard.configurations.progressScreen.ProgressBar;
+import de.cebitec.mgx.gui.wizard.configurations.progressscreen.ProgressBar;
 import java.util.Collection;
 import java.util.List;
 import javax.swing.JOptionPane;
@@ -52,7 +52,7 @@ public class WizardController {
         toolStartUp.initializeToolsView();
         Tool tool = toolStartUp.startWizardTools();
         isDelete = toolStartUp.isDelete();
-        bar = new ProgressBar("", 200, 100, true);
+        bar = new ProgressBar("", 200, 100);
         return tool;
     }
 

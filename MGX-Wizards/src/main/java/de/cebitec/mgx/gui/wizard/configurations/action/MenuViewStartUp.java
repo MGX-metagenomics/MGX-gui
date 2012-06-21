@@ -5,12 +5,10 @@
 package de.cebitec.mgx.gui.wizard.configurations.action;
 
 import de.cebitec.mgx.gui.datamodel.DirEntry;
-import de.cebitec.mgx.gui.datamodel.Tool;
 import de.cebitec.mgx.gui.wizard.configurations.data.impl.ConfigItem;
 import de.cebitec.mgx.gui.wizard.configurations.data.impl.Node;
 import de.cebitec.mgx.gui.wizard.configurations.data.impl.Store;
 import de.cebitec.mgx.gui.wizard.configurations.menu.MenuController;
-import de.cebitec.mgx.gui.wizard.configurations.progressScreen.ProgressBar;
 import de.cebitec.mgx.gui.wizard.configurations.summary.MenuSummaryController;
 import de.cebitec.mgx.gui.wizard.configurations.utilities.ActionCommands;
 import java.awt.Component;
@@ -22,7 +20,6 @@ import java.util.*;
 import java.util.logging.Logger;
 import javax.swing.*;
 import org.openide.DialogDisplayer;
-import org.openide.NotifyDescriptor;
 import org.openide.WizardDescriptor;
 
 /**

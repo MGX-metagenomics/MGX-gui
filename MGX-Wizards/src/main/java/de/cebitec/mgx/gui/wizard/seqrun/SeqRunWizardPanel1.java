@@ -75,6 +75,7 @@ public class SeqRunWizardPanel1 implements WizardDescriptor.Panel<WizardDescript
     public void storeSettings(WizardDescriptor settings) {
         model = settings;
         SeqRunVisualPanel1 c = getComponent();
+        model.putProperty(SeqRunVisualPanel1.PROP_NAME, c.getRunName());
         model.putProperty(SeqRunVisualPanel1.PROP_PLATFORM, c.getPlatform());
         model.putProperty(SeqRunVisualPanel1.PROP_METHOD, c.getMethod());
         model.putProperty(SeqRunVisualPanel1.PROP_SUBMITTED, c.getSubmittedState());
@@ -84,6 +85,7 @@ public class SeqRunWizardPanel1 implements WizardDescriptor.Panel<WizardDescript
     public void setProperties(WizardDescriptor settings) {
         model = settings;
         SeqRunVisualPanel1 c = getComponent();
+        c.setRunName((String) model.getProperty(SeqRunVisualPanel1.PROP_NAME));
         c.setPlatform((String) model.getProperty(SeqRunVisualPanel1.PROP_PLATFORM));
         c.setMethod((String) model.getProperty(SeqRunVisualPanel1.PROP_METHOD));
         c.setSubmittedState((Boolean) model.getProperty(SeqRunVisualPanel1.PROP_SUBMITTED));
@@ -99,8 +101,13 @@ public class SeqRunWizardPanel1 implements WizardDescriptor.Panel<WizardDescript
 
     private boolean checkValidity() {
         isValid = true;
-
+        
         SeqRunVisualPanel1 c = getComponent();
+        
+        if (c.getRunName() == null || "".equals(c.getRunName())) {
+            isValid = false;
+        }
+        
         if (c.getSubmittedState()) {
             String accession = c.getAccession();
             if (accession == null || "".equals(accession)) {
