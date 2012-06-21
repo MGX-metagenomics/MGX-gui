@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package de.cebitec.mgx.gui.wizard.configurations.menu;
 
 import de.cebitec.mgx.gui.datamodel.DirEntry;
@@ -15,7 +11,6 @@ import java.util.List;
 import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
-import java.awt.event.KeyListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,8 +32,6 @@ public final class MenuView extends JPanel implements DocumentListener {
      * Der Name des Panels bzw. Node.
      */
     private String displayName;
-    private final static Logger LOGGER =
-            Logger.getLogger(MenuView.class.getName());
     /**
      * HashMap um zum passenden ConfigItem den passenden JFileChooser
      * aufzurufen.
@@ -68,7 +61,6 @@ public final class MenuView extends JPanel implements DocumentListener {
      * Der ActionListener für die Buttons.
      */
     private ActionListener listener;
-   
     private List<DirEntry> entries;
 
     /**
@@ -103,7 +95,7 @@ public final class MenuView extends JPanel implements DocumentListener {
         displayName = lDisplayName;
         allComponentsList = new ArrayList();
         defaultValues = lDefaultValues;
-        radioButtons = new HashMap<Integer, ArrayList<JRadioButton>>();
+        radioButtons = new HashMap<>();
 
         setMinimumSize(new Dimension(650, 380));
         setPreferredSize(new Dimension(650, 380));
@@ -356,7 +348,7 @@ public final class MenuView extends JPanel implements DocumentListener {
         mandatoryLabel.setFont(fontFields);
         optionalLabel.setFont(fontFields);
 
-        chooser = new HashMap<Integer, JFileChooser>();
+        chooser = new HashMap<>();
 
         if (lMandatoryComponentsCounter == lUserNames.size()
                 || lMandatoryComponentsCounter != 0) {
@@ -677,7 +669,7 @@ public final class MenuView extends JPanel implements DocumentListener {
             int lMandatoryComponentsCounter, String lDefaultValue) {
 
 
-        ArrayList<JRadioButton> radioGroup = new ArrayList<JRadioButton>();
+        ArrayList<JRadioButton> radioGroup = new ArrayList<>();
         JRadioButton radioTrue;
         JRadioButton radioFalse;
         JRadioButton radioNothing;
@@ -725,34 +717,27 @@ public final class MenuView extends JPanel implements DocumentListener {
      * @return Die Antwort in einem String.
      */
     protected String getInput(int lIndex) {
+        Object selected = allComponentsList.get(lIndex);
 
-        if (allComponentsList.get(lIndex) instanceof ButtonGroup) {
-            ButtonGroup buttonGroup = ((ButtonGroup) allComponentsList.get(lIndex));
-            if (buttonGroup.getSelection() == null
-                    || buttonGroup.getSelection().getActionCommand().equals(
-                    ActionCommands.RadioNothing)) {
+        if (selected instanceof ButtonGroup) {
+            ButtonGroup buttonGroup = ((ButtonGroup) selected);
+            if (buttonGroup.getSelection() == null || buttonGroup.getSelection().getActionCommand().equals(ActionCommands.RadioNothing)) {
                 return "";
-            } else {
-
-                return buttonGroup.getSelection().getActionCommand().toString();
             }
-
-        } else if (allComponentsList.get(lIndex) instanceof JComboBox) {
-
-            JComboBox comboBox = ((JComboBox) allComponentsList.get(lIndex));
-
+            return buttonGroup.getSelection().getActionCommand().toString();
+        } else if (selected instanceof JComboBox) {
+            JComboBox comboBox = ((JComboBox) selected);
             return comboBox.getSelectedItem().toString();
-
-        } else if (allComponentsList.get(lIndex) instanceof JTextArea) {
-
-
-            return ((JTextArea) allComponentsList.get(lIndex)).getText().trim();
-
-        } else {
+        } else if (selected instanceof JTextArea) {
+            return ((JTextArea) selected).getText().trim();
+        } else if (selected instanceof JTextField) {
             return ((JTextField) allComponentsList.get(lIndex)).getText().trim();
-
-
+        } else {
+            assert false;
         }
+        
+        // not reached
+        return "";
     }
 
     /**
@@ -773,7 +758,7 @@ public final class MenuView extends JPanel implements DocumentListener {
             UIManager.put("FileChooser.readOnly", old);
 
             if (filedField.getText().isEmpty()) {
-              
+
                 UIManager.put("FileChooser.readOnly", Boolean.TRUE);
                 fileChooser = new JFileChooser(new ProjectFileSystemView(entries));
                 UIManager.put("FileChooser.readOnly", old);

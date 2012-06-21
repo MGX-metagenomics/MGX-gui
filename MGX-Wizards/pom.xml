@@ -85,13 +85,7 @@
                         <publicPackage>de.cebitec.mgx.gui.wizard.configurations.action</publicPackage>
                         <publicPackage>de.cebitec.mgx.gui.wizard.configurations.data.impl</publicPackage>
                         <publicPackage>de.cebitec.mgx.gui.wizard.configurations.data.util</publicPackage>
-                        <publicPackage>de.cebitec.mgx.gui.wizard.configurations.menu</publicPackage>
-                        <publicPackage>de.cebitec.mgx.gui.wizard.configurations.messages</publicPackage>
                         <publicPackage>de.cebitec.mgx.gui.wizard.configurations.progressscreen</publicPackage>
-                        <publicPackage>de.cebitec.mgx.gui.wizard.configurations.renderer</publicPackage>
-                        <publicPackage>de.cebitec.mgx.gui.wizard.configurations.start</publicPackage>
-                        <publicPackage>de.cebitec.mgx.gui.wizard.configurations.summary</publicPackage>
-                        <publicPackage>de.cebitec.mgx.gui.wizard.configurations.utilities</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>

@@ -1,14 +1,8 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package de.cebitec.mgx.gui.wizard.configurations.renderer;
 
 import java.awt.Component;
-import java.awt.Dimension;
 import javax.swing.JLabel;
 import javax.swing.JTable;
-import javax.swing.JTextArea;
 import javax.swing.UIManager;
 import javax.swing.table.TableCellRenderer;
 

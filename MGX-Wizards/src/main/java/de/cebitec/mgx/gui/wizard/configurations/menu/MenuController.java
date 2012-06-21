@@ -1,38 +1,28 @@
-
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package de.cebitec.mgx.gui.wizard.configurations.menu;
 
-//~--- non-JDK imports --------------------------------------------------------
 import de.cebitec.mgx.gui.datamodel.DirEntry;
 import de.cebitec.mgx.gui.wizard.configurations.data.impl.ConfigItem;
 import de.cebitec.mgx.gui.wizard.configurations.data.impl.Node;
 import de.cebitec.mgx.gui.wizard.configurations.messages.Messages;
 import de.cebitec.mgx.gui.wizard.configurations.utilities.ActionCommands;
 import de.cebitec.mgx.gui.wizard.configurations.utilities.Types;
-import org.openide.WizardDescriptor;
-import org.openide.util.HelpCtx;
-
-//~--- JDK imports ------------------------------------------------------------
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-
 import java.math.BigInteger;
-
-import java.util.*;
-import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.JButton;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
+import org.openide.WizardDescriptor;
+import org.openide.util.HelpCtx;
 
 /**
  * Das Wizard Panel dienst als Controller, der zwischen den einzelnen
@@ -44,8 +34,6 @@ public class MenuController
         implements WizardDescriptor.Panel<WizardDescriptor>,
         PropertyChangeListener, ActionListener {
 
-    private final static Logger LOGGER =
-            Logger.getLogger(MenuController.class.getName());
     private WizardDescriptor model = null;
     /**
      * Damit ein WizardDescriptor sich bei einem Wizard-Panel registrieren kann,
@@ -110,14 +98,14 @@ public class MenuController
 
         id = lNode.getId();
         className = lNode.getClassName();
-        configItems = new ArrayList<ConfigItem>();
-        defaultValues = new ArrayList<String>();
+        configItems = new ArrayList<>();
+        defaultValues = new ArrayList<>();
         nodeCounter = lNodeCounter;
 
         String displayName = lNode.getDisplayName();
-        ArrayList<String> userNames = new ArrayList<String>();
-        ArrayList<String> configTypes = new ArrayList<String>();
-        ArrayList<String> userDescriptions = new ArrayList<String>();
+        ArrayList<String> userNames = new ArrayList<>();
+        ArrayList<String> configTypes = new ArrayList<>();
+        ArrayList<String> userDescriptions = new ArrayList<>();
         int mandatoryComponents = 0;
         ArrayList<ArrayList<String>> userChoicesDescriptions = null;
         ArrayList<ArrayList<String>> userChoicesValues = null;
@@ -131,8 +119,6 @@ public class MenuController
         }
 
         hasDefault = false;
-
-
 
         for (ConfigItem item : configItems) {
             configTypes.add(item.getConfigType());
@@ -149,18 +135,18 @@ public class MenuController
 
             if (item.hasChoices()) {
                 if (userChoicesValues == null) {
-                    userChoicesValues = new ArrayList<ArrayList<String>>();
+                    userChoicesValues = new ArrayList<>();
                 }
 
                 if (userChoicesDescriptions == null) {
                     userChoicesDescriptions =
-                            new ArrayList<ArrayList<String>>();
+                            new ArrayList<>();
                 }
 
-                userChoicesValues.add(new ArrayList<String>(item.getChoice().
+                userChoicesValues.add(new ArrayList<>(item.getChoice().
                         getChoices().keySet()));
                 userChoicesDescriptions.add(
-                        new ArrayList<String>(item.getChoice().getChoices().values()));
+                        new ArrayList<>(item.getChoice().getChoices().values()));
             }
         }
 

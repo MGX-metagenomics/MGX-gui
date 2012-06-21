@@ -1,11 +1,5 @@
-
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package de.cebitec.mgx.gui.wizard.configurations.summary;
 
-//~--- non-JDK imports --------------------------------------------------------
 import de.cebitec.mgx.gui.wizard.configurations.data.impl.ConfigItem;
 import de.cebitec.mgx.gui.wizard.configurations.data.impl.Node;
 import de.cebitec.mgx.gui.wizard.configurations.data.impl.Store;

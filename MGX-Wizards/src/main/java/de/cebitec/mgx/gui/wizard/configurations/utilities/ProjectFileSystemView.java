@@ -2,12 +2,9 @@ package de.cebitec.mgx.gui.wizard.configurations.utilities;
 
 import de.cebitec.mgx.gui.datamodel.DirEntry;
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.Icon;
 import javax.swing.filechooser.FileSystemView;
 

@@ -1,8 +1,3 @@
-
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package de.cebitec.mgx.gui.wizard.configurations.messages;
 
 /**
@@ -122,7 +117,7 @@ public class Messages {
                         + "descimal number and use \".\" as decimal separator.";
             }
             case ToolNameExists: {
-                return "The tool name alreasy exists.";
+                return "The tool name already exists.";
             }
             default: {
                 return "";
@@ -179,6 +174,3 @@ public class Messages {
         }
     }
 }
-
-
-//~ Formatted by Jindent --- http://www.jindent.com

@@ -1,17 +1,10 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package de.cebitec.mgx.gui.wizard.configurations.start;
 
-import java.lang.NumberFormatException;
 import de.cebitec.mgx.gui.datamodel.Tool;
-import de.cebitec.mgx.gui.wizard.configurations.menu.MenuView;
 import de.cebitec.mgx.gui.wizard.configurations.messages.Messages;
 import de.cebitec.mgx.gui.wizard.configurations.utilities.ActionCommands;
 import de.cebitec.mgx.gui.wizard.configurations.utilities.AlphabetSorter;
 import de.cebitec.mgx.gui.wizard.configurations.utilities.Util;
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -20,8 +13,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.event.*;

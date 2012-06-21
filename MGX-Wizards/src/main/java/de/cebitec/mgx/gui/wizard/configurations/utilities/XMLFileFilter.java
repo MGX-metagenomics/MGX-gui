@@ -32,6 +32,6 @@ public class XMLFileFilter extends FileFilter {
      */
     @Override
     public String getDescription() {
-        return "XML-File(*.xml)";
+        return "XML File (*.xml)";
     }
 }

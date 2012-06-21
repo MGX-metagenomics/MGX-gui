@@ -10,6 +10,7 @@ import de.cebitec.mgx.gui.wizard.configurations.utilities.ActionCommands;
 import de.cebitec.mgx.gui.wizard.configurations.utilities.Util;
 import java.awt.Component;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,6 +21,7 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import org.openide.DialogDisplayer;
 import org.openide.WizardDescriptor;
+import org.openide.util.Exceptions;
 
 /**
  * Klasse die die verschiedenen Tools anzeigt.
@@ -153,7 +155,13 @@ public class ToolViewStartUp {
                 String url = stringArray[1];
                 Tool tool = new Tool();
                 LOGGER.info("Local-Tools Path: " + url);
-                tool.setXMLFile(Util.readFile(url));
+                String fileContent = null;
+                try {
+                    fileContent = Util.readFile(url);
+                } catch (IOException ex) {
+                    Exceptions.printStackTrace(ex);
+                }
+                tool.setXMLFile(fileContent);
                 tool.setAuthor((String) (wiz.getProperty("LOCALAUTHOR")));
                 tool.setDescription((String) (wiz.getProperty("LOCALDESCRIPTION")));
                 tool.setName((String) (wiz.getProperty("LOCALNAME")));

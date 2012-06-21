@@ -1,21 +1,14 @@
 package de.cebitec.mgx.gui.wizard.configurations.start;
 
-/*
- * To change this template, choose Tools | Templates and open the template in
- * the editor.
- */
-import de.cebitec.mgx.gui.wizard.configurations.utilities.XMLFileFilter;
 import de.cebitec.mgx.gui.wizard.configurations.renderer.CellRenderer;
 import de.cebitec.mgx.gui.wizard.configurations.renderer.CheckBoxCellRenderer;
-import de.cebitec.mgx.gui.wizard.configurations.renderer.MenuComboBoxRenderer;
 import de.cebitec.mgx.gui.wizard.configurations.renderer.MultiLineTableHeaderRenderer;
 import de.cebitec.mgx.gui.wizard.configurations.utilities.ActionCommands;
-import de.cebitec.mgx.gui.wizard.configurations.utilities.AlphabetSorter;
-import de.cebitec.mgx.gui.wizard.configurations.utilities.Util;
+import de.cebitec.mgx.gui.wizard.configurations.utilities.XMLFileFilter;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;

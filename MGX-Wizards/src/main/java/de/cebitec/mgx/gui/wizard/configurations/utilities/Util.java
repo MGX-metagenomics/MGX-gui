@@ -1,25 +1,20 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package de.cebitec.mgx.gui.wizard.configurations.utilities;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.openide.util.Exceptions;
 
 /**
- *Nuetzliche Methoden. 
- * 
+ * Nuetzliche Methoden.
+ *
  * @author pbelmann
  */
 public class Util {
 
     /**
      * Prueft ob buchstaben in der Zeichenkette vorhanden sind.
+     *
      * @param lInput
      * @return vorhanden oder nicht.
      */
@@ -31,15 +26,15 @@ public class Util {
     }
 
     /**
-     * 
+     *
      * Ueberprueft, ob die Zahl im Float Format vorliegt.
-     * 
+     *
      * @param versionText
      * @return Float oder nicht.
      */
     public static boolean checkFloatFormat(String versionText) {
         try {
-            if (!Util.checkForLetters(versionText)) {
+            if (!checkForLetters(versionText)) {
                 NumberFormatException exception = new NumberFormatException();
                 throw exception;
             }
@@ -49,30 +44,29 @@ public class Util {
         }
         return true;
     }
-    
-    
-     /**
+
+    /**
      * liest die XML Datei ein und gibt den Inhalt als String wieder.
+     *
      * @param path Pfad zu der Datei.
      * @return Datei als String
      */
-    public static String readFile(String path) {
+    public static String readFile(String path) throws IOException {
+        StringBuilder content = new StringBuilder();
 
-        // Erzeuge ein File-Objekt
-        File file = new File(path);
-        String content = "";
         try {
-            FileReader fr = new FileReader(file);
-            char[] temp = new char[(int) file.length()];
-            fr.read(temp);
-            content = new String(temp);
-            fr.close();
-        } catch (FileNotFoundException e1) {
-            System.err.println("File not Found: "
-                    + file);
-        } catch (IOException e2) {
-            e2.printStackTrace();
+            FileInputStream fis = new FileInputStream(path);
+            try (DataInputStream in = new DataInputStream(fis)) {
+                BufferedReader br = new BufferedReader(new InputStreamReader(in));
+                String strLine;
+                while ((strLine = br.readLine()) != null) {
+                    content.append(strLine);
+                }
+            }
+        } catch (IOException e) {
+            throw e;
         }
-        return content;
+
+        return content.toString();
     }
 }

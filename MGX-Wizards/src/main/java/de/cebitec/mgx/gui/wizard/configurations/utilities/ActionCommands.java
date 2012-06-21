@@ -1,14 +1,10 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package de.cebitec.mgx.gui.wizard.configurations.utilities;
 
 /**
  *
  * @author belmann
  */
-public class ActionCommands {
+public final class ActionCommands {
 
     public static final String FileOpen = "openFileButton";
     public static final String Box = "comboBox";

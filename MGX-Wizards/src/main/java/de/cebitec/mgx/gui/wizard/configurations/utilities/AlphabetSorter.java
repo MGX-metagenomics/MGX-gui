@@ -1,12 +1,7 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package de.cebitec.mgx.gui.wizard.configurations.utilities;
 
 import de.cebitec.mgx.gui.datamodel.Tool;
 import java.util.Comparator;
-import java.util.Vector;
 
 /**
  * AlphabetSorter sortiert eine Liste nach dem Alphabet.
@@ -14,7 +9,7 @@ import java.util.Vector;
  *
  * @author pbelmann
  */
-public class AlphabetSorter implements Comparator {
+public class AlphabetSorter implements Comparator<Tool> {
 
     /**
      * vergleicht zwischen zwei Objekten.
@@ -24,9 +19,7 @@ public class AlphabetSorter implements Comparator {
      * @return groesser, kleiner oder gleich.
      */
     @Override
-    public int compare(Object a1, Object b1) {
-        Tool a = (Tool) a1;
-        Tool b = (Tool) b1;
+    public int compare(Tool a, Tool b) {
 
         if (a.getName() instanceof String && ((String) a.getName()).length() == 0) {
             a = null;

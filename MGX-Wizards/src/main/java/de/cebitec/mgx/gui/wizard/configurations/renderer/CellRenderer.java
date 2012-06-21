@@ -1,18 +1,13 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package de.cebitec.mgx.gui.wizard.configurations.renderer;
 
-import de.cebitec.mgx.gui.wizard.configurations.menu.MenuView;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
-import javax.swing.UIManager;
 import javax.swing.table.DefaultTableCellRenderer;
 
 /**
@@ -20,27 +15,22 @@ import javax.swing.table.DefaultTableCellRenderer;
  */
 public class CellRenderer extends DefaultTableCellRenderer {
 
-    private final static Logger LOGGER =
-            Logger.getLogger(CellRenderer.class.getName());
     /**
      * Zelleninhalte bestehen aus JTextArea.
      */
-    private JTextArea area;
-    private final ArrayList<Integer> disableRows;
+    private JTextArea area= new JTextArea();
+    private List<Integer> disableRows = null;
 
     /**
      * Der Konstruktor initialisiert die JTextArea.
      *
      */
     public CellRenderer() {
-        area = new JTextArea();
         area.setLineWrap(true);
         area.setWrapStyleWord(true);
         area.setEditable(false);
-        disableRows = null;
-
+        disableRows = new ArrayList<>();
     }
-
     
     /**
      * Konstruktor fuer die Uebergabe von Zeilen, die ausgeblendet werden soll.
@@ -48,13 +38,10 @@ public class CellRenderer extends DefaultTableCellRenderer {
      * @param lDisableRows 
      */
     public CellRenderer(ArrayList<Integer> lDisableRows) {
-
         disableRows = lDisableRows;
-        area = new JTextArea();
         area.setLineWrap(true);
         area.setWrapStyleWord(true);
         area.setEditable(false);
-
     }
 
     /**

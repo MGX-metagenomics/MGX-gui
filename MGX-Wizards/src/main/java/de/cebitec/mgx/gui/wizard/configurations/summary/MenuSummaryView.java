@@ -1,23 +1,20 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package de.cebitec.mgx.gui.wizard.configurations.summary;
 
-//~--- JDK imports ------------------------------------------------------------
 import de.cebitec.mgx.gui.wizard.configurations.menu.MenuView;
 import de.cebitec.mgx.gui.wizard.configurations.renderer.CellRenderer;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
-
 import java.util.ArrayList;
 import java.util.logging.Logger;
-
-import javax.swing.*;
-import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
 
 /**
  * Diese Klasse stellt die View der Summary dar. Diese besteht aus einer JTable.
