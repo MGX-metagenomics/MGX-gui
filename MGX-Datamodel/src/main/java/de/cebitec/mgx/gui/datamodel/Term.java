@@ -11,7 +11,7 @@ public class Term {
     private String name;
     private String description;
 
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
