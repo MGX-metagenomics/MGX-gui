@@ -383,11 +383,13 @@ public class ToolView extends JPanel implements DocumentListener {
         c.weighty = 0;
         c.weightx = 0;
         toolField = new JTextField();
-
+        Font font = new Font(Font.DIALOG, Font.BOLD, 13);
+        toolField.setFont(font);
         toolField.getDocument().addDocumentListener(this);
         toolField.setText("");
         toolField.setEditable(false);
         toolField.setFocusable(false);
+        toolField.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         JPanel southPanel = new JPanel();
         southPanel.setLayout(new BoxLayout(southPanel, BoxLayout.LINE_AXIS));
         southPanel.add(Box.createVerticalGlue());
@@ -397,11 +399,14 @@ public class ToolView extends JPanel implements DocumentListener {
         toolFieldLabelPanel.setLayout(new BorderLayout());
         toolFieldLabelPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
         JLabel label = new JLabel("Selected tool:", SwingConstants.LEFT);
+        label.setFont(font);
         label.setHorizontalAlignment(SwingConstants.LEFT);
         label.setHorizontalTextPosition(SwingConstants.LEFT);
         label.setAlignmentX(Component.LEFT_ALIGNMENT);
         label.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
+        label.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 10));
         toolFieldLabelPanel.add(label, BorderLayout.LINE_START);
+
         toolFieldLabelPanel.add(toolField, BorderLayout.CENTER);
         southPanel.add(toolFieldLabelPanel);
         southPanel.add(Box.createVerticalGlue());

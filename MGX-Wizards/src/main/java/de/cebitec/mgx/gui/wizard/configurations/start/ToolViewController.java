@@ -202,41 +202,41 @@ public class ToolViewController implements WizardDescriptor.Panel<WizardDescript
      */
     @Override
     public void storeSettings(WizardDescriptor settings) {
+//        if (settings.getValue() == WizardDescriptor.FINISH_OPTION) {
+            deleteButton.removeActionListener(this);
+            if (isDelete) {
+                model.putProperty("DELETE",
+                        getComponent().getToolLocation() + ";"
+                        + project.get(getComponent().getCurrentRow()).getId());
+            }
+            if (getComponent().getToolLocation().equals(ActionCommands.Local)) {
 
-        deleteButton.removeActionListener(this);
-        if (isDelete) {
-            model.putProperty("DELETE",
-                    getComponent().getToolLocation() + ";"
-                    + project.get(getComponent().getCurrentRow()).getId());
-        }
-        if (getComponent().getToolLocation().equals(ActionCommands.Local)) {
+                settings.putProperty(ActionCommands.ToolType, getComponent().
+                        getToolLocation() + ";"
+                        + getComponent().getFileFieldText());
+                settings.putProperty(ActionCommands.LocalToolName, getComponent().
+                        getNameText());
+                settings.putProperty(ActionCommands.LocalToolAuthor, getComponent().
+                        getAuthorText());
+                settings.putProperty(ActionCommands.LocalToolDescription,
+                        getComponent().
+                        getDescriptionText());
+                settings.putProperty(ActionCommands.LocalToolVersion,
+                        getComponent().
+                        getVersionText());
+            } else if (getComponent().getToolLocation().
+                    equals(ActionCommands.Global)) {
+                settings.putProperty(ActionCommands.ToolType, getComponent().
+                        getToolLocation() + ";"
+                        + global.get(getComponent().getCurrentRow()).getId());
+            } else if (getComponent().getToolLocation().
+                    equals(ActionCommands.Project)) {
+                settings.putProperty(ActionCommands.ToolType,
+                        getComponent().getToolLocation() + ";"
+                        + project.get(getComponent().getCurrentRow()).getId());
 
-            settings.putProperty(ActionCommands.ToolType, getComponent().
-                    getToolLocation() + ";"
-                    + getComponent().getFileFieldText());
-            settings.putProperty(ActionCommands.LocalToolName, getComponent().
-                    getNameText());
-            settings.putProperty(ActionCommands.LocalToolAuthor, getComponent().
-                    getAuthorText());
-            settings.putProperty(ActionCommands.LocalToolDescription,
-                    getComponent().
-                    getDescriptionText());
-            settings.putProperty(ActionCommands.LocalToolVersion,
-                    getComponent().
-                    getVersionText());
-        } else if (getComponent().getToolLocation().
-                equals(ActionCommands.Global)) {
-            settings.putProperty(ActionCommands.ToolType, getComponent().
-                    getToolLocation() + ";"
-                    + global.get(getComponent().getCurrentRow()).getId());
-        } else if (getComponent().getToolLocation().
-                equals(ActionCommands.Project)) {
-            settings.putProperty(ActionCommands.ToolType,
-                    getComponent().getToolLocation() + ";"
-                    + project.get(getComponent().getCurrentRow()).getId());
-
-        }
-
+            }
+//        }
     }
 
     /**
@@ -260,21 +260,20 @@ public class ToolViewController implements WizardDescriptor.Panel<WizardDescript
         if (e.getActionCommand().equals(ActionCommands.toolBox)) {
             if (viewComponent.getToolLocation().equals(
                     ActionCommands.Project)) {
-//                this.deleteButton.setEnabled(true);
                 viewComponent.setToolsToChoose(viewComponent.project);
             } else if (viewComponent.getToolLocation().equals(
                     ActionCommands.Global)) {
-//                this.deleteButton.setEnabled(false);
                 viewComponent.setToolsToChoose(viewComponent.global);
             } else {
-//                this.deleteButton.setEnabled(false);
                 viewComponent.setToolsToChoose(viewComponent.local);
             }
-        } else if (e.getActionCommand().equals("DELETE") && !getComponent().getFileFieldText().isEmpty()) {
+        } else if (e.getActionCommand().equals("DELETE") && !getComponent().
+                getFileFieldText().isEmpty()) {
             Object[] options = {"Yes",
                 "No",};
             int value = JOptionPane.showOptionDialog(null,
-                    "Do you really want to delete the Tool: " + getComponent().getFileFieldText(), "",
+                    "Do you really want to delete the Tool: " + getComponent().
+                    getFileFieldText(), "",
                     JOptionPane.YES_NO_OPTION,
                     JOptionPane.QUESTION_MESSAGE, null,
                     options, options[0]);
@@ -339,7 +338,6 @@ public class ToolViewController implements WizardDescriptor.Panel<WizardDescript
                     listeners.getListeners(ChangeListener.class)) {
 
                 listener.stateChanged(ev);
-
             }
         }
     }
@@ -375,7 +373,6 @@ public class ToolViewController implements WizardDescriptor.Panel<WizardDescript
 
                 return false;
             } else if (exists(getComponent().getNameText())) {
-
                 model.getNotificationLineSupport().
                         setWarningMessage(
                         Messages.getInformation(Messages.ToolNameExists));

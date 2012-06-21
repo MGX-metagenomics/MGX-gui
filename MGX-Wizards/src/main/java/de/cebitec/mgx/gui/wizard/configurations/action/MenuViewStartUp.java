@@ -10,6 +10,7 @@ import de.cebitec.mgx.gui.wizard.configurations.data.impl.ConfigItem;
 import de.cebitec.mgx.gui.wizard.configurations.data.impl.Node;
 import de.cebitec.mgx.gui.wizard.configurations.data.impl.Store;
 import de.cebitec.mgx.gui.wizard.configurations.menu.MenuController;
+import de.cebitec.mgx.gui.wizard.configurations.progressScreen.ProgressBar;
 import de.cebitec.mgx.gui.wizard.configurations.summary.MenuSummaryController;
 import de.cebitec.mgx.gui.wizard.configurations.utilities.ActionCommands;
 import java.awt.Component;
@@ -227,21 +228,43 @@ public class MenuViewStartUp {
             }
         });
 
+
+        JButton buttonCancel = new JButton("Cancel");
+        buttonCancel.setMnemonic(KeyEvent.VK_C);
+        buttonCancel.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                Object[] options = {"Yes",
+                    "No",};
+                int value = JOptionPane.showOptionDialog(null,
+                        "If you Cancel this Menu, already "
+                        + "entered parameters will be deleted.", "",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE, null,
+                        options, options[1]);
+                if (value == JOptionPane.YES_OPTION) {
+
+                    wiz.doCancelClick();
+
+                } else {
+                }
+            }
+        });
+
+
         Object[] optionButtons = {chooseToolButton, setAllDefaultbutton,
             WizardDescriptor.PREVIOUS_OPTION, WizardDescriptor.NEXT_OPTION,
-            WizardDescriptor.FINISH_OPTION, WizardDescriptor.CANCEL_OPTION};
-        
+            WizardDescriptor.FINISH_OPTION, buttonCancel};
+
         wiz.setOptions(optionButtons);
-        
-         Object[] objects = wiz.getOptions();
+
+        Object[] objects = wiz.getOptions();
         JButton buttonNext = (JButton) objects[3];
         LOGGER.info(buttonNext.getName());
         buttonNext.setMnemonic(KeyEvent.VK_N);
-        JButton buttonCancel = (JButton) objects[5];
-        buttonCancel.setMnemonic(KeyEvent.VK_C);
-        
-        
-        
+
         wiz.setTitleFormat(new MessageFormat("{0}"));
         wiz.setTitle("Configuration of the tool: \"" + toolName + "\" ");
         this.wiz = wiz;

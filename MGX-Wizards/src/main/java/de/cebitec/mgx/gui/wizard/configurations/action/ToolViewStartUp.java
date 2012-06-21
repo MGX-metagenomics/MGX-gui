@@ -105,7 +105,6 @@ public class ToolViewStartUp {
             }
         }
 
-
         final WizardDescriptor wiz =
                 new WizardDescriptor(
                 new WizardDescriptor.ArrayIterator<WizardDescriptor>(panels));
