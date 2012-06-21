@@ -8,11 +8,21 @@ public class SeqRun extends ModelBase {
 
     protected String sequencing_technology;
     protected String sequencing_method;
+    protected String name;
     protected Boolean submitted_to_insdc;
     protected String database_accession;
     protected long extract_id;
     protected long numSequences = 0;
 
+    public String getName() {
+        return name;
+    }
+    
+    public SeqRun setName(String n) {
+        name = n;
+        return this;
+    }
+    
     public SeqRun setDNAExtractId(long extractId) {
         extract_id = extractId;
         return this;
