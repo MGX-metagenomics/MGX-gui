@@ -90,7 +90,7 @@ public class GlobalToolWorker extends SwingWorker implements ActionListener, Win
                 options, options[1]);
         if (value == JOptionPane.YES_OPTION) {
             progress = new ProgressBar("Installing tool...",
-                    200, 140, this, this,true);
+                    300, 140, this, this,true);
             project_tool_id = 0;
             try {
                 project_tool_id = master.Tool().installTool(tool.getId());

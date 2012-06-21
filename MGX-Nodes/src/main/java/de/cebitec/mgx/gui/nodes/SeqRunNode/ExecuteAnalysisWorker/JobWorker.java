@@ -95,7 +95,7 @@ public class JobWorker extends SwingWorker {
             boolean job_is_ok = false;
             try {
                 ProgressBar bar = new ProgressBar("Verifying toolparameters.",
-                        200, 140, false);
+                        300, 140, false);
 //                startup.showWaitforServer("Verifying toolparameters.");
                 job_is_ok = master.Job().verify(jobId);
 
@@ -105,8 +105,6 @@ public class JobWorker extends SwingWorker {
                     master.Job().execute(jobId);
                     bar.dispose();
                 }
-
-
 
             } catch (MGXServerException ex) {
                 Exceptions.printStackTrace(ex);
@@ -123,7 +121,8 @@ public class JobWorker extends SwingWorker {
                 worker.execute();
             } else if (value == JOptionPane.NO_OPTION) {
             }
-            startup.closeProgressBar();
+            
+//            startup.closeProgressBar();
         }
         return null;
     }

@@ -75,7 +75,7 @@ public class LocalToolWorker extends SwingWorker implements ActionListener, Wind
     protected Object doInBackground() {
         LOGGER.info("localTool");
         progress = new ProgressBar("Installing tool...",
-                200, 140, this, this, true);
+                300, 140, this, this, true);
         tool_id = master.Tool().create(tool);
         return null;
     }

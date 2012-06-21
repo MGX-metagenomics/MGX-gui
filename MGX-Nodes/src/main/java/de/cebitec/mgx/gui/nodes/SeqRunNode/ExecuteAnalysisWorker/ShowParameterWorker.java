@@ -42,12 +42,12 @@ public class ShowParameterWorker extends SwingWorker {
     private Store store;
     private WizardController startUp;
     private MGXMaster master;
+    private ArrayList<JobParameter> list;
 
     public ShowParameterWorker(Tool lTool,
             WizardController startUp, MGXMaster master, SeqRun seqrun) {
         this.master = master;
         tool = lTool;
-
         this.startUp = startUp;
         this.seqrun = seqrun;
     }
@@ -70,7 +70,7 @@ public class ShowParameterWorker extends SwingWorker {
         LOGGER.info("After create JobID: " + jobid);
         jobParameterList = null;
         //parsen
-        List<JobParameter> list = new ArrayList<JobParameter>();
+        list = new ArrayList<JobParameter>();
         Iterator iterator = null;
 
         try {
@@ -80,9 +80,7 @@ public class ShowParameterWorker extends SwingWorker {
             Exceptions.printStackTrace(ex);
         }
         if (!iterator.hasNext()) {
-
             LOGGER.info("Iterator has no next");
-
         }
 
         while (iterator.hasNext()) {
@@ -94,7 +92,8 @@ public class ShowParameterWorker extends SwingWorker {
         List<DirEntry> fetchall = master.File().fetchall();
         LOGGER.info("after setStore");
         if (list.size() > 0) {
-            this.store = startUp.startParameterConfiguration(store, fetchall, tool.getName());
+            this.store = startUp.startParameterConfiguration(store, fetchall,
+                    tool.getName());
         }
         return null;
     }
@@ -102,19 +101,23 @@ public class ShowParameterWorker extends SwingWorker {
     @Override
     protected void done() {
         LOGGER.info("DONE SHOWTOOLWORKER");
-        if (startUp.getStatus() == MenuAction.again) {
-            LOGGER.info("Again SHOWTOOLWORKER");
-            GetToolsWorker worker = new GetToolsWorker(startUp, master, seqrun);
-            worker.execute();
-        } else if (startUp.getStatus() == MenuAction.finish) {
-            jobParameterList = new ArrayList<JobParameter>();
-            jobParameterList =
-                    Transform.getFromNodeStoreJobParameter(store);
-            JobWorker worker = new JobWorker(jobParameterList, jobid, job, master, startUp, seqrun);
-            worker.execute();
-            LOGGER.info("Finish SHOWTOOLWORKER");
-        } else if (startUp.getStatus() == MenuAction.cancel) {
-            LOGGER.info("Cancel SHOWTOOLWORKER");
+        if (list.size() > 0) {
+            if (startUp.getStatus() == MenuAction.again) {
+                LOGGER.info("Again SHOWTOOLWORKER");
+                GetToolsWorker worker = new GetToolsWorker(startUp, master, 
+                        seqrun);
+                worker.execute();
+            } else if (startUp.getStatus() == MenuAction.finish) {
+                jobParameterList = new ArrayList<JobParameter>();
+                jobParameterList =
+                        Transform.getFromNodeStoreJobParameter(store);
+                JobWorker worker = new JobWorker(jobParameterList, jobid, job, 
+                        master, startUp, seqrun);
+                worker.execute();
+                LOGGER.info("Finish SHOWTOOLWORKER");
+            } else if (startUp.getStatus() == MenuAction.cancel) {
+                LOGGER.info("Cancel SHOWTOOLWORKER");
+            }
         }
     }
 }

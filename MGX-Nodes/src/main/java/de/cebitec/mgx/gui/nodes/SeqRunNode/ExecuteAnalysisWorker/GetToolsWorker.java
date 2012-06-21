@@ -135,7 +135,7 @@ public class GetToolsWorker extends SwingWorker {
     @Override
     protected void done() {
         startUp.closeProgressBar();
-        LOGGER.info("DONE");
+        LOGGER.info("Get Tools Worker DONE");
 
         if (isDelete) {
             DeleteWorker deleteWorker = new DeleteWorker(startUp, master, tool.getId(), seqRun);
