@@ -21,6 +21,7 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.CategoryItemRenderer;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
+import org.jfree.data.Range;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -97,7 +98,7 @@ public class BarChartViewer extends CategoricalViewerI {
         chart.setBackgroundPaint(Color.WHITE);
         cPanel = new ChartPanel(chart);
         CategoryPlot plot = chart.getCategoryPlot();
-
+        
         plot.setBackgroundPaint(Color.WHITE);
 
         // x axis
