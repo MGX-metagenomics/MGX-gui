@@ -6,10 +6,10 @@ package de.cebitec.mgx.gui.datamodel;
  */
 public class SeqRun extends ModelBase {
 
-    protected String sequencing_technology;
-    protected String sequencing_method;
+    protected Term sequencing_technology;
+    protected Term sequencing_method;
     protected String name;
-    protected Boolean submitted_to_insdc;
+    protected boolean submitted_to_insdc;
     protected String database_accession;
     protected long extract_id;
     protected long numSequences = 0;
@@ -41,25 +41,25 @@ public class SeqRun extends ModelBase {
         return this;
     }
 
-    public String getSequencingMethod() {
+    public Term getSequencingMethod() {
         return sequencing_method;
     }
 
-    public SeqRun setSequencingMethod(String sequencing_method) {
+    public SeqRun setSequencingMethod(Term sequencing_method) {
         this.sequencing_method = sequencing_method;
         return this;
     }
 
-    public String getSequencingTechnology() {
+    public Term getSequencingTechnology() {
         return sequencing_technology;
     }
 
-    public SeqRun setSequencingTechnology(String sequencing_technology) {
+    public SeqRun setSequencingTechnology(Term sequencing_technology) {
         this.sequencing_technology = sequencing_technology;
         return this;
     }
 
-    public Boolean getSubmittedToINSDC() {
+    public boolean getSubmittedToINSDC() {
         return submitted_to_insdc;
     }
 

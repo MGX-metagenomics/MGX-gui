@@ -42,4 +42,9 @@ public class Term {
     public void setParentId(long parent_id) {
         this.parent_id = parent_id;
     }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }
