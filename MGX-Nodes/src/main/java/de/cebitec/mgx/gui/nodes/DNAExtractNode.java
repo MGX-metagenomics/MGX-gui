@@ -139,7 +139,7 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            final SeqRunWizardDescriptor wd = new SeqRunWizardDescriptor();
+            final SeqRunWizardDescriptor wd = new SeqRunWizardDescriptor(getMaster());
             Dialog dialog = DialogDisplayer.getDefault().createDialog(wd);
             dialog.setVisible(true);
             dialog.toFront();
