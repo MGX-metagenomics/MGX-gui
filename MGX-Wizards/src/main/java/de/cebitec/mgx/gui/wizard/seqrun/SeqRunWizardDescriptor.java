@@ -1,6 +1,9 @@
 package de.cebitec.mgx.gui.wizard.seqrun;
 
+import de.cebitec.mgx.gui.controller.MGXMaster;
+import de.cebitec.mgx.gui.controller.TermAccess;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
+import de.cebitec.mgx.gui.datamodel.Term;
 import java.io.File;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -17,7 +20,7 @@ public class SeqRunWizardDescriptor extends WizardDescriptor {
     private SeqRunWizardPanel2 p2 = new SeqRunWizardPanel2();
     private SeqRun seqrun = null;
 
-    public SeqRunWizardDescriptor() {
+    public SeqRunWizardDescriptor(MGXMaster m) {
         List<Panel<WizardDescriptor>> panels = new ArrayList<>();
         panels.add(p1);
         panels.add(p2);
@@ -28,11 +31,19 @@ public class SeqRunWizardDescriptor extends WizardDescriptor {
         putProperty(WizardDescriptor.PROP_AUTO_WIZARD_STYLE, Boolean.TRUE);
         putProperty(WizardDescriptor.PROP_CONTENT_DISPLAYED, Boolean.TRUE);
         putProperty(WizardDescriptor.PROP_CONTENT_NUMBERED, Boolean.TRUE);
+
+        p1.setMethods(m.Term().byCategory(TermAccess.SEQ_METHODS).toArray(new Term[]{}));
+        p1.setPlatforms(m.Term().byCategory(TermAccess.SEQ_PLATFORMS).toArray(new Term[]{}));
     }
 
     public SeqRunWizardDescriptor(SeqRun d) {
         List<Panel<WizardDescriptor>> panels = new ArrayList<>();
         panels.add(p1);
+
+        MGXMaster m = (MGXMaster) d.getMaster();
+        p1.setMethods(m.Term().byCategory(TermAccess.SEQ_METHODS).toArray(new Term[]{}));
+        p1.setPlatforms(m.Term().byCategory(TermAccess.SEQ_PLATFORMS).toArray(new Term[]{}));
+
         this.setPanelsAndSettings(new ArrayIterator<>(panels), this);
         this.setTitleFormat(new MessageFormat("{0}"));
         this.setTitle("Sequencing run wizard");
@@ -54,8 +65,8 @@ public class SeqRunWizardDescriptor extends WizardDescriptor {
             seqrun = new SeqRun();
         }
 
-        seqrun.setSequencingMethod((String) getProperty(SeqRunVisualPanel1.PROP_METHOD))
-                .setSequencingTechnology((String) getProperty(SeqRunVisualPanel1.PROP_PLATFORM))
+        seqrun.setSequencingMethod((Term) getProperty(SeqRunVisualPanel1.PROP_METHOD))
+                .setSequencingTechnology((Term) getProperty(SeqRunVisualPanel1.PROP_PLATFORM))
                 .setSubmittedToINSDC((Boolean) getProperty(SeqRunVisualPanel1.PROP_SUBMITTED))
                 .setName((String) getProperty(SeqRunVisualPanel1.PROP_NAME));
 

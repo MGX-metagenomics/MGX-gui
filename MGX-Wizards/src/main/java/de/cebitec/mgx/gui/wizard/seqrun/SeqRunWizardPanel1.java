@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.wizard.seqrun;
 
+import de.cebitec.mgx.gui.datamodel.Term;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import javax.swing.event.ChangeEvent;
@@ -86,8 +87,8 @@ public class SeqRunWizardPanel1 implements WizardDescriptor.Panel<WizardDescript
         model = settings;
         SeqRunVisualPanel1 c = getComponent();
         c.setRunName((String) model.getProperty(SeqRunVisualPanel1.PROP_NAME));
-        c.setPlatform((String) model.getProperty(SeqRunVisualPanel1.PROP_PLATFORM));
-        c.setMethod((String) model.getProperty(SeqRunVisualPanel1.PROP_METHOD));
+        c.setPlatform((Term) model.getProperty(SeqRunVisualPanel1.PROP_PLATFORM));
+        c.setMethod((Term) model.getProperty(SeqRunVisualPanel1.PROP_METHOD));
         c.setSubmittedState((Boolean) model.getProperty(SeqRunVisualPanel1.PROP_SUBMITTED));
         c.setAccession((String) model.getProperty(SeqRunVisualPanel1.PROP_ACCESSION));
     }
@@ -101,13 +102,13 @@ public class SeqRunWizardPanel1 implements WizardDescriptor.Panel<WizardDescript
 
     private boolean checkValidity() {
         isValid = true;
-        
+
         SeqRunVisualPanel1 c = getComponent();
-        
+
         if (c.getRunName() == null || "".equals(c.getRunName())) {
             isValid = false;
         }
-        
+
         if (c.getSubmittedState()) {
             String accession = c.getAccession();
             if (accession == null || "".equals(accession)) {
@@ -116,5 +117,13 @@ public class SeqRunWizardPanel1 implements WizardDescriptor.Panel<WizardDescript
         }
 
         return isValid;
+    }
+
+    public void setMethods(Term[] terms) {
+        getComponent().setMethods(terms);
+    }
+
+    public void setPlatforms(Term[] terms) {
+        getComponent().setPlatforms(terms);
     }
 }
