@@ -71,6 +71,10 @@ public class MGXMaster implements MGXMasterI {
     public FileAccess File() {
         return getAccessor(FileAccess.class);
     }
+    
+    public TermAccess Term() {
+        return getAccessor(TermAccess.class);
+    }
 
     void log(Level lvl, String msg) {
         logger.log(lvl, msg);
