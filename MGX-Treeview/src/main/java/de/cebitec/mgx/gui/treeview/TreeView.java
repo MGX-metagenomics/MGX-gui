@@ -93,6 +93,11 @@ public class TreeView extends HierarchicalViewerI {
     public String getName() {
         return "Tree View";
     }
+    
+        @Override
+    public Class getInputType() {
+        return Tree.class;
+    }
 
     @Override
     public void setAttributeType(AttributeType aType) {
@@ -146,6 +151,26 @@ public class TreeView extends HierarchicalViewerI {
         m_nodeRenderer = null;
         super.dispose();
     }
+    
+//    private prefuse.data.Tree getPrefuseTree(Node<Map<VisualizationGroup, Long>> root, Map<String, Long[]> rankCounts) {
+//        prefuse.data.Tree  prefTree = new prefuse.data.Tree();
+//        prefTree.getNodeTable().addColumn(nodeLabel, Attribute.class);
+//        prefTree.getNodeTable().addColumn(nodeTotalElements, long.class);
+//        prefTree.getNodeTable().addColumn(sameRankCount, Map.class);
+//        prefTree.getNodeTable().addColumn(nodeContent, Map.class);
+//
+//
+//        prefuse.data.Node rootNode = prefTree.addRoot();
+//        rootNode.set(nodeLabel, root.getAttribute());
+//        rootNode.set(nodeContent, root.getContent());
+//        rootNode.set(nodeTotalElements, calculateNodeCount(root.getContent()));
+//        rootNode.set(sameRankCount, rankCounts);
+//
+//        for (Node<Map<VisualizationGroup, Long>> child : root.getChildren()) {
+//            addWithChildren(prefTree, rootNode, child, rankCounts);
+//        }
+//        return prefTree;
+//    }
 
     private static void addWithChildren(prefuse.data.Tree pTree, prefuse.data.Node parent, Node<Map<VisualizationGroup, Long>> node, Map<String, Long[]> rankCounts) {
         prefuse.data.Node self = pTree.addChild(parent);
@@ -157,11 +182,6 @@ public class TreeView extends HierarchicalViewerI {
         for (Node<Map<VisualizationGroup, Long>> child : node.getChildren()) {
             addWithChildren(pTree, self, child, rankCounts);
         }
-    }
-
-    @Override
-    public Class getInputType() {
-        return Tree.class;
     }
 
     private void initDisplay() {
