@@ -23,5 +23,4 @@ public abstract class HierarchicalViewerI extends ViewerI<Tree<Long>> {
 //        return null;
 //    }
 //    
-    
 }

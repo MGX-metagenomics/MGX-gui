@@ -12,7 +12,6 @@ import javax.swing.JComponent;
  */
 public abstract class ViewerI<T> implements Comparable<ViewerI<T>> { //, VisFilterI<T>  {
 
-    //private boolean ascending = true;
     private AttributeType attrType;
     private String chartTitle;
 
