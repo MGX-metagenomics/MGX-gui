@@ -74,7 +74,6 @@ public class TreeView extends HierarchicalViewerI {
     public static final String nodeContent = "content";
     public static final String nodeTotalElements = "totalElements"; //number of sequences assigned to this node
     public static final String sameRankCount = "rankCount"; // total number of sequences assigned at same rank
-
     //
     private prefuse.data.Tree pTree = null;
     private LabelRenderer m_nodeRenderer;
@@ -93,8 +92,8 @@ public class TreeView extends HierarchicalViewerI {
     public String getName() {
         return "Tree View";
     }
-    
-        @Override
+
+    @Override
     public Class getInputType() {
         return Tree.class;
     }
@@ -111,7 +110,7 @@ public class TreeView extends HierarchicalViewerI {
         // merge hierarchies into consensus tree
         Tree<Map<VisualizationGroup, Long>> combinedTree = TreeFactory.combineTrees(trees);
         Node<Map<VisualizationGroup, Long>> root = combinedTree.getRoot();
-        
+
         Map<String, Long[]> rankCounts = calculateRankCounts(combinedTree);
 
         initDisplay();
@@ -151,7 +150,7 @@ public class TreeView extends HierarchicalViewerI {
         m_nodeRenderer = null;
         super.dispose();
     }
-    
+
 //    private prefuse.data.Tree getPrefuseTree(Node<Map<VisualizationGroup, Long>> root, Map<String, Long[]> rankCounts) {
 //        prefuse.data.Tree  prefTree = new prefuse.data.Tree();
 //        prefTree.getNodeTable().addColumn(nodeLabel, Attribute.class);
@@ -171,7 +170,6 @@ public class TreeView extends HierarchicalViewerI {
 //        }
 //        return prefTree;
 //    }
-
     private static void addWithChildren(prefuse.data.Tree pTree, prefuse.data.Node parent, Node<Map<VisualizationGroup, Long>> node, Map<String, Long[]> rankCounts) {
         prefuse.data.Node self = pTree.addChild(parent);
         self.set(nodeLabel, node.getAttribute());
@@ -336,23 +334,23 @@ public class TreeView extends HierarchicalViewerI {
         }
         return total;
     }
-    
+
     private static Map<String, Long[]> calculateRankCounts(Tree<Map<VisualizationGroup, Long>> tree) {
         Map<String, Long[]> ret = new HashMap<>();
-        
-        for (Node<Map<VisualizationGroup, Long>> node: tree.getNodes()) {
+
+        for (Node<Map<VisualizationGroup, Long>> node : tree.getNodes()) {
             if (!ret.containsKey(node.getAttribute().getAttributeType().getName())) {
                 ret.put(node.getAttribute().getAttributeType().getName(), new Long[node.getContent().size()]);
-                
+
                 Long[] current = new Long[node.getContent().size()];
-                for (int i=0; i < node.getContent().size(); i++) {
+                for (int i = 0; i < node.getContent().size(); i++) {
                     current[i] = Long.valueOf(0);
                 }
                 ret.put(node.getAttribute().getAttributeType().getName(), current);
             }
             Long[] current = ret.get(node.getAttribute().getAttributeType().getName());
-            int i=0;
-            for (Entry<VisualizationGroup, Long> e :node.getContent().entrySet()) {
+            int i = 0;
+            for (Entry<VisualizationGroup, Long> e : node.getContent().entrySet()) {
                 current[i++] += e.getValue().longValue();
             }
         }
