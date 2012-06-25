@@ -18,6 +18,7 @@ import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.SwingWorker;
@@ -25,6 +26,7 @@ import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.WizardDescriptor;
 import org.openide.nodes.Children;
+import org.openide.util.Exceptions;
 import org.openide.util.lookup.Lookups;
 
 /**
@@ -148,14 +150,20 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
                 DNAExtract extract = getLookup().lookup(DNAExtract.class);
                 final SeqRun seqrun = wd.getSeqRun();
                 seqrun.setDNAExtractId(extract.getId());
+                
+                System.err.println("name: "+seqrun.getName());
+                System.err.println("method: "+seqrun.getSequencingMethod().getName());
+                System.err.println("tech: "+seqrun.getSequencingTechnology().getName());
 
                 SwingWorker<Void, Exception> sw = new SwingWorker<Void, Exception>() {
 
                     @Override
-                    protected Void doInBackground() throws Exception {
+                    protected Void doInBackground() {
+                        System.err.println("creating..");
 
                         getMaster().SeqRun().create(seqrun);
 
+                        System.err.println("created..");
                         // create a sequence reader
                         String canonicalPath = null;
                         SeqReaderI reader = null;
@@ -163,12 +171,15 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
                             canonicalPath = wd.getSequenceFile().getCanonicalPath();
                             reader = SeqReaderFactory.getReader(canonicalPath);
                         } catch (IOException | SeqStoreException ex) {
+                            System.err.println("ex 1");
                             getMaster().SeqRun().delete(seqrun.getId());
                             snf.refreshChildren();
                             publish(ex);
                             return null;
                         }
+                        System.err.println("creating uploader..");
                         final SeqUploader uploader = getMaster().Sequence().createUploader(seqrun.getId(), reader);
+                        System.err.println("..done");
                         MGXTask run = new MGXTask() {
 
                             @Override
@@ -206,6 +217,7 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
 
                     @Override
                     protected void process(List<Exception> chunks) {
+                        System.err.println("process()..");
                         StringBuilder sb = new StringBuilder();
                         for (Exception e : chunks) {
                             sb.append(e.getMessage());
@@ -218,6 +230,18 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
                                 null);
                         Object ret = DialogDisplayer.getDefault().notify(nd);
                     }
+
+                    @Override
+                    protected void done() {
+                        try {
+                            get();
+                        } catch (InterruptedException | ExecutionException ex) {
+                            Exceptions.printStackTrace(ex);
+                        }
+                        super.done();
+                    }
+                    
+                    
                 };
                 sw.execute();
             }
