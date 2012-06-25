@@ -8,7 +8,10 @@ import java.io.File;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import javax.swing.SwingWorker;
 import org.openide.WizardDescriptor;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -32,8 +35,7 @@ public class SeqRunWizardDescriptor extends WizardDescriptor {
         putProperty(WizardDescriptor.PROP_CONTENT_DISPLAYED, Boolean.TRUE);
         putProperty(WizardDescriptor.PROP_CONTENT_NUMBERED, Boolean.TRUE);
 
-        p1.setMethods(m.Term().byCategory(TermAccess.SEQ_METHODS).toArray(new Term[]{}));
-        p1.setPlatforms(m.Term().byCategory(TermAccess.SEQ_PLATFORMS).toArray(new Term[]{}));
+        setTerms(m);
     }
 
     public SeqRunWizardDescriptor(SeqRun d) {
@@ -41,8 +43,7 @@ public class SeqRunWizardDescriptor extends WizardDescriptor {
         panels.add(p1);
 
         MGXMaster m = (MGXMaster) d.getMaster();
-        p1.setMethods(m.Term().byCategory(TermAccess.SEQ_METHODS).toArray(new Term[]{}));
-        p1.setPlatforms(m.Term().byCategory(TermAccess.SEQ_PLATFORMS).toArray(new Term[]{}));
+        setTerms(m);
 
         this.setPanelsAndSettings(new ArrayIterator<>(panels), this);
         this.setTitleFormat(new MessageFormat("{0}"));
@@ -58,6 +59,24 @@ public class SeqRunWizardDescriptor extends WizardDescriptor {
         putProperty(SeqRunVisualPanel1.PROP_SUBMITTED, d.getSubmittedToINSDC());
         putProperty(SeqRunVisualPanel1.PROP_ACCESSION, d.getAccession());
         p1.setProperties(this);
+    }
+
+    private void setTerms(final MGXMaster m) {
+        SwingWorker<Void, Void> sw = new SwingWorker<Void, Void>() {
+
+            @Override
+            protected Void doInBackground() {
+                p1.setMethods(m.Term().byCategory(TermAccess.SEQ_METHODS).toArray(new Term[]{}));
+                p1.setPlatforms(m.Term().byCategory(TermAccess.SEQ_PLATFORMS).toArray(new Term[]{}));
+                return null;
+            }
+        };
+        sw.execute();
+        try {
+            sw.get();
+        } catch (InterruptedException | ExecutionException ex) {
+            Exceptions.printStackTrace(ex);
+        }
     }
 
     public SeqRun getSeqRun() {
