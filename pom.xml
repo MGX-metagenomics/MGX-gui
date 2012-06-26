@@ -160,6 +160,21 @@
                 <artifactId>jcharts</artifactId>
                 <version>0.7.5</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.xmlgraphics</groupId>
+                <artifactId>batik-rasterizer</artifactId>
+                <version>1.7</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.xmlgraphics</groupId>
+                <artifactId>batik-svggen</artifactId>
+                <version>1.7</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.xmlgraphics</groupId>
+                <artifactId>batik-swing</artifactId>
+                <version>1.7</version>
+            </dependency>
             
             <!-- own components -->
             <dependency>
