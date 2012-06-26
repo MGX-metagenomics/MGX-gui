@@ -31,6 +31,7 @@ public class XYPlotViewer extends NumericalViewerI {
 
     private ChartPanel cPanel = null;
     private XYPlotCustomizer customizer = null;
+    private JFreeChart chart = null;
 
     @Override
     public JComponent getComponent() {
@@ -61,7 +62,7 @@ public class XYPlotViewer extends NumericalViewerI {
         String xAxisLabel = "";
         String yAxisLabel = getCustomizer().useFractions() ? "Fraction" : "Count";
 
-        JFreeChart chart = ChartFactory.createXYLineChart(getTitle(), xAxisLabel, yAxisLabel, dataset, PlotOrientation.VERTICAL, true, true, false);
+        chart = ChartFactory.createXYLineChart(getTitle(), xAxisLabel, yAxisLabel, dataset, PlotOrientation.VERTICAL, true, true, false);
         chart.setBorderPaint(Color.WHITE);
         chart.setBackgroundPaint(Color.WHITE);
         cPanel = new ChartPanel(chart);
