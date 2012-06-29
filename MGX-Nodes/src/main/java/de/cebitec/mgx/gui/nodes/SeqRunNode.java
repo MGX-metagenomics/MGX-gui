@@ -13,7 +13,6 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
-import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import org.openide.DialogDisplayer;
@@ -35,7 +34,7 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> implements Transferable {
     public SeqRunNode(MGXMaster m, SeqRun s) {
         this(s);
         master = m;
-        setDisplayName(s.getSequencingMethod() + " run");
+        setDisplayName(s.getName());
     }
 
     private SeqRunNode(SeqRun s) {
@@ -86,8 +85,7 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> implements Transferable {
         @Override
         public void actionPerformed(final ActionEvent e) {
             SeqRun seqrun = getLookup().lookup(SeqRun.class);
-            WizardController startUp = new WizardController();
-            GetToolsWorker getTools = new GetToolsWorker(startUp, master, seqrun);
+            GetToolsWorker getTools = new GetToolsWorker(new WizardController(), master, seqrun);
             getTools.execute();
         }
     }

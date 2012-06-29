@@ -151,19 +151,13 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
                 final SeqRun seqrun = wd.getSeqRun();
                 seqrun.setDNAExtractId(extract.getId());
                 
-                System.err.println("name: "+seqrun.getName());
-                System.err.println("method: "+seqrun.getSequencingMethod().getName());
-                System.err.println("tech: "+seqrun.getSequencingTechnology().getName());
-
                 SwingWorker<Void, Exception> sw = new SwingWorker<Void, Exception>() {
 
                     @Override
                     protected Void doInBackground() {
-                        System.err.println("creating..");
 
                         getMaster().SeqRun().create(seqrun);
 
-                        System.err.println("created..");
                         // create a sequence reader
                         String canonicalPath = null;
                         SeqReaderI reader = null;
@@ -171,15 +165,12 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
                             canonicalPath = wd.getSequenceFile().getCanonicalPath();
                             reader = SeqReaderFactory.getReader(canonicalPath);
                         } catch (IOException | SeqStoreException ex) {
-                            System.err.println("ex 1");
                             getMaster().SeqRun().delete(seqrun.getId());
                             snf.refreshChildren();
                             publish(ex);
                             return null;
                         }
-                        System.err.println("creating uploader..");
                         final SeqUploader uploader = getMaster().Sequence().createUploader(seqrun.getId(), reader);
-                        System.err.println("..done");
                         MGXTask run = new MGXTask() {
 
                             @Override
@@ -217,7 +208,6 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
 
                     @Override
                     protected void process(List<Exception> chunks) {
-                        System.err.println("process()..");
                         StringBuilder sb = new StringBuilder();
                         for (Exception e : chunks) {
                             sb.append(e.getMessage());
