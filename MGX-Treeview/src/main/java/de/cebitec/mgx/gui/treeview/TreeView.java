@@ -110,8 +110,15 @@ public class TreeView extends HierarchicalViewerI {
         // merge hierarchies into consensus tree
         Tree<Map<VisualizationGroup, Long>> combinedTree = TreeFactory.combineTrees(trees);
         Node<Map<VisualizationGroup, Long>> root = combinedTree.getRoot();
+        
+        // create an ordered list of groups
+        int i = 0;
+        VisualizationGroup[] groupOrder = new VisualizationGroup[trees.size()];
+        for (Pair<VisualizationGroup, Tree<Long>> pair : trees) {
+            groupOrder[i++] = pair.getFirst();
+        }
 
-        Map<String, Long[]> rankCounts = calculateRankCounts(combinedTree);
+        Map<String, long[]> rankCounts = calculateRankCounts(combinedTree, groupOrder);
 
         initDisplay();
 
@@ -170,7 +177,7 @@ public class TreeView extends HierarchicalViewerI {
 //        }
 //        return prefTree;
 //    }
-    private static void addWithChildren(prefuse.data.Tree pTree, prefuse.data.Node parent, Node<Map<VisualizationGroup, Long>> node, Map<String, Long[]> rankCounts) {
+    private static void addWithChildren(prefuse.data.Tree pTree, prefuse.data.Node parent, Node<Map<VisualizationGroup, Long>> node, Map<String, long[]> rankCounts) {
         prefuse.data.Node self = pTree.addChild(parent);
         self.set(nodeLabel, node.getAttribute());
         self.set(nodeContent, node.getContent());
@@ -329,29 +336,34 @@ public class TreeView extends HierarchicalViewerI {
 
     private static long calculateNodeCount(Map<VisualizationGroup, Long> content) {
         long total = 0;
-        for (long l : content.values()) {
-            total += l;
+        for (Long l : content.values()) {
+            total += l.longValue();
         }
         return total;
     }
 
-    private static Map<String, Long[]> calculateRankCounts(Tree<Map<VisualizationGroup, Long>> tree) {
-        Map<String, Long[]> ret = new HashMap<>();
+    private static Map<String, long[]> calculateRankCounts(Tree<Map<VisualizationGroup, Long>> tree, VisualizationGroup[] groupOrder) {
+        Map<String, long[]> ret = new HashMap<>();
 
         for (Node<Map<VisualizationGroup, Long>> node : tree.getNodes()) {
-            if (!ret.containsKey(node.getAttribute().getAttributeType().getName())) {
-                ret.put(node.getAttribute().getAttributeType().getName(), new Long[node.getContent().size()]);
-
-                Long[] current = new Long[node.getContent().size()];
-                for (int i = 0; i < node.getContent().size(); i++) {
-                    current[i] = Long.valueOf(0);
+            String rankName = node.getAttribute().getAttributeType().getName();
+            if (!ret.containsKey(rankName)) {
+                long[] current = new long[groupOrder.length];
+                for (int i = 0; i < current.length; i++) {
+                    current[i] = 0;
                 }
-                ret.put(node.getAttribute().getAttributeType().getName(), current);
+                ret.put(rankName, current);
             }
-            Long[] current = ret.get(node.getAttribute().getAttributeType().getName());
+            long[] current = ret.get(rankName);
+            
             int i = 0;
-            for (Entry<VisualizationGroup, Long> e : node.getContent().entrySet()) {
-                current[i++] += e.getValue().longValue();
+            for (VisualizationGroup vg : groupOrder) {
+            //for (Entry<VisualizationGroup, Long> e : node.getContent().entrySet()) {
+                if (node.getContent().containsKey(vg)) {
+                    current[i] += node.getContent().get(vg).longValue();
+                }
+                i++;
+                //current[i++] += e.getValue().longValue();
             }
         }
         return ret;
