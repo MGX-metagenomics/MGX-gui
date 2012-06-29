@@ -51,7 +51,7 @@ public final class ConflictResolverVisualPanel1 extends JPanel implements ListSe
     public void setSeqRun(SeqRun run) {
         this.run = run;
         String projName = ((MGXMaster) run.getMaster()).getProject();
-        seqRunLabel.setText(run.getSequencingMethod() + " run from " + projName);
+        seqRunLabel.setText(projName + ": " + run.getName());
     }
 
     public void setVisualizationGroup(VisualizationGroup vg) {
@@ -66,7 +66,7 @@ public final class ConflictResolverVisualPanel1 extends JPanel implements ListSe
 
     @Override
     public String getName() {
-        return vg.getName() + " " + run.getSequencingTechnology();
+        return vg.getName() + " " + run.getName();
     }
 
     /**

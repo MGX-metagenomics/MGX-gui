@@ -14,6 +14,10 @@ public abstract class HierarchicalViewerI extends ViewerI<Tree<Long>> {
         return valueType.getStructure() == AttributeType.STRUCTURE_HIERARCHICAL;
     }
 
+    @Override
+    public Class getInputType() {
+        return Tree.class;
+    }
 //    @Override
 //    public List<Pair<VisualizationGroup, Distribution>> filter(List<Pair<VisualizationGroup, Distribution>> dists) {
 //        for (Pair<VisualizationGroup, Distribution> pair : dists) {
