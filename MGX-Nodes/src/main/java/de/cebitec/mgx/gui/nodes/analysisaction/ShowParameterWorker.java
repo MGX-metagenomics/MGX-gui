@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 import org.openide.util.Exceptions;
 
@@ -96,18 +97,38 @@ public class ShowParameterWorker extends SwingWorker {
         if (list.size() > 0) {
             if (startUp.getStatus() == MenuAction.again) {
                 LOGGER.info("Again SHOWTOOLWORKER");
-                GetToolsWorker worker = new GetToolsWorker(startUp, master, 
+                GetToolsWorker worker = new GetToolsWorker(startUp, master,
                         seqrun);
                 worker.execute();
             } else if (startUp.getStatus() == MenuAction.finish) {
                 jobParameterList =
                         Transform.getFromNodeStoreJobParameter(store);
-                JobWorker worker = new JobWorker(jobParameterList, jobid, job, 
+                JobWorker worker = new JobWorker(jobParameterList, jobid, job,
                         master, startUp, seqrun);
                 worker.execute();
                 LOGGER.info("Finish SHOWTOOLWORKER");
             } else if (startUp.getStatus() == MenuAction.cancel) {
                 LOGGER.info("Cancel SHOWTOOLWORKER");
+            }
+        } else {
+
+            Object[] options = {"Yes",
+                "No",};
+            int value = JOptionPane.showOptionDialog(null,
+                    "The tool has no configurable parameters. "
+                    + "Do you want to execute the tool?",
+                    "Tool Execution",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE, null,
+                    options, options[0]);
+            if (value == JOptionPane.YES_OPTION) {
+                jobParameterList = new ArrayList<JobParameter>();
+                JobWorker worker = new JobWorker(jobParameterList, jobid, job,
+                        master, startUp, seqrun);
+                worker.execute();
+            } else if (value == JOptionPane.NO_OPTION) {
+                GetToolsWorker worker = new GetToolsWorker(startUp, master, seqrun);
+                worker.execute();
             }
         }
     }

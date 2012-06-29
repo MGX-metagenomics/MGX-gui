@@ -39,7 +39,7 @@ public class DeleteWorker extends SwingWorker implements ActionListener, WindowL
     @Override
     protected Object doInBackground() {
         LOGGER.info("Delete start");
-        bar = new ProgressBar("Delete tool...", 300, 140);
+        bar = new ProgressBar("Deleting tool.","Waiting for the server", 300, 140);
         master.Tool().delete(id);
         bar.setButton("Tool is removed");
 

@@ -14,6 +14,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
 /**
@@ -21,7 +22,7 @@ import javax.swing.SwingWorker;
  *
  * @author pbelmann
  */
-public class LocalToolWorker extends SwingWorker implements ActionListener, WindowListener {
+public class LocalToolWorker extends SwingWorker {
 
     private final static Logger LOGGER =
             Logger.getLogger(LocalToolWorker.class.getName());
@@ -72,7 +73,7 @@ public class LocalToolWorker extends SwingWorker implements ActionListener, Wind
     @Override
     protected Object doInBackground() {
         LOGGER.info("localTool");
-        progress = new ProgressBar("Installing tool...",
+        progress = new ProgressBar("Installing tool.","Waiting for the server",
                 300, 140);
         tool_id = master.Tool().create(tool);
         return null;
@@ -88,51 +89,18 @@ public class LocalToolWorker extends SwingWorker implements ActionListener, Wind
             LOGGER.info("after localTool create TOOLID: " + tool.getId());
         }
 
-        progress.setButton("The tool is installed and available in "
-                + "your project tools view.");
-
-//        ProgressBar bar = new ProgressBar();
-//        ShowParameterWorker showToolsWorker =
-//                new ShowParameterWorker(tool, startUp, master, seqRun);
-//        showToolsWorker.execute();
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-
-        GetToolsWorker worker = new GetToolsWorker(startUp, master, seqRun);
-        worker.execute();
         progress.dispose();
-    }
-
-    @Override
-    public void windowOpened(WindowEvent e) {
-    }
-
-    @Override
-    public void windowClosing(WindowEvent e) {
-
-        GetToolsWorker worker = new GetToolsWorker(startUp, master, seqRun);
-        worker.execute();
-    }
-
-    @Override
-    public void windowClosed(WindowEvent e) {
-    }
-
-    @Override
-    public void windowIconified(WindowEvent e) {
-    }
-
-    @Override
-    public void windowDeiconified(WindowEvent e) {
-    }
-
-    @Override
-    public void windowActivated(WindowEvent e) {
-    }
-
-    @Override
-    public void windowDeactivated(WindowEvent e) {
+        String[] ok = {"ok"};
+        int answer = JOptionPane.showOptionDialog(null, 
+                "The tool is installed and available in "
+                + "your project tool overview.",
+                "Notification",
+                JOptionPane.OK_OPTION,
+                JOptionPane.PLAIN_MESSAGE, null, ok, "OK");
+        if (answer == JOptionPane.OK_OPTION || 
+                answer == JOptionPane.CLOSED_OPTION) {
+            GetToolsWorker worker = new GetToolsWorker(startUp, master, seqRun);
+            worker.execute();
+        }
     }
 }

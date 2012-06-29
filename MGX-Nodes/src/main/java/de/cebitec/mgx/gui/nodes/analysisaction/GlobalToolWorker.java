@@ -23,7 +23,7 @@ import javax.swing.SwingWorker;
  *
  * @author pbelmann
  */
-public class GlobalToolWorker extends SwingWorker implements ActionListener, WindowListener {
+public class GlobalToolWorker extends SwingWorker {
 
     private final static Logger LOGGER =
             Logger.getLogger(GlobalToolWorker.class.getName());
@@ -82,13 +82,13 @@ public class GlobalToolWorker extends SwingWorker implements ActionListener, Win
         Object[] options = {"Yes",
             "No",};
         int value = JOptionPane.showOptionDialog(null,
-                "Should the tool \"" + tool.getName() + "\" installed.\n"
-                + "You can choose it then in the Project Tools View.", "",
+                "Should the tool \"" + tool.getName() + "\" be installed?\n"
+                + "You can choose it then in the project tools overview.", "Tool Installation",
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.QUESTION_MESSAGE, null,
-                options, options[1]);
+                options, options[0]);
         if (value == JOptionPane.YES_OPTION) {
-            progress = new ProgressBar("Installing tool...",
+            progress = new ProgressBar("Installing tool.","Waiting for the server.",
                     300, 140);
             project_tool_id = 0;
             try {
@@ -97,22 +97,22 @@ public class GlobalToolWorker extends SwingWorker implements ActionListener, Win
 
                 project_tool_id = 0;
             }
-            progress.setButton("The tool is installed and available in "
-                    + "your project tools view.");
-        } else {
-//            return NOINSTALL;
-        }
+            progress.dispose();
 
-//        install = startUp.showInstallDialog(tool.getName());
-//        if (install == WizardController.YESINSTALL) {
-//            project_tool_id = 0;
-//            try {
-//                project_tool_id = master.Tool().installTool(tool.getId());
-//            } catch (MGXServerException ex) {
-//
-//                project_tool_id = 0;
-//            }
-//        }
+            String[] ok = {"ok"};
+            int answer = JOptionPane.showOptionDialog(null,
+                    "The tool is installed and available in "
+                    + "your project tool overview.",
+                    "Tool Installation",
+                    JOptionPane.OK_OPTION, JOptionPane.PLAIN_MESSAGE, null, ok, "OK");
+            if (answer == JOptionPane.OK_OPTION || answer == JOptionPane.CLOSED_OPTION) {
+                GetToolsWorker worker = new GetToolsWorker(startUp, master, seqRun);
+                worker.execute();
+            }
+        } else {
+            GetToolsWorker worker = new GetToolsWorker(startUp, master, seqRun);
+            worker.execute();
+        }
         return null;
     }
 
@@ -122,46 +122,5 @@ public class GlobalToolWorker extends SwingWorker implements ActionListener, Win
     @Override
     protected void done() {
         LOGGER.info("after installTool");
-//        while (project_tool_id == -2) {
-//        }
-//        GetToolsWorker worker = new GetToolsWorker(startUp, master, seqRun);
-//        worker.execute();
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        GetToolsWorker worker = new GetToolsWorker(startUp, master, seqRun);
-        worker.execute();
-        progress.dispose();
-    }
-
-    @Override
-    public void windowOpened(WindowEvent e) {
-    }
-
-    @Override
-    public void windowClosing(WindowEvent e) {
-        GetToolsWorker worker = new GetToolsWorker(startUp, master, seqRun);
-        worker.execute();
-    }
-
-    @Override
-    public void windowClosed(WindowEvent e) {
-    }
-
-    @Override
-    public void windowIconified(WindowEvent e) {
-    }
-
-    @Override
-    public void windowDeiconified(WindowEvent e) {
-    }
-
-    @Override
-    public void windowActivated(WindowEvent e) {
-    }
-
-    @Override
-    public void windowDeactivated(WindowEvent e) {
     }
 }

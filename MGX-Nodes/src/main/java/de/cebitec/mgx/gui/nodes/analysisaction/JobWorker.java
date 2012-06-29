@@ -57,7 +57,8 @@ public class JobWorker extends SwingWorker {
      * @param lMaster Masterobjekt.
      * @param lStartup GuiController
      */
-    public JobWorker(List<JobParameter> lParameter, long lJobId, Job lJob, MGXMaster lMaster, WizardController lStartup, SeqRun lRun) {
+    public JobWorker(List<JobParameter> lParameter, long lJobId, Job lJob, 
+            MGXMaster lMaster, WizardController lStartup, SeqRun lRun) {
         run = lRun;
         jobParameterList = lParameter;
         jobId = lJobId;
@@ -87,17 +88,26 @@ public class JobWorker extends SwingWorker {
                         + answer + "\"";
             }
             job.setParameters(parameter);
+            
+            
+            
+            try {
+                master.Job().setParameters(jobId, jobParameterList);
+            } catch (MGXServerException ex) {
+                Exceptions.printStackTrace(ex);
+            }
 
             boolean job_is_ok = false;
             try {
-                ProgressBar bar = new ProgressBar("Verifying toolparameters.",
+                
+                ProgressBar bar = new ProgressBar("Verifying tool parameters.",
+                        "Waiting for the server",
                         300, 140);
-//                startup.showWaitforServer("Verifying toolparameters.");
                 job_is_ok = master.Job().verify(jobId);
 
                 if (job_is_ok) {
                     LOGGER.info("job is ok");
-                    bar.setUpdateText("Parameters are ok. Execute Parameters.");
+                    bar.setUpdateText("Parameters are fine. Running tool.");
                     master.Job().execute(jobId);
                     bar.dispose();
                 }
@@ -108,7 +118,8 @@ public class JobWorker extends SwingWorker {
             Object[] options = {"Yes",
                 "No",};
             int value = JOptionPane.showOptionDialog(null,
-                    "Parameters are executed. Do you want to return to the Tool View.", "",
+                    "Tool is executed. Do you want to return to the tool overview.", 
+                    "Tool Execution.",
                     JOptionPane.YES_NO_OPTION,
                     JOptionPane.QUESTION_MESSAGE, null,
                     options, options[0]);
@@ -117,8 +128,6 @@ public class JobWorker extends SwingWorker {
                 worker.execute();
             } else if (value == JOptionPane.NO_OPTION) {
             }
-            
-//            startup.closeProgressBar();
         }
         return null;
     }
