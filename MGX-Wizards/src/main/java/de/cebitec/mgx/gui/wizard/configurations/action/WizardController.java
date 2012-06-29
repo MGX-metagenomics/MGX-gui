@@ -36,6 +36,7 @@ public class WizardController {
      * Nein das Tool soll nicht installiert werden.
      */
     public final static int NOINSTALL = 2;
+    private ToolViewStartUp toolStartUp;
 
     /**
      * Startet die Anzeige fuer die Auswahl der Tools.
@@ -47,28 +48,35 @@ public class WizardController {
     public Tool startToolViewStartUp(Collection<Tool> lGlobalTools,
             List<Tool> lProjectTools) {
         isDelete = false;
-        ToolViewStartUp toolStartUp = new ToolViewStartUp(lGlobalTools,
+        toolStartUp = new ToolViewStartUp(lGlobalTools,
                 lProjectTools);
         toolStartUp.initializeToolsView();
         Tool tool = toolStartUp.startWizardTools();
         isDelete = toolStartUp.isDelete();
-        bar = new ProgressBar("", 200, 100);
+//        bar = new ProgressBar("Waiting for server.", "Notification", 200, 100);
         return tool;
     }
-
-    /**
-     * Schliesst die ProgressBar.
-     */
-    public void closeProgressBar() {
-        if (bar != null) {
-            bar.dispose();
-        }
-
-    }
+//    /**
+//     * Schliesst die ProgressBar.
+//     */
+//    public void closeProgressBar() {
+//        if (bar != null) {
+//            bar.dispose();
+//        }
+//
+//    }
     private boolean isDelete;
 
     public boolean isToolDelete() {
         return isDelete;
+    }
+
+    public String getLastToolType() {
+        if (toolStartUp == null) {
+            return "";
+        } else {
+            return toolStartUp.getLastToolType();
+        }
     }
 
     /**
@@ -81,7 +89,7 @@ public class WizardController {
      */
     public Store startParameterConfiguration(Store store,
             List<DirEntry> entries, String toolName) {
-        bar.dispose();
+//        bar.dispose();
         configurationStartUp = new MenuViewStartUp(store, entries, toolName);
         configurationStartUp.initializeWizard();
         return configurationStartUp.startWizardConfigurations();
@@ -111,8 +119,8 @@ public class WizardController {
         Object[] options = {"Yes",
             "No",};
         int value = JOptionPane.showOptionDialog(null,
-                "Should the tool \"" + toolName + "\" be installed\n"
-                + "You can choose it then in the Project Tools View.", "",
+                "Should the tool \"" + toolName + "\" be installed.\n"
+                + "You can choose it then in the project tools view.", "",
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.QUESTION_MESSAGE, null,
                 options, options[1]);
@@ -122,14 +130,13 @@ public class WizardController {
             return NOINSTALL;
         }
     }
-
 //    public void showWaitforServer(String message) {
 //        bar = new ProgressBar(message,270,200);
 //
 //    }
-    public void setUpdateText(String text) {
-        if (bar != null) {
-            bar.setUpdateText(text);
-        }
-    }
+//    public void setUpdateText(String text) {
+//        if (bar != null) {
+//            bar.setUpdateText(text);
+//        }
+//    }
 }

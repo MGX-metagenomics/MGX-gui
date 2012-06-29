@@ -10,10 +10,7 @@ import java.awt.event.*;
 import java.io.File;
 import java.util.ArrayList;
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
+import javax.swing.event.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
@@ -39,14 +36,14 @@ public class ToolView extends JPanel implements DocumentListener {
      */
     public final static int local = 2;
     /**
-     * ActionListener um zu erkennen, was in der ComboBox gewählt wurde.
+     * ChangeListener um zu erkennen, was in der ComboBox gewählt wurde.
      */
-    private ActionListener listener;
+    private ChangeListener listener;
     /**
      * ComboBox um zu bestimmen, ob die Tools vom Server, Projekt oder Lokal
      * hochgeladen werden.
      */
-    private JComboBox toolLocationBox;
+//    private JComboBox toolLocationBox;
     /**
      * Author von Tools vom Server.
      */
@@ -110,7 +107,7 @@ public class ToolView extends JPanel implements DocumentListener {
     /**
      * AllInOnePanel in das alle möglichen Panels eingegeben werden.
      */
-    private JPanel allInOnePanel;
+    private JTabbedPane allInOnePanel;
     /**
      * Array für die Höhe der einzelnen Zeilen in der Tabelle für die Tools vom
      * Projekt.
@@ -163,7 +160,7 @@ public class ToolView extends JPanel implements DocumentListener {
      * @param lVersionProject Versionsnummern von Tools vom Projekt.
      * @param lNameGlobal Name der Tools vom Server.
      * @param lNameProject Name der Tools vom Projekt.
-     * @param lActionListener ActionListener für die ComboBox.
+     * @param lChangeListener ActionListener für die ComboBox.
      * @param lDocumentListener DocumentListener fuer das JTextField.
      */
     protected ToolView(ArrayList<String> lAuthorGlobal,
@@ -173,11 +170,11 @@ public class ToolView extends JPanel implements DocumentListener {
             ArrayList<String> lVersionGlobal,
             ArrayList<String> lVersionProject,
             ArrayList<String> lNameGlobal, ArrayList<String> lNameProject,
-            ActionListener lActionListener) {
+            ChangeListener lChangeListener) {
 
 
         fileChooser = new JFileChooser();
-        listener = lActionListener;
+        listener = lChangeListener;
         authorGlobal = lAuthorGlobal;
         authorProject = lAuthorProject;
         descriptionGlobal = lDescriptionGlobal;
@@ -219,7 +216,7 @@ public class ToolView extends JPanel implements DocumentListener {
      * @return Ort der Tools.
      */
     protected String getToolLocation() {
-        return (String) toolLocationBox.getSelectedItem();
+        return allInOnePanel.getTitleAt(allInOnePanel.getSelectedIndex());
     }
 
     /**
@@ -236,9 +233,9 @@ public class ToolView extends JPanel implements DocumentListener {
 
         String[] options = {ActionCommands.Project, ActionCommands.Global,
             ActionCommands.Local};
-        toolLocationBox = new JComboBox(options);
-        toolLocationBox.setActionCommand(ActionCommands.toolBox);
-        toolLocationBox.addActionListener(listener);
+//        toolLocationBox = new JComboBox(options);
+//        toolLocationBox.setActionCommand(ActionCommands.toolBox);
+//        toolLocationBox.addActionListener(listener);
 
         JPanel northPanel = new JPanel();
         northPanel.setLayout(new BorderLayout());
@@ -251,12 +248,12 @@ public class ToolView extends JPanel implements DocumentListener {
         questionToolBoxConstraints.gridy = 0;
         Font font = new Font(Font.DIALOG, Font.BOLD, 13);
         JLabel label = new JLabel("Select the location from "
-                + "where you want to load your Tools.");
+                + "where you want to load your tools.");
         label.setFont(font);
         questionToolBox.add(label,
                 questionToolBoxConstraints);
         questionToolBoxConstraints.gridy = 1;
-        questionToolBox.add(toolLocationBox, questionToolBoxConstraints);
+//        questionToolBox.add(toolLocationBox, questionToolBoxConstraints);
 
         northPanel.add(questionToolBox);
         add(northPanel, c);
@@ -265,8 +262,7 @@ public class ToolView extends JPanel implements DocumentListener {
         String[][] dataGlobal = GetDataForTableGlobal();
         String[] columnsProject = {"Name", "Author", "Description", "Version"
         };
-        String[] columnsGlobal = {"Name", "Author", "Description", "Version",
-            "Is tool in Project"
+        String[] columnsGlobal = {"Name", "Author", "Description", "Version"
         };
 
 
@@ -346,13 +342,13 @@ public class ToolView extends JPanel implements DocumentListener {
      */
     private JPanel assemblePanels(JPanel buttonCenterPanel,
             JPanel borderLayoutPanel) {
-        scrollPane.setBorder(BorderFactory.createLineBorder(Color.black));
-        allInOnePanel.add(scrollPane, "scrollPane");
+//        scrollPane.setBorder(BorderFactory.createLineBorder(Color.black));
+        allInOnePanel.add(ActionCommands.Project, scrollPane);
+        allInOnePanel.addChangeListener(listener);
         c.gridy = 1;
         c.insets = new Insets(10, 0, 10, 0);
         chooseFile = new JButton("Choose a local tool.");
         chooseFile.addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 chooseLocalFile();
@@ -368,7 +364,10 @@ public class ToolView extends JPanel implements DocumentListener {
         buttonCenterPanel.add(inputLocalToolForm(), BorderLayout.CENTER);
         buttonCenterPanel.add(chooseFile, BorderLayout.SOUTH);
         buttonCenterPanel.add(Box.createVerticalGlue());
-        allInOnePanel.add(buttonCenterPanel, "buttonPanel");
+        JScrollPane globalPane = new JScrollPane(globalTable);
+        allInOnePanel.add(ActionCommands.Global, globalPane);
+        allInOnePanel.add(ActionCommands.Local, buttonCenterPanel);
+
         borderLayoutPanel.add(allInOnePanel, BorderLayout.CENTER);
         c.weighty = 2.3;
         c.weightx = 2.3;
@@ -470,7 +469,7 @@ public class ToolView extends JPanel implements DocumentListener {
         versionField.getDocument().addDocumentListener(this);
         versionField.setColumns(width);
 
-        lab = new JLabel("Vesrsion:", JLabel.RIGHT);
+        lab = new JLabel("Version:", JLabel.RIGHT);
         lab.setLabelFor(versionField);
 
         con.gridx = 0;
@@ -584,8 +583,8 @@ public class ToolView extends JPanel implements DocumentListener {
                 new CellRenderer(checkBoxTableIndizes));
         globalTable.getColumnModel().getColumn(3).setCellRenderer(
                 new CellRenderer(checkBoxTableIndizes));
-        globalTable.getColumnModel().getColumn(4).setCellRenderer(
-                new CheckBoxCellRenderer(checkBoxTableIndizes));
+//        globalTable.getColumnModel().getColumn(4).setCellRenderer(
+//                new CheckBoxCellRenderer(checkBoxTableIndizes));
         globalTable.getTableHeader().setDefaultRenderer(
                 new MultiLineTableHeaderRenderer());
         TableColumn col = globalTable.getColumnModel().getColumn(3);
@@ -596,11 +595,11 @@ public class ToolView extends JPanel implements DocumentListener {
         col.setWidth(versionWidth);
         col.setPreferredWidth(versionWidth);
 
-        TableColumn col2 = globalTable.getColumnModel().getColumn(4);
-        int checkBoxWidth = 70;
-        col2.setPreferredWidth(checkBoxWidth);
-        col2.setMaxWidth(checkBoxWidth);
-        col2.setMinWidth(checkBoxWidth);
+//        TableColumn col2 = globalTable.getColumnModel().getColumn(4);
+//        int checkBoxWidth = 70;
+//        col2.setPreferredWidth(checkBoxWidth);
+//        col2.setMaxWidth(checkBoxWidth);
+//        col2.setMinWidth(checkBoxWidth);
 
 
 
@@ -703,8 +702,8 @@ public class ToolView extends JPanel implements DocumentListener {
         });
         JPanel borderLayoutPanel = new JPanel();
         borderLayoutPanel.setLayout(new BorderLayout());
-        allInOnePanel = new JPanel();
-        allInOnePanel.setLayout(new CardLayout());
+        allInOnePanel = new JTabbedPane();
+//        allInOnePanel.setLayout(new CardLayout());
         scrollPane = new JScrollPane(projectTable);
         scrollPane.getVerticalScrollBar().addAdjustmentListener(
                 new AdjustmentListener() {
@@ -839,24 +838,24 @@ public class ToolView extends JPanel implements DocumentListener {
             case project:
                 projectTable.clearSelection();
                 globalTable.clearSelection();
-                scrollPane.remove(chooseFile);
-                scrollPane.remove(globalTable);
-                scrollPane.setViewportView(projectTable);
-                ((CardLayout) allInOnePanel.getLayout()).show(allInOnePanel,
-                        "scrollPane");
+//                scrollPane.remove(chooseFile);
+//                scrollPane.remove(globalTable);
+//                scrollPane.setViewportView(projectTable);
+//                ((CardLayout) allInOnePanel.getLayout()).show(allInOnePanel,
+//                        "scrollPane");
                 break;
             case global:
                 globalTable.clearSelection();
                 projectTable.clearSelection();
-                scrollPane.remove(chooseFile);
-                scrollPane.remove(projectTable);
-                scrollPane.setViewportView(globalTable);
-                ((CardLayout) allInOnePanel.getLayout()).show(allInOnePanel,
-                        "scrollPane");
+//                scrollPane.remove(chooseFile);
+//                scrollPane.remove(projectTable);
+//                scrollPane.setViewportView(globalTable);
+//                ((CardLayout) allInOnePanel.getLayout()).show(allInOnePanel,
+//                        "scrollPane");
                 break;
             case local:
-                ((CardLayout) allInOnePanel.getLayout()).show(allInOnePanel,
-                        "buttonPanel");
+//                ((CardLayout) allInOnePanel.getLayout()).show(allInOnePanel,
+//                        "buttonPanel");
                 break;
         }
     }

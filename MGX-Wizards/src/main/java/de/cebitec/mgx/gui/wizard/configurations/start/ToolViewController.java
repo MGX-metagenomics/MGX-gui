@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
+import javax.swing.JTabbedPane;
 import javax.swing.event.*;
 import org.openide.WizardDescriptor;
 import org.openide.util.HelpCtx;
@@ -27,7 +28,7 @@ import org.openide.util.HelpCtx;
  * @author belmann
  */
 public class ToolViewController implements WizardDescriptor.Panel<WizardDescriptor>,
-        ActionListener, PropertyChangeListener {
+       ChangeListener,ActionListener, PropertyChangeListener {
 
     private final static Logger LOGGER =
             Logger.getLogger(ToolViewController.class.getName());
@@ -248,17 +249,7 @@ public class ToolViewController implements WizardDescriptor.Panel<WizardDescript
      */
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getActionCommand().equals(ActionCommands.toolBox)) {
-            if (viewComponent.getToolLocation().equals(
-                    ActionCommands.Project)) {
-                viewComponent.setToolsToChoose(viewComponent.project);
-            } else if (viewComponent.getToolLocation().equals(
-                    ActionCommands.Global)) {
-                viewComponent.setToolsToChoose(viewComponent.global);
-            } else {
-                viewComponent.setToolsToChoose(viewComponent.local);
-            }
-        } else if (e.getActionCommand().equals("DELETE") && !getComponent().
+       if (e.getActionCommand().equals("DELETE") && !getComponent().
                 getFileFieldText().isEmpty()) {
             Object[] options = {"Yes",
                 "No",};
@@ -413,5 +404,20 @@ public class ToolViewController implements WizardDescriptor.Panel<WizardDescript
         }
         return false;
 
+    }
+
+    @Override
+    public void stateChanged(ChangeEvent e) {
+      if  (e.getSource() instanceof JTabbedPane)  {
+            if (viewComponent.getToolLocation().equals(
+                    ActionCommands.Project)) {
+                viewComponent.setToolsToChoose(viewComponent.project);
+            } else if (viewComponent.getToolLocation().equals(
+                    ActionCommands.Global)) {
+                viewComponent.setToolsToChoose(viewComponent.global);
+            } else {
+                viewComponent.setToolsToChoose(viewComponent.local);
+            }
+        } 
     }
 }

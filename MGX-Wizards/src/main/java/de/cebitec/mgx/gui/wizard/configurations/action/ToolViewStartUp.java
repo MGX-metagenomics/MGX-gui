@@ -123,7 +123,7 @@ public class ToolViewStartUp {
 
 
         wiz.setTitleFormat(new MessageFormat("{0}"));
-        wiz.setTitle("Toolview");
+        wiz.setTitle("Tool Overview");
         this.wiz = wiz;
     }
     private boolean isDelete;
@@ -131,6 +131,15 @@ public class ToolViewStartUp {
     public boolean isDelete() {
         return isDelete;
 
+    }
+    String toolType = null;
+
+    public String getLastToolType() {
+        if (toolType == null) {
+            return "";
+        } else {
+            return toolType;
+        }
     }
 
     /**
@@ -170,7 +179,12 @@ public class ToolViewStartUp {
                 tool.setVersion(Float.parseFloat((String) (wiz.getProperty("LOCALVERSION"))));
                 return tool;
             }
+            String[] temp = ((String) wiz.getProperty("TOOL")).split(";");
+            toolType = temp[0];
+
             Tool tool = tools.get(wiz.getProperty("TOOL"));
+
+
             LOGGER.info("TOOLName " + tool.getName());
             LOGGER.info("TOOLAuthor " + tool.getAuthor());
             LOGGER.info("TOOLDescription " + tool.getDescription());

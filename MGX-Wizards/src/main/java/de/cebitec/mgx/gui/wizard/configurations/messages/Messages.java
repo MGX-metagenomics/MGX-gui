@@ -114,7 +114,7 @@ public class Messages {
             }
             case ToolVersion: {
                 return "Please enter a "
-                        + "descimal number and use \".\" as decimal separator.";
+                        + "decimal number and use \".\" as decimal separator.";
             }
             case ToolNameExists: {
                 return "The tool name already exists.";
@@ -138,22 +138,23 @@ public class Messages {
         switch (lType) {
             case ULong:
                 return "Please enter in field number " + lNodeNumber + "." + lconfigNumber
-                        + " only whole numbers between 0 and <br>18.446.744.073.709.551.615.";
+                        + " only a whole number between 0 and <br>18.446.744.073.709.551.615.";
             case Byte:
                 return "Please enter in field number " + lNodeNumber + "." + lconfigNumber
-                        + " only whole numbers between 0 and 255.";
+                        + " only a whole number between 0 and 255.";
             case Long:
                 return "Please enter in field number " + lNodeNumber + "." + lconfigNumber
-                        + " only whole numbers between −9.223.372.036.854.775.808 and <br>9.223.372.036.854.775.807.";
+                        + " only a whole number between −9.223.372.036.854.775.808 and <br>9.223.372.036.854.775.807.";
             case Double:
                 return "Please enter in field number " + lNodeNumber + "." + lconfigNumber
-                        + " a decimal number between <br>- 1.79769313486231570 *10<sup>308</sup> and 1.79769313486231570*10<sup>308</sup>. <br>Use \".\" as decimal separator.";
+                        + " a decimal number between <br>- 1.79769313486231570 *10<sup>308</sup> and 1.79769313486231570*10<sup>308</sup>. "
+                        + "<br>Use \".\" as decimal separator.";
             case Integer:
                 return "Please enter in field number " + lNodeNumber + "." + lconfigNumber
-                        + " only whole numbers between " + java.lang.Integer.MIN_VALUE + " and <br>" + java.lang.Integer.MAX_VALUE + ".";
+                        + " only a whole number between " + java.lang.Integer.MIN_VALUE + " and <br>" + java.lang.Integer.MAX_VALUE + ".";
             case SByte:
                 return "Please enter in field number " + lNodeNumber + "." + lconfigNumber
-                        + " only whole numbers between −128 and 127.";
+                        + " only a whole number between −128 and 127.";
             case Enumeration:
                 return "Please select an item in field number " + lNodeNumber + "." + lconfigNumber
                         + ".";

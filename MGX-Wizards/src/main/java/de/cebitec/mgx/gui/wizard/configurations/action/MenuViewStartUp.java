@@ -202,8 +202,8 @@ public class MenuViewStartUp {
         setAllDefaultbutton.setActionCommand(ActionCommands.Default);
 
 
-        JButton chooseToolButton = new JButton("Choose a Tool");
-        chooseToolButton.setMnemonic(KeyEvent.VK_T);
+        JButton chooseToolButton = new JButton("Back to Overview");
+        chooseToolButton.setMnemonic(KeyEvent.VK_O);
         chooseToolButton.addActionListener(new ActionListener() {
 
             @Override
@@ -236,7 +236,7 @@ public class MenuViewStartUp {
                 Object[] options = {"Yes",
                     "No",};
                 int value = JOptionPane.showOptionDialog(null,
-                        "If you Cancel this Menu, already "
+                        "If you cancel this Menu, already "
                         + "entered parameters will be deleted.", "",
                         JOptionPane.YES_NO_OPTION,
                         JOptionPane.QUESTION_MESSAGE, null,
