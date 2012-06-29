@@ -94,7 +94,7 @@ public class VisualizationGroupNodeFactory extends ChildFactory<SeqRunNode> impl
         @Override
         public String getDisplayName() {
             MGXMaster m = (MGXMaster) n.getContent().getMaster();
-            return m.getProject() + " " + n.getContent().getSequencingTechnology();
+            return n.getContent().getName() + " (" + m.getProject() + ")";
         }
         
         @Override
