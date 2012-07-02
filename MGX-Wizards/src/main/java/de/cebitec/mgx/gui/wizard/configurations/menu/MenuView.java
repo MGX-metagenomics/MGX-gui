@@ -190,8 +190,6 @@ public final class MenuView extends JPanel implements DocumentListener {
         lComponentConstraints.anchor = GridBagConstraints.WEST;
         lComponentConstraints.weightx = 20;
         lComponentConstraints.weighty = 20;
-
-//        lComponentConstraints.
         lComponentDescriptionPanel.add(lComponentPanel, lComponentConstraints);
         lComponentConstraints.gridy = lStartLabel;
         lComponentDescriptionPanel.add(lDescriptionPanel, lComponentConstraints);
@@ -544,7 +542,7 @@ public final class MenuView extends JPanel implements DocumentListener {
             if (!lDefaultValue.isEmpty()) {
                 area.setText(lDefaultValue);
                 area.setToolTipText("Default: " + lDefaultValue);
-                defaultButton = new JButton("set default value");
+                defaultButton = new JButton("Reset Default");
                 defaultButton.setToolTipText("Default: " + lDefaultValue);
                 defaultButton.setActionCommand(ActionCommands.Default + ":"
                         + Integer.toString(lConfigIndex));
@@ -560,7 +558,7 @@ public final class MenuView extends JPanel implements DocumentListener {
             if (!lDefaultValue.isEmpty()) {
                 field.setText(lDefaultValue);
                 field.setToolTipText("Default: " + lDefaultValue);
-                defaultButton = new JButton("set default value");
+                defaultButton = new JButton("Reset Default");
                 defaultButton.setToolTipText("Default: " + lDefaultValue);
                 defaultButton.setActionCommand(ActionCommands.Default + ":"
                         + Integer.toString(lConfigIndex));
@@ -613,7 +611,7 @@ public final class MenuView extends JPanel implements DocumentListener {
         int selectedIndex = 0;
         for (int j = 0; j < lUserChoiceValues.get(lChoiceIndex).size(); j++) {
             choicesValues[j + 1] = lUserChoiceValues.get(lChoiceIndex).get(j);
-            choicesDescriptions[j + 1] = lUserChoiceDescriptions.get(lChoiceIndex).get(j);
+            choicesDescriptions[j + 1] = "("+lUserChoiceDescriptions.get(lChoiceIndex).get(j)+")";
             if (!lDefaultValue.isEmpty()) {
 
                 toolTip = "Default: " + lDefaultValue;
@@ -642,7 +640,7 @@ public final class MenuView extends JPanel implements DocumentListener {
         if (!lDefaultValue.isEmpty()) {
             comboBox.setToolTipText(toolTip);
             comboBox.setSelectedIndex(selectedIndex);
-            JButton defaultButton = new JButton("set default value");
+            JButton defaultButton = new JButton("Reset Default");
             defaultButton.setToolTipText("Default: " + lDefaultValue);
             defaultButton.setActionCommand(ActionCommands.Default + ":"
                     + Integer.toString(lConfigIndex));

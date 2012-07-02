@@ -196,7 +196,7 @@ public class MenuViewStartUp {
                 new WizardDescriptor(
                 new WizardDescriptor.ArrayIterator<WizardDescriptor>(panels));
 
-        JButton setAllDefaultbutton = new JButton("Set default");
+        JButton setAllDefaultbutton = new JButton("Reset Defaults");
         setAllDefaultbutton.setMnemonic(KeyEvent.VK_S);
         setAllDefaultbutton.setToolTipText("Sets available default values.");
         setAllDefaultbutton.setActionCommand(ActionCommands.Default);

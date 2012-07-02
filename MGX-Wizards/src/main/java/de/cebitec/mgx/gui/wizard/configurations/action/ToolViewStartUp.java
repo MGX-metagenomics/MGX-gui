@@ -152,6 +152,8 @@ public class ToolViewStartUp {
 
         if (DialogDisplayer.getDefault().notify(wiz)
                 == WizardDescriptor.FINISH_OPTION) {
+            String[] temp = ((String) wiz.getProperty("TOOL")).split(";");
+            toolType = temp[0];
             if (wiz.getProperty("DELETE") != null) {
                 Tool tool = tools.get(wiz.getProperty("DELETE"));
                 isDelete = true;
@@ -159,6 +161,7 @@ public class ToolViewStartUp {
 
             } else if (((String) (wiz.getProperty("TOOL"))).startsWith("Local-Tools")) {
                 LOGGER.info("Local-Tools");
+              
                 String[] stringArray =
                         ((String) (wiz.getProperty("TOOL"))).split(";");
                 String url = stringArray[1];
@@ -179,8 +182,7 @@ public class ToolViewStartUp {
                 tool.setVersion(Float.parseFloat((String) (wiz.getProperty("LOCALVERSION"))));
                 return tool;
             }
-            String[] temp = ((String) wiz.getProperty("TOOL")).split(";");
-            toolType = temp[0];
+            
 
             Tool tool = tools.get(wiz.getProperty("TOOL"));
 
