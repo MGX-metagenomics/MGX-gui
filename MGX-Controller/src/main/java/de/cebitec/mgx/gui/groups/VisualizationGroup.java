@@ -220,7 +220,7 @@ public class VisualizationGroup {
             return distCache.get(selectedAttributeType);
         }
 
-        List<Map<Attribute, ? extends Number>> results = Collections.synchronizedList(new ArrayList<Map<Attribute, ? extends Number>>());
+        List<Distribution> results = Collections.synchronizedList(new ArrayList<Distribution>());
 
         // start distribution retrieval workers in background
         //
@@ -301,9 +301,11 @@ public class VisualizationGroup {
         return validTypes.get(0);
     }
 
-    private static Distribution mergeDistributions(List<Map<Attribute, ? extends Number>> dists) {
+    private static Distribution mergeDistributions(List<Distribution> dists) {
         Map<Attribute, Number> summary = new HashMap<>();
-        for (Map<Attribute, ? extends Number> d : dists) {
+        long total = 0;
+        for (Distribution d : dists) {
+            total += d.getTotalClassifiedElements();
             for (Entry<Attribute, ? extends Number> e : d.entrySet()) {
                 Attribute attr = e.getKey();
                 Long count = e.getValue().longValue();
@@ -314,7 +316,7 @@ public class VisualizationGroup {
             }
         }
 
-        return new Distribution(summary);
+        return new Distribution(summary, total);
     }
 
     private void waitForWorkers(List<Fetcher> workerList) {
@@ -375,14 +377,14 @@ public class VisualizationGroup {
         }
     }
 
-    private class DistributionFetcher extends Fetcher<Map<Attribute, Long>> {
+    private class DistributionFetcher extends Fetcher<Distribution> {
 
         protected AttributeType attrType;
         protected Job job;
         protected CountDownLatch latch;
-        protected final List<Map<Attribute, ? extends Number>> result;
+        protected final List<Distribution> result;
 
-        public DistributionFetcher(AttributeType attrType, Job job, CountDownLatch latch, List<Map<Attribute, ? extends Number>> ret) {
+        public DistributionFetcher(AttributeType attrType, Job job, CountDownLatch latch, List<Distribution> ret) {
             this.attrType = attrType;
             this.job = job;
             this.latch = latch;
@@ -390,14 +392,14 @@ public class VisualizationGroup {
         }
 
         @Override
-        protected Map<Attribute, Long> doInBackground() throws Exception {
+        protected Distribution doInBackground() throws Exception {
             MGXMaster master = (MGXMaster) attrType.getMaster();
             return master.Attribute().getDistribution(attrType.getId(), job.getId());
         }
 
         @Override
         protected void done() {
-            Map<Attribute, Long> dist = null;
+            Distribution dist = null;
             try {
                 dist = get();
             } catch (InterruptedException | ExecutionException ex) {

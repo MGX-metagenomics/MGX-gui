@@ -7,10 +7,7 @@ import de.cebitec.mgx.dto.dto.AttributeDTO;
 import de.cebitec.mgx.dto.dto.AttributeDistribution;
 import de.cebitec.mgx.dto.dto.AttributeTypeDTO;
 import de.cebitec.mgx.dto.dto.CorrelatedAttributeCount;
-import de.cebitec.mgx.gui.datamodel.Attribute;
-import de.cebitec.mgx.gui.datamodel.AttributeType;
-import de.cebitec.mgx.gui.datamodel.Job;
-import de.cebitec.mgx.gui.datamodel.Pair;
+import de.cebitec.mgx.gui.datamodel.*;
 import de.cebitec.mgx.gui.datamodel.tree.Tree;
 import de.cebitec.mgx.gui.datamodel.tree.TreeFactory;
 import de.cebitec.mgx.gui.dtoconversion.AttributeDTOFactory;
@@ -83,8 +80,9 @@ public class AttributeAccess extends AccessBase<Attribute> {
 //        }
 //        return res;
 //    }
-    public Map<Attribute, Long> getDistribution(long attrType_id, long job_id) {
+    public Distribution getDistribution(long attrType_id, long job_id) {
         Map<Attribute, Long> res = new HashMap<>();
+        long total = 0;
         try {
             AttributeDistribution distribution = getDTOmaster().Attribute().getDistribution(attrType_id, job_id);
 
@@ -99,12 +97,13 @@ public class AttributeAccess extends AccessBase<Attribute> {
                 Attribute attr = AttributeDTOFactory.getInstance().toModel(ac.getAttribute());
                 attr.setAttributeType(types.get(ac.getAttribute().getAttributeTypeId()));
                 attr.setMaster(this.getMaster());
+                total += ac.getCount();
                 res.put(attr, ac.getCount());
             }
         } catch (MGXServerException ex) {
             Logger.getLogger(AttributeAccess.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return res;
+        return new Distribution(res, total);
     }
 
     @Override
