@@ -8,14 +8,20 @@ import java.util.*;
  */
 public class Distribution implements Map<Attribute, Number> {
 
-    private final Map<Attribute, Number> _data;
+    private final Map<Attribute, ? extends Number> _data;
     private Set<Attribute> keys = new LinkedHashSet<>();
     private final Map<Attribute, Number> filtered = new HashMap<>();
+    private long totalClassifiedElements = -1;
 
-    public Distribution(Map<Attribute, Number> data) {
+    public Distribution(Map<Attribute, ? extends Number> data, long total) {
         this._data = data;
         keys.addAll(_data.keySet());
         filtered.putAll(_data);
+        totalClassifiedElements = total;
+    }
+
+    public long getTotalClassifiedElements() {
+        return totalClassifiedElements;
     }
 
     @Override
