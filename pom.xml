@@ -27,6 +27,11 @@
             </dependency>
             <dependency>
                 <groupId>org.netbeans.api</groupId>
+                <artifactId>org-openide-modules</artifactId>
+                <version>${netbeans.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.netbeans.api</groupId>
                 <artifactId>org-netbeans-modules-options-api</artifactId>
                 <version>${netbeans.version}</version>
             </dependency>
@@ -274,6 +279,11 @@
                 <artifactId>MGX-Prefuse</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>MGX-JOGL-Wrapper</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             
         </dependencies>
     </dependencyManagement>
@@ -341,6 +351,8 @@
         <module>MGX-Treeview</module>
         <module>MGX-BasicCharts</module>
         <module>MGX-jCharts</module>
+        <module>MGX-JOGL-Wrapper</module>
+        <module>MGX-Jzy3D-Wrapper</module>
     </modules>
 
     <properties>
