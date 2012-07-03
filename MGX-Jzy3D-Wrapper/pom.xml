@@ -54,10 +54,9 @@
             <artifactId>MGX-JOGL-Wrapper</artifactId>
         </dependency>
         <dependency>
-            <groupId>de.cebitec.mgx.gui</groupId>
+            <groupId>de.cebitec.external</groupId>
             <artifactId>jzy3d</artifactId>
             <version>0.9</version>
-            <type>jar</type>
         </dependency>
     </dependencies>
 
