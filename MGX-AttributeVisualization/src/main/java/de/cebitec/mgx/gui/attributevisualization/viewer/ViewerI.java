@@ -8,6 +8,7 @@ import javax.swing.JComponent;
 
 /**
  *
+ * @param <T>
  * @author sjaenick
  */
 public abstract class ViewerI<T> implements Comparable<ViewerI<T>> { //, VisFilterI<T>  {
@@ -15,46 +16,85 @@ public abstract class ViewerI<T> implements Comparable<ViewerI<T>> { //, VisFilt
     private AttributeType attrType;
     private String chartTitle;
 
+    /**
+     *
+     * @return main component representing the visualization
+     */
     public abstract JComponent getComponent();
 
+    /**
+     *
+     * @return display name of the viewer
+     */
     public abstract String getName();
 
+    /**
+     *
+     * @param valueType
+     * @return true if this viewer can display the attribute type
+     */
     public abstract boolean canHandle(AttributeType valueType);
-    
+
+    /**
+     *
+     * @return the expected class of data to be displayed
+     */
     public abstract Class getInputType();
-    
+
+    /**
+     *
+     * @param dists
+     */
     public abstract void show(List<Pair<VisualizationGroup, T>> dists);
-    
+
+    /**
+     *
+     * @return customizing component
+     */
     public abstract JComponent getCustomizer();
-    
-    public void dispose() {};
+
+    /**
+     *
+     */
+    public void dispose() {
+    }
+
+    ;
 
 //    @Override
 //    public List<Pair<VisualizationGroup, T>> filter(List<Pair<VisualizationGroup, T>> dists) {
 //        show(dists);
 //        return null;
 //    }
-
-//    public void sortAscending(boolean ascending) {
-//        this.ascending = ascending;
-//    }
-//
-//    protected boolean sortAscending() {
-//        return ascending;
-//    }
     
+    /**
+     * 
+     * @param aType indicates the attribute type to be displayed
+     */
     public void setAttributeType(AttributeType aType) {
         this.attrType = aType;
     }
-    
+
+    /**
+     *
+     * @return
+     */
     protected AttributeType getAttributeType() {
         return attrType;
     }
 
+    /**
+     *
+     * @param title
+     */
     public void setTitle(String title) {
         chartTitle = title;
     }
 
+    /**
+     *
+     * @return
+     */
     protected String getTitle() {
         return chartTitle;
     }
