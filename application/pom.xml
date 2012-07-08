@@ -89,6 +89,11 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>MGX-BasicCharts</artifactId>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>MGX-3DCharts</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
