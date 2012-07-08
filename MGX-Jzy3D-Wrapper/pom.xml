@@ -66,6 +66,26 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>nbm-maven-plugin</artifactId>
                 <extensions>true</extensions>
+                <configuration>
+                    <publicPackages>
+                        <publicPackage>org.jzy3d.chart</publicPackage>
+                        <publicPackage>org.jzy3d.chart.controllers.mouse</publicPackage>
+                        <publicPackage>org.jzy3d.chart.controllers.thread</publicPackage>
+                        <publicPackage>org.jzy3d.colors</publicPackage>
+                        <publicPackage>org.jzy3d.colors.colormaps</publicPackage>
+                        <publicPackage>org.jzy3d.global</publicPackage>
+                        <publicPackage>org.jzy3d.maths</publicPackage>
+                        <publicPackage>org.jzy3d.plot2d.primitive</publicPackage>
+                        <publicPackage>org.jzy3d.plot3d.primitives</publicPackage>
+                        <publicPackage>org.jzy3d.plot3d.primitives.axes.*</publicPackage>
+                        <publicPackage>org.jzy3d.plot3d.rendering.canvas</publicPackage>
+                        <publicPackage>org.jzy3d.plot3d.rendering.scene</publicPackage>
+                        <publicPackage>org.jzy3d.plot3d.rendering.tooltips</publicPackage>
+                        <publicPackage>org.jzy3d.plot3d.rendering.view</publicPackage>
+                        <publicPackage>org.jzy3d.plot3d.rendering.view.controllers</publicPackage>
+                        <publicPackage>org.jzy3d.plot3d.rendering.view.modes</publicPackage>
+                    </publicPackages>
+                </configuration>
             </plugin>
 
             <plugin>
