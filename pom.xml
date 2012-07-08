@@ -358,7 +358,8 @@
         <module>MGX-jCharts</module>
         <module>MGX-JOGL-Wrapper</module>
         <module>MGX-Jzy3D-Wrapper</module>
-    </modules>
+    <module>MGX-3DCharts</module>
+  </modules>
 
     <properties>
         <netbeans.version>RELEASE712</netbeans.version>
