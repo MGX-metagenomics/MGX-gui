@@ -29,7 +29,7 @@ public class ToolAccess extends AccessBase<Tool> {
 
     public long installTool(long global_id) throws MGXServerException {
         assert global_id != ModelBase.INVALID_IDENTIFIER;
-        return getDTOmaster().Tool().installTool(global_id);
+        return getDTOmaster().Tool().installGlobalTool(global_id);
     }
 
     @Override
