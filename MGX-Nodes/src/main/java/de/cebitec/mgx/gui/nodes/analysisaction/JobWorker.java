@@ -79,19 +79,9 @@ public class JobWorker extends SwingWorker {
         // muster: nodeid.configname "wert"
 
         if (jobParameterList != null) {
-            for (JobParameter jobParameter : jobParameterList) {
-                String answer = jobParameter.getConfigItemValue().replaceAll("\n", " ");
-                answer = answer.replaceAll("\r\n", " ");
-
-                parameter = parameter + jobParameter.getNodeId() + "."
-                        + jobParameter.getConfigItemName() + "\""
-                        + answer + "\"";
-            }
-            job.setParameters(parameter);
-            
-            
             
             try {
+                job.setParameters(jobParameterList);
                 master.Job().setParameters(jobId, jobParameterList);
             } catch (MGXServerException ex) {
                 Exceptions.printStackTrace(ex);
