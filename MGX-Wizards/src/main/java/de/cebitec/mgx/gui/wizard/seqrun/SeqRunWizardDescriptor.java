@@ -12,6 +12,7 @@ import java.util.concurrent.ExecutionException;
 import javax.swing.SwingWorker;
 import org.openide.WizardDescriptor;
 import org.openide.util.Exceptions;
+import org.openide.util.Utilities;
 
 /**
  *
@@ -23,7 +24,7 @@ public class SeqRunWizardDescriptor extends WizardDescriptor {
     private SeqRunWizardPanel2 p2 = new SeqRunWizardPanel2();
     private SeqRun seqrun = null;
 
-    public SeqRunWizardDescriptor(MGXMaster m) {
+    public SeqRunWizardDescriptor() {
         List<Panel<WizardDescriptor>> panels = new ArrayList<>();
         panels.add(p1);
         panels.add(p2);
@@ -34,16 +35,15 @@ public class SeqRunWizardDescriptor extends WizardDescriptor {
         putProperty(WizardDescriptor.PROP_AUTO_WIZARD_STYLE, Boolean.TRUE);
         putProperty(WizardDescriptor.PROP_CONTENT_DISPLAYED, Boolean.TRUE);
         putProperty(WizardDescriptor.PROP_CONTENT_NUMBERED, Boolean.TRUE);
-
-        setTerms(m);
+        
+        setTerms();
     }
 
     public SeqRunWizardDescriptor(SeqRun d) {
         List<Panel<WizardDescriptor>> panels = new ArrayList<>();
         panels.add(p1);
 
-        MGXMaster m = (MGXMaster) d.getMaster();
-        setTerms(m);
+        setTerms();
 
         this.setPanelsAndSettings(new ArrayIterator<>(panels), this);
         this.setTitleFormat(new MessageFormat("{0}"));
@@ -61,7 +61,8 @@ public class SeqRunWizardDescriptor extends WizardDescriptor {
         p1.setProperties(this);
     }
 
-    private void setTerms(final MGXMaster m) {
+    private void setTerms() {
+        final MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
         SwingWorker<Void, Void> sw = new SwingWorker<Void, Void>() {
 
             @Override
