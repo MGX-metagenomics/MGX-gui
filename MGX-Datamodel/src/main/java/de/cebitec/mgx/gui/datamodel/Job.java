@@ -1,5 +1,7 @@
 package de.cebitec.mgx.gui.datamodel;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 
 /**
@@ -17,8 +19,8 @@ public class Job extends ModelBase {
     //
     protected Date finishDate = null;
     //
-    protected String parameters;
-    private int jobstate;
+    protected Collection<JobParameter> parameters = new ArrayList<>();;
+    private int jobstate = JobState.CREATED.getValue();
 
     public JobState getStatus() {
         return JobState.values()[jobstate];
@@ -38,11 +40,11 @@ public class Job extends ModelBase {
         return this;
     }
 
-    public String getParameters() {
+    public Collection<JobParameter> getParameters() {
         return parameters;
     }
 
-    public Job setParameters(String parameters) {
+    public Job setParameters(Collection<JobParameter> parameters) {
         this.parameters = parameters;
         return this;
     }
