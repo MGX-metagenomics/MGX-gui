@@ -27,6 +27,7 @@ import org.openide.NotifyDescriptor;
 import org.openide.WizardDescriptor;
 import org.openide.nodes.Children;
 import org.openide.util.Exceptions;
+import org.openide.util.Utilities;
 import org.openide.util.lookup.Lookups;
 
 /**
@@ -38,13 +39,13 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
     private SeqRunNodeFactory snf = null;
 
     public DNAExtractNode(MGXMaster m, DNAExtract d) {
-        this(d, new SeqRunNodeFactory(m, d));
+        this(m, d, new SeqRunNodeFactory(m, d));
         master = m;
         setDisplayName(d.getMethod());
     }
 
-    private DNAExtractNode(DNAExtract d, SeqRunNodeFactory snf) {
-        super(Children.create(snf, true), Lookups.singleton(d), d);
+    private DNAExtractNode(MGXMaster m, DNAExtract d, SeqRunNodeFactory snf) {
+        super(Children.create(snf, true), Lookups.fixed(m, d), d);
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/DNAExtract.png");
         this.snf = snf;
     }
@@ -76,11 +77,12 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
             if (!cancelled) {
                 final String oldDisplayName = extract.getMethod();
                 final DNAExtract updatedExtract = wd.getDNAExtract();
+                final MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
                 SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
 
                     @Override
                     protected Void doInBackground() throws Exception {
-                        getMaster().DNAExtract().update(updatedExtract);
+                        m.DNAExtract().update(updatedExtract);
                         return null;
                     }
 
@@ -112,12 +114,13 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
                     null);
             Object ret = DialogDisplayer.getDefault().notify(d);
             if (NotifyDescriptor.YES_OPTION.equals(ret)) {
+                final MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
                 MGXTask deleteTask = new MGXTask() {
 
                     @Override
                     public void process() {
                         setStatus("Deleting..");
-                        getMaster().DNAExtract().delete(dna.getId());
+                        m.DNAExtract().delete(dna.getId());
                     }
 
                     @Override
@@ -141,7 +144,7 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            final SeqRunWizardDescriptor wd = new SeqRunWizardDescriptor(getMaster());
+            final SeqRunWizardDescriptor wd = new SeqRunWizardDescriptor();
             Dialog dialog = DialogDisplayer.getDefault().createDialog(wd);
             dialog.setVisible(true);
             dialog.toFront();
@@ -150,13 +153,13 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
                 DNAExtract extract = getLookup().lookup(DNAExtract.class);
                 final SeqRun seqrun = wd.getSeqRun();
                 seqrun.setDNAExtractId(extract.getId());
-                
+
                 SwingWorker<Void, Exception> sw = new SwingWorker<Void, Exception>() {
 
                     @Override
                     protected Void doInBackground() {
-
-                        getMaster().SeqRun().create(seqrun);
+                        MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
+                        m.SeqRun().create(seqrun);
 
                         // create a sequence reader
                         String canonicalPath = null;
@@ -165,12 +168,12 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
                             canonicalPath = wd.getSequenceFile().getCanonicalPath();
                             reader = SeqReaderFactory.getReader(canonicalPath);
                         } catch (IOException | SeqStoreException ex) {
-                            getMaster().SeqRun().delete(seqrun.getId());
+                            m.SeqRun().delete(seqrun.getId());
                             snf.refreshChildren();
                             publish(ex);
                             return null;
                         }
-                        final SeqUploader uploader = getMaster().Sequence().createUploader(seqrun.getId(), reader);
+                        final SeqUploader uploader = m.Sequence().createUploader(seqrun.getId(), reader);
                         MGXTask run = new MGXTask() {
 
                             @Override
@@ -188,7 +191,8 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
 
                             @Override
                             public void failed() {
-                                getMaster().SeqRun().delete(seqrun.getId());
+                                MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
+                                m.SeqRun().delete(seqrun.getId());
                                 snf.refreshChildren();
                             }
 
@@ -196,7 +200,7 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
                             public void propertyChange(PropertyChangeEvent pce) {
                                 if (pce.getPropertyName().equals(SeqUploader.NUM_SEQUENCES)) {
                                     setStatus(String.format("%1$d sequences sent", pce.getNewValue()));
-                                    seqrun.setNumSequences((Long)pce.getNewValue());
+                                    seqrun.setNumSequences((Long) pce.getNewValue());
                                 }
                             }
                         };
@@ -218,7 +222,7 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
                                 NotifyDescriptor.ERROR_MESSAGE,
                                 null,
                                 null);
-                        Object ret = DialogDisplayer.getDefault().notify(nd);
+                        DialogDisplayer.getDefault().notify(nd);
                     }
 
                     @Override
@@ -230,8 +234,6 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
                         }
                         super.done();
                     }
-                    
-                    
                 };
                 sw.execute();
             }

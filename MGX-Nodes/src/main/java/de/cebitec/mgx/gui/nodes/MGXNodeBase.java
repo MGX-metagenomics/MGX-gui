@@ -4,6 +4,7 @@ import de.cebitec.mgx.gui.controller.MGXMaster;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.util.Lookup;
+import org.openide.util.Utilities;
 
 /**
  *
@@ -19,9 +20,9 @@ public abstract class MGXNodeBase<T> extends AbstractNode {
         content = data;
     }
 
-    public MGXMaster getMaster() {
-        return master;
-    }
+//    public MGXMaster getMaster() {
+//        return master; //Utilities.actionsGlobalContext().lookup(MGXMaster.class);
+//    }
 
     public T getContent() {
         return content;

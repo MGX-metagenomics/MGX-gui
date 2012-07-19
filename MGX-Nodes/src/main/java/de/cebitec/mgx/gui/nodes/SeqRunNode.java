@@ -19,6 +19,7 @@ import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.WizardDescriptor;
 import org.openide.nodes.Children;
+import org.openide.util.Utilities;
 import org.openide.util.lookup.Lookups;
 
 /**
@@ -32,17 +33,19 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> implements Transferable {
     public static final DataFlavor DATA_FLAVOR = new DataFlavor(SeqRunNode.class, "SeqRunNode");
 
     public SeqRunNode(MGXMaster m, SeqRun s) {
-        this(s);
+        super(Children.LEAF, Lookups.fixed(m, s), s);
+        setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/SeqRun.png");
+        setShortDescription(getToolTipText(s));
+        //this(m, s);
         master = m;
         setDisplayName(s.getName());
     }
 
-    private SeqRunNode(SeqRun s) {
-        super(Children.LEAF, Lookups.singleton(s), s);
-        setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/SeqRun.png");
-        setShortDescription(getToolTipText(s));
-    }
-
+//    private SeqRunNode(MGXMaster m, SeqRun s) {
+//        super(Children.LEAF, Lookups.fixed(m, s), s);
+//        setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/SeqRun.png");
+//        setShortDescription(getToolTipText(s));
+//    }
     @Override
     public Transferable drag() throws IOException {
         return this;
@@ -84,7 +87,8 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> implements Transferable {
 
         @Override
         public void actionPerformed(final ActionEvent e) {
-            SeqRun seqrun = getLookup().lookup(SeqRun.class);
+            SeqRun seqrun = Utilities.actionsGlobalContext().lookup(SeqRun.class);
+            //SeqRun seqrun = getLookup().lookup(SeqRun.class);
             GetToolsWorker getTools = new GetToolsWorker(new WizardController(), master, seqrun);
             getTools.execute();
         }
@@ -105,9 +109,10 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> implements Transferable {
             dialog.toFront();
             boolean cancelled = wd.getValue() != WizardDescriptor.FINISH_OPTION;
             if (!cancelled) {
+                MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);  
                 String oldDisplayName = seqrun.getSequencingMethod() + " run";
                 seqrun = wd.getSeqRun();
-                getMaster().SeqRun().update(seqrun);
+                m.SeqRun().update(seqrun);
                 fireDisplayNameChange(oldDisplayName, seqrun.getSequencingMethod() + " run");
                 setDisplayName(seqrun.getSequencingMethod() + " run");
             }
@@ -145,7 +150,8 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> implements Transferable {
                     @Override
                     public void process() {
                         setStatus("Deleting..");
-                        getMaster().SeqRun().delete(sr.getId());
+                        MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);  
+                        m.SeqRun().delete(sr.getId());
                     }
 
                     @Override

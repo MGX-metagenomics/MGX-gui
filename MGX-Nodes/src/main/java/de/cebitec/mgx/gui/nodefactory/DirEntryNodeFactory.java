@@ -42,13 +42,13 @@ public class DirEntryNodeFactory extends ChildFactory<DirEntry> implements NodeL
 
     @Override
     protected Node createNodeForKey(DirEntry key) {
-        DirEntryNode node = null;
+        DirEntryNode node;
         if (key.isFile()) {
-            node = new DirEntryNode(key);
+            node = new DirEntryNode(master, key);
             node.addNodeListener(this);
         } else {
             DirEntryNodeFactory dirEntryNodeFactory = new DirEntryNodeFactory(master, key);
-            node = new DirEntryNode(key, dirEntryNodeFactory);
+            node = new DirEntryNode(master, key, dirEntryNodeFactory);
             node.addNodeListener(dirEntryNodeFactory);
         }
         return node;

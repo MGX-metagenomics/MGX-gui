@@ -10,6 +10,8 @@ import de.cebitec.mgx.gui.wizard.configurations.data.util.Transform;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
@@ -21,7 +23,7 @@ import org.openide.util.Exceptions;
  *
  * @author pbelmann
  */
-public class ShowParameterWorker extends SwingWorker {
+public class ShowParameterWorker extends SwingWorker<List<JobParameter>, Void> {
 
     private final static Logger LOGGER =
             Logger.getLogger(ShowParameterWorker.class.getName());
@@ -35,10 +37,8 @@ public class ShowParameterWorker extends SwingWorker {
     private Store store;
     private WizardController startUp;
     private MGXMaster master;
-    private ArrayList<JobParameter> list;
 
-    public ShowParameterWorker(Tool lTool,
-            WizardController startUp, MGXMaster master, SeqRun seqrun) {
+    public ShowParameterWorker(Tool lTool, WizardController startUp, MGXMaster master, SeqRun seqrun) {
         this.master = master;
         tool = lTool;
         this.startUp = startUp;
@@ -46,9 +46,7 @@ public class ShowParameterWorker extends SwingWorker {
     }
 
     @Override
-    protected Object doInBackground() {
-
-//        master.Tool().delete(tool.getId());
+    protected List<JobParameter> doInBackground() {
 
         job = new Job();
         job.setSeqrun(seqrun);
@@ -63,7 +61,7 @@ public class ShowParameterWorker extends SwingWorker {
         LOGGER.info("After create JobID: " + jobid);
         jobParameterList = null;
         //parsen
-        list = new ArrayList<>();
+        List<JobParameter> list = new ArrayList<>();
         Iterator iterator = null;
 
         try {
@@ -80,7 +78,7 @@ public class ShowParameterWorker extends SwingWorker {
             list.add((JobParameter) iterator.next());
         }
 
-        LOGGER.info("JobParameter: " + list.size());
+        LOGGER.log(Level.INFO, "JobParameter: {0}", list.size());
         Store store = Transform.getFromJobParameterNodeStore(list);
         List<DirEntry> fetchall = master.File().fetchall();
         LOGGER.info("after setStore");
@@ -88,12 +86,18 @@ public class ShowParameterWorker extends SwingWorker {
             this.store = startUp.startParameterConfiguration(store, fetchall,
                     tool.getName());
         }
-        return null;
+        return list;
     }
 
     @Override
     protected void done() {
         LOGGER.info("DONE SHOWTOOLWORKER");
+        List<JobParameter> list = null;
+        try {
+            list = get();
+        } catch (InterruptedException | ExecutionException ex) {
+            Exceptions.printStackTrace(ex);
+        }
         if (list.size() > 0) {
             if (startUp.getStatus() == MenuAction.again) {
                 LOGGER.info("Again SHOWTOOLWORKER");
@@ -122,7 +126,7 @@ public class ShowParameterWorker extends SwingWorker {
                     JOptionPane.QUESTION_MESSAGE, null,
                     options, options[0]);
             if (value == JOptionPane.YES_OPTION) {
-                jobParameterList = new ArrayList<JobParameter>();
+                jobParameterList = new ArrayList<>();
                 JobWorker worker = new JobWorker(jobParameterList, jobid, job,
                         master, startUp, seqrun);
                 worker.execute();

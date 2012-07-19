@@ -17,6 +17,7 @@ import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.WizardDescriptor;
 import org.openide.nodes.Children;
+import org.openide.util.Utilities;
 import org.openide.util.lookup.Lookups;
 
 /**
@@ -28,13 +29,13 @@ public class HabitatNode extends MGXNodeBase<Habitat> {
     private SampleNodeFactory snf = null;
 
     public HabitatNode(MGXMaster m, Habitat h) {
-        this(h, new SampleNodeFactory(m, h));
+        this(h, m, new SampleNodeFactory(m, h));
         master = m;
         setDisplayName(h.getName());
     }
 
-    private HabitatNode(Habitat h, SampleNodeFactory snf) {
-        super(Children.create(snf, true), Lookups.singleton(h), h);
+    private HabitatNode(Habitat h, MGXMaster m, SampleNodeFactory snf) {
+        super(Children.create(snf, true), Lookups.fixed(m, h), h);
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/Habitat.png");
         setShortDescription(getToolTipText(h));
         this.snf = snf;
@@ -79,7 +80,8 @@ public class HabitatNode extends MGXNodeBase<Habitat> {
             if (!cancelled) {
                 String oldDisplayName = habitat.getName();
                 habitat = hwd.getHabitat();
-                getMaster().Habitat().update(habitat);
+                MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
+                m.Habitat().update(habitat);
                 fireDisplayNameChange(oldDisplayName, habitat.getName());
                 setDisplayName(habitat.getName());
             }
@@ -108,7 +110,8 @@ public class HabitatNode extends MGXNodeBase<Habitat> {
                     @Override
                     public void process() {
                         setStatus("Deleting..");
-                        getMaster().Habitat().delete(habitat.getId());
+                        MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
+                        m.Habitat().delete(habitat.getId());
                     }
 
                     @Override
@@ -151,7 +154,8 @@ public class HabitatNode extends MGXNodeBase<Habitat> {
 
                     @Override
                     protected Void doInBackground() throws Exception {
-                        getMaster().Sample().create(s);
+                        MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
+                        m.Sample().create(s);
                         return null;
                     }
                 };

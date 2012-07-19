@@ -17,6 +17,7 @@ import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.WizardDescriptor;
 import org.openide.nodes.Children;
+import org.openide.util.Utilities;
 import org.openide.util.lookup.Lookups;
 
 /**
@@ -28,13 +29,13 @@ public class SampleNode extends MGXNodeBase<Sample> {
     private DNAExtractNodeFactory nf = null;
 
     public SampleNode(MGXMaster m, Sample s) {
-        this(s, new DNAExtractNodeFactory(m, s));
+        this(m, s, new DNAExtractNodeFactory(m, s));
         master = m;
         setDisplayName(s.getMaterial());
     }
 
-    private SampleNode(Sample s, DNAExtractNodeFactory snf) {
-        super(Children.create(snf, true), Lookups.singleton(s), s);
+    private SampleNode(MGXMaster m, Sample s, DNAExtractNodeFactory snf) {
+        super(Children.create(snf, true), Lookups.fixed(m, s), s);
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/Sample.png");
         this.nf = snf;
     }
@@ -64,9 +65,10 @@ public class SampleNode extends MGXNodeBase<Sample> {
             dialog.toFront();
             boolean cancelled = swd.getValue() != WizardDescriptor.FINISH_OPTION;
             if (!cancelled) {
+                MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
                 String oldDisplayName = sample.getMaterial();
                 sample = swd.getSample();
-                getMaster().Sample().update(sample);
+                m.Sample().update(sample);
                 fireDisplayNameChange(oldDisplayName, sample.getMaterial());
             }
         }
@@ -88,13 +90,14 @@ public class SampleNode extends MGXNodeBase<Sample> {
                     null,
                     null);
             Object ret = DialogDisplayer.getDefault().notify(d);
+            final MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
             if (NotifyDescriptor.YES_OPTION.equals(ret)) {
                 MGXTask deleteTask = new MGXTask() {
 
                     @Override
                     public void process() {
                         setStatus("Deleting..");
-                        getMaster().Sample().delete(sample.getId());
+                        m.Sample().delete(sample.getId());
                     }
 
                     @Override
@@ -123,6 +126,7 @@ public class SampleNode extends MGXNodeBase<Sample> {
             dialog.toFront();
             boolean cancelled = wd.getValue() != WizardDescriptor.FINISH_OPTION;
             if (!cancelled) {
+                final MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
                 Sample s = getLookup().lookup(Sample.class);
                 final DNAExtract extract = wd.getDNAExtract();
                 extract.setSampleId(s.getId());
@@ -130,7 +134,7 @@ public class SampleNode extends MGXNodeBase<Sample> {
 
                     @Override
                     protected Void doInBackground() throws Exception {
-                        getMaster().DNAExtract().create(extract);
+                        m.DNAExtract().create(extract);
                         return null;
                     }
 

@@ -12,6 +12,7 @@ import javax.swing.SwingWorker;
 import org.openide.DialogDisplayer;
 import org.openide.WizardDescriptor;
 import org.openide.nodes.Children;
+import org.openide.util.Utilities;
 import org.openide.util.lookup.Lookups;
 
 /**
@@ -28,7 +29,7 @@ public class ProjectDataNode extends MGXNodeBase<MGXMaster> {
     }
 
     private ProjectDataNode(MGXMaster m, HabitatNodeFactory hnf) {
-        super(Children.create(hnf, true), Lookups.singleton(m), m);
+        super(Children.create(hnf, true), Lookups.fixed(m), m);
         this.hnf = hnf;
         setDisplayName("Project Data");
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/ProjectData.png");
@@ -63,7 +64,8 @@ public class ProjectDataNode extends MGXNodeBase<MGXMaster> {
 
                     @Override
                     protected Void doInBackground() throws Exception {
-                        getMaster().Habitat().create(h);
+                        MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
+                        m.Habitat().create(h);
                         return null;
                     }
 
