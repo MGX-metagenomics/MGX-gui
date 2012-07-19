@@ -2,9 +2,12 @@ package de.cebitec.mgx.gui.controller;
 
 import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
+import de.cebitec.mgx.dto.dto.JobParameterDTO;
 import de.cebitec.mgx.dto.dto.ToolDTO;
+import de.cebitec.mgx.gui.datamodel.JobParameter;
 import de.cebitec.mgx.gui.datamodel.ModelBase;
 import de.cebitec.mgx.gui.datamodel.Tool;
+import de.cebitec.mgx.gui.dtoconversion.JobParameterDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.ToolDTOFactory;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,7 +32,39 @@ public class ToolAccess extends AccessBase<Tool> {
 
     public long installTool(long global_id) throws MGXServerException {
         assert global_id != ModelBase.INVALID_IDENTIFIER;
+
+
         return getDTOmaster().Tool().installGlobalTool(global_id);
+
+    }
+
+    public Iterable<JobParameter> getAvailableParameters(Tool tool) {
+
+        ToolDTO dto = ToolDTOFactory.getInstance().toDTO(tool);
+
+        List<JobParameter> ret = new ArrayList<>();
+        try {
+            for (JobParameterDTO dtoParameter : getDTOmaster().Tool().getAvailableParameters(dto)) {
+                ret.add(JobParameterDTOFactory.getInstance().toModel(dtoParameter));
+            }
+        } catch (MGXServerException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+        return ret;
+
+    }
+
+    public Iterable<JobParameter> getAvailableParameters(long toolId, boolean isGlobal) {
+        List<JobParameter> ret = new ArrayList<>();
+        try {
+            for (JobParameterDTO dto : getDTOmaster().Tool().getAvailableParameters(toolId, isGlobal)) {
+                ret.add(JobParameterDTOFactory.getInstance().toModel(dto));
+            }
+
+        } catch (MGXServerException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+        return ret;
     }
 
     @Override
