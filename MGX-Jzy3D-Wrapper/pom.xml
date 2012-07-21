@@ -68,14 +68,24 @@
                 <extensions>true</extensions>
                 <configuration>
                     <publicPackages>
-                        <publicPackage>org.jzy3d.chart</publicPackage>
-                        <publicPackage>org.jzy3d.chart.controllers.mouse</publicPackage>
-                        <publicPackage>org.jzy3d.chart.controllers.thread</publicPackage>
+                        <publicPackage>org.jzy3d.bridge</publicPackage>
+                        <publicPackage>org.jzy3d.bridge.awt</publicPackage>
+                        <publicPackage>org.jzy3d.bridge.swing</publicPackage>
+                        <publicPackage>org.jzy3d.chart.*</publicPackage>
                         <publicPackage>org.jzy3d.colors</publicPackage>
                         <publicPackage>org.jzy3d.colors.colormaps</publicPackage>
+                        <publicPackage>org.jzy3d.contour</publicPackage>
+                        <publicPackage>org.jzy3d.events</publicPackage>
+                        <publicPackage>org.jzy3d.factories</publicPackage>
                         <publicPackage>org.jzy3d.global</publicPackage>
                         <publicPackage>org.jzy3d.maths</publicPackage>
+                        <publicPackage>org.jzy3d.maths.algorithms</publicPackage>
+                        <publicPackage>org.jzy3d.maths.graphs</publicPackage>
+                        <publicPackage>org.jzy3d.picking</publicPackage>
                         <publicPackage>org.jzy3d.plot2d.primitive</publicPackage>
+                        <publicPackage>org.jzy3d.plot2d.rendering</publicPackage>
+                        <publicPackage>org.jzy3d.plot3d.builder.*</publicPackage>
+                        <publicPackage>org.jzy3d.plot3d.pipelines</publicPackage>
                         <publicPackage>org.jzy3d.plot3d.primitives</publicPackage>
                         <publicPackage>org.jzy3d.plot3d.primitives.axes.*</publicPackage>
                         <publicPackage>org.jzy3d.plot3d.rendering.canvas</publicPackage>
