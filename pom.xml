@@ -289,6 +289,11 @@
                 <artifactId>MGX-Jzy3D-Wrapper</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>MGX-Charts3D</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             
         </dependencies>
     </dependencyManagement>
@@ -358,8 +363,8 @@
         <module>MGX-jCharts</module>
         <module>MGX-JOGL-Wrapper</module>
         <module>MGX-Jzy3D-Wrapper</module>
-    <module>MGX-3DCharts</module>
-  </modules>
+        <module>MGX-Charts3D</module>
+    </modules>
 
     <properties>
         <netbeans.version>RELEASE712</netbeans.version>
