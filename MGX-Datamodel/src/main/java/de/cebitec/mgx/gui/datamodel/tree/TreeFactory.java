@@ -2,7 +2,7 @@ package de.cebitec.mgx.gui.datamodel.tree;
 
 import de.cebitec.mgx.gui.datamodel.Attribute;
 import de.cebitec.mgx.gui.datamodel.ModelBase;
-import de.cebitec.mgx.gui.datamodel.Pair;
+import de.cebitec.mgx.gui.datamodel.misc.Pair;
 import java.util.*;
 import java.util.Map.Entry;
 

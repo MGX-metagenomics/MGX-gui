@@ -1,4 +1,4 @@
-package de.cebitec.mgx.gui.datamodel;
+package de.cebitec.mgx.gui.datamodel.misc;
 
 /**
  *
