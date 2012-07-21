@@ -1,6 +1,10 @@
 package de.cebitec.mgx.gui.login.dialog;
 
 import de.cebitec.mgx.gui.explorer.ProjectExplorerTopComponent;
+import de.cebitec.mgx.gui.login.configuration.MGXserverPanel;
+import de.cebitec.mgx.restgpms.GPMS;
+import java.awt.Cursor;
+import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -8,11 +12,8 @@ import java.beans.PropertyChangeListener;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.NotificationLineSupport;
-import org.openide.util.NbPreferences;
-import de.cebitec.mgx.gui.login.configuration.MGXserverPanel;
-import de.cebitec.mgx.restgpms.GPMS;
-import java.awt.EventQueue;
 import org.openide.util.Lookup;
+import org.openide.util.NbPreferences;
 import org.openide.windows.Mode;
 import org.openide.windows.WindowManager;
 
@@ -77,18 +78,23 @@ public class LoginHandler implements ActionListener {
             String password = panel.getPassword();
             NbPreferences.forModule(MGXserverPanel.class).put("lastLogin", user);
             final GPMS gpms = new GPMS(servername, serveruri);
-            if (gpms.login(user, password)) {
-                dialog.setClosingOptions(new Object[]{DialogDescriptor.CANCEL_OPTION, DialogDescriptor.OK_OPTION});
-                EventQueue.invokeLater(new Runnable() {
+            try {
+                panel.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+                if (gpms.login(user, password)) {
+                    dialog.setClosingOptions(new Object[]{DialogDescriptor.CANCEL_OPTION, DialogDescriptor.OK_OPTION});
+                    EventQueue.invokeLater(new Runnable() {
 
-                    @Override
-                    public void run() {
-                        openProjectExplorer(gpms);
-                    }
-                });
-            } else {
-                dialog.setClosingOptions(new Object[]{DialogDescriptor.CANCEL_OPTION});
-                nline.setErrorMessage("Login failed: " + gpms.getError());
+                        @Override
+                        public void run() {
+                            openProjectExplorer(gpms);
+                        }
+                    });
+                } else {
+                    dialog.setClosingOptions(new Object[]{DialogDescriptor.CANCEL_OPTION});
+                    nline.setErrorMessage("Login failed: " + gpms.getError());
+                }
+            } finally {
+                panel.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             }
         }
     }
