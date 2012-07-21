@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.search;
 
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
+import de.cebitec.mgx.gui.datamodel.misc.SearchResult;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -53,11 +54,13 @@ public final class SearchTopComponent extends TopComponent implements LookupList
         initComponents();
         setName(Bundle.CTL_SearchTopComponent());
         setToolTipText(Bundle.HINT_SearchTopComponent());
-        
+
         // both working on same model - FIXME: renderers
         resultList.setModel(resultModel);
         readList.setModel(resultModel);
         
+        readList.setCellRenderer(new ReadListListCellRenderer());
+
         runList.setModel(runListModel);
         runList.addListSelectionListener(new ListSelectionListener() {
 
@@ -67,7 +70,7 @@ public final class SearchTopComponent extends TopComponent implements LookupList
             }
         });
         runList.setCellRenderer(new ListCellRenderer<SeqRun>() {
-            
+
             private JLabel label = new JLabel();
 
             @Override
@@ -95,7 +98,7 @@ public final class SearchTopComponent extends TopComponent implements LookupList
                 enableButton();
             }
         });
-        
+
         button.addActionListener(this);
     }
 
@@ -317,25 +320,25 @@ public final class SearchTopComponent extends TopComponent implements LookupList
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        SwingWorker worker = new SwingWorker<Void, Void>(){
+        SwingWorker worker = new SwingWorker<List<SearchResult>, Void>() {
 
             @Override
-            protected Void doInBackground() throws Exception {
-                currentMaster.Attribute().search(getSelectedSeqRuns(), searchTerm.getText(), exact.isSelected());
-                return null;
+            protected List<SearchResult> doInBackground() throws Exception {
+                return currentMaster.Attribute().search(getSelectedSeqRuns(), searchTerm.getText(), exact.isSelected());
             }
+
             @Override
             protected void done() {
                 try {
-                    get();
+                    List<SearchResult> result = get();
                 } catch (InterruptedException | ExecutionException ex) {
                     Exceptions.printStackTrace(ex);
                 }
-}
+            }
         };
         worker.execute();
     }
-    
+
     private final class ResultListModel extends AbstractListModel<Void> {
 
         @Override
@@ -346,6 +349,18 @@ public final class SearchTopComponent extends TopComponent implements LookupList
         @Override
         public Void getElementAt(int index) {
             throw new UnsupportedOperationException("Not supported yet.");
+        }
+    }
+
+    private final class ReadListListCellRenderer implements ListCellRenderer<SearchResult> {
+
+        private JLabel label = new JLabel();
+
+        @Override
+        public Component getListCellRendererComponent(JList<? extends SearchResult> list, SearchResult value, int index, boolean isSelected, boolean cellHasFocus) {
+            label.setText(value.getSequenceName());
+            label.setBackground(isSelected ? Color.BLUE : Color.WHITE);
+            return label;
         }
     }
 }
