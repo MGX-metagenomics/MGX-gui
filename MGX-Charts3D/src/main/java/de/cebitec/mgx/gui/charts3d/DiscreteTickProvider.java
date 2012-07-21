@@ -1,4 +1,4 @@
-package de.cebitec.mgx.gui.threedcharts;
+package de.cebitec.mgx.gui.charts3d;
 
 import org.jzy3d.plot3d.primitives.axes.layout.providers.ITickProvider;
 
@@ -32,6 +32,6 @@ class DiscreteTickProvider implements ITickProvider {
 
     @Override
     public int getDefaultSteps() {
-        return 42;
+        return 10;
     }
 }

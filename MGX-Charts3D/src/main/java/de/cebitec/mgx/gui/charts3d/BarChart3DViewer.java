@@ -1,4 +1,4 @@
-package de.cebitec.mgx.gui.threedcharts;
+package de.cebitec.mgx.gui.charts3d;
 
 import de.cebitec.mgx.gui.attributevisualization.viewer.CategoricalViewerI;
 import de.cebitec.mgx.gui.attributevisualization.viewer.ViewerI;
@@ -10,8 +10,6 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 import javax.swing.JComponent;
 import org.jzy3d.chart.Chart;
 import org.jzy3d.colors.Color;
@@ -28,6 +26,8 @@ import org.openide.util.lookup.ServiceProvider;
 /**
  *
  * @author sj
+ * 
+ * based on http://code.google.com/p/jzy3d/source/browse/branches/0.8.1/src/demos/org/jzy3d/demos/histogram/barchart/BarChartDemo.java?r=438
  */
 @ServiceProvider(service = ViewerI.class)
 public class BarChart3DViewer extends CategoricalViewerI {
@@ -36,6 +36,7 @@ public class BarChart3DViewer extends CategoricalViewerI {
     private CustomMouseControl mouseCamera;
     private Chart chart;
     private List<VisualizationGroup> groups = new ArrayList<>();
+    private List<Attribute> attributes = new ArrayList<>();
 
     @Override
     public JComponent getComponent() {
@@ -55,13 +56,13 @@ public class BarChart3DViewer extends CategoricalViewerI {
     @Override
     public void show(List<Pair<VisualizationGroup, Distribution>> dists) {
         Settings.getInstance().setHardwareAccelerated(true);
-        chart = new Chart(Quality.Nicest, "swing") {
-
-            @Override
-            public void dispose() {
-                mouseCamera.removeSlaveThreadController();
-            }
-        };
+        chart = new Chart(Quality.Nicest, "swing"); // {
+//
+//            @Override
+//            public void dispose() {
+//                mouseCamera.removeSlaveThreadController();
+//            }
+//        };
         setupAxes();
         setupMouseNavigation();
         setupKeyboardNavigation();
@@ -73,23 +74,32 @@ public class BarChart3DViewer extends CategoricalViewerI {
         BarChartBar.BAR_RADIUS = 5f;
         BarChartBar.BAR_FEAT_BUFFER_RADIUS = BarChartBar.BAR_RADIUS / 2f;
         Scene scene = chart.getScene();
-        java.awt.Color c = java.awt.Color.BLUE;
-        Color cc = new Color(c.getRed(), c.getGreen(), c.getBlue());
 
-        Set<Attribute> attributes = new TreeSet<>();
+
+        // collect all present attributes
+        attributes.clear();
         for (Pair<VisualizationGroup, Distribution> p : dists) {
-            attributes.addAll(p.getSecond().keySet());
+            for (Attribute a : p.getSecond().keySet()) {
+                if (!attributes.contains(a)) {
+                    attributes.add(a);
+                }
+            }
         }
 
         int distNum = 0;
         int entryNum = 0;
         for (Pair<VisualizationGroup, Distribution> p : dists) {
-            groups.add(p.getFirst());
-            for (Attribute attr : attributes) {
-                double height = p.getSecond().containsKey(attr) ? p.getSecond().get(attr).doubleValue() : 0;
-                scene.add(addBar(distNum++, p.getFirst().getName(), entryNum++, attr.getValue(), height, cc));
+            VisualizationGroup curGroup = p.getFirst();
+            groups.add(curGroup);
 
+            Color color = new Color(curGroup.getColor().getRed(), curGroup.getColor().getGreen(), curGroup.getColor().getBlue());
+            //System.err.println("group: "+curGroup.getName());
+            for (Attribute attr : attributes) {
+                float height = p.getSecond().containsKey(attr) ? p.getSecond().get(attr).floatValue() : 0;
+                //System.err.println("  adding "+attr.getValue() +": "+height);
+                scene.add(addBar(distNum, curGroup.getName(), entryNum++, attr.getValue(), height, color));
             }
+            distNum++;
         }
     }
 
@@ -108,7 +118,7 @@ public class BarChart3DViewer extends CategoricalViewerI {
 
             @Override
             public void paint(Graphics g) {
-                g.setColor(java.awt.Color.BLUE);
+                g.setColor(java.awt.Color.BLACK);
                 g.setFont(g.getFont().deriveFont(Font.BOLD, 16));
                 g.drawString(getTitle(),
                         (int) (15 + 0.05d * chart.getCanvas().getRendererWidth()),
@@ -128,11 +138,10 @@ public class BarChart3DViewer extends CategoricalViewerI {
     }
 
     private void setupAxes() {
-        chart.getAxeLayout().setXAxeLabel("Scattering");
-        chart.getAxeLayout().setXTickRenderer(new DefaultDecimalTickRenderer(2));
 
-        chart.getAxeLayout().setYAxeLabel("Group");
-        chart.getAxeLayout().setYTickRenderer(new ITickRenderer() {
+        // x axis
+        chart.getAxeLayout().setXAxeLabel("Groups");
+        chart.getAxeLayout().setXTickRenderer(new ITickRenderer() {
 
             @Override
             public String format(float value) {
@@ -144,9 +153,27 @@ public class BarChart3DViewer extends CategoricalViewerI {
                 }
             }
         });
+
+        // y axis
+        chart.getAxeLayout().setYAxeLabel(getAttributeType().getName());
         chart.getAxeLayout().setYTickProvider(new DiscreteTickProvider());
-        chart.getAxeLayout().setZAxeLabel("Tangling");
-        chart.getAxeLayout().setZTickRenderer(new DefaultDecimalTickRenderer(2));
+        chart.getAxeLayout().setYTickRenderer(new ITickRenderer() {
+
+            @Override
+            public String format(float value) {
+                int idx = getFeatureIndex(value);
+                if (value >= 0 && idx >= 0 && idx < attributes.size()) {
+                    return attributes.get(idx).getValue();
+                } else {
+                    return "";
+                }
+            }
+        });
+
+        // z axis
+        chart.getAxeLayout().setZAxeLabel("Count");
+        chart.getAxeLayout().setZTickRenderer(new DefaultDecimalTickRenderer(1));
+        chart.getAxeLayout().setZTickProvider(new DiscreteTickProvider());
 //        chart.getAxeLayout().setZTickRenderer( new ScientificNotationTickRenderer(2) );
 //        float[] ticks = {0f, 0.5f, 1f};
 //            chart.getAxeLayout().setZTickProvider(new StaticTickProvider(ticks));
@@ -155,13 +182,12 @@ public class BarChart3DViewer extends CategoricalViewerI {
 //        chart.getView().setAxeSquared(false);
     }
 
-    public AbstractDrawable addBar(int compUnit, String compUnitName, int feature, String featureName, double height, Color color) {
-        // compUnit, feature numbered form 0!
+    public AbstractDrawable addBar(int compUnit, String compUnitName, int feature, String featureName, float height, Color color) {
         color.a = 1f;
 
         BarChartBar bar = new BarChartBar(chart, featureName, compUnitName);
 
-        bar.setData(compUnit, feature, (float) height, color);
+        bar.setData(compUnit, feature, height, color);
 //        if (!a) {
 //            bar.setColorMapper(new ColorMapper(new AffinityColorGen(), 0f, 2.0f));
 //            bar.setLegend(new ColorbarLegend(bar, chart.getAxeLayout()));
@@ -191,14 +217,15 @@ public class BarChart3DViewer extends CategoricalViewerI {
 //    @Override
 //    public void featureSelectionChanged(SelectionManager tl) {
 //    }
-    @Override
-    public void dispose() {
-        if (chart != null) {
-            chart.getCanvas().dispose();
-            chart.dispose();
-        }
-        chart = null;
-    }
+//    @Override
+//    public void dispose() {
+//        if (chart != null) {
+////            ICanvas canvas = chart.getCanvas(); 
+////            canvas.dispose();
+//            chart.dispose();
+//        }
+//        chart = null;
+//    }
 //    @Override
 //    public void compUnitSelectionChanged(SelectionManager tl) {
 //        if (chart != null) {

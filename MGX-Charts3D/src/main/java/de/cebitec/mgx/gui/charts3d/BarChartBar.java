@@ -1,4 +1,4 @@
-package de.cebitec.mgx.gui.threedcharts;
+package de.cebitec.mgx.gui.charts3d;
 
 import java.util.ArrayList;
 import java.util.LinkedList;

@@ -1,4 +1,4 @@
-package de.cebitec.mgx.gui.threedcharts;
+package de.cebitec.mgx.gui.charts3d;
 
 import java.awt.Graphics2D;
 import org.jzy3d.maths.IntegerCoord2d;
