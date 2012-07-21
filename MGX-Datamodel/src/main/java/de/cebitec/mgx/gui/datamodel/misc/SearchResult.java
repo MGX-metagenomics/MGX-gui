@@ -9,6 +9,7 @@ import java.util.List;
  * @author sj
  */
 public class SearchResult {
+
     private String seqName;
     private List<Observation> observations = new ArrayList<>();
 
@@ -27,6 +28,4 @@ public class SearchResult {
     public void setSequenceName(String seqName) {
         this.seqName = seqName;
     }
-    
-    
 }
