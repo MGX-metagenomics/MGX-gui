@@ -7,7 +7,12 @@ import de.cebitec.mgx.dto.dto.AttributeDTO;
 import de.cebitec.mgx.dto.dto.AttributeDistribution;
 import de.cebitec.mgx.dto.dto.AttributeTypeDTO;
 import de.cebitec.mgx.dto.dto.CorrelatedAttributeCount;
+import de.cebitec.mgx.dto.dto.SearchRequestDTO;
+import de.cebitec.mgx.dto.dto.SearchRequestDTO.Builder;
+import de.cebitec.mgx.dto.dto.SearchResultDTO;
 import de.cebitec.mgx.gui.datamodel.*;
+import de.cebitec.mgx.gui.datamodel.misc.Pair;
+import de.cebitec.mgx.gui.datamodel.misc.SearchResult;
 import de.cebitec.mgx.gui.datamodel.tree.Tree;
 import de.cebitec.mgx.gui.datamodel.tree.TreeFactory;
 import de.cebitec.mgx.gui.dtoconversion.AttributeDTOFactory;
@@ -148,13 +153,13 @@ public class AttributeAccess extends AccessBase<Attribute> {
                 //attr.setAttributeType(types.get(cac.getRestrictedAttribute().getAttributeTypeId()));
                 attr.setAttributeType(attributeType1);
                 attr.setMaster(this.getMaster());
-                
+
                 // the attribute
                 Attribute attr2 = AttributeDTOFactory.getInstance().toModel(cac.getAttribute());
                 //attr2.setAttributeType(types.get(cac.getAttribute().getAttributeTypeId()));
                 attr2.setAttributeType(attributeType2);
                 attr2.setMaster(this.getMaster());
-                
+
                 ret.put(new Pair<>(attr, attr2), cac.getCount());
             }
         } catch (MGXServerException ex) {
@@ -185,11 +190,28 @@ public class AttributeAccess extends AccessBase<Attribute> {
         } catch (MGXServerException ex) {
             Logger.getLogger(AttributeAccess.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        System.err.println("getHierarchy(" +attrType_id+"), job "+job_id+", got "+res.size()+" entries");
+
+        //System.err.println("getHierarchy(" +attrType_id+"), job "+job_id+", got "+res.size()+" entries");
 
         Tree<Long> ret = TreeFactory.createTree(res);
 
         return ret;
+    }
+
+    public List<SearchResult> search(List<SeqRun> selectedSeqRuns, String text, boolean exact) {
+        // FIXME move to dtoconverter package
+        Builder b = SearchRequestDTO.newBuilder().setExact(exact).setTerm(text);
+        for (SeqRun sr : selectedSeqRuns) {
+            b.addSeqrunId(sr.getId());
+        }
+        try {
+            List<SearchResultDTO> search = getDTOmaster().Attribute().search(b.build());
+
+            // FIXME - convert back and return 
+
+        } catch (MGXServerException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+        return null;
     }
 }

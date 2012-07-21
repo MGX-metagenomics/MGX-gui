@@ -292,7 +292,9 @@ public class VisualizationGroup {
 
     private AttributeType selectAttributeType(SeqRun run, Job job, String attrTypeName) {
         List<AttributeType> validTypes = new ArrayList<>();
-        for (AttributeType atype : attributeTypes.get(run).get(job)) {
+        Map<Job, List<AttributeType>> jobattrtypes = attributeTypes.get(run);
+        assert jobattrtypes != null;
+        for (AttributeType atype : jobattrtypes.get(job)) {
             if (atype.getName().equals(attrTypeName)) {
                 validTypes.add(atype);
             }
@@ -371,6 +373,7 @@ public class VisualizationGroup {
             } catch (InterruptedException | ExecutionException ex) {
                 Exceptions.printStackTrace(ex);
             }
+            assert get != null;
             result.put(run, get);
             fireVGroupChanged(VISGROUP_CHANGED);
             super.done();
@@ -405,6 +408,7 @@ public class VisualizationGroup {
             } catch (InterruptedException | ExecutionException ex) {
                 Exceptions.printStackTrace(ex);
             }
+            assert dist != null;
             result.add(dist);
             latch.countDown();
         }
@@ -438,6 +442,7 @@ public class VisualizationGroup {
             } catch (InterruptedException | ExecutionException ex) {
                 Exceptions.printStackTrace(ex);
             }
+            assert tree != null;
             result.add(tree);
             latch.countDown();
         }
