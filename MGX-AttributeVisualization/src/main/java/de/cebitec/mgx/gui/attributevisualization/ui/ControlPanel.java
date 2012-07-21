@@ -13,6 +13,7 @@ import de.cebitec.mgx.gui.attributevisualization.viewer.ViewerI;
 import de.cebitec.mgx.gui.datamodel.*;
 import de.cebitec.mgx.gui.datamodel.tree.Tree;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
+import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -274,7 +275,6 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
 
             if (vgmgr.selectAttributeType(currentAttributeType.getName())) {
                 // fetch distribution (and hierarchy) in background
-                System.err.println("fetching data for "+currentAttributeType.getName());
                 ResultCollector rc = new ResultCollector(currentAttributeType, currentDistributions, currentHierarchies, ControlPanel.this);
                 rc.execute();
             } else {
@@ -325,42 +325,46 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
             if (e.getStateChange() != ItemEvent.SELECTED) {
                 return;
             }
-            
-            if (currentViewer != null)
+
+            if (currentViewer != null) {
                 currentViewer.dispose();
-            
+            }
+
             currentViewer = vizListModel.getSelectedItem();
             currentViewer.setAttributeType(currentAttributeType);
-            
+
 //            JComponent customizer = currentViewer.getCustomizer();
 //            if (customizer != null) {
 //                customPane.setViewportView(customizer);
 //            }
             customPane.setViewportView(currentViewer.getCustomizer());
-            
+
         }
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-
-        SwingWorker worker;
-
-        if (currentViewer.getInputType().equals(Distribution.class)) {
-            // reset previous settings 
-            for (Pair<VisualizationGroup, Distribution> p: currentDistributions) {
-                p.getSecond().reset();
+        try {
+            setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+            if (currentViewer.getInputType().equals(Distribution.class)) {
+                // reset previous settings 
+                for (Pair<VisualizationGroup, Distribution> p : currentDistributions) {
+                    p.getSecond().reset();
+                }
+                currentViewer.show(currentDistributions);
+                topComponent.setVisualization(currentViewer.getComponent());
+            } else {
+                currentViewer.show(currentHierarchies);
+                topComponent.setVisualization(currentViewer.getComponent());
             }
-            currentViewer.show(currentDistributions);
-            topComponent.setVisualization(currentViewer.getComponent());
-        } else {
-            currentViewer.show(currentHierarchies);
-            topComponent.setVisualization(currentViewer.getComponent());
+        } finally {
+            setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         }
     }
-    
-    public void dispose() {
-        if (currentViewer != null)
+
+    public final void dispose() {
+        if (currentViewer != null) {
             currentViewer.dispose();
+        }
     }
 }
