@@ -3,7 +3,6 @@ package de.cebitec.mgx.gui.charts3d;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.glu.GLU;
 import org.jzy3d.chart.Chart;
@@ -14,7 +13,6 @@ import org.jzy3d.maths.Coord3d;
 import org.jzy3d.maths.IntegerCoord2d;
 import org.jzy3d.plot3d.primitives.*;
 import org.jzy3d.plot3d.rendering.view.Camera;
-import org.netbeans.modules.progress.spi.Controller;
 
 /**
  *
@@ -58,7 +56,7 @@ public class BarChartBar extends HistogramBar {
                 chart.getView().getCurrentGL(),
                 gluObj,
                 getShape().getBounds().getVertices().toArray(new Coord3d[]{}));
-        List<Coord2d> l = new ArrayList<Coord2d>();
+        List<Coord2d> l = new ArrayList<>();
         for (Coord3d c3 : co) {
             l.add(new Coord2d((int) c3.x, (int) chart.flip(c3.y)));
         }
@@ -158,7 +156,7 @@ public class BarChartBar extends HistogramBar {
         Coord3d p6 = position.clone();
         p6.x += radius;
 
-        List<Polygon> ps = new LinkedList<Polygon>();
+        List<Polygon> ps = new LinkedList<>();
 
         ps.add(getZQuad(p1, radius, color));
         ps.add(getZQuad(p2, radius, color));

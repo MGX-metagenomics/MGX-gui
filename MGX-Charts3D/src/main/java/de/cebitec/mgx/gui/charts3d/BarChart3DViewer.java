@@ -71,13 +71,16 @@ public class BarChart3DViewer extends CategoricalViewerI {
         setupTitle();
         chart.getView().setMaximized(true);
         chart.getView().getCamera().setStretchToFill(true);
+        //chart.getView().setAxeSquared(false);
+
         BarChartBar.BAR_RADIUS = 5f;
         BarChartBar.BAR_FEAT_BUFFER_RADIUS = BarChartBar.BAR_RADIUS / 2f;
-        Scene scene = chart.getScene();
+        
 
 
+        attributes.clear(); groups.clear();
+        
         // collect all present attributes
-        attributes.clear();
         for (Pair<VisualizationGroup, Distribution> p : dists) {
             for (Attribute a : p.getSecond().keySet()) {
                 if (!attributes.contains(a)) {
@@ -85,18 +88,19 @@ public class BarChart3DViewer extends CategoricalViewerI {
                 }
             }
         }
+        
 
         int distNum = 0;
         int entryNum = 0;
+        Scene scene = chart.getScene();
         for (Pair<VisualizationGroup, Distribution> p : dists) {
             VisualizationGroup curGroup = p.getFirst();
+            Distribution curDist = p.getSecond();
             groups.add(curGroup);
 
             Color color = new Color(curGroup.getColor().getRed(), curGroup.getColor().getGreen(), curGroup.getColor().getBlue());
-            //System.err.println("group: "+curGroup.getName());
             for (Attribute attr : attributes) {
-                float height = p.getSecond().containsKey(attr) ? p.getSecond().get(attr).floatValue() : 0;
-                //System.err.println("  adding "+attr.getValue() +": "+height);
+                float height = curDist.containsKey(attr) ? curDist.get(attr).floatValue() : 0;
                 scene.add(addBar(distNum, curGroup.getName(), entryNum++, attr.getValue(), height, color));
             }
             distNum++;
@@ -146,6 +150,7 @@ public class BarChart3DViewer extends CategoricalViewerI {
             @Override
             public String format(float value) {
                 int idx = getFeatureIndex(value);
+                //int idx = Math.round(value); 
                 if (value >= 0 && idx >= 0 && idx < groups.size()) {
                     return groups.get(idx).getName();
                 } else {
