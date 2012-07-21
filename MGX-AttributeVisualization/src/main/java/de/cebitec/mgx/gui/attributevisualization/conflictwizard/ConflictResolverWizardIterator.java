@@ -6,7 +6,7 @@ package de.cebitec.mgx.gui.attributevisualization.conflictwizard;
 
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.Job;
-import de.cebitec.mgx.gui.datamodel.Pair;
+import de.cebitec.mgx.gui.datamodel.misc.Pair;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.datamodel.Tool;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;

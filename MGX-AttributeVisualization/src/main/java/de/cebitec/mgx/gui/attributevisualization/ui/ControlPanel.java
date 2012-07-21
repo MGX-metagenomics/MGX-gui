@@ -5,6 +5,7 @@
  */
 package de.cebitec.mgx.gui.attributevisualization.ui;
 
+import de.cebitec.mgx.gui.datamodel.misc.Pair;
 import de.cebitec.mgx.gui.attributevisualization.BaseModel;
 import de.cebitec.mgx.gui.attributevisualization.VGroupManager;
 import de.cebitec.mgx.gui.attributevisualization.conflictwizard.ConflictResolverWizardIterator;

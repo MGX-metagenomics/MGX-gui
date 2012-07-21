@@ -1,7 +1,7 @@
 package de.cebitec.mgx.gui.attributevisualization;
 
 import de.cebitec.mgx.gui.datamodel.Distribution;
-import de.cebitec.mgx.gui.datamodel.Pair;
+import de.cebitec.mgx.gui.datamodel.misc.Pair;
 import de.cebitec.mgx.gui.datamodel.tree.Tree;
 import de.cebitec.mgx.gui.groups.ConflictingJobsException;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;

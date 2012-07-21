@@ -1,7 +1,7 @@
 package de.cebitec.mgx.gui.attributevisualization.viewer;
 
 import de.cebitec.mgx.gui.datamodel.AttributeType;
-import de.cebitec.mgx.gui.datamodel.Pair;
+import de.cebitec.mgx.gui.datamodel.misc.Pair;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import java.util.List;
 import javax.swing.JComponent;
