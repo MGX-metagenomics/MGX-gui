@@ -51,6 +51,7 @@ public class ResultCollector extends SwingWorker<Pair<List<Pair<VisualizationGro
         } catch (InterruptedException | ExecutionException ex) {
             Exceptions.printStackTrace(ex);
         }
+        assert p != null;
         distHolder.clear();
         hierarchyHolder.clear();
         distHolder.addAll(p.getFirst());
