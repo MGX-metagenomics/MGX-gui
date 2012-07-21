@@ -7,9 +7,9 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -19,8 +19,8 @@ import javax.swing.event.ListSelectionListener;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
-import org.openide.util.*;
 import org.openide.util.NbBundle.Messages;
+import org.openide.util.*;
 import org.openide.windows.TopComponent;
 
 /**
@@ -267,12 +267,10 @@ public final class SearchTopComponent extends TopComponent implements LookupList
         // better to version settings since initial version as advocated at
         // http://wiki.apidesign.org/wiki/PropertyFiles
         p.setProperty("version", "1.0");
-        // TODO store your settings
     }
 
     void readProperties(java.util.Properties p) {
         String version = p.getProperty("version");
-        // TODO read your settings according to their version
     }
 
     @Override
@@ -330,7 +328,7 @@ public final class SearchTopComponent extends TopComponent implements LookupList
             @Override
             protected void done() {
                 try {
-                    List<SearchResult> result = get();
+                    resultModel.setResult(get());
                 } catch (InterruptedException | ExecutionException ex) {
                     Exceptions.printStackTrace(ex);
                 }
@@ -339,16 +337,22 @@ public final class SearchTopComponent extends TopComponent implements LookupList
         worker.execute();
     }
 
-    private final class ResultListModel extends AbstractListModel<Void> {
-
-        @Override
-        public int getSize() {
-            throw new UnsupportedOperationException("Not supported yet.");
+    private final class ResultListModel extends AbstractListModel<SearchResult> {
+        
+        List<SearchResult> list = new ArrayList<>();
+        
+        public void setResult(List<SearchResult> l) {
+            list = l;
         }
 
         @Override
-        public Void getElementAt(int index) {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public int getSize() {
+            return list.size();
+        }
+
+        @Override
+        public SearchResult getElementAt(int index) {
+            return list.get(index);
         }
     }
 
