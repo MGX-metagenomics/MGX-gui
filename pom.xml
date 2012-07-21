@@ -294,6 +294,11 @@
                 <artifactId>MGX-Charts3D</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>MGX-Search</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             
         </dependencies>
     </dependencyManagement>
@@ -364,6 +369,7 @@
         <module>MGX-JOGL-Wrapper</module>
         <module>MGX-Jzy3D-Wrapper</module>
         <module>MGX-Charts3D</module>
+        <module>MGX-Search</module>
     </modules>
 
     <properties>
