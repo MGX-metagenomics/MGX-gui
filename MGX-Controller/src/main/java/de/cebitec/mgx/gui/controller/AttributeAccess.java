@@ -12,11 +12,13 @@ import de.cebitec.mgx.dto.dto.SearchRequestDTO.Builder;
 import de.cebitec.mgx.dto.dto.SearchResultDTO;
 import de.cebitec.mgx.gui.datamodel.*;
 import de.cebitec.mgx.gui.datamodel.misc.Pair;
+import de.cebitec.mgx.gui.datamodel.misc.SearchRequest;
 import de.cebitec.mgx.gui.datamodel.misc.SearchResult;
 import de.cebitec.mgx.gui.datamodel.tree.Tree;
 import de.cebitec.mgx.gui.datamodel.tree.TreeFactory;
 import de.cebitec.mgx.gui.dtoconversion.AttributeDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.AttributeTypeDTOFactory;
+import de.cebitec.mgx.gui.dtoconversion.SearchRequestDTOFactory;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -198,14 +200,15 @@ public class AttributeAccess extends AccessBase<Attribute> {
         return ret;
     }
 
-    public List<SearchResult> search(List<SeqRun> selectedSeqRuns, String text, boolean exact) {
-        // FIXME move to dtoconverter package
-        Builder b = SearchRequestDTO.newBuilder().setExact(exact).setTerm(text);
-        for (SeqRun sr : selectedSeqRuns) {
-            b.addSeqrunId(sr.getId());
-        }
+    public List<SearchResult> search(SeqRun[] selectedSeqRuns, String text, boolean exact) {
+        SearchRequest sr = new SearchRequest();
+        sr.setTerm(text);
+        sr.setExact(exact);
+        sr.setRuns(selectedSeqRuns);
+        SearchRequestDTO reqdto = SearchRequestDTOFactory.getInstance().toDTO(sr);
+      
         try {
-            List<SearchResultDTO> search = getDTOmaster().Attribute().search(b.build());
+            List<SearchResultDTO> search = getDTOmaster().Attribute().search(reqdto);
 
             // FIXME - convert back and return 
 
