@@ -29,6 +29,7 @@ public class DNAExtractDTOFactory extends DTOConversionBase<DNAExtract, DNAExtra
         if (d.getId() != ModelBase.INVALID_IDENTIFIER) {
             b.setId(d.getId());
         }
+        b = b.setName(d.getName());
         b = b.setSampleId(d.getSampleId());
 
         b = b.setMethod(d.getMethod());
@@ -47,6 +48,8 @@ public class DNAExtractDTOFactory extends DTOConversionBase<DNAExtract, DNAExtra
     @Override
     public final DNAExtract toModel(DNAExtractDTO dto) {
         DNAExtract d = new DNAExtract();
+        
+        d.setName(dto.getName());
 
         d.setSampleId(dto.getSampleId())
                 .setMethod(dto.getMethod())
