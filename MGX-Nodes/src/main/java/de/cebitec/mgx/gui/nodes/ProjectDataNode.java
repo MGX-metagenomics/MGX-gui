@@ -6,12 +6,14 @@ import de.cebitec.mgx.gui.nodefactory.HabitatNodeFactory;
 import de.cebitec.mgx.gui.wizard.habitat.HabitatWizardDescriptor;
 import java.awt.Dialog;
 import java.awt.event.ActionEvent;
+import java.util.concurrent.ExecutionException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.SwingWorker;
 import org.openide.DialogDisplayer;
 import org.openide.WizardDescriptor;
 import org.openide.nodes.Children;
+import org.openide.util.Exceptions;
 import org.openide.util.Utilities;
 import org.openide.util.lookup.Lookups;
 
@@ -71,6 +73,11 @@ public class ProjectDataNode extends MGXNodeBase<MGXMaster> {
 
                     @Override
                     protected void done() {
+                        try {
+                            get();
+                        } catch (InterruptedException | ExecutionException ex) {
+                            Exceptions.printStackTrace(ex);
+                        }
                         hnf.refreshChildren();
                         super.done();
                     }

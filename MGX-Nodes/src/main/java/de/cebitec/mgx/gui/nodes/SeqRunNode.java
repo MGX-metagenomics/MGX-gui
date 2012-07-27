@@ -52,7 +52,13 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> implements Transferable {
     }
 
     private String getToolTipText(SeqRun run) {
-        return new StringBuilder("<html><b>").append(run.getSequencingTechnology()).append(" sequencing run </b>(").append(run.getNumSequences()).append(" reads)").toString();
+        return new StringBuilder("<html><b>Sequencing run: </b>").append(run.getName())
+                .append("<br><hr><br>")
+                .append(run.getSequencingTechnology().getName()).append(" ")
+                .append(run.getSequencingMethod().getName())
+                .append("<br>")
+                .append(run.getNumSequences()).append(" reads)")
+                .append("</html>").toString();
     }
 
     @Override
@@ -113,8 +119,10 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> implements Transferable {
                 String oldDisplayName = seqrun.getSequencingMethod() + " run";
                 seqrun = wd.getSeqRun();
                 m.SeqRun().update(seqrun);
-                fireDisplayNameChange(oldDisplayName, seqrun.getSequencingMethod() + " run");
-                setDisplayName(seqrun.getSequencingMethod() + " run");
+
+                setDisplayName(seqrun.getName());
+                setShortDescription(getToolTipText(seqrun));
+                fireDisplayNameChange(oldDisplayName, seqrun.getName());
             }
         }
     }

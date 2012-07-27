@@ -10,6 +10,7 @@ import de.cebitec.mgx.gui.wizard.habitat.HabitatWizardDescriptor;
 import de.cebitec.mgx.gui.wizard.sample.SampleWizardDescriptor;
 import java.awt.Dialog;
 import java.awt.event.ActionEvent;
+import java.util.concurrent.ExecutionException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.SwingWorker;
@@ -17,6 +18,7 @@ import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.WizardDescriptor;
 import org.openide.nodes.Children;
+import org.openide.util.Exceptions;
 import org.openide.util.Utilities;
 import org.openide.util.lookup.Lookups;
 
@@ -82,8 +84,10 @@ public class HabitatNode extends MGXNodeBase<Habitat> {
                 habitat = hwd.getHabitat();
                 MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
                 m.Habitat().update(habitat);
-                fireDisplayNameChange(oldDisplayName, habitat.getName());
+
                 setDisplayName(habitat.getName());
+                setShortDescription(getToolTipText(habitat));
+                fireDisplayNameChange(oldDisplayName, habitat.getName());
             }
         }
     }
@@ -144,19 +148,23 @@ public class HabitatNode extends MGXNodeBase<Habitat> {
                 Habitat hab = getLookup().lookup(Habitat.class);
                 final Sample s = wd.getSample();
                 s.setHabitatId(hab.getId());
-                SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+                SwingWorker<Long, Void> worker = new SwingWorker<Long, Void>() {
 
                     @Override
                     protected void done() {
+                        try {
+                            get();
+                        } catch (InterruptedException | ExecutionException ex) {
+                            Exceptions.printStackTrace(ex);
+                        }
                         snf.refreshChildren();
                         super.done();
                     }
 
                     @Override
-                    protected Void doInBackground() throws Exception {
+                    protected Long doInBackground() throws Exception {
                         MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
-                        m.Sample().create(s);
-                        return null;
+                        return m.Sample().create(s);
                     }
                 };
                 worker.execute();

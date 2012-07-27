@@ -10,6 +10,7 @@ import de.cebitec.mgx.gui.wizard.extract.DNAExtractWizardDescriptor;
 import de.cebitec.mgx.gui.wizard.sample.SampleWizardDescriptor;
 import java.awt.Dialog;
 import java.awt.event.ActionEvent;
+import java.util.concurrent.ExecutionException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.SwingWorker;
@@ -17,6 +18,7 @@ import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.WizardDescriptor;
 import org.openide.nodes.Children;
+import org.openide.util.Exceptions;
 import org.openide.util.Utilities;
 import org.openide.util.lookup.Lookups;
 
@@ -31,13 +33,22 @@ public class SampleNode extends MGXNodeBase<Sample> {
     public SampleNode(MGXMaster m, Sample s) {
         this(m, s, new DNAExtractNodeFactory(m, s));
         master = m;
-        setDisplayName(s.getMaterial());
+
     }
 
     private SampleNode(MGXMaster m, Sample s, DNAExtractNodeFactory snf) {
         super(Children.create(snf, true), Lookups.fixed(m, s), s);
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/Sample.png");
+        setShortDescription(getToolTipText(s));
+        setDisplayName(s.getMaterial());
         this.nf = snf;
+    }
+
+    private String getToolTipText(Sample s) {
+        return new StringBuilder("<html><b>Sample: </b>").append(s.getMaterial())
+                .append("<br><hr><br>")
+                .append("date: ").append(s.getCollectionDate().toString()).append("<br>")
+                .append("</html>").toString();
     }
 
     @Override
@@ -65,11 +76,30 @@ public class SampleNode extends MGXNodeBase<Sample> {
             dialog.toFront();
             boolean cancelled = swd.getValue() != WizardDescriptor.FINISH_OPTION;
             if (!cancelled) {
-                MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
-                String oldDisplayName = sample.getMaterial();
-                sample = swd.getSample();
-                m.Sample().update(sample);
-                fireDisplayNameChange(oldDisplayName, sample.getMaterial());
+                final String oldDisplayName = sample.getMaterial();
+                final Sample s = swd.getSample();
+                SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+                    @Override
+                    protected Void doInBackground() throws Exception {
+                        MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
+                        m.Sample().update(s);
+                        return null;
+                    }
+
+                    @Override
+                    protected void done() {
+                        try {
+                            get();
+                        } catch (InterruptedException | ExecutionException ex) {
+                            Exceptions.printStackTrace(ex);
+                        }
+                        setShortDescription(getToolTipText(s));
+                        setDisplayName(s.getMaterial());
+                        fireDisplayNameChange(oldDisplayName, s.getMaterial());
+                        super.done();
+                    }
+                };
+                worker.execute();
             }
         }
     }
@@ -93,7 +123,6 @@ public class SampleNode extends MGXNodeBase<Sample> {
             final MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
             if (NotifyDescriptor.YES_OPTION.equals(ret)) {
                 MGXTask deleteTask = new MGXTask() {
-
                     @Override
                     public void process() {
                         setStatus("Deleting..");
@@ -130,16 +159,19 @@ public class SampleNode extends MGXNodeBase<Sample> {
                 Sample s = getLookup().lookup(Sample.class);
                 final DNAExtract extract = wd.getDNAExtract();
                 extract.setSampleId(s.getId());
-                SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
-
+                SwingWorker<Long, Void> worker = new SwingWorker<Long, Void>() {
                     @Override
-                    protected Void doInBackground() throws Exception {
-                        m.DNAExtract().create(extract);
-                        return null;
+                    protected Long doInBackground() throws Exception {
+                        return m.DNAExtract().create(extract);
                     }
 
                     @Override
                     protected void done() {
+                        try {
+                            get();
+                        } catch (InterruptedException | ExecutionException ex) {
+                            Exceptions.printStackTrace(ex);
+                        }
                         nf.refreshChildren();
                         super.done();
                     }

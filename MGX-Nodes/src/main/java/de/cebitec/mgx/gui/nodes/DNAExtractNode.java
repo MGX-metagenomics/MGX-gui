@@ -41,13 +41,23 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
     public DNAExtractNode(MGXMaster m, DNAExtract d) {
         this(m, d, new SeqRunNodeFactory(m, d));
         master = m;
-        setDisplayName(d.getMethod());
     }
 
     private DNAExtractNode(MGXMaster m, DNAExtract d, SeqRunNodeFactory snf) {
         super(Children.create(snf, true), Lookups.fixed(m, d), d);
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/DNAExtract.png");
+        setShortDescription(getToolTipText(d));
+        setDisplayName(d.getName());
         this.snf = snf;
+    }
+    
+    private String getToolTipText(DNAExtract d) {
+        return new StringBuilder("<html><b>DNA extract: </b>")
+                .append(d.getName())
+                .append("<br><hr><br>")
+                .append("type: ").append(d.getMethod()).append("<br>")
+                .append("protocol: ").append(d.getProtocol() != null ? d.getProtocol() : "")
+                .append("</html>").toString();
     }
 
     @Override
@@ -88,6 +98,13 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
 
                     @Override
                     protected void done() {
+                        try {
+                            get();
+                        } catch (InterruptedException | ExecutionException ex) {
+                            Exceptions.printStackTrace(ex);
+                        }
+                        setShortDescription(getToolTipText(updatedExtract));
+                        setDisplayName(updatedExtract.getName());
                         fireDisplayNameChange(oldDisplayName, updatedExtract.getMethod());
                         super.done();
                     }
@@ -130,7 +147,7 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
                     }
                 };
 
-                TaskManager.getInstance().addTask("Delete " + dna.getMethod(), deleteTask);
+                TaskManager.getInstance().addTask("Delete " + dna.getName(), deleteTask);
 
             }
         }
