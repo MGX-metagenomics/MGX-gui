@@ -2,7 +2,7 @@ package de.cebitec.mgx.gui.search;
 
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
-import de.cebitec.mgx.gui.datamodel.misc.SearchResult;
+import de.cebitec.mgx.gui.datamodel.Sequence;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -19,8 +19,8 @@ import javax.swing.event.ListSelectionListener;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
-import org.openide.util.NbBundle.Messages;
 import org.openide.util.*;
+import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
 
 /**
@@ -30,7 +30,7 @@ import org.openide.windows.TopComponent;
 autostore = false)
 @TopComponent.Description(preferredID = "SearchTopComponent",
 //iconBase="SET/PATH/TO/ICON/HERE", 
-persistenceType = TopComponent.PERSISTENCE_ALWAYS)
+persistenceType = TopComponent.PERSISTENCE_NEVER)
 @TopComponent.Registration(mode = "editor", openAtStartup = false)
 @ActionID(category = "Window", id = "de.cebitec.mgx.gui.search.SearchTopComponent")
 @ActionReference(path = "Menu/Window" /*
@@ -55,34 +55,15 @@ public final class SearchTopComponent extends TopComponent implements LookupList
         setName(Bundle.CTL_SearchTopComponent());
         setToolTipText(Bundle.HINT_SearchTopComponent());
 
-        // both working on same model - FIXME: renderers
-        resultList.setModel(resultModel);
-        readList.setModel(resultModel);
-        
-        readList.setCellRenderer(new ReadListListCellRenderer());
-
         runList.setModel(runListModel);
         runList.addListSelectionListener(new ListSelectionListener() {
-
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 enableButton();
             }
         });
-        runList.setCellRenderer(new ListCellRenderer<SeqRun>() {
-
-            private JLabel label = new JLabel();
-
-            @Override
-            public Component getListCellRendererComponent(JList list, SeqRun value, int index, boolean isSelected, boolean cellHasFocus) {
-                label.setText(value.getName());
-                label.setBackground(isSelected ? Color.BLUE : Color.WHITE);
-                return label;
-            }
-        });
 
         searchTerm.getDocument().addDocumentListener(new DocumentListener() {
-
             @Override
             public void insertUpdate(DocumentEvent e) {
                 enableButton();
@@ -100,11 +81,24 @@ public final class SearchTopComponent extends TopComponent implements LookupList
         });
 
         button.addActionListener(this);
+
+        // both working on same model - FIXME: renderers
+        resultList.setModel(resultModel);
+        readList.setModel(resultModel);
+
+        readList.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                int[] idx = readList.getSelectedIndices();
+                resultList.setSelectedIndices(idx);
+                resultList.ensureIndexIsVisible(idx.length > 0 ? idx[0] : 0);
+            }
+        });
     }
 
     private void enableButton() {
         button.setEnabled(false);
-        if (!"".equals(searchTerm.getText()) && getSelectedSeqRuns().size() > 0) {
+        if (!"".equals(searchTerm.getText()) && getSelectedSeqRuns().length > 0) {
             button.setEnabled(true);
         }
     }
@@ -290,7 +284,6 @@ public final class SearchTopComponent extends TopComponent implements LookupList
 
     private void updateRunList() {
         SwingWorker worker = new SwingWorker<List<SeqRun>, Void>() {
-
             @Override
             protected List<SeqRun> doInBackground() throws Exception {
                 return currentMaster.SeqRun().fetchall();
@@ -312,16 +305,15 @@ public final class SearchTopComponent extends TopComponent implements LookupList
         worker.execute();
     }
 
-    private List<SeqRun> getSelectedSeqRuns() {
-        return runList.getSelectedValuesList();
+    private SeqRun[] getSelectedSeqRuns() {
+        return (SeqRun[]) runList.getSelectedValuesList().toArray(new SeqRun[0]);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        SwingWorker worker = new SwingWorker<List<SearchResult>, Void>() {
-
+        SwingWorker worker = new SwingWorker<List<Sequence>, Void>() {
             @Override
-            protected List<SearchResult> doInBackground() throws Exception {
+            protected List<Sequence> doInBackground() throws Exception {
                 return currentMaster.Attribute().search(getSelectedSeqRuns(), searchTerm.getText(), exact.isSelected());
             }
 
@@ -337,12 +329,13 @@ public final class SearchTopComponent extends TopComponent implements LookupList
         worker.execute();
     }
 
-    private final class ResultListModel extends AbstractListModel<SearchResult> {
-        
-        List<SearchResult> list = new ArrayList<>();
-        
-        public void setResult(List<SearchResult> l) {
+    private final class ResultListModel extends AbstractListModel<Sequence> {
+
+        List<Sequence> list = new ArrayList<>();
+
+        public void setResult(List<Sequence> l) {
             list = l;
+            fireContentsChanged(this, -1, -1);
         }
 
         @Override
@@ -351,18 +344,18 @@ public final class SearchTopComponent extends TopComponent implements LookupList
         }
 
         @Override
-        public SearchResult getElementAt(int index) {
+        public Sequence getElementAt(int index) {
             return list.get(index);
         }
     }
 
-    private final class ReadListListCellRenderer implements ListCellRenderer<SearchResult> {
+    private final class ReadListListCellRenderer implements ListCellRenderer<Sequence> {
 
         private JLabel label = new JLabel();
 
         @Override
-        public Component getListCellRendererComponent(JList<? extends SearchResult> list, SearchResult value, int index, boolean isSelected, boolean cellHasFocus) {
-            label.setText(value.getSequenceName());
+        public Component getListCellRendererComponent(JList<? extends Sequence> list, Sequence seq, int index, boolean isSelected, boolean cellHasFocus) {
+            label.setText(seq.getName());
             label.setBackground(isSelected ? Color.BLUE : Color.WHITE);
             return label;
         }
