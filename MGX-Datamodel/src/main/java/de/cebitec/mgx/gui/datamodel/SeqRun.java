@@ -77,6 +77,11 @@ public class SeqRun extends ModelBase {
     }
 
     @Override
+    public String toString() {
+        return name;
+    }
+
+    @Override
     public int hashCode() {
         int hash = 0;
         hash = (int) ((int) 31 * hash + this.id);

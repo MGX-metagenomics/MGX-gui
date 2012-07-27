@@ -6,8 +6,7 @@ package de.cebitec.mgx.gui.datamodel;
  */
 public class DNAExtract extends ModelBase {
 
-//    protected Collection<SeqRun> seqruns = new HashSet<SeqRun>();
-//    protected Sample sample;
+    protected String name;
     protected String method;
     protected String protocol;
     protected String fivePrimer;
@@ -16,6 +15,15 @@ public class DNAExtract extends ModelBase {
     protected String targetFragment;
     protected String description;
     protected long sample_id;
+
+    public String getName() {
+        return name;
+    }
+
+    public DNAExtract setName(String name) {
+        this.name = name;
+        return this;
+    }
 
     public DNAExtract setSampleId(long sampleId) {
         sample_id = sampleId;

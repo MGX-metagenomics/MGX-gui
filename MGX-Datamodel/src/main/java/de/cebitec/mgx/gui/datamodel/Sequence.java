@@ -7,6 +7,8 @@ package de.cebitec.mgx.gui.datamodel;
 public class Sequence extends ModelBase {
 
     protected String name;
+    protected int length = -1;
+    protected String sequence;
 
     public String getName() {
         return name;
@@ -14,6 +16,27 @@ public class Sequence extends ModelBase {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getSequence() {
+        return sequence;
+    }
+
+    public void setSequence(String sequence) {
+        this.sequence = sequence;
+    }
+
+    public int getLength() {
+        return length;
+    }
+
+    public void setLength(int length) {
+        this.length = length;
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 
     @Override
