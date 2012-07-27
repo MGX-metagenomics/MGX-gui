@@ -74,6 +74,7 @@ public class DNAExtractWizardPanel1 implements WizardDescriptor.Panel<WizardDesc
     public void setProperties(WizardDescriptor settings) {
         model = settings;
         DNAExtractVisualPanel1 c = getComponent();
+        c.setExtractName((String) model.getProperty(DNAExtractVisualPanel1.PROP_NAME));
         c.setMethod((String) model.getProperty(DNAExtractVisualPanel1.PROP_METHOD));
         c.setProtocol((String) model.getProperty(DNAExtractVisualPanel1.PROP_PROTOCOL));
         c.setFiveprimer((String) model.getProperty(DNAExtractVisualPanel1.PROP_FIVEPRIMER));
@@ -86,6 +87,7 @@ public class DNAExtractWizardPanel1 implements WizardDescriptor.Panel<WizardDesc
     public void storeSettings(WizardDescriptor settings) {
         model = settings;
         DNAExtractVisualPanel1 c = getComponent();
+        model.putProperty(DNAExtractVisualPanel1.PROP_NAME, c.getExtractName());
         model.putProperty(DNAExtractVisualPanel1.PROP_METHOD, c.getMethod());
         model.putProperty(DNAExtractVisualPanel1.PROP_PROTOCOL, c.getProtocol());
         model.putProperty(DNAExtractVisualPanel1.PROP_FIVEPRIMER, c.getFiveprimer());
@@ -107,6 +109,9 @@ public class DNAExtractWizardPanel1 implements WizardDescriptor.Panel<WizardDesc
         DNAExtractVisualPanel1 c = getComponent();
         String test = c.getMethod();
         if (test == null || "".equals(test)) {
+            isValid = false;
+        }
+        if (c.getExtractName() == null || "".equals(c.getExtractName())) {
             isValid = false;
         }
 

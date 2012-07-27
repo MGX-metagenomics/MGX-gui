@@ -17,10 +17,10 @@ public class DNAExtractWizardDescriptor extends WizardDescriptor {
     private DNAExtract extract = null;
 
     public DNAExtractWizardDescriptor() {
-        List<Panel<WizardDescriptor>> panels = new ArrayList<Panel<WizardDescriptor>>();
+        List<Panel<WizardDescriptor>> panels = new ArrayList<>();
         panels.add(p1);
         panels.add(p2);
-        this.setPanelsAndSettings(new ArrayIterator<WizardDescriptor>(panels), this);
+        this.setPanelsAndSettings(new ArrayIterator<>(panels), this);
         this.setTitleFormat(new MessageFormat("{0}"));
         this.setTitle("DNA extract wizard");
         putProperty(WizardDescriptor.PROP_CONTENT_DATA, new String[]{p1.getName(), p2.getName()});
@@ -32,6 +32,7 @@ public class DNAExtractWizardDescriptor extends WizardDescriptor {
     public DNAExtractWizardDescriptor(DNAExtract d) {
         this();
         this.extract = d;
+        putProperty(DNAExtractVisualPanel1.PROP_NAME, d.getName());
         putProperty(DNAExtractVisualPanel1.PROP_METHOD, d.getMethod());
         putProperty(DNAExtractVisualPanel1.PROP_PROTOCOL, d.getProtocol());
         putProperty(DNAExtractVisualPanel1.PROP_FIVEPRIMER, d.getFivePrimer());
@@ -48,7 +49,8 @@ public class DNAExtractWizardDescriptor extends WizardDescriptor {
             extract = new DNAExtract();
         }
 
-        extract.setMethod((String) getProperty(DNAExtractVisualPanel1.PROP_METHOD))
+        extract.setName((String) getProperty(DNAExtractVisualPanel1.PROP_NAME))
+                .setMethod((String) getProperty(DNAExtractVisualPanel1.PROP_METHOD))
                 .setProtocol((String) getProperty(DNAExtractVisualPanel1.PROP_PROTOCOL))
                 .setFivePrimer((String) getProperty(DNAExtractVisualPanel1.PROP_FIVEPRIMER))
                 .setThreePrimer((String) getProperty(DNAExtractVisualPanel1.PROP_THREEPRIMER))
