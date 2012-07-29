@@ -2,7 +2,7 @@ package de.cebitec.mgx.gui.dtoconversion;
 
 import de.cebitec.mgx.dto.dto.SampleDTO;
 import de.cebitec.mgx.dto.dto.SampleDTO.Builder;
-import de.cebitec.mgx.gui.datamodel.ModelBase;
+import de.cebitec.mgx.gui.datamodel.Identifiable;
 import de.cebitec.mgx.gui.datamodel.Sample;
 
 /**
@@ -25,7 +25,7 @@ public class SampleDTOFactory extends DTOConversionBase<Sample, SampleDTO> {
     @Override
     public final SampleDTO toDTO(Sample s) {
         Builder b = SampleDTO.newBuilder();
-        if (s.getId() != ModelBase.INVALID_IDENTIFIER) {
+        if (s.getId() != Identifiable.INVALID_IDENTIFIER) {
             b.setId(s.getId());
         }
         b = b.setHabitatId(s.getHabitatId())

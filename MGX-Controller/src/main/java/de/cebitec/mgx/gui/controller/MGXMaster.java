@@ -2,6 +2,9 @@ package de.cebitec.mgx.gui.controller;
 
 import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.gui.datamodel.MGXMasterI;
+import de.cebitec.mgx.gui.datamodel.ModelBase;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
@@ -13,14 +16,16 @@ import java.util.logging.Logger;
  *
  * @author sjaenick
  */
-public class MGXMaster implements MGXMasterI {
+public class MGXMaster extends ModelBase implements MGXMasterI, PropertyChangeListener {
 
     private final MGXDTOMaster dtomaster;
     private static final Logger logger = Logger.getLogger("MGX");
     private final Map<Class, AccessBase> accessors;
 
     public MGXMaster(MGXDTOMaster dtomaster) {
+        super();
         this.dtomaster = dtomaster;
+        dtomaster.addPropertyChangeListener(this);
         accessors = new HashMap<>();
     }
 
@@ -54,6 +59,10 @@ public class MGXMaster implements MGXMasterI {
 
     public SeqRunAccess SeqRun() {
         return getAccessor(SeqRunAccess.class);
+    }
+    
+    public ObservationAccess Observation() {
+        return getAccessor(ObservationAccess.class);
     }
 
     public SequenceAccess Sequence() {
@@ -98,5 +107,10 @@ public class MGXMaster implements MGXMasterI {
             logger.log(Level.SEVERE, null, ex);
         }
         throw new UnsupportedOperationException("Could not create accessor for " + clazz);
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

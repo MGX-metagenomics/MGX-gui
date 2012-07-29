@@ -1,7 +1,7 @@
 package de.cebitec.mgx.gui.dtoconversion;
 
 import de.cebitec.mgx.dto.dto.SequenceDTO;
-import de.cebitec.mgx.gui.datamodel.ModelBase;
+import de.cebitec.mgx.gui.datamodel.Identifiable;
 import de.cebitec.mgx.gui.datamodel.Sequence;
 
 /**
@@ -26,7 +26,7 @@ public class SequenceDTOFactory extends DTOConversionBase<Sequence, SequenceDTO>
     public SequenceDTO toDTO(Sequence a) {
         SequenceDTO.Builder b = SequenceDTO.newBuilder()
                 .setName(a.getName());
-        if (a.getId() != ModelBase.INVALID_IDENTIFIER) {
+        if (a.getId() != Identifiable.INVALID_IDENTIFIER) {
             b.setId(a.getId());
         }
         if (a.getLength() != -1) {

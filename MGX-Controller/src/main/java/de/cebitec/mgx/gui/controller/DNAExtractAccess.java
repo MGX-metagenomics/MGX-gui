@@ -4,8 +4,8 @@ import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.DNAExtractDTO;
 import de.cebitec.mgx.gui.datamodel.DNAExtract;
+import de.cebitec.mgx.gui.datamodel.Identifiable;
 import de.cebitec.mgx.gui.datamodel.ModelBase;
-import de.cebitec.mgx.gui.datamodel.Sample;
 import de.cebitec.mgx.gui.dtoconversion.DNAExtractDTOFactory;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +20,7 @@ public class DNAExtractAccess extends AccessBase<DNAExtract> {
     @Override
     public long create(DNAExtract obj) {
         DNAExtractDTO dto = DNAExtractDTOFactory.getInstance().toDTO(obj);
-        long id = ModelBase.INVALID_IDENTIFIER;
+        long id = Identifiable.INVALID_IDENTIFIER;
         try {
             id = getDTOmaster().DNAExtract().create(dto);
         } catch (MGXServerException | MGXClientException ex) {
@@ -67,15 +67,17 @@ public class DNAExtractAccess extends AccessBase<DNAExtract> {
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
+        obj.firePropertyChange(ModelBase.OBJECT_MODIFIED, null, obj);
     }
 
     @Override
-    public void delete(long id) {
+    public void delete(DNAExtract obj) {
         try {
-            getDTOmaster().DNAExtract().delete(id);
+            getDTOmaster().DNAExtract().delete(obj.getId());
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
+        obj.firePropertyChange(ModelBase.OBJECT_DELETED, obj, null);
     }
 
     public Iterable<DNAExtract> BySample(long sample_id) {

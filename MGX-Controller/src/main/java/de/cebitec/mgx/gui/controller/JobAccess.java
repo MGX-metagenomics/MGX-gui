@@ -6,10 +6,10 @@ import de.cebitec.mgx.dto.dto.JobDTO;
 import de.cebitec.mgx.dto.dto.JobParameterDTO;
 import de.cebitec.mgx.dto.dto.JobParameterListDTO;
 import de.cebitec.mgx.dto.dto.JobParameterListDTO.Builder;
+import de.cebitec.mgx.gui.datamodel.Identifiable;
 import de.cebitec.mgx.gui.datamodel.Job;
 import de.cebitec.mgx.gui.datamodel.JobParameter;
 import de.cebitec.mgx.gui.datamodel.ModelBase;
-import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.dtoconversion.JobDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.JobParameterDTOFactory;
 import java.util.ArrayList;
@@ -53,7 +53,7 @@ public class JobAccess extends AccessBase<Job> {
     @Override
     public long create(Job obj) {
         JobDTO dto = JobDTOFactory.getInstance().toDTO(obj);
-        long id = ModelBase.INVALID_IDENTIFIER;
+        long id = Identifiable.INVALID_IDENTIFIER;
         try {
             id = getDTOmaster().Job().create(dto);
         } catch (MGXServerException | MGXClientException ex) {
@@ -100,15 +100,17 @@ public class JobAccess extends AccessBase<Job> {
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
+        obj.firePropertyChange(ModelBase.OBJECT_MODIFIED, null, obj);
     }
 
     @Override
-    public void delete(long id) {
+    public void delete(Job obj) {
         try {
-            getDTOmaster().Job().delete(id);
+            getDTOmaster().Job().delete(obj.getId());
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
+        obj.firePropertyChange(ModelBase.OBJECT_DELETED, obj, null);
     }
 
     public List<Job> ByAttributeTypeAndSeqRun(long atype_id, long seqrun_id) {

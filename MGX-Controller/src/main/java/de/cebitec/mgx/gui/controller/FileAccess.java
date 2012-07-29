@@ -46,7 +46,7 @@ public class FileAccess extends AccessBase<DirEntry> {
     }
 
     @Override
-    public void delete(long id) {
+    public void delete(DirEntry obj) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 }

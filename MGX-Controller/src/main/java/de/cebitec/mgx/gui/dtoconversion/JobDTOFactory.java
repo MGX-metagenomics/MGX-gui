@@ -31,11 +31,13 @@ public class JobDTOFactory extends DTOConversionBase<Job, JobDTO> {
                 .setCreator(j.getCreator())
                 .setState(JobDTO.JobState.valueOf(j.getStatus().getValue()));
 
-        if (j.getStartDate() != null)
+        if (j.getStartDate() != null) {
             b.setStartDate(toUnixTimeStamp(j.getStartDate()));
+        }
 
-        if (j.getFinishDate() != null)
+        if (j.getFinishDate() != null) {
             b.setFinishDate(toUnixTimeStamp(j.getFinishDate()));
+        }
 
         return b.build();
     }

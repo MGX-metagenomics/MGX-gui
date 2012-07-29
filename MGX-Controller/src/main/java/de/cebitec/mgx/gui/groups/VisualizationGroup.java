@@ -2,14 +2,16 @@ package de.cebitec.mgx.gui.groups;
 
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.*;
+import de.cebitec.mgx.gui.datamodel.misc.Distribution;
 import de.cebitec.mgx.gui.datamodel.tree.Tree;
 import de.cebitec.mgx.gui.datamodel.tree.TreeFactory;
 import java.awt.Color;
 import java.awt.EventQueue;
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.util.Map.Entry;
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import javax.swing.SwingWorker;
@@ -140,6 +142,22 @@ public class VisualizationGroup {
             hierarchyCache.clear();
 
             seqruns.add(sr);
+            sr.addPropertyChangeListener(new PropertyChangeListener() {
+
+                @Override
+                public void propertyChange(PropertyChangeEvent evt) {
+                    System.err.println("Vgroup got PCE "+evt.getPropertyName());
+                    switch (evt.getPropertyName()) {
+                        case ModelBase.OBJECT_DELETED:
+                            removeSeqRun((SeqRun)evt.getOldValue());
+                            pcs.firePropertyChange(evt);
+                            break;
+                        default:
+                            System.err.println("unhandled PCE: "+evt.getPropertyName());
+                            assert false;
+                    }
+                }
+            });
 
             AttributeTypeFetcher fetcher = new AttributeTypeFetcher(sr, attributeTypes);
             fetcher.execute();

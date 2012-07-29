@@ -52,7 +52,7 @@ public class TermAccess extends AccessBase<Term> {
     }
 
     @Override
-    public void delete(long id) {
+    public void delete(Term obj) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 }

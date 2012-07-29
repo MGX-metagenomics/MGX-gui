@@ -4,6 +4,7 @@ import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.JobParameterDTO;
 import de.cebitec.mgx.dto.dto.ToolDTO;
+import de.cebitec.mgx.gui.datamodel.Identifiable;
 import de.cebitec.mgx.gui.datamodel.JobParameter;
 import de.cebitec.mgx.gui.datamodel.ModelBase;
 import de.cebitec.mgx.gui.datamodel.Tool;
@@ -31,11 +32,8 @@ public class ToolAccess extends AccessBase<Tool> {
     }
 
     public long installTool(long global_id) throws MGXServerException {
-        assert global_id != ModelBase.INVALID_IDENTIFIER;
-
-
+        assert global_id != Identifiable.INVALID_IDENTIFIER;
         return getDTOmaster().Tool().installGlobalTool(global_id);
-
     }
 
     public Iterable<JobParameter> getAvailableParameters(Tool tool) {
@@ -69,9 +67,9 @@ public class ToolAccess extends AccessBase<Tool> {
 
     @Override
     public long create(Tool obj) {
-        assert obj.getId() == ModelBase.INVALID_IDENTIFIER;
+        assert obj.getId() == Identifiable.INVALID_IDENTIFIER;
         ToolDTO dto = ToolDTOFactory.getInstance().toDTO(obj);
-        long id = ModelBase.INVALID_IDENTIFIER;
+        long id = Identifiable.INVALID_IDENTIFIER;
         try {
             id = getDTOmaster().Tool().create(dto);
         } catch (MGXServerException | MGXClientException ex) {
@@ -112,16 +110,17 @@ public class ToolAccess extends AccessBase<Tool> {
 
     @Override
     public void update(Tool obj) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException("Not supported.");
     }
 
     @Override
-    public void delete(long id) {
+    public void delete(Tool obj) {
         try {
-            getDTOmaster().Tool().delete(id);
+            getDTOmaster().Tool().delete(obj.getId());
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
+        obj.firePropertyChange(ModelBase.OBJECT_DELETED, obj, null);
     }
 
     public Tool ByJob(long id) {

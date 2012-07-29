@@ -46,7 +46,7 @@ public class SequenceAccess extends AccessBase<Sequence> {
     }
 
     @Override
-    public void delete(long id) {
+    public void delete(Sequence obj) {
         throw new UnsupportedOperationException("Not supported.");
     }
 }

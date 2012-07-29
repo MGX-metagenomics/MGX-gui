@@ -6,6 +6,7 @@ import de.cebitec.mgx.dto.dto.AttributeTypeDTO;
 import de.cebitec.mgx.dto.dto.JobAndAttributeTypes;
 import de.cebitec.mgx.dto.dto.SeqRunDTO;
 import de.cebitec.mgx.gui.datamodel.AttributeType;
+import de.cebitec.mgx.gui.datamodel.Identifiable;
 import de.cebitec.mgx.gui.datamodel.Job;
 import de.cebitec.mgx.gui.datamodel.ModelBase;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
@@ -27,7 +28,7 @@ public class SeqRunAccess extends AccessBase<SeqRun> {
     @Override
     public long create(SeqRun obj) {
         SeqRunDTO dto = SeqRunDTOFactory.getInstance().toDTO(obj);
-        long id = ModelBase.INVALID_IDENTIFIER;
+        long id = Identifiable.INVALID_IDENTIFIER;
         try {
             id = getDTOmaster().SeqRun().create(dto);
         } catch (MGXServerException | MGXClientException ex) {
@@ -74,15 +75,17 @@ public class SeqRunAccess extends AccessBase<SeqRun> {
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
+        obj.firePropertyChange(ModelBase.OBJECT_MODIFIED, null, obj);
     }
 
     @Override
-    public void delete(long id) {
+    public void delete(SeqRun obj) {
         try {
-            getDTOmaster().SeqRun().delete(id);
+            getDTOmaster().SeqRun().delete(obj.getId());
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
+        obj.firePropertyChange(ModelBase.OBJECT_DELETED, obj, null);
     }
 
     public Iterable<SeqRun> ByExtract(long extract_id) {

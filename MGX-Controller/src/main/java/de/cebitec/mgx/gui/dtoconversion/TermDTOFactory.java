@@ -2,7 +2,7 @@ package de.cebitec.mgx.gui.dtoconversion;
 
 import de.cebitec.mgx.dto.dto.TermDTO;
 import de.cebitec.mgx.dto.dto.TermDTO.Builder;
-import de.cebitec.mgx.gui.datamodel.ModelBase;
+import de.cebitec.mgx.gui.datamodel.Identifiable;
 import de.cebitec.mgx.gui.datamodel.Term;
 
 /**
@@ -28,10 +28,12 @@ public class TermDTOFactory extends DTOConversionBase<Term, TermDTO> {
         Builder b = TermDTO.newBuilder()
                 .setId(a.getId())
                 .setName(a.getName());
-        if (a.getDescription() != null)
+        if (a.getDescription() != null) {
             b = b.setDescription(a.getDescription());
-        if (a.getParentId() != ModelBase.INVALID_IDENTIFIER)
+        }
+        if (a.getParentId() != Identifiable.INVALID_IDENTIFIER) {
             b = b.setParentId(a.getParentId());
+        }
         return b.build();
     }
 

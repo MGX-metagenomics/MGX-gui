@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.controller;
 
+import de.cebitec.mgx.gui.datamodel.misc.Distribution;
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.AttributeCorrelation;
 import de.cebitec.mgx.dto.dto.AttributeCount;
@@ -12,7 +13,6 @@ import de.cebitec.mgx.dto.dto.SequenceDTO;
 import de.cebitec.mgx.gui.datamodel.*;
 import de.cebitec.mgx.gui.datamodel.misc.Pair;
 import de.cebitec.mgx.gui.datamodel.misc.SearchRequest;
-import de.cebitec.mgx.gui.datamodel.misc.SearchResult;
 import de.cebitec.mgx.gui.datamodel.tree.Tree;
 import de.cebitec.mgx.gui.datamodel.tree.TreeFactory;
 import de.cebitec.mgx.gui.dtoconversion.AttributeDTOFactory;
@@ -134,7 +134,7 @@ public class AttributeAccess extends AccessBase<Attribute> {
     }
 
     @Override
-    public void delete(long id) {
+    public void delete(Attribute obj) {
         throw new UnsupportedOperationException("Not supported.");
     }
 
