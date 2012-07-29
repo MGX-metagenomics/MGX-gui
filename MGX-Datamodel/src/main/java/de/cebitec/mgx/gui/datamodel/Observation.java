@@ -6,8 +6,6 @@ package de.cebitec.mgx.gui.datamodel;
  */
 public class Observation extends ModelBase {
 
-    private Sequence seq;
-    private Job job;
     private Attribute attribute;
     protected int start;
     protected int stop;
@@ -28,17 +26,11 @@ public class Observation extends ModelBase {
         this.stop = stop;
     }
 
-    @Override
-    public int hashCode() {
-        return (int) (seq.getId() + job.getId() + attribute.getId());
+    public Attribute getAttribute() {
+        return attribute;
     }
 
-    @Override
-    public boolean equals(Object object) {
-        if (object instanceof Observation) {
-            Observation other = (Observation) object;
-            return (other.seq.getId() == this.seq.getId()) && (other.job.getId() == this.job.getId()) && (other.attribute.getId() == this.attribute.getId());
-        }
-        return false;
+    public void setAttribute(Attribute attribute) {
+        this.attribute = attribute;
     }
 }
