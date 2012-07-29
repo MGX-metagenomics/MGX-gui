@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.search;
 
 import de.cebitec.mgx.gui.controller.MGXMaster;
+import de.cebitec.mgx.gui.datamodel.Observation;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.datamodel.Sequence;
 import java.awt.Color;
@@ -9,8 +10,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -43,12 +48,13 @@ preferredID = "SearchTopComponent")
     "CTL_SearchTopComponent=Search Window",
     "HINT_SearchTopComponent=This is a Search window"
 })
-public final class SearchTopComponent extends TopComponent implements LookupListener, ActionListener {
+public final class SearchTopComponent extends TopComponent implements LookupListener, ActionListener, DocumentListener {
 
     private Lookup.Result<MGXMaster> result;
     private MGXMaster currentMaster = null;
     DefaultListModel<SeqRun> runListModel = new DefaultListModel<>();
     private ResultListModel resultModel = new ResultListModel();
+    private RequestProcessor proc;
 
     public SearchTopComponent() {
         initComponents();
@@ -63,29 +69,12 @@ public final class SearchTopComponent extends TopComponent implements LookupList
             }
         });
 
-        searchTerm.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                enableButton();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                enableButton();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                enableButton();
-            }
-        });
-
+        searchTerm.getDocument().addDocumentListener(this);
         button.addActionListener(this);
 
-        // both working on same model - FIXME: renderers
         resultList.setModel(resultModel);
+        resultList.setCellRenderer(new ObservationListCellRenderer());
         readList.setModel(resultModel);
-
         readList.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
@@ -128,6 +117,7 @@ public final class SearchTopComponent extends TopComponent implements LookupList
         searchTerm = new javax.swing.JTextField();
         button = new javax.swing.JButton();
         exact = new javax.swing.JCheckBox();
+        numResults = new javax.swing.JLabel();
 
         jList2.setModel(new javax.swing.AbstractListModel() {
             String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
@@ -158,6 +148,7 @@ public final class SearchTopComponent extends TopComponent implements LookupList
 
         jSplitPane2.setLeftComponent(jScrollPane3);
 
+        readList.setFont(new java.awt.Font("Monospaced", 1, 12)); // NOI18N
         readList.setModel(new javax.swing.AbstractListModel() {
             String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
             public int getSize() { return strings.length; }
@@ -185,6 +176,8 @@ public final class SearchTopComponent extends TopComponent implements LookupList
 
         org.openide.awt.Mnemonics.setLocalizedText(exact, org.openide.util.NbBundle.getMessage(SearchTopComponent.class, "SearchTopComponent.exact.text")); // NOI18N
 
+        org.openide.awt.Mnemonics.setLocalizedText(numResults, org.openide.util.NbBundle.getMessage(SearchTopComponent.class, "SearchTopComponent.numResults.text")); // NOI18N
+
         javax.swing.GroupLayout topPanelLayout = new javax.swing.GroupLayout(topPanel);
         topPanel.setLayout(topPanelLayout);
         topPanelLayout.setHorizontalGroup(
@@ -198,9 +191,10 @@ public final class SearchTopComponent extends TopComponent implements LookupList
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, topPanelLayout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(topPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(topPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(exact)
-                            .addComponent(searchTerm, javax.swing.GroupLayout.PREFERRED_SIZE, 269, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(searchTerm, javax.swing.GroupLayout.DEFAULT_SIZE, 269, Short.MAX_VALUE)
+                            .addComponent(numResults, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         topPanelLayout.setVerticalGroup(
@@ -212,8 +206,10 @@ public final class SearchTopComponent extends TopComponent implements LookupList
                         .addGroup(topPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel1)
                             .addComponent(searchTerm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(exact)
+                        .addGap(30, 30, 30)
+                        .addComponent(numResults)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(button))
                     .addGroup(topPanelLayout.createSequentialGroup()
@@ -239,6 +235,7 @@ public final class SearchTopComponent extends TopComponent implements LookupList
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JSplitPane jSplitPane2;
+    private javax.swing.JLabel numResults;
     private javax.swing.JList readList;
     private javax.swing.JList resultList;
     private javax.swing.JList runList;
@@ -250,11 +247,14 @@ public final class SearchTopComponent extends TopComponent implements LookupList
     public void componentOpened() {
         result = Utilities.actionsGlobalContext().lookupResult(MGXMaster.class);
         result.addLookupListener(this);
+        proc = new RequestProcessor("MGX-ObservationFetch-Pool", Runtime.getRuntime().availableProcessors() + 5);
+
     }
 
     @Override
     public void componentClosed() {
         result.removeLookupListener(this);
+        proc.shutdown();
     }
 
     void writeProperties(java.util.Properties p) {
@@ -306,7 +306,8 @@ public final class SearchTopComponent extends TopComponent implements LookupList
     }
 
     private SeqRun[] getSelectedSeqRuns() {
-        return (SeqRun[]) runList.getSelectedValuesList().toArray(new SeqRun[0]);
+        List<SeqRun> selected = runList.getSelectedValuesList();
+        return selected.toArray(new SeqRun[selected.size()]);
     }
 
     @Override
@@ -320,7 +321,9 @@ public final class SearchTopComponent extends TopComponent implements LookupList
             @Override
             protected void done() {
                 try {
-                    resultModel.setResult(get());
+                    List<Sequence> hits = get();
+                    numResults.setText(hits.size() + " hits.");
+                    resultModel.setResult(hits);
                 } catch (InterruptedException | ExecutionException ex) {
                     Exceptions.printStackTrace(ex);
                 }
@@ -349,15 +352,45 @@ public final class SearchTopComponent extends TopComponent implements LookupList
         }
     }
 
-    private final class ReadListListCellRenderer implements ListCellRenderer<Sequence> {
+    private final class ObservationListCellRenderer implements ListCellRenderer<Sequence> {
 
-        private JLabel label = new JLabel();
+        private ObservationViewPanel comp = new ObservationViewPanel();
+        private Map<Sequence, Collection<Observation>> cache = Collections.<Sequence, Collection<Observation>>synchronizedMap(new HashMap<Sequence, Collection<Observation>>());
 
         @Override
-        public Component getListCellRendererComponent(JList<? extends Sequence> list, Sequence seq, int index, boolean isSelected, boolean cellHasFocus) {
-            label.setText(seq.getName());
-            label.setBackground(isSelected ? Color.BLUE : Color.WHITE);
-            return label;
+        public Component getListCellRendererComponent(JList<? extends Sequence> list, final Sequence seq, int index, boolean isSelected, boolean cellHasFocus) {
+            comp.setSequence(seq);
+            if (!cache.containsKey(seq)) {
+                SwingWorker<Collection<Observation>, Void> worker = new SwingWorker<Collection<Observation>, Void>() {
+                    @Override
+                    protected Collection<Observation> doInBackground() throws Exception {
+                        return currentMaster.Observation().ByRead(seq);
+                    }
+                };
+                worker.execute();
+                try {
+                    cache.put(seq, worker.get());
+                } catch (InterruptedException | ExecutionException ex) {
+                    Exceptions.printStackTrace(ex);
+                }
+            }
+            comp.setObservations(cache.get(seq));
+            return comp;
         }
+    }
+
+    @Override
+    public void insertUpdate(DocumentEvent e) {
+        enableButton();
+    }
+
+    @Override
+    public void removeUpdate(DocumentEvent e) {
+        enableButton();
+    }
+
+    @Override
+    public void changedUpdate(DocumentEvent e) {
+        enableButton();
     }
 }
