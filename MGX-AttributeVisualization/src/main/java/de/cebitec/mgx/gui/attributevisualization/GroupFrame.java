@@ -41,6 +41,7 @@ public class GroupFrame extends javax.swing.JInternalFrame implements ExplorerMa
     private VisualizationGroup vGroup = null;
     private ExplorerManager exmngr = new ExplorerManager();
     private VisualizationGroupNodeFactory vgnf;
+    private MyListView listView;
 
     public GroupFrame(VisualizationGroup group) {
         this();
@@ -64,7 +65,8 @@ public class GroupFrame extends javax.swing.JInternalFrame implements ExplorerMa
         final InvisibleRoot root = new InvisibleRoot(Children.create(vgnf, true));
         exmngr.setRootContext(root);
 
-        panel.add(new MyListView(), BorderLayout.CENTER);
+        listView = new MyListView();
+        panel.add(listView, BorderLayout.CENTER);
 
         setVisible(true); 
     }
@@ -77,7 +79,7 @@ public class GroupFrame extends javax.swing.JInternalFrame implements ExplorerMa
     }
 
     @Override
-    public void setTitle(String title) {
+    public final void setTitle(String title) {
         setToolTipText(title);
         super.setTitle(title);
     }
@@ -203,7 +205,7 @@ public class GroupFrame extends javax.swing.JInternalFrame implements ExplorerMa
         }
     }
 
-    private class MyListView extends TreeTableView {
+    private class MyListView extends TreeTableView implements PropertyChangeListener {
 
         public MyListView() {
             super();
@@ -212,6 +214,7 @@ public class GroupFrame extends javax.swing.JInternalFrame implements ExplorerMa
             //setShowParentNode(true);
             setAllowedDropActions(DnDConstants.ACTION_COPY + DnDConstants.ACTION_REFERENCE);
             setDropTarget();
+            vGroup.addPropertyChangeListener(this);
         }
 
         private void setDropTarget() {
@@ -249,6 +252,11 @@ public class GroupFrame extends javax.swing.JInternalFrame implements ExplorerMa
             });
             setDropTarget(dt);
 
+        }
+
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+            System.err.println("ListView got "+evt.getPropertyName());
         }
     }
 

@@ -1,7 +1,7 @@
 package de.cebitec.mgx.gui.attributevisualization.viewer;
 
 import de.cebitec.mgx.gui.datamodel.AttributeType;
-import de.cebitec.mgx.gui.datamodel.Distribution;
+import de.cebitec.mgx.gui.datamodel.misc.Distribution;
 
 /**
  *
