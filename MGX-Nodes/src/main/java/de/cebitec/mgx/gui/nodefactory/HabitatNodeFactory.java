@@ -29,10 +29,12 @@ public class HabitatNodeFactory extends ChildFactory<Habitat> implements NodeLis
     protected Node createNodeForKey(Habitat key) {
         HabitatNode node = new HabitatNode(master, key);
         node.addNodeListener(this);
+        //node.addPropertyChangeListener(this);
         return node;
     }
 
     public void refreshChildren() {
+        System.err.println("HNF refreshing");
         refresh(true);
     }
 
@@ -52,11 +54,14 @@ public class HabitatNodeFactory extends ChildFactory<Habitat> implements NodeLis
 
     @Override
     public void nodeDestroyed(NodeEvent ev) {
+        System.err.println("HNF got nodeDestroyed");
         refresh(true);
     }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        //refresh(true);
+        System.err.println("HNF got PCE "+evt.getPropertyName());
+//        if (!Node.PROP_PARENT_NODE.equals(evt.getPropertyName())) {
+//        refresh(true); }
     }
 }

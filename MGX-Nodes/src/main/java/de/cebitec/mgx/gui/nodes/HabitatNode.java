@@ -32,12 +32,12 @@ public class HabitatNode extends MGXNodeBase<Habitat> {
 
     public HabitatNode(MGXMaster m, Habitat h) {
         this(h, m, new SampleNodeFactory(m, h));
-        master = m;
-        setDisplayName(h.getName());
     }
 
     private HabitatNode(Habitat h, MGXMaster m, SampleNodeFactory snf) {
         super(Children.create(snf, true), Lookups.fixed(m, h), h);
+        master = m;
+        setDisplayName(h.getName());
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/Habitat.png");
         setShortDescription(getToolTipText(h));
         this.snf = snf;
@@ -46,12 +46,12 @@ public class HabitatNode extends MGXNodeBase<Habitat> {
     private String getToolTipText(Habitat h) {
         return new StringBuilder("<html>").append("<b>Habitat: </b>")
                 .append(h.getName())
-                .append("<br><hr><br>").append("biome: ")
-                .append(h.getBiome()).append("<br>").append("location: ")
-                .append(new Double(h.getLatitude()).toString())
+                .append("<br><hr><br>")
+                .append("biome: ").append(h.getBiome()).append("<br>")
+                .append("location: ").append(new Double(h.getLatitude()).toString())
                 .append(" / ").append(new Double(h.getLongitude()).toString())
-                .append("<br>").append("altitude: ")
-                .append(Integer.valueOf(h.getAltitude()).toString())
+                .append("<br>")
+                .append("altitude: ").append(Integer.valueOf(h.getAltitude()).toString())
                 .append("</html>").toString();
     }
 
@@ -81,13 +81,31 @@ public class HabitatNode extends MGXNodeBase<Habitat> {
             boolean cancelled = hwd.getValue() != WizardDescriptor.FINISH_OPTION;
             if (!cancelled) {
                 String oldDisplayName = habitat.getName();
-                habitat = hwd.getHabitat();
-                MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
-                m.Habitat().update(habitat);
+                final Habitat hab = hwd.getHabitat();
 
-                setDisplayName(habitat.getName());
-                setShortDescription(getToolTipText(habitat));
-                fireDisplayNameChange(oldDisplayName, habitat.getName());
+                SwingWorker<Void, Void> sw = new SwingWorker<Void, Void>() {
+                    @Override
+                    protected Void doInBackground() throws Exception {
+                        MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
+                        m.Habitat().update(hab);
+                        return null;
+                    }
+
+                    @Override
+                    protected void done() {
+                        try {
+                            get();
+                        } catch (InterruptedException | ExecutionException ex) {
+                            Exceptions.printStackTrace(ex);
+                        }
+                        super.done();
+                    }
+                };
+                sw.execute();
+
+//                setDisplayName(habitat.getName());
+//                setShortDescription(getToolTipText(habitat));
+//                fireDisplayNameChange(oldDisplayName, habitat.getName());
             }
         }
     }
@@ -110,18 +128,16 @@ public class HabitatNode extends MGXNodeBase<Habitat> {
             Object ret = DialogDisplayer.getDefault().notify(d);
             if (NotifyDescriptor.YES_OPTION.equals(ret)) {
                 MGXTask deleteTask = new MGXTask() {
-
                     @Override
                     public void process() {
                         setStatus("Deleting..");
                         MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
-                        m.Habitat().delete(habitat.getId());
+                        m.Habitat().delete(habitat);
                     }
 
                     @Override
                     public void finished() {
                         super.finished();
-                        fireNodeDestroyed();
                     }
                 };
 
@@ -149,6 +165,11 @@ public class HabitatNode extends MGXNodeBase<Habitat> {
                 final Sample s = wd.getSample();
                 s.setHabitatId(hab.getId());
                 SwingWorker<Long, Void> worker = new SwingWorker<Long, Void>() {
+                    @Override
+                    protected Long doInBackground() throws Exception {
+                        MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
+                        return m.Sample().create(s);
+                    }
 
                     @Override
                     protected void done() {
@@ -159,12 +180,6 @@ public class HabitatNode extends MGXNodeBase<Habitat> {
                         }
                         snf.refreshChildren();
                         super.done();
-                    }
-
-                    @Override
-                    protected Long doInBackground() throws Exception {
-                        MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
-                        return m.Sample().create(s);
                     }
                 };
                 worker.execute();

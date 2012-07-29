@@ -13,12 +13,15 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.SwingWorker;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.WizardDescriptor;
 import org.openide.nodes.Children;
+import org.openide.util.Exceptions;
 import org.openide.util.Utilities;
 import org.openide.util.lookup.Lookups;
 
@@ -36,7 +39,6 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> implements Transferable {
         super(Children.LEAF, Lookups.fixed(m, s), s);
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/SeqRun.png");
         setShortDescription(getToolTipText(s));
-        //this(m, s);
         master = m;
         setDisplayName(s.getName());
     }
@@ -57,7 +59,7 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> implements Transferable {
                 .append(run.getSequencingTechnology().getName()).append(" ")
                 .append(run.getSequencingMethod().getName())
                 .append("<br>")
-                .append(run.getNumSequences()).append(" reads)")
+                .append(run.getNumSequences()).append(" reads")
                 .append("</html>").toString();
     }
 
@@ -115,14 +117,33 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> implements Transferable {
             dialog.toFront();
             boolean cancelled = wd.getValue() != WizardDescriptor.FINISH_OPTION;
             if (!cancelled) {
-                MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);  
+                
                 String oldDisplayName = seqrun.getSequencingMethod() + " run";
-                seqrun = wd.getSeqRun();
-                m.SeqRun().update(seqrun);
+                final SeqRun run = wd.getSeqRun();
+                SwingWorker<Void, Void> sw = new SwingWorker<Void, Void>() {
+                    @Override
+                    protected Void doInBackground() throws Exception {
+                        MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
+                        m.SeqRun().update(run);
+                        return null;
+                    }
 
-                setDisplayName(seqrun.getName());
-                setShortDescription(getToolTipText(seqrun));
-                fireDisplayNameChange(oldDisplayName, seqrun.getName());
+                    @Override
+                    protected void done() {
+                        try {
+                            get();
+                        } catch (InterruptedException | ExecutionException ex) {
+                            Exceptions.printStackTrace(ex);
+                        }
+                        super.done();
+                    }
+                    
+                };
+                sw.execute();
+
+//                setDisplayName(seqrun.getName());
+//                setShortDescription(getToolTipText(seqrun));
+//                fireDisplayNameChange(oldDisplayName, seqrun.getName());
             }
         }
     }
@@ -136,7 +157,7 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> implements Transferable {
         @Override
         public void actionPerformed(ActionEvent e) {
             final SeqRun sr = getLookup().lookup(SeqRun.class);
-            NotifyDescriptor d = new NotifyDescriptor("Really delete sequencing run " + sr.getSequencingMethod() + "?",
+            NotifyDescriptor d = new NotifyDescriptor("Really delete sequencing run " + sr.getName() + "?",
                     "Delete sequencing run",
                     NotifyDescriptor.YES_NO_OPTION,
                     NotifyDescriptor.QUESTION_MESSAGE,
@@ -154,12 +175,11 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> implements Transferable {
                 // FIXME disable actions?
 
                 MGXTask deleteTask = new MGXTask() {
-
                     @Override
                     public void process() {
                         setStatus("Deleting..");
-                        MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);  
-                        m.SeqRun().delete(sr.getId());
+                        MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
+                        m.SeqRun().delete(sr);
                     }
 
                     @Override
@@ -169,7 +189,7 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> implements Transferable {
                     }
                 };
 
-                TaskManager.getInstance().addTask("Delete " + sr.getSequencingMethod(), deleteTask);
+                TaskManager.getInstance().addTask("Delete " + sr.getName(), deleteTask);
             }
         }
     }

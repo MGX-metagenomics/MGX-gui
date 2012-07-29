@@ -1,16 +1,18 @@
 package de.cebitec.mgx.gui.nodes;
 
 import de.cebitec.mgx.gui.controller.MGXMaster;
+import de.cebitec.mgx.gui.datamodel.ModelBase;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.util.Lookup;
-import org.openide.util.Utilities;
 
 /**
  *
  * @author sj
  */
-public abstract class MGXNodeBase<T> extends AbstractNode {
+public abstract class MGXNodeBase<T extends ModelBase> extends AbstractNode implements PropertyChangeListener {
 
     protected MGXMaster master;
     protected T content;
@@ -18,13 +20,39 @@ public abstract class MGXNodeBase<T> extends AbstractNode {
     protected MGXNodeBase(Children children, Lookup lookup, T data) {
         super(children, lookup);
         content = data;
+        content.addPropertyChangeListener(this);
     }
-
-//    public MGXMaster getMaster() {
-//        return master; //Utilities.actionsGlobalContext().lookup(MGXMaster.class);
-//    }
 
     public T getContent() {
         return content;
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        System.err.println("node got PCE: "+evt.getPropertyName());
+        switch (evt.getPropertyName()) {
+            case ModelBase.OBJECT_DELETED:
+                fireNodeDestroyed();
+                break;
+            case ModelBase.OBJECT_MODIFIED:
+                fireDisplayNameChange(null, getDisplayName());
+                fireShortDescriptionChange(null, getShortDescription()); 
+                fireNameChange(null, getName());
+                fireCookieChange();
+                break;
+            default:
+                System.err.println("unhandled event: "+evt.getPropertyName());
+                assert false;
+        }
+    }
+    
+    public void addPropertyChangelistener(PropertyChangeListener pcl) {
+        super.addPropertyChangeListener(pcl);
+        content.addPropertyChangeListener(pcl); 
+    }
+        
+    public void removePropertyChangelistener(PropertyChangeListener pcl) {
+        super.removePropertyChangeListener(pcl);
+        content.removePropertyChangeListener(pcl);
     }
 }

@@ -6,7 +6,6 @@ import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.datamodel.Tool;
 import de.cebitec.mgx.gui.wizard.configurations.action.WizardController;
 import de.cebitec.mgx.gui.wizard.configurations.progressscreen.ProgressBar;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.logging.Logger;
@@ -139,7 +138,7 @@ public class GetToolsWorker extends SwingWorker {
         LOGGER.info("Get Tools Worker DONE");
 
         if (isDelete) {
-            DeleteWorker deleteWorker = new DeleteWorker(startUp, master, tool.getId(), seqRun);
+            DeleteWorker deleteWorker = new DeleteWorker(startUp, master, tool, seqRun);
             deleteWorker.execute();
         } else {
 

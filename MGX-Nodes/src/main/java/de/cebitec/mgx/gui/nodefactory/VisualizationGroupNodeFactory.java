@@ -5,6 +5,7 @@ import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import de.cebitec.mgx.gui.nodes.SeqRunNode;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.AbstractAction;
@@ -23,6 +24,14 @@ public class VisualizationGroupNodeFactory extends ChildFactory<SeqRunNode> impl
 
     public VisualizationGroupNodeFactory(VisualizationGroup group) {
         this.group = group;
+        group.addPropertyChangeListener(new PropertyChangeListener() {
+
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                System.err.println("VGNF got event "+evt.getPropertyName());
+                refreshChildren();
+            }
+        });
     }
     
     @Override
@@ -31,13 +40,15 @@ public class VisualizationGroupNodeFactory extends ChildFactory<SeqRunNode> impl
         return true;
     }
 
-    public void addNode(SeqRunNode node) {
+    public void addNode(SeqRunNode node) { 
+        node.addNodeListener(this);
         nodes.add(node);
         group.addSeqRun(node.getContent());
         refreshChildren();
     }
     
-    public void removeNode(SeqRunNode node) {
+    public void removeNode(SeqRunNode node) { 
+        node.removeNodeListener(this);
         nodes.remove(node);
         group.removeSeqRun(node.getContent());
         refreshChildren();
@@ -78,7 +89,7 @@ public class VisualizationGroupNodeFactory extends ChildFactory<SeqRunNode> impl
         //refresh(true);
     }
 
-    private class DisplayNode extends FilterNode {
+    private class DisplayNode extends FilterNode implements NodeListener {
         
         private SeqRunNode n;
         private VisualizationGroupNodeFactory nf;
@@ -87,8 +98,8 @@ public class VisualizationGroupNodeFactory extends ChildFactory<SeqRunNode> impl
             super(node, Children.LEAF, Lookups.singleton(node.getContent()));
             disableDelegation(DELEGATE_SET_DISPLAY_NAME + DELEGATE_GET_ACTIONS);
             n = node;
-            nf = nodef;
-            
+            nf = nodef; 
+            node.addNodeListener(this);
         }
 
         @Override
@@ -102,6 +113,31 @@ public class VisualizationGroupNodeFactory extends ChildFactory<SeqRunNode> impl
             return new Action[]{new RemoveAction()};
         }
 
+        @Override
+        public void childrenAdded(NodeMemberEvent ev) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public void childrenRemoved(NodeMemberEvent ev) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public void childrenReordered(NodeReorderEvent ev) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public void nodeDestroyed(NodeEvent ev) {
+            nf.removeNode(n);
+            //fireNodeDestroyed();
+        }
+
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+        }
+
         private class RemoveAction extends AbstractAction {
 
             public RemoveAction() {
@@ -111,7 +147,7 @@ public class VisualizationGroupNodeFactory extends ChildFactory<SeqRunNode> impl
             @Override
             public void actionPerformed(ActionEvent e) {
                 nf.removeNode(n);
-                fireNodeDestroyed();
+                //fireNodeDestroyed();
             }
         }
     }

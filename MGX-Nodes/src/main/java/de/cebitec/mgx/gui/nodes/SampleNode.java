@@ -10,6 +10,7 @@ import de.cebitec.mgx.gui.wizard.extract.DNAExtractWizardDescriptor;
 import de.cebitec.mgx.gui.wizard.sample.SampleWizardDescriptor;
 import java.awt.Dialog;
 import java.awt.event.ActionEvent;
+import java.text.DateFormat;
 import java.util.concurrent.ExecutionException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -45,9 +46,10 @@ public class SampleNode extends MGXNodeBase<Sample> {
     }
 
     private String getToolTipText(Sample s) {
+        String date = DateFormat.getDateInstance(DateFormat.MEDIUM).format(s.getCollectionDate());
         return new StringBuilder("<html><b>Sample: </b>").append(s.getMaterial())
                 .append("<br><hr><br>")
-                .append("date: ").append(s.getCollectionDate().toString()).append("<br>")
+                .append("Collection date: ").append(date).append("<br>")
                 .append("</html>").toString();
     }
 
@@ -126,7 +128,7 @@ public class SampleNode extends MGXNodeBase<Sample> {
                     @Override
                     public void process() {
                         setStatus("Deleting..");
-                        m.Sample().delete(sample.getId());
+                        m.Sample().delete(sample);
                     }
 
                     @Override

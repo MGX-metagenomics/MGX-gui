@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.nodes;
 
 import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.upload.SeqUploader;
+import de.cebitec.mgx.client.upload.UploadBase;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.DNAExtract;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
@@ -40,11 +41,11 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
 
     public DNAExtractNode(MGXMaster m, DNAExtract d) {
         this(m, d, new SeqRunNodeFactory(m, d));
-        master = m;
     }
 
     private DNAExtractNode(MGXMaster m, DNAExtract d, SeqRunNodeFactory snf) {
         super(Children.create(snf, true), Lookups.fixed(m, d), d);
+        master = m;
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/DNAExtract.png");
         setShortDescription(getToolTipText(d));
         setDisplayName(d.getName());
@@ -137,7 +138,7 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
                     @Override
                     public void process() {
                         setStatus("Deleting..");
-                        m.DNAExtract().delete(dna.getId());
+                        m.DNAExtract().delete(dna);
                     }
 
                     @Override
@@ -185,7 +186,7 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
                             canonicalPath = wd.getSequenceFile().getCanonicalPath();
                             reader = SeqReaderFactory.getReader(canonicalPath);
                         } catch (IOException | SeqStoreException ex) {
-                            m.SeqRun().delete(seqrun.getId());
+                            m.SeqRun().delete(seqrun);
                             snf.refreshChildren();
                             publish(ex);
                             return null;
@@ -209,13 +210,13 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
                             @Override
                             public void failed() {
                                 MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
-                                m.SeqRun().delete(seqrun.getId());
+                                m.SeqRun().delete(seqrun);
                                 snf.refreshChildren();
                             }
 
                             @Override
                             public void propertyChange(PropertyChangeEvent pce) {
-                                if (pce.getPropertyName().equals(SeqUploader.NUM_SEQUENCES)) {
+                                if (pce.getPropertyName().equals(UploadBase.NUM_ELEMENTS_SENT)) {
                                     setStatus(String.format("%1$d sequences sent", pce.getNewValue()));
                                     seqrun.setNumSequences((Long) pce.getNewValue());
                                 }

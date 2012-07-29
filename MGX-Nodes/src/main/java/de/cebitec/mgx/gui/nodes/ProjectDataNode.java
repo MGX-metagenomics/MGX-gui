@@ -27,11 +27,11 @@ public class ProjectDataNode extends MGXNodeBase<MGXMaster> {
 
     public ProjectDataNode(MGXMaster m) {
         this(m, new HabitatNodeFactory(m));
-        master = m;
     }
 
     private ProjectDataNode(MGXMaster m, HabitatNodeFactory hnf) {
         super(Children.create(hnf, true), Lookups.fixed(m), m);
+        master = m;
         this.hnf = hnf;
         setDisplayName("Project Data");
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/ProjectData.png");
@@ -63,7 +63,6 @@ public class ProjectDataNode extends MGXNodeBase<MGXMaster> {
             if (!cancelled) {
                 final Habitat h = hwd.getHabitat();
                 SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
-
                     @Override
                     protected Void doInBackground() throws Exception {
                         MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
