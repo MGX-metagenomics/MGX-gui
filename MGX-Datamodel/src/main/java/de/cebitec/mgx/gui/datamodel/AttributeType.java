@@ -4,7 +4,7 @@ package de.cebitec.mgx.gui.datamodel;
  *
  * @author sjaenick
  */
-public class AttributeType extends ModelBase implements Comparable<AttributeType> {
+public class AttributeType extends Identifiable implements Comparable<AttributeType> {
 
     public static final char VALUE_NUMERIC = 'N';
     public static final char VALUE_DISCRETE = 'D';

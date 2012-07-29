@@ -4,12 +4,12 @@ package de.cebitec.mgx.gui.datamodel;
  *
  * @author sjaenick
  */
-public class Attribute extends ModelBase {
+public class Attribute extends Identifiable {
     
     protected AttributeType atype;
     protected String value;
     protected long job_id;
-    private long parent_id = ModelBase.INVALID_IDENTIFIER;
+    private long parent_id = Identifiable.INVALID_IDENTIFIER;
 
     
     public long getParentID() {

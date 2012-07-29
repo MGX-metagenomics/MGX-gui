@@ -48,8 +48,6 @@ public class Tree<T> {
     }
 
     public void addEdge(Long child, Long parent) {
-        //assert nodes.containsKey(child);
-        //assert nodes.containsKey(parent);
         edges.put(child, parent);
     }
 

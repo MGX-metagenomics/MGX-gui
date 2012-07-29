@@ -1,7 +1,7 @@
 package de.cebitec.mgx.gui.datamodel.tree;
 
 import de.cebitec.mgx.gui.datamodel.Attribute;
-import de.cebitec.mgx.gui.datamodel.ModelBase;
+import de.cebitec.mgx.gui.datamodel.Identifiable;
 import de.cebitec.mgx.gui.datamodel.misc.Pair;
 import java.util.*;
 import java.util.Map.Entry;
@@ -36,7 +36,7 @@ public class TreeFactory {
             Node<Long> node = tree.createNode(attr, count);
             idmap.put(attr.getId(), node.getId());
 
-            if (attr.getParentID() == ModelBase.INVALID_IDENTIFIER) {
+            if (attr.getParentID() == Identifiable.INVALID_IDENTIFIER) {
                 tree.setRoot(node);
             } else {
                 // remember the outgoing edge (based on original ids)

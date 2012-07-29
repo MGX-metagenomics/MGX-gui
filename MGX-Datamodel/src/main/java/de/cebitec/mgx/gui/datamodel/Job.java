@@ -8,7 +8,7 @@ import java.util.Date;
  *
  * @author sjaenick
  */
-public class Job extends ModelBase {
+public class Job extends Identifiable {
 
     protected SeqRun seqrun;
     //

@@ -53,7 +53,7 @@ public class Node<T> {
     }
     
     void build() {
-        children = new HashSet<Node<T>>();
+        children = new HashSet<>();
         for (Entry<Long, Long> e : tree.edges.entrySet()) {
             Long from = e.getKey();
             Long to = e.getValue();

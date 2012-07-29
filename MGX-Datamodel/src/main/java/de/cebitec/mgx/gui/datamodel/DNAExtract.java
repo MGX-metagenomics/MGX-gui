@@ -4,7 +4,7 @@ package de.cebitec.mgx.gui.datamodel;
  *
  * @author sjaenick
  */
-public class DNAExtract extends ModelBase {
+public class DNAExtract extends Identifiable {
 
     protected String name;
     protected String method;

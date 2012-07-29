@@ -4,7 +4,7 @@ package de.cebitec.mgx.gui.datamodel;
  *
  * @author sjaenick
  */
-public class Tool extends ModelBase {
+public class Tool extends Identifiable {
 
     protected String name;
     protected String description;
@@ -70,7 +70,7 @@ public class Tool extends ModelBase {
    @Override
     public int hashCode() {
         int hash = 0;
-        hash = (int) ((int) 31 * hash + this.id);
+        hash = (int) (31 * hash + this.id);
         return hash;
     }
 

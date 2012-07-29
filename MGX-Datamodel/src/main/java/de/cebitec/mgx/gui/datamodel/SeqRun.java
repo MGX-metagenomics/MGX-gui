@@ -4,7 +4,7 @@ package de.cebitec.mgx.gui.datamodel;
  *
  * @author sjaenick
  */
-public class SeqRun extends ModelBase {
+public class SeqRun extends Identifiable {
 
     protected Term sequencing_technology;
     protected Term sequencing_method;
@@ -84,7 +84,7 @@ public class SeqRun extends ModelBase {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash = (int) ((int) 31 * hash + this.id);
+        hash = (int) (31 * hash + this.id);
         return hash;
     }
 

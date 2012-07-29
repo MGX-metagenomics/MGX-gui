@@ -4,7 +4,7 @@ package de.cebitec.mgx.gui.datamodel;
  *
  * @author sjaenick
  */
-public class Sequence extends ModelBase {
+public class Sequence extends Identifiable {
 
     protected String name;
     protected int length = -1;
@@ -42,7 +42,7 @@ public class Sequence extends ModelBase {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash = (int) ((int) 31 * hash + this.id);
+        hash = (int) (31 * hash + this.id);
         return hash;
     }
 

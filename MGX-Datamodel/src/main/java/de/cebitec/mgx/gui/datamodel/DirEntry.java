@@ -4,19 +4,10 @@ package de.cebitec.mgx.gui.datamodel;
  *
  * @author sjaenick
  */
-public class DirEntry {
+public class DirEntry extends ModelBase {
 
-    protected MGXMasterI master;
     protected MGXFile file = null;
     protected MGXDirectory directory = null;
-
-    public MGXMasterI getMaster() {
-        return master;
-    }
-
-    public void setMaster(MGXMasterI m) {
-        this.master = m;
-    }
 
     public MGXDirectory getDirectory() {
         return directory;

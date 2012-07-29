@@ -9,7 +9,7 @@ import java.util.List;
  */
 public class MGXDirectory extends MGXFile {
     
-    protected List<DirEntry> entries = new ArrayList<DirEntry>();
+    protected List<DirEntry> entries = new ArrayList<>();
 
     public List<DirEntry> getEntries() {
         return entries;

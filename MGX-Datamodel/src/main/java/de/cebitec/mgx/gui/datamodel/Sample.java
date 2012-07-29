@@ -6,7 +6,7 @@ import java.util.Date;
  *
  * @author sjaenick
  */
-public class Sample extends ModelBase {
+public class Sample extends Identifiable {
 
     protected Date collectiondate;
     protected String material;
@@ -14,17 +14,6 @@ public class Sample extends ModelBase {
     protected int volume;
     protected String volume_unit;
     protected long habitat_id;
-//    protected Collection<DNAExtract> extracts = new HashSet<DNAExtract>();
-//    protected Habitat habitat;
-//
-//    public Habitat getHabitat() {
-//        return habitat;
-//    }
-//
-//    public Sample setHabitat(Habitat h) {
-//        habitat = h;
-//        return this;
-//    }
 
     public Sample setHabitatId(long habId) {
         habitat_id = habId;
@@ -80,24 +69,10 @@ public class Sample extends ModelBase {
         return this;
     }
 
-//    public Collection<DNAExtract> getDNAExtracts() {
-//        return extracts;
-//    }
-//
-//    public Sample setDNAExtracts(Collection<DNAExtract> extracts) {
-//        this.extracts = extracts;
-//        return this;
-//    }
-//
-//    public Sample addDNAExtract(DNAExtract d) {
-//        getDNAExtracts().add(d);
-//        d.setSample(this);
-//        return this;
-//    }
     @Override
     public int hashCode() {
         int hash = 0;
-        hash = (int) ((int) 31 * hash + this.id);
+        hash = (int) (31 * hash + this.id);
         return hash;
     }
 

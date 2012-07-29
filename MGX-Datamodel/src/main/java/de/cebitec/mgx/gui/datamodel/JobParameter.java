@@ -6,7 +6,7 @@ import java.util.Map;
  *
  * @author sjaenick
  */
-public class JobParameter {
+public class JobParameter extends Identifiable {
 
     long node_id;
     String user_name;

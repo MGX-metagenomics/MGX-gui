@@ -6,8 +6,8 @@ package de.cebitec.mgx.gui.datamodel;
  */
 public class Term {
 
-    private long id = ModelBase.INVALID_IDENTIFIER;
-    private long parent_id = ModelBase.INVALID_IDENTIFIER;
+    private long id = Identifiable.INVALID_IDENTIFIER;
+    private long parent_id = Identifiable.INVALID_IDENTIFIER;
     private String name;
     private String description;
 

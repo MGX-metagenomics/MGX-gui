@@ -1,5 +1,6 @@
-package de.cebitec.mgx.gui.datamodel;
+package de.cebitec.mgx.gui.datamodel.misc;
 
+import de.cebitec.mgx.gui.datamodel.Attribute;
 import java.util.*;
 
 /**
@@ -21,6 +22,7 @@ public class Distribution implements Map<Attribute, Number> {
     }
 
     public long getTotalClassifiedElements() {
+        assert totalClassifiedElements != -1;
         return totalClassifiedElements;
     }
 
