@@ -22,12 +22,10 @@ import org.openide.windows.TopComponent;
 autostore = false)
 @TopComponent.Description(preferredID = "VisualizationGroupTopComponent",
 //iconBase="SET/PATH/TO/ICON/HERE", 
-persistenceType = TopComponent.PERSISTENCE_ALWAYS)
+persistenceType = TopComponent.PERSISTENCE_NEVER)
 @TopComponent.Registration(mode = "output", openAtStartup = false)
 @ActionID(category = "Window", id = "de.cebitec.mgx.gui.attributevisualization.ui.VisualizationGroupTopComponent")
-@ActionReference(path = "Menu/Window" /*
- * , position = 333
- */)
+@ActionReference(path = "Menu/Window", position = 333)
 @TopComponent.OpenActionRegistration(displayName = "#CTL_VisualizationGroupAction",
 preferredID = "VisualizationGroupTopComponent")
 @Messages({
@@ -44,7 +42,7 @@ public final class VisualizationGroupTopComponent extends TopComponent implement
     public VisualizationGroupTopComponent() {
         initComponents();
         addGroupButton.addActionListener(this);
-        
+
         setName(Bundle.CTL_VisualizationGroupTopComponent());
         setToolTipText(Bundle.HINT_VisualizationGroupTopComponent());
         associateLookup(ExplorerUtils.createLookup(exmngr, getActionMap()));
@@ -53,8 +51,6 @@ public final class VisualizationGroupTopComponent extends TopComponent implement
     public Collection<VisualizationGroup> getVisualizationGroups() {
         return groupmgr.getActiveGroups();
     }
-
-
 
     void removeGroup(VisualizationGroup group) {
         groupmgr.removeGroup(group);

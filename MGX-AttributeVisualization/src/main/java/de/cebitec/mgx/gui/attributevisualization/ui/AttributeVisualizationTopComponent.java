@@ -17,12 +17,10 @@ import org.openide.windows.WindowManager;
 autostore = false)
 @TopComponent.Description(preferredID = "AttributeVisualizationTopComponent",
 //iconBase="SET/PATH/TO/ICON/HERE", 
-persistenceType = TopComponent.PERSISTENCE_ALWAYS)
+persistenceType = TopComponent.PERSISTENCE_NEVER)
 @TopComponent.Registration(mode = "editor", openAtStartup = false)
 @ActionID(category = "Window", id = "de.cebitec.mgx.gui.attributevisualization.ui.AttributeVisualizationTopComponent")
-@ActionReference(path = "Menu/Window" /*
- * , position = 333
- */)
+@ActionReference(path = "Menu/Window", position = 333)
 @TopComponent.OpenActionRegistration(displayName = "#CTL_AttributeVisualizationAction",
 preferredID = "AttributeVisualizationTopComponent")
 public final class AttributeVisualizationTopComponent extends TopComponent {
@@ -112,7 +110,7 @@ public final class AttributeVisualizationTopComponent extends TopComponent {
             System.err.println("output mode not found");
         }
         pe.open();
-        
+
         //pe.requestActive();
     }
 }
