@@ -7,7 +7,7 @@ import de.cebitec.mgx.gui.datamodel.Observation;
  *
  * @author sj
  */
-class ObservationDTOFactory extends DTOConversionBase<Observation, ObservationDTO> {
+public class ObservationDTOFactory extends DTOConversionBase<Observation, ObservationDTO> {
 
     static {
         instance = new ObservationDTOFactory();
@@ -28,6 +28,10 @@ class ObservationDTOFactory extends DTOConversionBase<Observation, ObservationDT
 
     @Override
     public Observation toModel(ObservationDTO dto) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Observation o = new Observation();
+        o.setStart(dto.getStart());
+        o.setStop(dto.getStop());
+        o.setAttribute(AttributeDTOFactory.getInstance().toModel(dto.getAttribute()));
+        return o;
     }
 }
