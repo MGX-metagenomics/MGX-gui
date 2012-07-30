@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.charts3d;
 
+import de.cebitec.mgx.gui.attributevisualization.filter.SortOrder;
 import de.cebitec.mgx.gui.attributevisualization.viewer.CategoricalViewerI;
 import de.cebitec.mgx.gui.attributevisualization.viewer.ViewerI;
 import de.cebitec.mgx.gui.datamodel.Attribute;
@@ -26,8 +27,9 @@ import org.openide.util.lookup.ServiceProvider;
 /**
  *
  * @author sj
- * 
- * based on http://code.google.com/p/jzy3d/source/browse/branches/0.8.1/src/demos/org/jzy3d/demos/histogram/barchart/BarChartDemo.java?r=438
+ *
+ * based on
+ * http://code.google.com/p/jzy3d/source/browse/branches/0.8.1/src/demos/org/jzy3d/demos/histogram/barchart/BarChartDemo.java?r=438
  */
 @ServiceProvider(service = ViewerI.class)
 public class BarChart3DViewer extends CategoricalViewerI {
@@ -55,6 +57,11 @@ public class BarChart3DViewer extends CategoricalViewerI {
 
     @Override
     public void show(List<Pair<VisualizationGroup, Distribution>> dists) {
+
+        SortOrder sorter = new SortOrder(getAttributeType(), SortOrder.DESCENDING);
+        dists = sorter.filter(dists);
+        
+        
         Settings.getInstance().setHardwareAccelerated(true);
         chart = new Chart(Quality.Nicest, "swing"); // {
 //
@@ -75,11 +82,10 @@ public class BarChart3DViewer extends CategoricalViewerI {
 
         BarChartBar.BAR_RADIUS = 5f;
         BarChartBar.BAR_FEAT_BUFFER_RADIUS = BarChartBar.BAR_RADIUS / 2f;
-        
 
+        attributes.clear();
+        groups.clear();
 
-        attributes.clear(); groups.clear();
-        
         // collect all present attributes
         for (Pair<VisualizationGroup, Distribution> p : dists) {
             for (Attribute a : p.getSecond().keySet()) {
@@ -88,7 +94,7 @@ public class BarChart3DViewer extends CategoricalViewerI {
                 }
             }
         }
-        
+
 
         int distNum = 0;
         int entryNum = 0;
@@ -119,7 +125,6 @@ public class BarChart3DViewer extends CategoricalViewerI {
 
     private void setupTitle() {
         Renderer2d messageRenderer = new Renderer2d() {
-
             @Override
             public void paint(Graphics g) {
                 g.setColor(java.awt.Color.BLACK);
@@ -146,7 +151,6 @@ public class BarChart3DViewer extends CategoricalViewerI {
         // x axis
         chart.getAxeLayout().setXAxeLabel("Groups");
         chart.getAxeLayout().setXTickRenderer(new ITickRenderer() {
-
             @Override
             public String format(float value) {
                 int idx = getFeatureIndex(value);
@@ -163,7 +167,6 @@ public class BarChart3DViewer extends CategoricalViewerI {
         chart.getAxeLayout().setYAxeLabel(getAttributeType().getName());
         chart.getAxeLayout().setYTickProvider(new DiscreteTickProvider());
         chart.getAxeLayout().setYTickRenderer(new ITickRenderer() {
-
             @Override
             public String format(float value) {
                 int idx = getFeatureIndex(value);
@@ -218,7 +221,6 @@ public class BarChart3DViewer extends CategoricalViewerI {
     private void setupKeyboardSave() {
         chart.getCanvas().addKeyListener(new PNGKeyboardSaver(chart));
     }
-
 //    @Override
 //    public void featureSelectionChanged(SelectionManager tl) {
 //    }
