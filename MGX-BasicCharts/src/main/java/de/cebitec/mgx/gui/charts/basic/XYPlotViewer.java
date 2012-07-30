@@ -2,14 +2,13 @@ package de.cebitec.mgx.gui.charts.basic;
 
 import de.cebitec.mgx.gui.attributevisualization.viewer.NumericalViewerI;
 import de.cebitec.mgx.gui.attributevisualization.viewer.ViewerI;
-import de.cebitec.mgx.gui.datamodel.Attribute;
+import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
 import de.cebitec.mgx.gui.datamodel.misc.Distribution;
 import de.cebitec.mgx.gui.datamodel.misc.Pair;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import java.awt.Color;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map.Entry;
 import javax.swing.JComponent;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -18,7 +17,6 @@ import org.jfree.chart.axis.*;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
-import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -47,17 +45,7 @@ public class XYPlotViewer extends NumericalViewerI {
     public void show(List<Pair<VisualizationGroup, Distribution>> dists) {
 
         dists = getCustomizer().filter(dists);
-
-        XYSeriesCollection dataset = new XYSeriesCollection();
-
-        for (Pair<VisualizationGroup, Distribution> groupDistribution : dists) {
-            XYSeries series = new XYSeries(groupDistribution.getFirst().getName());
-
-            for (Entry<Attribute, ? extends Number> entry : groupDistribution.getSecond().entrySet()) {
-                series.add(Double.parseDouble(entry.getKey().getValue()), entry.getValue());
-            }
-            dataset.addSeries(series);
-        }
+        XYSeriesCollection dataset = JFreeChartUtil.createXYSeries(dists);
 
         String xAxisLabel = "";
         String yAxisLabel = getCustomizer().useFractions() ? "Fraction" : "Count";
