@@ -70,12 +70,14 @@
                         <publicPackage>org.jfree.chart.axis</publicPackage>
                         <publicPackage>org.jfree.chart.labels</publicPackage>
                         <publicPackage>org.jfree.chart.plot</publicPackage>
+                        <publicPackage>org.jfree.chart.title</publicPackage>
                         <publicPackage>org.jfree.chart.renderer</publicPackage>
                         <publicPackage>org.jfree.chart.renderer.category</publicPackage>
                         <publicPackage>org.jfree.chart.renderer.xy</publicPackage>
                         <publicPackage>org.jfree.data</publicPackage>
                         <publicPackage>org.jfree.data.category</publicPackage>
                         <publicPackage>org.jfree.data.xy</publicPackage>
+                        <publicPackage>org.jfree.ui</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>
