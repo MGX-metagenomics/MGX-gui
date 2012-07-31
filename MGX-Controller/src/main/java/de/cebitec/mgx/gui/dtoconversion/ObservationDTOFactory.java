@@ -31,7 +31,8 @@ public class ObservationDTOFactory extends DTOConversionBase<Observation, Observ
         Observation o = new Observation();
         o.setStart(dto.getStart());
         o.setStop(dto.getStop());
-        o.setAttribute(AttributeDTOFactory.getInstance().toModel(dto.getAttribute()));
+        o.setAttributeName(dto.getAttributeName());
+        o.setAttributeTypeName(dto.getAttributeTypeValue());
         return o;
     }
 }
