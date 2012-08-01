@@ -8,17 +8,17 @@ import java.util.Map;
  */
 public class JobParameter extends Identifiable {
 
-    long node_id;
-    String user_name;
-    String user_desc;
-    String displayName;
-    String className;
-    Map<String, String> choices;
-    String configitem_name;
-    String configitem_value;
-    String type;
-    boolean optional;
-    String default_value = "";
+    private long node_id;
+    private String user_name;
+    private String user_desc;
+    private String displayName;
+    private String className;
+    private Map<String, String> choices;
+    private String configitem_name;
+    private String configitem_value;
+    private String type;
+    private boolean optional;
+    private String default_value = "";
 
     public String getConfigItemName() {
         return configitem_name;
