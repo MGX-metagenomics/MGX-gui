@@ -97,6 +97,11 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>MGX-Search</artifactId>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>MGX-TableView</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
