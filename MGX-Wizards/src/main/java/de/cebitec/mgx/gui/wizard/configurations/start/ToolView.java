@@ -130,7 +130,7 @@ public class ToolView extends JPanel implements DocumentListener {
     /**
      * Das Feld fuer die Beschreibung des lokalen Tools.
      */
-    private JTextField descriptionField;
+    private JTextArea descriptionField;
     /**
      * Die Versionsnummer fuer das lokale Tool.
      */
@@ -233,9 +233,6 @@ public class ToolView extends JPanel implements DocumentListener {
 
         String[] options = {ActionCommands.Project, ActionCommands.Global,
             ActionCommands.Local};
-//        toolLocationBox = new JComboBox(options);
-//        toolLocationBox.setActionCommand(ActionCommands.toolBox);
-//        toolLocationBox.addActionListener(listener);
 
         JPanel northPanel = new JPanel();
         northPanel.setLayout(new BorderLayout());
@@ -348,7 +345,24 @@ public class ToolView extends JPanel implements DocumentListener {
         c.gridy = 1;
         c.insets = new Insets(10, 0, 10, 0);
         chooseFile = new JButton("Choose a local tool.");
+//        chooseFile.setMaximumSize(new Dimension(50,10));
+//        chooseFile.setPreferredSize(new Dimension(50,10));
+//        chooseFile.setMinimumSize(new Dimension(50,10));
+//        chooseFile.setSize(new Dimension(50,10));
+//        JPanel buttonPanel = new JPanel();
+
+//JPanel borderPanel = new JPanel(new BorderLayout());
+//JButton theButton = new JButton("Click Me");
+//JPanel flowPanel = new JPanel(new FlowLayout());
+//flowPanel.add(theButton);
+//borderPanel.add(BorderLayout.CENTER, flowPanel);
+
+
+//        buttonPanel.setLayout(new FlowLayout());
+//        buttonPanel.add(chooseFile);
+
         chooseFile.addActionListener(new ActionListener() {
+
             @Override
             public void actionPerformed(ActionEvent e) {
                 chooseLocalFile();
@@ -359,11 +373,16 @@ public class ToolView extends JPanel implements DocumentListener {
         chooseFile.setAlignmentX(
                 Component.CENTER_ALIGNMENT);
         buttonCenterPanel.setLayout(new BoxLayout(buttonCenterPanel,
-                BoxLayout.PAGE_AXIS));
+                BoxLayout.PAGE_AXIS)); 
+        
         buttonCenterPanel.add(Box.createVerticalGlue());
-        buttonCenterPanel.add(inputLocalToolForm(), BorderLayout.CENTER);
-        buttonCenterPanel.add(chooseFile, BorderLayout.SOUTH);
+//        buttonPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+//        buttonCenterPanel.add(buttonPanel, BorderLayout.SOUTH);   
+       JPanel temp = inputLocalToolForm();
+//       temp.setBorder(BorderFactory.createLineBorder(Color.BLUE));
+       buttonCenterPanel.add(temp, BorderLayout.NORTH);   
         buttonCenterPanel.add(Box.createVerticalGlue());
+        
         JScrollPane globalPane = new JScrollPane(globalTable);
         allInOnePanel.add(ActionCommands.Global, globalPane);
         allInOnePanel.add(ActionCommands.Local, buttonCenterPanel);
@@ -415,26 +434,34 @@ public class ToolView extends JPanel implements DocumentListener {
     private JPanel inputLocalToolForm() {
         GridBagConstraints con = new GridBagConstraints();
         JPanel panel = new JPanel(new GridBagLayout());
-        con.insets = new Insets(10, 5, 10, 5);
         int width = 15;
 
-
         con.gridy = 0;
+        con.gridx = 0;
+        JLabel lab = new JLabel("", JLabel.RIGHT);
+        lab.setLabelFor(chooseFile);
+        panel.add(lab,con);
+        
+        con.gridx= 1;
+        panel.add(chooseFile, con);
+        
+        con.gridy = 1;
         nameField = new JTextField();
         nameField.setColumns(width);
         nameField.getDocument().addDocumentListener(this);
 
-        JLabel lab = new JLabel("Name:", JLabel.RIGHT);
+        lab = new JLabel("Name:", JLabel.RIGHT);
         lab.setLabelFor(nameField);
 
         con.gridx = 0;
         con.anchor = GridBagConstraints.EAST;
         panel.add(lab, con);
+        con.insets = new Insets(10, 5, 10, 5);
 
         con.gridx = 1;
         panel.add(nameField, con);
 
-        con.gridy = 1;
+        con.gridy = 2;
         authorField = new JTextField();
         authorField.setColumns(width);
         authorField.getDocument().addDocumentListener(this);
@@ -449,22 +476,27 @@ public class ToolView extends JPanel implements DocumentListener {
         con.gridx = 1;
         panel.add(authorField, con);
 
-        con.gridy = 2;
-        descriptionField = new JTextField();
-        descriptionField.setColumns(width);
+        con.gridy = 3;
+        descriptionField = new JTextArea();
+        descriptionField.setWrapStyleWord(true);
+        descriptionField.setLineWrap(true);
         descriptionField.getDocument().addDocumentListener(this);
-
+        JScrollPane pane = new JScrollPane(descriptionField);
+        pane.setMinimumSize(new Dimension(168, 70));
+        pane.setMaximumSize(new Dimension(168, 70));
+        pane.setPreferredSize(new Dimension(168, 70));
+        pane.setSize(new Dimension(168, 70));
         lab = new JLabel("Description:", JLabel.RIGHT);
-        lab.setLabelFor(descriptionField);
+        lab.setLabelFor(pane);
 
         con.gridx = 0;
-        con.anchor = GridBagConstraints.EAST;
+        con.anchor = GridBagConstraints.NORTHEAST;
         panel.add(lab, con);
 
         con.gridx = 1;
-        panel.add(descriptionField, con);
+        panel.add(pane, con);
 
-        con.gridy = 3;
+        con.gridy = 4;
         versionField = new JTextField();
         versionField.getDocument().addDocumentListener(this);
         versionField.setColumns(width);
