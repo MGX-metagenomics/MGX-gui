@@ -27,15 +27,16 @@ public class ObservationViewPanel extends javax.swing.JPanel {
     }
     
     public void setObservations(Collection<Observation> obs) {
-        Graphics2D gfx = (Graphics2D) obsview.getGraphics();
-        assert gfx != null;
-        int height = obsview.getHeight();
-        int width = obsview.getWidth();
-        
-        int midheight = height/2;
-        gfx.drawLine(BORDER, midheight, width - BORDER, midheight);
-        gfx.drawString("1", BORDER - 3, midheight + 5);
-        gfx.drawString(String.valueOf(seqLen), width - BORDER - 3, midheight + 5);
+        readName.setText(readName.getText() + " numObs: "+obs.size());
+//        Graphics2D gfx = (Graphics2D) obsview.getGraphics();
+//        assert gfx != null;
+//        int height = obsview.getHeight();
+//        int width = obsview.getWidth();
+//        
+//        int midheight = height/2;
+//        gfx.drawLine(BORDER, midheight, width - BORDER, midheight);
+//        gfx.drawString("1", BORDER - 3, midheight + 5);
+//        gfx.drawString(String.valueOf(seqLen), width - BORDER - 3, midheight + 5);
     }
 
     /**
