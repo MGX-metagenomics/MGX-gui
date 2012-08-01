@@ -8,12 +8,12 @@ import java.beans.PropertyChangeListener;
 import java.util.List;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
-import org.openide.util.NbBundle;
-import org.openide.windows.TopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
+import org.openide.windows.TopComponent;
 
 /**
  * Top component which displays something.
@@ -25,7 +25,7 @@ autostore = false)
 persistenceType = TopComponent.PERSISTENCE_ALWAYS)
 @TopComponent.Registration(mode = "properties", openAtStartup = false)
 @ActionID(category = "Window", id = "de.cebitec.mgx.gui.taskview.TaskViewTopComponent")
-@ActionReference(path = "Menu/Window" /*, position = 333 */)
+@ActionReference(path = "Menu/Window", position = 370)
 @TopComponent.OpenActionRegistration(displayName = "#CTL_TaskViewAction",
 preferredID = "TaskViewTopComponent")
 @ServiceProvider(service = TaskViewTopComponent.class)

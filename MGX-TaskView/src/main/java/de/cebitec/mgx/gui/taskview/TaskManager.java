@@ -25,7 +25,7 @@ public class TaskManager implements PropertyChangeListener {
     public static final String TASKMANAGER_CHANGE = "tmChange";
     private static TaskManager instance;
     private RequestProcessor reqProcessor = null;
-    private Map<Task, TaskDescriptor> currentTasks = new HashMap<Task, TaskDescriptor>();
+    private Map<Task, TaskDescriptor> currentTasks = new HashMap<>();
     private TaskViewTopComponent taskViewer;
     private final PropertyChangeSupport pcs;
 
@@ -49,7 +49,7 @@ public class TaskManager implements PropertyChangeListener {
 
     public void clearFinished() {
         boolean modified = false;
-        List<Task> to_remove = new ArrayList<Task>();
+        List<Task> to_remove = new ArrayList<>();
         for (Entry<Task, TaskDescriptor> e : currentTasks.entrySet()) {
             // check if task is finished
             TaskDescriptor td = e.getValue();
