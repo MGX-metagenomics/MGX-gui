@@ -23,6 +23,8 @@ public class SortOrder implements VisFilterI<Distribution> {
     
     private final int currentCriteria;
     private final int order;
+    
+    private List<Attribute> sortList = new ArrayList<>();
 
     public SortOrder(AttributeType aType, int order) {
         assert aType != null;
@@ -58,7 +60,7 @@ public class SortOrder implements VisFilterI<Distribution> {
         }
 
 
-        List<Attribute> sortList = new ArrayList<>();
+        sortList.clear();
         // sort by selected criteria
         switch (currentCriteria) {
             case BY_VALUE:
@@ -90,6 +92,10 @@ public class SortOrder implements VisFilterI<Distribution> {
         return dists;
     }
 
+    public List<Attribute> getOrder() {
+        return sortList;
+    }
+    
     public final static class SortNumerically implements Comparator<Attribute>, Serializable {
 
         @Override
