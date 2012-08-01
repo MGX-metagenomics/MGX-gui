@@ -4,6 +4,7 @@ import de.cebitec.mgx.dto.dto.ChoicesDTO;
 import de.cebitec.mgx.dto.dto.JobParameterDTO;
 import de.cebitec.mgx.dto.dto.JobParameterDTO.Builder;
 import de.cebitec.mgx.dto.dto.KVPair;
+import de.cebitec.mgx.gui.datamodel.Identifiable;
 import de.cebitec.mgx.gui.datamodel.JobParameter;
 import java.util.HashMap;
 import java.util.Map.Entry;
@@ -25,7 +26,7 @@ public class JobParameterDTOFactory extends DTOConversionBase<JobParameter, JobP
 
     @Override
     public JobParameterDTO toDTO(JobParameter p) {
-                Builder b = JobParameterDTO.newBuilder()
+        Builder b = JobParameterDTO.newBuilder()
                 .setNodeId(p.getNodeId())
                 .setUserName(p.getUserName())
                 .setUserDesc(p.getUserDescription())
@@ -34,6 +35,9 @@ public class JobParameterDTOFactory extends DTOConversionBase<JobParameter, JobP
                 .setConfigitemName(p.getConfigItemName())
                 .setType(p.getType())
                 .setIsOptional(p.isOptional());
+        if (p.getId() != Identifiable.INVALID_IDENTIFIER) {
+            b = b.setId(p.getId());
+        }
         
         // choices
         if (p.getChoices() != null) {
@@ -61,6 +65,9 @@ public class JobParameterDTOFactory extends DTOConversionBase<JobParameter, JobP
     @Override
     public JobParameter toModel(JobParameterDTO dto) {
         JobParameter jp = new JobParameter();
+        if (dto.hasId()) {
+            jp.setId(dto.getId());
+        }
         jp.setNodeId(dto.getNodeId());
         jp.setUserName(dto.getUserName());
         jp.setUserDescription(dto.getUserDesc());
