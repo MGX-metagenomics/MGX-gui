@@ -38,15 +38,13 @@ autostore = false)
 persistenceType = TopComponent.PERSISTENCE_NEVER)
 @TopComponent.Registration(mode = "editor", openAtStartup = false)
 @ActionID(category = "Window", id = "de.cebitec.mgx.gui.search.SearchTopComponent")
-@ActionReference(path = "Menu/Window" /*
- * , position = 333
- */)
+@ActionReference(path = "Menu/Window", position = 332)
 @TopComponent.OpenActionRegistration(displayName = "#CTL_SearchAction",
 preferredID = "SearchTopComponent")
 @Messages({
     "CTL_SearchAction=Search",
     "CTL_SearchTopComponent=Search Window",
-    "HINT_SearchTopComponent=This is a Search window"
+    "HINT_SearchTopComponent=MGX Search window"
 })
 public final class SearchTopComponent extends TopComponent implements LookupListener, ActionListener, DocumentListener {
 
