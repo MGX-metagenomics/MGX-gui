@@ -85,12 +85,9 @@ public class GetToolsWorker extends SwingWorker {
     protected Object doInBackground() {
 
 
-
-
         toolType = 5;
         ProgressBar bar = null;
         try {
-
             bar = new ProgressBar("Loading tools from server. ", "Waiting for the server",
                     300, 140);
 
@@ -99,7 +96,6 @@ public class GetToolsWorker extends SwingWorker {
             bar.setUpdateText("Loading tools from project.");
 
             projectTools = master.Tool().fetchall();
-
             LOGGER.info("Globaltools Size: " + globalTools.size());
             LOGGER.info("Projecttools Size: " + projectTools.size());
 
@@ -107,6 +103,7 @@ public class GetToolsWorker extends SwingWorker {
             bar.dispose();
             tool = startUp.startToolViewStartUp(globalTools, projectTools);
             LOGGER.info("tools set");
+            
         } catch (MGXServerException ex) {
             Exceptions.printStackTrace(ex);
         }
@@ -142,41 +139,41 @@ public class GetToolsWorker extends SwingWorker {
             deleteWorker.execute();
         } else {
 
-            switch (toolType) {
-                case GLOBAL:
-                    GlobalToolWorker globalToolWorker =
-                            new GlobalToolWorker(tool, startUp,
-                            master, seqRun);
-                    globalToolWorker.execute();
-                    break;
-                case LOCAL:
-                    Object[] options = {"Yes",
-                        "No",};
-                    int value = JOptionPane.showOptionDialog(null,
-                            "Do you want to install the tool in your project. You can"
-                            + " run it from your project view.", "Tool Installation",
-                            JOptionPane.YES_NO_OPTION,
-                            JOptionPane.QUESTION_MESSAGE, null,
-                            options, options[0]);
-                    if (value == JOptionPane.YES_OPTION) {
-                        LocalToolWorker localToolWorker =
-                                new LocalToolWorker(tool, startUp,
-                                master, seqRun);
-                        localToolWorker.execute();
-
-                    } else if (value == JOptionPane.NO_OPTION) {
-                        GetToolsWorker worker = new GetToolsWorker(startUp, master, seqRun);
-                        worker.execute();
-                    }
-                    break;
-                case PROJECT:
+//            switch (toolType) {
+//                case GLOBAL:
+//                    GlobalToolWorker globalToolWorker =
+//                            new GlobalToolWorker(tool, startUp,
+//                            master, seqRun);
+//                    globalToolWorker.execute();
+//                    break;
+//                case LOCAL:
+//                    Object[] options = {"Yes",
+//                        "No",};
+//                    int value = JOptionPane.showOptionDialog(null,
+//                            "Do you want to install the tool in your project. You can"
+//                            + " run it from your project view.", "Tool Installation",
+//                            JOptionPane.YES_NO_OPTION,
+//                            JOptionPane.QUESTION_MESSAGE, null,
+//                            options, options[0]);
+//                    if (value == JOptionPane.YES_OPTION) {
+//                        LocalToolWorker localToolWorker =
+//                                new LocalToolWorker(tool, startUp,
+//                                master, seqRun);
+//                        localToolWorker.execute();
+//
+//                    } else if (value == JOptionPane.NO_OPTION) {
+//                        GetToolsWorker worker = new GetToolsWorker(startUp, master, seqRun);
+//                        worker.execute();
+//                    }
+//                    break;
+//                case PROJECT:
                     ShowParameterWorker showToolsWorker =
                             new ShowParameterWorker(tool, startUp,
-                            master, seqRun);
+                            master, seqRun,toolType);
                     showToolsWorker.execute();
-                    break;
-                default:
-            }
+//                    break;
+//                default:
+//            }
         }
         super.done();
     }

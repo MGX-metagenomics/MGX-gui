@@ -37,12 +37,20 @@ public class ShowParameterWorker extends SwingWorker<List<JobParameter>, Void> {
     private Store store;
     private WizardController startUp;
     private MGXMaster master;
-
-    public ShowParameterWorker(Tool lTool, WizardController startUp, MGXMaster master, SeqRun seqrun) {
+    private int toolType=3;
+    private int project = 2;
+    private int global = 0;
+    private int local = 1;
+    
+    
+    public ShowParameterWorker(Tool lTool, WizardController startUp, MGXMaster master, 
+            SeqRun seqrun,
+            int toolType) {
         this.master = master;
         tool = lTool;
         this.startUp = startUp;
         this.seqrun = seqrun;
+        this.toolType = toolType;
     }
 
     @Override
@@ -56,7 +64,7 @@ public class ShowParameterWorker extends SwingWorker<List<JobParameter>, Void> {
 
         LOGGER.info("Before create JobID: " + jobid);
 
-        jobid = master.Job().create(job);
+//        jobid = master.Job().create(job);
 
         LOGGER.info("After create JobID: " + jobid);
         jobParameterList = null;
@@ -64,12 +72,21 @@ public class ShowParameterWorker extends SwingWorker<List<JobParameter>, Void> {
         List<JobParameter> list = new ArrayList<>();
         Iterator iterator = null;
 
-        try {
-            iterator = master.Job().getParameters(jobid).iterator();
-            LOGGER.info("After Get Parameters");
-        } catch (MGXServerException ex) {
-            Exceptions.printStackTrace(ex);
-        }
+//        try {
+//            iterator = master.Job().getParameters(jobid).iterator();
+        
+        switch(toolType){
+            case 0:  iterator = master.Tool().getAvailableParameters(tool.getId(),true).iterator();
+                        break;
+            case 2:  iterator = master.Tool().getAvailableParameters(tool.getId(),false).iterator();
+                        break;
+            case 1:  iterator = master.Tool().getAvailableParameters(tool).iterator();
+                        break;
+        }     
+        LOGGER.info("After Get Parameters");
+//        } catch (MGXServerException ex) {
+//            Exceptions.printStackTrace(ex);
+//        }
         if (!iterator.hasNext()) {
             LOGGER.info("Iterator has no next");
         }
@@ -98,42 +115,42 @@ public class ShowParameterWorker extends SwingWorker<List<JobParameter>, Void> {
         } catch (InterruptedException | ExecutionException ex) {
             Exceptions.printStackTrace(ex);
         }
-        if (list.size() > 0) {
-            if (startUp.getStatus() == MenuAction.again) {
-                LOGGER.info("Again SHOWTOOLWORKER");
-                GetToolsWorker worker = new GetToolsWorker(startUp, master,
-                        seqrun);
-                worker.execute();
-            } else if (startUp.getStatus() == MenuAction.finish) {
-                jobParameterList =
-                        Transform.getFromNodeStoreJobParameter(store);
-                JobWorker worker = new JobWorker(jobParameterList, jobid, job,
-                        master, startUp, seqrun);
-                worker.execute();
-                LOGGER.info("Finish SHOWTOOLWORKER");
-            } else if (startUp.getStatus() == MenuAction.cancel) {
-                LOGGER.info("Cancel SHOWTOOLWORKER");
-            }
-        } else {
-
-            Object[] options = {"Yes",
-                "No",};
-            int value = JOptionPane.showOptionDialog(null,
-                    "The tool has no configurable parameters. "
-                    + "Do you want to execute the tool?",
-                    "Tool Execution",
-                    JOptionPane.YES_NO_OPTION,
-                    JOptionPane.QUESTION_MESSAGE, null,
-                    options, options[0]);
-            if (value == JOptionPane.YES_OPTION) {
-                jobParameterList = new ArrayList<>();
-                JobWorker worker = new JobWorker(jobParameterList, jobid, job,
-                        master, startUp, seqrun);
-                worker.execute();
-            } else if (value == JOptionPane.NO_OPTION) {
-                GetToolsWorker worker = new GetToolsWorker(startUp, master, seqrun);
-                worker.execute();
-            }
-        }
+//        if (list.size() > 0) {
+//            if (startUp.getStatus() == MenuAction.again) {
+//                LOGGER.info("Again SHOWTOOLWORKER");
+//                GetToolsWorker worker = new GetToolsWorker(startUp, master,
+//                        seqrun);
+//                worker.execute();
+//            } else if (startUp.getStatus() == MenuAction.finish) {
+//                jobParameterList =
+//                        Transform.getFromNodeStoreJobParameter(store);
+//                JobWorker worker = new JobWorker(jobParameterList, jobid, job,
+//                        master, startUp, seqrun);
+//                worker.execute();
+//                LOGGER.info("Finish SHOWTOOLWORKER");
+//            } else if (startUp.getStatus() == MenuAction.cancel) {
+//                LOGGER.info("Cancel SHOWTOOLWORKER");
+//            }
+//        } else {
+//
+//            Object[] options = {"Yes",
+//                "No",};
+//            int value = JOptionPane.showOptionDialog(null,
+//                    "The tool has no configurable parameters. "
+//                    + "Do you want to execute the tool?",
+//                    "Tool Execution",
+//                    JOptionPane.YES_NO_OPTION,
+//                    JOptionPane.QUESTION_MESSAGE, null,
+//                    options, options[0]);
+//            if (value == JOptionPane.YES_OPTION) {
+//                jobParameterList = new ArrayList<>();
+//                JobWorker worker = new JobWorker(jobParameterList, jobid, job,
+//                        master, startUp, seqrun);
+//                worker.execute();
+//            } else if (value == JOptionPane.NO_OPTION) {
+//                GetToolsWorker worker = new GetToolsWorker(startUp, master, seqrun);
+//                worker.execute();
+//            }
+//        }
     }
 }

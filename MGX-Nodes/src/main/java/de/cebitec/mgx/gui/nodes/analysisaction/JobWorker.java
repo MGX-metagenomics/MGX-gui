@@ -57,7 +57,7 @@ public class JobWorker extends SwingWorker {
      * @param lMaster Masterobjekt.
      * @param lStartup GuiController
      */
-    public JobWorker(List<JobParameter> lParameter, long lJobId, Job lJob, 
+    public JobWorker(List<JobParameter> lParameter, long lJobId, Job lJob,
             MGXMaster lMaster, WizardController lStartup, SeqRun lRun) {
         run = lRun;
         jobParameterList = lParameter;
@@ -81,43 +81,48 @@ public class JobWorker extends SwingWorker {
         if (jobParameterList != null) {
             
             try {
-                job.setParameters(jobParameterList);
+//                job.setParameters(jobParameterList);
+                master.Job().setParameters(jobId, jobParameterList);
+            } catch (MGXServerException ex) {
+                Exceptions.printStackTrace(ex);
+            }  
+
+            try {
                 master.Job().setParameters(jobId, jobParameterList);
             } catch (MGXServerException ex) {
                 Exceptions.printStackTrace(ex);
             }
-
-            boolean job_is_ok = false;
-            try {
-                
-                ProgressBar bar = new ProgressBar("Verifying tool parameters.",
-                        "Waiting for the server",
-                        300, 140);
-                job_is_ok = master.Job().verify(jobId);
-
-                if (job_is_ok) {
-                    LOGGER.info("job is ok");
-                    bar.setUpdateText("Parameters are fine. Running tool.");
-                    master.Job().execute(jobId);
-                    bar.dispose();
-                }
-
-            } catch (MGXServerException ex) {
-                Exceptions.printStackTrace(ex);
-            }
-            Object[] options = {"Yes",
-                "No",};
-            int value = JOptionPane.showOptionDialog(null,
-                    "Tool is executed. Do you want to return to the tool overview.", 
-                    "Tool Execution.",
-                    JOptionPane.YES_NO_OPTION,
-                    JOptionPane.QUESTION_MESSAGE, null,
-                    options, options[0]);
-            if (value == JOptionPane.YES_OPTION) {
-                GetToolsWorker worker = new GetToolsWorker(startup, master, run);
-                worker.execute();
-            } else if (value == JOptionPane.NO_OPTION) {
-            }
+//            boolean job_is_ok = false;
+//            try {
+//                
+//                ProgressBar bar = new ProgressBar("Verifying tool parameters.",
+//                        "Waiting for the server",
+//                        300, 140);
+//                job_is_ok = master.Job().verify(jobId);
+//
+//                if (job_is_ok) {
+//                    LOGGER.info("job is ok");
+//                    bar.setUpdateText("Parameters are fine. Running tool.");
+//                    master.Job().execute(jobId);
+//                    bar.dispose();
+//                }
+//
+//            } catch (MGXServerException ex) {
+//                Exceptions.printStackTrace(ex);
+//            }
+//            Object[] options = {"Yes",
+//                "No",};
+//            int value = JOptionPane.showOptionDialog(null,
+//                    "Tool is executed. Do you want to return to the tool overview.", 
+//                    "Tool Execution.",
+//                    JOptionPane.YES_NO_OPTION,
+//                    JOptionPane.QUESTION_MESSAGE, null,
+//                    options, options[0]);
+//            if (value == JOptionPane.YES_OPTION) {
+//                GetToolsWorker worker = new GetToolsWorker(startup, master, run);
+//                worker.execute();
+//            } else if (value == JOptionPane.NO_OPTION) {
+//            }
         }
         return null;
     }
