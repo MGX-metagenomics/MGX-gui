@@ -370,7 +370,8 @@
         <module>MGX-Jzy3D-Wrapper</module>
         <module>MGX-Charts3D</module>
         <module>MGX-Search</module>
-    </modules>
+    <module>MGX-TableView</module>
+  </modules>
 
     <properties>
         <netbeans.version>RELEASE72</netbeans.version>
