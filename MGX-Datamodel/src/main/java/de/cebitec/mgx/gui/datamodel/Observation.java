@@ -6,9 +6,10 @@ package de.cebitec.mgx.gui.datamodel;
  */
 public class Observation extends ModelBase {
 
-    private Attribute attribute;
-    protected int start;
-    protected int stop;
+    private int start;
+    private int stop;
+    private String attributeName;
+    private String attributeTypeName;
 
     public int getStart() {
         return start;
@@ -26,11 +27,19 @@ public class Observation extends ModelBase {
         this.stop = stop;
     }
 
-    public Attribute getAttribute() {
-        return attribute;
+    public String getAttributeName() {
+        return attributeName;
     }
 
-    public void setAttribute(Attribute attribute) {
-        this.attribute = attribute;
+    public void setAttributeName(String attributeName) {
+        this.attributeName = attributeName;
+    }
+
+    public String getAttributeTypeName() {
+        return attributeTypeName;
+    }
+
+    public void setAttributeTypeName(String attributeTypeName) {
+        this.attributeTypeName = attributeTypeName;
     }
 }
