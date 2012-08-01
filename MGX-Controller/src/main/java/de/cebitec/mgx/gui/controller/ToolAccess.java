@@ -36,7 +36,7 @@ public class ToolAccess extends AccessBase<Tool> {
         return getDTOmaster().Tool().installGlobalTool(global_id);
     }
 
-    public Iterable<JobParameter> getAvailableParameters(Tool tool) {
+    public Collection<JobParameter> getAvailableParameters(Tool tool) {
 
         ToolDTO dto = ToolDTOFactory.getInstance().toDTO(tool);
 
@@ -52,7 +52,7 @@ public class ToolAccess extends AccessBase<Tool> {
 
     }
 
-    public Iterable<JobParameter> getAvailableParameters(long toolId, boolean isGlobal) {
+    public Collection<JobParameter> getAvailableParameters(long toolId, boolean isGlobal) {
         List<JobParameter> ret = new ArrayList<>();
         try {
             for (JobParameterDTO dto : getDTOmaster().Tool().getAvailableParameters(toolId, isGlobal)) {
