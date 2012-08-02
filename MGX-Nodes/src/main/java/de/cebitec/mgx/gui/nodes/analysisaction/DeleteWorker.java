@@ -7,18 +7,16 @@ import de.cebitec.mgx.gui.datamodel.Tool;
 import de.cebitec.mgx.gui.wizard.configurations.action.WizardController;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
-import java.util.logging.Logger;
+import java.util.concurrent.ExecutionException;
 import javax.swing.SwingWorker;
+import org.openide.util.Exceptions;
 
 /**
  *
  * @author pbelmann
  */
-public class DeleteWorker extends SwingWorker implements ActionListener {
+public class DeleteWorker extends SwingWorker<Void, Void> implements ActionListener {
 
-    private final static Logger LOGGER =
-            Logger.getLogger(DeleteWorker.class.getName());
     private MGXMaster master;
     private Tool tool;
     private WizardController startUp;
@@ -32,15 +30,24 @@ public class DeleteWorker extends SwingWorker implements ActionListener {
     }
 
     @Override
-    protected Object doInBackground() {
+    protected Void doInBackground() {
         master.Tool().delete(tool);
         return null;
+    }
+
+    @Override
+    protected void done() {
+        try {
+            get();
+        } catch (InterruptedException | ExecutionException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+        super.done();
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         GetToolsWorker worker = new GetToolsWorker(startUp, master, seqRun);
         worker.execute();
-
     }
 }
