@@ -21,8 +21,8 @@ import org.openide.util.Exceptions;
  */
 public class ToolAccess extends AccessBase<Tool> {
 
-    public Collection<Tool> listGlobalTools() throws MGXServerException {
-        Collection<Tool> ret = new ArrayList<>();
+    public List<Tool> listGlobalTools() throws MGXServerException {
+        List<Tool> ret = new ArrayList<>();
         for (ToolDTO dto : getDTOmaster().Tool().listGlobalTools()) {
             Tool tool = ToolDTOFactory.getInstance().toModel(dto);
             // FIXME cannot set master
