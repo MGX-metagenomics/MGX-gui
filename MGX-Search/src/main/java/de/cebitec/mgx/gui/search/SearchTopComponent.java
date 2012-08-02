@@ -6,6 +6,7 @@ import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.datamodel.Sequence;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -246,7 +247,7 @@ public final class SearchTopComponent extends TopComponent implements LookupList
         result = Utilities.actionsGlobalContext().lookupResult(MGXMaster.class);
         result.addLookupListener(this);
         proc = new RequestProcessor("MGX-ObservationFetch-Pool", Runtime.getRuntime().availableProcessors() + 5);
-
+        getMaster();
     }
 
     @Override
@@ -267,6 +268,10 @@ public final class SearchTopComponent extends TopComponent implements LookupList
 
     @Override
     public void resultChanged(LookupEvent le) {
+        getMaster();
+    }
+
+    private void getMaster() {
         Collection<? extends MGXMaster> m = result.allInstances();
         boolean needUpdate = false;
         for (MGXMaster newMaster : m) {
@@ -294,6 +299,7 @@ public final class SearchTopComponent extends TopComponent implements LookupList
                     for (SeqRun sr : get()) {
                         runListModel.addElement(sr);
                     }
+                    runList.setSelectedIndex(0);
                 } catch (InterruptedException | ExecutionException ex) {
                     Exceptions.printStackTrace(ex);
                 }
@@ -310,24 +316,26 @@ public final class SearchTopComponent extends TopComponent implements LookupList
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        SwingWorker worker = new SwingWorker<List<Sequence>, Void>() {
+
+        SwingWorker<List<Sequence>, Void> worker = new SwingWorker<List<Sequence>, Void>() {
             @Override
             protected List<Sequence> doInBackground() throws Exception {
                 return currentMaster.Attribute().search(getSelectedSeqRuns(), searchTerm.getText(), exact.isSelected());
             }
-
-            @Override
-            protected void done() {
-                try {
-                    List<Sequence> hits = get();
-                    numResults.setText(hits.size() + " hits.");
-                    resultModel.setResult(hits);
-                } catch (InterruptedException | ExecutionException ex) {
-                    Exceptions.printStackTrace(ex);
-                }
-            }
         };
-        worker.execute();
+        try {
+            setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+            numResults.setText("Searching..");
+            worker.execute();
+            List<Sequence> hits = worker.get();
+            numResults.setText(hits.size() + " hits.");
+            resultModel.setResult(hits);
+        } catch (InterruptedException | ExecutionException ex) {
+            Exceptions.printStackTrace(ex);
+        } finally {
+            setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        }
+
     }
 
     private final class ResultListModel extends AbstractListModel<Sequence> {
