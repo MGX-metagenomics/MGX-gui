@@ -49,7 +49,7 @@ public class ToolViewStartUp {
         for (Tool tool : lProjectTools) {
             projectTools.put(tool.getId(), tool);
         }
-        tools.put(ToolType.PROJECT, globalTools);
+        tools.put(ToolType.PROJECT, projectTools);
     }
 
     /**
@@ -130,8 +130,8 @@ public class ToolViewStartUp {
                 selectedTool = tools.get(toolType).get((Long) wiz.getProperty("TOOL"));
                 break;
             case USER_PROVIDED:
-                String[] stringArray = ((String) (wiz.getProperty("TOOL"))).split(";");
-                String url = stringArray[1];
+//                String[] stringArray = ((String) (wiz.getProperty("TOOL"))).split(";");
+                String url = (String) wiz.getProperty("TOOL");
                 Tool tool = new Tool();
                 String fileContent = null;
                 try {

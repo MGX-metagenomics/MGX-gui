@@ -207,9 +207,13 @@ public class ToolViewController implements WizardDescriptor.Panel<WizardDescript
         }
         if (getComponent().getToolType() == ToolType.USER_PROVIDED) {
 
-            settings.putProperty(ActionCommands.ToolType, getComponent().
-                    getToolType() + ";"
-                    + getComponent().getFileFieldText());
+            settings.putProperty("TOOL"
+//                    ActionCommands.ToolType
+                            , 
+//                    getComponent().
+//                    getToolType() + ";"
+//                    + 
+                    getComponent().getFileFieldText());
             settings.putProperty(ActionCommands.LocalToolName, getComponent().
                     getNameText());
             settings.putProperty(ActionCommands.LocalToolAuthor, getComponent().
@@ -220,15 +224,23 @@ public class ToolViewController implements WizardDescriptor.Panel<WizardDescript
             settings.putProperty(ActionCommands.LocalToolVersion,
                     getComponent().
                     getVersionText());
+            settings.putProperty("TOOLTYPE", ToolType.USER_PROVIDED);         
         } else if (getComponent().getToolType() == ToolType.GLOBAL) {
-            settings.putProperty(ActionCommands.ToolType, getComponent().
-                    getToolType() + ";"
-                    + global.get(getComponent().getCurrentRow()).getId());
+            settings.putProperty("TOOL", 
+//                    getComponent().
+//                    getToolType() + ";"
+//                    +
+                    global.get(getComponent().getCurrentRow()).getId());
+            settings.putProperty("TOOLTYPE", ToolType.GLOBAL);
         } else if (getComponent().getToolType() == ToolType.PROJECT) {
-            settings.putProperty(ActionCommands.ToolType,
-                    getComponent().getToolType() + ";"
-                    + project.get(getComponent().getCurrentRow()).getId());
-
+            settings.putProperty(
+//                    ActionCommands.ToolType
+                    "TOOL",
+//                    getComponent().getToolType() + ";"
+//                    + 
+                    project.get(getComponent().getCurrentRow()).getId());
+            settings.putProperty("TOOLTYPE", ToolType.PROJECT);
+            
         }
 //        }
     }
