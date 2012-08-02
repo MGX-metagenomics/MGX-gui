@@ -6,6 +6,7 @@ import de.cebitec.mgx.gui.datamodel.misc.ToolType;
 import de.cebitec.mgx.gui.wizard.configurations.action.WizardController;
 import de.cebitec.mgx.gui.wizard.configurations.data.impl.Store;
 import de.cebitec.mgx.gui.wizard.configurations.data.util.Transform;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -53,7 +54,7 @@ public class ShowParameterWorker extends SwingWorker<Collection<JobParameter>, V
                 assert false;
         }
 
-        Store store = Transform.getFromJobParameterNodeStore(list);
+        Store store = Transform.getFromJobParameterNodeStore(new ArrayList<JobParameter>(list));
         List<DirEntry> files = master.File().fetchall();
 
         if (list.size() > 0) {

@@ -6,6 +6,7 @@ import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.datamodel.Tool;
 import de.cebitec.mgx.gui.datamodel.misc.ToolType;
 import de.cebitec.mgx.gui.wizard.configurations.action.WizardController;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.SwingWorker;
 import org.openide.util.Exceptions;
@@ -62,7 +63,8 @@ public class GetToolsWorker extends SwingWorker<Void, Void> {
     @Override
     protected Void doInBackground() {
         try {
-            globalTools = master.Tool().listGlobalTools();
+            globalTools = new ArrayList<Tool>();
+            globalTools.addAll(master.Tool().listGlobalTools());
             projectTools = master.Tool().fetchall();
             tool = startUp.startToolViewStartUp(globalTools, projectTools);
         } catch (MGXServerException ex) {
@@ -86,6 +88,6 @@ public class GetToolsWorker extends SwingWorker<Void, Void> {
                     new ShowParameterWorker(tool, startUp, master, seqRun, toolType);
             worker.execute();
         }
-        super.done();
+//        super.done();
     }
 }
