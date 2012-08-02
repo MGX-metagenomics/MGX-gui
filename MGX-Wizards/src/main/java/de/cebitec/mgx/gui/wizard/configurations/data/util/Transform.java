@@ -79,7 +79,7 @@ public class Transform {
      * @param parameters
      * @return NodeStore.
      */
-    public static Store getFromJobParameterNodeStore(List<JobParameter> parameters) {
+    public static Store getFromJobParameterNodeStore(Iterable<JobParameter> parameters) {
         Store store = new Store();
         LOGGER.info("Get from Parameters is started.");
 

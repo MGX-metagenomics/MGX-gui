@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.wizard.configurations.start;
 
 import de.cebitec.mgx.gui.datamodel.Tool;
+import de.cebitec.mgx.gui.datamodel.misc.ToolType;
 import de.cebitec.mgx.gui.wizard.configurations.messages.Messages;
 import de.cebitec.mgx.gui.wizard.configurations.utilities.ActionCommands;
 import de.cebitec.mgx.gui.wizard.configurations.utilities.AlphabetSorter;
@@ -12,6 +13,7 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
@@ -28,7 +30,7 @@ import org.openide.util.HelpCtx;
  * @author belmann
  */
 public class ToolViewController implements WizardDescriptor.Panel<WizardDescriptor>,
-       ChangeListener,ActionListener, PropertyChangeListener {
+        ChangeListener, ActionListener, PropertyChangeListener {
 
     private final static Logger LOGGER =
             Logger.getLogger(ToolViewController.class.getName());
@@ -102,10 +104,18 @@ public class ToolViewController implements WizardDescriptor.Panel<WizardDescript
      * @param lGlobal Tools auf dem Server.
      * @param lProject Tools im Projekt.
      */
-    public ToolViewController(List<Tool> lGlobal, List<Tool> lProject) {
+    //public ToolViewController(List<Tool> lGlobal, List<Tool> lProject) {
+    public ToolViewController(Map<ToolType, Map<Long, Tool>> tools) {
         AlphabetSorter sorter = new AlphabetSorter();
+
+        List<Tool> lGlobal = new ArrayList<>();
+        lGlobal.addAll(tools.get(ToolType.GLOBAL).values());
         Collections.sort(lGlobal, sorter);
+
+        List<Tool> lProject = new ArrayList<>();
+        lProject.addAll(tools.get(ToolType.PROJECT).values());
         Collections.sort(lProject, sorter);
+
         global = lGlobal;
         project = lProject;
 
@@ -124,7 +134,6 @@ public class ToolViewController implements WizardDescriptor.Panel<WizardDescript
             authorGlobal.add(tool.getAuthor());
             descriptionGlobal.add(tool.getDescription());
             versionGlobal.add(Float.toString(tool.getVersion()));
-
         }
 
         for (Tool tool : lProject) {
@@ -153,11 +162,6 @@ public class ToolViewController implements WizardDescriptor.Panel<WizardDescript
         return viewComponent;
     }
 
-    /**
-     * Gibt den Hilfe Text fuer eine View wieder. Hier jedoch keine vorhanden.
-     *
-     * @return keine Hilfetext.
-     */
     @Override
     public HelpCtx getHelp() {
         return HelpCtx.DEFAULT_HELP;
@@ -195,39 +199,37 @@ public class ToolViewController implements WizardDescriptor.Panel<WizardDescript
     @Override
     public void storeSettings(WizardDescriptor settings) {
 //        if (settings.getValue() == WizardDescriptor.FINISH_OPTION) {
-            deleteButton.removeActionListener(this);
-            if (isDelete) {
-                model.putProperty("DELETE",
-                        getComponent().getToolLocation() + ";"
-                        + project.get(getComponent().getCurrentRow()).getId());
-            }
-            if (getComponent().getToolLocation().equals(ActionCommands.Local)) {
+        deleteButton.removeActionListener(this);
+        if (isDelete) {
+            model.putProperty("DELETE",
+                    getComponent().getToolType() + ";"
+                    + project.get(getComponent().getCurrentRow()).getId());
+        }
+        if (getComponent().getToolType() == ToolType.USER_PROVIDED) {
 
-                settings.putProperty(ActionCommands.ToolType, getComponent().
-                        getToolLocation() + ";"
-                        + getComponent().getFileFieldText());
-                settings.putProperty(ActionCommands.LocalToolName, getComponent().
-                        getNameText());
-                settings.putProperty(ActionCommands.LocalToolAuthor, getComponent().
-                        getAuthorText());
-                settings.putProperty(ActionCommands.LocalToolDescription,
-                        getComponent().
-                        getDescriptionText());
-                settings.putProperty(ActionCommands.LocalToolVersion,
-                        getComponent().
-                        getVersionText());
-            } else if (getComponent().getToolLocation().
-                    equals(ActionCommands.Global)) {
-                settings.putProperty(ActionCommands.ToolType, getComponent().
-                        getToolLocation() + ";"
-                        + global.get(getComponent().getCurrentRow()).getId());
-            } else if (getComponent().getToolLocation().
-                    equals(ActionCommands.Project)) {
-                settings.putProperty(ActionCommands.ToolType,
-                        getComponent().getToolLocation() + ";"
-                        + project.get(getComponent().getCurrentRow()).getId());
+            settings.putProperty(ActionCommands.ToolType, getComponent().
+                    getToolType() + ";"
+                    + getComponent().getFileFieldText());
+            settings.putProperty(ActionCommands.LocalToolName, getComponent().
+                    getNameText());
+            settings.putProperty(ActionCommands.LocalToolAuthor, getComponent().
+                    getAuthorText());
+            settings.putProperty(ActionCommands.LocalToolDescription,
+                    getComponent().
+                    getDescriptionText());
+            settings.putProperty(ActionCommands.LocalToolVersion,
+                    getComponent().
+                    getVersionText());
+        } else if (getComponent().getToolType() == ToolType.GLOBAL) {
+            settings.putProperty(ActionCommands.ToolType, getComponent().
+                    getToolType() + ";"
+                    + global.get(getComponent().getCurrentRow()).getId());
+        } else if (getComponent().getToolType() == ToolType.PROJECT) {
+            settings.putProperty(ActionCommands.ToolType,
+                    getComponent().getToolType() + ";"
+                    + project.get(getComponent().getCurrentRow()).getId());
 
-            }
+        }
 //        }
     }
 
@@ -249,7 +251,7 @@ public class ToolViewController implements WizardDescriptor.Panel<WizardDescript
      */
     @Override
     public void actionPerformed(ActionEvent e) {
-       if (e.getActionCommand().equals("DELETE") && !getComponent().
+        if (e.getActionCommand().equals("DELETE") && !getComponent().
                 getFileFieldText().isEmpty()) {
             Object[] options = {"Yes",
                 "No",};
@@ -332,14 +334,13 @@ public class ToolViewController implements WizardDescriptor.Panel<WizardDescript
      */
     private boolean checkValidity(PropertyChangeEvent evt) {
         if (!getComponent().getFileFieldText().isEmpty()
-                && getComponent().getToolLocation().equals(ActionCommands.Project)) {
-
+                && getComponent().getToolType() == ToolType.PROJECT) {
             deleteButton.setEnabled(true);
         } else {
             deleteButton.setEnabled(false);
-
         }
-        if (getComponent().getToolLocation().equals(ActionCommands.Local)) {
+
+        if (getComponent().getToolType() == ToolType.USER_PROVIDED) {
             if (getComponent().getFileFieldText().isEmpty()) {
 
                 model.getNotificationLineSupport().
@@ -397,27 +398,13 @@ public class ToolViewController implements WizardDescriptor.Panel<WizardDescript
     }
 
     private boolean exists(String nameText) {
-
-        if (nameProject.contains(nameText) || nameGlobal.contains(nameText)) {
-            return true;
-
-        }
-        return false;
-
+        return (nameProject.contains(nameText) || nameGlobal.contains(nameText));
     }
 
     @Override
     public void stateChanged(ChangeEvent e) {
-      if  (e.getSource() instanceof JTabbedPane)  {
-            if (viewComponent.getToolLocation().equals(
-                    ActionCommands.Project)) {
-                viewComponent.setToolsToChoose(viewComponent.project);
-            } else if (viewComponent.getToolLocation().equals(
-                    ActionCommands.Global)) {
-                viewComponent.setToolsToChoose(viewComponent.global);
-            } else {
-                viewComponent.setToolsToChoose(viewComponent.local);
-            }
-        } 
+        if (e.getSource() instanceof JTabbedPane) {
+            viewComponent.setToolsToChoose(viewComponent.getToolType());
+        }
     }
 }

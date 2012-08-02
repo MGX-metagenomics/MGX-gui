@@ -1,13 +1,9 @@
-
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package de.cebitec.mgx.gui.wizard.configurations.action;
 
 //~--- non-JDK imports --------------------------------------------------------
 import de.cebitec.mgx.gui.datamodel.DirEntry;
 import de.cebitec.mgx.gui.datamodel.Tool;
+import de.cebitec.mgx.gui.datamodel.misc.ToolType;
 import de.cebitec.mgx.gui.wizard.configurations.data.impl.ConfigItem;
 import de.cebitec.mgx.gui.wizard.configurations.data.impl.Node;
 import de.cebitec.mgx.gui.wizard.configurations.data.impl.Store;
@@ -155,7 +151,21 @@ public final class MenuAction implements ActionListener {
         List<WizardDescriptor.Panel<WizardDescriptor>> panels =
                 new ArrayList<>();
 
-        panels.add(new ToolViewController(globalTools, projectTools));
+        Map<ToolType, Map<Long, Tool>> allTools = new HashMap<>();
+        Map<Long, Tool> gTools = new HashMap<>();
+        for (Tool tool : globalTools) {
+            gTools.put(tool.getId(), tool);
+        }
+        allTools.put(ToolType.GLOBAL, gTools);
+
+        Map<Long, Tool> pTools = new HashMap<>();
+        for (Tool tool : projectTools) {
+            pTools.put(tool.getId(), tool);
+        }
+        allTools.put(ToolType.PROJECT, pTools);
+        
+        ToolViewController tvc = new ToolViewController(allTools);
+        panels.add(tvc);
 
 
         String[] steps = new String[panels.size()];
@@ -180,8 +190,7 @@ public final class MenuAction implements ActionListener {
         }
 
 
-        final WizardDescriptor wiz =
-                new WizardDescriptor(
+         wiz = new WizardDescriptor(
                 new WizardDescriptor.ArrayIterator<>(panels));
 
         Object[] optionButtons = {WizardDescriptor.PREVIOUS_OPTION, WizardDescriptor.FINISH_OPTION,
@@ -195,7 +204,6 @@ public final class MenuAction implements ActionListener {
         wiz.setTitleFormat(new MessageFormat("{0}"));
         wiz.setTitle("Configurations");
 
-        this.wiz = wiz;
     }
     int status = 0;
     public static final int cancel = 0;
@@ -245,9 +253,9 @@ public final class MenuAction implements ActionListener {
             }
         }
 
-        final WizardDescriptor wiz =
-                new WizardDescriptor(
-                new WizardDescriptor.ArrayIterator<WizardDescriptor>(panels));
+        
+          wiz = new WizardDescriptor(
+                new WizardDescriptor.ArrayIterator<>(panels));
 
         JButton setAllDefaultbutton = new JButton("Set default");
         setAllDefaultbutton.setToolTipText("Sets available default values.");
@@ -298,7 +306,6 @@ public final class MenuAction implements ActionListener {
         button.getActionMap().put("PreviousKey",
                 previousClickAction);
         //  startWizardConfigurations(wiz);
-        this.wiz = wiz;
 
     }
     WizardDescriptor wiz;

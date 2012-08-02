@@ -1,7 +1,7 @@
 package de.cebitec.mgx.gui.wizard.configurations.start;
 
+import de.cebitec.mgx.gui.datamodel.misc.ToolType;
 import de.cebitec.mgx.gui.wizard.configurations.renderer.CellRenderer;
-import de.cebitec.mgx.gui.wizard.configurations.renderer.CheckBoxCellRenderer;
 import de.cebitec.mgx.gui.wizard.configurations.renderer.MultiLineTableHeaderRenderer;
 import de.cebitec.mgx.gui.wizard.configurations.utilities.ActionCommands;
 import de.cebitec.mgx.gui.wizard.configurations.utilities.XMLFileFilter;
@@ -189,8 +189,8 @@ public class ToolView extends JPanel implements DocumentListener {
         setPreferredSize(new Dimension(650, 380));
         setMaximumSize(new Dimension(650, 380));
 
-        containsTool = new ArrayList<Boolean>();
-        checkBoxTableIndizes = new ArrayList<Integer>();
+        containsTool = new ArrayList<>();
+        checkBoxTableIndizes = new ArrayList<>();
         for (String name : lNameProject) {
             for (int i = 0; i < nameGlobal.size(); i++) {
                 if (nameGlobal.get(i).equals(name)) {
@@ -215,8 +215,21 @@ public class ToolView extends JPanel implements DocumentListener {
      *
      * @return Ort der Tools.
      */
-    protected String getToolLocation() {
-        return allInOnePanel.getTitleAt(allInOnePanel.getSelectedIndex());
+    protected ToolType getToolType() {
+        switch (allInOnePanel.getTitleAt(allInOnePanel.getSelectedIndex())) {
+            case "Project-Tools":
+                return ToolType.PROJECT;
+            case "Global-Tools (Server)":
+                return ToolType.GLOBAL;
+            case "Local-Tools":
+                return ToolType.USER_PROVIDED;
+            default:
+                assert false;
+        }
+        
+        // not reached
+        assert false;
+        return ToolType.USER_PROVIDED;
     }
 
     /**
@@ -562,6 +575,7 @@ public class ToolView extends JPanel implements DocumentListener {
         DefaultTableModel dtm = new DefaultTableModel(dataGlobal, columns);
         globalTable = new JTable(dtm) {
 
+            @Override
             public boolean isCellEditable(int rowIndex, int colIndex) {
                 return false;
             }
@@ -669,6 +683,7 @@ public class ToolView extends JPanel implements DocumentListener {
         DefaultTableModel dtm = new DefaultTableModel(dataProject, columns);
         projectTable = new JTable(dtm) {
 
+            @Override
             public boolean isCellEditable(int rowIndex, int colIndex) {
                 return false; //Disallow the editing of any cell
             }
@@ -860,34 +875,22 @@ public class ToolView extends JPanel implements DocumentListener {
      *
      * @param toolLocation Ort, wo die Tools sich befindet.
      */
-    protected void setToolsToChoose(int toolLocation) {
+    protected void setToolsToChoose(ToolType toolLocation) {
         toolField.setText("");
         this.firePropertyChange("insert", 0, 1);
         c.weighty = 2.3;
         c.weightx = 2.3;
         c.gridy = 1;
         switch (toolLocation) {
-            case project:
+            case PROJECT:
                 projectTable.clearSelection();
                 globalTable.clearSelection();
-//                scrollPane.remove(chooseFile);
-//                scrollPane.remove(globalTable);
-//                scrollPane.setViewportView(projectTable);
-//                ((CardLayout) allInOnePanel.getLayout()).show(allInOnePanel,
-//                        "scrollPane");
                 break;
-            case global:
+            case GLOBAL:
                 globalTable.clearSelection();
                 projectTable.clearSelection();
-//                scrollPane.remove(chooseFile);
-//                scrollPane.remove(projectTable);
-//                scrollPane.setViewportView(globalTable);
-//                ((CardLayout) allInOnePanel.getLayout()).show(allInOnePanel,
-//                        "scrollPane");
                 break;
-            case local:
-//                ((CardLayout) allInOnePanel.getLayout()).show(allInOnePanel,
-//                        "buttonPanel");
+            case USER_PROVIDED:
                 break;
         }
     }
@@ -909,7 +912,7 @@ public class ToolView extends JPanel implements DocumentListener {
      */
     @Override
     public void insertUpdate(DocumentEvent e) {
-        if (this.getToolLocation().equals(ActionCommands.Local)) {
+        if (this.getToolType() == ToolType.USER_PROVIDED) {
             this.firePropertyChange(null, 0, 1);
         }
     }
@@ -922,7 +925,7 @@ public class ToolView extends JPanel implements DocumentListener {
      */
     @Override
     public void removeUpdate(DocumentEvent e) {
-        if (this.getToolLocation().equals(ActionCommands.Local)) {
+        if (this.getToolType() == ToolType.USER_PROVIDED) {
             this.firePropertyChange(null, 0, 1);
         }
     }

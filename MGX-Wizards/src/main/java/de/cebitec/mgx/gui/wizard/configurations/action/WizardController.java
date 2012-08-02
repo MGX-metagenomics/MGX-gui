@@ -1,14 +1,10 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package de.cebitec.mgx.gui.wizard.configurations.action;
 
 import de.cebitec.mgx.gui.datamodel.DirEntry;
 import de.cebitec.mgx.gui.datamodel.Tool;
+import de.cebitec.mgx.gui.datamodel.misc.ToolType;
 import de.cebitec.mgx.gui.wizard.configurations.data.impl.Store;
 import de.cebitec.mgx.gui.wizard.configurations.progressscreen.ProgressBar;
-import java.util.Collection;
 import java.util.List;
 import javax.swing.JOptionPane;
 
@@ -28,14 +24,7 @@ public class WizardController {
      * Das StartUp fuer die Anzeige der Parameter.
      */
     private MenuViewStartUp configurationStartUp;
-    /**
-     * Ja es soll ein Tool installiert werden.
-     */
-    public final static int YESINSTALL = 1;
-    /**
-     * Nein das Tool soll nicht installiert werden.
-     */
-    public final static int NOINSTALL = 2;
+   
     private ToolViewStartUp toolStartUp;
 
     /**
@@ -45,38 +34,22 @@ public class WizardController {
      * @param lProjectTools Tools die sich im Projekt befinden.
      * @return Das ausgewaehlte Tool.
      */
-    public Tool startToolViewStartUp(Collection<Tool> lGlobalTools,
-            List<Tool> lProjectTools) {
+    public Tool startToolViewStartUp(List<Tool> lGlobalTools, List<Tool> lProjectTools) {
         isDelete = false;
-        toolStartUp = new ToolViewStartUp(lGlobalTools,
-                lProjectTools);
+        toolStartUp = new ToolViewStartUp(lGlobalTools, lProjectTools);
         toolStartUp.initializeToolsView();
         Tool tool = toolStartUp.startWizardTools();
         isDelete = toolStartUp.isDelete();
-//        bar = new ProgressBar("Waiting for server.", "Notification", 200, 100);
         return tool;
     }
-//    /**
-//     * Schliesst die ProgressBar.
-//     */
-//    public void closeProgressBar() {
-//        if (bar != null) {
-//            bar.dispose();
-//        }
-//
-//    }
     private boolean isDelete;
 
     public boolean isToolDelete() {
         return isDelete;
     }
 
-    public String getLastToolType() {
-        if (toolStartUp == null) {
-            return "";
-        } else {
-            return toolStartUp.getLastToolType();
-        }
+    public ToolType getLastToolType() {
+        return toolStartUp.getLastToolType();
     }
 
     /**
@@ -109,34 +82,21 @@ public class WizardController {
         }
     }
 
-    /**
-     * Es soll vor der Installation eines Tools nachgefragt werden, ob es
-     * installiert werden soll.
-     *
-     * @return YESINSTALL oder NOINSTALL
-     */
-    public int showInstallDialog(String toolName) {
-        Object[] options = {"Yes",
-            "No",};
-        int value = JOptionPane.showOptionDialog(null,
-                "Should the tool \"" + toolName + "\" be installed.\n"
-                + "You can choose it then in the project tools view.", "",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE, null,
-                options, options[1]);
-        if (value == JOptionPane.YES_OPTION) {
-            return YESINSTALL;
-        } else {
-            return NOINSTALL;
-        }
-    }
-//    public void showWaitforServer(String message) {
-//        bar = new ProgressBar(message,270,200);
-//
-//    }
-//    public void setUpdateText(String text) {
-//        if (bar != null) {
-//            bar.setUpdateText(text);
-//        }
+//    /**
+//     * Es soll vor der Installation eines Tools nachgefragt werden, ob es
+//     * installiert werden soll.
+//     *
+//     * @return YESINSTALL oder NOINSTALL
+//     */
+//    public boolean showInstallDialog(String toolName) {
+//        Object[] options = {"Yes",
+//            "No",};
+//        int value = JOptionPane.showOptionDialog(null,
+//                "Should the tool \"" + toolName + "\" be installed.\n"
+//                + "You can choose it then in the project tools view.", "",
+//                JOptionPane.YES_NO_OPTION,
+//                JOptionPane.QUESTION_MESSAGE, null,
+//                options, options[1]);
+//        return value == JOptionPane.YES_OPTION;
 //    }
 }

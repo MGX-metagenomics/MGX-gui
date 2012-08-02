@@ -1,22 +1,17 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package de.cebitec.mgx.gui.wizard.configurations.action;
 
 import de.cebitec.mgx.gui.datamodel.Tool;
+import de.cebitec.mgx.gui.datamodel.misc.ToolType;
 import de.cebitec.mgx.gui.wizard.configurations.start.ToolViewController;
-import de.cebitec.mgx.gui.wizard.configurations.utilities.ActionCommands;
 import de.cebitec.mgx.gui.wizard.configurations.utilities.Util;
 import java.awt.Component;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Logger;
+import java.util.Map;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import org.openide.DialogDisplayer;
@@ -31,27 +26,10 @@ import org.openide.util.Exceptions;
  */
 public class ToolViewStartUp {
 
-    /**
-     * Alle Tools werden hier abgespeichert.
-     */
-    private HashMap<String, Tool> tools;
-    /**
-     * Alle Tools die auf dem Server liegen.
-     */
-    private List<Tool> globalTools;
-    /**
-     * Alle Tools die sich im Projekt befinden.
-     */
-    private List<Tool> projectTools;
-    /**
-     * Logger fuer die Ausgaben.
-     */
-    private final static Logger LOGGER =
-            Logger.getLogger(ToolViewStartUp.class.getName());
-    /**
-     * WizardDescriptor fuer das Menu.
-     */
+    private HashMap<ToolType, Map<Long, Tool>> tools = new HashMap<>();
     private WizardDescriptor wiz;
+    private boolean isDelete;
+    ToolType toolType = null;
 
     /**
      * Konstruktor um die Tools zu verarbeiten.
@@ -59,23 +37,19 @@ public class ToolViewStartUp {
      * @param lGlobalTools Tools vom Server.
      * @param lProjectTools Tools vom Projekt.
      */
-    public ToolViewStartUp(Collection<Tool> lGlobalTools,
-            List<Tool> lProjectTools) {
-        isDelete = false;
-        tools = new HashMap<String, Tool>();
-        projectTools = lProjectTools;
-        globalTools = new ArrayList<>();
+    public ToolViewStartUp(List<Tool> lGlobalTools, List<Tool> lProjectTools) {
 
+        Map<Long, Tool> globalTools = new HashMap<>();
         for (Tool tool : lGlobalTools) {
-
-            tools.put(ActionCommands.Global + ";" + tool.getId(), tool);
-            globalTools.add(tool);
-
+            globalTools.put(tool.getId(), tool);
         }
+        tools.put(ToolType.GLOBAL, globalTools);
+
+        Map<Long, Tool> projectTools = new HashMap<>();
         for (Tool tool : lProjectTools) {
-
-            tools.put(ActionCommands.Project + ";" + tool.getId(), tool);
+            projectTools.put(tool.getId(), tool);
         }
+        tools.put(ToolType.PROJECT, globalTools);
     }
 
     /**
@@ -83,11 +57,9 @@ public class ToolViewStartUp {
      */
     protected void initializeToolsView() {
         isDelete = false;
-        List<WizardDescriptor.Panel<WizardDescriptor>> panels =
-                new ArrayList<WizardDescriptor.Panel<WizardDescriptor>>();
+        List<WizardDescriptor.Panel<WizardDescriptor>> panels = new ArrayList<>();
 
-        panels.add(new ToolViewController(globalTools, projectTools));
-
+        panels.add(new ToolViewController(tools));
 
         for (int i = 0; i < panels.size(); i++) {
             Component c = panels.get(i).getComponent();
@@ -101,9 +73,7 @@ public class ToolViewStartUp {
             }
         }
 
-        final WizardDescriptor wiz =
-                new WizardDescriptor(
-                new WizardDescriptor.ArrayIterator<WizardDescriptor>(panels));
+        wiz = new WizardDescriptor(new WizardDescriptor.ArrayIterator<>(panels));
 
         JButton delete = new JButton("Delete");
         delete.setMnemonic(KeyEvent.VK_D);
@@ -120,26 +90,16 @@ public class ToolViewStartUp {
         JButton buttonCancel = (JButton) objects[3];
         buttonCancel.setMnemonic(KeyEvent.VK_C);
 
-
-
         wiz.setTitleFormat(new MessageFormat("{0}"));
         wiz.setTitle("Tool Overview");
-        this.wiz = wiz;
     }
-    private boolean isDelete;
 
     public boolean isDelete() {
         return isDelete;
-
     }
-    String toolType = null;
 
-    public String getLastToolType() {
-        if (toolType == null) {
-            return "";
-        } else {
-            return toolType;
-        }
+    public ToolType getLastToolType() {
+        return toolType;
     }
 
     /**
@@ -148,25 +108,31 @@ public class ToolViewStartUp {
      * @return Tool.
      */
     public Tool startWizardTools() {
-        LOGGER.info("Tools start.");
 
-        if (DialogDisplayer.getDefault().notify(wiz)
-                == WizardDescriptor.FINISH_OPTION) {
-            String[] temp = ((String) wiz.getProperty("TOOL")).split(";");
-            toolType = temp[0];
-            if (wiz.getProperty("DELETE") != null) {
-                Tool tool = tools.get(wiz.getProperty("DELETE"));
-                isDelete = true;
-                return tool;
+        if (DialogDisplayer.getDefault().notify(wiz) != WizardDescriptor.FINISH_OPTION) {
+            return null;
+        }
 
-            } else if (((String) (wiz.getProperty("TOOL"))).startsWith("Local-Tools")) {
-                LOGGER.info("Local-Tools");
-              
-                String[] stringArray =
-                        ((String) (wiz.getProperty("TOOL"))).split(";");
+        if (wiz.getProperty("DELETE") != null) {
+            Tool tool = tools.get(toolType).get((Long) wiz.getProperty("DELETE"));
+            isDelete = true;
+            return tool;
+        }
+
+        toolType = (ToolType) wiz.getProperty("TOOLTYPE");
+        Tool selectedTool = null;
+
+        switch (toolType) {
+            case GLOBAL:
+                selectedTool = tools.get(toolType).get((Long) wiz.getProperty("TOOL"));
+                break;
+            case PROJECT:
+                selectedTool = tools.get(toolType).get((Long) wiz.getProperty("TOOL"));
+                break;
+            case USER_PROVIDED:
+                String[] stringArray = ((String) (wiz.getProperty("TOOL"))).split(";");
                 String url = stringArray[1];
                 Tool tool = new Tool();
-                LOGGER.info("Local-Tools Path: " + url);
                 String fileContent = null;
                 try {
                     fileContent = Util.readFile(url);
@@ -177,22 +143,14 @@ public class ToolViewStartUp {
                 tool.setAuthor((String) (wiz.getProperty("LOCALAUTHOR")));
                 tool.setDescription((String) (wiz.getProperty("LOCALDESCRIPTION")));
                 tool.setName((String) (wiz.getProperty("LOCALNAME")));
-                tool.setId(-1);
                 tool.setUrl(url);
                 tool.setVersion(Float.parseFloat((String) (wiz.getProperty("LOCALVERSION"))));
-                return tool;
-            }
-            
-
-            Tool tool = tools.get(wiz.getProperty("TOOL"));
-
-
-            LOGGER.info("TOOLName " + tool.getName());
-            LOGGER.info("TOOLAuthor " + tool.getAuthor());
-            LOGGER.info("TOOLDescription " + tool.getDescription());
-            LOGGER.info("TOOLId " + tool.getId());
-            return tool;
+                selectedTool = tool;
+                break;
+            default:
+                assert false;
         }
-        return null;
+
+        return selectedTool;
     }
 }
