@@ -64,7 +64,7 @@ public class GetToolsWorker extends SwingWorker<Void, Void> {
     protected Void doInBackground() {
         try {
             globalTools = new ArrayList<Tool>();
-            globalTools.addAll(master.Tool().listGlobalTools());
+            globalTools=master.Tool().listGlobalTools();
             projectTools = master.Tool().fetchall();
             tool = startUp.startToolViewStartUp(globalTools, projectTools);
         } catch (MGXServerException ex) {

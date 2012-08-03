@@ -25,20 +25,23 @@ public class ShowParameterWorker extends SwingWorker<Collection<JobParameter>, V
     private WizardController startUp;
     private MGXMaster master;
     private ToolType toolType;
+    private SeqRun seqRun;
+    private Collection<JobParameter> list = null;
 
     public ShowParameterWorker(Tool lTool, WizardController startUp, MGXMaster master,
-            SeqRun seqrun,
+            SeqRun lSeqRun,
             ToolType toolType) {
         this.master = master;
         tool = lTool;
         this.startUp = startUp;
         this.toolType = toolType;
+        seqRun = lSeqRun;
     }
 
     @Override
     protected Collection<JobParameter> doInBackground() {
 
-        Collection<JobParameter> list = null;
+
 
         switch (toolType) {
             case GLOBAL:
@@ -70,5 +73,8 @@ public class ShowParameterWorker extends SwingWorker<Collection<JobParameter>, V
         } catch (InterruptedException | ExecutionException ex) {
             Exceptions.printStackTrace(ex);
         }
+
+        JobWorker worker = new JobWorker(toolType, tool, new ArrayList(list), master, seqRun);
+        worker.execute();
     }
 }

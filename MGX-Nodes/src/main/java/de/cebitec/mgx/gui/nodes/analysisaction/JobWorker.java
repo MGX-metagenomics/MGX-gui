@@ -8,7 +8,10 @@ import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.Job;
 import de.cebitec.mgx.gui.datamodel.JobParameter;
+import de.cebitec.mgx.gui.datamodel.JobState;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
+import de.cebitec.mgx.gui.datamodel.Tool;
+import de.cebitec.mgx.gui.datamodel.misc.ToolType;
 import de.cebitec.mgx.gui.wizard.configurations.action.WizardController;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -23,9 +26,12 @@ import org.openide.util.Exceptions;
 public class JobWorker extends SwingWorker<Void, Void> {
 
     private final List<JobParameter> jobParameterList;
-    private Job job;
+   
     private MGXMaster master;
-
+    private ToolType toolType;
+    private Tool tool;
+    private SeqRun seqRun;   
+    
     /**
      * Konstruktor
      *
@@ -33,10 +39,13 @@ public class JobWorker extends SwingWorker<Void, Void> {
      * @param lJob Job mit dem Tool
      * @param lMaster Masterobjekt.
      */
-    public JobWorker(List<JobParameter> lParameter, Job lJob, MGXMaster lMaster) {
+    public JobWorker(ToolType lToolType ,Tool lTool,List<JobParameter> lParameter,  
+            MGXMaster lMaster, SeqRun lSeqrun) {
+        toolType = lToolType;
+        tool = lTool;
         jobParameterList = lParameter;
-        job = lJob;
         master = lMaster;
+        seqRun = lSeqrun;
     }
 
     /**
@@ -46,14 +55,47 @@ public class JobWorker extends SwingWorker<Void, Void> {
      */
     @Override
     protected Void doInBackground() {
-        if ((jobParameterList != null) && jobParameterList.size() > 0){
-            try {
+        switch(toolType){
+            case PROJECT:
+                Job job = new Job();
+                job.setTool(tool);
+                job.setId(tool.getId());
+                job.setSeqrun(seqRun);
+                job.setCreator(master.getLogin());
+                job.setStatus(JobState.CREATED);  
                 job.setParameters(jobParameterList);
+                Long job_id = master.Job().create(job);
+                 if ((jobParameterList != null) && jobParameterList.size() > 0){
+            try {
                 master.Job().setParameters(job.getId(), jobParameterList);
             } catch (MGXServerException ex) {
                 Exceptions.printStackTrace(ex);
             }
+            }
+                boolean job_ok = false;
+            try {
+                job_ok = master.Job().verify(job_id);
+            } catch (MGXServerException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+            
+            System.err.println("job verification: " + job_ok);
+            
+            boolean submitted = false;
+            try {
+                submitted = master.Job().execute(job_id);
+            } catch (MGXServerException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+            
+            System.err.println("job execution: " + submitted);
+        
+                break;
         }
+        
+        
+        
+       
         return null;
     }
 
