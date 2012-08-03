@@ -4,7 +4,6 @@ import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.Observation;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.datamodel.Sequence;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
@@ -16,7 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
+import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -320,7 +319,11 @@ public final class SearchTopComponent extends TopComponent implements LookupList
         SwingWorker<List<Sequence>, Void> worker = new SwingWorker<List<Sequence>, Void>() {
             @Override
             protected List<Sequence> doInBackground() throws Exception {
-                return currentMaster.Attribute().search(getSelectedSeqRuns(), searchTerm.getText(), exact.isSelected());
+                long start = System.currentTimeMillis();
+                List<Sequence> ret= currentMaster.Attribute().search(getSelectedSeqRuns(), searchTerm.getText(), exact.isSelected());
+                start = System.currentTimeMillis()-start;
+                Logger.getGlobal().info("search for "+searchTerm.getText()+ " took "+start+"ms");
+                return ret;
             }
         };
         try {
