@@ -1,8 +1,10 @@
 package de.cebitec.mgx.gui.dtoconversion;
 
+import de.cebitec.mgx.dto.dto;
 import de.cebitec.mgx.dto.dto.ChoicesDTO;
 import de.cebitec.mgx.dto.dto.JobParameterDTO;
 import de.cebitec.mgx.dto.dto.JobParameterDTO.Builder;
+import de.cebitec.mgx.dto.dto.JobParameterListDTO;
 import de.cebitec.mgx.dto.dto.KVPair;
 import de.cebitec.mgx.gui.datamodel.Identifiable;
 import de.cebitec.mgx.gui.datamodel.JobParameter;
@@ -38,7 +40,7 @@ public class JobParameterDTOFactory extends DTOConversionBase<JobParameter, JobP
         if (p.getId() != Identifiable.INVALID_IDENTIFIER) {
             b = b.setId(p.getId());
         }
-        
+
         // choices
         if (p.getChoices() != null) {
             ChoicesDTO.Builder choices = ChoicesDTO.newBuilder();
@@ -51,11 +53,11 @@ public class JobParameterDTOFactory extends DTOConversionBase<JobParameter, JobP
             }
             b.setChoices(choices.build());
         }
-        
+
         if (p.getConfigItemValue() != null) {
             b.setConfigitemValue(p.getConfigItemValue());
         }
-                
+
         if (p.getDefaultValue() != null) {
             b.setDefaultValue(p.getDefaultValue());
         }
@@ -76,22 +78,30 @@ public class JobParameterDTOFactory extends DTOConversionBase<JobParameter, JobP
         jp.setConfigItemName(dto.getConfigitemName());
         jp.setType(dto.getType());
         jp.setOptional(dto.getIsOptional());
-        
+
         if (dto.hasChoices()) {
             jp.setChoices(new HashMap<String, String>());
             for (KVPair kv : dto.getChoices().getEntryList()) {
                 jp.getChoices().put(kv.getKey(), kv.getValue());
             }
         }
-        
+
         if (dto.hasConfigitemValue()) {
             jp.setConfigItemValue(dto.getConfigitemValue());
         }
-        
+
         if (dto.hasDefaultValue()) {
             jp.setDefaultValue(dto.getDefaultValue());
         }
-        
+
         return jp;
+    }
+
+    public JobParameterListDTO toList(Iterable<JobParameter> params) {
+        JobParameterListDTO.Builder b = JobParameterListDTO.newBuilder();
+        for (JobParameter p : params) {
+            b.addParameter(toDTO(p));
+        }
+        return b.build();
     }
 }
