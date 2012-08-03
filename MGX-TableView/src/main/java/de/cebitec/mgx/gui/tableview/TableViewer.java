@@ -7,6 +7,7 @@ import de.cebitec.mgx.gui.datamodel.AttributeType;
 import de.cebitec.mgx.gui.datamodel.misc.Distribution;
 import de.cebitec.mgx.gui.datamodel.misc.Pair;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
+import java.util.HashSet;
 import java.util.List;
 import javax.swing.JComponent;
 import javax.swing.JTable;
@@ -43,22 +44,26 @@ public class TableViewer extends ViewerI<Distribution> {
 
     @Override
     public void show(List<Pair<VisualizationGroup, Distribution>> dists) {
+        HashSet<Attribute> allAttrs = new HashSet<>();
         String[] columns = new String[dists.size() + 1];
         int i = 0;
         columns[i++] = getAttributeType().getName();
         for (Pair<VisualizationGroup, Distribution> p : dists) {
             columns[i++] = p.getFirst().getName();
+            allAttrs.addAll(p.getSecond().keySet());
         }
         
         SortOrder order = new SortOrder(getAttributeType(), SortOrder.DESCENDING);
         dists = order.filter(dists);
  
-        String[][] rowData = new String[dists.size()+1][order.getOrder().size()];
+        int numRows = dists.size()+1;
+        System.err.println("rows: "+ numRows + " cols: "+ allAttrs.size());
+        String[][] rowData = new String[numRows][allAttrs.size()];
         
         int row = 0;
-        for (Attribute a : order.getOrder()) {
-            int col = 0;
-            rowData[row][col++] = a.getValue();
+        for (Attribute a : allAttrs) {
+            rowData[row][0] = a.getValue();
+            int col = 1;
             for (Pair<VisualizationGroup, Distribution> p : dists) {
                 Distribution d = p.getSecond();
                 rowData[row][col++] = d.containsKey(a) ? d.get(a).toString() : "0";
