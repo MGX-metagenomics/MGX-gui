@@ -118,7 +118,7 @@ public class Transform {
 
                 Set set = parameter.getChoices().entrySet();
                 Iterator iterator = set.iterator();
-                Choices choices = new Choices();;
+                Choices choices = new Choices();
                 while (iterator.hasNext()) {
                     Entry choiceME = (Map.Entry) iterator.next();
                     String choiceName = (String) choiceME.getKey();
