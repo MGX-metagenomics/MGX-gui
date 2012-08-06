@@ -14,19 +14,13 @@ public class JobParameter extends Identifiable {
     private String displayName;
     private String className;
     private Map<String, String> choices;
-    private String configitem_name;
-    private String configitem_value;
+    private String parameter_name;
+    private String parameter_value;
     private String type;
     private boolean optional;
     private String default_value = "";
 
-    public String getConfigItemName() {
-        return configitem_name;
-    }
 
-    public void setConfigItemName(String configitem_name) {
-        this.configitem_name = configitem_name;
-    }
 
     public void setDisplayName(String lDisplayName) {
         displayName = lDisplayName;
@@ -50,14 +44,6 @@ public class JobParameter extends Identifiable {
 
     public Map<String, String> getChoices() {
         return choices;
-    }
-
-    public String getConfigItemValue() {
-        return configitem_value;
-    }
-
-    public void setConfigItemValue(String configitem_value) {
-        this.configitem_value = configitem_value;
     }
 
     public String getDefaultValue() {
@@ -106,5 +92,21 @@ public class JobParameter extends Identifiable {
 
     public void setUserName(String user_name) {
         this.user_name = user_name;
+    }
+
+    public String getParameterName() {
+        return parameter_name;
+    }
+
+    public void setParameterName(String parameter_name) {
+        this.parameter_name = parameter_name;
+    }
+
+    public String getParameterValue() {
+        return parameter_value;
+    }
+
+    public void setParameterValue(String parameter_value) {
+        this.parameter_value = parameter_value;
     }
 }

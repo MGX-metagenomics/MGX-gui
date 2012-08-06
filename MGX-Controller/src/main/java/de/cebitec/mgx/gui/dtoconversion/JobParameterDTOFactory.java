@@ -1,6 +1,5 @@
 package de.cebitec.mgx.gui.dtoconversion;
 
-import de.cebitec.mgx.dto.dto;
 import de.cebitec.mgx.dto.dto.ChoicesDTO;
 import de.cebitec.mgx.dto.dto.JobParameterDTO;
 import de.cebitec.mgx.dto.dto.JobParameterDTO.Builder;
@@ -34,7 +33,7 @@ public class JobParameterDTOFactory extends DTOConversionBase<JobParameter, JobP
                 .setUserDesc(p.getUserDescription())
                 .setDisplayName(p.getDisplayName())
                 .setClassName(p.getClassName())
-                .setConfigitemName(p.getConfigItemName())
+                .setParameterName(p.getParameterName())
                 .setType(p.getType())
                 .setIsOptional(p.isOptional());
         if (p.getId() != Identifiable.INVALID_IDENTIFIER) {
@@ -54,8 +53,8 @@ public class JobParameterDTOFactory extends DTOConversionBase<JobParameter, JobP
             b.setChoices(choices.build());
         }
 
-        if (p.getConfigItemValue() != null) {
-            b.setConfigitemValue(p.getConfigItemValue());
+        if (p.getParameterValue() != null) {
+            b.setParameterValue(p.getParameterValue());
         }
 
         if (p.getDefaultValue() != null) {
@@ -75,7 +74,7 @@ public class JobParameterDTOFactory extends DTOConversionBase<JobParameter, JobP
         jp.setUserDescription(dto.getUserDesc());
         jp.setDisplayName(dto.getDisplayName());
         jp.setClassName(dto.getClassName());
-        jp.setConfigItemName(dto.getConfigitemName());
+        jp.setParameterName(dto.getParameterName());
         jp.setType(dto.getType());
         jp.setOptional(dto.getIsOptional());
 
@@ -86,8 +85,8 @@ public class JobParameterDTOFactory extends DTOConversionBase<JobParameter, JobP
             }
         }
 
-        if (dto.hasConfigitemValue()) {
-            jp.setConfigItemValue(dto.getConfigitemValue());
+        if (dto.hasParameterValue()) {
+            jp.setParameterValue(dto.getParameterValue());
         }
 
         if (dto.hasDefaultValue()) {
