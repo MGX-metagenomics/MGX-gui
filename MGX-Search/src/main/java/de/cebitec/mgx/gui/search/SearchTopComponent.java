@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -320,9 +321,9 @@ public final class SearchTopComponent extends TopComponent implements LookupList
             @Override
             protected List<Sequence> doInBackground() throws Exception {
                 long start = System.currentTimeMillis();
-                List<Sequence> ret= currentMaster.Attribute().search(getSelectedSeqRuns(), searchTerm.getText(), exact.isSelected());
-                start = System.currentTimeMillis()-start;
-                Logger.getGlobal().info("search for "+searchTerm.getText()+ " took "+start+"ms");
+                List<Sequence> ret = currentMaster.Attribute().search(getSelectedSeqRuns(), searchTerm.getText(), exact.isSelected());
+                start = System.currentTimeMillis() - start;
+                Logger.getGlobal().log(Level.INFO, "search for {0} took {1}ms", new Object[]{searchTerm.getText(), start});
                 return ret;
             }
         };
@@ -360,6 +361,8 @@ public final class SearchTopComponent extends TopComponent implements LookupList
             return list.get(index);
         }
     }
+    
+    private static int numWorkers = 0;
 
     private final class ObservationListCellRenderer implements ListCellRenderer<Sequence> {
 
@@ -369,10 +372,12 @@ public final class SearchTopComponent extends TopComponent implements LookupList
         @Override
         public Component getListCellRendererComponent(JList<? extends Sequence> list, final Sequence seq, int index, boolean isSelected, boolean cellHasFocus) {
             comp.setSequence(seq);
-            if (!cache.containsKey(seq)) {
+            boolean isVisible = ((index >= resultList.getFirstVisibleIndex()) && (index <= resultList.getLastVisibleIndex()));
+            if (isVisible && !cache.containsKey(seq)) {
                 SwingWorker<Collection<Observation>, Void> worker = new SwingWorker<Collection<Observation>, Void>() {
                     @Override
                     protected Collection<Observation> doInBackground() throws Exception {
+                        Logger.getGlobal().log(Level.INFO, "getObs worker {0}", ++numWorkers);
                         return currentMaster.Observation().ByRead(seq);
                     }
                 };

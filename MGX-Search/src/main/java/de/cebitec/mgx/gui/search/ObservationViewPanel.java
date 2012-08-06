@@ -2,7 +2,6 @@ package de.cebitec.mgx.gui.search;
 
 import de.cebitec.mgx.gui.datamodel.Observation;
 import de.cebitec.mgx.gui.datamodel.Sequence;
-import java.awt.Graphics2D;
 import java.util.Collection;
 
 /**
@@ -18,6 +17,7 @@ public class ObservationViewPanel extends javax.swing.JPanel {
      * Creates new form ObservationViewPanel
      */
     public ObservationViewPanel() {
+        super();
         initComponents();
     }
     
