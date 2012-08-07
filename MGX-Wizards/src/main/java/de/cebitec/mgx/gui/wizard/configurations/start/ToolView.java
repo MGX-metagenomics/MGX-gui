@@ -226,7 +226,7 @@ public class ToolView extends JPanel implements DocumentListener {
             default:
                 assert false;
         }
-        
+
         // not reached
         assert false;
         return ToolType.USER_PROVIDED;
@@ -375,7 +375,6 @@ public class ToolView extends JPanel implements DocumentListener {
 //        buttonPanel.add(chooseFile);
 
         chooseFile.addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 chooseLocalFile();
@@ -386,16 +385,16 @@ public class ToolView extends JPanel implements DocumentListener {
         chooseFile.setAlignmentX(
                 Component.CENTER_ALIGNMENT);
         buttonCenterPanel.setLayout(new BoxLayout(buttonCenterPanel,
-                BoxLayout.PAGE_AXIS)); 
-        
+                BoxLayout.PAGE_AXIS));
+
         buttonCenterPanel.add(Box.createVerticalGlue());
 //        buttonPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 //        buttonCenterPanel.add(buttonPanel, BorderLayout.SOUTH);   
-       JPanel temp = inputLocalToolForm();
+        JPanel temp = inputLocalToolForm();
 //       temp.setBorder(BorderFactory.createLineBorder(Color.BLUE));
-       buttonCenterPanel.add(temp, BorderLayout.NORTH);   
+        buttonCenterPanel.add(temp, BorderLayout.NORTH);
         buttonCenterPanel.add(Box.createVerticalGlue());
-        
+
         JScrollPane globalPane = new JScrollPane(globalTable);
         allInOnePanel.add(ActionCommands.Global, globalPane);
         allInOnePanel.add(ActionCommands.Local, buttonCenterPanel);
@@ -453,11 +452,11 @@ public class ToolView extends JPanel implements DocumentListener {
         con.gridx = 0;
         JLabel lab = new JLabel("", JLabel.RIGHT);
         lab.setLabelFor(chooseFile);
-        panel.add(lab,con);
-        
-        con.gridx= 1;
+        panel.add(lab, con);
+
+        con.gridx = 1;
         panel.add(chooseFile, con);
-        
+
         con.gridy = 1;
         nameField = new JTextField();
         nameField.setColumns(width);
@@ -472,6 +471,7 @@ public class ToolView extends JPanel implements DocumentListener {
         con.insets = new Insets(10, 5, 10, 5);
 
         con.gridx = 1;
+        con.anchor = GridBagConstraints.CENTER;
         panel.add(nameField, con);
 
         con.gridy = 2;
@@ -487,6 +487,7 @@ public class ToolView extends JPanel implements DocumentListener {
         panel.add(lab, con);
 
         con.gridx = 1;
+        con.anchor = GridBagConstraints.CENTER;
         panel.add(authorField, con);
 
         con.gridy = 3;
@@ -495,10 +496,10 @@ public class ToolView extends JPanel implements DocumentListener {
         descriptionField.setLineWrap(true);
         descriptionField.getDocument().addDocumentListener(this);
         JScrollPane pane = new JScrollPane(descriptionField);
-        pane.setMinimumSize(new Dimension(168, 70));
-        pane.setMaximumSize(new Dimension(168, 70));
-        pane.setPreferredSize(new Dimension(168, 70));
-        pane.setSize(new Dimension(168, 70));
+        pane.setMinimumSize(new Dimension(125, 70));
+        pane.setMaximumSize(new Dimension(125, 70));
+        pane.setPreferredSize(new Dimension(125, 70));
+        pane.setSize(new Dimension(125, 70));
         lab = new JLabel("Description:", JLabel.RIGHT);
         lab.setLabelFor(pane);
 
@@ -506,6 +507,7 @@ public class ToolView extends JPanel implements DocumentListener {
         con.anchor = GridBagConstraints.NORTHEAST;
         panel.add(lab, con);
 
+        con.anchor = GridBagConstraints.CENTER;
         con.gridx = 1;
         panel.add(pane, con);
 
@@ -522,6 +524,7 @@ public class ToolView extends JPanel implements DocumentListener {
         panel.add(lab, con);
 
         con.gridx = 1;
+        con.anchor = GridBagConstraints.CENTER;
         panel.add(versionField, con);
 
         return panel;
@@ -574,14 +577,12 @@ public class ToolView extends JPanel implements DocumentListener {
             String[] columns) {
         DefaultTableModel dtm = new DefaultTableModel(dataGlobal, columns);
         globalTable = new JTable(dtm) {
-
             @Override
             public boolean isCellEditable(int rowIndex, int colIndex) {
                 return false;
             }
         };
         globalTable.addComponentListener(new ComponentListener() {
-
             @Override
             public void componentHidden(ComponentEvent e) {
             }
@@ -602,7 +603,6 @@ public class ToolView extends JPanel implements DocumentListener {
         });
         globalTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         globalTable.setSelectionModel(new DefaultListSelectionModel() {
-
             @Override
             public boolean isSelectedIndex(int index) {
                 boolean isSelected;
@@ -647,12 +647,8 @@ public class ToolView extends JPanel implements DocumentListener {
 //        col2.setMaxWidth(checkBoxWidth);
 //        col2.setMinWidth(checkBoxWidth);
 
-
-
-
         globalTable.getSelectionModel().addListSelectionListener(
                 new ListSelectionListener() {
-
                     @Override
                     public void valueChanged(ListSelectionEvent e) {
                         if (globalTable.getSelectedRow() != -1
@@ -682,7 +678,6 @@ public class ToolView extends JPanel implements DocumentListener {
             String[] columns) {
         DefaultTableModel dtm = new DefaultTableModel(dataProject, columns);
         projectTable = new JTable(dtm) {
-
             @Override
             public boolean isCellEditable(int rowIndex, int colIndex) {
                 return false; //Disallow the editing of any cell
@@ -713,7 +708,6 @@ public class ToolView extends JPanel implements DocumentListener {
         col.setPreferredWidth(width);
         projectTable.getSelectionModel().addListSelectionListener(
                 new ListSelectionListener() {
-
                     @Override
                     public void valueChanged(ListSelectionEvent e) {
                         if (projectTable.getSelectedRow() != -1) {
@@ -728,7 +722,6 @@ public class ToolView extends JPanel implements DocumentListener {
                 });
 
         projectTable.addComponentListener(new ComponentListener() {
-
             @Override
             public void componentHidden(ComponentEvent e) {
             }
@@ -754,7 +747,6 @@ public class ToolView extends JPanel implements DocumentListener {
         scrollPane = new JScrollPane(projectTable);
         scrollPane.getVerticalScrollBar().addAdjustmentListener(
                 new AdjustmentListener() {
-
                     @Override
                     public void adjustmentValueChanged(AdjustmentEvent e) {
                         projectTable.repaint();
@@ -780,7 +772,6 @@ public class ToolView extends JPanel implements DocumentListener {
 
             localScrollPane.getHorizontalScrollBar().addAdjustmentListener(
                     new AdjustmentListener() {
-
                         @Override
                         public void adjustmentValueChanged(AdjustmentEvent e) {
                             lChooser.repaint();

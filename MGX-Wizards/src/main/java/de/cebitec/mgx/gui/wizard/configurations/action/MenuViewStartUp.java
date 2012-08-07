@@ -236,7 +236,7 @@ public class MenuViewStartUp {
                 Object[] options = {"Yes",
                     "No",};
                 int value = JOptionPane.showOptionDialog(null,
-                        "If you cancel this Menu, already "
+                        "Do you really want to cancel this Menu. Already "
                         + "entered parameters will be deleted.", "",
                         JOptionPane.YES_NO_OPTION,
                         JOptionPane.QUESTION_MESSAGE, null,
