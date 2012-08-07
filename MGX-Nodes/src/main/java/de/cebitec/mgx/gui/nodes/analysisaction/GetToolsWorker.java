@@ -6,6 +6,7 @@ import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.datamodel.Tool;
 import de.cebitec.mgx.gui.datamodel.misc.ToolType;
 import de.cebitec.mgx.gui.wizard.configurations.action.WizardController;
+import de.cebitec.mgx.gui.wizard.configurations.progressscreen.ProgressBar;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.SwingWorker;
@@ -16,7 +17,7 @@ import org.openide.util.Exceptions;
  * @author pbelmann
  */
 public class GetToolsWorker extends SwingWorker<Void, Void> {
-  
+
     /**
      * Das Tool, welches ausgesucht wurde.
      */
@@ -59,18 +60,22 @@ public class GetToolsWorker extends SwingWorker<Void, Void> {
         this.master = master;
         seqRun = lSeqrun;
     }
-   
+
     @Override
     protected Void doInBackground() {
+        ProgressBar progress = new ProgressBar("Loading tools.", "Loading global tools.",
+                300, 140);
+
         try {
             globalTools = new ArrayList<Tool>();
-            globalTools=master.Tool().listGlobalTools();
+            globalTools = master.Tool().listGlobalTools();
+            progress.setUpdateText("Loading project tools.");
             projectTools = master.Tool().fetchall();
+            progress.dispose();
             tool = startUp.startToolViewStartUp(globalTools, projectTools);
         } catch (MGXServerException ex) {
             Exceptions.printStackTrace(ex);
         }
-
         isDelete = startUp.isToolDelete();
         toolType = startUp.getLastToolType();
 
@@ -79,15 +84,15 @@ public class GetToolsWorker extends SwingWorker<Void, Void> {
 
     @Override
     protected void done() {
-
-        if (isDelete) {
-            DeleteWorker deleteWorker = new DeleteWorker(startUp, master, tool, seqRun);
-            deleteWorker.execute();
-        } else {
-            ShowParameterWorker worker =
-                    new ShowParameterWorker(tool, startUp, master, seqRun, toolType);
-            worker.execute();
+        if (tool != null) {
+            if (isDelete) {
+                DeleteWorker deleteWorker = new DeleteWorker(startUp, master, tool, seqRun);
+                deleteWorker.execute();
+            } else {
+                ShowParameterWorker worker =
+                        new ShowParameterWorker(tool, startUp, master, seqRun, toolType);
+                worker.execute();
+            }
         }
-//        super.done();
     }
 }
