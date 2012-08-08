@@ -51,6 +51,10 @@
                     <artifactId>jersey-client</artifactId>
                     <groupId>com.sun.jersey</groupId>
                 </exclusion>
+                <exclusion>
+                    <groupId>com.google.protobuf</groupId>
+                    <artifactId>protobuf-java</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -70,7 +74,16 @@
                     <artifactId>MGX-DTO</artifactId>
                     <groupId>de.cebitec.mgx</groupId>
                 </exclusion>
-             </exclusions>
+                <exclusion>
+                    <artifactId>protobuf-java</artifactId>
+                    <groupId>com.google.protobuf</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>MGX-ProtoBuf-Wrapper</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 
