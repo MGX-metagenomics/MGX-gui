@@ -42,16 +42,21 @@
         <dependency>
             <groupId>de.cebitec.mgx</groupId>
             <artifactId>MGX-DTO</artifactId>
-          <!--  <exclusions>
+            <exclusions>
                 <exclusion>
                     <groupId>com.google.protobuf</groupId>
                     <artifactId>protobuf-java</artifactId>
                 </exclusion>
-            </exclusions> -->
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>de.cebitec.mgx.gui</groupId>
             <artifactId>Jersey-Wrapper</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>MGX-ProtoBuf-Wrapper</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 
