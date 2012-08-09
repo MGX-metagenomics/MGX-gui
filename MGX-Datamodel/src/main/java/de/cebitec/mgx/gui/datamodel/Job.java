@@ -19,7 +19,7 @@ public class Job extends Identifiable {
     //
     protected Date finishDate = null;
     //
-    protected Collection<JobParameter> parameters = new ArrayList<>();;
+    protected Collection<JobParameter> parameters = new ArrayList<>();
     private int jobstate = JobState.CREATED.getValue();
 
     public JobState getStatus() {
