@@ -369,8 +369,8 @@ public class VisualizationGroup {
 
     private class AttributeTypeFetcher extends Fetcher<Map<Job, List<AttributeType>>> {
 
-        protected SeqRun run;
-        protected Map<SeqRun, Map<Job, List<AttributeType>>> result;
+        protected final SeqRun run;
+        protected final Map<SeqRun, Map<Job, List<AttributeType>>> result;
 
         public AttributeTypeFetcher(SeqRun run, Map<SeqRun, Map<Job, List<AttributeType>>> result) {
             this.run = run;

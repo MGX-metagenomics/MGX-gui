@@ -2,7 +2,9 @@ package de.cebitec.mgx.gui.dtoconversion;
 
 import de.cebitec.mgx.dto.dto.JobDTO;
 import de.cebitec.mgx.dto.dto.JobDTO.Builder;
+import de.cebitec.mgx.dto.dto.JobParameterDTO;
 import de.cebitec.mgx.gui.datamodel.Job;
+import de.cebitec.mgx.gui.datamodel.JobParameter;
 import de.cebitec.mgx.gui.datamodel.JobState;
 
 /**
@@ -52,6 +54,10 @@ public class JobDTOFactory extends DTOConversionBase<Job, JobDTO> {
                 .setStartDate(toDate(dto.getStartDate()))
                 .setFinishDate(toDate(dto.getFinishDate()));
 
+        for (JobParameterDTO jpdto : dto.getParameters().getParameterList()) {
+            JobParameter jp = JobParameterDTOFactory.getInstance().toModel(jpdto);
+            j.getParameters().add(jp);
+        }
         j.setId(dto.getId());
         return j;
     }
