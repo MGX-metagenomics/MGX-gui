@@ -14,6 +14,8 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.SwingWorker;
 import org.openide.util.Exceptions;
 
@@ -309,10 +311,19 @@ public class VisualizationGroup {
     }
 
     private AttributeType selectAttributeType(SeqRun run, Job job, String attrTypeName) {
+        if (job == null) {
+            // no job for this run provides the selected attribute type
+            return null;
+        }
         List<AttributeType> validTypes = new ArrayList<>();
         Map<Job, List<AttributeType>> jobattrtypes = attributeTypes.get(run);
         assert jobattrtypes != null;
-        for (AttributeType atype : jobattrtypes.get(job)) {
+        List<AttributeType> attributesForJob = jobattrtypes.get(job);
+        if (attributesForJob == null) {
+            Logger.getGlobal().log(Level.SEVERE, "no attributes for run {0} from job {1}", new Object[]{run.getName(), job.getId()});
+            assert false;
+        }
+        for (AttributeType atype : attributesForJob) {
             if (atype.getName().equals(attrTypeName)) {
                 validTypes.add(atype);
             }
@@ -321,7 +332,7 @@ public class VisualizationGroup {
         return validTypes.get(0);
     }
 
-    private static Distribution mergeDistributions(List<Distribution> dists) {
+    private static Distribution mergeDistributions(final List<Distribution> dists) {
         Map<Attribute, Number> summary = new HashMap<>();
         long total = 0;
         for (Distribution d : dists) {
@@ -372,7 +383,7 @@ public class VisualizationGroup {
         protected final SeqRun run;
         protected final Map<SeqRun, Map<Job, List<AttributeType>>> result;
 
-        public AttributeTypeFetcher(SeqRun run, Map<SeqRun, Map<Job, List<AttributeType>>> result) {
+        public AttributeTypeFetcher(SeqRun run, final Map<SeqRun, Map<Job, List<AttributeType>>> result) {
             this.run = run;
             this.result = result;
         }
@@ -391,7 +402,6 @@ public class VisualizationGroup {
             } catch (InterruptedException | ExecutionException ex) {
                 Exceptions.printStackTrace(ex);
             }
-            assert get != null;
             result.put(run, get);
             fireVGroupChanged(VISGROUP_CHANGED);
             super.done();
