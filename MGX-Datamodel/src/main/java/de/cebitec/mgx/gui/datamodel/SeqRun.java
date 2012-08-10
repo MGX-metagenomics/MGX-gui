@@ -4,7 +4,7 @@ package de.cebitec.mgx.gui.datamodel;
  *
  * @author sjaenick
  */
-public class SeqRun extends Identifiable {
+public class SeqRun extends Identifiable implements Comparable<SeqRun> {
 
     protected Term sequencing_technology;
     protected Term sequencing_method;
@@ -98,5 +98,10 @@ public class SeqRun extends Identifiable {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public int compareTo(SeqRun o) {
+        return getName().compareTo(o.getName());
     }
 }
