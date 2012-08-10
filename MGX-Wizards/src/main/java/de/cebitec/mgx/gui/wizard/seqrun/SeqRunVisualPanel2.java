@@ -3,8 +3,10 @@ package de.cebitec.mgx.gui.wizard.seqrun;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.filechooser.FileFilter;
+import org.openide.util.NbPreferences;
 
 public final class SeqRunVisualPanel2 extends JPanel {
 
@@ -14,12 +16,21 @@ public final class SeqRunVisualPanel2 extends JPanel {
     /** Creates new form SeqRunVisualPanel2 */
     public SeqRunVisualPanel2() {
         initComponents();
+        String last = NbPreferences.forModule(JFileChooser.class).get("lastDirectory", null);
+        if (last != null) {
+            File f = new File(last);
+            if (f.exists() && f.isDirectory()) {
+                fchooser.setCurrentDirectory(f);
+            }
+        }
+        
         fchooser.addChoosableFileFilter(new SeqFileFilter());
         fchooser.addPropertyChangeListener(new PropertyChangeListener() {
 
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
                 if ("SelectedFileChangedProperty".equals(evt.getPropertyName())) {
+                    NbPreferences.forModule(JFileChooser.class).put("lastDirectory", fchooser.getCurrentDirectory().getAbsolutePath().toString());
                     file = fchooser.getSelectedFile();
                     firePropertyChange(PROP_SEQFILE, 0, 1);
                 }
