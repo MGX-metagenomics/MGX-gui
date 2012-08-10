@@ -141,7 +141,6 @@ public class VGroupManager implements PropertyChangeListener {
             System.err.println("fetching vizGroup " + (String) pce.getOldValue());
             VisualizationGroup vg = getGroup((String) pce.getOldValue());
             if (vg != null) {
-                System.err.println("renaming group twice?");
                 vg.setName((String) pce.getNewValue());
             }
         }

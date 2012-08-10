@@ -2,11 +2,12 @@ package de.cebitec.mgx.gui.attributevisualization.conflictwizard;
 
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.Job;
+import de.cebitec.mgx.gui.datamodel.JobParameter;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
-import de.cebitec.mgx.gui.datamodel.Tool;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import java.awt.Component;
-import java.util.Map;
+import java.util.Collection;
+import java.util.Iterator;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -17,7 +18,6 @@ public final class ConflictResolverVisualPanel1 extends JPanel implements ListSe
 
     private VisualizationGroup vg;
     private SeqRun run;
-    private Map<Tool, Job> map;
 
     /**
      * Creates new form ConflictResolverVisualPanel1
@@ -25,8 +25,8 @@ public final class ConflictResolverVisualPanel1 extends JPanel implements ListSe
     public ConflictResolverVisualPanel1() {
         initComponents();
 
-        toolList.setCellRenderer(new CellRenderer());
-        toolList.addListSelectionListener(this);
+        jobList.setCellRenderer(new CellRenderer());
+        jobList.addListSelectionListener(this);
     }
 
     @Override
@@ -38,14 +38,18 @@ public final class ConflictResolverVisualPanel1 extends JPanel implements ListSe
 
         @Override
         public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-            return super.getListCellRendererComponent(list, ((Tool) value).getName(), index, isSelected, cellHasFocus);
+            Job job = (Job) value;
+            assert job.getTool() != null; // fails
+            StringBuilder sb = new StringBuilder(job.getTool().getName())
+                    .append(" (")
+                    .append(joinParameters(job.getParameters(), ", "))
+                    .append(")");
+            return super.getListCellRendererComponent(list, sb.toString(), index, isSelected, cellHasFocus);
         }
     }
 
-    public void setJobMap(Map<Tool, Job> map) {
-        this.map = map;
-        toolList.setListData(map.keySet().toArray());
-
+    public void setJobs(Collection<Job> jobs) {
+        jobList.setListData(jobs.toArray());
     }
 
     public void setSeqRun(SeqRun run) {
@@ -60,13 +64,33 @@ public final class ConflictResolverVisualPanel1 extends JPanel implements ListSe
     }
 
     public Job getSelectedJob() {
-        Tool t = (Tool) toolList.getSelectedValue();
-        return map.get(t);
+        return (Job) jobList.getSelectedValue();
     }
 
     @Override
     public String getName() {
         return vg.getName() + " " + run.getName();
+    }
+
+    protected static String joinParameters(Iterable<JobParameter> pColl, String separator) {
+        Iterator<JobParameter> oIter;
+        if (pColl == null || (!(oIter = pColl.iterator()).hasNext())) {
+            return "";
+        }
+        StringBuilder oBuilder = new StringBuilder(toParameterString(oIter.next()));
+        while (oIter.hasNext()) {
+            oBuilder.append(separator).append(toParameterString(oIter.next()));
+        }
+        return oBuilder.toString();
+    }
+
+    private static String toParameterString(JobParameter jp) {
+        return new StringBuilder(Long.toString(jp.getNodeId()))
+                .append(".")
+                .append(jp.getParameterName())
+                .append("=")
+                .append(jp.getParameterValue())
+                .toString();
     }
 
     /**
@@ -78,19 +102,19 @@ public final class ConflictResolverVisualPanel1 extends JPanel implements ListSe
     private void initComponents() {
 
         jScrollPane1 = new javax.swing.JScrollPane();
-        toolList = new javax.swing.JList();
+        jobList = new javax.swing.JList();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
         groupLabel = new javax.swing.JLabel();
         seqRunLabel = new javax.swing.JLabel();
 
-        toolList.setModel(new javax.swing.AbstractListModel() {
+        jobList.setModel(new javax.swing.AbstractListModel() {
             String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });
-        toolList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        jScrollPane1.setViewportView(toolList);
+        jobList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jScrollPane1.setViewportView(jobList);
 
         jScrollPane2.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         jScrollPane2.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
@@ -139,7 +163,7 @@ public final class ConflictResolverVisualPanel1 extends JPanel implements ListSe
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextArea jTextArea1;
+    private javax.swing.JList jobList;
     private javax.swing.JLabel seqRunLabel;
-    private javax.swing.JList toolList;
     // End of variables declaration//GEN-END:variables
 }

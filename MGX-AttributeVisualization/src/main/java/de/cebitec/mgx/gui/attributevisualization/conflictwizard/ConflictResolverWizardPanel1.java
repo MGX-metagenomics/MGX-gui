@@ -1,12 +1,13 @@
 package de.cebitec.mgx.gui.attributevisualization.conflictwizard;
 
 import de.cebitec.mgx.gui.datamodel.Job;
-import de.cebitec.mgx.gui.datamodel.misc.Pair;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.datamodel.Tool;
+import de.cebitec.mgx.gui.datamodel.misc.Pair;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Collection;
 import java.util.Map;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -18,13 +19,13 @@ public class ConflictResolverWizardPanel1 implements WizardDescriptor.Panel<Wiza
 
     private VisualizationGroup vg;
     private SeqRun run;
-    private Map<Tool, Job> toolmap;
+    private Collection<Job> jobs;
     private final EventListenerList listeners = new EventListenerList();
 
-    public ConflictResolverWizardPanel1(VisualizationGroup vg, SeqRun run, Map<Tool, Job> map) {
+    public ConflictResolverWizardPanel1(VisualizationGroup vg, SeqRun run, Collection<Job> j) {
         this.vg = vg;
         this.run = run;
-        this.toolmap = map;
+        this.jobs = j;
     }
     /**
      * The visual component that displays this panel. If you need to access the
@@ -42,7 +43,7 @@ public class ConflictResolverWizardPanel1 implements WizardDescriptor.Panel<Wiza
             component = new ConflictResolverVisualPanel1();
             component.setVisualizationGroup(vg);
             component.setSeqRun(run);
-            component.setJobMap(toolmap);
+            component.setJobs(jobs);
             component.addPropertyChangeListener(this);
         }
         return component;

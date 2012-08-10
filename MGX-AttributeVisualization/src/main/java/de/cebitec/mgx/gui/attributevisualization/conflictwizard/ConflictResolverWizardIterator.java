@@ -1,18 +1,15 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package de.cebitec.mgx.gui.attributevisualization.conflictwizard;
 
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.Job;
-import de.cebitec.mgx.gui.datamodel.misc.Pair;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.datamodel.Tool;
+import de.cebitec.mgx.gui.datamodel.misc.Pair;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import java.awt.Component;
-import java.util.Map.Entry;
 import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import javax.swing.JComponent;
 import javax.swing.SwingWorker;
@@ -66,32 +63,35 @@ public final class ConflictResolverWizardIterator implements WizardDescriptor.It
             panels = new ArrayList<>();
 
             for (final VisualizationGroup vg : groups) {
+
+                //
+                // the job objects don't have the corresponding tool instance set
+                // here, so we need to fetch them separately
+                //
+
                 for (final Entry<SeqRun, List<Job>> e : vg.getConflicts().entrySet()) {
 
-                    final List<Job> jobs = e.getValue();
-
-                    SwingWorker<Map<Tool, Job>, Void> sw = new SwingWorker<Map<Tool, Job>, Void>() {
-
+                    SwingWorker<Void, Void> fetchTool = new SwingWorker<Void, Void>() {
                         @Override
-                        protected Map<Tool, Job> doInBackground() throws Exception {
-                            Map<Tool, Job> map = new HashMap<>();
-                            for (Job j : jobs) {
-                                MGXMaster master = (MGXMaster) j.getMaster();
-                                Tool t = master.Tool().ByJob(j.getId());
-                                map.put(t, j);
+                        protected Void doInBackground() throws Exception {
+                            for (final Job job : e.getValue()) {
+                                assert job.getTool() == null;
+                                MGXMaster master = (MGXMaster) job.getMaster();
+                                Tool tool = master.Tool().ByJob(job.getId());
+                                job.setTool(tool);
                             }
-                            return map;
+                            return null;
                         }
                     };
-                    sw.execute();
-                    Map<Tool, Job> map = null;
+                    fetchTool.execute();
                     try {
-                        map = sw.get();
+                        fetchTool.get();
                     } catch (InterruptedException | ExecutionException ex) {
                         Exceptions.printStackTrace(ex);
                     }
 
-                    WizardDescriptor.Panel panel = new ConflictResolverWizardPanel1(vg, e.getKey(), map);
+
+                    WizardDescriptor.Panel panel = new ConflictResolverWizardPanel1(vg, e.getKey(), e.getValue());
                     panels.add(panel);
                 }
             }
