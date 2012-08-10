@@ -36,14 +36,14 @@ public class SeqRunWizardDescriptor extends WizardDescriptor {
         putProperty(WizardDescriptor.PROP_CONTENT_DISPLAYED, Boolean.TRUE);
         putProperty(WizardDescriptor.PROP_CONTENT_NUMBERED, Boolean.TRUE);
         
-        setTerms();
+        setData();
     }
 
     public SeqRunWizardDescriptor(SeqRun d) {
         List<Panel<WizardDescriptor>> panels = new ArrayList<>();
         panels.add(p1);
 
-        setTerms();
+        setData();
 
         this.setPanelsAndSettings(new ArrayIterator<>(panels), this);
         this.setTitleFormat(new MessageFormat("{0}"));
@@ -61,7 +61,7 @@ public class SeqRunWizardDescriptor extends WizardDescriptor {
         p1.setProperties(this);
     }
 
-    private void setTerms() {
+    private void setData() {
         final MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
         SwingWorker<Void, Void> sw = new SwingWorker<Void, Void>() {
 
@@ -69,6 +69,7 @@ public class SeqRunWizardDescriptor extends WizardDescriptor {
             protected Void doInBackground() {
                 p1.setMethods(m.Term().byCategory(TermAccess.SEQ_METHODS).toArray(new Term[]{}));
                 p1.setPlatforms(m.Term().byCategory(TermAccess.SEQ_PLATFORMS).toArray(new Term[]{}));
+                p1.setSeqRuns(m.SeqRun().fetchall());
                 return null;
             }
         };

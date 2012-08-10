@@ -1,11 +1,14 @@
 package de.cebitec.mgx.gui.wizard.seqrun;
 
+import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.datamodel.Term;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Collection;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
+import org.openide.NotificationLineSupport;
 import org.openide.WizardDescriptor;
 import org.openide.util.HelpCtx;
 
@@ -19,6 +22,7 @@ public class SeqRunWizardPanel1 implements WizardDescriptor.Panel<WizardDescript
     private WizardDescriptor model = null;
     private boolean isValid = true;
     private final EventListenerList listeners = new EventListenerList();
+    private Collection<SeqRun> otherRuns;
 
     @Override
     public SeqRunVisualPanel1 getComponent() {
@@ -102,13 +106,24 @@ public class SeqRunWizardPanel1 implements WizardDescriptor.Panel<WizardDescript
 
     private boolean checkValidity() {
         isValid = true;
+        NotificationLineSupport nls = model.getNotificationLineSupport();
+        nls.setErrorMessage("");
 
         SeqRunVisualPanel1 c = getComponent();
 
         if (c.getRunName() == null || "".equals(c.getRunName())) {
             isValid = false;
         }
+        
+        // prevent creating duplicate run names
+        for (SeqRun other : otherRuns) {
+            if (other.getName().equals(c.getRunName())) {
+                isValid = false;
+                nls.setErrorMessage("Run with same name already exists.");
+            }
+        }
 
+        // if it's submitted, we require the accession
         if (c.getSubmittedState()) {
             String accession = c.getAccession();
             if (accession == null || "".equals(accession)) {
@@ -125,5 +140,9 @@ public class SeqRunWizardPanel1 implements WizardDescriptor.Panel<WizardDescript
 
     public void setPlatforms(Term[] terms) {
         getComponent().setPlatforms(terms);
+    }
+    
+    public void setSeqRuns(Collection<SeqRun> runs) {
+        otherRuns = runs;
     }
 }
