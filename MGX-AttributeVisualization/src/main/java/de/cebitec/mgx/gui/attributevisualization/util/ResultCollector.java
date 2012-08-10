@@ -18,10 +18,10 @@ import org.openide.util.Exceptions;
  */
 public class ResultCollector extends SwingWorker<Pair<List<Pair<VisualizationGroup, Distribution>>, List<Pair<VisualizationGroup, Tree<Long>>>>, Void> {
 
-    private AttributeType aType;
-    private List<Pair<VisualizationGroup, Distribution>> distHolder;
-    private List<Pair<VisualizationGroup, Tree<Long>>> hierarchyHolder;
-    private ControlPanel ctl;
+    private final AttributeType aType;
+    private final List<Pair<VisualizationGroup, Distribution>> distHolder;
+    private final List<Pair<VisualizationGroup, Tree<Long>>> hierarchyHolder;
+    private final ControlPanel ctl;
 
     public ResultCollector(AttributeType aType, List<Pair<VisualizationGroup, Distribution>> distHolder, List<Pair<VisualizationGroup, Tree<Long>>> hierarchyHolder, ControlPanel ctl) {
         this.aType = aType;
@@ -34,13 +34,18 @@ public class ResultCollector extends SwingWorker<Pair<List<Pair<VisualizationGro
     protected Pair<List<Pair<VisualizationGroup, Distribution>>, List<Pair<VisualizationGroup, Tree<Long>>>> doInBackground() throws Exception {
         
         List<Pair<VisualizationGroup, Distribution>> distributions = VGroupManager.getInstance().getDistributions();
+        assert distributions != null;
         List<Pair<VisualizationGroup, Tree<Long>>> hierarchies = null;
         
         if (aType.getStructure() == AttributeType.STRUCTURE_HIERARCHICAL) {
             hierarchies = VGroupManager.getInstance().getHierarchies();
+            assert hierarchies != null;
         }
 
-        return new Pair(distributions, hierarchies);
+        
+        Pair p = new Pair(distributions, hierarchies);
+        assert p != null;
+        return p;
     }
 
     @Override
@@ -56,8 +61,9 @@ public class ResultCollector extends SwingWorker<Pair<List<Pair<VisualizationGro
         hierarchyHolder.clear();
         distHolder.addAll(p.getFirst());
         
-        if (p.getSecond() != null)
+        if (p.getSecond() != null) {
             hierarchyHolder.addAll(p.getSecond());
+        }
 
         if (aType.getStructure() == AttributeType.STRUCTURE_HIERARCHICAL) {
             assert hierarchyHolder != null;

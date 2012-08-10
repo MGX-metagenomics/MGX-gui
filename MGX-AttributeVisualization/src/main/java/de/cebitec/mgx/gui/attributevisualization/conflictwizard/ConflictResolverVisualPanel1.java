@@ -42,7 +42,7 @@ public final class ConflictResolverVisualPanel1 extends JPanel implements ListSe
             assert job.getTool() != null; // fails
             StringBuilder sb = new StringBuilder(job.getTool().getName())
                     .append(" (")
-                    .append(joinParameters(job.getParameters(), ", "))
+                    .append(job.getParameters().size() > 0 ? joinParameters(job.getParameters(), ", ") : "default parameters")
                     .append(")");
             return super.getListCellRendererComponent(list, sb.toString(), index, isSelected, cellHasFocus);
         }
