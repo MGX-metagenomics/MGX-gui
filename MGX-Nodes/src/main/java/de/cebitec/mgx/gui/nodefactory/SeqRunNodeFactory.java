@@ -5,6 +5,8 @@ import de.cebitec.mgx.gui.datamodel.DNAExtract;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.nodes.SeqRunNode;
 import java.beans.PropertyChangeEvent;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import org.openide.nodes.*;
 
@@ -27,8 +29,11 @@ public class SeqRunNodeFactory extends ChildFactory<SeqRun> implements NodeListe
         for (SeqRun sr : master.SeqRun().ByExtract(extract_id)) {
             toPopulate.add(sr);
         }
+        
+        Collections.sort(toPopulate); 
         return true;
     }
+        
 
     @Override
     protected Node createNodeForKey(SeqRun key) {
