@@ -381,7 +381,8 @@
         <module>MGX-Search</module>
         <module>MGX-TableView</module>
         <module>MGX-ProtoBuf-Wrapper</module>
-    </modules>
+    <module>MGX-JobMonitor</module>
+  </modules>
 
     <properties>
         <netbeans.version>RELEASE72</netbeans.version>
