@@ -17,6 +17,7 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.ExplorerUtils;
+import org.openide.nodes.Children;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
@@ -58,6 +59,7 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
         setName(Bundle.CTL_JobMonitorTopComponent());
         setToolTipText(Bundle.HINT_JobMonitorTopComponent());
         associateLookup(ExplorerUtils.createLookup(explorerManager, getActionMap()));
+        explorerManager.setRootContext(new ProjectRootNode("No project selected", Children.LEAF));
     }
 
     /**
@@ -133,19 +135,28 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
                 Map<SeqRun, List<Job>> ret = new HashMap<>();
                 for (SeqRun sr : currentMaster.SeqRun().fetchall()) {
                     List<Job> jobs = currentMaster.Job().BySeqRun(sr.getId());
+                    for (Job j : jobs) {
+                        j.setTool(currentMaster.Tool().ByJob(j.getId()));
+                    }
                     ret.put(sr, jobs);
                 }
                 return ret;
             }
+
+            @Override
+            protected void done() {
+                try {
+                    Map<SeqRun, List<Job>> get = get();
+                    explorerManager.setRootContext(new ProjectRootNode(currentMaster.getProject(), new SeqRunChildren(currentMaster, get)));
+                } catch (InterruptedException | ExecutionException ex) {
+                    Exceptions.printStackTrace(ex);
+                }
+                super.done();
+            }
         };
         worker.execute();
-        
-        try {
-            Map<SeqRun, List<Job>> get = worker.get();
-            explorerManager.setRootContext(new ProjectRootNode(currentMaster.getProject(), new SeqRunChildren(currentMaster, get)));
-        } catch (InterruptedException | ExecutionException ex) {
-            Exceptions.printStackTrace(ex);
-        }
+
+
     }
 
     @Override
