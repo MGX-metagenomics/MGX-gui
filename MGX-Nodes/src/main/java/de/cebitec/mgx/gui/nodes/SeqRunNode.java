@@ -35,8 +35,8 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> implements Transferable {
     //
     public static final DataFlavor DATA_FLAVOR = new DataFlavor(SeqRunNode.class, "SeqRunNode");
 
-    public SeqRunNode(MGXMaster m, SeqRun s) {
-        super(Children.LEAF, Lookups.fixed(m, s), s);
+    public SeqRunNode(MGXMaster m, SeqRun s, Children children) {
+        super(children, Lookups.fixed(m, s), s);
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/SeqRun.png");
         setShortDescription(getToolTipText(s));
         master = m;

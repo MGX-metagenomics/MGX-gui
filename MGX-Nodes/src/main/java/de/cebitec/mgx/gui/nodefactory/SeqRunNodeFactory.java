@@ -37,7 +37,7 @@ public class SeqRunNodeFactory extends ChildFactory<SeqRun> implements NodeListe
 
     @Override
     protected Node createNodeForKey(SeqRun key) {
-        SeqRunNode node = new SeqRunNode(master, key);
+        SeqRunNode node = new SeqRunNode(master, key, Children.LEAF);
         node.addNodeListener(this);
         return node;
     }

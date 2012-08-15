@@ -34,7 +34,6 @@ public class SampleNode extends MGXNodeBase<Sample> {
     public SampleNode(MGXMaster m, Sample s) {
         this(m, s, new DNAExtractNodeFactory(m, s));
         master = m;
-
     }
 
     private SampleNode(MGXMaster m, Sample s, DNAExtractNodeFactory snf) {
