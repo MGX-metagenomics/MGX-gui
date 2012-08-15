@@ -60,12 +60,13 @@
             <artifactId>org-netbeans-modules-settings</artifactId>
         </dependency>
         <dependency>
-            <groupId>de.cebitec.mgx.gui</groupId>
-            <artifactId>MGX-Controller</artifactId>
-        </dependency>
-        <dependency>
             <artifactId>MGX-Datamodel</artifactId>
             <groupId>de.cebitec.mgx.gui</groupId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>MGX-Controller</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 
