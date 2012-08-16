@@ -1,24 +1,16 @@
 package de.cebitec.mgx.gui.jobmonitor;
 
 import de.cebitec.mgx.gui.controller.MGXMaster;
-import de.cebitec.mgx.gui.datamodel.Job;
-import de.cebitec.mgx.gui.datamodel.SeqRun;
+import de.cebitec.mgx.gui.nodefactory.JobNodeFactory;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import javax.swing.SwingWorker;
-import javax.swing.Timer;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.ExplorerUtils;
 import org.openide.nodes.Children;
-import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
@@ -36,7 +28,7 @@ autostore = false)
     preferredID = "JobMonitorTopComponent",
 //iconBase="SET/PATH/TO/ICON/HERE", 
 persistenceType = TopComponent.PERSISTENCE_ALWAYS)
-@TopComponent.Registration(mode = "navigator", openAtStartup = false)
+@TopComponent.Registration(mode = "satellite", openAtStartup = false)
 @ActionID(category = "Window", id = "de.cebitec.mgx.gui.jobmonitor.JobMonitorTopComponent")
 @ActionReference(path = "Menu/Window", position = 555)
 @TopComponent.OpenActionRegistration(
@@ -51,7 +43,6 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
 
     private Lookup.Result<MGXMaster> result;
     private MGXMaster currentMaster = null;
-    private Timer t = new Timer(1000 * 10, this);
     private transient ExplorerManager explorerManager = new ExplorerManager();
 
     public JobMonitorTopComponent() {
@@ -60,6 +51,10 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
         setToolTipText(Bundle.HINT_JobMonitorTopComponent());
         associateLookup(ExplorerUtils.createLookup(explorerManager, getActionMap()));
         explorerManager.setRootContext(new ProjectRootNode("No project selected", Children.LEAF));
+
+        view.setPropertyColumns("tool", "Tool", "seqrun", "Run", "jobstate", "state");
+        view.getOutline().setRootVisible(false);
+
     }
 
     /**
@@ -70,25 +65,23 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        btv = new org.openide.explorer.view.BeanTreeView();
+        view = new org.openide.explorer.view.OutlineView();
 
         setLayout(new java.awt.BorderLayout());
-        add(btv, java.awt.BorderLayout.CENTER);
+        add(view, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private org.openide.explorer.view.BeanTreeView btv;
+    private org.openide.explorer.view.OutlineView view;
     // End of variables declaration//GEN-END:variables
 
     @Override
     public void componentOpened() {
         result = Utilities.actionsGlobalContext().lookupResult(MGXMaster.class);
         result.addLookupListener(this);
-        t.start();
     }
 
     @Override
     public void componentClosed() {
-        t.stop();
     }
 
     void writeProperties(java.util.Properties p) {
@@ -129,34 +122,8 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
         if (currentMaster == null) {
             return;
         }
-        SwingWorker<Map<SeqRun, List<Job>>, Void> worker = new SwingWorker<Map<SeqRun, List<Job>>, Void>() {
-            @Override
-            protected Map<SeqRun, List<Job>> doInBackground() throws Exception {
-                Map<SeqRun, List<Job>> ret = new HashMap<>();
-                for (SeqRun sr : currentMaster.SeqRun().fetchall()) {
-                    List<Job> jobs = currentMaster.Job().BySeqRun(sr.getId());
-                    for (Job j : jobs) {
-                        j.setTool(currentMaster.Tool().ByJob(j.getId()));
-                    }
-                    ret.put(sr, jobs);
-                }
-                return ret;
-            }
-
-            @Override
-            protected void done() {
-                try {
-                    Map<SeqRun, List<Job>> get = get();
-                    explorerManager.setRootContext(new ProjectRootNode(currentMaster.getProject(), new SeqRunChildren(currentMaster, get)));
-                } catch (InterruptedException | ExecutionException ex) {
-                    Exceptions.printStackTrace(ex);
-                }
-                super.done();
-            }
-        };
-        worker.execute();
-
-
+        Children chld = Children.create(new JobNodeFactory(currentMaster), true);
+        explorerManager.setRootContext(new ProjectRootNode(currentMaster.getProject(), chld));
     }
 
     @Override

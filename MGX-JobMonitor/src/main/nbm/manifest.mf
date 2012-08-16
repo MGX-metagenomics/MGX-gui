@@ -1,3 +1,4 @@
 Manifest-Version: 1.0
+OpenIDE-Module-Layer: de/cebitec/mgx/gui/jobmonitor/layer.xml
 OpenIDE-Module-Localizing-Bundle: de/cebitec/mgx/gui/jobmonitor/Bundle.properties
 OpenIDE-Module-Requires: org.openide.windows.WindowManager
