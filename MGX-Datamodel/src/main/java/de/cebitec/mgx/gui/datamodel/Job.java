@@ -8,7 +8,7 @@ import java.util.Date;
  *
  * @author sjaenick
  */
-public class Job extends Identifiable {
+public class Job extends Identifiable implements Comparable<Job> {
 
     protected SeqRun seqrun;
     //
@@ -102,5 +102,10 @@ public class Job extends Identifiable {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public int compareTo(Job o) {
+        return this.startDate.compareTo(o.startDate);
     }
 }
