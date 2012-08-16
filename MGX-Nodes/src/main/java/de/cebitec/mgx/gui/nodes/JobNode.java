@@ -1,8 +1,9 @@
 package de.cebitec.mgx.gui.nodes;
 
+import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.Job;
 import org.openide.nodes.Children;
-import org.openide.util.Lookup;
+import org.openide.util.lookup.Lookups;
 
 /**
  *
@@ -10,9 +11,9 @@ import org.openide.util.Lookup;
  */
 public class JobNode extends MGXNodeBase<Job>  {
 
-    public JobNode(Children children, Lookup lookup, Job data) {
-        super(children, lookup, data);
-        setDisplayName(data.getTool().getName());
+    public JobNode(MGXMaster m, Job job, Children c) {
+        super(Children.LEAF, Lookups.fixed(m, job), job);
+        setDisplayName(job.getTool().getName());
     }
     
 }
