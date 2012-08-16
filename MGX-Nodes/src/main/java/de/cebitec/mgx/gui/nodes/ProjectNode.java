@@ -28,7 +28,7 @@ public class ProjectNode extends MGXNodeBase<MGXMaster> {
     private ProjectNode(MGXMaster m, ProjectStructureNodeFactory nf) {
         super(Children.create(nf, false), Lookups.singleton(m), m);
         this.nf = nf;
-        preopenMGXProject(m);
+//        preopenMGXProject(m);
     }
 
     @Override
@@ -41,29 +41,29 @@ public class ProjectNode extends MGXNodeBase<MGXMaster> {
         return new Action[0]; // disables context menu
     }
 
-    private void preopenMGXProject(final MGXMaster master) {
-        SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
-
-            @Override
-            protected Void doInBackground() throws Exception {
-                // trigger creation of the hibernate instance on the 
-                // server side to speed up access
-                master.Habitat().fetchall();
-                return null;
-            }
-
-            @Override
-            protected void done() {
-                try {
-                    get();
-                } catch (InterruptedException | ExecutionException ex) {
-                    Exceptions.printStackTrace(ex);
-                }
-                super.done();
-            }
-            
-            
-        };
-        worker.execute();
-    }
+//    private void preopenMGXProject(final MGXMaster master) {
+//        SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+//
+//            @Override
+//            protected Void doInBackground() throws Exception {
+//                // trigger creation of the hibernate instance on the 
+//                // server side to speed up access
+//                master.Habitat().fetchall();
+//                return null;
+//            }
+//
+//            @Override
+//            protected void done() {
+//                try {
+//                    get();
+//                } catch (InterruptedException | ExecutionException ex) {
+//                    Exceptions.printStackTrace(ex);
+//                }
+//                super.done();
+//            }
+//            
+//            
+//        };
+//        worker.execute();
+//    }
 }
