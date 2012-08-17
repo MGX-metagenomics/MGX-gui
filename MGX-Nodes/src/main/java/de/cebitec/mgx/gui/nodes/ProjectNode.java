@@ -3,11 +3,8 @@ package de.cebitec.mgx.gui.nodes;
 import de.cebitec.gpms.core.MembershipI;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.nodefactory.ProjectStructureNodeFactory;
-import java.util.concurrent.ExecutionException;
 import javax.swing.Action;
-import javax.swing.SwingWorker;
 import org.openide.nodes.Children;
-import org.openide.util.Exceptions;
 import org.openide.util.lookup.Lookups;
 
 /**

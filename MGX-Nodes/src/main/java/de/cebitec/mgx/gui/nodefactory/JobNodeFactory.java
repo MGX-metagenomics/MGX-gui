@@ -26,11 +26,10 @@ import org.openide.nodes.NodeReorderEvent;
 public class JobNodeFactory extends ChildFactory<Job> implements NodeListener {
 
     private MGXMaster master;
-    private Timer t;
 
     public JobNodeFactory(MGXMaster master) {
         this.master = master;
-        t = new Timer(1000 * 10, new ActionListener() {
+        Timer timer = new Timer(1000 * 10, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 refreshChildren();
