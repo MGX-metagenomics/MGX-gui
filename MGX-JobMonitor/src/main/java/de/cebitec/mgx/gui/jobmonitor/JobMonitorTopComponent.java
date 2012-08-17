@@ -61,10 +61,14 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
                 JobNode.SEQRUN_PROPERTY, "Run",
                 JobNode.STATE_PROPERTY, "State");
         view.getOutline().setRootVisible(false);
+        
+        final NodePopupFactory origNpf = view.getNodePopupFactory();
+        
         NodePopupFactory npf = new NodePopupFactory() {
             @Override
             public JPopupMenu createPopupMenu(int row, int column, Node[] selectedNodes, Component component) {
-                return null;
+                setShowQuickFilter(false);
+                return origNpf.createPopupMenu(row, 0, selectedNodes, component);
             }
         };
         view.setNodePopupFactory(npf);
