@@ -14,6 +14,9 @@ import org.openide.util.Exceptions;
 
 /**
  *
+ * Ist fuer das Beschaffen der Tools zustaendig, die Angezeigt werden sollen.
+ * 
+ * 
  * @author pbelmann
  */
 public class GetToolsWorker extends SwingWorker<Void, Void> {
@@ -46,24 +49,33 @@ public class GetToolsWorker extends SwingWorker<Void, Void> {
      * Der Sequenzierlauf.
      */
     private SeqRun seqRun;
-    private boolean isDelete = false;
-
     /**
-     * Konstruktor fuer den Worker, der die Tools anzeigt.
-     *
-     * @param startup GuiController
-     * @param master Masterobjekt
-     * @param lSeqrun Sequenzierlauf.
+     * Soll das Tool geloescht werden oder nicht.
      */
-    public GetToolsWorker(WizardController startup, MGXMaster master, SeqRun lSeqrun) {
+    private boolean isDelete;
+
+   /**
+    * 
+    * @param startup 
+    * @param lMaster
+    * @param lSeqrun 
+    */
+    public GetToolsWorker(WizardController startup,
+            MGXMaster lMaster, SeqRun lSeqrun) {
         startUp = startup;
-        this.master = master;
+        master = lMaster;
         seqRun = lSeqrun;
+        isDelete = false;
     }
 
+    /**
+     * Methode wird im Hintergrund bearbeitet.
+     * @return null
+     */
     @Override
     protected Void doInBackground() {
-        ProgressBar progress = new ProgressBar("Loading tools.", "Loading global tools.",
+        ProgressBar progress = new ProgressBar("Loading tools.",
+                "Loading global tools.",
                 300, 140);
 
         try {
@@ -86,7 +98,8 @@ public class GetToolsWorker extends SwingWorker<Void, Void> {
     protected void done() {
         if (tool != null) {
             if (isDelete) {
-                DeleteWorker deleteWorker = new DeleteWorker(startUp, master, tool, seqRun);
+                DeleteWorker deleteWorker =
+                        new DeleteWorker(startUp, master, tool, seqRun);
                 deleteWorker.execute();
             } else {
                 ShowParameterWorker worker =

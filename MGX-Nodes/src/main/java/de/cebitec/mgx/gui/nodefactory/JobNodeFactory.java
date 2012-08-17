@@ -47,7 +47,7 @@ public class JobNodeFactory extends ChildFactory<Job> implements NodeListener {
                 toPopulate.add(j);
             }
         }
-        Collections.sort(toPopulate);
+//        Collections.sort(toPopulate);
         return true;
     }
 

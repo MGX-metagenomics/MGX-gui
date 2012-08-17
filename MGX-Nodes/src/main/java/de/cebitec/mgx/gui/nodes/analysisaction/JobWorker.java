@@ -22,14 +22,26 @@ import javax.swing.SwingWorker;
 import org.openide.util.Exceptions;
 
 /**
- * JobWorker, der den Job an den Server sendet.
+ * JobWorker, der den Job an den Server uebergibt.
  *
  * @author pbelmann
  */
 public class JobWorker extends SwingWorker<Void, Void> {
 
+    /**
+     * Enthaelt alle Parameter die der Benutzer eingegeben hat.
+     */
     private final List<JobParameter> jobParameterList;
+    
+    /**
+     * MGX Master
+     */
     private MGXMaster master;
+    
+    
+    /**
+     * Der Tooltyp
+     */
     private ToolType toolType;
     private WizardController startUp;
     private Tool tool;
@@ -67,6 +79,18 @@ public class JobWorker extends SwingWorker<Void, Void> {
         Long job_id = null;
         switch (toolType) {
             case PROJECT:
+                break;
+            case GLOBAL:          
+                Long installedToolId = null;
+                try {
+                    installedToolId = master.Tool().installTool(tool.getId());
+                } catch (MGXServerException ex) {
+                    Exceptions.printStackTrace(ex);
+                }
+                break;
+            case USER_PROVIDED:
+                master.Tool().create(tool);
+        }
                 Job job = new Job();
                 job.setTool(tool);
                 job.setSeqrun(seqRun);
@@ -74,50 +98,7 @@ public class JobWorker extends SwingWorker<Void, Void> {
                 job.setStatus(JobState.CREATED);
                 job.setParameters(jobParameterList);
                 job_id = master.Job().create(job);
-//                 if ((jobParameterList != null) && jobParameterList.size() > 0){
-//            try {
-//                master.Job().setParameters(job_id, jobParameterList);
-//            } catch (MGXServerException ex) {
-//                Exceptions.printStackTrace(ex);
-//            }
-//            }
-                break;
-            case GLOBAL:
-                Long installedToolId = null;
-                try {
-                    installedToolId = master.Tool().installTool(tool.getId());
-                } catch (MGXServerException ex) {
-                    Exceptions.printStackTrace(ex);
-                }
-                job = new Job();
-                job.setTool(tool);
-                job.setSeqrun(seqRun);
-                job.setCreator(master.getLogin());
-                job.setStatus(JobState.CREATED);
-                job.setParameters(jobParameterList);
-                job_id = master.Job().create(job);
-//                 if ((jobParameterList != null) && jobParameterList.size() > 0){
-//            try {
-//                master.Job().setParameters(job.getId(), jobParameterList);
-//            } catch (MGXServerException ex) {
-//                Exceptions.printStackTrace(ex);
-//            }
-//            }
-                break;
-            case USER_PROVIDED:
-                master.Tool().create(tool);
-                job = new Job();
-                job.setTool(tool);
-                job.setSeqrun(seqRun);
-                job.setCreator(master.getLogin());
-                job.setStatus(JobState.CREATED);
-                job.setParameters(jobParameterList);
-                job_id = master.Job().create(job);
-
-        }
-
-        boolean job_ok = false;
-
+                boolean job_ok = false;
         progress.setUpdateText("Verifying Parameters.");
 
         try {

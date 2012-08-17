@@ -7,6 +7,7 @@ import de.cebitec.mgx.gui.wizard.configurations.action.WizardController;
 import de.cebitec.mgx.gui.wizard.configurations.data.impl.Store;
 import de.cebitec.mgx.gui.wizard.configurations.data.util.Transform;
 import de.cebitec.mgx.gui.wizard.configurations.progressscreen.ProgressBar;
+import de.cebitec.mgx.gui.wizard.configurations.utilities.MenuStatus;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -35,14 +36,14 @@ public class ShowParameterWorker extends SwingWorker<Collection<JobParameter>, V
             ToolType toolType) {
         this.master = master;
         tool = lTool;
-        this.startUp = startUp;
+        this.startUp = new WizardController();
         this.toolType = toolType;
         seqRun = lSeqRun;
     }
 
     @Override
     protected Collection<JobParameter> doInBackground() {
-        ProgressBar progress = new ProgressBar("Loading Parameters.", 
+        ProgressBar progress = new ProgressBar("Loading Parameters.",
                 "Waiting for the server",
                 300, 140);
         switch (toolType) {
@@ -60,19 +61,19 @@ public class ShowParameterWorker extends SwingWorker<Collection<JobParameter>, V
         }
         progress.setUpdateText("Loading Project Files");
         List<DirEntry> files = master.File().fetchall();
-         progress.dispose();
-         Store store = null;
-       
+        progress.dispose();
+        Store store = null;
+
         if (list.size() > 0) {
             store = Transform.getFromJobParameterNodeStore(
                     new ArrayList<JobParameter>(list));
             store = startUp.startParameterConfiguration(
                     store, files, tool.getName());
-            if (startUp.getStatus() == 1) {
+            if (startUp.getStatus() == MenuStatus.FINISH) {
                 list = Transform.getFromNodeStoreJobParameter(store);
             }
         }
-        
+
         return list;
     }
 
@@ -84,12 +85,13 @@ public class ShowParameterWorker extends SwingWorker<Collection<JobParameter>, V
             Exceptions.printStackTrace(ex);
         }
 
-        if (startUp.getStatus() == 2) {
+        if (startUp.getStatus() == MenuStatus.AGAIN && list.size() > 0) {
 
             GetToolsWorker worker = new GetToolsWorker(startUp, master, seqRun);
             worker.execute();
 
-        } else if (startUp.getStatus() == 1) {
+        } else if (startUp.getStatus() != MenuStatus.AGAIN && 
+                startUp.getStatus() != MenuStatus.CANCEL) {
 
             String message = null;
             if (list.isEmpty()) {
