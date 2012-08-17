@@ -3,6 +3,7 @@ package de.cebitec.mgx.gui.wizard.configurations.action;
 import de.cebitec.mgx.gui.datamodel.Tool;
 import de.cebitec.mgx.gui.datamodel.misc.ToolType;
 import de.cebitec.mgx.gui.wizard.configurations.start.ToolViewController;
+import de.cebitec.mgx.gui.wizard.configurations.utilities.ActionCommands;
 import de.cebitec.mgx.gui.wizard.configurations.utilities.Util;
 import java.awt.Component;
 import java.awt.event.KeyEvent;
@@ -26,10 +27,29 @@ import org.openide.util.Exceptions;
  */
 public class ToolViewStartUp {
 
-    private HashMap<ToolType, Map<Long, Tool>> tools = new HashMap<>();
+    /**
+     * Speichert alle Tools. Schluessel ist hierbei der ToolTyp. Er gibt eine Map
+     * von Projekt Tools und Server Tools
+     * Die innere Map hat die Id des Tools als Schluessels und als Value das 
+     * Tool. 
+     */
+    private HashMap<ToolType, Map<Long, Tool>> tools;
+    
+    /**
+     * Der Descriptor fuer die Anzeige der Tools;
+     */
     private WizardDescriptor wiz;
+    
+    /**
+     * Flag um festzustellen, ob das Tool geloescht werden soll oder nicht.
+     */
     private boolean isDelete;
-    ToolType toolType = null;
+    
+    /**
+     * 
+     * Der Typ des Tools, welches ausgesucht wurde.
+     */
+    private ToolType toolType;
 
     /**
      * Konstruktor um die Tools zu verarbeiten.
@@ -38,7 +58,8 @@ public class ToolViewStartUp {
      * @param lProjectTools Tools vom Projekt.
      */
     public ToolViewStartUp(List<Tool> lGlobalTools, List<Tool> lProjectTools) {
-
+        toolType = null;
+        tools = new HashMap<>();
         Map<Long, Tool> globalTools = new HashMap<>();
         for (Tool tool : lGlobalTools) {
             globalTools.put(tool.getId(), tool);
@@ -94,10 +115,19 @@ public class ToolViewStartUp {
         wiz.setTitle("Tool Overview");
     }
 
-    public boolean isDelete() {
+    /**
+     * Getter fuer Flag, ob das Tool geloescht werden soll.
+     * @return boolean
+     */
+    protected boolean isDelete() {
         return isDelete;
     }
 
+    /**
+     * Gibt den Typ des Zuletzt ausgesuchten Tools wieder.
+     * 
+     * @return Der Typ des Tools.
+     */
     public ToolType getLastToolType() {
         return toolType;
     }
@@ -109,29 +139,33 @@ public class ToolViewStartUp {
      */
     public Tool startWizardTools() {
 
-        if (DialogDisplayer.getDefault().notify(wiz) != WizardDescriptor.FINISH_OPTION) {
+        if (DialogDisplayer.getDefault().notify(wiz) != 
+                WizardDescriptor.FINISH_OPTION) {
             return null;
         }
 
-        if (wiz.getProperty("DELETE") != null) {
-            Tool tool = tools.get(toolType).get((Long) wiz.getProperty("DELETE"));
+        if (wiz.getProperty(ActionCommands.ToolDelete) != null) {
+            Tool tool = tools.get(ToolType.PROJECT)
+                    .get((Long) wiz.getProperty(ActionCommands.ToolDelete));
             isDelete = true;
             return tool;
         }
 
-        toolType = (ToolType) wiz.getProperty("TOOLTYPE");
+        toolType = (ToolType) wiz.getProperty(ActionCommands.ToolType);
         Tool selectedTool = null;
 
         switch (toolType) {
             case GLOBAL:
-                selectedTool = tools.get(toolType).get((Long) wiz.getProperty("TOOL"));
+                selectedTool = tools.get(toolType)
+                        .get((Long) wiz.getProperty(ActionCommands.Tool));
                 break;
             case PROJECT:
-                selectedTool = tools.get(toolType).get((Long) wiz.getProperty("TOOL"));
+                selectedTool = tools.get(toolType)
+                        .get((Long) wiz.getProperty(ActionCommands.Tool));
                 break;
             case USER_PROVIDED:
-//                String[] stringArray = ((String) (wiz.getProperty("TOOL"))).split(";");
-                String url = (String) wiz.getProperty("TOOL");
+                String url = (String) wiz
+                        .getProperty(ActionCommands.Tool);
                 Tool tool = new Tool();
                 String fileContent = null;
                 try {
@@ -140,11 +174,15 @@ public class ToolViewStartUp {
                     Exceptions.printStackTrace(ex);
                 }
                 tool.setXMLFile(fileContent);
-                tool.setAuthor((String) (wiz.getProperty("LOCALAUTHOR")));
-                tool.setDescription((String) (wiz.getProperty("LOCALDESCRIPTION")));
-                tool.setName((String) (wiz.getProperty("LOCALNAME")));
+                tool.setAuthor((String) (wiz
+                        .getProperty(ActionCommands.LocalToolAuthor)));
+                tool.setDescription((String) (wiz
+                        .getProperty(ActionCommands.LocalToolDescription)));
+                tool.setName((String) (wiz
+                        .getProperty(ActionCommands.LocalToolName)));
                 tool.setUrl(url);
-                tool.setVersion(Float.parseFloat((String) (wiz.getProperty("LOCALVERSION"))));
+                tool.setVersion(Float.parseFloat((String) (wiz
+                        .getProperty(ActionCommands.LocalToolVersion))));
                 selectedTool = tool;
                 break;
             default:

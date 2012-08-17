@@ -17,9 +17,11 @@ public final class ActionCommands {
     public static final String Global = "Global-Tools (Server)";
     public static final String Local = "Local-Tools";
     public static final String toolBox = "toolBox";
-    public static final String ToolType = "ToolType";
+    public static final String ToolType = "TOOLTYPE";
     public static final String LocalToolName = "LOCALNAME";
     public static final String LocalToolAuthor = "LOCALAUTHOR";
     public static final String LocalToolDescription = "LOCALDESCRIPTION";
     public static final String LocalToolVersion = "LOCALVERSION";
+    public static final String Tool = "TOOL";
+    public static final String ToolDelete = "DELETE";
 }

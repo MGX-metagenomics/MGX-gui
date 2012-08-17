@@ -11,6 +11,7 @@ import de.cebitec.mgx.gui.wizard.configurations.data.impl.Store;
 import de.cebitec.mgx.gui.wizard.configurations.menu.MenuController;
 import de.cebitec.mgx.gui.wizard.configurations.summary.MenuSummaryController;
 import de.cebitec.mgx.gui.wizard.configurations.utilities.ActionCommands;
+import de.cebitec.mgx.gui.wizard.configurations.utilities.MenuStatus;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -43,23 +44,23 @@ public class MenuViewStartUp {
     /**
      * Der WizardDescriptor fuer die Anzeige.
      */
-    private WizardDescriptor wiz;
+    private WizardDescriptor gWiz;
     /**
      * Speichert den Status des Wizards.
      */
-    private int status = 0;
-    /**
-     * Wizard wurde Abgebrochen.
-     */
-    private static final int cancel = 0;
-    /**
-     * Wizard wird beendet.
-     */
-    private static final int finish = 1;
-    /**
-     * Der Tool Wizard muss nochmal gestartet werden.
-     */
-    private static final int again = 2;
+    private MenuStatus menuStatus;
+//    /**
+//     * Wizard wurde Abgebrochen.
+//     */
+//    private static final int cancel = 0;
+//    /**
+//     * Wizard wird beendet.
+//     */
+//    private static final int finish = 1;
+//    /**
+//     * Der Tool Wizard muss nochmal gestartet werden.
+//     */
+//    private static final int again = 2;
     /**
      * Dateieintraete in dem Projekt.
      */
@@ -80,7 +81,7 @@ public class MenuViewStartUp {
         LOGGER.info("setStore");
         toolName = lToolName;
         this.store = lStore;
-
+        menuStatus = MenuStatus.RUNNING;
 
         Iterator nodeIterator = store.getIterator();
         Map.Entry nodeME;
@@ -125,12 +126,12 @@ public class MenuViewStartUp {
      */
     protected Store startWizardConfigurations() {
         LOGGER.info("Configurations start");
-
-        Object object = DialogDisplayer.getDefault().notify(wiz);
+        menuStatus = MenuStatus.RUNNING;
+        Object object = DialogDisplayer.getDefault().notify(gWiz);
         if (object
                 == WizardDescriptor.FINISH_OPTION) {
-            status = finish;
-            removeNodesAndConfigItems(wiz);
+            menuStatus = MenuStatus.FINISH;
+            removeNodesAndConfigItems(gWiz);
             return store;
         }
         return null;
@@ -143,15 +144,15 @@ public class MenuViewStartUp {
      *
      * @return Status
      */
-    public int getStatus() {
-        return status;
+    public MenuStatus getStatus() {
+        return menuStatus;
     }
 
     /**
      * Initialisiert den Wizard und stellt ihn ein.
      */
     protected void initializeWizard() {
-        status = 0;
+        menuStatus = MenuStatus.RUNNING;
         List<WizardDescriptor.Panel<WizardDescriptor>> panels =
                 new ArrayList<WizardDescriptor.Panel<WizardDescriptor>>();
 
@@ -192,7 +193,7 @@ public class MenuViewStartUp {
             }
         }
 
-        final WizardDescriptor wiz =
+        gWiz =
                 new WizardDescriptor(
                 new WizardDescriptor.ArrayIterator<WizardDescriptor>(panels));
 
@@ -205,7 +206,6 @@ public class MenuViewStartUp {
         JButton chooseToolButton = new JButton("Back to Overview");
         chooseToolButton.setMnemonic(KeyEvent.VK_O);
         chooseToolButton.addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 Object[] options = {"Yes",
@@ -218,8 +218,8 @@ public class MenuViewStartUp {
                         JOptionPane.QUESTION_MESSAGE, null,
                         options, options[1]);
                 if (value == JOptionPane.YES_OPTION) {
-                    status = again;
-                    wiz.doCancelClick();
+                    menuStatus = MenuStatus.AGAIN;
+                    gWiz.doCancelClick();
                 } else if (value == JOptionPane.NO_OPTION) {
                 }
             }
@@ -229,7 +229,6 @@ public class MenuViewStartUp {
         JButton buttonCancel = new JButton("Cancel");
         buttonCancel.setMnemonic(KeyEvent.VK_C);
         buttonCancel.addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
 
@@ -243,7 +242,7 @@ public class MenuViewStartUp {
                         options, options[1]);
                 if (value == JOptionPane.YES_OPTION) {
 
-                    wiz.doCancelClick();
+                    gWiz.doCancelClick();
 
                 } else {
                 }
@@ -255,16 +254,15 @@ public class MenuViewStartUp {
             WizardDescriptor.PREVIOUS_OPTION, WizardDescriptor.NEXT_OPTION,
             WizardDescriptor.FINISH_OPTION, buttonCancel};
 
-        wiz.setOptions(optionButtons);
+        gWiz.setOptions(optionButtons);
 
-        Object[] objects = wiz.getOptions();
+        Object[] objects = gWiz.getOptions();
         JButton buttonNext = (JButton) objects[3];
         LOGGER.info(buttonNext.getName());
         buttonNext.setMnemonic(KeyEvent.VK_N);
 
-        wiz.setTitleFormat(new MessageFormat("{0}"));
-        wiz.setTitle("Configuration of the tool: \"" + toolName + "\" ");
-        this.wiz = wiz;
+        gWiz.setTitleFormat(new MessageFormat("{0}"));
+        gWiz.setTitle("Configuration of the tool: \"" + toolName + "\" ");
     }
 
     /**
@@ -282,6 +280,9 @@ public class MenuViewStartUp {
         Map.Entry nodeME;
         String nodeId;
         Iterator configItemIterator;
+        String localProperty;
+        String configItemName;
+        String nodeClassName;
         while (nodeIterator.hasNext()) {
 
 
@@ -291,9 +292,7 @@ public class MenuViewStartUp {
             configItemIterator = ((Node) nodeME.getValue()).getIterator();
             Map.Entry configItemME;
 
-            String localProperty;
-            String configItemName;
-            String nodeClassName;
+
 
             while (configItemIterator.hasNext()) {
 

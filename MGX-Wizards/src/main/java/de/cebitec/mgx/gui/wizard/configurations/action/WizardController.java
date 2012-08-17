@@ -5,6 +5,7 @@ import de.cebitec.mgx.gui.datamodel.Tool;
 import de.cebitec.mgx.gui.datamodel.misc.ToolType;
 import de.cebitec.mgx.gui.wizard.configurations.data.impl.Store;
 import de.cebitec.mgx.gui.wizard.configurations.progressscreen.ProgressBar;
+import de.cebitec.mgx.gui.wizard.configurations.utilities.MenuStatus;
 import java.util.List;
 import javax.swing.JOptionPane;
 
@@ -25,8 +26,17 @@ public class WizardController {
      */
     private MenuViewStartUp configurationStartUp;
    
+    /**
+     * Controller fuer die Anzeige der aller vorhandenen Tools.
+     */
     private ToolViewStartUp toolStartUp;
 
+    /**
+     * Flag, ob das Tool geloescht werden soll oder nicht.
+     */
+    private boolean isDelete;
+    
+    
     /**
      * Startet die Anzeige fuer die Auswahl der Tools.
      *
@@ -42,7 +52,6 @@ public class WizardController {
         isDelete = toolStartUp.isDelete();
         return tool;
     }
-    private boolean isDelete;
 
     public boolean isToolDelete() {
         return isDelete;
@@ -62,7 +71,6 @@ public class WizardController {
      */
     public Store startParameterConfiguration(Store store,
             List<DirEntry> entries, String toolName) {
-//        bar.dispose();
         configurationStartUp = new MenuViewStartUp(store, entries, toolName);
         configurationStartUp.initializeWizard();
         return configurationStartUp.startWizardConfigurations();
@@ -74,29 +82,11 @@ public class WizardController {
      *
      * @return Status
      */
-    public int getStatus() {
+    public MenuStatus getStatus() {
         if (configurationStartUp != null) {
             return configurationStartUp.getStatus();
         } else {
-            return 0;
+            return MenuStatus.RUNNING;
         }
     }
-
-//    /**
-//     * Es soll vor der Installation eines Tools nachgefragt werden, ob es
-//     * installiert werden soll.
-//     *
-//     * @return YESINSTALL oder NOINSTALL
-//     */
-//    public boolean showInstallDialog(String toolName) {
-//        Object[] options = {"Yes",
-//            "No",};
-//        int value = JOptionPane.showOptionDialog(null,
-//                "Should the tool \"" + toolName + "\" be installed.\n"
-//                + "You can choose it then in the project tools view.", "",
-//                JOptionPane.YES_NO_OPTION,
-//                JOptionPane.QUESTION_MESSAGE, null,
-//                options, options[1]);
-//        return value == JOptionPane.YES_OPTION;
-//    }
 }

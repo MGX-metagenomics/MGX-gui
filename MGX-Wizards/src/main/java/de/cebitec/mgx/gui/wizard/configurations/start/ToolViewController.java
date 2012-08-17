@@ -198,21 +198,14 @@ public class ToolViewController implements WizardDescriptor.Panel<WizardDescript
      */
     @Override
     public void storeSettings(WizardDescriptor settings) {
-//        if (settings.getValue() == WizardDescriptor.FINISH_OPTION) {
         deleteButton.removeActionListener(this);
         if (isDelete) {
-            model.putProperty("DELETE",
-                    getComponent().getToolType() + ";"
-                    + project.get(getComponent().getCurrentRow()).getId());
+            model.putProperty(ActionCommands.ToolDelete,
+                    project.get(getComponent().getCurrentRow()).getId());
         }
         if (getComponent().getToolType() == ToolType.USER_PROVIDED) {
 
-            settings.putProperty("TOOL"
-//                    ActionCommands.ToolType
-                            , 
-//                    getComponent().
-//                    getToolType() + ";"
-//                    + 
+            settings.putProperty(ActionCommands.Tool, 
                     getComponent().getFileFieldText());
             settings.putProperty(ActionCommands.LocalToolName, getComponent().
                     getNameText());
@@ -224,25 +217,16 @@ public class ToolViewController implements WizardDescriptor.Panel<WizardDescript
             settings.putProperty(ActionCommands.LocalToolVersion,
                     getComponent().
                     getVersionText());
-            settings.putProperty("TOOLTYPE", ToolType.USER_PROVIDED);         
+            settings.putProperty(ActionCommands.ToolType, ToolType.USER_PROVIDED);         
         } else if (getComponent().getToolType() == ToolType.GLOBAL) {
-            settings.putProperty("TOOL", 
-//                    getComponent().
-//                    getToolType() + ";"
-//                    +
+            settings.putProperty(ActionCommands.Tool,
                     global.get(getComponent().getCurrentRow()).getId());
-            settings.putProperty("TOOLTYPE", ToolType.GLOBAL);
+            settings.putProperty(ActionCommands.ToolType, ToolType.GLOBAL);
         } else if (getComponent().getToolType() == ToolType.PROJECT) {
-            settings.putProperty(
-//                    ActionCommands.ToolType
-                    "TOOL",
-//                    getComponent().getToolType() + ";"
-//                    + 
+            settings.putProperty( ActionCommands.Tool,
                     project.get(getComponent().getCurrentRow()).getId());
-            settings.putProperty("TOOLTYPE", ToolType.PROJECT);
-            
+            settings.putProperty(ActionCommands.ToolType, ToolType.PROJECT);
         }
-//        }
     }
 
     /**
