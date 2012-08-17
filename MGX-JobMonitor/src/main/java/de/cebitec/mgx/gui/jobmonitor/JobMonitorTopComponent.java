@@ -2,15 +2,20 @@ package de.cebitec.mgx.gui.jobmonitor;
 
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.nodefactory.JobNodeFactory;
+import de.cebitec.mgx.gui.nodes.JobNode;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collection;
+import javax.swing.JPopupMenu;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.ExplorerUtils;
+import org.openide.explorer.view.NodePopupFactory;
 import org.openide.nodes.Children;
+import org.openide.nodes.Node;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
@@ -52,9 +57,17 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
         associateLookup(ExplorerUtils.createLookup(explorerManager, getActionMap()));
         explorerManager.setRootContext(new ProjectRootNode("No project selected", Children.LEAF));
 
-        view.setPropertyColumns("tool", "Tool", "seqrun", "Run", "jobstate", "state");
+        view.setPropertyColumns(//JobNode.TOOL_PROPERTY, "Tool",
+                JobNode.SEQRUN_PROPERTY, "Run",
+                JobNode.STATE_PROPERTY, "State");
         view.getOutline().setRootVisible(false);
-
+        NodePopupFactory npf = new NodePopupFactory() {
+            @Override
+            public JPopupMenu createPopupMenu(int row, int column, Node[] selectedNodes, Component component) {
+                return null;
+            }
+        };
+        view.setNodePopupFactory(npf);
     }
 
     /**
@@ -65,7 +78,7 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        view = new org.openide.explorer.view.OutlineView();
+        view = new org.openide.explorer.view.OutlineView("Tool");
 
         setLayout(new java.awt.BorderLayout());
         add(view, java.awt.BorderLayout.CENTER);
