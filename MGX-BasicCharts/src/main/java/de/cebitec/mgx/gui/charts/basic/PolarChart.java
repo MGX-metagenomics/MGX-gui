@@ -23,6 +23,7 @@ import org.jfree.chart.plot.Plot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.PolarPlot;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.DefaultPolarItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.openide.util.lookup.ServiceProvider;
@@ -64,7 +65,7 @@ public class PolarChart extends NumericalViewerI {
 
         // set the colors
         int i = 0;
-        XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) plot.getRenderer();
+        DefaultPolarItemRenderer renderer = (DefaultPolarItemRenderer) plot.getRenderer();
         for (Pair<VisualizationGroup, Distribution> groupDistribution : dists) {
             renderer.setSeriesPaint(i++, groupDistribution.getFirst().getColor());
         }

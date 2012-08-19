@@ -20,6 +20,7 @@ import org.jfree.chart.axis.TickUnitSource;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.XYAreaRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.openide.util.lookup.ServiceProvider;
@@ -101,7 +102,7 @@ public class AreaChart extends NumericalViewerI {
 
         // set the colors
         int i = 0;
-        XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) plot.getRenderer();
+        XYAreaRenderer renderer = (XYAreaRenderer) plot.getRenderer();
         for (Pair<VisualizationGroup, Distribution> groupDistribution : dists) {
             renderer.setSeriesPaint(i++, groupDistribution.getFirst().getColor());
         }
