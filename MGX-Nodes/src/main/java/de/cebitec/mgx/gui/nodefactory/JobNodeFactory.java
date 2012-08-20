@@ -64,10 +64,12 @@ public class JobNodeFactory extends ChildFactory<Job> implements NodeListener {
 
     @Override
     public void childrenAdded(NodeMemberEvent ev) {
+        refresh(true);
     }
 
     @Override
     public void childrenRemoved(NodeMemberEvent ev) {
+        refresh(true);
     }
 
     @Override
@@ -76,10 +78,11 @@ public class JobNodeFactory extends ChildFactory<Job> implements NodeListener {
 
     @Override
     public void nodeDestroyed(NodeEvent ev) {
-        this.refresh(true);
+        refresh(true);
     }
 
     @Override
-    public void propertyChange(PropertyChangeEvent pce) {
+    public void propertyChange(PropertyChangeEvent evt) {
+        //refresh(true);
     }
 }

@@ -1,12 +1,21 @@
 package de.cebitec.mgx.gui.nodes;
 
 import de.cebitec.mgx.gui.controller.MGXMaster;
+import de.cebitec.mgx.gui.datamodel.Habitat;
 import de.cebitec.mgx.gui.datamodel.Job;
+import de.cebitec.mgx.gui.datamodel.JobState;
+import de.cebitec.mgx.gui.taskview.MGXTask;
+import de.cebitec.mgx.gui.taskview.TaskManager;
+import java.awt.event.ActionEvent;
 import java.lang.reflect.InvocationTargetException;
+import javax.swing.AbstractAction;
 import javax.swing.Action;
+import org.openide.DialogDisplayer;
+import org.openide.NotifyDescriptor;
 import org.openide.nodes.Children;
 import org.openide.nodes.PropertySupport;
 import org.openide.nodes.Sheet;
+import org.openide.util.Utilities;
 import org.openide.util.lookup.Lookups;
 
 /**
@@ -18,7 +27,7 @@ public class JobNode extends MGXNodeBase<Job> {
     public static String TOOL_PROPERTY = "tool";
     public static String SEQRUN_PROPERTY = "seqrun";
     public static String STATE_PROPERTY = "state";
-    private Job job;
+    private final Job job;
 
     public JobNode(MGXMaster m, Job job, Children c) {
         super(Children.LEAF, Lookups.fixed(m, job), job);
@@ -28,7 +37,7 @@ public class JobNode extends MGXNodeBase<Job> {
 
     @Override
     public Action[] getActions(boolean context) {
-        return new Action[]{};
+        return new Action[]{ new DeleteJob() };
     }
 
     @Override
@@ -75,5 +84,48 @@ public class JobNode extends MGXNodeBase<Job> {
         sheet.put(set);
 
         return sheet;
+    }
+
+    private class DeleteJob extends AbstractAction {
+
+        public DeleteJob() {
+            putValue(NAME, "Delete");
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            final Job job = getLookup().lookup(Job.class);
+            NotifyDescriptor d = new NotifyDescriptor("Really delete job?",
+                    "Delete job",
+                    NotifyDescriptor.YES_NO_OPTION,
+                    NotifyDescriptor.QUESTION_MESSAGE,
+                    null,
+                    null);
+            Object ret = DialogDisplayer.getDefault().notify(d);
+            if (NotifyDescriptor.YES_OPTION.equals(ret)) {
+                MGXTask deleteTask = new MGXTask() {
+                    @Override
+                    public void process() {
+                        setStatus("Deleting..");
+                        MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
+                        m.Job().delete(job);
+                    }
+
+                    @Override
+                    public void finished() {
+                        super.finished();
+                        //fireNodeDestroyed();
+                    }
+                };
+
+                TaskManager.getInstance().addTask("Delete " + job.getTool().getName() + " " + job.getSeqrun().getName(), deleteTask);
+
+            }
+        }
+
+        @Override
+        public boolean isEnabled() {
+            return super.isEnabled() && !job.getStatus().equals(JobState.RUNNING);
+        }
     }
 }
