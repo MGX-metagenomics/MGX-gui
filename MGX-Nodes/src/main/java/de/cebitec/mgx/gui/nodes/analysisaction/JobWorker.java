@@ -12,9 +12,7 @@ import de.cebitec.mgx.gui.datamodel.JobState;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.datamodel.Tool;
 import de.cebitec.mgx.gui.datamodel.misc.ToolType;
-import de.cebitec.mgx.gui.wizard.configurations.action.WizardController;
 import de.cebitec.mgx.gui.wizard.configurations.progressscreen.ProgressBar;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import javax.swing.JOptionPane;
@@ -32,36 +30,37 @@ public class JobWorker extends SwingWorker<Void, Void> {
      * Enthaelt alle Parameter die der Benutzer eingegeben hat.
      */
     private final List<JobParameter> jobParameterList;
-    
     /**
      * MGX Master
      */
     private MGXMaster master;
-    
-    
     /**
-     * Der Tooltyp
+     * Der Tooltyp.
      */
     private ToolType toolType;
-    private WizardController startUp;
+    /**
+     * Das Tool welches ausgewaehlt wurde.
+     */
     private Tool tool;
+    /**
+     * Der Sequenzierlauf.
+     */
     private SeqRun seqRun;
 
     /**
-     * Konstruktor
+     * Konstruktor fuer den Worker.
      *
      * @param lParameter Parameter
      * @param lJob Job mit dem Tool
      * @param lMaster Masterobjekt.
      */
-    public JobWorker(WizardController lStartUp, ToolType lToolType, Tool lTool, List<JobParameter> lParameter,
+    public JobWorker(ToolType lToolType, Tool lTool, List<JobParameter> lParameter,
             MGXMaster lMaster, SeqRun lSeqrun) {
         toolType = lToolType;
         tool = lTool;
         jobParameterList = lParameter;
         master = lMaster;
         seqRun = lSeqrun;
-        startUp = lStartUp;
     }
 
     /**
@@ -76,11 +75,10 @@ public class JobWorker extends SwingWorker<Void, Void> {
                 "Waiting for the server",
                 300, 140);
 
-        Long job_id = null;
         switch (toolType) {
             case PROJECT:
                 break;
-            case GLOBAL:          
+            case GLOBAL:
                 Long installedToolId = null;
                 try {
                     installedToolId = master.Tool().installTool(tool.getId());
@@ -91,14 +89,14 @@ public class JobWorker extends SwingWorker<Void, Void> {
             case USER_PROVIDED:
                 master.Tool().create(tool);
         }
-                Job job = new Job();
-                job.setTool(tool);
-                job.setSeqrun(seqRun);
-                job.setCreator(master.getLogin());
-                job.setStatus(JobState.CREATED);
-                job.setParameters(jobParameterList);
-                job_id = master.Job().create(job);
-                boolean job_ok = false;
+        Job job = new Job();
+        job.setTool(tool);
+        job.setSeqrun(seqRun);
+        job.setCreator(master.getLogin());
+        job.setStatus(JobState.CREATED);
+        job.setParameters(jobParameterList);
+        Long job_id = master.Job().create(job);
+        boolean job_ok = false;
         progress.setUpdateText("Verifying Parameters.");
 
         try {
@@ -145,7 +143,7 @@ public class JobWorker extends SwingWorker<Void, Void> {
                 options, options[0]);
         if (value == JOptionPane.YES_OPTION) {
             GetToolsWorker worker =
-                    new GetToolsWorker(startUp, master, seqRun);
+                    new GetToolsWorker(master, seqRun);
             worker.execute();
         } else {
         }

@@ -4,7 +4,6 @@ package de.cebitec.mgx.gui.nodes.analysisaction;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.datamodel.Tool;
-import de.cebitec.mgx.gui.wizard.configurations.action.WizardController;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.concurrent.ExecutionException;
@@ -12,20 +11,33 @@ import javax.swing.SwingWorker;
 import org.openide.util.Exceptions;
 
 /**
- *
+ *Worker zum Entfernen von Tools
  * @author pbelmann
  */
 public class DeleteWorker extends SwingWorker<Void, Void> implements ActionListener {
 
+    /**
+     * Masterobjekt, um Verbindung mit dem Server aufzunehmen.
+     */
     private MGXMaster master;
+    /**
+     * Tool welches entfernt werden soll.
+     */
     private Tool tool;
-    private WizardController startUp;
+    /**
+     * Sequenzierlauf.
+     */
     private SeqRun seqRun;
 
-    public DeleteWorker(WizardController lStartUp, MGXMaster lMaster, Tool tool, SeqRun lSeqRun) {
+    /**
+     * Konstruktor zum entfernen von Tools.
+     * @param lMaster Masterobjekt
+     * @param tool Tool, welches entfernt werden soll.
+     * @param lSeqRun Sequenzierlauf
+     */
+    public DeleteWorker(MGXMaster lMaster, Tool tool, SeqRun lSeqRun) {
         master = lMaster;
         this.tool = tool;
-        startUp = lStartUp;
         seqRun = lSeqRun;
     }
 
@@ -42,12 +54,12 @@ public class DeleteWorker extends SwingWorker<Void, Void> implements ActionListe
         } catch (InterruptedException | ExecutionException ex) {
             Exceptions.printStackTrace(ex);
         }
-        super.done();
+                super.done();
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        GetToolsWorker worker = new GetToolsWorker(startUp, master, seqRun);
+        GetToolsWorker worker = new GetToolsWorker(master, seqRun);
         worker.execute();
     }
 }

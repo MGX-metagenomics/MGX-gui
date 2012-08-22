@@ -96,8 +96,7 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> implements Transferable {
         @Override
         public void actionPerformed(final ActionEvent e) {
             SeqRun seqrun = Utilities.actionsGlobalContext().lookup(SeqRun.class);
-            //SeqRun seqrun = getLookup().lookup(SeqRun.class);
-            GetToolsWorker getTools = new GetToolsWorker(new WizardController(), master, seqrun);
+            GetToolsWorker getTools = new GetToolsWorker( master, seqrun);
             getTools.execute();
         }
     }

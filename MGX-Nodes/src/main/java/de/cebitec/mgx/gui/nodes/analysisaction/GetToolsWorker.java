@@ -7,7 +7,6 @@ import de.cebitec.mgx.gui.datamodel.Tool;
 import de.cebitec.mgx.gui.datamodel.misc.ToolType;
 import de.cebitec.mgx.gui.wizard.configurations.action.WizardController;
 import de.cebitec.mgx.gui.wizard.configurations.progressscreen.ProgressBar;
-import java.util.ArrayList;
 import java.util.List;
 import javax.swing.SwingWorker;
 import org.openide.util.Exceptions;
@@ -15,34 +14,22 @@ import org.openide.util.Exceptions;
 /**
  *
  * Ist fuer das Beschaffen der Tools zustaendig, die Angezeigt werden sollen.
- * 
- * 
+ *
+ *
  * @author pbelmann
  */
 public class GetToolsWorker extends SwingWorker<Void, Void> {
 
     /**
-     * Das Tool, welches ausgesucht wurde.
+     * Das Tool, welches vom Benutzer ausgesucht wurde.
      */
     private Tool tool;
     /**
-     * Globale Tools.
-     */
-    private List<Tool> globalTools;
-    /**
-     * Projekt Tools.
-     */
-    private List<Tool> projectTools;
-    /**
-     * Tooltypen.
+     * Die verschiedenen Tooltypen.
      */
     private ToolType toolType;
     /**
-     * Der GuiController.
-     */
-    private WizardController startUp;
-    /**
-     * Das Master Objekt um Verbindung zum Server aufzunehmen.
+     * Das Masterobjekt um eine Verbindung zum Server aufzunehmen.
      */
     private MGXMaster master;
     /**
@@ -54,15 +41,13 @@ public class GetToolsWorker extends SwingWorker<Void, Void> {
      */
     private boolean isDelete;
 
-   /**
-    * 
-    * @param startup 
-    * @param lMaster
-    * @param lSeqrun 
-    */
-    public GetToolsWorker(WizardController startup,
-            MGXMaster lMaster, SeqRun lSeqrun) {
-        startUp = startup;
+    /**
+     * @param lMaster Objekt um Verbindung zum Server aufnehmen zu koennen.
+     * @param lSeqrun Sequenzierlauf.
+     */
+    public GetToolsWorker(
+            final MGXMaster lMaster, final SeqRun lSeqrun) {
+
         master = lMaster;
         seqRun = lSeqrun;
         isDelete = false;
@@ -70,40 +55,43 @@ public class GetToolsWorker extends SwingWorker<Void, Void> {
 
     /**
      * Methode wird im Hintergrund bearbeitet.
+     *
      * @return null
      */
     @Override
-    protected Void doInBackground() {
+    final protected Void doInBackground() {
+        final int width = 300;
+        final int height = 140;
+        WizardController startUp = new WizardController();
         ProgressBar progress = new ProgressBar("Loading tools.",
                 "Loading global tools.",
-                300, 140);
+                width, height);
 
         try {
-            globalTools = new ArrayList<Tool>();
-            globalTools = master.Tool().listGlobalTools();
+            List<Tool> globalTools = master.Tool().listGlobalTools();
             progress.setUpdateText("Loading project tools.");
-            projectTools = master.Tool().fetchall();
+            List<Tool> projectTools = master.Tool().fetchall();
             progress.dispose();
             tool = startUp.startToolViewStartUp(globalTools, projectTools);
         } catch (MGXServerException ex) {
             Exceptions.printStackTrace(ex);
         }
+
         isDelete = startUp.isToolDelete();
         toolType = startUp.getLastToolType();
-
         return null;
     }
 
     @Override
-    protected void done() {
+    final protected void done() {
         if (tool != null) {
             if (isDelete) {
                 DeleteWorker deleteWorker =
-                        new DeleteWorker(startUp, master, tool, seqRun);
+                        new DeleteWorker(master, tool, seqRun);
                 deleteWorker.execute();
             } else {
                 ShowParameterWorker worker =
-                        new ShowParameterWorker(tool, startUp, master, seqRun, toolType);
+                        new ShowParameterWorker(tool, master, seqRun, toolType);
                 worker.execute();
             }
         }

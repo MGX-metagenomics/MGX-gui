@@ -24,14 +24,42 @@ import org.openide.util.Exceptions;
  */
 public class ShowParameterWorker extends SwingWorker<Collection<JobParameter>, Void> {
 
+    /**
+     * Tool, dessen Parameter angezeigt werden sollen.
+     */
     private Tool tool;
+    
+    /**
+     * Controller fuer die Anzeige der Parameter.
+     */
     private WizardController startUp;
+    
+    /**
+     * Masterobjekt fuer die Verbindung zum Server.
+     */
     private MGXMaster master;
+    
+    /**
+     * Der Typ des Tools.
+     */
     private ToolType toolType;
+    
+    /**
+     * Der Sequenzierlauf.
+     */
     private SeqRun seqRun;
-    private Collection<JobParameter> list = null;
-
-    public ShowParameterWorker(Tool lTool, WizardController startUp, MGXMaster master,
+    
+    /**
+     * Parameterliste 
+     */
+    private Collection<JobParameter> parameterList;
+    /**
+     * @param lTool Das Tool, welches angezeigt werden soll.
+     * @param master Objekt fuer die Verbindung zum Server.
+     * @param lSeqRun Sequenzierlauf.
+     * @param toolType Der Typ des Tools.
+     */
+    public ShowParameterWorker(Tool lTool, MGXMaster master,
             SeqRun lSeqRun,
             ToolType toolType) {
         this.master = master;
@@ -39,8 +67,13 @@ public class ShowParameterWorker extends SwingWorker<Collection<JobParameter>, V
         this.startUp = new WizardController();
         this.toolType = toolType;
         seqRun = lSeqRun;
+        parameterList = null;
     }
 
+    /**
+     * Methode die im Hintergrund agbearbeitet wird.
+     * @return Collection der Parameter.
+     */
     @Override
     protected Collection<JobParameter> doInBackground() {
         ProgressBar progress = new ProgressBar("Loading Parameters.",
@@ -48,13 +81,13 @@ public class ShowParameterWorker extends SwingWorker<Collection<JobParameter>, V
                 300, 140);
         switch (toolType) {
             case GLOBAL:
-                list = master.Tool().getAvailableParameters(tool.getId(), true);
+                parameterList = master.Tool().getAvailableParameters(tool.getId(), true);
                 break;
             case PROJECT:
-                list = master.Tool().getAvailableParameters(tool.getId(), false);
+                parameterList = master.Tool().getAvailableParameters(tool.getId(), false);
                 break;
             case USER_PROVIDED:
-                list = master.Tool().getAvailableParameters(tool);
+                parameterList = master.Tool().getAvailableParameters(tool);
                 break;
             default:
                 assert false;
@@ -64,19 +97,22 @@ public class ShowParameterWorker extends SwingWorker<Collection<JobParameter>, V
         progress.dispose();
         Store store = null;
 
-        if (list.size() > 0) {
+        if (parameterList.size() > 0) {
             store = Transform.getFromJobParameterNodeStore(
-                    new ArrayList<JobParameter>(list));
+                    new ArrayList<>(parameterList));
             store = startUp.startParameterConfiguration(
                     store, files, tool.getName());
             if (startUp.getStatus() == MenuStatus.FINISH) {
-                list = Transform.getFromNodeStoreJobParameter(store);
+                parameterList = Transform.getFromNodeStoreJobParameter(store);
             }
         }
 
-        return list;
+        return parameterList;
     }
 
+    /**
+     * Methode die vor dem Beenden des Workers aufgerufen wird.
+     */
     @Override
     protected void done() {
         try {
@@ -84,17 +120,13 @@ public class ShowParameterWorker extends SwingWorker<Collection<JobParameter>, V
         } catch (InterruptedException | ExecutionException ex) {
             Exceptions.printStackTrace(ex);
         }
-
-        if (startUp.getStatus() == MenuStatus.AGAIN && list.size() > 0) {
-
-            GetToolsWorker worker = new GetToolsWorker(startUp, master, seqRun);
+        if (startUp.getStatus() == MenuStatus.AGAIN && parameterList.size() > 0) {
+            GetToolsWorker worker = new GetToolsWorker(master, seqRun);
             worker.execute();
-
-        } else if (startUp.getStatus() != MenuStatus.AGAIN && 
+        } else if (startUp.getStatus() != MenuStatus.AGAIN &&
                 startUp.getStatus() != MenuStatus.CANCEL) {
-
             String message = null;
-            if (list.isEmpty()) {
+            if (parameterList.isEmpty()) {
                 message = "The tool \"" + tool.getName()
                         + "\" has no parameters.\n" + "The tool should be executed?";
             } else {
@@ -110,12 +142,12 @@ public class ShowParameterWorker extends SwingWorker<Collection<JobParameter>, V
                     JOptionPane.QUESTION_MESSAGE, null,
                     options, options[0]);
             if (value == JOptionPane.YES_OPTION) {
-                JobWorker worker = new JobWorker(startUp, toolType, tool,
-                        new ArrayList(list), master, seqRun);
+                JobWorker worker = new JobWorker(toolType, tool,
+                        new ArrayList(parameterList), master, seqRun);
                 worker.execute();
             } else {
                 GetToolsWorker worker =
-                        new GetToolsWorker(startUp, master, seqRun);
+                        new GetToolsWorker( master, seqRun);
                 worker.execute();
             }
         }
