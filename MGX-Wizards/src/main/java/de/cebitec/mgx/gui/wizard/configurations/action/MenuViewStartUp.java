@@ -17,7 +17,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 import javax.swing.*;
 import org.openide.DialogDisplayer;
@@ -33,9 +36,7 @@ public class MenuViewStartUp {
      * Der Store in dem die konfigurierbaren Nodes enthalten sind.
      */
     private Store store;
-    /**
-     * .
-     */
+
     /**
      * Logger fuer die Ausgaben.
      */
@@ -49,18 +50,7 @@ public class MenuViewStartUp {
      * Speichert den Status des Wizards.
      */
     private MenuStatus menuStatus;
-//    /**
-//     * Wizard wurde Abgebrochen.
-//     */
-//    private static final int cancel = 0;
-//    /**
-//     * Wizard wird beendet.
-//     */
-//    private static final int finish = 1;
-//    /**
-//     * Der Tool Wizard muss nochmal gestartet werden.
-//     */
-//    private static final int again = 2;
+
     /**
      * Dateieintraete in dem Projekt.
      */
