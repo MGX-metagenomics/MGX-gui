@@ -1,7 +1,7 @@
 package de.cebitec.mgx.gui.wizard.configurations.utilities;
 
 /**
- *
+ *Saemtliche Aufrufe werden in dieser Klasse abgehandelt.
  * @author belmann
  */
 public final class ActionCommands {

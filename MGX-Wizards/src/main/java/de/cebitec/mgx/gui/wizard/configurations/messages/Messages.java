@@ -57,12 +57,37 @@ public class Messages {
      * ConfigFill.
      */
     public static final int Fill = 11;
+    
+    /**
+     * Nachricht zum Auswaehlen eines Tools.
+     */
     public static final int ToolChoose = 12;
+    
+    /**
+     * Nachricht um die Angabe des Tool Namen.
+     */
     public static final int ToolName = 13;
+    
+    /**
+     * Nachricht fuer die Angabe des Namen, des Authors.
+     */
     public static final int ToolAuthor = 14;
+    
+    /**
+     * Nachricht fuer die Angabe der Tool Beschreibung.
+     */
     public static final int ToolDescription = 15;
+    
+    /**
+     * Nachricht fuer die Angabe der Tool Version.
+     */
     public static final int ToolVersion = 16;
-    public static final int ToolNameExists = 17;
+    
+    /**
+     * Nachricht fuer die Meldung, dass die Konkatenation aus Tool Name und 
+     * Versionsnummer bereits existiert.
+     */
+    public static final int ToolVersionNameExists = 17;
 
     /**
      * Gibt die an den Benutzer gerichtete Nachricht wieder.
@@ -116,8 +141,9 @@ public class Messages {
                 return "Please enter a "
                         + "decimal number and use \".\" as decimal separator.";
             }
-            case ToolNameExists: {
-                return "The tool name already exists.";
+            case ToolVersionNameExists: {
+                return "The Combination of tool name and version number "
+                        + "already exists.";
             }
             default: {
                 return "";

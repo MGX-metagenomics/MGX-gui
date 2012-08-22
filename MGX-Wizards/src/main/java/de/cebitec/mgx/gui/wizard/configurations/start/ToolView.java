@@ -39,11 +39,7 @@ public class ToolView extends JPanel implements DocumentListener {
      * ChangeListener um zu erkennen, was in der ComboBox gewählt wurde.
      */
     private ChangeListener listener;
-    /**
-     * ComboBox um zu bestimmen, ob die Tools vom Server, Projekt oder Lokal
-     * hochgeladen werden.
-     */
-//    private JComboBox toolLocationBox;
+
     /**
      * Author von Tools vom Server.
      */
@@ -103,7 +99,7 @@ public class ToolView extends JPanel implements DocumentListener {
     /**
      * GridBagConstraints für das GridBagLayout des kompletten Panels.
      */
-    private GridBagConstraints c;
+    private GridBagConstraints constraintsForAllPanels;
     /**
      * AllInOnePanel in das alle möglichen Panels eingegeben werden.
      */
@@ -217,11 +213,11 @@ public class ToolView extends JPanel implements DocumentListener {
      */
     protected ToolType getToolType() {
         switch (allInOnePanel.getTitleAt(allInOnePanel.getSelectedIndex())) {
-            case "Project-Tools":
+            case ActionCommands.Project:
                 return ToolType.PROJECT;
-            case "Global-Tools (Server)":
+            case ActionCommands.Global:
                 return ToolType.GLOBAL;
-            case "Local-Tools":
+            case ActionCommands.Local:
                 return ToolType.USER_PROVIDED;
             default:
                 assert false;
@@ -239,10 +235,10 @@ public class ToolView extends JPanel implements DocumentListener {
 
         setLayout(new GridBagLayout());
 
-        c = new GridBagConstraints();
-        c.fill = GridBagConstraints.BOTH;
-        c.anchor = GridBagConstraints.CENTER;
-        c.gridy = 0;
+        constraintsForAllPanels = new GridBagConstraints();
+        constraintsForAllPanels.fill = GridBagConstraints.BOTH;
+        constraintsForAllPanels.anchor = GridBagConstraints.CENTER;
+        constraintsForAllPanels.gridy = 0;
 
         String[] options = {ActionCommands.Project, ActionCommands.Global,
             ActionCommands.Local};
@@ -263,10 +259,9 @@ public class ToolView extends JPanel implements DocumentListener {
         questionToolBox.add(label,
                 questionToolBoxConstraints);
         questionToolBoxConstraints.gridy = 1;
-//        questionToolBox.add(toolLocationBox, questionToolBoxConstraints);
 
         northPanel.add(questionToolBox);
-        add(northPanel, c);
+        add(northPanel, constraintsForAllPanels);
 
         JPanel buttonCenterPanel = new JPanel();
         String[][] dataGlobal = GetDataForTableGlobal();
@@ -282,7 +277,7 @@ public class ToolView extends JPanel implements DocumentListener {
         GetDataForTableProject(dataProject);
         JPanel borderLayoutPanel = initializeProjectJTable(dataProject, columnsProject);
         JPanel southPanel = assemblePanels(buttonCenterPanel, borderLayoutPanel);
-        add(southPanel, c);
+        add(southPanel, constraintsForAllPanels);
     }
 
     /**
@@ -355,25 +350,9 @@ public class ToolView extends JPanel implements DocumentListener {
 //        scrollPane.setBorder(BorderFactory.createLineBorder(Color.black));
         allInOnePanel.add(ActionCommands.Project, scrollPane);
         allInOnePanel.addChangeListener(listener);
-        c.gridy = 1;
-        c.insets = new Insets(10, 0, 10, 0);
+        constraintsForAllPanels.gridy = 1;
+        constraintsForAllPanels.insets = new Insets(10, 0, 10, 0);
         chooseFile = new JButton("Choose a local tool.");
-//        chooseFile.setMaximumSize(new Dimension(50,10));
-//        chooseFile.setPreferredSize(new Dimension(50,10));
-//        chooseFile.setMinimumSize(new Dimension(50,10));
-//        chooseFile.setSize(new Dimension(50,10));
-//        JPanel buttonPanel = new JPanel();
-
-//JPanel borderPanel = new JPanel(new BorderLayout());
-//JButton theButton = new JButton("Click Me");
-//JPanel flowPanel = new JPanel(new FlowLayout());
-//flowPanel.add(theButton);
-//borderPanel.add(BorderLayout.CENTER, flowPanel);
-
-
-//        buttonPanel.setLayout(new FlowLayout());
-//        buttonPanel.add(chooseFile);
-
         chooseFile.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -388,10 +367,7 @@ public class ToolView extends JPanel implements DocumentListener {
                 BoxLayout.PAGE_AXIS));
 
         buttonCenterPanel.add(Box.createVerticalGlue());
-//        buttonPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-//        buttonCenterPanel.add(buttonPanel, BorderLayout.SOUTH);   
         JPanel temp = inputLocalToolForm();
-//       temp.setBorder(BorderFactory.createLineBorder(Color.BLUE));
         buttonCenterPanel.add(temp, BorderLayout.NORTH);
         buttonCenterPanel.add(Box.createVerticalGlue());
 
@@ -400,11 +376,11 @@ public class ToolView extends JPanel implements DocumentListener {
         allInOnePanel.add(ActionCommands.Local, buttonCenterPanel);
 
         borderLayoutPanel.add(allInOnePanel, BorderLayout.CENTER);
-        c.weighty = 2.3;
-        c.weightx = 2.3;
-        add(borderLayoutPanel, c);
-        c.weighty = 0;
-        c.weightx = 0;
+        constraintsForAllPanels.weighty = 2.3;
+        constraintsForAllPanels.weightx = 2.3;
+        add(borderLayoutPanel, constraintsForAllPanels);
+        constraintsForAllPanels.weighty = 0;
+        constraintsForAllPanels.weightx = 0;
         toolField = new JTextField();
         Font font = new Font(Font.DIALOG, Font.BOLD, 13);
         toolField.setFont(font);
@@ -433,8 +409,8 @@ public class ToolView extends JPanel implements DocumentListener {
         toolFieldLabelPanel.add(toolField, BorderLayout.CENTER);
         southPanel.add(toolFieldLabelPanel);
         southPanel.add(Box.createVerticalGlue());
-        c.gridy = 2;
-        c.insets = new Insets(0, 0, 0, 0);
+        constraintsForAllPanels.gridy = 2;
+        constraintsForAllPanels.insets = new Insets(0, 0, 0, 0);
         return southPanel;
     }
 
@@ -629,8 +605,6 @@ public class ToolView extends JPanel implements DocumentListener {
                 new CellRenderer(checkBoxTableIndizes));
         globalTable.getColumnModel().getColumn(3).setCellRenderer(
                 new CellRenderer(checkBoxTableIndizes));
-//        globalTable.getColumnModel().getColumn(4).setCellRenderer(
-//                new CheckBoxCellRenderer(checkBoxTableIndizes));
         globalTable.getTableHeader().setDefaultRenderer(
                 new MultiLineTableHeaderRenderer());
         TableColumn col = globalTable.getColumnModel().getColumn(3);
@@ -640,12 +614,6 @@ public class ToolView extends JPanel implements DocumentListener {
         col.setMinWidth(versionWidth);
         col.setWidth(versionWidth);
         col.setPreferredWidth(versionWidth);
-
-//        TableColumn col2 = globalTable.getColumnModel().getColumn(4);
-//        int checkBoxWidth = 70;
-//        col2.setPreferredWidth(checkBoxWidth);
-//        col2.setMaxWidth(checkBoxWidth);
-//        col2.setMinWidth(checkBoxWidth);
 
         globalTable.getSelectionModel().addListSelectionListener(
                 new ListSelectionListener() {
@@ -743,7 +711,6 @@ public class ToolView extends JPanel implements DocumentListener {
         JPanel borderLayoutPanel = new JPanel();
         borderLayoutPanel.setLayout(new BorderLayout());
         allInOnePanel = new JTabbedPane();
-//        allInOnePanel.setLayout(new CardLayout());
         scrollPane = new JScrollPane(projectTable);
         scrollPane.getVerticalScrollBar().addAdjustmentListener(
                 new AdjustmentListener() {
@@ -869,9 +836,9 @@ public class ToolView extends JPanel implements DocumentListener {
     protected void setToolsToChoose(ToolType toolLocation) {
         toolField.setText("");
         this.firePropertyChange("insert", 0, 1);
-        c.weighty = 2.3;
-        c.weightx = 2.3;
-        c.gridy = 1;
+        constraintsForAllPanels.weighty = 2.3;
+        constraintsForAllPanels.weightx = 2.3;
+        constraintsForAllPanels.gridy = 1;
         switch (toolLocation) {
             case PROJECT:
                 projectTable.clearSelection();

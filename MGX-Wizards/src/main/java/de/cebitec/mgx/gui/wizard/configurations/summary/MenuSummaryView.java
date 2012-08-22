@@ -215,9 +215,5 @@ public class MenuSummaryView extends JPanel {
 	   }
 	}
    }
-   private final static Logger LOGGER =
-	 Logger.getLogger(MenuView.class.getName());
-
- 
 }
 //~ Formatted by Jindent --- http://www.jindent.com

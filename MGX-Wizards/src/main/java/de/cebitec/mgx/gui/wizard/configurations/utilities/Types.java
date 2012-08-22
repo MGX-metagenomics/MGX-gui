@@ -1,7 +1,7 @@
 package de.cebitec.mgx.gui.wizard.configurations.utilities;
 
 /**
- *
+ *Datentypen, die verwendet werden.
  * @author belmann
  */
 public final class Types {

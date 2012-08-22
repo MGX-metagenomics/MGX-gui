@@ -5,7 +5,7 @@
 package de.cebitec.mgx.gui.wizard.configurations.utilities;
 
 /**
- *
+ *Status den der Wizard einnehmen kann.
  * @author pbelmann
  */
 public enum MenuStatus {

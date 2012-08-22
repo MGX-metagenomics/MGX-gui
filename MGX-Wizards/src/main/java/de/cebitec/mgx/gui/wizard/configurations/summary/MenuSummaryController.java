@@ -110,8 +110,6 @@ public class MenuSummaryController
     public HelpCtx getHelp() {
         return HelpCtx.DEFAULT_HELP;
     }
-    private final static Logger LOGGER =
-            Logger.getLogger(MenuView.class.getName());
 
     /**
      * Liest die eingegebenen Parameter der vorherigen Panels aus. Wandelt die

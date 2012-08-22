@@ -70,8 +70,6 @@ public class Transform {
         }
         return parameters;
     }
-    private final static Logger LOGGER =
-            Logger.getLogger(Transform.class.getName());
 
     /**
      * Gibt von einer Liste von JobParametern einen NodeStore zurueck.
@@ -81,7 +79,6 @@ public class Transform {
      */
     public static Store getFromJobParameterNodeStore(Iterable<JobParameter> parameters) {
         Store store = new Store();
-        LOGGER.info("Get from Parameters is started.");
 
         for (JobParameter parameter : parameters) {
             boolean newNode = false;
@@ -146,9 +143,6 @@ public class Transform {
 
 
         }
-
-        LOGGER.info("Get from Parameters is finished.");
-
         return store;
     }
 }

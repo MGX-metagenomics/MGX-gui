@@ -66,18 +66,7 @@ public class MenuComboBoxRenderer extends JLabel implements ListCellRenderer {
                         value.toString() + "</b> " + descriptions[index] + 
                         "</td></table>";
             }
-//            String itemText = "<html><table><td width=" + 220
-//                    + "><b><i>" + value.toString() + "<br></i></b></td></table>";
-//            String divideText;
-//            if (index == 0) {
-//
-//                divideText = "<html><table><td width=" + 220 + "></td></table>";
-//            } else {
-//                divideText = " <html><table><td width=" + 220
-//                        + ">" + "----------------" + "</td></table>";
-//            }
-//            String descriptionText = " <html><table><td width=" + 220 + ">"
-//                    + descriptions[index] + "</td></table>";
+
             setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.black));
             setText(itemText );
         } else {

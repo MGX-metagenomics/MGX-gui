@@ -84,6 +84,10 @@ public class MenuController
      * JButton um alle möglichen Default Werte für einen Node zu setzen.
      */
     private JButton allDefaultButton;
+    
+    /**
+     * Dateien des Servers.
+     */
     private List<DirEntry> entries;
 
     /**
@@ -377,8 +381,6 @@ public class MenuController
      * @return Korrekte Eingabe oder nicht.
      */
     private boolean checkConfigInteger(String lInput, int lIndex) {
-
-
         try {
             if (!checkForLetters(lInput)) {
                 NumberFormatException exception = new NumberFormatException();

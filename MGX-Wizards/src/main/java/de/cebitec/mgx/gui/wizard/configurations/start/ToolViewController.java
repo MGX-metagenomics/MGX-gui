@@ -12,6 +12,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -35,40 +36,6 @@ public class ToolViewController implements WizardDescriptor.Panel<WizardDescript
     private final static Logger LOGGER =
             Logger.getLogger(ToolViewController.class.getName());
     /**
-     * Hier werden die Namen der Authoren der Tools aus dem Server
-     * abgespeichert.
-     */
-    private ArrayList<String> authorGlobal;
-    /**
-     * Hier werden die Namen der Authoren der Tools aus dem Projekt
-     * abgespeichert.
-     */
-    private ArrayList<String> authorProject;
-    /**
-     * Hier werden die Beschreibungen der Tools aus dem Server abgespeichert.
-     */
-    private ArrayList<String> descriptionGlobal;
-    /**
-     * Hier werden die Versionsnummern der Tools aus dem Server abgespeichert.
-     */
-    private ArrayList<String> versionGlobal;
-    /**
-     * Hier werden die Beschreibungen der Tools aus dem Projekt abgespeichert.
-     */
-    private final ArrayList<String> descriptionProject;
-    /**
-     * Hier werden die Versionsnummern der Tools aus dem Project abgespeichert.
-     */
-    private final ArrayList<String> versionProject;
-    /**
-     * Hier werden die Namen der Tools aus dem Server abgespeichert.
-     */
-    private final ArrayList<String> nameGlobal;
-    /**
-     * Hier werden die Namen der Tools aus dem Projekt abgespeichert.
-     */
-    private final ArrayList<String> nameProject;
-    /**
      * StartView stellt die View des Panels dar.
      */
     private ToolView viewComponent;
@@ -89,12 +56,20 @@ public class ToolViewController implements WizardDescriptor.Panel<WizardDescript
      */
     private boolean isValid = false;
     /**
+     * Eine Liste von Namen konkateniert mit der Versionsnummer. Jeder Eintrag
+     * ist eindeutig.
+     */
+    private HashSet<String> nameVersion;
+    /**
      * Damit ein WizardDescriptor sich bei einem Wizard-Panel registrieren kann,
      * schreibt das Interface WizardDescriptor.Panel die beiden Methoden
      * addChangeListener und removeChangeListener vor. Diese Methoden fügen
      * dieser Liste die jeweiligen Listener hinzu.
      */
     private final EventListenerList listeners = new EventListenerList();
+    /**
+     * Button zum Loeschen eines Tools.
+     */
     private JButton deleteButton;
 
     /**
@@ -104,7 +79,6 @@ public class ToolViewController implements WizardDescriptor.Panel<WizardDescript
      * @param lGlobal Tools auf dem Server.
      * @param lProject Tools im Projekt.
      */
-    //public ToolViewController(List<Tool> lGlobal, List<Tool> lProject) {
     public ToolViewController(Map<ToolType, Map<Long, Tool>> tools) {
         AlphabetSorter sorter = new AlphabetSorter();
 
@@ -120,20 +94,25 @@ public class ToolViewController implements WizardDescriptor.Panel<WizardDescript
         project = lProject;
 
         isDelete = false;
-        descriptionGlobal = new ArrayList<>();
-        authorGlobal = new ArrayList<>();
-        authorProject = new ArrayList<>();
-        descriptionProject = new ArrayList<>();
-        versionGlobal = new ArrayList<>();
-        versionProject = new ArrayList<>();
-        nameGlobal = new ArrayList<>();
-        nameProject = new ArrayList<>();
+        ArrayList<String> descriptionGlobal = new ArrayList<>();
+        ArrayList<String> authorGlobal = new ArrayList<>();
+        ArrayList<String> authorProject = new ArrayList<>();
+        ArrayList<String> descriptionProject = new ArrayList<>();
+        ArrayList<String> versionGlobal = new ArrayList<>();
+        ArrayList<String> versionProject = new ArrayList<>();
+        ArrayList<String> nameGlobal = new ArrayList<>();
+        ArrayList<String> nameProject = new ArrayList<>();
+
+        nameVersion = new HashSet();
 
         for (Tool tool : lGlobal) {
             nameGlobal.add(tool.getName());
             authorGlobal.add(tool.getAuthor());
             descriptionGlobal.add(tool.getDescription());
             versionGlobal.add(Float.toString(tool.getVersion()));
+
+
+            nameVersion.add(tool.getName() + Float.toString(tool.getVersion()).trim());
         }
 
         for (Tool tool : lProject) {
@@ -144,6 +123,12 @@ public class ToolViewController implements WizardDescriptor.Panel<WizardDescript
 
         }
 
+
+        viewComponent = new ToolView(authorGlobal, authorProject,
+                descriptionGlobal, descriptionProject,
+                versionGlobal, versionProject,
+                nameGlobal, nameProject, this);
+
     }
 
     /**
@@ -153,12 +138,6 @@ public class ToolViewController implements WizardDescriptor.Panel<WizardDescript
      */
     @Override
     public ToolView getComponent() {
-        if (viewComponent == null) {
-            viewComponent = new ToolView(authorGlobal, authorProject,
-                    descriptionGlobal, descriptionProject,
-                    versionGlobal, versionProject,
-                    nameGlobal, nameProject, this);
-        }
         return viewComponent;
     }
 
@@ -181,13 +160,6 @@ public class ToolViewController implements WizardDescriptor.Panel<WizardDescript
         LOGGER.info(deleteButton.getName());
         deleteButton.setActionCommand("DELETE");
         deleteButton.addActionListener(this);
-//        deleteButton.setEnabled(true);
-//        if (hasDefault) {
-//            allDefaultButton.setEnabled(true);
-//        } else {
-//            allDefaultButton.setEnabled(false);
-//        }
-
         getComponent().addPropertyChangeListener(this);
     }
 
@@ -205,7 +177,7 @@ public class ToolViewController implements WizardDescriptor.Panel<WizardDescript
         }
         if (getComponent().getToolType() == ToolType.USER_PROVIDED) {
 
-            settings.putProperty(ActionCommands.Tool, 
+            settings.putProperty(ActionCommands.Tool,
                     getComponent().getFileFieldText());
             settings.putProperty(ActionCommands.LocalToolName, getComponent().
                     getNameText());
@@ -217,13 +189,13 @@ public class ToolViewController implements WizardDescriptor.Panel<WizardDescript
             settings.putProperty(ActionCommands.LocalToolVersion,
                     getComponent().
                     getVersionText());
-            settings.putProperty(ActionCommands.ToolType, ToolType.USER_PROVIDED);         
+            settings.putProperty(ActionCommands.ToolType, ToolType.USER_PROVIDED);
         } else if (getComponent().getToolType() == ToolType.GLOBAL) {
             settings.putProperty(ActionCommands.Tool,
                     global.get(getComponent().getCurrentRow()).getId());
             settings.putProperty(ActionCommands.ToolType, ToolType.GLOBAL);
         } else if (getComponent().getToolType() == ToolType.PROJECT) {
-            settings.putProperty( ActionCommands.Tool,
+            settings.putProperty(ActionCommands.Tool,
                     project.get(getComponent().getCurrentRow()).getId());
             settings.putProperty(ActionCommands.ToolType, ToolType.PROJECT);
         }
@@ -351,10 +323,10 @@ public class ToolViewController implements WizardDescriptor.Panel<WizardDescript
                         Messages.getInformation(Messages.ToolName));
 
                 return false;
-            } else if (exists(getComponent().getNameText())) {
+            } else if (exists(getComponent().getNameText(), getComponent().getVersionText())) {
                 model.getNotificationLineSupport().
                         setWarningMessage(
-                        Messages.getInformation(Messages.ToolNameExists));
+                        Messages.getInformation(Messages.ToolVersionNameExists));
                 return false;
             } else if (getComponent().getAuthorText().isEmpty()) {
 
@@ -393,10 +365,37 @@ public class ToolViewController implements WizardDescriptor.Panel<WizardDescript
         return true;
     }
 
-    private boolean exists(String nameText) {
-        return (nameProject.contains(nameText) || nameGlobal.contains(nameText));
+    /**
+     * Ueberprueft, ob der Name bereits existiert.
+     *
+     * @param nameText des Tools
+     * @return Name existiert bereits oder nicht.
+     */
+    private boolean exists(String toolName, String toolVersion) {
+        return (nameVersion.contains(toolName + prepareVersionNumber(toolVersion)));
     }
 
+    /**
+     * Bereitet die Versionsnummer vor, indem aus z.B 1 der Float 1.0 erstellt
+     * wird, um dann mit allen Versionsnummern der bereits eingetragenen Tools
+     * vergleichen zu koennen.
+     *
+     * @return Versionsnummer
+     */
+    private String prepareVersionNumber(String lRawNumber) {
+        float tempFloat = 0;
+        try {
+            tempFloat = Float.parseFloat(lRawNumber);
+        } catch (NumberFormatException e) {
+        }
+        return Float.toString(tempFloat);
+    }
+
+    /**
+     * Gibt an, dass sich der Status veraendert hat.
+     *
+     * @param e Das Event, fuer die Aenderung.
+     */
     @Override
     public void stateChanged(ChangeEvent e) {
         if (e.getSource() instanceof JTabbedPane) {

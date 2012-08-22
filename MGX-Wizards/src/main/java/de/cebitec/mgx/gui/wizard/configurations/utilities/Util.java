@@ -66,7 +66,6 @@ public class Util {
         } catch (IOException e) {
             throw e;
         }
-
         return content.toString();
     }
 }

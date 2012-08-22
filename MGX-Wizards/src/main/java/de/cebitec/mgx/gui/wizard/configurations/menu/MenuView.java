@@ -61,6 +61,10 @@ public final class MenuView extends JPanel implements DocumentListener {
      * Der ActionListener für die Buttons.
      */
     private ActionListener listener;
+    
+    /**
+     * Dateien die sich im Projekt befinden.
+     */
     private List<DirEntry> entries;
 
     /**
@@ -104,12 +108,6 @@ public final class MenuView extends JPanel implements DocumentListener {
         setUpPanelForm(lConfigTypes, lUserDescriptions, lUserNames,
                 lUserChoicesDescriptions, lUserChoicesValues,
                 lMandatoryComponentsCounter, lFieldCounter);
-    }
-
-    public String getFileFieldText() {
-
-        return fileField.getText();
-
     }
 
     /**
@@ -157,19 +155,7 @@ public final class MenuView extends JPanel implements DocumentListener {
             JPanel lComponentPanel, int lMandatoryComponentsCounter,
             GridBagConstraints lAllInOneConstraints, int lAddToConfigIndex,
             JPanel lRightComponentPanel, JLabel lOptionalLabel, int lFieldCounter) {
-//        lRightComponentPanel.setAlignmentX(JComponent.LEFT_ALIGNMENT);
         Font font = new Font(Font.DIALOG, Font.BOLD, 14);
-        lComponentPanel.setAlignmentX(JComponent.LEFT_ALIGNMENT);
-        lComponentPanel.setAlignmentY(JComponent.LEFT_ALIGNMENT);
-//        lComponentPanel.setBorder(BorderFactory.createLineBorder(Color.GREEN));
-//        lDescriptionPanel.setBorder(BorderFactory.createLineBorder(Color.GREEN));
-        lDescriptionPanel.setAlignmentX(JComponent.LEFT_ALIGNMENT);
-        lDescriptionPanel.setAlignmentY(JComponent.LEFT_ALIGNMENT);
-
-        lComponentDescriptionPanel.setAlignmentY(JComponent.LEFT_ALIGNMENT);
-        lComponentDescriptionPanel.setAlignmentX(JComponent.LEFT_ALIGNMENT);
-        lComponentDescriptionPanel.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
-//        lComponentDescriptionPanel.setBorder(BorderFactory.createLineBorder(Color.GREEN));
 
         lComponentDescriptionPanel.setBorder(
                 BorderFactory.createTitledBorder(null, lUserNames.get(configIndex),
@@ -666,7 +652,6 @@ public final class MenuView extends JPanel implements DocumentListener {
     private void initializeRadioButtons(JPanel lComponentPanel, int lConfigIndex,
             int lMandatoryComponentsCounter, String lDefaultValue) {
 
-
         ArrayList<JRadioButton> radioGroup = new ArrayList<>();
         JRadioButton radioTrue;
         JRadioButton radioFalse;
@@ -716,10 +701,12 @@ public final class MenuView extends JPanel implements DocumentListener {
      */
     protected String getInput(int lIndex) {
         Object selected = allComponentsList.get(lIndex);
-
+        
         if (selected instanceof ButtonGroup) {
             ButtonGroup buttonGroup = ((ButtonGroup) selected);
-            if (buttonGroup.getSelection() == null || buttonGroup.getSelection().getActionCommand().equals(ActionCommands.RadioNothing)) {
+            if (buttonGroup.getSelection() == null || 
+                    buttonGroup.getSelection().getActionCommand().
+                    equals(ActionCommands.RadioNothing)) {
                 return "";
             }
             return buttonGroup.getSelection().getActionCommand().toString();
