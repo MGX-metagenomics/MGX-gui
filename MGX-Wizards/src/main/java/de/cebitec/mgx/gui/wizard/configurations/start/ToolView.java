@@ -347,7 +347,6 @@ public class ToolView extends JPanel implements DocumentListener {
      */
     private JPanel assemblePanels(JPanel buttonCenterPanel,
             JPanel borderLayoutPanel) {
-//        scrollPane.setBorder(BorderFactory.createLineBorder(Color.black));
         allInOnePanel.add(ActionCommands.Project, scrollPane);
         allInOnePanel.addChangeListener(listener);
         constraintsForAllPanels.gridy = 1;
@@ -422,7 +421,7 @@ public class ToolView extends JPanel implements DocumentListener {
     private JPanel inputLocalToolForm() {
         GridBagConstraints con = new GridBagConstraints();
         JPanel panel = new JPanel(new GridBagLayout());
-        int width = 15;
+        int width = 50;
 
         con.gridy = 0;
         con.gridx = 0;
@@ -472,10 +471,7 @@ public class ToolView extends JPanel implements DocumentListener {
         descriptionField.setLineWrap(true);
         descriptionField.getDocument().addDocumentListener(this);
         JScrollPane pane = new JScrollPane(descriptionField);
-        pane.setMinimumSize(new Dimension(125, 70));
-        pane.setMaximumSize(new Dimension(125, 70));
-        pane.setPreferredSize(new Dimension(125, 70));
-        pane.setSize(new Dimension(125, 70));
+        pane.setPreferredSize(new Dimension(405, 70));
         lab = new JLabel("Description:", JLabel.RIGHT);
         lab.setLabelFor(pane);
 
