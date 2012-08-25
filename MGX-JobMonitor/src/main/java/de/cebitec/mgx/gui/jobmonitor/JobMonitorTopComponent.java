@@ -95,10 +95,12 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
     public void componentOpened() {
         result = Utilities.actionsGlobalContext().lookupResult(MGXMaster.class);
         result.addLookupListener(this);
+        getMaster();
     }
 
     @Override
     public void componentClosed() {
+        result.removeLookupListener(this);
     }
 
     void writeProperties(java.util.Properties p) {
