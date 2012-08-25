@@ -1,84 +1,82 @@
 package de.cebitec.mgx.gui.charts.basic;
 
-import de.cebitec.mgx.gui.attributevisualization.viewer.NumericalViewerI;
+import de.cebitec.mgx.gui.attributevisualization.VGroupManager;
 import de.cebitec.mgx.gui.attributevisualization.viewer.ViewerI;
-import de.cebitec.mgx.gui.charts.basic.customizer.XYPlotCustomizer;
 import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
+import de.cebitec.mgx.gui.datamodel.AttributeType;
 import de.cebitec.mgx.gui.datamodel.misc.Distribution;
 import de.cebitec.mgx.gui.datamodel.misc.Pair;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import java.awt.Color;
 import java.util.List;
 import java.util.Locale;
-import javax.swing.JComponent;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
-import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.LogAxis;
 import org.jfree.chart.axis.LogarithmicAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.TickUnitSource;
 import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.category.CategoryItemRenderer;
 import org.jfree.chart.renderer.xy.XYAreaRenderer;
-import org.jfree.data.xy.XYSeriesCollection;
+import org.jfree.data.category.DefaultCategoryDataset;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
- * @author sj
+ * @author sjaenick
  */
 @ServiceProvider(service = ViewerI.class)
-public class AreaChart extends NumericalViewerI {
-
-    protected ChartPanel cPanel = null;
-    protected XYPlotCustomizer customizer = null;
-    protected JFreeChart chart = null;
-
-    @Override
-    public JComponent getComponent() {
-        return cPanel;
-    }
+public class StackedAreaChart extends AreaChart {
 
     @Override
     public String getName() {
-        return "Area Chart";
+        return "Stacked Area Chart";
     }
+
+    @Override
+    public boolean canHandle(AttributeType valueType) {
+        return ((super.canHandle(valueType)) && (VGroupManager.getInstance().getActiveGroups().size() > 1));
+    }
+    
+    
 
     @Override
     public void show(List<Pair<VisualizationGroup, Distribution>> dists) {
 
         dists = getCustomizer().filter(dists);
-        XYSeriesCollection dataset = JFreeChartUtil.createXYSeries(dists);
+        DefaultCategoryDataset dataset = JFreeChartUtil.createCategoryDataset(dists);
 
         String xAxisLabel = "";
         String yAxisLabel = getCustomizer().useFractions() ? "Fraction" : "Count";
 
-        chart = ChartFactory.createXYAreaChart(getTitle(), xAxisLabel, yAxisLabel, dataset, PlotOrientation.VERTICAL, true, true, false);
-
+        chart = ChartFactory.createStackedAreaChart(getTitle(), xAxisLabel, yAxisLabel, dataset, PlotOrientation.VERTICAL, true, true, false);
         chart.setBorderPaint(Color.WHITE);
         chart.setBackgroundPaint(Color.WHITE);
         cPanel = new ChartPanel(chart);
-        XYPlot plot = (XYPlot) chart.getPlot();
+        CategoryPlot plot = (CategoryPlot) chart.getPlot();
         plot.setBackgroundPaint(Color.WHITE);
 
-        // x axis
-        ValueAxis valueAxis;
-        final TickUnitSource tusX;
-        if (getCustomizer().logX()) {
-            valueAxis = new LogarithmicAxis("log(" + xAxisLabel + ")");
-            ((LogarithmicAxis) valueAxis).setStrictValuesFlag(false);
-            tusX = LogAxis.createLogTickUnits(Locale.getDefault());
-
-        } else {
-            valueAxis = (NumberAxis) plot.getDomainAxis();
-            tusX = NumberAxis.createIntegerTickUnits();
-        }
-        valueAxis.setStandardTickUnits(tusX);
-        valueAxis.setInverted(!getCustomizer().getSortAscending());
-        plot.setDomainAxis(valueAxis);
-
+//        // x axis
+//        CategoryAxis valueAxis;
+//        final TickUnitSource tusX;
+//        if (getCustomizer().logX()) {
+//            valueAxis = new LogarithmicAxis("log(" + xAxisLabel + ")");
+//            ((LogarithmicAxis) valueAxis).setStrictValuesFlag(false);
+//            tusX = LogAxis.createLogTickUnits(Locale.getDefault());
+//
+//        } else {
+//            valueAxis = (CategoryAxis) plot.getDomainAxis();
+//            tusX = NumberAxis.createIntegerTickUnits();
+//        }
+//        valueAxis.setStandardTickUnits(tusX);
+//        valueAxis.setInverted(!getCustomizer().getSortAscending());
+//        plot.setDomainAxis(valueAxis);
+        plot.getDomainAxis().setCategoryMargin(0); 
 
         // y axis
         final NumberAxis rangeAxis;
@@ -100,26 +98,11 @@ public class AreaChart extends NumericalViewerI {
         plot.setRangeAxis(rangeAxis);
 
 
-        // set the colors
+        // colors
         int i = 0;
-        XYAreaRenderer renderer = (XYAreaRenderer) plot.getRenderer();
+        CategoryItemRenderer renderer = chart.getCategoryPlot().getRenderer();
         for (Pair<VisualizationGroup, Distribution> groupDistribution : dists) {
             renderer.setSeriesPaint(i++, groupDistribution.getFirst().getColor());
         }
-
-    }
-
-    @Override
-    public XYPlotCustomizer getCustomizer() {
-        if (customizer == null) {
-            customizer = new XYPlotCustomizer();
-            customizer.setAttributeType(getAttributeType());
-        }
-        return customizer;
-    }
-
-    @Override
-    public Class getInputType() {
-        return Distribution.class;
     }
 }

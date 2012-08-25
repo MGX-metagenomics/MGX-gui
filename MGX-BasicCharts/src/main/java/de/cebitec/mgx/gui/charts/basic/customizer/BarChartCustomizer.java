@@ -1,4 +1,4 @@
-package de.cebitec.mgx.gui.charts.basic;
+package de.cebitec.mgx.gui.charts.basic.customizer;
 
 import de.cebitec.mgx.gui.attributevisualization.filter.LimitFilter;
 import de.cebitec.mgx.gui.attributevisualization.filter.SortOrder;

@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.charts.basic;
 
+import de.cebitec.mgx.gui.charts.basic.customizer.XYPlotCustomizer;
 import de.cebitec.mgx.gui.attributevisualization.viewer.NumericalViewerI;
 import de.cebitec.mgx.gui.attributevisualization.viewer.ViewerI;
 import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
