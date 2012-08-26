@@ -61,8 +61,8 @@ public class StackedAreaChart extends AreaChart {
         CategoryPlot plot = (CategoryPlot) chart.getPlot();
         plot.setBackgroundPaint(Color.WHITE);
 
-//        // x axis
-//        CategoryAxis valueAxis;
+        // x axis
+        CategoryAxis valueAxis;
 //        final TickUnitSource tusX;
 //        if (getCustomizer().logX()) {
 //            valueAxis = new LogarithmicAxis("log(" + xAxisLabel + ")");
