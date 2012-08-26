@@ -9,7 +9,6 @@ import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import java.awt.Component;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import javax.swing.JComponent;
 import javax.swing.SwingWorker;
@@ -75,10 +74,11 @@ public final class ConflictResolverWizardIterator implements WizardDescriptor.It
                         @Override
                         protected Void doInBackground() throws Exception {
                             for (final Job job : e.getValue()) {
-                                assert job.getTool() == null;
-                                MGXMaster master = (MGXMaster) job.getMaster();
-                                Tool tool = master.Tool().ByJob(job.getId());
-                                job.setTool(tool);
+                                if (job.getTool() == null) {
+                                    MGXMaster master = (MGXMaster) job.getMaster();
+                                    Tool tool = master.Tool().ByJob(job.getId());
+                                    job.setTool(tool);
+                                }
                             }
                             return null;
                         }
