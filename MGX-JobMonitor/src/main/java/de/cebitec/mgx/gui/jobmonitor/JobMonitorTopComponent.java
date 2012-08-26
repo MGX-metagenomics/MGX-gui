@@ -72,6 +72,8 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
             }
         };
         view.setNodePopupFactory(npf);
+        
+        getMaster();
     }
 
     /**
