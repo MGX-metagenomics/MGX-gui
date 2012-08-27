@@ -320,7 +320,7 @@ public final class MenuView extends JPanel implements DocumentListener {
         JPanel descriptionPanel;
         String defaultValue;
         int addToConfigIndex = 0;
-        JLabel mandatoryLabel = new JLabel("<html><u>Mandatory "
+        JLabel mandatoryLabel = new JLabel("<html><u>Required "
                 + "Fields:</u></html>");
         JLabel optionalLabel = new JLabel("<html><u>Optional "
                 + "Fields:</u></html>");

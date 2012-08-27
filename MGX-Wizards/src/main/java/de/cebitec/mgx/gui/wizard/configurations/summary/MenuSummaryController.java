@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Logger;
+import javax.swing.JButton;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
 import org.openide.WizardDescriptor;
@@ -121,8 +122,11 @@ public class MenuSummaryController
     @Override
     public void readSettings(WizardDescriptor lWiz) {
 
-        getComponent().removeAll();
+        Object[] objects = lWiz.getOptions();
+        JButton allDefaultsButton = ((JButton) objects[1]);
+        allDefaultsButton.setEnabled(false);
 
+        getComponent().removeAll();
         ArrayList<ArrayList<String>> propertys =
                 new ArrayList<ArrayList<String>>();
 

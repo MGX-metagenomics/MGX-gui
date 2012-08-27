@@ -76,7 +76,7 @@ public class MenuSummaryView extends JPanel {
     */
    @Override
    public String getName() {
-	return "Summary/Finish";
+	return "Summary/Confirm";
    }
 
    /**
@@ -90,7 +90,7 @@ public class MenuSummaryView extends JPanel {
 	setPreferredSize(new Dimension(650, 380));
 	setMaximumSize(new Dimension(650, 380));
 
-	String[] columns = {"Field", "Parameter", "Input"};
+	String[] columns = {"Analysis Step", "Parameter Name", "Input"};
 	int size = 0;
 
 	for (ArrayList<String> localParameter : parameter) {

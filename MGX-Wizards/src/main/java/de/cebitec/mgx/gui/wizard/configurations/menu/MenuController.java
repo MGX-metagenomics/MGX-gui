@@ -245,11 +245,6 @@ public class MenuController
     @Override
     public void readSettings(WizardDescriptor lModel) {
         this.model = lModel;
-
-
-
-
-
         Object[] objects = lModel.getOptions();
         allDefaultButton = ((JButton) objects[1]);
         allDefaultButton.addActionListener(listenerbutton);

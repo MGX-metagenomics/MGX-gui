@@ -261,7 +261,7 @@ public class ToolView extends JPanel implements DocumentListener {
         questionToolBoxConstraints.gridy = 1;
 
         northPanel.add(questionToolBox);
-        add(northPanel, constraintsForAllPanels);
+//        add(northPanel, constraintsForAllPanels);
 
         JPanel buttonCenterPanel = new JPanel();
         String[][] dataGlobal = GetDataForTableGlobal();

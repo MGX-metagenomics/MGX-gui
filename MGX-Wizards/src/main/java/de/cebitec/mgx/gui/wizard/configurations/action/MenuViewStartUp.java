@@ -36,7 +36,6 @@ public class MenuViewStartUp {
      * Der Store in dem die konfigurierbaren Nodes enthalten sind.
      */
     private Store store;
-
     /**
      * Logger fuer die Ausgaben.
      */
@@ -50,7 +49,6 @@ public class MenuViewStartUp {
      * Speichert den Status des Wizards.
      */
     private MenuStatus menuStatus;
-
     /**
      * Dateieintraete in dem Projekt.
      */
@@ -123,6 +121,14 @@ public class MenuViewStartUp {
             menuStatus = MenuStatus.FINISH;
             removeNodesAndConfigItems(gWiz);
             return store;
+        } else {
+
+            if (menuStatus != MenuStatus.AGAIN) {
+                menuStatus = MenuStatus.CANCEL;
+
+            }
+
+
         }
         return null;
     }
@@ -231,22 +237,25 @@ public class MenuViewStartUp {
                         JOptionPane.QUESTION_MESSAGE, null,
                         options, options[1]);
                 if (value == JOptionPane.YES_OPTION) {
-
+                    menuStatus = MenuStatus.CANCEL;
                     gWiz.doCancelClick();
 
                 } else {
                 }
             }
         });
+       
 
 
         Object[] optionButtons = {chooseToolButton, setAllDefaultbutton,
             WizardDescriptor.PREVIOUS_OPTION, WizardDescriptor.NEXT_OPTION,
             WizardDescriptor.FINISH_OPTION, buttonCancel};
-
+        
         gWiz.setOptions(optionButtons);
 
         Object[] objects = gWiz.getOptions();
+        JButton buttonConfirm = (JButton) objects[4];
+        buttonConfirm.setText("Confirm");
         JButton buttonNext = (JButton) objects[3];
         LOGGER.info(buttonNext.getName());
         buttonNext.setMnemonic(KeyEvent.VK_N);
