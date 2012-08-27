@@ -72,6 +72,7 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
             }
         };
         view.setNodePopupFactory(npf);
+        result = Utilities.actionsGlobalContext().lookupResult(MGXMaster.class);
         
         getMaster();
     }
@@ -95,7 +96,6 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
 
     @Override
     public void componentOpened() {
-        result = Utilities.actionsGlobalContext().lookupResult(MGXMaster.class);
         result.addLookupListener(this);
         getMaster();
     }
