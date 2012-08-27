@@ -28,27 +28,22 @@ public class ShowParameterWorker extends SwingWorker<Collection<JobParameter>, V
      * Tool, dessen Parameter angezeigt werden sollen.
      */
     private Tool tool;
-    
     /**
      * Controller fuer die Anzeige der Parameter.
      */
     private WizardController startUp;
-    
     /**
      * Masterobjekt fuer die Verbindung zum Server.
      */
     private MGXMaster master;
-    
     /**
      * Der Typ des Tools.
      */
     private ToolType toolType;
-    
     /**
      * Der Sequenzierlauf.
      */
     private SeqRun seqRun;
-    
     /**
      * Parameterliste 
      */
@@ -120,7 +115,8 @@ public class ShowParameterWorker extends SwingWorker<Collection<JobParameter>, V
         } catch (InterruptedException | ExecutionException ex) {
             Exceptions.printStackTrace(ex);
         }
-        if (startUp.getStatus() == MenuStatus.AGAIN && parameterList.size() > 0) {
+        if (startUp.getStatus() == MenuStatus.AGAIN && parameterList.size() > 0 
+                && startUp.getStatus() != MenuStatus.CANCEL) {
             GetToolsWorker worker = new GetToolsWorker(master, seqRun);
             worker.execute();
         } else if (startUp.getStatus() != MenuStatus.AGAIN &&
