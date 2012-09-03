@@ -50,14 +50,14 @@ public class ObservationViewPanel extends javax.swing.JPanel {
         }
         
         if (cache.containsKey(seq)) {
-            WeakReference<Observation[]> ref = cache.get(seq);
-            if (ref.get() == null) {
+            Observation[] obs = cache.get(seq).get(); // create strong reference
+            if (obs == null) {
                 // weak ref expired, start new fetcher and invoke self
                 fetchFromServer(m, seq, proc);
                 return getObservations(m, seq, proc);
             } else {
                 // weak ref alive, return value
-                return ref.get();
+                return obs;
             }
         }
         
