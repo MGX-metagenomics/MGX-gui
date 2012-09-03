@@ -1,6 +1,5 @@
 package de.cebitec.mgx.gui.controller;
 
-import de.cebitec.mgx.gui.datamodel.misc.Distribution;
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.AttributeCorrelation;
 import de.cebitec.mgx.dto.dto.AttributeCount;
@@ -11,6 +10,7 @@ import de.cebitec.mgx.dto.dto.CorrelatedAttributeCount;
 import de.cebitec.mgx.dto.dto.SearchRequestDTO;
 import de.cebitec.mgx.dto.dto.SequenceDTO;
 import de.cebitec.mgx.gui.datamodel.*;
+import de.cebitec.mgx.gui.datamodel.misc.Distribution;
 import de.cebitec.mgx.gui.datamodel.misc.Pair;
 import de.cebitec.mgx.gui.datamodel.misc.SearchRequest;
 import de.cebitec.mgx.gui.datamodel.tree.Tree;
@@ -200,22 +200,26 @@ public class AttributeAccess extends AccessBase<Attribute> {
         return ret;
     }
 
-    public List<Sequence> search(SeqRun[] selectedSeqRuns, String text, boolean exact) {
+    public Sequence[] search(SeqRun[] selectedSeqRuns, String text, boolean exact) {
         SearchRequest sr = new SearchRequest();
         sr.setTerm(text);
         sr.setExact(exact);
         sr.setRuns(selectedSeqRuns);
         SearchRequestDTO reqdto = SearchRequestDTOFactory.getInstance().toDTO(sr);
-        
-        List<Sequence> ret = new ArrayList<>();
-      
+
+        List<SequenceDTO> searchResult = null;
         try {
-            for (SequenceDTO dto : getDTOmaster().Attribute().search(reqdto)) {
-                ret.add(SequenceDTOFactory.getInstance().toModel(dto));
-            }
+            searchResult = getDTOmaster().Attribute().search(reqdto);
         } catch (MGXServerException ex) {
             Exceptions.printStackTrace(ex);
         }
+        
+        Sequence[] ret = new Sequence[searchResult.size()];
+        int i = 0;
+        for (SequenceDTO dto : searchResult) {
+            ret[i++] = SequenceDTOFactory.getInstance().toModel(dto);
+        }
+        
         return ret;
     }
 }
