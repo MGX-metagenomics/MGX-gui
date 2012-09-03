@@ -1,17 +1,24 @@
 package de.cebitec.mgx.gui.search;
 
+import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.Observation;
 import de.cebitec.mgx.gui.datamodel.Sequence;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import org.openide.util.RequestProcessor;
+import org.openide.util.RequestProcessor.Task;
 
 /**
  *
  * @author sj
  */
 public class ObservationViewPanel extends javax.swing.JPanel {
-    
-    private final static int BORDER = 5;
-    private int seqLen;
+
+    private Task myTask;
+    private Sequence seq;
+    private static Map<Sequence, Collection<Observation>> cache = Collections.<Sequence, Collection<Observation>>synchronizedMap(new HashMap<Sequence, Collection<Observation>>());
 
     /**
      * Creates new form ObservationViewPanel
@@ -20,23 +27,42 @@ public class ObservationViewPanel extends javax.swing.JPanel {
         super();
         initComponents();
     }
-    
-    public void setSequence(Sequence seq) {
-        seqLen = seq.getLength();
-        readName.setText(seq.getName() + " ("+seq.getLength()+"bp)");
+
+    @Override
+    public int getHeight() {
+        return 200;
+    }
+
+    public void setCurrentData(MGXMaster m, Sequence seq, RequestProcessor proc) {
+        this.seq = seq;
+        readName.setText(seq.getName() + " (" + seq.getLength() + "bp)");
+        if (!cache.containsKey(seq)) {
+            //myTask = proc.post(new ObsFetcher(m, seq));
+        }
     }
     
-    public void setObservations(Collection<Observation> obs) {
-        readName.setText(readName.getText() + " numObs: "+obs.size());
-//        Graphics2D gfx = (Graphics2D) obsview.getGraphics();
-//        assert gfx != null;
-//        int height = obsview.getHeight();
-//        int width = obsview.getWidth();
-//        
-//        int midheight = height/2;
-//        gfx.drawLine(BORDER, midheight, width - BORDER, midheight);
-//        gfx.drawString("1", BORDER - 3, midheight + 5);
-//        gfx.drawString(String.valueOf(seqLen), width - BORDER - 3, midheight + 5);
+    private Collection<Observation> getObservations() {
+        if (!cache.containsKey(seq)) {
+            assert myTask != null;
+            myTask.waitFinished();
+        }
+        return cache.get(seq);
+    }
+
+    private class ObsFetcher implements Runnable { //, Future<Collection<Observation>> {
+
+        private final MGXMaster master;
+        private final Sequence seq;
+
+        public ObsFetcher(MGXMaster master, Sequence seq) {
+            this.master = master;
+            this.seq = seq;
+        }
+
+        @Override
+        public void run() {
+            cache.put(seq, master.Observation().ByRead(seq));
+        }
     }
 
     /**

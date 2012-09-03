@@ -246,7 +246,7 @@ public final class SearchTopComponent extends TopComponent implements LookupList
     public void componentOpened() {
         result = Utilities.actionsGlobalContext().lookupResult(MGXMaster.class);
         result.addLookupListener(this);
-        proc = new RequestProcessor("MGX-ObservationFetch-Pool", Runtime.getRuntime().availableProcessors() + 5);
+        proc = new RequestProcessor("MGX-ObservationFetch-Pool", Runtime.getRuntime().availableProcessors() + 2);
         getMaster();
     }
 
@@ -317,11 +317,11 @@ public final class SearchTopComponent extends TopComponent implements LookupList
     @Override
     public void actionPerformed(ActionEvent e) {
 
-        SwingWorker<List<Sequence>, Void> worker = new SwingWorker<List<Sequence>, Void>() {
+        SwingWorker<Sequence[], Void> worker = new SwingWorker<Sequence[], Void>() {
             @Override
-            protected List<Sequence> doInBackground() throws Exception {
+            protected Sequence[] doInBackground() throws Exception {
                 long start = System.currentTimeMillis();
-                List<Sequence> ret = currentMaster.Attribute().search(getSelectedSeqRuns(), searchTerm.getText(), exact.isSelected());
+                Sequence[] ret = currentMaster.Attribute().search(getSelectedSeqRuns(), searchTerm.getText(), exact.isSelected());
                 start = System.currentTimeMillis() - start;
                 Logger.getGlobal().log(Level.INFO, "search for {0} took {1}ms", new Object[]{searchTerm.getText(), start});
                 return ret;
@@ -331,8 +331,8 @@ public final class SearchTopComponent extends TopComponent implements LookupList
             setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             numResults.setText("Searching..");
             worker.execute();
-            List<Sequence> hits = worker.get();
-            numResults.setText(hits.size() + " hits.");
+            Sequence[] hits = worker.get();
+            numResults.setText(hits.length + " hits.");
             resultModel.setResult(hits);
         } catch (InterruptedException | ExecutionException ex) {
             Exceptions.printStackTrace(ex);
@@ -344,21 +344,21 @@ public final class SearchTopComponent extends TopComponent implements LookupList
 
     private final class ResultListModel extends AbstractListModel<Sequence> {
 
-        List<Sequence> list = new ArrayList<>();
+        Sequence list[] = new Sequence[0];
 
-        public void setResult(List<Sequence> l) {
-            list = l;
+        public void setResult(Sequence[] result) {
+            list = result;
             fireContentsChanged(this, -1, -1);
         }
 
         @Override
         public int getSize() {
-            return list.size();
+            return list.length;
         }
 
         @Override
         public Sequence getElementAt(int index) {
-            return list.get(index);
+            return list[index];
         }
     }
     
@@ -367,28 +367,10 @@ public final class SearchTopComponent extends TopComponent implements LookupList
     private final class ObservationListCellRenderer implements ListCellRenderer<Sequence> {
 
         private ObservationViewPanel comp = new ObservationViewPanel();
-        private Map<Sequence, Collection<Observation>> cache = Collections.<Sequence, Collection<Observation>>synchronizedMap(new HashMap<Sequence, Collection<Observation>>());
 
         @Override
         public Component getListCellRendererComponent(JList<? extends Sequence> list, final Sequence seq, int index, boolean isSelected, boolean cellHasFocus) {
-            comp.setSequence(seq);
-            boolean isVisible = ((index >= resultList.getFirstVisibleIndex()) && (index <= resultList.getLastVisibleIndex()));
-            if (isVisible && !cache.containsKey(seq)) {
-                SwingWorker<Collection<Observation>, Void> worker = new SwingWorker<Collection<Observation>, Void>() {
-                    @Override
-                    protected Collection<Observation> doInBackground() throws Exception {
-                        Logger.getGlobal().log(Level.INFO, "getObs worker {0}", ++numWorkers);
-                        return currentMaster.Observation().ByRead(seq);
-                    }
-                };
-                worker.execute();
-                try {
-                    cache.put(seq, worker.get());
-                } catch (InterruptedException | ExecutionException ex) {
-                    Exceptions.printStackTrace(ex);
-                }
-            }
-            comp.setObservations(cache.get(seq));
+            comp.setCurrentData(currentMaster, seq, proc);
             return comp;
         }
     }
