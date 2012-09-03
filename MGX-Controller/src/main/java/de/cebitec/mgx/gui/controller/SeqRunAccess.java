@@ -14,6 +14,7 @@ import de.cebitec.mgx.gui.dtoconversion.AttributeTypeDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.JobDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.SeqRunDTOFactory;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,9 +55,12 @@ public class SeqRunAccess extends AccessBase<SeqRun> {
 
     @Override
     public List<SeqRun> fetchall() {
-        List<SeqRun> all = new ArrayList<>();
+        List<SeqRun> all = null;
         try {
-            for (SeqRunDTO dto : getDTOmaster().SeqRun().fetchall()) {
+            Collection<SeqRunDTO> fetchall = getDTOmaster().SeqRun().fetchall();
+            all = new ArrayList<>(fetchall.size());
+
+            for (SeqRunDTO dto : fetchall) {
                 SeqRun sr = SeqRunDTOFactory.getInstance().toModel(dto);
                 sr.setMaster(this.getMaster());
                 all.add(sr);
@@ -89,9 +93,11 @@ public class SeqRunAccess extends AccessBase<SeqRun> {
     }
 
     public Iterable<SeqRun> ByExtract(long extract_id) {
-        List<SeqRun> all = new ArrayList<>();
+        List<SeqRun> all = null; 
         try {
-            for (SeqRunDTO dto : getDTOmaster().SeqRun().ByExtract(extract_id)) {
+            Collection<SeqRunDTO> ByExtract = getDTOmaster().SeqRun().ByExtract(extract_id);
+            all = new ArrayList<>(ByExtract.size());
+            for (SeqRunDTO dto : ByExtract) {
                 SeqRun sr = SeqRunDTOFactory.getInstance().toModel(dto);
                 sr.setMaster(this.getMaster());
                 all.add(sr);
