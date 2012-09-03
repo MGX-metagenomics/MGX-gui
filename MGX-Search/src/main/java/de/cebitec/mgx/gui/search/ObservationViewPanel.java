@@ -3,7 +3,7 @@ package de.cebitec.mgx.gui.search;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.Observation;
 import de.cebitec.mgx.gui.datamodel.Sequence;
-import java.util.Collection;
+import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +18,7 @@ public class ObservationViewPanel extends javax.swing.JPanel {
 
     private Task myTask;
     private Sequence seq;
-    private static Map<Sequence, Collection<Observation>> cache = Collections.<Sequence, Collection<Observation>>synchronizedMap(new HashMap<Sequence, Collection<Observation>>());
+    private static Map<Sequence, WeakReference<Observation[]>> cache = Collections.<Sequence, WeakReference<Observation[]>>synchronizedMap(new HashMap<Sequence, WeakReference<Observation[]>>());
 
     /**
      * Creates new form ObservationViewPanel
@@ -37,16 +37,36 @@ public class ObservationViewPanel extends javax.swing.JPanel {
         this.seq = seq;
         readName.setText(seq.getName() + " (" + seq.getLength() + "bp)");
         if (!cache.containsKey(seq)) {
-            //myTask = proc.post(new ObsFetcher(m, seq));
+            // submit observation fetcher task
+            fetchFromServer(m, seq, proc);
         }
     }
-    
-    private Collection<Observation> getObservations() {
-        if (!cache.containsKey(seq)) {
-            assert myTask != null;
+
+    private Observation[] getObservations(MGXMaster m, Sequence seq, RequestProcessor proc) {
+        // if task is still running, wait for it to finish
+        if (myTask != null) {
             myTask.waitFinished();
+            myTask = null;
         }
-        return cache.get(seq);
+        
+        if (cache.containsKey(seq)) {
+            WeakReference<Observation[]> ref = cache.get(seq);
+            if (ref.get() == null) {
+                // weak ref expired, start new fetcher and invoke self
+                fetchFromServer(m, seq, proc);
+                return getObservations(m, seq, proc);
+            } else {
+                // weak ref alive, return value
+                return ref.get();
+            }
+        }
+        
+        assert false;
+        return null;
+    }
+
+    private void fetchFromServer(MGXMaster m, Sequence seq, RequestProcessor proc) {
+        myTask = proc.post(new ObsFetcher(m, seq));
     }
 
     private class ObsFetcher implements Runnable { //, Future<Collection<Observation>> {
@@ -61,7 +81,8 @@ public class ObservationViewPanel extends javax.swing.JPanel {
 
         @Override
         public void run() {
-            cache.put(seq, master.Observation().ByRead(seq));
+            Observation[] obs = master.Observation().ByRead(seq).toArray(new Observation[]{});
+            cache.put(seq, new WeakReference(obs));
         }
     }
 
