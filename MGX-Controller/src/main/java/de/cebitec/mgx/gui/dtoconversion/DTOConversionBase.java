@@ -16,6 +16,8 @@ public abstract class DTOConversionBase<T, U> {
         if (date == null) {
             return null;
         }
+        
+        // seconds since 1970
         return date.getTime() / 1000L;
     }
 
@@ -23,6 +25,6 @@ public abstract class DTOConversionBase<T, U> {
         if (timestamp == null) {
             return null;
         }
-        return new Date(timestamp);
+        return new Date(1000L * timestamp);
     }
 }
