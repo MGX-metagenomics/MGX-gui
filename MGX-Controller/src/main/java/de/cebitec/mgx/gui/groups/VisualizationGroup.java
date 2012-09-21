@@ -81,7 +81,6 @@ public class VisualizationGroup {
 
     public final void setColor(Color color) {
         this.color = color;
-        //fireVGroupChanged(VISGROUP_CHANGED);
     }
 
     public final long getNumSequences() {
@@ -96,6 +95,17 @@ public class VisualizationGroup {
         return seqruns;
     }
 
+    /**
+     *
+     * @param attrType
+     * @throws ConflictingJobsException
+     *
+     * promote selection of an attribute type to the group; checks all contained
+     * sequencing runs, i.) if they provide the attribute type and ii.) if the
+     * attribute type is provided by a single job only. if several jobs are able
+     * to provide the corresponding attribute type, a ConflictingJobsException
+     * will be raised for resolval of the conflict.
+     */
     public final void selectAttributeType(String attrType) throws ConflictingJobsException {
 
         selectedAttributeType = attrType;
@@ -132,39 +142,37 @@ public class VisualizationGroup {
     }
 
     public final void resolveConflict(SeqRun sr, Job j) {
-        assert needsResolval.containsKey(sr);
         needsResolval.remove(sr);
         uniqueJobs.put(sr, j);
-        System.err.println("VG "+getName()+" resolved to "+j.getId());
     }
 
     public final void addSeqRun(SeqRun sr) {
-        if (!seqruns.contains(sr)) {
-            distCache.clear(); // invalidate caches
-            hierarchyCache.clear();
-
-            seqruns.add(sr);
-            sr.addPropertyChangeListener(new PropertyChangeListener() {
-
-                @Override
-                public void propertyChange(PropertyChangeEvent evt) {
-                    System.err.println("Vgroup got PCE "+evt.getPropertyName());
-                    switch (evt.getPropertyName()) {
-                        case ModelBase.OBJECT_DELETED:
-                            removeSeqRun((SeqRun)evt.getOldValue());
-                            pcs.firePropertyChange(evt);
-                            break;
-                        default:
-                            System.err.println("unhandled PCE: "+evt.getPropertyName());
-                            assert false;
-                    }
-                }
-            });
-
-            AttributeTypeFetcher fetcher = new AttributeTypeFetcher(sr, attributeTypes);
-            fetcher.execute();
-            attributeTypePrefetchers.add(fetcher);
+        if (seqruns.contains(sr)) {
+            return;
         }
+        distCache.clear(); // invalidate caches
+        hierarchyCache.clear();
+
+        seqruns.add(sr);
+        sr.addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                System.err.println("Vgroup got PCE " + evt.getPropertyName());
+                switch (evt.getPropertyName()) {
+                    case ModelBase.OBJECT_DELETED:
+                        removeSeqRun((SeqRun) evt.getOldValue());
+                        pcs.firePropertyChange(evt);
+                        break;
+                    default:
+                        System.err.println("unhandled PCE: " + evt.getPropertyName());
+                        assert false;
+                }
+            }
+        });
+
+        AttributeTypeFetcher fetcher = new AttributeTypeFetcher(sr, attributeTypes);
+        fetcher.execute();
+        attributeTypePrefetchers.add(fetcher);
     }
 
     public void removeSeqRun(SeqRun sr) {
@@ -207,7 +215,6 @@ public class VisualizationGroup {
             if (selectedJob == null || currentAttributeType == null) {
                 allDone.countDown();
             } else {
-                System.err.println("fetching hierarchy for group "+getName()+" and job "+selectedJob.getId());
                 HierarchyFetcher fetcher = new HierarchyFetcher(currentAttributeType, selectedJob, allDone, results);
                 fetcher.execute();
             }
@@ -295,7 +302,7 @@ public class VisualizationGroup {
 
     public List<Job> getJobsProvidingAttributeType(SeqRun run, String attrTypeName) {
         //
-        // process all jobs for this seqrun and keep only those
+        // process all jobs for a seqrun and keep only those
         // which provide the requested attribute type
         //
         List<Job> validJobs = new ArrayList<>();
@@ -317,11 +324,9 @@ public class VisualizationGroup {
         }
         List<AttributeType> validTypes = new ArrayList<>();
         Map<Job, List<AttributeType>> jobattrtypes = attributeTypes.get(run);
-        assert jobattrtypes != null;
         List<AttributeType> attributesForJob = jobattrtypes.get(job);
         if (attributesForJob == null) {
             Logger.getGlobal().log(Level.SEVERE, "no attributes for run {0} from job {1}", new Object[]{run.getName(), job.getId()});
-            assert false;
         }
         for (AttributeType atype : attributesForJob) {
             if (atype.getName().equals(attrTypeName)) {
@@ -332,7 +337,7 @@ public class VisualizationGroup {
         return validTypes.get(0);
     }
 
-    private static Distribution mergeDistributions(final List<Distribution> dists) {
+    private static Distribution mergeDistributions(final Iterable<Distribution> dists) {
         Map<Attribute, Number> summary = new HashMap<>();
         long total = 0;
         for (Distribution d : dists) {
@@ -383,7 +388,7 @@ public class VisualizationGroup {
         protected final SeqRun run;
         protected final Map<SeqRun, Map<Job, List<AttributeType>>> result;
 
-        public AttributeTypeFetcher(SeqRun run, final Map<SeqRun, Map<Job, List<AttributeType>>> result) {
+        public AttributeTypeFetcher(final SeqRun run, final Map<SeqRun, Map<Job, List<AttributeType>>> result) {
             this.run = run;
             this.result = result;
         }
@@ -391,7 +396,8 @@ public class VisualizationGroup {
         @Override
         protected Map<Job, List<AttributeType>> doInBackground() throws Exception {
             MGXMaster master = (MGXMaster) run.getMaster();
-            return master.SeqRun().getJobsAndAttributeTypes(run.getId());
+            Map<Job, List<AttributeType>> ret = master.SeqRun().getJobsAndAttributeTypes(run.getId());
+            return ret;
         }
 
         @Override
@@ -410,12 +416,12 @@ public class VisualizationGroup {
 
     private class DistributionFetcher extends Fetcher<Distribution> {
 
-        protected AttributeType attrType;
-        protected Job job;
-        protected CountDownLatch latch;
+        protected final AttributeType attrType;
+        protected final Job job;
+        protected final CountDownLatch latch;
         protected final List<Distribution> result;
 
-        public DistributionFetcher(AttributeType attrType, Job job, CountDownLatch latch, List<Distribution> ret) {
+        public DistributionFetcher(final AttributeType attrType, final Job job, final CountDownLatch latch, List<Distribution> ret) {
             this.attrType = attrType;
             this.job = job;
             this.latch = latch;
@@ -436,7 +442,6 @@ public class VisualizationGroup {
             } catch (InterruptedException | ExecutionException ex) {
                 Exceptions.printStackTrace(ex);
             }
-            assert dist != null;
             result.add(dist);
             latch.countDown();
         }
@@ -444,12 +449,12 @@ public class VisualizationGroup {
 
     private final class HierarchyFetcher extends Fetcher<Tree<Long>> {
 
-        protected AttributeType attrType;
-        protected Job job;
-        protected CountDownLatch latch;
+        protected final AttributeType attrType;
+        protected final Job job;
+        protected final CountDownLatch latch;
         protected final List<Tree<Long>> result;
 
-        public HierarchyFetcher(AttributeType attrType, Job job, CountDownLatch latch, List<Tree<Long>> ret) {
+        public HierarchyFetcher(final AttributeType attrType, final Job job, final CountDownLatch latch, final List<Tree<Long>> ret) {
             this.attrType = attrType;
             this.job = job;
             this.latch = latch;
@@ -470,7 +475,6 @@ public class VisualizationGroup {
             } catch (InterruptedException | ExecutionException ex) {
                 Exceptions.printStackTrace(ex);
             }
-            assert tree != null;
             result.add(tree);
             latch.countDown();
         }
