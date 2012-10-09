@@ -1,7 +1,7 @@
 package de.cebitec.mgx.gui.search;
 
 import de.cebitec.mgx.gui.datamodel.Observation;
-import de.cebitec.mgx.gui.search.ComputeObservations.Layer;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -16,114 +16,148 @@ import javax.swing.SwingUtilities;
 import org.openide.util.Exceptions;
 
 /**
- * TODO:
- *
- * nummerierung der observations muessen passen, auch wenn die observations zu
- * kurz sind.
- *
- *
- *
- *
+ * Malt die einzelnen Observations.
  * @author pbelmann
  */
-public class PaintObservations {
+public class PaintReadObservations {
 
+    
+    /**
+     * Laenge des Reads.
+     */
     private int readLength;
+    
+    /**
+     * Observations.
+     */
     private ArrayList<Observation> observations;
-    private int width = 8;
-    private int paddingNorth = 15;
+    
+    /**
+     * Die Breite der Observations und der Reads.
+     */
+    private final int ObservationReadWidth = 8;
+    
+    /**
+     * Das Padding zum oberen Rand des Panels.
+     */
+    private final int paddingNorth = 15;
+    
+    /**
+     * Graphics Objekt.
+     */
     private Graphics graphics;
+    
+    /**
+     * Skalierungsfaktor fuer den Read und den Observations.
+     */
     private double scaleFactor;
+    
+    /**
+     * Ebenen fuer die Reads.
+     */
     private ArrayList<Layer> layers;
+    
+    /**
+     * Array fuer die Farben, die verwendet werden bei den Reads.
+     */
     private Color[] colors = {Color.BLUE, Color.magenta, Color.BLACK,
         new Color(0, 100, 0), Color.gray, new Color(97, 73, 46),};
-    private Component component;
+    
+    /**
+     * JPanel fuer die Darstellung der Reads und Observations.
+     */
+    private JPanel component;
+    
+    /**
+     * Hoehe fuer das JPanel.
+     */
     private int height;
-private double value;
     
+   /**
+    * Abschnitte auf dem Read.
+    */
+    private double cutValue;
     
-    public PaintObservations(double readLength,
-            ArrayList<Layer> layers, Graphics lGraphics, double lViewWidth, Component lComponent, int lViewHeight, double value) {
-        this.value = value;
+    /**
+     * Zeichnen der Observations.
+     * @param readLength Laenge des Read.
+     * @param layers Ebenen fuer die Observations.
+     * @param lGraphics Graphisobjekt. 
+     * @param lComponent Komponente fuer das Darstellen der Reads.
+     * @param cutValue Wert in denen der Read eingeteilt wird.
+     */
+    public PaintReadObservations(double readLength,
+            ArrayList<Layer> layers, Graphics lGraphics,  JPanel lComponent, double cutValue) {
+        this.cutValue = cutValue;
         this.component = lComponent;
         this.layers = layers;
-        this.scaleFactor = lViewWidth / readLength;
+        this.scaleFactor = ((double)lComponent.getWidth()) / readLength;
         this.readLength = (int) readLength;
         graphics = lGraphics;
-        height = lViewHeight;
+        height = component.getHeight();
         paint(graphics);
     }
 
+    /**
+     * Zeichnen den Read und die Observations.
+     * @param lGraphics Graphics objekt.
+     */
     private void paint(Graphics lGraphics) {
         this.drawRead(readLength, lGraphics);
         this.drawObservations(observations, lGraphics);
     }
 
+    
+    /**
+     * Zeichnet den Read.
+     * @param lReadLength Laenge des Read.
+     * @param lGraphics Graphics objekt fuer das Zeichnen.
+     */
     private void drawRead(int lReadLength, Graphics lGraphics) {
         lGraphics.setColor(Color.red);
         int scaledReadLength = (int) Math.round(lReadLength * scaleFactor);
         drawArrowHead(0, scaledReadLength, lGraphics, paddingNorth);
-        lGraphics.fillRect(0, paddingNorth - 4, scaledReadLength - 7, width);
-
-
-       
-
-        //TODO Testen:!!
-        
-
-        
-
-
-//        if (readLength <= 100) {
-//
-//            value /= 10.0;
-//            value = Math.round(value) * 10.0;
-//
-//        } else if (readLength <= 1000) {
-//
-//            value /= 100.0;
-//            value = Math.round(value) * 100.0;
-//
-//        } else if (readLength < 10000) {
-//        }
+        lGraphics.fillRect(0, paddingNorth - 4, scaledReadLength - 7, ObservationReadWidth);
 
         int factor = 0;
-        while (value * factor < readLength) {
+        while (cutValue * factor < readLength) {
 
             lGraphics.setColor(Color.RED);
-//            lGraphics.drawLine((int) (Math.round(value) * scaleFactor * factor), paddingNorth,
-//                    (int) (Math.round(value) * scaleFactor * factor), paddingNorth - 12);
-            lGraphics.drawLine((int) (Math.round(value) * scaleFactor * factor), 0,
-                    (int) (Math.round(value) * scaleFactor * factor), height);
-
+            lGraphics.drawLine((int) (Math.round(cutValue) * scaleFactor * factor), 0,
+                    (int) (Math.round(cutValue) * scaleFactor * factor), height);
 
             lGraphics.setColor(Color.BLACK);
-
             FontMetrics fm = component.getFontMetrics(component.getFont());
 
-            int multFactor = (int) value * factor;
-            if (fm.stringWidth(" " + multFactor) + (int) (Math.round(value) * scaleFactor * factor) > scaledReadLength) {
-                lGraphics.drawString(" " + (int) value * factor, ((int) (Math.round(value) * scaleFactor * factor))
+            int multFactor = (int) cutValue * factor;
+            if (fm.stringWidth(" " + multFactor) + (int) (Math.round(cutValue) * scaleFactor * factor) > scaledReadLength) {
+                lGraphics.drawString(" " + (int) cutValue * factor, ((int) (Math.round(cutValue) * scaleFactor * factor))
                         - fm.stringWidth(" " + multFactor), paddingNorth - 5);
             } else {
                 lGraphics.drawString(" "
-                        + (int) value * factor, (int) (Math.round(value) * scaleFactor * factor), paddingNorth - 5);
+                        + (int) cutValue * factor, (int) (Math.round(cutValue) * scaleFactor * factor), paddingNorth - 5);
             }
-
             factor++;
         }
     }
 
-    private void drawArrowHead(int lObservationStart, int lObservationStop, Graphics lGraphics, int yPosition) {
+    /**
+     * Zeichnet den Pfeil beim Read und bei den Observations.
+     * @param lSequenceStart Start der Observations
+     * @param lSequenceStop Stop der Observations.
+     * @param lGraphics Graphics Objekt
+     * @param yPosition y Position der Ebene.
+     */
+    private void drawArrowHead(int lSequenceStart, int lSequenceStop, Graphics lGraphics, int yPosition) {
         Polygon p = new Polygon();
-        if (lObservationStart < lObservationStop) {
-            p.addPoint(lObservationStop, yPosition);
-            p.addPoint(lObservationStop - 7, yPosition - 5);
-            p.addPoint(lObservationStop - 7, yPosition + 4);
+        if (lSequenceStart < lSequenceStop) {
+            p.addPoint(lSequenceStop, yPosition);
+            p.addPoint(lSequenceStop - 7, yPosition - 5);
+            p.addPoint(lSequenceStop - 7, yPosition + 4);
         } else {
-            p.addPoint(lObservationStop, yPosition);
-            p.addPoint(lObservationStop + 7, yPosition - 5);
-            p.addPoint(lObservationStop + 7, yPosition + 4);
+            p.addPoint(lSequenceStop, yPosition);
+            p.addPoint(lSequenceStop + 7, yPosition - 5);
+            p.addPoint(lSequenceStop + 7, yPosition + 4);
         }
         lGraphics.fillPolygon(p);
     }
@@ -143,9 +177,6 @@ private double value;
         int colorIndex = 0;
         int observationCounter = 0;
         
-        
-        
-        
         for (Layer layer : layers) {
             for (Observation observation : layer.getObservations()) {
 
@@ -156,13 +187,13 @@ private double value;
                 colorIndex = incrementColorIndex(colorIndex);
                 if (scaledObservationStart < scaledObservationStop) {
 
-                    lGraphics.fillRect(scaledObservationStart, layer.getyPosition() - 4, (scaledObservationStop - 7) - scaledObservationStart, width);
+                    lGraphics.fillRect(scaledObservationStart, layer.getyPosition() - 4, (scaledObservationStop - 7) - scaledObservationStart, ObservationReadWidth);
                     this.drawArrowHead(scaledObservationStart, scaledObservationStop, lGraphics, layer.getyPosition());
 
                     lGraphics.setColor(Color.WHITE);
                     lGraphics.drawString(Integer.toString(observationCounter), scaledObservationStart + 10, layer.getyPosition() + 4);
                 } else {
-                    lGraphics.fillRect(scaledObservationStop + 7, layer.getyPosition() - 4, scaledObservationStart - (scaledObservationStop + 7), width);
+                    lGraphics.fillRect(scaledObservationStop + 7, layer.getyPosition() - 4, scaledObservationStart - (scaledObservationStop + 7), ObservationReadWidth);
                     this.drawArrowHead(scaledObservationStart, scaledObservationStop, lGraphics, layer.getyPosition());
                     lGraphics.setColor(Color.WHITE);
                     lGraphics.drawString(Integer.toString(observationCounter), scaledObservationStart - 10, layer.getyPosition() + 4);
@@ -173,7 +204,7 @@ private double value;
     }
 
     /**
-     * erhoet den Index fuer das Farbarray.
+     * Erhoet den Index fuer das Farbarray.
      *
      * @param oldIndex alter Index
      * @return neuer Index

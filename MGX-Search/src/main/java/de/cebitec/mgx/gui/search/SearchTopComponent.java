@@ -12,7 +12,6 @@ import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.Observation;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.datamodel.Sequence;
-import de.cebitec.mgx.gui.search.ComputeObservations.Layer;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Point;
@@ -399,9 +398,6 @@ public final class SearchTopComponent extends TopComponent implements LookupList
     @Override
     public void actionPerformed(ActionEvent e) {
 
-        
-
-
         SwingWorker<Sequence[], Void> worker = new SwingWorker<Sequence[], Void>() {
             @Override
             protected Sequence[] doInBackground() throws Exception {
@@ -449,22 +445,21 @@ public final class SearchTopComponent extends TopComponent implements LookupList
 
     private final class ObservationListCellRenderer implements ListCellRenderer<Sequence> {
 
-        ArrayList<ArrayList<Layer>> toolTips = new ArrayList<ArrayList<Layer>>();
-        ArrayList<String> readNames = new ArrayList<String>();
-//        private ObservationViewPanel2 comp = new ObservationViewPanel2();
-        ModelObservation model = new ModelObservation();
+        public ArrayList<ArrayList<Layer>> toolTips = new ArrayList<ArrayList<Layer>>();
+        public ArrayList<String> readNames = new ArrayList<String>();
+        public ServerDataWrapper model = new ServerDataWrapper();
 
         @Override
         public Component getListCellRendererComponent(JList<? extends Sequence> list,
                 final Sequence seq, int index, boolean isSelected, boolean cellHasFocus) {
 
-            ComputeObservations compute;
-            compute = model.setCurrentData(currentMaster, seq, proc);
+            OrderedObservations compute;
+            compute = model.getOrderedObervations(currentMaster, seq, proc);
 
             readNames.add(seq.getName());
             toolTips.add(compute.getLayers());
 
-            return new ObservationViewPanel(compute, model.currentMaster, seq);
+            return new ObservationViewPanel(compute,  seq);
         }
     }
 
