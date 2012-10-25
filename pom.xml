@@ -105,9 +105,14 @@
                 <version>${netbeans.version}</version>
             </dependency>
             <dependency>
+                <artifactId>org-netbeans-swing-outline</artifactId>
+                <groupId>org.netbeans.api</groupId>
+                <version>${netbeans.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.netbeans.external</groupId>
                 <artifactId>xerces-2.8.0</artifactId>
-                <version>RELEASE712</version>
+                <version>RELEASE721</version>
             </dependency>
             <dependency>
                 <groupId>org.netbeans.external</groupId>
@@ -142,7 +147,7 @@
             <dependency>
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
-                <version>1.6</version>
+                <version>1.7</version>
             </dependency>
             <dependency>
                 <groupId>commons-httpclient</groupId>
@@ -157,12 +162,12 @@
             <dependency>
                 <groupId>com.sun.jersey</groupId>
                 <artifactId>jersey-core</artifactId>
-                <version>1.13</version>
+                <version>1.14</version>
             </dependency>
             <dependency>
                 <groupId>com.sun.jersey</groupId>
                 <artifactId>jersey-client</artifactId>
-                <version>1.13</version>
+                <version>1.14</version>
             </dependency>
             <dependency>
                 <groupId>jcharts</groupId>
@@ -381,11 +386,11 @@
         <module>MGX-Search</module>
         <module>MGX-TableView</module>
         <module>MGX-ProtoBuf-Wrapper</module>
-    <module>MGX-JobMonitor</module>
-  </modules>
+        <module>MGX-JobMonitor</module>
+    </modules>
 
     <properties>
-        <netbeans.version>RELEASE72</netbeans.version>
+        <netbeans.version>RELEASE721</netbeans.version>
         <brandingToken>mgx_gui</brandingToken>
     </properties>
 
