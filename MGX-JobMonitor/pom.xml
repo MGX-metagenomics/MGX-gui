@@ -85,8 +85,6 @@
         <dependency>
             <artifactId>org-netbeans-swing-outline</artifactId>
             <groupId>org.netbeans.api</groupId>
-            <type>jar</type>
-            <version>RELEASE72</version>
         </dependency>
     </dependencies>
 
