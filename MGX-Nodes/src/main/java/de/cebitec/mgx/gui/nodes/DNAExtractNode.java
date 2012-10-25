@@ -51,7 +51,7 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
         setDisplayName(d.getName());
         this.snf = snf;
     }
-    
+
     private String getToolTipText(DNAExtract d) {
         return new StringBuilder("<html><b>DNA extract: </b>")
                 .append(d.getName())
@@ -69,6 +69,13 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
     @Override
     public Action[] getActions(boolean context) {
         return new Action[]{new EditDNAExtract(), new DeleteDNAExtract(), new AddSeqRun()};
+    }
+
+    @Override
+    public void updateModified() {
+        setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/DNAExtract.png");
+        setShortDescription(getToolTipText(getContent()));
+        setDisplayName(getContent().getName());
     }
 
     private class EditDNAExtract extends AbstractAction {
@@ -90,7 +97,6 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
                 final DNAExtract updatedExtract = wd.getDNAExtract();
                 final MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
                 SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
-
                     @Override
                     protected Void doInBackground() throws Exception {
                         m.DNAExtract().update(updatedExtract);
@@ -104,9 +110,9 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
                         } catch (InterruptedException | ExecutionException ex) {
                             Exceptions.printStackTrace(ex);
                         }
-                        setShortDescription(getToolTipText(updatedExtract));
-                        setDisplayName(updatedExtract.getName());
-                        fireDisplayNameChange(oldDisplayName, updatedExtract.getMethod());
+//                        setShortDescription(getToolTipText(updatedExtract));
+//                        setDisplayName(updatedExtract.getName());
+//                        fireDisplayNameChange(oldDisplayName, updatedExtract.getMethod());
                         super.done();
                     }
                 };
@@ -134,7 +140,6 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
             if (NotifyDescriptor.YES_OPTION.equals(ret)) {
                 final MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
                 MGXTask deleteTask = new MGXTask() {
-
                     @Override
                     public void process() {
                         setStatus("Deleting..");
@@ -173,7 +178,6 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
                 seqrun.setDNAExtractId(extract.getId());
 
                 SwingWorker<Void, Exception> sw = new SwingWorker<Void, Exception>() {
-
                     @Override
                     protected Void doInBackground() {
                         MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
@@ -193,7 +197,6 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
                         }
                         final SeqUploader uploader = m.Sequence().createUploader(seqrun.getId(), reader);
                         MGXTask run = new MGXTask() {
-
                             @Override
                             public void process() {
                                 boolean success = uploader.upload();

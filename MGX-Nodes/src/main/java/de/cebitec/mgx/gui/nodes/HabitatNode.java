@@ -65,6 +65,13 @@ public class HabitatNode extends MGXNodeBase<Habitat> {
         return new Action[]{new EditHabitat(), new DeleteHabitat(), new AddSample()};
     }
 
+    @Override
+    public void updateModified() {
+        setDisplayName(getContent().getName());
+        setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/Habitat.png");
+        setShortDescription(getToolTipText(getContent()));
+    }
+
     private class EditHabitat extends AbstractAction {
 
         public EditHabitat() {

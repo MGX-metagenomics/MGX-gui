@@ -26,4 +26,9 @@ public class ProjectJobsNode extends MGXNodeBase<MGXMaster> {
     public Action[] getActions(boolean popup) {
         return new Action[0]; // disables context menu
     }
+
+    @Override
+    public void updateModified() {
+        //
+    }
 }

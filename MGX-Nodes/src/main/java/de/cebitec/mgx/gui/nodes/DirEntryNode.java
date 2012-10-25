@@ -37,9 +37,15 @@ public class DirEntryNode extends MGXNodeBase<DirEntry> {
     public Action[] getActions(boolean context) {
         return new Action[]{};
     }
-    
+
     private static String stripPath(String in) {
         String[] split = in.split("/");
-        return split[split.length-1];
+        return split[split.length - 1];
+    }
+
+    @Override
+    public void updateModified() {
+        setDisplayName(stripPath(getContent().getFile().getName()));
+        setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/File.png");
     }
 }

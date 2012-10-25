@@ -60,7 +60,7 @@ public class HabitatNodeFactory extends ChildFactory<Habitat> implements NodeLis
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        System.err.println("HNF got PCE "+evt.getPropertyName());
+        //System.err.println("HNF got PCE "+evt.getPropertyName());
 //        if (!Node.PROP_PARENT_NODE.equals(evt.getPropertyName())) {
 //        refresh(true); }
     }

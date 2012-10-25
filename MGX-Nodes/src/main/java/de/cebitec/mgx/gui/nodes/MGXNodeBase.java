@@ -35,10 +35,11 @@ public abstract class MGXNodeBase<T extends ModelBase> extends AbstractNode impl
                 fireNodeDestroyed();
                 break;
             case ModelBase.OBJECT_MODIFIED:
-                fireDisplayNameChange(null, getDisplayName());
-                fireShortDescriptionChange(null, getShortDescription()); 
-                fireNameChange(null, getName());
-                fireCookieChange();
+                updateModified();
+//                fireDisplayNameChange(null, getDisplayName());
+//                fireShortDescriptionChange(null, getShortDescription()); 
+//                fireNameChange(null, getName());
+//                fireCookieChange();
                 break;
             default:
                 System.err.println("unhandled event: "+evt.getPropertyName());
@@ -55,4 +56,6 @@ public abstract class MGXNodeBase<T extends ModelBase> extends AbstractNode impl
         super.removePropertyChangeListener(pcl);
         content.removePropertyChangeListener(pcl);
     }
+    
+    public abstract void updateModified();
 }

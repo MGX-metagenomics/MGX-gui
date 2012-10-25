@@ -1,7 +1,6 @@
 package de.cebitec.mgx.gui.nodes;
 
 import de.cebitec.mgx.gui.controller.MGXMaster;
-import de.cebitec.mgx.gui.datamodel.Habitat;
 import de.cebitec.mgx.gui.datamodel.Job;
 import de.cebitec.mgx.gui.datamodel.JobState;
 import de.cebitec.mgx.gui.taskview.MGXTask;
@@ -37,7 +36,7 @@ public class JobNode extends MGXNodeBase<Job> {
 
     @Override
     public Action[] getActions(boolean context) {
-        return new Action[]{ new DeleteJob() };
+        return new Action[]{new DeleteJob()};
     }
 
     @Override
@@ -84,6 +83,11 @@ public class JobNode extends MGXNodeBase<Job> {
         sheet.put(set);
 
         return sheet;
+    }
+
+    @Override
+    public void updateModified() {
+        setDisplayName(job.getTool().getName());
     }
 
     private class DeleteJob extends AbstractAction {

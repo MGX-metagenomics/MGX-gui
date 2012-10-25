@@ -47,6 +47,11 @@ public class ProjectDataNode extends MGXNodeBase<MGXMaster> {
         return new Action[]{new AddHabitat(), new Refresh()};
     }
 
+    @Override
+    public void updateModified() {
+        //
+    }
+
     private class AddHabitat extends AbstractAction {
 
         public AddHabitat() {

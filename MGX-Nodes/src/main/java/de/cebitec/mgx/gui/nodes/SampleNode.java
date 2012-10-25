@@ -62,6 +62,13 @@ public class SampleNode extends MGXNodeBase<Sample> {
         return new Action[]{new EditSample(), new DeleteSample(), new AddExtract()};
     }
 
+    @Override
+    public void updateModified() {
+        setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/Sample.png");
+        setShortDescription(getToolTipText(getContent()));
+        setDisplayName(getContent().getMaterial());
+    }
+
     private class EditSample extends AbstractAction {
 
         public EditSample() {
@@ -94,9 +101,9 @@ public class SampleNode extends MGXNodeBase<Sample> {
                         } catch (InterruptedException | ExecutionException ex) {
                             Exceptions.printStackTrace(ex);
                         }
-                        setShortDescription(getToolTipText(s));
-                        setDisplayName(s.getMaterial());
-                        fireDisplayNameChange(oldDisplayName, s.getMaterial());
+//                        setShortDescription(getToolTipText(s));
+//                        setDisplayName(s.getMaterial());
+//                        fireDisplayNameChange(oldDisplayName, s.getMaterial());
                         super.done();
                     }
                 };

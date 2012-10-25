@@ -63,4 +63,8 @@ public class ProjectNode extends MGXNodeBase<MGXMaster> {
 //        };
 //        worker.execute();
 //    }
+    @Override
+    public void updateModified() {
+        //
+    }
 }

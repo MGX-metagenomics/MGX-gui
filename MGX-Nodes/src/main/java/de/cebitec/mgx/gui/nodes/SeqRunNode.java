@@ -5,7 +5,6 @@ import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.nodes.analysisaction.GetToolsWorker;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
-import de.cebitec.mgx.gui.wizard.configurations.action.WizardController;
 import de.cebitec.mgx.gui.wizard.seqrun.SeqRunWizardDescriptor;
 import java.awt.Dialog;
 import java.awt.datatransfer.DataFlavor;
@@ -87,6 +86,18 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> implements Transferable {
         }
     }
 
+    @Override
+    public void updateModified() {
+        setDisplayName(getContent().getName());
+        setShortDescription(getToolTipText(getContent()));
+//        fireDisplayNameChange(null, getContent().getName());
+
+//        fireDisplayNameChange(null, getDisplayName());
+//        fireShortDescriptionChange(null, getShortDescription());
+//        fireNameChange(null, getName());
+//        fireCookieChange();
+    }
+
     private final class ExecuteAnalysis extends AbstractAction {
 
         public ExecuteAnalysis() {
@@ -96,7 +107,7 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> implements Transferable {
         @Override
         public void actionPerformed(final ActionEvent e) {
             SeqRun seqrun = Utilities.actionsGlobalContext().lookup(SeqRun.class);
-            GetToolsWorker getTools = new GetToolsWorker( master, seqrun);
+            GetToolsWorker getTools = new GetToolsWorker(master, seqrun);
             getTools.execute();
         }
     }
@@ -116,8 +127,8 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> implements Transferable {
             dialog.toFront();
             boolean cancelled = wd.getValue() != WizardDescriptor.FINISH_OPTION;
             if (!cancelled) {
-                
-                String oldDisplayName = seqrun.getSequencingMethod() + " run";
+
+                //String oldDisplayName = seqrun.getSequencingMethod() + " run";
                 final SeqRun run = wd.getSeqRun();
                 SwingWorker<Void, Void> sw = new SwingWorker<Void, Void>() {
                     @Override
@@ -136,7 +147,6 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> implements Transferable {
                         }
                         super.done();
                     }
-                    
                 };
                 sw.execute();
 
