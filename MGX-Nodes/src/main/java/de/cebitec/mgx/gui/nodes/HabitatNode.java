@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.nodes;
 
+import de.cebitec.gpms.core.RoleI;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.Habitat;
 import de.cebitec.mgx.gui.datamodel.Sample;
@@ -8,6 +9,7 @@ import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
 import de.cebitec.mgx.gui.wizard.habitat.HabitatWizardDescriptor;
 import de.cebitec.mgx.gui.wizard.sample.SampleWizardDescriptor;
+import de.cebitec.mgx.restgpms.Role;
 import java.awt.Dialog;
 import java.awt.event.ActionEvent;
 import java.util.concurrent.ExecutionException;
@@ -87,7 +89,6 @@ public class HabitatNode extends MGXNodeBase<Habitat> {
             dialog.toFront();
             boolean cancelled = hwd.getValue() != WizardDescriptor.FINISH_OPTION;
             if (!cancelled) {
-                String oldDisplayName = habitat.getName();
                 final Habitat hab = hwd.getHabitat();
 
                 SwingWorker<Void, Void> sw = new SwingWorker<Void, Void>() {
@@ -109,10 +110,6 @@ public class HabitatNode extends MGXNodeBase<Habitat> {
                     }
                 };
                 sw.execute();
-
-//                setDisplayName(habitat.getName());
-//                setShortDescription(getToolTipText(habitat));
-//                fireDisplayNameChange(oldDisplayName, habitat.getName());
             }
         }
     }
@@ -149,9 +146,17 @@ public class HabitatNode extends MGXNodeBase<Habitat> {
                 };
 
                 TaskManager.getInstance().addTask("Delete " + habitat.getName(), deleteTask);
-
             }
         }
+
+        @Override
+        public boolean isEnabled() {
+            MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
+            RoleI role = m.getMembership().getRole();
+            return (super.isEnabled() && role.getName().equals(Role.USER));
+        }
+        
+        
     }
 
     private class AddSample extends AbstractAction {

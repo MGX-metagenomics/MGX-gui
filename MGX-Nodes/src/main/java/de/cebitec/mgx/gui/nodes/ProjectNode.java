@@ -23,7 +23,7 @@ public class ProjectNode extends MGXNodeBase<MGXMaster> {
     }
 
     private ProjectNode(MGXMaster m, ProjectStructureNodeFactory nf) {
-        super(Children.create(nf, false), Lookups.singleton(m), m);
+        super(Children.create(nf, false), Lookups.fixed(m), m);
         this.nf = nf;
 //        preopenMGXProject(m);
     }

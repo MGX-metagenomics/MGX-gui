@@ -13,7 +13,7 @@ import org.openide.util.lookup.Lookups;
 public class ProjectFilesNode extends MGXNodeBase<MGXMaster> {
 
     public ProjectFilesNode(MGXMaster m) {
-        super(Children.create(new DirEntryNodeFactory(m), true), Lookups.singleton(m), m);
+        super(Children.create(new DirEntryNodeFactory(m), true), Lookups.fixed(m), m);
         master = m;
         setDisplayName("Project Files");
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/ProjectFiles.png");

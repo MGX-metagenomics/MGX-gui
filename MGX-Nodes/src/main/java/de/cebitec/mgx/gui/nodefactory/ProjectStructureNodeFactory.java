@@ -29,7 +29,7 @@ public class ProjectStructureNodeFactory extends ChildFactory<String> {
         ProjectFilesNode files = new ProjectFilesNode(master);
         ProjectAnalysisTasksNode tasks = new ProjectAnalysisTasksNode(master); // FIXME implement this
 
-        project_structure = new HashMap<String, Node>();
+        project_structure = new HashMap<>();
         project_structure.put("data", data);
         project_structure.put("files", files);
         project_structure.put("tasks", tasks);
