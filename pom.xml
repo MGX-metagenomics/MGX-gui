@@ -387,7 +387,7 @@
         <module>MGX-TableView</module>
         <module>MGX-ProtoBuf-Wrapper</module>
         <module>MGX-JobMonitor</module>
-    </modules>
+  </modules>
 
     <properties>
         <netbeans.version>RELEASE721</netbeans.version>
