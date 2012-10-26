@@ -43,6 +43,11 @@
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-util</artifactId>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>MGXClient-Wrapper</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

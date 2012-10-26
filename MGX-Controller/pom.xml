@@ -55,7 +55,7 @@
             <artifactId>DTO-Wrapper</artifactId>
             <groupId>${project.groupId}</groupId>
         </dependency>
-    </dependencies>
+    </dependencies> 
 
     <build>
         <plugins>

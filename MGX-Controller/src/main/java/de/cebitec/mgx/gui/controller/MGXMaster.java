@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.controller;
 
+import de.cebitec.gpms.core.MembershipI;
 import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.gui.datamodel.MGXMasterI;
 import de.cebitec.mgx.gui.datamodel.ModelBase;
@@ -28,11 +29,18 @@ public class MGXMaster extends ModelBase implements MGXMasterI, PropertyChangeLi
         dtomaster.addPropertyChangeListener(this);
         accessors = new HashMap<>();
     }
+    
+    @Override
+    public MembershipI getMembership() {
+        return dtomaster.getMembership();
+    }
 
+    @Override
     public String getProject() {
         return dtomaster.getProject().getName();
     }
 
+    @Override
     public String getLogin() {
         return dtomaster.getLogin();
     }
