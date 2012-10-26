@@ -114,12 +114,14 @@ public class SeqRunWizardPanel1 implements WizardDescriptor.Panel<WizardDescript
         if (c.getRunName() == null || "".equals(c.getRunName())) {
             isValid = false;
         }
-        
-        // prevent creating duplicate run names
-        for (SeqRun other : otherRuns) {
-            if (other.getName().equals(c.getRunName())) {
-                isValid = false;
-                nls.setErrorMessage("Run with same name already exists.");
+
+        if (model.getProperty(SeqRunWizardDescriptor.INVOCATION_MODE).equals(SeqRunWizardDescriptor.CREATE_MODE)) {
+            // prevent creating duplicate run names
+            for (SeqRun other : otherRuns) {
+                if (other.getName().equals(c.getRunName())) {
+                    isValid = false;
+                    nls.setErrorMessage("Run with same name already exists.");
+                }
             }
         }
 
@@ -141,7 +143,7 @@ public class SeqRunWizardPanel1 implements WizardDescriptor.Panel<WizardDescript
     public void setPlatforms(Term[] terms) {
         getComponent().setPlatforms(terms);
     }
-    
+
     public void setSeqRuns(Collection<SeqRun> runs) {
         otherRuns = runs;
     }

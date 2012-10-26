@@ -23,6 +23,10 @@ public class SeqRunWizardDescriptor extends WizardDescriptor {
     private SeqRunWizardPanel1 p1 = new SeqRunWizardPanel1();
     private SeqRunWizardPanel2 p2 = new SeqRunWizardPanel2();
     private SeqRun seqrun = null;
+    
+    public static final String INVOCATION_MODE = "invocationMode";
+    public static final String CREATE_MODE = "CREATE";
+    public static final String EDIT_MODE = "EDIT";
 
     public SeqRunWizardDescriptor() {
         List<Panel<WizardDescriptor>> panels = new ArrayList<>();
@@ -35,6 +39,8 @@ public class SeqRunWizardDescriptor extends WizardDescriptor {
         putProperty(WizardDescriptor.PROP_AUTO_WIZARD_STYLE, Boolean.TRUE);
         putProperty(WizardDescriptor.PROP_CONTENT_DISPLAYED, Boolean.TRUE);
         putProperty(WizardDescriptor.PROP_CONTENT_NUMBERED, Boolean.TRUE);
+        
+        putProperty(SeqRunWizardDescriptor.INVOCATION_MODE, CREATE_MODE);
         
         setData();
     }
@@ -58,6 +64,9 @@ public class SeqRunWizardDescriptor extends WizardDescriptor {
         putProperty(SeqRunVisualPanel1.PROP_PLATFORM, d.getSequencingTechnology());
         putProperty(SeqRunVisualPanel1.PROP_SUBMITTED, d.getSubmittedToINSDC());
         putProperty(SeqRunVisualPanel1.PROP_ACCESSION, d.getAccession());
+        
+        putProperty(SeqRunWizardDescriptor.INVOCATION_MODE, EDIT_MODE);
+        
         p1.setProperties(this);
     }
 
