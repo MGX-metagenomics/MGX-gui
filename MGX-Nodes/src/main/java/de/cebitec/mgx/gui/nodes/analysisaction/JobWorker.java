@@ -74,9 +74,10 @@ public class JobWorker extends SwingWorker<Void, Void> {
         ProgressBar progress = new ProgressBar("Executing tool.",
                 "Waiting for the server",
                 300, 140);
-
+            Job job = new Job();
         switch (toolType) {
             case PROJECT:
+                job.setId(tool.getId());
                 break;
             case GLOBAL:
                 Long installedToolId = null;
@@ -85,11 +86,13 @@ public class JobWorker extends SwingWorker<Void, Void> {
                 } catch (MGXServerException ex) {
                     Exceptions.printStackTrace(ex);
                 }
+                job.setId(installedToolId);
                 break;
             case USER_PROVIDED:
+                job.setId(tool.getId());
                 master.Tool().create(tool);
         }
-        Job job = new Job();
+       
         job.setTool(tool);
         job.setSeqrun(seqRun);
         job.setCreator(master.getLogin());
