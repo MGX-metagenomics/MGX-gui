@@ -59,7 +59,7 @@ public class JobAccess extends AccessBase<Job> {
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
-        obj.setId(id);
+       
         obj.setMaster(this.getMaster());
         return id;
     }
