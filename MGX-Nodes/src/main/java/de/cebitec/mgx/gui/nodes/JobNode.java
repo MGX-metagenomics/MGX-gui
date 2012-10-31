@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.nodes;
 
 import de.cebitec.mgx.gui.controller.MGXMaster;
+import de.cebitec.mgx.gui.controller.RBAC;
 import de.cebitec.mgx.gui.datamodel.Job;
 import de.cebitec.mgx.gui.datamodel.JobState;
 import de.cebitec.mgx.gui.taskview.MGXTask;
@@ -129,7 +130,7 @@ public class JobNode extends MGXNodeBase<Job> {
 
         @Override
         public boolean isEnabled() {
-            return super.isEnabled() && !job.getStatus().equals(JobState.RUNNING);
+            return super.isEnabled() && RBAC.isUser() && !job.getStatus().equals(JobState.RUNNING);
         }
     }
 }

@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.nodes;
 
 import de.cebitec.mgx.gui.controller.MGXMaster;
+import de.cebitec.mgx.gui.controller.RBAC;
 import de.cebitec.mgx.gui.datamodel.DNAExtract;
 import de.cebitec.mgx.gui.datamodel.Sample;
 import de.cebitec.mgx.gui.nodefactory.DNAExtractNodeFactory;
@@ -110,6 +111,11 @@ public class SampleNode extends MGXNodeBase<Sample> {
                 worker.execute();
             }
         }
+
+        @Override
+        public boolean isEnabled() {
+            return (super.isEnabled() && RBAC.isUser());
+        }
     }
 
     private class DeleteSample extends AbstractAction {
@@ -146,6 +152,11 @@ public class SampleNode extends MGXNodeBase<Sample> {
 
                 TaskManager.getInstance().addTask("Delete " + sample.getMaterial(), deleteTask);
             }
+        }
+
+        @Override
+        public boolean isEnabled() {
+            return (super.isEnabled() && RBAC.isUser());
         }
     }
 
@@ -186,6 +197,11 @@ public class SampleNode extends MGXNodeBase<Sample> {
                 };
                 worker.execute();
             }
+        }
+
+        @Override
+        public boolean isEnabled() {
+            return (super.isEnabled() && RBAC.isUser());
         }
     }
 }

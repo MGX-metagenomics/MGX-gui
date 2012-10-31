@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.nodes;
 
 import de.cebitec.mgx.gui.controller.MGXMaster;
+import de.cebitec.mgx.gui.controller.RBAC;
 import de.cebitec.mgx.gui.datamodel.Habitat;
 import de.cebitec.mgx.gui.nodefactory.HabitatNodeFactory;
 import de.cebitec.mgx.gui.wizard.habitat.HabitatWizardDescriptor;
@@ -88,6 +89,11 @@ public class ProjectDataNode extends MGXNodeBase<MGXMaster> {
                 };
                 worker.execute();
             }
+        }
+
+        @Override
+        public boolean isEnabled() {
+            return (super.isEnabled() && RBAC.isUser());
         }
     }
 

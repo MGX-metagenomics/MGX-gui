@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.nodes;
 
 import de.cebitec.mgx.gui.controller.MGXMaster;
+import de.cebitec.mgx.gui.controller.RBAC;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.nodes.analysisaction.GetToolsWorker;
 import de.cebitec.mgx.gui.taskview.MGXTask;
@@ -110,6 +111,11 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> implements Transferable {
             GetToolsWorker getTools = new GetToolsWorker(master, seqrun);
             getTools.execute();
         }
+
+        @Override
+        public boolean isEnabled() {
+            return (super.isEnabled() && RBAC.isUser());
+        }
     }
 
     private class EditSeqRun extends AbstractAction {
@@ -154,6 +160,11 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> implements Transferable {
 //                setShortDescription(getToolTipText(seqrun));
 //                fireDisplayNameChange(oldDisplayName, seqrun.getName());
             }
+        }
+
+        @Override
+        public boolean isEnabled() {
+            return (super.isEnabled() && RBAC.isUser());
         }
     }
 
@@ -200,6 +211,11 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> implements Transferable {
 
                 TaskManager.getInstance().addTask("Delete " + sr.getName(), deleteTask);
             }
+        }
+
+        @Override
+        public boolean isEnabled() {
+            return (super.isEnabled() && RBAC.isUser());
         }
     }
 }

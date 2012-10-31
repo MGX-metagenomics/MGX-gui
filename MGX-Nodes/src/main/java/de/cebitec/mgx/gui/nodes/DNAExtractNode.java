@@ -4,6 +4,7 @@ import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.upload.SeqUploader;
 import de.cebitec.mgx.client.upload.UploadBase;
 import de.cebitec.mgx.gui.controller.MGXMaster;
+import de.cebitec.mgx.gui.controller.RBAC;
 import de.cebitec.mgx.gui.datamodel.DNAExtract;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.nodefactory.SeqRunNodeFactory;
@@ -119,6 +120,11 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
                 worker.execute();
             }
         }
+
+        @Override
+        public boolean isEnabled() {
+            return (super.isEnabled() && RBAC.isUser());
+        }
     }
 
     private class DeleteDNAExtract extends AbstractAction {
@@ -156,6 +162,11 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
                 TaskManager.getInstance().addTask("Delete " + dna.getName(), deleteTask);
 
             }
+        }
+
+        @Override
+        public boolean isEnabled() {
+            return (super.isEnabled() && RBAC.isUser());
         }
     }
 
@@ -258,6 +269,11 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
                 };
                 sw.execute();
             }
+        }
+
+        @Override
+        public boolean isEnabled() {
+            return (super.isEnabled() && RBAC.isUser());
         }
     }
 }
