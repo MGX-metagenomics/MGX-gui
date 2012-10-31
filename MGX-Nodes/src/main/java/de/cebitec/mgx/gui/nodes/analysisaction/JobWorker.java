@@ -74,7 +74,7 @@ public class JobWorker extends SwingWorker<Void, Void> {
         ProgressBar progress = new ProgressBar("Executing tool.",
                 "Waiting for the server",
                 300, 140);
-            Job job = new Job();
+        Job job = new Job();
         switch (toolType) {
             case PROJECT:
                 job.setId(tool.getId());
@@ -89,10 +89,11 @@ public class JobWorker extends SwingWorker<Void, Void> {
                 job.setId(installedToolId);
                 break;
             case USER_PROVIDED:
-                job.setId(tool.getId());
-                master.Tool().create(tool);
+                long toolId = master.Tool().create(tool);
+                job.setId(toolId);
+
         }
-       
+
         job.setTool(tool);
         job.setSeqrun(seqRun);
         job.setCreator(master.getLogin());
