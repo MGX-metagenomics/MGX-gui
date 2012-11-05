@@ -107,6 +107,11 @@
             <artifactId>MGX-JobMonitor</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>MGX-Statistics</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
