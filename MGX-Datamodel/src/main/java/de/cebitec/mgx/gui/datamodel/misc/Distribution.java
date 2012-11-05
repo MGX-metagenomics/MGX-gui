@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.datamodel.misc;
 
 import de.cebitec.mgx.gui.datamodel.Attribute;
+import de.cebitec.mgx.gui.datamodel.MGXMasterI;
 import java.util.*;
 
 /**
@@ -9,16 +10,22 @@ import java.util.*;
  */
 public class Distribution implements Map<Attribute, Number> {
 
+    protected final MGXMasterI master;
     private final Map<Attribute, ? extends Number> _data;
     private Set<Attribute> keys = new LinkedHashSet<>();
     private final Map<Attribute, Number> filtered = new HashMap<>();
     private long totalClassifiedElements = -1;
 
-    public Distribution(Map<Attribute, ? extends Number> data, long total) {
+    public Distribution(Map<Attribute, ? extends Number> data, long total, MGXMasterI m) {
         this._data = data;
         keys.addAll(_data.keySet());
         filtered.putAll(_data);
         totalClassifiedElements = total;
+        master = m;
+    }
+    
+    public MGXMasterI getMaster() {
+        return master;
     }
 
     public long getTotalClassifiedElements() {

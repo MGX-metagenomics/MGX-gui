@@ -4,7 +4,7 @@ package de.cebitec.mgx.gui.datamodel;
  *
  * @author sjaenick
  */
-public class Attribute extends Identifiable {
+public class Attribute extends Identifiable implements Comparable<Attribute> {
     
     protected AttributeType atype;
     protected String value;
@@ -76,5 +76,10 @@ public class Attribute extends Identifiable {
         int hash = 7;
         hash = 47 * hash + (this.value != null ? this.value.hashCode() : 0);
         return hash;
+    }
+
+    @Override
+    public int compareTo(Attribute o) {
+        return this.value.compareTo(o.value);
     }
 }
