@@ -77,6 +77,7 @@
                         <publicPackage>org.jfree.data</publicPackage>
                         <publicPackage>org.jfree.data.category</publicPackage>
                         <publicPackage>org.jfree.data.xy</publicPackage>
+                        <publicPackage>org.jfree.data.general</publicPackage>
                         <publicPackage>org.jfree.ui</publicPackage>
                     </publicPackages>
                 </configuration>
