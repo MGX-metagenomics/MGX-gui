@@ -17,13 +17,10 @@ import org.jfree.chart.axis.LogAxis;
 import org.jfree.chart.axis.LogarithmicAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.TickUnitSource;
-import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.category.CategoryItemRenderer;
-import org.jfree.chart.renderer.xy.XYAreaRenderer;
-import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.category.CategoryDataset;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -49,7 +46,7 @@ public class StackedAreaChart extends AreaChart {
     public void show(List<Pair<VisualizationGroup, Distribution>> dists) {
 
         dists = getCustomizer().filter(dists);
-        DefaultCategoryDataset dataset = JFreeChartUtil.createCategoryDataset(dists);
+        CategoryDataset dataset = JFreeChartUtil.createCategoryDataset(dists);
 
         String xAxisLabel = "";
         String yAxisLabel = getCustomizer().useFractions() ? "Fraction" : "Count";
