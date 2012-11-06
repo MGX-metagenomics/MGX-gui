@@ -11,6 +11,8 @@ import java.util.Map;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.general.DefaultKeyedValues2DDataset;
+import org.jfree.data.general.KeyedValues2DDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.openide.util.Exceptions;
@@ -47,6 +49,19 @@ public class JFreeChartUtil {
             }
             dataset.addSeries(series);
         }
+        return dataset;
+    }
+    
+        public static KeyedValues2DDataset createKeyedValues2DDataset(List<Pair<VisualizationGroup, Distribution>> in) {
+        DefaultKeyedValues2DDataset dataset = new DefaultKeyedValues2DDataset();
+        for (Pair<VisualizationGroup, Distribution> groupDistribution : in) {
+            Distribution d = groupDistribution.getSecond();
+
+            for (Map.Entry<Attribute, ? extends Number> entry : d.entrySet()) {
+                dataset.addValue(entry.getValue(), groupDistribution.getFirst().getName(), entry.getKey().getValue());
+            }
+        }
+        
         return dataset;
     }
     
