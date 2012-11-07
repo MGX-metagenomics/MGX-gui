@@ -25,7 +25,6 @@ public class ToFractionFilter implements VisFilterI<Distribution> {
 
         // sum up
         long total = dist.getTotalClassifiedElements();
-        System.out.println("got total of "+total);
 
         for (Entry<Attribute, Number> e : dist.entrySet()) {
             //e.setValue((double)e.getValue().longValue() / total);
