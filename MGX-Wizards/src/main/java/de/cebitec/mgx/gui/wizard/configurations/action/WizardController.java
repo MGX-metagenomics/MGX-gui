@@ -1,13 +1,12 @@
 package de.cebitec.mgx.gui.wizard.configurations.action;
 
-import de.cebitec.mgx.gui.datamodel.DirEntry;
+import de.cebitec.mgx.gui.datamodel.MGXFile;
 import de.cebitec.mgx.gui.datamodel.Tool;
 import de.cebitec.mgx.gui.datamodel.misc.ToolType;
 import de.cebitec.mgx.gui.wizard.configurations.data.impl.Store;
 import de.cebitec.mgx.gui.wizard.configurations.progressscreen.ProgressBar;
 import de.cebitec.mgx.gui.wizard.configurations.utilities.MenuStatus;
 import java.util.List;
-import javax.swing.JOptionPane;
 
 /**
  * Startet die Anzeige fuer die Tools als auch die Anzeige fuer die Parameter.
@@ -70,7 +69,7 @@ public class WizardController {
      * @return Der Store mit den eingegebenen Parametern.
      */
     public Store startParameterConfiguration(Store store,
-            List<DirEntry> entries, String toolName) {
+            List<MGXFile> entries, String toolName) {
         configurationStartUp = new MenuViewStartUp(store, entries, toolName);
         configurationStartUp.initializeWizard();
         return configurationStartUp.startWizardConfigurations();

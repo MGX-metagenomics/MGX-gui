@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.wizard.configurations.utilities;
 
-import de.cebitec.mgx.gui.datamodel.DirEntry;
+import de.cebitec.mgx.gui.controller.MGXMaster;
+import de.cebitec.mgx.gui.datamodel.MGXFile;
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
@@ -30,26 +31,17 @@ public class ProjectFileSystemView extends FileSystemView {
      */
     private String projectDirectoryName = null;
 
-    
     /**
-     * 
+     *
      * Initialisiert die Root Dateien, sowie alle anderen Dateien, die in der
      * View vorhanden sein sollen.
-     * 
+     *
      * @param entries Eintraege der Dateien.
      */
-    public ProjectFileSystemView(List<DirEntry> entries) {
-        files = new HashMap();
+    public ProjectFileSystemView(List<MGXFile> entries) {
+        files = new HashMap<>();
         if (entries.size() > 0) {
-            if (entries.get(0).isDirectory()) {
-
-                projectDirectoryName = entries.get(0).getDirectory().getName();
-
-            } else {
-
-                projectDirectoryName = entries.get(0).getFile().getName();
-
-            }
+            projectDirectoryName = entries.get(0).getName();
         }
         String[] names = projectDirectoryName.split("/");
         projectDirectoryName = names[0];
@@ -59,14 +51,8 @@ public class ProjectFileSystemView extends FileSystemView {
 
         ProjectFile[] filesProject = new ProjectFile[entries.size()];
         for (int i = 0; i < entries.size(); i++) {
-
-            if (entries.get(i).isFile()) {
-                filesProject[i] = new ProjectFile(entries.get(i).
-                        getFile().getName(), true);
-            } else {
-                filesProject[i] = new ProjectFile(entries.get(i).
-                        getDirectory().getName(), false);
-            }
+            MGXFile curElement = entries.get(i);
+            filesProject[i] = new ProjectFile(curElement.getName(), !curElement.isDirectory());
         }
 
         files.put("getFiles(" + projectDirectoryName + ")", filesProject);
@@ -74,48 +60,50 @@ public class ProjectFileSystemView extends FileSystemView {
         this.setPath(entries);
     }
 
-    
     /**
      * Setzt den Pfad der Dateien die in der View angezeigt werden sollen.
+     *
      * @param entries Eintraege in der View.
      */
-    private void setPath(List<DirEntry> entries) {
+    private void setPath(List<MGXFile> entries) {
         for (int i = 0; i < entries.size(); i++) {
-            boolean isDirectory = entries.get(i).isDirectory();
-            if (isDirectory) {
-                String newPath = entries.get(i).getDirectory().getName();
-                ProjectFile file = new ProjectFile(newPath,
-                        !isDirectory);
+            MGXFile currentFile = entries.get(i);
+            MGXMaster master = (MGXMaster) currentFile.getMaster();
+
+            boolean isDirectory = currentFile.isDirectory();
+            if (currentFile.isDirectory()) {
+
+                // create directory entry
+                String newPath = currentFile.getName();
+                ProjectFile file = new ProjectFile(newPath, false);
                 files.put(newPath, file);
 
-                ProjectFile[] children = new ProjectFile[entries.get(i).
-                        getDirectory().getEntries().size()];
+                // process children
+                List<MGXFile> dirEntries = master.File().fetchall(currentFile);
+                ProjectFile[] children = new ProjectFile[dirEntries.size()];
 
                 for (int j = 0; j < children.length; j++) {
+                    MGXFile child = dirEntries.get(j);
 
-                    if (entries.get(i).getDirectory().
-                            getEntries().get(j).isDirectory()) {
-                        ProjectFile fileDirectory = new ProjectFile(entries.get(i).
-                                getDirectory().getEntries().get(j).getDirectory().getName(),
-                                !entries.get(i).getDirectory().
-                                getEntries().get(j).isDirectory());
-                        children[j] = fileDirectory;
+                    ProjectFile pfEntry;
+
+                    if (child.isDirectory()) {
+                        pfEntry = new ProjectFile(child.getName(),
+                                !child.isDirectory());
                     } else {
-                        ProjectFile fileFile = new ProjectFile(entries.get(i).
-                                getDirectory().getEntries().get(j).getFile().getName(),
-                                !entries.get(i).getDirectory().
-                                getEntries().get(j).isDirectory());
-                        children[j] = fileFile;
+                        pfEntry = new ProjectFile(child.getName(),
+                                !child.isDirectory());
+
                     }
+                    children[j] = pfEntry;
                 }
 
-                files.put("getFiles(" + entries.get(i).getDirectory().getName() + ")", children);
+                files.put("getFiles(" + entries.get(i).getName() + ")", children);
 
-                setPath(entries.get(i).getDirectory().getEntries());
+                setPath(dirEntries);
             } else {
-                String newPath = entries.get(i).getFile().getName();
-                ProjectFile file = new ProjectFile(newPath,
-                        !isDirectory);
+                String newPath = currentFile.getName();
+                ProjectFile file = new ProjectFile(newPath, !isDirectory);
                 files.put(newPath, file);
             }
         }
@@ -134,52 +122,6 @@ public class ProjectFileSystemView extends FileSystemView {
     /*
      * (non-Javadoc)
      *
-     * @see
-     * javax.swing.filechooser.FileSystemView#createFileObject(java.io.File,
-     * java.lang.String)
-     */
-    @Override
-    public File createFileObject(File dir, String filename) {
-        return super.createFileObject(dir, filename);
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * javax.swing.filechooser.FileSystemView#createFileObject(java.lang.String)
-     */
-    @Override
-    public File createFileObject(String path) {
-        return super.createFileObject(path);
-
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * javax.swing.filechooser.FileSystemView#createFileSystemRoot(java.io.File)
-     */
-    @Override
-    protected File createFileSystemRoot(File f) {
-        return createFileSystemRoot(f);
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see javax.swing.filechooser.FileSystemView#getChild(java.io.File,
-     * java.lang.String)
-     */
-    @Override
-    public File getChild(File parent, String fileName) {
-        return super.getChild(parent, fileName);
-    }
-
-    /*
-     * (non-Javadoc)
-     *
      * @see javax.swing.filechooser.FileSystemView#getDefaultDirectory()
      */
     @Override
@@ -192,6 +134,7 @@ public class ProjectFileSystemView extends FileSystemView {
      * @see javax.swing.filechooser.FileSystemView#getFiles(java.io.File,
      * boolean)
      */
+
     @Override
     public File[] getFiles(File dir, boolean useFileHiding) {
         ProjectFile[] children = null;

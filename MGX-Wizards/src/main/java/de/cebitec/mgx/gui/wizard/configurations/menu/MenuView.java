@@ -1,20 +1,19 @@
 package de.cebitec.mgx.gui.wizard.configurations.menu;
 
-import de.cebitec.mgx.gui.datamodel.DirEntry;
+import de.cebitec.mgx.gui.datamodel.MGXFile;
 import de.cebitec.mgx.gui.wizard.configurations.messages.Messages;
 import de.cebitec.mgx.gui.wizard.configurations.renderer.MenuComboBoxRenderer;
 import de.cebitec.mgx.gui.wizard.configurations.utilities.ActionCommands;
 import de.cebitec.mgx.gui.wizard.configurations.utilities.ProjectFileSystemView;
 import de.cebitec.mgx.gui.wizard.configurations.utilities.Types;
 import java.awt.*;
-import java.util.List;
 import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.logging.Logger;
+import java.util.List;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.DocumentEvent;
@@ -65,7 +64,7 @@ public final class MenuView extends JPanel implements DocumentListener {
     /**
      * Dateien die sich im Projekt befinden.
      */
-    private List<DirEntry> entries;
+    private List<MGXFile> entries;
 
     /**
      * Konstruktor für die Übergabe der
@@ -91,7 +90,7 @@ public final class MenuView extends JPanel implements DocumentListener {
             ArrayList<ArrayList<String>> lUserChoicesDescriptions,
             ArrayList<String> lDefaultValues, int lMandatoryComponentsCounter,
             ActionListener lListener,
-            List<DirEntry> lEntries) {
+            List<MGXFile> lEntries) {
 
         this.entries = lEntries;
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));

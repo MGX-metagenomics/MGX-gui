@@ -1,6 +1,6 @@
 package de.cebitec.mgx.gui.wizard.configurations.menu;
 
-import de.cebitec.mgx.gui.datamodel.DirEntry;
+import de.cebitec.mgx.gui.datamodel.MGXFile;
 import de.cebitec.mgx.gui.wizard.configurations.data.impl.ConfigItem;
 import de.cebitec.mgx.gui.wizard.configurations.data.impl.Node;
 import de.cebitec.mgx.gui.wizard.configurations.messages.Messages;
@@ -88,7 +88,7 @@ public class MenuController
     /**
      * Dateien des Servers.
      */
-    private List<DirEntry> entries;
+    private List<MGXFile> entries;
 
     /**
      * Der Konstruktor bereitet die einzelnen Parameter der MenuView vor.
@@ -97,7 +97,7 @@ public class MenuController
      * @param lNodeCounter Nodenummer.
      * @param lNode Node
      */
-    public MenuController(int lNodeCounter, Node lNode, List<DirEntry> lEntries) {
+    public MenuController(int lNodeCounter, Node lNode, List<MGXFile> lEntries) {
         entries = lEntries;
 
         id = lNode.getId();

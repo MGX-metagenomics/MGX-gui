@@ -1,10 +1,7 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package de.cebitec.mgx.gui.wizard.configurations.action;
 
-import de.cebitec.mgx.gui.datamodel.DirEntry;
+import de.cebitec.mgx.gui.datamodel.MGXFile;
 import de.cebitec.mgx.gui.wizard.configurations.data.impl.ConfigItem;
 import de.cebitec.mgx.gui.wizard.configurations.data.impl.Node;
 import de.cebitec.mgx.gui.wizard.configurations.data.impl.Store;
@@ -52,7 +49,7 @@ public class MenuViewStartUp {
     /**
      * Dateieintraete in dem Projekt.
      */
-    private List<DirEntry> entries;
+    private List<MGXFile> entries;
     /**
      * Der Name des Tools.
      */
@@ -64,7 +61,7 @@ public class MenuViewStartUp {
      * @param lStore Store mit den moeglichen Paramtern.
      * @param entries Eintraege der Dateien im Projekt.
      */
-    protected MenuViewStartUp(Store lStore, List<DirEntry> lEntries, String lToolName) {
+    protected MenuViewStartUp(Store lStore, List<MGXFile> lEntries, String lToolName) {
         this.entries = lEntries;
         LOGGER.info("setStore");
         toolName = lToolName;
