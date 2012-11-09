@@ -110,7 +110,7 @@ public class AttributeAccess extends AccessBase<Attribute> {
         } catch (MGXServerException ex) {
             Logger.getLogger(AttributeAccess.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return new Distribution(res, total);
+        return new Distribution(res, total, getMaster());
     }
 
     @Override
