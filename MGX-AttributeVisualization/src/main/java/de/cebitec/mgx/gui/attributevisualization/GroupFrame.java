@@ -256,7 +256,7 @@ public class GroupFrame extends javax.swing.JInternalFrame implements ExplorerMa
 
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
-            System.err.println("ListView got "+evt.getPropertyName());
+            //System.err.println("ListView got "+evt.getPropertyName());
         }
     }
 

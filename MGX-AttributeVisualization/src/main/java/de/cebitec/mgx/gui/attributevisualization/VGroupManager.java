@@ -93,7 +93,6 @@ public class VGroupManager implements PropertyChangeListener {
     }
 
     public List<Pair<VisualizationGroup, Distribution>> getDistributions() throws ConflictingJobsException {
-        System.err.println("getting distributions");
         List<Pair<VisualizationGroup, Distribution>> ret = new ArrayList<>();
         for (VisualizationGroup vg : getActiveGroups()) {
             Distribution dist = vg.getDistribution();
@@ -138,7 +137,7 @@ public class VGroupManager implements PropertyChangeListener {
     public void propertyChange(PropertyChangeEvent pce) {
         // rename group
         if (pce.getPropertyName().equals(VisualizationGroup.VISGROUP_RENAMED)) {
-            System.err.println("fetching vizGroup " + (String) pce.getOldValue());
+            //System.err.println("fetching vizGroup " + (String) pce.getOldValue());
             VisualizationGroup vg = getGroup((String) pce.getOldValue());
             if (vg != null) {
                 vg.setName((String) pce.getNewValue());
@@ -153,7 +152,7 @@ public class VGroupManager implements PropertyChangeListener {
                 return vg;
             }
         }
-        System.err.println("group " + name + " not found");
+        //System.err.println("group " + name + " not found");
         assert false; // shouldn't happen
         return null;
     }
