@@ -28,7 +28,7 @@ public class VisualizationGroupNodeFactory extends ChildFactory<SeqRunNode> impl
 
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
-                System.err.println("VGNF got event "+evt.getPropertyName());
+                //System.err.println("VGNF got event "+evt.getPropertyName());
                 refreshChildren();
             }
         });

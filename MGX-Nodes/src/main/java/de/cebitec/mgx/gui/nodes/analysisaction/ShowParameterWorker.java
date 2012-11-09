@@ -88,7 +88,7 @@ public class ShowParameterWorker extends SwingWorker<Collection<JobParameter>, V
                 assert false;
         }
         progress.setUpdateText("Loading Project Files");
-        List<DirEntry> files = master.File().fetchall();
+        List<MGXFile> files = master.File().fetchall();
         progress.dispose();
         Store store = null;
 
