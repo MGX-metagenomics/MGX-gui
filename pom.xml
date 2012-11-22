@@ -388,7 +388,7 @@
         <module>MGX-ProtoBuf-Wrapper</module>
         <module>MGX-JobMonitor</module>
         <module>MGX-Statistics</module>
-    </modules>
+  </modules>
 
     <properties>
         <netbeans.version>RELEASE721</netbeans.version>
