@@ -1,5 +1,7 @@
 package de.cebitec.mgx.gui.nodes;
 
+import de.cebitec.mgx.gui.actions.CreateDirectory;
+import de.cebitec.mgx.gui.actions.DeleteFileOrDirectory;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.MGXFile;
 import de.cebitec.mgx.gui.nodefactory.FileNodeFactory;
@@ -28,6 +30,12 @@ public class MGXFileNode extends MGXNodeBase<MGXFile> {
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/File.png");
     }
 
+//    @Override
+//    public void destroy() throws IOException {
+//        super.destroy();
+//        fireNodeDestroyed();
+//    }
+
     @Override
     public boolean canDestroy() {
         return true;
@@ -35,7 +43,11 @@ public class MGXFileNode extends MGXNodeBase<MGXFile> {
 
     @Override
     public Action[] getActions(boolean context) {
-        return new Action[]{};
+        if (getContent().isDirectory()) {
+            return new Action[]{new CreateDirectory(nf), new DeleteFileOrDirectory(this)};
+        } else {
+            return new Action[]{new DeleteFileOrDirectory(this)};
+        }
     }
 
     private static String stripPath(String in) {

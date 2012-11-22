@@ -37,12 +37,11 @@ public class FileNodeFactory extends ChildFactory<MGXFile> implements NodeListen
         MGXFileNode node;
         if (!file.isDirectory()) {
             node = new MGXFileNode(master, file);
-            node.addNodeListener(this);
         } else {
             FileNodeFactory dirEntryNodeFactory = new FileNodeFactory(master, file);
             node = new MGXFileNode(master, file, dirEntryNodeFactory);
-            node.addNodeListener(dirEntryNodeFactory);
         }
+        node.addNodeListener(this);
         return node;
     }
 
@@ -64,7 +63,8 @@ public class FileNodeFactory extends ChildFactory<MGXFile> implements NodeListen
 
     @Override
     public void nodeDestroyed(NodeEvent ev) {
-        this.refresh(true);
+        //ev.getNode().removeNodeListener(this);
+        refresh(true);
     }
 
     @Override
