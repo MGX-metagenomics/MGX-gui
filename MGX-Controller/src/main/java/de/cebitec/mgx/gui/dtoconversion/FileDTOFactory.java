@@ -26,7 +26,7 @@ public class FileDTOFactory extends DTOConversionBase<MGXFile, FileDTO> {
     @Override
     public FileDTO toDTO(MGXFile a) {
         return FileDTO.newBuilder()
-                .setName(a.getName())
+                .setName(a.getFullPath())
                 .setIsDirectory(a.isDirectory())
                 .build();
     }

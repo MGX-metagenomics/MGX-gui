@@ -4,6 +4,7 @@ import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.FileDTO;
 import de.cebitec.mgx.gui.datamodel.MGXFile;
+import de.cebitec.mgx.gui.datamodel.ModelBase;
 import de.cebitec.mgx.gui.dtoconversion.FileDTOFactory;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,12 +22,18 @@ public class FileAccess extends AccessBase<MGXFile> {
     }
 
     public long createDirectory(MGXFile newObj) {
-        throw new UnsupportedOperationException("Not supported.");
+        FileDTO dto = FileDTOFactory.getInstance().toDTO(newObj);
+        try {
+            return getDTOmaster().File().create(dto);
+        } catch (MGXServerException | MGXClientException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+        return -1; // files have no id
     }
 
     @Override
     public MGXFile fetch(long id) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException("Not supported.");
     }
 
     public List<MGXFile> fetchall(MGXFile rootDir) {
@@ -51,7 +58,13 @@ public class FileAccess extends AccessBase<MGXFile> {
 
     @Override
     public void delete(MGXFile obj) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        try {
+            FileDTO dto = FileDTOFactory.getInstance().toDTO(obj);
+            getDTOmaster().File().delete(dto);
+        } catch (MGXServerException | MGXClientException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+        obj.firePropertyChange(ModelBase.OBJECT_DELETED, obj, null);
     }
 
     @Override
