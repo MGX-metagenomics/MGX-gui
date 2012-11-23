@@ -340,13 +340,14 @@ public class VisualizationGroup {
     private static Distribution mergeDistributions(final Iterable<Distribution> dists) {
         Map<Attribute, Number> summary = new HashMap<>();
         long total = 0;
-        MGXMaster m = null;
+        MGXMasterI anyMaster = null;
+
         for (Distribution d : dists) {
-            m = (MGXMaster) d.getMaster();
+            anyMaster = (MGXMaster) d.getMaster();
             total += d.getTotalClassifiedElements();
             for (Entry<Attribute, ? extends Number> e : d.entrySet()) {
                 Attribute attr = e.getKey();
-                Long count = e.getValue().longValue();
+                long count = e.getValue().longValue();
                 if (summary.containsKey(attr)) {
                     count += summary.get(attr).longValue();
                 }
@@ -354,7 +355,7 @@ public class VisualizationGroup {
             }
         }
 
-        return new Distribution(summary, total, m);
+        return new Distribution(summary, total, anyMaster);
     }
 
     private void waitForWorkers(List<Fetcher> workerList) {
