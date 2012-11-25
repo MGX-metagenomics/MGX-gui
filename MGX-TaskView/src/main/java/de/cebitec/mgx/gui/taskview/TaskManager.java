@@ -24,8 +24,8 @@ public class TaskManager implements PropertyChangeListener {
 
     public static final String TASKMANAGER_CHANGE = "tmChange";
     private static TaskManager instance;
-    private RequestProcessor reqProcessor = null;
-    private Map<Task, TaskDescriptor> currentTasks = new HashMap<>();
+    private final RequestProcessor reqProcessor;
+    private final Map<Task, TaskDescriptor> currentTasks = new HashMap<>();
     private TaskViewTopComponent taskViewer;
     private final PropertyChangeSupport pcs;
 
@@ -117,7 +117,6 @@ public class TaskManager implements PropertyChangeListener {
     private TaskViewTopComponent getTaskViewer() {
         TaskViewTopComponent t = (TaskViewTopComponent) WindowManager.getDefault().findTopComponent("TaskViewTopComponent");
 
-
         if (t == null) {
             t = Lookup.getDefault().lookup(TaskViewTopComponent.class);
         }
@@ -127,8 +126,6 @@ public class TaskManager implements PropertyChangeListener {
     @Override
     public void propertyChange(PropertyChangeEvent pce) {
         pcs.firePropertyChange(pce);
-
-
     }
 
     private final class MyTaskListener implements TaskListener {
@@ -140,6 +137,7 @@ public class TaskManager implements PropertyChangeListener {
                 td.finished();
             } else {
                 System.err.println("task NOT finished");
+                assert false; // do we ever reach this?
             }
         }
     }
