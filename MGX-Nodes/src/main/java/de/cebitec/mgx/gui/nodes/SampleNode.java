@@ -142,12 +142,6 @@ public class SampleNode extends MGXNodeBase<Sample> {
                         setStatus("Deleting..");
                         m.Sample().delete(sample);
                     }
-
-                    @Override
-                    public void finished() {
-                        super.finished();
-                        fireNodeDestroyed();
-                    }
                 };
 
                 TaskManager.getInstance().addTask("Delete " + sample.getMaterial(), deleteTask);
