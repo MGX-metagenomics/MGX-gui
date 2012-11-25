@@ -2,11 +2,14 @@ package de.cebitec.mgx.gui.controller;
 
 import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
+import de.cebitec.mgx.client.upload.FileUploader;
 import de.cebitec.mgx.dto.dto.FileDTO;
 import de.cebitec.mgx.gui.datamodel.MGXFile;
 import de.cebitec.mgx.gui.datamodel.ModelBase;
 import de.cebitec.mgx.gui.dtoconversion.FileDTOFactory;
+import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.openide.util.Exceptions;
 
@@ -48,6 +51,7 @@ public class FileAccess extends AccessBase<MGXFile> {
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
+        Collections.sort(ret);
         return ret;
     }
 
@@ -70,5 +74,9 @@ public class FileAccess extends AccessBase<MGXFile> {
     @Override
     public List<MGXFile> fetchall() {
         throw new UnsupportedOperationException("Not supported.");
+    }
+    
+    public FileUploader createUploader(FileReader reader, MGXFile target) {
+        return getDTOmaster().File().createUploader(target.getFullPath(), reader);
     }
 }
