@@ -34,7 +34,6 @@ public class HabitatNodeFactory extends ChildFactory<Habitat> implements NodeLis
     }
 
     public void refreshChildren() {
-        System.err.println("HNF refreshing");
         refresh(true);
     }
 
@@ -54,7 +53,6 @@ public class HabitatNodeFactory extends ChildFactory<Habitat> implements NodeLis
 
     @Override
     public void nodeDestroyed(NodeEvent ev) {
-        System.err.println("HNF got nodeDestroyed");
         refresh(true);
     }
 

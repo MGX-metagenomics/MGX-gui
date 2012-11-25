@@ -12,11 +12,11 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sj
  */
-public class ProjectFilesNode extends MGXNodeBase<MGXMaster> {
+public class ProjectFilesNode extends MGXNodeBase<MGXFile> {
     
     private FileNodeFactory nf;
 
-    public ProjectFilesNode(MGXMaster m, MGXFile root) {
+    public ProjectFilesNode(final MGXMaster m, final MGXFile root) {
         this(new FileNodeFactory(m, root), m, root);
         master = m;
         setDisplayName("Project Files");
@@ -24,7 +24,7 @@ public class ProjectFilesNode extends MGXNodeBase<MGXMaster> {
     }
     
     private ProjectFilesNode(FileNodeFactory fnf, MGXMaster m, MGXFile root) {
-        super(Children.create(fnf, true), Lookups.fixed(m, root), m);
+        super(Children.create(fnf, true), Lookups.fixed(m, root), root);
         nf = fnf;
     }
 
@@ -34,7 +34,7 @@ public class ProjectFilesNode extends MGXNodeBase<MGXMaster> {
     }
 
     @Override
-    public Action[] getActions(boolean popup) {
+    public Action[] getActions(boolean ctx) {
         return new Action[]{new CreateDirectory(nf)}; //, new DeleteDirEntry()};
     }
 

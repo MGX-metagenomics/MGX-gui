@@ -2,44 +2,41 @@ package de.cebitec.mgx.gui.nodefactory;
 
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.MGXFile;
+import de.cebitec.mgx.gui.nodes.MGXDirectoryNode;
 import de.cebitec.mgx.gui.nodes.MGXFileNode;
 import java.beans.PropertyChangeEvent;
 import java.util.List;
-import org.openide.nodes.ChildFactory;
-import org.openide.nodes.Node;
-import org.openide.nodes.NodeEvent;
-import org.openide.nodes.NodeListener;
-import org.openide.nodes.NodeMemberEvent;
-import org.openide.nodes.NodeReorderEvent;
+import org.openide.nodes.*;
 
 /**
  *
- * @author sjaenick
+ * @author sj
  */
 public class FileNodeFactory extends ChildFactory<MGXFile> implements NodeListener {
 
-    private final MGXMaster master;
-    private final MGXFile current_root;
+    private MGXMaster master;
+    private MGXFile curDirectory;
 
-    public FileNodeFactory(MGXMaster m, MGXFile d) {
-        master = m;
-        current_root = d;
+    public FileNodeFactory(MGXMaster master, MGXFile curDir) {
+        this.master = master;
+        curDirectory = curDir;
     }
 
     @Override
     protected boolean createKeys(List<MGXFile> toPopulate) {
-        toPopulate.addAll(master.File().fetchall(current_root));
+        for (MGXFile f : master.File().fetchall(curDirectory)) {
+            toPopulate.add(f);
+        }
         return true;
     }
 
     @Override
     protected Node createNodeForKey(MGXFile file) {
-        MGXFileNode node;
+        Node node;
         if (!file.isDirectory()) {
-            node = new MGXFileNode(master, file);
+            node = new MGXFileNode(file, master);
         } else {
-            FileNodeFactory dirEntryNodeFactory = new FileNodeFactory(master, file);
-            node = new MGXFileNode(master, file, dirEntryNodeFactory);
+            node = new MGXDirectoryNode(master, file);
         }
         node.addNodeListener(this);
         return node;
@@ -48,13 +45,15 @@ public class FileNodeFactory extends ChildFactory<MGXFile> implements NodeListen
     public void refreshChildren() {
         refresh(true);
     }
-
+    
     @Override
     public void childrenAdded(NodeMemberEvent ev) {
+        //refresh(true);
     }
 
     @Override
     public void childrenRemoved(NodeMemberEvent ev) {
+        //refresh(true);
     }
 
     @Override
@@ -63,11 +62,12 @@ public class FileNodeFactory extends ChildFactory<MGXFile> implements NodeListen
 
     @Override
     public void nodeDestroyed(NodeEvent ev) {
-        //ev.getNode().removeNodeListener(this);
+        System.err.println("nodeDestroyed() called from " + ev.getSource().toString()); 
         refresh(true);
     }
 
     @Override
-    public void propertyChange(PropertyChangeEvent pce) {
+    public void propertyChange(PropertyChangeEvent evt) {
+        //refresh(true);
     }
 }

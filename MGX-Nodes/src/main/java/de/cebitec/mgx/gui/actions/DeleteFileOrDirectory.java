@@ -3,10 +3,8 @@ package de.cebitec.mgx.gui.actions;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.controller.RBAC;
 import de.cebitec.mgx.gui.datamodel.MGXFile;
-import de.cebitec.mgx.gui.nodefactory.FileNodeFactory;
 import de.cebitec.mgx.gui.nodes.MGXFileNode;
 import java.awt.event.ActionEvent;
-import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import javax.swing.AbstractAction;
 import javax.swing.SwingWorker;
@@ -21,11 +19,9 @@ import org.openide.util.Utilities;
  */
 public class DeleteFileOrDirectory extends AbstractAction {
 
-    private MGXFileNode node;
 
-    public DeleteFileOrDirectory(MGXFileNode nf) {
+    public DeleteFileOrDirectory() {
         putValue(NAME, "Delete");
-        node = nf;
     }
 
     @Override

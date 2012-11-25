@@ -91,12 +91,6 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> implements Transferable {
     public void updateModified() {
         setDisplayName(getContent().getName());
         setShortDescription(getToolTipText(getContent()));
-//        fireDisplayNameChange(null, getContent().getName());
-
-//        fireDisplayNameChange(null, getDisplayName());
-//        fireShortDescriptionChange(null, getShortDescription());
-//        fireNameChange(null, getName());
-//        fireCookieChange();
     }
 
     private final class ExecuteAnalysis extends AbstractAction {
@@ -134,7 +128,6 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> implements Transferable {
             boolean cancelled = wd.getValue() != WizardDescriptor.FINISH_OPTION;
             if (!cancelled) {
 
-                //String oldDisplayName = seqrun.getSequencingMethod() + " run";
                 final SeqRun run = wd.getSeqRun();
                 SwingWorker<Void, Void> sw = new SwingWorker<Void, Void>() {
                     @Override

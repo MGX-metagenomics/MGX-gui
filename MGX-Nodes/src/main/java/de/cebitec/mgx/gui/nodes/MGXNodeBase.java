@@ -4,10 +4,8 @@ import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.ModelBase;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.IOException;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
-import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 
 /**
@@ -34,11 +32,7 @@ public abstract class MGXNodeBase<T extends ModelBase> extends AbstractNode impl
         System.err.println("node got PCE: " + evt.getPropertyName());
         switch (evt.getPropertyName()) {
             case ModelBase.OBJECT_DELETED:
-                try {
-                    destroy();
-                } catch (IOException ex) {
-                    Exceptions.printStackTrace(ex);
-                }
+                content.removePropertyChangeListener(this);
                 fireNodeDestroyed();
                 break;
             case ModelBase.OBJECT_MODIFIED:
