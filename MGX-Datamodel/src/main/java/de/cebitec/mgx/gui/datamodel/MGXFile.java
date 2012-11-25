@@ -4,7 +4,7 @@ package de.cebitec.mgx.gui.datamodel;
  *
  * @author sjaenick
  */
-public class MGXFile extends ModelBase {
+public class MGXFile extends ModelBase implements Comparable<MGXFile> {
 
     protected MGXFile parent = null;
     protected String name;
@@ -47,5 +47,17 @@ public class MGXFile extends ModelBase {
             return parent.getFullPath() + "/" + getName();
         }
         return "." + getName();
+    }
+
+    @Override
+    public int compareTo(MGXFile o) {
+        if (isDirectory == o.isDirectory()) {
+            return this.name.compareTo(o.name);
+        } else {
+            if (isDirectory) {
+                return -1;
+            }
+            return 1;
+        }
     }
 }
