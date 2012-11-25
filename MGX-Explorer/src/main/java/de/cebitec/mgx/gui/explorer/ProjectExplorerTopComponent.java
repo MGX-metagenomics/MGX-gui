@@ -47,6 +47,7 @@ public final class ProjectExplorerTopComponent extends TopComponent implements E
         putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_KEEP_PREFERRED_SIZE_WHEN_SLIDED_IN, Boolean.TRUE);
         associateLookup(ExplorerUtils.createLookup(exmngr, getActionMap()));
+        getActionMap().put("delete", ExplorerUtils.actionDelete(exmngr, true));
     }
 
     private void initComponents() {
