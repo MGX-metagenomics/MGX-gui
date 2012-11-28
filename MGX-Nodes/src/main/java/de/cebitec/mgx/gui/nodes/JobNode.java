@@ -117,9 +117,13 @@ public class JobNode extends MGXNodeBase<Job> {
                     }
 
                     @Override
-                    public void finished() {
-                        super.finished();
-                        //fireNodeDestroyed();
+                    public boolean isDeterminate() {
+                        return false;
+                    }
+
+                    @Override
+                    public int getProgress() {
+                        return -1;
                     }
                 };
 

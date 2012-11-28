@@ -157,6 +157,16 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
                         super.finished();
                         fireNodeDestroyed();
                     }
+
+                    @Override
+                    public boolean isDeterminate() {
+                        return false;
+                    }
+
+                    @Override
+                    public int getProgress() {
+                        return -1;
+                    }
                 };
 
                 TaskManager.getInstance().addTask("Delete " + dna.getName(), deleteTask);
@@ -226,6 +236,17 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
                                 MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
                                 m.SeqRun().delete(seqrun);
                                 snf.refreshChildren();
+                                super.failed();
+                            }
+
+                            @Override
+                            public boolean isDeterminate() {
+                                return false;
+                            }
+
+                            @Override
+                            public int getProgress() {
+                                return -1;
                             }
 
                             @Override

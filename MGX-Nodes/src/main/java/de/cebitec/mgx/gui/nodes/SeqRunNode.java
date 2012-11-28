@@ -178,14 +178,6 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> implements Transferable {
                     null);
             Object ret = DialogDisplayer.getDefault().notify(d);
             if (NotifyDescriptor.YES_OPTION.equals(ret)) {
-                // update display name to indicate this object is currently being modified
-//                String oldDisplayName = sr.getSequencingMethod() + " run";
-//                String newName = new StringBuilder("<html><s>")
-//                        .append(sr.getSequencingMethod())
-//                        .append(" run</s></html>")
-//                        .toString();
-//                fireDisplayNameChange(oldDisplayName, newName);
-                // FIXME disable actions?
 
                 MGXTask deleteTask = new MGXTask() {
                     @Override
@@ -199,6 +191,16 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> implements Transferable {
                     public void finished() {
                         super.finished();
                         fireNodeDestroyed();
+                    }
+
+                    @Override
+                    public boolean isDeterminate() {
+                        return false;
+                    }
+
+                    @Override
+                    public int getProgress() {
+                        return -1;
                     }
                 };
 

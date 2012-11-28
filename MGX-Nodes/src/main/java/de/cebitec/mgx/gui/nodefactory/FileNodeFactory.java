@@ -16,6 +16,8 @@ public class FileNodeFactory extends ChildFactory<MGXFile> implements NodeListen
 
     private MGXMaster master;
     private MGXFile curDirectory;
+    //
+    private boolean refreshing = false;
 
     public FileNodeFactory(MGXMaster master, MGXFile curDir) {
         this.master = master;
@@ -43,9 +45,13 @@ public class FileNodeFactory extends ChildFactory<MGXFile> implements NodeListen
     }
 
     public void refreshChildren() {
-        refresh(true);
+        if (!refreshing) {
+            refreshing = true;
+            refresh(true);
+            refreshing = false;
+        }
     }
-    
+
     @Override
     public void childrenAdded(NodeMemberEvent ev) {
         //refresh(true);
@@ -62,8 +68,17 @@ public class FileNodeFactory extends ChildFactory<MGXFile> implements NodeListen
 
     @Override
     public void nodeDestroyed(NodeEvent ev) {
-        System.err.println("nodeDestroyed() called from " + ev.getSource().toString()); 
-        refresh(true);
+        // this is ugly, and unnecessary everywhere else. however, here
+        // it triggers a stack overflow otherwise: refresh() makes the
+        // childfactory remove (and re-add) all nodes, which triggers a 
+        // nodeDestroyed() call for each removed node.
+        //
+        // I have no idea....
+        if (!refreshing) {
+            refreshing = true;
+            refresh(true);
+            refreshing = false;
+        }
     }
 
     @Override

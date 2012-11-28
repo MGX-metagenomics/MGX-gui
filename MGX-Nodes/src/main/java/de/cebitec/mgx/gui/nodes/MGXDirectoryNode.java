@@ -1,5 +1,8 @@
 package de.cebitec.mgx.gui.nodes;
 
+import de.cebitec.mgx.gui.actions.CreateDirectory;
+import de.cebitec.mgx.gui.actions.DeleteFileOrDirectory;
+import de.cebitec.mgx.gui.actions.UploadFile;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.controller.RBAC;
 import de.cebitec.mgx.gui.datamodel.Habitat;
@@ -48,58 +51,18 @@ public class MGXDirectoryNode extends MGXNodeBase<MGXFile> {
     }
 
     @Override
+    public Action getPreferredAction() {
+        return null;
+    }
+
+    @Override
     public Action[] getActions(boolean context) {
-        return new Action[]{new UploadFile()};
+        return new Action[]{new CreateDirectory(nf), new DeleteFileOrDirectory(), new UploadFile(nf)};
     }
 
     @Override
     public void updateModified() {
         setDisplayName(getContent().getName());
         setShortDescription(getContent().getName());
-    }
-
-    private class UploadFile extends AbstractAction {
-
-        public UploadFile() {
-            putValue(NAME, "Upload file");
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            SampleWizardDescriptor wd = new SampleWizardDescriptor();
-            Dialog dialog = DialogDisplayer.getDefault().createDialog(wd);
-            dialog.setVisible(true);
-            dialog.toFront();
-            boolean cancelled = wd.getValue() != WizardDescriptor.FINISH_OPTION;
-            if (!cancelled) {
-                Habitat hab = getLookup().lookup(Habitat.class);
-                final Sample s = wd.getSample();
-                s.setHabitatId(hab.getId());
-                SwingWorker<Long, Void> worker = new SwingWorker<Long, Void>() {
-                    @Override
-                    protected Long doInBackground() throws Exception {
-                        MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
-                        return m.Sample().create(s);
-                    }
-
-                    @Override
-                    protected void done() {
-                        try {
-                            get();
-                        } catch (InterruptedException | ExecutionException ex) {
-                            Exceptions.printStackTrace(ex);
-                        }
-                        nf.refreshChildren();
-                        super.done();
-                    }
-                };
-                worker.execute();
-            }
-        }
-
-        @Override
-        public boolean isEnabled() {
-            return (super.isEnabled() && RBAC.isUser());
-        }
     }
 }
