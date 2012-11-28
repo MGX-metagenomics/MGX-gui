@@ -7,6 +7,7 @@ import de.cebitec.mgx.dto.dto.FileDTO;
 import de.cebitec.mgx.gui.datamodel.MGXFile;
 import de.cebitec.mgx.gui.datamodel.ModelBase;
 import de.cebitec.mgx.gui.dtoconversion.FileDTOFactory;
+import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -76,7 +77,12 @@ public class FileAccess extends AccessBase<MGXFile> {
         throw new UnsupportedOperationException("Not supported.");
     }
     
-    public FileUploader createUploader(FileReader reader, MGXFile target) {
-        return getDTOmaster().File().createUploader(target.getFullPath(), reader);
+    public FileUploader createUploader(File localFile, MGXFile targetDir, String targetName) {
+        assert targetDir.isDirectory();
+        if (targetName.contains("/")) {
+            assert false;
+        }
+        String fullPath = targetDir.getFullPath() + "/" + targetName;
+        return getDTOmaster().File().createUploader(localFile, fullPath);
     }
 }
