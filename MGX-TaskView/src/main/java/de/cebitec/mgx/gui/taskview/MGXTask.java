@@ -34,6 +34,10 @@ public abstract class MGXTask implements Runnable, PropertyChangeListener {
     }
 
     public abstract void process();
+    
+    public abstract boolean isDeterminate();
+    
+    public abstract int getProgress();
 
     public void finished() {
         setStatus("Done");

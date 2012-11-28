@@ -4,6 +4,7 @@ import java.awt.EventQueue;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import javax.swing.JProgressBar;
 
 /**
  *
@@ -26,12 +27,19 @@ public class TaskDescriptor implements Comparable<TaskDescriptor>, PropertyChang
 
         te = new TaskListEntry();
         te.setMainText(tName);
+        if (mgxTask.isDeterminate()) {
+            JProgressBar progress = te.getProgressBar();
+            progress.setIndeterminate(false);
+            progress.setMinimum(0);
+            progress.setMaximum(100);
+            progress.setValue(0);
+        }
     }
 
     public TaskListEntry getTaskEntry() {
         return te;
     }
-    
+
     public void finished() {
         endTime = System.currentTimeMillis();
         te.finished();
@@ -41,7 +49,7 @@ public class TaskDescriptor implements Comparable<TaskDescriptor>, PropertyChang
     public Long getEndTime() {
         return endTime;
     }
-    
+
     private long getStartTime() {
         return startTime;
     }
@@ -73,10 +81,13 @@ public class TaskDescriptor implements Comparable<TaskDescriptor>, PropertyChang
     public void propertyChange(final PropertyChangeEvent pce) {
         if (pce.getPropertyName().equals(MGXTask.TASK_CHANGED)) {
             EventQueue.invokeLater(new Runnable() {
-
                 @Override
                 public void run() {
                     getTaskEntry().setDetailText(mgxTask.getStatus());
+                    JProgressBar progress = getTaskEntry().getProgressBar();
+                    if (mgxTask.isDeterminate()) {
+                        progress.setValue(mgxTask.getProgress());
+                    }
                 }
             });
         } else {
