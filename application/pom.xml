@@ -15,7 +15,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <netbeans.run.params.ide>-J-Xmx128m</netbeans.run.params.ide>
+        <netbeans.run.params.ide>-J-Xmx256m</netbeans.run.params.ide>
         <netbeans.run.params>${netbeans.run.params.ide}</netbeans.run.params>
     </properties>
 
@@ -119,6 +119,9 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>nbm-maven-plugin</artifactId>
+                <configuration>
+                    <etcConfFile>src/main/resources/mgxgui.conf</etcConfFile>
+                </configuration>
             </plugin>
             <!-- To run NbModuleSuite in integration-test phase:
             <plugin>
