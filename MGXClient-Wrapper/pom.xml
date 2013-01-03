@@ -100,7 +100,7 @@
                         <publicPackage>de.cebitec.mgx.client</publicPackage>
                         <publicPackage>de.cebitec.mgx.client.access.rest</publicPackage>
                         <publicPackage>de.cebitec.mgx.client.exception</publicPackage>
-                        <publicPackage>de.cebitec.mgx.client.upload</publicPackage>
+                        <publicPackage>de.cebitec.mgx.client.datatransfer</publicPackage>
                         <publicPackage>de.cebitec.mgx.restgpms</publicPackage>
                         <publicPackage>de.cebitec.mgx.sequence</publicPackage>
                     </publicPackages>
