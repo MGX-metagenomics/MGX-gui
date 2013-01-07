@@ -2,8 +2,11 @@ package de.cebitec.mgx.gui.controller;
 
 import de.cebitec.mgx.client.datatransfer.SeqDownloader;
 import de.cebitec.mgx.client.datatransfer.SeqUploader;
+import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
+import de.cebitec.mgx.dto.dto.SequenceDTO;
 import de.cebitec.mgx.gui.datamodel.Sequence;
+import de.cebitec.mgx.gui.dtoconversion.SequenceDTOFactory;
 import de.cebitec.mgx.sequence.SeqReaderI;
 import de.cebitec.mgx.sequence.SeqWriterI;
 import java.util.List;
@@ -46,7 +49,13 @@ public class SequenceAccess extends AccessBase<Sequence> {
 
     @Override
     public Sequence fetch(long id) {
-        throw new UnsupportedOperationException("Not supported.");
+        SequenceDTO dto = null;
+        try {
+            dto = getDTOmaster().Sequence().fetch(id);
+        } catch (MGXServerException | MGXClientException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+        return SequenceDTOFactory.getInstance().toModel(dto);
     }
 
     @Override
