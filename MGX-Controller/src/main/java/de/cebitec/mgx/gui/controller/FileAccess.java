@@ -1,14 +1,13 @@
 package de.cebitec.mgx.gui.controller;
 
+import de.cebitec.mgx.client.datatransfer.FileUploader;
 import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
-import de.cebitec.mgx.client.upload.FileUploader;
 import de.cebitec.mgx.dto.dto.FileDTO;
 import de.cebitec.mgx.gui.datamodel.MGXFile;
 import de.cebitec.mgx.gui.datamodel.ModelBase;
 import de.cebitec.mgx.gui.dtoconversion.FileDTOFactory;
 import java.io.File;
-import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
