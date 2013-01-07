@@ -1,7 +1,7 @@
 package de.cebitec.mgx.gui.actions;
 
-import de.cebitec.mgx.client.upload.FileUploader;
-import de.cebitec.mgx.client.upload.UploadBase;
+import de.cebitec.mgx.client.datatransfer.FileUploader;
+import de.cebitec.mgx.client.datatransfer.UploadBase;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.controller.RBAC;
 import de.cebitec.mgx.gui.datamodel.MGXFile;
@@ -45,6 +45,8 @@ public class UploadFile extends AbstractAction {
         if (fchooser.showOpenDialog(null) != JFileChooser.APPROVE_OPTION) {
             return;
         }
+        
+        NbPreferences.forModule(JFileChooser.class).put("lastDirectory", fchooser.getCurrentDirectory().getAbsolutePath());
 
         File localFile = fchooser.getSelectedFile();
 

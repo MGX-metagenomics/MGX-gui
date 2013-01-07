@@ -1,8 +1,8 @@
 package de.cebitec.mgx.gui.nodes;
 
+import de.cebitec.mgx.client.datatransfer.SeqUploader;
+import de.cebitec.mgx.client.datatransfer.UploadBase;
 import de.cebitec.mgx.client.exception.MGXClientException;
-import de.cebitec.mgx.client.upload.SeqUploader;
-import de.cebitec.mgx.client.upload.UploadBase;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.controller.RBAC;
 import de.cebitec.mgx.gui.datamodel.DNAExtract;
