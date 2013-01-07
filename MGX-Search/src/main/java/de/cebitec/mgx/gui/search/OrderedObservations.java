@@ -1,11 +1,9 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package de.cebitec.mgx.gui.search;
 
 import de.cebitec.mgx.gui.datamodel.Observation;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Berechnet die Position der der Observations.
@@ -23,7 +21,7 @@ public class OrderedObservations {
     /**
      * Observations
      */
-    private ArrayList<Observation> observations;
+    private List<Observation> observations;
    
     /**
      * Abstand nach oben zum Rand.
@@ -38,7 +36,7 @@ public class OrderedObservations {
     /**
      * Alle Observations aufgeteilt in die einzelnen Layer.
      */
-    private ArrayList<Layer> layers;
+    private List<Layer> layers;
     
     /**
      * Konstruktor.
@@ -46,7 +44,7 @@ public class OrderedObservations {
      * @param lObservations Observations, die angeordnet werden sollen.
      */
     public OrderedObservations(double lReadLength,
-            ArrayList<Observation> lObservations) {
+            List<Observation> lObservations) {
 
         this.readLength = lReadLength;
         this.observations = lObservations;
@@ -74,10 +72,10 @@ public class OrderedObservations {
      * @param observations Observations die angeordnet werden sollen.
      * @param lGraphics Graphics der jeweiligen Komponente.
      */
-    private void computeObservations(ArrayList<Observation> observations) {
+    private void computeObservations(List<Observation> observations) {
 
         int yPosition = paddingNorth + paddingBetween;
-        layers = new ArrayList<Layer>();
+        layers = new ArrayList<>();
         layers.add(new Layer(yPosition));
         boolean isObservationSet = false;
 
@@ -107,7 +105,7 @@ public class OrderedObservations {
      *
      * @return Ebene
      */
-    public ArrayList<Layer> getLayers() {
+    public List<Layer> getLayers() {
         return layers;
     }
 }

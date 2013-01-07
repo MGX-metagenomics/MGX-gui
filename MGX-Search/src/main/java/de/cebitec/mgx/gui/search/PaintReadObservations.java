@@ -11,6 +11,7 @@ import java.awt.Polygon;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import org.openide.util.Exceptions;
@@ -30,7 +31,7 @@ public class PaintReadObservations {
     /**
      * Observations.
      */
-    private ArrayList<Observation> observations;
+    private List<Observation> observations;
     
     /**
      * Die Breite der Observations und der Reads.
@@ -55,7 +56,7 @@ public class PaintReadObservations {
     /**
      * Ebenen fuer die Reads.
      */
-    private ArrayList<Layer> layers;
+    private List<Layer> layers;
     
     /**
      * Array fuer die Farben, die verwendet werden bei den Reads.
@@ -87,7 +88,7 @@ public class PaintReadObservations {
      * @param cutValue Wert in denen der Read eingeteilt wird.
      */
     public PaintReadObservations(double readLength,
-            ArrayList<Layer> layers, Graphics lGraphics,  JPanel lComponent, double cutValue) {
+            List<Layer> layers, Graphics lGraphics,  JPanel lComponent, double cutValue) {
         this.cutValue = cutValue;
         this.component = lComponent;
         this.layers = layers;
@@ -168,7 +169,7 @@ public class PaintReadObservations {
      * @param observations Observations
      * @param lGraphics Graphics
      */
-    private void drawObservations(ArrayList<Observation> observations,
+    private void drawObservations(List<Observation> observations,
             Graphics lGraphics) {
        
         

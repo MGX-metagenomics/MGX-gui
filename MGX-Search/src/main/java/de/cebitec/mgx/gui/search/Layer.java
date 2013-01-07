@@ -1,11 +1,9 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package de.cebitec.mgx.gui.search;
 
 import de.cebitec.mgx.gui.datamodel.Observation;
 import java.util.ArrayList;
+import java.util.List;
 
 
  /**
@@ -16,7 +14,7 @@ import java.util.ArrayList;
         /**
          * Liste von Observations, die in der Ebene gezeichnet werden sollen.
          */
-        private ArrayList<Observation> observations;
+        private List<Observation> observations;
         /**
          * y Position der Ebene.
          */
@@ -29,7 +27,7 @@ import java.util.ArrayList;
          * werden sollen.
          */
         public Layer(int lYPosition) {
-            observations = new ArrayList<Observation>();
+            observations = new ArrayList<>();
             yPosition = lYPosition;
         }
 
@@ -107,7 +105,7 @@ import java.util.ArrayList;
          * Gibt die Observations wider.
          * @return the observations
          */
-        public ArrayList<Observation> getObservations() {
+        public List<Observation> getObservations() {
             return observations;
         }
     }

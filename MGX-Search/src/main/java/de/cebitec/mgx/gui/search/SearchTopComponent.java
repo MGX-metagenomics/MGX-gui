@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package de.cebitec.mgx.gui.search;
 
 /**
@@ -445,8 +442,8 @@ public final class SearchTopComponent extends TopComponent implements LookupList
 
     private final class ObservationListCellRenderer implements ListCellRenderer<Sequence> {
 
-        public ArrayList<ArrayList<Layer>> toolTips = new ArrayList<ArrayList<Layer>>();
-        public ArrayList<String> readNames = new ArrayList<String>();
+        public List<List<Layer>> toolTips = new ArrayList<>();
+        public List<String> readNames = new ArrayList<>();
         public ServerDataWrapper model = new ServerDataWrapper();
 
         @Override
