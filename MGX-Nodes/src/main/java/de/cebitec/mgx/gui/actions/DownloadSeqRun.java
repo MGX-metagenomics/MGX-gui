@@ -59,7 +59,7 @@ public class DownloadSeqRun extends AbstractAction {
         }
         fchooser.setSelectedFile(suggestedName);
 
-        if (fchooser.showOpenDialog(null) != JFileChooser.APPROVE_OPTION) {
+        if (fchooser.showSaveDialog(null) != JFileChooser.APPROVE_OPTION) {
             return;
         }
 
