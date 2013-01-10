@@ -4,12 +4,17 @@ import de.cebitec.mgx.client.datatransfer.SeqDownloader;
 import de.cebitec.mgx.client.datatransfer.SeqUploader;
 import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
+import de.cebitec.mgx.dto.dto.AttributeDTOList;
+import de.cebitec.mgx.dto.dto.AttributeDTOList.Builder;
 import de.cebitec.mgx.dto.dto.SequenceDTO;
+import de.cebitec.mgx.gui.datamodel.Attribute;
 import de.cebitec.mgx.gui.datamodel.Sequence;
+import de.cebitec.mgx.gui.dtoconversion.AttributeDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.SequenceDTOFactory;
 import de.cebitec.mgx.sequence.SeqReaderI;
 import de.cebitec.mgx.sequence.SeqWriterI;
 import java.util.List;
+import java.util.Set;
 import org.openide.util.Exceptions;
 
 /**
@@ -37,6 +42,18 @@ public class SequenceAccess extends AccessBase<Sequence> {
     public void downloadSequences(long seqrun_id, SeqWriterI writer) {
         try {
             getDTOmaster().Sequence().downloadSequences(seqrun_id, writer);
+        } catch (MGXServerException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+    }
+
+    public void downloadSequencesForAttributes(Set<Attribute> attrs, SeqWriterI writer) {
+        try {
+            Builder b = AttributeDTOList.newBuilder();
+            for (Attribute a : attrs) {
+                b.addAttribute(AttributeDTOFactory.getInstance().toDTO(a));
+            }
+            getDTOmaster().Sequence().fetchAnnotatedReads(b.build(), writer);
         } catch (MGXServerException ex) {
             Exceptions.printStackTrace(ex);
         }

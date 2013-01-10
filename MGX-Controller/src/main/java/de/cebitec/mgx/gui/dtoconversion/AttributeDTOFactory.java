@@ -1,7 +1,9 @@
 package de.cebitec.mgx.gui.dtoconversion;
 
 import de.cebitec.mgx.dto.dto.AttributeDTO;
+import de.cebitec.mgx.dto.dto.AttributeDTO.Builder;
 import de.cebitec.mgx.gui.datamodel.Attribute;
+import de.cebitec.mgx.gui.datamodel.Identifiable;
 
 /**
  *
@@ -20,7 +22,19 @@ public class AttributeDTOFactory extends DTOConversionBase<Attribute, AttributeD
 
     @Override
     public final AttributeDTO toDTO(Attribute a) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Builder b = AttributeDTO.newBuilder();
+        b.setAttributeTypeId(a.getAttributeType().getId())
+                .setValue(a.getValue())
+                .setJobid(a.getJobId());
+        
+        if (a.getId() != Identifiable.INVALID_IDENTIFIER) {
+            b.setId(a.getId());
+        }
+        
+        if (a.getParentID() != Identifiable.INVALID_IDENTIFIER) {
+            b.setParentId(a.getParentID());
+        }
+        return b.build();
     }
 
     @Override

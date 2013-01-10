@@ -1,5 +1,6 @@
-package de.cebitec.mgx.gui.attributevisualization;
+package de.cebitec.mgx.gui.groups;
 
+import de.cebitec.mgx.gui.datamodel.Attribute;
 import de.cebitec.mgx.gui.datamodel.misc.Distribution;
 import de.cebitec.mgx.gui.datamodel.misc.Pair;
 import de.cebitec.mgx.gui.datamodel.tree.Tree;
@@ -10,9 +11,11 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  *
@@ -90,6 +93,17 @@ public class VGroupManager implements PropertyChangeListener {
         }
         
         return true;
+    }
+    
+    public Set<String> getAvailableAttributes() {
+        Set<String> attrNames = new HashSet<>();
+        for (VisualizationGroup vg : getActiveGroups()) {
+            Distribution dist = vg.getDistribution();
+            for (Attribute a : dist.keySet()) {
+                attrNames.add(a.getValue());
+            }
+        }
+        return attrNames;
     }
 
     public List<Pair<VisualizationGroup, Distribution>> getDistributions() throws ConflictingJobsException {

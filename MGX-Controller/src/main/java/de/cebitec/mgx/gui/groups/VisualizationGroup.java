@@ -12,6 +12,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
@@ -41,6 +42,7 @@ public class VisualizationGroup {
     private Map<SeqRun, List<Job>> needsResolval = new HashMap<>();
     //
     private final Map<SeqRun, Map<Job, List<AttributeType>>> attributeTypes = Collections.synchronizedMap(new HashMap<SeqRun, Map<Job, List<AttributeType>>>());
+    private final Map<SeqRun, Distribution> currentDistributions;
     private List<Fetcher> attributeTypePrefetchers = new ArrayList<>();
     private final PropertyChangeSupport pcs;
     //
@@ -52,6 +54,7 @@ public class VisualizationGroup {
         this.name = groupName;
         this.color = color;
         pcs = new PropertyChangeSupport(this);
+        currentDistributions = new ConcurrentHashMap<>();
     }
 
     public int getId() {
@@ -157,7 +160,6 @@ public class VisualizationGroup {
         sr.addPropertyChangeListener(new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
-                System.err.println("Vgroup got PCE " + evt.getPropertyName());
                 switch (evt.getPropertyName()) {
                     case ModelBase.OBJECT_DELETED:
                         removeSeqRun((SeqRun) evt.getOldValue());
@@ -246,8 +248,9 @@ public class VisualizationGroup {
         if (distCache.containsKey(selectedAttributeType)) {
             return distCache.get(selectedAttributeType);
         }
-
-        List<Distribution> results = Collections.synchronizedList(new ArrayList<Distribution>());
+        
+        currentDistributions.clear();
+        //List<Distribution> results = Collections.synchronizedList(new ArrayList<Distribution>());
 
         // start distribution retrieval workers in background
         //
@@ -265,10 +268,10 @@ public class VisualizationGroup {
             // 
             // start background worker to fetch distribution
             //
-            if (selectedJob == null || selectedAttributeType == null) {
+            if (selectedJob == null || currentAttributeType == null) {
                 allDone.countDown();
             } else {
-                DistributionFetcher distFetcher = new DistributionFetcher(currentAttributeType, selectedJob, allDone, results);
+                DistributionFetcher distFetcher = new DistributionFetcher(run, currentAttributeType, selectedJob, allDone, currentDistributions);
                 distFetcher.execute();
             }
         }
@@ -283,7 +286,7 @@ public class VisualizationGroup {
         //
         // merge results
         //
-        Distribution ret = mergeDistributions(results);
+        Distribution ret = mergeDistributions(currentDistributions.values());
         distCache.put(selectedAttributeType, ret);
 
         return ret;
@@ -357,6 +360,25 @@ public class VisualizationGroup {
 
         return new Distribution(summary, total, anyMaster);
     }
+    
+    private Map<SeqRun, Set<Attribute>> getSaveSet(List<String> requestedAttrs) {
+        assert needsResolval.isEmpty();
+        Map<SeqRun, Set<Attribute>> filtered = new HashMap<>();
+        for (Entry<SeqRun, Distribution> e : currentDistributions.entrySet()) {
+            
+            Set<Attribute> relevant = new HashSet<>();
+            for (Attribute a : e.getValue().keySet()) {
+                if (requestedAttrs.contains(a.getValue())) {
+                    relevant.add(a);
+                }
+            }
+            
+            if (!relevant.isEmpty()) {
+                filtered.put(e.getKey(), relevant);
+            }
+        }
+        return filtered;
+    }
 
     private void waitForWorkers(List<Fetcher> workerList) {
         List<Fetcher> removeList = new ArrayList<>();
@@ -419,12 +441,14 @@ public class VisualizationGroup {
 
     private class DistributionFetcher extends Fetcher<Distribution> {
 
+        protected final SeqRun run;
         protected final AttributeType attrType;
         protected final Job job;
         protected final CountDownLatch latch;
-        protected final List<Distribution> result;
+        protected final Map<SeqRun, Distribution> result;
 
-        public DistributionFetcher(final AttributeType attrType, final Job job, final CountDownLatch latch, List<Distribution> ret) {
+        public DistributionFetcher(final SeqRun run, final AttributeType attrType, final Job job, final CountDownLatch latch, Map<SeqRun, Distribution> ret) {
+            this.run = run;
             this.attrType = attrType;
             this.job = job;
             this.latch = latch;
@@ -445,7 +469,7 @@ public class VisualizationGroup {
             } catch (InterruptedException | ExecutionException ex) {
                 Exceptions.printStackTrace(ex);
             }
-            result.add(dist);
+            result.put(run, dist);
             latch.countDown();
         }
     }
