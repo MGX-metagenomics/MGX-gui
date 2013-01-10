@@ -97,7 +97,7 @@ public class VisualizationGroup {
     public final Set<SeqRun> getSeqRuns() {
         return seqruns;
     }
-
+    
     /**
      *
      * @param attrType

@@ -94,17 +94,6 @@ public class VGroupManager implements PropertyChangeListener {
         
         return true;
     }
-    
-    public Set<String> getAvailableAttributes() {
-        Set<String> attrNames = new HashSet<>();
-        for (VisualizationGroup vg : getActiveGroups()) {
-            Distribution dist = vg.getDistribution();
-            for (Attribute a : dist.keySet()) {
-                attrNames.add(a.getValue());
-            }
-        }
-        return attrNames;
-    }
 
     public List<Pair<VisualizationGroup, Distribution>> getDistributions() throws ConflictingJobsException {
         List<Pair<VisualizationGroup, Distribution>> ret = new ArrayList<>();
