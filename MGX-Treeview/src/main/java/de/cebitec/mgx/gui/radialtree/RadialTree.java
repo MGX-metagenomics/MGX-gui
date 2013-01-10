@@ -1,12 +1,12 @@
 package de.cebitec.mgx.gui.radialtree;
 
-import de.cebitec.mgx.gui.attributevisualization.VGroupManager;
 import de.cebitec.mgx.gui.attributevisualization.viewer.HierarchicalViewerI;
 import de.cebitec.mgx.gui.attributevisualization.viewer.ViewerI;
 import de.cebitec.mgx.gui.datamodel.AttributeType;
 import de.cebitec.mgx.gui.datamodel.misc.Pair;
 import de.cebitec.mgx.gui.datamodel.tree.Node;
 import de.cebitec.mgx.gui.datamodel.tree.Tree;
+import de.cebitec.mgx.gui.groups.VGroupManager;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import de.cebitec.mgx.gui.radialtree.internal.*;
 import java.awt.BorderLayout;
