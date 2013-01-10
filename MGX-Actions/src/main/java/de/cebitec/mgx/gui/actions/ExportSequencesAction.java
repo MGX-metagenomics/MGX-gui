@@ -1,0 +1,42 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package de.cebitec.mgx.gui.actions;
+
+import de.cebitec.mgx.gui.groups.SequenceExporterI;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
+import org.openide.awt.ActionID;
+import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
+import org.openide.awt.ActionRegistration;
+import org.openide.util.NbBundle.Messages;
+
+@ActionID(
+    category = "File",
+id = "de.cebitec.mgx.gui.actions.ExportSequencesAction")
+@ActionRegistration(
+    iconBase = "de/cebitec/mgx/gui/actions/saveSeq.png",
+displayName = "#CTL_ExportSequencesAction")
+@ActionReferences({
+    @ActionReference(path = "Menu/File", position = 1750),
+    @ActionReference(path = "Toolbars/File", position = 300)
+})
+@Messages("CTL_ExportSequencesAction=Export sequences")
+public final class ExportSequencesAction implements ActionListener {
+
+    private final List<SequenceExporterI> context;
+
+    public ExportSequencesAction(List<SequenceExporterI> context) {
+        this.context = context;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent ev) {
+        for (SequenceExporterI ex : context) {
+            ex.export();
+        }
+    }
+}
