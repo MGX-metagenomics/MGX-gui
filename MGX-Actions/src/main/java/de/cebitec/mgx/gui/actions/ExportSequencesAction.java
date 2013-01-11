@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package de.cebitec.mgx.gui.actions;
 
 import de.cebitec.mgx.gui.groups.SequenceExporterI;
@@ -22,7 +19,7 @@ id = "de.cebitec.mgx.gui.actions.ExportSequencesAction")
 displayName = "#CTL_ExportSequencesAction")
 @ActionReferences({
     @ActionReference(path = "Menu/File", position = 1750),
-    @ActionReference(path = "Toolbars/File", position = 300)
+    @ActionReference(path = "Toolbars/File", position = 600)
 })
 @Messages("CTL_ExportSequencesAction=Export sequences")
 public final class ExportSequencesAction implements ActionListener {
