@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.actions;
 
 import de.cebitec.mgx.client.datatransfer.DownloadBase;
+import de.cebitec.mgx.client.datatransfer.SeqByAttributeDownloader;
 import de.cebitec.mgx.client.datatransfer.SeqDownloader;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
@@ -89,7 +90,7 @@ public class DownloadSeqRun extends AbstractAction {
 
             MGXMaster master = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
             final SeqDownloader downloader = master.Sequence().createDownloader(seqrun.getId(), writer);
-
+            
             MGXTask run = new MGXTask() {
                 @Override
                 public void process() {
