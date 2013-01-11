@@ -361,7 +361,7 @@ public class VisualizationGroup {
         return new Distribution(summary, total, anyMaster);
     }
     
-    private Map<SeqRun, Set<Attribute>> getSaveSet(List<String> requestedAttrs) {
+    public Map<SeqRun, Set<Attribute>> getSaveSet(List<String> requestedAttrs) {
         assert needsResolval.isEmpty();
         Map<SeqRun, Set<Attribute>> filtered = new HashMap<>();
         for (Entry<SeqRun, Distribution> e : currentDistributions.entrySet()) {
