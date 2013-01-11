@@ -11,6 +11,7 @@ import java.beans.PropertyChangeSupport;
 public abstract class MGXTask implements Runnable, PropertyChangeListener {
     
     public static final String TASK_CHANGED = "MGXTaskChanged";
+    public static final int PROGRESS_UNKNOWN = -1;
     private final PropertyChangeSupport pcs;
     private String status = "";
 
