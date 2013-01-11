@@ -6,7 +6,6 @@
 package de.cebitec.mgx.gui.attributevisualization.ui;
 
 import de.cebitec.mgx.gui.attributevisualization.BaseModel;
-import de.cebitec.mgx.gui.attributevisualization.VGroupManager;
 import de.cebitec.mgx.gui.attributevisualization.conflictwizard.ConflictResolverWizardIterator;
 import de.cebitec.mgx.gui.attributevisualization.util.ResultCollector;
 import de.cebitec.mgx.gui.attributevisualization.viewer.ViewerI;
@@ -14,6 +13,7 @@ import de.cebitec.mgx.gui.datamodel.*;
 import de.cebitec.mgx.gui.datamodel.misc.Distribution;
 import de.cebitec.mgx.gui.datamodel.misc.Pair;
 import de.cebitec.mgx.gui.datamodel.tree.Tree;
+import de.cebitec.mgx.gui.groups.VGroupManager;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
@@ -98,6 +98,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
 
     public final void updateViewerList() {
         vizListModel.update();
+        topComponent.updateLookup(currentDistributions);
     }
 
     /**

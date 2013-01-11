@@ -5,6 +5,7 @@
  */
 package de.cebitec.mgx.gui.attributevisualization;
 
+import de.cebitec.mgx.gui.groups.VGroupManager;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import de.cebitec.mgx.gui.nodefactory.VisualizationGroupNodeFactory;
 import de.cebitec.mgx.gui.nodes.SeqRunNode;

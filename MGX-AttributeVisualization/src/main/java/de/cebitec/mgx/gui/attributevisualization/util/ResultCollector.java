@@ -1,6 +1,6 @@
 package de.cebitec.mgx.gui.attributevisualization.util;
 
-import de.cebitec.mgx.gui.attributevisualization.VGroupManager;
+import de.cebitec.mgx.gui.groups.VGroupManager;
 import de.cebitec.mgx.gui.attributevisualization.ui.ControlPanel;
 import de.cebitec.mgx.gui.datamodel.AttributeType;
 import de.cebitec.mgx.gui.datamodel.misc.Distribution;
@@ -44,7 +44,7 @@ public class ResultCollector extends SwingWorker<Pair<List<Pair<VisualizationGro
 
         
         Pair p = new Pair(distributions, hierarchies);
-        assert p != null;
+        assert p != null; // distribution are required, hierarchies optional
         return p;
     }
 

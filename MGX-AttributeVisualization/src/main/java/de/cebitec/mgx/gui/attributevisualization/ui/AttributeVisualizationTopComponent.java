@@ -1,11 +1,21 @@
 package de.cebitec.mgx.gui.attributevisualization.ui;
 
+import de.cebitec.mgx.gui.attributevisualization.exportwizard.SeqExporter;
+import de.cebitec.mgx.gui.datamodel.misc.Distribution;
+import de.cebitec.mgx.gui.datamodel.misc.Pair;
+import de.cebitec.mgx.gui.groups.SequenceExporterI;
+import de.cebitec.mgx.gui.groups.VisualizationGroup;
+import java.awt.EventQueue;
+import java.util.Collections;
+import java.util.List;
 import javax.swing.JComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
+import org.openide.util.lookup.AbstractLookup;
+import org.openide.util.lookup.InstanceContent;
 import org.openide.windows.Mode;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
@@ -25,6 +35,9 @@ persistenceType = TopComponent.PERSISTENCE_NEVER)
 preferredID = "AttributeVisualizationTopComponent")
 public final class AttributeVisualizationTopComponent extends TopComponent {
 
+    private InstanceContent content = new InstanceContent();
+    private Lookup lookup;
+
     public AttributeVisualizationTopComponent() {
         initComponents();
         setName(NbBundle.getMessage(AttributeVisualizationTopComponent.class, "CTL_AttributeVisualizationTopComponent"));
@@ -33,6 +46,8 @@ public final class AttributeVisualizationTopComponent extends TopComponent {
 //        groupingPanel1.addPropertyChangeListener(controlPanel1);
         // create initial group
 //        groupingPanel1.addGroup();
+        lookup = new AbstractLookup(content);
+        associateLookup(lookup);
         controlPanel1.setTopComponent(this);
         openVGroupTopComponent();
     }
@@ -94,7 +109,7 @@ public final class AttributeVisualizationTopComponent extends TopComponent {
     void readProperties(java.util.Properties p) {
         String version = p.getProperty("version");
     }
-
+    
     public void setVisualization(JComponent p) {
         chartpane.setViewportView(p);
     }
@@ -112,5 +127,13 @@ public final class AttributeVisualizationTopComponent extends TopComponent {
         pe.open();
 
         //pe.requestActive();
+    }
+
+    void updateLookup(List<Pair<VisualizationGroup, Distribution>> currentDistributions) {
+        content.set(Collections.emptyList(), null); // clear content
+        for (Pair<VisualizationGroup, Distribution> p : currentDistributions) {
+            SequenceExporterI exp = new SeqExporter(p.getFirst(), p.getSecond());
+            content.add(exp);
+        }
     }
 }
