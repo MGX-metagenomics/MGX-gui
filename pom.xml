@@ -388,6 +388,7 @@
         <module>MGX-ProtoBuf-Wrapper</module>
         <module>MGX-JobMonitor</module>
         <module>MGX-Statistics</module>
+    <module>MGX-Actions</module>
   </modules>
 
     <properties>
