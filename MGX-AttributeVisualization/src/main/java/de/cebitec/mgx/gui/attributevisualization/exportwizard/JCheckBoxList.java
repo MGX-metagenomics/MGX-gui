@@ -60,14 +60,14 @@ public class JCheckBoxList<T> extends JList<T> {
         for (Entry<T, Boolean> e : selections.entrySet()) {
             e.setValue(Boolean.TRUE);
         }
-        this.repaint();
+        repaint();
     }
 
     public void deselectAll() {
         for (Entry<T, Boolean> e : selections.entrySet()) {
             e.setValue(Boolean.FALSE);
         }
-        this.repaint();
+        repaint();
     }
 
     public Set<T> getSelectedEntries() {
