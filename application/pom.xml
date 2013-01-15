@@ -55,7 +55,7 @@
         -->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>GUI-login</artifactId>
+            <artifactId>MGX-Login</artifactId>
         </dependency>
         <dependency>
             <artifactId>org-netbeans-modules-queries</artifactId>

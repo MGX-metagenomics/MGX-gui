@@ -230,7 +230,7 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>GUI-login</artifactId>
+                <artifactId>MGX-Login</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
