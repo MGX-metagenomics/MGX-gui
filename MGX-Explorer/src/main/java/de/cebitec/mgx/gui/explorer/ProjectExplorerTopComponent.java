@@ -95,7 +95,7 @@ public final class ProjectExplorerTopComponent extends TopComponent implements E
 
             @Override
             protected List<Node> doInBackground() throws Exception {
-                List<Node> ret = new ArrayList<Node>();
+                List<Node> ret = new ArrayList<>();
                 for (Node server : root.getChildren().getNodes()) {
                     ret.add(server);
                     publish(server);
