@@ -5,7 +5,6 @@ import de.cebitec.mgx.gui.datamodel.misc.Distribution;
 import de.cebitec.mgx.gui.datamodel.misc.Pair;
 import de.cebitec.mgx.gui.groups.SequenceExporterI;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
-import java.awt.EventQueue;
 import java.util.Collections;
 import java.util.List;
 import javax.swing.JComponent;
@@ -46,6 +45,9 @@ public final class AttributeVisualizationTopComponent extends TopComponent {
 //        groupingPanel1.addPropertyChangeListener(controlPanel1);
         // create initial group
 //        groupingPanel1.addGroup();
+        
+        int width = jSplitPane1.getSize().width;
+        jSplitPane1.setDividerLocation(width - 100);
         lookup = new AbstractLookup(content);
         associateLookup(lookup);
         controlPanel1.setTopComponent(this);
@@ -69,7 +71,7 @@ public final class AttributeVisualizationTopComponent extends TopComponent {
 
         jPanel1.setLayout(new java.awt.BorderLayout());
 
-        jSplitPane1.setDividerLocation(564);
+        jSplitPane1.setDividerLocation(700);
         jSplitPane1.setDividerSize(5);
 
         controlPanel1.setMaximumSize(new java.awt.Dimension(200, 32767));
