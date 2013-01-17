@@ -3,18 +3,11 @@ package de.cebitec.mgx.gui.search;
 import de.cebitec.mgx.gui.datamodel.Observation;
 
 import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Polygon;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-import org.openide.util.Exceptions;
 
 /**
  * Malt die einzelnen Observations.
@@ -22,68 +15,68 @@ import org.openide.util.Exceptions;
  */
 public class PaintReadObservations {
 
-    
+
     /**
      * Laenge des Reads.
      */
     private int readLength;
-    
+
     /**
      * Observations.
      */
     private List<Observation> observations;
-    
+
     /**
      * Die Breite der Observations und der Reads.
      */
     private final int ObservationReadWidth = 8;
-    
+
     /**
      * Das Padding zum oberen Rand des Panels.
      */
     private final int paddingNorth = 15;
-    
+
     /**
      * Graphics Objekt.
      */
     private Graphics graphics;
-    
+
     /**
      * Skalierungsfaktor fuer den Read und den Observations.
      */
     private double scaleFactor;
-    
+
     /**
      * Ebenen fuer die Reads.
      */
     private List<Layer> layers;
-    
+
     /**
      * Array fuer die Farben, die verwendet werden bei den Reads.
      */
     private Color[] colors = {Color.BLUE, Color.magenta, Color.BLACK,
         new Color(0, 100, 0), Color.gray, new Color(97, 73, 46),};
-    
+
     /**
      * JPanel fuer die Darstellung der Reads und Observations.
      */
     private JPanel component;
-    
+
     /**
      * Hoehe fuer das JPanel.
      */
     private int height;
-    
+
    /**
     * Abschnitte auf dem Read.
     */
     private double cutValue;
-    
+
     /**
      * Zeichnen der Observations.
      * @param readLength Laenge des Read.
      * @param layers Ebenen fuer die Observations.
-     * @param lGraphics Graphisobjekt. 
+     * @param lGraphics Graphisobjekt.
      * @param lComponent Komponente fuer das Darstellen der Reads.
      * @param cutValue Wert in denen der Read eingeteilt wird.
      */
@@ -108,7 +101,7 @@ public class PaintReadObservations {
         this.drawObservations(observations, lGraphics);
     }
 
-    
+
     /**
      * Zeichnet den Read.
      * @param lReadLength Laenge des Read.
@@ -171,13 +164,13 @@ public class PaintReadObservations {
      */
     private void drawObservations(List<Observation> observations,
             Graphics lGraphics) {
-       
-        
+
+
         int scaledObservationStop;
         int scaledObservationStart;
         int colorIndex = 0;
         int observationCounter = 0;
-        
+
         for (Layer layer : layers) {
             for (Observation observation : layer.getObservations()) {
 
