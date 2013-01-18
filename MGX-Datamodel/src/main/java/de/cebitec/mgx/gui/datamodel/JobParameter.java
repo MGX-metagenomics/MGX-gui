@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.datamodel;
 
+import java.awt.datatransfer.DataFlavor;
 import java.util.Map;
 
 /**
@@ -19,8 +20,12 @@ public class JobParameter extends Identifiable {
     private String type;
     private boolean optional;
     private String default_value = "";
+    //
+    public static final DataFlavor DATA_FLAVOR = new DataFlavor(JobParameter.class, "JobParameter");
 
-
+    public JobParameter() {
+        super(DATA_FLAVOR);
+    }
 
     public void setDisplayName(String lDisplayName) {
         displayName = lDisplayName;

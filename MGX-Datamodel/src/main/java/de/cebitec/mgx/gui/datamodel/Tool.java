@@ -1,5 +1,7 @@
 package de.cebitec.mgx.gui.datamodel;
 
+import java.awt.datatransfer.DataFlavor;
+
 /**
  *
  * @author sjaenick
@@ -12,6 +14,12 @@ public class Tool extends Identifiable {
     protected String author;
     protected String url;
     protected String xml_file;
+    //
+    public static final DataFlavor DATA_FLAVOR = new DataFlavor(Tool.class, "Tool");
+
+    public Tool() {
+        super(DATA_FLAVOR);
+    }
 
     public String getAuthor() {
         return author;
@@ -67,7 +75,7 @@ public class Tool extends Identifiable {
         return this;
     }
 
-   @Override
+    @Override
     public int hashCode() {
         int hash = 0;
         hash = (int) (31 * hash + this.id);

@@ -1,5 +1,7 @@
 package de.cebitec.mgx.gui.datamodel;
 
+import java.awt.datatransfer.DataFlavor;
+
 /**
  *
  * @author sjaenick
@@ -14,8 +16,11 @@ public class AttributeType extends Identifiable implements Comparable<AttributeT
     protected String name;
     protected char value_type;
     protected char structure;
+    //
+    public static final DataFlavor DATA_FLAVOR = new DataFlavor(AttributeType.class, "AttributeType");
 
     public AttributeType(long id, String name, char value_type, char structure) {
+        super(DATA_FLAVOR);
         this.id = id;
         this.name = name;
         this.value_type = value_type;
@@ -91,7 +96,7 @@ public class AttributeType extends Identifiable implements Comparable<AttributeT
                 : this.value_type - o.value_type < 0 ? -1 : 1;
         if (ret == 0) {
             ret = this.structure == o.structure ? 0
-                : this.structure - o.structure < 0 ? -1 : 1;
+                    : this.structure - o.structure < 0 ? -1 : 1;
             if (ret == 0) {
                 return this.name.compareTo(o.name);
             }

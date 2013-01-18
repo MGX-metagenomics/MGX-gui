@@ -1,5 +1,7 @@
 package de.cebitec.mgx.gui.datamodel;
 
+import java.awt.datatransfer.DataFlavor;
+
 /**
  *
  * @author sjaenick
@@ -9,6 +11,12 @@ public class Sequence extends Identifiable {
     protected String name;
     protected int length = -1;
     protected String sequence;
+    //
+    public static final DataFlavor DATA_FLAVOR = new DataFlavor(Sequence.class, "Sequence");
+
+    public Sequence() {
+        super(DATA_FLAVOR);
+    }
 
     public String getName() {
         return name;

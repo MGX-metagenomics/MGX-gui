@@ -1,5 +1,7 @@
 package de.cebitec.mgx.gui.datamodel;
 
+import java.awt.datatransfer.DataFlavor;
+
 /**
  *
  * @author sjaenick
@@ -7,6 +9,8 @@ package de.cebitec.mgx.gui.datamodel;
 public class Habitat extends Identifiable {
 
     protected String name;
+    //
+    public static final DataFlavor DATA_FLAVOR = new DataFlavor(Habitat.class, "Habitat");
     /*
      * GPS location of habitat
      */
@@ -15,6 +19,10 @@ public class Habitat extends Identifiable {
     protected String description;
     protected int altitude;
     protected String biome;
+
+    public Habitat() {
+        super(DATA_FLAVOR);
+    }
 
     public String getName() {
         return name;

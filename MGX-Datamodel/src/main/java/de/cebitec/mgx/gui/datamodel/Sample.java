@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.datamodel;
 
+import java.awt.datatransfer.DataFlavor;
 import java.util.Date;
 
 /**
@@ -14,6 +15,12 @@ public class Sample extends Identifiable {
     protected int volume;
     protected String volume_unit;
     protected long habitat_id;
+    //
+    public static final DataFlavor DATA_FLAVOR = new DataFlavor(Sample.class, "Sample");
+
+    public Sample() {
+        super(DATA_FLAVOR);
+    }
 
     public Sample setHabitatId(long habId) {
         habitat_id = habId;

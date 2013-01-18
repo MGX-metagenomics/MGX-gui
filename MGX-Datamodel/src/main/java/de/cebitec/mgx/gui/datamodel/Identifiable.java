@@ -1,5 +1,7 @@
 package de.cebitec.mgx.gui.datamodel;
 
+import java.awt.datatransfer.DataFlavor;
+
 /**
  *
  * @author sj
@@ -9,8 +11,8 @@ public abstract class Identifiable extends ModelBase {
     public final static long INVALID_IDENTIFIER = -1;
     protected long id = INVALID_IDENTIFIER;
 
-    public Identifiable() {
-        super();
+    public Identifiable(DataFlavor df) {
+        super(df);
     }
 
     public void setId(long id) {

@@ -1,17 +1,24 @@
 package de.cebitec.mgx.gui.datamodel;
 
+import java.awt.datatransfer.DataFlavor;
+
 /**
  *
  * @author sjaenick
  */
 public class Attribute extends Identifiable implements Comparable<Attribute> {
-    
+
     protected AttributeType atype;
     protected String value;
     protected long job_id;
     private long parent_id = Identifiable.INVALID_IDENTIFIER;
+    //
+    public static final DataFlavor DATA_FLAVOR = new DataFlavor(Attribute.class, "Attribute");
 
-    
+    public Attribute() {
+        super(DATA_FLAVOR);
+    }
+
     public long getParentID() {
         return parent_id;
     }
@@ -19,7 +26,7 @@ public class Attribute extends Identifiable implements Comparable<Attribute> {
     public void setParentID(long parent_id) {
         this.parent_id = parent_id;
     }
-    
+
     public AttributeType getAttributeType() {
         return atype;
     }
@@ -70,7 +77,6 @@ public class Attribute extends Identifiable implements Comparable<Attribute> {
         return true;
     }
 
-    
     @Override
     public int hashCode() {
         int hash = 7;

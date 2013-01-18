@@ -1,5 +1,7 @@
 package de.cebitec.mgx.gui.datamodel;
 
+import java.awt.datatransfer.DataFlavor;
+
 /**
  *
  * @author sjaenick
@@ -10,6 +12,12 @@ public class Observation extends ModelBase {
     private int stop;
     private String attributeName;
     private String attributeTypeName;
+    //
+    public static final DataFlavor DATA_FLAVOR = new DataFlavor(Observation.class, "Observation");
+
+    public Observation() {
+        super(DATA_FLAVOR);
+    }
 
     public int getStart() {
         return start;

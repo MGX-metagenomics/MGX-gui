@@ -1,5 +1,7 @@
 package de.cebitec.mgx.gui.datamodel;
 
+import java.awt.datatransfer.DataFlavor;
+
 /**
  *
  * @author sjaenick
@@ -9,6 +11,12 @@ public class MGXFile extends ModelBase implements Comparable<MGXFile> {
     protected MGXFile parent = null;
     protected String name;
     protected boolean isDirectory;
+    //
+    public static final DataFlavor DATA_FLAVOR = new DataFlavor(MGXFile.class, "MGXFile");
+
+    public MGXFile() {
+        super(DATA_FLAVOR);
+    }
 
     public static MGXFile getRoot(MGXMasterI m) {
         MGXFile root = new MGXFile();

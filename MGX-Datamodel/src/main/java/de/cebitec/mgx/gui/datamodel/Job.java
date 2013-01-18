@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.datamodel;
 
+import java.awt.datatransfer.DataFlavor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -21,6 +22,12 @@ public class Job extends Identifiable implements Comparable<Job> {
     //
     protected Collection<JobParameter> parameters = new ArrayList<>();
     private int jobstate = JobState.CREATED.getValue();
+    //
+    public static final DataFlavor DATA_FLAVOR = new DataFlavor(Job.class, "Job");
+
+    public Job() {
+        super(DATA_FLAVOR);
+    }
 
     public JobState getStatus() {
         return JobState.values()[jobstate];

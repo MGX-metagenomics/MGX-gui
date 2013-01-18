@@ -1,5 +1,7 @@
 package de.cebitec.mgx.gui.datamodel;
 
+import java.awt.datatransfer.DataFlavor;
+
 /**
  *
  * @author sjaenick
@@ -15,6 +17,12 @@ public class DNAExtract extends Identifiable {
     protected String targetFragment;
     protected String description;
     protected long sample_id;
+    //
+    public static final DataFlavor DATA_FLAVOR = new DataFlavor(DNAExtract.class, "DNAExtract");
+
+    public DNAExtract() {
+        super(DATA_FLAVOR);
+    }
 
     public String getName() {
         return name;

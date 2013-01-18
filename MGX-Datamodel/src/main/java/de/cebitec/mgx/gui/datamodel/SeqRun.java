@@ -1,5 +1,7 @@
 package de.cebitec.mgx.gui.datamodel;
 
+import java.awt.datatransfer.DataFlavor;
+
 /**
  *
  * @author sjaenick
@@ -13,6 +15,12 @@ public class SeqRun extends Identifiable implements Comparable<SeqRun> {
     protected String database_accession;
     protected long extract_id;
     protected long numSequences = 0;
+    //
+    public static final DataFlavor DATA_FLAVOR = new DataFlavor(SeqRun.class, "SeqRun");
+
+    public SeqRun() {
+        super(DATA_FLAVOR);
+    }
 
     public String getName() {
         return name;
