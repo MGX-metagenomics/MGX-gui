@@ -9,11 +9,7 @@ import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
 import de.cebitec.mgx.gui.wizard.seqrun.SeqRunWizardDescriptor;
 import java.awt.Dialog;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
-import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -30,11 +26,11 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sj
  */
-public class SeqRunNode extends MGXNodeBase<SeqRun> implements Transferable {
+public class SeqRunNode extends MGXNodeBase<SeqRun> { // implements Transferable {
 
     private Action[] actions = new Action[]{new ExecuteAnalysis(), new EditSeqRun(), new DeleteSeqRun(), new DownloadSeqRun()};
     //
-    public static final DataFlavor DATA_FLAVOR = new DataFlavor(SeqRunNode.class, "SeqRunNode");
+    //public static final DataFlavor DATA_FLAVOR = new DataFlavor(SeqRunNode.class, "SeqRunNode");
 
     public SeqRunNode(MGXMaster m, SeqRun s, Children children) {
         super(children, Lookups.fixed(m, s), s);
@@ -44,15 +40,10 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> implements Transferable {
         setDisplayName(s.getName());
     }
 
-//    private SeqRunNode(MGXMaster m, SeqRun s) {
-//        super(Children.LEAF, Lookups.fixed(m, s), s);
-//        setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/SeqRun.png");
-//        setShortDescription(getToolTipText(s));
+//    @Override
+//    public Transferable drag() throws IOException {
+//        return getContent();
 //    }
-    @Override
-    public Transferable drag() throws IOException {
-        return this;
-    }
 
     private String getToolTipText(SeqRun run) {
         return new StringBuilder("<html><b>Sequencing run: </b>").append(run.getName())
@@ -69,24 +60,24 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> implements Transferable {
         return actions;
     }
 
-    @Override
-    public DataFlavor[] getTransferDataFlavors() {
-        return new DataFlavor[]{DATA_FLAVOR};
-    }
+//    @Override
+//    public DataFlavor[] getTransferDataFlavors() {
+//        return new DataFlavor[]{DATA_FLAVOR};
+//    }
 
-    @Override
-    public boolean isDataFlavorSupported(DataFlavor flavor) {
-        return flavor == DATA_FLAVOR;
-    }
-
-    @Override
-    public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
-        if (flavor == DATA_FLAVOR) {
-            return this;
-        } else {
-            throw new UnsupportedFlavorException(flavor);
-        }
-    }
+//    @Override
+//    public boolean isDataFlavorSupported(DataFlavor flavor) {
+//        return flavor == DATA_FLAVOR;
+//    }
+//
+//    @Override
+//    public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
+//        if (flavor == DATA_FLAVOR) {
+//            return this;
+//        } else {
+//            throw new UnsupportedFlavorException(flavor);
+//        }
+//    }
 
     @Override
     public void updateModified() {

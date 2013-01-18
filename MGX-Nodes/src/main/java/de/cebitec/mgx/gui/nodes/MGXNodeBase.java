@@ -2,8 +2,10 @@ package de.cebitec.mgx.gui.nodes;
 
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.ModelBase;
+import java.awt.datatransfer.Transferable;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.util.Lookup;
@@ -24,6 +26,11 @@ public abstract class MGXNodeBase<T extends ModelBase> extends AbstractNode impl
     }
 
     public T getContent() {
+        return content;
+    }
+
+    @Override
+    public Transferable drag() throws IOException {
         return content;
     }
 
