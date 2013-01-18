@@ -4,6 +4,7 @@ import de.cebitec.gpms.core.MembershipI;
 import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.gui.datamodel.MGXMasterI;
 import de.cebitec.mgx.gui.datamodel.ModelBase;
+import java.awt.datatransfer.DataFlavor;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.lang.reflect.Constructor;
@@ -22,14 +23,16 @@ public class MGXMaster extends ModelBase implements MGXMasterI, PropertyChangeLi
     private final MGXDTOMaster dtomaster;
     private static final Logger logger = Logger.getLogger("MGX");
     private final Map<Class, AccessBase> accessors;
+    //
+    public static final DataFlavor DATA_FLAVOR = new DataFlavor(MGXMaster.class, "MGXMaster");
 
     public MGXMaster(MGXDTOMaster dtomaster) {
-        super();
+        super(DATA_FLAVOR);
         this.dtomaster = dtomaster;
         dtomaster.addPropertyChangeListener(this);
         accessors = new HashMap<>();
     }
-    
+
     @Override
     public MembershipI getMembership() {
         return dtomaster.getMembership();
@@ -68,7 +71,7 @@ public class MGXMaster extends ModelBase implements MGXMasterI, PropertyChangeLi
     public SeqRunAccess SeqRun() {
         return getAccessor(SeqRunAccess.class);
     }
-    
+
     public ObservationAccess Observation() {
         return getAccessor(ObservationAccess.class);
     }
@@ -88,7 +91,7 @@ public class MGXMaster extends ModelBase implements MGXMasterI, PropertyChangeLi
     public FileAccess File() {
         return getAccessor(FileAccess.class);
     }
-    
+
     public TermAccess Term() {
         return getAccessor(TermAccess.class);
     }
