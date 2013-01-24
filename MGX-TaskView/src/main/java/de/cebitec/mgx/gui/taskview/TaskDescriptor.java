@@ -90,6 +90,23 @@ public class TaskDescriptor implements Comparable<TaskDescriptor>, PropertyChang
                     }
                 }
             });
+        } else if (pce.getPropertyName().equals(MGXTask.TASK_FINISHED)) {
+            EventQueue.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    getTaskEntry().setDetailText(mgxTask.getStatus());
+                    getTaskEntry().finished();
+                }
+            });
+        } else if (pce.getPropertyName().equals(MGXTask.TASK_FAILED)) {
+            EventQueue.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    getTaskEntry().setDetailText(mgxTask.getStatus());
+                    getTaskEntry().failed();
+             
+                }
+            });
         } else {
             pcs.firePropertyChange(pce);
         }

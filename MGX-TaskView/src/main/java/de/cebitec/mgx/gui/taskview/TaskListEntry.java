@@ -23,16 +23,28 @@ public class TaskListEntry extends javax.swing.JPanel {
 
     public void setMainText(String t) {
         maintext.setText(t);
+        repaint();
     }
 
     public void setDetailText(String t) {
         detailtext.setText(t);
+        repaint();
     }
 
     public void finished() {
         jProgressBar1.setIndeterminate(false);
         jProgressBar1.setValue(jProgressBar1.getMaximum());
+        imagepanel.removeAll();
         imagepanel.add(new ImagePanel("de/cebitec/mgx/gui/taskview/ok.png"), BorderLayout.CENTER);
+        repaint();
+    }
+
+    public void failed() {
+        jProgressBar1.setIndeterminate(false);
+        jProgressBar1.setValue(jProgressBar1.getMinimum());
+        imagepanel.removeAll();
+        imagepanel.add(new ImagePanel("de/cebitec/mgx/gui/taskview/fail.png"), BorderLayout.CENTER);
+        repaint();
     }
 
     public JProgressBar getProgressBar() {

@@ -9,11 +9,14 @@ import java.beans.PropertyChangeSupport;
  * @author sjaenick
  */
 public abstract class MGXTask implements Runnable, PropertyChangeListener {
-    
+
     public static final String TASK_CHANGED = "MGXTaskChanged";
+    public static final String TASK_FAILED = "MGXTaskFailed";
+    public static final String TASK_FINISHED = "MGXTaskFinished";
     public static final int PROGRESS_UNKNOWN = -1;
     private final PropertyChangeSupport pcs;
     private String status = "";
+    private boolean failed = false;
 
     public MGXTask() {
         pcs = new PropertyChangeSupport(this);
@@ -35,23 +38,29 @@ public abstract class MGXTask implements Runnable, PropertyChangeListener {
     }
 
     public abstract void process();
-    
+
     public abstract boolean isDeterminate();
-    
+
     public abstract int getProgress();
 
     public void finished() {
+        if (failed) {
+            return;
+        }
         setStatus("Done");
-        fireTaskChanged();
+        pcs.firePropertyChange(TASK_FINISHED, 0, 1);
     }
 
     public void failed() {
+        failed = true;
         setStatus("Failed");
-        fireTaskChanged();
+        pcs.firePropertyChange(TASK_FAILED, 0, 1);
     }
-    
+
     private void fireTaskChanged() {
-        pcs.firePropertyChange(TASK_CHANGED, 0, 1);
+        if (!failed) {
+            pcs.firePropertyChange(TASK_CHANGED, 0, 1);
+        }
     }
 
     public void addPropertyChangeListener(PropertyChangeListener p) {
