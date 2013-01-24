@@ -45,8 +45,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>MGXClient-Wrapper</artifactId>
-            <version>${project.version}</version>
+            <artifactId>MGX-Client-Wrapper</artifactId>
         </dependency>
     </dependencies>
 
