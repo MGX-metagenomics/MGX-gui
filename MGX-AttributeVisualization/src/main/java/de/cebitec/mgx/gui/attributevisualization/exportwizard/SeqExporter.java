@@ -134,14 +134,14 @@ public final class SeqExporter implements SequenceExporterI {
 
         @Override
         public void finished() {
-            latch.countDown();
             super.finished();
+            latch.countDown();
         }
 
         @Override
         public void failed() {
-            latch.countDown();
             super.failed();
+            latch.countDown();
         }
         
         
@@ -150,6 +150,11 @@ public final class SeqExporter implements SequenceExporterI {
         public void propertyChange(PropertyChangeEvent pce) {
             if (pce.getPropertyName().equals(DownloadBase.NUM_ELEMENTS_RECEIVED)) {
                 setStatus(String.format("%1$d sequences received", pce.getNewValue()));
+            } else if (pce.getPropertyName().equals(DownloadBase.TRANSFER_FAILED)) {
+                failed();
+            } else {
+                System.err.println("cannot handle event "+pce.getPropertyName());
+                assert false;
             }
         }
 

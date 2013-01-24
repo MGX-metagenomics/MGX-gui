@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.attributevisualization.viewer;
 
 import de.cebitec.mgx.gui.datamodel.AttributeType;
 import de.cebitec.mgx.gui.datamodel.misc.Pair;
+import de.cebitec.mgx.gui.groups.ImageExporterI;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import java.util.List;
 import javax.swing.JComponent;
@@ -24,6 +25,12 @@ public abstract class ViewerI<T> implements Comparable<ViewerI<T>> { //, VisFilt
 
     /**
      *
+     * @return exporter instance able to save the visualization
+     */
+    public abstract ImageExporterI getImageExporter();
+
+    /**
+     *
      * @return display name of the viewer
      */
     public abstract String getName();
@@ -43,7 +50,7 @@ public abstract class ViewerI<T> implements Comparable<ViewerI<T>> { //, VisFilt
 
     /**
      *
-     * @param dists
+     * @param dists distributions to be displayed
      */
     public abstract void show(List<Pair<VisualizationGroup, T>> dists);
 

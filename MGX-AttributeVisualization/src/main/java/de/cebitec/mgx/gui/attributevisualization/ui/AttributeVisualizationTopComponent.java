@@ -1,8 +1,10 @@
 package de.cebitec.mgx.gui.attributevisualization.ui;
 
 import de.cebitec.mgx.gui.attributevisualization.exportwizard.SeqExporter;
+import de.cebitec.mgx.gui.attributevisualization.viewer.ViewerI;
 import de.cebitec.mgx.gui.datamodel.misc.Distribution;
 import de.cebitec.mgx.gui.datamodel.misc.Pair;
+import de.cebitec.mgx.gui.groups.ImageExporterI;
 import de.cebitec.mgx.gui.groups.SequenceExporterI;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import java.util.Collections;
@@ -45,7 +47,7 @@ public final class AttributeVisualizationTopComponent extends TopComponent {
 //        groupingPanel1.addPropertyChangeListener(controlPanel1);
         // create initial group
 //        groupingPanel1.addGroup();
-        
+
         int width = jSplitPane1.getSize().width;
         jSplitPane1.setDividerLocation(width - 100);
         lookup = new AbstractLookup(content);
@@ -111,12 +113,19 @@ public final class AttributeVisualizationTopComponent extends TopComponent {
     void readProperties(java.util.Properties p) {
         String version = p.getProperty("version");
     }
-    
-    public void setVisualization(JComponent p) {
-        chartpane.setViewportView(p);
+
+    public void setVisualization(ViewerI v) {
+        chartpane.setViewportView(v.getComponent());
+        ImageExporterI exporter = v.getImageExporter();
+        if (exporter != null) {
+            content.add(exporter);
+        } else {
+            System.err.println("no exporter provided by " + v.getName());
+        }
     }
 
     private void openVGroupTopComponent() {
+        // TODO: prevent opening this twice
         VisualizationGroupTopComponent pe = Lookup.getDefault().lookup(VisualizationGroupTopComponent.class);
         pe.setVisible(true);
 

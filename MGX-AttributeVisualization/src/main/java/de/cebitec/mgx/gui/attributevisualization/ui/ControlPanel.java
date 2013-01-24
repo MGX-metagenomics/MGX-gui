@@ -40,7 +40,7 @@ import org.openide.util.Lookup;
  */
 public class ControlPanel extends javax.swing.JPanel implements PropertyChangeListener, ActionListener {
 
-    private VGroupManager vgmgr = VGroupManager.getInstance();
+    private final VGroupManager vgmgr = VGroupManager.getInstance();
     private AttributeVisualizationTopComponent topComponent;
     //
     private List<Pair<VisualizationGroup, Distribution>> currentDistributions = new ArrayList<>();
@@ -63,7 +63,6 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
 
         vgmgr.addPropertyChangeListener(this);
         vgmgr.registerResolver(new VGroupManager.ConflictResolver() {
-
             @Override
             public boolean resolve(List<VisualizationGroup> groups) {
                 ConflictResolverWizardIterator iter = new ConflictResolverWizardIterator(groups);
@@ -98,7 +97,6 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
 
     public final void updateViewerList() {
         vizListModel.update();
-        topComponent.updateLookup(currentDistributions);
     }
 
     /**
@@ -222,7 +220,6 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
             updateButton.setEnabled(false);
 
             SwingWorker<SortedSet<AttributeType>, Void> worker = new SwingWorker<SortedSet<AttributeType>, Void>() {
-
                 @Override
                 protected SortedSet<AttributeType> doInBackground() throws Exception {
                     SortedSet<AttributeType> types = new TreeSet<>();
@@ -357,11 +354,11 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
                     p.getSecond().reset();
                 }
                 currentViewer.show(currentDistributions);
-                topComponent.setVisualization(currentViewer.getComponent());
             } else {
                 currentViewer.show(currentHierarchies);
-                topComponent.setVisualization(currentViewer.getComponent());
             }
+            topComponent.updateLookup(currentDistributions);
+            topComponent.setVisualization(currentViewer);
         } finally {
             setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         }
