@@ -22,14 +22,19 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+import javafx.util.Duration;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import org.openide.util.lookup.ServiceProvider;
@@ -64,6 +69,7 @@ public final class FXBarChart extends CategoricalViewerI {
     */
    private JPanel panel;
 
+
    /**
     * Konstruktor zur Initialisation.
     */
@@ -77,9 +83,25 @@ public final class FXBarChart extends CategoricalViewerI {
     */
    private void createScene() {
 	chart = createBarChart();
-	setData();
-	chartFxPanel.setScene(new Scene(chart));
-	setColor();
+	Scene scene = new Scene(chart);
+	chartFxPanel.setScene(scene);
+
+	new Timeline(
+	    new KeyFrame(
+	    Duration.millis(100),
+	    new EventHandler<ActionEvent>() {
+		 @Override
+		 public void handle(ActionEvent t) {
+
+		    setData();
+		    setColor();
+		    chart.layout();
+		 }
+	    })).play();
+
+
+	chartFxPanel.repaint();
+	chart.layout();
    }
 
    /**
@@ -116,6 +138,18 @@ public final class FXBarChart extends CategoricalViewerI {
 	String xAxisLabel = "";
 	xAxis.setLabel(xAxisLabel);
 	NumberAxis yAxis = new NumberAxis();
+
+	yAxis.setAutoRanging(true);
+	yAxis.setAnimated(true);
+	yAxis.autosize();
+
+	yAxis.setForceZeroInRange(true);
+	xAxis.setAutoRanging(true);
+	xAxis.setAnimated(true);
+	xAxis.autosize();
+	xAxis.setEndMargin(10);
+
+
 
 	String yAxisLabel = getCustomizer().useFractions() ? "Fraction" : "Count";
 	yAxis.setLabel(yAxisLabel);
