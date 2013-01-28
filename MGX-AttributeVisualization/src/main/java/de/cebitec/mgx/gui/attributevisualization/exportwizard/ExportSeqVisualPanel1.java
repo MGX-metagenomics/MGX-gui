@@ -2,13 +2,15 @@ package de.cebitec.mgx.gui.attributevisualization.exportwizard;
 
 import de.cebitec.mgx.gui.datamodel.Attribute;
 import de.cebitec.mgx.gui.datamodel.misc.Distribution;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import javax.swing.JPanel;
 
-public final class ExportSeqVisualPanel1 extends JPanel {
+public final class ExportSeqVisualPanel1 extends JPanel implements PropertyChangeListener {
 
     private JCheckBoxList<Attribute> list = new JCheckBoxList<>();
     private boolean all_selected = true;
@@ -19,6 +21,7 @@ public final class ExportSeqVisualPanel1 extends JPanel {
     public ExportSeqVisualPanel1() {
         initComponents();
         scrollpane.setViewportView(list);
+        list.addPropertyChangeListener(this);
     }
 
     public void setDistribution(Distribution d) {
@@ -101,12 +104,21 @@ public final class ExportSeqVisualPanel1 extends JPanel {
             all_selected = true;
             jButton1.setText("Deselect all");
         }
+        validateInput();
         repaint();
     }//GEN-LAST:event_jButton1ActionPerformed
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane scrollpane;
     // End of variables declaration//GEN-END:variables
+
+    private void validateInput() {
+        firePropertyChange("REVALIDATE", 0, 1);
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        validateInput();
+    }
 }

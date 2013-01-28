@@ -3,6 +3,8 @@ package de.cebitec.mgx.gui.attributevisualization.exportwizard;
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -27,6 +29,7 @@ public class JCheckBoxList<T> extends JList<T> {
 
     private Map<T, Boolean> selections = new HashMap<>();
     private DefaultListModel<T> model = new DefaultListModel<>();
+    public static final String selectionChange = "SELECTION_CHANGED";
 
     public JCheckBoxList() {
         setModel(model);
@@ -39,6 +42,7 @@ public class JCheckBoxList<T> extends JList<T> {
                     T elem = model.getElementAt(index);
                     boolean oldVal = selections.get(elem);
                     selections.put(elem, !oldVal);
+                    firePropertyChange(selectionChange, false, true);
                     repaint();
                 }
             }
@@ -60,6 +64,7 @@ public class JCheckBoxList<T> extends JList<T> {
         for (Entry<T, Boolean> e : selections.entrySet()) {
             e.setValue(Boolean.TRUE);
         }
+        firePropertyChange(selectionChange, false, true);
         repaint();
     }
 
@@ -67,6 +72,7 @@ public class JCheckBoxList<T> extends JList<T> {
         for (Entry<T, Boolean> e : selections.entrySet()) {
             e.setValue(Boolean.FALSE);
         }
+        firePropertyChange(selectionChange, false, true);
         repaint();
     }
 

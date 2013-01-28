@@ -1,14 +1,17 @@
-
 package de.cebitec.mgx.gui.attributevisualization.exportwizard;
 
 import de.cebitec.mgx.gui.datamodel.Attribute;
 import de.cebitec.mgx.gui.datamodel.misc.Distribution;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Set;
+import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.EventListenerList;
 import org.openide.WizardDescriptor;
 import org.openide.util.HelpCtx;
 
-public class ExportSeqWizardPanel1 implements WizardDescriptor.Panel<WizardDescriptor> {
+public class ExportSeqWizardPanel1 implements WizardDescriptor.Panel<WizardDescriptor>, PropertyChangeListener {
 
     /**
      * The visual component that displays this panel. If you need to access the
@@ -24,6 +27,7 @@ public class ExportSeqWizardPanel1 implements WizardDescriptor.Panel<WizardDescr
     public ExportSeqVisualPanel1 getComponent() {
         if (component == null) {
             component = new ExportSeqVisualPanel1();
+            component.addPropertyChangeListener(this);
         }
         return component;
     }
@@ -35,32 +39,47 @@ public class ExportSeqWizardPanel1 implements WizardDescriptor.Panel<WizardDescr
 
     @Override
     public boolean isValid() {
-        return true;
+        return getSelectedAttributes().size() > 0;
     }
-    
+
     public void setDistribution(Distribution d) {
         getComponent().setDistribution(d);
     }
-    
+
     public Set<Attribute> getSelectedAttributes() {
         return getComponent().getSelectedAttributes();
     }
 
     @Override
-    public void addChangeListener(ChangeListener l) {
-    }
-
-    @Override
-    public void removeChangeListener(ChangeListener l) {
-    }
-
-    @Override
     public void readSettings(WizardDescriptor wiz) {
-        // use wiz.getProperty to retrieve previous panel state
     }
 
     @Override
     public void storeSettings(WizardDescriptor wiz) {
-        // use wiz.putProperty to remember current panel state
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        fireChangeEvent(this, !isValid(), isValid());
+    }
+
+    protected final void fireChangeEvent(Object src, boolean old, boolean newState) {
+        if (old != newState) {
+            ChangeEvent ev = new ChangeEvent(src);
+            for (ChangeListener cl : listeners.getListeners(ChangeListener.class)) {
+                cl.stateChanged(ev);
+            }
+        }
+    }
+    private final EventListenerList listeners = new EventListenerList();
+
+    @Override
+    public final void addChangeListener(ChangeListener l) {
+        listeners.add(ChangeListener.class, l);
+    }
+
+    @Override
+    public final void removeChangeListener(ChangeListener l) {
+        listeners.remove(ChangeListener.class, l);
     }
 }
