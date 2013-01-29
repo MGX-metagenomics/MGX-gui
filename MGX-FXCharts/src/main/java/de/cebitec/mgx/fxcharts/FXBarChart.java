@@ -37,6 +37,7 @@ import javafx.scene.chart.XYChart;
 import javafx.util.Duration;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -68,7 +69,37 @@ public final class FXBarChart extends CategoricalViewerI {
     * JPanel zum Einfuegen des charts.
     */
    private JPanel panel;
+   /**
+    * barGapsSum
+    */
+   int barGapsSum = 0;
 
+   /*
+    * series Gaps
+    */
+   int seriesGapsSum = 0;
+
+   /*
+    *
+    */
+   int barwidthSum = 0;
+   /**
+    * offset bezüglich ränder.
+    */
+   final int offset = 400;
+   /**
+    * Weite eines barwidthSum.
+    */
+   final int barWidth = 10;
+
+   /*
+    * Weite einer Gap.
+    */
+   final int gapWidth = 2;
+   /**
+    * Weite eines Gaps zwischen einer series.
+    */
+   final int seriesGapWidth = 4;
 
    /**
     * Konstruktor zur Initialisation.
@@ -82,8 +113,16 @@ public final class FXBarChart extends CategoricalViewerI {
     * Erzeugt die Scene fuer den BarChart.
     */
    private void createScene() {
+	barGapsSum = 0;
+	seriesGapsSum = 0;
+	barwidthSum = 0;
+
+	setData();
 	chart = createBarChart();
-	Scene scene = new Scene(chart);
+
+	Scene scene = new Scene(chart, this.offset + this.barwidthSum
+	    + this.seriesGapsSum + this.barGapsSum, 500);
+
 	chartFxPanel.setScene(scene);
 
 	new Timeline(
@@ -92,22 +131,30 @@ public final class FXBarChart extends CategoricalViewerI {
 	    new EventHandler<ActionEvent>() {
 		 @Override
 		 public void handle(ActionEvent t) {
+		    chart.getData().addAll(series);
 
-		    setData();
-		    setColor();
+		    new Timeline(new KeyFrame(Duration.millis(100),
+			  new EventHandler<ActionEvent>() {
+			     @Override
+			     public void handle(ActionEvent t) {
+				  setColor();
+
+			     }
+			  })).play();
 		    chart.layout();
 		 }
 	    })).play();
 
-
 	chartFxPanel.repaint();
 	chart.layout();
    }
+   ArrayList<XYChart.Series<String, Number>> series;
 
    /**
-    * Setzt die Daten in den BarChar.
+    * Setzt die Daten in den BarChart.
     */
    private void setData() {
+	series = new ArrayList<XYChart.Series<String, Number>>();
 	XYChart.Series<String, Number> series;
 	for (int i = 0; i < dists.size(); i++) {
 	   series = new XYChart.Series<String, Number>();
@@ -118,14 +165,15 @@ public final class FXBarChart extends CategoricalViewerI {
 	   while (iter.hasNext()) {
 		Entry<Attribute, Number> entry = iter.next();
 		XYChart.Data<String, Number> bar = new XYChart.Data<String, Number>(entry.getKey().getValue(), entry.getValue().intValue());
-
 		series.getData().add(bar);
+		this.barGapsSum += gapWidth;
+		this.barwidthSum += barWidth;
 	   }
-	   chart.getData().add(series);
-	   for (int j = 0; j < dists.get(i).getSecond().entrySet().size(); j++) {
-		((XYChart.Series<String, Number>) chart.getData().get(i)).getData().get(j).getNode().setStyle("-fx-bar-fill: " + Util.convertColorToHexString(dists.get(i).getFirst().getColor()) + ";");
-	   }
+	   this.seriesGapsSum += seriesGapWidth;
+	   this.series.add(series);
 	}
+	barGapsSum -= gapWidth;
+	seriesGapsSum -= seriesGapWidth;
    }
 
    /**
@@ -148,8 +196,6 @@ public final class FXBarChart extends CategoricalViewerI {
 	xAxis.setAnimated(true);
 	xAxis.autosize();
 	xAxis.setEndMargin(10);
-
-
 
 	String yAxisLabel = getCustomizer().useFractions() ? "Fraction" : "Count";
 	yAxis.setLabel(yAxisLabel);
@@ -225,7 +271,14 @@ public final class FXBarChart extends CategoricalViewerI {
 	panel.setLayout(new BorderLayout());
 
 	chartFxPanel = new JFXPanel();
-	panel.add(chartFxPanel, BorderLayout.CENTER);
+
+
+	JScrollPane scrollpane = new JScrollPane(chartFxPanel);
+
+	panel.add(scrollpane, BorderLayout.CENTER);
+
+
+
 	Platform.runLater(new Runnable() {
 	   @Override
 	   public void run() {
@@ -255,6 +308,9 @@ public final class FXBarChart extends CategoricalViewerI {
 	for (int k = 0; k < dists.size(); k++) {
 	   for (Node n : chart.lookupAll(".bar-legend-symbol.default-color" + k)) {
 		n.setStyle("-fx-background-color: " + Util.convertColorToHexString(dists.get(k).getFirst().getColor()) + ";");
+	   }
+	   for (int j = 0; j < dists.get(k).getSecond().entrySet().size(); j++) {
+		((XYChart.Series<String, Number>) chart.getData().get(k)).getData().get(j).getNode().setStyle("-fx-bar-fill: " + Util.convertColorToHexString(dists.get(k).getFirst().getColor()) + ";");
 	   }
 	}
    }
