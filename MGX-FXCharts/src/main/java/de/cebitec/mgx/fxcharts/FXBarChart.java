@@ -113,6 +113,8 @@ public final class FXBarChart extends CategoricalViewerI {
     * Erzeugt die Scene fuer den BarChart.
     */
    private void createScene() {
+
+	//reset
 	barGapsSum = 0;
 	seriesGapsSum = 0;
 	barwidthSum = 0;
@@ -121,13 +123,13 @@ public final class FXBarChart extends CategoricalViewerI {
 	chart = createBarChart();
 
 	Scene scene = new Scene(chart, this.offset + this.barwidthSum
-	    + this.seriesGapsSum + this.barGapsSum, 500);
+	    + this.seriesGapsSum + this.barGapsSum, 1000);
 
 	chartFxPanel.setScene(scene);
 
 	new Timeline(
 	    new KeyFrame(
-	    Duration.millis(100),
+	    Duration.millis(150),
 	    new EventHandler<ActionEvent>() {
 		 @Override
 		 public void handle(ActionEvent t) {
@@ -138,7 +140,6 @@ public final class FXBarChart extends CategoricalViewerI {
 			     @Override
 			     public void handle(ActionEvent t) {
 				  setColor();
-
 			     }
 			  })).play();
 		    chart.layout();
@@ -164,7 +165,12 @@ public final class FXBarChart extends CategoricalViewerI {
 
 	   while (iter.hasNext()) {
 		Entry<Attribute, Number> entry = iter.next();
-		XYChart.Data<String, Number> bar = new XYChart.Data<String, Number>(entry.getKey().getValue(), entry.getValue().intValue());
+		XYChart.Data<String, Number> bar = null;
+		if (getCustomizer().useFractions()) {
+		   bar = new XYChart.Data<String, Number>(entry.getKey().getValue(), entry.getValue().doubleValue());
+		} else {
+		   bar = new XYChart.Data<String, Number>(entry.getKey().getValue(), entry.getValue().intValue());
+		}
 		series.getData().add(bar);
 		this.barGapsSum += gapWidth;
 		this.barwidthSum += barWidth;
@@ -187,6 +193,7 @@ public final class FXBarChart extends CategoricalViewerI {
 	xAxis.setLabel(xAxisLabel);
 	NumberAxis yAxis = new NumberAxis();
 
+
 	yAxis.setAutoRanging(true);
 	yAxis.setAnimated(true);
 	yAxis.autosize();
@@ -198,8 +205,11 @@ public final class FXBarChart extends CategoricalViewerI {
 	xAxis.setEndMargin(10);
 
 	String yAxisLabel = getCustomizer().useFractions() ? "Fraction" : "Count";
+
+
 	yAxis.setLabel(yAxisLabel);
 	BarChart chart = new BarChart(xAxis, yAxis);
+
 	chart.setLegendVisible(true);
 	chart.setBarGap(1);
 	chart.setCategoryGap(2);
