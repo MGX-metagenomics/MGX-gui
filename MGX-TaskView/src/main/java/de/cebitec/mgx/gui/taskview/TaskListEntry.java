@@ -6,44 +6,69 @@
 package de.cebitec.mgx.gui.taskview;
 
 import java.awt.BorderLayout;
+import java.awt.EventQueue;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import javax.swing.JProgressBar;
 
 /**
  *
  * @author sj
  */
-public class TaskListEntry extends javax.swing.JPanel {
+public class TaskListEntry extends javax.swing.JPanel implements PropertyChangeListener {
 
     /**
      * Creates new form TaskListEntry
      */
-    public TaskListEntry() {
+//    private TaskListEntry() {
+//        initComponents();
+//    }
+    private final MGXTask task;
+
+    public TaskListEntry(MGXTask task) {
+        this.task = task;
         initComponents();
+        setMainText(task.getName());
+        setDetailText(task.getStatus());
+        task.addPropertyChangeListener(this);
+        jProgressBar1.setIndeterminate(!task.isDeterminate());
+        if (task.isDeterminate()) {
+            jProgressBar1.setMinimum(0);
+            jProgressBar1.setMaximum(100);
+            jProgressBar1.setValue(task.getProgress());
+        }
     }
 
-    public void setMainText(String t) {
+    private void setMainText(String t) {
         maintext.setText(t);
         repaint();
     }
 
-    public void setDetailText(String t) {
+    private void setDetailText(String t) {
         detailtext.setText(t);
         repaint();
     }
+    private ImagePanel ip = new ImagePanel();
 
-    public void finished() {
+    private void finished() {
+        setDetailText(task.getStatus());
+        task.removePropertyChangeListener(this);
         jProgressBar1.setIndeterminate(false);
         jProgressBar1.setValue(jProgressBar1.getMaximum());
-        imagepanel.removeAll();
-        imagepanel.add(new ImagePanel("de/cebitec/mgx/gui/taskview/ok.png"), BorderLayout.CENTER);
+        imagepanel.add(ip, BorderLayout.CENTER);
+        ip.setImage("de/cebitec/mgx/gui/taskview/ok.png");
+        revalidate();
         repaint();
     }
 
-    public void failed() {
+    private void failed() {
+        setDetailText(task.getStatus());
+        task.removePropertyChangeListener(this);
         jProgressBar1.setIndeterminate(false);
         jProgressBar1.setValue(jProgressBar1.getMinimum());
-        imagepanel.removeAll();
-        imagepanel.add(new ImagePanel("de/cebitec/mgx/gui/taskview/fail.png"), BorderLayout.CENTER);
+        imagepanel.add(ip, BorderLayout.CENTER);
+        ip.setImage("de/cebitec/mgx/gui/taskview/fail.png");
+        revalidate();
         repaint();
     }
 
@@ -69,7 +94,7 @@ public class TaskListEntry extends javax.swing.JPanel {
 
         maintext.setText(org.openide.util.NbBundle.getMessage(TaskListEntry.class, "TaskListEntry.maintext.text")); // NOI18N
 
-        detailtext.setFont(new java.awt.Font("Dialog", 0, 10));
+        detailtext.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         detailtext.setText(org.openide.util.NbBundle.getMessage(TaskListEntry.class, "TaskListEntry.detailtext.text")); // NOI18N
 
         jProgressBar1.setIndeterminate(true);
@@ -86,13 +111,13 @@ public class TaskListEntry extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 324, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jProgressBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 296, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(maintext, javax.swing.GroupLayout.DEFAULT_SIZE, 262, Short.MAX_VALUE)
-                            .addComponent(detailtext, javax.swing.GroupLayout.DEFAULT_SIZE, 262, Short.MAX_VALUE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(maintext, javax.swing.GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE)
+                            .addComponent(detailtext, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(imagepanel, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(imagepanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -116,4 +141,41 @@ public class TaskListEntry extends javax.swing.JPanel {
     private javax.swing.JProgressBar jProgressBar1;
     private javax.swing.JLabel maintext;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void propertyChange(final PropertyChangeEvent pce) {
+        switch (pce.getPropertyName()) {
+            case MGXTask.TASK_CHANGED:
+                EventQueue.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        setDetailText(task.getStatus());
+                        if (task.isDeterminate()) {
+                            jProgressBar1.setValue(task.getProgress());
+                        }
+                    }
+                });
+                break;
+            case MGXTask.TASK_FINISHED:
+                EventQueue.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        finished();
+                    }
+                });
+                break;
+            case MGXTask.TASK_FAILED:
+                EventQueue.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        failed();
+                    }
+                });
+                break;
+            default:
+                System.err.println("unhandled in TaskListEntry: " + pce.getPropertyName());
+                assert false;
+                break;
+        }
+    }
 }

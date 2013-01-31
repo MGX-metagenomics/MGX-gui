@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mode version="2.4">
+    <name unique="right" />
+    <kind type="view" />
+    <state type="joined" />
+    <constraints>
+       <!-- <path orientation="horizontal" number="60" weight="0.7"/>
+        <path orientation="vertical" number="40" weight="0.8"/> -->
+        <path orientation="horizontal" number="80" weight="0.19"/>
+        <path orientation="vertical" number="80" weight="0.8"/>
+    </constraints>
+    <bounds x="1440" y="672" width="288" height="384" />
+    <empty-behavior permanent="true" />
+</mode>

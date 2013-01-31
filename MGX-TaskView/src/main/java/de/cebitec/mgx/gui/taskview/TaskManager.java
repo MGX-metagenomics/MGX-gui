@@ -4,12 +4,11 @@ import java.awt.EventQueue;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
+import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.RequestProcessor;
 import org.openide.util.RequestProcessor.Task;
@@ -20,18 +19,19 @@ import org.openide.windows.WindowManager;
  *
  * @author sjaenick
  */
-public class TaskManager implements PropertyChangeListener {
+public class TaskManager implements TaskListener, PropertyChangeListener {
 
-    public static final String TASKMANAGER_CHANGE = "tmChange";
+    public static final String TASK_ADDED = "TaskManager_TaskAdded";
+    public static final String TASK_COMPLETED = "TaskManager_TaskCompleted";
     private static TaskManager instance;
     private final RequestProcessor reqProcessor;
-    private final Map<Task, TaskDescriptor> currentTasks = new HashMap<>();
+    private final Map<org.openide.util.Task, MGXTask> currentTasks = new HashMap<>();
     private TaskViewTopComponent taskViewer;
     private final PropertyChangeSupport pcs;
 
     private TaskManager() {
         pcs = new PropertyChangeSupport(this);
-        reqProcessor = new RequestProcessor("Tasks", 5, true);
+        reqProcessor = new RequestProcessor("Tasks", Runtime.getRuntime().availableProcessors() + 5, true);
     }
 
     public static TaskManager getInstance() {
@@ -41,65 +41,37 @@ public class TaskManager implements PropertyChangeListener {
         return instance;
     }
 
-    public List<TaskDescriptor> getActiveTasks() {
-        List<TaskDescriptor> ret = new ArrayList(currentTasks.values());
-        Collections.sort(ret);
-        return ret;
+    public Collection<MGXTask> getActiveTasks() {
+        return currentTasks.values();
     }
 
-    public void clearFinished() {
-        boolean modified = false;
-        List<Task> to_remove = new ArrayList<>();
-        for (Entry<Task, TaskDescriptor> e : currentTasks.entrySet()) {
-            // check if task is finished
-            TaskDescriptor td = e.getValue();
-            if (td.getEndTime() != null) {
-                to_remove.add(e.getKey());
-                //currentTasks.remove(e.getKey());
-                modified = true;
-            }
-        }
-        for (Task t : to_remove) {
-            currentTasks.remove(t);
-        }
-        if (modified) {
-            fireTaskManagerChange();
-        }
-    }
-
-//    public void removeTask(TaskDescriptor td) {
-//        boolean found = false;
-//        for (Entry<Task, TaskDescriptor> e : currentTasks.entrySet()) {
-//            if (e.getValue() == td) {
-//                currentTasks.remove(e.getKey());
-//                found = true;
-//            }
-//        }
-//        if (found) {
-//            fireTaskManagerChange();
-//        }
-//    }
-    public void addTask(String taskName, final MGXTask run) {
-        TaskDescriptor td = new TaskDescriptor(taskName, run);
-        td.addPropertyChangeListener(this);
-        Task task = reqProcessor.post(run);
-        task.addTaskListener(new MyTaskListener());
-        currentTasks.put(task, td);
-
-        EventQueue.invokeLater(new Runnable() {
-
-            @Override
-            public void run() {
-                if (taskViewer == null) {
-                    taskViewer = getTaskViewer();
+    public void addTask(final MGXTask mgxtask) {
+        assert !EventQueue.isDispatchThread();
+        
+        try {
+            EventQueue.invokeAndWait(new Runnable() {
+                @Override
+                public void run() {
+                    // make sure the task viewer topcomponent is visible
+                    if (taskViewer == null) {
+                        taskViewer = getTaskViewer();
+                    }
+                    if (!taskViewer.isOpened()) {
+                        taskViewer.open();
+                        taskViewer.requestActive();
+                    }
                 }
-                if (!taskViewer.isOpened()) {
-                    taskViewer.open();
-                    taskViewer.requestActive();
-                }
-                fireTaskManagerChange();
-            }
-        });
+            });
+        } catch (InterruptedException | InvocationTargetException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+
+        //mgxtask.addPropertyChangeListener(this);
+        Task task = reqProcessor.post(mgxtask);
+        currentTasks.put(task, mgxtask);
+        task.addTaskListener(this);
+
+        pcs.firePropertyChange(TASK_ADDED, 0, mgxtask);
     }
 
     public void addPropertyChangeListener(PropertyChangeListener p) {
@@ -108,10 +80,6 @@ public class TaskManager implements PropertyChangeListener {
 
     public void removePropertyChangeListener(PropertyChangeListener p) {
         pcs.removePropertyChangeListener(p);
-    }
-
-    private void fireTaskManagerChange() {
-        pcs.firePropertyChange(TASKMANAGER_CHANGE, 0, 1);
     }
 
     private TaskViewTopComponent getTaskViewer() {
@@ -124,21 +92,13 @@ public class TaskManager implements PropertyChangeListener {
     }
 
     @Override
-    public void propertyChange(PropertyChangeEvent pce) {
-        pcs.firePropertyChange(pce);
+    public void taskFinished(org.openide.util.Task task) {
+        MGXTask completedTask = currentTasks.remove(task);
+        pcs.firePropertyChange(TASK_COMPLETED, 0, completedTask);
     }
 
-    private final class MyTaskListener implements TaskListener {
-
-        @Override
-        public void taskFinished(org.openide.util.Task task) {
-            TaskDescriptor td = currentTasks.get(task);
-            if (task.isFinished()) {
-                td.finished();
-            } else {
-                System.err.println("task NOT finished");
-                assert false; // do we ever reach this?
-            }
-        }
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        pcs.firePropertyChange(evt);
     }
 }

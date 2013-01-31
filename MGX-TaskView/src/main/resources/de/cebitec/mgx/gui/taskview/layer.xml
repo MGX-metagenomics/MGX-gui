@@ -2,4 +2,9 @@
 <!DOCTYPE filesystem PUBLIC "-//NetBeans//DTD Filesystem 1.0//EN" "http://www.netbeans.org/dtds/filesystem-1_0.dtd">
 <filesystem>
  
+    <folder name="Windows2">
+        <folder name="Modes">
+            <file name="right.wsmode" url="rightWsmode.xml"/>
+        </folder>
+    </folder>
 </filesystem>
