@@ -1,21 +1,16 @@
 package de.cebitec.mgx.gui.groups;
 
-import de.cebitec.mgx.gui.datamodel.Attribute;
 import de.cebitec.mgx.gui.datamodel.misc.Distribution;
 import de.cebitec.mgx.gui.datamodel.misc.Pair;
 import de.cebitec.mgx.gui.datamodel.tree.Tree;
-import de.cebitec.mgx.gui.groups.ConflictingJobsException;
-import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  *
@@ -26,7 +21,7 @@ public class VGroupManager implements PropertyChangeListener {
     public static final String VISGROUP_NUM_CHANGED = "vgNumChanged";
     private static VGroupManager instance = null;
     // LinkedHashSet keeps the order elements are added
-    private Map<Integer, VisualizationGroup> groups = new LinkedHashMap<>();
+    private final Map<Integer, VisualizationGroup> groups = new LinkedHashMap<>();
     private int groupCount = 1;
     private PropertyChangeSupport pcs = null;
     private String currentAttributeType = null;
@@ -88,10 +83,10 @@ public class VGroupManager implements PropertyChangeListener {
             if (!conflicts.isEmpty()) {
                 resolver.resolve(conflicts);
             }
-            
+
             return conflicts.isEmpty();
         }
-        
+
         return true;
     }
 
@@ -132,7 +127,10 @@ public class VGroupManager implements PropertyChangeListener {
     }
 
     public void removeGroup(VisualizationGroup vg) {
-        groups.remove(vg.getId());
+        synchronized (groups) {
+            vg.close();
+            groups.remove(vg.getId());
+        }
         firePropertyChange(VISGROUP_NUM_CHANGED, 0, vg.getName());
     }
 
@@ -170,6 +168,8 @@ public class VGroupManager implements PropertyChangeListener {
 
     public void removePropertyChangeListener(PropertyChangeListener p) {
         pcs.removePropertyChangeListener(p);
+
+
     }
 
     public interface ConflictResolver {

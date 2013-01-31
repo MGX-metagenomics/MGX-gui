@@ -59,6 +59,12 @@
             <artifactId>DTO-Wrapper</artifactId>
             <groupId>${project.groupId}</groupId>
         </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-dialogs</artifactId>
+            <version>RELEASE721</version>
+            <type>jar</type>
+        </dependency>
     </dependencies> 
 
     <build>
@@ -71,6 +77,7 @@
                     <publicPackages>
                         <publicPackage>de.cebitec.mgx.gui.controller</publicPackage>
                         <publicPackage>de.cebitec.mgx.gui.groups</publicPackage>
+                        <publicPackage>de.cebitec.mgx.gui.util</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>
