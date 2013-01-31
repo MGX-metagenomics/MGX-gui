@@ -9,12 +9,13 @@ import de.cebitec.mgx.gui.groups.SequenceExporterI;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import java.util.Collections;
 import java.util.List;
-import javax.swing.JComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
+import org.openide.util.NbBundle.Messages;
 import org.openide.util.lookup.AbstractLookup;
 import org.openide.util.lookup.InstanceContent;
 import org.openide.windows.Mode;
@@ -27,11 +28,14 @@ import org.openide.windows.WindowManager;
 @ConvertAsProperties(dtd = "-//de.cebitec.mgx.gui.attributevisualization.ui//AttributeVisualization//EN",
 autostore = false)
 @TopComponent.Description(preferredID = "AttributeVisualizationTopComponent",
-//iconBase="SET/PATH/TO/ICON/HERE", 
+iconBase="de/cebitec/mgx/gui/attributevisualization/ui/ShowVisualization.png", 
 persistenceType = TopComponent.PERSISTENCE_NEVER)
 @TopComponent.Registration(mode = "editor", openAtStartup = false)
 @ActionID(category = "Window", id = "de.cebitec.mgx.gui.attributevisualization.ui.AttributeVisualizationTopComponent")
-@ActionReference(path = "Menu/Window", position = 333)
+@ActionReferences({
+    @ActionReference(path = "Menu/Window", position = 333),
+    @ActionReference(path = "Toolbars/AttrViz", position = 610)
+})
 @TopComponent.OpenActionRegistration(displayName = "#CTL_AttributeVisualizationAction",
 preferredID = "AttributeVisualizationTopComponent")
 public final class AttributeVisualizationTopComponent extends TopComponent {
