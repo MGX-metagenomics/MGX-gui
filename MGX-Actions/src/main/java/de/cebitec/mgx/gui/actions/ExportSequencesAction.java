@@ -19,7 +19,7 @@ id = "de.cebitec.mgx.gui.actions.ExportSequencesAction")
 displayName = "#CTL_ExportSequencesAction")
 @ActionReferences({
     @ActionReference(path = "Menu/File", position = 1750),
-    @ActionReference(path = "Toolbars/File", position = 600)
+    @ActionReference(path = "Toolbars/AttrViz", position = 630)
 })
 @Messages("CTL_ExportSequencesAction=Export sequences")
 public final class ExportSequencesAction implements ActionListener {

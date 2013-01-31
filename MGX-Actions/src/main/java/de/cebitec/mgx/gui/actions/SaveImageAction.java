@@ -18,7 +18,7 @@ id = "de.cebitec.mgx.gui.actions.SaveImageAction")
 displayName = "#CTL_SaveImageAction")
 @ActionReferences({
     @ActionReference(path = "Menu/File", position = 1760),
-    @ActionReference(path = "Toolbars/File", position = 610)
+    @ActionReference(path = "Toolbars/AttrViz", position = 620)
 })
 @Messages("CTL_SaveImageAction=Save image")
 public final class SaveImageAction implements ActionListener {
