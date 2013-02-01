@@ -4,10 +4,13 @@ import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.Job;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.datamodel.Tool;
+import de.cebitec.mgx.gui.nodes.JobNode;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 import javax.swing.Timer;
+import org.openide.nodes.Children;
+import org.openide.nodes.Node;
 
 /**
  *
@@ -39,5 +42,12 @@ public class JobBySeqRunNodeFactory extends JobNodeFactory {
         }
 //        Collections.sort(toPopulate);
         return true;
+    }
+
+    @Override
+    protected Node createNodeForKey(Job key) {
+        JobNode node = new JobNode((MGXMaster) key.getMaster(), key, Children.LEAF);
+        node.addNodeListener(this);
+        return node;
     }
 }

@@ -27,17 +27,17 @@ public class JobNodeFactory extends ChildFactory<Job> implements NodeListener {
     private MGXMaster master;
 
     public JobNodeFactory(MGXMaster master) {
+        this();
         this.master = master;
+    }
+
+    protected JobNodeFactory() {
         Timer timer = new Timer(1000 * 10, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 refreshChildren();
             }
         });
-    }
-
-    protected JobNodeFactory() {
-        // needed by JobBySeqRunNodeFactory
     }
 
     @Override
