@@ -93,11 +93,16 @@ public class TaskListEntry extends javax.swing.JPanel implements PropertyChangeL
         setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
         maintext.setText(org.openide.util.NbBundle.getMessage(TaskListEntry.class, "TaskListEntry.maintext.text")); // NOI18N
+        maintext.setMaximumSize(new java.awt.Dimension(5000, 15));
+        maintext.setMinimumSize(new java.awt.Dimension(25, 15));
 
         detailtext.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         detailtext.setText(org.openide.util.NbBundle.getMessage(TaskListEntry.class, "TaskListEntry.detailtext.text")); // NOI18N
+        detailtext.setMaximumSize(new java.awt.Dimension(5000, 13));
+        detailtext.setMinimumSize(new java.awt.Dimension(25, 13));
 
         jProgressBar1.setIndeterminate(true);
+        jProgressBar1.setPreferredSize(new java.awt.Dimension(50, 14));
 
         imagepanel.setMaximumSize(new java.awt.Dimension(48, 48));
         imagepanel.setMinimumSize(new java.awt.Dimension(48, 48));
@@ -108,16 +113,16 @@ public class TaskListEntry extends javax.swing.JPanel implements PropertyChangeL
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jProgressBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 296, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jProgressBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(maintext, javax.swing.GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(maintext, javax.swing.GroupLayout.DEFAULT_SIZE, 169, Short.MAX_VALUE)
                             .addComponent(detailtext, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(imagepanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(imagepanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -126,9 +131,9 @@ public class TaskListEntry extends javax.swing.JPanel implements PropertyChangeL
                 .addGap(12, 12, 12)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(maintext)
+                        .addComponent(maintext, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(detailtext))
+                        .addComponent(detailtext, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(imagepanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -173,7 +178,7 @@ public class TaskListEntry extends javax.swing.JPanel implements PropertyChangeL
                 });
                 break;
             default:
-                System.err.println("unhandled in TaskListEntry: " + pce.getPropertyName());
+                System.err.println("unhandled event in TaskListEntry: " + pce.getPropertyName());
                 assert false;
                 break;
         }
