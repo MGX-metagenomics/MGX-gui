@@ -102,7 +102,7 @@ public final class SeqExporter implements SequenceExporterI {
                     for (Entry<SeqRun, Set<Attribute>> e : saveSet.entrySet()) {
                         MGXMaster m = (MGXMaster) e.getKey().getMaster();
                         SeqByAttributeDownloader downloader = m.Sequence().createDownloaderByAttributes(e.getValue(), writer);
-                        MGXTask task = new DownloadTask("Export " + e.getKey().getName() + "to " + target.getName(), downloader, latch);
+                        MGXTask task = new DownloadTask("Export " + e.getKey().getName() + " to " + target.getName(), downloader, latch);
                         TaskManager.getInstance().addTask(task);
                     }
                     latch.await();
