@@ -5,6 +5,7 @@ import de.cebitec.mgx.gui.controller.RBAC;
 import de.cebitec.mgx.gui.datamodel.MGXFile;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
+import de.cebitec.mgx.gui.util.NonEDT;
 import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import org.openide.DialogDisplayer;
@@ -33,7 +34,7 @@ public class DeleteFileOrDirectory extends AbstractAction {
         Object ret = DialogDisplayer.getDefault().notify(d);
         if (NotifyDescriptor.YES_OPTION.equals(ret)) {
             
-            MGXTask deleteTask = new MGXTask("Delete " + file.getName()) {
+            final MGXTask deleteTask = new MGXTask("Delete " + file.getName()) {
                 
                 @Override
                 public void process() {
@@ -52,8 +53,14 @@ public class DeleteFileOrDirectory extends AbstractAction {
                     return -1;
                 }
             };
+            
+            NonEDT.invoke(new Runnable() {
 
-            TaskManager.getInstance().addTask(deleteTask);
+                @Override
+                public void run() {
+                    TaskManager.getInstance().addTask(deleteTask);
+                }
+            });
         }
     }
 
