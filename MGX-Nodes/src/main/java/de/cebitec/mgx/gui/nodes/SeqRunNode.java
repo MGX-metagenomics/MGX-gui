@@ -7,6 +7,7 @@ import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.nodes.analysisaction.GetToolsWorker;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
+import de.cebitec.mgx.gui.util.NonEDT;
 import de.cebitec.mgx.gui.wizard.seqrun.SeqRunWizardDescriptor;
 import java.awt.Dialog;
 import java.awt.event.ActionEvent;
@@ -44,7 +45,6 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> { // implements Transferable
 //    public Transferable drag() throws IOException {
 //        return getContent();
 //    }
-
     private String getToolTipText(SeqRun run) {
         return new StringBuilder("<html><b>Sequencing run: </b>").append(run.getName())
                 .append("<br><hr><br>")
@@ -64,7 +64,6 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> { // implements Transferable
 //    public DataFlavor[] getTransferDataFlavors() {
 //        return new DataFlavor[]{DATA_FLAVOR};
 //    }
-
 //    @Override
 //    public boolean isDataFlavorSupported(DataFlavor flavor) {
 //        return flavor == DATA_FLAVOR;
@@ -78,7 +77,6 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> { // implements Transferable
 //            throw new UnsupportedFlavorException(flavor);
 //        }
 //    }
-
     @Override
     public void updateModified() {
         setDisplayName(getContent().getName());
@@ -171,7 +169,7 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> { // implements Transferable
             Object ret = DialogDisplayer.getDefault().notify(d);
             if (NotifyDescriptor.YES_OPTION.equals(ret)) {
 
-                MGXTask deleteTask = new MGXTask("Delete " + sr.getName()) {
+                final MGXTask deleteTask = new MGXTask("Delete " + sr.getName()) {
                     @Override
                     public void process() {
                         setStatus("Deleting..");
@@ -196,7 +194,13 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> { // implements Transferable
                     }
                 };
 
-                TaskManager.getInstance().addTask(deleteTask);
+                NonEDT.invoke(new Runnable() {
+                    @Override
+                    public void run() {
+                        TaskManager.getInstance().addTask(deleteTask);
+                    }
+                });
+
             }
         }
 
