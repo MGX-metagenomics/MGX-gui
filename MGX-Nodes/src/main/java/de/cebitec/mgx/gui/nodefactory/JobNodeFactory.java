@@ -8,7 +8,6 @@ import de.cebitec.mgx.gui.nodes.JobNode;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
-import java.util.Collections;
 import java.util.List;
 import javax.swing.Timer;
 import org.openide.nodes.ChildFactory;
@@ -35,6 +34,10 @@ public class JobNodeFactory extends ChildFactory<Job> implements NodeListener {
                 refreshChildren();
             }
         });
+    }
+
+    protected JobNodeFactory() {
+        // needed by JobBySeqRunNodeFactory
     }
 
     @Override
