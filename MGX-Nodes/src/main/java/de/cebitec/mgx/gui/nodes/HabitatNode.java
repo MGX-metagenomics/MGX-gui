@@ -135,7 +135,7 @@ public class HabitatNode extends MGXNodeBase<Habitat> {
                     null);
             Object ret = DialogDisplayer.getDefault().notify(d);
             if (NotifyDescriptor.YES_OPTION.equals(ret)) {
-                MGXTask deleteTask = new MGXTask() {
+                MGXTask deleteTask = new MGXTask("Delete " + habitat.getName()) {
                     @Override
                     public void process() {
                         setStatus("Deleting..");
@@ -150,11 +150,11 @@ public class HabitatNode extends MGXNodeBase<Habitat> {
 
                     @Override
                     public int getProgress() {
-                        return -1;
+                        return MGXTask.PROGRESS_UNKNOWN;
                     }
                 };
 
-                TaskManager.getInstance().addTask("Delete " + habitat.getName(), deleteTask);
+                TaskManager.getInstance().addTask(deleteTask);
             }
         }
 

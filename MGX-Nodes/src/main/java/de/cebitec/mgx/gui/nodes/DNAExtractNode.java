@@ -145,7 +145,7 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
             Object ret = DialogDisplayer.getDefault().notify(d);
             if (NotifyDescriptor.YES_OPTION.equals(ret)) {
                 final MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
-                MGXTask deleteTask = new MGXTask() {
+                MGXTask deleteTask = new MGXTask("Delete " + dna.getName()) {
                     @Override
                     public void process() {
                         setStatus("Deleting..");
@@ -165,11 +165,11 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
 
                     @Override
                     public int getProgress() {
-                        return -1;
+                        return MGXTask.PROGRESS_UNKNOWN;
                     }
                 };
 
-                TaskManager.getInstance().addTask("Delete " + dna.getName(), deleteTask);
+                TaskManager.getInstance().addTask(deleteTask);
 
             }
         }
@@ -217,7 +217,7 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
                             return null;
                         }
                         final SeqUploader uploader = m.Sequence().createUploader(seqrun.getId(), reader);
-                        MGXTask run = new MGXTask() {
+                        MGXTask run = new MGXTask("Upload " + canonicalPath) {
                             @Override
                             public void process() {
                                 boolean success = uploader.upload();
@@ -246,7 +246,7 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
 
                             @Override
                             public int getProgress() {
-                                return -1;
+                                return MGXTask.PROGRESS_UNKNOWN;
                             }
 
                             @Override
@@ -259,7 +259,7 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
                         };
                         uploader.addPropertyChangeListener(run);
 
-                        TaskManager.getInstance().addTask("Upload " + canonicalPath, run);
+                        TaskManager.getInstance().addTask(run);
                         return null;
                     }
 

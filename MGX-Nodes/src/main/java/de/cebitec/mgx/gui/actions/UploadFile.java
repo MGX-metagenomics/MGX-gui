@@ -55,7 +55,7 @@ public class UploadFile extends AbstractAction {
         final MGXFile targetDir = Utilities.actionsGlobalContext().lookup(MGXFile.class);
         final FileUploader uploader = master.File().createUploader(localFile, targetDir, localFile.getName());
 
-        MGXTask run = new MGXTask() {
+        MGXTask run = new MGXTask("Upload " + fchooser.getSelectedFile().getName()) {
             @Override
             public void process() {
                 boolean success = uploader.upload();
@@ -93,7 +93,7 @@ public class UploadFile extends AbstractAction {
         };
         uploader.addPropertyChangeListener(run);
 
-        TaskManager.getInstance().addTask("Upload " + fchooser.getSelectedFile().getName(), run);
+        TaskManager.getInstance().addTask(run);
     }
 
     @Override

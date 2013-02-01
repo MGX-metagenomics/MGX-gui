@@ -7,14 +7,21 @@ import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
+import de.cebitec.mgx.gui.util.FileType;
+import de.cebitec.mgx.gui.util.SuffixFilter;
 import de.cebitec.mgx.seqstorage.FastaWriter;
 import de.cebitec.mgx.sequence.SeqStoreException;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
+import javax.swing.SwingWorker;
+import javax.swing.filechooser.FileFilter;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.util.Exceptions;
@@ -46,19 +53,22 @@ public class DownloadSeqRun extends AbstractAction {
                 fchooser.setCurrentDirectory(f);
             }
         }
-        
+
         // suggest a file name
         File suggestedName = new File(fchooser.getCurrentDirectory(), cleanupName(seqrun.getName()) + ".fas");
         int cnt = 1;
         while (suggestedName.exists()) {
             String newName = new StringBuilder(cleanupName(seqrun.getName()))
-                                      .append(" (")
-                                      .append(cnt++)
-                                      .append(").fas")
-                                      .toString();
+                    .append(" (")
+                    .append(cnt++)
+                    .append(").fas")
+                    .toString();
             suggestedName = new File(fchooser.getCurrentDirectory(), newName);
         }
         fchooser.setSelectedFile(suggestedName);
+        FileFilter ff = new SuffixFilter(FileType.FAS);
+        fchooser.addChoosableFileFilter(ff);
+        fchooser.setFileFilter(ff);
 
         if (fchooser.showSaveDialog(null) != JFileChooser.APPROVE_OPTION) {
             return;
@@ -74,8 +84,8 @@ public class DownloadSeqRun extends AbstractAction {
                     .append(" already exists. Should this ")
                     .append("file be overwritten?")
                     .toString();
-            NotifyDescriptor nd = new NotifyDescriptor(msg, 
-                    "Overwrite file?", 
+            NotifyDescriptor nd = new NotifyDescriptor(msg,
+                    "Overwrite file?",
                     NotifyDescriptor.OK_CANCEL_OPTION,
                     NotifyDescriptor.WARNING_MESSAGE,
                     null, null);
@@ -84,27 +94,30 @@ public class DownloadSeqRun extends AbstractAction {
                 return;
             }
         }
-        
+
         try {
             final FastaWriter writer = new FastaWriter(target.getAbsolutePath());
 
             MGXMaster master = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
             final SeqDownloader downloader = master.Sequence().createDownloader(seqrun.getId(), writer);
-            
-            MGXTask run = new MGXTask() {
+
+            final MGXTask run = new MGXTask("Export to " + fchooser.getSelectedFile().getName()) {
                 @Override
                 public void process() {
                     downloader.addPropertyChangeListener(this);
-                    boolean success = downloader.download();
-                    if (!success) {
+                    if (downloader.download()) {
+                        finished();
+                    } else {
                         failed();
                     }
+                    downloader.removePropertyChangeListener(this);
                 }
 
                 @Override
                 public void finished() {
                     try {
                         writer.close();
+                        super.finished();
                     } catch (IOException ex) {
                         failed();
                     }
@@ -115,12 +128,21 @@ public class DownloadSeqRun extends AbstractAction {
                     if (target.exists()) {
                         target.delete();
                     }
+                    super.failed();
                 }
 
                 @Override
                 public void propertyChange(PropertyChangeEvent pce) {
-                    if (pce.getPropertyName().equals(DownloadBase.NUM_ELEMENTS_RECEIVED)) {
-                        setStatus(String.format("%1$d sequences received", pce.getNewValue()));
+                    switch (pce.getPropertyName()) {
+                        case DownloadBase.NUM_ELEMENTS_RECEIVED:
+                            setStatus(String.format("%1$d sequences received", pce.getNewValue()));
+                            break;
+                        case DownloadBase.TRANSFER_FAILED:
+                            failed();
+                            break;
+                        default:
+                            super.propertyChange(pce);
+                            break;
                     }
                 }
 
@@ -131,13 +153,31 @@ public class DownloadSeqRun extends AbstractAction {
 
                 @Override
                 public int getProgress() {
-                    int curSeqs = downloader.getProgress();
+                    long curSeqs = downloader.getProgress();
                     float fraction = 1.0f * curSeqs / seqrun.getNumSequences();
                     return Math.round(100 * fraction);
                 }
             };
 
-            TaskManager.getInstance().addTask("Export to " + fchooser.getSelectedFile().getName(), run);
+            SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+                @Override
+                protected Void doInBackground() throws Exception {
+                    TaskManager.getInstance().addTask(run);
+                    return null;
+                }
+
+                @Override
+                protected void done() {
+                    try {
+                        get();
+                    } catch (InterruptedException | ExecutionException ex) {
+                        Exceptions.printStackTrace(ex);
+                    }
+                    super.done();
+                }
+            };
+            worker.execute();
+
         } catch (SeqStoreException ex) {
             Exceptions.printStackTrace(ex);
         }
@@ -147,7 +187,7 @@ public class DownloadSeqRun extends AbstractAction {
     public boolean isEnabled() {
         return true;
     }
-    
+
     private String cleanupName(String runName) {
         if (runName.contains(File.separator)) {
             runName = runName.replace(File.separator, "_");

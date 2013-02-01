@@ -136,7 +136,7 @@ public class SampleNode extends MGXNodeBase<Sample> {
             Object ret = DialogDisplayer.getDefault().notify(d);
             final MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
             if (NotifyDescriptor.YES_OPTION.equals(ret)) {
-                MGXTask deleteTask = new MGXTask() {
+                MGXTask deleteTask = new MGXTask("Delete " + sample.getMaterial()) {
                     @Override
                     public void process() {
                         setStatus("Deleting..");
@@ -154,7 +154,7 @@ public class SampleNode extends MGXNodeBase<Sample> {
                     }
                 };
 
-                TaskManager.getInstance().addTask("Delete " + sample.getMaterial(), deleteTask);
+                TaskManager.getInstance().addTask(deleteTask);
             }
         }
 

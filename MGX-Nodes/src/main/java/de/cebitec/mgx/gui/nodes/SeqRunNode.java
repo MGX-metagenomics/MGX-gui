@@ -171,7 +171,7 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> { // implements Transferable
             Object ret = DialogDisplayer.getDefault().notify(d);
             if (NotifyDescriptor.YES_OPTION.equals(ret)) {
 
-                MGXTask deleteTask = new MGXTask() {
+                MGXTask deleteTask = new MGXTask("Delete " + sr.getName()) {
                     @Override
                     public void process() {
                         setStatus("Deleting..");
@@ -192,11 +192,11 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> { // implements Transferable
 
                     @Override
                     public int getProgress() {
-                        return -1;
+                        return MGXTask.PROGRESS_UNKNOWN;
                     }
                 };
 
-                TaskManager.getInstance().addTask("Delete " + sr.getName(), deleteTask);
+                TaskManager.getInstance().addTask(deleteTask);
             }
         }
 

@@ -32,7 +32,9 @@ public class DeleteFileOrDirectory extends AbstractAction {
                 null);
         Object ret = DialogDisplayer.getDefault().notify(d);
         if (NotifyDescriptor.YES_OPTION.equals(ret)) {
-            MGXTask deleteTask = new MGXTask() {
+            
+            MGXTask deleteTask = new MGXTask("Delete " + file.getName()) {
+                
                 @Override
                 public void process() {
                     setStatus("Deleting..");
@@ -51,7 +53,7 @@ public class DeleteFileOrDirectory extends AbstractAction {
                 }
             };
 
-            TaskManager.getInstance().addTask("Delete " + file.getName(), deleteTask);
+            TaskManager.getInstance().addTask(deleteTask);
         }
     }
 
