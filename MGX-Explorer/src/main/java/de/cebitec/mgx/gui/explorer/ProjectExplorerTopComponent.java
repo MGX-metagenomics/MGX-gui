@@ -26,7 +26,7 @@ autostore = false)
 @TopComponent.Description(preferredID = "ProjectExplorerTopComponent",
 //iconBase="SET/PATH/TO/ICON/HERE",
 persistenceType = TopComponent.PERSISTENCE_NEVER)
-@TopComponent.Registration(mode = "explorer", openAtStartup = false)
+@TopComponent.Registration(mode = "explorer", openAtStartup = false, position = 1)
 @ActionID(category = "Window", id = "de.cebitec.mgx.gui.explorer.ProjectExplorerTopComponent")
 @TopComponent.OpenActionRegistration(displayName = "#CTL_ProjectExplorerAction",
 preferredID = "ProjectExplorerTopComponent")
@@ -92,7 +92,6 @@ public final class ProjectExplorerTopComponent extends TopComponent implements E
         final AbstractNode root = new AbstractNode(Children.create(new ServerNodeFactory(gpms), true));
         exmngr.setRootContext(root);
         SwingWorker<List<Node>, Node> sw = new SwingWorker<List<Node>, Node>() {
-
             @Override
             protected List<Node> doInBackground() throws Exception {
                 List<Node> ret = new ArrayList<>();
@@ -116,7 +115,6 @@ public final class ProjectExplorerTopComponent extends TopComponent implements E
         };
         sw.execute();
     }
-
 //    @Override
 //    public int getPersistenceType() {
 //        return PERSISTENCE_NEVER;
