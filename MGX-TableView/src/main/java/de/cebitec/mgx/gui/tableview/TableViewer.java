@@ -10,8 +10,10 @@ import de.cebitec.mgx.gui.groups.ImageExporterI;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.swing.JComponent;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 import org.jdesktop.swingx.JXTable;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -47,11 +49,11 @@ public class TableViewer extends ViewerI<Distribution> {
 
     @Override
     public void show(List<Pair<VisualizationGroup, Distribution>> dists) {
-        HashSet<Attribute> allAttrs = new HashSet<>();
+        Set<Attribute> allAttrs = new HashSet<>();
         int numColumns = dists.size() + 1;
         String[] columns = new String[numColumns];
         int i = 0;
-        columns[i++] = getAttributeType().getName();
+        columns[i++] = getAttributeType().getName(); // first column
         for (Pair<VisualizationGroup, Distribution> p : dists) {
             columns[i++] = p.getFirst().getName();
             allAttrs.addAll(p.getSecond().keySet());
@@ -70,9 +72,14 @@ public class TableViewer extends ViewerI<Distribution> {
                         return Long.class;
                 }
             }
+
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
         };
-        cust.setModel(model);
-        
+        cust.setModel(model); // for tsv export
+
         for (Attribute a : allAttrs) {
             Object[] rowData = new Object[numColumns];
             rowData[0] = a.getValue();
@@ -86,6 +93,13 @@ public class TableViewer extends ViewerI<Distribution> {
 
         table = new JXTable(model);
         table.setFillsViewportHeight(true);
+        for (TableColumn tc : table.getColumns()) {
+            if (0 != tc.getModelIndex()) {
+                tc.setMinWidth(20);
+                tc.setPreferredWidth(40);
+                tc.setWidth(40);
+            }
+        }
     }
 
     @Override
