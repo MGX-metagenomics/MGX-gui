@@ -30,7 +30,7 @@ persistenceType = TopComponent.PERSISTENCE_NEVER)
 preferredID = "VisualizationGroupTopComponent")
 @Messages({
     "CTL_VisualizationGroupAction=VisualizationGroup",
-    "CTL_VisualizationGroupTopComponent=VisualizationGroup Window",
+    "CTL_VisualizationGroupTopComponent=Visualization groups",
     "HINT_VisualizationGroupTopComponent=This is a VisualizationGroup window"
 })
 @ServiceProvider(service = VisualizationGroupTopComponent.class)
@@ -46,6 +46,11 @@ public final class VisualizationGroupTopComponent extends TopComponent implement
         setName(Bundle.CTL_VisualizationGroupTopComponent());
         setToolTipText(Bundle.HINT_VisualizationGroupTopComponent());
         associateLookup(ExplorerUtils.createLookup(exmngr, getActionMap()));
+        
+        // create initial group, if necessary
+        if (groupmgr.getAllGroups().isEmpty()) {
+            actionPerformed(null);
+        }
     }
 
     public Collection<VisualizationGroup> getVisualizationGroups() {
