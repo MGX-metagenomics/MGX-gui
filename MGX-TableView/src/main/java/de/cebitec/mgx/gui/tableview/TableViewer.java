@@ -6,6 +6,7 @@ import de.cebitec.mgx.gui.datamodel.Attribute;
 import de.cebitec.mgx.gui.datamodel.AttributeType;
 import de.cebitec.mgx.gui.datamodel.misc.Distribution;
 import de.cebitec.mgx.gui.datamodel.misc.Pair;
+import de.cebitec.mgx.gui.groups.ImageExporterI;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import java.util.HashSet;
 import java.util.List;
@@ -90,5 +91,10 @@ public class TableViewer extends ViewerI<Distribution> {
     @Override
     public JComponent getCustomizer() {
         return cust;
+    }
+
+    @Override
+    public ImageExporterI getImageExporter() {
+        return null; // no image to export here
     }
 }
