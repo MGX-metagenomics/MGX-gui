@@ -38,7 +38,7 @@ public abstract class AccessBase<T> {
     
     public abstract void update(T obj);
 
-    public abstract void delete(T obj);
+    public abstract boolean delete(T obj);
 
     /*
      * from http://snippets.dzone.com/posts/show/91

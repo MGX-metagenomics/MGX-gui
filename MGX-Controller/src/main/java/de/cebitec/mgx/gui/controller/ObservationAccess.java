@@ -51,7 +51,7 @@ public class ObservationAccess extends AccessBase<Observation> {
     }
 
     @Override
-    public void delete(Observation obj) {
+    public boolean delete(Observation obj) {
         throw new UnsupportedOperationException("Not supported.");
     }
     

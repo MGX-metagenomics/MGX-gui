@@ -96,7 +96,7 @@ public class SequenceAccess extends AccessBase<Sequence> {
     }
 
     @Override
-    public void delete(Sequence obj) {
+    public boolean delete(Sequence obj) {
         throw new UnsupportedOperationException("Not supported.");
     }
 }

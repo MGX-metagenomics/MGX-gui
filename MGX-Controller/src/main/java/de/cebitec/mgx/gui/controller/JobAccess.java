@@ -59,7 +59,7 @@ public class JobAccess extends AccessBase<Job> {
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
-       
+
         obj.setMaster(this.getMaster());
         return id;
     }
@@ -104,13 +104,15 @@ public class JobAccess extends AccessBase<Job> {
     }
 
     @Override
-    public void delete(Job obj) {
+    public boolean delete(Job obj) {
         try {
-            getDTOmaster().Job().delete(obj.getId());
+            boolean ret = getDTOmaster().Job().delete(obj.getId());
+            obj.firePropertyChange(ModelBase.OBJECT_DELETED, obj, null);
+            return ret;
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
-        obj.firePropertyChange(ModelBase.OBJECT_DELETED, obj, null);
+        return false;
     }
 
     public List<Job> ByAttributeTypeAndSeqRun(long atype_id, long seqrun_id) {

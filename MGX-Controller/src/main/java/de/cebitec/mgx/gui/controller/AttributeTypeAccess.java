@@ -37,7 +37,7 @@ public class AttributeTypeAccess extends AccessBase<AttributeType> {
     }
 
     @Override
-    public void delete(AttributeType obj) {
+    public boolean delete(AttributeType obj) {
         throw new UnsupportedOperationException("Not supported.");
     }
 

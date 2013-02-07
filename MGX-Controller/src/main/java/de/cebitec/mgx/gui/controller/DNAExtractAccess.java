@@ -71,13 +71,16 @@ public class DNAExtractAccess extends AccessBase<DNAExtract> {
     }
 
     @Override
-    public void delete(DNAExtract obj) {
+    public boolean delete(DNAExtract obj) {
+        boolean ret;
         try {
-            getDTOmaster().DNAExtract().delete(obj.getId());
+            ret = getDTOmaster().DNAExtract().delete(obj.getId());
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
+            return false;
         }
         obj.firePropertyChange(ModelBase.OBJECT_DELETED, obj, null);
+        return ret;
     }
 
     public Iterable<DNAExtract> BySample(long sample_id) {

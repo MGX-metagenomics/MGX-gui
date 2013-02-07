@@ -114,13 +114,16 @@ public class ToolAccess extends AccessBase<Tool> {
     }
 
     @Override
-    public void delete(Tool obj) {
+    public boolean delete(Tool obj) {
+        boolean ret;
         try {
-            getDTOmaster().Tool().delete(obj.getId());
+            ret = getDTOmaster().Tool().delete(obj.getId());
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
+            return false;
         }
         obj.firePropertyChange(ModelBase.OBJECT_DELETED, obj, null);
+        return ret;
     }
 
     public Tool ByJob(long id) {

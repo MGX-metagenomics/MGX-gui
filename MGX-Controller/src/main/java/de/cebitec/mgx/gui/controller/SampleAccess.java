@@ -71,13 +71,16 @@ public class SampleAccess extends AccessBase<Sample> {
     }
 
     @Override
-    public void delete(Sample obj) {
+    public boolean delete(Sample obj) {
+        boolean ret;
         try {
-            getDTOmaster().Sample().delete(obj.getId());
+            ret = getDTOmaster().Sample().delete(obj.getId());
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
+            return false;
         }
         obj.firePropertyChange(ModelBase.OBJECT_DELETED, obj, null);
+        return ret;
     }
 
     public Iterable<Sample> ByHabitat(long hab_id) {

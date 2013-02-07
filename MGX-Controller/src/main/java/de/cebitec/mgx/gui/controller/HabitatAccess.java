@@ -70,12 +70,15 @@ public class HabitatAccess extends AccessBase<Habitat> {
     }
 
     @Override
-    public void delete(Habitat obj) {
+    public boolean delete(Habitat obj) {
+        boolean ret;
         try {
-            getDTOmaster().Habitat().delete(obj.getId());
+            ret = getDTOmaster().Habitat().delete(obj.getId());
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
+            return false;
         }
         obj.firePropertyChange(ModelBase.OBJECT_DELETED, obj, null);
+        return ret;
     }
 }

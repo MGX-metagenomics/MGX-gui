@@ -83,13 +83,16 @@ public class SeqRunAccess extends AccessBase<SeqRun> {
     }
 
     @Override
-    public void delete(SeqRun obj) {
+    public boolean delete(SeqRun obj) {
+        boolean ret;
         try {
-            getDTOmaster().SeqRun().delete(obj.getId());
+            ret = getDTOmaster().SeqRun().delete(obj.getId());
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
+            return false;
         }
         obj.firePropertyChange(ModelBase.OBJECT_DELETED, obj, null);
+        return ret;
     }
 
     public Iterable<SeqRun> ByExtract(long extract_id) {
