@@ -6,6 +6,7 @@ import de.cebitec.mgx.gui.datamodel.Job;
 import de.cebitec.mgx.gui.datamodel.JobState;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
+import de.cebitec.mgx.gui.util.NonEDT;
 import java.awt.event.ActionEvent;
 import java.lang.reflect.InvocationTargetException;
 import javax.swing.AbstractAction;
@@ -15,6 +16,7 @@ import org.openide.NotifyDescriptor;
 import org.openide.nodes.Children;
 import org.openide.nodes.PropertySupport;
 import org.openide.nodes.Sheet;
+import org.openide.util.ImageUtilities;
 import org.openide.util.Utilities;
 import org.openide.util.lookup.Lookups;
 
@@ -72,7 +74,20 @@ public class JobNode extends MGXNodeBase<Job> {
         Property stateProperty = new PropertySupport.ReadWrite<String>(STATE_PROPERTY, String.class, "State", "Job state") {
             @Override
             public String getValue() throws IllegalAccessException, InvocationTargetException {
-                return job.getStatus().toString();
+                JobState state = job.getStatus();
+                String icon = null;
+                switch (state) {
+                    case FINISHED:
+                        icon = "de/cebitec/mgx/gui/nodes/JobStateOK.png";
+                        break;
+                    case FAILED:
+                        icon = "de/cebitec/mgx/gui/nodes/JobStateFAILED.png";
+                        break;
+                }
+                if (icon != null) {
+                    setValue("valueIcon", ImageUtilities.loadImage(icon, true));
+                }
+                return state.toString();
             }
 
             @Override
@@ -80,6 +95,7 @@ public class JobNode extends MGXNodeBase<Job> {
             }
         };
         stateProperty.setValue("suppressCustomEditor", Boolean.TRUE);
+        //stateProperty.setValue("valueIcon", ImageUtilities.loadImage("za/co/kitt/demo/nodesdemo/error_1.png", true));
         set.put(stateProperty);
 
         sheet.put(set);
@@ -109,12 +125,12 @@ public class JobNode extends MGXNodeBase<Job> {
                     null);
             Object ret = DialogDisplayer.getDefault().notify(d);
             if (NotifyDescriptor.YES_OPTION.equals(ret)) {
-                MGXTask deleteTask = new MGXTask("Delete " + job.getTool().getName() + " " + job.getSeqrun().getName()) {
+                final MGXTask deleteTask = new MGXTask("Delete " + job.getTool().getName() + " " + job.getSeqrun().getName()) {
                     @Override
-                    public void process() {
+                    public boolean process() {
                         setStatus("Deleting..");
                         MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
-                        m.Job().delete(job);
+                        return m.Job().delete(job);
                     }
 
                     @Override
@@ -128,8 +144,12 @@ public class JobNode extends MGXNodeBase<Job> {
                     }
                 };
 
-                TaskManager.getInstance().addTask(deleteTask);
-
+                NonEDT.invoke(new Runnable() {
+                    @Override
+                    public void run() {
+                        TaskManager.getInstance().addTask(deleteTask);
+                    }
+                });
             }
         }
 

@@ -171,10 +171,10 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> { // implements Transferable
 
                 final MGXTask deleteTask = new MGXTask("Delete " + sr.getName()) {
                     @Override
-                    public void process() {
+                    public boolean process() {
                         setStatus("Deleting..");
                         MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
-                        m.SeqRun().delete(sr);
+                        return m.SeqRun().delete(sr);
                     }
 
                     @Override

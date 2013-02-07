@@ -45,7 +45,7 @@ public class UploadFile extends AbstractAction {
         if (fchooser.showOpenDialog(null) != JFileChooser.APPROVE_OPTION) {
             return;
         }
-        
+
         NbPreferences.forModule(JFileChooser.class).put("lastDirectory", fchooser.getCurrentDirectory().getAbsolutePath());
 
         File localFile = fchooser.getSelectedFile();
@@ -57,20 +57,19 @@ public class UploadFile extends AbstractAction {
 
         MGXTask run = new MGXTask("Upload " + fchooser.getSelectedFile().getName()) {
             @Override
-            public void process() {
-                boolean success = uploader.upload();
-                if (!success) {
-                    failed();
-                }
+            public boolean process() {
+                return uploader.upload();
             }
 
             @Override
             public void finished() {
+                super.finished();
                 fnf.refreshChildren();
             }
 
             @Override
             public void failed() {
+                super.failed();
                 fnf.refreshChildren();
             }
 
@@ -78,6 +77,8 @@ public class UploadFile extends AbstractAction {
             public void propertyChange(PropertyChangeEvent pce) {
                 if (pce.getPropertyName().equals(UploadBase.NUM_ELEMENTS_SENT)) {
                     setStatus(String.format("%1$d bytes sent", pce.getNewValue()));
+                } else {
+                    super.propertyChange(pce);
                 }
             }
 

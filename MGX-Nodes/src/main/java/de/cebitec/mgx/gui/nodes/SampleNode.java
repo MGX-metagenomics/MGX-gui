@@ -138,9 +138,9 @@ public class SampleNode extends MGXNodeBase<Sample> {
             if (NotifyDescriptor.YES_OPTION.equals(ret)) {
                 MGXTask deleteTask = new MGXTask("Delete " + sample.getMaterial()) {
                     @Override
-                    public void process() {
+                    public boolean process() {
                         setStatus("Deleting..");
-                        m.Sample().delete(sample);
+                        return m.Sample().delete(sample);
                     }
 
                     @Override
@@ -150,7 +150,7 @@ public class SampleNode extends MGXNodeBase<Sample> {
 
                     @Override
                     public int getProgress() {
-                        return -1;
+                        return MGXTask.PROGRESS_UNKNOWN;
                     }
                 };
 

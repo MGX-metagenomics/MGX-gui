@@ -137,10 +137,10 @@ public class HabitatNode extends MGXNodeBase<Habitat> {
             if (NotifyDescriptor.YES_OPTION.equals(ret)) {
                 MGXTask deleteTask = new MGXTask("Delete " + habitat.getName()) {
                     @Override
-                    public void process() {
+                    public boolean process() {
                         setStatus("Deleting..");
                         MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
-                        m.Habitat().delete(habitat);
+                        return m.Habitat().delete(habitat);
                     }
 
                     @Override

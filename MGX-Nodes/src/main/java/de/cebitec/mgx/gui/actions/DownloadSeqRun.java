@@ -103,14 +103,11 @@ public class DownloadSeqRun extends AbstractAction {
 
             final MGXTask run = new MGXTask("Export to " + fchooser.getSelectedFile().getName()) {
                 @Override
-                public void process() {
+                public boolean process() {
                     downloader.addPropertyChangeListener(this);
-                    if (downloader.download()) {
-                        finished();
-                    } else {
-                        failed();
-                    }
+                    boolean ret = downloader.download();
                     downloader.removePropertyChangeListener(this);
+                    return ret;
                 }
 
                 @Override

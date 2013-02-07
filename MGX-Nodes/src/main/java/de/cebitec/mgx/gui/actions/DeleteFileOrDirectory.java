@@ -37,10 +37,10 @@ public class DeleteFileOrDirectory extends AbstractAction {
             final MGXTask deleteTask = new MGXTask("Delete " + file.getName()) {
                 
                 @Override
-                public void process() {
+                public boolean process() {
                     setStatus("Deleting..");
                     MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
-                    m.File().delete(file);
+                    return m.File().delete(file);
                 }
 
                 @Override
@@ -50,7 +50,7 @@ public class DeleteFileOrDirectory extends AbstractAction {
 
                 @Override
                 public int getProgress() {
-                    return -1;
+                    return MGXTask.PROGRESS_UNKNOWN;
                 }
             };
             

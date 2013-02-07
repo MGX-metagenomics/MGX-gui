@@ -147,9 +147,9 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
                 final MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
                 MGXTask deleteTask = new MGXTask("Delete " + dna.getName()) {
                     @Override
-                    public void process() {
+                    public boolean process() {
                         setStatus("Deleting..");
-                        m.DNAExtract().delete(dna);
+                        return m.DNAExtract().delete(dna);
                     }
 
                     @Override
@@ -219,11 +219,12 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
                         final SeqUploader uploader = m.Sequence().createUploader(seqrun.getId(), reader);
                         MGXTask run = new MGXTask("Upload " + canonicalPath) {
                             @Override
-                            public void process() {
+                            public boolean process() {
                                 boolean success = uploader.upload();
                                 if (!success) {
                                     publish(new MGXClientException(uploader.getErrorMessage()));
                                 }
+                                return success;
                             }
 
                             @Override
