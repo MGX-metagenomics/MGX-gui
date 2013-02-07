@@ -33,6 +33,7 @@ public class JobNode extends MGXNodeBase<Job> {
         super(Children.LEAF, Lookups.fixed(m, job), job);
         this.job = job;
         setDisplayName(job.getTool().getName());
+        setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/AnalysisTasks.png");
     }
 
     @Override
