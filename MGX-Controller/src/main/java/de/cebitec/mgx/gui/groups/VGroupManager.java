@@ -8,6 +8,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,6 +62,10 @@ public class VGroupManager implements PropertyChangeListener {
             }
         }
         return ret;
+    }
+
+    public Collection<VisualizationGroup> getAllGroups() {
+        return groups.values();
     }
 
     public boolean selectAttributeType(String aType) {
