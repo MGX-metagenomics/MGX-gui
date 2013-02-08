@@ -94,6 +94,7 @@ public class TaskManager implements TaskListener, PropertyChangeListener {
     @Override
     public void taskFinished(org.openide.util.Task task) {
         MGXTask completedTask = currentTasks.remove(task);
+        assert completedTask != null;
         pcs.firePropertyChange(TASK_COMPLETED, 0, completedTask);
     }
 

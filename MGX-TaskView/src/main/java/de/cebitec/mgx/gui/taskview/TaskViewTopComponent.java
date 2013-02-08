@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import org.netbeans.api.settings.ConvertAsProperties;
@@ -54,6 +55,7 @@ public final class TaskViewTopComponent extends TopComponent implements Property
             public void actionPerformed(ActionEvent e) {
                 synchronized (completedTasks) {
                     for (TaskListEntry tle : completedTasks) {
+                        assert tle != null;
                         tasklistpanel.remove(tle);
                     }
                     completedTasks.clear();
@@ -121,7 +123,7 @@ public final class TaskViewTopComponent extends TopComponent implements Property
     private final Collection<TaskListEntry> completedTasks = new ArrayList<>();
 
     @Override
-    public void propertyChange(PropertyChangeEvent evt) {
+    public synchronized void propertyChange(PropertyChangeEvent evt) {
         MGXTask task;
         switch (evt.getPropertyName()) {
             case TaskManager.TASK_ADDED:
@@ -133,7 +135,7 @@ public final class TaskViewTopComponent extends TopComponent implements Property
                 removeTask(task);
                 break;
             default:
-                System.err.println("TopComponent received PCE " + evt.getPropertyName());
+                System.err.println("TaskViewTopComponent received PCE " + evt.getPropertyName());
                 break;
         }
     }
@@ -156,7 +158,9 @@ public final class TaskViewTopComponent extends TopComponent implements Property
     }
 
     private void removeTask(MGXTask t) {
+        assert t != null;
         TaskListEntry tle = currentTasks.remove(t);
+        assert tle != null;
         synchronized (completedTasks) {
             completedTasks.add(tle);
         }

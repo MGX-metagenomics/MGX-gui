@@ -3,6 +3,8 @@ package de.cebitec.mgx.gui.taskview;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.Objects;
+import java.util.UUID;
 
 /**
  *
@@ -18,6 +20,7 @@ public abstract class MGXTask implements Runnable, PropertyChangeListener {
     private final String taskName;
     private String statusMessage = "";
     private String state = TASK_CHANGED;
+    private UUID uuid = UUID.randomUUID();
 
     public MGXTask(String name) {
         taskName = name;
@@ -28,13 +31,17 @@ public abstract class MGXTask implements Runnable, PropertyChangeListener {
     @Override
     public final void run() {
         fireTaskChanged();
-        process();
+        if (process()) {
+            finished();
+        } else {
+            failed();
+        }
     }
 
     public final String getStatus() {
         return statusMessage;
     }
-    
+
     public final String getName() {
         return taskName;
     }
@@ -44,17 +51,19 @@ public abstract class MGXTask implements Runnable, PropertyChangeListener {
         fireTaskChanged();
     }
 
-    public abstract void process();
+    public abstract boolean process();
 
-    public abstract boolean isDeterminate();
+    public boolean isDeterminate() {
+        return false;
+    }
 
-    
     /**
      *
-     * @return a number between 0 and 100 indicating the progress
-     * of this task, or MGXTask.PROGRESS_UNKNOWN 
+     * @return a number between 0 and 100 indicating the progress of this task, or MGXTask.PROGRESS_UNKNOWN
      */
-    public abstract int getProgress();
+    public int getProgress() {
+        return MGXTask.PROGRESS_UNKNOWN;
+    }
 
     public void finished() {
         setStatus("Done");
@@ -83,5 +92,25 @@ public abstract class MGXTask implements Runnable, PropertyChangeListener {
     @Override
     public void propertyChange(PropertyChangeEvent pce) {
         pcs.firePropertyChange(pce);
+    }
+
+    @Override
+    public int hashCode() {
+        return uuid.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final MGXTask other = (MGXTask) obj;
+        if (!Objects.equals(this.uuid, other.uuid)) {
+            return false;
+        }
+        return true;
     }
 }
