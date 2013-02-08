@@ -137,13 +137,11 @@ public final class SeqExporter implements SequenceExporterI {
         }
 
         @Override
-        public void process() {
+        public boolean process() {
             downloader.addPropertyChangeListener(this);
-            if (downloader.download()) {
-                finished();
-            } else {
-                failed();
-            }
+            boolean ret = downloader.download();
+            downloader.removePropertyChangeListener(this);
+            return ret;
         }
 
         @Override
