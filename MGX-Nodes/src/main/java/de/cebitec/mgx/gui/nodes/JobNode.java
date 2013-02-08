@@ -129,19 +129,12 @@ public class JobNode extends MGXNodeBase<Job> {
                     @Override
                     public boolean process() {
                         setStatus("Deleting..");
-                        MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
+                        MGXMaster m = getLookup().lookup(MGXMaster.class);
+                        assert m != null;
                         return m.Job().delete(job);
                     }
 
-                    @Override
-                    public boolean isDeterminate() {
-                        return false;
-                    }
-
-                    @Override
-                    public int getProgress() {
-                        return MGXTask.PROGRESS_UNKNOWN;
-                    }
+               
                 };
 
                 NonEDT.invoke(new Runnable() {
