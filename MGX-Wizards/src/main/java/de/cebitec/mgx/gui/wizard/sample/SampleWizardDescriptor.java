@@ -19,10 +19,10 @@ public class SampleWizardDescriptor extends WizardDescriptor {
     private Sample sample = null;
 
     public SampleWizardDescriptor() {
-        List<Panel<WizardDescriptor>> panels = new ArrayList<Panel<WizardDescriptor>>();
+        List<Panel<WizardDescriptor>> panels = new ArrayList<>();
         panels.add(p1);
         panels.add(p2);
-        this.setPanelsAndSettings(new ArrayIterator<WizardDescriptor>(panels), this);
+        this.setPanelsAndSettings(new ArrayIterator<>(panels), this);
         this.setTitleFormat(new MessageFormat("{0}"));
         this.setTitle("Sample wizard");
         putProperty(WizardDescriptor.PROP_CONTENT_DATA, new String[]{p1.getName(), p2.getName()});
