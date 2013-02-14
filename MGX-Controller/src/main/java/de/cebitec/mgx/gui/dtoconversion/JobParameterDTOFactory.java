@@ -53,7 +53,8 @@ public class JobParameterDTOFactory extends DTOConversionBase<JobParameter, JobP
             b.setChoices(choices.build());
         }
 
-        if (p.getParameterValue() != null) {
+        String value = p.getParameterValue();
+        if (value != null && !value.isEmpty()) {
             b.setParameterValue(p.getParameterValue());
         }
 
@@ -86,7 +87,10 @@ public class JobParameterDTOFactory extends DTOConversionBase<JobParameter, JobP
         }
 
         if (dto.hasParameterValue()) {
-            jp.setParameterValue(dto.getParameterValue());
+            String value = dto.getParameterValue();
+            if (value != null && !value.isEmpty()) {
+                jp.setParameterValue(value);
+            }
         }
 
         if (dto.hasDefaultValue()) {

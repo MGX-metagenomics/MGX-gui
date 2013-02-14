@@ -10,7 +10,9 @@ public enum FileType {
     JPEG("JPEG image (.jpg)", "jpg", "jpeg"),
     SVG("Scalable Vector Graphics (.svg)", "svg"),
     FAS("FASTA format (.fas)", "fas", "fna", "fa", "fasta"),
-    FASTQ("FASTQ format (.fastq, .fq", "fastq", "fq");
+    FASTQ("FASTQ format (.fastq, .fq", "fastq", "fq"),
+    XML("Conveyor graph definition", "xml");
+    
     private final String[] suffices;
     private final String description;
 

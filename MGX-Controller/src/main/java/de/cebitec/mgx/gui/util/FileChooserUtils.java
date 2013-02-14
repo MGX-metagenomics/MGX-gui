@@ -61,4 +61,37 @@ public class FileChooserUtils {
 
         return ret;
     }
+    
+        public static String selectExistingFilename(FileType[] types) {
+        String ret = null;
+        JFileChooser chooser = new JFileChooser();
+        chooser.setDialogType(JFileChooser.OPEN_DIALOG);
+
+        // try to restore last directory selection
+        String last = NbPreferences.forModule(JFileChooser.class).get("lastDirectory", null);
+        if (last != null) {
+            File f = new File(last);
+            if (f.exists() && f.isDirectory() && f.canWrite()) {
+                chooser.setCurrentDirectory(f);
+            }
+        }
+
+        chooser.setAcceptAllFileFilterUsed(false);
+
+        for (FileType ft : types) {
+            chooser.addChoosableFileFilter(new SuffixFilter(ft));
+        }
+
+        if (chooser.showSaveDialog(null) != JFileChooser.APPROVE_OPTION) {
+            ret = null;
+        } else {
+            final File target = chooser.getSelectedFile();
+            ret = target.getAbsolutePath();
+        }
+
+        // save directory
+        NbPreferences.forModule(JFileChooser.class).put("lastDirectory", chooser.getCurrentDirectory().getAbsolutePath());
+
+        return ret;
+    }
 }
