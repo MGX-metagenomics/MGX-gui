@@ -1,16 +1,21 @@
 package de.cebitec.mgx.gui.nodes;
 
+import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.gui.actions.DownloadSeqRun;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.controller.RBAC;
+import de.cebitec.mgx.gui.datamodel.Job;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
-import de.cebitec.mgx.gui.nodes.analysisaction.GetToolsWorker;
+import de.cebitec.mgx.gui.datamodel.Tool;
+import de.cebitec.mgx.gui.datamodel.misc.ToolType;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
 import de.cebitec.mgx.gui.util.NonEDT;
+import de.cebitec.mgx.gui.wizard.analysis.AnalysisWizardIterator;
 import de.cebitec.mgx.gui.wizard.seqrun.SeqRunWizardDescriptor;
 import java.awt.Dialog;
 import java.awt.event.ActionEvent;
+import java.text.MessageFormat;
 import java.util.concurrent.ExecutionException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -91,9 +96,29 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> { // implements Transferable
 
         @Override
         public void actionPerformed(final ActionEvent e) {
-            SeqRun seqrun = Utilities.actionsGlobalContext().lookup(SeqRun.class);
-            GetToolsWorker getTools = new GetToolsWorker(master, seqrun);
-            getTools.execute();
+            SeqRun seqrun = getLookup().lookup(SeqRun.class);
+            //GetToolsWorker getTools = new GetToolsWorker(master, seqrun);
+            //getTools.execute();
+            AnalysisWizardIterator iter = new AnalysisWizardIterator(master);
+            WizardDescriptor wiz = new WizardDescriptor(iter);
+            iter.setWizardDescriptor(wiz);
+            //             // {0} will be replaced by WizardDescriptor.Panel.getComponent().getName()
+            //             // {1} will be replaced by WizardDescriptor.Iterator.name()
+            wiz.setTitleFormat(new MessageFormat("{0}"));
+            wiz.setTitle("Tool selection");
+            if (DialogDisplayer.getDefault().notify(wiz) == WizardDescriptor.FINISH_OPTION) {
+                Tool tool = (Tool) wiz.getProperty(AnalysisWizardIterator.PROP_TOOL);
+                ToolType tooltype = (ToolType) wiz.getProperty(AnalysisWizardIterator.PROP_TOOLTYPE);
+                System.err.println("SELECTED TOOL "+ tool.getName());
+//                Job job = (Job) wiz.getProperty(AnalysisWizardIterator.PROP_JOB);
+//                try {
+//                    //master.Job().execute(job.getId());
+//                } catch (MGXServerException ex) {
+//                    Exceptions.printStackTrace(ex);
+//                }
+            } else {
+                // FIXME - cancel?
+            }
         }
 
         @Override

@@ -41,13 +41,7 @@ public class GetToolsWorker extends SwingWorker<Void, Void> {
      */
     private boolean isDelete;
 
-    /**
-     * @param lMaster Objekt um Verbindung zum Server aufnehmen zu koennen.
-     * @param lSeqrun Sequenzierlauf.
-     */
-    public GetToolsWorker(
-            final MGXMaster lMaster, final SeqRun lSeqrun) {
-
+    public GetToolsWorker(final MGXMaster lMaster, final SeqRun lSeqrun) {
         master = lMaster;
         seqRun = lSeqrun;
         isDelete = false;
@@ -60,18 +54,11 @@ public class GetToolsWorker extends SwingWorker<Void, Void> {
      */
     @Override
     final protected Void doInBackground() {
-        final int width = 300;
-        final int height = 140;
         WizardController startUp = new WizardController();
-        ProgressBar progress = new ProgressBar("Loading tools.",
-                "Loading global tools.",
-                width, height);
 
         try {
             List<Tool> globalTools = master.Tool().listGlobalTools();
-            progress.setUpdateText("Loading project tools.");
             List<Tool> projectTools = master.Tool().fetchall();
-            progress.dispose();
             tool = startUp.startToolViewStartUp(globalTools, projectTools);
         } catch (MGXServerException ex) {
             Exceptions.printStackTrace(ex);

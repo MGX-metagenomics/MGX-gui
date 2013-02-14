@@ -93,10 +93,8 @@ public class ShowParameterWorker extends SwingWorker<Collection<JobParameter>, V
         Store store = null;
 
         if (parameterList.size() > 0) {
-            store = Transform.getFromJobParameterNodeStore(
-                    new ArrayList<>(parameterList));
-            store = startUp.startParameterConfiguration(
-                    store, files, tool.getName());
+            store = Transform.getFromJobParameterNodeStore(parameterList);
+            store = startUp.startParameterConfiguration(store, files, tool.getName());
             if (startUp.getStatus() == MenuStatus.FINISH) {
                 parameterList = Transform.getFromNodeStoreJobParameter(store);
             }
