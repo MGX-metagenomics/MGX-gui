@@ -1,11 +1,7 @@
 
-/*
-* To change this template, choose Tools | Templates
-* and open the template in the editor.
- */
+
 package de.cebitec.mgx.gui.wizard.configurations.data.impl;
 
-//~--- JDK imports ------------------------------------------------------------
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -23,20 +19,20 @@ public class Choices  {
     * Hier sind die einzelnen Elemente gespeichert,
     * dabei dient der choice Name als key und die Beschreibung als value.
     */
-   private LinkedHashMap<String,String> sample;
+   private final Map<String,String> sample;
    
 
    /**
     * Initialisiert die Datenstruktur für die Namen und Beschreibungen.
     */
     public Choices() {
-	 sample = new LinkedHashMap<String, String>();
+	 sample = new LinkedHashMap<>();
     }
    /**
     * Uebergibt dem konstruktor die Choices.
     */
     public Choices(Map<String, String> choices) {
-	 sample = (LinkedHashMap<String, String>) choices;
+	 sample = choices;
     }
 
  
@@ -61,10 +57,7 @@ public class Choices  {
     * Gibt die Auswahl für das ConfigItem wieder.
     * @return LinkedHashMap, wobei der Schlüssel, das Value darstellt.
     */
-   public LinkedHashMap<String,String> getChoices() {
+   public Map<String,String> getChoices() {
 	return sample;
    }
 }
-
-
-//~ Formatted by Jindent --- http://www.jindent.com

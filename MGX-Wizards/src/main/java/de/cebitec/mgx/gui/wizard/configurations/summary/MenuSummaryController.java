@@ -23,8 +23,7 @@ import org.openide.util.HelpCtx;
  *
  * @author belmann
  */
-public class MenuSummaryController
-        implements WizardDescriptor.Panel<WizardDescriptor> {
+public class MenuSummaryController implements WizardDescriptor.Panel<WizardDescriptor> {
 
     /**
      * Damit ein WizardDescriptor sich bei einem Wizard-Panel registrieren kann,

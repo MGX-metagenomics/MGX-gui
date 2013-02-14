@@ -22,35 +22,30 @@ import java.util.logging.Logger;
 public class Transform {
 
     /**
-     * Giibt von einem Stoer die JobParameter zurueck.
+     * Giibt von einem Store die JobParameter zurueck.
      *
      * @param store
      * @return Liste von JobParametern
      */
     public static List<JobParameter> getFromNodeStoreJobParameter(Store store) {
-        List<JobParameter> parameters = new ArrayList<JobParameter>();
+        List<JobParameter> parameters = new ArrayList<>();
 
-        Iterator nodeIterator = store.getIterator();
-        Map.Entry nodeME;
-        String nodeId;
-        Iterator configItemIterator;
+
+        Iterator<Entry<String, Node>> nodeIterator = store.getIterator();
         while (nodeIterator.hasNext()) {
-
-            nodeME = (Map.Entry) nodeIterator.next();
-            nodeId = (String) nodeME.getKey();
-            Node node = (Node) nodeME.getValue();
-            configItemIterator = (node).getIterator();
-            Map.Entry configItemME;
+            Entry<String, Node> nodeME = nodeIterator.next();
+            String nodeId = nodeME.getKey();
+            Node node = nodeME.getValue();
+            Iterator<Entry<String, ConfigItem>> configItemIterator = node.getIterator();
 
 
             String configItemName;
 
-
             while (configItemIterator.hasNext()) {
 
-                configItemME = (Map.Entry) configItemIterator.next();
-                ConfigItem configItem = (ConfigItem) configItemME.getValue();
-                configItemName = (String) configItemME.getKey();
+                Map.Entry<String, ConfigItem> configItemME = configItemIterator.next();
+                ConfigItem configItem = configItemME.getValue();
+                configItemName = configItemME.getKey();
 
                 JobParameter jobParameter = new JobParameter();
                 jobParameter.setParameterName(configItemName);
@@ -81,49 +76,35 @@ public class Transform {
         Store store = new Store();
 
         for (JobParameter parameter : parameters) {
-            boolean newNode = false;
-            boolean newConfig = false;
-            Node node;
-
-
-            if (store.getNode(Long.toString(
-                    parameter.getNodeId())) == null) {
-                node = new Node(parameter.getClassName(),
-                        Long.toString(parameter.getNodeId()));
-                newNode = true;
+            Node node = null;
+            if (store.getNode(Long.toString(parameter.getNodeId())) == null) {
+                node = new Node(parameter.getClassName(), Long.toString(parameter.getNodeId()));
+                store.addNode(node);
             } else {
                 node = store.getNode(Long.toString(parameter.getNodeId()));
             }
             node.setDisplayName(parameter.getDisplayName());
 
-            ConfigItem configItem;
 
+            ConfigItem configItem = null;
             if (node.getConfigItem(parameter.getParameterName()) == null) {
-
-
-                configItem = new ConfigItem(parameter.getUserName(),
-                        parameter.getUserDescription(),
-                        parameter.getParameterName());
-                newConfig = true;
+                configItem = new ConfigItem(parameter.getUserName(), parameter.getUserDescription(), parameter.getParameterName());
+                node.addConfigItem(configItem);
 
             } else {
                 configItem = node.getConfigItem(parameter.getParameterName());
             }
 
             if (!parameter.getChoices().isEmpty()) {
-
-
-                Set set = parameter.getChoices().entrySet();
-                Iterator iterator = set.iterator();
+                Set<Entry<String, String>> set = parameter.getChoices().entrySet();
+                Iterator<Entry<String, String>> iterator = set.iterator();
                 Choices choices = new Choices();
                 while (iterator.hasNext()) {
-                    Entry choiceME = (Map.Entry) iterator.next();
-                    String choiceName = (String) choiceME.getKey();
-                    String description = (String) choiceME.getValue();
+                    Entry<String, String> choiceME = iterator.next();
+                    String choiceName = choiceME.getKey();
+                    String description = choiceME.getValue();
 
                     choices.addItem(choiceName, description);
-
-
                 }
                 configItem.setChoice(choices);
 
@@ -132,16 +113,6 @@ public class Transform {
             configItem.setDefaultValue(parameter.getDefaultValue());
             configItem.setOptional(parameter.isOptional());
             configItem.setUserDescription(parameter.getUserDescription());
-
-            if (newConfig) {
-                node.addConfigItem(configItem);
-            }
-
-            if (newNode) {
-                store.addNode(node);
-            }
-
-
         }
         return store;
     }

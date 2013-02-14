@@ -1,4 +1,3 @@
-
 package de.cebitec.mgx.gui.wizard.configurations.action;
 
 import de.cebitec.mgx.gui.datamodel.MGXFile;
@@ -18,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Logger;
 import javax.swing.*;
 import org.openide.DialogDisplayer;
@@ -54,6 +54,7 @@ public class MenuViewStartUp {
      * Der Name des Tools.
      */
     private String toolName;
+    private boolean DEBUG = false;
 
     /**
      * Konstruktor fuer den Menu start.
@@ -68,38 +69,31 @@ public class MenuViewStartUp {
         this.store = lStore;
         menuStatus = MenuStatus.RUNNING;
 
-        Iterator nodeIterator = store.getIterator();
-        Map.Entry nodeME;
-        String nodeId;
-        Iterator configItemIterator;
-        while (nodeIterator.hasNext()) {
+        if (DEBUG) {
+            Iterator<Entry<String, Node>> nodeIterator = store.getIterator();
+            while (nodeIterator.hasNext()) {
 
-            nodeME = (Map.Entry) nodeIterator.next();
-            nodeId = (String) nodeME.getKey();
-            Node node = (Node) nodeME.getValue();
-            configItemIterator = (node).getIterator();
-            Map.Entry configItemME;
+                Map.Entry<String, Node> nodeME = nodeIterator.next();
+                String nodeId = nodeME.getKey();
+                Node node = nodeME.getValue();
+                Iterator<Entry<String, ConfigItem>> configItemIterator = node.getIterator();
 
-
-            String configItemName;
-            LOGGER.info("NodeId: " + nodeId);
-            LOGGER.info(node.getDisplayName());
-            while (configItemIterator.hasNext()) {
-
-                configItemME = (Map.Entry) configItemIterator.next();
-                ConfigItem configItem = (ConfigItem) configItemME.getValue();
-                configItemName = (String) configItemME.getKey();
+                while (configItemIterator.hasNext()) {
+                    Map.Entry<String, ConfigItem> configItemME = configItemIterator.next();
+                    ConfigItem configItem = configItemME.getValue();
+                    String configItemName = configItemME.getKey();
 
 
-                LOGGER.info(nodeId + " "
-                        + configItemName);
-                LOGGER.info(nodeId + " " + configItem.getAnswer());
-                LOGGER.info(nodeId + " " + node.getClassName());
-                LOGGER.info(nodeId + " " + configItem.getDefaultValue());
-                LOGGER.info(nodeId + " " + Boolean.toString(configItem.isOptional()));
-                LOGGER.info(nodeId + " " + configItem.getConfigType());
-                LOGGER.info(nodeId + " " + configItem.getUserDescription());
-                LOGGER.info(nodeId + " " + configItem.getUserName());
+                    LOGGER.info(nodeId + " "
+                            + configItemName);
+                    LOGGER.info(nodeId + " " + configItem.getAnswer());
+                    LOGGER.info(nodeId + " " + node.getClassName());
+                    LOGGER.info(nodeId + " " + configItem.getDefaultValue());
+                    LOGGER.info(nodeId + " " + Boolean.toString(configItem.isOptional()));
+                    LOGGER.info(nodeId + " " + configItem.getConfigType());
+                    LOGGER.info(nodeId + " " + configItem.getUserDescription());
+                    LOGGER.info(nodeId + " " + configItem.getUserName());
+                }
             }
         }
     }
@@ -110,22 +104,15 @@ public class MenuViewStartUp {
      * @return Den Store, der alle moeglichen Parameter enthaelt.
      */
     protected Store startWizardConfigurations() {
-        LOGGER.info("Configurations start");
         menuStatus = MenuStatus.RUNNING;
-        Object object = DialogDisplayer.getDefault().notify(gWiz);
-        if (object
-                == WizardDescriptor.FINISH_OPTION) {
+        if (DialogDisplayer.getDefault().notify(gWiz) == WizardDescriptor.FINISH_OPTION) {
             menuStatus = MenuStatus.FINISH;
             removeNodesAndConfigItems(gWiz);
             return store;
         } else {
-
             if (menuStatus != MenuStatus.AGAIN) {
                 menuStatus = MenuStatus.CANCEL;
-
             }
-
-
         }
         return null;
     }
@@ -146,20 +133,15 @@ public class MenuViewStartUp {
      */
     protected void initializeWizard() {
         menuStatus = MenuStatus.RUNNING;
-        List<WizardDescriptor.Panel<WizardDescriptor>> panels =
-                new ArrayList<WizardDescriptor.Panel<WizardDescriptor>>();
-
-        Iterator iterator =
-                store.getIterator();
-
-        Map.Entry me;
+        List<WizardDescriptor.Panel<WizardDescriptor>> panels = new ArrayList<>();
+        
+        
+        Iterator<Entry<String, Node>> iterator = store.getIterator();
         int nodeIndex = 1;
 
         while (iterator.hasNext()) {
-            me = (Map.Entry) iterator.next();
-            panels.add(
-                    new MenuController(nodeIndex,
-                    store.getNode((String) me.getKey()), entries));
+            Entry<String, Node> me = iterator.next();
+            panels.add(new MenuController(nodeIndex, store.getNode(me.getKey()), entries));
             nodeIndex++;
         }
         panels.add(new MenuSummaryController(store));
@@ -241,13 +223,13 @@ public class MenuViewStartUp {
                 }
             }
         });
-       
+
 
 
         Object[] optionButtons = {chooseToolButton, setAllDefaultbutton,
             WizardDescriptor.PREVIOUS_OPTION, WizardDescriptor.NEXT_OPTION,
             WizardDescriptor.FINISH_OPTION, buttonCancel};
-        
+
         gWiz.setOptions(optionButtons);
 
         Object[] objects = gWiz.getOptions();
@@ -262,9 +244,8 @@ public class MenuViewStartUp {
     }
 
     /**
-     * Nach dem Beenden des Wizards werden alle Antworten in den Store zu den
-     * jeweiligen Nodes und ConfigItems gegeben und dann alle Nodes und
-     * configItems entfernt, die keine Antworten des Users enthalten.
+     * Nach dem Beenden des Wizards werden alle Antworten in den Store zu den jeweiligen Nodes und ConfigItems gegeben und dann alle Nodes und configItems
+     * entfernt, die keine Antworten des Users enthalten.
      *
      * @param lWiz WizardDescriptor
      */

@@ -1,12 +1,9 @@
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package de.cebitec.mgx.gui.wizard.configurations.data.impl;
 
-//~--- non-JDK imports --------------------------------------------------------
 import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * Verwaltet die Nodes einer vom User möglichen Auswahl an Tools.
@@ -27,16 +24,15 @@ public class Store  {
     * verwaltet.
     */
    public Store() {
-	nodes = new TreeMap<String, Node>();
+	nodes = new TreeMap<>();
    }
 
     /**
     * Gibt einen Iterator wieder, um über alle Nodes iterieren zu können.
     * @return Iterator
     */
-   public Iterator getIterator() {
-	Set set = nodes.entrySet();
-	return set.iterator();
+   public Iterator<Entry<String, Node>> getIterator() {
+        return nodes.entrySet().iterator();
    }
 
    /**
@@ -72,7 +68,7 @@ public class Store  {
     */
    public void deleteEmptyNodes() {
 
-	for (String id : new ArrayList<String>(nodes.keySet())) {
+	for (String id : nodes.keySet()) {
 	   nodes.get(id).deleteEmptyConfigItems();
 	   if (nodes.get(id).getNumberOfConfigItems() == 0) {
 		nodes.remove(id);
@@ -106,7 +102,7 @@ public class Store  {
    public HashMap<String, HashMap<String, String>> getAllAnswers() {
 	deleteEmptyNodes();
 
-	HashMap<String, HashMap<String, String>> map = new HashMap<String, HashMap<String, String>>();
+	HashMap<String, HashMap<String, String>> map = new HashMap<>();
 
 	for (String key : nodes.keySet()) {
 	   map.put(key, nodes.get(key).getAnswers());
@@ -114,6 +110,3 @@ public class Store  {
 	return map;
    }
 }
-
-
-//~ Formatted by Jindent --- http://www.jindent.com
