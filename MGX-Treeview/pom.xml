@@ -55,6 +55,12 @@
             <artifactId>MGX-Controller</artifactId>
             <groupId>de.cebitec.mgx.gui</groupId>
         </dependency>
+        <dependency>
+            <artifactId>org-openide-dialogs</artifactId>
+            <groupId>org.netbeans.api</groupId>
+            <type>jar</type>
+            <version>RELEASE721</version>
+        </dependency>
     </dependencies>
 
     <build>

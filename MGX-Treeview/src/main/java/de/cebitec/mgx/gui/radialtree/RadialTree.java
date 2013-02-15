@@ -6,19 +6,28 @@ import de.cebitec.mgx.gui.datamodel.AttributeType;
 import de.cebitec.mgx.gui.datamodel.misc.Pair;
 import de.cebitec.mgx.gui.datamodel.tree.Node;
 import de.cebitec.mgx.gui.datamodel.tree.Tree;
+import de.cebitec.mgx.gui.groups.ImageExporterI;
 import de.cebitec.mgx.gui.groups.VGroupManager;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import de.cebitec.mgx.gui.radialtree.internal.*;
+import de.cebitec.mgx.gui.util.FileChooserUtils;
+import de.cebitec.mgx.gui.util.FileType;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.io.BufferedOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Iterator;
 import java.util.List;
 import javax.swing.JComponent;
 import javax.swing.SwingConstants;
+import org.openide.DialogDisplayer;
+import org.openide.NotifyDescriptor;
 import org.openide.util.lookup.ServiceProvider;
 import prefuse.Display;
 import prefuse.Visualization;
@@ -149,7 +158,6 @@ public class RadialTree extends HierarchicalViewerI {
         // colors
         ItemAction nodeColor = new NodeColorAction(treeNodes);
         ColorAction nodeStrokeColor = new ColorAction(treeNodes, VisualItem.STROKECOLOR) {
-
             @Override
             public int getColor(VisualItem item) {
                 return ColorLib.darker(item.getFillColor());
@@ -171,7 +179,6 @@ public class RadialTree extends HierarchicalViewerI {
 
         // recentre and rezoom on reload
         resizeAction = new Action() {
-
             @Override
             public void run(double frac) {
                 // animate reset zoom to fit the data (must run only AFTER layout)
@@ -214,7 +221,6 @@ public class RadialTree extends HierarchicalViewerI {
 
         // repaint
         ActionList repaint = new ActionList() {
-
             @Override
             public void run(double frac) {
                 // only repaint if animation is not already running; otherwise we get flicker if repaint
@@ -251,7 +257,6 @@ public class RadialTree extends HierarchicalViewerI {
         // the PolarLocationAnimator should read this set and act accordingly
 
         selected.addTupleSetListener(new TupleSetListener() {
-
             @Override
             public void tupleSetChanged(TupleSet t, Tuple[] add, Tuple[] rem) {
                 visualization.cancel("animate");
@@ -260,7 +265,6 @@ public class RadialTree extends HierarchicalViewerI {
         });
 
         search.addTupleSetListener(new TupleSetListener() {
-
             @Override
             public void tupleSetChanged(TupleSet t, Tuple[] add, Tuple[] rem) {
                 visualization.cancel("animate");
@@ -357,6 +361,28 @@ public class RadialTree extends HierarchicalViewerI {
     @Override
     public boolean canHandle(AttributeType valueType) {
         return super.canHandle(valueType) && VGroupManager.getInstance().getActiveGroups().size() == 1;
+    }
+
+    @Override
+    public ImageExporterI getImageExporter() {
+        return new ImageExporterI() {
+            @Override
+            public void export() {
+                String fname = FileChooserUtils.selectNewFilename(new FileType[]{FileType.PNG});
+                if (fname == null) {
+                    return;
+                }
+                try (OutputStream os = new BufferedOutputStream(new FileOutputStream(fname))) {
+                    display.saveImage(os, FileType.PNG.getSuffices()[0].toUpperCase(), 2);
+                } catch (IOException ex) {
+                    NotifyDescriptor nd = new NotifyDescriptor.Message("Error: " + ex.getMessage(), NotifyDescriptor.ERROR_MESSAGE);
+                    DialogDisplayer.getDefault().notify(nd);
+                    return;
+                }
+                NotifyDescriptor nd = new NotifyDescriptor.Message("Chart saved to "+fname, NotifyDescriptor.INFORMATION_MESSAGE);
+                DialogDisplayer.getDefault().notify(nd);
+            }
+        };
     }
 
     /**
