@@ -5,7 +5,6 @@ import javax.swing.JComponent;
 import org.math.array.DoubleArray;
 import org.math.array.LinearAlgebra;
 import org.math.array.StatisticSample;
-import org.math.plot.FrameView;
 import org.math.plot.Plot2DPanel;
 
 /**
