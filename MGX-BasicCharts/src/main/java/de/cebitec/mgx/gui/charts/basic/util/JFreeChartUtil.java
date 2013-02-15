@@ -3,7 +3,10 @@ package de.cebitec.mgx.gui.charts.basic.util;
 import de.cebitec.mgx.gui.datamodel.Attribute;
 import de.cebitec.mgx.gui.datamodel.misc.Distribution;
 import de.cebitec.mgx.gui.datamodel.misc.Pair;
+import de.cebitec.mgx.gui.groups.ImageExporterI;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
+import de.cebitec.mgx.gui.util.FileChooserUtils;
+import de.cebitec.mgx.gui.util.FileType;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -15,6 +18,8 @@ import org.jfree.data.general.DefaultKeyedValues2DDataset;
 import org.jfree.data.general.KeyedValues2DDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
+import org.openide.DialogDisplayer;
+import org.openide.NotifyDescriptor;
 import org.openide.util.Exceptions;
 
 /**
@@ -51,8 +56,8 @@ public class JFreeChartUtil {
         }
         return dataset;
     }
-    
-        public static KeyedValues2DDataset createKeyedValues2DDataset(List<Pair<VisualizationGroup, Distribution>> in) {
+
+    public static KeyedValues2DDataset createKeyedValues2DDataset(List<Pair<VisualizationGroup, Distribution>> in) {
         DefaultKeyedValues2DDataset dataset = new DefaultKeyedValues2DDataset();
         for (Pair<VisualizationGroup, Distribution> groupDistribution : in) {
             Distribution d = groupDistribution.getSecond();
@@ -61,10 +66,10 @@ public class JFreeChartUtil {
                 dataset.addValue(entry.getValue(), groupDistribution.getFirst().getName(), entry.getKey().getValue());
             }
         }
-        
+
         return dataset;
     }
-    
+
 //    public static void saveSVG(JFreeChart chart, File f) {
 //        DOMImplementation domImpl = GenericDOMImplementation.getDOMImplementation();
 //        Document document = domImpl.createDocument(null, "svg", null);
@@ -80,6 +85,29 @@ public class JFreeChartUtil {
 //            Exceptions.printStackTrace(ex);
 //        }
 //    }
+    
+    
+    public static ImageExporterI getImageExporter(final JFreeChart chart) {
+        return new ImageExporterI() {
+            @Override
+            public void export() {
+                String fname = FileChooserUtils.selectNewFilename(new FileType[]{FileType.PNG});
+                if (fname == null) {
+                    return;
+                }
+
+                try {
+                    ChartUtilities.saveChartAsPNG(new File(fname), chart, 1280, 1024);
+                } catch (IOException ex) {
+                    NotifyDescriptor nd = new NotifyDescriptor.Message("Error: " + ex.getMessage(), NotifyDescriptor.ERROR_MESSAGE);
+                    DialogDisplayer.getDefault().notify(nd);
+                    return;
+                }
+                NotifyDescriptor nd = new NotifyDescriptor.Message("Chart saved to " + fname, NotifyDescriptor.INFORMATION_MESSAGE);
+                DialogDisplayer.getDefault().notify(nd);
+            }
+        };
+    }
 
     public static void savePNG(JFreeChart chart, File f) {
         try {

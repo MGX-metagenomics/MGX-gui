@@ -6,6 +6,7 @@ import de.cebitec.mgx.gui.charts.basic.customizer.BarChartCustomizer;
 import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
 import de.cebitec.mgx.gui.datamodel.misc.Distribution;
 import de.cebitec.mgx.gui.datamodel.misc.Pair;
+import de.cebitec.mgx.gui.groups.ImageExporterI;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import java.awt.Color;
 import java.util.List;
@@ -115,5 +116,10 @@ public class BarChartViewer extends CategoricalViewerI {
             customizer.setAttributeType(getAttributeType());
         }
         return customizer;
+    }
+
+    @Override
+    public ImageExporterI getImageExporter() {
+        return JFreeChartUtil.getImageExporter(chart);
     }
 }

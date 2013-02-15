@@ -5,8 +5,10 @@ import de.cebitec.mgx.gui.attributevisualization.viewer.CategoricalViewerI;
 import de.cebitec.mgx.gui.attributevisualization.viewer.ViewerI;
 import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
 import de.cebitec.mgx.gui.charts.basic.util.TickedSpiderWebPlot;
+import de.cebitec.mgx.gui.datamodel.AttributeType;
 import de.cebitec.mgx.gui.datamodel.misc.Distribution;
 import de.cebitec.mgx.gui.datamodel.misc.Pair;
+import de.cebitec.mgx.gui.groups.ImageExporterI;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import java.awt.Color;
 import java.awt.Font;
@@ -16,13 +18,9 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.StandardChartTheme;
-import org.jfree.chart.block.BlockBorder;
 import org.jfree.chart.labels.CategoryToolTipGenerator;
 import org.jfree.chart.labels.StandardCategoryToolTipGenerator;
-import org.jfree.chart.plot.SpiderWebPlot;
-import org.jfree.chart.title.LegendTitle;
 import org.jfree.data.category.CategoryDataset;
-import org.jfree.ui.RectangleEdge;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -34,6 +32,12 @@ public class SpiderWebChart extends CategoricalViewerI {
 
     private ChartPanel cPanel = null;
     private JFreeChart chart = null;
+
+    @Override
+    public boolean canHandle(AttributeType valueType) {
+        // currently broken, disable viewer
+        return false;
+    }
 
     @Override
     public JComponent getComponent() {
@@ -91,5 +95,10 @@ public class SpiderWebChart extends CategoricalViewerI {
     @Override
     public JComponent getCustomizer() {
         return null;
+    }
+
+    @Override
+    public ImageExporterI getImageExporter() {
+        return JFreeChartUtil.getImageExporter(chart);
     }
 }

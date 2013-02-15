@@ -4,27 +4,19 @@ import de.cebitec.mgx.gui.attributevisualization.filter.SortOrder;
 import de.cebitec.mgx.gui.attributevisualization.viewer.NumericalViewerI;
 import de.cebitec.mgx.gui.attributevisualization.viewer.ViewerI;
 import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
+import de.cebitec.mgx.gui.datamodel.AttributeType;
 import de.cebitec.mgx.gui.datamodel.misc.Distribution;
 import de.cebitec.mgx.gui.datamodel.misc.Pair;
+import de.cebitec.mgx.gui.groups.ImageExporterI;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import java.awt.Color;
 import java.util.List;
-import java.util.Locale;
 import javax.swing.JComponent;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.LogAxis;
-import org.jfree.chart.axis.LogarithmicAxis;
-import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.axis.TickUnitSource;
-import org.jfree.chart.axis.ValueAxis;
-import org.jfree.chart.plot.Plot;
-import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.PolarPlot;
-import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.DefaultPolarItemRenderer;
-import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -37,6 +29,12 @@ public class PolarChart extends NumericalViewerI {
 
     private ChartPanel cPanel = null;
     private JFreeChart chart = null;
+
+    @Override
+    public boolean canHandle(AttributeType valueType) {
+        // currently broken, disable viewer
+        return false;
+    }
 
     @Override
     public JComponent getComponent() {
@@ -80,5 +78,10 @@ public class PolarChart extends NumericalViewerI {
     @Override
     public Class getInputType() {
         return Distribution.class;
+    }
+
+    @Override
+    public ImageExporterI getImageExporter() {
+        return JFreeChartUtil.getImageExporter(chart);
     }
 }

@@ -6,6 +6,7 @@ import de.cebitec.mgx.gui.charts.basic.customizer.XYPlotCustomizer;
 import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
 import de.cebitec.mgx.gui.datamodel.misc.Distribution;
 import de.cebitec.mgx.gui.datamodel.misc.Pair;
+import de.cebitec.mgx.gui.groups.ImageExporterI;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import java.awt.Color;
 import java.util.List;
@@ -121,5 +122,10 @@ public class AreaChart extends NumericalViewerI {
     @Override
     public Class getInputType() {
         return Distribution.class;
+    }
+
+    @Override
+    public ImageExporterI getImageExporter() {
+        return JFreeChartUtil.getImageExporter(chart);
     }
 }

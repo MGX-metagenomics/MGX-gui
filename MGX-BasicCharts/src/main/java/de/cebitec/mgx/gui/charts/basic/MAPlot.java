@@ -4,10 +4,12 @@ import de.cebitec.mgx.gui.attributevisualization.filter.ToFractionFilter;
 import de.cebitec.mgx.gui.attributevisualization.viewer.NumericalViewerI;
 import de.cebitec.mgx.gui.attributevisualization.viewer.ViewerI;
 import de.cebitec.mgx.gui.charts.basic.customizer.XYPlotCustomizer;
+import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
 import de.cebitec.mgx.gui.datamodel.Attribute;
 import de.cebitec.mgx.gui.datamodel.AttributeType;
 import de.cebitec.mgx.gui.datamodel.misc.Distribution;
 import de.cebitec.mgx.gui.datamodel.misc.Pair;
+import de.cebitec.mgx.gui.groups.ImageExporterI;
 import de.cebitec.mgx.gui.groups.VGroupManager;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import java.awt.Color;
@@ -122,7 +124,6 @@ public class MAPlot extends NumericalViewerI {
         dot.setDotHeight(5);
         dot.setDotWidth(5);
         dot.setBaseToolTipGenerator(new StandardXYToolTipGenerator() {
-
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -154,5 +155,10 @@ public class MAPlot extends NumericalViewerI {
     public boolean canHandle(AttributeType valueType) {
         return valueType.getValueType() == AttributeType.VALUE_DISCRETE
                 && VGroupManager.getInstance().getActiveGroups().size() == 2;
+    }
+
+    @Override
+    public ImageExporterI getImageExporter() {
+        return JFreeChartUtil.getImageExporter(chart);
     }
 }
