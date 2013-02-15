@@ -16,7 +16,7 @@ public class JobParameter extends Identifiable {
     private String className;
     private Map<String, String> choices;
     private String parameter_name;
-    private String parameter_value;
+    private String parameter_value = null;
     private String type;
     private boolean optional;
     private String default_value = "";

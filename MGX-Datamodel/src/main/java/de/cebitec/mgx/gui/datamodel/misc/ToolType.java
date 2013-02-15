@@ -8,5 +8,5 @@ public enum ToolType {
 
     GLOBAL,
     PROJECT,
-    USER_PROVIDED
+    USER_PROVIDED;
 }
