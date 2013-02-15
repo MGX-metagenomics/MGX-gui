@@ -4,8 +4,10 @@ import de.cebitec.mgx.gui.attributevisualization.filter.SortOrder;
 import de.cebitec.mgx.gui.attributevisualization.viewer.CategoricalViewerI;
 import de.cebitec.mgx.gui.attributevisualization.viewer.ViewerI;
 import de.cebitec.mgx.gui.datamodel.Attribute;
+import de.cebitec.mgx.gui.datamodel.AttributeType;
 import de.cebitec.mgx.gui.datamodel.misc.Distribution;
 import de.cebitec.mgx.gui.datamodel.misc.Pair;
+import de.cebitec.mgx.gui.groups.ImageExporterI;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -33,6 +35,14 @@ import org.openide.util.lookup.ServiceProvider;
  */
 @ServiceProvider(service = ViewerI.class)
 public class BarChart3DViewer extends CategoricalViewerI {
+
+    @Override
+    public boolean canHandle(AttributeType valueType) {
+        // currently broken, disable viewer
+        return false;
+    }
+    
+    
 
     private LabeledMouseSelector mouseSelection;
     private CustomMouseControl mouseCamera;
@@ -239,4 +249,9 @@ public class BarChart3DViewer extends CategoricalViewerI {
 //            chart.render();
 //        }
 //    }
+
+    @Override
+    public ImageExporterI getImageExporter() {
+        return null;
+    }
 }
