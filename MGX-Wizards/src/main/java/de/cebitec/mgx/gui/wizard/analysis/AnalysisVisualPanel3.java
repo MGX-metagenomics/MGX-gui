@@ -1,7 +1,14 @@
-
 package de.cebitec.mgx.gui.wizard.analysis;
 
+import de.cebitec.mgx.gui.datamodel.JobParameter;
+import de.cebitec.mgx.gui.wizard.analysis.misc.ParameterPanel;
+import java.awt.Component;
+import java.util.List;
+import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.ListCellRenderer;
+import javax.swing.border.Border;
+import javax.swing.border.LineBorder;
 
 public final class AnalysisVisualPanel3 extends JPanel {
 
@@ -10,11 +17,20 @@ public final class AnalysisVisualPanel3 extends JPanel {
      */
     public AnalysisVisualPanel3() {
         initComponents();
+        paramlist.setCellRenderer(new JobParameterRenderer());
     }
 
     @Override
     public String getName() {
         return "Confirm selection";
+    }
+
+    public void setToolName(String name) {
+        toolname.setText(name);
+    }
+
+    public void setParameters(List<JobParameter> jps) {
+        paramlist.setListData(jps.toArray(new JobParameter[]{}));
     }
 
     /**
@@ -24,17 +40,70 @@ public final class AnalysisVisualPanel3 extends JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLabel1 = new javax.swing.JLabel();
+        toolname = new javax.swing.JTextField();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        paramlist = new javax.swing.JList();
+
+        jLabel1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(AnalysisVisualPanel3.class, "AnalysisVisualPanel3.jLabel1.text")); // NOI18N
+
+        toolname.setEditable(false);
+        toolname.setText(org.openide.util.NbBundle.getMessage(AnalysisVisualPanel3.class, "AnalysisVisualPanel3.toolname.text")); // NOI18N
+
+        paramlist.setModel(new javax.swing.AbstractListModel() {
+            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            public int getSize() { return strings.length; }
+            public Object getElementAt(int i) { return strings[i]; }
+        });
+        jScrollPane1.setViewportView(paramlist);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(toolname, javax.swing.GroupLayout.DEFAULT_SIZE, 257, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(toolname, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 251, Short.MAX_VALUE)
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JList paramlist;
+    private javax.swing.JTextField toolname;
     // End of variables declaration//GEN-END:variables
+
+    private final class JobParameterRenderer implements ListCellRenderer<JobParameter> {
+
+        private ParameterPanel panel = new ParameterPanel();
+        protected Border noFocusBorder = LineBorder.createGrayLineBorder();
+        protected Border focusBorder = LineBorder.createBlackLineBorder();
+
+        @Override
+        public Component getListCellRendererComponent(JList<? extends JobParameter> list, JobParameter jp, int index, boolean isSelected, boolean cellHasFocus) {
+            panel.setParameterName(jp.getDisplayName());
+            panel.setValue(jp.getParameterValue());
+            panel.setDescription(jp.getUserDescription());
+            panel.setBorder(isSelected ? focusBorder : noFocusBorder);
+            return panel;
+        }
+    }
 }

@@ -7,10 +7,16 @@ package de.cebitec.mgx.gui.wizard.analysis.validator;
 public abstract class ValidatorI<T> {
     
     protected T value = null;
+    protected static String DEFAULT_ERROR_MSG = "Invalid value.";
+    protected String error = DEFAULT_ERROR_MSG;
 
     public abstract boolean validate(String input);
 
-    public T getValue() {
-        return value;
+    public String getValue() {
+        return value.toString();
+    }
+    
+    public String getError() {
+        return error;
     }
 }

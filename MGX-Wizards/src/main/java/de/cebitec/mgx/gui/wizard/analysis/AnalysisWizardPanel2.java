@@ -2,10 +2,21 @@ package de.cebitec.mgx.gui.wizard.analysis;
 
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.JobParameter;
+import de.cebitec.mgx.gui.datamodel.misc.Pair;
+import de.cebitec.mgx.gui.wizard.analysis.misc.BooleanPanel;
+import de.cebitec.mgx.gui.wizard.analysis.misc.ComboBoxPanel;
+import de.cebitec.mgx.gui.wizard.analysis.misc.FileChooserPanel;
+import de.cebitec.mgx.gui.wizard.analysis.misc.TextFieldPanel;
+import de.cebitec.mgx.gui.wizard.analysis.misc.ValueHolderI;
+import de.cebitec.mgx.gui.wizard.analysis.validator.BooleanValidator;
+import de.cebitec.mgx.gui.wizard.analysis.validator.ByteValidator;
 import de.cebitec.mgx.gui.wizard.analysis.validator.DoubleValidator;
 import de.cebitec.mgx.gui.wizard.analysis.validator.IntegerValidator;
 import de.cebitec.mgx.gui.wizard.analysis.validator.LongValidator;
+import de.cebitec.mgx.gui.wizard.analysis.validator.MultipleChoiceValidator;
+import de.cebitec.mgx.gui.wizard.analysis.validator.SByteValidator;
 import de.cebitec.mgx.gui.wizard.analysis.validator.StringValidator;
+import de.cebitec.mgx.gui.wizard.analysis.validator.ULongValidator;
 import de.cebitec.mgx.gui.wizard.analysis.validator.ValidatorI;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -26,7 +37,10 @@ public class AnalysisWizardPanel2 implements WizardDescriptor.Panel<WizardDescri
     private JobParameter parameter = null;
     private WizardDescriptor model = null;
     private boolean isValid = false;
+    private ValidatorI validator = null;
+    private ValueHolderI valueHolder = null;
     private final EventListenerList listeners = new EventListenerList();
+    public static final String PROP_PARAM = "propParam";
 
     @Override
     public AnalysisVisualPanel2 getComponent() {
@@ -80,28 +94,38 @@ public class AnalysisWizardPanel2 implements WizardDescriptor.Panel<WizardDescri
     @Override
     public void storeSettings(WizardDescriptor settings) {
         model = settings;
+        parameter.setParameterValue(getComponent().getValue());
     }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         boolean oldState = isValid;
         isValid = checkValidity();
-        if (oldState != isValid) {
+       // if (oldState != isValid) {
             fireChangeEvent(this, oldState, isValid);
-        }
+       // }
     }
 
     private boolean checkValidity() {
-        isValid = true;
-        if (parameter.isOptional()) {
+        //isValid = true;
+        NotificationLineSupport nls = model.getNotificationLineSupport();
+        nls.clearMessages();
+        if (parameter.isOptional() && valueHolder.getValue().isEmpty()) {
             return true;
         }
-        NotificationLineSupport nls = model.getNotificationLineSupport();
-        nls.setErrorMessage("");
-        return isValid;
+
+        boolean newValue = validator.validate(valueHolder.getValue());
+
+        if (!newValue) {
+            nls.setErrorMessage(validator.getError());
+        }
+        return newValue;
     }
 
     public void setJobParameter(JobParameter jp) {
+        if (jp == parameter) {
+            return;
+        }
         parameter = jp;
         AnalysisVisualPanel2 avp = getComponent();
         String title = new StringBuilder(parameter.getDisplayName())
@@ -112,36 +136,46 @@ public class AnalysisWizardPanel2 implements WizardDescriptor.Panel<WizardDescri
         avp.setDescription(parameter.getUserDescription());
         avp.setOptional(parameter.isOptional());
 
-        ValidatorI validator = getValidator(parameter.getType());
+
+        Pair<? extends ValueHolderI, ? extends ValidatorI> p = getValidator(parameter.getType());
+        valueHolder = p.getFirst();
+        validator = p.getSecond();
+        if (jp.getDefaultValue() != null) {
+            valueHolder.setValue(jp.getDefaultValue());
+        }
+        if (jp.getParameterValue() != null) {
+            valueHolder.setValue(jp.getParameterValue());
+        }
+        getComponent().setInputComponent(valueHolder);
     }
 
-    private ValidatorI getValidator(String type) {
+    private Pair<? extends ValueHolderI, ? extends ValidatorI> getValidator(String type) {
         switch (type) {
             case "ConfigByte":
-                return null;
+                return new Pair<>(new TextFieldPanel(), new ByteValidator());
             case "ConfigDouble":
-                return new DoubleValidator();
+                return new Pair<>(new TextFieldPanel(), new DoubleValidator());
             case "ConfigEnumeration`1":
-                return null;
+                return new Pair<>(new ComboBoxPanel(parameter), new MultipleChoiceValidator(parameter));
             case "ConfigFile":
-                return null;
+                return new Pair<>(new FileChooserPanel(master), new StringValidator());
             case "ConfigInteger":
-                return new IntegerValidator();
+                return new Pair<>(new TextFieldPanel(), new IntegerValidator());
             case "ConfigLong":
-                return new LongValidator();
+                return new Pair<>(new TextFieldPanel(), new LongValidator());
             case "ConfigSByte":
-                return null;
+                return new Pair<>(new TextFieldPanel(), new SByteValidator());
             case "ConfigSelection`2":
-                return null;
+                return new Pair<>(new ComboBoxPanel(parameter), new MultipleChoiceValidator(parameter));
             case "ConfigString":
-                return new StringValidator();
+                return new Pair<>(new TextFieldPanel(), new StringValidator());
             case "ConfigULong":
-                return null;
+                return new Pair<>(new TextFieldPanel(), new ULongValidator());
             case "ConfigBoolean":
-                return null;
+                return new Pair<>(new BooleanPanel(parameter), new BooleanValidator());
             default:
                 // uncheckable configuration type
-                return new StringValidator();
+                return new Pair<>(new TextFieldPanel(), new StringValidator());
         }
     }
 }

@@ -2,8 +2,6 @@ package de.cebitec.mgx.gui.wizard.analysis;
 
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.JobParameter;
-import de.cebitec.mgx.gui.wizard.configurations.data.impl.Store;
-import de.cebitec.mgx.gui.wizard.configurations.data.util.Transform;
 import java.awt.Component;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -87,6 +85,10 @@ public final class AnalysisWizardIterator implements WizardDescriptor.Iterator<W
 
     @Override
     public WizardDescriptor.Panel<WizardDescriptor> current() {
+        if (currentParameterIdx == -1) {
+            wd.putProperty(PROP_PARAMETERS, null);
+            return p1;
+        }
         switch (nextState) {
             case INIT:
                 return p1;
@@ -102,7 +104,6 @@ public final class AnalysisWizardIterator implements WizardDescriptor.Iterator<W
                 return null;
 
         }
-        //return panels.get(index);
     }
 
     @Override
@@ -143,7 +144,7 @@ public final class AnalysisWizardIterator implements WizardDescriptor.Iterator<W
     private void updateState() {
         if (wd.getProperty(PROP_TOOL) == null) {
             nextState = State.INIT;
-            cs.fireChange();
+       //     cs.fireChange();
             return;
         }
         if (wd.getProperty(PROP_PARAMETERS) != null) {
@@ -172,24 +173,24 @@ public final class AnalysisWizardIterator implements WizardDescriptor.Iterator<W
 
             if (allParamsSet) {
                 nextState = State.OVERVIEW;
-                cs.fireChange();
+             //   cs.fireChange();
                 return;
             }
         }
         if (wd.getProperty(PROP_JOB) != null) {
             nextState = State.OVERVIEW;
-            cs.fireChange();
+          //  cs.fireChange();
         }
     }
-    private ChangeSupport cs = new ChangeSupport(this);
+    //private ChangeSupport cs = new ChangeSupport(this);
 
     @Override
     public void addChangeListener(ChangeListener l) {
-        cs.addChangeListener(l);
+       // cs.addChangeListener(l);
     }
 
     @Override
     public void removeChangeListener(ChangeListener l) {
-        cs.removeChangeListener(l);
+       // cs.removeChangeListener(l);
     }
 }

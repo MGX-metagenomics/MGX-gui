@@ -104,16 +104,21 @@ public class AnalysisWizardPanel1 implements WizardDescriptor.AsynchronousValida
         model = settings;
         AnalysisVisualPanel1 c = getComponent();
         c.addPropertyChangeListener(this);
+        //model.putProperty(AnalysisWizardIterator.PROP_PARAMETERS, null);
     }
 
     @Override
     public void storeSettings(WizardDescriptor settings) {
         model = settings;
         AnalysisVisualPanel1 c = getComponent();
+        Tool previousTool = (Tool) model.getProperty(AnalysisWizardIterator.PROP_TOOL);
         Tool tool = c.getTool();
-        ToolType ttype = c.getToolType();
-        model.putProperty(AnalysisWizardIterator.PROP_TOOL, tool);
-        model.putProperty(AnalysisWizardIterator.PROP_TOOLTYPE, ttype);
+
+        if (previousTool == null || !tool.equals(previousTool)) {
+            model.putProperty(AnalysisWizardIterator.PROP_TOOL, tool);
+            model.putProperty(AnalysisWizardIterator.PROP_TOOLTYPE, c.getToolType());
+            model.putProperty(AnalysisWizardIterator.PROP_PARAMETERS, null);
+        }
 
     }
 
@@ -129,7 +134,7 @@ public class AnalysisWizardPanel1 implements WizardDescriptor.AsynchronousValida
     private boolean checkValidity() {
         isValid = true;
         NotificationLineSupport nls = model.getNotificationLineSupport();
-        nls.setErrorMessage("");
+        nls.clearMessages();
         Tool t = getComponent().getTool();
         ToolType tt = getComponent().getToolType();
 
@@ -184,26 +189,29 @@ public class AnalysisWizardPanel1 implements WizardDescriptor.AsynchronousValida
     @Override
     public void prepareValidation() {
 
-        if (isValid) {
-            latch = new CountDownLatch(1);
-            ParameterRetriever pr = new ParameterRetriever(master, getComponent().getTool(), getComponent().getToolType()) {
-                @Override
-                protected void done() {
-                    try {
-                        Collection<JobParameter> params = get();
-                        // we need a list instead of a collection, convert..
-                        List<JobParameter> list =  new ArrayList<>(params);
-                        model.putProperty(AnalysisWizardIterator.PROP_PARAMETERS, list);
-                    } catch (InterruptedException | ExecutionException ex) {
-                        model.putProperty(AnalysisWizardIterator.PROP_PARAMETERS, null);
-                        Exceptions.printStackTrace(ex);
-                    }
-                    latch.countDown();
-                    super.done();
-                }
-            };
-            pr.execute();
+        if (!isValid) {
+            latch = null;
+            return;
         }
+        
+        latch = new CountDownLatch(1);
+        ParameterRetriever pr = new ParameterRetriever(master, getComponent().getTool(), getComponent().getToolType()) {
+            @Override
+            protected void done() {
+                try {
+                    Collection<JobParameter> params = get();
+                    // we need a list instead of a collection, convert..
+                    List<JobParameter> list = new ArrayList<>(params);
+                    model.putProperty(AnalysisWizardIterator.PROP_PARAMETERS, list);
+                } catch (InterruptedException | ExecutionException ex) {
+                    model.putProperty(AnalysisWizardIterator.PROP_PARAMETERS, null);
+                    Exceptions.printStackTrace(ex);
+                }
+                latch.countDown();
+                super.done();
+            }
+        };
+        pr.execute();
     }
 
     @Override
