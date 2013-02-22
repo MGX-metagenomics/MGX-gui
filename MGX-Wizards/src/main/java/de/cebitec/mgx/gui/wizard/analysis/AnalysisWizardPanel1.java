@@ -193,6 +193,9 @@ public class AnalysisWizardPanel1 implements WizardDescriptor.Panel<WizardDescri
                         return null; // tool already present in project
                     }
                 }
+                
+                String xmlData = t.getXMLFile();
+                // TODO: validate content
 
                 return t;
             default:
