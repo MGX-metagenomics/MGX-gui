@@ -4,8 +4,6 @@ import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.JobDTO;
 import de.cebitec.mgx.dto.dto.JobParameterDTO;
-import de.cebitec.mgx.dto.dto.JobParameterListDTO;
-import de.cebitec.mgx.dto.dto.JobParameterListDTO.Builder;
 import de.cebitec.mgx.gui.datamodel.Identifiable;
 import de.cebitec.mgx.gui.datamodel.Job;
 import de.cebitec.mgx.gui.datamodel.JobParameter;
@@ -22,40 +20,53 @@ import org.openide.util.Exceptions;
  */
 public class JobAccess extends AccessBase<Job> {
 
-    public boolean verify(long jobId) throws MGXServerException {
-        return getDTOmaster().Job().verify(jobId);
-    }
-
-    public boolean execute(long jobId) throws MGXServerException {
-        return getDTOmaster().Job().execute(jobId);
-    }
-
-    public boolean cancel(long jobId) throws MGXServerException {
-        return getDTOmaster().Job().cancel(jobId);
-    }
-
-    public Iterable<JobParameter> getParameters(long jobId) throws MGXServerException {
-        List<JobParameter> ret = new ArrayList<>();
-        for (JobParameterDTO dto : getDTOmaster().Job().getParameters(jobId)) {
-            ret.add(JobParameterDTOFactory.getInstance().toModel(dto));
-        }
+    public boolean verify(Job obj) throws MGXServerException {
+        assert obj.getId() != Identifiable.INVALID_IDENTIFIER;
+        boolean ret = getDTOmaster().Job().verify(obj.getId());
+        obj.firePropertyChange(ModelBase.OBJECT_MODIFIED, null, obj);
         return ret;
     }
 
-    public void setParameters(long jobId, Iterable<JobParameter> params) throws MGXServerException {
-        Builder b = JobParameterListDTO.newBuilder();
-        for (JobParameter jp : params) {
-            b.addParameter(JobParameterDTOFactory.getInstance().toDTO(jp));
-        }
-        getDTOmaster().Job().setParameters(jobId, b.build());
+    public boolean execute(Job obj) throws MGXServerException {
+        assert obj.getId() != Identifiable.INVALID_IDENTIFIER;
+        boolean ret = getDTOmaster().Job().execute(obj.getId());
+        obj.firePropertyChange(ModelBase.OBJECT_MODIFIED, null, obj);
+        return ret;
     }
 
+    public boolean cancel(Job obj) throws MGXServerException {
+        assert obj.getId() != Identifiable.INVALID_IDENTIFIER;
+        boolean ret = getDTOmaster().Job().cancel(obj.getId());
+        obj.firePropertyChange(ModelBase.OBJECT_MODIFIED, null, obj);
+        return ret;
+    }
+
+//    public Iterable<JobParameter> getParameters(long jobId) throws MGXServerException {
+//        List<JobParameter> ret = new ArrayList<>();
+//        for (JobParameterDTO dto : getDTOmaster().Job().getParameters(jobId)) {
+//            ret.add(JobParameterDTOFactory.getInstance().toModel(dto));
+//        }
+//        return ret;
+//    }
+
+//    public void setParameters(long jobId, Iterable<JobParameter> params) throws MGXServerException {
+//        Builder b = JobParameterListDTO.newBuilder();
+//        for (JobParameter jp : params) {
+//            b.addParameter(JobParameterDTOFactory.getInstance().toDTO(jp));
+//        }
+//        getDTOmaster().Job().setParameters(jobId, b.build());
+//    }
     @Override
     public long create(Job obj) {
+        assert obj.getTool().getId() != Identifiable.INVALID_IDENTIFIER;
+        assert obj.getSeqrun().getId() != Identifiable.INVALID_IDENTIFIER;
+
         JobDTO dto = JobDTOFactory.getInstance().toDTO(obj);
         long id = Identifiable.INVALID_IDENTIFIER;
         try {
             id = getDTOmaster().Job().create(dto);
+            obj.setId(id);
+            obj.firePropertyChange(ModelBase.OBJECT_MODIFIED, null, obj);
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
