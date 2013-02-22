@@ -11,13 +11,16 @@ import java.util.List;
 public class SearchResult {
 
     private String seqName;
-    private List<Observation> observations = new ArrayList<>();
+    private List<Observation> observations = null;
 
     public List<Observation> getObservations() {
         return observations;
     }
 
     public void addObservation(Observation obs) {
+        if (observations == null) {
+            observations = new ArrayList<>();
+        }
         observations.add(obs);
     }
 
