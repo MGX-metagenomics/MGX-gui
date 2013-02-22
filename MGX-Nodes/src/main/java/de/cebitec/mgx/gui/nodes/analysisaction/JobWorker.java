@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package de.cebitec.mgx.gui.nodes.analysisaction;
 
 import de.cebitec.mgx.client.exception.MGXServerException;
@@ -15,7 +12,6 @@ import de.cebitec.mgx.gui.datamodel.misc.ToolType;
 import de.cebitec.mgx.gui.wizard.configurations.progressscreen.ProgressBar;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 import org.openide.util.Exceptions;
 
@@ -26,26 +22,11 @@ import org.openide.util.Exceptions;
  */
 public class JobWorker extends SwingWorker<Void, Void> {
 
-    /**
-     * Enthaelt alle Parameter die der Benutzer eingegeben hat.
-     */
     private final List<JobParameter> jobParameterList;
-    /**
-     * MGX Master
-     */
-    private MGXMaster master;
-    /**
-     * Der Tooltyp.
-     */
-    private ToolType toolType;
-    /**
-     * Das Tool welches ausgewaehlt wurde.
-     */
+    private final MGXMaster master;
+    private final ToolType toolType;
     private Tool tool;
-    /**
-     * Der Sequenzierlauf.
-     */
-    private SeqRun seqRun;
+    private final SeqRun seqRun;
 
     /**
      * Konstruktor fuer den Worker.
@@ -74,11 +55,7 @@ public class JobWorker extends SwingWorker<Void, Void> {
         ProgressBar progress = new ProgressBar("Executing tool.",
                 "Waiting for the server",
                 300, 140);
-        Job job = new Job();
         switch (toolType) {
-            case PROJECT:
-                job.setId(tool.getId());
-                break;
             case GLOBAL:
                 Long installedToolId = null;
                 try {
@@ -86,14 +63,14 @@ public class JobWorker extends SwingWorker<Void, Void> {
                 } catch (MGXServerException ex) {
                     Exceptions.printStackTrace(ex);
                 }
-                job.setId(installedToolId);
+                tool = master.Tool().fetch(installedToolId);
                 break;
             case USER_PROVIDED:
                 long toolId = master.Tool().create(tool);
-                job.setId(toolId);
-
+                break;
         }
 
+        Job job = new Job();
         job.setTool(tool);
         job.setSeqrun(seqRun);
         job.setCreator(master.getLogin());
@@ -101,55 +78,31 @@ public class JobWorker extends SwingWorker<Void, Void> {
         job.setParameters(jobParameterList);
         Long job_id = master.Job().create(job);
         boolean job_ok = false;
-        progress.setUpdateText("Verifying Parameters.");
+        progress.setUpdateText("Verifying..");
 
         try {
-            job_ok = master.Job().verify(job_id);
+            job_ok = master.Job().verify(job);
         } catch (MGXServerException ex) {
             Exceptions.printStackTrace(ex);
         }
 
-        System.err.println("job verification: " + job_ok);
-
-        boolean submitted = false;
-
-        progress.setUpdateText("Executing Parameters.");
+        progress.setUpdateText("Submitting..");
 
         try {
-            submitted = master.Job().execute(job_id);
+            master.Job().execute(job);
         } catch (MGXServerException ex) {
             Exceptions.printStackTrace(ex);
         }
-        System.err.println("job execution: " + submitted);
         progress.dispose();
         return null;
     }
 
-    /**
-     * Methode wird aufgerufen, bevor der Worker beendet wird.
-     */
     @Override
     protected void done() {
         try {
             get();
         } catch (InterruptedException | ExecutionException ex) {
             Exceptions.printStackTrace(ex);
-        }
-
-        Object[] options = {"Yes",
-            "No",};
-        int value = JOptionPane.showOptionDialog(null,
-                "The tool has been successfully installed.\n"
-                + "Do you want to return back to the tool Overview?",
-                "",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE, null,
-                options, options[0]);
-        if (value == JOptionPane.YES_OPTION) {
-            GetToolsWorker worker =
-                    new GetToolsWorker(master, seqRun);
-            worker.execute();
-        } else {
         }
     }
 }
