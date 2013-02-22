@@ -8,13 +8,11 @@ import java.util.NoSuchElementException;
 import javax.swing.JComponent;
 import javax.swing.event.ChangeListener;
 import org.openide.WizardDescriptor;
-import org.openide.util.ChangeSupport;
 
 public final class AnalysisWizardIterator implements WizardDescriptor.Iterator<WizardDescriptor> {
 
     public static final String PROP_TOOL = "tool";
     public static final String PROP_TOOLTYPE = "tooltype";
-    public static final String PROP_PARAMFETCHER = "paramFetcher";
     public static final String PROP_PARAMETERS = "toolParameters";
     public static final String PROP_JOB = "job";
     // Example of invoking this wizard:
@@ -38,15 +36,9 @@ public final class AnalysisWizardIterator implements WizardDescriptor.Iterator<W
     //private int index;
     private final MGXMaster master;
     private WizardDescriptor wd = null;
+    private int numPanels = 2;
+    private int idx = 0;
     //
-
-    private enum State {
-
-        INIT,
-        SET_PARAMETERS,
-        OVERVIEW;
-    };
-    private State nextState;
 
     public AnalysisWizardIterator(MGXMaster master) {
         this.master = master;
@@ -54,8 +46,8 @@ public final class AnalysisWizardIterator implements WizardDescriptor.Iterator<W
 
     public void setWizardDescriptor(WizardDescriptor wd) {
         this.wd = wd;
+        wd.putProperty(WizardDescriptor.PROP_CONTENT_DATA, new String[]{p1.getName(), p2.getName(), p3.getName()});
         createPanels();
-        nextState = State.INIT;
     }
     AnalysisWizardPanel1 p1 = new AnalysisWizardPanel1();
     AnalysisWizardPanel2 p2 = new AnalysisWizardPanel2();
@@ -64,6 +56,7 @@ public final class AnalysisWizardIterator implements WizardDescriptor.Iterator<W
     private void createPanels() {
 
         p1.setMaster(master);
+        p1.setWizardDescriptor(wd);
         //
         p2.setMaster(master);
         //
@@ -85,25 +78,16 @@ public final class AnalysisWizardIterator implements WizardDescriptor.Iterator<W
 
     @Override
     public WizardDescriptor.Panel<WizardDescriptor> current() {
-        if (currentParameterIdx == -1) {
-            wd.putProperty(PROP_PARAMETERS, null);
+        if (idx == 0) {
             return p1;
+        } else if (idx == numPanels - 1) {
+            return p3;
         }
-        switch (nextState) {
-            case INIT:
-                return p1;
-            case SET_PARAMETERS:
-                // update p2 with current data
-                JobParameter jp = params.get(currentParameterIdx);
-                p2.setJobParameter(jp);
-                return p2;
-            case OVERVIEW:
-                return p3;
-            default:
-                assert false;
-                return null;
 
-        }
+        List<JobParameter> params = (List<JobParameter>) wd.getProperty(PROP_PARAMETERS);
+        JobParameter jp = params.get(idx - 1);
+        p2.setJobParameter(jp);
+        return p2;
     }
 
     @Override
@@ -113,12 +97,12 @@ public final class AnalysisWizardIterator implements WizardDescriptor.Iterator<W
 
     @Override
     public boolean hasNext() {
-        return nextState != State.OVERVIEW;
+        return idx < numPanels - 1;
     }
 
     @Override
     public boolean hasPrevious() {
-        return nextState != State.INIT;
+        return idx > 0;
     }
 
     @Override
@@ -126,7 +110,7 @@ public final class AnalysisWizardIterator implements WizardDescriptor.Iterator<W
         if (!hasNext()) {
             throw new NoSuchElementException();
         }
-        currentParameterIdx++;
+        idx++;
         updateState();
     }
 
@@ -135,62 +119,23 @@ public final class AnalysisWizardIterator implements WizardDescriptor.Iterator<W
         if (!hasPrevious()) {
             throw new NoSuchElementException();
         }
-        currentParameterIdx--;
+        idx--;
         updateState();
     }
-    private int currentParameterIdx = -1;
-    private List<JobParameter> params = null;
+    //private int currentParameterIdx = -1;
 
     private void updateState() {
-        if (wd.getProperty(PROP_TOOL) == null) {
-            nextState = State.INIT;
-       //     cs.fireChange();
-            return;
-        }
         if (wd.getProperty(PROP_PARAMETERS) != null) {
-            if (params == null) {
-                // start setting parameters for this tool..
-                params = (List<JobParameter>) wd.getProperty(PROP_PARAMETERS);
-                
-                // make sure parameters are initially all unset
-                for (JobParameter j : params) {
-                    assert j.getParameterValue() == null;
-                }
-                nextState = State.SET_PARAMETERS;
-                currentParameterIdx = 0;
-            }
-
-            // check if all non-optional parameters are set
-            boolean allParamsSet = true;
-            for (JobParameter j : params) {
-                if (!j.isOptional()) {
-                    if (j.getParameterValue() == null) {
-                        allParamsSet = false;
-                        break;
-                    }
-                }
-            }
-
-            if (allParamsSet) {
-                nextState = State.OVERVIEW;
-             //   cs.fireChange();
-                return;
-            }
-        }
-        if (wd.getProperty(PROP_JOB) != null) {
-            nextState = State.OVERVIEW;
-          //  cs.fireChange();
+            List<JobParameter> params = (List<JobParameter>) wd.getProperty(PROP_PARAMETERS);
+            numPanels = 2 + params.size();
         }
     }
-    //private ChangeSupport cs = new ChangeSupport(this);
 
     @Override
     public void addChangeListener(ChangeListener l) {
-       // cs.addChangeListener(l);
     }
 
     @Override
     public void removeChangeListener(ChangeListener l) {
-       // cs.removeChangeListener(l);
     }
 }

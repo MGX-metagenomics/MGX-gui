@@ -54,4 +54,8 @@ public class AnalysisWizardPanel3 implements WizardDescriptor.Panel<WizardDescri
     public void storeSettings(WizardDescriptor wiz) {
         model = wiz;
     }
+
+    public String getName() {
+        return "Confirm";
+    }
 }

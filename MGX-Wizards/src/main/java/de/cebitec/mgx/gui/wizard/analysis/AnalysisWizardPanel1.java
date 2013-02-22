@@ -12,21 +12,20 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
 import org.openide.NotificationLineSupport;
 import org.openide.WizardDescriptor;
-import org.openide.WizardValidationException;
 import org.openide.util.Exceptions;
 import org.openide.util.HelpCtx;
 
-public class AnalysisWizardPanel1 implements WizardDescriptor.AsynchronousValidatingPanel<WizardDescriptor>, PropertyChangeListener {
+public class AnalysisWizardPanel1 implements WizardDescriptor.Panel<WizardDescriptor>, PropertyChangeListener {
 
     /**
-     * The visual component that displays this panel. If you need to access the component from this class, just use getComponent().
+     * The visual component that displays this panel. If you need to access the
+     * component from this class, just use getComponent().
      */
     private AnalysisVisualPanel1 component;
     private WizardDescriptor model = null;
@@ -36,6 +35,12 @@ public class AnalysisWizardPanel1 implements WizardDescriptor.AsynchronousValida
     private List<Tool> projTools;
     private List<Tool> serverTools;
     private MGXMaster master = null;
+    private Tool currentTool = null;
+    private List<JobParameter> currentParams = null;
+
+    public void setWizardDescriptor(WizardDescriptor wdesc) {
+        model = wdesc;
+    }
 
     public void setMaster(MGXMaster master) {
         this.master = master;
@@ -57,14 +62,15 @@ public class AnalysisWizardPanel1 implements WizardDescriptor.AsynchronousValida
         tr.execute();
     }
 
-    // Get the visual component for the panel. In this template, the component
-    // is kept separate. This can be more efficient: if the wizard is created
-    // but never displayed, or not all panels are displayed, it is better to
-    // create only those which really need to be visible.
+    public String getName() {
+        return "Select tool";
+    }
+
     @Override
     public AnalysisVisualPanel1 getComponent() {
         if (component == null) {
             component = new AnalysisVisualPanel1();
+            component.addPropertyChangeListener(this);
         }
         return component;
     }
@@ -101,38 +107,48 @@ public class AnalysisWizardPanel1 implements WizardDescriptor.AsynchronousValida
 
     @Override
     public void readSettings(WizardDescriptor settings) {
-        model = settings;
-        AnalysisVisualPanel1 c = getComponent();
-        c.addPropertyChangeListener(this);
         //model.putProperty(AnalysisWizardIterator.PROP_PARAMETERS, null);
     }
 
     @Override
     public void storeSettings(WizardDescriptor settings) {
-        model = settings;
         AnalysisVisualPanel1 c = getComponent();
-        Tool previousTool = (Tool) model.getProperty(AnalysisWizardIterator.PROP_TOOL);
-        Tool tool = c.getTool();
 
-        if (previousTool == null || !tool.equals(previousTool)) {
-            model.putProperty(AnalysisWizardIterator.PROP_TOOL, tool);
-            model.putProperty(AnalysisWizardIterator.PROP_TOOLTYPE, c.getToolType());
-            model.putProperty(AnalysisWizardIterator.PROP_PARAMETERS, null);
-        }
-
+        model.putProperty(AnalysisWizardIterator.PROP_TOOL, currentTool);
+        model.putProperty(AnalysisWizardIterator.PROP_TOOLTYPE, c.getToolType());
+        model.putProperty(AnalysisWizardIterator.PROP_PARAMETERS, currentParams);
     }
 
     @Override
-    public void propertyChange(PropertyChangeEvent evt) {
+    public synchronized void propertyChange(PropertyChangeEvent evt) {
         boolean oldState = isValid;
-        isValid = checkValidity();
+
+        if (!evt.getPropertyName().equals("toolSelected")) {
+            return;
+        }
+
+        Tool newTool = checkTool();
+        if (newTool == null) {
+            currentTool = null;
+            currentParams = null;
+        }
+        
+        if (newTool != null && !newTool.equals(currentTool)) {
+            currentTool = newTool;
+            // fetch parameters
+            currentParams = fetchParameters(newTool);
+        }
+
+        // panel is valid, if parameters have been determined; even empty
+        // parameter list is ok
+        isValid = currentTool != null && currentParams != null;
+
         if (oldState != isValid) {
             fireChangeEvent(this, oldState, isValid);
         }
     }
 
-    private boolean checkValidity() {
-        isValid = true;
+    private Tool checkTool() {
         NotificationLineSupport nls = model.getNotificationLineSupport();
         nls.clearMessages();
         Tool t = getComponent().getTool();
@@ -140,89 +156,65 @@ public class AnalysisWizardPanel1 implements WizardDescriptor.AsynchronousValida
 
         switch (tt) {
             case PROJECT:
-                return t != null;
+                return t;
             case GLOBAL:
                 if (t == null) {
-                    return false;
+                    return null;
                 }
                 for (Tool pTool : projTools) {
                     if (pTool.getName().equals(t.getName())) {
                         nls.setErrorMessage("Tool with same name already exists in project.");
-                        return false; // tool already present in project
+                        return null; // tool already present in project
                     }
                 }
-                return true;
+                return t;
             case USER_PROVIDED:
                 if (t == null) {
-                    return false;
+                    return null;
                 }
 
                 String newVersion = getComponent().getNewToolVersion();
                 if (newVersion == null || newVersion.isEmpty()) {
                     nls.setErrorMessage("Missing version.");
-                    return false;
+                    return null;
                 } else {
                     try {
                         float parseFloat = Float.parseFloat(newVersion);
                         t.setVersion(parseFloat);
                     } catch (NumberFormatException nfe) {
                         nls.setErrorMessage("Invalid version, needs to be numeric (e.g. 1.1)");
-                        return false;
+                        return null;
                     }
                 }
 
                 for (Tool pTool : projTools) {
                     if (pTool.getName().equals(t.getName())) {
                         nls.setErrorMessage("Tool with same name already exists in project.");
-                        return false; // tool already present in project
+                        return null; // tool already present in project
                     }
                 }
 
-                return true;
+                return t;
             default:
                 assert false;
-                return false;
+                return null;
         }
     }
-    private CountDownLatch latch = null;
 
-    @Override
-    public void prepareValidation() {
-
-        if (!isValid) {
-            latch = null;
-            return;
+    private List<JobParameter> fetchParameters(Tool t) {
+        if (t == null) {
+            return null;
         }
-        
-        latch = new CountDownLatch(1);
-        ParameterRetriever pr = new ParameterRetriever(master, getComponent().getTool(), getComponent().getToolType()) {
-            @Override
-            protected void done() {
-                try {
-                    Collection<JobParameter> params = get();
-                    // we need a list instead of a collection, convert..
-                    List<JobParameter> list = new ArrayList<>(params);
-                    model.putProperty(AnalysisWizardIterator.PROP_PARAMETERS, list);
-                } catch (InterruptedException | ExecutionException ex) {
-                    model.putProperty(AnalysisWizardIterator.PROP_PARAMETERS, null);
-                    Exceptions.printStackTrace(ex);
-                }
-                latch.countDown();
-                super.done();
-            }
-        };
+
+        ParameterRetriever pr = new ParameterRetriever(master, t, getComponent().getToolType());
         pr.execute();
-    }
-
-    @Override
-    public void validate() throws WizardValidationException {
-        if (latch != null) {
-            try {
-                latch.await();
-            } catch (InterruptedException ex) {
-                Exceptions.printStackTrace(ex);
-                model.putProperty(AnalysisWizardIterator.PROP_PARAMETERS, null);
-            }
+        try {
+            Collection<JobParameter> params = pr.get();
+            // we need a list instead of a collection, convert..
+            return new ArrayList<>(params);
+        } catch (InterruptedException | ExecutionException ex) {
+            Exceptions.printStackTrace(ex);
         }
+        return null;
     }
 }

@@ -178,4 +178,8 @@ public class AnalysisWizardPanel2 implements WizardDescriptor.Panel<WizardDescri
                 return new Pair<>(new TextFieldPanel(), new StringValidator());
         }
     }
+
+    public String getName() {
+        return "Configure parameters";
+    }
 }

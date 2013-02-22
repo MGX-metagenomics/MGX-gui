@@ -4,7 +4,6 @@ import de.cebitec.mgx.gui.wizard.analysis.misc.ValueHolderI;
 import java.awt.BorderLayout;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 public final class AnalysisVisualPanel2 extends JPanel implements PropertyChangeListener {
