@@ -1,7 +1,6 @@
 package de.cebitec.mgx.gui.datamodel;
 
 import java.awt.datatransfer.DataFlavor;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 
@@ -20,7 +19,7 @@ public class Job extends Identifiable implements Comparable<Job> {
     //
     protected Date finishDate = null;
     //
-    protected Collection<JobParameter> parameters = new ArrayList<>();
+    protected Collection<JobParameter> parameters = null;
     private int jobstate = JobState.CREATED.getValue();
     //
     public static final DataFlavor DATA_FLAVOR = new DataFlavor(Job.class, "Job");
@@ -95,7 +94,7 @@ public class Job extends Identifiable implements Comparable<Job> {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash = (int) ((int) 31 * hash + this.id);
+        hash = (int) (31 * hash + this.id);
         return hash;
     }
 
