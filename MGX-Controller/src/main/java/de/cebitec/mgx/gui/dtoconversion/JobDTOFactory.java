@@ -6,6 +6,7 @@ import de.cebitec.mgx.dto.dto.JobParameterDTO;
 import de.cebitec.mgx.gui.datamodel.Job;
 import de.cebitec.mgx.gui.datamodel.JobParameter;
 import de.cebitec.mgx.gui.datamodel.JobState;
+import java.util.ArrayList;
 
 /**
  *
@@ -18,7 +19,8 @@ public class JobDTOFactory extends DTOConversionBase<Job, JobDTO> {
     }
     protected static JobDTOFactory instance;
 
-    private JobDTOFactory() {}
+    private JobDTOFactory() {
+    }
 
     public static JobDTOFactory getInstance() {
         return instance;
@@ -40,8 +42,10 @@ public class JobDTOFactory extends DTOConversionBase<Job, JobDTO> {
         if (j.getFinishDate() != null) {
             b.setFinishDate(toUnixTimeStamp(j.getFinishDate()));
         }
-        
-        b.setParameters(JobParameterDTOFactory.getInstance().toList(j.getParameters()));
+
+        if (j.getParameters() != null && j.getParameters().size() > 0) {
+            b.setParameters(JobParameterDTOFactory.getInstance().toList(j.getParameters()));
+        }
 
         return b.build();
     }
@@ -54,9 +58,12 @@ public class JobDTOFactory extends DTOConversionBase<Job, JobDTO> {
                 .setStartDate(toDate(dto.getStartDate()))
                 .setFinishDate(toDate(dto.getFinishDate()));
 
-        for (JobParameterDTO jpdto : dto.getParameters().getParameterList()) {
-            JobParameter jp = JobParameterDTOFactory.getInstance().toModel(jpdto);
-            j.getParameters().add(jp);
+        if (dto.hasParameters()) {
+            j.setParameters(new ArrayList<JobParameter>(dto.getParameters().getParameterCount()));
+            for (JobParameterDTO jpdto : dto.getParameters().getParameterList()) {
+                JobParameter jp = JobParameterDTOFactory.getInstance().toModel(jpdto);
+                j.getParameters().add(jp);
+            }
         }
         j.setId(dto.getId());
         return j;
