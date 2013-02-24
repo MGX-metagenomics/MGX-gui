@@ -12,6 +12,7 @@ import java.beans.PropertyChangeListener;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.NotificationLineSupport;
+import org.openide.awt.StatusDisplayer;
 import org.openide.util.Lookup;
 import org.openide.util.NbPreferences;
 import org.openide.windows.Mode;
@@ -44,7 +45,6 @@ public class LoginHandler implements ActionListener {
         dialog.setClosingOptions(new Object[]{DialogDescriptor.CANCEL_OPTION, DialogDescriptor.OK_OPTION});
         nline = dialog.createNotificationLineSupport();
         dialog.addPropertyChangeListener(new PropertyChangeListener() {
-
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
                 if (evt.getPropertyName().equals(DialogDescriptor.PROP_VALUE)
@@ -83,10 +83,10 @@ public class LoginHandler implements ActionListener {
                 if (gpms.login(user, password)) {
                     dialog.setClosingOptions(new Object[]{DialogDescriptor.CANCEL_OPTION, DialogDescriptor.OK_OPTION});
                     EventQueue.invokeLater(new Runnable() {
-
                         @Override
                         public void run() {
                             openProjectExplorer(gpms);
+                            startPing(gpms);
                         }
                     });
                 } else {
@@ -112,5 +112,36 @@ public class LoginHandler implements ActionListener {
         }
         pe.open();
         pe.requestActive();
+    }
+
+    private void startPing(final GPMS gpms) {
+        Thread t = new Thread(new Runnable() {
+            
+            private long min = Long.MAX_VALUE;
+            private long max = Long.MIN_VALUE;
+            
+            @Override
+            public void run() {
+                while (true) {
+                    long now = System.currentTimeMillis();
+                    long serverTime = gpms.ping();
+                    long rtt = System.currentTimeMillis();
+                    
+                    if (serverTime < now || serverTime > rtt) {
+                        System.err.println("Client/server clocks out of sync.");
+                    }
+                    
+                    rtt = rtt - now;
+                    StatusDisplayer.getDefault().setStatusText("Connected to "+gpms.getServerName() + rtt + " ms RTT");
+                    try {
+                        Thread.sleep(1000 * 10);
+                    } catch (InterruptedException ex) {
+                    }
+                }
+            }
+        });
+        t.setName("Ping-" + gpms.getServerName());
+        t.setDaemon(true);
+        t.start();
     }
 }
