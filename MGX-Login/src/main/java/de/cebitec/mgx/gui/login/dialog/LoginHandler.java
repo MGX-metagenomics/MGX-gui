@@ -125,8 +125,8 @@ public class LoginHandler implements ActionListener {
                 while (true) {
 
                     refresh++;
-                    if (refresh % 35 == 0) {
-                        refresh = -1;
+                    if (refresh == 30) {
+                        refresh = 0;
                         long now = System.currentTimeMillis();
                         long serverTime = gpms.ping();
                         rtt = System.currentTimeMillis();
