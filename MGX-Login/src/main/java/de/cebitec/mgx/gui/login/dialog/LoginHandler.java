@@ -116,25 +116,31 @@ public class LoginHandler implements ActionListener {
 
     private void startPing(final GPMS gpms) {
         Thread t = new Thread(new Runnable() {
-            
-            private long min = Long.MAX_VALUE;
-            private long max = Long.MIN_VALUE;
-            
+
+            private int refresh = -1;
+            private long rtt = 0;
+
             @Override
             public void run() {
                 while (true) {
-                    long now = System.currentTimeMillis();
-                    long serverTime = gpms.ping();
-                    long rtt = System.currentTimeMillis();
-                    
-                    if (serverTime < now || serverTime > rtt) {
-                        System.err.println("Client/server clocks out of sync.");
+
+                    refresh++;
+                    if (refresh % 35 == 0) {
+                        refresh = -1;
+                        long now = System.currentTimeMillis();
+                        long serverTime = gpms.ping();
+                        rtt = System.currentTimeMillis();
+
+                        if (serverTime < now || serverTime > rtt) {
+                            System.err.println("Client/server clocks out of sync.");
+                            return;
+                        }
+
+                        rtt = rtt - now;
                     }
-                    
-                    rtt = rtt - now;
-                    StatusDisplayer.getDefault().setStatusText("Connected to "+gpms.getServerName() + rtt + " ms RTT");
+                    StatusDisplayer.getDefault().setStatusText("Connected to " + gpms.getServerName() + " " + rtt + " ms RTT");
                     try {
-                        Thread.sleep(1000 * 10);
+                        Thread.sleep(1000);
                     } catch (InterruptedException ex) {
                     }
                 }
