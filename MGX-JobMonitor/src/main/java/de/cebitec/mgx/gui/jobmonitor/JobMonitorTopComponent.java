@@ -24,6 +24,7 @@ import org.openide.util.LookupListener;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.Utilities;
 import org.openide.windows.TopComponent;
+import org.openide.windows.WindowManager;
 
 /**
  * Top component which displays something.
@@ -126,7 +127,9 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
 
     @Override
     public void resultChanged(LookupEvent le) {
-        update();
+        if (!isFocusOwner()) {
+            update();
+        }
     }
 
     private void update() {
@@ -174,13 +177,13 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
                 return;
             }
             Children chld = Children.create(new JobNodeFactory(currentMaster), true);
-            explorerManager.setRootContext(new ProjectRootNode(currentMaster.getProject(), chld));
+            explorerManager.setRootContext(new ProjectRootNode(currentMaster, chld));
         } else {
             if (currentSeqRun == null) {
                 return;
             }
             Children chld = Children.create(new JobBySeqRunNodeFactory(currentSeqRun), true);
-            explorerManager.setRootContext(new ProjectRootNode(currentSeqRun.getMaster().getProject(), chld));
+            explorerManager.setRootContext(new ProjectRootNode((MGXMaster) currentSeqRun.getMaster(), chld));
         }
     }
 
