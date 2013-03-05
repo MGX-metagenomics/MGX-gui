@@ -8,6 +8,7 @@ import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
 import de.cebitec.mgx.gui.util.FileType;
+import de.cebitec.mgx.gui.util.NonEDT;
 import de.cebitec.mgx.gui.util.SuffixFilter;
 import de.cebitec.mgx.seqstorage.FastaWriter;
 import de.cebitec.mgx.sequence.SeqStoreException;
@@ -156,25 +157,12 @@ public class DownloadSeqRun extends AbstractAction {
                 }
             };
 
-            SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+            NonEDT.invoke(new Runnable() {
                 @Override
-                protected Void doInBackground() throws Exception {
+                public void run() {
                     TaskManager.getInstance().addTask(run);
-                    return null;
                 }
-
-                @Override
-                protected void done() {
-                    try {
-                        get();
-                    } catch (InterruptedException | ExecutionException ex) {
-                        Exceptions.printStackTrace(ex);
-                    }
-                    super.done();
-                }
-            };
-            worker.execute();
-
+            });
         } catch (SeqStoreException ex) {
             Exceptions.printStackTrace(ex);
         }

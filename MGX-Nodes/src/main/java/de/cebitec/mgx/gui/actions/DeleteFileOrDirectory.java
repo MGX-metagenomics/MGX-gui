@@ -25,6 +25,7 @@ public class DeleteFileOrDirectory extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         final MGXFile file = Utilities.actionsGlobalContext().lookup(MGXFile.class);
+        final MGXMaster master = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
         NotifyDescriptor d = new NotifyDescriptor("Really delete " + file.getName() + "?",
                 "Delete file/directory",
                 NotifyDescriptor.YES_NO_OPTION,
@@ -33,29 +34,10 @@ public class DeleteFileOrDirectory extends AbstractAction {
                 null);
         Object ret = DialogDisplayer.getDefault().notify(d);
         if (NotifyDescriptor.YES_OPTION.equals(ret)) {
-            
-            final MGXTask deleteTask = new MGXTask("Delete " + file.getName()) {
-                
-                @Override
-                public boolean process() {
-                    setStatus("Deleting..");
-                    MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
-                    return m.File().delete(file);
-                }
 
-                @Override
-                public boolean isDeterminate() {
-                    return false;
-                }
+            final DeleteTask deleteTask = new DeleteTask(master, file, "Delete " + file.getName());
 
-                @Override
-                public int getProgress() {
-                    return MGXTask.PROGRESS_UNKNOWN;
-                }
-            };
-            
             NonEDT.invoke(new Runnable() {
-
                 @Override
                 public void run() {
                     TaskManager.getInstance().addTask(deleteTask);
@@ -67,5 +49,23 @@ public class DeleteFileOrDirectory extends AbstractAction {
     @Override
     public boolean isEnabled() {
         return (super.isEnabled() && RBAC.isUser());
+    }
+
+    private final class DeleteTask extends MGXTask {
+
+        private final MGXMaster master;
+        private final MGXFile file;
+
+        public DeleteTask(MGXMaster master, MGXFile file, String name) {
+            super(name);
+            this.master = master;
+            this.file = file;
+        }
+
+        @Override
+        public boolean process() {
+            setStatus("Deleting..");
+            return master.File().delete(file);
+        }
     }
 }

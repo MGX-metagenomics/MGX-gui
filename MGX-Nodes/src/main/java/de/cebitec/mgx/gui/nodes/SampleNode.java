@@ -142,16 +142,6 @@ public class SampleNode extends MGXNodeBase<Sample> {
                         setStatus("Deleting..");
                         return m.Sample().delete(sample);
                     }
-
-                    @Override
-                    public boolean isDeterminate() {
-                        return false;
-                    }
-
-                    @Override
-                    public int getProgress() {
-                        return MGXTask.PROGRESS_UNKNOWN;
-                    }
                 };
 
                 TaskManager.getInstance().addTask(deleteTask);

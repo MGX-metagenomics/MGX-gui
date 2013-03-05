@@ -142,16 +142,6 @@ public class HabitatNode extends MGXNodeBase<Habitat> {
                         MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
                         return m.Habitat().delete(habitat);
                     }
-
-                    @Override
-                    public boolean isDeterminate() {
-                        return false;
-                    }
-
-                    @Override
-                    public int getProgress() {
-                        return MGXTask.PROGRESS_UNKNOWN;
-                    }
                 };
 
                 TaskManager.getInstance().addTask(deleteTask);

@@ -157,16 +157,6 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
                         super.finished();
                         fireNodeDestroyed();
                     }
-
-                    @Override
-                    public boolean isDeterminate() {
-                        return false;
-                    }
-
-                    @Override
-                    public int getProgress() {
-                        return MGXTask.PROGRESS_UNKNOWN;
-                    }
                 };
 
                 TaskManager.getInstance().addTask(deleteTask);
@@ -229,6 +219,7 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
 
                             @Override
                             public void finished() {
+                                super.finished();
                                 snf.refreshChildren();
                             }
 
@@ -241,20 +232,12 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
                             }
 
                             @Override
-                            public boolean isDeterminate() {
-                                return false;
-                            }
-
-                            @Override
-                            public int getProgress() {
-                                return MGXTask.PROGRESS_UNKNOWN;
-                            }
-
-                            @Override
                             public void propertyChange(PropertyChangeEvent pce) {
                                 if (pce.getPropertyName().equals(UploadBase.NUM_ELEMENTS_SENT)) {
                                     setStatus(String.format("%1$d sequences sent", pce.getNewValue()));
                                     seqrun.setNumSequences((Long) pce.getNewValue());
+                                } else {
+                                    super.propertyChange(pce);
                                 }
                             }
                         };

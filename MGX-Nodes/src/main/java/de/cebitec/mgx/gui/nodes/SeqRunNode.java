@@ -207,16 +207,6 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> { // implements Transferable
                         super.finished();
                         fireNodeDestroyed();
                     }
-
-                    @Override
-                    public boolean isDeterminate() {
-                        return false;
-                    }
-
-                    @Override
-                    public int getProgress() {
-                        return MGXTask.PROGRESS_UNKNOWN;
-                    }
                 };
 
                 NonEDT.invoke(new Runnable() {
