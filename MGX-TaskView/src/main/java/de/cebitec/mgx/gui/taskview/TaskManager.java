@@ -58,7 +58,6 @@ public class TaskManager implements TaskListener, PropertyChangeListener {
                     }
                     if (!taskViewer.isOpened()) {
                         taskViewer.open();
-                        taskViewer.requestActive();
                     }
                 }
             });
