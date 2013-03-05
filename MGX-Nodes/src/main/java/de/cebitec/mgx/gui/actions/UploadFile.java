@@ -8,6 +8,7 @@ import de.cebitec.mgx.gui.datamodel.MGXFile;
 import de.cebitec.mgx.gui.nodefactory.FileNodeFactory;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
+import de.cebitec.mgx.gui.util.NonEDT;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.io.File;
@@ -55,7 +56,7 @@ public class UploadFile extends AbstractAction {
         final MGXFile targetDir = Utilities.actionsGlobalContext().lookup(MGXFile.class);
         final FileUploader uploader = master.File().createUploader(localFile, targetDir, localFile.getName());
 
-        MGXTask run = new MGXTask("Upload " + fchooser.getSelectedFile().getName()) {
+        final MGXTask run = new MGXTask("Upload " + fchooser.getSelectedFile().getName()) {
             @Override
             public boolean process() {
                 return uploader.upload();
@@ -94,7 +95,13 @@ public class UploadFile extends AbstractAction {
         };
         uploader.addPropertyChangeListener(run);
 
-        TaskManager.getInstance().addTask(run);
+        NonEDT.invoke(new Runnable() {
+            @Override
+            public void run() {
+                TaskManager.getInstance().addTask(run);
+
+            }
+        });
     }
 
     @Override
