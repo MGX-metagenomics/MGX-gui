@@ -11,6 +11,7 @@ import javax.swing.JPanel;
 
 /**
  * Malt die einzelnen Observations.
+ *
  * @author pbelmann
  */
 public class PaintReadObservations {
@@ -74,6 +75,7 @@ public class PaintReadObservations {
 
     /**
      * Zeichnen der Observations.
+     *
      * @param readLength Laenge des Read.
      * @param layers Ebenen fuer die Observations.
      * @param lGraphics Graphisobjekt.
@@ -85,7 +87,7 @@ public class PaintReadObservations {
         this.cutValue = cutValue;
         this.component = lComponent;
         this.layers = layers;
-        this.scaleFactor = ((double)lComponent.getWidth()) / readLength;
+        this.scaleFactor = ((double) lComponent.getWidth()) / readLength;
         this.readLength = (int) readLength;
         graphics = lGraphics;
         height = component.getHeight();
@@ -94,6 +96,7 @@ public class PaintReadObservations {
 
     /**
      * Zeichnen den Read und die Observations.
+     *
      * @param lGraphics Graphics objekt.
      */
     private void paint(Graphics lGraphics) {
@@ -104,6 +107,7 @@ public class PaintReadObservations {
 
     /**
      * Zeichnet den Read.
+     *
      * @param lReadLength Laenge des Read.
      * @param lGraphics Graphics objekt fuer das Zeichnen.
      */
@@ -111,32 +115,45 @@ public class PaintReadObservations {
         lGraphics.setColor(Color.red);
         int scaledReadLength = (int) Math.round(lReadLength * scaleFactor);
         drawArrowHead(0, scaledReadLength, lGraphics, paddingNorth);
-        lGraphics.fillRect(0, paddingNorth - 4, scaledReadLength - 7, ObservationReadWidth);
+        lGraphics.fillRect(0, paddingNorth - 6, scaledReadLength - 7, ObservationReadWidth + 2); // -4 war der alte wert
+
+        FontMetrics fm = component.getFontMetrics(component.getFont());
+
 
         int factor = 0;
+
+
+
         while (cutValue * factor < readLength) {
 
             lGraphics.setColor(Color.RED);
             lGraphics.drawLine((int) (Math.round(cutValue) * scaleFactor * factor), 0,
                     (int) (Math.round(cutValue) * scaleFactor * factor), height);
-
-            lGraphics.setColor(Color.BLACK);
-            FontMetrics fm = component.getFontMetrics(component.getFont());
-
             int multFactor = (int) cutValue * factor;
             if (fm.stringWidth(" " + multFactor) + (int) (Math.round(cutValue) * scaleFactor * factor) > scaledReadLength) {
                 lGraphics.drawString(" " + (int) cutValue * factor, ((int) (Math.round(cutValue) * scaleFactor * factor))
-                        - fm.stringWidth(" " + multFactor), paddingNorth - 5);
+                        - fm.stringWidth(" " + multFactor), paddingNorth - 7);
             } else {
                 lGraphics.drawString(" "
-                        + (int) cutValue * factor, (int) (Math.round(cutValue) * scaleFactor * factor), paddingNorth - 5);
+                        + (int) cutValue * factor, (int) (Math.round(cutValue) * scaleFactor * factor), paddingNorth - 7);
             }
             factor++;
         }
+        lGraphics.setColor(Color.BLACK);
+        lGraphics.drawLine(0, 0, 0, height);
+        lGraphics.drawLine(scaledReadLength - 1, 0, scaledReadLength - 1, height);
+        String readLength = "Read Lenght: " + lReadLength + " bp";
+        int stringWidth = fm.stringWidth(readLength);
+        lGraphics.setColor(Color.BLACK);
+        lGraphics.drawString(readLength, scaledReadLength - 7 - stringWidth,
+                paddingNorth - 5 + ObservationReadWidth);
+
+
     }
 
     /**
      * Zeichnet den Pfeil beim Read und bei den Observations.
+     *
      * @param lSequenceStart Start der Observations
      * @param lSequenceStop Stop der Observations.
      * @param lGraphics Graphics Objekt

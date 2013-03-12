@@ -60,29 +60,9 @@ public class ObservationViewPanel extends javax.swing.JPanel {
    private void initComponents() {
 
 	int height = ((orderedObservations.getLayers().size() + 1) * 10) + 15;
-	JButton readName = new javax.swing.JButton();
+	JLabel readName = new javax.swing.JLabel();
 
-	cutValue = ((double) orderedObservations.getReadLength() / 4);
-	int length = Integer.toString((int) orderedObservations.getReadLength()).length();
-	double temp = 10;
-	for (int counter = 0; counter < length - 2; counter++) {
-	   temp *= 10;
-	}
-
-	cutValue /= temp;
-	double roundValue = Math.round(cutValue);
-
-	while (roundValue == 0) {
-
-	   double newTemp = temp;
-	   newTemp /= 10;
-	   cutValue *= temp;
-	   cutValue /= newTemp;
-	   temp = newTemp;
-	   roundValue = Math.round(cutValue);
-	}
-
-	cutValue = roundValue * temp;
+	calculateSequenceCuts();
 
 	obsview = new javax.swing.JPanel() {
 	   @Override
@@ -96,14 +76,7 @@ public class ObservationViewPanel extends javax.swing.JPanel {
 	readName.setText(seq.getName() + " (" + seq.getLength() + "bp)");
 	setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
-	readName.setEnabled(true);
-	readName.setOpaque(true);
-	readName.addActionListener(new ActionListener() {
-	   @Override
-	   public void actionPerformed(ActionEvent e) {
-		new ReadWindow(master, seq.getId());
-	   }
-	});
+
 	javax.swing.GroupLayout obsviewLayout = new javax.swing.GroupLayout(obsview);
 	obsview.setLayout(obsviewLayout);
 	obsviewLayout.setHorizontalGroup(
@@ -137,4 +110,32 @@ public class ObservationViewPanel extends javax.swing.JPanel {
 	obsview.setEnabled(true);
 	obsview.repaint();
    }
+
+   
+   /*
+    * Berechnet die Abschnitte, in die die Sequenzen eingeteilt werden.
+    */
+    private void calculateSequenceCuts() {
+        cutValue = ((double) orderedObservations.getReadLength() / 4);
+        int length = Integer.toString((int) orderedObservations.getReadLength()).length();
+        double temp = 10;
+        for (int counter = 0; counter < length - 2; counter++) {
+           temp *= 10;
+        }
+
+        cutValue /= temp;
+        double roundValue = Math.round(cutValue);
+
+        while (roundValue == 0) {
+
+           double newTemp = temp;
+           newTemp /= 10;
+           cutValue *= temp;
+           cutValue /= newTemp;
+           temp = newTemp;
+           roundValue = Math.round(cutValue);
+        }
+
+        cutValue = roundValue * temp;
+    }
 }
