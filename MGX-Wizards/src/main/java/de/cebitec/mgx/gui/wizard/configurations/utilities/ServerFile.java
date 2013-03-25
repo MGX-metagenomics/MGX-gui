@@ -2,17 +2,18 @@ package de.cebitec.mgx.gui.wizard.configurations.utilities;
 
 import de.cebitec.mgx.gui.datamodel.MGXFile;
 import java.io.File;
+import java.io.IOException;
 
 /**
  *
  * @author sjaenick
  */
 public class ServerFile extends File {
-    
-    private final MGXFile file;
+
+    private MGXFile file;
 
     public ServerFile(MGXFile file) {
-        super(file.getName());
+        super(file.getFullPath());
         this.file = file;
     }
 
@@ -23,16 +24,30 @@ public class ServerFile extends File {
 
     @Override
     public String getParent() {
-        return file.getParent().getName();
+
+        if (file.getParent() != null) {
+            return file.getParent().getFullPath();
+        } else {
+            return null;
+        }
     }
 
     @Override
     public File getParentFile() {
-        return new ServerFile(file.getParent());
+
+        if (file.getParent() != null) {
+            return new ServerFile(file.getParent());
+        } else {
+
+            return null;
+        }
+
+
     }
 
     @Override
-    public String getPath() {
+    public String getPath() {        
+        
         return file.getFullPath();
     }
 
@@ -60,8 +75,36 @@ public class ServerFile extends File {
     public String toString() {
         return file.getFullPath();
     }
-    
+
     public boolean isRoot() {
         return file.getParent() == null;
+    }
+
+    @Override
+    public File getCanonicalFile() throws IOException {
+
+        if (file.isDirectory()) {
+            return this;
+        } else {
+            return super.getCanonicalFile();
+        }
+    }
+
+    /**
+     * Getter fuer MGXFile
+     *
+     * @return MGXFile
+     */
+    public MGXFile getMGXFile() {
+        return file;
+    }
+
+    /**
+     * Setter fuer MGXFile
+     *
+     * @param file MGXFile
+     */
+    public void setMGXFile(MGXFile file) {
+        this.file = file;
     }
 }
