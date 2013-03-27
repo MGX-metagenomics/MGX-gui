@@ -17,7 +17,6 @@ import org.openide.nodes.Children;
 import org.openide.nodes.PropertySupport;
 import org.openide.nodes.Sheet;
 import org.openide.util.ImageUtilities;
-import org.openide.util.Utilities;
 import org.openide.util.lookup.Lookups;
 
 /**
