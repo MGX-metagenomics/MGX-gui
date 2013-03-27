@@ -10,6 +10,7 @@ import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.nodefactory.SeqRunNodeFactory;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
+import de.cebitec.mgx.gui.util.NonEDT;
 import de.cebitec.mgx.gui.wizard.extract.DNAExtractWizardDescriptor;
 import de.cebitec.mgx.gui.wizard.seqrun.SeqRunWizardDescriptor;
 import de.cebitec.mgx.sequence.SeqReaderFactory;
@@ -145,7 +146,7 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
             Object ret = DialogDisplayer.getDefault().notify(d);
             if (NotifyDescriptor.YES_OPTION.equals(ret)) {
                 final MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
-                MGXTask deleteTask = new MGXTask("Delete " + dna.getName()) {
+                final MGXTask deleteTask = new MGXTask("Delete " + dna.getName()) {
                     @Override
                     public boolean process() {
                         setStatus("Deleting..");
@@ -159,8 +160,12 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
                     }
                 };
 
-                TaskManager.getInstance().addTask(deleteTask);
-
+                NonEDT.invoke(new Runnable() {
+                    @Override
+                    public void run() {
+                        TaskManager.getInstance().addTask(deleteTask);
+                    }
+                });
             }
         }
 
@@ -214,6 +219,7 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
                                 if (!success) {
                                     publish(new MGXClientException(uploader.getErrorMessage()));
                                 }
+                                seqrun.setNumSequences(uploader.getNumElementsSent());
                                 return success;
                             }
 
@@ -235,7 +241,7 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
                             public void propertyChange(PropertyChangeEvent pce) {
                                 if (pce.getPropertyName().equals(UploadBase.NUM_ELEMENTS_SENT)) {
                                     setStatus(String.format("%1$d sequences sent", pce.getNewValue()));
-                                    seqrun.setNumSequences((Long) pce.getNewValue());
+                                    //seqrun.setNumSequences((Long) pce.getNewValue());
                                 } else {
                                     super.propertyChange(pce);
                                 }
