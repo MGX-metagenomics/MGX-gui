@@ -51,10 +51,10 @@ public class AreaChart extends NumericalViewerI {
     public void show(List<Pair<VisualizationGroup, Distribution>> dists) {
 
         dists = getCustomizer().filter(dists);
-        XYSeriesCollection dataset = JFreeChartUtil.createXYSeries(dists);
+        XYSeriesCollection dataset = JFreeChartUtil.createXYSeries(dists, getCustomizer().logY());
 
         String xAxisLabel = "";
-        String yAxisLabel = getCustomizer().useFractions() ? "Fraction" : "Count";
+        String yAxisLabel = useFractions() ? "Fraction" : "Count";
 
         chart = ChartFactory.createXYAreaChart(getTitle(), xAxisLabel, yAxisLabel, dataset, PlotOrientation.VERTICAL, true, true, false);
 
@@ -127,5 +127,9 @@ public class AreaChart extends NumericalViewerI {
     @Override
     public ImageExporterI getImageExporter() {
         return JFreeChartUtil.getImageExporter(chart);
+    }
+    
+    private boolean useFractions() {
+        return getCustomizer().useFractions();
     }
 }

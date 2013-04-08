@@ -44,14 +44,50 @@ public class JFreeChartUtil {
     }
 
     public static XYSeriesCollection createXYSeries(List<Pair<VisualizationGroup, Distribution>> in) {
+        return createXYSeries(in, false);
+    }
+
+    public static XYSeriesCollection createXYSeries(List<Pair<VisualizationGroup, Distribution>> in, boolean createBounds) {
         XYSeriesCollection dataset = new XYSeriesCollection();
 
         for (Pair<VisualizationGroup, Distribution> groupDistribution : in) {
             XYSeries series = new XYSeries(groupDistribution.getFirst().getName());
 
+            double[][] values = new double[groupDistribution.getSecond().size()][];
+            int idx = 0;
+
+            double minAttrVal = Double.MAX_VALUE;
+            double maxAttrVal = Double.MIN_VALUE;
+
             for (Map.Entry<Attribute, ? extends Number> entry : groupDistribution.getSecond().entrySet()) {
-                series.add(Double.parseDouble(entry.getKey().getValue()), entry.getValue());
+                double attrVal = Double.parseDouble(entry.getKey().getValue());
+                double value = entry.getValue().doubleValue();
+
+                values[idx++] = new double[]{attrVal, value};
+
+                if (createBounds) {
+                    minAttrVal = attrVal < minAttrVal ? attrVal : minAttrVal;
+                    maxAttrVal = attrVal > maxAttrVal ? attrVal : maxAttrVal;
+                }
             }
+            
+            if (createBounds) {
+                series.add(minAttrVal - Double.MIN_VALUE, 0);
+            }
+
+            for (int i = 0; i < values.length; i++) {
+                double[] pair = values[i];
+                series.add(pair[0], pair[1]);
+            }
+            
+            if (createBounds) {
+                series.add(maxAttrVal + Double.MIN_VALUE, 0);
+            }
+
+//            for (Map.Entry<Attribute, ? extends Number> entry : groupDistribution.getSecond().entrySet()) {
+//                double d = Double.parseDouble(entry.getKey().getValue());
+//                series.add(d, entry.getValue());
+//            }
             dataset.addSeries(series);
         }
         return dataset;
@@ -85,8 +121,6 @@ public class JFreeChartUtil {
 //            Exceptions.printStackTrace(ex);
 //        }
 //    }
-    
-    
     public static ImageExporterI getImageExporter(final JFreeChart chart) {
         return new ImageExporterI() {
             @Override
