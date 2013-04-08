@@ -56,7 +56,6 @@ public final class AttributeVisualizationTopComponent extends TopComponent {
         lookup = new AbstractLookup(content);
         associateLookup(lookup);
         controlPanel1.setTopComponent(this);
-        openVGroupTopComponent();
     }
 
     /**
@@ -100,6 +99,7 @@ public final class AttributeVisualizationTopComponent extends TopComponent {
 
     @Override
     public void componentOpened() {
+        openVGroupTopComponent();
     }
 
     @Override
