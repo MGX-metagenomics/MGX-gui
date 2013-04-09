@@ -49,7 +49,7 @@ import org.openide.windows.TopComponent;
 @ActionID(category = "Window", id = "de.cebitec.mgx.gui.search.SearchTopComponent")
 @ActionReferences({
     @ActionReference(path = "Menu/Window", position = 332),
-    @ActionReference(path = "Toolbars/UndoRedo", position = 520)
+    @ActionReference(path = "Toolbars/UndoRedo", position = 525)
 })
 @TopComponent.OpenActionRegistration(displayName = "#CTL_SearchAction",
         preferredID = "SearchTopComponent")
