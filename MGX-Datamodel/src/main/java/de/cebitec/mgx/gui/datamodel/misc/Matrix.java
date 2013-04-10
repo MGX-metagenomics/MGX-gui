@@ -57,7 +57,7 @@ public class Matrix implements Map<Pair<Attribute, Attribute>, Number> {
 
     @Override
     public boolean containsKey(Object key) {
-        return _data.containsKey((Pair<Attribute, Attribute>) key);
+        return _data.containsKey(key);
     }
 
     @Override
@@ -72,11 +72,13 @@ public class Matrix implements Map<Pair<Attribute, Attribute>, Number> {
 
     @Override
     public Number put(Pair<Attribute, Attribute> key, Number value) {
+        totalClassifiedElements = -1;
         return _data.put(key, value);
     }
 
     @Override
     public void clear() {
+        totalClassifiedElements = -1;
         _data.clear();
     }
 
@@ -97,11 +99,13 @@ public class Matrix implements Map<Pair<Attribute, Attribute>, Number> {
 
     @Override
     public Number remove(Object key) {
+        totalClassifiedElements = -1;
         return _data.remove(key);
     }
 
     @Override
     public void putAll(Map<? extends Pair<Attribute, Attribute>, ? extends Number> m) {
         _data.putAll(m);
+        totalClassifiedElements = -1;
     }
 }
