@@ -1,7 +1,6 @@
 package de.cebitec.mgx.gui.datamodel.misc;
 
 import de.cebitec.mgx.gui.datamodel.Attribute;
-import de.cebitec.mgx.gui.datamodel.MGXMasterI;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
