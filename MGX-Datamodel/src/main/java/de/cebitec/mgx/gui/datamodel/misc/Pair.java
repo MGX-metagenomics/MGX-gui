@@ -6,8 +6,8 @@ package de.cebitec.mgx.gui.datamodel.misc;
  */
 public class Pair<T, U> {
 
-    private T first;
-    private U second;
+    private final T first;
+    private final U second;
 
     public Pair(T first, U second) {
         this.first = first;
@@ -22,13 +22,13 @@ public class Pair<T, U> {
         return second;
     }
 
-    public void setFirst(T first) {
-        this.first = first;
-    }
-
-    public void setSecond(U second) {
-        this.second = second;
-    }
+//    public void setFirst(T first) {
+//        this.first = first;
+//    }
+//
+//    public void setSecond(U second) {
+//        this.second = second;
+//    }
 
     @Override
     public boolean equals(Object obj) {
