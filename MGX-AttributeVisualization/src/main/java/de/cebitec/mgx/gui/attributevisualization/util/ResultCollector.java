@@ -44,7 +44,6 @@ public class ResultCollector extends SwingWorker<Pair<List<Pair<VisualizationGro
 
         
         Pair p = new Pair(distributions, hierarchies);
-        assert p != null; // distribution are required, hierarchies optional
         return p;
     }
 

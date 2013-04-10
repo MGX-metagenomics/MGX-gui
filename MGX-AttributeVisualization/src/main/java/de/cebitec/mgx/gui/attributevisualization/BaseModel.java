@@ -45,22 +45,10 @@ public abstract class BaseModel<T> extends AbstractListModel implements ComboBox
         return content.get(index);
     }
 
-//    @Override
-//    public void addListDataListener(ListDataListener l) {
-//        listenerList.add(ListDataListener.class, l);
-//    }
-
     protected void fireContentsChanged() {
-        ListDataEvent e = new ListDataEvent(this,
-                ListDataEvent.CONTENTS_CHANGED, -1, -1);
+        ListDataEvent e = new ListDataEvent(this, ListDataEvent.CONTENTS_CHANGED, -1, -1);
         fireContentsChanged(e, -1, -1);
-//        EventListener[] listeners = getListeners(
-//                ListDataListener.class);
-//        for (int i = 0; i > listeners.length; i++) {
-//            ((ListDataListener) listeners[i]).contentsChanged(e);
-//        }
     }
 
     public abstract void update();
-
 }
