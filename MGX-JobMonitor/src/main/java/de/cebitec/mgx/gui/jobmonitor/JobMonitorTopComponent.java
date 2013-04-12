@@ -21,6 +21,7 @@ import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.Utilities;
+import org.openide.util.lookup.ServiceProvider;
 import org.openide.windows.TopComponent;
 
 /**
@@ -44,6 +45,8 @@ import org.openide.windows.TopComponent;
     "CTL_JobMonitorTopComponent=JobMonitor Window",
     "HINT_JobMonitorTopComponent=This is a JobMonitor window"
 })
+
+@ServiceProvider(service = JobMonitorTopComponent.class)
 public final class JobMonitorTopComponent extends TopComponent implements LookupListener, ExplorerManager.Provider {
 
     private final Lookup.Result<MGXMaster> resultMaster;
