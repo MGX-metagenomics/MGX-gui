@@ -50,7 +50,22 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>MGX-Controller</artifactId>
-            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>MGX-JobMonitor</artifactId>
+        </dependency>
+        <dependency>
+            <artifactId>MGX-Datamodel</artifactId>
+            <groupId>de.cebitec.mgx.gui</groupId>
+        </dependency>
+        <dependency>
+            <artifactId>org-openide-util-lookup</artifactId>
+            <groupId>org.netbeans.api</groupId>
+        </dependency>
+        <dependency>
+            <artifactId>org-openide-windows</artifactId>
+            <groupId>org.netbeans.api</groupId>
         </dependency>
     </dependencies>
 
