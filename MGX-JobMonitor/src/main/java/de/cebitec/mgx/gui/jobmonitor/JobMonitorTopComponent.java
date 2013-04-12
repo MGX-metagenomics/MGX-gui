@@ -6,8 +6,6 @@ import de.cebitec.mgx.gui.nodefactory.JobBySeqRunNodeFactory;
 import de.cebitec.mgx.gui.nodefactory.JobNodeFactory;
 import de.cebitec.mgx.gui.nodes.JobNode;
 import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Collection;
 import javax.swing.JPopupMenu;
 import org.netbeans.api.settings.ConvertAsProperties;
@@ -24,24 +22,23 @@ import org.openide.util.LookupListener;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.Utilities;
 import org.openide.windows.TopComponent;
-import org.openide.windows.WindowManager;
 
 /**
  * Top component which displays something.
  */
 @ConvertAsProperties(
-    dtd = "-//de.cebitec.mgx.gui.jobmonitor//JobMonitor//EN",
-autostore = false)
+        dtd = "-//de.cebitec.mgx.gui.jobmonitor//JobMonitor//EN",
+        autostore = false)
 @TopComponent.Description(
-    preferredID = "JobMonitorTopComponent",
-//iconBase="SET/PATH/TO/ICON/HERE", 
-persistenceType = TopComponent.PERSISTENCE_ALWAYS)
+        preferredID = "JobMonitorTopComponent",
+        iconBase="de/cebitec/mgx/gui/jobmonitor/JobMonitor.png" , 
+        persistenceType = TopComponent.PERSISTENCE_NEVER)
 @TopComponent.Registration(mode = "satellite", openAtStartup = false)
 @ActionID(category = "Window", id = "de.cebitec.mgx.gui.jobmonitor.JobMonitorTopComponent")
 @ActionReference(path = "Menu/Window", position = 555)
 @TopComponent.OpenActionRegistration(
-    displayName = "#CTL_JobMonitorAction",
-preferredID = "JobMonitorTopComponent")
+        displayName = "#CTL_JobMonitorAction",
+        preferredID = "JobMonitorTopComponent")
 @Messages({
     "CTL_JobMonitorAction=JobMonitor",
     "CTL_JobMonitorTopComponent=JobMonitor Window",
@@ -127,15 +124,14 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
 
     @Override
     public void resultChanged(LookupEvent le) {
-        if (!isFocusOwner()) {
-            update();
-        }
+        update();
     }
 
     private void update() {
         boolean needUpdate = false;
 
         Collection<? extends SeqRun> runs = resultSeqRun.allInstances();
+        Collection<? extends MGXMaster> m = resultMaster.allInstances();
 
         if (runs.size() > 0) {
             currentMode = SEQRUN_MODE;
@@ -150,7 +146,6 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
         } else {
             currentMode = MASTER_MODE;
 
-            Collection<? extends MGXMaster> m = resultMaster.allInstances();
             for (MGXMaster newMaster : m) {
                 if (currentMaster == null || !newMaster.equals(currentMaster)) {
                     currentMaster = newMaster;
