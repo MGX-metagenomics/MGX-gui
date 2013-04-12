@@ -140,7 +140,7 @@ public class LoginHandler implements ActionListener {
                     }
                     StatusDisplayer.getDefault().setStatusText("Connected to " + gpms.getServerName() + " " + rtt + " ms RTT");
                     try {
-                        Thread.sleep(1000);
+                        Thread.sleep(500);
                     } catch (InterruptedException ex) {
                     }
                 }
