@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package de.cebitec.mgx.gui.search;
 
 import de.cebitec.mgx.gui.controller.MGXMaster;
@@ -15,16 +11,16 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JTextArea;
 import javax.swing.SwingWorker;
 import javax.swing.WindowConstants;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -37,20 +33,20 @@ public class ReadWindow extends JFrame {
     /*
      * JTextArea fuer die Darstellung
      */
-    private JTextArea sequenceArea;
+    private final JTextArea sequenceArea;
     /*
      * Master zum Laden der Sequenzen.
      */
-    private MGXMaster master;
+    private final MGXMaster master;
     /*
      * Sequenzen die geladen werden muessen.
      */
-    private ArrayList<Sequence> sequences;
+    private final List<Sequence> sequences;
     /*
      * ProgressBar fuer das Anzeigen des Lade Fortschritts.
      * 
      */
-    private JProgressBar bar;
+    private final JProgressBar bar;
     /*
      * Panel fuer die JProgressBar.
      */
@@ -63,7 +59,7 @@ public class ReadWindow extends JFrame {
      * 
      * @param sequences Sequenzen die geladen werden sollen.
      */
-    public ReadWindow(MGXMaster lMaster, ArrayList<Sequence> sequences) {
+    public ReadWindow(MGXMaster lMaster, List<Sequence> sequences) {
         this.sequences = sequences;
         this.master = lMaster;
         JPanel panel = new JPanel(new BorderLayout());
@@ -96,7 +92,7 @@ public class ReadWindow extends JFrame {
         });
         buttonPanel.add(clipboardButton);
         buttonPanel.add(closeButton);
-        
+
         panel.add(buttonPanel, BorderLayout.SOUTH);
         this.setLocationRelativeTo(null);
         this.setTitle("Read Sequences");
@@ -116,28 +112,30 @@ public class ReadWindow extends JFrame {
      */
     private void loadSequences() {
 
-        SwingWorker worker = new SwingWorker() {
-            StringBuilder sb = new StringBuilder();
-
+        SwingWorker<String, Void> worker = new SwingWorker<String, Void>() {
             @Override
-            protected Object doInBackground() throws Exception {
+            protected String doInBackground() throws Exception {
+                // fetch updated sequence objects with actual sequence data
+                master.Sequence().fetchSeqData(sequences);
 
-                Sequence s;
+                StringBuilder sb = new StringBuilder();
                 for (Sequence seq : sequences) {
-                    s = master.Sequence().fetch(seq.getId());
-                    sb.append(">")
-                            .append(s.getName())
+                    sb.append(">").append(seq.getName())
                             .append("\n")
-                            .append(s.getSequence())
+                            .append(seq.getSequence())
                             .append("\n");
                 }
 
-                return null;
+                return sb.toString();
             }
 
             @Override
             protected void done() {
-                sequenceArea.setText(sb.toString());
+                try {
+                    sequenceArea.setText(get());
+                } catch (InterruptedException | ExecutionException ex) {
+                    Exceptions.printStackTrace(ex);
+                }
                 processPanel.remove(bar);
                 super.done();
             }
@@ -147,11 +145,12 @@ public class ReadWindow extends JFrame {
         bar.setStringPainted(true);
         processPanel.add(bar);
         worker.execute();
-    }
 
-    /*
+    } /*
      * Kopiert alle Sequenzen in den Arbeitsspeicher.
      */
+
+
     private void copyAllSequencesToClipBoard() {
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         clipboard.setContents(new StringSelection(sequenceArea.getText()), null);

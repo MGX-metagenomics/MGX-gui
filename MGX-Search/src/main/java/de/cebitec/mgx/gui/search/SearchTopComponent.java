@@ -13,8 +13,6 @@ import java.awt.Cursor;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -60,20 +58,18 @@ import org.openide.windows.TopComponent;
 })
 public final class SearchTopComponent extends TopComponent implements LookupListener, ActionListener, DocumentListener {
 
-    private Lookup.Result<MGXMaster> result;
+    private final Lookup.Result<MGXMaster> result;
     private MGXMaster currentMaster = null;
-    DefaultListModel<SeqRun> runListModel = new DefaultListModel<>();
+    private final DefaultListModel<SeqRun> runListModel = new DefaultListModel<>();
     private SearchTopComponent.ResultListModel resultModel = new SearchTopComponent.ResultListModel();
     private RequestProcessor proc;
     private JButton selectAll;
 
     public SearchTopComponent() {
-
-
         initComponents();
         setName(Bundle.CTL_SearchTopComponent());
         setToolTipText(Bundle.HINT_SearchTopComponent());
-
+        result = Utilities.actionsGlobalContext().lookupResult(MGXMaster.class);
         runList.setModel(runListModel);
         runList.addListSelectionListener(new ListSelectionListener() {
             @Override
@@ -95,23 +91,18 @@ public final class SearchTopComponent extends TopComponent implements LookupList
             public void propertyChange(PropertyChangeEvent evt) {
 
                 if (evt.getPropertyName().equals(JCheckBoxList.selectionChange) && evt.getNewValue() == true) {
-
-
                     deselectAll.setEnabled(true);
-                    getSequence.setEnabled(true);
-
+                    fetchSeqButton.setEnabled(true);
                 } else if (evt.getPropertyName().equals(JCheckBoxList.selectionChange) && readList.getSelectedEntries().isEmpty()) {
-
                     deselectAll.setEnabled(false);
-                    getSequence.setEnabled(false);
-
+                    fetchSeqButton.setEnabled(false);
                 }
             }
         });
 
 
-
-
+        // make sure result list is synced to read list whenever a read name gets
+        // selected
         readList.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
@@ -214,19 +205,19 @@ public final class SearchTopComponent extends TopComponent implements LookupList
         button = new javax.swing.JButton();
         exact = new javax.swing.JCheckBox();
         numResults = new javax.swing.JLabel("Hits found:");
-        getSequence = new javax.swing.JButton("Get Sequences");
+        fetchSeqButton = new javax.swing.JButton("Get Sequences");
         deselectAll = new javax.swing.JButton("Deselect All");
         selectAll = new javax.swing.JButton("Select All");
 
-        getSequence.setEnabled(false);
-        getSequence.setActionCommand("getSequence");
+        fetchSeqButton.setEnabled(false);
+        fetchSeqButton.setActionCommand("getSequence");
         deselectAll.setEnabled(false);
         deselectAll.setActionCommand("DeselectAll");
         selectAll.setEnabled(false);
         selectAll.setActionCommand("SelectAll");
         deselectAll.addActionListener(this);
         selectAll.addActionListener(this);
-        getSequence.addActionListener(this);
+        fetchSeqButton.addActionListener(this);
 
 
         jScrollPane2.setViewportView(jList2);
@@ -281,7 +272,7 @@ public final class SearchTopComponent extends TopComponent implements LookupList
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 168, Short.MAX_VALUE)
                 .addGroup(topPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(button, javax.swing.GroupLayout.Alignment.TRAILING)
-                .addGroup(GroupLayout.Alignment.CENTER, topPanelLayout.createSequentialGroup().addComponent(getSequence)
+                .addGroup(GroupLayout.Alignment.CENTER, topPanelLayout.createSequentialGroup().addComponent(fetchSeqButton)
                 .addGap(5, 5, 5).addComponent(deselectAll)
                 .addGap(5, 5, 5).addComponent(selectAll))
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, topPanelLayout.createSequentialGroup()
@@ -308,7 +299,7 @@ public final class SearchTopComponent extends TopComponent implements LookupList
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(button).addGap(15, 15, 15)
                 .addGroup(topPanelLayout.createSequentialGroup().addGroup(topPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                .addComponent(getSequence).addComponent(deselectAll).addComponent(selectAll))))
+                .addComponent(fetchSeqButton).addComponent(deselectAll).addComponent(selectAll))))
                 .addGroup(topPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 75, Short.MAX_VALUE)))
@@ -337,22 +328,21 @@ public final class SearchTopComponent extends TopComponent implements LookupList
     private javax.swing.JList runList;
     private javax.swing.JTextField searchTerm;
     private javax.swing.JPanel topPanel;
-    private javax.swing.JButton getSequence;
+    private javax.swing.JButton fetchSeqButton;
     private javax.swing.JButton deselectAll;
     // End of variables declaration
 
     @Override
     public void componentOpened() {
-        result = Utilities.actionsGlobalContext().lookupResult(MGXMaster.class);
         result.addLookupListener(this);
         proc = new RequestProcessor("MGX-ObservationFetch-Pool", Runtime.getRuntime().availableProcessors() + 2);
-        getMaster();
+        updateSeqRunList();
     }
 
     @Override
     public void componentClosed() {
         result.removeLookupListener(this);
-        proc.shutdown();
+        proc.shutdownNow();
     }
 
     void writeProperties(java.util.Properties p) {
@@ -365,10 +355,10 @@ public final class SearchTopComponent extends TopComponent implements LookupList
 
     @Override
     public void resultChanged(LookupEvent le) {
-        getMaster();
+        updateSeqRunList();
     }
 
-    private void getMaster() {
+    private void updateSeqRunList() {
         Collection<? extends MGXMaster> m = result.allInstances();
         boolean needUpdate = false;
         for (MGXMaster newMaster : m) {
@@ -377,12 +367,11 @@ public final class SearchTopComponent extends TopComponent implements LookupList
                 needUpdate = true;
             }
         }
-        if (needUpdate) {
-            updateRunList();
+        if (!needUpdate) {
+            return;
         }
-    }
 
-    private void updateRunList() {
+
         SwingWorker worker = new SwingWorker<List<SeqRun>, Void>() {
             @Override
             protected List<SeqRun> doInBackground() throws Exception {
@@ -492,21 +481,18 @@ public final class SearchTopComponent extends TopComponent implements LookupList
             return list[index];
         }
     }
-    private static int numWorkers = 0;
 
     private final class ObservationListCellRenderer implements ListCellRenderer<Sequence> {
 
-        public List<List<Layer>> toolTips = new ArrayList<>();
-        public List<String> readNames = new ArrayList<>();
-        public ServerDataWrapper model = new ServerDataWrapper();
+        private List<List<Layer>> toolTips = new ArrayList<>();
+        private List<String> readNames = new ArrayList<>();
+        private ServerDataWrapper model = new ServerDataWrapper();
 
         @Override
-        public Component getListCellRendererComponent(JList<? extends Sequence> list,
+        public ObservationViewPanel getListCellRendererComponent(JList<? extends Sequence> list,
                 final Sequence seq, int index, boolean isSelected, boolean cellHasFocus) {
 
-            OrderedObservations compute;
-            compute = model.getOrderedObervations(currentMaster, seq, proc);
-
+            OrderedObservations compute = model.getOrderedObervations(currentMaster, seq, proc);
             readNames.add(seq.getName());
             toolTips.add(compute.getLayers());
 
