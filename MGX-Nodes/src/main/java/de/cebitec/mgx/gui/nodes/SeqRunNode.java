@@ -1,10 +1,8 @@
 package de.cebitec.mgx.gui.nodes;
 
-import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.gui.actions.DownloadSeqRun;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.controller.RBAC;
-import de.cebitec.mgx.gui.datamodel.Job;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.datamodel.Tool;
 import de.cebitec.mgx.gui.datamodel.misc.ToolType;
@@ -46,10 +44,6 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> { // implements Transferable
         setDisplayName(s.getName());
     }
 
-//    @Override
-//    public Transferable drag() throws IOException {
-//        return getContent();
-//    }
     private String getToolTipText(SeqRun run) {
         return new StringBuilder("<html><b>Sequencing run: </b>").append(run.getName())
                 .append("<br><hr><br>")
@@ -65,23 +59,6 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> { // implements Transferable
         return actions;
     }
 
-//    @Override
-//    public DataFlavor[] getTransferDataFlavors() {
-//        return new DataFlavor[]{DATA_FLAVOR};
-//    }
-//    @Override
-//    public boolean isDataFlavorSupported(DataFlavor flavor) {
-//        return flavor == DATA_FLAVOR;
-//    }
-//
-//    @Override
-//    public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
-//        if (flavor == DATA_FLAVOR) {
-//            return this;
-//        } else {
-//            throw new UnsupportedFlavorException(flavor);
-//        }
-//    }
     @Override
     public void updateModified() {
         setDisplayName(getContent().getName());

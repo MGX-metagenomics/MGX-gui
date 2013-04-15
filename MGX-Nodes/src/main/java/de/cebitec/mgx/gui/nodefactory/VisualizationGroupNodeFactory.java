@@ -19,8 +19,8 @@ import org.openide.util.lookup.Lookups;
  */
 public class VisualizationGroupNodeFactory extends ChildFactory<SeqRunNode> implements NodeListener {
 
-    private VisualizationGroup group;
-    private List<SeqRunNode> nodes = new ArrayList<>();
+    private final VisualizationGroup group;
+    private final List<SeqRunNode> nodes = new ArrayList<>();
 
     public VisualizationGroupNodeFactory(VisualizationGroup group) {
         this.group = group;
