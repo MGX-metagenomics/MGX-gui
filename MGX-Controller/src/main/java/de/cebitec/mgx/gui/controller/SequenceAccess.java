@@ -8,6 +8,7 @@ import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.AttributeDTOList;
 import de.cebitec.mgx.dto.dto.AttributeDTOList.Builder;
 import de.cebitec.mgx.dto.dto.SequenceDTO;
+import de.cebitec.mgx.dto.dto.SequenceDTOList;
 import de.cebitec.mgx.gui.datamodel.Attribute;
 import de.cebitec.mgx.gui.datamodel.Sequence;
 import de.cebitec.mgx.gui.dtoconversion.AttributeDTOFactory;
@@ -15,7 +16,10 @@ import de.cebitec.mgx.gui.dtoconversion.SequenceDTOFactory;
 import de.cebitec.mgx.sequence.DNASequenceI;
 import de.cebitec.mgx.sequence.SeqReaderI;
 import de.cebitec.mgx.sequence.SeqWriterI;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.openide.util.Exceptions;
 
@@ -83,6 +87,41 @@ public class SequenceAccess extends AccessBase<Sequence> {
             Exceptions.printStackTrace(ex);
         }
         return SequenceDTOFactory.getInstance().toModel(dto);
+    }
+
+    public void fetchSeqData(Iterable<Sequence> seqs) {
+        Map<Long, Sequence> idx = new HashMap<>();
+        try {
+            for (Sequence s : seqs) {
+                if (s.getSequence() == null) {
+                    idx.put(s.getId(), s);
+                }
+            }
+            
+            if (idx.isEmpty()) {
+                return;
+            }
+
+            SequenceDTOList dto = getDTOmaster().Sequence().fetchSeqData(idx.keySet());
+
+            // update fields
+            for (SequenceDTO sdto : dto.getSeqList()) {
+                assert idx.containsKey(sdto.getId());
+                Sequence s = idx.get(sdto.getId());
+
+                s.setName(sdto.getName());
+                if (sdto.hasLength()) {
+                    s.setLength(sdto.getLength());
+                }
+                if (sdto.hasSequence()) {
+                    s.setSequence(sdto.getSequence());
+                }
+            }
+        } catch (MGXServerException | MGXClientException ex) {
+            Exceptions.printStackTrace(ex);
+        } finally {
+            idx.clear();
+        }
     }
 
     @Override
