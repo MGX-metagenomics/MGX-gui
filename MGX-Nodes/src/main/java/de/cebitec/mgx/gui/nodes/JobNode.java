@@ -82,6 +82,9 @@ public class JobNode extends MGXNodeBase<Job> {
                     case FAILED:
                         icon = "de/cebitec/mgx/gui/nodes/JobStateFAILED.png";
                         break;
+                    case RUNNING:
+                        icon = "de/cebitec/mgx/gui/nodes/JobStatusRunning.png";
+                        break;
                 }
                 if (icon != null) {
                     setValue("valueIcon", ImageUtilities.loadImage(icon, true));
@@ -132,8 +135,6 @@ public class JobNode extends MGXNodeBase<Job> {
                         assert m != null;
                         return m.Job().delete(job);
                     }
-
-               
                 };
 
                 NonEDT.invoke(new Runnable() {
