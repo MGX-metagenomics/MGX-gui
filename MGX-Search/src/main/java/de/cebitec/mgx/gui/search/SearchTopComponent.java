@@ -8,7 +8,8 @@ import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.Observation;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.datamodel.Sequence;
-import java.awt.Component;
+import de.cebitec.mgx.gui.search.util.ObservationListCellRenderer;
+import de.cebitec.mgx.gui.search.util.ResultListModel;
 import java.awt.Cursor;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -17,7 +18,6 @@ import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
@@ -61,8 +61,8 @@ public final class SearchTopComponent extends TopComponent implements LookupList
     private final Lookup.Result<MGXMaster> result;
     private MGXMaster currentMaster = null;
     private final DefaultListModel<SeqRun> runListModel = new DefaultListModel<>();
-    private SearchTopComponent.ResultListModel resultModel = new SearchTopComponent.ResultListModel();
-    private RequestProcessor proc;
+    private ResultListModel resultModel = new ResultListModel();
+    //private RequestProcessor proc;
     private JButton selectAll;
 
     public SearchTopComponent() {
@@ -82,7 +82,7 @@ public final class SearchTopComponent extends TopComponent implements LookupList
         button.addActionListener(this);
         resultList.setModel(resultModel);
         resultList.setEnabled(true);
-        resultList.setCellRenderer(new SearchTopComponent.ObservationListCellRenderer());
+        //resultList.setCellRenderer(new ObservationListCellRenderer());
         readList.setModel(resultModel);
 
 
@@ -101,8 +101,11 @@ public final class SearchTopComponent extends TopComponent implements LookupList
         });
 
 
-        // make sure result list is synced to read list whenever a read name gets
-        // selected
+        /*
+         * make sure result list is synced to read list whenever a read name gets
+         * selected
+         */
+
         readList.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
@@ -115,10 +118,11 @@ public final class SearchTopComponent extends TopComponent implements LookupList
     }
 
     private void enableButton() {
-        button.setEnabled(false);
-        if (!"".equals(searchTerm.getText()) && getSelectedSeqRuns().length > 0) {
-            button.setEnabled(true);
-        }
+        /* 
+         * enable "search" button only when seqruns are selected and a 
+         * search term is present
+         */
+        button.setEnabled(!"".equals(searchTerm.getText()) && getSelectedSeqRuns().length > 0);
     }
 
     /**
@@ -137,21 +141,25 @@ public final class SearchTopComponent extends TopComponent implements LookupList
 
 
         resultList = new javax.swing.JList() {
+            private ObservationListCellRenderer renderer = null;
+
             @Override
             public String getToolTipText(MouseEvent event) {
                 int index = locationToIndex(event.getPoint());
-                ObservationListCellRenderer renderer = (ObservationListCellRenderer) getCellRenderer();
+                if (renderer == null) {
+                    renderer = (ObservationListCellRenderer) getCellRenderer();
+                }
 
-                String names = "";
+                StringBuilder names = null;
 
-                if (!renderer.toolTips.isEmpty()) {
-                    names = "<html><table border=0><colgroup width=200></colgroup><td>";
-                    names += "<tr> Read Name: " + renderer.readNames.get(index) + "</tr>";
+                if (!renderer.getToolTips().isEmpty()) {
+                    names = new StringBuilder("<html><table border=0><colgroup width=200></colgroup><td>");
+                    names.append("<tr> Read Name: ").append(renderer.getReadNames().get(index)).append("</tr>");
                     int counter = -1;
-                    String obsName = "";
-                    String[] parts = null;
+                    String obsName;
+                    String[] parts;
 
-                    for (Layer layer : renderer.toolTips.get(index)) {
+                    for (Layer layer : renderer.getToolTips().get(index)) {
                         for (Observation obs : layer.getObservations()) {
                             counter++;
                             obsName = obs.getAttributeName();
@@ -167,17 +175,18 @@ public final class SearchTopComponent extends TopComponent implements LookupList
 
                                 }
                             }
-                            names += "<tr> " + counter + ": "
-                                    + obsName
+                            names.append("<tr> ").append(counter).append(": ")
+                                    .append(obsName)
                                     //                                + " Start/Stop: " +obs.getStart()+"/"+obs.getStop()
-                                    + " </tr>";
+                                    .append(" </tr>");
                         }
                     }
 
-                    names += "</td></table></html>";
+                    names.append("</td></table></html>");
 
                 }
-                return names;
+                assert names != null;
+                return names.toString();
             }
 
             @Override
@@ -185,6 +194,7 @@ public final class SearchTopComponent extends TopComponent implements LookupList
                 Point point;
 
                 try {
+                    // FIXME indexToLocation(locationToIndex) - ???
                     point = new Point(getX() + getWidth(),
                             (int) indexToLocation(locationToIndex(event.getPoint())).getY());
 
@@ -335,14 +345,14 @@ public final class SearchTopComponent extends TopComponent implements LookupList
     @Override
     public void componentOpened() {
         result.addLookupListener(this);
-        proc = new RequestProcessor("MGX-ObservationFetch-Pool", Runtime.getRuntime().availableProcessors() + 2);
+       // proc = new RequestProcessor("MGX-ObservationFetch-Pool", Runtime.getRuntime().availableProcessors() + 4);
         updateSeqRunList();
     }
 
     @Override
     public void componentClosed() {
         result.removeLookupListener(this);
-        proc.shutdownNow();
+       // proc.shutdownNow();
     }
 
     void writeProperties(java.util.Properties p) {
@@ -359,40 +369,43 @@ public final class SearchTopComponent extends TopComponent implements LookupList
     }
 
     private void updateSeqRunList() {
-        Collection<? extends MGXMaster> m = result.allInstances();
-        boolean needUpdate = false;
-        for (MGXMaster newMaster : m) {
+        for (MGXMaster newMaster : result.allInstances()) {
             if (currentMaster == null || !newMaster.equals(currentMaster)) {
+
+                /*
+                 * we have a new MGXMaster instance; remember it and start a
+                 * worker to fetch the list of associated sequencing runs
+                 */
                 currentMaster = newMaster;
-                needUpdate = true;
-            }
-        }
-        if (!needUpdate) {
-            return;
-        }
 
-
-        SwingWorker worker = new SwingWorker<List<SeqRun>, Void>() {
-            @Override
-            protected List<SeqRun> doInBackground() throws Exception {
-                return currentMaster.SeqRun().fetchall();
-            }
-
-            @Override
-            protected void done() {
-                runListModel.removeAllElements();
-                try {
-                    for (SeqRun sr : get()) {
-                        runListModel.addElement(sr);
+                SwingWorker worker = new SwingWorker<List<SeqRun>, Void>() {
+                    @Override
+                    protected List<SeqRun> doInBackground() throws Exception {
+                        return currentMaster.SeqRun().fetchall();
                     }
-                    runList.setSelectedIndex(0);
-                } catch (InterruptedException | ExecutionException ex) {
-                    Exceptions.printStackTrace(ex);
-                }
-                super.done();
+
+                    @Override
+                    protected void done() {
+                        runListModel.removeAllElements();
+                        try {
+                            for (SeqRun sr : get()) {
+                                runListModel.addElement(sr);
+                            }
+                            runList.setSelectedIndex(0);
+                        } catch (InterruptedException | ExecutionException ex) {
+                            Exceptions.printStackTrace(ex);
+                        }
+                        super.done();
+                    }
+                };
+                worker.execute();
+
+                /*
+                 * we have a new MGXMaster set, return..
+                 */
+                return;
             }
-        };
-        worker.execute();
+        }
     }
 
     private SeqRun[] getSelectedSeqRuns() {
@@ -412,7 +425,7 @@ public final class SearchTopComponent extends TopComponent implements LookupList
                 readList.selectAll();
                 break;
             case "getSequence":
-                new ReadWindow(currentMaster, new ArrayList(readList.getSelectedEntries()));
+                ReadWindow rw = new ReadWindow(currentMaster, new ArrayList(readList.getSelectedEntries()));
                 break;
             case "Search":
 
@@ -425,78 +438,30 @@ public final class SearchTopComponent extends TopComponent implements LookupList
                         Logger.getGlobal().log(Level.INFO, "search for {0} took {1}ms", new Object[]{searchTerm.getText(), start});
                         return ret;
                     }
+
+                    @Override
+                    protected void done() {
+                        Sequence[] hits;
+                        try {
+                            hits = get();
+                            numResults.setText("Hits found: " + hits.length);
+                            selectAll.setEnabled(hits.length > 0);
+                            resultModel.setResult(hits);
+                            
+                            //readList.addElements(hits);
+                            readList.deselectAll();
+                        } catch (InterruptedException | ExecutionException ex) {
+                            Exceptions.printStackTrace(ex);
+                        } finally {
+                            setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                        }
+                        super.done();
+                    }
                 };
-                try {
-                    setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-                    numResults.setText("Searching..");
-
-                    worker.execute();
-
-                    Sequence[] hits = worker.get();
-                    hitsSize = hits.length;
-
-                    numResults.setText("Hits found: " + hits.length);
-
-                    if (hits.length > 0) {
-                        selectAll.setEnabled(true);
-
-                    } else {
-                        selectAll.setEnabled(false);
-                    }
-
-                    resultModel.setResult(hits);
-
-
-                    for (Sequence hit : hits) {
-                        readList.addElement(hit);
-                    }
-                    readList.deselectAll();
-
-                } catch (InterruptedException | ExecutionException ex) {
-                    Exceptions.printStackTrace(ex);
-                } finally {
-                    setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-                }
+                setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+                numResults.setText("Searching..");
+                worker.execute();
                 break;
-        }
-    }
-    int hitsSize = 0;
-
-    private final class ResultListModel extends AbstractListModel<Sequence> {
-
-        Sequence list[] = new Sequence[0];
-
-        public void setResult(Sequence[] result) {
-            list = result;
-            fireContentsChanged(this, -1, -1);
-        }
-
-        @Override
-        public int getSize() {
-            return list.length;
-        }
-
-        @Override
-        public Sequence getElementAt(int index) {
-            return list[index];
-        }
-    }
-
-    private final class ObservationListCellRenderer implements ListCellRenderer<Sequence> {
-
-        private List<List<Layer>> toolTips = new ArrayList<>();
-        private List<String> readNames = new ArrayList<>();
-        private ServerDataWrapper model = new ServerDataWrapper();
-
-        @Override
-        public ObservationViewPanel getListCellRendererComponent(JList<? extends Sequence> list,
-                final Sequence seq, int index, boolean isSelected, boolean cellHasFocus) {
-
-            OrderedObservations compute = model.getOrderedObervations(currentMaster, seq, proc);
-            readNames.add(seq.getName());
-            toolTips.add(compute.getLayers());
-
-            return new ObservationViewPanel(compute, seq, currentMaster);
         }
     }
 

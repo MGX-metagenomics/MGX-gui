@@ -92,9 +92,8 @@ public class ServerDataWrapper {
         }
 
         OrderedObservations compute = null;
-            observations = getObservations(m, seq, proc);
-            compute = new OrderedObservations(seq.getLength(),
-                    new ArrayList(Arrays.asList(observations)));
+        observations = getObservations(m, seq, proc);
+        compute = new OrderedObservations(seq.getLength(), Arrays.asList(observations));
 
         return compute;
     }

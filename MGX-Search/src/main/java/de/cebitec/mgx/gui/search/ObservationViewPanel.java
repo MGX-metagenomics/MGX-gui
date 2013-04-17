@@ -4,9 +4,6 @@ import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.Sequence;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -22,11 +19,11 @@ public class ObservationViewPanel extends javax.swing.JPanel {
    /**
     * Der Read, zu dem die einzelnen Observations dargestellt werden sollen.
     */
-   private Sequence seq;
+   private final Sequence seq;
    /**
     * Observations die in Ebenen angeordnet sind.
     */
-   private OrderedObservations orderedObservations;
+   private final OrderedObservations orderedObservations;
    /**
     * Gibt die Groesse der Abschnitte an, in die der Read aufgeteilt wird.
     */
@@ -36,7 +33,7 @@ public class ObservationViewPanel extends javax.swing.JPanel {
     */
    private JPanel obsview;
 
-   private MGXMaster master;
+   private final MGXMaster master;
 
 
    /**

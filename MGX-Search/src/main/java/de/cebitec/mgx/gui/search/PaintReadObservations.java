@@ -159,7 +159,7 @@ public class PaintReadObservations {
      * @param lGraphics Graphics Objekt
      * @param yPosition y Position der Ebene.
      */
-    private void drawArrowHead(int lSequenceStart, int lSequenceStop, Graphics lGraphics, int yPosition) {
+    private static void drawArrowHead(int lSequenceStart, int lSequenceStop, Graphics lGraphics, int yPosition) {
         Polygon p = new Polygon();
         if (lSequenceStart < lSequenceStop) {
             p.addPoint(lSequenceStop, yPosition);
@@ -199,13 +199,13 @@ public class PaintReadObservations {
                 if (scaledObservationStart < scaledObservationStop) {
 
                     lGraphics.fillRect(scaledObservationStart, layer.getyPosition() - 4, (scaledObservationStop - 7) - scaledObservationStart, ObservationReadWidth);
-                    this.drawArrowHead(scaledObservationStart, scaledObservationStop, lGraphics, layer.getyPosition());
+                    drawArrowHead(scaledObservationStart, scaledObservationStop, lGraphics, layer.getyPosition());
 
                     lGraphics.setColor(Color.WHITE);
                     lGraphics.drawString(Integer.toString(observationCounter), scaledObservationStart + 10, layer.getyPosition() + 4);
                 } else {
                     lGraphics.fillRect(scaledObservationStop + 7, layer.getyPosition() - 4, scaledObservationStart - (scaledObservationStop + 7), ObservationReadWidth);
-                    this.drawArrowHead(scaledObservationStart, scaledObservationStop, lGraphics, layer.getyPosition());
+                    drawArrowHead(scaledObservationStart, scaledObservationStop, lGraphics, layer.getyPosition());
                     lGraphics.setColor(Color.WHITE);
                     lGraphics.drawString(Integer.toString(observationCounter), scaledObservationStart - 10, layer.getyPosition() + 4);
                 }

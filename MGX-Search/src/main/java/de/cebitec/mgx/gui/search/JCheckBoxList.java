@@ -84,6 +84,12 @@ public class JCheckBoxList<T> extends JList<T> {
         selections.put(elem, Boolean.FALSE);
         model.addElement(elem);
     }
+    
+    public void addElements(T[] elems) {
+        for (T t: elems) {
+            addElement(t);
+        }
+    }
 
     /*
      * Selektiert alle Elemente in der Liste.
