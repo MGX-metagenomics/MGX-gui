@@ -39,7 +39,10 @@ public class ObservationFetcher implements Runnable {
      */
     @Override
     public void run() {
-        Observation[] obs = master.Observation().ByRead(seq).toArray(new Observation[]{});
-        cache.put(seq, new WeakReference(obs));
+        if (cache.containsKey(seq) && cache.get(seq).get() != null) {
+        } else {
+            Observation[] obs = master.Observation().ByRead(seq).toArray(new Observation[]{});
+            cache.put(seq, new WeakReference(obs));
+        }
     }
 }

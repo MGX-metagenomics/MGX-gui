@@ -15,8 +15,6 @@ import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -86,19 +84,19 @@ public final class SearchTopComponent extends TopComponent implements LookupList
         readList.setModel(resultModel);
 
 
-        readList.addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-
-                if (evt.getPropertyName().equals(JCheckBoxList.selectionChange) && evt.getNewValue() == true) {
-                    deselectAll.setEnabled(true);
-                    fetchSeqButton.setEnabled(true);
-                } else if (evt.getPropertyName().equals(JCheckBoxList.selectionChange) && readList.getSelectedEntries().isEmpty()) {
-                    deselectAll.setEnabled(false);
-                    fetchSeqButton.setEnabled(false);
-                }
-            }
-        });
+//        readList.addPropertyChangeListener(new PropertyChangeListener() {
+//            @Override
+//            public void propertyChange(PropertyChangeEvent evt) {
+//
+//                if (evt.getPropertyName().equals(JCheckBoxList.selectionChange) && evt.getNewValue() == true) {
+//                    deselectAll.setEnabled(true);
+//                    fetchSeqButton.setEnabled(true);
+//                } else if (evt.getPropertyName().equals(JCheckBoxList.selectionChange) && readList.getSelectedEntries().isEmpty()) {
+//                    deselectAll.setEnabled(false);
+//                    fetchSeqButton.setEnabled(false);
+//                }
+//            }
+//        });
 
 
         /*
@@ -417,15 +415,8 @@ public final class SearchTopComponent extends TopComponent implements LookupList
     public void actionPerformed(ActionEvent e) {
 
         switch (e.getActionCommand()) {
-            case "DeselectAll":
-                readList.deselectAll();
-                selectAll.setEnabled(true);
-                break;
-            case "SelectAll":
-                readList.selectAll();
-                break;
             case "getSequence":
-                ReadWindow rw = new ReadWindow(currentMaster, new ArrayList(readList.getSelectedEntries()));
+                ReadWindow rw = new ReadWindow(currentMaster, new ArrayList(resultModel.getSelectedEntries()));
                 break;
             case "Search":
 
@@ -449,7 +440,7 @@ public final class SearchTopComponent extends TopComponent implements LookupList
                             resultModel.setResult(hits);
                             
                             //readList.addElements(hits);
-                            readList.deselectAll();
+                            //readList.deselectAll();
                         } catch (InterruptedException | ExecutionException ex) {
                             Exceptions.printStackTrace(ex);
                         } finally {
