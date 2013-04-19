@@ -4,6 +4,8 @@ import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.Observation;
 import de.cebitec.mgx.gui.datamodel.Sequence;
 import java.lang.ref.WeakReference;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Map;
 
 /**
@@ -40,9 +42,19 @@ public class ObservationFetcher implements Runnable {
     @Override
     public void run() {
         if (cache.containsKey(seq) && cache.get(seq).get() != null) {
-        } else {
-            Observation[] obs = master.Observation().ByRead(seq).toArray(new Observation[]{});
-            cache.put(seq, new WeakReference(obs));
+            return;
         }
+        Observation[] obs = master.Observation().ByRead(seq).toArray(new Observation[]{});
+        Arrays.sort(obs, comp);
+        cache.put(seq, new WeakReference(obs));
     }
+    
+    private final static Comparator<Observation> comp = new Comparator<Observation>() {
+        @Override
+        public int compare(Observation o1, Observation o2) {
+            int min1 = o1.getStart() < o1.getStop() ? o1.getStart() : o1.getStop();
+            int min2 = o2.getStart() < o2.getStop() ? o2.getStart() : o2.getStop();
+            return Integer.compare(min1, min2);
+        }
+    };
 }

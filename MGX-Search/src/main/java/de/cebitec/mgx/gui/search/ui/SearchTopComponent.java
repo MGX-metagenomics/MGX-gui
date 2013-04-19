@@ -3,7 +3,6 @@ package de.cebitec.mgx.gui.search.ui;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.datamodel.Sequence;
-import de.cebitec.mgx.gui.search.util.ResultListModel;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
@@ -23,6 +22,7 @@ import javax.swing.event.ListSelectionListener;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
@@ -39,11 +39,14 @@ import org.openide.util.Utilities;
         autostore = false)
 @TopComponent.Description(
         preferredID = "SearchTopComponent",
-        //iconBase="SET/PATH/TO/ICON/HERE", 
-        persistenceType = TopComponent.PERSISTENCE_ALWAYS)
+        iconBase = "de/cebitec/mgx/gui/search/SequenceSearch.png",
+        persistenceType = TopComponent.PERSISTENCE_NEVER)
 @TopComponent.Registration(mode = "editor", openAtStartup = false)
 @ActionID(category = "Window", id = "de.cebitec.mgx.gui.search.ui.SearchTopComponent")
-@ActionReference(path = "Menu/Window" /*, position = 333 */)
+@ActionReferences({
+    @ActionReference(path = "Menu/Window", position = 332),
+    @ActionReference(path = "Toolbars/UndoRedo", position = 525)
+})
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_SearchAction",
         preferredID = "SearchTopComponent")
@@ -57,7 +60,6 @@ public final class SearchTopComponent extends TopComponent implements LookupList
     private final Lookup.Result<MGXMaster> result;
     private MGXMaster currentMaster = null;
     private final DefaultListModel<SeqRun> runListModel = new DefaultListModel<>();
-    private ResultListModel resultModel = new ResultListModel();
 
     public SearchTopComponent() {
         initComponents();
@@ -75,8 +77,7 @@ public final class SearchTopComponent extends TopComponent implements LookupList
         searchTerm.getDocument().addDocumentListener(this);
 
         // both lists work based on the same model
-        obsList.setModel(resultModel);
-        readList.setModel(resultModel);
+        obsList.setModel(readList.getModel());
 
         /*
          * make sure result list is synced to read list whenever a read name gets
@@ -142,9 +143,9 @@ public final class SearchTopComponent extends TopComponent implements LookupList
         runList = new javax.swing.JList();
         jSplitPane1 = new javax.swing.JSplitPane();
         jScrollPane2 = new javax.swing.JScrollPane();
-        readList = new de.cebitec.mgx.gui.search.JCheckBoxList();
+        readList = new de.cebitec.mgx.gui.search.JCheckBoxList<Sequence>();
         jScrollPane3 = new javax.swing.JScrollPane();
-        obsList = new javax.swing.JList();
+        obsList = new javax.swing.JList<Sequence>();
         searchTerm = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
         exact = new javax.swing.JCheckBox();
@@ -159,24 +160,19 @@ public final class SearchTopComponent extends TopComponent implements LookupList
         });
         jScrollPane1.setViewportView(runList);
 
-        jSplitPane1.setDividerLocation(700);
+        jSplitPane1.setResizeWeight(1.0);
 
-        readList.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public Object getElementAt(int i) { return strings[i]; }
-        });
+        jScrollPane2.setPreferredSize(new java.awt.Dimension(180, 131));
+
         jScrollPane2.setViewportView(readList);
 
         jSplitPane1.setRightComponent(jScrollPane2);
 
-        obsList.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public Object getElementAt(int i) { return strings[i]; }
-        });
+        jScrollPane3.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        jScrollPane3.setPreferredSize(new java.awt.Dimension(500, 131));
+
+        obsList.setMaximumSize(new java.awt.Dimension(5000, 50000000));
         obsList.setMinimumSize(new java.awt.Dimension(500, 85));
-        obsList.setPreferredSize(new java.awt.Dimension(500, 85));
         jScrollPane3.setViewportView(obsList);
 
         jSplitPane1.setLeftComponent(jScrollPane3);
@@ -247,8 +243,8 @@ public final class SearchTopComponent extends TopComponent implements LookupList
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JSplitPane jSplitPane1;
-    private javax.swing.JList obsList;
-    private de.cebitec.mgx.gui.search.JCheckBoxList readList;
+    private javax.swing.JList<Sequence> obsList;
+    private de.cebitec.mgx.gui.search.JCheckBoxList<Sequence> readList;
     private javax.swing.JList runList;
     private javax.swing.JProgressBar searchProgress;
     private javax.swing.JTextField searchTerm;
@@ -307,9 +303,11 @@ public final class SearchTopComponent extends TopComponent implements LookupList
                     statusLine.setText("Results found: " + hits.length);
                     searchProgress.setIndeterminate(false);
                     searchProgress.setValue(100);
+                    readList.clear();
+                    for (Sequence s : hits) {
+                        readList.addElement(s);
+                    }
 
-                    resultModel.setResult(hits);
-                    readList.setModel(resultModel);
                 } catch (InterruptedException | ExecutionException ex) {
                     Exceptions.printStackTrace(ex);
                 } finally {
