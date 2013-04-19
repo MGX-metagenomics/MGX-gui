@@ -48,13 +48,23 @@ public class ObservationFetcher implements Runnable {
         Arrays.sort(obs, comp);
         cache.put(seq, new WeakReference(obs));
     }
-    
     private final static Comparator<Observation> comp = new Comparator<Observation>() {
         @Override
         public int compare(Observation o1, Observation o2) {
             int min1 = o1.getStart() < o1.getStop() ? o1.getStart() : o1.getStop();
             int min2 = o2.getStart() < o2.getStop() ? o2.getStart() : o2.getStop();
-            return Integer.compare(min1, min2);
+            int ret = Integer.compare(min1, min2);
+            return ret == 0 ? compareLength(o1, o2) : ret;
+        }
+
+        private int compareLength(Observation o1, Observation o2) {
+            int l1 = o1.getStart() < o1.getStop()
+                    ? o1.getStop() - o1.getStart() + 1
+                    : o1.getStart() - o1.getStop() + 1;
+            int l2 = o2.getStart() < o2.getStop()
+                    ? o2.getStop() - o2.getStart() + 1
+                    : o2.getStart() - o2.getStop() + 1;
+            return Integer.compare(l1, l2);
         }
     };
 }

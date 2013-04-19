@@ -6,6 +6,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.geom.Line2D;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
@@ -50,20 +51,27 @@ public class ObservationView extends javax.swing.JPanel {
             super.paintComponent(g);
             Graphics2D g2 = (Graphics2D) g;
 
+            RenderingHints rh = new RenderingHints(RenderingHints.KEY_ANTIALIASING,
+                    RenderingHints.VALUE_ANTIALIAS_ON);
+            rh.put(RenderingHints.KEY_RENDERING,
+                    RenderingHints.VALUE_RENDER_QUALITY);
+
+            g2.setRenderingHints(rh);
+
             int height = getHeight();
             int width = getWidth();
 
             int midY = height / 2;
 
             int seqLen = seq.getLength();
-            
+
             g2.setColor(Color.BLACK);
 
             // horizontal line representing the sequence itself
             g2.draw(new Line2D.Double(borderWidth, midY, width - borderWidth, midY));
             // left boundary
             g2.draw(new Line2D.Double(borderWidth, midY - 5, borderWidth, midY + 5));
-            g2.drawString("0", borderWidth - 3, midY - 7); //0bp position
+            g2.drawString("1", borderWidth - 3, midY - 7); //0bp position
             // right boundary
             g2.draw(new Line2D.Double(width - borderWidth, midY - 5, width - borderWidth, midY + 5));
             if (seqLen < 100) {
