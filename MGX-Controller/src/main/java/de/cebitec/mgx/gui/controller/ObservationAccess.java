@@ -8,6 +8,7 @@ import de.cebitec.mgx.gui.datamodel.Sequence;
 import de.cebitec.mgx.gui.dtoconversion.ObservationDTOFactory;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import org.openide.util.Exceptions;
 
@@ -21,8 +22,11 @@ public class ObservationAccess extends AccessBase<Observation> {
     public Collection<Observation> ByRead(Sequence s) {
         Collection<Observation> ret = new ArrayList<>();
         try {
-            for (ObservationDTO dto : getDTOmaster().Observation().ByRead(s.getId())) {
-                ret.add(ObservationDTOFactory.getInstance().toModel(dto));
+            Iterator<ObservationDTO> iter = getDTOmaster().Observation().ByRead(s.getId());
+            while (iter.hasNext()) {
+                Observation obs = ObservationDTOFactory.getInstance().toModel(iter.next());
+                obs.setMaster(getMaster());
+                ret.add(obs);
             }
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
