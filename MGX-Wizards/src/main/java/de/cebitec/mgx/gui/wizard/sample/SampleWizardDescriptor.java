@@ -1,11 +1,16 @@
 package de.cebitec.mgx.gui.wizard.sample;
 
+import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.Sample;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import javax.swing.SwingWorker;
 import org.openide.WizardDescriptor;
+import org.openide.util.Exceptions;
+import org.openide.util.Utilities;
 
 /**
  *
@@ -29,6 +34,7 @@ public class SampleWizardDescriptor extends WizardDescriptor {
         putProperty(WizardDescriptor.PROP_AUTO_WIZARD_STYLE, Boolean.TRUE);
         putProperty(WizardDescriptor.PROP_CONTENT_DISPLAYED, Boolean.TRUE);
         putProperty(WizardDescriptor.PROP_CONTENT_NUMBERED, Boolean.TRUE);
+        
     }
     
     public SampleWizardDescriptor(Sample s) {

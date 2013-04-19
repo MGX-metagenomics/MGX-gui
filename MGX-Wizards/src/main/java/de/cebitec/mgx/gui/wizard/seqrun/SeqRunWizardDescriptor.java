@@ -38,10 +38,8 @@ public class SeqRunWizardDescriptor extends WizardDescriptor {
         putProperty(WizardDescriptor.PROP_CONTENT_DATA, new String[]{p1.getName(), p2.getName()});
         putProperty(WizardDescriptor.PROP_AUTO_WIZARD_STYLE, Boolean.TRUE);
         putProperty(WizardDescriptor.PROP_CONTENT_DISPLAYED, Boolean.TRUE);
-        putProperty(WizardDescriptor.PROP_CONTENT_NUMBERED, Boolean.TRUE);
-        
-        putProperty(SeqRunWizardDescriptor.INVOCATION_MODE, CREATE_MODE);
-        
+        putProperty(WizardDescriptor.PROP_CONTENT_NUMBERED, Boolean.TRUE);   
+        putProperty(SeqRunWizardDescriptor.INVOCATION_MODE, CREATE_MODE);     
         setData();
     }
 
@@ -64,9 +62,7 @@ public class SeqRunWizardDescriptor extends WizardDescriptor {
         putProperty(SeqRunVisualPanel1.PROP_PLATFORM, d.getSequencingTechnology());
         putProperty(SeqRunVisualPanel1.PROP_SUBMITTED, d.getSubmittedToINSDC());
         putProperty(SeqRunVisualPanel1.PROP_ACCESSION, d.getAccession());
-        
-        putProperty(SeqRunWizardDescriptor.INVOCATION_MODE, EDIT_MODE);
-        
+        putProperty(SeqRunWizardDescriptor.INVOCATION_MODE, EDIT_MODE);  
         p1.setProperties(this);
     }
 

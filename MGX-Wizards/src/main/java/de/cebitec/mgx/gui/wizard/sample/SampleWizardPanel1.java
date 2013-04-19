@@ -1,7 +1,9 @@
 package de.cebitec.mgx.gui.wizard.sample;
 
+import de.cebitec.mgx.gui.datamodel.Sample;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Collection;
 import java.util.Date;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -19,7 +21,8 @@ public class SampleWizardPanel1 implements WizardDescriptor.Panel<WizardDescript
     private WizardDescriptor model = null;
     private boolean isValid = false;
     private final EventListenerList listeners = new EventListenerList();
-
+    private Collection<Sample> allSamples;
+    
     @Override
     public SampleVisualPanel1 getComponent() {
         if (component == null) {
@@ -97,6 +100,7 @@ public class SampleWizardPanel1 implements WizardDescriptor.Panel<WizardDescript
         Date selectedDate = getComponent().getCollectionDate();
         isValid = ((selectedDate != null)
                 && (now.compareTo(selectedDate) >= 0));
+       
         return isValid;
     }
 }

@@ -1,7 +1,9 @@
 package de.cebitec.mgx.gui.wizard.habitat;
 
+import de.cebitec.mgx.gui.datamodel.Habitat;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Collection;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
@@ -18,7 +20,9 @@ public class HabitatWizardPanel1 implements WizardDescriptor.Panel<WizardDescrip
     private WizardDescriptor model = null;
     private boolean isValid = false;
     private final EventListenerList listeners = new EventListenerList();
-
+    private Collection<Habitat> allHabitat;
+    
+    
     // Get the visual component for the panel. In this template, the component
     // is kept separate. This can be more efficient: if the wizard is created
     // but never displayed, or not all panels are displayed, it is better to
@@ -111,24 +115,61 @@ public class HabitatWizardPanel1 implements WizardDescriptor.Panel<WizardDescrip
         HabitatVisualPanel1 c = getComponent();
         String test = c.getHabitatName();
         if (test == null || "".equals(test)) {
+            model.getNotificationLineSupport().setErrorMessage("Please enter a name for Habitat.");
             isValid = false;
         }
 
         test = c.getBiome();
         if (test == null || "".equals(test)) {
+            model.getNotificationLineSupport().setErrorMessage("Please enter a name for Biome.");
             isValid = false;
         }
 
         Double d = c.getGPSLatitude();
         if (d == null) {
+            model.getNotificationLineSupport().setErrorMessage("Please choose a location.");
             isValid = false;
         }
         
         d = c.getGPSLongitude();
         if (d == null) {
+            model.getNotificationLineSupport().setErrorMessage("Please choose a location.");
             isValid = false;
         }
-
+        boolean alreadyExists = checkDuplicate(c.getHabitatName());
+        if (alreadyExists) {
+            model.getNotificationLineSupport().setErrorMessage("Habitat with same name already exists.");
+            isValid = false;
+        } 
+        
+        if(isValid){
+             model.getNotificationLineSupport().clearMessages();
+        }
+        
+        
         return isValid;
+    }
+    
+    public void setHabitat(Collection<Habitat> habitats) {
+        allHabitat = habitats;
+    }
+
+    private boolean checkDuplicate(String name) {
+        // prevent creating duplicate extract names
+        boolean alreadyExists = false;
+        if (model.getProperty(HabitatWizardDescriptor.INVOCATION_MODE).equals(HabitatWizardDescriptor.CREATE_MODE)) {
+            for (Habitat habitat : allHabitat) {
+                if (habitat.getName().equals(name)) {
+                    alreadyExists = true;
+                }
+            }
+        } else if(model.getProperty(HabitatWizardDescriptor.INVOCATION_MODE).equals(HabitatWizardDescriptor.EDIT_MODE)){
+            for (Habitat habitat : allHabitat) {
+                if (habitat.getName().equals(name) && !habitat.getName().equals(model.getProperty(HabitatVisualPanel1.PROP_NAME))) {
+                    alreadyExists = true;
+                }
+            }
+        }
+        return alreadyExists;
     }
 }

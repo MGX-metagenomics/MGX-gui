@@ -22,7 +22,7 @@ public class SeqRunWizardPanel1 implements WizardDescriptor.Panel<WizardDescript
     private WizardDescriptor model = null;
     private boolean isValid = true;
     private final EventListenerList listeners = new EventListenerList();
-    private Collection<SeqRun> otherRuns;
+    private Collection<SeqRun> allRuns;
 
     @Override
     public SeqRunVisualPanel1 getComponent() {
@@ -112,27 +112,26 @@ public class SeqRunWizardPanel1 implements WizardDescriptor.Panel<WizardDescript
         SeqRunVisualPanel1 c = getComponent();
 
         if (c.getRunName() == null || "".equals(c.getRunName())) {
+            model.getNotificationLineSupport().setErrorMessage("Please enter run name.");
             isValid = false;
         }
-
-        if (model.getProperty(SeqRunWizardDescriptor.INVOCATION_MODE).equals(SeqRunWizardDescriptor.CREATE_MODE)) {
-            // prevent creating duplicate run names
-            for (SeqRun other : otherRuns) {
-                if (other.getName().equals(c.getRunName())) {
-                    isValid = false;
-                    nls.setErrorMessage("Run with same name already exists.");
-                }
-            }
-        }
+        boolean alreadyExists = checkDuplicate(c.getRunName());
+        if (alreadyExists) {
+            model.getNotificationLineSupport().setErrorMessage("Sequencing run with same name already exists.");
+            isValid = false;
+        } 
 
         // if it's submitted, we require the accession
         if (c.getSubmittedState()) {
             String accession = c.getAccession();
             if (accession == null || "".equals(accession)) {
+                model.getNotificationLineSupport().setErrorMessage("Please enter accession.");
                 isValid = false;
             }
+        } 
+        if(isValid){
+             model.getNotificationLineSupport().clearMessages();
         }
-
         return isValid;
     }
 
@@ -145,6 +144,24 @@ public class SeqRunWizardPanel1 implements WizardDescriptor.Panel<WizardDescript
     }
 
     public void setSeqRuns(Collection<SeqRun> runs) {
-        otherRuns = runs;
+        allRuns = runs;
+    }
+
+    private boolean checkDuplicate(String name) {
+        boolean alreadyExists = false;
+        if (model.getProperty(SeqRunWizardDescriptor.INVOCATION_MODE).equals(SeqRunWizardDescriptor.CREATE_MODE)) {
+            for (SeqRun seqrun : allRuns) {
+                if (seqrun.getName().equals(name)) {
+                    alreadyExists = true;
+                }
+            }
+        } else if(model.getProperty(SeqRunWizardDescriptor.INVOCATION_MODE).equals(SeqRunWizardDescriptor.EDIT_MODE)){
+            for (SeqRun seqrun : allRuns) {
+                if (seqrun.getName().equals(name) && !seqrun.getName().equals(model.getProperty(SeqRunVisualPanel1.PROP_NAME))) {
+                    alreadyExists = true;
+                }
+            }
+        }
+        return alreadyExists;
     }
 }
