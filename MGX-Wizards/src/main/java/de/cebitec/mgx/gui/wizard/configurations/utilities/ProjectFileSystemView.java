@@ -3,7 +3,9 @@ package de.cebitec.mgx.gui.wizard.configurations.utilities;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.MGXFile;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.swing.Icon;
@@ -38,7 +40,11 @@ public class ProjectFileSystemView extends FileSystemView {
      *
      * @param entries Eintraege der Dateien.
      */
-    public ProjectFileSystemView(List<MGXFile> entries) {
+    public ProjectFileSystemView(Iterator<MGXFile> iter) {
+        List<MGXFile> entries = new ArrayList<>();
+        while (iter.hasNext()) {
+            entries.add(iter.next());
+        }
         files = new HashMap<>();
         if (entries.size() > 0) {
             projectDirectoryName = entries.get(0).getName();
@@ -79,7 +85,11 @@ public class ProjectFileSystemView extends FileSystemView {
                 files.put(newPath, file);
 
                 // process children
-                List<MGXFile> dirEntries = master.File().fetchall(currentFile);
+                Iterator<MGXFile> dirEntriesIter = master.File().fetchall(currentFile);
+                List<MGXFile> dirEntries = new ArrayList<>();
+                while (dirEntriesIter.hasNext()) {
+                    dirEntries.add(dirEntriesIter.next());
+                }
                 ProjectFile[] children = new ProjectFile[dirEntries.size()];
 
                 for (int j = 0; j < children.length; j++) {

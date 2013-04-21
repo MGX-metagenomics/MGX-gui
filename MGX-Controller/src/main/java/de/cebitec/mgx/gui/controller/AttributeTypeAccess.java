@@ -7,6 +7,7 @@ import de.cebitec.mgx.gui.datamodel.AttributeType;
 import de.cebitec.mgx.gui.datamodel.Job;
 import de.cebitec.mgx.gui.dtoconversion.AttributeTypeDTOFactory;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import org.openide.util.Exceptions;
 
@@ -27,7 +28,7 @@ public class AttributeTypeAccess extends AccessBase<AttributeType> {
     }
 
     @Override
-    public List<AttributeType> fetchall() {
+    public Iterator<AttributeType> fetchall() {
         throw new UnsupportedOperationException("Not supported.");
     }
 

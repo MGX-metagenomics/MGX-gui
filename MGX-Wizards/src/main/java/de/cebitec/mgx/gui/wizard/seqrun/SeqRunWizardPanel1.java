@@ -4,7 +4,9 @@ import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.datamodel.Term;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
@@ -143,8 +145,11 @@ public class SeqRunWizardPanel1 implements WizardDescriptor.Panel<WizardDescript
         getComponent().setPlatforms(terms);
     }
 
-    public void setSeqRuns(Collection<SeqRun> runs) {
-        allRuns = runs;
+    public void setSeqRuns(Iterator<SeqRun> runs) {
+        allRuns = new ArrayList<>();
+        while (runs.hasNext()) {
+            allRuns.add(runs.next());
+        }
     }
 
     private boolean checkDuplicate(String name) {

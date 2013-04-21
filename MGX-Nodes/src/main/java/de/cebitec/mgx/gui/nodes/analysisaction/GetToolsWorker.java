@@ -6,8 +6,7 @@ import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.datamodel.Tool;
 import de.cebitec.mgx.gui.datamodel.misc.ToolType;
 import de.cebitec.mgx.gui.wizard.configurations.action.WizardController;
-import de.cebitec.mgx.gui.wizard.configurations.progressscreen.ProgressBar;
-import java.util.List;
+import java.util.Iterator;
 import javax.swing.SwingWorker;
 import org.openide.util.Exceptions;
 
@@ -57,8 +56,8 @@ public class GetToolsWorker extends SwingWorker<Void, Void> {
         WizardController startUp = new WizardController();
 
         try {
-            List<Tool> globalTools = master.Tool().listGlobalTools();
-            List<Tool> projectTools = master.Tool().fetchall();
+            Iterator<Tool> globalTools = master.Tool().listGlobalTools();
+            Iterator<Tool> projectTools = master.Tool().fetchall();
             tool = startUp.startToolViewStartUp(globalTools, projectTools);
         } catch (MGXServerException ex) {
             Exceptions.printStackTrace(ex);

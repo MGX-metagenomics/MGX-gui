@@ -19,8 +19,9 @@ import de.cebitec.mgx.gui.dtoconversion.AttributeDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.AttributeTypeDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.SearchRequestDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.SequenceDTOFactory;
-import java.util.ArrayList;
+import de.cebitec.mgx.gui.util.BaseIterator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -33,18 +34,24 @@ import org.openide.util.Exceptions;
  */
 public class AttributeAccess extends AccessBase<Attribute> {
 
-    public List<Attribute> BySeqRun(long seqrun_id) {
-        List<Attribute> attrs = new ArrayList<>();
+    public Iterator<Attribute> BySeqRun(final long seqrun_id) {
         try {
-            for (AttributeDTO adto : getDTOmaster().Attribute().BySeqRun(seqrun_id)) {
-                Attribute attr = AttributeDTOFactory.getInstance().toModel(adto);
-                attr.setMaster(this.getMaster());
-                attrs.add(attr);
-            }
+
+            Iterator<AttributeDTO> BySeqRun = getDTOmaster().Attribute().BySeqRun(seqrun_id);
+
+            return new BaseIterator<AttributeDTO, Attribute>(BySeqRun) {
+                @Override
+                public Attribute next() {
+                    Attribute attr = AttributeDTOFactory.getInstance().toModel(iter.next());
+                    attr.setMaster(getMaster());
+                    return attr;
+                }
+            };
+
         } catch (MGXServerException ex) {
             Logger.getLogger(AttributeAccess.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return attrs;
+        return null;
     }
 
 //    public Collection<String> listTypes() throws MGXServerException {
@@ -124,7 +131,7 @@ public class AttributeAccess extends AccessBase<Attribute> {
     }
 
     @Override
-    public List<Attribute> fetchall() {
+    public Iterator<Attribute> fetchall() {
         throw new UnsupportedOperationException("Not supported.");
     }
 

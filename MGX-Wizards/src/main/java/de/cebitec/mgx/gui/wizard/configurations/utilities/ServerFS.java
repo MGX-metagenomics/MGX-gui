@@ -4,6 +4,8 @@ import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.MGXFile;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import javax.swing.Icon;
 import javax.swing.filechooser.FileSystemView;
@@ -128,7 +130,12 @@ public class ServerFS extends FileSystemView {
         if (dir instanceof ServerFile) {
 
             ServerFile file = (ServerFile) dir;
-            List<MGXFile> files = master.File().fetchall(file.getMGXFile());
+            Iterator<MGXFile> filesIter = master.File().fetchall(file.getMGXFile());
+            List<MGXFile> files = new ArrayList<>();
+            while (filesIter.hasNext()) {
+                files.add(filesIter.next());
+            }
+            
             children = new ServerFile[files.size()];
 
             for (int i = 0; i < files.size(); i++) {

@@ -7,6 +7,9 @@ import de.cebitec.mgx.gui.wizard.analysis.misc.ToolPanel;
 import java.awt.Component;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -43,13 +46,14 @@ public final class AnalysisVisualPanel1 extends JPanel implements ListSelectionL
         tabs.addChangeListener(this);
     }
 
-    public void setProjectTools(List<Tool> pTools) {
+    public void setProjectTools(Collection<Tool> pTools) {
         projectTools.setListData(pTools.toArray(new Tool[]{}));
     }
 
-    public void setServerTools(List<Tool> sTools) {
+    public void setServerTools(Collection<Tool> sTools) {
         serverTools.setListData(sTools.toArray(new Tool[]{}));
     }
+    
     private JList<Tool> projectTools = null;
     private JList<Tool> serverTools = null;
     private NewToolPanel newTool = new NewToolPanel();

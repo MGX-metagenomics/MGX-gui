@@ -3,7 +3,9 @@ package de.cebitec.mgx.gui.wizard.habitat;
 import de.cebitec.mgx.gui.datamodel.Habitat;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
@@ -150,8 +152,11 @@ public class HabitatWizardPanel1 implements WizardDescriptor.Panel<WizardDescrip
         return isValid;
     }
     
-    public void setHabitat(Collection<Habitat> habitats) {
-        allHabitat = habitats;
+    public void setHabitat(Iterator<Habitat> iter) {
+        allHabitat = new ArrayList<>();
+        while (iter.hasNext()) {
+            allHabitat.add(iter.next());
+        }
     }
 
     private boolean checkDuplicate(String name) {

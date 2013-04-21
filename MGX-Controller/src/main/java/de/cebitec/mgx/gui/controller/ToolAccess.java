@@ -10,8 +10,10 @@ import de.cebitec.mgx.gui.datamodel.ModelBase;
 import de.cebitec.mgx.gui.datamodel.Tool;
 import de.cebitec.mgx.gui.dtoconversion.JobParameterDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.ToolDTOFactory;
+import de.cebitec.mgx.gui.util.BaseIterator;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import org.openide.util.Exceptions;
 
@@ -21,14 +23,16 @@ import org.openide.util.Exceptions;
  */
 public class ToolAccess extends AccessBase<Tool> {
 
-    public List<Tool> listGlobalTools() throws MGXServerException {
-        List<Tool> ret = new ArrayList<>();
-        for (ToolDTO dto : getDTOmaster().Tool().listGlobalTools()) {
-            Tool tool = ToolDTOFactory.getInstance().toModel(dto);
-            // FIXME cannot set master
-            ret.add(tool);
-        }
-        return ret;
+    public Iterator<Tool> listGlobalTools() throws MGXServerException {
+        Iterator<ToolDTO> listGlobalTools = getDTOmaster().Tool().listGlobalTools();
+        return new BaseIterator<ToolDTO, Tool>(listGlobalTools) {
+            @Override
+            public Tool next() {
+                Tool tool = ToolDTOFactory.getInstance().toModel(iter.next());
+                // FIXME cannot set master
+                return tool;
+            }
+        };
     }
 
     public long installTool(long global_id) throws MGXServerException {
@@ -86,26 +90,30 @@ public class ToolAccess extends AccessBase<Tool> {
         try {
             ToolDTO dto = getDTOmaster().Tool().fetch(id);
             t = ToolDTOFactory.getInstance().toModel(dto);
+            t.setMaster(getMaster());
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
-        t.setMaster(this.getMaster());
         return t;
     }
 
     @Override
-    public List<Tool> fetchall() {
-        List<Tool> ret = new ArrayList<>();
+    public Iterator<Tool> fetchall() {
         try {
-            for (ToolDTO dto : getDTOmaster().Tool().fetchall()) {
-                Tool tool = ToolDTOFactory.getInstance().toModel(dto);
-                tool.setMaster(this.getMaster());
-                ret.add(tool);
-            }
+            Iterator<ToolDTO> fetchall = getDTOmaster().Tool().fetchall();
+            return new BaseIterator<ToolDTO, Tool>(fetchall) {
+                @Override
+                public Tool next() {
+                    Tool tool = ToolDTOFactory.getInstance().toModel(iter.next());
+                    tool.setMaster(getMaster());
+                    return tool;
+                }
+            };
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
-        return ret;
+
+        return null;
     }
 
     @Override
@@ -131,10 +139,10 @@ public class ToolAccess extends AccessBase<Tool> {
         try {
             ToolDTO dto = getDTOmaster().Tool().ByJob(id);
             t = ToolDTOFactory.getInstance().toModel(dto);
+            t.setMaster(getMaster());
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
-        t.setMaster(this.getMaster());
         return t;
     }
 }

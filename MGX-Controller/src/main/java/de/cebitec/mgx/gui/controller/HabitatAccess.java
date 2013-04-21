@@ -7,7 +7,9 @@ import de.cebitec.mgx.gui.datamodel.Habitat;
 import de.cebitec.mgx.gui.datamodel.Identifiable;
 import de.cebitec.mgx.gui.datamodel.ModelBase;
 import de.cebitec.mgx.gui.dtoconversion.HabitatDTOFactory;
+import de.cebitec.mgx.gui.util.BaseIterator;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import org.openide.util.Exceptions;
 
@@ -44,18 +46,23 @@ public class HabitatAccess extends AccessBase<Habitat> {
     }
 
     @Override
-    public List<Habitat> fetchall() {
-        List<Habitat> all = new ArrayList<>();
+    public Iterator<Habitat> fetchall() {
         try {
-            for (HabitatDTO dto : getDTOmaster().Habitat().fetchall()) {
-                Habitat h = HabitatDTOFactory.getInstance().toModel(dto);
-                h.setMaster(this.getMaster());
-                all.add(h);
-            }
+            Iterator<HabitatDTO> fetchall = getDTOmaster().Habitat().fetchall();
+            return new BaseIterator<HabitatDTO, Habitat>(fetchall) {
+                @Override
+                public Habitat next() {
+                    Habitat h = HabitatDTOFactory.getInstance().toModel(iter.next());
+                    h.setMaster(getMaster());
+                    return h;
+                }
+            };
+
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
-        return all;
+
+        return null;
     }
 
     @Override

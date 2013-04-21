@@ -9,7 +9,6 @@ import de.cebitec.mgx.gui.dtoconversion.ObservationDTOFactory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 import org.openide.util.Exceptions;
 
 
@@ -45,7 +44,7 @@ public class ObservationAccess extends AccessBase<Observation> {
     }
 
     @Override
-    public List<Observation> fetchall() {
+    public Iterator<Observation> fetchall() {
         throw new UnsupportedOperationException("Not supported.");
     }
 

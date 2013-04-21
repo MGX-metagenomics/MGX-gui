@@ -49,7 +49,7 @@ public class MenuViewStartUp {
     /**
      * Dateieintraete in dem Projekt.
      */
-    private List<MGXFile> entries;
+    private Iterator<MGXFile> entries;
     /**
      * Der Name des Tools.
      */
@@ -62,7 +62,7 @@ public class MenuViewStartUp {
      * @param lStore Store mit den moeglichen Paramtern.
      * @param entries Eintraege der Dateien im Projekt.
      */
-    protected MenuViewStartUp(Store lStore, List<MGXFile> lEntries, String lToolName) {
+    protected MenuViewStartUp(Store lStore, Iterator<MGXFile> lEntries, String lToolName) {
         this.entries = lEntries;
         LOGGER.info("setStore");
         toolName = lToolName;

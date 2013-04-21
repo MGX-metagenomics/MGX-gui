@@ -8,6 +8,7 @@ import de.cebitec.mgx.gui.datamodel.Identifiable;
 import de.cebitec.mgx.gui.datamodel.ModelBase;
 import de.cebitec.mgx.gui.dtoconversion.DNAExtractDTOFactory;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import org.openide.util.Exceptions;
 
@@ -45,18 +46,33 @@ public class DNAExtractAccess extends AccessBase<DNAExtract> {
     }
 
     @Override
-    public List<DNAExtract> fetchall() {
-        List<DNAExtract> all = new ArrayList<>();
+    public Iterator<DNAExtract> fetchall() {
         try {
-            for (DNAExtractDTO dto : getDTOmaster().DNAExtract().fetchall()) {
-                DNAExtract ret = DNAExtractDTOFactory.getInstance().toModel(dto);
-                ret.setMaster(this.getMaster());
-                all.add(ret);
-            }
+
+            return new Iterator<DNAExtract>() {
+                final Iterator<DNAExtractDTO> iter = getDTOmaster().DNAExtract().fetchall();
+
+                @Override
+                public boolean hasNext() {
+                    return iter.hasNext();
+                }
+
+                @Override
+                public DNAExtract next() {
+                    DNAExtract ret = DNAExtractDTOFactory.getInstance().toModel(iter.next());
+                    ret.setMaster(getMaster());
+                    return ret;
+                }
+
+                @Override
+                public void remove() {
+                    throw new UnsupportedOperationException("Not supported.");
+                }
+            };
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
-        return all;
+        return null;
     }
 
     @Override
@@ -83,17 +99,32 @@ public class DNAExtractAccess extends AccessBase<DNAExtract> {
         return ret;
     }
 
-    public Iterable<DNAExtract> BySample(long sample_id) {
-        List<DNAExtract> all = new ArrayList<>();
+    public Iterator<DNAExtract> BySample(final long sample_id) {
+
         try {
-            for (DNAExtractDTO dto : getDTOmaster().DNAExtract().BySample(sample_id)) {
-                DNAExtract extract = DNAExtractDTOFactory.getInstance().toModel(dto);
-                extract.setMaster(this.getMaster());
-                all.add(extract);
-            }
+            return new Iterator<DNAExtract>() {
+                final Iterator<DNAExtractDTO> iter = getDTOmaster().DNAExtract().BySample(sample_id);
+
+                @Override
+                public boolean hasNext() {
+                    return iter.hasNext();
+                }
+
+                @Override
+                public DNAExtract next() {
+                    DNAExtract ret = DNAExtractDTOFactory.getInstance().toModel(iter.next());
+                    ret.setMaster(getMaster());
+                    return ret;
+                }
+
+                @Override
+                public void remove() {
+                    throw new UnsupportedOperationException("Not supported.");
+                }
+            };
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
-        return all;
+        return null;
     }
 }

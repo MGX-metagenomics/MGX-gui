@@ -6,6 +6,7 @@ import de.cebitec.mgx.gui.datamodel.misc.ToolType;
 import de.cebitec.mgx.gui.wizard.configurations.data.impl.Store;
 import de.cebitec.mgx.gui.wizard.configurations.progressscreen.ProgressBar;
 import de.cebitec.mgx.gui.wizard.configurations.utilities.MenuStatus;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -43,7 +44,7 @@ public class WizardController {
      * @param lProjectTools Tools die sich im Projekt befinden.
      * @return Das ausgewaehlte Tool.
      */
-    public Tool startToolViewStartUp(List<Tool> lGlobalTools, List<Tool> lProjectTools) {
+    public Tool startToolViewStartUp(Iterator<Tool> lGlobalTools, Iterator<Tool> lProjectTools) {
         isDelete = false;
         toolStartUp = new ToolViewStartUp(lGlobalTools, lProjectTools);
         toolStartUp.initializeToolsView();
@@ -69,7 +70,7 @@ public class WizardController {
      * @return Der Store mit den eingegebenen Parametern.
      */
     public Store startParameterConfiguration(Store store,
-            List<MGXFile> entries, String toolName) {
+            Iterator<MGXFile> entries, String toolName) {
         configurationStartUp = new MenuViewStartUp(store, entries, toolName);
         configurationStartUp.initializeWizard();
         return configurationStartUp.startWizardConfigurations();

@@ -12,8 +12,8 @@ import java.awt.event.ActionListener;
 import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -384,9 +384,9 @@ public final class SearchTopComponent extends TopComponent implements LookupList
                  */
                 currentMaster = newMaster;
 
-                SwingWorker worker = new SwingWorker<List<SeqRun>, Void>() {
+                SwingWorker worker = new SwingWorker<Iterator<SeqRun>, Void>() {
                     @Override
-                    protected List<SeqRun> doInBackground() throws Exception {
+                    protected Iterator<SeqRun> doInBackground() throws Exception {
                         return currentMaster.SeqRun().fetchall();
                     }
 
@@ -394,8 +394,9 @@ public final class SearchTopComponent extends TopComponent implements LookupList
                     protected void done() {
                         runListModel.removeAllElements();
                         try {
-                            for (SeqRun sr : get()) {
-                                runListModel.addElement(sr);
+                            Iterator<SeqRun> iter = get();
+                            while (iter.hasNext()) {
+                                runListModel.addElement(iter.next());
                             }
                             runList.setSelectedIndex(0);
                         } catch (InterruptedException | ExecutionException ex) {

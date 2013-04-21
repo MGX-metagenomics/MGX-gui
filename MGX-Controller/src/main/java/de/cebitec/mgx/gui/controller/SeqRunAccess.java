@@ -13,9 +13,10 @@ import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.dtoconversion.AttributeTypeDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.JobDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.SeqRunDTOFactory;
+import de.cebitec.mgx.gui.util.BaseIterator;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.openide.util.Exceptions;
@@ -54,21 +55,21 @@ public class SeqRunAccess extends AccessBase<SeqRun> {
     }
 
     @Override
-    public List<SeqRun> fetchall() {
-        List<SeqRun> all = null;
+    public Iterator<SeqRun> fetchall() {
         try {
-            Collection<SeqRunDTO> fetchall = getDTOmaster().SeqRun().fetchall();
-            all = new ArrayList<>(fetchall.size());
-
-            for (SeqRunDTO dto : fetchall) {
-                SeqRun sr = SeqRunDTOFactory.getInstance().toModel(dto);
-                sr.setMaster(this.getMaster());
-                all.add(sr);
-            }
+            Iterator<SeqRunDTO> fetchall = getDTOmaster().SeqRun().fetchall();
+            return new BaseIterator<SeqRunDTO, SeqRun>(fetchall) {
+                @Override
+                public SeqRun next() {
+                    SeqRun sr = SeqRunDTOFactory.getInstance().toModel(iter.next());
+                    sr.setMaster(getMaster());
+                    return sr;
+                }
+            };
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
-        return all;
+        return null;
     }
 
     @Override
@@ -95,20 +96,21 @@ public class SeqRunAccess extends AccessBase<SeqRun> {
         return ret;
     }
 
-    public Iterable<SeqRun> ByExtract(long extract_id) {
-        List<SeqRun> all = null; 
+    public Iterator<SeqRun> ByExtract(final long extract_id) {
         try {
-            Collection<SeqRunDTO> ByExtract = getDTOmaster().SeqRun().ByExtract(extract_id);
-            all = new ArrayList<>(ByExtract.size());
-            for (SeqRunDTO dto : ByExtract) {
-                SeqRun sr = SeqRunDTOFactory.getInstance().toModel(dto);
-                sr.setMaster(this.getMaster());
-                all.add(sr);
-            }
+            Iterator<SeqRunDTO> fetchall = getDTOmaster().SeqRun().ByExtract(extract_id);
+            return new BaseIterator<SeqRunDTO, SeqRun>(fetchall) {
+                @Override
+                public SeqRun next() {
+                    SeqRun sr = SeqRunDTOFactory.getInstance().toModel(iter.next());
+                    sr.setMaster(getMaster());
+                    return sr;
+                }
+            };
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
-        return all;
+        return null;
     }
 
     public Map<Job, List<AttributeType>> getJobsAndAttributeTypes(long run_id) {

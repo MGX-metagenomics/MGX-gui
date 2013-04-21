@@ -6,6 +6,7 @@ import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.nodes.SeqRunNode;
 import java.beans.PropertyChangeEvent;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import org.openide.nodes.*;
 
@@ -25,8 +26,9 @@ public class SeqRunNodeFactory extends ChildFactory<SeqRun> implements NodeListe
 
     @Override
     protected boolean createKeys(List<SeqRun> toPopulate) {
-        for (SeqRun sr : master.SeqRun().ByExtract(extract_id)) {
-            toPopulate.add(sr);
+        Iterator<SeqRun> ByExtract = master.SeqRun().ByExtract(extract_id);
+        while (ByExtract.hasNext()) {
+            toPopulate.add(ByExtract.next());
         }
 
         Collections.sort(toPopulate);

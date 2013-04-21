@@ -13,6 +13,7 @@ import java.awt.event.AdjustmentListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -64,7 +65,7 @@ public final class MenuView extends JPanel implements DocumentListener {
     /**
      * Dateien die sich im Projekt befinden.
      */
-    private List<MGXFile> entries;
+    private Iterator<MGXFile> entries;
 
     /**
      * Konstruktor für die Übergabe der
@@ -90,7 +91,7 @@ public final class MenuView extends JPanel implements DocumentListener {
             ArrayList<ArrayList<String>> lUserChoicesDescriptions,
             ArrayList<String> lDefaultValues, int lMandatoryComponentsCounter,
             ActionListener lListener,
-            List<MGXFile> lEntries) {
+            Iterator<MGXFile> lEntries) {
 
         this.entries = lEntries;
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));

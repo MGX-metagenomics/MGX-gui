@@ -34,7 +34,7 @@ public abstract class AccessBase<T> {
 
     public abstract T fetch(long id);
 
-    public abstract List<T> fetchall();
+    public abstract Iterator<T> fetchall();
     
     public abstract void update(T obj);
 

@@ -17,7 +17,7 @@ import de.cebitec.mgx.sequence.DNASequenceI;
 import de.cebitec.mgx.sequence.SeqReaderI;
 import de.cebitec.mgx.sequence.SeqWriterI;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import org.openide.util.Exceptions;
@@ -124,7 +124,7 @@ public class SequenceAccess extends AccessBase<Sequence> {
     }
 
     @Override
-    public List<Sequence> fetchall() {
+    public Iterator<Sequence> fetchall() {
         throw new UnsupportedOperationException("Not supported.");
     }
 

@@ -88,7 +88,7 @@ public class MenuController
     /**
      * Dateien des Servers.
      */
-    private List<MGXFile> entries;
+    private Iterator<MGXFile> entries;
 
     /**
      * Der Konstruktor bereitet die einzelnen Parameter der MenuView vor.
@@ -97,7 +97,7 @@ public class MenuController
      * @param lNodeCounter Nodenummer.
      * @param lNode Node
      */
-    public MenuController(int lNodeCounter, Node lNode, List<MGXFile> lEntries) {
+    public MenuController(int lNodeCounter, Node lNode, Iterator<MGXFile> lEntries) {
         entries = lEntries;
 
         id = lNode.getId();

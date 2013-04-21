@@ -5,7 +5,9 @@ import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.wizard.seqrun.SeqRunWizardDescriptor;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
@@ -134,8 +136,11 @@ public class DNAExtractWizardPanel1 implements WizardDescriptor.Panel<WizardDesc
         return isValid;
     }
 
-    public void setDNAExtracts(Collection<DNAExtract> extracts) {
-        allExtracts = extracts;
+    public void setDNAExtracts(Iterator<DNAExtract> iter) {
+        allExtracts = new ArrayList<>();
+        while (iter.hasNext()) {
+            allExtracts.add(iter.next());
+        }
     }
 
     private boolean checkDuplicate(String name) {

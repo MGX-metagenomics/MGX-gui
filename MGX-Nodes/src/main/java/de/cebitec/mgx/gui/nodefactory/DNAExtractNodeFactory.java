@@ -5,6 +5,7 @@ import de.cebitec.mgx.gui.datamodel.DNAExtract;
 import de.cebitec.mgx.gui.datamodel.Sample;
 import de.cebitec.mgx.gui.nodes.DNAExtractNode;
 import java.beans.PropertyChangeEvent;
+import java.util.Iterator;
 import java.util.List;
 import org.openide.nodes.*;
 
@@ -24,8 +25,9 @@ public class DNAExtractNodeFactory extends ChildFactory<DNAExtract> implements N
 
     @Override
     protected boolean createKeys(List<DNAExtract> toPopulate) {
-        for (DNAExtract d : master.DNAExtract().BySample(sample_id)) {
-            toPopulate.add(d);
+        Iterator<DNAExtract> iter = master.DNAExtract().BySample(sample_id);
+        while (iter.hasNext()) {
+            toPopulate.add(iter.next());
         }
         return true;
     }

@@ -5,6 +5,7 @@ import de.cebitec.mgx.gui.datamodel.Habitat;
 import de.cebitec.mgx.gui.datamodel.Sample;
 import de.cebitec.mgx.gui.nodes.SampleNode;
 import java.beans.PropertyChangeEvent;
+import java.util.Iterator;
 import java.util.List;
 import org.openide.nodes.*;
 
@@ -24,9 +25,11 @@ public class SampleNodeFactory extends ChildFactory<Sample> implements NodeListe
 
     @Override
     protected boolean createKeys(List<Sample> toPopulate) {
-        for (Sample s : master.Sample().ByHabitat(habitat_id)) {
-            toPopulate.add(s);
+        Iterator<Sample> iter = master.Sample().ByHabitat(habitat_id);
+        while (iter.hasNext()) {
+            toPopulate.add(iter.next());
         }
+
         return true;
     }
 

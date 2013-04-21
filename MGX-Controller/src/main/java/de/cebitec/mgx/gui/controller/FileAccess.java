@@ -7,10 +7,9 @@ import de.cebitec.mgx.dto.dto.FileDTO;
 import de.cebitec.mgx.gui.datamodel.MGXFile;
 import de.cebitec.mgx.gui.datamodel.ModelBase;
 import de.cebitec.mgx.gui.dtoconversion.FileDTOFactory;
+import de.cebitec.mgx.gui.util.BaseIterator;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.Iterator;
 import org.openide.util.Exceptions;
 
 /**
@@ -39,20 +38,22 @@ public class FileAccess extends AccessBase<MGXFile> {
         throw new UnsupportedOperationException("Not supported.");
     }
 
-    public List<MGXFile> fetchall(MGXFile rootDir) {
-        List<MGXFile> ret = new ArrayList<>();
+    public Iterator<MGXFile> fetchall(final MGXFile rootDir) {
         try {
-            for (FileDTO fod : getDTOmaster().File().fetchall(rootDir.getFullPath())) {
-                MGXFile f = FileDTOFactory.getInstance().toModel(fod);
-                f.setMaster(this.getMaster());
-                f.setParent(rootDir);
-                ret.add(f);
-            }
+            Iterator<FileDTO> fetchall = getDTOmaster().File().fetchall(rootDir.getFullPath());
+            return new BaseIterator<FileDTO, MGXFile>(fetchall) {
+                @Override
+                public MGXFile next() {
+                    MGXFile f = FileDTOFactory.getInstance().toModel(iter.next());
+                    f.setMaster(getMaster());
+                    f.setParent(rootDir);
+                    return f;
+                }
+            };
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
-        Collections.sort(ret);
-        return ret;
+        return null;
     }
 
     @Override
@@ -75,10 +76,10 @@ public class FileAccess extends AccessBase<MGXFile> {
     }
 
     @Override
-    public List<MGXFile> fetchall() {
+    public Iterator<MGXFile> fetchall() {
         throw new UnsupportedOperationException("Not supported.");
     }
-    
+
     public FileUploader createUploader(File localFile, MGXFile targetDir, String targetName) {
         assert targetDir.isDirectory();
         if (targetName.contains("/")) {

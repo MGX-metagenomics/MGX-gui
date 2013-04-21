@@ -5,6 +5,7 @@ import de.cebitec.mgx.gui.datamodel.MGXFile;
 import de.cebitec.mgx.gui.nodes.MGXDirectoryNode;
 import de.cebitec.mgx.gui.nodes.MGXFileNode;
 import java.beans.PropertyChangeEvent;
+import java.util.Iterator;
 import java.util.List;
 import org.openide.nodes.*;
 
@@ -26,8 +27,9 @@ public class FileNodeFactory extends ChildFactory<MGXFile> implements NodeListen
 
     @Override
     protected boolean createKeys(List<MGXFile> toPopulate) {
-        for (MGXFile f : master.File().fetchall(curDirectory)) {
-            toPopulate.add(f);
+        Iterator<MGXFile> iter = master.File().fetchall(curDirectory);
+        while (iter.hasNext()) {
+            toPopulate.add(iter.next());
         }
         return true;
     }

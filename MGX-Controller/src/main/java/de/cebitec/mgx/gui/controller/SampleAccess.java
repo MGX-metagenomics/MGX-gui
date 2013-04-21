@@ -7,7 +7,9 @@ import de.cebitec.mgx.gui.datamodel.Identifiable;
 import de.cebitec.mgx.gui.datamodel.ModelBase;
 import de.cebitec.mgx.gui.datamodel.Sample;
 import de.cebitec.mgx.gui.dtoconversion.SampleDTOFactory;
+import de.cebitec.mgx.gui.util.BaseIterator;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import org.openide.util.Exceptions;
 
@@ -45,18 +47,23 @@ public class SampleAccess extends AccessBase<Sample> {
     }
 
     @Override
-    public List<Sample> fetchall() {
-        List<Sample> all = new ArrayList<>();
+    public Iterator<Sample> fetchall() {
         try {
-            for (SampleDTO dto : getDTOmaster().Sample().fetchall()) {
-                Sample s = SampleDTOFactory.getInstance().toModel(dto);
-                s.setMaster(this.getMaster());
-                all.add(s);
-            }
+            Iterator<SampleDTO> fetchall = getDTOmaster().Sample().fetchall();
+            return new BaseIterator<SampleDTO, Sample>(fetchall) {
+                @Override
+                public Sample next() {
+                    Sample s = SampleDTOFactory.getInstance().toModel(iter.next());
+                    s.setMaster(getMaster());
+                    return s;
+                }
+            };
+
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
-        return all;
+
+        return null;
     }
 
     @Override
@@ -83,17 +90,22 @@ public class SampleAccess extends AccessBase<Sample> {
         return ret;
     }
 
-    public Iterable<Sample> ByHabitat(long hab_id) {
-        List<Sample> all = new ArrayList<>();
+    public Iterator<Sample> ByHabitat(final long hab_id) {
         try {
-            for (SampleDTO dto : getDTOmaster().Sample().ByHabitat(hab_id)) {
-                Sample s = SampleDTOFactory.getInstance().toModel(dto);
-                s.setMaster(this.getMaster());
-                all.add(s);
-            }
+            Iterator<SampleDTO> fetchall = getDTOmaster().Sample().ByHabitat(hab_id);
+            return new BaseIterator<SampleDTO, Sample>(fetchall) {
+                @Override
+                public Sample next() {
+                    Sample s = SampleDTOFactory.getInstance().toModel(iter.next());
+                    s.setMaster(getMaster());
+                    return s;
+                }
+            };
+
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
-        return all;
+
+        return null;
     }
 }

@@ -10,7 +10,9 @@ import de.cebitec.mgx.gui.datamodel.JobParameter;
 import de.cebitec.mgx.gui.datamodel.ModelBase;
 import de.cebitec.mgx.gui.dtoconversion.JobDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.JobParameterDTOFactory;
+import de.cebitec.mgx.gui.util.BaseIterator;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import org.openide.util.Exceptions;
 
@@ -48,7 +50,6 @@ public class JobAccess extends AccessBase<Job> {
 //        }
 //        return ret;
 //    }
-
 //    public void setParameters(long jobId, Iterable<JobParameter> params) throws MGXServerException {
 //        Builder b = JobParameterListDTO.newBuilder();
 //        for (JobParameter jp : params) {
@@ -89,18 +90,22 @@ public class JobAccess extends AccessBase<Job> {
     }
 
     @Override
-    public List<Job> fetchall() {
-        List<Job> all = new ArrayList<>();
+    public Iterator<Job> fetchall() {
         try {
-            for (JobDTO dto : getDTOmaster().Job().fetchall()) {
-                Job j = JobDTOFactory.getInstance().toModel(dto);
-                j.setMaster(this.getMaster());
-                all.add(j);
-            }
+            Iterator<JobDTO> fetchall = getDTOmaster().Job().fetchall();
+            return new BaseIterator<JobDTO, Job>(fetchall) {
+                @Override
+                public Job next() {
+                    Job j = JobDTOFactory.getInstance().toModel(iter.next());
+                    j.setMaster(getMaster());
+                    return j;
+                }
+            };
+
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
-        return all;
+        return null;
     }
 
     @Override

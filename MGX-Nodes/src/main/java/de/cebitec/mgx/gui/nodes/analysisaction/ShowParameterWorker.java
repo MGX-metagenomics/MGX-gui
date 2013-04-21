@@ -10,6 +10,7 @@ import de.cebitec.mgx.gui.wizard.configurations.progressscreen.ProgressBar;
 import de.cebitec.mgx.gui.wizard.configurations.utilities.MenuStatus;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import javax.swing.JOptionPane;
@@ -88,7 +89,7 @@ public class ShowParameterWorker extends SwingWorker<Collection<JobParameter>, V
                 assert false;
         }
         progress.setUpdateText("Loading Project Files");
-        List<MGXFile> files = master.File().fetchall();
+        Iterator<MGXFile> files = master.File().fetchall();
         progress.dispose();
         Store store = null;
 

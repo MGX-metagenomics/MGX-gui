@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.swing.JButton;
@@ -57,17 +58,19 @@ public class ToolViewStartUp {
      * @param lGlobalTools Tools vom Server.
      * @param lProjectTools Tools vom Projekt.
      */
-    public ToolViewStartUp(List<Tool> lGlobalTools, List<Tool> lProjectTools) {
+    public ToolViewStartUp(Iterator<Tool> lGlobalTools, Iterator<Tool> lProjectTools) {
         toolType = null;
         tools = new HashMap<>();
         Map<Long, Tool> globalTools = new HashMap<>();
-        for (Tool tool : lGlobalTools) {
+        while (lGlobalTools.hasNext()) {
+            Tool tool = lGlobalTools.next();
             globalTools.put(tool.getId(), tool);
         }
         tools.put(ToolType.GLOBAL, globalTools);
 
         Map<Long, Tool> projectTools = new HashMap<>();
-        for (Tool tool : lProjectTools) {
+        while (lProjectTools.hasNext()) {
+            Tool tool = lProjectTools.next();
             projectTools.put(tool.getId(), tool);
         }
         tools.put(ToolType.PROJECT, projectTools);

@@ -8,6 +8,7 @@ import de.cebitec.mgx.gui.nodes.JobNode;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
+import java.util.Iterator;
 import java.util.List;
 import javax.swing.Timer;
 import org.openide.nodes.ChildFactory;
@@ -42,7 +43,9 @@ public class JobNodeFactory extends ChildFactory<Job> implements NodeListener {
 
     @Override
     protected boolean createKeys(List<Job> toPopulate) {
-        for (SeqRun sr : master.SeqRun().fetchall()) {
+        Iterator<SeqRun> iter = master.SeqRun().fetchall();
+        while (iter.hasNext()) {
+            SeqRun sr = iter.next();
             for (Job j : master.Job().BySeqRun(sr.getId())) {
                 j.setSeqrun(sr);
                 Tool t = master.Tool().ByJob(j.getId());

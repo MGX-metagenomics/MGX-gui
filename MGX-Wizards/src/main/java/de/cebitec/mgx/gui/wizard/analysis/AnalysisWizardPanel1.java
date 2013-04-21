@@ -11,6 +11,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import javax.swing.event.ChangeEvent;
@@ -48,9 +49,17 @@ public class AnalysisWizardPanel1 implements WizardDescriptor.Panel<WizardDescri
             @Override
             protected void done() {
                 try {
-                    Pair<List<Tool>, List<Tool>> ret = get();
-                    projTools = ret.getSecond();
-                    serverTools = ret.getFirst();
+                    Pair<Iterator<Tool>, Iterator<Tool>> ret = get();
+                    projTools = new ArrayList<>();
+                    Iterator<Tool> pIter = ret.getSecond();
+                    while (pIter.hasNext()) {
+                        projTools.add(pIter.next());
+                    }
+                    serverTools = new ArrayList<>();
+                    Iterator<Tool> sIter = ret.getFirst();
+                    while (pIter.hasNext()) {
+                        serverTools.add(sIter.next());
+                    }
                     getComponent().setProjectTools(projTools);
                     getComponent().setServerTools(serverTools);
                 } catch (InterruptedException | ExecutionException ex) {
