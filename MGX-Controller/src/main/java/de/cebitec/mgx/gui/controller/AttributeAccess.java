@@ -213,13 +213,15 @@ public class AttributeAccess extends AccessBase<Attribute> {
         } catch (MGXServerException ex) {
             Exceptions.printStackTrace(ex);
         }
-        
+
         Sequence[] ret = new Sequence[searchResult.size()];
         int i = 0;
         for (SequenceDTO dto : searchResult) {
-            ret[i++] = SequenceDTOFactory.getInstance().toModel(dto);
+            Sequence seq = SequenceDTOFactory.getInstance().toModel(dto);
+            seq.setMaster(getMaster());
+            ret[i++] = seq;
         }
-        
+
         return ret;
     }
 }
