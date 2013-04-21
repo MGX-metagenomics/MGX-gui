@@ -1,13 +1,22 @@
 package de.cebitec.mgx.gui.search.ui;
 
 import de.cebitec.mgx.gui.controller.MGXMaster;
+import de.cebitec.mgx.gui.datamodel.Observation;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.datamodel.Sequence;
+import de.cebitec.mgx.gui.search.util.ObservationFetcher;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.lang.ref.WeakReference;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,6 +38,7 @@ import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
 import org.openide.windows.TopComponent;
 import org.openide.util.NbBundle.Messages;
+import org.openide.util.RequestProcessor;
 import org.openide.util.Utilities;
 
 /**
@@ -60,6 +70,7 @@ public final class SearchTopComponent extends TopComponent implements LookupList
     private final Lookup.Result<MGXMaster> result;
     private MGXMaster currentMaster = null;
     private final DefaultListModel<SeqRun> runListModel = new DefaultListModel<>();
+    private RequestProcessor proc;
 
     public SearchTopComponent() {
         initComponents();
@@ -111,12 +122,25 @@ public final class SearchTopComponent extends TopComponent implements LookupList
          * a custom renderer for the observation list
          */
         obsList.setCellRenderer(new ListCellRenderer<Sequence>() {
-        
-            private ObservationView oview = new ObservationView();
+            private final ObservationView oview = new ObservationView();
+            private final ConcurrentMap<Sequence, WeakReference<Observation[]>> cache = new ConcurrentHashMap<>();
+            private final Set<Sequence> activeTasks = Collections.<Sequence>synchronizedSet(new HashSet<Sequence>());
 
             @Override
             public Component getListCellRendererComponent(JList list, Sequence value, int index, boolean isSelected, boolean cellHasFocus) {
-                oview.show(value, null, cellHasFocus);
+       
+                if (cache.containsKey(value) && cache.get(value).get() != null) {
+                    oview.show(value, cache.get(value).get(), cellHasFocus);
+                } else {
+                    // check if worker for this sequence is already running
+                    if (!activeTasks.contains(value)) {
+                        Runnable r = new ObservationFetcher(activeTasks, currentMaster, value, cache);
+                        proc.post(r);
+                        oview.show(value, "Data not yet loaded", cellHasFocus);
+                    } else {
+                        oview.show(value, "Waiting for data..", cellHasFocus); 
+                    }
+                }
                 return oview;
             }
         });
@@ -255,11 +279,13 @@ public final class SearchTopComponent extends TopComponent implements LookupList
     public void componentOpened() {
         result.addLookupListener(this);
         updateSeqRunList();
+        proc = new RequestProcessor("MGX-ObservationFetch-Pool", Runtime.getRuntime().availableProcessors() + 10);
     }
 
     @Override
     public void componentClosed() {
         result.removeLookupListener(this);
+        proc.shutdownNow();
     }
 
     void writeProperties(java.util.Properties p) {

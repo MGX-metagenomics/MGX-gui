@@ -7,6 +7,12 @@ import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentMap;
+import javax.swing.AbstractListModel;
+import javax.swing.DefaultListModel;
+import javax.swing.JList;
+import javax.swing.ListModel;
 
 /**
  *
@@ -22,7 +28,8 @@ public class ObservationFetcher implements Runnable {
      * Sequenz des Reads.
      */
     private final Sequence seq;
-    private final Map<Sequence, WeakReference<Observation[]>> cache;
+    private final ConcurrentMap<Sequence, WeakReference<Observation[]>> cache;
+    private final Set<Sequence> activeTasks;
 
     /**
      * Konstruktor
@@ -30,7 +37,8 @@ public class ObservationFetcher implements Runnable {
      * @param master MGXMaster
      * @param seq Sequenz des Reads.
      */
-    public ObservationFetcher(MGXMaster master, Sequence seq, Map<Sequence, WeakReference<Observation[]>> cache) {
+    public ObservationFetcher(Set<Sequence> activeTasks, MGXMaster master, Sequence seq, ConcurrentMap<Sequence, WeakReference<Observation[]>> cache) {
+        this.activeTasks = activeTasks;
         this.master = master;
         this.seq = seq;
         this.cache = cache;
@@ -47,13 +55,17 @@ public class ObservationFetcher implements Runnable {
         Observation[] obs = master.Observation().ByRead(seq).toArray(new Observation[]{});
         Arrays.sort(obs, comp);
         cache.put(seq, new WeakReference(obs));
+        //list.repaint();
+        activeTasks.remove(seq);
     }
     private final static Comparator<Observation> comp = new Comparator<Observation>() {
         @Override
         public int compare(Observation o1, Observation o2) {
+            // compare start positions, first one comes first
             int min1 = o1.getStart() < o1.getStop() ? o1.getStart() : o1.getStop();
             int min2 = o2.getStart() < o2.getStop() ? o2.getStart() : o2.getStop();
-            int ret = Integer.compare(min1, min2);
+            int ret = Integer.compare(min2, min1);
+            // if equal, compare length - longer one first
             return ret == 0 ? compareLength(o1, o2) : ret;
         }
 

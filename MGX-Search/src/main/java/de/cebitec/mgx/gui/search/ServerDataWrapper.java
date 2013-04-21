@@ -5,7 +5,6 @@ import de.cebitec.mgx.gui.datamodel.Observation;
 import de.cebitec.mgx.gui.datamodel.Sequence;
 import de.cebitec.mgx.gui.search.util.ObservationFetcher;
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -74,7 +73,7 @@ public class ServerDataWrapper {
      * @param proc RequestProcessor
      */
     public void fetchFromServer(MGXMaster m, Sequence seq, RequestProcessor proc) {
-        myTask = proc.post(new ObservationFetcher(m, seq, cache));
+       // myTask = proc.post(new ObservationFetcher(m, seq, cache));
     }
 
     /**
