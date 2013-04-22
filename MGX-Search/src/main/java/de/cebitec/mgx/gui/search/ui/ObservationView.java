@@ -8,6 +8,9 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.Line2D;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.border.Border;
@@ -49,7 +52,7 @@ public class ObservationView extends javax.swing.JPanel {
         private Observation[] obs;
         private String message;
         //
-        private final static int borderWidth = 10;
+        private final static int borderWidth = 15;
 
         @Override
         protected void paintComponent(Graphics g) {
@@ -74,18 +77,18 @@ public class ObservationView extends javax.swing.JPanel {
             g2.setColor(Color.BLACK);
 
             // horizontal line representing the sequence itself
-            g2.draw(new Line2D.Double(borderWidth, midY, width - borderWidth, midY));
+            g2.draw(new Line2D.Double(borderWidth, height - borderWidth, width - borderWidth, height - borderWidth));
             // left boundary
-            g2.draw(new Line2D.Double(borderWidth, midY - 5, borderWidth, midY + 5));
-            g2.drawString("1", borderWidth - 3, midY - 7); //0bp position
+            g2.draw(new Line2D.Double(borderWidth, height - borderWidth - 3, borderWidth, height - borderWidth + 3));
+            g2.drawString("0", borderWidth - 3, height - borderWidth + 14); //1bp position
             // right boundary
-            g2.draw(new Line2D.Double(width - borderWidth, midY - 5, width - borderWidth, midY + 5));
+            g2.draw(new Line2D.Double(width - borderWidth, height - borderWidth - 3, width - borderWidth, height - borderWidth + 3));
             if (seqLen < 100) {
-                g2.drawString(String.valueOf(seqLen), width - borderWidth - 8, midY - 7); // XXbp position
+                g2.drawString(String.valueOf(seqLen), width - borderWidth - 8, height - borderWidth + 14); // XXbp position
             } else if (seqLen < 1000) {
-                g2.drawString(String.valueOf(seqLen), width - borderWidth - 11, midY - 7); // XXXbp position
+                g2.drawString(String.valueOf(seqLen), width - borderWidth - 11, height - borderWidth + 14); // XXXbp position
             } else {
-                g2.drawString(String.valueOf(seqLen), width - borderWidth - 13, midY - 7); // XXXXbp position
+                g2.drawString(String.valueOf(seqLen), width - borderWidth - 13, height - borderWidth + 14); // XXXXbp position
             }
 
             if (obs == null) {
@@ -94,17 +97,28 @@ public class ObservationView extends javax.swing.JPanel {
                 return;
             }
 
-            int paintableX = width - 2 * borderWidth;
-            int scaleX = paintableX / seqLen;
+            // create layers for the observations
+            createLayers(obs);
+            Logger.getAnonymousLogger().info(seq.getName() + " needs " + layers.size() + " layers.");
 
-            int layerY = midY - 5;
+            float paintableX = width - 2 * borderWidth; // width of the sequence in px
+            float scaleX = paintableX / seqLen;
+
+            int layerY = height - borderWidth - 5;
             for (Observation o : obs) {
-                int scaledStart = o.getStart() * scaleX;
-                int scaledStop = o.getStop() * scaleX;
+                int scaledStart = Math.round(o.getStart() * scaleX);
+                int scaledStop = Math.round(o.getStop() * scaleX);
 
+                String tmp = o.getStart() + "-" + o.getStop();
+                g2.drawString(o.getAttributeName() + " " + tmp, borderWidth + scaledStart, layerY - 4);
                 g2.draw(new Line2D.Double(borderWidth + scaledStart, layerY, borderWidth + scaledStop, layerY));
-                layerY -= 5;
+                layerY -= 15;
             }
+
+            g2.setColor(Color.red);
+            int scaledStart = Math.round(0 * scaleX);
+            int scaledStop = Math.round(seqLen * scaleX);
+            g2.draw(new Line2D.Double(borderWidth + scaledStart, 5, borderWidth + scaledStop, 5));
             g2.dispose();
 
         }
@@ -113,6 +127,25 @@ public class ObservationView extends javax.swing.JPanel {
             seq = s;
             obs = o;
             message = msg;
+        }
+        private List<Layer> layers = new LinkedList<>();
+
+        private void createLayers(Observation[] obs) {
+            layers.clear();
+            for (Observation o : obs) {
+                boolean placed = false;
+                for (Layer l : layers) {
+                    if (l.add(o)) { // layer accepts this observation
+                        placed = true;
+                        break;
+                    }
+                }
+                if (!placed) {
+                    Layer newLayer = new Layer();
+                    newLayer.add(o);
+                    layers.add(newLayer);
+                }
+            }
         }
     }
 
@@ -151,7 +184,7 @@ public class ObservationView extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(readName, javax.swing.GroupLayout.PREFERRED_SIZE, 12, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(drawArea, javax.swing.GroupLayout.DEFAULT_SIZE, 183, Short.MAX_VALUE)
+                .addComponent(drawArea, javax.swing.GroupLayout.DEFAULT_SIZE, 260, Short.MAX_VALUE)
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents

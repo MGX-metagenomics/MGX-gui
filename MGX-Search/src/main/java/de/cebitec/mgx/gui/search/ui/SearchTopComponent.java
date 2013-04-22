@@ -86,6 +86,7 @@ public final class SearchTopComponent extends TopComponent implements LookupList
             }
         });
         searchTerm.getDocument().addDocumentListener(this);
+        searchTerm.addActionListener(this);
 
         // both lists work based on the same model
         obsList.setModel(readList.getModel());
@@ -123,12 +124,10 @@ public final class SearchTopComponent extends TopComponent implements LookupList
          */
         obsList.setCellRenderer(new ListCellRenderer<Sequence>() {
             private final ObservationView oview = new ObservationView();
-            private final ConcurrentMap<Sequence, WeakReference<Observation[]>> cache = new ConcurrentHashMap<>();
-            private final Set<Sequence> activeTasks = Collections.<Sequence>synchronizedSet(new HashSet<Sequence>());
 
             @Override
             public Component getListCellRendererComponent(JList list, Sequence value, int index, boolean isSelected, boolean cellHasFocus) {
-       
+
                 if (cache.containsKey(value) && cache.get(value).get() != null) {
                     oview.show(value, cache.get(value).get(), cellHasFocus);
                 } else {
@@ -138,7 +137,7 @@ public final class SearchTopComponent extends TopComponent implements LookupList
                         proc.post(r);
                         oview.show(value, "Data not yet loaded", cellHasFocus);
                     } else {
-                        oview.show(value, "Waiting for data..", cellHasFocus); 
+                        oview.show(value, "Waiting for data..", cellHasFocus);
                     }
                 }
                 return oview;
@@ -154,6 +153,8 @@ public final class SearchTopComponent extends TopComponent implements LookupList
         // set up button listener
         executeSearch.addActionListener(this);
     }
+    private final ConcurrentMap<Sequence, WeakReference<Observation[]>> cache = new ConcurrentHashMap<>();
+    private final Set<Sequence> activeTasks = Collections.<Sequence>synchronizedSet(new HashSet<Sequence>());
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -279,7 +280,7 @@ public final class SearchTopComponent extends TopComponent implements LookupList
     public void componentOpened() {
         result.addLookupListener(this);
         updateSeqRunList();
-        proc = new RequestProcessor("MGX-ObservationFetch-Pool", Runtime.getRuntime().availableProcessors() + 10);
+        proc = new RequestProcessor("MGX-ObservationFetch-Pool", 3 * Runtime.getRuntime().availableProcessors() + 10);
     }
 
     @Override
@@ -303,10 +304,14 @@ public final class SearchTopComponent extends TopComponent implements LookupList
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        if ("".equals(searchTerm.getText())) {
+            return;
+        }
 
         /*
          * search button has been pressed
          */
+        readList.clear();
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         statusLine.setText("Searching..");
         searchProgress.setIndeterminate(true);
@@ -332,6 +337,10 @@ public final class SearchTopComponent extends TopComponent implements LookupList
                     readList.clear();
                     for (Sequence s : hits) {
                         readList.addElement(s);
+
+                        // pre-start observation fetchers
+                        Runnable r = new ObservationFetcher(activeTasks, currentMaster, s, cache);
+                        proc.post(r);
                     }
 
                 } catch (InterruptedException | ExecutionException ex) {
