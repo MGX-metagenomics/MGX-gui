@@ -42,6 +42,7 @@ public class ObservationFetcher implements Runnable {
         this.master = master;
         this.seq = seq;
         this.cache = cache;
+        activeTasks.add(seq);
     }
 
     /**
