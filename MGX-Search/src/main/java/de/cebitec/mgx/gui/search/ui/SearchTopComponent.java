@@ -22,12 +22,18 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
+import javax.swing.JTable;
 import javax.swing.ListCellRenderer;
 import javax.swing.SwingWorker;
+import javax.swing.UIManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableModel;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -88,8 +94,25 @@ public final class SearchTopComponent extends TopComponent implements LookupList
         searchTerm.getDocument().addDocumentListener(this);
         searchTerm.addActionListener(this);
 
-        // both lists work based on the same model
-        obsList.setModel(readList.getModel());
+        // both list and table work based on the same data
+        obsTable.setModel(new AbstractTableModel() {
+            
+            
+            @Override
+            public int getRowCount() {
+                return readList.getModel().getSize();
+            }
+
+            @Override
+            public int getColumnCount() {
+                return 1;
+            }
+
+            @Override
+            public Object getValueAt(int rowIndex, int columnIndex) {
+                return readList.getModel().getElementAt(rowIndex);
+            }
+        });
 
         /*
          * make sure result list is synced to read list whenever a read name gets
@@ -100,8 +123,8 @@ public final class SearchTopComponent extends TopComponent implements LookupList
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 int[] idx = readList.getSelectedIndices();
-                obsList.setSelectedIndices(idx);
-                obsList.ensureIndexIsVisible(idx.length > 0 ? idx[0] : 0);
+                //obsList.setSelectedIndices(idx);
+                //obsList.ensureIndexIsVisible(idx.length > 0 ? idx[0] : 0);
             }
         });
 
@@ -120,30 +143,15 @@ public final class SearchTopComponent extends TopComponent implements LookupList
 //        });
 
         /*
-         * a custom renderer for the observation list
+         * a custom renderer for the observation table
          */
-        obsList.setCellRenderer(new ListCellRenderer<Sequence>() {
-            private final ObservationView oview = new ObservationView();
+        obsTable.getColumnModel().getColumn(0).setCellRenderer(new VariableRowHeightRenderer());
+//        obsList.setCellRenderer(new ListCellRenderer<Sequence>() {
+//            @Override
+//            public Component getListCellRendererComponent(JList list, Sequence value, int index, boolean isSelected, boolean cellHasFocus) {
+//            }
+//        });
 
-            @Override
-            public Component getListCellRendererComponent(JList list, Sequence value, int index, boolean isSelected, boolean cellHasFocus) {
-
-                if (cache.containsKey(value) && cache.get(value).get() != null) {
-                    oview.show(value, cache.get(value).get(), cellHasFocus);
-                } else {
-                    // check if worker for this sequence is already running
-                    if (!activeTasks.contains(value)) {
-                        Runnable r = new ObservationFetcher(activeTasks, currentMaster, value, cache);
-                        proc.post(r);
-                        oview.show(value, "Data not yet loaded", cellHasFocus);
-                    } else {
-                        oview.show(value, "Waiting for data..", cellHasFocus);
-                    }
-                }
-                return oview;
-            }
-        });
-        
 
         /*
          * put progressbar in a "finished" state
@@ -169,8 +177,8 @@ public final class SearchTopComponent extends TopComponent implements LookupList
         jSplitPane1 = new javax.swing.JSplitPane();
         jScrollPane2 = new javax.swing.JScrollPane();
         readList = new de.cebitec.mgx.gui.search.JCheckBoxList<Sequence>();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        obsList = new javax.swing.JList<Sequence>();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        obsTable = new javax.swing.JTable();
         searchTerm = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
         exact = new javax.swing.JCheckBox();
@@ -193,14 +201,22 @@ public final class SearchTopComponent extends TopComponent implements LookupList
 
         jSplitPane1.setRightComponent(jScrollPane2);
 
-        jScrollPane3.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        jScrollPane3.setPreferredSize(new java.awt.Dimension(500, 131));
+        obsTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        obsTable.setFillsViewportHeight(true);
+        obsTable.setTableHeader(null);
+        jScrollPane4.setViewportView(obsTable);
 
-        obsList.setMaximumSize(new java.awt.Dimension(5000, 50000000));
-        obsList.setMinimumSize(new java.awt.Dimension(500, 85));
-        jScrollPane3.setViewportView(obsList);
-
-        jSplitPane1.setLeftComponent(jScrollPane3);
+        jSplitPane1.setLeftComponent(jScrollPane4);
 
         searchTerm.setText(org.openide.util.NbBundle.getMessage(SearchTopComponent.class, "SearchTopComponent.searchTerm.text")); // NOI18N
 
@@ -266,9 +282,9 @@ public final class SearchTopComponent extends TopComponent implements LookupList
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JSplitPane jSplitPane1;
-    private javax.swing.JList<Sequence> obsList;
+    private javax.swing.JTable obsTable;
     private de.cebitec.mgx.gui.search.JCheckBoxList<Sequence> readList;
     private javax.swing.JList runList;
     private javax.swing.JProgressBar searchProgress;
@@ -342,6 +358,9 @@ public final class SearchTopComponent extends TopComponent implements LookupList
                         Runnable r = new ObservationFetcher(activeTasks, currentMaster, s, cache);
                         proc.post(r);
                     }
+                    // notify table of updated data
+                    AbstractTableModel model = (AbstractTableModel) obsTable.getModel();
+                    model.fireTableDataChanged();
 
                 } catch (InterruptedException | ExecutionException ex) {
                     Exceptions.printStackTrace(ex);
@@ -421,6 +440,38 @@ public final class SearchTopComponent extends TopComponent implements LookupList
                  */
                 return;
             }
+        }
+    }
+
+    class VariableRowHeightRenderer implements TableCellRenderer {
+
+        private final ObservationView oview = new ObservationView();
+
+        public VariableRowHeightRenderer() {
+            super();
+            setOpaque(true);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object obj, boolean isSelected, boolean hasFocus, int row, int column) {
+
+
+            Sequence value = (Sequence) obj;
+            if (cache.containsKey(value) && cache.get(value).get() != null) {
+                oview.show(value, cache.get(value).get(), hasFocus, searchTerm.getText());
+            } else {
+                // check if worker for this sequence is already running
+                if (!activeTasks.contains(value)) {
+                    Runnable r = new ObservationFetcher(activeTasks, currentMaster, value, cache);
+                    proc.post(r);
+                    oview.show(value, "Data not yet loaded", hasFocus);
+                } else {
+                    oview.show(value, "Waiting for data..", hasFocus);
+                }
+            }
+            table.setRowHeight(row, oview.getPreferredSize().height);
+
+            return oview;
         }
     }
 }

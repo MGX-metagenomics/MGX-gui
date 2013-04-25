@@ -35,22 +35,23 @@ public class ObservationView extends javax.swing.JPanel {
     }
     private final View view = new View();
 
-    public void show(Sequence seq, Observation[] obs, boolean selected) {
+    public void show(Sequence seq, Observation[] obs, boolean selected, final String searchTerm) {
         readName.setText(seq.getName() + " (" + seq.getLength() + "bp)");
         setBorder(selected ? selectedBorder : unselectedBorder);
-        view.setData(seq, obs, null);
+        view.setData(seq, obs, null, searchTerm);
     }
 
     public void show(Sequence seq, String msg, boolean selected) {
         readName.setText(seq.getName() + " (" + seq.getLength() + "bp)");
         setBorder(selected ? selectedBorder : unselectedBorder);
-        view.setData(seq, null, msg);
+        view.setData(seq, null, msg, null);
     }
 
     private class View extends JComponent {
 
         private Sequence seq;
         private Observation[] obs;
+        private String searchTerm;
         private String message;
         //
         private final static int borderWidth = 15;
@@ -99,36 +100,42 @@ public class ObservationView extends javax.swing.JPanel {
             }
 
             float paintableX = width - 2 * borderWidth; // width of the sequence in px
-            float scaleX = paintableX / seqLen;
+            float scaleX = paintableX / seqLen; // internal scale factor
 
             int layerY = height - borderWidth - 5;
             for (Observation o : obs) {
                 int scaledStart = Math.round(o.getStart() * scaleX);
                 int scaledStop = Math.round(o.getStop() * scaleX);
 
-                String tmp = o.getStart() + "-" + o.getStop();
-                g2.drawString(o.getAttributeName() + " " + tmp, borderWidth + scaledStart, layerY - 4);
+                if (o.getAttributeName().contains(searchTerm)) {
+                    g2.setColor(Color.RED);
+                } else {
+                    g2.setColor(Color.BLACK);
+                }
+
+                g2.drawString(o.getAttributeTypeName() + ": " + o.getAttributeName(), borderWidth + Math.min(scaledStart, scaledStop), layerY - 4);
                 g2.draw(new Line2D.Double(borderWidth + scaledStart, layerY, borderWidth + scaledStop, layerY));
                 layerY -= 15;
             }
 
-            g2.setColor(Color.red);
-            int scaledStart = Math.round(0 * scaleX);
-            int scaledStop = Math.round(seqLen * scaleX);
-            g2.draw(new Line2D.Double(borderWidth + scaledStart, 5, borderWidth + scaledStop, 5));
+//            g2.setColor(Color.red);
+//            int scaledStart = Math.round(0 * scaleX);
+//            int scaledStop = Math.round(seqLen * scaleX);
+//            g2.draw(new Line2D.Double(borderWidth + scaledStart, 5, borderWidth + scaledStop, 5));
             g2.dispose();
 
         }
 
-        public void setData(Sequence s, Observation[] o, String msg) {
+        public void setData(Sequence s, Observation[] o, String msg, String term) {
             seq = s;
             obs = o;
             message = msg;
+            searchTerm = term;
 
             if (obs != null) {
                 // create layers for the observations
                 createLayers(obs);
-                Logger.getAnonymousLogger().info(seq.getName() + " needs " + layers.size() + " layers.");
+                //Logger.getAnonymousLogger().info(seq.getName() + " needs " + layers.size() + " layers.");
                 setMinimumSize(new Dimension(getWidth(), 2 * borderWidth + 30 + layers.size() * 15));
                 setPreferredSize(new Dimension(getWidth(), 2 * borderWidth + 30 + layers.size() * 15));
                 setMaximumSize(new Dimension(getWidth(), 2 * borderWidth + 30 + layers.size() * 15));
