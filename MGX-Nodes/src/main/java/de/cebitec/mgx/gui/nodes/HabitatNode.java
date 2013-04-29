@@ -7,6 +7,7 @@ import de.cebitec.mgx.gui.datamodel.Sample;
 import de.cebitec.mgx.gui.nodefactory.SampleNodeFactory;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
+import de.cebitec.mgx.gui.util.NonEDT;
 import de.cebitec.mgx.gui.wizard.habitat.HabitatWizardDescriptor;
 import de.cebitec.mgx.gui.wizard.sample.SampleWizardDescriptor;
 import java.awt.Dialog;
@@ -135,7 +136,7 @@ public class HabitatNode extends MGXNodeBase<Habitat> {
                     null);
             Object ret = DialogDisplayer.getDefault().notify(d);
             if (NotifyDescriptor.YES_OPTION.equals(ret)) {
-                MGXTask deleteTask = new MGXTask("Delete " + habitat.getName()) {
+                final MGXTask deleteTask = new MGXTask("Delete " + habitat.getName()) {
                     @Override
                     public boolean process() {
                         setStatus("Deleting..");
@@ -144,7 +145,13 @@ public class HabitatNode extends MGXNodeBase<Habitat> {
                     }
                 };
 
-                TaskManager.getInstance().addTask(deleteTask);
+                NonEDT.invoke(new Runnable() {
+                    @Override
+                    public void run() {
+                        TaskManager.getInstance().addTask(deleteTask);
+                    }
+                });
+
             }
         }
 
