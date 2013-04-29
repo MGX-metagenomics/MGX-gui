@@ -3,13 +3,11 @@ package de.cebitec.mgx.gui.controller;
 import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.JobDTO;
-import de.cebitec.mgx.dto.dto.JobParameterDTO;
+import de.cebitec.mgx.dto.dto.MGXString;
 import de.cebitec.mgx.gui.datamodel.Identifiable;
 import de.cebitec.mgx.gui.datamodel.Job;
-import de.cebitec.mgx.gui.datamodel.JobParameter;
 import de.cebitec.mgx.gui.datamodel.ModelBase;
 import de.cebitec.mgx.gui.dtoconversion.JobDTOFactory;
-import de.cebitec.mgx.gui.dtoconversion.JobParameterDTOFactory;
 import de.cebitec.mgx.gui.util.BaseIterator;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -157,5 +155,15 @@ public class JobAccess extends AccessBase<Job> {
             Exceptions.printStackTrace(ex);
         }
         return all;
+    }
+
+    public String getErrorMessage(Job job) {
+        try {
+            MGXString err = getDTOmaster().Job().getError(job.getId());
+            return err.getValue();
+        } catch (MGXServerException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+        return null;
     }
 }
