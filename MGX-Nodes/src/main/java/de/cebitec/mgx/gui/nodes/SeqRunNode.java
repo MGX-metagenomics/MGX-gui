@@ -1,8 +1,12 @@
 package de.cebitec.mgx.gui.nodes;
 
+import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.gui.actions.DownloadSeqRun;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.controller.RBAC;
+import de.cebitec.mgx.gui.datamodel.Job;
+import de.cebitec.mgx.gui.datamodel.JobParameter;
+import de.cebitec.mgx.gui.datamodel.JobState;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.datamodel.Tool;
 import de.cebitec.mgx.gui.datamodel.misc.ToolType;
@@ -14,6 +18,7 @@ import de.cebitec.mgx.gui.wizard.seqrun.SeqRunWizardDescriptor;
 import java.awt.Dialog;
 import java.awt.event.ActionEvent;
 import java.text.MessageFormat;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -86,15 +91,56 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> { // implements Transferable
             if (DialogDisplayer.getDefault().notify(wiz) == WizardDescriptor.FINISH_OPTION) {
                 Tool tool = (Tool) wiz.getProperty(AnalysisWizardIterator.PROP_TOOL);
                 ToolType tooltype = (ToolType) wiz.getProperty(AnalysisWizardIterator.PROP_TOOLTYPE);
-                System.err.println("SELECTED TOOL "+ tool.getName());
-//                Job job = (Job) wiz.getProperty(AnalysisWizardIterator.PROP_JOB);
-//                try {
-//                    //master.Job().execute(job.getId());
-//                } catch (MGXServerException ex) {
-//                    Exceptions.printStackTrace(ex);
-//                }
-            } else {
-                // FIXME - cancel?
+                List<JobParameter> params = (List<JobParameter>) wiz.getProperty(AnalysisWizardIterator.PROP_PARAMETERS);
+                try {
+
+                    switch (tooltype) {
+                        case GLOBAL:
+                            long projToolId = master.Tool().installTool(tool.getId());
+                            tool = master.Tool().fetch(projToolId);
+                            break;
+                        case PROJECT:
+                            break;
+                        case USER_PROVIDED:
+                            master.Tool().create(tool);
+                            break;
+                    }
+
+                    final Job job = new Job();
+                    job.setCreator(master.getLogin());
+                    job.setTool(tool);
+                    job.setStatus(JobState.CREATED);
+                    job.setSeqrun(getContent());
+                    job.setParameters(params);
+
+                    final MGXTask submit = new MGXTask("Submit " + getContent().getName() + " / " + tool.getName()) {
+                        @Override
+                        public boolean process() {
+                            try {
+                                setStatus("Creating job..");
+                                master.Job().create(job);
+                                setStatus("Validating configuration..");
+                                master.Job().verify(job);
+                                setStatus("Submitting..");
+                                return master.Job().execute(job);
+                            } catch (MGXServerException ex) {
+                                Exceptions.printStackTrace(ex);
+                            }
+                            return false;
+                        }
+                    };
+
+                    NonEDT.invoke(new Runnable() {
+                        @Override
+                        public void run() {
+                            TaskManager.getInstance().addTask(submit);
+                        }
+                    });
+
+                } catch (MGXServerException ex) {
+                    Exceptions.printStackTrace(ex);
+                }
+
             }
         }
 

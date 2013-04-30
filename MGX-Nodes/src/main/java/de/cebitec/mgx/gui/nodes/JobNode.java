@@ -9,13 +9,17 @@ import de.cebitec.mgx.gui.taskview.TaskManager;
 import de.cebitec.mgx.gui.util.NonEDT;
 import java.awt.event.ActionEvent;
 import java.lang.reflect.InvocationTargetException;
+import java.util.concurrent.ExecutionException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.JTextArea;
+import javax.swing.SwingWorker;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.nodes.Children;
 import org.openide.nodes.PropertySupport;
 import org.openide.nodes.Sheet;
+import org.openide.util.Exceptions;
 import org.openide.util.ImageUtilities;
 import org.openide.util.lookup.Lookups;
 
@@ -39,7 +43,7 @@ public class JobNode extends MGXNodeBase<Job> {
 
     @Override
     public Action[] getActions(boolean context) {
-        return new Action[]{new DeleteJob()};
+        return new Action[]{new DeleteJob(), new GetError()};
     }
 
     @Override
@@ -149,6 +153,45 @@ public class JobNode extends MGXNodeBase<Job> {
         @Override
         public boolean isEnabled() {
             return super.isEnabled() && RBAC.isUser() && !job.getStatus().equals(JobState.RUNNING);
+        }
+    }
+
+    private class GetError extends AbstractAction {
+
+        public GetError() {
+            putValue(NAME, "Show error");
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            final Job job = getLookup().lookup(Job.class);
+            final MGXMaster m = getLookup().lookup(MGXMaster.class);
+
+            SwingWorker<String, Void> sw = new SwingWorker<String, Void>() {
+                @Override
+                protected String doInBackground() throws Exception {
+                    return m.Job().getErrorMessage(job);
+                }
+
+                @Override
+                protected void done() {
+                    NotifyDescriptor nd;
+                    try {
+                        JTextArea area = new JTextArea(get());
+                        nd = new NotifyDescriptor.Message(area);
+                        DialogDisplayer.getDefault().notify(nd);
+                    } catch (InterruptedException | ExecutionException ex) {
+                        Exceptions.printStackTrace(ex);
+                    }
+                    super.done();
+                }
+            };
+            sw.execute();
+        }
+
+        @Override
+        public boolean isEnabled() {
+            return super.isEnabled() && RBAC.isUser() && job.getStatus().equals(JobState.FAILED);
         }
     }
 }
