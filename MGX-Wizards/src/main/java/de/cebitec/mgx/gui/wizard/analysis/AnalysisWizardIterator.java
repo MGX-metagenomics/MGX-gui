@@ -14,7 +14,7 @@ public final class AnalysisWizardIterator implements WizardDescriptor.Iterator<W
     public static final String PROP_TOOL = "tool";
     public static final String PROP_TOOLTYPE = "tooltype";
     public static final String PROP_PARAMETERS = "toolParameters";
-    public static final String PROP_JOB = "job";
+   // public static final String PROP_JOB = "job";
     // Example of invoking this wizard:
     // @ActionID(category="...", id="...")
     // @ActionRegistration(displayName="...")
