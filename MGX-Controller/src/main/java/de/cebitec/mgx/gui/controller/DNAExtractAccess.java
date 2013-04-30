@@ -7,9 +7,8 @@ import de.cebitec.mgx.gui.datamodel.DNAExtract;
 import de.cebitec.mgx.gui.datamodel.Identifiable;
 import de.cebitec.mgx.gui.datamodel.ModelBase;
 import de.cebitec.mgx.gui.dtoconversion.DNAExtractDTOFactory;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
+import java.util.UUID;
 import org.openide.util.Exceptions;
 
 /**
@@ -87,13 +86,12 @@ public class DNAExtractAccess extends AccessBase<DNAExtract> {
     }
 
     @Override
-    public boolean delete(DNAExtract obj) {
-        boolean ret;
+    public UUID delete(DNAExtract obj) {
+        UUID ret = null;
         try {
             ret = getDTOmaster().DNAExtract().delete(obj.getId());
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
-            return false;
         }
         obj.firePropertyChange(ModelBase.OBJECT_DELETED, obj, null);
         return ret;

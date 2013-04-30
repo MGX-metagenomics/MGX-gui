@@ -8,9 +8,8 @@ import de.cebitec.mgx.gui.datamodel.ModelBase;
 import de.cebitec.mgx.gui.datamodel.Sample;
 import de.cebitec.mgx.gui.dtoconversion.SampleDTOFactory;
 import de.cebitec.mgx.gui.util.BaseIterator;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
+import java.util.UUID;
 import org.openide.util.Exceptions;
 
 /**
@@ -78,13 +77,12 @@ public class SampleAccess extends AccessBase<Sample> {
     }
 
     @Override
-    public boolean delete(Sample obj) {
-        boolean ret;
+    public UUID delete(Sample obj) {
+        UUID ret = null;
         try {
             ret = getDTOmaster().Sample().delete(obj.getId());
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
-            return false;
         }
         obj.firePropertyChange(ModelBase.OBJECT_DELETED, obj, null);
         return ret;

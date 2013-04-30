@@ -10,7 +10,7 @@ public class Sequence extends Identifiable {
 
     protected String name;
     protected int length = -1;
-    protected String sequence;
+    protected String sequence = null;
     //
     public static final DataFlavor DATA_FLAVOR = new DataFlavor(Sequence.class, "Sequence");
 

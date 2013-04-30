@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import org.openide.util.Exceptions;
 
 /**
@@ -134,7 +135,7 @@ public class SequenceAccess extends AccessBase<Sequence> {
     }
 
     @Override
-    public boolean delete(Sequence obj) {
+    public UUID delete(Sequence obj) {
         throw new UnsupportedOperationException("Not supported.");
     }
 }

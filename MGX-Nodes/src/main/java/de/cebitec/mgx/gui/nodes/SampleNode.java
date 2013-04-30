@@ -4,6 +4,7 @@ import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.controller.RBAC;
 import de.cebitec.mgx.gui.datamodel.DNAExtract;
 import de.cebitec.mgx.gui.datamodel.Sample;
+import de.cebitec.mgx.gui.datamodel.misc.Task;
 import de.cebitec.mgx.gui.nodefactory.DNAExtractNodeFactory;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
@@ -12,6 +13,7 @@ import de.cebitec.mgx.gui.wizard.sample.SampleWizardDescriptor;
 import java.awt.Dialog;
 import java.awt.event.ActionEvent;
 import java.text.DateFormat;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -140,7 +142,15 @@ public class SampleNode extends MGXNodeBase<Sample> {
                     @Override
                     public boolean process() {
                         setStatus("Deleting..");
-                        return m.Sample().delete(sample);
+                        UUID delTask = m.Sample().delete(sample);
+                        Task task = m.Task().get(delTask);
+                        while (!task.done()) {
+                            setStatus(task.getStatusMessage());
+                            task = m.Task().get(delTask);
+                            sleep();
+                        }
+                        return task.getState() == Task.State.FINISHED;
+
                     }
                 };
 

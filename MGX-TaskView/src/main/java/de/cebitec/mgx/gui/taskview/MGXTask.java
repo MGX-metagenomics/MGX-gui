@@ -5,6 +5,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.Objects;
 import java.util.UUID;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -87,6 +88,13 @@ public abstract class MGXTask implements Runnable, PropertyChangeListener {
 
     public final void removePropertyChangeListener(PropertyChangeListener p) {
         pcs.removePropertyChangeListener(p);
+    }
+    
+    protected void sleep() {
+        try {
+            Thread.sleep(800);
+        } catch (InterruptedException ex) {
+        }
     }
 
     @Override

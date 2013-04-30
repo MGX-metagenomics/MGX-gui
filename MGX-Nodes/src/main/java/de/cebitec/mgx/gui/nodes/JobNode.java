@@ -4,11 +4,14 @@ import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.controller.RBAC;
 import de.cebitec.mgx.gui.datamodel.Job;
 import de.cebitec.mgx.gui.datamodel.JobState;
+import de.cebitec.mgx.gui.datamodel.misc.Task;
+import de.cebitec.mgx.gui.datamodel.misc.Task.State;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
 import de.cebitec.mgx.gui.util.NonEDT;
 import java.awt.event.ActionEvent;
 import java.lang.reflect.InvocationTargetException;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -137,7 +140,14 @@ public class JobNode extends MGXNodeBase<Job> {
                         setStatus("Deleting..");
                         MGXMaster m = getLookup().lookup(MGXMaster.class);
                         assert m != null;
-                        return m.Job().delete(job);
+                        UUID delTask = m.Job().delete(job);
+                        Task task = m.Task().get(delTask);
+                        while (!task.done()) {
+                            setStatus(task.getStatusMessage());
+                            task = m.Task().get(delTask);
+                            sleep();
+                        }
+                        return task.getState() == State.FINISHED;
                     }
                 };
 

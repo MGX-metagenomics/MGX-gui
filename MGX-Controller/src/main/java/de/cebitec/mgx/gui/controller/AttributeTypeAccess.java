@@ -9,6 +9,7 @@ import de.cebitec.mgx.gui.dtoconversion.AttributeTypeDTOFactory;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 import org.openide.util.Exceptions;
 
 /**
@@ -38,7 +39,7 @@ public class AttributeTypeAccess extends AccessBase<AttributeType> {
     }
 
     @Override
-    public boolean delete(AttributeType obj) {
+    public UUID delete(AttributeType obj) {
         throw new UnsupportedOperationException("Not supported.");
     }
 

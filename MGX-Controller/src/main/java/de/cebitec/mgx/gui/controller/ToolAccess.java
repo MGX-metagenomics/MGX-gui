@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 import org.openide.util.Exceptions;
 
 /**
@@ -122,13 +123,12 @@ public class ToolAccess extends AccessBase<Tool> {
     }
 
     @Override
-    public boolean delete(Tool obj) {
-        boolean ret;
+    public UUID delete(Tool obj) {
+        UUID ret = null;
         try {
             ret = getDTOmaster().Tool().delete(obj.getId());
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
-            return false;
         }
         obj.firePropertyChange(ModelBase.OBJECT_DELETED, obj, null);
         return ret;

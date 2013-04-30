@@ -10,6 +10,7 @@ import de.cebitec.mgx.gui.dtoconversion.FileDTOFactory;
 import de.cebitec.mgx.gui.util.BaseIterator;
 import java.io.File;
 import java.util.Iterator;
+import java.util.UUID;
 import org.openide.util.Exceptions;
 
 /**
@@ -62,17 +63,15 @@ public class FileAccess extends AccessBase<MGXFile> {
     }
 
     @Override
-    public boolean delete(MGXFile obj) {
-        boolean ret;
+    public UUID delete(MGXFile obj) {
         try {
             FileDTO dto = FileDTOFactory.getInstance().toDTO(obj);
-            ret = getDTOmaster().File().delete(dto);
+            getDTOmaster().File().delete(dto);
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
-            return false;
         }
         obj.firePropertyChange(ModelBase.OBJECT_DELETED, obj, null);
-        return ret;
+        return null;
     }
 
     @Override

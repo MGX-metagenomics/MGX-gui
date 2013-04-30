@@ -65,7 +65,8 @@ public class DeleteFileOrDirectory extends AbstractAction {
         @Override
         public boolean process() {
             setStatus("Deleting..");
-            return master.File().delete(file);
+            master.File().delete(file);
+            return true;
         }
     }
 }

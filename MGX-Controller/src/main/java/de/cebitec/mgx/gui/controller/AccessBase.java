@@ -4,6 +4,7 @@ import de.cebitec.mgx.client.MGXDTOMaster;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 
 /**
  *
@@ -38,7 +39,7 @@ public abstract class AccessBase<T> {
     
     public abstract void update(T obj);
 
-    public abstract boolean delete(T obj);
+    public abstract UUID delete(T obj);
 
     /*
      * from http://snippets.dzone.com/posts/show/91

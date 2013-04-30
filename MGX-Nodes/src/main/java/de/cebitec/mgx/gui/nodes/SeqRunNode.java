@@ -9,6 +9,7 @@ import de.cebitec.mgx.gui.datamodel.JobParameter;
 import de.cebitec.mgx.gui.datamodel.JobState;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.datamodel.Tool;
+import de.cebitec.mgx.gui.datamodel.misc.Task;
 import de.cebitec.mgx.gui.datamodel.misc.ToolType;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
@@ -19,6 +20,7 @@ import java.awt.Dialog;
 import java.awt.event.ActionEvent;
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -222,7 +224,14 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> { // implements Transferable
                     public boolean process() {
                         setStatus("Deleting..");
                         MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
-                        return m.SeqRun().delete(sr);
+                        UUID delTask = m.SeqRun().delete(sr);
+                        Task task = m.Task().get(delTask);
+                        while (!task.done()) {
+                            setStatus(task.getStatusMessage());
+                            task = m.Task().get(delTask);
+                            sleep();
+                        }
+                        return task.getState() == Task.State.FINISHED;
                     }
 
                     @Override

@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import org.openide.util.Exceptions;
 
 /**
@@ -84,13 +85,12 @@ public class SeqRunAccess extends AccessBase<SeqRun> {
     }
 
     @Override
-    public boolean delete(SeqRun obj) {
-        boolean ret;
+    public UUID delete(SeqRun obj) {
+        UUID ret = null;
         try {
             ret = getDTOmaster().SeqRun().delete(obj.getId());
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
-            return false;
         }
         obj.firePropertyChange(ModelBase.OBJECT_DELETED, obj, null);
         return ret;

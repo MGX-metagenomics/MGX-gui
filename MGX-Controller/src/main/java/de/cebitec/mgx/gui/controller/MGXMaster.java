@@ -96,6 +96,10 @@ public class MGXMaster extends ModelBase implements MGXMasterI, PropertyChangeLi
         return getAccessor(TermAccess.class);
     }
 
+    public TaskAccess Task() {
+        return getAccessor(TaskAccess.class);
+    }
+
     void log(Level lvl, String msg) {
         logger.log(lvl, msg);
     }

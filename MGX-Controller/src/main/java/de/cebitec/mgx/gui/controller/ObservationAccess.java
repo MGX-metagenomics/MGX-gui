@@ -9,6 +9,7 @@ import de.cebitec.mgx.gui.dtoconversion.ObservationDTOFactory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.UUID;
 import org.openide.util.Exceptions;
 
 
@@ -54,7 +55,7 @@ public class ObservationAccess extends AccessBase<Observation> {
     }
 
     @Override
-    public boolean delete(Observation obj) {
+    public UUID delete(Observation obj) {
         throw new UnsupportedOperationException("Not supported.");
     }
     

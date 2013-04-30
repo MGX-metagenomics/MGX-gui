@@ -7,6 +7,7 @@ import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.controller.RBAC;
 import de.cebitec.mgx.gui.datamodel.DNAExtract;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
+import de.cebitec.mgx.gui.datamodel.misc.Task;
 import de.cebitec.mgx.gui.nodefactory.SeqRunNodeFactory;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
@@ -21,6 +22,7 @@ import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -150,7 +152,14 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
                     @Override
                     public boolean process() {
                         setStatus("Deleting..");
-                        return m.DNAExtract().delete(dna);
+                        UUID delTask = m.DNAExtract().delete(dna);
+                        Task task = m.Task().get(delTask);
+                        while (!task.done()) {
+                            setStatus(task.getStatusMessage());
+                            task = m.Task().get(delTask);
+                            sleep();
+                        }
+                        return task.getState() == Task.State.FINISHED;
                     }
 
                     @Override

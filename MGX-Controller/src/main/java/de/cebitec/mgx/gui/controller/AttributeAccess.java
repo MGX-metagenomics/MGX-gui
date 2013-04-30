@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.openide.util.Exceptions;
@@ -141,7 +142,7 @@ public class AttributeAccess extends AccessBase<Attribute> {
     }
 
     @Override
-    public boolean delete(Attribute obj) {
+    public UUID delete(Attribute obj) {
         throw new UnsupportedOperationException("Not supported.");
     }
 

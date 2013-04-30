@@ -12,6 +12,7 @@ import de.cebitec.mgx.gui.util.BaseIterator;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 import org.openide.util.Exceptions;
 
 /**
@@ -118,15 +119,15 @@ public class JobAccess extends AccessBase<Job> {
     }
 
     @Override
-    public boolean delete(Job obj) {
+    public UUID delete(Job obj) {
         try {
-            boolean ret = getDTOmaster().Job().delete(obj.getId());
+            UUID ret = getDTOmaster().Job().delete(obj.getId());
             obj.firePropertyChange(ModelBase.OBJECT_DELETED, obj, null);
             return ret;
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
-        return false;
+        return null;
     }
 
     public List<Job> ByAttributeTypeAndSeqRun(long atype_id, long seqrun_id) {

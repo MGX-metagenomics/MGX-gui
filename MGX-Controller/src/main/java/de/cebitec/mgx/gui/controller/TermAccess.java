@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 import org.openide.util.Exceptions;
 
 /**
@@ -53,7 +54,7 @@ public class TermAccess extends AccessBase<Term> {
     }
 
     @Override
-    public boolean delete(Term obj) {
+    public UUID delete(Term obj) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 }
