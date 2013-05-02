@@ -5,6 +5,7 @@ import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.ObservationDTO;
 import de.cebitec.mgx.gui.datamodel.Observation;
 import de.cebitec.mgx.gui.datamodel.Sequence;
+import de.cebitec.mgx.gui.datamodel.misc.Task;
 import de.cebitec.mgx.gui.dtoconversion.ObservationDTOFactory;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -55,7 +56,7 @@ public class ObservationAccess extends AccessBase<Observation> {
     }
 
     @Override
-    public UUID delete(Observation obj) {
+    public Task delete(Observation obj) {
         throw new UnsupportedOperationException("Not supported.");
     }
     

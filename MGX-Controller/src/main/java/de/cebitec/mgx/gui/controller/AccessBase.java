@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.controller;
 
 import de.cebitec.mgx.client.MGXDTOMaster;
+import de.cebitec.mgx.gui.datamodel.misc.Task;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -39,7 +40,7 @@ public abstract class AccessBase<T> {
     
     public abstract void update(T obj);
 
-    public abstract UUID delete(T obj);
+    public abstract Task delete(T obj);
 
     /*
      * from http://snippets.dzone.com/posts/show/91

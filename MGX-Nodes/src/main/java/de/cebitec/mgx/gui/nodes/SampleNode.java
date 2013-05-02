@@ -142,13 +142,13 @@ public class SampleNode extends MGXNodeBase<Sample> {
                     @Override
                     public boolean process() {
                         setStatus("Deleting..");
-                        UUID delTask = m.Sample().delete(sample);
-                        Task task = m.Task().get(delTask);
+                        Task task = m.Sample().delete(sample);
                         while (!task.done()) {
                             setStatus(task.getStatusMessage());
-                            task = m.Task().get(delTask);
+                            task = m.Task().get(task.getObject(), task.getUuid());
                             sleep();
                         }
+                        task.finish();
                         return task.getState() == Task.State.FINISHED;
 
                     }

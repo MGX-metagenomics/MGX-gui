@@ -152,13 +152,13 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
                     @Override
                     public boolean process() {
                         setStatus("Deleting..");
-                        UUID delTask = m.DNAExtract().delete(dna);
-                        Task task = m.Task().get(delTask);
+                        Task task = m.DNAExtract().delete(dna);
                         while (!task.done()) {
                             setStatus(task.getStatusMessage());
-                            task = m.Task().get(delTask);
+                            task = m.Task().get(task.getObject(), task.getUuid());
                             sleep();
                         }
+                        task.finish();
                         return task.getState() == Task.State.FINISHED;
                     }
 

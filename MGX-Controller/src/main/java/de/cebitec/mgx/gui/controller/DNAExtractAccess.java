@@ -6,6 +6,7 @@ import de.cebitec.mgx.dto.dto.DNAExtractDTO;
 import de.cebitec.mgx.gui.datamodel.DNAExtract;
 import de.cebitec.mgx.gui.datamodel.Identifiable;
 import de.cebitec.mgx.gui.datamodel.ModelBase;
+import de.cebitec.mgx.gui.datamodel.misc.Task;
 import de.cebitec.mgx.gui.dtoconversion.DNAExtractDTOFactory;
 import java.util.Iterator;
 import java.util.UUID;
@@ -86,14 +87,14 @@ public class DNAExtractAccess extends AccessBase<DNAExtract> {
     }
 
     @Override
-    public UUID delete(DNAExtract obj) {
-        UUID ret = null;
+    public Task delete(DNAExtract obj) {
+        Task ret = null;
         try {
-            ret = getDTOmaster().DNAExtract().delete(obj.getId());
+            UUID uuid = getDTOmaster().DNAExtract().delete(obj.getId());
+            ret = getMaster().Task().get(obj, uuid);
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
-        obj.firePropertyChange(ModelBase.OBJECT_DELETED, obj, null);
         return ret;
     }
 

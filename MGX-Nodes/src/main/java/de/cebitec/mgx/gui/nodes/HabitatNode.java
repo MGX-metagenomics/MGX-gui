@@ -3,6 +3,7 @@ package de.cebitec.mgx.gui.nodes;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.controller.RBAC;
 import de.cebitec.mgx.gui.datamodel.Habitat;
+import de.cebitec.mgx.gui.datamodel.ModelBase;
 import de.cebitec.mgx.gui.datamodel.Sample;
 import de.cebitec.mgx.gui.datamodel.misc.Task;
 import de.cebitec.mgx.gui.nodefactory.SampleNodeFactory;
@@ -143,13 +144,13 @@ public class HabitatNode extends MGXNodeBase<Habitat> {
                     public boolean process() {
                         setStatus("Deleting..");
                         MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
-                        UUID delTask = m.Habitat().delete(habitat);
-                        Task task = m.Task().get(delTask);
+                        Task task = m.Habitat().delete(habitat);
                         while (!task.done()) {
                             setStatus(task.getStatusMessage());
-                            task = m.Task().get(delTask);
+                            task = m.Task().get(task.getObject(), task.getUuid());
                             sleep();
                         }
+                        task.finish();
                         return task.getState() == Task.State.FINISHED;
                     }
                 };

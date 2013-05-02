@@ -4,12 +4,12 @@ import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.TermDTO;
 import de.cebitec.mgx.gui.datamodel.Term;
+import de.cebitec.mgx.gui.datamodel.misc.Task;
 import de.cebitec.mgx.gui.dtoconversion.TermDTOFactory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.UUID;
 import org.openide.util.Exceptions;
 
 /**
@@ -54,7 +54,7 @@ public class TermAccess extends AccessBase<Term> {
     }
 
     @Override
-    public UUID delete(Term obj) {
+    public Task delete(Term obj) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 }

@@ -11,6 +11,7 @@ import de.cebitec.mgx.dto.dto.SequenceDTO;
 import de.cebitec.mgx.dto.dto.SequenceDTOList;
 import de.cebitec.mgx.gui.datamodel.Attribute;
 import de.cebitec.mgx.gui.datamodel.Sequence;
+import de.cebitec.mgx.gui.datamodel.misc.Task;
 import de.cebitec.mgx.gui.dtoconversion.AttributeDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.SequenceDTOFactory;
 import de.cebitec.mgx.sequence.DNASequenceI;
@@ -20,7 +21,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 import org.openide.util.Exceptions;
 
 /**
@@ -135,7 +135,7 @@ public class SequenceAccess extends AccessBase<Sequence> {
     }
 
     @Override
-    public UUID delete(Sequence obj) {
+    public Task delete(Sequence obj) {
         throw new UnsupportedOperationException("Not supported.");
     }
 }

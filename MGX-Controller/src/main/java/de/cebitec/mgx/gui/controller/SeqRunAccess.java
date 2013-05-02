@@ -10,6 +10,7 @@ import de.cebitec.mgx.gui.datamodel.Identifiable;
 import de.cebitec.mgx.gui.datamodel.Job;
 import de.cebitec.mgx.gui.datamodel.ModelBase;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
+import de.cebitec.mgx.gui.datamodel.misc.Task;
 import de.cebitec.mgx.gui.dtoconversion.AttributeTypeDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.JobDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.SeqRunDTOFactory;
@@ -85,14 +86,14 @@ public class SeqRunAccess extends AccessBase<SeqRun> {
     }
 
     @Override
-    public UUID delete(SeqRun obj) {
-        UUID ret = null;
+    public Task delete(SeqRun obj) {
+        Task ret = null;
         try {
-            ret = getDTOmaster().SeqRun().delete(obj.getId());
+            UUID uuid = getDTOmaster().SeqRun().delete(obj.getId());
+            ret = getMaster().Task().get(obj, uuid);
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
-        obj.firePropertyChange(ModelBase.OBJECT_DELETED, obj, null);
         return ret;
     }
 

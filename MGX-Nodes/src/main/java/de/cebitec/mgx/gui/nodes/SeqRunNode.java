@@ -224,13 +224,13 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> { // implements Transferable
                     public boolean process() {
                         setStatus("Deleting..");
                         MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
-                        UUID delTask = m.SeqRun().delete(sr);
-                        Task task = m.Task().get(delTask);
+                        Task task = m.SeqRun().delete(sr);
                         while (!task.done()) {
                             setStatus(task.getStatusMessage());
-                            task = m.Task().get(delTask);
+                            task = m.Task().get(task.getObject(), task.getUuid());
                             sleep();
                         }
+                        task.finish();
                         return task.getState() == Task.State.FINISHED;
                     }
 

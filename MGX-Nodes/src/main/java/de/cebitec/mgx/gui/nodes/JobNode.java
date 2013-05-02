@@ -140,13 +140,13 @@ public class JobNode extends MGXNodeBase<Job> {
                         setStatus("Deleting..");
                         MGXMaster m = getLookup().lookup(MGXMaster.class);
                         assert m != null;
-                        UUID delTask = m.Job().delete(job);
-                        Task task = m.Task().get(delTask);
+                        Task task = m.Job().delete(job);
                         while (!task.done()) {
                             setStatus(task.getStatusMessage());
-                            task = m.Task().get(delTask);
+                            task = m.Task().get(task.getObject(), task.getUuid());
                             sleep();
                         }
+                        task.finish();
                         return task.getState() == State.FINISHED;
                     }
                 };

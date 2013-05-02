@@ -8,6 +8,7 @@ import de.cebitec.mgx.gui.datamodel.Identifiable;
 import de.cebitec.mgx.gui.datamodel.JobParameter;
 import de.cebitec.mgx.gui.datamodel.ModelBase;
 import de.cebitec.mgx.gui.datamodel.Tool;
+import de.cebitec.mgx.gui.datamodel.misc.Task;
 import de.cebitec.mgx.gui.dtoconversion.JobParameterDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.ToolDTOFactory;
 import de.cebitec.mgx.gui.util.BaseIterator;
@@ -123,14 +124,14 @@ public class ToolAccess extends AccessBase<Tool> {
     }
 
     @Override
-    public UUID delete(Tool obj) {
-        UUID ret = null;
+    public Task delete(Tool obj) {
+        Task ret = null;
         try {
-            ret = getDTOmaster().Tool().delete(obj.getId());
+            UUID uuid = getDTOmaster().Tool().delete(obj.getId());
+            ret = getMaster().Task().get(obj, uuid);
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
-        obj.firePropertyChange(ModelBase.OBJECT_DELETED, obj, null);
         return ret;
     }
 

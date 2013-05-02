@@ -6,6 +6,7 @@ import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.FileDTO;
 import de.cebitec.mgx.gui.datamodel.MGXFile;
 import de.cebitec.mgx.gui.datamodel.ModelBase;
+import de.cebitec.mgx.gui.datamodel.misc.Task;
 import de.cebitec.mgx.gui.dtoconversion.FileDTOFactory;
 import de.cebitec.mgx.gui.util.BaseIterator;
 import java.io.File;
@@ -63,7 +64,7 @@ public class FileAccess extends AccessBase<MGXFile> {
     }
 
     @Override
-    public UUID delete(MGXFile obj) {
+    public Task delete(MGXFile obj) {
         try {
             FileDTO dto = FileDTOFactory.getInstance().toDTO(obj);
             getDTOmaster().File().delete(dto);

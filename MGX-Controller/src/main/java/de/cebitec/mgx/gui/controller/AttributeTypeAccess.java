@@ -5,6 +5,7 @@ import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.AttributeTypeDTO;
 import de.cebitec.mgx.gui.datamodel.AttributeType;
 import de.cebitec.mgx.gui.datamodel.Job;
+import de.cebitec.mgx.gui.datamodel.misc.Task;
 import de.cebitec.mgx.gui.dtoconversion.AttributeTypeDTOFactory;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -39,7 +40,7 @@ public class AttributeTypeAccess extends AccessBase<AttributeType> {
     }
 
     @Override
-    public UUID delete(AttributeType obj) {
+    public Task delete(AttributeType obj) {
         throw new UnsupportedOperationException("Not supported.");
     }
 
