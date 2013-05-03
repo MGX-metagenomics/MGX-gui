@@ -41,8 +41,9 @@ public class Job extends Identifiable implements Comparable<Job> {
         return tool;
     }
 
-    public Job setTool(Tool tool) {
-        this.tool = tool;
+    public Job setTool(Tool t) {
+        assert t != null;
+        this.tool = t;
         return this;
     }
 
@@ -77,8 +78,9 @@ public class Job extends Identifiable implements Comparable<Job> {
         return seqrun;
     }
 
-    public Job setSeqrun(SeqRun seqrun) {
-        this.seqrun = seqrun;
+    public Job setSeqrun(SeqRun run) {
+        assert run != null;
+        this.seqrun = run;
         return this;
     }
 
