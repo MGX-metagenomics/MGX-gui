@@ -57,7 +57,7 @@ public class AnalysisWizardPanel1 implements WizardDescriptor.Panel<WizardDescri
                     }
                     serverTools = new ArrayList<>();
                     Iterator<Tool> sIter = ret.getFirst();
-                    while (pIter.hasNext()) {
+                    while (sIter.hasNext()) {
                         serverTools.add(sIter.next());
                     }
                     getComponent().setProjectTools(projTools);
