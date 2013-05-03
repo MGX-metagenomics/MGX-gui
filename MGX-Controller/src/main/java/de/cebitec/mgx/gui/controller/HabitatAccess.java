@@ -81,7 +81,7 @@ public class HabitatAccess extends AccessBase<Habitat> {
         Task t = null;
         try {
             UUID uuid = getDTOmaster().Habitat().delete(obj.getId());
-            t = getMaster().Task().get(obj, uuid);
+            t = getMaster().Task().get(obj, uuid, Task.TaskType.DELETE);
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }

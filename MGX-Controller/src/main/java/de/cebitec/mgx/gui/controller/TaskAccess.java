@@ -5,6 +5,7 @@ import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.TaskDTO;
 import de.cebitec.mgx.gui.datamodel.ModelBase;
 import de.cebitec.mgx.gui.datamodel.misc.Task;
+import de.cebitec.mgx.gui.datamodel.misc.Task.TaskType;
 import de.cebitec.mgx.gui.dtoconversion.TaskDTOFactory;
 import java.util.Iterator;
 import java.util.UUID;
@@ -16,11 +17,22 @@ import org.openide.util.Exceptions;
  */
 public class TaskAccess<T extends ModelBase> extends AccessBase<Task> {
 
-    public Task get(T obj, UUID taskId) {
+    public Task get(T obj, UUID taskId, TaskType tt) {
         Task t = null;
         try {
             TaskDTO dto = getDTOmaster().Task().get(taskId);
-            t = TaskDTOFactory.getInstance(obj, taskId).toModel(dto);
+            t = TaskDTOFactory.getInstance(obj, taskId, tt).toModel(dto);
+        } catch (MGXServerException | MGXClientException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+        return t;
+    }
+
+    public Task get(Task origTask) {
+        Task t = null;
+        try {
+            TaskDTO dto = getDTOmaster().Task().get(origTask.getUuid());
+            t = TaskDTOFactory.getInstance(origTask.getObject(), origTask.getUuid(), origTask.getTaskType()).toModel(dto);
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }

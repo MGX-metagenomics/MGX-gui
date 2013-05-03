@@ -8,6 +8,7 @@ import de.cebitec.mgx.gui.datamodel.Identifiable;
 import de.cebitec.mgx.gui.datamodel.Job;
 import de.cebitec.mgx.gui.datamodel.ModelBase;
 import de.cebitec.mgx.gui.datamodel.misc.Task;
+import de.cebitec.mgx.gui.datamodel.misc.Task.TaskType;
 import de.cebitec.mgx.gui.dtoconversion.JobDTOFactory;
 import de.cebitec.mgx.gui.util.BaseIterator;
 import java.util.ArrayList;
@@ -43,20 +44,6 @@ public class JobAccess extends AccessBase<Job> {
         return ret;
     }
 
-//    public Iterable<JobParameter> getParameters(long jobId) throws MGXServerException {
-//        List<JobParameter> ret = new ArrayList<>();
-//        for (JobParameterDTO dto : getDTOmaster().Job().getParameters(jobId)) {
-//            ret.add(JobParameterDTOFactory.getInstance().toModel(dto));
-//        }
-//        return ret;
-//    }
-//    public void setParameters(long jobId, Iterable<JobParameter> params) throws MGXServerException {
-//        Builder b = JobParameterListDTO.newBuilder();
-//        for (JobParameter jp : params) {
-//            b.addParameter(JobParameterDTOFactory.getInstance().toDTO(jp));
-//        }
-//        getDTOmaster().Job().setParameters(jobId, b.build());
-//    }
     @Override
     public long create(Job obj) {
         assert obj.getTool().getId() != Identifiable.INVALID_IDENTIFIER;
@@ -124,7 +111,7 @@ public class JobAccess extends AccessBase<Job> {
         Task ret = null;
         try {
             UUID uuid = getDTOmaster().Job().delete(obj.getId());
-            ret = getMaster().Task().get(obj, uuid);
+            ret = getMaster().Task().get(obj, uuid, TaskType.DELETE);
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }

@@ -7,6 +7,7 @@ import de.cebitec.mgx.gui.datamodel.Identifiable;
 import de.cebitec.mgx.gui.datamodel.ModelBase;
 import de.cebitec.mgx.gui.datamodel.Sample;
 import de.cebitec.mgx.gui.datamodel.misc.Task;
+import de.cebitec.mgx.gui.datamodel.misc.Task.TaskType;
 import de.cebitec.mgx.gui.dtoconversion.SampleDTOFactory;
 import de.cebitec.mgx.gui.util.BaseIterator;
 import java.util.Iterator;
@@ -82,7 +83,7 @@ public class SampleAccess extends AccessBase<Sample> {
         Task ret = null;
         try {
             UUID uuid = getDTOmaster().Sample().delete(obj.getId());
-            ret = getMaster().Task().get(obj, uuid);
+            ret = getMaster().Task().get(obj, uuid, TaskType.DELETE);
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
