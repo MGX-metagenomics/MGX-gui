@@ -11,6 +11,9 @@ import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.datamodel.Tool;
 import de.cebitec.mgx.gui.datamodel.misc.Task;
 import de.cebitec.mgx.gui.datamodel.misc.ToolType;
+import static de.cebitec.mgx.gui.datamodel.misc.ToolType.GLOBAL;
+import static de.cebitec.mgx.gui.datamodel.misc.ToolType.PROJECT;
+import static de.cebitec.mgx.gui.datamodel.misc.ToolType.USER_PROVIDED;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
 import de.cebitec.mgx.gui.util.NonEDT;
@@ -20,7 +23,6 @@ import java.awt.Dialog;
 import java.awt.event.ActionEvent;
 import java.text.MessageFormat;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -81,8 +83,6 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> { // implements Transferable
         @Override
         public void actionPerformed(final ActionEvent e) {
             SeqRun seqrun = getLookup().lookup(SeqRun.class);
-            //GetToolsWorker getTools = new GetToolsWorker(master, seqrun);
-            //getTools.execute();
             AnalysisWizardIterator iter = new AnalysisWizardIterator(master);
             WizardDescriptor wiz = new WizardDescriptor(iter);
             iter.setWizardDescriptor(wiz);
@@ -91,57 +91,59 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> { // implements Transferable
             wiz.setTitleFormat(new MessageFormat("{0}"));
             wiz.setTitle("Tool selection");
             if (DialogDisplayer.getDefault().notify(wiz) == WizardDescriptor.FINISH_OPTION) {
-                Tool tool = (Tool) wiz.getProperty(AnalysisWizardIterator.PROP_TOOL);
-                ToolType tooltype = (ToolType) wiz.getProperty(AnalysisWizardIterator.PROP_TOOLTYPE);
-                List<JobParameter> params = (List<JobParameter>) wiz.getProperty(AnalysisWizardIterator.PROP_PARAMETERS);
-                try {
+                final Tool tool = (Tool) wiz.getProperty(AnalysisWizardIterator.PROP_TOOL);
+                final ToolType tooltype = (ToolType) wiz.getProperty(AnalysisWizardIterator.PROP_TOOLTYPE);
+                final List<JobParameter> params = (List<JobParameter>) wiz.getProperty(AnalysisWizardIterator.PROP_PARAMETERS);
 
-                    switch (tooltype) {
-                        case GLOBAL:
-                            long projToolId = master.Tool().installTool(tool.getId());
-                            tool = master.Tool().fetch(projToolId);
-                            break;
-                        case PROJECT:
-                            break;
-                        case USER_PROVIDED:
-                            master.Tool().create(tool);
-                            break;
-                    }
+                final MGXTask submit = new MGXTask("Submit " + getContent().getName() + " / " + tool.getName()) {
+                    @Override
+                    public boolean process() {
+                        try {
+                            
+                            Tool selectedTool = null;
 
-                    final Job job = new Job();
-                    job.setCreator(master.getLogin());
-                    job.setTool(tool);
-                    job.setStatus(JobState.CREATED);
-                    job.setSeqrun(getContent());
-                    job.setParameters(params);
-
-                    final MGXTask submit = new MGXTask("Submit " + getContent().getName() + " / " + tool.getName()) {
-                        @Override
-                        public boolean process() {
-                            try {
-                                setStatus("Creating job..");
-                                master.Job().create(job);
-                                setStatus("Validating configuration..");
-                                master.Job().verify(job);
-                                setStatus("Submitting..");
-                                return master.Job().execute(job);
-                            } catch (MGXServerException ex) {
-                                Exceptions.printStackTrace(ex);
+                            switch (tooltype) {
+                                case GLOBAL:
+                                    long projToolId = master.Tool().installTool(tool.getId());
+                                    selectedTool = master.Tool().fetch(projToolId);
+                                    break;
+                                case PROJECT:
+                                    selectedTool = tool;
+                                    break;
+                                case USER_PROVIDED:
+                                    master.Tool().create(tool);
+                                    selectedTool = tool;
+                                    break;
                             }
-                            return false;
-                        }
-                    };
 
-                    NonEDT.invoke(new Runnable() {
-                        @Override
-                        public void run() {
-                            TaskManager.getInstance().addTask(submit);
-                        }
-                    });
+                            final Job job = new Job();
+                            job.setCreator(master.getLogin());
+                            job.setTool(selectedTool);
+                            job.setStatus(JobState.CREATED);
+                            job.setSeqrun(getContent());
+                            job.setParameters(params);
 
-                } catch (MGXServerException ex) {
-                    Exceptions.printStackTrace(ex);
-                }
+                            setStatus("Creating job..");
+                            master.Job().create(job);
+                            setStatus("Validating configuration..");
+                            master.Job().verify(job);
+                            setStatus("Submitting..");
+                            return master.Job().execute(job);
+                        } catch (MGXServerException ex) {
+                            Exceptions.printStackTrace(ex);
+                        }
+                        return false;
+                    }
+                };
+
+                NonEDT.invoke(new Runnable() {
+                    @Override
+                    public void run() {
+                        TaskManager.getInstance().addTask(submit);
+                    }
+                });
+
+
 
             }
         }
@@ -227,7 +229,7 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> { // implements Transferable
                         Task task = m.SeqRun().delete(sr);
                         while (!task.done()) {
                             setStatus(task.getStatusMessage());
-                            task = m.Task().get(task.getObject(), task.getUuid());
+                            task = m.Task().get(task);
                             sleep();
                         }
                         task.finish();
