@@ -22,7 +22,6 @@ import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.io.IOException;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -155,7 +154,7 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
                         Task task = m.DNAExtract().delete(dna);
                         while (!task.done()) {
                             setStatus(task.getStatusMessage());
-                            task = m.Task().get(task.getObject(), task.getUuid());
+                            task = m.Task().get(task);
                             sleep();
                         }
                         task.finish();
@@ -209,8 +208,8 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
                         m.SeqRun().create(seqrun);
 
                         // create a sequence reader
-                        String canonicalPath = null;
-                        SeqReaderI reader = null;
+                        String canonicalPath;
+                        SeqReaderI reader;
                         try {
                             canonicalPath = wd.getSequenceFile().getCanonicalPath();
                             reader = SeqReaderFactory.getReader(canonicalPath);

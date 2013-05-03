@@ -141,9 +141,10 @@ public class JobNode extends MGXNodeBase<Job> {
                         MGXMaster m = getLookup().lookup(MGXMaster.class);
                         assert m != null;
                         Task task = m.Job().delete(job);
+                        assert task != null;
                         while (!task.done()) {
                             setStatus(task.getStatusMessage());
-                            task = m.Task().get(task.getObject(), task.getUuid());
+                            task = m.Task().get(task);
                             sleep();
                         }
                         task.finish();

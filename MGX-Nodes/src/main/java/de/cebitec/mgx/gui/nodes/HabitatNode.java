@@ -3,7 +3,6 @@ package de.cebitec.mgx.gui.nodes;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.controller.RBAC;
 import de.cebitec.mgx.gui.datamodel.Habitat;
-import de.cebitec.mgx.gui.datamodel.ModelBase;
 import de.cebitec.mgx.gui.datamodel.Sample;
 import de.cebitec.mgx.gui.datamodel.misc.Task;
 import de.cebitec.mgx.gui.nodefactory.SampleNodeFactory;
@@ -14,7 +13,6 @@ import de.cebitec.mgx.gui.wizard.habitat.HabitatWizardDescriptor;
 import de.cebitec.mgx.gui.wizard.sample.SampleWizardDescriptor;
 import java.awt.Dialog;
 import java.awt.event.ActionEvent;
-import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -147,7 +145,7 @@ public class HabitatNode extends MGXNodeBase<Habitat> {
                         Task task = m.Habitat().delete(habitat);
                         while (!task.done()) {
                             setStatus(task.getStatusMessage());
-                            task = m.Task().get(task.getObject(), task.getUuid());
+                            task = m.Task().get(task);
                             sleep();
                         }
                         task.finish();
