@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.login.dialog;
 
 import de.cebitec.mgx.gui.explorer.ProjectExplorerTopComponent;
+import de.cebitec.mgx.gui.login.LoginState;
 import de.cebitec.mgx.gui.login.configuration.MGXserverPanel;
 import de.cebitec.mgx.restgpms.GPMS;
 import java.awt.Cursor;
@@ -57,9 +58,9 @@ public class LoginHandler implements ActionListener {
         panel.setUser(NbPreferences.forModule(MGXserverPanel.class).get("lastLogin", ""));
         panel.setPassword("");
 
-        servername = NbPreferences.forModule(MGXserverPanel.class).get("servername", "CeBiTec");
+        servername = NbPreferences.forModule(MGXserverPanel.class).get("servername", "scooter");
         serveruri = NbPreferences.forModule(MGXserverPanel.class).get("serveruri", "https://mgx.cebitec.uni-bielefeld.de/MGX-maven-web/webresources/");
-        //serveruri = NbPreferences.forModule(MGXserverPanel.class).get("serveruri", "http://localhost:8080/MGX-maven-web/webresources/");
+        serveruri = NbPreferences.forModule(MGXserverPanel.class).get("serveruri", "http://scooter:8080/MGX-maven-web/webresources/");
         if ("".equals(serveruri)) {
             dialog.setClosingOptions(new Object[]{DialogDescriptor.CANCEL_OPTION});
             nline.setErrorMessage("No server configured!");
@@ -85,6 +86,7 @@ public class LoginHandler implements ActionListener {
                     EventQueue.invokeLater(new Runnable() {
                         @Override
                         public void run() {
+                            LoginState.getInstance().disable();
                             openProjectExplorer(gpms);
                             startPing(gpms);
                         }
@@ -99,7 +101,7 @@ public class LoginHandler implements ActionListener {
         }
     }
 
-    private void openProjectExplorer(final GPMS gpms) {
+    private static void openProjectExplorer(final GPMS gpms) {
         ProjectExplorerTopComponent pe = Lookup.getDefault().lookup(ProjectExplorerTopComponent.class);
         pe.setVisible(true);
         pe.setGPMS(gpms);
@@ -114,7 +116,7 @@ public class LoginHandler implements ActionListener {
         pe.requestActive();
     }
 
-    private void startPing(final GPMS gpms) {
+    private static void startPing(final GPMS gpms) {
         Thread t = new Thread(new Runnable() {
 
             private int refresh = -1;
