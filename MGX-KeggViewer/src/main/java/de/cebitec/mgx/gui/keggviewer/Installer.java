@@ -6,7 +6,6 @@ import de.cebitec.mgx.kegg.pathways.api.PathwayI;
 import java.io.File;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
-import java.util.logging.Logger;
 import org.netbeans.api.progress.ProgressHandle;
 import org.netbeans.api.progress.ProgressHandleFactory;
 import org.openide.modules.ModuleInstall;
@@ -26,7 +25,6 @@ public class Installer extends ModuleInstall {
             @Override
             public void run() {
                 String cacheDir = Places.getUserDirectory().getAbsolutePath() + File.separator + "kegg" + File.separator;
-                Logger.getAnonymousLogger().info("CACHEDIR IS " + cacheDir);
                 try {
                     final KEGGMaster km = new KEGGMaster(cacheDir);
                     Set<PathwayI> fetchall = km.Pathways().fetchall();
