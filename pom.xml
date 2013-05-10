@@ -394,6 +394,7 @@
         <module>MGX-JobMonitor</module>
         <module>MGX-Statistics</module>
         <module>MGX-Actions</module>
+        <module>MGX-KeggViewer</module>
     </modules>
 
     <properties>
