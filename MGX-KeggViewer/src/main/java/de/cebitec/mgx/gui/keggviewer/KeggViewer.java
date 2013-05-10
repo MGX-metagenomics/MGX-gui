@@ -120,6 +120,6 @@ public class KeggViewer extends CategoricalViewerI {
 
     @Override
     public boolean canHandle(AttributeType valueType) {
-        return Installer.keggLoaded && super.canHandle(valueType) && valueType.getName().equals("EC_Number");
+        return Installer.keggLoaded && super.canHandle(valueType) && valueType.getName().equals("EC_number");
     }
 }
