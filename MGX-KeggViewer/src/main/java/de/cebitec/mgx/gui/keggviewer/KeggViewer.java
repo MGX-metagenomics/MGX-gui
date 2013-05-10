@@ -35,15 +35,19 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = ViewerI.class)
 public class KeggViewer extends CategoricalViewerI {
 
-    private final KEGGPanel panel;
-    private final KEGGMaster master;
-    private final KeggCustomizer customizer;
+    private KEGGPanel panel;
+    private KEGGMaster master;
+    private KeggCustomizer customizer;
 
     public KeggViewer() {
         String cacheDir = Places.getUserDirectory().getAbsolutePath() + File.separator + "kegg" + File.separator;
-        master = new KEGGMaster(cacheDir);
-        panel = new KEGGPanel(master);
-        customizer = new KeggCustomizer(master);
+        try {
+            master = new KEGGMaster(cacheDir);
+            panel = new KEGGPanel(master);
+            customizer = new KeggCustomizer(master);
+        } catch (KEGGException ex) {
+            Exceptions.printStackTrace(ex);
+        }
     }
 
     @Override

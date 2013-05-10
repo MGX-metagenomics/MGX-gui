@@ -27,8 +27,8 @@ public class Installer extends ModuleInstall {
             public void run() {
                 String cacheDir = Places.getUserDirectory().getAbsolutePath() + File.separator + "kegg" + File.separator;
                 Logger.getAnonymousLogger().info("CACHEDIR IS " + cacheDir);
-                final KEGGMaster km = new KEGGMaster(cacheDir);
                 try {
+                    final KEGGMaster km = new KEGGMaster(cacheDir);
                     Set<PathwayI> fetchall = km.Pathways().fetchall();
                     final CountDownLatch latch = new CountDownLatch(fetchall.size());
                     for (final PathwayI p : fetchall) {
@@ -48,10 +48,10 @@ public class Installer extends ModuleInstall {
                         RP.post(r);
                     }
                     latch.await();
+                    keggLoaded = true;
                 } catch (KEGGException | InterruptedException ex) {
                     Exceptions.printStackTrace(ex);
                 }
-                keggLoaded = true;
             }
         };
 
