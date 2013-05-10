@@ -24,6 +24,7 @@ import java.util.regex.Pattern;
 import javax.swing.JComponent;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
+import org.openide.modules.Places;
 import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -39,7 +40,8 @@ public class KeggViewer extends CategoricalViewerI {
     private final KeggCustomizer customizer;
 
     public KeggViewer() {
-        master = new KEGGMaster();
+        String cacheDir = Places.getUserDirectory().getAbsolutePath() + File.separator + "kegg" + File.separator;
+        master = new KEGGMaster(cacheDir);
         panel = new KEGGPanel(master);
         customizer = new KeggCustomizer(master);
     }
@@ -114,6 +116,6 @@ public class KeggViewer extends CategoricalViewerI {
 
     @Override
     public boolean canHandle(AttributeType valueType) {
-        return super.canHandle(valueType) && valueType.getName().equals("EC_Number");
+        return Installer.keggLoaded && super.canHandle(valueType) && valueType.getName().equals("EC_Number");
     }
 }
