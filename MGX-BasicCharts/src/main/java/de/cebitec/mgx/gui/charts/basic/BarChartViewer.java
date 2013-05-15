@@ -68,13 +68,18 @@ public class BarChartViewer extends CategoricalViewerI {
 
         chart.setBorderPaint(Color.WHITE);
         chart.setBackgroundPaint(Color.WHITE);
+        chart.setAntiAlias(true);
         cPanel = new ChartPanel(chart);
         CategoryPlot plot = chart.getCategoryPlot();
 
         plot.setBackgroundPaint(Color.WHITE);
-
+        
+        BarRenderer br = (BarRenderer) plot.getRenderer();
+        br.setItemMargin(customizer.getItemMargin());
+        
         // x axis
         CategoryAxis domainAxis = plot.getDomainAxis();
+        domainAxis.setCategoryMargin(customizer.getCategoryMargin()); 
         domainAxis.setCategoryLabelPositions(CategoryLabelPositions.createUpRotationLabelPositions(Math.PI / 6));
 
         // y axis

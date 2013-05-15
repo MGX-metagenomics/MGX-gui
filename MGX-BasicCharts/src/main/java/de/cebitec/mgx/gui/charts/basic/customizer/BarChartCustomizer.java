@@ -32,13 +32,21 @@ public class BarChartCustomizer extends javax.swing.JPanel implements VisFilterI
     public boolean logY() {
         return useLogY.isSelected();
     }
-    
+
     public boolean useFractions() {
         return useFractions.isSelected();
     }
 
     public boolean getSortAscending() {
         return sortAscending.isSelected();
+    }
+
+    public double getItemMargin() {
+        return 1D * itemMargin.getValue() / 100;
+    }
+
+    public double getCategoryMargin() {
+        return 1D * categoryMargin.getValue() / 100;
     }
 
     /**
@@ -57,6 +65,10 @@ public class BarChartCustomizer extends javax.swing.JPanel implements VisFilterI
         useFractions = new javax.swing.JCheckBox();
         limit = new javax.swing.JComboBox();
         useLogY = new javax.swing.JCheckBox();
+        categoryMargin = new javax.swing.JSlider();
+        jLabel2 = new javax.swing.JLabel();
+        itemMargin = new javax.swing.JSlider();
+        jLabel3 = new javax.swing.JLabel();
 
         jLabel1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         jLabel1.setText(org.openide.util.NbBundle.getMessage(BarChartCustomizer.class, "BarChartCustomizer.jLabel1.text")); // NOI18N
@@ -75,25 +87,41 @@ public class BarChartCustomizer extends javax.swing.JPanel implements VisFilterI
 
         limit.setModel(new javax.swing.DefaultComboBoxModel(LimitFilter.LIMITS.values()));
         limit.setSelectedItem(LimitFilter.LIMITS.ALL);
+        limit.setMinimumSize(new java.awt.Dimension(16, 24));
 
         useLogY.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         useLogY.setText(org.openide.util.NbBundle.getMessage(BarChartCustomizer.class, "BarChartCustomizer.useLogY.text")); // NOI18N
+
+        categoryMargin.setValue(5);
+        categoryMargin.setMinimumSize(new java.awt.Dimension(16, 16));
+        categoryMargin.setPreferredSize(new java.awt.Dimension(25, 16));
+
+        jLabel2.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
+        jLabel2.setText(org.openide.util.NbBundle.getMessage(BarChartCustomizer.class, "BarChartCustomizer.jLabel2.text")); // NOI18N
+
+        itemMargin.setValue(5);
+        itemMargin.setMinimumSize(new java.awt.Dimension(15, 16));
+        itemMargin.setPreferredSize(new java.awt.Dimension(15, 16));
+
+        jLabel3.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
+        jLabel3.setText(org.openide.util.NbBundle.getMessage(BarChartCustomizer.class, "BarChartCustomizer.jLabel3.text")); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(limit, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(categoryMargin, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(itemMargin, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jLabel1)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(sortAscending)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(sortDescending))
-                    .addComponent(useFractions)
-                    .addComponent(useLogY))
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addComponent(sortAscending)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(sortDescending))
+            .addComponent(useFractions)
+            .addComponent(useLogY)
+            .addComponent(jLabel2)
+            .addComponent(jLabel3)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -110,11 +138,23 @@ public class BarChartCustomizer extends javax.swing.JPanel implements VisFilterI
                 .addComponent(useLogY)
                 .addGap(12, 12, 12)
                 .addComponent(limit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(127, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 157, Short.MAX_VALUE)
+                .addComponent(jLabel3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(itemMargin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(categoryMargin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JSlider categoryMargin;
+    private javax.swing.JSlider itemMargin;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JComboBox limit;
     private javax.swing.JRadioButton sortAscending;
     private javax.swing.JRadioButton sortDescending;
@@ -129,7 +169,7 @@ public class BarChartCustomizer extends javax.swing.JPanel implements VisFilterI
             VisFilterI fracFilter = new ToFractionFilter();
             dists = fracFilter.filter(dists);
         }
-        
+
         LimitFilter lf = new LimitFilter();
         //System.err.println("GOT _"+limit.getSelectedItem().toString()+"_");
         lf.setLimit(LimitFilter.LIMITS.values()[limit.getSelectedIndex()]);
