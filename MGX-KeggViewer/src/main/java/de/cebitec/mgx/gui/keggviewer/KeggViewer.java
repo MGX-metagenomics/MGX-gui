@@ -6,22 +6,30 @@ import de.cebitec.mgx.gui.datamodel.Attribute;
 import de.cebitec.mgx.gui.datamodel.AttributeType;
 import de.cebitec.mgx.gui.datamodel.misc.Distribution;
 import de.cebitec.mgx.gui.datamodel.misc.Pair;
+import de.cebitec.mgx.gui.groups.ConflictingJobsException;
 import de.cebitec.mgx.gui.groups.ImageExporterI;
+import de.cebitec.mgx.gui.groups.VGroupManager;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import de.cebitec.mgx.gui.util.FileChooserUtils;
 import de.cebitec.mgx.gui.util.FileType;
 import de.cebitec.mgx.kegg.pathways.KEGGException;
 import de.cebitec.mgx.kegg.pathways.KEGGMaster;
 import de.cebitec.mgx.kegg.pathways.api.ECNumberI;
+import de.cebitec.mgx.kegg.pathways.api.PathwayI;
 import de.cebitec.mgx.kegg.pathways.model.ECNumberFactory;
 import de.cebitec.mgx.kegg.pathways.paint.KEGGPanel;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.JComponent;
+import javax.swing.SwingWorker;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.modules.Places;
@@ -113,8 +121,46 @@ public class KeggViewer extends CategoricalViewerI {
 
     }
 
+    private Set<PathwayI> selectPathways() throws ConflictingJobsException, KEGGException {
+        Set<ECNumberI> ecNumbers = new HashSet<>();
+        for (Pair<VisualizationGroup, Distribution> p : VGroupManager.getInstance().getDistributions()) {
+            Distribution dist = p.getSecond();
+            for (Entry<Attribute, Number> e : dist.entrySet()) {
+                Matcher matcher = ecNumber.matcher(e.getKey().getValue());
+                if (matcher.find()) {
+                    try {
+                        ECNumberI ec = ECNumberFactory.fromString(e.getKey().getValue().substring(matcher.start(), matcher.end()));
+                        ecNumbers.add(ec);
+                    } catch (KEGGException ex) {
+                        Exceptions.printStackTrace(ex);
+                    }
+                }
+            }
+        }
+        Logger.getGlobal().info("found " + ecNumbers.size() + " ec numbers");
+        return master.Pathways().getMatchingPathways(ecNumbers);
+    }
+
     @Override
-    public JComponent getCustomizer() {
+    public KeggCustomizer getCustomizer() {
+        SwingWorker<Set<PathwayI>, Void> sw = new SwingWorker<Set<PathwayI>, Void>() {
+            @Override
+            protected Set<PathwayI> doInBackground() throws Exception {
+                return selectPathways();
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    customizer.restrictPathways(get());
+                } catch (InterruptedException | ExecutionException ex) {
+                    Exceptions.printStackTrace(ex);
+                }
+                super.done();
+            }
+        };
+        sw.execute();
+
         return customizer;
     }
 
