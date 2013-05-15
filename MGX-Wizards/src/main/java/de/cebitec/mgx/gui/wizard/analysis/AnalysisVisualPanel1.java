@@ -127,6 +127,7 @@ public final class AnalysisVisualPanel1 extends JPanel implements ListSelectionL
         jLabel1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(AnalysisVisualPanel1.class, "AnalysisVisualPanel1.jLabel1.text")); // NOI18N
 
+        selectedTool.setEditable(false);
         selectedTool.setText(org.openide.util.NbBundle.getMessage(AnalysisVisualPanel1.class, "AnalysisVisualPanel1.selectedTool.text")); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
