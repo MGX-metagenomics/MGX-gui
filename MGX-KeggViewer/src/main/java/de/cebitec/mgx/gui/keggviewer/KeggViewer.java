@@ -20,12 +20,13 @@ import de.cebitec.mgx.kegg.pathways.model.ECNumberFactory;
 import de.cebitec.mgx.kegg.pathways.paint.KEGGPanel;
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.JComponent;
@@ -34,6 +35,7 @@ import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.modules.Places;
 import org.openide.util.Exceptions;
+import org.openide.util.RequestProcessor;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -95,7 +97,7 @@ public class KeggViewer extends CategoricalViewerI {
     public Class getInputType() {
         return Distribution.class;
     }
-    private Pattern ecNumber = Pattern.compile("\\d+[.](-|\\d+)[.](-|\\d+)[.](-|\\d+)");
+    private final Pattern ecNumber = Pattern.compile("\\d+[.](-|\\d+)[.](-|\\d+)[.](-|\\d+)");
 
     @Override
     public void show(List<Pair<VisualizationGroup, Distribution>> dists) {
@@ -110,7 +112,8 @@ public class KeggViewer extends CategoricalViewerI {
                     Matcher matcher = ecNumber.matcher(e.getKey().getValue());
                     if (matcher.find()) {
                         ECNumberI ec = ECNumberFactory.fromString(e.getKey().getValue().substring(matcher.start(), matcher.end()));
-                        panel.addData(idx, ec, group.getColor(), e.getValue().intValue());
+                        String description = group.getName() + ": " + e.getValue().toString();
+                        panel.addData(idx, ec, group.getColor(), description);
                     }
                 }
                 idx++;
@@ -120,6 +123,7 @@ public class KeggViewer extends CategoricalViewerI {
         }
 
     }
+    private final static RequestProcessor RP = new RequestProcessor("KEGG-Viewer", 35, true);
 
     private Set<PathwayI> selectPathways() throws ConflictingJobsException, KEGGException {
         Set<ECNumberI> ecNumbers = new HashSet<>();
@@ -137,8 +141,28 @@ public class KeggViewer extends CategoricalViewerI {
                 }
             }
         }
-        Logger.getGlobal().info("found " + ecNumbers.size() + " ec numbers");
-        return master.Pathways().getMatchingPathways(ecNumbers);
+        final CountDownLatch latch = new CountDownLatch(ecNumbers.size());
+        final Set<PathwayI> ret = Collections.synchronizedSet(new HashSet<PathwayI>());
+        for (final ECNumberI ec : ecNumbers) {
+            RP.post(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        ret.addAll(master.Pathways().getMatchingPathways(ec));
+                    } catch (KEGGException ex) {
+                        Exceptions.printStackTrace(ex);
+                    } finally {
+                        latch.countDown();
+                    }
+                }
+            });
+        }
+        try {
+            latch.await();
+        } catch (InterruptedException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+        return ret;
     }
 
     @Override
@@ -168,4 +192,12 @@ public class KeggViewer extends CategoricalViewerI {
     public boolean canHandle(AttributeType valueType) {
         return Installer.keggLoaded && super.canHandle(valueType) && valueType.getName().equals("EC_number");
     }
+
+    @Override
+    public void dispose() {
+        RP.shutdownNow();
+        super.dispose();
+    }
+    
+    
 }

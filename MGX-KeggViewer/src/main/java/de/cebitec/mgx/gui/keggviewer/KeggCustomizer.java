@@ -31,7 +31,6 @@ public class KeggCustomizer extends javax.swing.JPanel {
     }
 
     public void restrictPathways(Set<PathwayI> pathways) {
-        Logger.getGlobal().info("found "+pathways.size()+" mathcing pathways");
         pathwayList.removeAllItems();
         for (PathwayI p : pathways) {
             pathwayList.addItem(p);

@@ -2,8 +2,13 @@ package de.cebitec.mgx.gui.keggviewer;
 
 import de.cebitec.mgx.kegg.pathways.KEGGException;
 import de.cebitec.mgx.kegg.pathways.KEGGMaster;
+import de.cebitec.mgx.kegg.pathways.api.ECNumberI;
 import de.cebitec.mgx.kegg.pathways.api.PathwayI;
+import java.awt.Rectangle;
 import java.io.File;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import org.netbeans.api.progress.ProgressHandle;
@@ -16,7 +21,7 @@ import org.openide.util.TaskListener;
 
 public class Installer extends ModuleInstall {
 
-    private final static RequestProcessor RP = new RequestProcessor("KEGG-Installer", 10, true);
+    private final static RequestProcessor RP = new RequestProcessor("KEGG-Installer", 35, true);
     public static boolean keggLoaded = false;
 
     @Override
@@ -28,14 +33,15 @@ public class Installer extends ModuleInstall {
                 try {
                     final KEGGMaster km = new KEGGMaster(cacheDir);
                     Set<PathwayI> fetchall = km.Pathways().fetchall();
-                    final CountDownLatch latch = new CountDownLatch(fetchall.size());
+                    final CountDownLatch latch = new CountDownLatch(fetchall.size() * 2);
+
+                    final Set<ECNumberI> ecNumbers = Collections.synchronizedSet(new HashSet<ECNumberI>());
                     for (final PathwayI p : fetchall) {
-                        Runnable r = new Runnable() {
+                        Runnable r1 = new Runnable() {
                             @Override
                             public void run() {
                                 try {
                                     km.Pathways().getImage(p);
-                                    km.Pathways().getCoords(p);
                                 } catch (KEGGException ex) {
                                     Exceptions.printStackTrace(ex);
                                 } finally {
@@ -43,9 +49,43 @@ public class Installer extends ModuleInstall {
                                 }
                             }
                         };
-                        RP.post(r);
+                        RP.post(r1);
+
+                        Runnable r2 = new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    Map<ECNumberI, Set<Rectangle>> coords = km.Pathways().getCoords(p);
+                                    ecNumbers.addAll(coords.keySet());
+                                } catch (KEGGException ex) {
+                                    Exceptions.printStackTrace(ex);
+                                } finally {
+                                    latch.countDown();
+                                }
+                            }
+                        };
+                        RP.post(r2);
                     }
                     latch.await();
+
+                    final CountDownLatch latch2 = new CountDownLatch(ecNumbers.size());
+                    for (final ECNumberI ec : ecNumbers) {
+                        Runnable r3 = new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    km.Pathways().getMatchingPathways(ec);
+                                } catch (KEGGException ex) {
+                                    Exceptions.printStackTrace(ex);
+                                } finally {
+                                    latch2.countDown();
+                                }
+                            }
+                        };
+                        RP.post(r3);
+                    }
+                    latch2.await();
+
                     keggLoaded = true;
                 } catch (KEGGException | InterruptedException ex) {
                     Exceptions.printStackTrace(ex);
@@ -54,10 +94,9 @@ public class Installer extends ModuleInstall {
         };
 
         final RequestProcessor.Task theTask = RP.create(runnable);
-        final ProgressHandle ph = ProgressHandleFactory.createHandle("Fetching KEGG data", theTask);
+        final ProgressHandle ph = ProgressHandleFactory.createHandle("Fetching/Validating KEGG data", theTask);
 
-        theTask.addTaskListener(
-                new TaskListener() {
+        theTask.addTaskListener(new TaskListener() {
             @Override
             public void taskFinished(org.openide.util.Task task) {
                 ph.finish();
