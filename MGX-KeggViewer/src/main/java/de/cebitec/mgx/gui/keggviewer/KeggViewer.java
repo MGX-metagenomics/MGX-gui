@@ -52,7 +52,7 @@ public class KeggViewer extends CategoricalViewerI {
     public KeggViewer() {
         String cacheDir = Places.getUserDirectory().getAbsolutePath() + File.separator + "kegg" + File.separator;
         try {
-            master = new KEGGMaster(cacheDir);
+            master = new KEGGMaster("/tmp/kegg/");
             panel = new KEGGPanel(master);
             customizer = new KeggCustomizer(master);
         } catch (KEGGException ex) {
@@ -112,7 +112,8 @@ public class KeggViewer extends CategoricalViewerI {
                     Matcher matcher = ecNumber.matcher(e.getKey().getValue());
                     if (matcher.find()) {
                         ECNumberI ec = ECNumberFactory.fromString(e.getKey().getValue().substring(matcher.start(), matcher.end()));
-                        String description = group.getName() + ": " + e.getValue().toString();
+                        String description = "<html><b>" + e.getKey().getValue() + "</b><br><hr>" 
+                                + group.getName() + ": " + e.getValue().toString() + " hits</html>";
                         panel.addData(idx, ec, group.getColor(), description);
                     }
                 }
