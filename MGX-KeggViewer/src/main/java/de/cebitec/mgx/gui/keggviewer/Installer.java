@@ -31,7 +31,7 @@ public class Installer extends ModuleInstall {
             public void run() {
                 String cacheDir = Places.getUserDirectory().getAbsolutePath() + File.separator + "kegg" + File.separator;
                 try {
-                    final KEGGMaster km = new KEGGMaster(cacheDir);
+                    final KEGGMaster km = new KEGGMaster("/tmp/kegg/");
                     Set<PathwayI> fetchall = km.Pathways().fetchall();
                     final CountDownLatch latch = new CountDownLatch(fetchall.size() * 2);
 
@@ -41,7 +41,7 @@ public class Installer extends ModuleInstall {
                             @Override
                             public void run() {
                                 try {
-                                    km.Pathways().getImage(p);
+                                    km.Pathways().fetchImage(p);
                                 } catch (KEGGException ex) {
                                     Exceptions.printStackTrace(ex);
                                 } finally {
