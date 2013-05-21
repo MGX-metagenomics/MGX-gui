@@ -131,6 +131,16 @@ public class VisualizationGroup implements PropertyChangeListener {
         selectedAttributeType = attrType;
         uniqueJobs.clear();
         needsResolval.clear();
+        
+        // clear caches - the cache might already contain data for the
+        // selected attribute type, but from a different set of selected
+        // jobs
+        if (distCache.containsKey(attrType)) {
+            distCache.remove(attrType);
+        }
+        if (hierarchyCache.containsKey(attrType)) {
+            hierarchyCache.remove(attrType);
+        }
 
         for (SeqRun run : seqruns) {
 
