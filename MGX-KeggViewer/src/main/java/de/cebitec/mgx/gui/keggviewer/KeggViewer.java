@@ -52,7 +52,7 @@ public class KeggViewer extends CategoricalViewerI {
     public KeggViewer() {
         String cacheDir = Places.getUserDirectory().getAbsolutePath() + File.separator + "kegg" + File.separator;
         try {
-            master = new KEGGMaster("/tmp/kegg/");
+            master = new KEGGMaster(cacheDir);
             panel = new KEGGPanel(master);
             customizer = new KeggCustomizer(master);
         } catch (KEGGException ex) {
