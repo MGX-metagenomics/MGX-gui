@@ -122,8 +122,6 @@ public final class AttributeVisualizationTopComponent extends TopComponent {
         ImageExporterI exporter = v.getImageExporter();
         if (exporter != null) {
             content.add(exporter);
-        } else {
-            System.err.println("no exporter provided by " + v.getName());
         }
     }
 
