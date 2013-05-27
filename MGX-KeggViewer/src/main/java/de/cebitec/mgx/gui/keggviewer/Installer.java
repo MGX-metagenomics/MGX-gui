@@ -34,6 +34,7 @@ public class Installer extends ModuleInstall {
                     final KEGGMaster km = new KEGGMaster(cacheDir);
                     Set<PathwayI> fetchall = km.Pathways().fetchall();
                     final CountDownLatch latch = new CountDownLatch(fetchall.size() * 2);
+                    final SuccessHolder success = new SuccessHolder();
 
                     final Set<ECNumberI> ecNumbers = Collections.synchronizedSet(new HashSet<ECNumberI>());
                     for (final PathwayI p : fetchall) {
@@ -43,7 +44,7 @@ public class Installer extends ModuleInstall {
                                 try {
                                     km.Pathways().fetchImage(p);
                                 } catch (KEGGException ex) {
-                                    Exceptions.printStackTrace(ex);
+                                    success.set(false);
                                 } finally {
                                     latch.countDown();
                                 }
@@ -58,7 +59,7 @@ public class Installer extends ModuleInstall {
                                     Map<ECNumberI, Set<Rectangle>> coords = km.Pathways().getCoords(p);
                                     ecNumbers.addAll(coords.keySet());
                                 } catch (KEGGException ex) {
-                                    Exceptions.printStackTrace(ex);
+                                    success.set(false);
                                 } finally {
                                     latch.countDown();
                                 }
@@ -76,7 +77,7 @@ public class Installer extends ModuleInstall {
                                 try {
                                     km.Pathways().getMatchingPathways(ec);
                                 } catch (KEGGException ex) {
-                                    Exceptions.printStackTrace(ex);
+                                    success.set(false);
                                 } finally {
                                     latch2.countDown();
                                 }
@@ -86,7 +87,7 @@ public class Installer extends ModuleInstall {
                     }
                     latch2.await();
 
-                    keggLoaded = true;
+                    keggLoaded = success.get();
                 } catch (KEGGException | InterruptedException ex) {
                     Exceptions.printStackTrace(ex);
                 }
@@ -105,5 +106,17 @@ public class Installer extends ModuleInstall {
 
         ph.start();
         theTask.schedule(0);
+    }
+    
+    private final class SuccessHolder {
+        private boolean success = true;
+        
+        public void set(boolean b) {
+            success = b;
+        }
+        
+        public boolean get() {
+            return success;
+        }
     }
 }
