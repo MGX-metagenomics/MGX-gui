@@ -89,7 +89,6 @@ public class Installer extends ModuleInstall {
 
                     keggLoaded = success.get();
                 } catch (KEGGException | InterruptedException ex) {
-                    Exceptions.printStackTrace(ex);
                 }
             }
         };
