@@ -4,11 +4,12 @@ import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.Job;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.datamodel.Tool;
+import de.cebitec.mgx.gui.datamodel.misc.AttributeRank;
 import de.cebitec.mgx.gui.datamodel.misc.Pair;
+import de.cebitec.mgx.gui.datamodel.misc.Triple;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import java.awt.Component;
 import java.util.*;
-import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
 import javax.swing.JComponent;
 import javax.swing.SwingWorker;
@@ -48,8 +49,8 @@ public final class ConflictResolverWizardIterator implements WizardDescriptor.It
 //    public void setGroups(List<VisualizationGroup> g) {
 //        groups = g;
 //    }
-    public List<Pair<VisualizationGroup, Pair<SeqRun, Job>>> getSelection() {
-        List<Pair<VisualizationGroup, Pair<SeqRun, Job>>> l = new ArrayList<>();
+    public List<Pair<VisualizationGroup, Triple<AttributeRank, SeqRun, Job>>> getSelection() {
+        List<Pair<VisualizationGroup, Triple<AttributeRank, SeqRun, Job>>> l = new ArrayList<>();
         for (Panel<WizardDescriptor> p : panels) {
             ConflictResolverWizardPanel1 tmp = (ConflictResolverWizardPanel1) p;
             l.add(tmp.getSelection());
@@ -68,12 +69,12 @@ public final class ConflictResolverWizardIterator implements WizardDescriptor.It
                 // here, so we need to fetch them separately
                 //
 
-                for (final Entry<SeqRun, List<Job>> e : vg.getConflicts().entrySet()) {
+                for (final Triple<AttributeRank, SeqRun, List<Job>> e : vg.getConflicts()) {
 
                     SwingWorker<Void, Void> fetchTool = new SwingWorker<Void, Void>() {
                         @Override
                         protected Void doInBackground() throws Exception {
-                            for (final Job job : e.getValue()) {
+                            for (final Job job : e.getThird()) {
                                 if (job.getTool() == null) {
                                     MGXMaster master = (MGXMaster) job.getMaster();
                                     Tool tool = master.Tool().ByJob(job.getId());
@@ -91,7 +92,7 @@ public final class ConflictResolverWizardIterator implements WizardDescriptor.It
                     }
 
 
-                    WizardDescriptor.Panel panel = new ConflictResolverWizardPanel1(vg, e.getKey(), e.getValue());
+                    WizardDescriptor.Panel panel = new ConflictResolverWizardPanel1(vg, e.getFirst(), e.getSecond(), e.getThird());
                     panels.add(panel);
                 }
             }

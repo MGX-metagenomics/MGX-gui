@@ -10,8 +10,10 @@ import de.cebitec.mgx.gui.attributevisualization.conflictwizard.ConflictResolver
 import de.cebitec.mgx.gui.attributevisualization.util.ResultCollector;
 import de.cebitec.mgx.gui.attributevisualization.viewer.ViewerI;
 import de.cebitec.mgx.gui.datamodel.*;
+import de.cebitec.mgx.gui.datamodel.misc.AttributeRank;
 import de.cebitec.mgx.gui.datamodel.misc.Distribution;
 import de.cebitec.mgx.gui.datamodel.misc.Pair;
+import de.cebitec.mgx.gui.datamodel.misc.Triple;
 import de.cebitec.mgx.gui.datamodel.tree.Tree;
 import de.cebitec.mgx.gui.groups.VGroupManager;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
@@ -73,9 +75,9 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
                 wiz.setTitleFormat(new MessageFormat("{0}"));
                 wiz.setTitle("Tool selection");
                 if (DialogDisplayer.getDefault().notify(wiz) == WizardDescriptor.FINISH_OPTION) {
-                    for (Pair<VisualizationGroup, Pair<SeqRun, Job>> p : iter.getSelection()) {
+                    for (Pair<VisualizationGroup, Triple<AttributeRank, SeqRun, Job>> p : iter.getSelection()) {
                         VisualizationGroup vg = p.getFirst();
-                        vg.resolveConflict(p.getSecond().getFirst(), p.getSecond().getSecond());
+                        vg.resolveConflict(p.getSecond().getFirst(), p.getSecond().getSecond(), p.getSecond().getThird());
                         groups.remove(vg);
                     }
                     return true;
@@ -275,7 +277,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
             visualizationTypeList.setEnabled(false);
             updateButton.setEnabled(false);
 
-            if (vgmgr.selectAttributeType(currentAttributeType.getName())) {
+            if (vgmgr.selectAttributeType(AttributeRank.PRIMARY, currentAttributeType.getName())) {
                 // fetch distribution (and hierarchy) in background
                 ResultCollector rc = new ResultCollector(currentAttributeType, currentDistributions, currentHierarchies, ControlPanel.this);
                 rc.execute();

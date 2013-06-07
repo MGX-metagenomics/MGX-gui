@@ -2,7 +2,9 @@ package de.cebitec.mgx.gui.attributevisualization.conflictwizard;
 
 import de.cebitec.mgx.gui.datamodel.Job;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
+import de.cebitec.mgx.gui.datamodel.misc.AttributeRank;
 import de.cebitec.mgx.gui.datamodel.misc.Pair;
+import de.cebitec.mgx.gui.datamodel.misc.Triple;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -17,13 +19,15 @@ public class ConflictResolverWizardPanel1 implements WizardDescriptor.Panel<Wiza
 
     private VisualizationGroup vg;
     private SeqRun run;
+    private final AttributeRank rank;
     private Collection<Job> jobs;
     private final EventListenerList listeners = new EventListenerList();
 
-    public ConflictResolverWizardPanel1(VisualizationGroup vg, SeqRun run, Collection<Job> j) {
+    public ConflictResolverWizardPanel1(VisualizationGroup vg, AttributeRank rank, SeqRun run, Collection<Job> j) {
         this.vg = vg;
         this.run = run;
         this.jobs = j;
+        this.rank = rank;
     }
     /**
      * The visual component that displays this panel. If you need to access the
@@ -67,8 +71,8 @@ public class ConflictResolverWizardPanel1 implements WizardDescriptor.Panel<Wiza
 
     }
 
-    public Pair<VisualizationGroup, Pair<SeqRun, Job>> getSelection() {
-        return new Pair<>(vg, new Pair<>(run, getComponent().getSelectedJob()));
+    public Pair<VisualizationGroup, Triple<AttributeRank, SeqRun, Job>> getSelection() {
+        return new Pair<>(vg, new Triple<>(rank, run, getComponent().getSelectedJob()));
     }
 
     @Override

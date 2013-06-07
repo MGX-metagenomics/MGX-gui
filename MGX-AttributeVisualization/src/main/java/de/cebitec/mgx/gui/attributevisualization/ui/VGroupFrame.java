@@ -1,9 +1,8 @@
 /*
- * GroupFrame.java
- *
- * Created on Dec 28, 2011, 2:52:00 PM
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
  */
-package de.cebitec.mgx.gui.attributevisualization;
+package de.cebitec.mgx.gui.attributevisualization.ui;
 
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
@@ -16,12 +15,15 @@ import java.awt.Color;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.dnd.*;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetAdapter;
+import java.awt.dnd.DropTargetDragEvent;
+import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
@@ -29,7 +31,6 @@ import java.text.DecimalFormat;
 import javax.swing.JColorChooser;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.Document;
@@ -43,16 +44,19 @@ import org.openide.util.datatransfer.MultiTransferObject;
 
 /**
  *
- * @author sj
+ * @author sjaenick
  */
-public class GroupFrame extends javax.swing.JInternalFrame implements ExplorerManager.Provider, ItemListener, ActionListener, DocumentListener, PropertyChangeListener {
+public class VGroupFrame extends javax.swing.JPanel implements ExplorerManager.Provider, ItemListener, ActionListener, DocumentListener, PropertyChangeListener {
 
     private final VisualizationGroup vGroup;
     private ExplorerManager exmngr = new ExplorerManager();
     private VisualizationGroupNodeFactory vgnf;
     private MyListView listView;
 
-    public GroupFrame(VisualizationGroup group) {
+    /**
+     * Creates new form VGroupFrame
+     */
+    public VGroupFrame(VisualizationGroup group) {
         initComponents();
         vGroup = group;
         vGroup.addPropertyChangeListener(this);
@@ -75,38 +79,27 @@ public class GroupFrame extends javax.swing.JInternalFrame implements ExplorerMa
         exmngr.setRootContext(root);
 
         listView = new MyListView();
-        panel.add(listView, BorderLayout.CENTER);
+        this.add(listView, BorderLayout.CENTER);
 
         setVisible(true);
-    }
-
-    @Override
-    public void doDefaultCloseAction() {
-        super.doDefaultCloseAction();
     }
 
     public VisualizationGroup getGroup() {
         return vGroup;
     }
 
-//    /**
-//     * Creates new form GroupFrame
-//     */
-//    private GroupFrame() {
-//        initComponents();
-//    }
-    @Override
+    //@Override
     public final void setTitle(String title) {
         setToolTipText(title);
-        super.setTitle(title);
+        //super.setTitle(title);
     }
-
-    @Override
-    public void dispose() {
-        vGroup.removePropertyChangeListener(this);
-        VGroupManager.getInstance().removeGroup(vGroup);
-        super.dispose();
-    }
+//
+//    @Override
+//    public void dispose() {
+//        vGroup.removePropertyChangeListener(this);
+//        VGroupManager.getInstance().removeGroup(vGroup);
+//        super.dispose();
+//    }
 
     /**
      * This method is called from within the constructor to initialize the form. WARNING: Do NOT modify this code. The content of this method is always
@@ -116,47 +109,52 @@ public class GroupFrame extends javax.swing.JInternalFrame implements ExplorerMa
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        panel = new javax.swing.JPanel();
-        jPanel2 = new javax.swing.JPanel();
         active = new javax.swing.JCheckBox();
         displayName = new javax.swing.JTextField();
         color = new javax.swing.JButton();
 
-        setClosable(true);
-        setResizable(true);
-        setMinimumSize(new java.awt.Dimension(180, 200));
-        setPreferredSize(new java.awt.Dimension(180, 200));
+        setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
-        panel.setLayout(new java.awt.BorderLayout());
+        org.openide.awt.Mnemonics.setLocalizedText(active, org.openide.util.NbBundle.getMessage(VGroupFrame.class, "VGroupFrame.active.text")); // NOI18N
+        active.setToolTipText(org.openide.util.NbBundle.getMessage(VGroupFrame.class, "VGroupFrame.active.toolTipText")); // NOI18N
 
-        jPanel2.setLayout(new java.awt.BorderLayout());
+        displayName.setText(org.openide.util.NbBundle.getMessage(VGroupFrame.class, "VGroupFrame.displayName.text")); // NOI18N
+        displayName.setToolTipText(org.openide.util.NbBundle.getMessage(VGroupFrame.class, "VGroupFrame.displayName.toolTipText")); // NOI18N
 
-        active.setSelected(true);
-        active.setToolTipText("Show group?");
-        jPanel2.add(active, java.awt.BorderLayout.WEST);
-
-        displayName.setText("jTextField1");
-        displayName.setToolTipText("Group name");
-        jPanel2.add(displayName, java.awt.BorderLayout.CENTER);
-
-        color.setToolTipText("Choose color");
+        org.openide.awt.Mnemonics.setLocalizedText(color, org.openide.util.NbBundle.getMessage(VGroupFrame.class, "VGroupFrame.color.text")); // NOI18N
+        color.setToolTipText(org.openide.util.NbBundle.getMessage(VGroupFrame.class, "VGroupFrame.color.toolTipText")); // NOI18N
         color.setMaximumSize(new java.awt.Dimension(16, 16));
         color.setMinimumSize(new java.awt.Dimension(16, 16));
-        color.setPreferredSize(new java.awt.Dimension(16, 16));
-        jPanel2.add(color, java.awt.BorderLayout.EAST);
 
-        panel.add(jPanel2, java.awt.BorderLayout.NORTH);
-
-        getContentPane().add(panel, java.awt.BorderLayout.CENTER);
-
-        pack();
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+        this.setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(6, 6, 6)
+                .addComponent(active)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(displayName, javax.swing.GroupLayout.DEFAULT_SIZE, 238, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(color, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(3, 3, 3)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(active)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(color, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(displayName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(0, 270, Short.MAX_VALUE))
+        );
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox active;
     private javax.swing.JButton color;
     private javax.swing.JTextField displayName;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel panel;
     // End of variables declaration//GEN-END:variables
 
     @Override
@@ -195,6 +193,13 @@ public class GroupFrame extends javax.swing.JInternalFrame implements ExplorerMa
     }
 
     @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (VisualizationGroup.VISGROUP_CHANGED.equals(evt.getPropertyName())) {
+            setTitle(vGroup.getName() + " (" + vGroup.getNumSequences() + " sequences)");
+        }
+    }
+
+    @Override
     public void actionPerformed(ActionEvent ae) {
         final JColorChooser jcc = new JColorChooser(vGroup.getColor());
         //jcc.setChooserPanels(new AbstractColorChooserPanel[]{});
@@ -209,13 +214,6 @@ public class GroupFrame extends javax.swing.JInternalFrame implements ExplorerMa
             }
         }, null);
         dialog.setVisible(true);
-    }
-
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-        if (VisualizationGroup.VISGROUP_CHANGED.equals(evt.getPropertyName())) {
-            setTitle(vGroup.getName() + " (" + vGroup.getNumSequences() + " sequences)");
-        }
     }
 
     private class MyListView extends TreeTableView implements PropertyChangeListener {
