@@ -1,111 +1,59 @@
 package de.cebitec.mgx.gui.datamodel.misc;
 
 import de.cebitec.mgx.gui.datamodel.Attribute;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  *
  * @author sj
  */
-public class Matrix implements Map<Pair<Attribute, Attribute>, Number> {
+public class Matrix {
 
-    private final Map<Pair<Attribute, Attribute>, Number> _data;
-    private long totalClassifiedElements = -1;
+    private List<Attribute> rows = new LinkedList<>();
+    private List<Attribute> columns = new LinkedList<>();
+    private double[][] _data = new double[0][0];
 
-    public Matrix(Map<Pair<Attribute, Attribute>, Number> data) {
-        this._data = data;
-    }
-
-    public Set<Attribute> getFirstAttributes() {
-        Set<Attribute> ret = new HashSet<>(_data.size());
-        for (Pair<Attribute, Attribute> p : _data.keySet()) {
-            ret.add(p.getFirst());
+    public void addData(Attribute rowAttr, Attribute colAttr, double value) {
+        if (!rows.contains(rowAttr)) {
+            rows.add(rowAttr);
         }
-        return ret;
-    }
-
-    public Set<Attribute> getSecondAttributes() {
-        Set<Attribute> ret = new HashSet<>(_data.size());
-        for (Pair<Attribute, Attribute> p : _data.keySet()) {
-            ret.add(p.getSecond());
+        if (!columns.contains(colAttr)) {
+            columns.add(colAttr);
         }
-        return ret;
+        int rowIdx = rows.indexOf(rowAttr);
+        int colIdx = columns.indexOf(colAttr);
+
+        while (_data.length < rows.size()) {
+            addRow();
+        }
+        while (_data[0].length < columns.size()) {
+            addColumn();
+        }
+
+        _data[rowIdx][colIdx] = value;
     }
 
-    public long getTotalClassifiedElements() {
-        if (totalClassifiedElements == -1) {
-            totalClassifiedElements = 0;
-            for (Number n : _data.values()) {
-                totalClassifiedElements += n.longValue();
+    private void addRow() {
+        double[][] newData = new double[rows.size()][columns.size()];
+
+        // copy over old content
+        for (int row = 0; row < rows.size(); row++) {
+            for (int col = 0; col < columns.size(); col++) {
+                newData[row][col] = _data[row][col];
             }
         }
-        return totalClassifiedElements;
+
+        // initialize last row to zero
+        Arrays.fill(newData[rows.size() - 1], 0);
+
+        _data = newData;
     }
 
-    @Override
-    public int size() {
-        return _data.size();
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return _data.isEmpty();
-    }
-
-    @Override
-    public boolean containsKey(Object key) {
-        return _data.containsKey(key);
-    }
-
-    @Override
-    public boolean containsValue(Object value) {
-        return _data.containsValue(value);
-    }
-
-    @Override
-    public Number get(Object key) {
-        return _data.get(key);
-    }
-
-    @Override
-    public Number put(Pair<Attribute, Attribute> key, Number value) {
-        totalClassifiedElements = -1;
-        return _data.put(key, value);
-    }
-
-    @Override
-    public void clear() {
-        totalClassifiedElements = -1;
-        _data.clear();
-    }
-
-    @Override
-    public Set<Pair<Attribute, Attribute>> keySet() {
-        return _data.keySet();
-    }
-
-    @Override
-    public Collection<Number> values() {
-        return _data.values();
-    }
-
-    @Override
-    public Set<Entry<Pair<Attribute, Attribute>, Number>> entrySet() {
-        return _data.entrySet();
-    }
-
-    @Override
-    public Number remove(Object key) {
-        totalClassifiedElements = -1;
-        return _data.remove(key);
-    }
-
-    @Override
-    public void putAll(Map<? extends Pair<Attribute, Attribute>, ? extends Number> m) {
-        _data.putAll(m);
-        totalClassifiedElements = -1;
+    private void addColumn() {
+        for (int row = 0; row < rows.size(); row++) {
+            _data[row] = Arrays.copyOf(_data[row], columns.size());
+        }
     }
 }
