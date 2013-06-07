@@ -2,7 +2,9 @@ package de.cebitec.mgx.gui.groups;
 
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.*;
+import de.cebitec.mgx.gui.datamodel.misc.AttributeRank;
 import de.cebitec.mgx.gui.datamodel.misc.Distribution;
+import de.cebitec.mgx.gui.datamodel.misc.Triple;
 import de.cebitec.mgx.gui.datamodel.tree.Tree;
 import de.cebitec.mgx.gui.datamodel.tree.TreeFactory;
 import java.awt.Color;
@@ -33,6 +35,9 @@ public class VisualizationGroup implements PropertyChangeListener {
     public static final String VISGROUP_CHANGED = "visgroup_changed";
     public static final String VISGROUP_RENAMED = "visgroup_renamed";
     //
+
+
+    //
     private final int id;
     private String name;
     private Color color;
@@ -40,8 +45,9 @@ public class VisualizationGroup implements PropertyChangeListener {
     private final Set<SeqRun> seqruns = new HashSet<>();
     //
     private String selectedAttributeType;
-    private Map<SeqRun, Job> uniqueJobs = new HashMap<>();
-    private Map<SeqRun, List<Job>> needsResolval = new HashMap<>();
+    private String secondaryAttributeType; // 2nd attr type for correlation matrices
+    private Map<AttributeRank, Map<SeqRun, Job>> uniqueJobs = new HashMap<>();
+    private Map<AttributeRank, Map<SeqRun, List<Job>>> needsResolval = new HashMap<>();
     //
     private final BlockingQueue<AttributeTypeFetcher> fetcherQueue = new LinkedBlockingQueue<>();
     private final Thread fetchThread;
@@ -59,6 +65,10 @@ public class VisualizationGroup implements PropertyChangeListener {
         this.id = id;
         this.name = groupName;
         this.color = color;
+        uniqueJobs.put(AttributeRank.PRIMARY, new HashMap<SeqRun, Job>());
+        uniqueJobs.put(AttributeRank.SECONDARY, new HashMap<SeqRun, Job>());
+        needsResolval.put(AttributeRank.PRIMARY, new HashMap<SeqRun, List<Job>>());
+        needsResolval.put(AttributeRank.SECONDARY, new HashMap<SeqRun, List<Job>>());
         pcs = new PropertyChangeSupport(this);
         attributeTypes = new ConcurrentHashMap<>();
         currentDistributions = new ConcurrentHashMap<>();
@@ -117,6 +127,14 @@ public class VisualizationGroup implements PropertyChangeListener {
         return seqruns;
     }
 
+//    public final void selectAttributeType(String attrType) throws ConflictingJobsException {
+//        selectAttributeType(AttributeRank.PRIMARY, attrType);
+//    }
+//
+//    public final void selectSecondaryAttributeType(String attrType) throws ConflictingJobsException {
+//        selectAttributeType(AttributeRank.SECONDARY, attrType);
+//    }
+
     /**
      *
      * @param attrType
@@ -126,12 +144,12 @@ public class VisualizationGroup implements PropertyChangeListener {
      * attribute type is provided by a single job only. if several jobs are able to provide the corresponding attribute type, a ConflictingJobsException will be
      * raised for resolval of the conflict.
      */
-    public final void selectAttributeType(String attrType) throws ConflictingJobsException {
+    public final void selectAttributeType(AttributeRank rank, String attrType) throws ConflictingJobsException {
         assert attrType != null;
         selectedAttributeType = attrType;
-        uniqueJobs.clear();
-        needsResolval.clear();
-        
+        uniqueJobs.get(rank).clear();
+        needsResolval.get(rank).clear();
+
         // clear caches - the cache might already contain data for the
         // selected attribute type, but from a different set of selected
         // jobs
@@ -154,26 +172,37 @@ public class VisualizationGroup implements PropertyChangeListener {
                     // nothing to do, no job provides this attribute type
                     break;
                 case 1:
-                    uniqueJobs.put(run, validJobs.get(0));
+                    uniqueJobs.get(rank).put(run, validJobs.get(0));
                     break;
                 default:
-                    needsResolval.put(run, validJobs);
+                    needsResolval.get(rank).put(run, validJobs);
                     break;
             }
         }
 
-        if (!needsResolval.isEmpty()) {
+        if (!needsResolval.get(rank).isEmpty()) {
             throw new ConflictingJobsException(this);
         }
     }
 
-    public final Map<SeqRun, List<Job>> getConflicts() {
-        return needsResolval;
+    public List<Triple<AttributeRank, SeqRun, List<Job>>> getConflicts() {
+        List<Triple<AttributeRank, SeqRun, List<Job>>> ret = new LinkedList<>();
+        for (Map.Entry<SeqRun, List<Job>> e : getConflicts(AttributeRank.PRIMARY).entrySet()) {
+            ret.add(new Triple<>(AttributeRank.PRIMARY, e.getKey(), e.getValue()));
+        }
+        for (Map.Entry<SeqRun, List<Job>> e : getConflicts(AttributeRank.SECONDARY).entrySet()) {
+            ret.add(new Triple<>(AttributeRank.SECONDARY, e.getKey(), e.getValue()));
+        }
+        return ret;
     }
 
-    public final void resolveConflict(SeqRun sr, Job j) {
-        needsResolval.remove(sr);
-        uniqueJobs.put(sr, j);
+    private Map<SeqRun, List<Job>> getConflicts(AttributeRank rank) {
+        return needsResolval.get(rank);
+    }
+
+    public final void resolveConflict(AttributeRank rank, SeqRun sr, Job j) {
+        needsResolval.get(rank).remove(sr);
+        uniqueJobs.get(rank).put(sr, j);
     }
 
     public final void addSeqRun(SeqRun sr) {
@@ -220,7 +249,7 @@ public class VisualizationGroup implements PropertyChangeListener {
     public final Tree<Long> getHierarchy() {
         assert !EventQueue.isDispatchThread();
         assert selectedAttributeType != null;
-        assert needsResolval.isEmpty();
+        assert needsResolval.get(AttributeRank.PRIMARY).isEmpty();
 
         if (hierarchyCache.containsKey(selectedAttributeType)) {
             return hierarchyCache.get(selectedAttributeType);
@@ -237,7 +266,7 @@ public class VisualizationGroup implements PropertyChangeListener {
             // select the job to use - either we can automatically determine
             // the correct job or we have to ask the user
             //
-            Job selectedJob = uniqueJobs.get(run);
+            Job selectedJob = uniqueJobs.get(AttributeRank.PRIMARY).get(run);
             //
             // there should only be one valid attribute type left that matches the
             // request attribute type name; however, we better check..
@@ -276,7 +305,7 @@ public class VisualizationGroup implements PropertyChangeListener {
 
         assert !EventQueue.isDispatchThread();
         assert selectedAttributeType != null;
-        assert needsResolval.isEmpty();
+        assert needsResolval.get(AttributeRank.PRIMARY).isEmpty();
 
         if (distCache.containsKey(selectedAttributeType)) {
             return distCache.get(selectedAttributeType);
@@ -291,7 +320,7 @@ public class VisualizationGroup implements PropertyChangeListener {
 
         for (SeqRun run : seqruns) {
 
-            Job selectedJob = uniqueJobs.get(run);
+            Job selectedJob = uniqueJobs.get(AttributeRank.PRIMARY).get(run);
             //
             // there should only be one valid attribute type left that matches the
             // request attribute type name; however, we better check..
@@ -340,7 +369,7 @@ public class VisualizationGroup implements PropertyChangeListener {
         return ret;
     }
 
-    private List<Job> getJobsProvidingAttributeType(SeqRun run, String attrTypeName) {
+    private List<Job> getJobsProvidingAttributeType(SeqRun run, final String attrTypeName) {
         //
         // process all jobs for a seqrun and keep only those
         // which provide the requested attribute type

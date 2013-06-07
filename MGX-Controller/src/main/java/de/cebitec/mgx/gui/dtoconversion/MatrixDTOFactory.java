@@ -37,6 +37,6 @@ public class MatrixDTOFactory extends DTOConversionBase<Matrix, AttributeCorrela
             data.put(entry.getKey(), entry.getValue());
         }
         
-        return new Matrix(data);
+        return new Matrix(); // FIXME
     }
 }

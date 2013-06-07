@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.groups;
 
+import de.cebitec.mgx.gui.datamodel.misc.AttributeRank;
 import de.cebitec.mgx.gui.datamodel.misc.Distribution;
 import de.cebitec.mgx.gui.datamodel.misc.Pair;
 import de.cebitec.mgx.gui.datamodel.tree.Tree;
@@ -9,6 +10,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +27,7 @@ public class VGroupManager implements PropertyChangeListener {
     private final Map<Integer, VisualizationGroup> groups = new LinkedHashMap<>();
     private int groupCount = 1;
     private PropertyChangeSupport pcs = null;
-    private String currentAttributeType = null;
+    private Map<AttributeRank, String> currentAttributeType = new HashMap<>();
     private ConflictResolver resolver = null;
     //
     private static Color colors[] = {Color.RED, Color.BLUE, Color.YELLOW, Color.PINK, Color.GREEN};
@@ -68,18 +70,18 @@ public class VGroupManager implements PropertyChangeListener {
         return groups.values();
     }
 
-    public boolean selectAttributeType(String aType) {
+    public boolean selectAttributeType(AttributeRank rank, String aType) {
         if (aType == null) {
             return false;
         }
 
         assert resolver != null;
 
-        if (!aType.equals(currentAttributeType)) {
+        if (!aType.equals(currentAttributeType.get(rank))) {
             List<VisualizationGroup> conflicts = new ArrayList<>();
             for (VisualizationGroup vg : getActiveGroups()) {
                 try {
-                    vg.selectAttributeType(aType);
+                    vg.selectAttributeType(rank, aType);
                 } catch (ConflictingJobsException ex) {
                     conflicts.add(vg);
                 }
