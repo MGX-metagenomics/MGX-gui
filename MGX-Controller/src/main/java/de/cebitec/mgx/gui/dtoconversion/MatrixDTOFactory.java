@@ -4,9 +4,6 @@ import de.cebitec.mgx.dto.dto.AttributeCorrelation;
 import de.cebitec.mgx.dto.dto.CorrelatedAttributeCount;
 import de.cebitec.mgx.gui.datamodel.Attribute;
 import de.cebitec.mgx.gui.datamodel.misc.Matrix;
-import de.cebitec.mgx.gui.datamodel.misc.Pair;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  *
@@ -29,14 +26,13 @@ public class MatrixDTOFactory extends DTOConversionBase<Matrix, AttributeCorrela
     }
 
     @Override
-    public Matrix toModel(AttributeCorrelation dto) {
-        Map<Pair<Attribute, Attribute>, Number> data = new HashMap<>(dto.getEntryList().size());
-        CorrelatedAttributeCountDTOFactory converter = CorrelatedAttributeCountDTOFactory.getInstance();
+    public Matrix<Attribute, Attribute> toModel(AttributeCorrelation dto) {
+        Matrix<Attribute, Attribute> ret = new Matrix();
         for (CorrelatedAttributeCount cac : dto.getEntryList()) {
-            Map.Entry<Pair<Attribute, Attribute>, Number> entry = converter.toModel(cac);
-            data.put(entry.getKey(), entry.getValue());
+            Attribute first = AttributeDTOFactory.getInstance().toModel(cac.getRestrictedAttribute());
+            Attribute second = AttributeDTOFactory.getInstance().toModel(cac.getAttribute());
+            ret.addData(first, second, cac.getCount());
         }
-        
-        return new Matrix(); // FIXME
+        return ret;
     }
 }

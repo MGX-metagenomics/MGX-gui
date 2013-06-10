@@ -6,18 +6,18 @@ import de.cebitec.mgx.dto.dto.AttributeCount;
 import de.cebitec.mgx.dto.dto.AttributeDTO;
 import de.cebitec.mgx.dto.dto.AttributeDistribution;
 import de.cebitec.mgx.dto.dto.AttributeTypeDTO;
-import de.cebitec.mgx.dto.dto.CorrelatedAttributeCount;
 import de.cebitec.mgx.dto.dto.SearchRequestDTO;
 import de.cebitec.mgx.dto.dto.SequenceDTO;
 import de.cebitec.mgx.gui.datamodel.*;
 import de.cebitec.mgx.gui.datamodel.misc.Distribution;
-import de.cebitec.mgx.gui.datamodel.misc.Pair;
+import de.cebitec.mgx.gui.datamodel.misc.Matrix;
 import de.cebitec.mgx.gui.datamodel.misc.SearchRequest;
 import de.cebitec.mgx.gui.datamodel.misc.Task;
 import de.cebitec.mgx.gui.datamodel.tree.Tree;
 import de.cebitec.mgx.gui.datamodel.tree.TreeFactory;
 import de.cebitec.mgx.gui.dtoconversion.AttributeDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.AttributeTypeDTOFactory;
+import de.cebitec.mgx.gui.dtoconversion.MatrixDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.SearchRequestDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.SequenceDTOFactory;
 import de.cebitec.mgx.gui.util.BaseIterator;
@@ -37,7 +37,6 @@ public class AttributeAccess extends AccessBase<Attribute> {
 
     public Iterator<Attribute> BySeqRun(final long seqrun_id) {
         try {
-
             Iterator<AttributeDTO> BySeqRun = getDTOmaster().Attribute().BySeqRun(seqrun_id);
 
             return new BaseIterator<AttributeDTO, Attribute>(BySeqRun) {
@@ -146,36 +145,14 @@ public class AttributeAccess extends AccessBase<Attribute> {
         throw new UnsupportedOperationException("Not supported.");
     }
 
-    public Map<Pair<Attribute, Attribute>, Long> getCorrelation(AttributeType attributeType1, Job job1, AttributeType attributeType2, Job job2) {
-        Map<Pair<Attribute, Attribute>, Long> ret = new HashMap<>();
+    public Matrix getCorrelation(AttributeType attributeType1, Job job1, AttributeType attributeType2, Job job2) {
         try {
             AttributeCorrelation corr = getDTOmaster().Attribute().getCorrelation(attributeType1.getId(), job1.getId(), attributeType2.getId(), job2.getId());
-
-//            // convert and save types first
-//            Map<Long, AttributeType> types = new HashMap<>();
-//            for (AttributeTypeDTO at : corr.getAttributeTypeList()) {
-//                types.put(at.getId(), AttributeTypeDTOFactory.getInstance().toModel(at));
-//            }
-
-            for (CorrelatedAttributeCount cac : corr.getEntryList()) {
-                // the restricting attribute
-                Attribute attr = AttributeDTOFactory.getInstance().toModel(cac.getRestrictedAttribute());
-                //attr.setAttributeType(types.get(cac.getRestrictedAttribute().getAttributeTypeId()));
-                attr.setAttributeType(attributeType1);
-                attr.setMaster(this.getMaster());
-
-                // the attribute
-                Attribute attr2 = AttributeDTOFactory.getInstance().toModel(cac.getAttribute());
-                //attr2.setAttributeType(types.get(cac.getAttribute().getAttributeTypeId()));
-                attr2.setAttributeType(attributeType2);
-                attr2.setMaster(this.getMaster());
-
-                ret.put(new Pair<>(attr, attr2), cac.getCount());
-            }
+            return MatrixDTOFactory.getInstance().toModel(corr);
         } catch (MGXServerException ex) {
             Exceptions.printStackTrace(ex);
         }
-        return ret;
+        return null;
     }
 
     public Tree<Long> getHierarchy(long attrType_id, long job_id) {
@@ -200,8 +177,6 @@ public class AttributeAccess extends AccessBase<Attribute> {
         } catch (MGXServerException ex) {
             Logger.getLogger(AttributeAccess.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-        //System.err.println("getHierarchy(" +attrType_id+"), job "+job_id+", got "+res.size()+" entries");
 
         Tree<Long> ret = TreeFactory.createTree(res);
 
