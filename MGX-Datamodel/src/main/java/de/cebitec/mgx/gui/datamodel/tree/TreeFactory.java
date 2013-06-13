@@ -12,93 +12,88 @@ import java.util.Map.Entry;
  */
 public class TreeFactory {
 
-    private static <T> void dumpNode(Node<T> node, int offset) {
+    private static <T> void dumpNode(Node<? extends T> node, int offset) {
         for (int i = 0; i < offset; i++) {
             System.err.print(" ");
         }
         System.err.println(node.getAttribute().toString());
-        for (Node<T> n : node.getChildren()) {
+        for (Node<? extends T> n : node.getChildren()) {
             dumpNode(n, offset + 5);
         }
     }
 
-    public static Tree<Long> createTree(Map<Attribute, Long> map) {
+    public static <T> Tree<T> createTree(final Map<Attribute, T> map) {
 
-        Map<Long, Long> edges = new HashMap<>();
-        Map<Long, Long> idmap = new HashMap<>();
+        Checker.sanityCheck(map.keySet());
 
-        Tree<Long> tree = new Tree<>();
+        Map<Long, Node<T>> idmap = new HashMap<>(map.size()); // attr id to node
 
-        for (Entry<Attribute, Long> entry : map.entrySet()) {
+        Tree<T> tree = new Tree<>();
+
+        for (Entry<Attribute, ? extends T> entry : map.entrySet()) {
             Attribute attr = entry.getKey();
-            Long count = entry.getValue();
+            Node<T> node = tree.createNode(attr, entry.getValue());
+            idmap.put(attr.getId(), node);
+        }
+        assert map.keySet().size() == idmap.size();
+        assert tree.nodes.size() == map.size();
 
-            Node<Long> node = tree.createNode(attr, count);
-            idmap.put(attr.getId(), node.getId());
-
+        for (Attribute attr : map.keySet()) {
             if (attr.getParentID() == Identifiable.INVALID_IDENTIFIER) {
-                tree.setRoot(node);
+                tree.setRoot(idmap.get(attr.getId()));
             } else {
-                // remember the outgoing edge (based on original ids)
-                edges.put(attr.getId(), attr.getParentID());
+                Node<T> child = idmap.get(attr.getId());
+                Node<T> parent = idmap.get(attr.getParentID());
+                assert child != null;
+                assert parent != null;
+                tree.addEdge(child, parent);
             }
         }
 
-        // fill in the edges with the correct ids
-        for (Entry<Long, Long> edge : edges.entrySet()) {
-            Long child = idmap.get(edge.getKey());
-            Long parent = idmap.get(edge.getValue());
-            tree.addEdge(child, parent);
-        }
-
         tree.build();
-
         return tree;
     }
 
-    // used within VisualizationGroup to create a combined tree of all the seqruns
-    // contained within a group
-    //
+// used within VisualizationGroup to create a combined tree of all the seqruns
+// contained within a group
+//
     public static Tree<Long> mergeTrees(Collection<Tree<Long>> trees) {
         //Logger.getLogger("mergeTrees").log(Level.INFO, "mergeTrees merging {0} trees", trees.size());
         //assert trees.size() > 0;
         Tree<Long> consensus = new Tree<>();
 
-
         for (Tree<Long> t : trees) {
 
-            Map<Long, Long> origEdges = new HashMap<>();
+            Map<Node<Long>, Node<Long>> origEdges = new HashMap<>();
             Map<Long, Long> idmap = new HashMap<>();
-
+            
             // insert all missing nodes into the consensus tree first
             //
             for (Node<Long> node : t.getNodes()) {
                 Node<Long> consNode = consensus.byAttribute(node.getAttribute());
                 if (consNode == null) {
-                    consNode = consensus.createNode(node.getAttribute(), Long.valueOf(0));
+                    consNode = consensus.createNode(node.getAttribute(), 0L);
 
                     if (node.isRoot()) {
                         consensus.setRoot(consNode);
                     } else {
-                        origEdges.put(node.getId(), node.getParent().getId());
+                        origEdges.put(node, node.getParent());
                     }
                 }
                 idmap.put(node.getId(), consNode.getId());
             }
-
             // create edges for added nodes
             //
-            for (Entry<Long, Long> edge : origEdges.entrySet()) {
-                Long child = idmap.get(edge.getKey());
-                Long parent = idmap.get(edge.getValue());
-                consensus.addEdge(child, parent);
+            for (Entry<Node<Long>, Node<Long>> edge : origEdges.entrySet()) {
+                consensus.addEdge(edge.getKey(), edge.getValue());
             }
 
             // fill in the values
             //
             for (Node<Long> node : t.getNodes()) {
                 Node<Long> consNode = consensus.byAttribute(node.getAttribute());
-                consNode.setContent(consNode.getContent() + node.getContent());
+                long sum = consNode.getContent().longValue() + node.getContent().longValue();
+                consNode.setContent(Long.valueOf(sum));
             }
         }
 
@@ -115,8 +110,8 @@ public class TreeFactory {
             T t = pair.getFirst(); // a vizgroup, typically
             Tree<Long> tree = pair.getSecond();
 
-            Map<Long, Long> origEdges = new HashMap<>();
-            Map<Long, Long> idmap = new HashMap<>();
+            Map<Node<Long>, Node<Long>> origEdges = new HashMap<>();
+            Map<Node<Long>, Node<Map<T, Long>>> idmap = new HashMap<>();
 
             // insert all missing nodes into the consensus tree first
             //
@@ -128,27 +123,26 @@ public class TreeFactory {
                     if (node.isRoot()) {
                         combined.setRoot(consNode);
                     } else {
-                        origEdges.put(node.getId(), node.getParent().getId());
+                        origEdges.put(node, node.getParent());
                     }
                 }
                 // insert the data
                 consNode.getContent().put(t, node.getContent());
 
-                idmap.put(node.getId(), consNode.getId());
+                idmap.put(node, consNode);
             }
 
             // create edges for added nodes
             //
-            for (Entry<Long, Long> edge : origEdges.entrySet()) {
-                Long child = idmap.get(edge.getKey());
-                Long parent = idmap.get(edge.getValue());
+            for (Entry<Node<Long>, Node<Long>> edge : origEdges.entrySet()) {
+                Node<Map<T, Long>> child = idmap.get(edge.getKey());
+                Node<Map<T, Long>> parent = idmap.get(edge.getValue());
                 combined.addEdge(child, parent);
             }
 
         }
 
         combined.build();
-
         return combined;
     }
 }

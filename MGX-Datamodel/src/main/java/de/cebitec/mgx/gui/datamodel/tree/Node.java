@@ -3,6 +3,7 @@ package de.cebitec.mgx.gui.datamodel.tree;
 import de.cebitec.mgx.gui.datamodel.Attribute;
 import java.util.HashSet;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -57,6 +58,8 @@ public class Node<T> {
         for (Entry<Long, Long> e : tree.edges.entrySet()) {
             Long from = e.getKey();
             Long to = e.getValue();
+            assert from != null;
+            assert to != null;
             if (id == to.longValue()) {
                 children.add(tree.byId(from));
             }
@@ -71,16 +74,25 @@ public class Node<T> {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final Node other = (Node) obj;
-        
-        return this.attr.equals(other.attr);
+        final Node<T> other = (Node<T>) obj;
+        if (this.id != other.id) {
+            return false;
+        }
+        if (!Objects.equals(this.attr, other.attr)) {
+            return false;
+        }
+        if (!Objects.equals(this.value, other.value)) {
+            return false;
+        }
+        return true;
     }
 
     @Override
     public int hashCode() {
-        int hash = 5;
+        int hash = 3;
         hash = 19 * hash + (int) (this.id ^ (this.id >>> 32));
-        hash = 19 * hash + (this.value != null ? this.value.hashCode() : 0);
+        hash = 19 * hash + Objects.hashCode(this.attr);
+        hash = 19 * hash + Objects.hashCode(this.value);
         return hash;
     }
 }

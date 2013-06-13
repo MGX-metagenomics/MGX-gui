@@ -36,6 +36,8 @@ public class Tree<T> {
     }
 
     public void setRoot(Node<T> n) {
+        assert root == null;
+        assert n != null;
         root = n;
     }
 
@@ -47,8 +49,10 @@ public class Tree<T> {
         return attrs.get(attr);
     }
 
-    public void addEdge(Long child, Long parent) {
-        edges.put(child, parent);
+    public void addEdge(Node<T> child, Node<T> parent) {
+        assert child != null;
+        assert parent != null;
+        edges.put(child.getId(), parent.getId());
     }
 
     public Node<T> getParent(long nodeId) {
@@ -87,7 +91,7 @@ public class Tree<T> {
     }
 
     public boolean containsNode(T content) {
-        for (Node<T> n : nodes.values()) {
+        for (Node<? extends T> n : nodes.values()) {
             if (n.getContent().equals(content)) {
                 return true;
             }
