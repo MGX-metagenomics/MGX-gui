@@ -13,6 +13,7 @@ import de.cebitec.mgx.gui.datamodel.misc.Distribution;
 import de.cebitec.mgx.gui.datamodel.misc.Matrix;
 import de.cebitec.mgx.gui.datamodel.misc.SearchRequest;
 import de.cebitec.mgx.gui.datamodel.misc.Task;
+import de.cebitec.mgx.gui.datamodel.tree.Checker;
 import de.cebitec.mgx.gui.datamodel.tree.Tree;
 import de.cebitec.mgx.gui.datamodel.tree.TreeFactory;
 import de.cebitec.mgx.gui.dtoconversion.AttributeDTOFactory;
@@ -25,6 +26,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.openide.util.Exceptions;
@@ -166,20 +168,35 @@ public class AttributeAccess extends AccessBase<Attribute> {
                 types.put(at.getId(), AttributeTypeDTOFactory.getInstance().toModel(at));
             }
 
+            int numRoots = 0;
+
             // convert attribute and fill in the attributetypes
             for (AttributeCount ac : distribution.getAttributeCountsList()) {
                 Attribute attr = AttributeDTOFactory.getInstance().toModel(ac.getAttribute());
+                if (attr.getParentID() == Identifiable.INVALID_IDENTIFIER) {
+                    numRoots++;
+                }
                 attr.setAttributeType(types.get(ac.getAttribute().getAttributeTypeId()));
                 attr.setMaster(this.getMaster());
+                if (attr.getValue().equals("Cryptococcus")) {
+                    System.err.println("adding Cryptococcus");
+                }
+                assert !res.containsKey(attr);
                 res.put(attr, ac.getCount());
             }
 
+            assert numRoots == 1;
+
         } catch (MGXServerException ex) {
             Logger.getLogger(AttributeAccess.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
 
-        Tree<Long> ret = TreeFactory.createTree(res);
+        //assert checkHasValue(res.keySet(), "Cryptococcus");
+        System.err.println("cryptoccus found "+countValues(res.keySet(), "Cryptococcus"));
 
+        Checker.sanityCheck(res.keySet());
+        Tree<Long> ret = TreeFactory.createTree(res);
         return ret;
     }
 
@@ -207,4 +224,36 @@ public class AttributeAccess extends AccessBase<Attribute> {
 
         return ret;
     }
+
+    private boolean checkHasValue(Set<Attribute> set, String value) {
+        for (Attribute a : set) {
+            if (a.getValue().equals(value)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private int countValues(Set<Attribute> set, String val) {
+        int cnt = 0;
+        for (Attribute a : set) {
+            if (a.getValue().equals(val)) {
+                cnt++;
+            }
+        }
+        return cnt;
+    }
+//    private static void sanityCheck(Set<Attribute> map) {
+//        for (Attribute a : map) {
+//            if (a.getId() != Identifiable.INVALID_IDENTIFIER) {
+//                boolean hasParent = false;
+//                for (Attribute b : map) {
+//                    if (a.getParentID() == b.getId()) {
+//                        hasParent = true;
+//                    }
+//                }
+//                assert hasParent;
+//            }
+//        }
+//    }
 }
