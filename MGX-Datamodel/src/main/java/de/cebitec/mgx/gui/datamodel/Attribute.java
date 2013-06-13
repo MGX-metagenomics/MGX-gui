@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.datamodel;
 
 import java.awt.datatransfer.DataFlavor;
+import java.util.Objects;
 
 /**
  *
@@ -60,6 +61,13 @@ public class Attribute extends Identifiable implements Comparable<Attribute> {
     }
 
     @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 47 * hash + (this.value != null ? this.value.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
     public boolean equals(Object obj) {
         if (obj == null) {
             return false;
@@ -68,20 +76,16 @@ public class Attribute extends Identifiable implements Comparable<Attribute> {
             return false;
         }
         final Attribute other = (Attribute) obj;
-        if (this.atype != other.atype && (this.atype == null || !this.atype.equals(other.atype))) {
+        if (!Objects.equals(this.atype, other.atype)) {
             return false;
         }
-        if ((this.value == null) ? (other.value != null) : !this.value.equals(other.value)) {
+        if (!Objects.equals(this.value, other.value)) {
+            return false;
+        }
+        if (this.parent_id != other.parent_id) {
             return false;
         }
         return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 47 * hash + (this.value != null ? this.value.hashCode() : 0);
-        return hash;
     }
 
     @Override
