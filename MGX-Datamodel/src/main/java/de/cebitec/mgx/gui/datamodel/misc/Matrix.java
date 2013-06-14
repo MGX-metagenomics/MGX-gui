@@ -13,9 +13,9 @@ public class Matrix<T, U>{
 
     private List<T> rows = new LinkedList<>();
     private List<U> columns = new LinkedList<>();
-    private long[][] _data = new long[0][0];
+    private int[][] _data = new int[0][0];
 
-    public void addData(T rowAttr, U colAttr, long value) {
+    public void addData(T rowAttr, U colAttr, int value) {
         if (!rows.contains(rowAttr)) {
             rows.add(rowAttr);
         }
@@ -43,8 +43,8 @@ public class Matrix<T, U>{
         return Collections.unmodifiableList(columns);
     }
 
-    public long getRowSum(T a) {
-        long ret = 0;
+    public int getRowSum(T a) {
+        int ret = 0;
         int rowIdx = rows.indexOf(a);
         for (int i = 0; i < _data[rowIdx].length; i++) {
             ret += _data[rowIdx][i];
@@ -52,8 +52,8 @@ public class Matrix<T, U>{
         return ret;
     }
 
-    public long getColumnSum(U a) {
-        long ret = 0;
+    public int getColumnSum(U a) {
+        int ret = 0;
         int colIdx = columns.indexOf(a);
         for (int i = 0; i < _data.length; i++) {
             ret += _data[i][colIdx];
@@ -61,7 +61,7 @@ public class Matrix<T, U>{
         return ret;
     }
 
-    public long getValue(T rowAttr, U colAttr) {
+    public int getValue(T rowAttr, U colAttr) {
         int rowIdx = rows.indexOf(rowAttr);
         int colIdx = columns.indexOf(colAttr);
         return _data[rowIdx][colIdx];
@@ -80,7 +80,7 @@ public class Matrix<T, U>{
     }
 
     private void addRow() {
-        long[][] newData = new long[rows.size()][columns.size()];
+        int[][] newData = new int[rows.size()][columns.size()];
 
         // copy over old content
         for (int row = 0; row < _data.length; row++) {
