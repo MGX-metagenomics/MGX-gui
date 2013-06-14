@@ -177,23 +177,17 @@ public class AttributeAccess extends AccessBase<Attribute> {
                     numRoots++;
                 }
                 attr.setAttributeType(types.get(ac.getAttribute().getAttributeTypeId()));
-                attr.setMaster(this.getMaster());
-                if (attr.getValue().equals("Cryptococcus")) {
-                    System.err.println("adding Cryptococcus");
-                }
-                assert !res.containsKey(attr);
+                attr.setMaster(getMaster());
+                assert !res.containsKey(attr); // no duplicates allowed
                 res.put(attr, ac.getCount());
             }
 
-            assert numRoots == 1;
+            assert numRoots == 1; //only one root
 
         } catch (MGXServerException ex) {
             Logger.getLogger(AttributeAccess.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
-
-        //assert checkHasValue(res.keySet(), "Cryptococcus");
-        System.err.println("cryptoccus found "+countValues(res.keySet(), "Cryptococcus"));
 
         Checker.sanityCheck(res.keySet());
         Tree<Long> ret = TreeFactory.createTree(res);
