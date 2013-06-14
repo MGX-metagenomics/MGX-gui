@@ -31,7 +31,7 @@ public class Installer extends ModuleInstall {
             public void run() {
                 String cacheDir = Places.getUserDirectory().getAbsolutePath() + File.separator + "kegg" + File.separator;
                 try {
-                    final KEGGMaster km = new KEGGMaster(cacheDir);
+                    final KEGGMaster km = KEGGMaster.getInstance(cacheDir);
                     Set<PathwayI> fetchall = km.Pathways().fetchall();
                     final CountDownLatch latch = new CountDownLatch(fetchall.size() * 2);
                     final SuccessHolder success = new SuccessHolder();
