@@ -48,6 +48,13 @@ public class Node<T> {
     public Node<T> getParent() {
         return tree.getParent(id);
     }
+    
+    public int getDepth() {
+        if (isRoot()) {
+            return 0;
+        }
+        return 1 + getParent().getDepth();
+    }
 
     public Set<Node<T>> getChildren() {
         return children;
@@ -75,8 +82,8 @@ public class Node<T> {
             return false;
         }
         final Node<T> other = (Node<T>) obj;
-        if (this.id != other.id) {
-            return false;
+        if ((this.id == other.id) && (this.tree == other.tree)) {
+            return true;
         }
         if (!Objects.equals(this.attr, other.attr)) {
             return false;

@@ -45,9 +45,9 @@ public class Tree<T> {
         return nodes.get(id);
     }
 
-    public Node<T> byAttribute(Attribute attr) {
-        return attrs.get(attr);
-    }
+//    public Node<T> byAttribute(Attribute attr) {
+//        return attrs.get(attr);
+//    }
 
     public void addEdge(Node<T> child, Node<T> parent) {
         assert child != null;
@@ -56,7 +56,11 @@ public class Tree<T> {
     }
 
     public Node<T> getParent(long nodeId) {
-        return byId(edges.get(nodeId));
+        Long parentId = edges.get(nodeId);
+        if (parentId == null) {
+            return null;
+        }
+        return byId(parentId);
     }
 
 //    public int getDepth(Node<T> node) {
@@ -74,7 +78,7 @@ public class Tree<T> {
     }
 
     public Collection<Node<T>> getNodes() {
-        return nodes.values();
+        return Collections.unmodifiableCollection(nodes.values()); 
     }
 
     public Collection<Node<T>> getNodesByAttributeType(AttributeType aType) {

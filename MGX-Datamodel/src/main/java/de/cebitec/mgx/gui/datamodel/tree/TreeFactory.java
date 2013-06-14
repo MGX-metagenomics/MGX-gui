@@ -51,7 +51,26 @@ public class TreeFactory {
         }
 
         tree.build();
+
+        Checker.checkTree(tree);
         return tree;
+    }
+    
+    
+    public static Tree<Long> mergeTrees2(Collection<Tree<Long>> trees) {
+        Tree<Long> consensus = new Tree<>();
+        for (Tree<Long> t : trees) {
+            Node<Long> root = t.getRoot();
+            Node<Long> consRoot = null;
+            if (consensus.getRoot() == null) {
+                consRoot = consensus.createNode(root.getAttribute(), 0L);
+                consensus.setRoot(consRoot);
+            }
+            for (Node<Long> child : root.getChildren()) {
+                // FIXME
+            }
+        }
+        return consensus;
     }
 
 // used within VisualizationGroup to create a combined tree of all the seqruns
@@ -64,13 +83,20 @@ public class TreeFactory {
 
         for (Tree<Long> t : trees) {
 
+            Checker.checkTree(t);
+
             Map<Node<Long>, Node<Long>> origEdges = new HashMap<>();
             Map<Long, Long> idmap = new HashMap<>();
-            
+
             // insert all missing nodes into the consensus tree first
             //
             for (Node<Long> node : t.getNodes()) {
-                Node<Long> consNode = consensus.byAttribute(node.getAttribute());
+                Node<Long> consNode = null;
+                for (Node<Long> n : consensus.getNodes()) {
+                    if (nodesAreEqual(node, n)) {
+                        consNode = n;
+                    }
+                }
                 if (consNode == null) {
                     consNode = consensus.createNode(node.getAttribute(), 0L);
 
@@ -82,28 +108,48 @@ public class TreeFactory {
                 }
                 idmap.put(node.getId(), consNode.getId());
             }
+
+            assert t.getNodes().size() == idmap.size();
+
             // create edges for added nodes
             //
             for (Entry<Node<Long>, Node<Long>> edge : origEdges.entrySet()) {
                 consensus.addEdge(edge.getKey(), edge.getValue());
             }
 
+
+        }
+
+        consensus.build();
+
+        for (Tree<Long> t : trees) {
             // fill in the values
             //
             for (Node<Long> node : t.getNodes()) {
-                Node<Long> consNode = consensus.byAttribute(node.getAttribute());
+                Node<Long> consNode = null;
+                for (Node<Long> n : consensus.getNodes()) {
+                    if (nodesAreEqual(node, n)) {
+                        consNode = n;
+                    }
+                }
+                assert consNode != null;
                 long sum = consNode.getContent().longValue() + node.getContent().longValue();
                 consNode.setContent(Long.valueOf(sum));
             }
         }
 
-        consensus.build();
 
+        Checker.checkTree(consensus);
         return consensus;
     }
 
     public static <T> Tree<Map<T, Long>> combineTrees(List<Pair<T, Tree<Long>>> trees) {
         Tree<Map<T, Long>> combined = new Tree<>();
+
+        for (Pair<T, Tree<Long>> pair : trees) {
+            Tree<Long> tree = pair.getSecond();
+            Checker.checkTree(tree);
+        }
 
         for (Pair<T, Tree<Long>> pair : trees) {
 
@@ -116,7 +162,12 @@ public class TreeFactory {
             // insert all missing nodes into the consensus tree first
             //
             for (Node<Long> node : tree.getNodes()) {
-                Node<Map<T, Long>> consNode = combined.byAttribute(node.getAttribute());
+                Node<Map<T, Long>> consNode = null;
+                for (Node<Map<T, Long>> n : combined.getNodes()) {
+                    if (nodesAreEqual(node, n)) {
+                        consNode = n;
+                    }
+                }
                 if (consNode == null) {
                     consNode = combined.createNode(node.getAttribute(), new LinkedHashMap<T, Long>());
 
@@ -143,6 +194,24 @@ public class TreeFactory {
         }
 
         combined.build();
+        Checker.checkTree(combined);
         return combined;
+    }
+
+    private static boolean nodesAreEqual(Node n1, Node n2) {
+        // compare depth
+        if (n1.isRoot() == n2.isRoot() && n1.getDepth() == n2.getDepth()) {
+            // compare attribute value
+            if (n1.getAttribute().getValue().equals(n2.getAttribute().getValue())) {
+                // compare attribute type name
+                if (n1.getAttribute().getAttributeType().getName().equals(n2.getAttribute().getAttributeType().getName())) {
+                    if (n1.isRoot() && n2.isRoot()) {
+                        return true;
+                    }
+                    return nodesAreEqual(n1.getParent(), n2.getParent());
+                }
+            }
+        }
+        return false;
     }
 }
