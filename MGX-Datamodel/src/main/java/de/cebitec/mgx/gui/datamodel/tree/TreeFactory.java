@@ -27,178 +27,119 @@ public class TreeFactory {
         Checker.sanityCheck(map.keySet());
 
         Map<Long, Node<T>> idmap = new HashMap<>(map.size()); // attr id to node
+        Map<Attribute, T> disconnected = new HashMap<>();
 
         Tree<T> tree = new Tree<>();
-
-        for (Entry<Attribute, ? extends T> entry : map.entrySet()) {
+        for (Entry<Attribute, T> entry : map.entrySet()) {
             Attribute attr = entry.getKey();
-            Node<T> node = tree.createNode(attr, entry.getValue());
-            idmap.put(attr.getId(), node);
-        }
-        assert map.keySet().size() == idmap.size();
-        assert tree.nodes.size() == map.size();
-
-        for (Attribute attr : map.keySet()) {
             if (attr.getParentID() == Identifiable.INVALID_IDENTIFIER) {
-                tree.setRoot(idmap.get(attr.getId()));
-            } else {
-                Node<T> child = idmap.get(attr.getId());
+                Node<T> root = tree.createRootNode(attr, entry.getValue());
+                idmap.put(attr.getId(), root);
+            } else if (idmap.containsKey(attr.getParentID())) {
                 Node<T> parent = idmap.get(attr.getParentID());
-                assert child != null;
-                assert parent != null;
-                tree.addEdge(child, parent);
+                Node<T> child = parent.addChild(attr, entry.getValue());
+                idmap.put(child.getAttribute().getId(), child);
+            } else {
+                disconnected.put(attr, entry.getValue());
             }
         }
 
-        tree.build();
+        while (!disconnected.isEmpty()) {
+            Iterator<Entry<Attribute, T>> it = disconnected.entrySet().iterator();
+            while (it.hasNext()) {
+                Entry<Attribute, T> next = it.next();
+                Attribute attr = next.getKey();
+                if (idmap.containsKey(attr.getParentID())) {
+                    Node<T> parent = idmap.get(attr.getParentID());
+                    Node<T> child = parent.addChild(attr, disconnected.get(attr));
+                    it.remove();
+                    idmap.put(attr.getId(), child);
+                }
+            }
+        }
+
+
+        assert map.keySet().size() == idmap.size();
+        assert tree.size() == map.size();
 
         Checker.checkTree(tree);
         return tree;
     }
-    
-    
-    public static Tree<Long> mergeTrees2(Collection<Tree<Long>> trees) {
-        Tree<Long> consensus = new Tree<>();
-        for (Tree<Long> t : trees) {
-            Node<Long> root = t.getRoot();
-            Node<Long> consRoot = null;
-            if (consensus.getRoot() == null) {
-                consRoot = consensus.createNode(root.getAttribute(), 0L);
-                consensus.setRoot(consRoot);
+
+    public static <T> Tree<T> mergeTrees(Collection<Tree<T>> trees) {
+        Tree<T> consensus = new Tree<>();
+        DataMerger<T, T> adder = new Adder();
+
+        for (Tree<T> t : trees) {
+            Node<T> root = consensus.getRoot();
+            if (root == null) {
+                root = consensus.createRootNode(t.getRoot().getAttribute(), t.getRoot().getContent());
+            } else {
+                //root.setContent(root.getContent().longValue() + t.getRoot().getContent().longValue());
+                root.setContent(adder.merge(root.getContent(), t.getRoot().getContent()));
             }
-            for (Node<Long> child : root.getChildren()) {
-                // FIXME
-            }
+            ContentAccessor<T, T> cac = new NodeAccess<>();
+            addChildren(root, t.getRoot().getChildren(), cac, adder);
         }
         return consensus;
     }
 
-// used within VisualizationGroup to create a combined tree of all the seqruns
-// contained within a group
-//
-    public static Tree<Long> mergeTrees(Collection<Tree<Long>> trees) {
-        //Logger.getLogger("mergeTrees").log(Level.INFO, "mergeTrees merging {0} trees", trees.size());
-        //assert trees.size() > 0;
-        Tree<Long> consensus = new Tree<>();
-
-        for (Tree<Long> t : trees) {
-
-            Checker.checkTree(t);
-
-            Map<Node<Long>, Node<Long>> origEdges = new HashMap<>();
-            Map<Long, Long> idmap = new HashMap<>();
-
-            // insert all missing nodes into the consensus tree first
-            //
-            for (Node<Long> node : t.getNodes()) {
-                Node<Long> consNode = null;
-                for (Node<Long> n : consensus.getNodes()) {
-                    if (nodesAreEqual(node, n)) {
-                        consNode = n;
-                    }
+    private static <T, U, V> void addChildren(Node<T> parent, Set<Node<U>> children, ContentAccessor<V, U> cac, DataMerger<T, V> merger) {
+        for (Node<U> node : children) {
+            Node<T> correctChild = null;
+            for (Node<T> candidate : parent.getChildren()) {
+                if (nodesAreEqual(node, candidate)) {
+                    correctChild = candidate;
+                    V content = cac.getContent(node);
+                    correctChild.setContent(merger.merge(correctChild.getContent(), content));
+                    break;
                 }
-                if (consNode == null) {
-                    consNode = consensus.createNode(node.getAttribute(), 0L);
-
-                    if (node.isRoot()) {
-                        consensus.setRoot(consNode);
-                    } else {
-                        origEdges.put(node, node.getParent());
-                    }
-                }
-                idmap.put(node.getId(), consNode.getId());
             }
 
-            assert t.getNodes().size() == idmap.size();
-
-            // create edges for added nodes
-            //
-            for (Entry<Node<Long>, Node<Long>> edge : origEdges.entrySet()) {
-                consensus.addEdge(edge.getKey(), edge.getValue());
+            if (correctChild == null) {
+                T merged = merger.merge(merger.getDefault(), cac.getContent(node));
+                correctChild = parent.addChild(node.getAttribute(), merged);
             }
 
+            assert correctChild != null;
 
-        }
-
-        consensus.build();
-
-        for (Tree<Long> t : trees) {
-            // fill in the values
-            //
-            for (Node<Long> node : t.getNodes()) {
-                Node<Long> consNode = null;
-                for (Node<Long> n : consensus.getNodes()) {
-                    if (nodesAreEqual(node, n)) {
-                        consNode = n;
-                    }
-                }
-                assert consNode != null;
-                long sum = consNode.getContent().longValue() + node.getContent().longValue();
-                consNode.setContent(Long.valueOf(sum));
+            if (!node.isLeaf()) {
+                addChildren(correctChild, node.getChildren(), cac, merger);
             }
         }
-
-
-        Checker.checkTree(consensus);
-        return consensus;
     }
 
-    public static <T> Tree<Map<T, Long>> combineTrees(List<Pair<T, Tree<Long>>> trees) {
-        Tree<Map<T, Long>> combined = new Tree<>();
+    public static <U, V> Tree<Map<U, V>> combineTrees(List<Pair<U, Tree<V>>> trees) {
 
-        for (Pair<T, Tree<Long>> pair : trees) {
-            Tree<Long> tree = pair.getSecond();
-            Checker.checkTree(tree);
+        Tree<Map<U, V>> combined = new Tree<>();
+        DataMerger<Map<U, V>, Pair<U, V>> merger = new Combiner<>();
+        PairNodeAccess<U, V> pna = new PairNodeAccess<>();
+        ContentAccessor<Pair<U, V>, V> cac = pna;
+
+        for (Pair<U, Tree<V>> pair : trees) {
+            pna.setFirst(pair.getFirst());
+            Tree<V> t = pair.getSecond();
+            Node<Map<U, V>> root = combined.getRoot();
+            if (root == null) {
+                Pair<U, V> newData = cac.getContent(t.getRoot());
+                Map<U, V> content = merger.merge(merger.getDefault(), newData);
+                root = combined.createRootNode(t.getRoot().getAttribute(), content);
+            } else {
+                Pair<U, V> data = cac.getContent(t.getRoot());
+                Map<U, V> content = merger.merge(root.getContent(), data);
+                root.setContent(content);
+            }
+            addChildren(root, t.getRoot().getChildren(), cac, merger);
         }
 
-        for (Pair<T, Tree<Long>> pair : trees) {
-
-            T t = pair.getFirst(); // a vizgroup, typically
-            Tree<Long> tree = pair.getSecond();
-
-            Map<Node<Long>, Node<Long>> origEdges = new HashMap<>();
-            Map<Node<Long>, Node<Map<T, Long>>> idmap = new HashMap<>();
-
-            // insert all missing nodes into the consensus tree first
-            //
-            for (Node<Long> node : tree.getNodes()) {
-                Node<Map<T, Long>> consNode = null;
-                for (Node<Map<T, Long>> n : combined.getNodes()) {
-                    if (nodesAreEqual(node, n)) {
-                        consNode = n;
-                    }
-                }
-                if (consNode == null) {
-                    consNode = combined.createNode(node.getAttribute(), new LinkedHashMap<T, Long>());
-
-                    if (node.isRoot()) {
-                        combined.setRoot(consNode);
-                    } else {
-                        origEdges.put(node, node.getParent());
-                    }
-                }
-                // insert the data
-                consNode.getContent().put(t, node.getContent());
-
-                idmap.put(node, consNode);
-            }
-
-            // create edges for added nodes
-            //
-            for (Entry<Node<Long>, Node<Long>> edge : origEdges.entrySet()) {
-                Node<Map<T, Long>> child = idmap.get(edge.getKey());
-                Node<Map<T, Long>> parent = idmap.get(edge.getValue());
-                combined.addEdge(child, parent);
-            }
-
-        }
-
-        combined.build();
         Checker.checkTree(combined);
         return combined;
     }
 
-    private static boolean nodesAreEqual(Node n1, Node n2) {
+//    private static <T, U, V extends Pair<T, U>> V getPair(T first, U second) {
+//        return (V) new Pair<>(first, second);
+//    }
+    private static <T, U> boolean nodesAreEqual(Node<T> n1, Node<U> n2) {
         // compare depth
         if (n1.isRoot() == n2.isRoot() && n1.getDepth() == n2.getDepth()) {
             // compare attribute value
@@ -213,5 +154,70 @@ public class TreeFactory {
             }
         }
         return false;
+    }
+
+    private interface DataMerger<T, U> {
+
+        T merge(T first, U second);
+
+        T getDefault();
+    }
+
+    private interface ContentAccessor<T, U> {
+
+        T getContent(Node<U> in);
+    }
+
+    private static class NodeAccess<T> implements ContentAccessor<T, T> {
+
+        @Override
+        public T getContent(Node<T> in) {
+            return in.getContent();
+        }
+    }
+
+    private static class PairNodeAccess<V, U> implements ContentAccessor<Pair<V, U>, U> {
+
+        private V first;
+
+        public void setFirst(V first) {
+            this.first = first;
+        }
+
+        @Override
+        public Pair<V, U> getContent(Node<U> in) {
+            return new Pair<>(first, in.getContent());
+        }
+    }
+
+    private static class Adder<T> implements DataMerger<Long, Long> {
+
+        @Override
+        public Long merge(Long first, Long second) {
+            return first.longValue() + second.longValue();
+        }
+
+        @Override
+        public Long getDefault() {
+            return 0L;
+        }
+    }
+
+    private static class Combiner<U, V> implements DataMerger<Map<U, V>, Pair<U, V>> {
+
+        @Override
+        public Map<U, V> merge(Map<U, V> first, Pair<U, V> second) {
+            first.put(second.getFirst(), second.getSecond());
+            return first;
+        }
+
+        @Override
+        public Map<U, V> getDefault() {
+            return new LinkedHashMap<>();
+        }
+
+        public Pair<U, V> getPair(U u, V v) {
+            return new Pair<>(u, v);
+        }
     }
 }

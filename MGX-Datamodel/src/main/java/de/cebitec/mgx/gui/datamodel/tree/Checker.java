@@ -33,7 +33,6 @@ public class Checker {
         assert tree.getRoot() != null;
 
         for (Node<T> node : tree.getNodes()) {
-            Logger.getAnonymousLogger().info("checking "+node.getAttribute().getValue());
             if (tree.getRoot().equals(node)) {
                 assert node.isRoot();
                 assert node.getParent() == null;

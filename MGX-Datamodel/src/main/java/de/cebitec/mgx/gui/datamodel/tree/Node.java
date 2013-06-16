@@ -23,6 +23,7 @@ public class Node<T> {
         this.id = id;
         this.attr = attr;
         this.value = content;
+        children = new HashSet<>();
     }
 
     public long getId() {
@@ -45,6 +46,10 @@ public class Node<T> {
         return this == tree.getRoot();
     }
     
+    public boolean isLeaf() {
+        return children.isEmpty();
+    }
+    
     public Node<T> getParent() {
         return tree.getParent(id);
     }
@@ -58,6 +63,12 @@ public class Node<T> {
 
     public Set<Node<T>> getChildren() {
         return children;
+    }
+    
+    public Node<T> addChild(Attribute attr, T content) {
+        Node<T> child = tree.addNode(this, attr, content);
+        children.add(child);
+        return child;
     }
     
     void build() {
