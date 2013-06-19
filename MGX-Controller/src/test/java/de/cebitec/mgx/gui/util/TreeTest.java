@@ -69,7 +69,7 @@ public class TreeTest {
             }
         }
         assertEquals(2, cryptoCnt);
-        assertEquals(71, dist.size());
+        assertEquals(367, dist.size());
     }
 
     @Test
