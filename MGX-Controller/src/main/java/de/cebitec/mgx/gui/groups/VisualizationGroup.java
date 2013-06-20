@@ -428,7 +428,7 @@ public class VisualizationGroup implements PropertyChangeListener {
     }
 
     public Map<SeqRun, Set<Attribute>> getSaveSet(List<String> requestedAttrs) {
-        assert needsResolval.isEmpty();
+        assert needsResolval.get(AttributeRank.PRIMARY).isEmpty();
         Map<SeqRun, Set<Attribute>> filtered = new HashMap<>();
         for (Entry<SeqRun, Distribution> e : currentDistributions.entrySet()) {
 
