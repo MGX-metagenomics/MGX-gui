@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.controller;
 
+import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.AttributeCorrelation;
 import de.cebitec.mgx.dto.dto.AttributeCount;
@@ -129,7 +130,16 @@ public class AttributeAccess extends AccessBase<Attribute> {
 
     @Override
     public Attribute fetch(long id) {
-        throw new UnsupportedOperationException("Not supported.");
+        Attribute ret = null;
+        try {
+            AttributeDTO dto = getDTOmaster().Attribute().fetch(id);
+            ret = AttributeDTOFactory.getInstance().toModel(dto);
+            AttributeTypeDTO aType = getDTOmaster().AttributeType().fetch(dto.getAttributeTypeId());
+            ret.setAttributeType(AttributeTypeDTOFactory.getInstance().toModel(aType));
+        } catch (MGXServerException | MGXClientException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+        return ret;
     }
 
     @Override

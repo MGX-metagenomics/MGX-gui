@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.controller;
 
 import de.cebitec.mgx.client.exception.MGXClientException;
+import de.cebitec.mgx.client.exception.MGXException;
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.JobParameterDTO;
 import de.cebitec.mgx.dto.dto.ToolDTO;
@@ -51,7 +52,7 @@ public class ToolAccess extends AccessBase<Tool> {
             for (JobParameterDTO dtoParameter : getDTOmaster().Tool().getAvailableParameters(dto)) {
                 ret.add(JobParameterDTOFactory.getInstance().toModel(dtoParameter));
             }
-        } catch (MGXServerException ex) {
+        } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);
         }
         return ret;
@@ -65,7 +66,7 @@ public class ToolAccess extends AccessBase<Tool> {
                 ret.add(JobParameterDTOFactory.getInstance().toModel(dto));
             }
 
-        } catch (MGXServerException ex) {
+        } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);
         }
         return ret;
@@ -78,7 +79,7 @@ public class ToolAccess extends AccessBase<Tool> {
         long id = Identifiable.INVALID_IDENTIFIER;
         try {
             id = getDTOmaster().Tool().create(dto);
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);
         }
         obj.setId(id);

@@ -7,10 +7,8 @@ import de.cebitec.mgx.gui.datamodel.AttributeType;
 import de.cebitec.mgx.gui.datamodel.Job;
 import de.cebitec.mgx.gui.datamodel.misc.Task;
 import de.cebitec.mgx.gui.dtoconversion.AttributeTypeDTOFactory;
-import java.util.ArrayList;
+import de.cebitec.mgx.gui.util.BaseIterator;
 import java.util.Iterator;
-import java.util.List;
-import java.util.UUID;
 import org.openide.util.Exceptions;
 
 /**
@@ -44,35 +42,37 @@ public class AttributeTypeAccess extends AccessBase<AttributeType> {
         throw new UnsupportedOperationException("Not supported.");
     }
 
-    public List<AttributeType> BySeqRun(long id) {
-        System.err.println("fetch atypes ");
-        List<AttributeType> all = new ArrayList<>();
+    public Iterator<AttributeType> BySeqRun(long id) {
         try {
-            for (AttributeTypeDTO dto : getDTOmaster().AttributeType().BySeqRun(id)) {
-                AttributeType aType = AttributeTypeDTOFactory.getInstance().toModel(dto);
-                aType.setMaster(getMaster());
-                all.add(aType);
-
-                System.err.println("recv " + aType.getName());
-            }
+            Iterator<AttributeTypeDTO> it = getDTOmaster().AttributeType().BySeqRun(id);
+            return new BaseIterator<AttributeTypeDTO, AttributeType>(it) {
+                @Override
+                public AttributeType next() {
+                    AttributeType attr = AttributeTypeDTOFactory.getInstance().toModel(iter.next());
+                    attr.setMaster(getMaster());
+                    return attr;
+                }
+            };
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
-        return all;
+        return null;
     }
 
-    public List<AttributeType> ByJob(Job job) {
-        List<AttributeType> all = new ArrayList<>();
-        MGXMaster master = getMaster();
+    public Iterator<AttributeType> ByJob(Job job) {
         try {
-            for (AttributeTypeDTO dto : getDTOmaster().AttributeType().ByJob(job.getId())) {
-                AttributeType aType = AttributeTypeDTOFactory.getInstance().toModel(dto);
-                aType.setMaster(master);
-                all.add(aType);
-            }
+            Iterator<AttributeTypeDTO> it = getDTOmaster().AttributeType().ByJob(job.getId());
+            return new BaseIterator<AttributeTypeDTO, AttributeType>(it) {
+                @Override
+                public AttributeType next() {
+                    AttributeType attr = AttributeTypeDTOFactory.getInstance().toModel(iter.next());
+                    attr.setMaster(getMaster());
+                    return attr;
+                }
+            };
         } catch (MGXServerException ex) {
             Exceptions.printStackTrace(ex);
         }
-        return all;
+        return null;
     }
 }
