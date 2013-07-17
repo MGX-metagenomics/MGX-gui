@@ -54,6 +54,19 @@ public class Node<T> {
         return tree.getParent(id);
     }
     
+    public Node<T>[] getPath() {
+        Node<T>[] ret = new Node[getDepth()+1];
+        Node<T> curNode = this;
+        int x = 0;
+        while (!curNode.isRoot()) {
+            ret[curNode.getDepth()-x] = curNode;
+            x++;
+            curNode = curNode.getParent();
+        }
+        ret[0] = tree.getRoot();
+        return ret;
+    }
+    
     public int getDepth() {
         if (isRoot()) {
             return 0;

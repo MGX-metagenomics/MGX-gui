@@ -98,6 +98,19 @@ public class TreeTest {
         
         assertEquals(4, merged.getRoot().getContent().longValue());
         assertEquals(0, merged.getRoot().getDepth());
+        
+        Node<Long> n = null;
+        for (Node<Long> tmp : merged.getNodes()) {
+            if (tmp.getAttribute().getValue().equals("a3")) {
+                n = tmp;
+            }
+        }
+        assertNotNull(n);
+        Node<Long>[] path = n.getPath();
+        assertEquals(2, path.length);
+        for (Node<Long> x : path) {
+            assertNotNull(x);
+        }
 
     }
 }
