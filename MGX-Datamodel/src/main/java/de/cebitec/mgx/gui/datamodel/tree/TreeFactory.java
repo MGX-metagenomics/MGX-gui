@@ -87,12 +87,15 @@ public class TreeFactory {
     private static <T, U, V> void addChildren(Node<T> parent, Set<Node<U>> children, ContentAccessor<V, U> cac, DataMerger<T, V> merger) {
         for (Node<U> node : children) {
             Node<T> correctChild = null;
-            for (Node<T> candidate : parent.getChildren()) {
-                if (nodesAreEqual(node, candidate)) {
-                    correctChild = candidate;
-                    V content = cac.getContent(node);
-                    correctChild.setContent(merger.merge(correctChild.getContent(), content));
-                    break;
+
+            if (!parent.isLeaf()) {
+                for (Node<T> candidate : parent.getChildren()) {
+                    if (nodesAreEqual(node, candidate)) {
+                        correctChild = candidate;
+                        V content = cac.getContent(node);
+                        correctChild.setContent(merger.merge(correctChild.getContent(), content));
+                        break;
+                    }
                 }
             }
 

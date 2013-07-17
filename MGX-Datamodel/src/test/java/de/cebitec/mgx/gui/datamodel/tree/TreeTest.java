@@ -103,9 +103,12 @@ public class TreeTest {
         for (Node<Long> tmp : merged.getNodes()) {
             if (tmp.getAttribute().getValue().equals("a3")) {
                 n = tmp;
+                break;
             }
         }
         assertNotNull(n);
+        
+        
         Node<Long>[] path = n.getPath();
         assertEquals(2, path.length);
         for (Node<Long> x : path) {

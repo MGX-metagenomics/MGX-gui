@@ -23,7 +23,7 @@ public class Node<T> {
         this.id = id;
         this.attr = attr;
         this.value = content;
-        children = new HashSet<>();
+        //children = new HashSet<>();
     }
 
     public long getId() {
@@ -45,28 +45,33 @@ public class Node<T> {
     public boolean isRoot() {
         return this == tree.getRoot();
     }
-    
+
     public boolean isLeaf() {
-        return children.isEmpty();
+        return children == null || children.isEmpty();
     }
-    
+
     public Node<T> getParent() {
         return tree.getParent(id);
     }
-    
+
     public Node<T>[] getPath() {
-        Node<T>[] ret = new Node[getDepth()+1];
-        Node<T> curNode = this;
-        int x = 0;
-        while (!curNode.isRoot()) {
-            ret[curNode.getDepth()-x] = curNode;
-            x++;
-            curNode = curNode.getParent();
+        //System.err.println("get path for " + getAttribute().getValue());
+        Node<T>[] ret = new Node[getDepth() + 1];
+        if (isRoot()) {
+            ret[getDepth()] = this;
+        } else {
+            Node<T> parent = getParent();
+            assert parent != null;
+            Node<T>[] parentPath = parent.getPath();
+            int i = 0;
+            for (Node<T> curNode : parentPath) {
+                ret[i++] = curNode;
+            }
+            ret[getDepth()] = this;
         }
-        ret[0] = tree.getRoot();
         return ret;
     }
-    
+
     public int getDepth() {
         if (isRoot()) {
             return 0;
@@ -78,12 +83,19 @@ public class Node<T> {
         return children;
     }
     
+    public boolean hasChildren() {
+        return !isLeaf();
+    }
+    
     public Node<T> addChild(Attribute attr, T content) {
         Node<T> child = tree.addNode(this, attr, content);
+        if (children == null) {
+            children = new HashSet<>();
+        }
         children.add(child);
         return child;
     }
-    
+
     void build() {
         children = new HashSet<>();
         for (Entry<Long, Long> e : tree.edges.entrySet()) {
