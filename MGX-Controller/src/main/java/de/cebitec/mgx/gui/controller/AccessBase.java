@@ -37,7 +37,7 @@ public abstract class AccessBase<T> {
     public abstract T fetch(long id);
 
     public abstract Iterator<T> fetchall();
-    
+
     public abstract void update(T obj);
 
     public abstract Task delete(T obj);

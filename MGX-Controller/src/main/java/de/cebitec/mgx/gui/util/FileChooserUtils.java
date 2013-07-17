@@ -61,8 +61,8 @@ public class FileChooserUtils {
 
         return ret;
     }
-    
-        public static String selectExistingFilename(FileType[] types) {
+
+    public static String selectExistingFilename(FileType[] types) {
         String ret = null;
         JFileChooser chooser = new JFileChooser();
         chooser.setDialogType(JFileChooser.OPEN_DIALOG);

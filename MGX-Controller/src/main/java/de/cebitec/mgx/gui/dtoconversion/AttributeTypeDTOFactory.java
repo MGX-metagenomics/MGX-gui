@@ -27,7 +27,6 @@ public class AttributeTypeDTOFactory extends DTOConversionBase<AttributeType, At
     public AttributeType toModel(AttributeTypeDTO dto) {
         return new AttributeType(dto.getId(), dto.getName(), dto.getValueType().charAt(0), dto.getStructure().charAt(0));
     }
-
 //    public List<AttributeType> toModelList(AttributeTypeDTOList dtolist) {
 //        List<AttributeType> all = new ArrayList<>();
 //        for (AttributeTypeDTO dto : dtolist.getAttributeTypeList()) {

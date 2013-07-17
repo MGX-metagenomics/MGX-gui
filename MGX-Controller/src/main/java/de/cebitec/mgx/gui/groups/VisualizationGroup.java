@@ -35,8 +35,6 @@ public class VisualizationGroup implements PropertyChangeListener {
     public static final String VISGROUP_CHANGED = "visgroup_changed";
     public static final String VISGROUP_RENAMED = "visgroup_renamed";
     //
-
-
     //
     private final int id;
     private String name;
@@ -134,15 +132,16 @@ public class VisualizationGroup implements PropertyChangeListener {
 //    public final void selectSecondaryAttributeType(String attrType) throws ConflictingJobsException {
 //        selectAttributeType(AttributeRank.SECONDARY, attrType);
 //    }
-
     /**
      *
      * @param attrType
      * @throws ConflictingJobsException
      *
-     * promote selection of an attribute type to the group; checks all contained sequencing runs, i.) if they provide the attribute type and ii.) if the
-     * attribute type is provided by a single job only. if several jobs are able to provide the corresponding attribute type, a ConflictingJobsException will be
-     * raised for resolval of the conflict.
+     * promote selection of an attribute type to the group; checks all contained
+     * sequencing runs, i.) if they provide the attribute type and ii.) if the
+     * attribute type is provided by a single job only. if several jobs are able
+     * to provide the corresponding attribute type, a ConflictingJobsException
+     * will be raised for resolval of the conflict.
      */
     public final void selectAttributeType(AttributeRank rank, String attrType) throws ConflictingJobsException {
         assert attrType != null;

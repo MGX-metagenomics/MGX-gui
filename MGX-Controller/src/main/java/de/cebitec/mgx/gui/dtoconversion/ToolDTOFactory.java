@@ -14,7 +14,8 @@ public class ToolDTOFactory extends DTOConversionBase<Tool, ToolDTO> {
     }
     protected static ToolDTOFactory instance;
 
-    private ToolDTOFactory() {}
+    private ToolDTOFactory() {
+    }
 
     public static ToolDTOFactory getInstance() {
         return instance;
@@ -40,10 +41,10 @@ public class ToolDTOFactory extends DTOConversionBase<Tool, ToolDTO> {
                 .setVersion(dto.getVersion())
                 .setAuthor(dto.getAuthor())
                 .setUrl(dto.getUrl());
-        
+
         // XML data is not present in the tools received from the
         // server
-        
+
         if (copyID && dto.hasId()) {
             t.setId(dto.getId());
         }

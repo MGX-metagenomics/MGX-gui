@@ -48,7 +48,7 @@ public class DNAExtractDTOFactory extends DTOConversionBase<DNAExtract, DNAExtra
     @Override
     public final DNAExtract toModel(DNAExtractDTO dto) {
         DNAExtract d = new DNAExtract();
-        
+
         d.setName(dto.getName());
 
         d.setSampleId(dto.getSampleId())

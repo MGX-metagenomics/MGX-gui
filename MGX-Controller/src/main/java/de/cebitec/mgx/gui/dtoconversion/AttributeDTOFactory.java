@@ -26,11 +26,11 @@ public class AttributeDTOFactory extends DTOConversionBase<Attribute, AttributeD
         b.setAttributeTypeId(a.getAttributeType().getId())
                 .setValue(a.getValue())
                 .setJobid(a.getJobId());
-        
+
         if (a.getId() != Identifiable.INVALID_IDENTIFIER) {
             b.setId(a.getId());
         }
-        
+
         if (a.getParentID() != Identifiable.INVALID_IDENTIFIER) {
             b.setParentId(a.getParentID());
         }
@@ -40,8 +40,8 @@ public class AttributeDTOFactory extends DTOConversionBase<Attribute, AttributeD
     @Override
     public final Attribute toModel(AttributeDTO dto) {
         Attribute a = new Attribute()
-            .setJobId(dto.getJobid())
-            .setValue(dto.getValue());
+                .setJobId(dto.getJobid())
+                .setValue(dto.getValue());
         if (dto.hasParentId()) {
             a.setParentID(dto.getParentId());
         }

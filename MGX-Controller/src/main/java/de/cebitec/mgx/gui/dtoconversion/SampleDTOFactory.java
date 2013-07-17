@@ -16,7 +16,8 @@ public class SampleDTOFactory extends DTOConversionBase<Sample, SampleDTO> {
     }
     protected static SampleDTOFactory instance;
 
-    private SampleDTOFactory() {}
+    private SampleDTOFactory() {
+    }
 
     public static SampleDTOFactory getInstance() {
         return instance;
@@ -32,7 +33,7 @@ public class SampleDTOFactory extends DTOConversionBase<Sample, SampleDTO> {
                 .setTemperature(s.getTemperature())
                 .setMaterial(s.getMaterial())
                 .setVolume(s.getVolume());
-        
+
         b = b.setVolumeUnit(s.getVolumeUnit())
                 .setCollectiondate(toUnixTimeStamp(s.getCollectionDate()));
         return b.build();
@@ -47,7 +48,7 @@ public class SampleDTOFactory extends DTOConversionBase<Sample, SampleDTO> {
                 .setTemperature(dto.getTemperature())
                 .setVolume(dto.getVolume())
                 .setVolumeUnit(dto.getVolumeUnit());
-        
+
         s.setId(dto.getId());
         return s;
     }

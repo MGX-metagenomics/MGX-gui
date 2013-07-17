@@ -19,7 +19,6 @@ public class TaskDTOFactory extends DTOConversionBase<Task, TaskDTO> {
 
     private TaskDTOFactory() {
     }
-    
     private static ModelBase object;
     private static UUID taskUUid;
     private static TaskType taskType;

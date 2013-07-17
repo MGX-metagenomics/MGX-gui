@@ -16,7 +16,7 @@ public abstract class DTOConversionBase<T, U> {
         if (date == null) {
             return null;
         }
-        
+
         // seconds since 1970
         return date.getTime() / 1000L;
     }

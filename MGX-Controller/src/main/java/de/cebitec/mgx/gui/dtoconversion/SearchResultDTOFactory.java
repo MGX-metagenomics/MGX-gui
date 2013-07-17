@@ -14,7 +14,6 @@ public class SearchResultDTOFactory extends DTOConversionBase<SearchResult, Sear
     static {
         instance = new SearchResultDTOFactory();
     }
-    
     protected static SearchResultDTOFactory instance;
 
     private SearchResultDTOFactory() {

@@ -26,7 +26,7 @@ public class HabitatDTOFactory extends DTOConversionBase<Habitat, HabitatDTO> {
         if (h.getId() != Identifiable.INVALID_IDENTIFIER) {
             b.setId(h.getId());
         }
-        
+
         return b.setName(h.getName())
                 .setGpsLatitude(h.getLatitude())
                 .setGpsLongitude(h.getLongitude())
@@ -44,9 +44,9 @@ public class HabitatDTOFactory extends DTOConversionBase<Habitat, HabitatDTO> {
                 .setLongitude(dto.getGpsLongitude())
                 .setAltitude(dto.getAltitude())
                 .setBiome(dto.getBiome());
-        
+
         if (dto.hasDescription()) {
-                h.setDescription(dto.getDescription());
+            h.setDescription(dto.getDescription());
         }
 
         h.setId(dto.getId());

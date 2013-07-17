@@ -91,7 +91,6 @@ public class DownloadTest {
 //        assertEquals(59482, cnt.get().intValue());
 //        assertTrue(closed.get());
 //    }
-
     @Test
     public void testFetchSequence() {
         System.out.println("testFetchSequence");

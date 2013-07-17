@@ -13,7 +13,6 @@ import java.util.Iterator;
 import java.util.UUID;
 import org.openide.util.Exceptions;
 
-
 /**
  *
  * @author sj
@@ -32,9 +31,10 @@ public class ObservationAccess extends AccessBase<Observation> {
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
-        
+
         return ret;
     }
+
     @Override
     public long create(Observation obj) {
         throw new UnsupportedOperationException("Not supported.");
@@ -59,5 +59,4 @@ public class ObservationAccess extends AccessBase<Observation> {
     public Task delete(Observation obj) {
         throw new UnsupportedOperationException("Not supported.");
     }
-    
 }

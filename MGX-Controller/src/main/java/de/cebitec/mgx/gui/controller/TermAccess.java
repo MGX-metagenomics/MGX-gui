@@ -17,7 +17,7 @@ import org.openide.util.Exceptions;
  * @author sjaenick
  */
 public class TermAccess extends AccessBase<Term> {
-    
+
     public static final String SEQ_METHODS = de.cebitec.mgx.client.access.rest.TermAccess.SEQ_METHODS;
     public static final String SEQ_PLATFORMS = de.cebitec.mgx.client.access.rest.TermAccess.SEQ_PLATFORMS;
 

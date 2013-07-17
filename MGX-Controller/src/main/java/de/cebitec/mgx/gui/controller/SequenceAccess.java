@@ -97,7 +97,7 @@ public class SequenceAccess extends AccessBase<Sequence> {
                     idx.put(s.getId(), s);
                 }
             }
-            
+
             if (idx.isEmpty()) {
                 return;
             }
