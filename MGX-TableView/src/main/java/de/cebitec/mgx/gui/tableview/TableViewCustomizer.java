@@ -10,7 +10,6 @@ import javax.swing.JFileChooser;
 import javax.swing.table.AbstractTableModel;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
-import org.openide.util.Exceptions;
 import org.openide.util.NbPreferences;
 
 /**
@@ -32,6 +31,10 @@ public class TableViewCustomizer extends javax.swing.JPanel {
         export.setEnabled(model != null);
     }
 
+    public boolean includeHeaders() {
+        return includeHeaders.isSelected();
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -42,6 +45,7 @@ public class TableViewCustomizer extends javax.swing.JPanel {
     private void initComponents() {
 
         export = new javax.swing.JButton();
+        includeHeaders = new javax.swing.JCheckBox();
 
         org.openide.awt.Mnemonics.setLocalizedText(export, org.openide.util.NbBundle.getMessage(TableViewCustomizer.class, "TableViewCustomizer.export.text")); // NOI18N
         export.setEnabled(false);
@@ -51,19 +55,27 @@ public class TableViewCustomizer extends javax.swing.JPanel {
             }
         });
 
+        includeHeaders.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
+        includeHeaders.setSelected(true);
+        org.openide.awt.Mnemonics.setLocalizedText(includeHeaders, org.openide.util.NbBundle.getMessage(TableViewCustomizer.class, "TableViewCustomizer.includeHeaders.text")); // NOI18N
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(export)
-                .addContainerGap(13, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(export)
+                    .addComponent(includeHeaders))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(263, Short.MAX_VALUE)
+                .addContainerGap()
+                .addComponent(includeHeaders)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 234, Short.MAX_VALUE)
                 .addComponent(export)
                 .addContainerGap())
         );
@@ -93,8 +105,8 @@ public class TableViewCustomizer extends javax.swing.JPanel {
                 }
             }
         });
-        
-        
+
+
         if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
 
             f = fc.getSelectedFile();
@@ -103,20 +115,33 @@ public class TableViewCustomizer extends javax.swing.JPanel {
                     throw new IOException(f.getName() + " already exists.");
                 }
                 BufferedWriter w = new BufferedWriter(new FileWriter(f));
-                for (int col = 0; col < model.getColumnCount() - 1; col++) {
-                    w.write(model.getColumnName(col));
-                    w.write("\t");
-                }
-                w.write(model.getColumnName(model.getColumnCount() - 1));
-                w.write(System.getProperty("line.separator"));
 
-                for (int row = 0; row < model.getRowCount(); row++) {
+                if (includeHeaders()) {
                     for (int col = 0; col < model.getColumnCount() - 1; col++) {
-                        w.write(model.getValueAt(row, col).toString());
+                        w.write(model.getColumnName(col));
                         w.write("\t");
                     }
-                    w.write(model.getValueAt(row, model.getColumnCount() - 1).toString());
-                    w.write(System.getProperty("line.separator"));
+                    w.write(model.getColumnName(model.getColumnCount() - 1));
+                    w.write(System.lineSeparator());
+                    w.write(System.lineSeparator());
+                }
+
+
+                // export data
+                for (int row = 0; row < model.getRowCount(); row++) {
+                    for (int col = 0; col <= model.getColumnCount() - 1; col++) {
+                        Object val = model.getValueAt(row, col);
+                        if (val != null) {
+                            w.write(val.toString());
+                        }
+                        if (col <= model.getColumnCount()-2 && model.getValueAt(row, col + 1) != null) {
+                            w.write("\t");
+                        }
+                    }
+//                    Object val = model.getValueAt(row, model.getColumnCount() - 1);
+//                    val = val != null ? val : "";
+  //                  w.write(val.toString());
+                    w.write(System.lineSeparator());
                 }
                 w.flush();
                 w.close();
@@ -134,5 +159,6 @@ public class TableViewCustomizer extends javax.swing.JPanel {
     }//GEN-LAST:event_exportActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton export;
+    private javax.swing.JCheckBox includeHeaders;
     // End of variables declaration//GEN-END:variables
 }
