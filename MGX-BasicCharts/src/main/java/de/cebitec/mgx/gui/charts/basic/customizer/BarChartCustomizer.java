@@ -1,14 +1,43 @@
 package de.cebitec.mgx.gui.charts.basic.customizer;
 
+import de.cebitec.mgx.gui.attributevisualization.filter.ExcludeFilter;
+import de.cebitec.mgx.gui.swingutils.JCheckBoxList;
 import de.cebitec.mgx.gui.attributevisualization.filter.LimitFilter;
 import de.cebitec.mgx.gui.attributevisualization.filter.SortOrder;
 import de.cebitec.mgx.gui.attributevisualization.filter.ToFractionFilter;
 import de.cebitec.mgx.gui.attributevisualization.filter.VisFilterI;
+import de.cebitec.mgx.gui.datamodel.Attribute;
 import de.cebitec.mgx.gui.datamodel.AttributeType;
 import de.cebitec.mgx.gui.datamodel.misc.Distribution;
 import de.cebitec.mgx.gui.datamodel.misc.Pair;
+import de.cebitec.mgx.gui.datamodel.tree.Node;
+import de.cebitec.mgx.gui.datamodel.tree.Tree;
+import de.cebitec.mgx.gui.datamodel.tree.TreeFactory;
+import de.cebitec.mgx.gui.groups.VGroupManager;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
+import de.cebitec.mgx.gui.swingutils.NonEDT;
+import de.cebitec.mgx.gui.util.Reference;
+import java.awt.BorderLayout;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.concurrent.ExecutionException;
+import javax.swing.AbstractListModel;
+import javax.swing.ComboBoxModel;
+import javax.swing.SwingWorker;
+import javax.swing.event.ListDataEvent;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -17,16 +46,84 @@ import java.util.List;
 public class BarChartCustomizer extends javax.swing.JPanel implements VisFilterI<Distribution> {
 
     private AttributeType at;
+    private final Map<AttributeType, SortedSet<Attribute>> parents = new HashMap<>();
+    private JCheckBoxList<Attribute> filterList = null;
 
     /**
      * Creates new form BasicCustomizer
      */
     public BarChartCustomizer() {
         initComponents();
+        AttrTypeModel atModel = (AttrTypeModel) attrTypeFilter.getModel();
+        attrTypeFilter.addItemListener(atModel);
     }
 
-    public void setAttributeType(AttributeType aType) {
+    public void setAttributeType(final AttributeType aType) {
+        if (aType.equals(at)) {
+            return;
+        }
         at = aType;
+
+        AttrTypeModel atModel = (AttrTypeModel) attrTypeFilter.getModel();
+        atModel.clear();
+        attrTypeFilter.setEnabled(false);
+        attrTypeFilter.setSelectedIndex(-1);
+        if (filterList != null) {
+            filterList.clear();
+            listholder.remove(filterList);
+            filterList = null;
+        }
+
+        if (at.getStructure() == AttributeType.STRUCTURE_HIERARCHICAL) {
+
+
+            SwingWorker<List<AttributeType>, Void> sw = new SwingWorker<List<AttributeType>, Void>() {
+                @Override
+                protected List<AttributeType> doInBackground() throws Exception {
+                    parents.clear();
+                    for (Pair<VisualizationGroup, Tree<Long>> p : VGroupManager.getInstance().getHierarchies()) {
+                        Tree<Long> tree = p.getSecond();
+                        for (Node<Long> node : tree.getNodes()) {
+
+                            // collect attributes and attributetypes for same layer and parent nodes only
+                            if (at.equals(node.getAttribute().getAttributeType())) {
+                                Node<Long> cur = node;
+                                while (!cur.isRoot()) {
+                                    Attribute attr = cur.getAttribute();
+                                    AttributeType type = attr.getAttributeType();
+
+                                    if (!parents.containsKey(type)) {
+                                        parents.put(type, new TreeSet<Attribute>());
+                                    }
+                                    parents.get(type).add(attr);
+                                    cur = cur.getParent();
+                                }
+                            }
+                        }
+                    }
+                    SortByNumberOfValues sorter = new SortByNumberOfValues();
+                    sorter.setMap(parents);
+                    List<AttributeType> typesOrdered = new ArrayList<>(parents.size());
+                    typesOrdered.addAll(parents.keySet());
+                    Collections.sort(typesOrdered, sorter);
+                    return typesOrdered;
+                }
+            };
+
+            sw.execute();
+            try {
+                List<AttributeType> typesOrdered = sw.get();
+
+                if (typesOrdered.size() > 0) {
+                    atModel.setData(typesOrdered);
+                    attrTypeFilter.setEnabled(true);
+                    attrTypeFilter.setSelectedIndex(0);
+                }
+            } catch (InterruptedException | ExecutionException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+
+        }
     }
 
     public boolean logY() {
@@ -69,6 +166,9 @@ public class BarChartCustomizer extends javax.swing.JPanel implements VisFilterI
         jLabel2 = new javax.swing.JLabel();
         itemMargin = new javax.swing.JSlider();
         jLabel3 = new javax.swing.JLabel();
+        attrTypeFilter = new javax.swing.JComboBox<AttributeType>();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        listholder = new javax.swing.JPanel();
 
         jLabel1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         jLabel1.setText(org.openide.util.NbBundle.getMessage(BarChartCustomizer.class, "BarChartCustomizer.jLabel1.text")); // NOI18N
@@ -106,22 +206,33 @@ public class BarChartCustomizer extends javax.swing.JPanel implements VisFilterI
         jLabel3.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         jLabel3.setText(org.openide.util.NbBundle.getMessage(BarChartCustomizer.class, "BarChartCustomizer.jLabel3.text")); // NOI18N
 
+        attrTypeFilter.setModel(new AttrTypeModel());
+        attrTypeFilter.setEnabled(false);
+
+        listholder.setLayout(new java.awt.BorderLayout());
+        jScrollPane1.setViewportView(listholder);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(limit, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(attrTypeFilter, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(categoryMargin, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(itemMargin, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jLabel1)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(sortAscending)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(sortDescending))
-            .addComponent(useFractions)
-            .addComponent(useLogY)
-            .addComponent(jLabel2)
-            .addComponent(jLabel3)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel1)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(sortAscending)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(sortDescending))
+                    .addComponent(useFractions)
+                    .addComponent(useLogY)
+                    .addComponent(jLabel2)
+                    .addComponent(jLabel3))
+                .addGap(0, 0, Short.MAX_VALUE))
+            .addComponent(jScrollPane1)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -138,7 +249,11 @@ public class BarChartCustomizer extends javax.swing.JPanel implements VisFilterI
                 .addComponent(useLogY)
                 .addGap(12, 12, 12)
                 .addComponent(limit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 157, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addComponent(attrTypeFilter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 143, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(itemMargin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -150,12 +265,15 @@ public class BarChartCustomizer extends javax.swing.JPanel implements VisFilterI
         );
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox<AttributeType> attrTypeFilter;
     private javax.swing.JSlider categoryMargin;
     private javax.swing.JSlider itemMargin;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JComboBox limit;
+    private javax.swing.JPanel listholder;
     private javax.swing.JRadioButton sortAscending;
     private javax.swing.JRadioButton sortDescending;
     private javax.swing.ButtonGroup sortOrderGroup;
@@ -170,8 +288,40 @@ public class BarChartCustomizer extends javax.swing.JPanel implements VisFilterI
             dists = fracFilter.filter(dists);
         }
 
+        if (getFilterEntries().size() > 0) {
+            Set<Attribute> filterEntries = getFilterEntries();
+            final Reference<Tree<Long>> result = new Reference<>();
+            NonEDT.invokeAndWait(new Runnable() {
+                @Override
+                public void run() {
+                    List<Pair<VisualizationGroup, Tree<Long>>> trees = VGroupManager.getInstance().getHierarchies();
+                    List<Tree<Long>> tmp = new LinkedList<>();
+                    for (Pair<VisualizationGroup, Tree<Long>> p : trees) {
+                        tmp.add(p.getSecond());
+                    }
+                    Tree<Long> merged = TreeFactory.mergeTrees(tmp);
+                    result.setValue(merged);
+                }
+            });
+
+            Tree<Long> merged = result.getValue();
+            Set<Attribute> blackList = new HashSet<>();
+
+            for (Node<Long> node : merged.getNodes()) {
+                if (at.equals(node.getAttribute().getAttributeType())) {
+                    for (Node<Long> pathNode : node.getPath()) {
+                        if (filterEntries.contains(pathNode.getAttribute())) {
+                            blackList.add(node.getAttribute());
+                            break;
+                        }
+                    }
+                }
+            }
+            ExcludeFilter ef = new ExcludeFilter(blackList);
+            dists = ef.filter(dists);
+        }
+
         LimitFilter lf = new LimitFilter();
-        //System.err.println("GOT _"+limit.getSelectedItem().toString()+"_");
         lf.setLimit(LimitFilter.LIMITS.values()[limit.getSelectedIndex()]);
         dists = lf.filter(dists);
 
@@ -179,5 +329,100 @@ public class BarChartCustomizer extends javax.swing.JPanel implements VisFilterI
         dists = sorter.filter(dists);
 
         return dists;
+    }
+
+    public Set<Attribute> getFilterEntries() {
+        return filterList == null ? Collections.EMPTY_SET : filterList.getDeselectedEntries();
+    }
+
+    private static class SortByNumberOfValues implements Comparator<AttributeType> {
+
+        Map<AttributeType, SortedSet<Attribute>> map;
+
+        public void setMap(Map<AttributeType, SortedSet<Attribute>> data) {
+            map = data;
+        }
+
+        @Override
+        public int compare(AttributeType o1, AttributeType o2) {
+            return map != null
+                    ? Integer.compare(map.get(o1).size(), map.get(o2).size())
+                    : 0;
+        }
+    }
+
+    private class AttrTypeModel extends AbstractListModel implements ComboBoxModel, ItemListener {
+
+        private final List<AttributeType> data = new ArrayList<>();
+        private int selectionIdx = -1;
+
+        public void setData(final Collection<AttributeType> newData) {
+            data.clear();
+            data.addAll(newData);
+            selectionIdx = -1;
+            if (getSize() > 0) {
+                setSelectedItem(data.get(0));
+            }
+            fireContentsChanged();
+        }
+
+        public void clear() {
+            data.clear();
+            selectionIdx = -1;
+            fireContentsChanged();
+        }
+
+        @Override
+        public void setSelectedItem(Object anItem) {
+            if (data.contains(anItem)) {
+                selectionIdx = data.indexOf(anItem);
+                itemStateChanged(new ItemEvent(attrTypeFilter,
+                        ItemEvent.ITEM_STATE_CHANGED,
+                        anItem,
+                        ItemEvent.SELECTED));
+            }
+
+        }
+
+        @Override
+        public Object getSelectedItem() {
+            return selectionIdx != -1 ? data.get(selectionIdx) : null;
+        }
+
+        @Override
+        public int getSize() {
+            return data.size();
+        }
+
+        @Override
+        public AttributeType getElementAt(int index) {
+            return data.get(index);
+        }
+
+        @Override
+        public void itemStateChanged(ItemEvent evt) {
+            if (evt.getStateChange() == ItemEvent.SELECTED) {
+                Object item = getSelectedItem();
+                if (item != null) {
+                    Set<Attribute> get = parents.get(item);
+                    if (filterList == null) {
+                        filterList = new JCheckBoxList<>();
+                        listholder.add(filterList, BorderLayout.CENTER);
+                    } else {
+                        filterList.clear();
+                    }
+
+                    for (Attribute pAttr : get) {
+                        filterList.addElement(pAttr);
+                    }
+                    filterList.selectAll();
+                }
+            }
+        }
+
+        protected void fireContentsChanged() {
+            ListDataEvent e = new ListDataEvent(this, ListDataEvent.CONTENTS_CHANGED, -1, -1);
+            fireContentsChanged(e, -1, -1);
+        }
     }
 }

@@ -73,13 +73,13 @@ public class BarChartViewer extends CategoricalViewerI {
         CategoryPlot plot = chart.getCategoryPlot();
 
         plot.setBackgroundPaint(Color.WHITE);
-        
+
         BarRenderer br = (BarRenderer) plot.getRenderer();
         br.setItemMargin(customizer.getItemMargin());
-        
+
         // x axis
         CategoryAxis domainAxis = plot.getDomainAxis();
-        domainAxis.setCategoryMargin(customizer.getCategoryMargin()); 
+        domainAxis.setCategoryMargin(customizer.getCategoryMargin());
         domainAxis.setCategoryLabelPositions(CategoryLabelPositions.createUpRotationLabelPositions(Math.PI / 6));
 
         // y axis
@@ -118,8 +118,8 @@ public class BarChartViewer extends CategoricalViewerI {
     public BarChartCustomizer getCustomizer() {
         if (customizer == null) {
             customizer = new BarChartCustomizer();
-            customizer.setAttributeType(getAttributeType());
         }
+        customizer.setAttributeType(getAttributeType());
         return customizer;
     }
 
