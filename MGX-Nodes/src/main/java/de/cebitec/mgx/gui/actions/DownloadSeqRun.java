@@ -1,14 +1,13 @@
 package de.cebitec.mgx.gui.actions;
 
 import de.cebitec.mgx.client.datatransfer.DownloadBase;
-import de.cebitec.mgx.client.datatransfer.SeqByAttributeDownloader;
 import de.cebitec.mgx.client.datatransfer.SeqDownloader;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
+import de.cebitec.mgx.gui.swingutils.NonEDT;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
 import de.cebitec.mgx.gui.util.FileType;
-import de.cebitec.mgx.gui.util.NonEDT;
 import de.cebitec.mgx.gui.util.SuffixFilter;
 import de.cebitec.mgx.seqstorage.FastaWriter;
 import de.cebitec.mgx.sequence.SeqStoreException;
@@ -16,12 +15,8 @@ import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.ExecutionException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
-import javax.swing.SwingWorker;
 import javax.swing.filechooser.FileFilter;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
