@@ -91,6 +91,11 @@
             <artifactId>MGX-TaskView</artifactId>
             <groupId>de.cebitec.mgx.gui</groupId>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>MGX-SwingUtils</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

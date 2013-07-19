@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.attributevisualization.exportwizard;
 
+import de.cebitec.mgx.gui.swingutils.JCheckBoxList;
 import de.cebitec.mgx.gui.datamodel.Attribute;
 import de.cebitec.mgx.gui.datamodel.misc.Distribution;
 import java.beans.PropertyChangeEvent;
