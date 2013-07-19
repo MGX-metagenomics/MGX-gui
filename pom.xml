@@ -395,7 +395,8 @@
         <module>MGX-Statistics</module>
         <module>MGX-Actions</module>
         <module>MGX-KeggViewer</module>
-    </modules>
+    <module>MGX-SwingUtils</module>
+  </modules>
 
     <properties>
         <netbeans.version>RELEASE73</netbeans.version>
