@@ -1,17 +1,10 @@
 package de.cebitec.mgx.gui.controller;
 
 import de.cebitec.mgx.gui.datamodel.Attribute;
-import de.cebitec.mgx.gui.datamodel.AttributeType;
 import de.cebitec.mgx.gui.datamodel.misc.Distribution;
 import de.cebitec.mgx.gui.datamodel.tree.Node;
 import de.cebitec.mgx.gui.datamodel.tree.Tree;
 import de.cebitec.mgx.gui.util.TestMaster;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
