@@ -135,6 +135,15 @@ public class AttributeAccessTest {
         Tree<Long> tree = master.Attribute().getHierarchy(6, 3);
         assertNotNull(tree);
 
+        // count manually
+        int i = 0;
+        for (Node<Long> node : tree.getNodes()) {
+            if (node.getAttribute().getAttributeType().equals(aType)) {
+                i++;
+            }
+        }
+        assertEquals(5, i);
+
         Distribution fromTree = DistributionFactory.fromTree(tree, aType);
         assertNotNull(fromTree);
         assertEquals(5, fromTree.size());
