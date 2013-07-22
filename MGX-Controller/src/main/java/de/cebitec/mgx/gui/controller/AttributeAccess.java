@@ -202,6 +202,7 @@ public class AttributeAccess extends AccessBase<Attribute> {
 
         Checker.sanityCheck(res.keySet());
         Tree<Long> ret = TreeFactory.createTree(res);
+        assert ret.getNodes().size() == res.size();
         return ret;
     }
 
