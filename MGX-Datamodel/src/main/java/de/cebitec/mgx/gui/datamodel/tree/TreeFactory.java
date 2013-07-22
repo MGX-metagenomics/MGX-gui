@@ -12,13 +12,15 @@ import java.util.Map.Entry;
  */
 public class TreeFactory {
 
-    private static <T> void dumpNode(Node<? extends T> node, int offset) {
+    public static <T> void dumpNode(Node<? extends T> node, int offset) {
         for (int i = 0; i < offset; i++) {
             System.err.print(" ");
         }
         System.err.println(node.getAttribute().toString());
-        for (Node<? extends T> n : node.getChildren()) {
-            dumpNode(n, offset + 5);
+        if (node.hasChildren()) {
+            for (Node<? extends T> n : node.getChildren()) {
+                dumpNode(n, offset + 5);
+            }
         }
     }
 
