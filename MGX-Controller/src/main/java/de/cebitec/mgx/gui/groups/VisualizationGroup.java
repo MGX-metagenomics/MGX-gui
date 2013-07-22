@@ -4,6 +4,7 @@ import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.*;
 import de.cebitec.mgx.gui.datamodel.misc.AttributeRank;
 import de.cebitec.mgx.gui.datamodel.misc.Distribution;
+import de.cebitec.mgx.gui.datamodel.misc.DistributionFactory;
 import de.cebitec.mgx.gui.datamodel.misc.Triple;
 import de.cebitec.mgx.gui.datamodel.tree.Tree;
 import de.cebitec.mgx.gui.datamodel.tree.TreeFactory;
@@ -137,11 +138,9 @@ public class VisualizationGroup implements PropertyChangeListener {
      * @param attrType
      * @throws ConflictingJobsException
      *
-     * promote selection of an attribute type to the group; checks all contained
-     * sequencing runs, i.) if they provide the attribute type and ii.) if the
-     * attribute type is provided by a single job only. if several jobs are able
-     * to provide the corresponding attribute type, a ConflictingJobsException
-     * will be raised for resolval of the conflict.
+     * promote selection of an attribute type to the group; checks all contained sequencing runs, i.) if they provide the attribute type and ii.) if the
+     * attribute type is provided by a single job only. if several jobs are able to provide the corresponding attribute type, a ConflictingJobsException will be
+     * raised for resolval of the conflict.
      */
     public final void selectAttributeType(AttributeRank rank, String attrType) throws ConflictingJobsException {
         assert attrType != null;
@@ -347,7 +346,7 @@ public class VisualizationGroup implements PropertyChangeListener {
         //
         // merge results
         //
-        Distribution ret = mergeDistributions(currentDistributions.values());
+        Distribution ret = DistributionFactory.merge(currentDistributions.values());
         distCache.put(selectedAttributeType, ret);
 
         return ret;
@@ -405,27 +404,26 @@ public class VisualizationGroup implements PropertyChangeListener {
         return validTypes.get(0);
     }
 
-    private static Distribution mergeDistributions(final Iterable<Distribution> dists) {
-        Map<Attribute, Number> summary = new HashMap<>();
-        long total = 0;
-        MGXMasterI anyMaster = null;
-
-        for (Distribution d : dists) {
-            anyMaster = (MGXMaster) d.getMaster();
-            total += d.getTotalClassifiedElements();
-            for (Entry<Attribute, ? extends Number> e : d.entrySet()) {
-                Attribute attr = e.getKey();
-                long count = e.getValue().longValue();
-                if (summary.containsKey(attr)) {
-                    count += summary.get(attr).longValue();
-                }
-                summary.put(attr, count);
-            }
-        }
-
-        return new Distribution(summary, total, anyMaster);
-    }
-
+//    private static Distribution mergeDistributions(final Iterable<Distribution> dists) {
+//        Map<Attribute, Number> summary = new HashMap<>();
+//        long total = 0;
+//        MGXMasterI anyMaster = null;
+//
+//        for (Distribution d : dists) {
+//            anyMaster = (MGXMaster) d.getMaster();
+//            total += d.getTotalClassifiedElements();
+//            for (Entry<Attribute, ? extends Number> e : d.entrySet()) {
+//                Attribute attr = e.getKey();
+//                long count = e.getValue().longValue();
+//                if (summary.containsKey(attr)) {
+//                    count += summary.get(attr).longValue();
+//                }
+//                summary.put(attr, count);
+//            }
+//        }
+//
+//        return new Distribution(summary, total, anyMaster);
+//    }
     public Map<SeqRun, Set<Attribute>> getSaveSet(List<String> requestedAttrs) {
         assert needsResolval.get(AttributeRank.PRIMARY).isEmpty();
         Map<SeqRun, Set<Attribute>> filtered = new HashMap<>();
