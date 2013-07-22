@@ -169,6 +169,7 @@ public class BarChartCustomizer extends javax.swing.JPanel implements VisFilterI
         attrTypeFilter = new javax.swing.JComboBox<AttributeType>();
         jScrollPane1 = new javax.swing.JScrollPane();
         listholder = new javax.swing.JPanel();
+        jLabel4 = new javax.swing.JLabel();
 
         jLabel1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         jLabel1.setText(org.openide.util.NbBundle.getMessage(BarChartCustomizer.class, "BarChartCustomizer.jLabel1.text")); // NOI18N
@@ -212,6 +213,9 @@ public class BarChartCustomizer extends javax.swing.JPanel implements VisFilterI
         listholder.setLayout(new java.awt.BorderLayout());
         jScrollPane1.setViewportView(listholder);
 
+        jLabel4.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
+        jLabel4.setText(org.openide.util.NbBundle.getMessage(BarChartCustomizer.class, "BarChartCustomizer.jLabel4.text")); // NOI18N
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -220,6 +224,7 @@ public class BarChartCustomizer extends javax.swing.JPanel implements VisFilterI
             .addComponent(attrTypeFilter, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(categoryMargin, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(itemMargin, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jScrollPane1)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel1)
@@ -230,9 +235,9 @@ public class BarChartCustomizer extends javax.swing.JPanel implements VisFilterI
                     .addComponent(useFractions)
                     .addComponent(useLogY)
                     .addComponent(jLabel2)
-                    .addComponent(jLabel3))
+                    .addComponent(jLabel3)
+                    .addComponent(jLabel4))
                 .addGap(0, 0, Short.MAX_VALUE))
-            .addComponent(jScrollPane1)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -249,10 +254,12 @@ public class BarChartCustomizer extends javax.swing.JPanel implements VisFilterI
                 .addComponent(useLogY)
                 .addGap(12, 12, 12)
                 .addComponent(limit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addGap(2, 2, 2)
+                .addComponent(jLabel4)
+                .addGap(1, 1, 1)
                 .addComponent(attrTypeFilter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 143, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 145, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -271,6 +278,7 @@ public class BarChartCustomizer extends javax.swing.JPanel implements VisFilterI
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JComboBox limit;
     private javax.swing.JPanel listholder;
