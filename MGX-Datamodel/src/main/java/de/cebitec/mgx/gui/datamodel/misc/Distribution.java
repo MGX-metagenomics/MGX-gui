@@ -80,6 +80,7 @@ public class Distribution implements Map<Attribute, Number> {
     public void clear() {
         keys.clear();
         filtered.clear();
+        totalClassifiedElements = -1;
     }
 
     @Override

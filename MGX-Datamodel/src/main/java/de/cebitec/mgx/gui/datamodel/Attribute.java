@@ -82,9 +82,18 @@ public class Attribute extends Identifiable implements Comparable<Attribute> {
         if (!Objects.equals(this.value, other.value)) {
             return false;
         }
-        if (this.parent_id != other.parent_id) {
-            return false;
+        
+        // parent ids can only be compared if they are from the same project
+        if (this.getMaster() == other.getMaster()) {
+            if (this.job_id == other.job_id && this.parent_id != other.parent_id) {
+                return false;
+            }
         }
+        /*
+         * this is still wrong; we're unable to distinguish between
+         * equally-named and -ranked attributes from different projects,
+         * e.g. certain taxonomic groups which occur more than once.
+         */
         return true;
     }
 

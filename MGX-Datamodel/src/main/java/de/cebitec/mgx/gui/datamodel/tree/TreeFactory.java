@@ -90,12 +90,13 @@ public class TreeFactory {
         for (Node<U> node : children) {
             Node<T> correctChild = null;
 
-            if (!parent.isLeaf()) {
+            if (parent.hasChildren()) {
                 for (Node<T> candidate : parent.getChildren()) {
                     if (nodesAreEqual(node, candidate)) {
                         correctChild = candidate;
                         V content = cac.getContent(node);
-                        correctChild.setContent(merger.merge(correctChild.getContent(), content));
+                        T mergedContent = merger.merge(correctChild.getContent(), content);
+                        correctChild.setContent(mergedContent);
                         break;
                     }
                 }
@@ -144,7 +145,10 @@ public class TreeFactory {
 //    private static <T, U, V extends Pair<T, U>> V getPair(T first, U second) {
 //        return (V) new Pair<>(first, second);
 //    }
-    private static <T, U> boolean nodesAreEqual(Node<T> n1, Node<U> n2) {
+    public static <T, U> boolean nodesAreEqual(Node<T> n1, Node<U> n2) {
+        if (n1.isRoot() && n2.isRoot()) {
+            return true;
+        }
         // compare depth
         if (n1.isRoot() == n2.isRoot() && n1.getDepth() == n2.getDepth()) {
             // compare attribute value
