@@ -308,7 +308,7 @@ public class VisualizationGroup implements PropertyChangeListener {
         if (distCache.containsKey(selectedAttributeType)) {
             return distCache.get(selectedAttributeType);
         }
-
+        
         currentDistributions.clear();
         //List<Distribution> results = Collections.synchronizedList(new ArrayList<Distribution>());
 
@@ -496,7 +496,12 @@ public class VisualizationGroup implements PropertyChangeListener {
         @Override
         protected Distribution doInBackground() throws Exception {
             MGXMaster master = (MGXMaster) attrType.getMaster();
-            return master.Attribute().getDistribution(attrType.getId(), job.getId());
+            if (attrType.getStructure() == AttributeType.STRUCTURE_HIERARCHICAL) {
+                Tree<Long> tree = master.Attribute().getHierarchy(attrType.getId(), job.getId());
+                return DistributionFactory.fromTree(tree, attrType);
+            } else {
+                return master.Attribute().getDistribution(attrType.getId(), job.getId());
+            }
         }
 
         @Override
