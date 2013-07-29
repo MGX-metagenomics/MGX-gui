@@ -47,6 +47,10 @@ public class ExcludeFilterTest {
     public void testCompareDistAndTree() {
         System.out.println("testCompareDistAndTree");
         MGXMaster m = TestMaster.get2();
+        if (m == null) {
+            System.err.println("  not tested, private test.");
+            return;
+        }
         // ncbi_class
         Tree<Long> atb = m.Attribute().getHierarchy(5, 19);
         assertNotNull(atb);
@@ -89,6 +93,10 @@ public class ExcludeFilterTest {
     public void testMerge() {
         System.out.println("testMerge");
         MGXMaster m = TestMaster.get2();
+        if (m == null) {
+            System.err.println("  not tested, private test.");
+            return;
+        }
 
         Tree<Long> atb = m.Attribute().getHierarchy(5, 19);
         assertNotNull(atb);
@@ -167,6 +175,10 @@ public class ExcludeFilterTest {
     public void testFilter() {
         System.out.println("filterSingleTree");
         MGXMaster m = TestMaster.get2();
+        if (m == null) {
+            System.err.println("  not tested, private test.");
+            return;
+        }
         // ncbi_class
         Tree<Long> atb = m.Attribute().getHierarchy(5, 19);
         assertNotNull(atb);
