@@ -39,7 +39,7 @@ public final class ConflictResolverVisualPanel1 extends JPanel implements ListSe
         @Override
         public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
             Job job = (Job) value;
-            assert job.getTool() != null; // fails
+            assert job.getTool() != null;
             StringBuilder sb = new StringBuilder(job.getTool().getName())
                     .append(" (")
                     .append(job.getParameters().size() > 0 ? joinParameters(job.getParameters(), ", ") : "default parameters")
@@ -48,8 +48,8 @@ public final class ConflictResolverVisualPanel1 extends JPanel implements ListSe
         }
     }
 
-    public void setJobs(Collection<Job> jobs) {
-        jobList.setListData(jobs.toArray());
+    public void setJobs(Collection<Job> jobs) { 
+        jobList.setListData(jobs.toArray(new Job[]{}));
     }
 
     public void setSeqRun(SeqRun run) {
@@ -64,7 +64,7 @@ public final class ConflictResolverVisualPanel1 extends JPanel implements ListSe
     }
 
     public Job getSelectedJob() {
-        return (Job) jobList.getSelectedValue();
+        return jobList.getSelectedValue();
     }
 
     @Override
@@ -102,7 +102,7 @@ public final class ConflictResolverVisualPanel1 extends JPanel implements ListSe
     private void initComponents() {
 
         jScrollPane1 = new javax.swing.JScrollPane();
-        jobList = new javax.swing.JList();
+        jobList = new javax.swing.JList<Job>();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
         groupLabel = new javax.swing.JLabel();
@@ -163,7 +163,7 @@ public final class ConflictResolverVisualPanel1 extends JPanel implements ListSe
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JList jobList;
+    private javax.swing.JList<Job> jobList;
     private javax.swing.JLabel seqRunLabel;
     // End of variables declaration//GEN-END:variables
 }

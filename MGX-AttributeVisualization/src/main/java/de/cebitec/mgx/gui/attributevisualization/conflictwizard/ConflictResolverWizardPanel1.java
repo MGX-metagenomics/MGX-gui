@@ -9,6 +9,10 @@ import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
@@ -20,13 +24,15 @@ public class ConflictResolverWizardPanel1 implements WizardDescriptor.Panel<Wiza
     private VisualizationGroup vg;
     private SeqRun run;
     private final AttributeRank rank;
-    private Collection<Job> jobs;
+    private List<Job> jobs;
     private final EventListenerList listeners = new EventListenerList();
 
     public ConflictResolverWizardPanel1(VisualizationGroup vg, AttributeRank rank, SeqRun run, Collection<Job> j) {
         this.vg = vg;
         this.run = run;
-        this.jobs = j;
+        this.jobs = new LinkedList<>();
+        jobs.addAll(j);
+        Collections.sort(jobs, new JobsByToolName());
         this.rank = rank;
     }
     /**
@@ -107,5 +113,13 @@ public class ConflictResolverWizardPanel1 implements WizardDescriptor.Panel<Wiza
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         fireChangeEvent(this, false, isValid());
+    }
+
+    private static class JobsByToolName implements Comparator<Job> {
+
+        @Override
+        public int compare(Job o1, Job o2) {
+            return o1.getTool().getName().compareTo(o2.getTool().getName());
+        }
     }
 }
