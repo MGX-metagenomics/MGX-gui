@@ -67,7 +67,7 @@ public class TestMaster {
         }
         GPMSClientI gpms = new GPMS("MyServer", serverURI);
         if (!gpms.login("sjaenick", "XXX")) {
-            fail();
+            return null;
         }
         for (MembershipI m : gpms.getMemberships()) {
             if ("MGX".equals(m.getProject().getProjectClass().getName()) && ("MGX_Viersen".equals(m.getProject().getName()))) {

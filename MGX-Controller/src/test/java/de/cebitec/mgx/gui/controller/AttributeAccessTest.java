@@ -99,6 +99,10 @@ public class AttributeAccessTest {
     public void testMergeD() {
         System.out.println("testMergeD");
         MGXMaster m = TestMaster.get2();
+        if (m == null) {
+            System.err.println("  not tested, private test.");
+            return;
+        }
 
         Distribution atbDist = m.Attribute().getDistribution(5, 19);
         assertNotNull(atbDist);
@@ -136,7 +140,7 @@ public class AttributeAccessTest {
         set.add(atbDist);
         Distribution mergedDists = DistributionFactory.merge(set);
         assertNotNull(mergedDists);
-        assertEquals(17447+46406, mergedDists.getTotalClassifiedElements());
+        assertEquals(17447 + 46406, mergedDists.getTotalClassifiedElements());
 
         int numfound = 0;
         Attribute actino = null;
@@ -166,6 +170,10 @@ public class AttributeAccessTest {
     public void testMergeH() {
         System.out.println("testMergeH");
         MGXMaster m = TestMaster.get2();
+        if (m == null) {
+            System.err.println("  not tested, private test.");
+            return;
+        }
 
         Tree<Long> atb = m.Attribute().getHierarchy(5, 19);
         assertNotNull(atb);
