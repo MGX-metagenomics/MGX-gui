@@ -1,11 +1,9 @@
 package de.cebitec.mgx.gui.keggviewer;
 
-import de.cebitec.mgx.kegg.pathways.KEGGException;
 import de.cebitec.mgx.kegg.pathways.KEGGMaster;
 import de.cebitec.mgx.kegg.pathways.api.PathwayI;
+import de.cebitec.mgx.kegg.pathways.model.Pathway;
 import java.util.Set;
-import java.util.logging.Logger;
-import org.openide.util.Exceptions;
 
 /**
  *
@@ -37,8 +35,8 @@ public class KeggCustomizer extends javax.swing.JPanel {
         }
     }
 
-    public PathwayI getSelectedPathway() {
-        return (PathwayI) pathwayList.getSelectedItem();
+    public Pathway getSelectedPathway() {
+        return (Pathway) pathwayList.getSelectedItem();
     }
 
     /**

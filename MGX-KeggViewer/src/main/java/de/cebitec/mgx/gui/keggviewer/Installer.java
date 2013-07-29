@@ -1,9 +1,11 @@
 package de.cebitec.mgx.gui.keggviewer;
 
+import de.cebitec.mgx.gui.util.Reference;
 import de.cebitec.mgx.kegg.pathways.KEGGException;
 import de.cebitec.mgx.kegg.pathways.KEGGMaster;
 import de.cebitec.mgx.kegg.pathways.api.ECNumberI;
 import de.cebitec.mgx.kegg.pathways.api.PathwayI;
+import de.cebitec.mgx.kegg.pathways.model.Pathway;
 import java.awt.Rectangle;
 import java.io.File;
 import java.util.Collections;
@@ -34,7 +36,7 @@ public class Installer extends ModuleInstall {
                     final KEGGMaster km = KEGGMaster.getInstance(cacheDir);
                     Set<PathwayI> fetchall = km.Pathways().fetchall();
                     final CountDownLatch latch = new CountDownLatch(fetchall.size() * 2);
-                    final SuccessHolder success = new SuccessHolder();
+                    final Reference<Boolean> success = new Reference<>(Boolean.TRUE);
 
                     final Set<ECNumberI> ecNumbers = Collections.synchronizedSet(new HashSet<ECNumberI>());
                     for (final PathwayI p : fetchall) {
@@ -42,9 +44,9 @@ public class Installer extends ModuleInstall {
                             @Override
                             public void run() {
                                 try {
-                                    km.Pathways().fetchImage(p);
+                                    km.Pathways().getImage(p);
                                 } catch (KEGGException ex) {
-                                    success.set(false);
+                                    success.setValue(false);
                                 } finally {
                                     latch.countDown();
                                 }
@@ -59,7 +61,7 @@ public class Installer extends ModuleInstall {
                                     Map<ECNumberI, Set<Rectangle>> coords = km.Pathways().getCoords(p);
                                     ecNumbers.addAll(coords.keySet());
                                 } catch (KEGGException ex) {
-                                    success.set(false);
+                                    success.setValue(false);
                                 } finally {
                                     latch.countDown();
                                 }
@@ -67,7 +69,11 @@ public class Installer extends ModuleInstall {
                         };
                         RP.post(r2);
                     }
-                    latch.await();
+                    try {
+                        latch.await();
+                    } catch (InterruptedException ex) {
+                        Exceptions.printStackTrace(ex);
+                    }
 
                     final CountDownLatch latch2 = new CountDownLatch(ecNumbers.size());
                     for (final ECNumberI ec : ecNumbers) {
@@ -77,7 +83,7 @@ public class Installer extends ModuleInstall {
                                 try {
                                     km.Pathways().getMatchingPathways(ec);
                                 } catch (KEGGException ex) {
-                                    success.set(false);
+                                    success.setValue(false);
                                 } finally {
                                     latch2.countDown();
                                 }
@@ -85,10 +91,15 @@ public class Installer extends ModuleInstall {
                         };
                         RP.post(r3);
                     }
-                    latch2.await();
+                    try {
+                        latch2.await();
+                    } catch (InterruptedException ex) {
+                        Exceptions.printStackTrace(ex);
+                    }
 
-                    keggLoaded = success.get();
-                } catch (KEGGException | InterruptedException ex) {
+                    keggLoaded = success.getValue();
+                } catch (KEGGException ex) {
+                    Exceptions.printStackTrace(ex);
                 }
             }
         };
@@ -105,17 +116,5 @@ public class Installer extends ModuleInstall {
 
         ph.start();
         theTask.schedule(0);
-    }
-    
-    private final class SuccessHolder {
-        private boolean success = true;
-        
-        public void set(boolean b) {
-            success = b;
-        }
-        
-        public boolean get() {
-            return success;
-        }
     }
 }
