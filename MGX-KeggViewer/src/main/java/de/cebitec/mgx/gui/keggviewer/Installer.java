@@ -5,7 +5,6 @@ import de.cebitec.mgx.kegg.pathways.KEGGException;
 import de.cebitec.mgx.kegg.pathways.KEGGMaster;
 import de.cebitec.mgx.kegg.pathways.api.ECNumberI;
 import de.cebitec.mgx.kegg.pathways.api.PathwayI;
-import de.cebitec.mgx.kegg.pathways.model.Pathway;
 import java.awt.Rectangle;
 import java.io.File;
 import java.util.Collections;
@@ -46,6 +45,7 @@ public class Installer extends ModuleInstall {
                                 try {
                                     km.Pathways().getImage(p);
                                 } catch (KEGGException ex) {
+                                    Exceptions.printStackTrace(ex);
                                     success.setValue(false);
                                 } finally {
                                     latch.countDown();
@@ -61,6 +61,7 @@ public class Installer extends ModuleInstall {
                                     Map<ECNumberI, Set<Rectangle>> coords = km.Pathways().getCoords(p);
                                     ecNumbers.addAll(coords.keySet());
                                 } catch (KEGGException ex) {
+                                    Exceptions.printStackTrace(ex);
                                     success.setValue(false);
                                 } finally {
                                     latch.countDown();
@@ -83,6 +84,7 @@ public class Installer extends ModuleInstall {
                                 try {
                                     km.Pathways().getMatchingPathways(ec);
                                 } catch (KEGGException ex) {
+                                    Exceptions.printStackTrace(ex);
                                     success.setValue(false);
                                 } finally {
                                     latch2.countDown();

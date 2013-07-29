@@ -106,7 +106,7 @@ public class KeggViewer extends CategoricalViewerI {
         }
         try {
             panel.setPathway(customizer.getSelectedPathway(), dists.size());
-
+            
             int idx = 0;
             for (Pair<VisualizationGroup, Distribution> p : dists) {
                 VisualizationGroup group = p.getFirst();
@@ -115,7 +115,7 @@ public class KeggViewer extends CategoricalViewerI {
                     Matcher matcher = ecNumber.matcher(e.getKey().getValue());
                     if (matcher.find()) {
                         ECNumberI ec = ECNumberFactory.fromString(e.getKey().getValue().substring(matcher.start(), matcher.end()));
-                        String description = "<html><b>" + e.getKey().getValue() + "</b><br><hr>" 
+                        String description = "<html><b>" + e.getKey().getValue() + "</b><br><hr>"
                                 + group.getName() + ": " + e.getValue().toString() + " hits</html>";
                         panel.addData(idx, ec, group.getColor(), description);
                     }
@@ -130,7 +130,7 @@ public class KeggViewer extends CategoricalViewerI {
     private final static RequestProcessor RP = new RequestProcessor("KEGG-Viewer", 35, true);
 
     private Set<PathwayI> selectPathways() throws ConflictingJobsException, KEGGException {
-        Set<ECNumberI> ecNumbers = new HashSet<>();
+        final Set<ECNumberI> ecNumbers = new HashSet<>();
         for (Pair<VisualizationGroup, Distribution> p : VGroupManager.getInstance().getDistributions()) {
             Distribution dist = p.getSecond();
             for (Entry<Attribute, Number> e : dist.entrySet()) {
@@ -145,22 +145,20 @@ public class KeggViewer extends CategoricalViewerI {
                 }
             }
         }
-        final CountDownLatch latch = new CountDownLatch(ecNumbers.size());
+        final CountDownLatch latch = new CountDownLatch(1);
         final Set<PathwayI> ret = Collections.synchronizedSet(new HashSet<PathwayI>());
-        for (final ECNumberI ec : ecNumbers) {
-            RP.post(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        ret.addAll(master.Pathways().getMatchingPathways(ec));
-                    } catch (KEGGException ex) {
-                        Exceptions.printStackTrace(ex);
-                    } finally {
-                        latch.countDown();
-                    }
+        RP.post(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    ret.addAll(master.Pathways().getMatchingPathways(ecNumbers));
+                } catch (KEGGException ex) {
+                    Exceptions.printStackTrace(ex);
+                } finally {
+                    latch.countDown();
                 }
-            });
-        }
+            }
+        });
         try {
             latch.await();
         } catch (InterruptedException ex) {
@@ -202,6 +200,4 @@ public class KeggViewer extends CategoricalViewerI {
         RP.shutdownNow();
         super.dispose();
     }
-    
-    
 }
