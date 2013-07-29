@@ -101,6 +101,9 @@ public class KeggViewer extends CategoricalViewerI {
 
     @Override
     public void show(List<Pair<VisualizationGroup, Distribution>> dists) {
+        if (customizer.getSelectedPathway() == null) {
+            return;
+        }
         try {
             panel.setPathway(customizer.getSelectedPathway(), dists.size());
 
