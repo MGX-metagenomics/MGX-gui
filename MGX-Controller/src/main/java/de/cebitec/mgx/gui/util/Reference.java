@@ -13,6 +13,9 @@ public class Reference<T> {
         this.value = value;
     }
 
+    public Reference() {
+    }
+
     public T getValue() {
         return value;
     }
