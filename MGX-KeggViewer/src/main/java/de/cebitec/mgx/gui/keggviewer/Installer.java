@@ -43,7 +43,7 @@ public class Installer extends ModuleInstall {
                             @Override
                             public void run() {
                                 try {
-                                    km.Pathways().getImage(p);
+                                    km.Pathways().fetchImageFromServer(p);
                                 } catch (KEGGException ex) {
                                     Exceptions.printStackTrace(ex);
                                     success.setValue(false);
