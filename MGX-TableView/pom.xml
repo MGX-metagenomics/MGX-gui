@@ -48,10 +48,6 @@
             <artifactId>MGX-Datamodel</artifactId>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>MGX-Controller</artifactId>
-        </dependency>
-        <dependency>
             <artifactId>SwingX-Wrapper</artifactId>
             <groupId>de.cebitec.mgx.gui</groupId>
         </dependency>
@@ -66,6 +62,16 @@
         <dependency>
             <artifactId>org-openide-dialogs</artifactId>
             <groupId>org.netbeans.api</groupId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>MGX-SwingUtils</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>MGX-Controller</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 

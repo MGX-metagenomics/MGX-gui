@@ -25,7 +25,7 @@ import org.openide.util.lookup.ServiceProvider;
 public class TableViewer extends ViewerI<Distribution> {
 
     private JXTable table;
-    private TableViewCustomizer cust = new TableViewCustomizer();
+    private TableViewCustomizer cust = null;
 
     @Override
     public JComponent getComponent() {
@@ -49,6 +49,9 @@ public class TableViewer extends ViewerI<Distribution> {
 
     @Override
     public void show(List<Pair<VisualizationGroup, Distribution>> dists) {
+
+        dists = getCustomizer().filter(dists);
+
         Set<Attribute> allAttrs = new HashSet<>();
         int numColumns = dists.size() + 1;
         String[] columns = new String[numColumns];
@@ -103,7 +106,11 @@ public class TableViewer extends ViewerI<Distribution> {
     }
 
     @Override
-    public JComponent getCustomizer() {
+    public TableViewCustomizer getCustomizer() {
+        if (cust == null) {
+            cust = new TableViewCustomizer();
+        }
+        cust.setAttributeType(getAttributeType());
         return cust;
     }
 

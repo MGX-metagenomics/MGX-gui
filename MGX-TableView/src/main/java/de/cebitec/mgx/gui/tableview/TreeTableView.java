@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.tableview;
 
 import de.cebitec.mgx.gui.attributevisualization.viewer.ViewerI;
+import de.cebitec.mgx.gui.datamodel.Attribute;
 import de.cebitec.mgx.gui.datamodel.AttributeType;
 import de.cebitec.mgx.gui.datamodel.misc.Pair;
 import de.cebitec.mgx.gui.datamodel.tree.Node;
@@ -8,7 +9,10 @@ import de.cebitec.mgx.gui.datamodel.tree.Tree;
 import de.cebitec.mgx.gui.groups.ImageExporterI;
 import de.cebitec.mgx.gui.groups.VGroupManager;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import javax.swing.JComponent;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
@@ -23,7 +27,8 @@ import org.openide.util.lookup.ServiceProvider;
 public class TreeTableView extends ViewerI<Tree<Long>> {
 
     private JXTable table;
-    private TableViewCustomizer cust = new TableViewCustomizer();
+    private TableViewCustomizer cust = null;
+    private Set<Attribute> excludeList = null;
 
     @Override
     public JComponent getComponent() {
@@ -32,7 +37,7 @@ public class TreeTableView extends ViewerI<Tree<Long>> {
 
     @Override
     public String getName() {
-        return "Tree Table View";
+        return "Krona Table View";
     }
 
     @Override
@@ -48,8 +53,14 @@ public class TreeTableView extends ViewerI<Tree<Long>> {
 
     @Override
     public void show(List<Pair<VisualizationGroup, Tree<Long>>> dists) {
+
         Tree<Long> tree = dists.get(0).getSecond();
         Node<Long> root = tree.getRoot();
+
+        // convert data to KRONA style
+        tree = convertTree(tree);
+        
+        excludeList = getCustomizer().createBlackList(tree, getCustomizer().getFilterEntries());
 
         /*
          *  handle unaligned trees, where equal depth does not mean equal
@@ -102,7 +113,11 @@ public class TreeTableView extends ViewerI<Tree<Long>> {
     }
 
     @Override
-    public JComponent getCustomizer() {
+    public TableViewCustomizer getCustomizer() {
+        if (cust == null) {
+            cust = new TableViewCustomizer();
+        }
+        cust.setAttributeType(getAttributeType());
         return cust;
     }
 
@@ -145,12 +160,12 @@ public class TreeTableView extends ViewerI<Tree<Long>> {
     private static void setupRowData(DefaultTableModel model, AttributeType[] aTypes, Node<Long> node) {
         Object[] rowData = new Object[1 + aTypes.length];
         int pos = 0;
-        
+
         // add the nodes content in first column
         rowData[pos++] = node.getContent();
-        
+
         Node<Long>[] path = node.getPath();
-        
+
         for (AttributeType at : aTypes) {
             String value = "";
             for (Node<Long> tmp : path) {
@@ -161,14 +176,39 @@ public class TreeTableView extends ViewerI<Tree<Long>> {
             }
             rowData[pos++] = value;
         }
-        
+
         model.addRow(rowData);
-        
+
         // recurse for child nodes
         if (!node.isLeaf()) {
             for (Node<Long> child : node.getChildren()) {
                 setupRowData(model, aTypes, child);
             }
         }
+    }
+
+    private Tree<Long> convertTree(Tree<Long> tree) {
+        // for KRONA plots, we need each nodes count to be the number
+        // of reads most specifically assigned to this node only, excluding
+        // reads assigned to a more specific entry.
+        // Thus, we iterate over all nodes and subtract the sum of reads assigned
+        // to the child nodes.
+        Map<Attribute, Long> newContent = new HashMap<>(tree.getNodes().size());
+        for (Node<Long> node : tree.getNodes()) {
+            Long numPathsEndingHere = node.getContent() - nodeSum(node.getChildren());
+            newContent.put(node.getAttribute(), numPathsEndingHere);
+        }
+        for (Node<Long> node : tree.getNodes()) {
+            node.setContent(newContent.get(node.getAttribute()));
+        }
+        return tree;
+    }
+
+    private static long nodeSum(Set<Node<Long>> nodes) {
+        int sum = 0;
+        for (Node<Long> n : nodes) {
+            sum += n.getContent();
+        }
+        return sum;
     }
 }
