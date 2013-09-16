@@ -31,10 +31,7 @@ public class ExcludeFilter implements VisFilterI<Distribution> {
     public void filterDist(Distribution d) {
         for (Attribute x : blacklist) {
             if (d.containsKey(x)) {
-                int before = d.size();
                 d.remove(x);
-                assert d.size() == before - 1;
-                assert !d.containsKey(x);
             }
         }
     }
