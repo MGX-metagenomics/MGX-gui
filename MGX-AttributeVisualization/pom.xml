@@ -114,6 +114,7 @@
                     <publicPackages>
                         <publicPackage>de.cebitec.mgx.gui.attributevisualization</publicPackage>
                         <publicPackage>de.cebitec.mgx.gui.attributevisualization.filter</publicPackage>
+                        <publicPackage>de.cebitec.mgx.gui.attributevisualization.sorter</publicPackage>
                         <publicPackage>de.cebitec.mgx.gui.attributevisualization.viewer</publicPackage>
                     </publicPackages>
                 </configuration>
