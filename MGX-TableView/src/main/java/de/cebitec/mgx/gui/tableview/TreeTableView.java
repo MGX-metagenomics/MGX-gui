@@ -1,7 +1,6 @@
 package de.cebitec.mgx.gui.tableview;
 
 import de.cebitec.mgx.gui.attributevisualization.viewer.ViewerI;
-import de.cebitec.mgx.gui.datamodel.Attribute;
 import de.cebitec.mgx.gui.datamodel.AttributeType;
 import de.cebitec.mgx.gui.datamodel.misc.Pair;
 import de.cebitec.mgx.gui.datamodel.tree.Node;
@@ -10,10 +9,7 @@ import de.cebitec.mgx.gui.datamodel.tree.TreeFactory;
 import de.cebitec.mgx.gui.groups.ImageExporterI;
 import de.cebitec.mgx.gui.groups.VGroupManager;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import javax.swing.JComponent;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
@@ -29,7 +25,6 @@ public class TreeTableView extends ViewerI<Tree<Long>> {
 
     private JXTable table;
     private TableViewCustomizer cust = null;
-    private Set<Attribute> excludeList = null;
 
     @Override
     public JComponent getComponent() {
@@ -58,9 +53,8 @@ public class TreeTableView extends ViewerI<Tree<Long>> {
         Tree<Long> tree = dists.get(0).getSecond();
 
         // convert data to KRONA style
-        tree = convertTree(tree);
-
-        excludeList = getCustomizer().createBlackList(tree, getCustomizer().getFilterEntries());
+        Tree<Long> kronaTree = TreeFactory.createKRONATree(tree);
+        kronaTree = TreeFactory.filter(kronaTree, getCustomizer().getFilterEntries());
 
         /*
          *  handle unaligned trees, where equal depth does not mean equal
@@ -72,7 +66,7 @@ public class TreeTableView extends ViewerI<Tree<Long>> {
          * 
          */
 
-        // setup column names
+        // setup column names, based on unfiltered tree
         AttributeType[] longestPath = getLongestPath(tree);
         String[] columns = new String[1 + longestPath.length];
         int i = 0;
@@ -99,7 +93,7 @@ public class TreeTableView extends ViewerI<Tree<Long>> {
         };
         cust.setModel(model); // for tsv export
 
-        setupRowData(model, longestPath, tree.getRoot());
+        setupRowData(model, longestPath, kronaTree.getRoot());
 
         table = new JXTable(model);
         table.setFillsViewportHeight(true);
@@ -143,12 +137,10 @@ public class TreeTableView extends ViewerI<Tree<Long>> {
         int curDepth = -1;
         Node<Long> deepestNode = null;
         for (Node<Long> node : tree.getNodes()) {
-            if (!excludeList.contains(node.getAttribute())) {
                 if (node.getDepth() > curDepth) {
                     deepestNode = node;
                     curDepth = node.getDepth();
                 }
-            }
         }
 
         AttributeType[] ret = new AttributeType[curDepth + 1];
@@ -160,9 +152,6 @@ public class TreeTableView extends ViewerI<Tree<Long>> {
     }
 
     private void setupRowData(DefaultTableModel model, AttributeType[] aTypes, Node<Long> node) {
-        if (excludeList.contains(node.getAttribute())) {
-            return;
-        }
         Object[] rowData = new Object[1 + aTypes.length];
         int pos = 0;
 
@@ -190,38 +179,5 @@ public class TreeTableView extends ViewerI<Tree<Long>> {
                 setupRowData(model, aTypes, child);
             }
         }
-    }
-
-    private Tree<Long> convertTree(Tree<Long> tree) {
-        
-        tree = TreeFactory.clone(tree);
-        
-        // for KRONA plots, we need each nodes count to be the number
-        // of reads most specifically assigned to this node only, excluding
-        // reads assigned to a more specific entry.
-        // Thus, we iterate over all nodes and subtract the sum of reads assigned
-        // to the immediate child nodes.
-        Map<Attribute, Long> newContent = new HashMap<>(tree.getNodes().size());
-        for (Node<Long> node : tree.getNodes()) {
-            Long numPathsEndingHere = node.getContent();
-            if (!node.isLeaf()) {
-                numPathsEndingHere = numPathsEndingHere - nodeSum(node.getChildren());
-            }
-            newContent.put(node.getAttribute(), numPathsEndingHere);
-        }
-        
-        // ..and update
-        for (Node<Long> node : tree.getNodes()) {
-            node.setContent(newContent.get(node.getAttribute()));
-        }
-        return tree;
-    }
-
-    private static long nodeSum(Set<Node<Long>> nodes) {
-        int sum = 0;
-        for (Node<Long> n : nodes) {
-            sum += n.getContent();
-        }
-        return sum;
     }
 }

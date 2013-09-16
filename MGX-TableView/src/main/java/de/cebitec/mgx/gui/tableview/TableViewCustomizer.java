@@ -174,7 +174,7 @@ public class TableViewCustomizer extends javax.swing.JPanel implements VisFilter
         return dists;
     }
 
-    public Set<Attribute> createBlackList(Tree<Long> tree, Set<Attribute> filterEntries) {
+    private Set<Attribute> createBlackList(Tree<Long> tree, Set<Attribute> filterEntries) {
         /*
          * create a list of all attributes affected by filterEntries, i.e.
          * where the path from the root node to a node contains an attribute
