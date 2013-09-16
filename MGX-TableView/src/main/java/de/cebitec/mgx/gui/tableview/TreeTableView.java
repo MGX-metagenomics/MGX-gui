@@ -6,6 +6,7 @@ import de.cebitec.mgx.gui.datamodel.AttributeType;
 import de.cebitec.mgx.gui.datamodel.misc.Pair;
 import de.cebitec.mgx.gui.datamodel.tree.Node;
 import de.cebitec.mgx.gui.datamodel.tree.Tree;
+import de.cebitec.mgx.gui.datamodel.tree.TreeFactory;
 import de.cebitec.mgx.gui.groups.ImageExporterI;
 import de.cebitec.mgx.gui.groups.VGroupManager;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
@@ -55,11 +56,10 @@ public class TreeTableView extends ViewerI<Tree<Long>> {
     public void show(List<Pair<VisualizationGroup, Tree<Long>>> dists) {
 
         Tree<Long> tree = dists.get(0).getSecond();
-        Node<Long> root = tree.getRoot();
 
         // convert data to KRONA style
         tree = convertTree(tree);
-        
+
         excludeList = getCustomizer().createBlackList(tree, getCustomizer().getFilterEntries());
 
         /*
@@ -99,7 +99,7 @@ public class TreeTableView extends ViewerI<Tree<Long>> {
         };
         cust.setModel(model); // for tsv export
 
-        setupRowData(model, longestPath, root);
+        setupRowData(model, longestPath, tree.getRoot());
 
         table = new JXTable(model);
         table.setFillsViewportHeight(true);
@@ -126,7 +126,7 @@ public class TreeTableView extends ViewerI<Tree<Long>> {
         return null; // no image to export here
     }
 
-    private static AttributeType[] getLongestPath(Tree<Long> tree) {
+    private AttributeType[] getLongestPath(Tree<Long> tree) {
         /*
          * actually, this is still wrong. we don't need the longest path, but
          * the most complete one. the current code will fail when several paths
@@ -143,9 +143,11 @@ public class TreeTableView extends ViewerI<Tree<Long>> {
         int curDepth = -1;
         Node<Long> deepestNode = null;
         for (Node<Long> node : tree.getNodes()) {
-            if (node.getDepth() > curDepth) {
-                deepestNode = node;
-                curDepth = node.getDepth();
+            if (!excludeList.contains(node.getAttribute())) {
+                if (node.getDepth() > curDepth) {
+                    deepestNode = node;
+                    curDepth = node.getDepth();
+                }
             }
         }
 
@@ -157,7 +159,10 @@ public class TreeTableView extends ViewerI<Tree<Long>> {
         return ret;
     }
 
-    private static void setupRowData(DefaultTableModel model, AttributeType[] aTypes, Node<Long> node) {
+    private void setupRowData(DefaultTableModel model, AttributeType[] aTypes, Node<Long> node) {
+        if (excludeList.contains(node.getAttribute())) {
+            return;
+        }
         Object[] rowData = new Object[1 + aTypes.length];
         int pos = 0;
 
@@ -188,16 +193,24 @@ public class TreeTableView extends ViewerI<Tree<Long>> {
     }
 
     private Tree<Long> convertTree(Tree<Long> tree) {
+        
+        tree = TreeFactory.clone(tree);
+        
         // for KRONA plots, we need each nodes count to be the number
         // of reads most specifically assigned to this node only, excluding
         // reads assigned to a more specific entry.
         // Thus, we iterate over all nodes and subtract the sum of reads assigned
-        // to the child nodes.
+        // to the immediate child nodes.
         Map<Attribute, Long> newContent = new HashMap<>(tree.getNodes().size());
         for (Node<Long> node : tree.getNodes()) {
-            Long numPathsEndingHere = node.getContent() - nodeSum(node.getChildren());
+            Long numPathsEndingHere = node.getContent();
+            if (!node.isLeaf()) {
+                numPathsEndingHere = numPathsEndingHere - nodeSum(node.getChildren());
+            }
             newContent.put(node.getAttribute(), numPathsEndingHere);
         }
+        
+        // ..and update
         for (Node<Long> node : tree.getNodes()) {
             node.setContent(newContent.get(node.getAttribute()));
         }
