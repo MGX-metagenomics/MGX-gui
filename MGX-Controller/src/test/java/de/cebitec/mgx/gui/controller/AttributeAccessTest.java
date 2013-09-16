@@ -91,8 +91,47 @@ public class AttributeAccessTest {
         assertEquals(path[0], tree.getRoot());
         assertNotNull(path[1]);
         assertEquals(path[2], n);
+    }
 
+    @Test
+    public void testFilterTree() {
+        System.out.println("filterTree");
+        Tree<Long> tree = master.Attribute().getHierarchy(6, 3);
+        assertNotNull(tree);
+        assertEquals(30, tree.getNodes().size());
+        assertNotNull(tree.getRoot());
 
+        Node<Long> n = null;
+        for (Node x : tree.getNodes()) {
+            if (x.getAttribute().getValue().equals("Bacteroidetes")) {
+                n = x;
+                break;
+            }
+        }
+        assertNotNull(n);
+        assertEquals(2, n.getDepth());
+
+        Set<Attribute> exclude = new HashSet<>();
+        exclude.add(n.getAttribute());
+
+        tree = TreeFactory.filter(tree, exclude);
+        assertNotNull(tree);
+        assertEquals(25, tree.getNodes().size());
+        assertNotNull(tree.getRoot());
+    }
+
+    @Test
+    public void testCloneTree() {
+        System.out.println("cloneTree");
+        Tree<Long> tree = master.Attribute().getHierarchy(6, 3);
+        assertNotNull(tree);
+        assertEquals(30, tree.getNodes().size());
+        assertNotNull(tree.getRoot());
+        
+        Tree<Long> tree2 = TreeFactory.clone(tree);
+        assertNotNull(tree2);
+        assertNotSame(tree2, tree);
+        assertEquals(tree.getNodes().size(), tree2.getNodes().size());
     }
 
     @Test
