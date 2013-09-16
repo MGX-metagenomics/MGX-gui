@@ -17,13 +17,13 @@ import de.cebitec.mgx.gui.groups.VGroupManager;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import de.cebitec.mgx.gui.swingutils.NonEDT;
 import de.cebitec.mgx.gui.util.Reference;
+import de.cebitec.mgx.gui.attributevisualization.sorter.SortByNumberOfValues;
 import java.awt.BorderLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -341,22 +341,6 @@ public class BarChartCustomizer extends javax.swing.JPanel implements VisFilterI
 
     public Set<Attribute> getFilterEntries() {
         return filterList == null ? Collections.EMPTY_SET : filterList.getDeselectedEntries();
-    }
-
-    private static class SortByNumberOfValues implements Comparator<AttributeType> {
-
-        Map<AttributeType, SortedSet<Attribute>> map;
-
-        public void setMap(Map<AttributeType, SortedSet<Attribute>> data) {
-            map = data;
-        }
-
-        @Override
-        public int compare(AttributeType o1, AttributeType o2) {
-            return map != null
-                    ? Integer.compare(map.get(o1).size(), map.get(o2).size())
-                    : 0;
-        }
     }
 
     private class AttrTypeModel extends AbstractListModel implements ComboBoxModel, ItemListener {
