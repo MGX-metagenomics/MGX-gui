@@ -98,6 +98,56 @@ public class TreeFactory {
 //
 //        return clone;
 //    }
+    public static Tree<Long> createKRONATree(Tree<Long> tree) {
+
+        tree = TreeFactory.clone(tree);
+
+        // for KRONA plots, we need each nodes count to be the number
+        // of reads most specifically assigned to this node only, excluding
+        // reads assigned to a more specific entry.
+        // Thus, we iterate over all nodes and subtract the sum of reads assigned
+        // to the immediate child nodes.
+        Map<Attribute, Long> newContent = new HashMap<>(tree.getNodes().size());
+        for (Node<Long> node : tree.getNodes()) {
+            Long numPathsEndingHere = node.getContent();
+            if (!node.isLeaf()) {
+                numPathsEndingHere = numPathsEndingHere - nodeSum(node.getChildren());
+            }
+            newContent.put(node.getAttribute(), numPathsEndingHere);
+        }
+
+        // ..and update
+        for (Node<Long> node : tree.getNodes()) {
+            node.setContent(newContent.get(node.getAttribute()));
+        }
+        return tree;
+    }
+
+    public static Tree<Long> filter(Tree<Long> tree, Set<Attribute> exclude) {
+        Tree<Long> clone = new Tree<>();
+
+        // clone root node
+        if (!exclude.contains(tree.getRoot().getAttribute())) {
+            long rootContent = tree.getRoot().getContent().longValue();
+            Node<Long> cloneRoot = clone.createRootNode(tree.getRoot().getAttribute(), Long.valueOf(rootContent));
+
+            // filter children recursively
+            filterChildren(cloneRoot, tree.getRoot().getChildren(), new LongCloner(), exclude);
+        }
+        
+        return clone;
+    }
+
+    private static <T> void filterChildren(Node<T> parent, Set<Node<T>> children, ContentCloner<T> cloner, Set<Attribute> exclude) {
+        for (Node<T> child : children) {
+            if (!exclude.contains(child.getAttribute())) {
+                Node<T> clonedChild = parent.addChild(child.getAttribute(), cloner.cloneContent(child.getContent()));
+                if (!child.isLeaf()) {
+                    filterChildren(clonedChild, child.getChildren(), cloner, exclude);
+                }
+            }
+        }
+    }
 
     public static Tree<Long> clone(Tree<Long> tree) {
         Tree<Long> clone = new Tree<>();
@@ -198,6 +248,14 @@ public class TreeFactory {
             }
         }
         return false;
+    }
+
+    private static long nodeSum(Set<Node<Long>> nodes) {
+        int sum = 0;
+        for (Node<Long> n : nodes) {
+            sum += n.getContent();
+        }
+        return sum;
     }
 
     private interface ContentCloner<T> {
