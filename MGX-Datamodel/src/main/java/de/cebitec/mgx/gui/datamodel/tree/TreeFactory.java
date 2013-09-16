@@ -86,6 +86,41 @@ public class TreeFactory {
         return consensus;
     }
 
+//    public static <T> Tree<T> filterTree(Tree<T> tree, Set<Attribute> exclude) {
+//        Tree<T> clone = new Tree<>();
+//
+//        // clone root node
+//        long rootContent = tree.getRoot().getContent().longValue();
+//        Node<Long> cloneRoot = clone.createRootNode(tree.getRoot().getAttribute(), Long.valueOf(rootContent));
+//
+//        // clone children recursively
+//        cloneChildren(cloneRoot, tree.getRoot().getChildren(), new LongCloner());
+//
+//        return clone;
+//    }
+
+    public static Tree<Long> clone(Tree<Long> tree) {
+        Tree<Long> clone = new Tree<>();
+
+        // clone root node
+        long rootContent = tree.getRoot().getContent().longValue();
+        Node<Long> cloneRoot = clone.createRootNode(tree.getRoot().getAttribute(), Long.valueOf(rootContent));
+
+        // clone children recursively
+        cloneChildren(cloneRoot, tree.getRoot().getChildren(), new LongCloner());
+
+        return clone;
+    }
+
+    private static <T> void cloneChildren(Node<T> parent, Set<Node<T>> children, ContentCloner<T> cloner) {
+        for (Node<T> child : children) {
+            Node<T> clonedChild = parent.addChild(child.getAttribute(), cloner.cloneContent(child.getContent()));
+            if (!child.isLeaf()) {
+                cloneChildren(clonedChild, child.getChildren(), cloner);
+            }
+        }
+    }
+
     private static <T, U, V> void addChildren(Node<T> parent, Set<Node<U>> children, ContentAccessor<V, U> cac, DataMerger<T, V> merger) {
         for (Node<U> node : children) {
             Node<T> correctChild = null;
@@ -165,6 +200,11 @@ public class TreeFactory {
         return false;
     }
 
+    private interface ContentCloner<T> {
+
+        T cloneContent(T content);
+    }
+
     private interface DataMerger<T, U> {
 
         T merge(T first, U second);
@@ -175,6 +215,14 @@ public class TreeFactory {
     private interface ContentAccessor<T, U> {
 
         T getContent(Node<U> in);
+    }
+
+    private static class LongCloner implements ContentCloner<Long> {
+
+        @Override
+        public Long cloneContent(Long content) {
+            return Long.valueOf(content.longValue());
+        }
     }
 
     private static class NodeAccess<T> implements ContentAccessor<T, T> {
