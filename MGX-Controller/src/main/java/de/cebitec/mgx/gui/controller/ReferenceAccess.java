@@ -115,6 +115,11 @@ public class ReferenceAccess extends AccessBase<Reference> {
         return null;
     }
     
+    public long installGlobalReference(long id) throws MGXServerException {
+        assert id != Identifiable.INVALID_IDENTIFIER;
+        return getDTOmaster().Reference().installGlobalReference(id);
+    }
+    
     
     @Override
     public Task delete(Reference obj) {
