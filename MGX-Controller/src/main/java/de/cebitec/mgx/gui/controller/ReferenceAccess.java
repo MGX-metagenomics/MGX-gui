@@ -14,10 +14,12 @@ import de.cebitec.mgx.gui.datamodel.Identifiable;
 import de.cebitec.mgx.gui.datamodel.ModelBase;
 import de.cebitec.mgx.gui.datamodel.Reference;
 import de.cebitec.mgx.gui.datamodel.Region;
+import de.cebitec.mgx.gui.datamodel.Tool;
 import de.cebitec.mgx.gui.datamodel.misc.Task;
 import de.cebitec.mgx.gui.dtoconversion.DNAExtractDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.ReferenceDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.RegionDTOFactory;
+import de.cebitec.mgx.gui.dtoconversion.ToolDTOFactory;
 import de.cebitec.mgx.gui.util.BaseIterator;
 import java.util.Iterator;
 import java.util.UUID;
@@ -114,6 +116,19 @@ public class ReferenceAccess extends AccessBase<Reference> {
         }
         return null;
     }
+    
+    public Iterator<Reference> listGlobalReferences() throws MGXServerException {
+        Iterator<dto.ReferenceDTO> listGlobalReferences = getDTOmaster().Reference().listGlobalReferences();
+        return new BaseIterator<dto.ReferenceDTO, Reference>(listGlobalReferences) {
+            @Override
+            public Reference next() {
+                Reference reference = ReferenceDTOFactory.getInstance().toModel(iter.next());
+                // FIXME cannot set master
+                return reference;
+            }
+        };
+    }
+    
     
     public long installGlobalReference(long id) throws MGXServerException {
         assert id != Identifiable.INVALID_IDENTIFIER;
