@@ -137,7 +137,7 @@ public class AnalysisWizardPanel2 implements WizardDescriptor.Panel<WizardDescri
         avp.setOptional(parameter.isOptional());
 
 
-        Pair<? extends ValueHolderI, ? extends ValidatorI> p = getValidator(parameter.getType());
+        Pair<? extends ValueHolderI, ? extends ValidatorI> p = getValidator(parameter);
         valueHolder = p.getFirst();
         validator = p.getSecond();
         if (jp.getDefaultValue() != null) {
@@ -149,8 +149,8 @@ public class AnalysisWizardPanel2 implements WizardDescriptor.Panel<WizardDescri
         getComponent().setInputComponent(valueHolder);
     }
 
-    private Pair<? extends ValueHolderI, ? extends ValidatorI> getValidator(String type) {
-        switch (type) {
+    private Pair<? extends ValueHolderI, ? extends ValidatorI> getValidator(JobParameter jp) {
+        switch (jp.getType()) {
             case "ConfigByte":
                 return new Pair<>(new TextFieldPanel(), new ByteValidator());
             case "ConfigDouble":
