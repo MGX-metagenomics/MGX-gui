@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package de.cebitec.mgx.gui.controller;
 
 import de.cebitec.mgx.client.exception.MGXClientException;
@@ -9,17 +6,13 @@ import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto;
 import de.cebitec.mgx.dto.dto.ReferenceDTO;
 import de.cebitec.mgx.dto.dto.RegionDTO;
-import de.cebitec.mgx.gui.datamodel.DNAExtract;
 import de.cebitec.mgx.gui.datamodel.Identifiable;
 import de.cebitec.mgx.gui.datamodel.ModelBase;
 import de.cebitec.mgx.gui.datamodel.Reference;
 import de.cebitec.mgx.gui.datamodel.Region;
-import de.cebitec.mgx.gui.datamodel.Tool;
 import de.cebitec.mgx.gui.datamodel.misc.Task;
-import de.cebitec.mgx.gui.dtoconversion.DNAExtractDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.ReferenceDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.RegionDTOFactory;
-import de.cebitec.mgx.gui.dtoconversion.ToolDTOFactory;
 import de.cebitec.mgx.gui.util.BaseIterator;
 import java.util.Iterator;
 import java.util.UUID;
