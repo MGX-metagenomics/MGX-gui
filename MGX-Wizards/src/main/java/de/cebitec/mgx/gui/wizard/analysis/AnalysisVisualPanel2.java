@@ -53,7 +53,7 @@ public final class AnalysisVisualPanel2 extends JPanel implements PropertyChange
         return valueholder.getValue();
     }
     
-    private ValueHolderI valueholder = null;
+    private ValueHolderI<String> valueholder = null;
 
     /**
      * This method is called from within the constructor to initialize the form. WARNING: Do NOT modify this code. The content of this method is always

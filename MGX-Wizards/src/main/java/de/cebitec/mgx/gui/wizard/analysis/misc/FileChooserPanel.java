@@ -7,7 +7,7 @@ import de.cebitec.mgx.gui.controller.MGXMaster;
  *
  * @author sjaenick
  */
-public class FileChooserPanel extends ValueHolderI {
+public class FileChooserPanel extends ValueHolderI<String> {
 
     private final MGXMaster master;
     /**

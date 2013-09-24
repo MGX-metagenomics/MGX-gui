@@ -7,7 +7,7 @@ import de.cebitec.mgx.gui.datamodel.JobParameter;
  *
  * @author sjaenick
  */
-public class BooleanPanel extends ValueHolderI {
+public class BooleanPanel extends ValueHolderI<String> {
 
     /**
      * Creates new form BooleanPanel

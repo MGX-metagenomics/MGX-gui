@@ -7,7 +7,7 @@ import javax.swing.event.DocumentListener;
  *
  * @author sjaenick
  */
-public class TextFieldPanel extends ValueHolderI implements DocumentListener {
+public class TextFieldPanel extends ValueHolderI<String> implements DocumentListener {
 
     /**
      * Creates new form TextFieldPanel

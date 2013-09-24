@@ -38,7 +38,7 @@ public class AnalysisWizardPanel2 implements WizardDescriptor.Panel<WizardDescri
     private WizardDescriptor model = null;
     private boolean isValid = false;
     private ValidatorI validator = null;
-    private ValueHolderI valueHolder = null;
+    private ValueHolderI<String> valueHolder = null;
     private final EventListenerList listeners = new EventListenerList();
     public static final String PROP_PARAM = "propParam";
 
@@ -156,7 +156,7 @@ public class AnalysisWizardPanel2 implements WizardDescriptor.Panel<WizardDescri
             case "ConfigDouble":
                 return new Pair<>(new TextFieldPanel(), new DoubleValidator());
             case "ConfigEnumeration`1":
-                return new Pair<>(new ComboBoxPanel(parameter), new MultipleChoiceValidator(parameter));
+                return new Pair<>(new ComboBoxPanel(jp), new MultipleChoiceValidator(jp));
             case "ConfigFile":
                 return new Pair<>(new FileChooserPanel(master), new StringValidator());
             case "ConfigInteger":
@@ -166,13 +166,13 @@ public class AnalysisWizardPanel2 implements WizardDescriptor.Panel<WizardDescri
             case "ConfigSByte":
                 return new Pair<>(new TextFieldPanel(), new SByteValidator());
             case "ConfigSelection`2":
-                return new Pair<>(new ComboBoxPanel(parameter), new MultipleChoiceValidator(parameter));
+                return new Pair<>(new ComboBoxPanel(jp), new MultipleChoiceValidator(jp));
             case "ConfigString":
                 return new Pair<>(new TextFieldPanel(), new StringValidator());
             case "ConfigULong":
                 return new Pair<>(new TextFieldPanel(), new ULongValidator());
             case "ConfigBoolean":
-                return new Pair<>(new BooleanPanel(parameter), new BooleanValidator());
+                return new Pair<>(new BooleanPanel(jp), new BooleanValidator());
             default:
                 // uncheckable configuration type
                 return new Pair<>(new TextFieldPanel(), new StringValidator());
