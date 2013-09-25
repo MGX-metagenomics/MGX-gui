@@ -17,6 +17,9 @@ public class MultipleChoiceValidator extends ValidatorI<String> {
 
     @Override
     public boolean validate(String input) {
+        if (input == null) {
+            return false;
+        }
         if (param.getChoices().containsKey(input)) {
             value = input;
             return true;

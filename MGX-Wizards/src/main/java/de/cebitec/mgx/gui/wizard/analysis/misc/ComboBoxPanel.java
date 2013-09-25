@@ -19,7 +19,7 @@ public class ComboBoxPanel extends ValueHolderI<String> implements ActionListene
         for (String o : jp.getChoices().keySet()) {
             jComboBox1.addItem(o);
         }
-        jComboBox1.addActionListener(jComboBox1);
+        jComboBox1.addActionListener(this);
     }
     
     /**
@@ -58,7 +58,7 @@ public class ComboBoxPanel extends ValueHolderI<String> implements ActionListene
 
     @Override
     public String getValue() {
-        return item.toString();
+        return item == null ? null : item.toString();
     }
 
     @Override
