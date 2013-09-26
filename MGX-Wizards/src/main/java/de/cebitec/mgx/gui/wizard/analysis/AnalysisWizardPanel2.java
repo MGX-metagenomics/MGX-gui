@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.wizard.analysis;
 
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.JobParameter;
+import de.cebitec.mgx.gui.datamodel.Reference;
 import de.cebitec.mgx.gui.datamodel.misc.Pair;
 import de.cebitec.mgx.gui.wizard.analysis.misc.BooleanPanel;
 import de.cebitec.mgx.gui.wizard.analysis.misc.ComboBoxPanel;
@@ -20,6 +21,9 @@ import de.cebitec.mgx.gui.wizard.analysis.validator.ULongValidator;
 import de.cebitec.mgx.gui.wizard.analysis.validator.ValidatorI;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
@@ -101,9 +105,9 @@ public class AnalysisWizardPanel2 implements WizardDescriptor.Panel<WizardDescri
     public void propertyChange(PropertyChangeEvent evt) {
         boolean oldState = isValid;
         isValid = checkValidity();
-       // if (oldState != isValid) {
-            fireChangeEvent(this, oldState, isValid);
-       // }
+        // if (oldState != isValid) {
+        fireChangeEvent(this, oldState, isValid);
+        // }
     }
 
     private boolean checkValidity() {
@@ -173,6 +177,15 @@ public class AnalysisWizardPanel2 implements WizardDescriptor.Panel<WizardDescri
                 return new Pair<>(new TextFieldPanel(), new ULongValidator());
             case "ConfigBoolean":
                 return new Pair<>(new BooleanPanel(jp), new BooleanValidator());
+            case "ConfigMGXReference":
+                // on EDT here?
+                Iterator<Reference> iter = master.Reference().fetchall();
+                Map<Reference, String> refs = new HashMap<>();
+                while (iter.hasNext()) {
+                    Reference r = iter.next();
+                    refs.put(r, String.valueOf(r.getId()));
+                }
+                return new Pair<>(new ComboBoxPanel(jp, refs), new MultipleChoiceValidator(jp, refs));
             default:
                 // uncheckable configuration type
                 return new Pair<>(new TextFieldPanel(), new StringValidator());
