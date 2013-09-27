@@ -75,7 +75,11 @@ public class MGXMaster extends ModelBase implements MGXMasterI, PropertyChangeLi
     public ReferenceAccess Reference() {
         return getAccessor(ReferenceAccess.class);
     }
-    
+
+    public MappingAccess Mapping() {
+        return getAccessor(MappingAccess.class);
+    }
+
     public ObservationAccess Observation() {
         return getAccessor(ObservationAccess.class);
     }
