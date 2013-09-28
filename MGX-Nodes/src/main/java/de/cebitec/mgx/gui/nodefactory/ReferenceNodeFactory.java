@@ -14,7 +14,7 @@ import org.openide.nodes.*;
  */
 public class ReferenceNodeFactory extends ChildFactory<Reference> implements NodeListener {
 
-    private MGXMaster master;
+    private final MGXMaster master;
     //
     private boolean refreshing = false;
 
