@@ -45,7 +45,7 @@ public class JobNode extends MGXNodeBase<Job> {
 
     @Override
     public Action[] getActions(boolean context) {
-        return new Action[]{new DeleteJob(), new GetError()};
+        return new Action[]{new DeleteJob(), new GetError(), new ResubmitAction()};
     }
 
     @Override
@@ -197,6 +197,46 @@ public class JobNode extends MGXNodeBase<Job> {
                 }
             };
             sw.execute();
+        }
+
+        @Override
+        public boolean isEnabled() {
+            return super.isEnabled() && RBAC.isUser() && job.getStatus().equals(JobState.FAILED);
+        }
+    }
+
+    private class ResubmitAction extends AbstractAction {
+
+        public ResubmitAction() {
+            putValue(NAME, "Restart");
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            final Job job = getLookup().lookup(Job.class);
+            final MGXMaster m = getLookup().lookup(MGXMaster.class);
+
+            final MGXTask restartTask = new MGXTask("Restart " + job.getTool().getName()) {
+                @Override
+                public boolean process() {
+                    setStatus("Restarting job..");
+                    Task task = m.Job().restart(job);
+                    while (!task.done()) {
+                        setStatus(task.getStatusMessage());
+                        task = m.Task().get(task);
+                        sleep();
+                    }
+                    task.finish();
+                    return task.getState() == Task.State.FINISHED;
+                }
+            };
+
+            NonEDT.invoke(new Runnable() {
+                @Override
+                public void run() {
+                    TaskManager.getInstance().addTask(restartTask);
+                }
+            });
         }
 
         @Override
