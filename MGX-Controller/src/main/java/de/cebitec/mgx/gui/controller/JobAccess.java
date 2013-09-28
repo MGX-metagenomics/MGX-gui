@@ -37,6 +37,17 @@ public class JobAccess extends AccessBase<Job> {
         return ret;
     }
 
+    public Task restart(Job job) {
+        Task ret = null;
+        try {
+            UUID uuid = getDTOmaster().Job().restart(job.getId());
+            ret = getMaster().Task().get(job, uuid, TaskType.MODIFY);
+        } catch (MGXServerException | MGXClientException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+        return ret;
+    }
+
     public boolean cancel(Job obj) throws MGXServerException {
         assert obj.getId() != Identifiable.INVALID_IDENTIFIER;
         boolean ret = getDTOmaster().Job().cancel(obj.getId());
