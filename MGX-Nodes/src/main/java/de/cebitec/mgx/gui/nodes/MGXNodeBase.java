@@ -36,7 +36,6 @@ public abstract class MGXNodeBase<T extends ModelBase> extends AbstractNode impl
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        System.err.println("node got PCE: " + evt.getPropertyName());
         switch (evt.getPropertyName()) {
             case ModelBase.OBJECT_DELETED:
                 content.removePropertyChangeListener(this);
