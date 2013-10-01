@@ -109,16 +109,22 @@ public class ReferenceAccess extends AccessBase<Reference> {
         return null;
     }
 
-    public Iterator<Reference> listGlobalReferences() throws MGXServerException {
-        Iterator<dto.ReferenceDTO> listGlobalReferences = getDTOmaster().Reference().listGlobalReferences();
-        return new BaseIterator<dto.ReferenceDTO, Reference>(listGlobalReferences) {
-            @Override
-            public Reference next() {
-                Reference reference = ReferenceDTOFactory.getInstance().toModel(iter.next());
-                // FIXME cannot set master
-                return reference;
-            }
-        };
+    public Iterator<Reference> listGlobalReferences() {
+        Iterator<ReferenceDTO> iter = null;
+        try {
+            iter = getDTOmaster().Reference().listGlobalReferences();
+            return new BaseIterator<dto.ReferenceDTO, Reference>(iter) {
+                @Override
+                public Reference next() {
+                    Reference reference = ReferenceDTOFactory.getInstance().toModel(iter.next());
+                    // FIXME cannot set master
+                    return reference;
+                }
+            };
+        } catch (MGXServerException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+        return null;
     }
 
     public long installGlobalReference(long id) throws MGXServerException {
