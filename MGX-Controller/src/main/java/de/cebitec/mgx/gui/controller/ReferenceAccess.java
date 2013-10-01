@@ -1,4 +1,3 @@
-
 package de.cebitec.mgx.gui.controller;
 
 import de.cebitec.mgx.client.exception.MGXClientException;
@@ -92,7 +91,7 @@ public class ReferenceAccess extends AccessBase<Reference> {
         obj.firePropertyChange(ModelBase.OBJECT_MODIFIED, null, obj);
     }
 
-    public Iterator<Region> byReferenceInterval(Long id,int from,int to) {
+    public Iterator<Region> byReferenceInterval(Long id, int from, int to) {
         Iterator<RegionDTO> fetchall;
         try {
             fetchall = getDTOmaster().Reference().byReferenceInterval(id, from, to);
@@ -103,13 +102,13 @@ public class ReferenceAccess extends AccessBase<Reference> {
                     s.setMaster(getMaster());
                     return s;
                 }
-            };   
+            };
         } catch (MGXServerException | MGXClientException ex) {
-             Exceptions.printStackTrace(ex);
+            Exceptions.printStackTrace(ex);
         }
         return null;
     }
-    
+
     public Iterator<Reference> listGlobalReferences() throws MGXServerException {
         Iterator<dto.ReferenceDTO> listGlobalReferences = getDTOmaster().Reference().listGlobalReferences();
         return new BaseIterator<dto.ReferenceDTO, Reference>(listGlobalReferences) {
@@ -121,14 +120,12 @@ public class ReferenceAccess extends AccessBase<Reference> {
             }
         };
     }
-    
-    
+
     public long installGlobalReference(long id) throws MGXServerException {
         assert id != Identifiable.INVALID_IDENTIFIER;
         return getDTOmaster().Reference().installGlobalReference(id);
     }
-    
-    
+
     @Override
     public Task delete(Reference obj) {
         Task ret = null;
