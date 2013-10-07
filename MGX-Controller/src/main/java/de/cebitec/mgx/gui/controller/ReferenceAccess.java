@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.controller;
 
+import de.cebitec.mgx.client.datatransfer.ReferenceUploader;
 import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto;
@@ -13,6 +14,7 @@ import de.cebitec.mgx.gui.datamodel.misc.Task;
 import de.cebitec.mgx.gui.dtoconversion.ReferenceDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.RegionDTOFactory;
 import de.cebitec.mgx.gui.util.BaseIterator;
+import java.io.File;
 import java.util.Iterator;
 import java.util.UUID;
 import org.openide.util.Exceptions;
@@ -142,5 +144,9 @@ public class ReferenceAccess extends AccessBase<Reference> {
             Exceptions.printStackTrace(ex);
         }
         return ret;
+    }
+    
+    public ReferenceUploader createUploader(File localFile) {
+        return getDTOmaster().Reference().createUploader(localFile);
     }
 }
