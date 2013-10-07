@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.nodes;
 
+import de.cebitec.mgx.gui.actions.UploadReference;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.controller.RBAC;
 import de.cebitec.mgx.gui.datamodel.Reference;
@@ -50,7 +51,7 @@ public class ProjectReferencesNode extends MGXNodeBase<MGXMaster> {
 
     @Override
     public Action[] getActions(boolean ctx) {
-        return new Action[]{new AddGlobalReference(), new ImportCustomReference()};
+        return new Action[]{new AddGlobalReference(), new UploadReference(nf)};
     }
 
     @Override
@@ -58,23 +59,22 @@ public class ProjectReferencesNode extends MGXNodeBase<MGXMaster> {
         //
     }
 
-    private class ImportCustomReference extends AbstractAction {
-
-        public ImportCustomReference() {
-            putValue(NAME, "Import EMBL/GenBank");
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public boolean isEnabled() {
-            return (super.isEnabled() && RBAC.isUser());
-        }
-    }
-
+//    private class ImportCustomReference extends AbstractAction {
+//
+//        public ImportCustomReference() {
+//            putValue(NAME, "Import EMBL/GenBank");
+//        }
+//
+//        @Override
+//        public void actionPerformed(ActionEvent e) {
+//            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//        }
+//
+//        @Override
+//        public boolean isEnabled() {
+//            return (super.isEnabled() && RBAC.isUser());
+//        }
+//    }
     private class AddGlobalReference extends AbstractAction {
 
         public AddGlobalReference() {
