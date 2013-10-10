@@ -8,6 +8,8 @@ import de.cebitec.mgx.gui.nodefactory.ReferenceNodeFactory;
 import de.cebitec.mgx.gui.swingutils.NonEDT;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
+import de.cebitec.mgx.gui.util.FileChooserUtils;
+import de.cebitec.mgx.gui.util.FileType;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.io.File;
@@ -32,29 +34,15 @@ public class UploadReference extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent e) {
 
-        JFileChooser fchooser = new JFileChooser();
-
-        // try to restore last directory selection
-        String last = NbPreferences.forModule(JFileChooser.class).get("lastDirectory", null);
-        if (last != null) {
-            File f = new File(last);
-            if (f.exists() && f.isDirectory()) {
-                fchooser.setCurrentDirectory(f);
-            }
-        }
-        if (fchooser.showOpenDialog(null) != JFileChooser.APPROVE_OPTION) {
+        String fName = FileChooserUtils.selectExistingFilename(new FileType[]{FileType.EMBLGENBANK});
+        if (fName == null) {
             return;
         }
-
-        NbPreferences.forModule(JFileChooser.class).put("lastDirectory", fchooser.getCurrentDirectory().getAbsolutePath());
-
-        File localFile = fchooser.getSelectedFile();
-
-
+        File localFile = new File(fName);
         MGXMaster master = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
         final ReferenceUploader uploader = master.Reference().createUploader(localFile);
 
-        final MGXTask run = new MGXTask("Upload " + fchooser.getSelectedFile().getName()) {
+        final MGXTask run = new MGXTask("Upload " + fName) {
             @Override
             public boolean process() {
                 return uploader.upload();
@@ -75,15 +63,10 @@ public class UploadReference extends AbstractAction {
             @Override
             public void propertyChange(PropertyChangeEvent pce) {
                 if (pce.getPropertyName().equals(UploadBase.NUM_ELEMENTS_SENT)) {
-                    setStatus(String.format("%1$d bytes sent", pce.getNewValue()));
+                    setStatus(String.format("%1$d subregions sent", pce.getNewValue()));
                 } else {
                     super.propertyChange(pce);
                 }
-            }
-
-            @Override
-            public boolean isDeterminate() {
-                return true;
             }
         };
         uploader.addPropertyChangeListener(run);
@@ -92,7 +75,6 @@ public class UploadReference extends AbstractAction {
             @Override
             public void run() {
                 TaskManager.getInstance().addTask(run);
-
             }
         });
     }
