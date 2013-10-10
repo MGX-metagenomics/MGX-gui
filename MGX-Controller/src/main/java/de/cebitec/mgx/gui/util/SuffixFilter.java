@@ -17,6 +17,9 @@ public class SuffixFilter extends FileFilter {
 
     @Override
     public boolean accept(File pathname) {
+        if (pathname.isDirectory()) {
+            return true;
+        }
         for (String suffix : ft.getSuffices()) {
             if (pathname.getName().endsWith("." + suffix)) {
                 return true;
