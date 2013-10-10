@@ -398,6 +398,7 @@
         <module>MGX-SwingUtils</module>
         <module>MGX-ReferenceObservationView</module>
         <module>MGX-BioJava-Wrapper</module>
+        <module>MGX-UpdateCenter</module>
     </modules>
 
     <properties>
