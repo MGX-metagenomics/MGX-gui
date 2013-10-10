@@ -14,8 +14,6 @@ import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.io.File;
 import javax.swing.AbstractAction;
-import javax.swing.JFileChooser;
-import org.openide.util.NbPreferences;
 import org.openide.util.Utilities;
 
 /**
