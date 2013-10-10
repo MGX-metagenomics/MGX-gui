@@ -22,6 +22,10 @@ public class InstallReferenceWizardPanel1 implements WizardDescriptor.Panel<Wiza
     public InstallReferenceVisualPanel1 getComponent() {
         if (component == null) {
             component = new InstallReferenceVisualPanel1();
+            component.putClientProperty(WizardDescriptor.PROP_AUTO_WIZARD_STYLE, Boolean.TRUE);
+            component.putClientProperty(WizardDescriptor.PROP_CONTENT_DISPLAYED, Boolean.TRUE);
+            component.putClientProperty(WizardDescriptor.PROP_CONTENT_NUMBERED, Boolean.TRUE);
+            component.putClientProperty(WizardDescriptor.PROP_CONTENT_SELECTED_INDEX, Integer.valueOf(0));
         }
         return component;
     }

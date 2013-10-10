@@ -19,7 +19,7 @@ public final class InstallReferenceVisualPanel1 extends JPanel implements ListSe
 
     @Override
     public String getName() {
-        return "Step #1";
+        return "Select reference";
     }
     
     public Reference getReference() {

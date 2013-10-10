@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.wizard.reference;
 
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.Reference;
+import java.awt.Dimension;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -11,6 +12,8 @@ import java.util.TreeSet;
 import java.util.concurrent.ExecutionException;
 import javax.swing.SwingWorker;
 import org.openide.WizardDescriptor;
+import org.openide.WizardDescriptor.ArrayIterator;
+import org.openide.WizardDescriptor.Panel;
 import org.openide.util.Exceptions;
 import org.openide.util.Utilities;
 
@@ -28,12 +31,13 @@ public class InstallReferenceDescriptor extends WizardDescriptor {
         panels.add(p1);
         this.setPanelsAndSettings(new ArrayIterator<>(panels), this);
         this.setTitleFormat(new MessageFormat("{0}"));
-        this.setTitle("Install reference genome");
+        this.setTitle("Reference sequence wizard");
         putProperty(WizardDescriptor.PROP_CONTENT_DATA, new String[]{p1.getName()});
         putProperty(WizardDescriptor.PROP_AUTO_WIZARD_STYLE, Boolean.TRUE);
         putProperty(WizardDescriptor.PROP_CONTENT_DISPLAYED, Boolean.TRUE);
         putProperty(WizardDescriptor.PROP_CONTENT_NUMBERED, Boolean.TRUE);
         setData();
+
     }
 
     public Reference getSelectedReference() {
