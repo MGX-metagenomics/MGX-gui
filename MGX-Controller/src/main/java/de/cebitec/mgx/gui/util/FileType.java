@@ -14,6 +14,7 @@ public enum FileType {
     FASGZ("Compressed FASTA format (.fas.gz)", "fas.gz", "fna.gz", "fa.gz", "fasta.gz"),
     FASTQ("FASTQ format (.fastq, .fq)", "fastq", "fq"),
     FASTQGZ("Compressed FASTQ format (.fastq.gz, .fq.gz)", "fastq.gz", "fq.gz"),
+    EMBLGENBANK("GenBank/EMBL format (.embl, .gbk)", "embl", "gbk"),
     XML("Conveyor graph definition", "xml");
     private final String[] suffices;
     private final String description;
