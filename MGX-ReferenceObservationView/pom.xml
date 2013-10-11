@@ -41,57 +41,15 @@
         </dependency>
         <dependency>
             <groupId>org.netbeans.api</groupId>
-            <artifactId>org-openide-windows</artifactId>
-            <type>jar</type>
-            <exclusions>
-                <exclusion>
-                    <artifactId>org-openide-util</artifactId>
-                    <groupId>org.netbeans.api</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>org-openide-util-lookup</artifactId>
-                    <groupId>org.netbeans.api</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.netbeans.api</groupId>
             <artifactId>org-netbeans-modules-settings</artifactId>
-            <type>jar</type>
-            <exclusions>
-                <exclusion>
-                    <artifactId>org-netbeans-core-startup</artifactId>
-                    <groupId>org.netbeans.modules</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>org-openide-util</artifactId>
-                    <groupId>org.netbeans.api</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>org-netbeans-bootstrap</artifactId>
-                    <groupId>org.netbeans.modules</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>org-openide-util-lookup</artifactId>
-                    <groupId>org.netbeans.api</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
+            <artifactId>org-openide-windows</artifactId>
             <groupId>org.netbeans.api</groupId>
-            <artifactId>org-netbeans-core-ide</artifactId>
-            <version>RELEASE731</version>
-            <type>jar</type>
-            <exclusions>
-                <exclusion>
-                    <artifactId>org-openide-util</artifactId>
-                    <groupId>org.netbeans.api</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-util</artifactId>
+            <groupId>org.netbeans.api</groupId>
         </dependency>
     </dependencies>
 
@@ -113,17 +71,17 @@
                 <!-- NetBeans 6.9+ requires JDK 6 -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
+                <version>2.5.1</version>
                 <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <source>1.7</source>
+                    <target>1.7</target>
                 </configuration>
             </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>2.3.1</version>
+                <version>2.4</version>
                 <configuration>
                     <!-- to have the jar plugin pickup the nbm generated manifest -->
                     <useDefaultManifestFile>true</useDefaultManifestFile>
