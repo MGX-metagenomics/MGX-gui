@@ -3,7 +3,6 @@ package de.cebitec.mgx.gui.controller;
 import de.cebitec.mgx.client.datatransfer.ReferenceUploader;
 import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
-import de.cebitec.mgx.dto.dto;
 import de.cebitec.mgx.dto.dto.ReferenceDTO;
 import de.cebitec.mgx.dto.dto.RegionDTO;
 import de.cebitec.mgx.gui.datamodel.Identifiable;
@@ -27,7 +26,7 @@ public class ReferenceAccess extends AccessBase<Reference> {
 
     @Override
     public long create(Reference obj) {
-        dto.ReferenceDTO dto = ReferenceDTOFactory.getInstance().toDTO(obj);
+        ReferenceDTO dto = ReferenceDTOFactory.getInstance().toDTO(obj);
         long id = Identifiable.INVALID_IDENTIFIER;
         try {
             id = getDTOmaster().Reference().create(dto);
@@ -41,7 +40,7 @@ public class ReferenceAccess extends AccessBase<Reference> {
 
     @Override
     public Reference fetch(long id) {
-        dto.ReferenceDTO dto = null;
+        ReferenceDTO dto = null;
         try {
             dto = getDTOmaster().Reference().fetch(id);
         } catch (MGXServerException | MGXClientException ex) {
@@ -110,12 +109,21 @@ public class ReferenceAccess extends AccessBase<Reference> {
         }
         return null;
     }
+    
+    public String getSequence(final Reference ref, int from, int to) {
+        try {
+            return getDTOmaster().Reference().getSequence(ref.getId(), from, to);
+        } catch (MGXServerException | MGXClientException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+        return null;
+    }
 
     public Iterator<Reference> listGlobalReferences() {
         Iterator<ReferenceDTO> iter = null;
         try {
             iter = getDTOmaster().Reference().listGlobalReferences();
-            return new BaseIterator<dto.ReferenceDTO, Reference>(iter) {
+            return new BaseIterator<ReferenceDTO, Reference>(iter) {
                 @Override
                 public Reference next() {
                     Reference reference = ReferenceDTOFactory.getInstance().toModel(iter.next());
