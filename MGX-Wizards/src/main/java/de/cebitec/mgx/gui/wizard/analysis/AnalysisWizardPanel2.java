@@ -4,6 +4,7 @@ import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.JobParameter;
 import de.cebitec.mgx.gui.datamodel.Reference;
 import de.cebitec.mgx.gui.datamodel.misc.Pair;
+import de.cebitec.mgx.gui.swingutils.NonEDT;
 import de.cebitec.mgx.gui.wizard.analysis.misc.BooleanPanel;
 import de.cebitec.mgx.gui.wizard.analysis.misc.ComboBoxPanel;
 import de.cebitec.mgx.gui.wizard.analysis.misc.FileChooserPanel;
@@ -34,7 +35,8 @@ import org.openide.util.HelpCtx;
 public class AnalysisWizardPanel2 implements WizardDescriptor.Panel<WizardDescriptor>, PropertyChangeListener {
 
     /**
-     * The visual component that displays this panel. If you need to access the component from this class, just use getComponent().
+     * The visual component that displays this panel. If you need to access the
+     * component from this class, just use getComponent().
      */
     private AnalysisVisualPanel2 component;
     private MGXMaster master = null;
@@ -178,13 +180,18 @@ public class AnalysisWizardPanel2 implements WizardDescriptor.Panel<WizardDescri
             case "ConfigBoolean":
                 return new Pair<>(new BooleanPanel(jp), new BooleanValidator());
             case "ConfigMGXReference":
-                // on EDT here?
-                Iterator<Reference> iter = master.Reference().fetchall();
-                Map<Reference, String> refs = new HashMap<>();
-                while (iter.hasNext()) {
-                    Reference r = iter.next();
-                    refs.put(r, String.valueOf(r.getId()));
-                }
+                final Map<Reference, String> refs = new HashMap<>();
+                NonEDT.invokeAndWait(new Runnable() {
+                    @Override
+                    public void run() {
+                        Iterator<Reference> iter = master.Reference().fetchall();
+                        while (iter.hasNext()) {
+                            Reference r = iter.next();
+                            refs.put(r, String.valueOf(r.getId()));
+                        }
+                    }
+                });
+
                 return new Pair<>(new ComboBoxPanel(jp, refs), new MultipleChoiceValidator(jp, refs));
             default:
                 // uncheckable configuration type
