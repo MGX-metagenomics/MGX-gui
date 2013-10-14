@@ -7,6 +7,7 @@ import de.cebitec.mgx.gui.controller.RBAC;
 import de.cebitec.mgx.gui.datamodel.Job;
 import de.cebitec.mgx.gui.datamodel.JobParameter;
 import de.cebitec.mgx.gui.datamodel.JobState;
+import de.cebitec.mgx.gui.datamodel.Reference;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.datamodel.Tool;
 import de.cebitec.mgx.gui.datamodel.misc.Task;
@@ -22,7 +23,10 @@ import de.cebitec.mgx.gui.wizard.seqrun.SeqRunWizardDescriptor;
 import java.awt.Dialog;
 import java.awt.event.ActionEvent;
 import java.text.MessageFormat;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -83,7 +87,18 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> { // implements Transferable
         @Override
         public void actionPerformed(final ActionEvent e) {
             SeqRun seqrun = getLookup().lookup(SeqRun.class);
-            AnalysisWizardIterator iter = new AnalysisWizardIterator(master);
+            final Set<Reference> references = new HashSet<>();
+            NonEDT.invokeAndWait(new Runnable() {
+                @Override
+                public void run() {
+                    Iterator<Reference> refiter = master.Reference().fetchall();
+                    while (refiter.hasNext()) {
+                        references.add(refiter.next());
+                    }
+                }
+            });
+
+            AnalysisWizardIterator iter = new AnalysisWizardIterator(master, references);
             WizardDescriptor wiz = new WizardDescriptor(iter);
             iter.setWizardDescriptor(wiz);
             //             // {0} will be replaced by WizardDescriptor.Panel.getComponent().getName()
@@ -99,7 +114,7 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> { // implements Transferable
                     @Override
                     public boolean process() {
                         try {
-                            
+
                             Tool selectedTool = null;
 
                             switch (tooltype) {
@@ -114,6 +129,8 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> { // implements Transferable
                                     master.Tool().create(tool);
                                     selectedTool = tool;
                                     break;
+                                default:
+                                    assert false;
                             }
 
                             final Job job = new Job();
