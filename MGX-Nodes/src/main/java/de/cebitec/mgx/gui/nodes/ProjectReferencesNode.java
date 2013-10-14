@@ -1,13 +1,20 @@
 package de.cebitec.mgx.gui.nodes;
 
+import de.cebitec.mgx.client.datatransfer.UploadBase;
+import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.gui.actions.UploadReference;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.controller.RBAC;
 import de.cebitec.mgx.gui.datamodel.Reference;
 import de.cebitec.mgx.gui.nodefactory.ReferenceNodeFactory;
+import de.cebitec.mgx.gui.swingutils.NonEDT;
+import de.cebitec.mgx.gui.taskview.MGXTask;
+import static de.cebitec.mgx.gui.taskview.MGXTask.TASK_FAILED;
+import de.cebitec.mgx.gui.taskview.TaskManager;
 import de.cebitec.mgx.gui.wizard.reference.InstallReferenceDescriptor;
 import java.awt.Dialog;
 import java.awt.event.ActionEvent;
+import java.beans.PropertyChangeEvent;
 import java.util.concurrent.ExecutionException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -59,22 +66,6 @@ public class ProjectReferencesNode extends MGXNodeBase<MGXMaster> {
         //
     }
 
-//    private class ImportCustomReference extends AbstractAction {
-//
-//        public ImportCustomReference() {
-//            putValue(NAME, "Import EMBL/GenBank");
-//        }
-//
-//        @Override
-//        public void actionPerformed(ActionEvent e) {
-//            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-//        }
-//
-//        @Override
-//        public boolean isEnabled() {
-//            return (super.isEnabled() && RBAC.isUser());
-//        }
-//    }
     private class AddGlobalReference extends AbstractAction {
 
         public AddGlobalReference() {
@@ -90,25 +81,45 @@ public class ProjectReferencesNode extends MGXNodeBase<MGXMaster> {
             boolean cancelled = wd.getValue() != WizardDescriptor.FINISH_OPTION;
             if (!cancelled) {
                 final Reference ref = wd.getSelectedReference();
-                SwingWorker<Long, Void> worker = new SwingWorker<Long, Void>() {
+                final MGXMaster master = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
+
+
+                final MGXTask run = new MGXTask("Install " + ref.getName()) {
+                    private String err = null;
+
                     @Override
-                    protected Long doInBackground() throws Exception {
-                        MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
-                        return m.Reference().installGlobalReference(ref.getId());
+                    public boolean process() {
+                        try {
+                            setStatus("Installing reference");
+                            master.Reference().installGlobalReference(ref.getId());
+                        } catch (MGXServerException ex) {
+                            err = ex.getMessage();
+                            return false;
+                        }
+                        return true;
                     }
 
                     @Override
-                    protected void done() {
-                        try {
-                            get();
-                        } catch (InterruptedException | ExecutionException ex) {
-                            Exceptions.printStackTrace(ex);
-                        }
+                    public void finished() {
+                        super.finished();
                         nf.refreshChildren();
-                        super.done();
+                    }
+
+                    @Override
+                    public void failed() {
+                        super.failed();
+                        setStatus("Failed: " + err);
+                        nf.refreshChildren();
                     }
                 };
-                worker.execute();
+
+                NonEDT.invoke(new Runnable() {
+                    @Override
+                    public void run() {
+                        TaskManager.getInstance().addTask(run);
+
+                    }
+                });
             }
         }
 
