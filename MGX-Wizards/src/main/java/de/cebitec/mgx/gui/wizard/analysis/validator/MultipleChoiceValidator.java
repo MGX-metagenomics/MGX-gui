@@ -1,9 +1,11 @@
 package de.cebitec.mgx.gui.wizard.analysis.validator;
 
+import de.cebitec.mgx.gui.datamodel.Identifiable;
 import de.cebitec.mgx.gui.datamodel.JobParameter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  *
@@ -18,10 +20,10 @@ public class MultipleChoiceValidator extends ValidatorI<String> {
         choices = param.getChoices();
     }
 
-    public MultipleChoiceValidator(JobParameter param, Map<?, String> options) {
+    public MultipleChoiceValidator(JobParameter param, Set<? extends Identifiable> allowedObjs) {
         choices = new HashMap<>();
-        for (Entry<?, String> e : options.entrySet()) {
-            choices.put(e.getKey().toString(), e.getValue());
+        for (Identifiable i : allowedObjs) {
+            choices.put(i.toString(), String.valueOf(i.getId()));
         }
         MODE = "OPTIONS";
     }
@@ -31,14 +33,19 @@ public class MultipleChoiceValidator extends ValidatorI<String> {
         if (input == null) {
             return false;
         }
-        if (choices.containsKey(input)) {
-            if (MODE.equals("CHOICES")) {
-                value = input;
-            } else {
-                value = choices.get(input);
-            }
+        if (MODE.equals("CHOICES") && choices.containsKey(input)) {
+            value = input;
             return true;
         }
+        if (MODE.equals("OPTIONS")) {
+            for (Entry<String, String> e : choices.entrySet()) {
+                if (e.getKey().toString().equals(input)) {
+                    value = e.getValue();
+                    return true;
+                }
+            }
+        }
+
         error = DEFAULT_ERROR_MSG;
         return false;
     }

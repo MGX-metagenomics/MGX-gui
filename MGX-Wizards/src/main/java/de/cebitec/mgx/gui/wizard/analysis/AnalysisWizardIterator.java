@@ -2,9 +2,12 @@ package de.cebitec.mgx.gui.wizard.analysis;
 
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.JobParameter;
+import de.cebitec.mgx.gui.datamodel.Reference;
 import java.awt.Component;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import javax.swing.JComponent;
 import javax.swing.event.ChangeListener;
 import org.openide.WizardDescriptor;
@@ -14,7 +17,7 @@ public final class AnalysisWizardIterator implements WizardDescriptor.Iterator<W
     public static final String PROP_TOOL = "tool";
     public static final String PROP_TOOLTYPE = "tooltype";
     public static final String PROP_PARAMETERS = "toolParameters";
-   // public static final String PROP_JOB = "job";
+    // public static final String PROP_JOB = "job";
     // Example of invoking this wizard:
     // @ActionID(category="...", id="...")
     // @ActionRegistration(displayName="...")
@@ -39,9 +42,15 @@ public final class AnalysisWizardIterator implements WizardDescriptor.Iterator<W
     private int numPanels = 2;
     private int idx = 0;
     //
+    private final AnalysisWizardPanel1 p1;
+    private final AnalysisWizardPanel2 p2;
+    private final AnalysisWizardPanel3 p3;
 
-    public AnalysisWizardIterator(MGXMaster master) {
+    public AnalysisWizardIterator(MGXMaster master, Set<Reference> references) {
         this.master = master;
+        p1 = new AnalysisWizardPanel1();
+        p2 = new AnalysisWizardPanel2(references);
+        p3 = new AnalysisWizardPanel3(master, references);
     }
 
     public void setWizardDescriptor(WizardDescriptor wd) {
@@ -49,9 +58,6 @@ public final class AnalysisWizardIterator implements WizardDescriptor.Iterator<W
         wd.putProperty(WizardDescriptor.PROP_CONTENT_DATA, new String[]{p1.getName(), p2.getName(), p3.getName()});
         createPanels();
     }
-    AnalysisWizardPanel1 p1 = new AnalysisWizardPanel1();
-    AnalysisWizardPanel2 p2 = new AnalysisWizardPanel2();
-    AnalysisWizardPanel3 p3 = new AnalysisWizardPanel3();
 
     private void createPanels() {
 

@@ -25,6 +25,8 @@ import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
@@ -32,7 +34,7 @@ import org.openide.NotificationLineSupport;
 import org.openide.WizardDescriptor;
 import org.openide.util.HelpCtx;
 
-public class AnalysisWizardPanel2 implements WizardDescriptor.Panel<WizardDescriptor>, PropertyChangeListener {
+public class AnalysisWizardPanel2<T> implements WizardDescriptor.Panel<WizardDescriptor>, PropertyChangeListener {
 
     /**
      * The visual component that displays this panel. If you need to access the
@@ -43,15 +45,21 @@ public class AnalysisWizardPanel2 implements WizardDescriptor.Panel<WizardDescri
     private JobParameter parameter = null;
     private WizardDescriptor model = null;
     private boolean isValid = false;
-    private ValidatorI validator = null;
-    private ValueHolderI<String> valueHolder = null;
+    private ValidatorI<T> validator = null;
+    private ValueHolderI<T> valueHolder = null;
     private final EventListenerList listeners = new EventListenerList();
     public static final String PROP_PARAM = "propParam";
+    //
+    private final Set<Reference> references;
+
+    public AnalysisWizardPanel2(Set<Reference> references) {
+        this.references = references;
+    }
 
     @Override
     public AnalysisVisualPanel2 getComponent() {
         if (component == null) {
-            component = new AnalysisVisualPanel2();
+            component = new AnalysisVisualPanel2(references);
         }
         return component;
     }
@@ -100,7 +108,8 @@ public class AnalysisWizardPanel2 implements WizardDescriptor.Panel<WizardDescri
     @Override
     public void storeSettings(WizardDescriptor settings) {
         model = settings;
-        parameter.setParameterValue(getComponent().getValue());
+        String storeVal = validator.getValue() == null ? null : validator.getValue().toString();
+        parameter.setParameterValue(storeVal); //getComponent().getValue());
     }
 
     @Override
@@ -114,15 +123,19 @@ public class AnalysisWizardPanel2 implements WizardDescriptor.Panel<WizardDescri
 
     private boolean checkValidity() {
         //isValid = true;
-        NotificationLineSupport nls = model.getNotificationLineSupport();
-        nls.clearMessages();
-        if (parameter.isOptional() && valueHolder.getValue().isEmpty()) {
+        NotificationLineSupport nls = null;
+        if (model != null) {
+            nls = model.getNotificationLineSupport();
+            nls.clearMessages();
+        }
+        if (parameter.isOptional() && (valueHolder.getValue() == null || valueHolder.getValue().toString().isEmpty())) {
             return true;
         }
 
-        boolean newValue = validator.validate(valueHolder.getValue());
+        String input = valueHolder.getValue() == null ? null : valueHolder.getValue().toString();
+        boolean newValue = validator.validate(input);
 
-        if (!newValue) {
+        if (!newValue && nls != null) {
             nls.setErrorMessage(validator.getError());
         }
         return newValue;
@@ -147,10 +160,16 @@ public class AnalysisWizardPanel2 implements WizardDescriptor.Panel<WizardDescri
         valueHolder = p.getFirst();
         validator = p.getSecond();
         if (jp.getDefaultValue() != null) {
-            valueHolder.setValue(jp.getDefaultValue());
+            // we need one round of validation here to perform String --> T conversion
+            validator.validate(jp.getDefaultValue());
+            T val = validator.getValue();
+            valueHolder.setValue(val);
         }
         if (jp.getParameterValue() != null) {
-            valueHolder.setValue(jp.getParameterValue());
+            // same as above
+            validator.validate(jp.getDefaultValue());
+            T val = validator.getValue();
+            valueHolder.setValue(val);
         }
         getComponent().setInputComponent(valueHolder);
     }
@@ -162,7 +181,7 @@ public class AnalysisWizardPanel2 implements WizardDescriptor.Panel<WizardDescri
             case "ConfigDouble":
                 return new Pair<>(new TextFieldPanel(), new DoubleValidator());
             case "ConfigEnumeration`1":
-                return new Pair<>(new ComboBoxPanel(jp), new MultipleChoiceValidator(jp));
+                return new Pair<>(new ComboBoxPanel<>(jp, jp.getChoices().keySet()), new MultipleChoiceValidator(jp));
             case "ConfigFile":
                 return new Pair<>(new FileChooserPanel(master), new StringValidator());
             case "ConfigInteger":
@@ -172,7 +191,7 @@ public class AnalysisWizardPanel2 implements WizardDescriptor.Panel<WizardDescri
             case "ConfigSByte":
                 return new Pair<>(new TextFieldPanel(), new SByteValidator());
             case "ConfigSelection`2":
-                return new Pair<>(new ComboBoxPanel(jp), new MultipleChoiceValidator(jp));
+                return new Pair<>(new ComboBoxPanel(jp, jp.getChoices().keySet()), new MultipleChoiceValidator(jp));
             case "ConfigString":
                 return new Pair<>(new TextFieldPanel(), new StringValidator());
             case "ConfigULong":
@@ -180,19 +199,8 @@ public class AnalysisWizardPanel2 implements WizardDescriptor.Panel<WizardDescri
             case "ConfigBoolean":
                 return new Pair<>(new BooleanPanel(jp), new BooleanValidator());
             case "ConfigMGXReference":
-                final Map<Reference, String> refs = new HashMap<>();
-                NonEDT.invokeAndWait(new Runnable() {
-                    @Override
-                    public void run() {
-                        Iterator<Reference> iter = master.Reference().fetchall();
-                        while (iter.hasNext()) {
-                            Reference r = iter.next();
-                            refs.put(r, String.valueOf(r.getId()));
-                        }
-                    }
-                });
-
-                return new Pair<>(new ComboBoxPanel(jp, refs), new MultipleChoiceValidator(jp, refs));
+                isValid = !references.isEmpty();
+                return new Pair<>(new ComboBoxPanel<>(jp, references), new MultipleChoiceValidator(jp, references));
             default:
                 // uncheckable configuration type
                 return new Pair<>(new TextFieldPanel(), new StringValidator());

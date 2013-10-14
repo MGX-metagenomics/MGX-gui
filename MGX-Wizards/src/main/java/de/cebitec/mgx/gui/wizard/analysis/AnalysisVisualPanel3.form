@@ -83,6 +83,9 @@
               </StringArray>
             </Property>
           </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;JobParameter&gt;"/>
+          </AuxValues>
         </Component>
       </SubComponents>
     </Container>

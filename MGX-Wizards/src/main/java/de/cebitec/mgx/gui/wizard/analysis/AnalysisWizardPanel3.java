@@ -1,8 +1,11 @@
 package de.cebitec.mgx.gui.wizard.analysis;
 
+import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.JobParameter;
+import de.cebitec.mgx.gui.datamodel.Reference;
 import de.cebitec.mgx.gui.datamodel.Tool;
 import java.util.List;
+import java.util.Set;
 import javax.swing.event.ChangeListener;
 import org.openide.WizardDescriptor;
 import org.openide.util.HelpCtx;
@@ -13,11 +16,18 @@ public class AnalysisWizardPanel3 implements WizardDescriptor.Panel<WizardDescri
      * The visual component that displays this panel. If you need to access the component from this class, just use getComponent().
      */
     private AnalysisVisualPanel3 component;
+    private final MGXMaster master;
+    private final Set<Reference> references;
+
+    public AnalysisWizardPanel3(MGXMaster master, Set<Reference> refs) {
+        this.master = master;
+        references = refs;
+    }
 
     @Override
     public AnalysisVisualPanel3 getComponent() {
         if (component == null) {
-            component = new AnalysisVisualPanel3();
+            component = new AnalysisVisualPanel3(references);
         }
         return component;
     }

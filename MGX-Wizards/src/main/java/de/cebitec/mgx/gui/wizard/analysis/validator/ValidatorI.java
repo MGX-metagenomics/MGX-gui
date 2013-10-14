@@ -12,8 +12,8 @@ public abstract class ValidatorI<T> {
 
     public abstract boolean validate(String input);
 
-    public String getValue() {
-        return value.toString();
+    public T getValue() {
+        return value;
     }
     
     public String getError() {
