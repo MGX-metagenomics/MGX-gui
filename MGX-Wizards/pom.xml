@@ -74,6 +74,10 @@
             <groupId>de.cebitec.mgx.gui</groupId>
             <artifactId>MGX-Controller</artifactId>
         </dependency>
+        <dependency>
+            <groupId>de.cebitec.mgx.gui</groupId>
+            <artifactId>MGX-SwingUtils</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
