@@ -4,12 +4,16 @@
  */
 package org.mgx.referenceview;
 
+import de.cebitec.mgx.gui.controller.MGXMaster;
+import de.cebitec.mgx.gui.datamodel.Reference;
+import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.vamp.view.dataVisualisation.BoundsInfo;
 import de.cebitec.vamp.view.dataVisualisation.BoundsInfoManager;
 import de.cebitec.vamp.view.dataVisualisation.MousePositionListener;
 import de.cebitec.vamp.view.dataVisualisation.basePanel.AdjustmentPanel;
 import de.cebitec.vamp.view.dataVisualisation.basePanel.BasePanel;
 import de.cebitec.vamp.view.dataVisualisation.referenceViewer.ReferenceViewer;
+import de.cebitec.vamp.view.load.ReferenceLoader;
 import excluded.BasePanelFactory;
 import excluded.PersistantReference;
 import excluded.ViewController;
@@ -17,73 +21,135 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.concurrent.ExecutionException;
+import java.util.logging.Logger;
+import javax.swing.SwingWorker;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.util.Exceptions;
+import org.openide.util.Lookup;
+import org.openide.util.LookupEvent;
+import org.openide.util.LookupListener;
 import org.openide.windows.TopComponent;
 import org.openide.util.NbBundle.Messages;
+import org.openide.util.Utilities;
 
 /**
  * Top component which displays something.
  */
 @ConvertAsProperties(
-    dtd = "-//org.mgx.referenceview//ReferenceView//EN",
-autostore = false)
+        dtd = "-//org.mgx.referenceview//ReferenceView//EN",
+        autostore = false)
 @TopComponent.Description(
-    preferredID = "ReferenceViewTopComponent",
-//iconBase="SET/PATH/TO/ICON/HERE",
-persistenceType = TopComponent.PERSISTENCE_NEVER)
+        preferredID = "ReferenceViewTopComponent",
+        //iconBase="SET/PATH/TO/ICON/HERE",
+        persistenceType = TopComponent.PERSISTENCE_NEVER)
 @TopComponent.Registration(mode = "editor", openAtStartup = false)
 @ActionID(category = "Window", id = "org.mgx.referenceview.ReferenceViewTopComponent")
-@ActionReference(path = "Menu/Window" , position = 333 )
+@ActionReference(path = "Menu/Window", position = 333)
 @TopComponent.OpenActionRegistration(
-    displayName = "#CTL_ReferenceViewAction",
-preferredID = "ReferenceViewTopComponent")
+        displayName = "#CTL_ReferenceViewAction",
+        preferredID = "ReferenceViewTopComponent")
 @Messages({
-   "CTL_ReferenceViewAction=ReferenceView",
-   "CTL_ReferenceViewTopComponent=ReferenceView Window",
-   "HINT_ReferenceViewTopComponent=This is a ReferenceView window"
+    "CTL_ReferenceViewAction=ReferenceView",
+    "CTL_ReferenceViewTopComponent=ReferenceView Window",
+    "HINT_ReferenceViewTopComponent=This is a ReferenceView window"
 })
 public final class ReferenceViewTopComponent extends TopComponent {
 
-   public ReferenceViewTopComponent() {
-	initMyComponents();
-	setName(Bundle.CTL_ReferenceViewTopComponent());
-	setToolTipText(Bundle.HINT_ReferenceViewTopComponent());
+    private ReferenceLoader loader;
+    private MGXMaster currentMaster = null;
+    private final Lookup.Result<MGXMaster> mgxMasterResult;
+    private static final Logger log = Logger.getLogger(ReferenceViewTopComponent.class.getName());
+    private Reference reference;
+    public ReferenceViewTopComponent() {
+        mgxMasterResult = Utilities.actionsGlobalContext().lookupResult(MGXMaster.class);
+        reference = null;
+        setName(Bundle.CTL_ReferenceViewTopComponent());
+        setToolTipText(Bundle.HINT_ReferenceViewTopComponent());
+    }
+    
+    private void loadReference(final long lId) {
+        
+        final SwingWorker referenceSequenceWorker = new SwingWorker<String, Void>() {
+            @Override
+            protected String doInBackground() throws Exception {
+                int length = currentMaster.Reference().fetch(lId).getLength();
+                return currentMaster.Reference().getSequence(lId, 0, length);
+            }
 
-   }
+            @Override
+            protected void done() {
+                String referenceString = null;
 
+                try {
+                    referenceString = get();
+                } catch (InterruptedException ex) {
+                    Exceptions.printStackTrace(ex);
+                } catch (ExecutionException ex) {
+                    Exceptions.printStackTrace(ex);
+                }
+                PersistantReference vampReference = new PersistantReference(10, reference.getName(), "description", referenceString, new Timestamp(new Date().getTime()));
+                BoundsInfoManager manager = new BoundsInfoManager(vampReference);
 
-   public void initMyComponents(){
-   	PersistantReference reference = new PersistantReference(10, "name", "description", "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC", new Timestamp(new Date().getTime()));
-	BoundsInfoManager manager = new BoundsInfoManager(reference);
+                MousePositionListener listener = new MousePositionListener() {
+                    @Override
+                    public void setCurrentMousePosition(int logPos) {
+                    }
 
-	MousePositionListener listener = new MousePositionListener() {
-	   @Override
-	   public void setCurrentMousePosition(int logPos) {
-//		throw new UnsupportedOperationException("Not supported yet.");
-	   }
+                    @Override
+                    public void setMouseOverPaintingRequested(boolean requested) {
+                    }
+                };
+                BasePanel basepanel = new BasePanel(manager, listener);
+                ViewController viewController = new ViewController();
+                viewController.addMousePositionListener(basepanel);
+                ReferenceViewer genomeViewer = new ReferenceViewer(manager, basepanel, vampReference);
+                int maxSliderValue = 500;
+                basepanel.setViewer(genomeViewer);
+                basepanel.setHorizontalAdjustmentPanel(createAdjustmentPanel(true, true, maxSliderValue, manager, vampReference));
 
-	   @Override
-	   public void setMouseOverPaintingRequested(boolean requested) {
-//		throw new UnsupportedOperationException("Not supported yet.");
-	   }
-	};
-	BasePanel basepanel = new BasePanel(manager, listener);
-	ViewController viewController = new ViewController();
-	viewController.addMousePositionListener(basepanel);
-	ReferenceViewer genomeViewer = new ReferenceViewer(manager, basepanel, reference);
-	int maxSliderValue = 500;
-	basepanel.setViewer(genomeViewer);
-	basepanel.setHorizontalAdjustmentPanel(this.createAdjustmentPanel(true, true, maxSliderValue,manager,reference));
+                BasePanelFactory factory = new BasePanelFactory(manager, viewController);
+                setLayout(new BorderLayout());
+                add(factory.getGenomeViewerBasePanel(vampReference));
 
-	BasePanelFactory factory = new BasePanelFactory(manager, viewController);
-	this.setLayout(new BorderLayout());
-	this.add(factory.getGenomeViewerBasePanel(reference));
-   }
+                super.done();
+            }
+        };
 
+        SwingWorker fetchWorker = new SwingWorker<Reference, Void>() {
+            @Override
+            protected Reference doInBackground() throws Exception {
+                return currentMaster.Reference().fetch(lId);
+            }
 
-private AdjustmentPanel createAdjustmentPanel(boolean hasScrollbar, boolean hasSlider, int sliderMax, BoundsInfoManager boundsManager,PersistantReference refGenome) {
+            @Override
+            protected void done() {
+                try {
+                    reference = get();
+                } catch (InterruptedException ex) {
+                    Exceptions.printStackTrace(ex);
+                } catch (ExecutionException ex) {
+                    Exceptions.printStackTrace(ex);
+                }
+                referenceSequenceWorker.execute();
+            }
+        };
+        fetchWorker.execute();
+    }
+
+    private void loadMGXMaster() {
+        for (MGXMaster newMaster : mgxMasterResult.allInstances()) {
+            if (currentMaster == null || !newMaster.equals(currentMaster)) {
+                currentMaster = newMaster;
+                return;
+            }
+        }
+    }
+
+    private AdjustmentPanel createAdjustmentPanel(boolean hasScrollbar, boolean hasSlider, int sliderMax, BoundsInfoManager boundsManager, PersistantReference refGenome) {
         // create control panel
         BoundsInfo bounds = boundsManager.getUpdatedBoundsInfo(new Dimension(10, 10));
         AdjustmentPanel control = new AdjustmentPanel(1, refGenome.getRefLength(),
@@ -93,12 +159,11 @@ private AdjustmentPanel createAdjustmentPanel(boolean hasScrollbar, boolean hasS
         return control;
     }
 
-
-   /**
-    * This method is called from within the constructor to initialize the form.
-    * WARNING: Do NOT modify this code. The content of this method is always
-    * regenerated by the Form Editor.
-    */
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
    private void initComponents() {
 
@@ -116,25 +181,25 @@ private AdjustmentPanel createAdjustmentPanel(boolean hasScrollbar, boolean hasS
 
    // Variables declaration - do not modify//GEN-BEGIN:variables
    // End of variables declaration//GEN-END:variables
-   @Override
-   public void componentOpened() {
-	// TODO add custom code on component opening
-   }
+    @Override
+    public void componentOpened() {
+        loadMGXMaster();
+        loadReference(62);
+    }
 
-   @Override
-   public void componentClosed() {
-	// TODO add custom code on component closing
-   }
+    @Override
+    public void componentClosed() {
+    }
 
-   void writeProperties(java.util.Properties p) {
-	// better to version settings since initial version as advocated at
-	// http://wiki.apidesign.org/wiki/PropertyFiles
-	p.setProperty("version", "1.0");
-	// TODO store your settings
-   }
+    void writeProperties(java.util.Properties p) {
+        // better to version settings since initial version as advocated at
+        // http://wiki.apidesign.org/wiki/PropertyFiles
+        p.setProperty("version", "1.0");
+        // TODO store your settings
+    }
 
-   void readProperties(java.util.Properties p) {
-	String version = p.getProperty("version");
-	// TODO read your settings according to their version
-   }
+    void readProperties(java.util.Properties p) {
+        String version = p.getProperty("version");
+        // TODO read your settings according to their version
+    }
 }
