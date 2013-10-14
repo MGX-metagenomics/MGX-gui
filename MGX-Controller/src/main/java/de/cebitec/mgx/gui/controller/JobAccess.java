@@ -70,7 +70,7 @@ public class JobAccess extends AccessBase<Job> {
             Exceptions.printStackTrace(ex);
         }
 
-        obj.setMaster(this.getMaster());
+        obj.setMaster(getMaster());
         return id;
     }
 
