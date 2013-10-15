@@ -87,11 +87,12 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> { // implements Transferable
         @Override
         public void actionPerformed(final ActionEvent e) {
             SeqRun seqrun = getLookup().lookup(SeqRun.class);
+            final MGXMaster m = getLookup().lookup(MGXMaster.class);
             final Set<Reference> references = new HashSet<>();
             NonEDT.invokeAndWait(new Runnable() {
                 @Override
                 public void run() {
-                    Iterator<Reference> refiter = master.Reference().fetchall();
+                    Iterator<Reference> refiter = m.Reference().fetchall();
                     while (refiter.hasNext()) {
                         references.add(refiter.next());
                     }
@@ -147,6 +148,7 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> { // implements Transferable
                             setStatus("Submitting..");
                             return master.Job().execute(job);
                         } catch (MGXServerException ex) {
+                            setStatus(ex.getMessage());
                             Exceptions.printStackTrace(ex);
                         }
                         return false;
