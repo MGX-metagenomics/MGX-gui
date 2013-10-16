@@ -4,9 +4,14 @@ import de.cebitec.mgx.gui.cache.internal.Interval;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import de.cebitec.mgx.gui.cache.internal.RegionCache;
 import de.cebitec.mgx.gui.cache.internal.SequenceCache;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.Reference;
+import de.cebitec.mgx.gui.datamodel.Region;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  *
@@ -29,5 +34,25 @@ public class CacheFactory {
                 .weakKeys()
                 .build(loader);
         return new SequenceCache(ref, lcache);
+    }
+
+    public static Cache<Set<Region>> createRegionCache(final MGXMaster master, final Reference ref) {
+
+        CacheLoader<Interval<Set<Region>>, Set<Region>> loader = new CacheLoader<Interval<Set<Region>>, Set<Region>>() {
+            @Override
+            public Set<Region> load(Interval<Set<Region>> k) throws Exception {
+                Iterator<Region> iter = master.Reference().byReferenceInterval(ref.getId(), k.getFrom(), k.getTo());
+                Set<Region> ret = new HashSet<>();
+                while (iter.hasNext()) {
+                    ret.add(iter.next());
+                }
+                return ret;
+            }
+        };
+
+        LoadingCache<Interval<Set<Region>>, Set<Region>> lcache = CacheBuilder.newBuilder()
+                .weakKeys()
+                .build(loader);
+        return new RegionCache(ref, lcache);
     }
 }

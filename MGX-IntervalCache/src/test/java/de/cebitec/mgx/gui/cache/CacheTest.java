@@ -5,11 +5,13 @@ import de.cebitec.gpms.rest.GPMSClientI;
 import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.Reference;
+import de.cebitec.mgx.gui.datamodel.Region;
 import de.cebitec.mgx.restgpms.GPMS;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.Set;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -43,17 +45,28 @@ public class CacheTest {
     }
 
     @Test
-    public void testGet() throws Exception {
-        System.out.println("get");
+    public void testGetSequence() throws Exception {
+        System.out.println("getSequence");
         MGXMaster master = get();
         Reference ref = master.Reference().fetch(4);
         Cache<String> cache = CacheFactory.createSequenceCache(master, ref);
         assertNotNull(cache);
         String seq = cache.get(0, 9);
         assertEquals("ttgtgcacac", seq);
-        
+
         seq = cache.get(97, 101);
         assertEquals("attcg", seq);
+    }
+
+    @Test
+    public void testGetRegions() throws Exception {
+        System.out.println("getRegions");
+        MGXMaster master = get();
+        Reference ref = master.Reference().fetch(4);
+        Cache<Set<Region>> cache = CacheFactory.createRegionCache(master, ref);
+        assertNotNull(cache);
+        Set<Region> data = cache.get(100, 2850);
+        assertEquals(2, data.size());
     }
 
     public static MGXMaster get() {
