@@ -413,7 +413,8 @@
         <module>MGX-ReferenceObservationView</module>
         <module>MGX-BioJava-Wrapper</module>
         <module>MGX-UpdateCenter</module>
-    </modules>
+    <module>MGX-IntervalCache</module>
+  </modules>
 
     <properties>
         <netbeans.version>RELEASE73</netbeans.version>
