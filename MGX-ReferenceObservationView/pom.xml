@@ -51,6 +51,16 @@
             <artifactId>org-openide-util</artifactId>
             <groupId>org.netbeans.api</groupId>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>MGX-Controller</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>MGX-Datamodel</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
