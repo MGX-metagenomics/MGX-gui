@@ -491,6 +491,7 @@ public class VisualizationGroup implements PropertyChangeListener {
             this.job = job;
             this.latch = latch;
             this.result = ret;
+            assert result != null;
         }
 
         @Override
@@ -511,6 +512,7 @@ public class VisualizationGroup implements PropertyChangeListener {
                 dist = get();
             } catch (InterruptedException | ExecutionException ex) {
                 Exceptions.printStackTrace(ex);
+                return;
             }
             result.put(run, dist);
             latch.countDown();
