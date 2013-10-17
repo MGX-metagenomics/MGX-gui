@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.jobmonitor;
 
 import de.cebitec.mgx.gui.controller.MGXMaster;
+import de.cebitec.mgx.gui.datamodel.Job;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.nodefactory.JobBySeqRunNodeFactory;
 import de.cebitec.mgx.gui.nodefactory.JobNodeFactory;
@@ -32,7 +33,7 @@ import org.openide.windows.TopComponent;
         autostore = false)
 @TopComponent.Description(
         preferredID = "JobMonitorTopComponent",
-        iconBase="de/cebitec/mgx/gui/jobmonitor/JobMonitor.png" , 
+        iconBase = "de/cebitec/mgx/gui/jobmonitor/JobMonitor.png",
         persistenceType = TopComponent.PERSISTENCE_NEVER)
 @TopComponent.Registration(mode = "satellite", openAtStartup = false)
 @ActionID(category = "Window", id = "de.cebitec.mgx.gui.jobmonitor.JobMonitorTopComponent")
@@ -45,12 +46,12 @@ import org.openide.windows.TopComponent;
     "CTL_JobMonitorTopComponent=JobMonitor Window",
     "HINT_JobMonitorTopComponent=This is a JobMonitor window"
 })
-
 @ServiceProvider(service = JobMonitorTopComponent.class)
 public final class JobMonitorTopComponent extends TopComponent implements LookupListener, ExplorerManager.Provider {
 
     private final Lookup.Result<MGXMaster> resultMaster;
     private final Lookup.Result<SeqRun> resultSeqRun;
+    private final Lookup.Result<Job> resultJobs;
     private MGXMaster currentMaster = null;
     private SeqRun currentSeqRun = null;
     private transient ExplorerManager explorerManager = new ExplorerManager();
@@ -82,6 +83,7 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
         view.setNodePopupFactory(npf);
         resultMaster = Utilities.actionsGlobalContext().lookupResult(MGXMaster.class);
         resultSeqRun = Utilities.actionsGlobalContext().lookupResult(SeqRun.class);
+        resultJobs = Utilities.actionsGlobalContext().lookupResult(Job.class);
 
         update();
     }
@@ -106,6 +108,7 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
     public void componentOpened() {
         resultMaster.addLookupListener(this);
         resultSeqRun.addLookupListener(this);
+        resultJobs.addLookupListener(this);
         update();
     }
 
@@ -113,6 +116,7 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
     public void componentClosed() {
         resultMaster.removeLookupListener(this);
         resultSeqRun.removeLookupListener(this);
+        resultJobs.removeLookupListener(this);
     }
 
     void writeProperties(java.util.Properties p) {
@@ -135,6 +139,11 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
 
         Collection<? extends SeqRun> runs = resultSeqRun.allInstances();
         Collection<? extends MGXMaster> m = resultMaster.allInstances();
+        Collection<? extends Job> jobs = resultJobs.allInstances();
+
+        if (!jobs.isEmpty()) {
+            return; // selection within own topcomponent, no update
+        }
 
         if (runs.size() > 0) {
             currentMode = SEQRUN_MODE;
