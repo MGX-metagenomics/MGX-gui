@@ -12,7 +12,6 @@ import de.cebitec.mgx.gui.wizard.configurations.data.impl.Store;
 
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.logging.Logger;
 
 /**
  * Sorgt fuer die Umwandlung zwischne Store und JobParameter.
