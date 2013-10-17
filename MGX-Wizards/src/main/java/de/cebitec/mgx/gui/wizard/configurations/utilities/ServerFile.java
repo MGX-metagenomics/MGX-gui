@@ -10,7 +10,7 @@ import java.io.IOException;
  */
 public class ServerFile extends File {
 
-    private MGXFile file;
+    private final MGXFile file;
 
     public ServerFile(MGXFile file) {
         super(file.getFullPath());
@@ -24,7 +24,6 @@ public class ServerFile extends File {
 
     @Override
     public String getParent() {
-
         if (file.getParent() != null) {
             return file.getParent().getFullPath();
         } else {
@@ -34,20 +33,15 @@ public class ServerFile extends File {
 
     @Override
     public File getParentFile() {
-
         if (file.getParent() != null) {
             return new ServerFile(file.getParent());
         } else {
-
             return null;
         }
-
-
     }
 
     @Override
-    public String getPath() {        
-        
+    public String getPath() {
         return file.getFullPath();
     }
 
@@ -82,7 +76,6 @@ public class ServerFile extends File {
 
     @Override
     public File getCanonicalFile() throws IOException {
-
         if (file.isDirectory()) {
             return this;
         } else {
@@ -90,21 +83,7 @@ public class ServerFile extends File {
         }
     }
 
-    /**
-     * Getter fuer MGXFile
-     *
-     * @return MGXFile
-     */
     public MGXFile getMGXFile() {
         return file;
-    }
-
-    /**
-     * Setter fuer MGXFile
-     *
-     * @param file MGXFile
-     */
-    public void setMGXFile(MGXFile file) {
-        this.file = file;
     }
 }
