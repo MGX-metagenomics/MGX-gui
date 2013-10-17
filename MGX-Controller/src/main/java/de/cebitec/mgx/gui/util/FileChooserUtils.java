@@ -83,7 +83,7 @@ public class FileChooserUtils {
             chooser.addChoosableFileFilter(new SuffixFilter(ft));
         }
 
-        if (chooser.showSaveDialog(null) != JFileChooser.APPROVE_OPTION) {
+        if (chooser.showOpenDialog(null) != JFileChooser.APPROVE_OPTION) {
             ret = null;
         } else {
             final File target = chooser.getSelectedFile();
