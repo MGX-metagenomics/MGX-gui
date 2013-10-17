@@ -3,8 +3,11 @@ package de.cebitec.mgx.gui.wizard.analysis.misc;
 import de.cebitec.mgx.gui.datamodel.Tool;
 import de.cebitec.mgx.gui.util.FileChooserUtils;
 import de.cebitec.mgx.gui.util.FileType;
-import de.cebitec.mgx.gui.wizard.configurations.utilities.Util;
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
@@ -191,7 +194,7 @@ public class NewToolPanel extends javax.swing.JPanel implements DocumentListener
         tool.setAuthor(author.getText().trim());
         tool.setDescription(description.getText().trim());
         try {
-            String xmlData = Util.readFile(xml.getText());
+            String xmlData = readFile(xml.getText());
             tool.setXMLFile(xmlData);
 
         } catch (IOException ex) {
@@ -211,5 +214,23 @@ public class NewToolPanel extends javax.swing.JPanel implements DocumentListener
 
     private boolean Empty(JTextArea f) {
         return "".equals(f.getText().trim());
+    }
+
+    private static String readFile(String path) throws IOException {
+        StringBuilder content = new StringBuilder();
+
+        try {
+            FileInputStream fis = new FileInputStream(path);
+            try (DataInputStream in = new DataInputStream(fis)) {
+                BufferedReader br = new BufferedReader(new InputStreamReader(in));
+                String strLine;
+                while ((strLine = br.readLine()) != null) {
+                    content.append(strLine);
+                }
+            }
+        } catch (IOException e) {
+            throw e;
+        }
+        return content.toString();
     }
 }

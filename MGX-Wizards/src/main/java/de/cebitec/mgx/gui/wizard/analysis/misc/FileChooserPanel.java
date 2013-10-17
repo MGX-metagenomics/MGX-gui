@@ -1,7 +1,7 @@
 package de.cebitec.mgx.gui.wizard.analysis.misc;
 
 import de.cebitec.mgx.gui.controller.MGXMaster;
-import de.cebitec.mgx.gui.wizard.configurations.utilities.ServerFS;
+import de.cebitec.mgx.gui.util.ServerFS;
 import java.io.File;
 import javax.swing.JFileChooser;
 
