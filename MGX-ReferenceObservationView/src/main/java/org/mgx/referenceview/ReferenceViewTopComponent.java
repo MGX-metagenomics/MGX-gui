@@ -4,24 +4,27 @@
  */
 package org.mgx.referenceview;
 
+import de.cebitec.mgx.gui.cache.Cache;
+import de.cebitec.mgx.gui.cache.CacheFactory;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.Reference;
-import de.cebitec.mgx.gui.datamodel.SeqRun;
+import de.cebitec.mgx.gui.datamodel.Region;
 import de.cebitec.vamp.view.dataVisualisation.BoundsInfo;
 import de.cebitec.vamp.view.dataVisualisation.BoundsInfoManager;
 import de.cebitec.vamp.view.dataVisualisation.MousePositionListener;
 import de.cebitec.vamp.view.dataVisualisation.basePanel.AdjustmentPanel;
 import de.cebitec.vamp.view.dataVisualisation.basePanel.BasePanel;
 import de.cebitec.vamp.view.dataVisualisation.referenceViewer.ReferenceViewer;
-import de.cebitec.vamp.view.load.ReferenceLoader;
 import excluded.BasePanelFactory;
 import excluded.PersistantReference;
 import excluded.ViewController;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
 import javax.swing.SwingWorker;
@@ -30,8 +33,6 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
-import org.openide.util.LookupEvent;
-import org.openide.util.LookupListener;
 import org.openide.windows.TopComponent;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.Utilities;
@@ -59,61 +60,43 @@ import org.openide.util.Utilities;
 })
 public final class ReferenceViewTopComponent extends TopComponent {
 
-    private ReferenceLoader loader;
+
     private MGXMaster currentMaster = null;
     private final Lookup.Result<MGXMaster> mgxMasterResult;
     private static final Logger log = Logger.getLogger(ReferenceViewTopComponent.class.getName());
     private Reference reference;
+    private String referenceSequence;
+
     public ReferenceViewTopComponent() {
         mgxMasterResult = Utilities.actionsGlobalContext().lookupResult(MGXMaster.class);
         reference = null;
         setName(Bundle.CTL_ReferenceViewTopComponent());
         setToolTipText(Bundle.HINT_ReferenceViewTopComponent());
+        referenceSequence = null;
     }
     
+    private int length = 0;
+
     private void loadReference(final long lId) {
-        
+
         final SwingWorker referenceSequenceWorker = new SwingWorker<String, Void>() {
             @Override
             protected String doInBackground() throws Exception {
-                int length = currentMaster.Reference().fetch(lId).getLength();
+                length = currentMaster.Reference().fetch(lId).getLength();
                 return currentMaster.Reference().getSequence(lId, 0, length);
             }
 
             @Override
             protected void done() {
-                String referenceString = null;
 
                 try {
-                    referenceString = get();
+                    referenceSequence = get();
                 } catch (InterruptedException ex) {
                     Exceptions.printStackTrace(ex);
                 } catch (ExecutionException ex) {
                     Exceptions.printStackTrace(ex);
                 }
-                PersistantReference vampReference = new PersistantReference(10, reference.getName(), "description", referenceString, new Timestamp(new Date().getTime()));
-                BoundsInfoManager manager = new BoundsInfoManager(vampReference);
-
-                MousePositionListener listener = new MousePositionListener() {
-                    @Override
-                    public void setCurrentMousePosition(int logPos) {
-                    }
-
-                    @Override
-                    public void setMouseOverPaintingRequested(boolean requested) {
-                    }
-                };
-                BasePanel basepanel = new BasePanel(manager, listener);
-                ViewController viewController = new ViewController();
-                viewController.addMousePositionListener(basepanel);
-                ReferenceViewer genomeViewer = new ReferenceViewer(manager, basepanel, vampReference);
-                int maxSliderValue = 500;
-                basepanel.setViewer(genomeViewer);
-                basepanel.setHorizontalAdjustmentPanel(createAdjustmentPanel(true, true, maxSliderValue, manager, vampReference));
-
-                BasePanelFactory factory = new BasePanelFactory(manager, viewController);
-                setLayout(new BorderLayout());
-                add(factory.getGenomeViewerBasePanel(vampReference));
+                loadRegions(lId);
 
                 super.done();
             }
@@ -138,6 +121,101 @@ public final class ReferenceViewTopComponent extends TopComponent {
             }
         };
         fetchWorker.execute();
+    }
+
+    private void loadRegions(final long lId) {
+
+
+
+
+        createView(reference);
+
+//        SwingWorker fetchWorker = new SwingWorker<Iterator<Region>, Void>() {
+//            @Override
+//            protected Iterator<Region> doInBackground() throws Exception {
+//
+//                Cache<Set<Region>> cache = CacheFactory.createRegionCache(currentMaster, reference);
+//
+//                Set<Region> set = null;
+//                try {
+//                    set = cache.get(0, 500000);
+//                } catch (ExecutionException ex) {
+//                    Exceptions.printStackTrace(ex);
+//                }
+//                return set.iterator();
+//                // return currentMaster.Reference().byReferenceInterval(lId, 0, length);
+//            }
+//
+//            @Override
+//            protected void done() {
+//                try {
+//                    Iterator<Region> iter = get();
+//
+//
+//                    log.info(iter.hasNext() ? "Region Iterator is not empty" : "Region Iterator is empty");
+//
+//                    //  while (iter.hasNext()) {
+//                    //      log.info("Region available: " + iter.next().getName());
+//                    //  }
+//
+//
+//
+//                    createView(reference, iter);
+//
+//                } catch (InterruptedException ex) {
+//                    Exceptions.printStackTrace(ex);
+//                } catch (ExecutionException ex) {
+//                    Exceptions.printStackTrace(ex);
+//                }
+//            }
+//        };
+//        fetchWorker.execute();
+
+
+
+    }
+
+    private void createView(Reference ref) {
+
+        PersistantReference vampReference = new PersistantReference(10, ref.getName(), "description", referenceSequence, new Timestamp(new Date().getTime()));
+        BoundsInfoManager manager = new BoundsInfoManager(vampReference);
+
+        MousePositionListener listener = new MousePositionListener() {
+            @Override
+            public void setCurrentMousePosition(int logPos) {
+            }
+
+            @Override
+            public void setMouseOverPaintingRequested(boolean requested) {
+            }
+        };
+        // BasePanel basepanel = new BasePanel(manager, listener);
+        ViewController viewController = new ViewController();
+        //viewController.addMousePositionListener(basepanel);
+        //ReferenceViewer genomeViewer = new ReferenceViewer(manager, basepanel, vampReference, iter);
+        // int maxSliderValue = 500;
+        //basepanel.setViewer(genomeViewer);
+        //basepanel.setHorizontalAdjustmentPanel(createAdjustmentPanel(true, true, maxSliderValue, manager, vampReference));
+
+        ArrayList<Region> list = new ArrayList<Region>();
+
+//        while (iter.hasNext()) {
+//
+//            list.add(iter.next());
+//        }
+//        log.info(Integer.toString(list.size()));
+        //list.clear();
+        BasePanelFactory factory = new BasePanelFactory(manager, viewController, currentMaster);
+        setLayout(new BorderLayout());
+//        Region testRegion = list.get(0);
+        BasePanel b = factory.getGenomeViewerBasePanel(vampReference, reference, list);
+        add(b);
+
+
+        //   ((ReferenceViewer) b.getViewer()).list.add(testRegion);
+        //   ((ReferenceViewer) b.getViewer()).createFeatures();
+
+
     }
 
     private void loadMGXMaster() {

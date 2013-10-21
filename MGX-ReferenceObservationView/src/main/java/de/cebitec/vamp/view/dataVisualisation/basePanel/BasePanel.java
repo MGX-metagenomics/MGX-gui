@@ -15,6 +15,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
+import org.mgx.referenceview.RegionsLoader;
 
 /**
  * A BasePanel serves as basis for other visual components.
@@ -24,7 +25,6 @@ import javax.swing.JSlider;
 public class BasePanel extends JPanel implements MousePositionListener {
 
     private static final long serialVersionUID = 246153482;
-
     private AbstractViewer viewer;
     private AbstractInfoPanel rightPanel;
     private AbstractInfoPanel leftPanel;
@@ -36,17 +36,22 @@ public class BasePanel extends JPanel implements MousePositionListener {
     private Component topPanel;
     private JScrollPane centerScrollpane;
 
-    public BasePanel(BoundsInfoManager boundsManager, MousePositionListener viewController){
+    public BasePanel(BoundsInfoManager boundsManager, MousePositionListener viewController) {
         super();
         this.setLayout(new BorderLayout());
         this.centerPanel = new JPanel(new BorderLayout());
         this.add(centerPanel, BorderLayout.CENTER);
         this.boundsManager = boundsManager;
+//        this.boundsManager.addBoundsListener(new RegionsLoader(viewer));
         this.viewController = viewController;
         this.currentMousePosListeners = new ArrayList();
     }
 
-    public void close(){
+    public BoundsInfoManager getBoundsManager() {
+        return this.boundsManager;
+    }
+
+    public void close() {
         this.shutdownViewer();
         this.shutdownInfoPanelAndAdjustmentPanel();
         this.remove(centerPanel);
@@ -55,8 +60,8 @@ public class BasePanel extends JPanel implements MousePositionListener {
         this.updateUI();
     }
 
-    private void shutdownViewer(){
-        if(this.viewer != null){
+    private void shutdownViewer() {
+        if (this.viewer != null) {
             this.boundsManager.removeBoundListener(viewer);
             this.currentMousePosListeners.remove(viewer);
             this.centerPanel.remove(viewer);
@@ -65,20 +70,20 @@ public class BasePanel extends JPanel implements MousePositionListener {
         }
     }
 
-    private void shutdownInfoPanelAndAdjustmentPanel(){
-        if(adjustmentPanelHorizontal != null){
+    private void shutdownInfoPanelAndAdjustmentPanel() {
+        if (adjustmentPanelHorizontal != null) {
             centerPanel.remove(adjustmentPanelHorizontal);
             adjustmentPanelHorizontal = null;
         }
 
-        if(rightPanel != null){
+        if (rightPanel != null) {
             rightPanel.close();
             this.remove(rightPanel);
             currentMousePosListeners.remove(rightPanel);
             rightPanel = null;
         }
 
-        if(leftPanel != null){
+        if (leftPanel != null) {
             leftPanel.close();
             this.remove(leftPanel);
             currentMousePosListeners.remove(leftPanel);
@@ -86,14 +91,14 @@ public class BasePanel extends JPanel implements MousePositionListener {
         }
     }
 
-    public void setViewer(AbstractViewer viewer, JSlider verticalZoom){
+    public void setViewer(AbstractViewer viewer, JSlider verticalZoom) {
         this.viewer = viewer;
         verticalZoom.setOrientation(JSlider.VERTICAL);
         this.boundsManager.addBoundsListener(viewer);
         currentMousePosListeners.add(viewer);
-       // if (viewer instanceof TrackViewer) {
-         //   TrackViewer tv = (TrackViewer) viewer;
-          //  tv.setVerticalZoomSlider(verticalZoom);
+        // if (viewer instanceof TrackViewer) {
+        //   TrackViewer tv = (TrackViewer) viewer;
+        //  tv.setVerticalZoomSlider(verticalZoom);
         //}
         centerPanel.add(viewer, BorderLayout.CENTER);
         centerPanel.add(verticalZoom, BorderLayout.WEST);
@@ -101,9 +106,10 @@ public class BasePanel extends JPanel implements MousePositionListener {
         this.updateSize();
     }
 
-    public void setViewer(AbstractViewer viewer){
+    public void setViewer(AbstractViewer viewer) {
         this.viewer = viewer;
         this.boundsManager.addBoundsListener(viewer);
+//        this.boundsManager.addBoundsListener(new RegionsLoader());
         currentMousePosListeners.add(viewer);
         centerPanel.add(viewer, BorderLayout.CENTER);
 
@@ -111,18 +117,19 @@ public class BasePanel extends JPanel implements MousePositionListener {
         this.updateSize();
     }
 
-    public void setHorizontalAdjustmentPanel(AdjustmentPanel adjustmentPanel){
+    public void setHorizontalAdjustmentPanel(AdjustmentPanel adjustmentPanel) {
         this.adjustmentPanelHorizontal = adjustmentPanel;
         centerPanel.add(adjustmentPanel, BorderLayout.NORTH);
         this.updateSize();
     }
 
     /**
-     * Adds a viewer in a scrollpane allowing for vertical scrolling.
-     * Horizontal scrolling is only available by "setHorizontalAdjustmentPanel".
+     * Adds a viewer in a scrollpane allowing for vertical scrolling. Horizontal
+     * scrolling is only available by "setHorizontalAdjustmentPanel".
+     *
      * @param viewer viewer to set
      */
-    public void setViewerInScrollpane(AbstractViewer viewer){
+    public void setViewerInScrollpane(AbstractViewer viewer) {
         this.viewer = viewer;
         this.boundsManager.addBoundsListener(viewer);
 
@@ -142,12 +149,14 @@ public class BasePanel extends JPanel implements MousePositionListener {
     }
 
     /**
-     * Adds a viewer in a scrollpane allowing for vertical scrolling and vertical zooming.
-     * Horizontal scrolling is only available by "setHorizontalAdjustmentPanel".
+     * Adds a viewer in a scrollpane allowing for vertical scrolling and
+     * vertical zooming. Horizontal scrolling is only available by
+     * "setHorizontalAdjustmentPanel".
+     *
      * @param viewer viewer to set
      * @param verticalZoom vertical zoom slider
      */
-    public void setViewerInScrollpane(AbstractViewer viewer, JSlider verticalZoom){
+    public void setViewerInScrollpane(AbstractViewer viewer, JSlider verticalZoom) {
         this.viewer = viewer;
         verticalZoom.setOrientation(JSlider.VERTICAL);
         this.boundsManager.addBoundsListener(viewer);
@@ -174,27 +183,27 @@ public class BasePanel extends JPanel implements MousePositionListener {
         }
     }
 
-    public void setTopInfoPanel(MousePositionListener infoPanel){
+    public void setTopInfoPanel(MousePositionListener infoPanel) {
         this.topPanel = (Component) infoPanel;
         centerPanel.add(topPanel, BorderLayout.NORTH);
         currentMousePosListeners.add(infoPanel);
         this.updateSize();
     }
 
-    public void setRightInfoPanel(AbstractInfoPanel infoPanel){
+    public void setRightInfoPanel(AbstractInfoPanel infoPanel) {
         this.rightPanel = infoPanel;
         this.add(infoPanel, BorderLayout.EAST);
         currentMousePosListeners.add(infoPanel);
         this.updateSize();
     }
 
-    public void setLeftInfoPanel(AbstractInfoPanel infoPanel){
+    public void setLeftInfoPanel(AbstractInfoPanel infoPanel) {
         this.leftPanel = infoPanel;
         this.add(leftPanel, BorderLayout.WEST);
         this.updateSize();
     }
 
-    public void setTitlePanel(JPanel title){
+    public void setTitlePanel(JPanel title) {
         this.add(title, BorderLayout.NORTH);
         this.updateSize();
     }
@@ -205,7 +214,7 @@ public class BasePanel extends JPanel implements MousePositionListener {
 
     @Override
     public void setCurrentMousePosition(int logPos) {
-        for(MousePositionListener c : currentMousePosListeners){
+        for (MousePositionListener c : currentMousePosListeners) {
             c.setCurrentMousePosition(logPos);
         }
     }
@@ -216,17 +225,16 @@ public class BasePanel extends JPanel implements MousePositionListener {
 
     @Override
     public void setMouseOverPaintingRequested(boolean requested) {
-        for(MousePositionListener c : currentMousePosListeners){
+        for (MousePositionListener c : currentMousePosListeners) {
             c.setMouseOverPaintingRequested(requested);
         }
     }
 
-    public AbstractViewer getViewer(){
+    public AbstractViewer getViewer() {
         return viewer;
     }
 
-    private void updateSize(){
+    private void updateSize() {
         this.setMaximumSize(new Dimension(Integer.MAX_VALUE, this.getPreferredSize().height));
     }
-
 }

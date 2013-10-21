@@ -1,5 +1,6 @@
 package de.cebitec.vamp.view.dataVisualisation.abstractViewer;
 
+
 import excluded.*;
 //import de.cebitec.vamp.databackend.dataObjects.PersistantReference;
 //import de.cebitec.vamp.util.ColorProperties;
@@ -24,14 +25,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
 
+
 /**
- * AbstractViewer ist a superclass for displaying genome related information.
- * It provides methods to compute the physical position (meaning pixel) for any
+ * AbstractViewer ist a superclass for displaying genome related information. It
+ * provides methods to compute the physical position (meaning pixel) for any
  * logical position (base position in genome) and otherwise. Depending on it's
  * own size and settings in the ViewerController AbstractViewer knows, which
  * interval from the genome should currently be diplayed and provides getter
- * methods for these values. Tooltips in this viewer are initially shown for
- * 20 seconds.
+ * methods for these values. Tooltips in this viewer are initially shown for 20
+ * seconds.
  *
  * @author ddoppmeier, rhilker
  */
@@ -56,7 +58,7 @@ public abstract class AbstractViewer extends JPanel implements LogicalBoundsList
     private BasePanel basePanel;
     private SequenceBar seqBar;
     private boolean centerSeqBar;
-    private PaintingAreaInfo paintingAreaInfo;
+    public PaintingAreaInfo paintingAreaInfo;
     private PersistantReference reference;
     private boolean isInMaxZoomLevel;
     private boolean inDrawingMode;
@@ -73,6 +75,7 @@ public abstract class AbstractViewer extends JPanel implements LogicalBoundsList
     public static final String PROP_MOUSEOVER_REQUESTED = "mouseOver requested";
     public static final Color backgroundColor = new Color(240, 240, 240); //to prevent wrong color on mac
     private JScrollBar scrollBar; /* Scrollbar, which should adapt, when component is repainted. */
+
     private boolean centerScrollBar = false;
 
     public AbstractViewer(BoundsInfoManager boundsManager, BasePanel basePanel, PersistantReference reference) {
@@ -139,6 +142,7 @@ public abstract class AbstractViewer extends JPanel implements LogicalBoundsList
 
     /**
      * Setup an option panel in the right top corner of the viewer.
+     *
      * @param label
      * @param options
      */
@@ -221,7 +225,6 @@ public abstract class AbstractViewer extends JPanel implements LogicalBoundsList
 
     private void initComponents() {
         this.addComponentListener(new ComponentAdapter() {
-
             @Override
             public void componentResized(java.awt.event.ComponentEvent evt) {
                 updatePhysicalBounds();
@@ -230,7 +233,6 @@ public abstract class AbstractViewer extends JPanel implements LogicalBoundsList
 
 
         this.addMouseWheelListener(new MouseWheelListener() {
-
             @Override
             public void mouseWheelMoved(MouseWheelEvent e) {
 
@@ -252,7 +254,6 @@ public abstract class AbstractViewer extends JPanel implements LogicalBoundsList
         });
 
         this.addMouseMotionListener(new MouseMotionListener() {
-
             @Override
             public void mouseDragged(MouseEvent e) {
                 setPanMode(e.getX());
@@ -275,7 +276,6 @@ public abstract class AbstractViewer extends JPanel implements LogicalBoundsList
             }
         });
         this.addMouseListener(new MouseListener() {
-
             @Override
             public void mouseClicked(MouseEvent e) {
             }
@@ -289,12 +289,12 @@ public abstract class AbstractViewer extends JPanel implements LogicalBoundsList
                 }
                 if (SwingUtilities.isRightMouseButton(e)) {
                     JPopupMenu popUp = new JPopupMenu();
-                  //  MenuItemFactory menuItemFactory = new MenuItemFactory();
+                    //  MenuItemFactory menuItemFactory = new MenuItemFactory();
 
                     //add copy mouse position option
-                 //   popUp.add(menuItemFactory.getCopyPositionItem(currentLogMousePos));
+                    //   popUp.add(menuItemFactory.getCopyPositionItem(currentLogMousePos));
                     //add center current position option
-                  //  popUp.add(menuItemFactory.getJumpToPosItem(boundsManager, getCurrentMousePos()));
+                    //  popUp.add(menuItemFactory.getJumpToPosItem(boundsManager, getCurrentMousePos()));
                     popUp.show((JComponent) e.getComponent(), e.getX(), e.getY());
                 }
             }
@@ -341,8 +341,8 @@ public abstract class AbstractViewer extends JPanel implements LogicalBoundsList
 
     /**
      * @param logPos position in the reference genome
-     * @return the physical boundaries (left, right) of a single base of the sequence
-     * in the viewer.
+     * @return the physical boundaries (left, right) of a single base of the
+     * sequence in the viewer.
      */
     public PhysicalBaseBounds getPhysBoundariesForLogPos(int logPos) {
         double left = this.transformToPhysicalCoord(logPos);
@@ -351,9 +351,11 @@ public abstract class AbstractViewer extends JPanel implements LogicalBoundsList
     }
 
     /**
-     * Compute the horizontal position (pixel) for a logical position (base in genome).
-     * If a base has more space than one pixel, this method returns the leftmost pixel,
-     * meaning the beginning of the available interval for displaying this base
+     * Compute the horizontal position (pixel) for a logical position (base in
+     * genome). If a base has more space than one pixel, this method returns the
+     * leftmost pixel, meaning the beginning of the available interval for
+     * displaying this base
+     *
      * @param logPos a position in the genome
      * @return horizontal position for requested base position
      */
@@ -365,6 +367,7 @@ public abstract class AbstractViewer extends JPanel implements LogicalBoundsList
     /**
      * Converts the physical pixel position into the logical sequence position
      * for a given phyPos.
+     *
      * @param phyPos physical position (pixel) in the reference genome
      * @return the logical position of a single base in the sequence.
      */
@@ -374,6 +377,7 @@ public abstract class AbstractViewer extends JPanel implements LogicalBoundsList
 
     /**
      * Compute the logical position for any given physical position (pixel).
+     *
      * @param physPos horizontal position of a pixel
      * @return logical position corresponding to the pixel
      */
@@ -385,11 +389,12 @@ public abstract class AbstractViewer extends JPanel implements LogicalBoundsList
 
     /**
      * Compute the logical position for any given physical position
+     *
      * @param physPos horizontal position of a pixel
      * @return logical position corresponding to the pixel
      */
     protected int transformToLogicalCoordForPannig(int physPos) {
-	  Logger.getLogger(this.getClass().getName()).log(Level.INFO, "position of pixel "+physPos);
+        Logger.getLogger(this.getClass().getName()).log(Level.INFO, "position of pixel " + physPos);
         int pos;
         int currentLog = bounds.getCurrentLogPos();
         int leftbound = bounds.getLogLeft();
@@ -406,10 +411,10 @@ public abstract class AbstractViewer extends JPanel implements LogicalBoundsList
             //mouse on the right side of currentLog
             if (currentLog < pos) {
                 pos = (int) (((double) physPos - horizontalMargin) / correlationFactor + leftbound);
-                 Logger.getLogger(this.getClass().getName()).log(Level.INFO, "rightside plus "+pos);
+                Logger.getLogger(this.getClass().getName()).log(Level.INFO, "rightside plus " + pos);
             } else {
                 pos = (int) (((double) physPos - horizontalMargin) / correlationFactor + rightBound);
-                     Logger.getLogger(this.getClass().getName()).log(Level.INFO, "leftside plus "+pos);
+                Logger.getLogger(this.getClass().getName()).log(Level.INFO, "leftside plus " + pos);
             }
 
         }
@@ -432,8 +437,8 @@ public abstract class AbstractViewer extends JPanel implements LogicalBoundsList
     }
 
     /**
-     * Update the physical coordinates of this panel, available width for painting.
-     * Method is called automatically, when this panel resizes
+     * Update the physical coordinates of this panel, available width for
+     * painting. Method is called automatically, when this panel resizes
      */
     public void updatePhysicalBounds() {
         this.setSizes();
@@ -442,36 +447,49 @@ public abstract class AbstractViewer extends JPanel implements LogicalBoundsList
     }
 
     /**
-     * Assign new logical bounds to this panel, meaning the range from the genome
-     * that should be displayed. In case the abstract viewer was handed over a scrollbar
-     * the value of the scrollbar is adjusted to the middle.
-     * @param bounds Information about the interval that should be displayed
-     * and the current position
+     * Assign new logical bounds to this panel, meaning the range from the
+     * genome that should be displayed. In case the abstract viewer was handed
+     * over a scrollbar the value of the scrollbar is adjusted to the middle.
+     *
+     * @param bounds Information about the interval that should be displayed and
+     * the current position
      */
     @Override
     public void updateLogicalBounds(BoundsInfo bounds) {
 //        if (!this.bounds.equals(bounds)) {
-            this.bounds = bounds;
-            this.calcBaseWidth();
-            this.recalcCorrelationFactor();
+        this.bounds = bounds;
+        this.calcBaseWidth();
+        this.recalcCorrelationFactor();
 
-            if (this.basewidth > 7) {
-                this.setIsInMaxZoomLevel(true);
-            } else {
-                this.setIsInMaxZoomLevel(false);
-            }
-            if (this.seqBar != null) {
-                this.seqBar.boundsChanged();
-            }
-            if (this.isActive()) {
-                this.boundsChangedHook();
-                this.repaint();
-            }
+        if (this.basewidth > 7) {
+            this.setIsInMaxZoomLevel(true);
+        } else {
+            this.setIsInMaxZoomLevel(false);
+        }
+        if (this.seqBar != null) {
+            this.seqBar.boundsChanged();
+        }
+        if (this.isActive()) {
+            this.boundsChangedHook();
+            this.repaint();
+        }
 //        }
 
         if (this.scrollBar != null && this.centerScrollBar) {
             this.scrollBar.setValue(this.scrollBar.getMaximum() / 2 - this.getParent().getHeight() / 2);
         }
+
+        Logger.getGlobal().info("Right:"+bounds.getLogRight());
+        
+        
+        
+
+
+        
+        
+        //TODO: add some 
+
+
     }
 
     @Override
@@ -492,6 +510,7 @@ public abstract class AbstractViewer extends JPanel implements LogicalBoundsList
 
     /**
      * Repaints the component.
+     *
      * @param oldPos the old mouse position
      * @param newPos the new mouse position
      */
@@ -518,8 +537,9 @@ public abstract class AbstractViewer extends JPanel implements LogicalBoundsList
     }
 
     /**
-     * Paints the rectangle marking the mouse position. It covers the whole height
-     * of the viewer.
+     * Paints the rectangle marking the mouse position. It covers the whole
+     * height of the viewer.
+     *
      * @param g the grapics object to paint in
      */
     private void drawMouseCursor(Graphics g) {
@@ -535,7 +555,7 @@ public abstract class AbstractViewer extends JPanel implements LogicalBoundsList
     private void paintCurrentCenterPosition(Graphics g) {
         PhysicalBaseBounds coords = getPhysBoundariesForLogPos(getBoundsInfo().getCurrentLogPos());
         PaintingAreaInfo info = this.getPaintingAreaInfo();
-       // g.setColor(ColorProperties.CURRENT_POSITION);
+        // g.setColor(ColorProperties.CURRENT_POSITION);
         int width = (int) (coords.getPhysWidth() >= 1 ? coords.getPhysWidth() : 1);
         g.fillRect((int) coords.getLeftPhysBound(), info.getForwardHigh(), width, info.getCompleteHeight());
     }
@@ -550,7 +570,7 @@ public abstract class AbstractViewer extends JPanel implements LogicalBoundsList
         super.paintComponent(graphics);
 
         if (isInDrawingMode()) {
-         //   graphics.setColor(ColorProperties.MOUSEOVER);
+            //   graphics.setColor(ColorProperties.MOUSEOVER);
             if (printMouseOver) {
                 drawMouseCursor(graphics);
             }
@@ -581,6 +601,7 @@ public abstract class AbstractViewer extends JPanel implements LogicalBoundsList
 
     /**
      * Returns the current bounds of the visible area of this component.
+     *
      * @return the current bounds values
      */
     public BoundsInfo getBoundsInfo() {
@@ -640,8 +661,8 @@ public abstract class AbstractViewer extends JPanel implements LogicalBoundsList
     }
 
     /**
-     * @return true, if this viewer is currently active (in the foreground)
-     * and false, if it is inactive
+     * @return true, if this viewer is currently active (in the foreground) and
+     * false, if it is inactive
      */
     public boolean isActive() {
         return this.isActive;
@@ -650,6 +671,7 @@ public abstract class AbstractViewer extends JPanel implements LogicalBoundsList
     /**
      * Set true, if this viewer should be active (in the foreground or it needs
      * to update its data) and false, if it should be inactive.
+     *
      * @param isActive true, if this viewer should be active and false, if not
      */
     public void setActive(boolean isActive) {
@@ -733,6 +755,7 @@ public abstract class AbstractViewer extends JPanel implements LogicalBoundsList
     /**
      * A scrollbar should be handed over, in case the scrollbar should adapt its
      * value to the middle position, whenever the genome position was updated.
+     *
      * @param scrollBar the scrollbar which should adapt
      */
     public void setScrollBar(JScrollBar scrollBar) {
@@ -740,10 +763,11 @@ public abstract class AbstractViewer extends JPanel implements LogicalBoundsList
     }
 
     /**
-     * Sets the property for centering the scrollbar around the center (sequence bar) (true)
-     * or not (false).
-     * @param centerScrollBar true, if the scrollbar should center around the sequence bar,
-     *              false otherwise
+     * Sets the property for centering the scrollbar around the center (sequence
+     * bar) (true) or not (false).
+     *
+     * @param centerScrollBar true, if the scrollbar should center around the
+     * sequence bar, false otherwise
      */
     public void setAutomaticCentering(boolean centerScrollBar) {
         this.centerScrollBar = centerScrollBar;

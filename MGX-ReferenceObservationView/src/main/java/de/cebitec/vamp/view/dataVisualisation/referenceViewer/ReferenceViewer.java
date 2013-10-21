@@ -8,6 +8,7 @@ package de.cebitec.vamp.view.dataVisualisation.referenceViewer;
 //import de.cebitec.vamp.util.ColorProperties;
 
 //import de.cebitec.vamp.util.FeatureType;
+import de.cebitec.mgx.gui.datamodel.Region;
 import de.cebitec.vamp.util.polyTree.Node;
 import de.cebitec.vamp.util.polyTree.NodeVisitor;
 import de.cebitec.vamp.util.polyTree.Polytree;
@@ -49,6 +50,8 @@ public class ReferenceViewer extends AbstractViewer {
     public static final String PROP_EXCLUDED_FEATURE_EVT = "excl feat evt";
     private int trackCount = 0;
 
+    public ArrayList<Region> list;
+    
     /**
      * Creates a new reference viewer.
      * @param boundsInfoManager the global bounds info manager
@@ -56,7 +59,7 @@ public class ReferenceViewer extends AbstractViewer {
      * @param refGenome the persistant reference, which is always accessible through the getReference
      *      method in any abstract viewer.
      */
-    public ReferenceViewer(BoundsInfoManager boundsInfoManager, BasePanel basePanel, PersistantReference refGenome){
+    public ReferenceViewer(BoundsInfoManager boundsInfoManager, BasePanel basePanel, PersistantReference refGenome, ArrayList<Region> lIter){
         super(boundsInfoManager, basePanel, refGenome);
         this.features = new ArrayList();
       //  this.refGenConnector = ProjectConnector.getInstance().getRefGenomeConnector(refGenome.getId());
@@ -64,6 +67,8 @@ public class ReferenceViewer extends AbstractViewer {
         this.getExcludedFeatureTypes().add(FeatureType.UNDEFINED);
         this.showSequenceBar(true, true);
         this.labelMargin = 3;
+        list = new ArrayList();
+        this.list = lIter;
         this.setViewerSize();
     }
 
@@ -119,7 +124,7 @@ public class ReferenceViewer extends AbstractViewer {
     /**
      * Creates all feature components to display in this viewer.
      */
-    private void createFeatures() {
+    public void createFeatures() {
         this.removeAll();
         this.features.clear();
         this.featureStats.clear();
@@ -132,16 +137,16 @@ public class ReferenceViewer extends AbstractViewer {
             this.add(this.getSequenceBar());
         }
 
-	  PersistantFeature feature = new PersistantFeature(13, "11", "enum", "locus", "product",35, 50, true, FeatureType.CDS, "name");
-
-	  feature.setFrame(1);
-
-
-
-        //new Feature List:
         List<PersistantFeature> featureList = new ArrayList<PersistantFeature>();
-	  featureList.add(feature);
-
+        
+        for(Region reg:list){
+        
+    
+	PersistantFeature feature = new PersistantFeature((int) reg.getId(), "11", "enum", reg.getName(), "product",reg.getStart(), reg.getStop(), true, FeatureType.CDS, reg.getName());
+	feature.setFrame(1);
+        //new Feature List:
+        featureList.add(feature);
+        }
 		//refGenConnector.getFeaturesForRegion(
               //  getBoundsInfo().getLogLeft(), getBoundsInfo().getLogRight(), FeatureType.ANY);
         List<Polytree> featureTrees = PersistantFeature.Utils.createFeatureTrees(featureList);
@@ -157,7 +162,8 @@ public class ReferenceViewer extends AbstractViewer {
 
         //Correct painting order is guaranteed by the node visitor
         for (JFeature jFeature : this.features) {
-            this.add(jFeature);
+         
+                   this.add(jFeature);
         }
 
         firePropertyChange(PROP_FEATURE_STATS_CHANGED, null, featureStats);
@@ -180,7 +186,7 @@ public class ReferenceViewer extends AbstractViewer {
      * Creates a feature component for a given feature and adds it to the reference viewer.
      * @param feature the feature to add to the viewer.
      */
-    private void addFeatureComponent(PersistantFeature feature) {
+    public void addFeatureComponent(PersistantFeature feature) {
         int frame = feature.getFrame();
         int yCoord = this.determineYFromFrame(frame);
         PaintingAreaInfo bounds = getPaintingAreaInfo();
@@ -217,7 +223,13 @@ public class ReferenceViewer extends AbstractViewer {
                 }
             }
             this.features.add(jFeature);
+            
+            //my work
+            firePropertyChange(PROP_FEATURE_STATS_CHANGED, null, featureStats);
         }
+        
+       // this.createFeatures();
+        
     }
 
     private int determineYFromFrame(int frame){

@@ -6,6 +6,9 @@ package excluded;
 //import de.cebitec.vamp.databackend.dataObjects.PersistantTrack;
 //import de.cebitec.vamp.util.ColorProperties;
 //import de.cebitec.vamp.util.FeatureType;
+import de.cebitec.mgx.gui.controller.MGXMaster;
+import de.cebitec.mgx.gui.datamodel.Reference;
+import de.cebitec.mgx.gui.datamodel.Region;
 import de.cebitec.vamp.view.dataVisualisation.BoundsInfo;
 import de.cebitec.vamp.view.dataVisualisation.BoundsInfoManager;
 import de.cebitec.vamp.view.dataVisualisation.abstractViewer.AbstractViewer;
@@ -24,9 +27,11 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import javax.swing.*;
-
+import org.mgx.referenceview.RegionsLoader;
 
 /**
  * Factory used to initialize all different kinds of base panels.
@@ -38,21 +43,48 @@ public class BasePanelFactory {
     private BoundsInfoManager boundsManager;
     private PersistantReference refGenome;
     private ViewController viewController;
-
-    public BasePanelFactory(BoundsInfoManager boundsManager, ViewController viewController) {
+    private MGXMaster master;
+    
+    public BasePanelFactory(BoundsInfoManager boundsManager, ViewController viewController, MGXMaster master) {
         this.boundsManager = boundsManager;
         this.viewController = viewController;
+        this.master = master;
     }
 
-    public BasePanel getGenomeViewerBasePanel(PersistantReference refGenome) {
+    public BasePanel getGenomeViewerBasePanel(PersistantReference refGenome,Reference reference ,ArrayList<Region> list) {
 
         this.refGenome = refGenome;
         BasePanel b = new BasePanel(boundsManager, viewController);
         viewController.addMousePositionListener(b);
+        
+        ArrayList<PersistantFeature> featureList = new ArrayList<>();
 
+        for (Region reg : list) {
+            PersistantFeature feature = new PersistantFeature((int) reg.getId(), "11", "enum", reg.getName(), "product", reg.getStart(), reg.getStop(), true, FeatureType.CDS, reg.getName());
+            feature.setFrame(1);
+            //new Feature List:
+            featureList.add(feature);
+        }
+     
+        list.clear();
         // create viewer
-        ReferenceViewer genomeViewer = new ReferenceViewer(boundsManager, b, refGenome);
-
+        ReferenceViewer genomeViewer = new ReferenceViewer(boundsManager, b, refGenome, list);
+        b.getBoundsManager().addBoundsListener(new RegionsLoader(master,genomeViewer,reference));
+        //genomeViewer.features.add(list.get(0));
+        //genomeViewer.addFeatureComponent(featureList.get(0));
+        //list.get(0);
+       // genomeViewer.list.add(testRegion);
+       // genomeViewer.addFeatureComponent(featureList.get(0));
+        
+        
+        
+        genomeViewer.createFeatures();
+       // genomeViewer.addFeatureComponent(featureList.get(0));
+       // genomeViewer.createFeatures();
+     //   genomeViewer.repaint();
+        // genomeViewer.addFeatureComponent(list.get(0));
+        
+        
         // show a color legend
         JPanel genomePanelLegend = this.getGenomeViewerLegend(genomeViewer);
         genomeViewer.setupLegend(new MenuLabel(genomePanelLegend, MenuLabel.TITLE_LEGEND), genomePanelLegend);
@@ -61,8 +93,8 @@ public class BasePanelFactory {
         int maxSliderValue = 500;
         b.setViewer(genomeViewer);
         b.setHorizontalAdjustmentPanel(this.createAdjustmentPanel(true, true, maxSliderValue));
-
-        return b;
+        b.repaint();
+       return b;
     }
 
 //    public BasePanel getTrackBasePanel(PersistantTrack track, PersistantReference refGen) {
@@ -106,7 +138,6 @@ public class BasePanelFactory {
 //
 //        return basePanel;
 //    }
-
     /**
      * Method to get one
      * <code>BasePanel</code> for multiple tracks. Only 2 tracks at once are
@@ -175,7 +206,6 @@ public class BasePanelFactory {
 //            throw new UnknownError();
 //        }
 //    }
-
 //    public BasePanel getAlignmentViewBasePanel(TrackConnector connector) {
 //        BasePanel b = new BasePanel(boundsManager, viewController);
 //        viewController.addMousePositionListener(b);
@@ -200,7 +230,6 @@ public class BasePanelFactory {
 //
 //        return b;
 //    }
-
 //    public BasePanel getHistogrammViewerBasePanel(TrackConnector connector) {
 //        BasePanel b = new BasePanel(boundsManager, viewController);
 //        viewController.addMousePositionListener(b);
@@ -221,7 +250,6 @@ public class BasePanelFactory {
 //        return b;
 //
 //    }
-
     /**
      * @param connector track connector of first track of two sequence pair
      * tracks
@@ -246,7 +274,6 @@ public class BasePanelFactory {
 //
 //        return b;
 //    }
-
     private AdjustmentPanel createAdjustmentPanel(boolean hasScrollbar, boolean hasSlider, int sliderMax) {
         // create control panel
         BoundsInfo bounds = boundsManager.getUpdatedBoundsInfo(new Dimension(10, 10));
@@ -412,7 +439,6 @@ public class BasePanelFactory {
 //
 //        return options;
 //    }
-
     /**
      * @param viewer the alignment viewer for which the options panel should be
      * created.
@@ -425,7 +451,6 @@ public class BasePanelFactory {
 //
 //        return options;
 //    }
-
     private JPanel getHistogramViewerLegend() {
         JPanel legend = new JPanel();
         legend.setLayout(new BoxLayout(legend, BoxLayout.PAGE_AXIS));
