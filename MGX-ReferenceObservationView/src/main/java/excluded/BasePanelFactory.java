@@ -44,7 +44,7 @@ public class BasePanelFactory {
     private PersistantReference refGenome;
     private ViewController viewController;
     private MGXMaster master;
-    
+
     public BasePanelFactory(BoundsInfoManager boundsManager, ViewController viewController, MGXMaster master) {
         this.boundsManager = boundsManager;
         this.viewController = viewController;
@@ -56,7 +56,7 @@ public class BasePanelFactory {
         this.refGenome = refGenome;
         BasePanel b = new BasePanel(boundsManager, viewController);
         viewController.addMousePositionListener(b);
-        
+
         ArrayList<PersistantFeature> featureList = new ArrayList<>();
 
         for (Region reg : list) {
@@ -65,7 +65,7 @@ public class BasePanelFactory {
             //new Feature List:
             featureList.add(feature);
         }
-     
+
         list.clear();
         // create viewer
         ReferenceViewer genomeViewer = new ReferenceViewer(boundsManager, b, refGenome, list);
@@ -73,18 +73,18 @@ public class BasePanelFactory {
         //genomeViewer.features.add(list.get(0));
         //genomeViewer.addFeatureComponent(featureList.get(0));
         //list.get(0);
-       // genomeViewer.list.add(testRegion);
-       // genomeViewer.addFeatureComponent(featureList.get(0));
-        
-        
-        
+        // genomeViewer.list.add(testRegion);
+        // genomeViewer.addFeatureComponent(featureList.get(0));
+
+
+
         genomeViewer.createFeatures();
-       // genomeViewer.addFeatureComponent(featureList.get(0));
-       // genomeViewer.createFeatures();
-     //   genomeViewer.repaint();
+        // genomeViewer.addFeatureComponent(featureList.get(0));
+        // genomeViewer.createFeatures();
+        //   genomeViewer.repaint();
         // genomeViewer.addFeatureComponent(list.get(0));
-        
-        
+
+
         // show a color legend
         JPanel genomePanelLegend = this.getGenomeViewerLegend(genomeViewer);
         genomeViewer.setupLegend(new MenuLabel(genomePanelLegend, MenuLabel.TITLE_LEGEND), genomePanelLegend);
@@ -94,7 +94,7 @@ public class BasePanelFactory {
         b.setViewer(genomeViewer);
         b.setHorizontalAdjustmentPanel(this.createAdjustmentPanel(true, true, maxSliderValue));
         b.repaint();
-       return b;
+        return b;
     }
 
 //    public BasePanel getTrackBasePanel(PersistantTrack track, PersistantReference refGen) {
