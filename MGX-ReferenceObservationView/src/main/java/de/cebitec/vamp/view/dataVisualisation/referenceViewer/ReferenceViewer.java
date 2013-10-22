@@ -145,10 +145,11 @@ public class ReferenceViewer extends AbstractViewer {
                 stop = reg.getStart();
                 isForward = false;
             } else {
+                start = reg.getStart();
+                stop = reg.getStop();
                 isForward = true;
             }
-            start = reg.getStart();
-            stop = reg.getStop();
+
 
             PersistantFeature feature = new PersistantFeature((int) reg.getId(), "", "enum", reg.getName(), "product", start, stop, isForward, FeatureType.CDS, reg.getName());
             // feature.setFrame(1);
