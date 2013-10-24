@@ -41,7 +41,12 @@ public class CacheFactory {
         CacheLoader<Interval<Set<Region>>, Set<Region>> loader = new CacheLoader<Interval<Set<Region>>, Set<Region>>() {
             @Override
             public Set<Region> load(Interval<Set<Region>> k) throws Exception {
-                Iterator<Region> iter = master.Reference().byReferenceInterval(ref.getId(), k.getFrom(), k.getTo());
+
+                int to = k.getTo();
+                if (ref.getLength() < to) {
+                    to = ref.getLength() - 1;
+                }
+                Iterator<Region> iter = master.Reference().byReferenceInterval(ref.getId(), k.getFrom(), to);
                 Set<Region> ret = new HashSet<>();
                 while (iter.hasNext()) {
                     ret.add(iter.next());
