@@ -35,7 +35,7 @@ public class ExtendedScroller extends JScrollBar implements SynchronousNavigator
                     currentValue = newValue;
                     updateListeners();
                 }
-            }
+            }      
         });
     }
 
