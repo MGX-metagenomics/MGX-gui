@@ -50,20 +50,10 @@ public class RegionWorker extends SwingWorker<Iterator<Region>, Void> {
                 currentValues.setCurrentTime(this.workerCreationTime);
                 Iterator<Region> iter = get();
 //                log.info(iter.hasNext() ? "Region Iterator is not empty" : "Region Iterator is empty");
-                viewer.list.clear();
-                int count = 0;
+                viewer.resetFeatures(iter);
                 Region reg;
-                while (iter.hasNext()) {
-                    count++;
-                    reg = iter.next();
-                    if (!viewer.list.contains(reg)) {
-                        viewer.list.add(reg);
-                    }
-                }
 //                log.info("Size: " + viewer.list.size());
 //                log.info("Loaded: " + count);
-                viewer.createFeatures();
-                viewer.repaint();
             }
         } catch (InterruptedException ex) {
             Exceptions.printStackTrace(ex);

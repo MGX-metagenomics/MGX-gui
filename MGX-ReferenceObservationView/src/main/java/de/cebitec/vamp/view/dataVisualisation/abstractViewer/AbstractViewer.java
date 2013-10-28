@@ -477,15 +477,7 @@ public abstract class AbstractViewer extends JPanel implements LogicalBoundsList
 
         if (this.scrollBar != null && this.centerScrollBar) {
             this.scrollBar.setValue(this.scrollBar.getMaximum() / 2 - this.getParent().getHeight() / 2);
-        }
-
-        Logger.getGlobal().info("Right:"+bounds.getLogRight());
-        
-        
-        
-
-
-        
+        }     
         
         //TODO: add some 
 

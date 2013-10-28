@@ -51,40 +51,26 @@ public class BasePanelFactory {
         this.master = master;
     }
 
-    public BasePanel getGenomeViewerBasePanel(PersistantReference refGenome,Reference reference ,ArrayList<Region> list) {
+    public BasePanel getGenomeViewerBasePanel(PersistantReference refGenome,Reference reference) {
 
         this.refGenome = refGenome;
         BasePanel b = new BasePanel(boundsManager, viewController);
         viewController.addMousePositionListener(b);
 
-        ArrayList<PersistantFeature> featureList = new ArrayList<>();
+//        ArrayList<PersistantFeature> featureList = new ArrayList<>();
 
-        for (Region reg : list) {
-            PersistantFeature feature = new PersistantFeature((int) reg.getId(), "11", "enum", reg.getName(), "product", reg.getStart(), reg.getStop(), true, FeatureType.CDS, reg.getName());
-            feature.setFrame(1);
-            //new Feature List:
-            featureList.add(feature);
-        }
+//        for (Region reg : list) {
+//            PersistantFeature feature = new PersistantFeature((int) reg.getId(), "11", "enum", reg.getName(), "product", reg.getStart(), reg.getStop(), true, FeatureType.CDS, reg.getName());
+//            feature.setFrame(1);
+//            //new Feature List:
+//            featureList.add(feature);
+//        }
 
-        list.clear();
+
         // create viewer
-        ReferenceViewer genomeViewer = new ReferenceViewer(boundsManager, b, refGenome, list);
+        ReferenceViewer genomeViewer = new ReferenceViewer(boundsManager, b, refGenome);
         b.getBoundsManager().addBoundsListener(new RegionsLoader(master,genomeViewer,reference));
-        //genomeViewer.features.add(list.get(0));
-        //genomeViewer.addFeatureComponent(featureList.get(0));
-        //list.get(0);
-        // genomeViewer.list.add(testRegion);
-        // genomeViewer.addFeatureComponent(featureList.get(0));
-
-
-
-        genomeViewer.createFeatures();
-        // genomeViewer.addFeatureComponent(featureList.get(0));
-        // genomeViewer.createFeatures();
-        //   genomeViewer.repaint();
-        // genomeViewer.addFeatureComponent(list.get(0));
-
-
+        
         // show a color legend
         JPanel genomePanelLegend = this.getGenomeViewerLegend(genomeViewer);
         genomeViewer.setupLegend(new MenuLabel(genomePanelLegend, MenuLabel.TITLE_LEGEND), genomePanelLegend);

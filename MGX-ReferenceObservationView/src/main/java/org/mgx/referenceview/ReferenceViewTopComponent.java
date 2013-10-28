@@ -70,14 +70,13 @@ public final class ReferenceViewTopComponent extends TopComponent {
         referenceSequence = null;
     }
     
-    private int length = 0;
 
     private void loadReference(final long lId) {
 
         final SwingWorker referenceSequenceWorker = new SwingWorker<String, Void>() {
             @Override
             protected String doInBackground() throws Exception {
-                length = currentMaster.Reference().fetch(lId).getLength();
+                int length = currentMaster.Reference().fetch(lId).getLength();
                 return currentMaster.Reference().getSequence(lId, 0, length);
             }
 
@@ -119,55 +118,7 @@ public final class ReferenceViewTopComponent extends TopComponent {
     }
 
     private void loadRegions(final long lId) {
-
-
-
-
         createView(reference);
-
-//        SwingWorker fetchWorker = new SwingWorker<Iterator<Region>, Void>() {
-//            @Override
-//            protected Iterator<Region> doInBackground() throws Exception {
-//
-//                Cache<Set<Region>> cache = CacheFactory.createRegionCache(currentMaster, reference);
-//
-//                Set<Region> set = null;
-//                try {
-//                    set = cache.get(0, 500000);
-//                } catch (ExecutionException ex) {
-//                    Exceptions.printStackTrace(ex);
-//                }
-//                return set.iterator();
-//                // return currentMaster.Reference().byReferenceInterval(lId, 0, length);
-//            }
-//
-//            @Override
-//            protected void done() {
-//                try {
-//                    Iterator<Region> iter = get();
-//
-//
-//                    log.info(iter.hasNext() ? "Region Iterator is not empty" : "Region Iterator is empty");
-//
-//                    //  while (iter.hasNext()) {
-//                    //      log.info("Region available: " + iter.next().getName());
-//                    //  }
-//
-//
-//
-//                    createView(reference, iter);
-//
-//                } catch (InterruptedException ex) {
-//                    Exceptions.printStackTrace(ex);
-//                } catch (ExecutionException ex) {
-//                    Exceptions.printStackTrace(ex);
-//                }
-//            }
-//        };
-//        fetchWorker.execute();
-
-
-
     }
 
     private void createView(Reference ref) {
@@ -192,25 +143,10 @@ public final class ReferenceViewTopComponent extends TopComponent {
         //basepanel.setViewer(genomeViewer);
         //basepanel.setHorizontalAdjustmentPanel(createAdjustmentPanel(true, true, maxSliderValue, manager, vampReference));
 
-        ArrayList<Region> list = new ArrayList<Region>();
-
-//        while (iter.hasNext()) {
-//
-//            list.add(iter.next());
-//        }
-//        log.info(Integer.toString(list.size()));
-        //list.clear();
         BasePanelFactory factory = new BasePanelFactory(manager, viewController, currentMaster);
         setLayout(new BorderLayout());
-//        Region testRegion = list.get(0);
-        BasePanel b = factory.getGenomeViewerBasePanel(vampReference, reference, list);
+        BasePanel b = factory.getGenomeViewerBasePanel(vampReference, reference);
         add(b);
-
-
-        //   ((ReferenceViewer) b.getViewer()).list.add(testRegion);
-        //   ((ReferenceViewer) b.getViewer()).createFeatures();
-
-
     }
 
     private void loadMGXMaster() {

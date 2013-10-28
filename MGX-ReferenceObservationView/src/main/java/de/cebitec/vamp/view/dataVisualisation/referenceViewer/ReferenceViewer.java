@@ -27,6 +27,7 @@ import java.util.Map;
 
 //neu
 import excluded.*;
+import java.util.Iterator;
 
 /**
  * Viewer for genome sequences / chromosomes.
@@ -47,7 +48,7 @@ public class ReferenceViewer extends AbstractViewer {
     public final static String PROP_FEATURE_SELECTED = "feat selected";
     public static final String PROP_EXCLUDED_FEATURE_EVT = "excl feat evt";
     private int trackCount = 0;
-    public ArrayList<Region> list;
+    private ArrayList<Region> list;
 
     /**
      * Creates a new reference viewer.
@@ -57,7 +58,7 @@ public class ReferenceViewer extends AbstractViewer {
      * @param refGenome the persistant reference, which is always accessible
      * through the getReference method in any abstract viewer.
      */
-    public ReferenceViewer(BoundsInfoManager boundsInfoManager, BasePanel basePanel, PersistantReference refGenome, ArrayList<Region> lIter) {
+    public ReferenceViewer(BoundsInfoManager boundsInfoManager, BasePanel basePanel, PersistantReference refGenome) {
         super(boundsInfoManager, basePanel, refGenome);
         this.features = new ArrayList();
         //  this.refGenConnector = ProjectConnector.getInstance().getRefGenomeConnector(refGenome.getId());
@@ -66,7 +67,7 @@ public class ReferenceViewer extends AbstractViewer {
         this.showSequenceBar(true, true);
         this.labelMargin = 3;
         list = new ArrayList();
-        this.list = lIter;
+        this.list = new ArrayList<>();
         this.setViewerSize();
     }
 
@@ -117,10 +118,19 @@ public class ReferenceViewer extends AbstractViewer {
 //        firePropertyChange(PROP_INTERVAL_CHANGED, null, getBoundsInfo());
     }
 
+    public void resetFeatures(Iterator<Region> iter) {
+        list.clear();
+        while (iter.hasNext()) {
+               list.add(iter.next());
+        }
+        this.createFeatures();
+        this.repaint();
+    }
+
     /**
      * Creates all feature components to display in this viewer.
      */
-    public void createFeatures() {
+    private void createFeatures() {
 
         this.removeAll();
         this.features.clear();
@@ -235,13 +245,7 @@ public class ReferenceViewer extends AbstractViewer {
                 }
             }
             this.features.add(jFeature);
-
-            //my work
-            firePropertyChange(PROP_FEATURE_STATS_CHANGED, null, featureStats);
         }
-
-        // this.createFeatures();
-
     }
 
     private int determineYFromFrame(int frame) {

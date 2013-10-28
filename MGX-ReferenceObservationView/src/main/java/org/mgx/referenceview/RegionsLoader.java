@@ -43,7 +43,7 @@ public class RegionsLoader implements LogicalBoundsListener, ICurrentValues {
     @Override
     public void updateLogicalBounds(final BoundsInfo lBounds) {
         this.bounds = lBounds;
-//        log.info("Loading data: Left: " + this.getBounds().getLogLeft() + " Right: " + this.getBounds().getLogRight());
+        //        log.info("Loading data: Left: " + this.getBounds().getLogLeft() + " Right: " + this.getBounds().getLogRight());
         RegionWorker worker = new RegionWorker(this, viewer, cache);
         worker.execute();
     }

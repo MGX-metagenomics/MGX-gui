@@ -13,6 +13,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import org.openide.util.ImageUtilities;
 
 /**
  *
@@ -36,9 +37,9 @@ public class MenuLabel extends JLabel implements Observer, Observable {
         super(title);
         this.observers = new ArrayList<Observer>();
         this.associatedPanel = associatedPanel;
-        isShowingLabel = false;
-//        expandIcon = new ImageIcon(this.getClass().getClassLoader().getResource("de/cebitec/vamp/resources/expandIcon.png"));
-//        collapseIcon = new ImageIcon(this.getClass().getClassLoader().getResource("de/cebitec/vamp/resources/collapseIcon.png"));
+        isShowingLabel = false;      
+        expandIcon = new ImageIcon(this.getClass().getClassLoader().getResource("de/cebitec/mgx/gui/mgxreferenceobservationview/expandIcon.png"));
+         collapseIcon = new ImageIcon(this.getClass().getClassLoader().getResource("de/cebitec/mgx/gui/mgxreferenceobservationview/collapseIcon.png"));
         this.setIcon(expandIcon);
 
         this.addMouseListener(new MouseListener() {

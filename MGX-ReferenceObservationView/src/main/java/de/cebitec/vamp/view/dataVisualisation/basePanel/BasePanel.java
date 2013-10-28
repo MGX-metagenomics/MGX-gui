@@ -42,7 +42,6 @@ public class BasePanel extends JPanel implements MousePositionListener {
         this.centerPanel = new JPanel(new BorderLayout());
         this.add(centerPanel, BorderLayout.CENTER);
         this.boundsManager = boundsManager;
-//        this.boundsManager.addBoundsListener(new RegionsLoader(viewer));
         this.viewController = viewController;
         this.currentMousePosListeners = new ArrayList();
     }
@@ -109,7 +108,6 @@ public class BasePanel extends JPanel implements MousePositionListener {
     public void setViewer(AbstractViewer viewer) {
         this.viewer = viewer;
         this.boundsManager.addBoundsListener(viewer);
-//        this.boundsManager.addBoundsListener(new RegionsLoader());
         currentMousePosListeners.add(viewer);
         centerPanel.add(viewer, BorderLayout.CENTER);
 
