@@ -10,9 +10,9 @@ import de.cebitec.vamp.view.dataVisualisation.BoundsInfo;
  *
  * @author belmann
  */
-public interface CurrentBounds  {
-    
-    public BoundsInfo getBounds();
+public interface ICurrentBounds {
 
-    public void setBounds(BoundsInfo bounds);
+    public BoundsInfo getCurrentBounds();
+
+    public void setCurrentBounds(BoundsInfo bounds);
 }

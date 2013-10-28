@@ -8,9 +8,5 @@ package org.mgx.referenceview;
  *
  * @author belmann
  */
-public interface Current extends CurrentBounds {
-    
-    public long getCurrent();
-    public void setCurrent(long current);
-    
+public interface ICurrentValues extends ICurrentBounds, ICurrentTime {
 }

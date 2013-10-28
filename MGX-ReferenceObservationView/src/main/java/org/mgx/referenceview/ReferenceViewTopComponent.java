@@ -4,8 +4,6 @@
  */
 package org.mgx.referenceview;
 
-import de.cebitec.mgx.gui.cache.Cache;
-import de.cebitec.mgx.gui.cache.CacheFactory;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.Reference;
 import de.cebitec.mgx.gui.datamodel.Region;
@@ -14,7 +12,6 @@ import de.cebitec.vamp.view.dataVisualisation.BoundsInfoManager;
 import de.cebitec.vamp.view.dataVisualisation.MousePositionListener;
 import de.cebitec.vamp.view.dataVisualisation.basePanel.AdjustmentPanel;
 import de.cebitec.vamp.view.dataVisualisation.basePanel.BasePanel;
-import de.cebitec.vamp.view.dataVisualisation.referenceViewer.ReferenceViewer;
 import excluded.BasePanelFactory;
 import excluded.PersistantReference;
 import excluded.ViewController;
@@ -23,8 +20,6 @@ import java.awt.Dimension;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
-import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
 import javax.swing.SwingWorker;
