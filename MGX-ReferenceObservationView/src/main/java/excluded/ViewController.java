@@ -4,7 +4,7 @@
  */
 package excluded;
 
-import de.cebitec.vamp.view.dataVisualisation.MousePositionListener;
+import de.cebitec.mgx.gui.reference.dataVisualisation.MousePositionListener;
 
 /**
  *

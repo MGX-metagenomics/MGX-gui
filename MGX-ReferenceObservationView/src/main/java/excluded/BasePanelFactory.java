@@ -9,15 +9,13 @@ package excluded;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.Reference;
 import de.cebitec.mgx.gui.datamodel.Region;
-import de.cebitec.vamp.view.dataVisualisation.BoundsInfo;
-import de.cebitec.vamp.view.dataVisualisation.BoundsInfoManager;
-import de.cebitec.vamp.view.dataVisualisation.abstractViewer.AbstractViewer;
-import de.cebitec.vamp.view.dataVisualisation.abstractViewer.MenuLabel;
-import de.cebitec.vamp.view.dataVisualisation.basePanel.AdjustmentPanel;
-//import de.cebitec.vamp.view.dataVisualisation.alignmentViewer.AlignmentOptionsPanel;
-//import de.cebitec.vamp.view.dataVisualisation.alignmentViewer.AlignmentViewer;
-import de.cebitec.vamp.view.dataVisualisation.basePanel.BasePanel;
-import de.cebitec.vamp.view.dataVisualisation.referenceViewer.ReferenceViewer;
+import de.cebitec.mgx.gui.reference.dataVisualisation.BoundsInfo;
+import de.cebitec.mgx.gui.reference.dataVisualisation.BoundsInfoManager;
+import de.cebitec.mgx.gui.reference.dataVisualisation.abstractViewer.AbstractViewer;
+import de.cebitec.mgx.gui.reference.dataVisualisation.abstractViewer.MenuLabel;
+import de.cebitec.mgx.gui.reference.dataVisualisation.basePanel.AdjustmentPanel;
+import de.cebitec.mgx.gui.reference.dataVisualisation.basePanel.BasePanel;
+import de.cebitec.mgx.gui.reference.dataVisualisation.referenceViewer.ReferenceViewer;
 //import de.cebitec.vamp.view.dataVisualisation.histogramViewer.HistogramViewer;
 
 //import de.cebitec.vamp.view.dataVisualisation.seqPairViewer.SequencePairViewer;
@@ -31,7 +29,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import javax.swing.*;
-import org.mgx.referenceview.RegionsLoader;
+import de.cebitec.mgx.gui.reference.referenceView.RegionsLoader;
 
 /**
  * Factory used to initialize all different kinds of base panels.
