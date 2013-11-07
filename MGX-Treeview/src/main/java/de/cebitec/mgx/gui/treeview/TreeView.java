@@ -118,7 +118,7 @@ public class TreeView extends HierarchicalViewerI {
         // merge hierarchies into consensus tree
         Tree<Map<VisualizationGroup, Long>> combinedTree = TreeFactory.combineTrees(trees);
         Node<Map<VisualizationGroup, Long>> root = combinedTree.getRoot();
-        
+
         // create an ordered list of groups
         int i = 0;
         VisualizationGroup[] groupOrder = new VisualizationGroup[trees.size()];
@@ -135,7 +135,6 @@ public class TreeView extends HierarchicalViewerI {
         pTree.getNodeTable().addColumn(nodeTotalElements, long.class);
         pTree.getNodeTable().addColumn(sameRankCount, Map.class);
         pTree.getNodeTable().addColumn(nodeContent, Map.class);
-
 
         prefuse.data.Node rootNode = pTree.addRoot();
         rootNode.set(nodeLabel, root.getAttribute());
@@ -192,8 +191,10 @@ public class TreeView extends HierarchicalViewerI {
         self.set(nodeTotalElements, calculateNodeCount(node.getContent()));
         self.set(sameRankCount, rankCounts);
 
-        for (Node<Map<VisualizationGroup, Long>> child : node.getChildren()) {
-            addWithChildren(pTree, self, child, rankCounts);
+        if (node.hasChildren()) {
+            for (Node<Map<VisualizationGroup, Long>> child : node.getChildren()) {
+                addWithChildren(pTree, self, child, rankCounts);
+            }
         }
     }
 
@@ -261,8 +262,8 @@ public class TreeView extends HierarchicalViewerI {
         treeLayout.setLayoutAnchor(new Point2D.Double(25, 300));
         visualization.putAction("treeLayout", treeLayout);
 
-        CollapsedSubtreeLayout subLayout =
-                new CollapsedSubtreeLayout(tree, orientation);
+        CollapsedSubtreeLayout subLayout
+                = new CollapsedSubtreeLayout(tree, orientation);
         visualization.putAction("subLayout", subLayout);
 
         AutoPanAction autoPan = new AutoPanAction();
@@ -300,7 +301,6 @@ public class TreeView extends HierarchicalViewerI {
         visualization.putAction("orient", orient);
 
         // ------------------------------------------------
-
         // initialize the display
         display.setSize(700, 600);
         display.setItemSorter(new TreeDepthItemSorter());
@@ -323,7 +323,6 @@ public class TreeView extends HierarchicalViewerI {
                 "bottom-to-top", KeyStroke.getKeyStroke("ctrl 4"), Display.WHEN_FOCUSED);
 
         // ------------------------------------------------
-
         // filter graph and perform layout
         setOrientation(orientation);
         visualization.run("filter");
@@ -363,10 +362,10 @@ public class TreeView extends HierarchicalViewerI {
                 ret.put(rankName, current);
             }
             long[] current = ret.get(rankName);
-            
+
             int i = 0;
             for (VisualizationGroup vg : groupOrder) {
-            //for (Entry<VisualizationGroup, Long> e : node.getContent().entrySet()) {
+                //for (Entry<VisualizationGroup, Long> e : node.getContent().entrySet()) {
                 if (node.getContent().containsKey(vg)) {
                     current[i] += node.getContent().get(vg).longValue();
                 }
@@ -443,7 +442,7 @@ public class TreeView extends HierarchicalViewerI {
                     DialogDisplayer.getDefault().notify(nd);
                     return;
                 }
-                NotifyDescriptor nd = new NotifyDescriptor.Message("Chart saved to "+fname, NotifyDescriptor.INFORMATION_MESSAGE);
+                NotifyDescriptor nd = new NotifyDescriptor.Message("Chart saved to " + fname, NotifyDescriptor.INFORMATION_MESSAGE);
                 DialogDisplayer.getDefault().notify(nd);
             }
         };

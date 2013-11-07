@@ -111,8 +111,6 @@ public class RadialTree extends HierarchicalViewerI {
 
         m_label = nodeLabel; //unclear?
 
-
-
         // -- set up visualization --
         visualization.add(tree, pTree);
         visualization.setVisible(treeEdges, null, false);
@@ -122,7 +120,6 @@ public class RadialTree extends HierarchicalViewerI {
         visualization.setRendererFactory(rf);
 
         // -- set up processing actions --
-
         // create the tree layout action; adds layout schema to nodes
         StarburstLayout treeLayout = new StarburstLayout(tree);
         // set location and turn off autoscale so graph layout doesn't revert to original view when mouse wheel is rolled
@@ -235,7 +232,6 @@ public class RadialTree extends HierarchicalViewerI {
         visualization.putAction("repaint", repaint);
 
         // ------------------------------------------------
-
         // initialize the display
         display.setSize(600, 600);
         display.setItemSorter(new TreeDepthItemSorter());
@@ -248,14 +244,12 @@ public class RadialTree extends HierarchicalViewerI {
         display.addControlListener(new MouseWheelControl("filter", "angleFactor"));
 
         // ------------------------------------------------
-
         // filter graph and perform layout
         visualization.run("filter");
 
         // maintain a set of items that should be interpolated linearly
         // this isn't absolutely necessary, but makes the animations nicer
         // the PolarLocationAnimator should read this set and act accordingly
-
         selected.addTupleSetListener(new TupleSetListener() {
             @Override
             public void tupleSetChanged(TupleSet t, Tuple[] add, Tuple[] rem) {
@@ -280,8 +274,10 @@ public class RadialTree extends HierarchicalViewerI {
         //self.set(nodeTotalElements, calculateNodeCount(node.getContent()));
         //self.set(sameRankCount, rankCounts);
 
-        for (Node<Long> child : node.getChildren()) {
-            addWithChildren(pTree, self, child);
+        if (node.hasChildren()) {
+            for (Node<Long> child : node.getChildren()) {
+                addWithChildren(pTree, self, child);
+            }
         }
     }
 
@@ -379,15 +375,14 @@ public class RadialTree extends HierarchicalViewerI {
                     DialogDisplayer.getDefault().notify(nd);
                     return;
                 }
-                NotifyDescriptor nd = new NotifyDescriptor.Message("Chart saved to "+fname, NotifyDescriptor.INFORMATION_MESSAGE);
+                NotifyDescriptor nd = new NotifyDescriptor.Message("Chart saved to " + fname, NotifyDescriptor.INFORMATION_MESSAGE);
                 DialogDisplayer.getDefault().notify(nd);
             }
         };
     }
 
     /**
-     * Switch the root of the tree by requesting a new spanning tree at the
-     * desired root and hiding all nodes above
+     * Switch the root of the tree by requesting a new spanning tree at the desired root and hiding all nodes above
      */
     public class TreeRootAction extends GroupAction {
 
