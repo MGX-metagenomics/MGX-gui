@@ -12,7 +12,7 @@ import org.openide.util.HelpCtx;
 import org.openide.util.Lookup;
 
 @OptionsPanelController.TopLevelRegistration(categoryName = "#OptionsCategory_Name_MGXserver",
-iconBase = "de/cebitec/mgx/gui/login/configuration/Computer.png",
+iconBase = "de/cebitec/mgx/gui/login/configuration/Server32.png",
 keywords = "#OptionsCategory_Keywords_MGXserver",
 keywordsCategory = "MGXserver")
 public final class MGXserverOptionsPanelController extends OptionsPanelController {

@@ -1,3 +1,2 @@
 Manifest-Version: 1.0
-OpenIDE-Module-Layer: de/cebitec/mgx/gui/login/layer.xml
 OpenIDE-Module-Localizing-Bundle: de/cebitec/mgx/gui/login/Bundle.properties

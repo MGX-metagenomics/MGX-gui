@@ -58,9 +58,9 @@ public class LoginHandler implements ActionListener {
         panel.setUser(NbPreferences.forModule(MGXserverPanel.class).get("lastLogin", ""));
         panel.setPassword("");
 
-        servername = NbPreferences.forModule(MGXserverPanel.class).get("servername", "scooter");
+        servername = NbPreferences.forModule(MGXserverPanel.class).get("servername", "CeBiTec");
         serveruri = NbPreferences.forModule(MGXserverPanel.class).get("serveruri", "https://mgx.cebitec.uni-bielefeld.de/MGX-maven-web/webresources/");
-        serveruri = NbPreferences.forModule(MGXserverPanel.class).get("serveruri", "http://scooter:8080/MGX-maven-web/webresources/");
+        //serveruri = NbPreferences.forModule(MGXserverPanel.class).get("serveruri", "http://scooter:8080/MGX-maven-web/webresources/");
         if ("".equals(serveruri)) {
             dialog.setClosingOptions(new Object[]{DialogDescriptor.CANCEL_OPTION});
             nline.setErrorMessage("No server configured!");
