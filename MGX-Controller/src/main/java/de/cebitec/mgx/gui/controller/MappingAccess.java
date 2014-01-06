@@ -107,6 +107,23 @@ public class MappingAccess extends AccessBase<Mapping> {
         return ret;
     }
 
+    public UUID openMapping(Long id) {
+        try {
+            return getDTOmaster().Mapping().openMapping(id);
+        } catch (MGXServerException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+        return null;
+    }
+
+    public void closeMapping(UUID uuid) {
+        try {
+            getDTOmaster().Mapping().closeMapping(uuid);
+        } catch (MGXServerException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+    }
+
     public Iterator<MappedSequence> byReferenceInterval(UUID uuid, int from, int to) throws MGXServerException, MGXClientException {
         try {
             Iterator<MappedSequenceDTO> mapped = getDTOmaster().Mapping().byReferenceInterval(uuid, from, to);
