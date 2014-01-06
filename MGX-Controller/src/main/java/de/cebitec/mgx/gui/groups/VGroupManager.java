@@ -22,15 +22,17 @@ import java.util.Map;
 public class VGroupManager implements PropertyChangeListener {
 
     public static final String VISGROUP_NUM_CHANGED = "vgNumChanged";
+    public static final String VISGROUP_SELECTION_CHANGED = "vgSelectionChanged";
+  
     private static VGroupManager instance = null;
     // LinkedHashSet keeps the order elements are added
     private final Map<Integer, VisualizationGroup> groups = new LinkedHashMap<>();
     private int groupCount = 1;
-    private PropertyChangeSupport pcs = null;
-    private Map<AttributeRank, String> currentAttributeType = new HashMap<>();
+    private final PropertyChangeSupport pcs;
+    private final Map<AttributeRank, String> currentAttributeType = new HashMap<>();
     private ConflictResolver resolver = null;
     //
-    private static Color colors[] = {Color.RED, Color.BLUE, Color.YELLOW, Color.PINK, Color.GREEN};
+    private static final Color colors[] = {Color.RED, Color.BLUE, Color.YELLOW, Color.PINK, Color.GREEN};
 
     private VGroupManager() {
         pcs = new PropertyChangeSupport(this);
@@ -144,13 +146,12 @@ public class VGroupManager implements PropertyChangeListener {
     @Override
     public void propertyChange(PropertyChangeEvent pce) {
         // rename group
-        if (pce.getPropertyName().equals(VisualizationGroup.VISGROUP_RENAMED)) {
-            //System.err.println("fetching vizGroup " + (String) pce.getOldValue());
-            VisualizationGroup vg = getGroup((String) pce.getOldValue());
-            if (vg != null) {
-                vg.setName((String) pce.getNewValue());
-            }
-        }
+//        if (pce.getPropertyName().equals(VisualizationGroup.VISGROUP_RENAMED)) {
+//            VisualizationGroup vg = getGroup((String) pce.getOldValue());
+//            if (vg != null) {
+//                vg.setName((String) pce.getNewValue());
+//            }
+//        }
         firePropertyChange(pce.getPropertyName(), pce.getOldValue(), pce.getNewValue());
     }
 
@@ -175,8 +176,17 @@ public class VGroupManager implements PropertyChangeListener {
 
     public void removePropertyChangeListener(PropertyChangeListener p) {
         pcs.removePropertyChangeListener(p);
-
-
+    }
+    
+    private VisualizationGroup selectedGroup = null;
+    
+    public void setSelectedGroup(VisualizationGroup group) {
+        selectedGroup = group;
+        firePropertyChange(VISGROUP_SELECTION_CHANGED, null, selectedGroup);
+    }
+    
+    public VisualizationGroup getSelectedGroup() {
+        return selectedGroup;
     }
 
     public interface ConflictResolver {

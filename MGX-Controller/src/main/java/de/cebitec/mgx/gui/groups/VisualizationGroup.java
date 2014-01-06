@@ -35,18 +35,22 @@ public class VisualizationGroup implements PropertyChangeListener {
     public static final String VISGROUP_DEACTIVATED = "visgroup_deactivated";
     public static final String VISGROUP_CHANGED = "visgroup_changed";
     public static final String VISGROUP_RENAMED = "visgroup_renamed";
+    public static final String VISGROUP_ATTRTYPE_CHANGED = "vgAttrTypeChange";
+    public static final String VISGROUP_HAS_DIST = "vgHasDist";
+    //public static final String VISGROUP_DESELECTED = "vgDeselected";
     //
     //
     private final int id;
     private String name;
     private Color color;
     private boolean is_active = true;
+    //private boolean is_selected = false;
     private final Set<SeqRun> seqruns = new HashSet<>();
     //
     private String selectedAttributeType;
     private String secondaryAttributeType; // 2nd attr type for correlation matrices
-    private Map<AttributeRank, Map<SeqRun, Job>> uniqueJobs = new HashMap<>();
-    private Map<AttributeRank, Map<SeqRun, List<Job>>> needsResolval = new HashMap<>();
+    private final Map<AttributeRank, Map<SeqRun, Job>> uniqueJobs = new HashMap<>();
+    private final Map<AttributeRank, Map<SeqRun, List<Job>>> needsResolval = new HashMap<>();
     //
     private final BlockingQueue<AttributeTypeFetcher> fetcherQueue = new LinkedBlockingQueue<>();
     private final Thread fetchThread;
@@ -57,8 +61,8 @@ public class VisualizationGroup implements PropertyChangeListener {
     //private List<Fetcher> attributeTypePrefetchers = new ArrayList<>();
     private final PropertyChangeSupport pcs;
     //
-    private Map<String, Distribution> distCache = new HashMap<>();
-    private Map<String, Tree<Long>> hierarchyCache = new HashMap<>();
+    private final Map<String, Distribution> distCache = new HashMap<>();
+    private final Map<String, Tree<Long>> hierarchyCache = new HashMap<>();
 
     VisualizationGroup(int id, String groupName, Color color) {
         this.id = id;
@@ -94,7 +98,9 @@ public class VisualizationGroup implements PropertyChangeListener {
     }
 
     public final void setName(String name) {
+        String oldVal = this.name;
         this.name = name;
+        pcs.firePropertyChange(VISGROUP_RENAMED, oldVal, name);
     }
 
     public final boolean isActive() {
@@ -126,6 +132,10 @@ public class VisualizationGroup implements PropertyChangeListener {
         return seqruns;
     }
 
+    public final String getSelectedAttributeType() {
+        return selectedAttributeType;
+    }
+
 //    public final void selectAttributeType(String attrType) throws ConflictingJobsException {
 //        selectAttributeType(AttributeRank.PRIMARY, attrType);
 //    }
@@ -138,9 +148,11 @@ public class VisualizationGroup implements PropertyChangeListener {
      * @param attrType
      * @throws ConflictingJobsException
      *
-     * promote selection of an attribute type to the group; checks all contained sequencing runs, i.) if they provide the attribute type and ii.) if the
-     * attribute type is provided by a single job only. if several jobs are able to provide the corresponding attribute type, a ConflictingJobsException will be
-     * raised for resolval of the conflict.
+     * promote selection of an attribute type to the group; checks all contained
+     * sequencing runs, i.) if they provide the attribute type and ii.) if the
+     * attribute type is provided by a single job only. if several jobs are able
+     * to provide the corresponding attribute type, a ConflictingJobsException
+     * will be raised for resolval of the conflict.
      */
     public final void selectAttributeType(AttributeRank rank, String attrType) throws ConflictingJobsException {
         assert attrType != null;
@@ -180,6 +192,8 @@ public class VisualizationGroup implements PropertyChangeListener {
 
         if (!needsResolval.get(rank).isEmpty()) {
             throw new ConflictingJobsException(this);
+//        } else {
+//            fireVGroupChanged(VISGROUP_ATTRTYPE_CHANGED);
         }
     }
 
@@ -201,6 +215,10 @@ public class VisualizationGroup implements PropertyChangeListener {
     public final void resolveConflict(AttributeRank rank, SeqRun sr, Job j) {
         needsResolval.get(rank).remove(sr);
         uniqueJobs.get(rank).put(sr, j);
+
+//        if (needsResolval.get(rank).isEmpty()) {
+//            fireVGroupChanged(VISGROUP_ATTRTYPE_CHANGED);
+//        }
     }
 
     public final void addSeqRun(SeqRun sr) {
@@ -217,7 +235,8 @@ public class VisualizationGroup implements PropertyChangeListener {
         fetcher.execute();
         fetcherQueue.add(fetcher);
 
-        //fireVGroupChanged(VISGROUP_CHANGED);
+        // fetcher thread will fire change event once task is complete
+        // fireVGroupChanged(VISGROUP_CHANGED);
     }
 
     public void removeSeqRun(SeqRun sr) {
@@ -308,7 +327,7 @@ public class VisualizationGroup implements PropertyChangeListener {
         if (distCache.containsKey(selectedAttributeType)) {
             return distCache.get(selectedAttributeType);
         }
-        
+
         currentDistributions.clear();
         //List<Distribution> results = Collections.synchronizedList(new ArrayList<Distribution>());
 
@@ -348,6 +367,7 @@ public class VisualizationGroup implements PropertyChangeListener {
         //
         Distribution ret = DistributionFactory.merge(currentDistributions.values());
         distCache.put(selectedAttributeType, ret);
+        fireVGroupChanged(VISGROUP_HAS_DIST);
 
         return ret;
     }
@@ -510,11 +530,10 @@ public class VisualizationGroup implements PropertyChangeListener {
             Distribution dist = null;
             try {
                 dist = get();
+                result.put(run, dist);
             } catch (InterruptedException | ExecutionException ex) {
                 Exceptions.printStackTrace(ex);
-                return;
             }
-            result.put(run, dist);
             latch.countDown();
         }
     }
