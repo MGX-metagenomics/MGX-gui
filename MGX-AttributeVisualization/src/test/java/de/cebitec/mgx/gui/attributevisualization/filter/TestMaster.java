@@ -66,7 +66,7 @@ public class TestMaster {
             }
         }
         GPMSClientI gpms = new GPMS("MyServer", serverURI);
-        if (!gpms.login("sjaenick", "XXX")) {
+        if (!gpms.login("sjaenick", "Diwdf@")) {
             return null;
         }
         for (MembershipI m : gpms.getMemberships()) {

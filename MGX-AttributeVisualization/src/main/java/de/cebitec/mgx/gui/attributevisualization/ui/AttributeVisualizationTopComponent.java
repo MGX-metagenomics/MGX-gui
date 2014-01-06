@@ -39,8 +39,8 @@ persistenceType = TopComponent.PERSISTENCE_NEVER)
 preferredID = "AttributeVisualizationTopComponent")
 public final class AttributeVisualizationTopComponent extends TopComponent {
 
-    private InstanceContent content = new InstanceContent();
-    private Lookup lookup;
+    private final InstanceContent content = new InstanceContent();
+    private final Lookup lookup;
 
     public AttributeVisualizationTopComponent() {
         initComponents();

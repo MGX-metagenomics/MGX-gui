@@ -3,17 +3,12 @@ package de.cebitec.mgx.gui.attributevisualization.ui;
 import de.cebitec.mgx.gui.attributevisualization.GroupFrame;
 import de.cebitec.mgx.gui.groups.VGroupManager;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.awt.event.ContainerEvent;
-import java.awt.event.ContainerListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Collection;
+import java.util.Collections;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -45,24 +40,24 @@ import org.openide.windows.TopComponent;
     "HINT_VisualizationGroupTopComponent=This is a VisualizationGroup window"
 })
 @ServiceProvider(service = VisualizationGroupTopComponent.class)
-public final class VisualizationGroupTopComponent extends TopComponent implements ActionListener, MouseListener { // , ExplorerManager.Provider {
+public final class VisualizationGroupTopComponent extends TopComponent implements ActionListener, PropertyChangeListener { // , ExplorerManager.Provider {
 
-    private VGroupManager groupmgr = VGroupManager.getInstance();
-    private ExplorerManager exmngr = new ExplorerManager();
-    private InstanceContent content = new InstanceContent();
-    private Lookup lookup;
+    private final VGroupManager groupmgr = VGroupManager.getInstance();
+    private final ExplorerManager exmngr = new ExplorerManager();
+    private final InstanceContent content = new InstanceContent();
+    private final Lookup lookup;
 
     public VisualizationGroupTopComponent() {
         initComponents();
         addGroupButton.addActionListener(this);
+
+        groupmgr.addPropertyChangeListener(this);
 
         setName(Bundle.CTL_VisualizationGroupTopComponent());
         setToolTipText(Bundle.HINT_VisualizationGroupTopComponent());
         //associateLookup(ExplorerUtils.createLookup(exmngr, getActionMap()));
         lookup = new AbstractLookup(content);
         associateLookup(lookup);
-        
-        panel.addMouseListener(this);
 
         // create initial group, if necessary
         if (groupmgr.getAllGroups().isEmpty()) {
@@ -131,51 +126,37 @@ public final class VisualizationGroupTopComponent extends TopComponent implement
         // better to version settings since initial version as advocated at
         // http://wiki.apidesign.org/wiki/PropertyFiles
         p.setProperty("version", "1.0");
-        // TODO store your settings
     }
 
     void readProperties(java.util.Properties p) {
         String version = p.getProperty("version");
-        // TODO read your settings according to their version
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         final VisualizationGroup newGroup = groupmgr.createGroup();
         final GroupFrame gf = new GroupFrame(newGroup);
-        gf.addMouseListener(this);
         panel.add(gf);
     }
 
-//    @Override
-//    public ExplorerManager getExplorerManager() {
-//        return exmngr;
-//    }
-
     @Override
-    public void mouseClicked(MouseEvent e) {
-    }
-
-    @Override
-    public void mousePressed(MouseEvent e) {
-        Component comp = getComponentAt(e.getPoint());
-        if (comp instanceof GroupFrame) {
-            GroupFrame gf = (GroupFrame) comp;
-            //gf.setSelected(true);
-            System.err.println("clicked on "+gf.getGroup().getName());
+    public void propertyChange(PropertyChangeEvent evt) {
+        switch (evt.getPropertyName()) {
+            case VGroupManager.VISGROUP_SELECTION_CHANGED:
+                content.set(Collections.emptyList(), null); // clear content
+                content.add(evt.getNewValue());
+                break;
+            case VisualizationGroup.VISGROUP_ATTRTYPE_CHANGED:
+                // ignore
+                break;
+            case VisualizationGroup.VISGROUP_CHANGED:
+                // ignore
+                break;
+            case VisualizationGroup.VISGROUP_HAS_DIST:
+                // ignore
+                break;
+            default:
+                System.err.println("VGTopComponent got unhandled event " + evt.getPropertyName());
         }
-        
-    }
-
-    @Override
-    public void mouseReleased(MouseEvent e) {
-    }
-
-    @Override
-    public void mouseEntered(MouseEvent e) {
-    }
-
-    @Override
-    public void mouseExited(MouseEvent e) {
     }
 }

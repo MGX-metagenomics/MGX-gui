@@ -80,7 +80,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
                         vg.resolveConflict(p.getSecond().getFirst(), p.getSecond().getSecond(), p.getSecond().getThird());
                         groups.remove(vg);
                     }
-                    return true;
+                    return true; // groups.isempty()?
                 } else {
                     // FIXME - cancel?
                     return false;
@@ -202,9 +202,17 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
             case VisualizationGroup.VISGROUP_DEACTIVATED:
                 updateAttributeTypeList();
                 break;
+            case VisualizationGroup.VISGROUP_ATTRTYPE_CHANGED:
+                break; // ignore
             case ModelBase.OBJECT_DELETED:
                 break;
             case ModelBase.OBJECT_MODIFIED:
+                break;
+            case VGroupManager.VISGROUP_SELECTION_CHANGED:
+                // ignore
+                break;
+            case VisualizationGroup.VISGROUP_HAS_DIST:
+                // ignore
                 break;
             default:
                 System.err.println("ControlPanel received unknown event " + evt.getPropertyName());
