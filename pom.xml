@@ -414,8 +414,8 @@
         <module>MGX-ReferenceObservationView</module>
         <module>MGX-UpdateCenter</module>
         <module>MGX-IntervalCache</module>
+        <module>MGX-Biodiversity</module>
     </modules>
-
     <properties>
         <netbeans.version>RELEASE74</netbeans.version>
         <brandingToken>mgx_gui</brandingToken>
