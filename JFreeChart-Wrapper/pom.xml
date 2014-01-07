@@ -85,6 +85,9 @@
                         <publicPackage>org.jfree.data.general</publicPackage>
                         <publicPackage>org.jfree.ui</publicPackage>
                         <publicPackage>org.jfree.graphics2d.svg</publicPackage>
+                        <publicPackage>com.lowagie.text</publicPackage>
+                        <publicPackage>com.lowagie.text.pdf</publicPackage>
+                        <publicPackage>org.w3c.dom</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>
