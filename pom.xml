@@ -415,6 +415,7 @@
         <module>MGX-UpdateCenter</module>
         <module>MGX-IntervalCache</module>
         <module>MGX-Biodiversity</module>
+        <module>MGX-Rarefaction</module>
     </modules>
     <properties>
         <netbeans.version>RELEASE74</netbeans.version>
