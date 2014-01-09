@@ -12,7 +12,7 @@ public class Distribution implements Map<Attribute, Number> {
 
     protected final MGXMasterI master;
     private final Map<Attribute, ? extends Number> _data;
-    private Set<Attribute> keys = new LinkedHashSet<>();
+    private final Set<Attribute> keys = new LinkedHashSet<>();
     private final Map<Attribute, Number> filtered = new HashMap<>();
     private long totalClassifiedElements = -1;
 
