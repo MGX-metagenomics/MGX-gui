@@ -60,6 +60,12 @@
             <artifactId>JFreeChart-Wrapper</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <artifactId>MGX-SwingUtils</artifactId>
+            <groupId>de.cebitec.mgx.gui</groupId>
+            <type>jar</type>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>

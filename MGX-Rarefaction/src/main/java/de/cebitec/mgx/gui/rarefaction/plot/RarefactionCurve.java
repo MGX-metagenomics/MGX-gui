@@ -8,6 +8,7 @@ import de.cebitec.mgx.gui.datamodel.misc.Point;
 import de.cebitec.mgx.gui.groups.ImageExporterI;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import de.cebitec.mgx.gui.rarefaction.Rarefaction;
+import de.cebitec.mgx.gui.swingutils.NonEDT;
 import de.cebitec.mgx.gui.util.FileChooserUtils;
 import de.cebitec.mgx.gui.util.FileType;
 import java.awt.Color;
@@ -57,8 +58,8 @@ public class RarefactionCurve extends ViewerI<Distribution> {
 
         XYSeriesCollection dataset = createXYSeries(dists);
 
-        String xAxisLabel = "";
-        String yAxisLabel = "";
+        String xAxisLabel = "Size";
+        String yAxisLabel = "Richness";
 
         chart = ChartFactory.createXYLineChart(getTitle(), xAxisLabel, yAxisLabel, dataset, PlotOrientation.VERTICAL, true, true, false);
         chart.setBorderPaint(Color.WHITE);
@@ -96,18 +97,25 @@ public class RarefactionCurve extends ViewerI<Distribution> {
     }
 
     private static XYSeriesCollection createXYSeries(List<Pair<VisualizationGroup, Distribution>> in) {
-        XYSeriesCollection dataset = new XYSeriesCollection();
+        final XYSeriesCollection dataset = new XYSeriesCollection();
 
-        for (Pair<VisualizationGroup, Distribution> groupDistribution : in) {
-            XYSeries series = new XYSeries(groupDistribution.getFirst().getName());
-            Distribution dist = groupDistribution.getSecond();
+        for (final Pair<VisualizationGroup, Distribution> groupDistribution : in) {
+
+            NonEDT.invokeAndWait(new Runnable() {
+
+                @Override
+                public void run() {
+                    XYSeries series = new XYSeries(groupDistribution.getFirst().getName());
+                    Distribution dist = groupDistribution.getSecond();
+                    Iterator<Point> iter = Rarefaction.rarefy(dist);
+                    while (iter.hasNext()) {
+                        Point p = iter.next();
+                        series.add(p.getX(), p.getY());
+                    }
+                    dataset.addSeries(series);
+                }
+            });
             
-            Iterator<Point> iter = Rarefaction.rarefy(dist);
-            while (iter.hasNext()) {
-                Point p = iter.next();
-                series.add(p.getX(), p.getY());
-            }
-            dataset.addSeries(series);
         }
         return dataset;
     }
@@ -147,12 +155,12 @@ public class RarefactionCurve extends ViewerI<Distribution> {
 
     @Override
     public boolean canHandle(AttributeType valueType) {
-        return true; // valueType.getValueType() == AttributeType.VALUE_NUMERIC;
+        return valueType.getValueType() == AttributeType.VALUE_DISCRETE;
     }
 
     @Override
     public void setAttributeType(AttributeType aType) {
         super.setAttributeType(aType);
-        super.setTitle("Distribution of " + aType.getName());
+        super.setTitle("Rarefaction of " + aType.getName());
     }
 }
