@@ -25,9 +25,9 @@ import org.openide.windows.WindowManager;
  */
 public class LoginHandler implements ActionListener {
 
-    private static LoginHandler instance = new LoginHandler();
+    private static final LoginHandler instance = new LoginHandler();
     //
-    private LoginPanel panel = new LoginPanel();
+    private final LoginPanel panel = new LoginPanel();
     private DialogDescriptor dialog = null;
     private NotificationLineSupport nline;
     //
@@ -59,8 +59,9 @@ public class LoginHandler implements ActionListener {
         panel.setPassword("");
 
         servername = NbPreferences.forModule(MGXserverPanel.class).get("servername", "CeBiTec");
+        //servername = NbPreferences.forModule(MGXserverPanel.class).get("servername", "scooter");
         serveruri = NbPreferences.forModule(MGXserverPanel.class).get("serveruri", "https://mgx.cebitec.uni-bielefeld.de/MGX-maven-web/webresources/");
-        //serveruri = NbPreferences.forModule(MGXserverPanel.class).get("serveruri", "http://scooter:8080/MGX-maven-web/webresources/");
+        //serveruri = NbPreferences.forModule(MGXserverPanel.class).get("serveruri", "http://localhost:8080/MGX-maven-web/webresources/");
         if ("".equals(serveruri)) {
             dialog.setClosingOptions(new Object[]{DialogDescriptor.CANCEL_OPTION});
             nline.setErrorMessage("No server configured!");
@@ -118,7 +119,6 @@ public class LoginHandler implements ActionListener {
 
     private static void startPing(final GPMS gpms) {
         Thread t = new Thread(new Runnable() {
-
             private int refresh = -1;
             private long rtt = 0;
 
