@@ -5,6 +5,7 @@ import de.cebitec.mgx.gui.datamodel.DNAExtract;
 import de.cebitec.mgx.gui.datamodel.Sample;
 import de.cebitec.mgx.gui.nodes.DNAExtractNode;
 import java.beans.PropertyChangeEvent;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import org.openide.nodes.*;
@@ -15,8 +16,8 @@ import org.openide.nodes.*;
  */
 public class DNAExtractNodeFactory extends ChildFactory<DNAExtract> implements NodeListener {
 
-    private MGXMaster master;
-    private long sample_id;
+    private final MGXMaster master;
+    private final long sample_id;
 
     public DNAExtractNodeFactory(MGXMaster master, Sample s) {
         this.master = master;
@@ -29,6 +30,7 @@ public class DNAExtractNodeFactory extends ChildFactory<DNAExtract> implements N
         while (iter.hasNext()) {
             toPopulate.add(iter.next());
         }
+        Collections.sort(toPopulate);
         return true;
     }
 

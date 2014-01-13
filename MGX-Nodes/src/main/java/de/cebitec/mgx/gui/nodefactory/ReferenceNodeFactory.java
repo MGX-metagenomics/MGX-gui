@@ -4,6 +4,7 @@ import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.Reference;
 import de.cebitec.mgx.gui.nodes.ReferenceNode;
 import java.beans.PropertyChangeEvent;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import org.openide.nodes.*;
@@ -28,6 +29,7 @@ public class ReferenceNodeFactory extends ChildFactory<Reference> implements Nod
         while (iter.hasNext()) {
             toPopulate.add(iter.next());
         }
+        Collections.sort(toPopulate);
         return true;
     }
 

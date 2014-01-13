@@ -13,6 +13,7 @@ import org.openide.util.Lookup;
 /**
  *
  * @author sj
+ * @param <T>
  */
 public abstract class MGXNodeBase<T extends ModelBase> extends AbstractNode implements PropertyChangeListener {
 

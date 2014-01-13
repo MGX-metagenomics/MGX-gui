@@ -5,6 +5,7 @@ import de.cebitec.mgx.gui.datamodel.MGXFile;
 import de.cebitec.mgx.gui.nodes.MGXDirectoryNode;
 import de.cebitec.mgx.gui.nodes.MGXFileNode;
 import java.beans.PropertyChangeEvent;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import org.openide.nodes.*;
@@ -15,8 +16,8 @@ import org.openide.nodes.*;
  */
 public class FileNodeFactory extends ChildFactory<MGXFile> implements NodeListener {
 
-    private MGXMaster master;
-    private MGXFile curDirectory;
+    private final MGXMaster master;
+    private final MGXFile curDirectory;
     //
     private boolean refreshing = false;
 
@@ -31,6 +32,7 @@ public class FileNodeFactory extends ChildFactory<MGXFile> implements NodeListen
         while (iter.hasNext()) {
             toPopulate.add(iter.next());
         }
+        Collections.sort(toPopulate);
         return true;
     }
 

@@ -14,7 +14,7 @@ import org.openide.nodes.*;
  */
 public class HabitatNodeFactory extends ChildFactory<Habitat> implements NodeListener {
 
-    private MGXMaster master;
+    private final MGXMaster master;
 
     public HabitatNodeFactory(MGXMaster m) {
         this.master = m;

@@ -20,7 +20,7 @@ import org.openide.nodes.NodeReorderEvent;
  */
 public class ProjectNodeFactory extends ChildFactory<MembershipI> implements NodeListener {
 
-    private GPMSClientI gpms;
+    private final GPMSClientI gpms;
 
     public ProjectNodeFactory(GPMSClientI gpms) {
         this.gpms = gpms;

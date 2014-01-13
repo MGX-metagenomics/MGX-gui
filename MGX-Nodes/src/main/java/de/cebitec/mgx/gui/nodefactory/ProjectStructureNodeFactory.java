@@ -5,6 +5,7 @@ import de.cebitec.mgx.gui.datamodel.MGXFile;
 import de.cebitec.mgx.gui.nodes.ProjectDataNode;
 import de.cebitec.mgx.gui.nodes.ProjectFilesNode;
 import de.cebitec.mgx.gui.nodes.ProjectReferencesNode;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +18,7 @@ import org.openide.nodes.Node;
  */
 public class ProjectStructureNodeFactory extends ChildFactory<String> {
 
-    private Map<String, Node> project_structure;
+    private final Map<String, Node> project_structure;
 
     public ProjectStructureNodeFactory(MGXMaster master) {
 
@@ -43,6 +44,7 @@ public class ProjectStructureNodeFactory extends ChildFactory<String> {
         for (String key : project_structure.keySet()) {
             toPopulate.add(key);
         }
+        Collections.sort(toPopulate);
         return true;
     }
 

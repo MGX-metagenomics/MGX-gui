@@ -16,8 +16,8 @@ import org.openide.nodes.*;
  */
 public class SeqRunNodeFactory extends ChildFactory<SeqRun> implements NodeListener {
 
-    private MGXMaster master;
-    private long extract_id;
+    private final MGXMaster master;
+    private final long extract_id;
 
     public SeqRunNodeFactory(MGXMaster master, DNAExtract key) {
         this.master = master;
