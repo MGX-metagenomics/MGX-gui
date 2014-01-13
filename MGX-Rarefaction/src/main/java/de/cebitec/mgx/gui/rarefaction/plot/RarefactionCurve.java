@@ -11,6 +11,7 @@ import de.cebitec.mgx.gui.rarefaction.Rarefaction;
 import de.cebitec.mgx.gui.swingutils.NonEDT;
 import de.cebitec.mgx.gui.util.FileChooserUtils;
 import de.cebitec.mgx.gui.util.FileType;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
@@ -18,6 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import javax.swing.JComponent;
+import javax.swing.JPanel;
 import javax.swing.SwingWorker;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -43,7 +45,7 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = ViewerI.class)
 public class RarefactionCurve extends ViewerI<Distribution> {
 
-    private DelayedPlot cPanel = null;
+    private JPanel cPanel = null;
     private JFreeChart chart = null;
 
     @Override
@@ -59,7 +61,7 @@ public class RarefactionCurve extends ViewerI<Distribution> {
     @Override
     public void show(final List<Pair<VisualizationGroup, Distribution>> dists) {
 
-        cPanel = new DelayedPlot(new WaitPanel());
+        cPanel = new WaitPanel();
 
         SwingWorker<JComponent, Void> worker = new SwingWorker<JComponent, Void>() {
 
@@ -109,7 +111,11 @@ public class RarefactionCurve extends ViewerI<Distribution> {
             @Override
             protected void done() {
                 try {
-                    RarefactionCurve.this.cPanel.setTarget(get());
+                    JPanel p = RarefactionCurve.this.cPanel;
+                    p.removeAll();
+                    p.setLayout(new BorderLayout());
+                    p.add(get(), BorderLayout.CENTER);
+                    p.revalidate();
                 } catch (InterruptedException | ExecutionException ex) {
                     Exceptions.printStackTrace(ex);
                 }
@@ -135,6 +141,7 @@ public class RarefactionCurve extends ViewerI<Distribution> {
                     Iterator<Point> iter = Rarefaction.rarefy(dist);
                     while (iter.hasNext()) {
                         Point p = iter.next();
+                        //System.err.println(p.getX() + "/" + p.getY());
                         series.add(p.getX(), p.getY());
                     }
                     dataset.addSeries(series);
