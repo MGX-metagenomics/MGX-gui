@@ -16,7 +16,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import javax.swing.JComponent;
+import javax.swing.SwingWorker;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.ChartUtilities;
@@ -31,6 +33,7 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
+import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -40,7 +43,7 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = ViewerI.class)
 public class RarefactionCurve extends ViewerI<Distribution> {
 
-    private ChartPanel cPanel = null;
+    private DelayedPlot cPanel = null;
     private JFreeChart chart = null;
 
     @Override
@@ -54,45 +57,67 @@ public class RarefactionCurve extends ViewerI<Distribution> {
     }
 
     @Override
-    public void show(List<Pair<VisualizationGroup, Distribution>> dists) {
+    public void show(final List<Pair<VisualizationGroup, Distribution>> dists) {
 
-        XYSeriesCollection dataset = createXYSeries(dists);
+        cPanel = new DelayedPlot(new WaitPanel());
 
-        String xAxisLabel = "Size";
-        String yAxisLabel = "Richness";
+        SwingWorker<JComponent, Void> worker = new SwingWorker<JComponent, Void>() {
 
-        chart = ChartFactory.createXYLineChart(getTitle(), xAxisLabel, yAxisLabel, dataset, PlotOrientation.VERTICAL, true, true, false);
-        chart.setBorderPaint(Color.WHITE);
-        chart.setBackgroundPaint(Color.WHITE);
-        cPanel = new ChartPanel(chart);
-        XYPlot plot = (XYPlot) chart.getPlot();
-        plot.setBackgroundPaint(Color.WHITE);
+            @Override
+            protected JComponent doInBackground() throws Exception {
+                JComponent ret;
+                XYSeriesCollection dataset = createXYSeries(dists);
 
-        // x axis
-        ValueAxis valueAxis;
-        final TickUnitSource tusX;
+                String xAxisLabel = "Size";
+                String yAxisLabel = "Richness";
 
-        valueAxis = (NumberAxis) plot.getDomainAxis();
-        tusX = NumberAxis.createIntegerTickUnits();
-        valueAxis.setStandardTickUnits(tusX);
-        valueAxis.setInverted(false);
-        plot.setDomainAxis(valueAxis);
+                chart = ChartFactory.createXYLineChart(getTitle(), xAxisLabel, yAxisLabel, dataset, PlotOrientation.VERTICAL, true, true, false);
+                chart.setBorderPaint(Color.WHITE);
+                chart.setBackgroundPaint(Color.WHITE);
+                ret = new ChartPanel(chart);
+                XYPlot plot = (XYPlot) chart.getPlot();
+                plot.setBackgroundPaint(Color.WHITE);
 
-        // y axis
-        final NumberAxis rangeAxis;
-        final TickUnitSource tus;
+                // x axis
+                ValueAxis valueAxis;
+                final TickUnitSource tusX;
 
-        rangeAxis = (NumberAxis) plot.getRangeAxis();
-        tus = NumberAxis.createIntegerTickUnits();
-        rangeAxis.setStandardTickUnits(tus);
-        plot.setRangeAxis(rangeAxis);
+                valueAxis = (NumberAxis) plot.getDomainAxis();
+                tusX = NumberAxis.createIntegerTickUnits();
+                valueAxis.setStandardTickUnits(tusX);
+                valueAxis.setInverted(false);
+                plot.setDomainAxis(valueAxis);
 
-        // set the colors
-        int i = 0;
-        XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) plot.getRenderer();
-        for (Pair<VisualizationGroup, Distribution> groupDistribution : dists) {
-            renderer.setSeriesPaint(i++, groupDistribution.getFirst().getColor());
-        }
+                // y axis
+                final NumberAxis rangeAxis;
+                final TickUnitSource tus;
+
+                rangeAxis = (NumberAxis) plot.getRangeAxis();
+                tus = NumberAxis.createIntegerTickUnits();
+                rangeAxis.setStandardTickUnits(tus);
+                plot.setRangeAxis(rangeAxis);
+
+                // set the colors
+                int i = 0;
+                XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) plot.getRenderer();
+                for (Pair<VisualizationGroup, Distribution> groupDistribution : dists) {
+                    renderer.setSeriesPaint(i++, groupDistribution.getFirst().getColor());
+                }
+                return ret;
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    RarefactionCurve.this.cPanel.setTarget(get());
+                } catch (InterruptedException | ExecutionException ex) {
+                    Exceptions.printStackTrace(ex);
+                }
+                super.done();
+            }
+
+        };
+        worker.execute();
 
     }
 
@@ -115,7 +140,7 @@ public class RarefactionCurve extends ViewerI<Distribution> {
                     dataset.addSeries(series);
                 }
             });
-            
+
         }
         return dataset;
     }
@@ -163,4 +188,5 @@ public class RarefactionCurve extends ViewerI<Distribution> {
         super.setAttributeType(aType);
         super.setTitle("Rarefaction of " + aType.getName());
     }
+
 }
