@@ -6,7 +6,7 @@ import java.awt.datatransfer.DataFlavor;
  *
  * @author sjaenick
  */
-public class DNAExtract extends Identifiable {
+public class DNAExtract extends Identifiable implements Comparable<DNAExtract> {
 
     protected String name;
     protected String method;
@@ -108,7 +108,7 @@ public class DNAExtract extends Identifiable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (int) ((int) 31 * hash + this.id);
+        hash += (int) (31 * hash + this.id);
         return hash;
     }
 
@@ -118,9 +118,11 @@ public class DNAExtract extends Identifiable {
             return false;
         }
         DNAExtract other = (DNAExtract) object;
-        if ((this.id == INVALID_IDENTIFIER && other.id != INVALID_IDENTIFIER) || (this.id != INVALID_IDENTIFIER && this.id != other.id)) {
-            return false;
-        }
-        return true;
+        return (this.id != INVALID_IDENTIFIER || other.id == INVALID_IDENTIFIER) && (this.id == INVALID_IDENTIFIER || this.id == other.id);
+    }
+
+    @Override
+    public int compareTo(DNAExtract o) {
+        return name.compareTo(o.name);
     }
 }
