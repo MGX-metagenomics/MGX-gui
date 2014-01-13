@@ -14,6 +14,7 @@ import org.openide.util.Exceptions;
 /**
  *
  * @author sjaenick
+ * @param <T>
  */
 public class TaskAccess<T extends ModelBase> extends AccessBase<Task> {
 
