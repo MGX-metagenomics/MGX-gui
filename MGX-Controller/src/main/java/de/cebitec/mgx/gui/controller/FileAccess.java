@@ -5,7 +5,6 @@ import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.FileDTO;
 import de.cebitec.mgx.gui.datamodel.MGXFile;
-import de.cebitec.mgx.gui.datamodel.ModelBase;
 import de.cebitec.mgx.gui.datamodel.misc.Task;
 import de.cebitec.mgx.gui.dtoconversion.FileDTOFactory;
 import de.cebitec.mgx.gui.util.BaseIterator;
@@ -60,19 +59,20 @@ public class FileAccess extends AccessBase<MGXFile> {
 
     @Override
     public void update(MGXFile obj) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException("Not supported.");
     }
 
     @Override
     public Task delete(MGXFile obj) {
+        Task t = null;
         try {
             FileDTO dto = FileDTOFactory.getInstance().toDTO(obj);
-            getDTOmaster().File().delete(dto);
+            UUID uuid = getDTOmaster().File().delete(dto);
+            t = getMaster().Task().get(obj, uuid, Task.TaskType.DELETE);
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
-        obj.firePropertyChange(ModelBase.OBJECT_DELETED, obj, null);
-        return null;
+        return t;
     }
 
     @Override
