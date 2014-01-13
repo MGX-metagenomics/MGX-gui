@@ -19,7 +19,7 @@ import org.openide.util.Utilities;
  */
 public class CreateDirectory extends AbstractAction {
 
-    private FileNodeFactory fnf;
+    private final FileNodeFactory fnf;
 
     public CreateDirectory(FileNodeFactory nf) {
         putValue(NAME, "Create directory");
