@@ -5,6 +5,7 @@ import de.cebitec.mgx.gui.datamodel.Habitat;
 import de.cebitec.mgx.gui.datamodel.Sample;
 import de.cebitec.mgx.gui.nodes.SampleNode;
 import java.beans.PropertyChangeEvent;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import org.openide.nodes.*;
@@ -15,8 +16,8 @@ import org.openide.nodes.*;
  */
 public class SampleNodeFactory extends ChildFactory<Sample> implements NodeListener {
 
-    private MGXMaster master;
-    private long habitat_id;
+    private final MGXMaster master;
+    private final long habitat_id;
 
     public SampleNodeFactory(MGXMaster master, Habitat h) {
         this.master = master;
@@ -29,7 +30,7 @@ public class SampleNodeFactory extends ChildFactory<Sample> implements NodeListe
         while (iter.hasNext()) {
             toPopulate.add(iter.next());
         }
-
+        Collections.sort(toPopulate);
         return true;
     }
 
