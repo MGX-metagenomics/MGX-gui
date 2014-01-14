@@ -8,29 +8,39 @@ import java.awt.datatransfer.DataFlavor;
  */
 public class MGXFile extends ModelBase implements Comparable<MGXFile> {
 
-    protected MGXFile parent = null;
-    protected String name;
-    protected boolean isDirectory;
+    //protected MGXFile parent = null;
+    protected final String fullPath;
+    protected final boolean isDirectory;
     //
     public static final DataFlavor DATA_FLAVOR = new DataFlavor(MGXFile.class, "MGXFile");
+    public static final String ROOT_PATH = ".|";
 
-    public MGXFile() {
+    public MGXFile(String path, boolean isDir) {
         super(DATA_FLAVOR);
+        if (!path.startsWith(".|")) {
+            throw new RuntimeException(path + " is invalid");
+        }
+        this.fullPath = path;
+        this.isDirectory = isDir;
     }
 
     public static MGXFile getRoot(MGXMasterI m) {
-        MGXFile root = new MGXFile();
+        MGXFile root = new MGXFile(ROOT_PATH, true);
         root.setMaster(m);
-        root.setName("");
-        root.isDirectory(true);
         return root;
     }
 
-    public void setParent(MGXFile parent) {
-        this.parent = parent;
-    }
-
+//    public void setParent(MGXFile parent) {
+//        this.parent = parent;
+//    }
+//
     public MGXFile getParent() {
+        if (ROOT_PATH.equals(getFullPath())) {
+            return this;
+        }
+        int sepPos = getFullPath().lastIndexOf("|");
+        MGXFile parent = new MGXFile(fullPath.substring(sepPos+1), true);
+        parent.setMaster(getMaster());
         return parent;
     }
 
@@ -38,29 +48,19 @@ public class MGXFile extends ModelBase implements Comparable<MGXFile> {
         return isDirectory;
     }
 
-    public void isDirectory(boolean isDirectory) {
-        this.isDirectory = isDirectory;
-    }
-
     public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+        int sepPos = getFullPath().lastIndexOf("|");
+        return fullPath.substring(sepPos+1);
     }
 
     public String getFullPath() {
-        if (parent != null) {
-            return parent.getFullPath() + "/" + getName();
-        }
-        return "." + getName();
+        return fullPath;
     }
 
     @Override
     public int compareTo(MGXFile o) {
         if (isDirectory == o.isDirectory()) {
-            return this.name.compareTo(o.name);
+            return this.fullPath.compareTo(o.fullPath);
         } else {
             if (isDirectory) {
                 return -1;
