@@ -6,6 +6,7 @@ import java.util.UUID;
 /**
  *
  * @author sjaenick
+ * @param <T>
  */
 public class Task<T extends ModelBase> {
 
@@ -21,7 +22,7 @@ public class Task<T extends ModelBase> {
         PROCESSING(1),
         FAILED(2),
         FINISHED(3);
-        private int code;
+        private final int code;
 
         private State(int c) {
             code = c;
