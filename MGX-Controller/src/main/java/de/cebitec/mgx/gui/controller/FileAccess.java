@@ -39,15 +39,14 @@ public class FileAccess extends AccessBase<MGXFile> {
         throw new UnsupportedOperationException("Not supported.");
     }
 
-    public Iterator<MGXFile> fetchall(final MGXFile rootDir) {
+    public Iterator<MGXFile> fetchall(final MGXFile curDir) {
         try {
-            Iterator<FileDTO> fetchall = getDTOmaster().File().fetchall(rootDir.getFullPath());
+            Iterator<FileDTO> fetchall = getDTOmaster().File().fetchall(curDir.getFullPath());
             return new BaseIterator<FileDTO, MGXFile>(fetchall) {
                 @Override
                 public MGXFile next() {
                     MGXFile f = FileDTOFactory.getInstance().toModel(iter.next());
                     f.setMaster(getMaster());
-                    f.setParent(rootDir);
                     return f;
                 }
             };
@@ -77,7 +76,7 @@ public class FileAccess extends AccessBase<MGXFile> {
 
     @Override
     public Iterator<MGXFile> fetchall() {
-        throw new UnsupportedOperationException("Not supported.");
+        return fetchall(MGXFile.getRoot(getMaster()));
     }
 
     public FileUploader createUploader(File localFile, MGXFile targetDir, String targetName) {
@@ -86,6 +85,11 @@ public class FileAccess extends AccessBase<MGXFile> {
             assert false;
         }
         String fullPath = targetDir.getFullPath() + "/" + targetName;
-        return getDTOmaster().File().createUploader(localFile, fullPath);
+        try {
+            return getDTOmaster().File().createUploader(localFile, fullPath);
+        } catch (MGXClientException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+        return null;
     }
 }
