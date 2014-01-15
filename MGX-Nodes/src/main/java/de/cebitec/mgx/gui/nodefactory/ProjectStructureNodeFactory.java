@@ -44,7 +44,7 @@ public class ProjectStructureNodeFactory extends ChildFactory<String> {
         for (String key : project_structure.keySet()) {
             toPopulate.add(key);
         }
-        Collections.sort(toPopulate);
+        //Collections.sort(toPopulate);
         return true;
     }
 
