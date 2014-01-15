@@ -6,7 +6,7 @@ import java.awt.datatransfer.DataFlavor;
  *
  * @author sjaenick
  */
-public class Habitat extends Identifiable {
+public class Habitat extends Identifiable implements Comparable<Habitat> {
 
     protected String name;
     //
@@ -95,5 +95,10 @@ public class Habitat extends Identifiable {
         int hash = 7;
         hash = (int) ((int) 31 * hash + this.id);
         return hash;
+    }
+
+    @Override
+    public int compareTo(Habitat o) {
+        return name.compareTo(o.name);
     }
 }
