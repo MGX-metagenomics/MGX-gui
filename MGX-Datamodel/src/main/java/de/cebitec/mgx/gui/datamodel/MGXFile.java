@@ -8,7 +8,7 @@ import java.awt.datatransfer.DataFlavor;
  */
 public class MGXFile extends ModelBase implements Comparable<MGXFile> {
 
-    //protected MGXFile parent = null;
+    protected  MGXFile parent;
     protected final String fullPath;
     protected final boolean isDirectory;
     //
@@ -27,17 +27,16 @@ public class MGXFile extends ModelBase implements Comparable<MGXFile> {
 
     public static MGXFile getRoot(MGXMasterI m) {
         MGXFile root = new MGXFile(ROOT_PATH, true);
+        root.setParent(null);
         root.setMaster(m);
         return root;
     }
 
+    public void setParent(MGXFile parent) {
+        this.parent = parent;
+    }
+    
     public MGXFile getParent() {
-        if (ROOT_PATH.equals(getFullPath())) {
-            return this;
-        }
-        int sepPos = getFullPath().lastIndexOf("|");
-        MGXFile parent = new MGXFile(fullPath.substring(sepPos+1), true);
-        parent.setMaster(getMaster());
         return parent;
     }
 
