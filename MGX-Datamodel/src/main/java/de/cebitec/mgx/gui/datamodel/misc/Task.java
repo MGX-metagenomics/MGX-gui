@@ -83,10 +83,10 @@ public class Task<T extends ModelBase> {
         if (getState() == State.FINISHED) {
             switch (taskType) {
                 case DELETE:
-                    getObject().firePropertyChange(ModelBase.OBJECT_DELETED, getObject(), null);
+                    getObject().deleted();
                     break;
                 case MODIFY:
-                    getObject().firePropertyChange(ModelBase.OBJECT_MODIFIED, getObject(), null);
+                    getObject().modified();
                     break;
             }
         }
