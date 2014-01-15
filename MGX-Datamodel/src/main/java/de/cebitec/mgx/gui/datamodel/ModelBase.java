@@ -56,6 +56,14 @@ public abstract class ModelBase implements Transferable {
             throw new UnsupportedFlavorException(flavor);
         }
     }
+    
+    public final void modified() {
+        firePropertyChange(ModelBase.OBJECT_MODIFIED, this, null);
+    }
+    
+    public final void deleted() {
+        firePropertyChange(ModelBase.OBJECT_DELETED, this, null);
+    }
 
     public void addPropertyChangeListener(PropertyChangeListener listener) {
         pcs.addPropertyChangeListener(listener);
