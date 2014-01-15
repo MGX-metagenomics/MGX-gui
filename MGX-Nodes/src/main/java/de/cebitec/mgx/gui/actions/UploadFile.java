@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.actions;
 
 import de.cebitec.mgx.client.datatransfer.FileUploader;
 import de.cebitec.mgx.client.datatransfer.UploadBase;
+import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.controller.RBAC;
 import de.cebitec.mgx.gui.datamodel.MGXFile;
@@ -14,6 +15,7 @@ import java.beans.PropertyChangeEvent;
 import java.io.File;
 import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
+import org.openide.util.Exceptions;
 import org.openide.util.NbPreferences;
 import org.openide.util.Utilities;
 
@@ -51,57 +53,60 @@ public class UploadFile extends AbstractAction {
 
         File localFile = fchooser.getSelectedFile();
 
-
         MGXMaster master = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
         final MGXFile targetDir = Utilities.actionsGlobalContext().lookup(MGXFile.class);
-        final FileUploader uploader = master.File().createUploader(localFile, targetDir, localFile.getName());
-
-        final MGXTask run = new MGXTask("Upload " + fchooser.getSelectedFile().getName()) {
-            @Override
-            public boolean process() {
-                return uploader.upload();
-            }
-
-            @Override
-            public void finished() {
-                super.finished();
-                fnf.refreshChildren();
-            }
-
-            @Override
-            public void failed() {
-                super.failed();
-                fnf.refreshChildren();
-            }
-
-            @Override
-            public void propertyChange(PropertyChangeEvent pce) {
-                if (pce.getPropertyName().equals(UploadBase.NUM_ELEMENTS_SENT)) {
-                    setStatus(String.format("%1$d bytes sent", pce.getNewValue()));
-                } else {
-                    super.propertyChange(pce);
+        final FileUploader uploader;
+        try {
+            uploader = master.File().createUploader(localFile, targetDir, localFile.getName());
+            final MGXTask upTask = new MGXTask("Upload " + fchooser.getSelectedFile().getName()) {
+                @Override
+                public boolean process() {
+                    return uploader.upload();
                 }
-            }
 
-            @Override
-            public boolean isDeterminate() {
-                return true;
-            }
+                @Override
+                public void finished() {
+                    super.finished();
+                    fnf.refreshChildren();
+                }
 
-            @Override
-            public int getProgress() {
-                return uploader.getProgress();
-            }
-        };
-        uploader.addPropertyChangeListener(run);
+                @Override
+                public void failed() {
+                    super.failed();
+                    fnf.refreshChildren();
+                }
 
-        NonEDT.invoke(new Runnable() {
-            @Override
-            public void run() {
-                TaskManager.getInstance().addTask(run);
+                @Override
+                public void propertyChange(PropertyChangeEvent pce) {
+                    if (pce.getPropertyName().equals(UploadBase.NUM_ELEMENTS_SENT)) {
+                        setStatus(String.format("%1$d bytes sent", pce.getNewValue()));
+                    } else {
+                        super.propertyChange(pce);
+                    }
+                }
 
-            }
-        });
+                @Override
+                public boolean isDeterminate() {
+                    return true;
+                }
+
+                @Override
+                public int getProgress() {
+                    return uploader.getProgress();
+                }
+            };
+            uploader.addPropertyChangeListener(upTask);
+
+            NonEDT.invoke(new Runnable() {
+                @Override
+                public void run() {
+                    TaskManager.getInstance().addTask(upTask);
+                }
+            });
+        } catch (MGXClientException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+
     }
 
     @Override

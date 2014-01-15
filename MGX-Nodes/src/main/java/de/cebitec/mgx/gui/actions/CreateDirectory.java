@@ -35,26 +35,24 @@ public class CreateDirectory extends AbstractAction {
         if (NotifyDescriptor.OK_OPTION.equals(DialogDisplayer.getDefault().notify(nd))) {
             String dirName = nd.getInputText().trim();
             if (!dirName.isEmpty()) {
-                final MGXFile newDir = new MGXFile();
-                newDir.setName(dirName);
-                newDir.isDirectory(true);
+                final MGXFile newDir = new MGXFile(dirName, true);
                 newDir.setParent(currentDir);
 
-                SwingWorker<Void, Void> sw = new SwingWorker<Void, Void>() {
+                SwingWorker<Boolean, Void> sw = new SwingWorker<Boolean, Void>() {
                     @Override
-                    protected Void doInBackground() throws Exception {
-                        m.File().createDirectory(newDir);
-                        return null;
+                    protected Boolean doInBackground() throws Exception {
+                        return m.File().createDirectory(newDir);
                     }
 
                     @Override
                     protected void done() {
                         try {
-                            get();
+                            if (get()) {
+                                fnf.refreshChildren();
+                            }
                         } catch (InterruptedException | ExecutionException ex) {
                             Exceptions.printStackTrace(ex);
                         }
-                        fnf.refreshChildren();
                         super.done();
                     }
                 };
