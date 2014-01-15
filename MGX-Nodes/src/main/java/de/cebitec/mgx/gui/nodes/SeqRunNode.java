@@ -248,7 +248,7 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> { // implements Transferable
                         Task task = m.SeqRun().delete(sr);
                         while (!task.done()) {
                             setStatus(task.getStatusMessage());
-                            task = m.Task().get(task);
+                            task = m.Task().refresh(task);
                             sleep();
                         }
                         task.finish();

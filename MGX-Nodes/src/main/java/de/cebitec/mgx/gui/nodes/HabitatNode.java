@@ -145,7 +145,7 @@ public class HabitatNode extends MGXNodeBase<Habitat> {
                         Task task = m.Habitat().delete(habitat);
                         while (!task.done()) {
                             setStatus(task.getStatusMessage());
-                            task = m.Task().get(task);
+                            task = m.Task().refresh(task);
                             sleep();
                         }
                         task.finish();

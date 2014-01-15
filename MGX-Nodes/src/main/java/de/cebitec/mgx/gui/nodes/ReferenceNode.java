@@ -2,27 +2,17 @@ package de.cebitec.mgx.gui.nodes;
 
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.controller.RBAC;
-import de.cebitec.mgx.gui.datamodel.Habitat;
 import de.cebitec.mgx.gui.datamodel.Reference;
-import de.cebitec.mgx.gui.datamodel.Sample;
 import de.cebitec.mgx.gui.datamodel.misc.Task;
-import de.cebitec.mgx.gui.nodefactory.SampleNodeFactory;
 import de.cebitec.mgx.gui.swingutils.NonEDT;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
-import de.cebitec.mgx.gui.wizard.habitat.HabitatWizardDescriptor;
-import de.cebitec.mgx.gui.wizard.sample.SampleWizardDescriptor;
-import java.awt.Dialog;
 import java.awt.event.ActionEvent;
-import java.util.concurrent.ExecutionException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.SwingWorker;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
-import org.openide.WizardDescriptor;
 import org.openide.nodes.Children;
-import org.openide.util.Exceptions;
 import org.openide.util.Utilities;
 import org.openide.util.lookup.Lookups;
 
@@ -95,7 +85,7 @@ public class ReferenceNode extends MGXNodeBase<Reference> {
                         Task task = m.Reference().delete(ref);
                         while (!task.done()) {
                             setStatus(task.getStatusMessage());
-                            task = m.Task().get(task);
+                            task = m.Task().refresh(task);
                             sleep();
                         }
                         task.finish();

@@ -143,7 +143,7 @@ public class JobNode extends MGXNodeBase<Job> {
                         assert task != null;
                         while (!task.done()) {
                             setStatus(task.getStatusMessage());
-                            task = m.Task().get(task);
+                            task = m.Task().refresh(task);
                             sleep();
                         }
                         task.finish();
@@ -223,7 +223,7 @@ public class JobNode extends MGXNodeBase<Job> {
                     Task task = m.Job().restart(job);
                     while (!task.done()) {
                         setStatus(task.getStatusMessage());
-                        task = m.Task().get(task);
+                        task = m.Task().refresh(task);
                         sleep();
                     }
                     task.finish();
