@@ -4,6 +4,7 @@ import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.Habitat;
 import de.cebitec.mgx.gui.nodes.HabitatNode;
 import java.beans.PropertyChangeEvent;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import org.openide.nodes.*;
@@ -26,6 +27,7 @@ public class HabitatNodeFactory extends ChildFactory<Habitat> implements NodeLis
         while (iter.hasNext()) {
             toPopulate.add(iter.next());
         }
+        Collections.sort(toPopulate);
         return true;
     }
 
@@ -33,7 +35,6 @@ public class HabitatNodeFactory extends ChildFactory<Habitat> implements NodeLis
     protected Node createNodeForKey(Habitat key) {
         HabitatNode node = new HabitatNode(master, key);
         node.addNodeListener(this);
-        //node.addPropertyChangeListener(this);
         return node;
     }
 
