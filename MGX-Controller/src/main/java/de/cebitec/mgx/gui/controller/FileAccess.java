@@ -24,14 +24,14 @@ public class FileAccess extends AccessBase<MGXFile> {
         throw new UnsupportedOperationException("Not supported.");
     }
 
-    public long createDirectory(MGXFile newObj) {
+    public boolean createDirectory(MGXFile newObj) {
         FileDTO dto = FileDTOFactory.getInstance().toDTO(newObj);
         try {
-            return getDTOmaster().File().create(dto);
+            return 1 == getDTOmaster().File().create(dto);
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
+            return false;
         }
-        return -1; // files have no id
     }
 
     @Override
@@ -79,7 +79,7 @@ public class FileAccess extends AccessBase<MGXFile> {
         return fetchall(MGXFile.getRoot(getMaster()));
     }
 
-    public FileUploader createUploader(File localFile, MGXFile targetDir, String targetName) {
+    public FileUploader createUploader(File localFile, MGXFile targetDir, String targetName) throws MGXClientException {
         assert targetDir.isDirectory();
         if (targetName.contains("/")) {
             assert false;
