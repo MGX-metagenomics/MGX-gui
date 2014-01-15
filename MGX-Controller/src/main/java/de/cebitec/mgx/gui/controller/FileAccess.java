@@ -84,7 +84,7 @@ public class FileAccess extends AccessBase<MGXFile> {
         if (targetName.contains("/")) {
             assert false;
         }
-        String fullPath = targetDir.getFullPath() + "/" + targetName;
+        String fullPath = targetDir.getFullPath() + MGXFile.separator + targetName;
         try {
             return getDTOmaster().File().createUploader(localFile, fullPath);
         } catch (MGXClientException ex) {

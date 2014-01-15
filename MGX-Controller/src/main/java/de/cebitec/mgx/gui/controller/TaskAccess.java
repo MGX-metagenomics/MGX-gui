@@ -29,15 +29,16 @@ public class TaskAccess<T extends ModelBase> extends AccessBase<Task> {
         return t;
     }
 
-    public Task get(Task origTask) {
-        Task t = null;
+    public Task refresh(Task origTask) {
         try {
             TaskDTO dto = getDTOmaster().Task().get(origTask.getUuid());
-            t = TaskDTOFactory.getInstance(origTask.getObject(), origTask.getUuid(), origTask.getTaskType()).toModel(dto);
+            origTask.setState(Task.State.values()[dto.getState().ordinal()]);
+            origTask.setStatusMessage(dto.getMessage());
+            //t = TaskDTOFactory.getInstance(origTask.getObject(), origTask.getUuid(), origTask.getTaskType()).toModel(dto);
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
-        return t;
+        return origTask;
     }
 
     @Override
