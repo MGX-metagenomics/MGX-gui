@@ -5,7 +5,6 @@ import de.cebitec.mgx.gui.datamodel.MGXFile;
 import de.cebitec.mgx.gui.nodes.ProjectDataNode;
 import de.cebitec.mgx.gui.nodes.ProjectFilesNode;
 import de.cebitec.mgx.gui.nodes.ProjectReferencesNode;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
