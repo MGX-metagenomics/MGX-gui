@@ -13,7 +13,7 @@ import org.openide.nodes.*;
  *
  * @author sj
  */
-public class HabitatNodeFactory extends ChildFactory<Habitat> implements NodeListener {
+public class HabitatNodeFactory extends MGXNodeFactoryBase<Habitat> {
 
     private final MGXMaster master;
 
@@ -36,10 +36,6 @@ public class HabitatNodeFactory extends ChildFactory<Habitat> implements NodeLis
         HabitatNode node = new HabitatNode(master, key);
         node.addNodeListener(this);
         return node;
-    }
-
-    public void refreshChildren() {
-        refresh(true);
     }
 
     @Override

@@ -3,6 +3,7 @@ package de.cebitec.mgx.gui.actions;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.controller.RBAC;
 import de.cebitec.mgx.gui.datamodel.MGXFile;
+import de.cebitec.mgx.gui.datamodel.misc.Task;
 import de.cebitec.mgx.gui.swingutils.NonEDT;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
@@ -65,7 +66,12 @@ public class DeleteFileOrDirectory extends AbstractAction {
         @Override
         public boolean process() {
             setStatus("Deleting..");
-            master.File().delete(file);
+            Task delTask = master.File().delete(file);
+            while (!delTask.done()) {
+                delTask = master.Task().refresh(delTask);
+                sleep();
+            }
+            delTask.finish();
             return true;
         }
     }

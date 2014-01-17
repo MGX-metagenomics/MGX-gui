@@ -34,6 +34,7 @@ public class MGXFileNode extends MGXNodeBase<MGXFile> {
     @Override
     public Action[] getActions(boolean context) {
         return new Action[]{new DeleteFileOrDirectory()};
+        //DeleteAction get = DeleteAction.get(DeleteAction.class);
     }
 
     @Override

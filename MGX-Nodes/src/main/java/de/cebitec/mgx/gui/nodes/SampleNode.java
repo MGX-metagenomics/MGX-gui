@@ -6,6 +6,7 @@ import de.cebitec.mgx.gui.datamodel.DNAExtract;
 import de.cebitec.mgx.gui.datamodel.Sample;
 import de.cebitec.mgx.gui.datamodel.misc.Task;
 import de.cebitec.mgx.gui.nodefactory.DNAExtractNodeFactory;
+import de.cebitec.mgx.gui.swingutils.NonEDT;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
 import de.cebitec.mgx.gui.wizard.extract.DNAExtractWizardDescriptor;
@@ -137,7 +138,7 @@ public class SampleNode extends MGXNodeBase<Sample> {
             Object ret = DialogDisplayer.getDefault().notify(d);
             final MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
             if (NotifyDescriptor.YES_OPTION.equals(ret)) {
-                MGXTask deleteTask = new MGXTask("Delete " + sample.getMaterial()) {
+                final MGXTask deleteTask = new MGXTask("Delete " + sample.getMaterial()) {
                     @Override
                     public boolean process() {
                         setStatus("Deleting..");
@@ -152,8 +153,14 @@ public class SampleNode extends MGXNodeBase<Sample> {
 
                     }
                 };
+                
+                NonEDT.invoke(new Runnable() {
 
-                TaskManager.getInstance().addTask(deleteTask);
+                    @Override
+                    public void run() {
+                        TaskManager.getInstance().addTask(deleteTask);
+                    }
+                });
             }
         }
 
