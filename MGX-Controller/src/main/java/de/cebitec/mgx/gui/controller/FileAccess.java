@@ -24,11 +24,14 @@ public class FileAccess extends AccessBase<MGXFile> {
         throw new UnsupportedOperationException("Not supported.");
     }
 
-    public boolean createDirectory(MGXFile newObj) {
+    public boolean createDirectory(MGXFile newObj) throws MGXServerException, MGXClientException {
         FileDTO dto = FileDTOFactory.getInstance().toDTO(newObj);
         try {
             return 1 == getDTOmaster().File().create(dto);
         } catch (MGXServerException | MGXClientException ex) {
+            if (ex.getMessage().trim().endsWith("already exists.")) {
+                throw ex; // rethrow
+            }
             Exceptions.printStackTrace(ex);
             return false;
         }
