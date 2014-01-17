@@ -1,10 +1,13 @@
 package de.cebitec.mgx.gui.actions;
 
+import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.controller.RBAC;
 import de.cebitec.mgx.gui.datamodel.MGXFile;
 import de.cebitec.mgx.gui.nodefactory.FileNodeFactory;
+import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import javax.swing.AbstractAction;
 import javax.swing.SwingWorker;
@@ -39,10 +42,34 @@ public class CreateDirectory extends AbstractAction {
                 final MGXFile newDir = new MGXFile(targetPath, true);
                 newDir.setParent(currentDir);
 
-                SwingWorker<Boolean, Void> sw = new SwingWorker<Boolean, Void>() {
+                SwingWorker<Boolean, String> sw = new SwingWorker<Boolean, String>() {
                     @Override
                     protected Boolean doInBackground() throws Exception {
-                        return m.File().createDirectory(newDir);
+                        try {
+                            return m.File().createDirectory(newDir);
+                        } catch (MGXServerException ex) {
+                            if (ex.getMessage().endsWith("already exists.")) {
+                                publish(ex.getMessage());
+                            }
+                        }
+                        return false;
+                    }
+
+                    @Override
+                    protected void process(List<String> chunks) {
+                        for (final String msg : chunks) {
+                            EventQueue.invokeLater(new Runnable() {
+
+                                @Override
+                                public void run() {
+                                    NotifyDescriptor nd = new NotifyDescriptor(msg, "Error",
+                                            NotifyDescriptor.OK_CANCEL_OPTION, NotifyDescriptor.ERROR_MESSAGE, null, null);
+                                    DialogDisplayer.getDefault().notify(nd);
+                                }
+                            });
+
+                        }
+                        super.process(chunks);
                     }
 
                     @Override
