@@ -155,6 +155,12 @@ public final class VisualizationGroupTopComponent extends TopComponent implement
             case VisualizationGroup.VISGROUP_HAS_DIST:
                 // ignore
                 break;
+            case VisualizationGroup.VISGROUP_DEACTIVATED:
+                // ignore
+                break;
+            case VisualizationGroup.VISGROUP_ACTIVATED:
+                // ignore
+                break;
             default:
                 System.err.println("VGTopComponent got unhandled event " + evt.getPropertyName());
         }

@@ -229,6 +229,12 @@ public class GroupFrame extends javax.swing.JInternalFrame implements ExplorerMa
                 setTitle(vGroup.getName() + " (" + df.format(vGroup.getNumSequences()) + " sequences)");
                 displayName.setBackground(Color.WHITE);
                 break;
+            case VisualizationGroup.VISGROUP_ACTIVATED:
+                //ignore
+                break;
+            case VisualizationGroup.VISGROUP_DEACTIVATED:
+                //ignore
+                break;
             case VisualizationGroup.VISGROUP_ATTRTYPE_CHANGED:
                 break; //ignore
             case VisualizationGroup.VISGROUP_HAS_DIST:
