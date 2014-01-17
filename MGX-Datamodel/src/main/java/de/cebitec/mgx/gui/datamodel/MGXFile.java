@@ -13,12 +13,12 @@ public class MGXFile extends ModelBase implements Comparable<MGXFile> {
     protected final boolean isDirectory;
     //
     public static final DataFlavor DATA_FLAVOR = new DataFlavor(MGXFile.class, "MGXFile");
-    public static final String ROOT_PATH = ".|";
+    public static final String ROOT_PATH = ".";
     public static final String separator = "|";
 
     public MGXFile(String path, boolean isDir) {
         super(DATA_FLAVOR); 
-        if (!path.startsWith(".|")) {
+        if (!path.startsWith(".")) {
             throw new RuntimeException(path + " is invalid");
         }
         this.fullPath = path;
