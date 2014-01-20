@@ -4,14 +4,17 @@ import de.cebitec.mgx.gui.cache.internal.Interval;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import de.cebitec.mgx.gui.cache.internal.MappedSequenceCache;
 import de.cebitec.mgx.gui.cache.internal.RegionCache;
 import de.cebitec.mgx.gui.cache.internal.SequenceCache;
 import de.cebitec.mgx.gui.controller.MGXMaster;
+import de.cebitec.mgx.gui.datamodel.MappedSequence;
 import de.cebitec.mgx.gui.datamodel.Reference;
 import de.cebitec.mgx.gui.datamodel.Region;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  *
@@ -59,5 +62,30 @@ public class CacheFactory {
                 .weakKeys()
                 .build(loader);
         return new RegionCache(ref, lcache);
+    }
+
+    public static Cache<Set<MappedSequence>> createMappedSequenceCache(final MGXMaster master, final Reference ref, final UUID uuid) {
+       
+        CacheLoader<Interval<Set<MappedSequence>>, Set<MappedSequence>> loader = new CacheLoader<Interval<Set<MappedSequence>>, Set<MappedSequence>>() {
+            @Override
+            public Set<MappedSequence> load(Interval<Set<MappedSequence>> k) throws Exception {
+
+                int to = k.getTo();
+                if (ref.getLength() < to) {
+                    to = ref.getLength() - 1;
+                }
+                Iterator<MappedSequence> iter = master.Mapping().byReferenceInterval(uuid, k.getFrom(), to);
+                Set<MappedSequence> ret = new HashSet<>();
+                while (iter.hasNext()) {
+                    ret.add(iter.next());
+                }
+                return ret;
+            }
+        };
+
+        LoadingCache<Interval<Set<MappedSequence>>, Set<MappedSequence>> lcache = CacheBuilder.newBuilder()
+                .weakKeys()
+                .build(loader);
+        return new MappedSequenceCache(ref, lcache);
     }
 }
