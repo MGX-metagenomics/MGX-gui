@@ -19,7 +19,14 @@ public class ServerFile extends File {
 
     @Override
     public String getName() {
-        return file.getName();
+        String fname = file.getName();
+        if (fname.contains(MGXFile.separator)) {
+            fname = fname.substring(fname.lastIndexOf(MGXFile.separator)+1);
+        }
+        if (MGXFile.ROOT_PATH.equals(fname)) {
+            return "Project storage";
+        }
+        return fname;
     }
 
     @Override
@@ -47,7 +54,7 @@ public class ServerFile extends File {
 
     @Override
     public String getAbsolutePath() {
-        return file.getFullPath();
+        return file.getName();
     }
 
     @Override
@@ -67,7 +74,12 @@ public class ServerFile extends File {
 
     @Override
     public String toString() {
-        return file.getFullPath();
+        return file.getName(); // getFullPath();
+    }
+
+    @Override
+    public long length() {
+        return file.getSize();
     }
 
     public boolean isRoot() {

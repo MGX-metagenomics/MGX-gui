@@ -24,9 +24,7 @@ public class ServerFS extends FileSystemView {
 
     public ServerFS(MGXMaster m) {
         this.master = m;
-
         projectDirectory = new ServerFile(MGXFile.getRoot(master));
-
     }
 
     @Override
@@ -41,9 +39,9 @@ public class ServerFS extends FileSystemView {
 
     @Override
     public Boolean isTraversable(File f) {
-        return Boolean.TRUE;
+        return f.isDirectory();
     }
-
+    
     @Override
     public String getSystemDisplayName(File f) {
         return super.getSystemDisplayName(f);

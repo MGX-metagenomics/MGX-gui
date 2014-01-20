@@ -33,6 +33,6 @@ public class FileDTOFactory extends DTOConversionBase<MGXFile, FileDTO> {
 
     @Override
     public MGXFile toModel(FileDTO dto) {
-        return new MGXFile(dto.getName(), dto.getIsDirectory());
+        return new MGXFile(dto.getName(), dto.getIsDirectory(), dto.getSize());
     }
 }
