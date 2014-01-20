@@ -74,7 +74,7 @@ public class ServerFile extends File {
 
     @Override
     public String toString() {
-        return file.getName(); // getFullPath();
+        return file.getName();
     }
 
     @Override
