@@ -192,6 +192,7 @@ public class ColorAction extends EncoderAction {
     /**
      * @see prefuse.action.ItemAction#process(prefuse.visual.VisualItem, double)
      */
+    @Override
     public void process(VisualItem item, double frac) {
         int c = getColor(item);
         int o = item.getInt(m_colorField);

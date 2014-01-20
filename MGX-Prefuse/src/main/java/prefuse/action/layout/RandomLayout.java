@@ -42,6 +42,7 @@ public class RandomLayout extends Layout {
     /**
      * @see prefuse.action.Action#run(double)
      */
+    @Override
     public void run(double frac) {
         Rectangle2D b = getLayoutBounds();
         double x, y;
