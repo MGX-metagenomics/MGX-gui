@@ -52,23 +52,28 @@ public class TestMaster {
     public static MGXMaster get2() {
         MGXMaster master = null;
 
-        String serverURI = "https://mgx.cebitec.uni-bielefeld.de/MGX-maven-web/webresources/";
+        String serverURI = "http://scooter.cebitec.uni-bielefeld.de:8080/MGX-maven-web/webresources/";
+        String username = null;
+        String password = null;
 
-        String config = System.getProperty("user.home") + "/.m2/mgx.junit";
+        Properties p = new Properties();
+        String config = System.getProperty("user.home") + "/.m2/mgx.private";
         File f = new File(config);
         if (f.exists() && f.canRead()) {
-            Properties p = new Properties();
             try {
                 p.load(new FileInputStream(f));
                 serverURI = p.getProperty("testserver");
+                password = p.getProperty("password");
+                username = p.getProperty("username");
             } catch (IOException ex) {
                 System.out.println(ex.getMessage());
             }
         }
         GPMSClientI gpms = new GPMS("MyServer", serverURI);
-        if (!gpms.login("sjaenick", "Diwdf@")) {
+        if (!gpms.login(username, password)) {
             return null;
         }
+
         for (MembershipI m : gpms.getMemberships()) {
             if ("MGX".equals(m.getProject().getProjectClass().getName()) && ("MGX_Viersen".equals(m.getProject().getName()))) {
                 MGXDTOMaster dtomaster = new MGXDTOMaster(gpms, m);
