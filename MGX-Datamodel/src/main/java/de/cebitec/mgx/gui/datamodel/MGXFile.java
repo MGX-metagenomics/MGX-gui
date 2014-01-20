@@ -11,22 +11,24 @@ public class MGXFile extends ModelBase implements Comparable<MGXFile> {
     protected  MGXFile parent;
     protected final String fullPath;
     protected final boolean isDirectory;
+    protected final long size;
     //
     public static final DataFlavor DATA_FLAVOR = new DataFlavor(MGXFile.class, "MGXFile");
     public static final String ROOT_PATH = ".";
     public static final String separator = "|";
 
-    public MGXFile(String path, boolean isDir) {
+    public MGXFile(String path, boolean isDir, long size) {
         super(DATA_FLAVOR); 
         if (!path.startsWith(".")) {
             throw new RuntimeException(path + " is invalid");
         }
         this.fullPath = path;
         this.isDirectory = isDir;
+        this.size = size;
     }
 
     public static MGXFile getRoot(MGXMasterI m) {
-        MGXFile root = new MGXFile(ROOT_PATH, true);
+        MGXFile root = new MGXFile(ROOT_PATH, true, 0);
         root.setParent(null);
         root.setMaster(m);
         return root;
@@ -42,6 +44,10 @@ public class MGXFile extends ModelBase implements Comparable<MGXFile> {
 
     public boolean isDirectory() {
         return isDirectory;
+    }
+    
+    public long getSize() {
+        return size;
     }
 
     public String getName() {
