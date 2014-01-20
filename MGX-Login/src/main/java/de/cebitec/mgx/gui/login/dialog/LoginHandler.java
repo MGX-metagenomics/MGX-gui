@@ -13,6 +13,7 @@ import java.beans.PropertyChangeListener;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.NotificationLineSupport;
+import org.openide.NotifyDescriptor;
 import org.openide.awt.StatusDisplayer;
 import org.openide.util.Lookup;
 import org.openide.util.NbPreferences;
@@ -42,6 +43,9 @@ public class LoginHandler implements ActionListener {
     }
 
     public void showDialog() {
+        if (!checkVersion()) {
+            return;
+        }
         dialog = new DialogDescriptor(panel, "Login", true, this);
         dialog.setClosingOptions(new Object[]{DialogDescriptor.CANCEL_OPTION, DialogDescriptor.OK_OPTION});
         nline = dialog.createNotificationLineSupport();
@@ -71,6 +75,19 @@ public class LoginHandler implements ActionListener {
         }
 
         DialogDisplayer.getDefault().notify(dialog);
+    }
+
+    private boolean checkVersion() {
+        String version = System.getProperty("java.version");
+        float ver = Float.valueOf(version.substring(0, 3));
+        if (ver < 1.9) {
+            String msg = "Your Java runtime version ("+version+") is too old. MGX requires at least Java 7.";
+            NotifyDescriptor nd = new NotifyDescriptor(msg, "Java too old", 
+                    NotifyDescriptor.OK_CANCEL_OPTION, NotifyDescriptor.ERROR_MESSAGE, null, null);
+            DialogDisplayer.getDefault().notify(nd);
+            return false;
+        }
+        return true;
     }
 
     @Override
