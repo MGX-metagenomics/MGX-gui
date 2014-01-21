@@ -1,9 +1,11 @@
 package de.cebitec.mgx.gui.wizard.analysis;
 
 import de.cebitec.mgx.gui.datamodel.JobParameter;
+import de.cebitec.mgx.gui.datamodel.MGXFile;
 import de.cebitec.mgx.gui.datamodel.Reference;
 import de.cebitec.mgx.gui.wizard.analysis.misc.ParameterPanel;
 import java.awt.Component;
+import java.io.File;
 import java.util.List;
 import java.util.Set;
 import javax.swing.JList;
@@ -99,7 +101,7 @@ public final class AnalysisVisualPanel3 extends JPanel {
 
     private final class JobParameterRenderer implements ListCellRenderer<JobParameter> {
 
-        private ParameterPanel panel = new ParameterPanel();
+        private final ParameterPanel panel = new ParameterPanel();
         protected Border noFocusBorder = LineBorder.createGrayLineBorder();
         protected Border focusBorder = LineBorder.createBlackLineBorder();
 
@@ -119,6 +121,15 @@ public final class AnalysisVisualPanel3 extends JPanel {
                 }
                 assert r != null;
                 panel.setValue(r.getName());
+            }
+            
+            if (jp.getType().equals("ConfigFile")) {
+                String displayName = jp.getParameterValue();
+                if (displayName.startsWith(MGXFile.ROOT_PATH + MGXFile.separator)) {
+                    displayName  = displayName.substring(2);
+                }
+                displayName = displayName.replace(MGXFile.separator, File.separator);
+                panel.setValue(displayName);
             }
 
             panel.setDescription(jp.getUserDescription());

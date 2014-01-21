@@ -13,6 +13,7 @@ import de.cebitec.mgx.gui.wizard.analysis.misc.ValueHolderI;
 import de.cebitec.mgx.gui.wizard.analysis.validator.BooleanValidator;
 import de.cebitec.mgx.gui.wizard.analysis.validator.ByteValidator;
 import de.cebitec.mgx.gui.wizard.analysis.validator.DoubleValidator;
+import de.cebitec.mgx.gui.wizard.analysis.validator.FilenameValidator;
 import de.cebitec.mgx.gui.wizard.analysis.validator.IntegerValidator;
 import de.cebitec.mgx.gui.wizard.analysis.validator.LongValidator;
 import de.cebitec.mgx.gui.wizard.analysis.validator.MultipleChoiceValidator;
@@ -183,7 +184,7 @@ public class AnalysisWizardPanel2<T> implements WizardDescriptor.Panel<WizardDes
             case "ConfigEnumeration`1":
                 return new Pair<>(new ComboBoxPanel<>(jp, jp.getChoices().keySet()), new MultipleChoiceValidator(jp));
             case "ConfigFile":
-                return new Pair<>(new FileChooserPanel(master), new StringValidator());
+                return new Pair<>(new FileChooserPanel(master), new FilenameValidator());
             case "ConfigInteger":
                 return new Pair<>(new TextFieldPanel(), new IntegerValidator());
             case "ConfigLong":
