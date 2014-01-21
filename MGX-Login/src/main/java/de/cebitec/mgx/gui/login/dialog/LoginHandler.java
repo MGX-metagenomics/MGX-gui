@@ -80,7 +80,7 @@ public class LoginHandler implements ActionListener {
     private boolean checkVersion() {
         String version = System.getProperty("java.version");
         float ver = Float.valueOf(version.substring(0, 3));
-        if (ver < 1.9) {
+        if (ver < 1.7) {
             String msg = "Your Java runtime version ("+version+") is too old. MGX requires at least Java 7.";
             NotifyDescriptor nd = new NotifyDescriptor(msg, "Java too old", 
                     NotifyDescriptor.OK_CANCEL_OPTION, NotifyDescriptor.ERROR_MESSAGE, null, null);
