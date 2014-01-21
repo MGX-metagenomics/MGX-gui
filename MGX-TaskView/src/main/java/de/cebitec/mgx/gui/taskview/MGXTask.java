@@ -5,7 +5,6 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.Objects;
 import java.util.UUID;
-import org.openide.util.Exceptions;
 
 /**
  *
