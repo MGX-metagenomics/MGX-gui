@@ -17,7 +17,7 @@ import static org.junit.Assert.fail;
  */
 public class TestMaster {
 
-    public static MGXMaster get() {
+    public static MGXMaster getRO() {
         MGXMaster master = null;
 
         String serverURI = "http://scooter.cebitec.uni-bielefeld.de:8080/MGX-maven-web/webresources/";
@@ -34,7 +34,7 @@ public class TestMaster {
             }
         }
         GPMSClientI gpms = new GPMS("MyServer", serverURI);
-        if (!gpms.login("mgx_unittest", "gut-isM5iNt")) {
+        if (!gpms.login("mgx_unittestRO", "gut-isM5iNt")) {
             fail();
         }
         for (MembershipI m : gpms.getMemberships()) {
