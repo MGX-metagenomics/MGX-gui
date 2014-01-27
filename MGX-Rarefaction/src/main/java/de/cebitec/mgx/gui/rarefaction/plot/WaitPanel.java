@@ -3,8 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package de.cebitec.mgx.gui.rarefaction.plot;
+
+import java.awt.BorderLayout;
+import javax.swing.JComponent;
 
 /**
  *
@@ -17,6 +19,13 @@ public class WaitPanel extends javax.swing.JPanel {
      */
     public WaitPanel() {
         initComponents();
+    }
+
+    public void setTarget(JComponent target) {
+        removeAll();
+        setLayout(new BorderLayout());
+        add(target, BorderLayout.CENTER);
+        revalidate();
     }
 
     /**

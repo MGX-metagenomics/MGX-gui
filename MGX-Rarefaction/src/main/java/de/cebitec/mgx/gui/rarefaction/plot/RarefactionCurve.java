@@ -45,7 +45,7 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = ViewerI.class)
 public class RarefactionCurve extends ViewerI<Distribution> {
 
-    private JPanel cPanel = null;
+    private WaitPanel cPanel = null;
     private JFreeChart chart = null;
 
     @Override
@@ -111,11 +111,8 @@ public class RarefactionCurve extends ViewerI<Distribution> {
             @Override
             protected void done() {
                 try {
-                    JPanel p = RarefactionCurve.this.cPanel;
-                    p.removeAll();
-                    p.setLayout(new BorderLayout());
-                    p.add(get(), BorderLayout.CENTER);
-                    p.revalidate();
+                    WaitPanel wp = RarefactionCurve.this.cPanel;
+                    wp.setTarget(get());
                 } catch (InterruptedException | ExecutionException ex) {
                     Exceptions.printStackTrace(ex);
                 }
