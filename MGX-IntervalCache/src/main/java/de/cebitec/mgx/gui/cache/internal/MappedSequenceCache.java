@@ -8,32 +8,31 @@ import com.google.common.cache.LoadingCache;
 import de.cebitec.mgx.gui.cache.Cache;
 import de.cebitec.mgx.gui.datamodel.MappedSequence;
 import de.cebitec.mgx.gui.datamodel.Reference;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Set;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 /**
  *
  * @author belmann
  */
-public class MappedSequenceCache extends Cache<Set<MappedSequence>> {
+public class MappedSequenceCache extends Cache<List<MappedSequence>> {
 
-    public MappedSequenceCache(Reference ref, LoadingCache<Interval<Set<MappedSequence>>, Set<MappedSequence>> lcache) {
+    public MappedSequenceCache(Reference ref, LoadingCache<Interval<List<MappedSequence>>, List<MappedSequence>> lcache) {
         super(ref, lcache);
     }
 
-    public MappedSequenceCache(Reference ref, LoadingCache<Interval<Set<MappedSequence>>, Set<MappedSequence>> lcache, int segSize) {
+    public MappedSequenceCache(Reference ref, LoadingCache<Interval<List<MappedSequence>>, List<MappedSequence>> lcache, int segSize) {
         super(ref, lcache, segSize);
     }
 
     @Override
-    public Set<MappedSequence> get(int from, int to) throws ExecutionException {
-        Iterator<Interval<Set<MappedSequence>>> iter = getIntervals(from, to);
-
-        Set<MappedSequence> mappedSequences = new HashSet<MappedSequence>();
+    public List<MappedSequence> get(int from, int to) throws ExecutionException {
+        Iterator<Interval<List<MappedSequence>>> iter = getIntervals(from, to);
+        List<MappedSequence> mappedSequences = new ArrayList<MappedSequence>();
         while (iter.hasNext()) {
-            Set<MappedSequence> get = lcache.get(iter.next());
+            List<MappedSequence> get = lcache.get(iter.next());
             for (MappedSequence seq : get) {
                 mappedSequences.add(seq);
             }

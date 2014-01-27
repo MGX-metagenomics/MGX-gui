@@ -11,8 +11,10 @@ import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.MappedSequence;
 import de.cebitec.mgx.gui.datamodel.Reference;
 import de.cebitec.mgx.gui.datamodel.Region;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -64,18 +66,18 @@ public class CacheFactory {
         return new RegionCache(ref, lcache);
     }
 
-    public static Cache<Set<MappedSequence>> createMappedSequenceCache(final MGXMaster master, final Reference ref, final UUID uuid) {
-       
-        CacheLoader<Interval<Set<MappedSequence>>, Set<MappedSequence>> loader = new CacheLoader<Interval<Set<MappedSequence>>, Set<MappedSequence>>() {
+    public static Cache<List<MappedSequence>> createMappedSequenceCache(final MGXMaster master, final Reference ref, final UUID uuid) {
+
+        CacheLoader<Interval<List<MappedSequence>>, List<MappedSequence>> loader = new CacheLoader<Interval<List<MappedSequence>>, List<MappedSequence>>() {
             @Override
-            public Set<MappedSequence> load(Interval<Set<MappedSequence>> k) throws Exception {
+            public List<MappedSequence> load(Interval<List<MappedSequence>> k) throws Exception {
 
                 int to = k.getTo();
                 if (ref.getLength() < to) {
                     to = ref.getLength() - 1;
                 }
                 Iterator<MappedSequence> iter = master.Mapping().byReferenceInterval(uuid, k.getFrom(), to);
-                Set<MappedSequence> ret = new HashSet<>();
+                List<MappedSequence> ret = new ArrayList<>();
                 while (iter.hasNext()) {
                     ret.add(iter.next());
                 }
@@ -83,7 +85,7 @@ public class CacheFactory {
             }
         };
 
-        LoadingCache<Interval<Set<MappedSequence>>, Set<MappedSequence>> lcache = CacheBuilder.newBuilder()
+        LoadingCache<Interval<List<MappedSequence>>, List<MappedSequence>> lcache = CacheBuilder.newBuilder()
                 .weakKeys()
                 .build(loader);
         return new MappedSequenceCache(ref, lcache);
