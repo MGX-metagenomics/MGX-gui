@@ -8,9 +8,15 @@ import org.openide.util.Utilities;
  */
 public class RBAC {
 
+    public static boolean isAdmin() {
+        MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
+        return m != null && m.getMembership().getRole().getName().equals("Admin");
+    }
+
     public static boolean isUser() {
         MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
-        return m != null && m.getMembership().getRole().getName().equals("User");
+        // Admins are treated as users, as well..
+        return m != null && (isAdmin() || m.getMembership().getRole().getName().equals("User"));
     }
 
     public static boolean isGuest() {
