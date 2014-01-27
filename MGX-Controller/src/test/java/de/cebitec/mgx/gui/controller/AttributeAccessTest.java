@@ -134,120 +134,120 @@ public class AttributeAccessTest {
         assertEquals(tree.getNodes().size(), tree2.getNodes().size());
     }
 
-    @Test
-    public void testMergeD() {
-        System.out.println("testMergeD");
-        MGXMaster m = TestMaster.get2();
-        if (m == null) {
-            System.err.println("  not tested, private test.");
-            return;
-        }
-
-        Distribution atbDist = m.Attribute().getDistribution(5, 19);
-        assertNotNull(atbDist);
-        assertEquals(86, atbDist.size());
-        assertEquals(17447, atbDist.getTotalClassifiedElements());
-        long total = 0;
-        for (Attribute attr : atbDist.keySet()) {
-            total += atbDist.get(attr).longValue();
-        }
-        assertEquals(17447, total);
-        checkDist(atbDist, "Actinopterygii", 25L);
-        Attribute a1 = findDist(atbDist, "Actinopterygii");
-        assertNotNull(a1);
-
-        Distribution hawDist = m.Attribute().getDistribution(5, 20);
-        assertNotNull(hawDist);
-        assertEquals(93, hawDist.size());
-        assertEquals(46406, hawDist.getTotalClassifiedElements());
-        total = 0;
-        for (Attribute attr : hawDist.keySet()) {
-            total += hawDist.get(attr).longValue();
-        }
-        assertEquals(46406, total);
-        checkDist(hawDist, "Actinopterygii", 35L);
-        Attribute a2 = findDist(hawDist, "Actinopterygii");
-        assertNotNull(a2);
-
-        assertEquals(a1.getAttributeType(), a2.getAttributeType());
-        assertEquals(a1.getValue(), a2.getValue());
-        assertEquals(a1.getMaster(), a2.getMaster());
-        assertEquals(a1, a2);
-
-        Set<Distribution> set = new HashSet<>();
-        set.add(hawDist);
-        set.add(atbDist);
-        Distribution mergedDists = DistributionFactory.merge(set);
-        assertNotNull(mergedDists);
-        assertEquals(17447 + 46406, mergedDists.getTotalClassifiedElements());
-
-        int numfound = 0;
-        Attribute actino = null;
-        for (Attribute attr : mergedDists.keySet()) {
-            if (attr.getValue().equals("Actinopterygii")) {
-                numfound++;
-                //assertNull(actino);
-                actino = attr;
-            }
-        }
-        assertEquals(1, numfound);
-
-
-        checkDist(mergedDists, "Actinopterygii", 60L);
-
-//        // compare content in both directions
-//        for (Attribute attr : mergedFromTree.keySet()) {
-//            assertEquals("values differ for " + attr.getValue(), mergedFromTree.get(attr), mergedDists.get(attr));
-//            assertTrue(attr.getValue() + " only in tree, not in dist", mergedDists.containsKey(attr));
+//    @Test
+//    public void testMergeD() {
+//        System.out.println("testMergeD");
+//        MGXMaster m = TestMaster.get2();
+//        if (m == null) {
+//            System.err.println("  not tested, private test.");
+//            return;
 //        }
+//
+//        Distribution atbDist = m.Attribute().getDistribution(5, 19);
+//        assertNotNull(atbDist);
+//        assertEquals(86, atbDist.size());
+//        assertEquals(17447, atbDist.getTotalClassifiedElements());
+//        long total = 0;
+//        for (Attribute attr : atbDist.keySet()) {
+//            total += atbDist.get(attr).longValue();
+//        }
+//        assertEquals(17447, total);
+//        checkDist(atbDist, "Actinopterygii", 25L);
+//        Attribute a1 = findDist(atbDist, "Actinopterygii");
+//        assertNotNull(a1);
+//
+//        Distribution hawDist = m.Attribute().getDistribution(5, 20);
+//        assertNotNull(hawDist);
+//        assertEquals(93, hawDist.size());
+//        assertEquals(46406, hawDist.getTotalClassifiedElements());
+//        total = 0;
+//        for (Attribute attr : hawDist.keySet()) {
+//            total += hawDist.get(attr).longValue();
+//        }
+//        assertEquals(46406, total);
+//        checkDist(hawDist, "Actinopterygii", 35L);
+//        Attribute a2 = findDist(hawDist, "Actinopterygii");
+//        assertNotNull(a2);
+//
+//        assertEquals(a1.getAttributeType(), a2.getAttributeType());
+//        assertEquals(a1.getValue(), a2.getValue());
+//        assertEquals(a1.getMaster(), a2.getMaster());
+//        assertEquals(a1, a2);
+//
+//        Set<Distribution> set = new HashSet<>();
+//        set.add(hawDist);
+//        set.add(atbDist);
+//        Distribution mergedDists = DistributionFactory.merge(set);
+//        assertNotNull(mergedDists);
+//        assertEquals(17447 + 46406, mergedDists.getTotalClassifiedElements());
+//
+//        int numfound = 0;
+//        Attribute actino = null;
+//        for (Attribute attr : mergedDists.keySet()) {
+//            if (attr.getValue().equals("Actinopterygii")) {
+//                numfound++;
+//                //assertNull(actino);
+//                actino = attr;
+//            }
+//        }
+//        assertEquals(1, numfound);
+//
+//
+//        checkDist(mergedDists, "Actinopterygii", 60L);
+//
+////        // compare content in both directions
+////        for (Attribute attr : mergedFromTree.keySet()) {
+////            assertEquals("values differ for " + attr.getValue(), mergedFromTree.get(attr), mergedDists.get(attr));
+////            assertTrue(attr.getValue() + " only in tree, not in dist", mergedDists.containsKey(attr));
+////        }
+//
+//
+//        assertEquals(100, mergedDists.size());
+//    }
 
-
-        assertEquals(100, mergedDists.size());
-    }
-
-    @Test
-    public void testMergeH() {
-        System.out.println("testMergeH");
-        MGXMaster m = TestMaster.get2();
-        if (m == null) {
-            System.err.println("  not tested, private test.");
-            return;
-        }
-
-        Tree<Long> atb = m.Attribute().getHierarchy(5, 19);
-        assertNotNull(atb);
-        assertEquals(2274, atb.getNodes().size());
-        checkNode(atb, "Actinopterygii", 25L);
-        Node<Long> n1 = findNode(atb, "Actinopterygii");
-
-        Tree<Long> haw = m.Attribute().getHierarchy(5, 20);
-        assertNotNull(haw);
-        assertEquals(2900, haw.getNodes().size());
-        checkNode(haw, "Actinopterygii", 35L);
-        Node<Long> n2 = findNode(haw, "Actinopterygii");
-
-        assertTrue(TreeFactory.nodesAreEqual(n1, n2));
-
-        // merge trees
-        Collection<Tree<Long>> data = new HashSet<>();
-        data.add(haw);
-        data.add(atb);
-        Tree<Long> mergedTree = TreeFactory.mergeTrees(data);
-
-        int numfound = 0;
-        Node<Long> actino = null;
-        for (Node<Long> node : mergedTree.getNodes()) {
-            if (node.getAttribute().getValue().equals("Actinopterygii")) {
-                numfound++;
-                assertNull(actino);
-                actino = node;
-            }
-        }
-        assertEquals(1, numfound);
-        assertEquals("Chordata", actino.getParent().getAttribute().getValue());
-
-        checkNode(mergedTree, "Actinopterygii", Long.valueOf(60));
-    }
+//    @Test
+//    public void testMergeH() {
+//        System.out.println("testMergeH");
+//        MGXMaster m = TestMaster.get2();
+//        if (m == null) {
+//            System.err.println("  not tested, private test.");
+//            return;
+//        }
+//
+//        Tree<Long> atb = m.Attribute().getHierarchy(5, 19);
+//        assertNotNull(atb);
+//        assertEquals(2274, atb.getNodes().size());
+//        checkNode(atb, "Actinopterygii", 25L);
+//        Node<Long> n1 = findNode(atb, "Actinopterygii");
+//
+//        Tree<Long> haw = m.Attribute().getHierarchy(5, 20);
+//        assertNotNull(haw);
+//        assertEquals(2900, haw.getNodes().size());
+//        checkNode(haw, "Actinopterygii", 35L);
+//        Node<Long> n2 = findNode(haw, "Actinopterygii");
+//
+//        assertTrue(TreeFactory.nodesAreEqual(n1, n2));
+//
+//        // merge trees
+//        Collection<Tree<Long>> data = new HashSet<>();
+//        data.add(haw);
+//        data.add(atb);
+//        Tree<Long> mergedTree = TreeFactory.mergeTrees(data);
+//
+//        int numfound = 0;
+//        Node<Long> actino = null;
+//        for (Node<Long> node : mergedTree.getNodes()) {
+//            if (node.getAttribute().getValue().equals("Actinopterygii")) {
+//                numfound++;
+//                assertNull(actino);
+//                actino = node;
+//            }
+//        }
+//        assertEquals(1, numfound);
+//        assertEquals("Chordata", actino.getParent().getAttribute().getValue());
+//
+//        checkNode(mergedTree, "Actinopterygii", Long.valueOf(60));
+//    }
 
     @Test
     public void verifyTreeStructure() {

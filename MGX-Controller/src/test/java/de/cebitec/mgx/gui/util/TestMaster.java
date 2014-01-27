@@ -49,7 +49,7 @@ public class TestMaster {
         return master;
     }
 
-    public static MGXMaster get2() {
+    public static MGXMaster getRW() {
         MGXMaster master = null;
 
         String serverURI = "https://mgx.cebitec.uni-bielefeld.de/MGX-maven-web/webresources/";
@@ -66,18 +66,17 @@ public class TestMaster {
             }
         }
         GPMSClientI gpms = new GPMS("MyServer", serverURI);
-        if (!gpms.login("sjaenick", "Diwdf@")) {
+        if (!gpms.login("mgx_unittestRW", "hL0amo3oLae")) {
             return null;
         }
         for (MembershipI m : gpms.getMemberships()) {
-            if ("MGX".equals(m.getProject().getProjectClass().getName()) && ("MGX_Viersen".equals(m.getProject().getName()))) {
+            if ("MGX".equals(m.getProject().getProjectClass().getName()) && ("MGX_Unittest".equals(m.getProject().getName()))) {
                 MGXDTOMaster dtomaster = new MGXDTOMaster(gpms, m);
                 master = new MGXMaster(dtomaster);
                 break;
             }
         }
 
-        assert master != null;
         return master;
     }
 }
