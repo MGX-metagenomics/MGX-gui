@@ -172,12 +172,12 @@
             <dependency>
                 <groupId>com.sun.jersey</groupId>
                 <artifactId>jersey-core</artifactId>
-                <version>1.17.1</version>
+                <version>1.18</version>
             </dependency>
             <dependency>
                 <groupId>com.sun.jersey</groupId>
                 <artifactId>jersey-client</artifactId>
-                <version>1.17.1</version>
+                <version>1.18</version>
             </dependency>
             <dependency>
                 <groupId>jcharts</groupId>
