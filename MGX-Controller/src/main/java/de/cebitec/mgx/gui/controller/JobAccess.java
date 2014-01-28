@@ -6,7 +6,6 @@ import de.cebitec.mgx.dto.dto.JobDTO;
 import de.cebitec.mgx.dto.dto.MGXString;
 import de.cebitec.mgx.gui.datamodel.Identifiable;
 import de.cebitec.mgx.gui.datamodel.Job;
-import de.cebitec.mgx.gui.datamodel.ModelBase;
 import de.cebitec.mgx.gui.datamodel.misc.Task;
 import de.cebitec.mgx.gui.datamodel.misc.Task.TaskType;
 import de.cebitec.mgx.gui.dtoconversion.JobDTOFactory;
@@ -26,14 +25,14 @@ public class JobAccess extends AccessBase<Job> {
     public boolean verify(Job obj) throws MGXServerException {
         assert obj.getId() != Identifiable.INVALID_IDENTIFIER;
         boolean ret = getDTOmaster().Job().verify(obj.getId());
-        obj.firePropertyChange(ModelBase.OBJECT_MODIFIED, null, obj);
+        obj.modified();
         return ret;
     }
 
     public boolean execute(Job obj) throws MGXServerException {
         assert obj.getId() != Identifiable.INVALID_IDENTIFIER;
         boolean ret = getDTOmaster().Job().execute(obj.getId());
-        obj.firePropertyChange(ModelBase.OBJECT_MODIFIED, null, obj);
+        obj.modified();
         return ret;
     }
 
@@ -42,6 +41,7 @@ public class JobAccess extends AccessBase<Job> {
         try {
             UUID uuid = getDTOmaster().Job().restart(job.getId());
             ret = getMaster().Task().get(job, uuid, TaskType.MODIFY);
+            job.modified();
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
@@ -51,7 +51,7 @@ public class JobAccess extends AccessBase<Job> {
     public boolean cancel(Job obj) throws MGXServerException {
         assert obj.getId() != Identifiable.INVALID_IDENTIFIER;
         boolean ret = getDTOmaster().Job().cancel(obj.getId());
-        obj.firePropertyChange(ModelBase.OBJECT_MODIFIED, null, obj);
+        obj.modified();
         return ret;
     }
 
@@ -65,7 +65,7 @@ public class JobAccess extends AccessBase<Job> {
         try {
             id = getDTOmaster().Job().create(dto);
             obj.setId(id);
-            obj.firePropertyChange(ModelBase.OBJECT_MODIFIED, null, obj);
+            obj.modified();
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
@@ -114,7 +114,7 @@ public class JobAccess extends AccessBase<Job> {
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
-        obj.firePropertyChange(ModelBase.OBJECT_MODIFIED, null, obj);
+        obj.modified();
     }
 
     @Override
