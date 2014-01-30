@@ -40,7 +40,7 @@ public final class ConflictResolverWizardIterator implements WizardDescriptor.It
     // }
     private int index;
     private List<WizardDescriptor.Panel<WizardDescriptor>> panels;
-    private List<VisualizationGroup> groups;
+    private final List<VisualizationGroup> groups;
 
     public ConflictResolverWizardIterator(List<VisualizationGroup> groups) {
         this.groups = groups;
