@@ -9,7 +9,6 @@ import de.cebitec.mgx.gui.datamodel.tree.Tree;
 import de.cebitec.mgx.gui.datamodel.tree.TreeFactory;
 import de.cebitec.mgx.gui.util.TestMaster;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -286,7 +285,7 @@ public class AttributeAccessTest {
         assertEquals(5, dist.size());
         assertEquals(24, dist.getTotalClassifiedElements());
 
-        AttributeType aType = dist.keySet().toArray(new Attribute[0])[0].getAttributeType();
+        AttributeType aType = dist.keySet().toArray(new Attribute[]{})[0].getAttributeType();
         assertNotNull(aType);
         assertEquals("Bergey_class", aType.getName());
 
