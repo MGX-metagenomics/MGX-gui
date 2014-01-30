@@ -109,7 +109,7 @@ public class Job extends Identifiable implements Comparable<Job> {
         if ((this.id == INVALID_IDENTIFIER && other.id != INVALID_IDENTIFIER) || (this.id != INVALID_IDENTIFIER && this.id != other.id)) {
             return false;
         }
-        return true;
+        return getMaster().getProject().equals(other.getMaster().getProject());
     }
 
     @Override
