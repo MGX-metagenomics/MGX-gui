@@ -72,6 +72,7 @@ public class Task<T extends ModelBase> {
 
     public Task setState(State state) {
         this.state = state;
+        getObject().modified();
         return this;
     }
 

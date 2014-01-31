@@ -1,23 +1,15 @@
 package de.cebitec.mgx.gui.keggviewer;
 
-import de.cebitec.mgx.gui.util.Reference;
-import de.cebitec.mgx.kegg.pathways.KEGGException;
-import de.cebitec.mgx.kegg.pathways.KEGGMaster;
-import de.cebitec.mgx.kegg.pathways.api.ECNumberI;
-import de.cebitec.mgx.kegg.pathways.api.PathwayI;
-import java.awt.Rectangle;
 import java.io.File;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.CountDownLatch;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.netbeans.api.progress.ProgressHandle;
 import org.netbeans.api.progress.ProgressHandleFactory;
 import org.openide.modules.ModuleInstall;
 import org.openide.modules.Places;
-import org.openide.util.Exceptions;
 import org.openide.util.RequestProcessor;
 import org.openide.util.TaskListener;
 
@@ -32,78 +24,79 @@ public class Installer extends ModuleInstall {
             @Override
             public void run() {
                 String cacheDir = Places.getUserDirectory().getAbsolutePath() + File.separator + "kegg" + File.separator;
-                try {
-                    final KEGGMaster km = KEGGMaster.getInstance(cacheDir);
-                    Set<PathwayI> fetchall = km.Pathways().fetchall();
-                    final CountDownLatch latch = new CountDownLatch(fetchall.size() * 2);
-                    final Reference<Boolean> success = new Reference<>(Boolean.TRUE);
-
-                    final Set<ECNumberI> ecNumbers = Collections.synchronizedSet(new HashSet<ECNumberI>());
-                    for (final PathwayI p : fetchall) {
-                        Runnable r1 = new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    km.Pathways().fetchImageFromServer(p);
-                                } catch (KEGGException ex) {
-                                    Exceptions.printStackTrace(ex);
-                                    success.setValue(false);
-                                } finally {
-                                    latch.countDown();
-                                }
-                            }
-                        };
-                        RP.post(r1);
-
-                        Runnable r2 = new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    Map<ECNumberI, Set<Rectangle>> coords = km.Pathways().getCoords(p);
-                                    ecNumbers.addAll(coords.keySet());
-                                } catch (KEGGException ex) {
-                                    Exceptions.printStackTrace(ex);
-                                    success.setValue(false);
-                                } finally {
-                                    latch.countDown();
-                                }
-                            }
-                        };
-                        RP.post(r2);
-                    }
-                    try {
-                        latch.await();
-                    } catch (InterruptedException ex) {
-                        Exceptions.printStackTrace(ex);
-                    }
-
-                    final CountDownLatch latch2 = new CountDownLatch(ecNumbers.size());
-                    for (final ECNumberI ec : ecNumbers) {
-                        Runnable r3 = new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    km.Pathways().getMatchingPathways(ec);
-                                } catch (KEGGException ex) {
-                                    Exceptions.printStackTrace(ex);
-                                    success.setValue(false);
-                                } finally {
-                                    latch2.countDown();
-                                }
-                            }
-                        };
-                        RP.post(r3);
-                    }
-                    try {
-                        latch2.await();
-                    } catch (InterruptedException ex) {
-                        Exceptions.printStackTrace(ex);
-                    }
-
-                    keggLoaded = success.getValue();
-                } catch (KEGGException ex) {
-                    Exceptions.printStackTrace(ex);
-                }
+                keggLoaded = copyDB(cacheDir);
+//                try {
+//                    final KEGGMaster km = KEGGMaster.getInstance(cacheDir);
+//                    Set<PathwayI> fetchall = km.Pathways().fetchall();
+//                    final CountDownLatch latch = new CountDownLatch(fetchall.size() * 2);
+//                    final Reference<Boolean> success = new Reference<>(Boolean.TRUE);
+//
+//                    final Set<ECNumberI> ecNumbers = Collections.synchronizedSet(new HashSet<ECNumberI>());
+//                    for (final PathwayI p : fetchall) {
+//                        Runnable r1 = new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                try {
+//                                    km.Pathways().fetchImageFromServer(p);
+//                                } catch (KEGGException ex) {
+//                                    Exceptions.printStackTrace(ex);
+//                                    success.setValue(false);
+//                                } finally {
+//                                    latch.countDown();
+//                                }
+//                            }
+//                        };
+//                        RP.post(r1);
+//
+//                        Runnable r2 = new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                try {
+//                                    Map<ECNumberI, Set<Rectangle>> coords = km.Pathways().getCoords(p);
+//                                    ecNumbers.addAll(coords.keySet());
+//                                } catch (KEGGException ex) {
+//                                    Exceptions.printStackTrace(ex);
+//                                    success.setValue(false);
+//                                } finally {
+//                                    latch.countDown();
+//                                }
+//                            }
+//                        };
+//                        RP.post(r2);
+//                    }
+//                    try {
+//                        latch.await();
+//                    } catch (InterruptedException ex) {
+//                        Exceptions.printStackTrace(ex);
+//                    }
+//
+//                    final CountDownLatch latch2 = new CountDownLatch(ecNumbers.size());
+//                    for (final ECNumberI ec : ecNumbers) {
+//                        Runnable r3 = new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                try {
+//                                    km.Pathways().getMatchingPathways(ec);
+//                                } catch (KEGGException ex) {
+//                                    Exceptions.printStackTrace(ex);
+//                                    success.setValue(false);
+//                                } finally {
+//                                    latch2.countDown();
+//                                }
+//                            }
+//                        };
+//                        RP.post(r3);
+//                    }
+//                    try {
+//                        latch2.await();
+//                    } catch (InterruptedException ex) {
+//                        Exceptions.printStackTrace(ex);
+//                    }
+//
+//                    keggLoaded = success.getValue();
+//                } catch (KEGGException ex) {
+//                    Exceptions.printStackTrace(ex);
+//                }
             }
         };
 
@@ -119,5 +112,36 @@ public class Installer extends ModuleInstall {
 
         ph.start();
         theTask.schedule(0);
+    }
+
+    private boolean copyDB(String targetDir) {
+        String target = targetDir + File.separator + "kegg.h2.db";
+        if (new File(target).exists()) {
+            new File(target).delete();
+        }
+        
+        if (!new File(targetDir).exists()) {
+            new File(targetDir).mkdirs();
+        }
+
+        try (InputStream is = getClass().getClassLoader().getResourceAsStream("de/cebitec/mgx/gui/keggviewer/kegg.h2.db")) {
+            try (FileOutputStream rOut = new FileOutputStream(target)) {
+
+                byte[] buffer = new byte[1024];
+
+                int bytesRead = is.read(buffer);
+                while (bytesRead >= 0) {
+                    rOut.write(buffer, 0, bytesRead);
+                    bytesRead = is.read(buffer);
+                }
+
+                rOut.flush();
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(Installer.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+        Logger.getLogger(Installer.class.getName()).log(Level.INFO, "KEGG database successfully installed.");
+        return true;
     }
 }

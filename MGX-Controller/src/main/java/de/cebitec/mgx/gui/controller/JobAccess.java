@@ -6,6 +6,7 @@ import de.cebitec.mgx.dto.dto.JobDTO;
 import de.cebitec.mgx.dto.dto.MGXString;
 import de.cebitec.mgx.gui.datamodel.Identifiable;
 import de.cebitec.mgx.gui.datamodel.Job;
+import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.datamodel.misc.Task;
 import de.cebitec.mgx.gui.datamodel.misc.Task.TaskType;
 import de.cebitec.mgx.gui.dtoconversion.JobDTOFactory;
@@ -129,11 +130,12 @@ public class JobAccess extends AccessBase<Job> {
         return ret;
     }
 
-    public List<Job> ByAttributeTypeAndSeqRun(long atype_id, long seqrun_id) {
+    public List<Job> ByAttributeTypeAndSeqRun(long atype_id, SeqRun run) {
         List<Job> all = new ArrayList<>();
         try {
-            for (JobDTO dto : getDTOmaster().Job().ByAttributeTypeAndSeqRun(atype_id, seqrun_id)) {
+            for (JobDTO dto : getDTOmaster().Job().ByAttributeTypeAndSeqRun(atype_id, run.getId())) {
                 Job j = JobDTOFactory.getInstance().toModel(dto);
+                j.setSeqrun(run);
                 j.setMaster(this.getMaster());
                 all.add(j);
             }
@@ -143,11 +145,12 @@ public class JobAccess extends AccessBase<Job> {
         return all;
     }
 
-    public List<Job> BySeqRun(long seqrun_id) {
+    public List<Job> BySeqRun(SeqRun run) {
         List<Job> all = new ArrayList<>();
         try {
-            for (JobDTO dto : getDTOmaster().Job().BySeqRun(seqrun_id)) {
+            for (JobDTO dto : getDTOmaster().Job().BySeqRun(run.getId())) {
                 Job j = JobDTOFactory.getInstance().toModel(dto);
+                j.setSeqrun(run);
                 j.setMaster(this.getMaster());
                 all.add(j);
             }

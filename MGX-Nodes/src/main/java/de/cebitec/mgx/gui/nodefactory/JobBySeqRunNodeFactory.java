@@ -7,6 +7,7 @@ import de.cebitec.mgx.gui.datamodel.Tool;
 import de.cebitec.mgx.gui.nodes.JobNode;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Collections;
 import java.util.List;
 import javax.swing.Timer;
 import org.openide.nodes.Children;
@@ -18,7 +19,7 @@ import org.openide.nodes.Node;
  */
 public class JobBySeqRunNodeFactory extends JobNodeFactory {
 
-    private SeqRun run;
+    private final SeqRun run;
 
     public JobBySeqRunNodeFactory(SeqRun run) {
         super();
@@ -29,18 +30,19 @@ public class JobBySeqRunNodeFactory extends JobNodeFactory {
                 refreshChildren();
             }
         });
+        timer.start();
     }
 
     @Override
     protected boolean createKeys(List<Job> toPopulate) {
         MGXMaster master = (MGXMaster) run.getMaster();
-        for (Job j : master.Job().BySeqRun(run.getId())) {
+        for (Job j : master.Job().BySeqRun(run)) {
             j.setSeqrun(run);
             Tool t = master.Tool().ByJob(j.getId());
             j.setTool(t);
             toPopulate.add(j);
         }
-//        Collections.sort(toPopulate);
+        Collections.sort(toPopulate);
         return true;
     }
 

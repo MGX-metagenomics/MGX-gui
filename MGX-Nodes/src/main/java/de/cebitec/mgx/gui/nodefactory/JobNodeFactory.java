@@ -5,9 +5,12 @@ import de.cebitec.mgx.gui.datamodel.Job;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.datamodel.Tool;
 import de.cebitec.mgx.gui.nodes.JobNode;
+import de.cebitec.mgx.gui.swingutils.NonEDT;
+import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import javax.swing.Timer;
@@ -39,6 +42,7 @@ public class JobNodeFactory extends ChildFactory<Job> implements NodeListener {
                 refreshChildren();
             }
         });
+        timer.start();
     }
 
     @Override
@@ -46,14 +50,14 @@ public class JobNodeFactory extends ChildFactory<Job> implements NodeListener {
         Iterator<SeqRun> iter = master.SeqRun().fetchall();
         while (iter.hasNext()) {
             SeqRun sr = iter.next();
-            for (Job j : master.Job().BySeqRun(sr.getId())) {
+            for (Job j : master.Job().BySeqRun(sr)) {
                 j.setSeqrun(sr);
                 Tool t = master.Tool().ByJob(j.getId());
                 j.setTool(t);
                 toPopulate.add(j);
             }
         }
-//        Collections.sort(toPopulate);
+        Collections.sort(toPopulate);
         return true;
     }
 
@@ -63,10 +67,32 @@ public class JobNodeFactory extends ChildFactory<Job> implements NodeListener {
         node.addNodeListener(this);
         return node;
     }
+    
+        protected boolean refreshing = false;
 
-    public void refreshChildren() {
-        refresh(true);
+    public final void refreshChildren() {
+
+        if (EventQueue.isDispatchThread()) {
+            NonEDT.invoke(new Runnable() {
+
+                @Override
+                public void run() {
+                    refreshChildren();
+                }
+            });
+            return;
+        }
+        if (!refreshing) {
+            refreshing = true;
+            //System.err.println("refreshing on EDT? " + EventQueue.isDispatchThread());
+            refresh(true);
+            refreshing = false;
+        }
     }
+
+//    public void refreshChildren() {
+//        refresh(true);
+//    }
 
     @Override
     public void childrenAdded(NodeMemberEvent ev) {

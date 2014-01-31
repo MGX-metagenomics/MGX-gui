@@ -66,7 +66,7 @@ public class ToolAccess extends AccessBase<Tool> {
                 ret.add(JobParameterDTOFactory.getInstance().toModel(dto));
             }
 
-        } catch (MGXException ex) {
+        } catch (MGXServerException ex) {
             Exceptions.printStackTrace(ex);
         }
         return ret;

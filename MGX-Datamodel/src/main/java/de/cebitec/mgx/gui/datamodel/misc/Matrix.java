@@ -11,8 +11,8 @@ import java.util.List;
  */
 public class Matrix<T, U>{
 
-    private List<T> rows = new LinkedList<>();
-    private List<U> columns = new LinkedList<>();
+    private final List<T> rows = new LinkedList<>();
+    private final List<U> columns = new LinkedList<>();
     private int[][] _data = new int[0][0];
 
     public void addData(T rowAttr, U colAttr, int value) {

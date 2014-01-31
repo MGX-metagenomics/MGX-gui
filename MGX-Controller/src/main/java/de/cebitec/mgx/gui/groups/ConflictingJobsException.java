@@ -6,7 +6,7 @@ package de.cebitec.mgx.gui.groups;
  */
 public class ConflictingJobsException extends Exception {
 
-    private VisualizationGroup group;
+    private final VisualizationGroup group;
 
     public ConflictingJobsException(VisualizationGroup group) {
         this.group = group;
@@ -15,4 +15,10 @@ public class ConflictingJobsException extends Exception {
     public VisualizationGroup getGroup() {
         return group;
     }
+
+    @Override
+    public String getMessage() {
+        return "Conflicts remain for group " + group.getName();
+    }
+
 }

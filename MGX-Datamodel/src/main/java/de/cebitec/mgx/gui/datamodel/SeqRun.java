@@ -25,12 +25,12 @@ public class SeqRun extends Identifiable implements Comparable<SeqRun> {
     public String getName() {
         return name;
     }
-    
+
     public SeqRun setName(String n) {
         name = n;
         return this;
     }
-    
+
     public SeqRun setDNAExtractId(long extractId) {
         extract_id = extractId;
         return this;
@@ -100,6 +100,10 @@ public class SeqRun extends Identifiable implements Comparable<SeqRun> {
     public boolean equals(Object object) {
         if (!(object instanceof SeqRun)) {
             return false;
+        }
+
+        if (this == object) {
+            return true;
         }
         SeqRun other = (SeqRun) object;
         if ((this.id == INVALID_IDENTIFIER && other.id != INVALID_IDENTIFIER) || (this.id != INVALID_IDENTIFIER && this.id != other.id)) {

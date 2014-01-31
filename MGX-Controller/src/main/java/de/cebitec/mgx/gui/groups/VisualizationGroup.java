@@ -145,6 +145,7 @@ public class VisualizationGroup implements PropertyChangeListener {
 //    }
     /**
      *
+     * @param rank
      * @param attrType
      * @throws ConflictingJobsException
      *
@@ -157,8 +158,10 @@ public class VisualizationGroup implements PropertyChangeListener {
     public final void selectAttributeType(AttributeRank rank, String attrType) throws ConflictingJobsException {
         assert attrType != null;
         selectedAttributeType = attrType;
-        uniqueJobs.get(rank).clear();
-        needsResolval.get(rank).clear();
+        synchronized (needsResolval) {
+            uniqueJobs.get(rank).clear();
+            needsResolval.get(rank).clear();
+        }
 
         // clear caches - the cache might already contain data for the
         // selected attribute type, but from a different set of selected
@@ -213,8 +216,11 @@ public class VisualizationGroup implements PropertyChangeListener {
     }
 
     public final void resolveConflict(AttributeRank rank, SeqRun sr, Job j) {
-        needsResolval.get(rank).remove(sr);
-        uniqueJobs.get(rank).put(sr, j);
+        synchronized (needsResolval) {
+            List<Job> options = needsResolval.get(rank).remove(sr);
+            assert options.contains(j);
+            uniqueJobs.get(rank).put(sr, j);
+        }
 
 //        if (needsResolval.get(rank).isEmpty()) {
 //            fireVGroupChanged(VISGROUP_ATTRTYPE_CHANGED);
@@ -231,12 +237,19 @@ public class VisualizationGroup implements PropertyChangeListener {
         seqruns.add(sr);
         sr.addPropertyChangeListener(this);
 
-        AttributeTypeFetcher fetcher = new AttributeTypeFetcher(sr);
+        CountDownLatch l = new CountDownLatch(1);
+
+        AttributeTypeFetcher fetcher = new AttributeTypeFetcher(sr, l);
         fetcher.execute();
         fetcherQueue.add(fetcher);
-
+        try {
+            l.await();
+        } catch (InterruptedException ex) {
+            Exceptions.printStackTrace(ex);
+        }
         // fetcher thread will fire change event once task is complete
         // fireVGroupChanged(VISGROUP_CHANGED);
+
     }
 
     public void removeSeqRun(SeqRun sr) {
@@ -318,11 +331,14 @@ public class VisualizationGroup implements PropertyChangeListener {
         return ret;
     }
 
-    public final Distribution getDistribution() {
+    public final Distribution getDistribution() throws ConflictingJobsException {
 
         assert !EventQueue.isDispatchThread();
         assert selectedAttributeType != null;
-        assert needsResolval.get(AttributeRank.PRIMARY).isEmpty();
+        //assert needsResolval.get(AttributeRank.PRIMARY).isEmpty();
+        if (!needsResolval.get(AttributeRank.PRIMARY).isEmpty()) {
+            throw new ConflictingJobsException(this);
+        }
 
         if (distCache.containsKey(selectedAttributeType)) {
             return distCache.get(selectedAttributeType);
@@ -392,6 +408,9 @@ public class VisualizationGroup implements PropertyChangeListener {
         // process all jobs for a seqrun and keep only those
         // which provide the requested attribute type
         //
+        assert attributeTypes.containsKey(run);
+        assert attributeTypes.get(run) != null;
+
         List<Job> validJobs = new ArrayList<>();
         for (Entry<Job, List<AttributeType>> entrySet : attributeTypes.get(run).entrySet()) {
             for (AttributeType atype : entrySet.getValue()) {
@@ -481,20 +500,29 @@ public class VisualizationGroup implements PropertyChangeListener {
     private final class AttributeTypeFetcher extends Fetcher<Map<Job, List<AttributeType>>> {
 
         private final SeqRun run;
+        private final CountDownLatch latch;
 
-        public AttributeTypeFetcher(final SeqRun run) {
+        public AttributeTypeFetcher(final SeqRun run, final CountDownLatch l) {
             this.run = run;
+            this.latch = l;
         }
 
         public SeqRun getRun() {
             return run;
         }
 
+        public void processed() {
+            latch.countDown();
+        }
+
         @Override
         protected Map<Job, List<AttributeType>> doInBackground() throws Exception {
             MGXMaster master = (MGXMaster) run.getMaster();
-            return master.SeqRun().getJobsAndAttributeTypes(run.getId());
+            Map<Job, List<AttributeType>> ret = master.SeqRun().getJobsAndAttributeTypes(run);
+//            latch.countDown();
+            return ret;
         }
+
     }
 
     private class DistributionFetcher extends Fetcher<Distribution> {
@@ -594,6 +622,8 @@ public class VisualizationGroup implements PropertyChangeListener {
                         }
                     } catch (InterruptedException | ExecutionException ex) {
                         Exceptions.printStackTrace(ex);
+                    } finally {
+                        fetcher.processed();
                     }
 
                     if (queue.isEmpty()) {

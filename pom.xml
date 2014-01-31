@@ -411,9 +411,9 @@
         <module>MGX-Actions</module>
         <module>MGX-KeggViewer</module>
         <module>MGX-SwingUtils</module>
-        <module>MGX-ReferenceObservationView</module>
+        <!-- <module>MGX-ReferenceObservationView</module> -->
         <module>MGX-UpdateCenter</module>
-        <module>MGX-IntervalCache</module>
+        <!-- <module>MGX-IntervalCache</module> -->
         <module>MGX-Biodiversity</module>
         <module>MGX-Rarefaction</module>
     </modules>

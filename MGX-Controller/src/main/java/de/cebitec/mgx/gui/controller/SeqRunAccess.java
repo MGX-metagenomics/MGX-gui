@@ -115,11 +115,12 @@ public class SeqRunAccess extends AccessBase<SeqRun> {
         return null;
     }
 
-    public Map<Job, List<AttributeType>> getJobsAndAttributeTypes(long run_id) {
+    public Map<Job, List<AttributeType>> getJobsAndAttributeTypes(SeqRun run) {
         Map<Job, List<AttributeType>> ret = new HashMap<>();
         try {
-            for (JobAndAttributeTypes jat : getDTOmaster().SeqRun().getJobsAndAttributeTypes(run_id)) {
+            for (JobAndAttributeTypes jat : getDTOmaster().SeqRun().getJobsAndAttributeTypes(run.getId())) {
                 Job job = JobDTOFactory.getInstance().toModel(jat.getJob());
+                job.setSeqrun(run);
                 job.setMaster(this.getMaster());
 
                 List<AttributeType> all = new ArrayList<>();
