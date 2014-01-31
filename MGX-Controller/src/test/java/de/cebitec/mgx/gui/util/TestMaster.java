@@ -16,9 +16,13 @@ import static org.junit.Assert.fail;
  * @author sj
  */
 public class TestMaster {
+    
+    private static MGXMaster masterRO = null;
 
     public static MGXMaster getRO() {
-        MGXMaster master = null;
+        if (masterRO != null) {
+            return masterRO;
+        }
 
         String serverURI = "http://scooter.cebitec.uni-bielefeld.de:8080/MGX-maven-web/webresources/";
 
@@ -40,13 +44,13 @@ public class TestMaster {
         for (MembershipI m : gpms.getMemberships()) {
             if ("MGX".equals(m.getProject().getProjectClass().getName()) && ("MGX_Unittest".equals(m.getProject().getName()))) {
                 MGXDTOMaster dtomaster = new MGXDTOMaster(gpms, m);
-                master = new MGXMaster(dtomaster);
+                masterRO = new MGXMaster(dtomaster);
                 break;
             }
         }
 
-        assert master != null;
-        return master;
+        assert masterRO != null;
+        return masterRO;
     }
 
     public static MGXMaster getRW() {
