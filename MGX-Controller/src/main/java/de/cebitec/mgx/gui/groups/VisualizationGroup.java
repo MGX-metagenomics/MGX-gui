@@ -194,7 +194,7 @@ public class VisualizationGroup implements PropertyChangeListener {
         }
 
         if (!needsResolval.get(rank).isEmpty()) {
-            throw new ConflictingJobsException(this);
+            throw new ConflictingJobsException(this, needsResolval.get(rank));
 //        } else {
 //            fireVGroupChanged(VISGROUP_ATTRTYPE_CHANGED);
         }
@@ -216,6 +216,8 @@ public class VisualizationGroup implements PropertyChangeListener {
     }
 
     public final void resolveConflict(AttributeRank rank, SeqRun sr, Job j) {
+        assert j != null;
+        assert needsResolval.get(rank).containsKey(sr);
         synchronized (needsResolval) {
             List<Job> options = needsResolval.get(rank).remove(sr);
             assert options.contains(j);
@@ -337,7 +339,7 @@ public class VisualizationGroup implements PropertyChangeListener {
         assert selectedAttributeType != null;
         //assert needsResolval.get(AttributeRank.PRIMARY).isEmpty();
         if (!needsResolval.get(AttributeRank.PRIMARY).isEmpty()) {
-            throw new ConflictingJobsException(this);
+            throw new ConflictingJobsException(this, needsResolval.get(AttributeRank.PRIMARY));
         }
 
         if (distCache.containsKey(selectedAttributeType)) {
