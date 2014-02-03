@@ -81,8 +81,7 @@ public class StatisticsAccessTest {
 
         String newick = master.Statistics().Clustering(dists);
         assertNotNull(newick);
-        assertEquals("(grp1:5.74456264653803,grp2:5.74456264653803);", newick);
-
+        assertTrue(newick.equals("(grp1:5.74456264653803,grp2:5.74456264653803);") || newick.equals("(grp2:5.74456264653803,grp1:5.74456264653803);"));
     }
 
     private class Resolver implements VGroupManager.ConflictResolver {
