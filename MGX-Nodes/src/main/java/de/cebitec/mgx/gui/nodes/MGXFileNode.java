@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.nodes;
 
 import de.cebitec.mgx.gui.actions.DeleteFileOrDirectory;
+import de.cebitec.mgx.gui.actions.DownloadFile;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.MGXFile;
 import javax.swing.Action;
@@ -33,8 +34,11 @@ public class MGXFileNode extends MGXNodeBase<MGXFile> {
 
     @Override
     public Action[] getActions(boolean context) {
-        return new Action[]{new DeleteFileOrDirectory()};
-        //DeleteAction get = DeleteAction.get(DeleteAction.class);
+        if (getContent().isDirectory()) {
+            return new Action[]{new DeleteFileOrDirectory()};
+        } else {
+            return new Action[]{new DownloadFile(), new DeleteFileOrDirectory()};
+        }
     }
 
     @Override
