@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.rarefaction.plot;
 
+import de.cebitec.mgx.gui.attributevisualization.ui.DelayedPlot;
 import de.cebitec.mgx.gui.attributevisualization.viewer.ViewerI;
 import de.cebitec.mgx.gui.datamodel.AttributeType;
 import de.cebitec.mgx.gui.datamodel.misc.Distribution;
@@ -45,7 +46,7 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = ViewerI.class)
 public class RarefactionCurve extends ViewerI<Distribution> {
 
-    private WaitPanel cPanel = null;
+    private DelayedPlot cPanel = null;
     private JFreeChart chart = null;
 
     @Override
@@ -61,7 +62,7 @@ public class RarefactionCurve extends ViewerI<Distribution> {
     @Override
     public void show(final List<Pair<VisualizationGroup, Distribution>> dists) {
 
-        cPanel = new WaitPanel();
+        cPanel = new DelayedPlot();
 
         SwingWorker<JComponent, Void> worker = new SwingWorker<JComponent, Void>() {
 
@@ -111,7 +112,7 @@ public class RarefactionCurve extends ViewerI<Distribution> {
             @Override
             protected void done() {
                 try {
-                    WaitPanel wp = RarefactionCurve.this.cPanel;
+                    DelayedPlot wp = RarefactionCurve.this.cPanel;
                     wp.setTarget(get());
                 } catch (InterruptedException | ExecutionException ex) {
                     Exceptions.printStackTrace(ex);
