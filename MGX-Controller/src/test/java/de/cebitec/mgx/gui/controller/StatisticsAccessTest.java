@@ -81,7 +81,7 @@ public class StatisticsAccessTest {
 
         String newick = master.Statistics().Clustering(dists);
         assertNotNull(newick);
-        assertEquals("FIXME", newick);
+        assertEquals("(grp1:5.74456264653803,grp2:5.74456264653803);", newick);
 
     }
 
