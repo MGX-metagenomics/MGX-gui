@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.controller;
 
+import de.cebitec.mgx.client.datatransfer.FileDownloader;
 import de.cebitec.mgx.client.datatransfer.FileUploader;
 import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
@@ -9,6 +10,7 @@ import de.cebitec.mgx.gui.datamodel.misc.Task;
 import de.cebitec.mgx.gui.dtoconversion.FileDTOFactory;
 import de.cebitec.mgx.gui.util.BaseIterator;
 import java.io.File;
+import java.io.OutputStream;
 import java.util.Iterator;
 import java.util.UUID;
 import org.openide.util.Exceptions;
@@ -90,6 +92,15 @@ public class FileAccess extends AccessBase<MGXFile> {
         String fullPath = targetDir.getFullPath() + MGXFile.separator + targetName;
         try {
             return getDTOmaster().File().createUploader(localFile, fullPath);
+        } catch (MGXClientException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+        return null;
+    }
+
+    public FileDownloader createDownloader(String serverFname, OutputStream out) throws MGXClientException {
+        try {
+            return getDTOmaster().File().createDownloader(serverFname, out);
         } catch (MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
