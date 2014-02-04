@@ -79,7 +79,7 @@ public class StatisticsAccessTest {
         assertNotNull(dists);
         assertEquals(2, dists.size());
 
-        String newick = master.Statistics().Clustering(dists);
+        String newick = master.Statistics().Clustering(dists, "euclidean", "ward");
         assertNotNull(newick);
         assertTrue(newick.equals("(grp1:5.74456264653803,grp2:5.74456264653803);") || newick.equals("(grp2:5.74456264653803,grp1:5.74456264653803);"));
     }

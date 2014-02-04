@@ -44,7 +44,7 @@ public class StatisticsAccess extends AccessBase<Point> {
         return null;
     }
 
-    public String Clustering(Collection<Pair<VisualizationGroup, Distribution>> groups) {
+    public String Clustering(Collection<Pair<VisualizationGroup, Distribution>> groups, String distMethod, String aggloMethod) {
         MGXMatrixDTO.Builder b = MGXMatrixDTO.newBuilder();
 
         // collect all attributes first
@@ -63,7 +63,7 @@ public class StatisticsAccess extends AccessBase<Point> {
             b.addRow(prof);
         }
         try {
-            return getDTOmaster().Statistics().Clustering(b.build());
+            return getDTOmaster().Statistics().Clustering(b.build(), distMethod, aggloMethod);
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
