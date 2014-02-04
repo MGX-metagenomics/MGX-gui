@@ -25,7 +25,8 @@ import org.openide.util.lookup.ServiceProvider;
 public class HClustPlot extends ViewerI<Distribution> {
 
     private DelayedPlot cPanel = null;
-    
+    private final HClustCustomizer customizer = new HClustCustomizer();
+
     @Override
     public JComponent getComponent() {
         return cPanel;
@@ -46,7 +47,7 @@ public class HClustPlot extends ViewerI<Distribution> {
             @Override
             protected String doInBackground() throws Exception {
                 MGXMaster m = (MGXMaster) dists.get(0).getSecond().getMaster();
-                return m.Statistics().Clustering(dists);
+                return m.Statistics().Clustering(dists, customizer.getDistanceMethod(), customizer.getAgglomeration());
             }
 
             @Override
@@ -69,7 +70,7 @@ public class HClustPlot extends ViewerI<Distribution> {
 
     @Override
     public JComponent getCustomizer() {
-        return null;
+        return customizer;
     }
 
     @Override

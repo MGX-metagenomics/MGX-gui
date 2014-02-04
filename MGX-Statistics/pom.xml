@@ -77,6 +77,12 @@
             <type>jar</type>
             <version>RELEASE74</version>
         </dependency>
+        <dependency>
+            <artifactId>org-openide-awt</artifactId>
+            <groupId>org.netbeans.api</groupId>
+            <type>jar</type>
+            <version>RELEASE74</version>
+        </dependency>
     </dependencies>
 
     <build>
