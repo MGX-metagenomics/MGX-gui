@@ -13,7 +13,7 @@ import org.openide.util.lookup.Lookups;
  */
 public class ProjectNode extends MGXNodeBase<MGXMaster> {
 
-    private ProjectStructureNodeFactory nf = null;
+    //private ProjectStructureNodeFactory nf = null;
 
     public ProjectNode(MGXMaster m, MembershipI mbr) {
         this(m, new ProjectStructureNodeFactory(m));
@@ -24,8 +24,7 @@ public class ProjectNode extends MGXNodeBase<MGXMaster> {
 
     private ProjectNode(MGXMaster m, ProjectStructureNodeFactory nf) {
         super(Children.create(nf, false), Lookups.fixed(m), m);
-        this.nf = nf;
-//        preopenMGXProject(m);
+        //this.nf = nf;
     }
 
     @Override
@@ -38,31 +37,6 @@ public class ProjectNode extends MGXNodeBase<MGXMaster> {
         return new Action[0]; // disables context menu
     }
 
-//    private void preopenMGXProject(final MGXMaster master) {
-//        SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
-//
-//            @Override
-//            protected Void doInBackground() throws Exception {
-//                // trigger creation of the hibernate instance on the 
-//                // server side to speed up access
-//                master.Habitat().fetchall();
-//                return null;
-//            }
-//
-//            @Override
-//            protected void done() {
-//                try {
-//                    get();
-//                } catch (InterruptedException | ExecutionException ex) {
-//                    Exceptions.printStackTrace(ex);
-//                }
-//                super.done();
-//            }
-//            
-//            
-//        };
-//        worker.execute();
-//    }
     @Override
     public void updateModified() {
         //
