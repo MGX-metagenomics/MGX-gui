@@ -11,6 +11,8 @@ import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
 import java.awt.event.ActionEvent;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -45,7 +47,14 @@ public class JobNode extends MGXNodeBase<Job> {
 
     @Override
     public Action[] getActions(boolean context) {
-        return new Action[]{new DeleteJob(), new GetError(), new ResubmitAction()};
+        List<Action> actions = new ArrayList<>();
+        actions.add(new DeleteJob());
+        actions.add(new GetError());
+        actions.add(new ResubmitAction());
+        actions.add(new CancelJob());
+
+        return actions.toArray(new Action[]{});
+        //return new Action[]{new DeleteJob(), new GetError(), new ResubmitAction()};
     }
 
     @Override
@@ -138,9 +147,7 @@ public class JobNode extends MGXNodeBase<Job> {
                     public boolean process() {
                         setStatus("Deleting..");
                         MGXMaster m = getLookup().lookup(MGXMaster.class);
-                        assert m != null;
                         Task task = m.Job().delete(job);
-                        assert task != null;
                         while (!task.done()) {
                             setStatus(task.getStatusMessage());
                             task = m.Task().refresh(task);
@@ -242,6 +249,40 @@ public class JobNode extends MGXNodeBase<Job> {
         @Override
         public boolean isEnabled() {
             return super.isEnabled() && RBAC.isUser() && job.getStatus().equals(JobState.FAILED);
+        }
+    }
+
+    private class CancelJob extends AbstractAction {
+
+        public CancelJob() {
+            putValue(NAME, "Cancel");
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            final Job job = getLookup().lookup(Job.class);
+            final MGXMaster m = getLookup().lookup(MGXMaster.class);
+
+            SwingWorker<Void, Void> sw = new SwingWorker<Void, Void>() {
+
+                @Override
+                protected Void doInBackground() throws Exception {
+                    m.Job().cancel(job);
+                    return null;
+                }
+            };
+            sw.execute();
+            try {
+                sw.get();
+            } catch (InterruptedException | ExecutionException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+        }
+
+        @Override
+        public boolean isEnabled() {
+            return super.isEnabled() && RBAC.isUser() 
+                    && !(job.getStatus().equals(JobState.FINISHED) || job.getStatus().equals(JobState.FAILED));
         }
     }
 }
