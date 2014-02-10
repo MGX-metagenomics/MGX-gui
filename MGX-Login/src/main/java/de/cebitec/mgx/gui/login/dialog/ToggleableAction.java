@@ -10,7 +10,7 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
-import org.openide.util.NbBundle;
+import org.openide.util.NbBundle.Messages;
 
 /**
  *
@@ -18,13 +18,15 @@ import org.openide.util.NbBundle;
  */
 @ActionID(category = "File",
         id = "de.cebitec.mgx.gui.login.dialog.ToggleableAction")
-@ActionRegistration(displayName = "#CTL_LoginAction", lazy = false)
+@ActionRegistration(displayName = "#CTL_LoginAction",
+        iconBase = "de/cebitec/mgx/gui/login/dialog/Login.png")
+        //lazy = false)
 @ActionReferences({
     @ActionReference(path = "Menu/File", position = 1100),
     @ActionReference(path = "Toolbars/File", position = 300),
     @ActionReference(path = "Shortcuts", name = "D-L")
 })
-@NbBundle.Messages("CTL_LoginAction=Login")
+@Messages("CTL_LoginAction=Login")
 public class ToggleableAction extends AbstractAction implements PropertyChangeListener {
 
     public ToggleableAction() {
