@@ -67,8 +67,8 @@ public class JobNodeFactory extends ChildFactory<Job> implements NodeListener {
         node.addNodeListener(this);
         return node;
     }
-    
-        protected boolean refreshing = false;
+
+    protected boolean refreshing = false;
 
     public final void refreshChildren() {
 
@@ -93,7 +93,6 @@ public class JobNodeFactory extends ChildFactory<Job> implements NodeListener {
 //    public void refreshChildren() {
 //        refresh(true);
 //    }
-
     @Override
     public void childrenAdded(NodeMemberEvent ev) {
         refresh(true);
