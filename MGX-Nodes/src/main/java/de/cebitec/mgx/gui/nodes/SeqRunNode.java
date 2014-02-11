@@ -23,10 +23,11 @@ import de.cebitec.mgx.gui.wizard.seqrun.SeqRunWizardDescriptor;
 import java.awt.Dialog;
 import java.awt.event.ActionEvent;
 import java.text.MessageFormat;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -88,7 +89,7 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> { // implements Transferable
         public void actionPerformed(final ActionEvent e) {
             SeqRun seqrun = getLookup().lookup(SeqRun.class);
             final MGXMaster m = getLookup().lookup(MGXMaster.class);
-            final Set<Reference> references = new HashSet<>();
+            final List<Reference> references = new ArrayList<>();
             NonEDT.invokeAndWait(new Runnable() {
                 @Override
                 public void run() {
@@ -96,6 +97,7 @@ public class SeqRunNode extends MGXNodeBase<SeqRun> { // implements Transferable
                     while (refiter.hasNext()) {
                         references.add(refiter.next());
                     }
+                    Collections.sort(references);
                 }
             });
 
