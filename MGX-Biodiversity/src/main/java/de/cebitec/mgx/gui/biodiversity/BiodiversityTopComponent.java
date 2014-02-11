@@ -40,7 +40,7 @@ import org.openide.util.Utilities;
 )
 @TopComponent.Registration(mode = "satellite", openAtStartup = false)
 @ActionID(category = "Window", id = "de.cebitec.mgx.gui.biodiversity.BiodiversityTopComponent")
-@ActionReference(path = "Menu/Window" /*, position = 333 */)
+@ActionReference(path = "Menu/Window", position = 338)
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_BiodiversityAction",
         preferredID = "BiodiversityTopComponent"
