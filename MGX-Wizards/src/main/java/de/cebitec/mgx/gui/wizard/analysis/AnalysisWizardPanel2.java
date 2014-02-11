@@ -4,7 +4,6 @@ import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.JobParameter;
 import de.cebitec.mgx.gui.datamodel.Reference;
 import de.cebitec.mgx.gui.datamodel.misc.Pair;
-import de.cebitec.mgx.gui.swingutils.NonEDT;
 import de.cebitec.mgx.gui.wizard.analysis.misc.BooleanPanel;
 import de.cebitec.mgx.gui.wizard.analysis.misc.ComboBoxPanel;
 import de.cebitec.mgx.gui.wizard.analysis.misc.FileChooserPanel;
@@ -23,11 +22,7 @@ import de.cebitec.mgx.gui.wizard.analysis.validator.ULongValidator;
 import de.cebitec.mgx.gui.wizard.analysis.validator.ValidatorI;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
+import java.util.List;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
@@ -51,9 +46,9 @@ public class AnalysisWizardPanel2<T> implements WizardDescriptor.Panel<WizardDes
     private final EventListenerList listeners = new EventListenerList();
     public static final String PROP_PARAM = "propParam";
     //
-    private final Set<Reference> references;
+    private final List<Reference> references;
 
-    public AnalysisWizardPanel2(Set<Reference> references) {
+    public AnalysisWizardPanel2(List<Reference> references) {
         this.references = references;
     }
 

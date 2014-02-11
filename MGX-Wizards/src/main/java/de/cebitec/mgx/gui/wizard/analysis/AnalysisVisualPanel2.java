@@ -5,17 +5,17 @@ import de.cebitec.mgx.gui.wizard.analysis.misc.ValueHolderI;
 import java.awt.BorderLayout;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.Set;
+import java.util.List;
 import javax.swing.JPanel;
 
 public final class AnalysisVisualPanel2 extends JPanel implements PropertyChangeListener {
 
-     private final Set<Reference> references;
+     private final List<Reference> references;
      
     /**
      * Creates new form AnalysisVisualPanel2
      */
-    public AnalysisVisualPanel2(Set<Reference> refs) {
+    public AnalysisVisualPanel2(List<Reference> refs) {
         references = refs;
         initComponents();
     }

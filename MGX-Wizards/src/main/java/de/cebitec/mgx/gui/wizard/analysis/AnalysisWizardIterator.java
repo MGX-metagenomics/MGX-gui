@@ -5,9 +5,7 @@ import de.cebitec.mgx.gui.datamodel.JobParameter;
 import de.cebitec.mgx.gui.datamodel.Reference;
 import java.awt.Component;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Set;
 import javax.swing.JComponent;
 import javax.swing.event.ChangeListener;
 import org.openide.WizardDescriptor;
@@ -46,7 +44,7 @@ public final class AnalysisWizardIterator implements WizardDescriptor.Iterator<W
     private final AnalysisWizardPanel2 p2;
     private final AnalysisWizardPanel3 p3;
 
-    public AnalysisWizardIterator(MGXMaster master, Set<Reference> references) {
+    public AnalysisWizardIterator(MGXMaster master, List<Reference> references) {
         this.master = master;
         p1 = new AnalysisWizardPanel1();
         p2 = new AnalysisWizardPanel2(references);

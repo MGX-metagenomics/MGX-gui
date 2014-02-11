@@ -7,7 +7,6 @@ import de.cebitec.mgx.gui.wizard.analysis.misc.ParameterPanel;
 import java.awt.Component;
 import java.io.File;
 import java.util.List;
-import java.util.Set;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
@@ -16,12 +15,12 @@ import javax.swing.border.LineBorder;
 
 public final class AnalysisVisualPanel3 extends JPanel {
 
-    private final Set<Reference> references;
+    private final List<Reference> references;
 
     /**
      * Creates new form AnalysisVisualPanel3
      */
-    public AnalysisVisualPanel3(Set<Reference> refs) {
+    public AnalysisVisualPanel3(List<Reference> refs) {
         initComponents();
         references = refs;
         paramlist.setCellRenderer(new JobParameterRenderer());

@@ -2,10 +2,10 @@ package de.cebitec.mgx.gui.wizard.analysis.validator;
 
 import de.cebitec.mgx.gui.datamodel.Identifiable;
 import de.cebitec.mgx.gui.datamodel.JobParameter;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 /**
  *
@@ -20,7 +20,7 @@ public class MultipleChoiceValidator extends ValidatorI<String> {
         choices = param.getChoices();
     }
 
-    public MultipleChoiceValidator(JobParameter param, Set<? extends Identifiable> allowedObjs) {
+    public MultipleChoiceValidator(JobParameter param, Collection<? extends Identifiable> allowedObjs) {
         choices = new HashMap<>();
         for (Identifiable i : allowedObjs) {
             choices.put(i.toString(), String.valueOf(i.getId()));

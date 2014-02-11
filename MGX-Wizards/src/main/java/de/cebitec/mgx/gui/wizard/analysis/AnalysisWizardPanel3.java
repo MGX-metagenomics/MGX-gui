@@ -5,7 +5,6 @@ import de.cebitec.mgx.gui.datamodel.JobParameter;
 import de.cebitec.mgx.gui.datamodel.Reference;
 import de.cebitec.mgx.gui.datamodel.Tool;
 import java.util.List;
-import java.util.Set;
 import javax.swing.event.ChangeListener;
 import org.openide.WizardDescriptor;
 import org.openide.util.HelpCtx;
@@ -17,9 +16,9 @@ public class AnalysisWizardPanel3 implements WizardDescriptor.Panel<WizardDescri
      */
     private AnalysisVisualPanel3 component;
     private final MGXMaster master;
-    private final Set<Reference> references;
+    private final List<Reference> references;
 
-    public AnalysisWizardPanel3(MGXMaster master, Set<Reference> refs) {
+    public AnalysisWizardPanel3(MGXMaster master, List<Reference> refs) {
         this.master = master;
         references = refs;
     }
