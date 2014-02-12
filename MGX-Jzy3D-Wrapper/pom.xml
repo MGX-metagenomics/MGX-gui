@@ -39,16 +39,6 @@
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-netbeans-api-annotations-common</artifactId>
         </dependency>
-  <!--      <dependency>
-            <groupId>de.cebitec.mgx.gui</groupId>
-            <artifactId>jzy3d</artifactId>
-            <version>0.9</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>MGX-JOGL-Wrapper</artifactId>
-            <version>${project.version}</version>
-        </dependency> -->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>MGX-JOGL-Wrapper</artifactId>
