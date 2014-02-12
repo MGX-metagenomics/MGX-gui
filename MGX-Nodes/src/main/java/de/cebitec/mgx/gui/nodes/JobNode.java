@@ -36,11 +36,11 @@ public class JobNode extends MGXNodeBase<Job> {
     public static String TOOL_PROPERTY = "tool";
     public static String SEQRUN_PROPERTY = "seqrun";
     public static String STATE_PROPERTY = "state";
-    private final Job job;
+    //private final Job job;
 
     public JobNode(MGXMaster m, Job job, Children c) {
         super(Children.LEAF, Lookups.fixed(m, job), job);
-        this.job = job;
+        //this.job = job;
         setDisplayName(job.getTool().getName());
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/AnalysisTasks.png");
     }
@@ -66,7 +66,7 @@ public class JobNode extends MGXNodeBase<Job> {
         Property toolProperty = new PropertySupport.ReadOnly<String>(TOOL_PROPERTY, String.class, "Tool", "Tool name") {
             @Override
             public String getValue() throws IllegalAccessException, InvocationTargetException {
-                return job.getTool().getName();
+                return getContent().getTool().getName();
             }
         };
         toolProperty.setValue("suppressCustomEditor", Boolean.TRUE);
@@ -75,7 +75,7 @@ public class JobNode extends MGXNodeBase<Job> {
         Property runProperty = new PropertySupport.ReadWrite<String>(SEQRUN_PROPERTY, String.class, "Run", "Run name") {
             @Override
             public String getValue() throws IllegalAccessException, InvocationTargetException {
-                return job.getSeqrun().getName();
+                return getContent().getSeqrun().getName();
             }
 
             @Override
@@ -88,7 +88,7 @@ public class JobNode extends MGXNodeBase<Job> {
         Property stateProperty = new PropertySupport.ReadWrite<String>(STATE_PROPERTY, String.class, "State", "Job state") {
             @Override
             public String getValue() throws IllegalAccessException, InvocationTargetException {
-                JobState state = job.getStatus();
+                JobState state = getContent().getStatus();
                 String icon = null;
                 switch (state) {
                     case FINISHED:
@@ -122,7 +122,7 @@ public class JobNode extends MGXNodeBase<Job> {
 
     @Override
     public void updateModified() {
-        setDisplayName(job.getTool().getName());
+        setDisplayName(getContent().getTool().getName());
     }
 
     private class DeleteJob extends AbstractAction {
@@ -169,7 +169,7 @@ public class JobNode extends MGXNodeBase<Job> {
 
         @Override
         public boolean isEnabled() {
-            return super.isEnabled() && RBAC.isUser() && !job.getStatus().equals(JobState.RUNNING);
+            return super.isEnabled() && RBAC.isUser() && !getContent().getStatus().equals(JobState.RUNNING);
         }
     }
 
@@ -208,7 +208,7 @@ public class JobNode extends MGXNodeBase<Job> {
 
         @Override
         public boolean isEnabled() {
-            return super.isEnabled() && RBAC.isUser() && job.getStatus().equals(JobState.FAILED);
+            return super.isEnabled() && RBAC.isUser() && getContent().getStatus().equals(JobState.FAILED);
         }
     }
 
@@ -248,7 +248,7 @@ public class JobNode extends MGXNodeBase<Job> {
 
         @Override
         public boolean isEnabled() {
-            return super.isEnabled() && RBAC.isUser() && job.getStatus().equals(JobState.FAILED);
+            return super.isEnabled() && RBAC.isUser() && getContent().getStatus().equals(JobState.FAILED);
         }
     }
 
@@ -282,7 +282,7 @@ public class JobNode extends MGXNodeBase<Job> {
         @Override
         public boolean isEnabled() {
             return super.isEnabled() && RBAC.isUser() 
-                    && !(job.getStatus().equals(JobState.FINISHED) || job.getStatus().equals(JobState.FAILED));
+                    && !(getContent().getStatus().equals(JobState.FINISHED) || getContent().getStatus().equals(JobState.FAILED));
         }
     }
 }
