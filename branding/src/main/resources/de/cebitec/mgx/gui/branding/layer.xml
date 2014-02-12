@@ -10,4 +10,8 @@
             <file name="org-openide-actions-UndoAction.shadow_hidden"/>
         </folder>
     </folder>
+    <folder name="Menu">
+        <folder name="Edit_hidden"/>
+        <folder name="GoTo_hidden"/>
+    </folder>
 </filesystem>
