@@ -70,12 +70,21 @@
                 <extensions>true</extensions>
                 <configuration>
                     <publicPackages>
+                        <publicPackage>com.jogamp.newt</publicPackage>
+                        <publicPackage>com.jogamp.newt.awt</publicPackage>
+                        <publicPackage>com.jogamp.newt.event</publicPackage>
+                        <publicPackage>com.jogamp.newt.opengl</publicPackage>
+                        <publicPackage>com.jogamp.opengl.util.glsl</publicPackage>
+                        <publicPackage>com.jogamp.opengl.util.glsl.fixedfunc</publicPackage>
+                        <publicPackage>com.jogamp.newt.awt.event</publicPackage>
+                        <publicPackage>jogamp.newt.awt.event</publicPackage>
                         <publicPackage>com.jogamp.common.nio</publicPackage>
                         <publicPackage>com.jogamp.opengl.util</publicPackage>
                         <publicPackage>com.jogamp.opengl.util.awt</publicPackage>
                         <publicPackage>com.jogamp.opengl.util.gl2</publicPackage>
                         <publicPackage>com.jogamp.opengl.util.texture</publicPackage>
                         <publicPackage>com.jogamp.opengl.util.texture.awt</publicPackage>
+                        <publicPackage>javax.media.nativewindow.util</publicPackage>
                         <publicPackage>javax.media.opengl</publicPackage>
                         <publicPackage>javax.media.opengl.awt</publicPackage>
                         <publicPackage>javax.media.opengl.glu</publicPackage>

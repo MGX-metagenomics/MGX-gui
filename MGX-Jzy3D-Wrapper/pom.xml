@@ -32,6 +32,11 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
+        <repository>
+            <id>jzy3d-releases</id>
+            <name>Jzy3d Snapshots</name>
+            <url>http://www.jzy3d.org/maven/releases</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -43,10 +48,15 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>MGX-JOGL-Wrapper</artifactId>
         </dependency>
-        <dependency>
+        <!--  <dependency>
             <groupId>de.cebitec.external</groupId>
             <artifactId>jzy3d</artifactId>
             <version>0.9</version>
+        </dependency> -->
+        <dependency>
+            <groupId>org.jzy3d</groupId>
+            <artifactId>jzy3d-api</artifactId>
+            <version>0.9.1</version>
         </dependency>
     </dependencies>
 
