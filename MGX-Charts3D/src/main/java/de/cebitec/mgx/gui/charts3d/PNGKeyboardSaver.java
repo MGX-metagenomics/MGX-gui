@@ -37,7 +37,8 @@ public class PNGKeyboardSaver extends KeyAdapter {
                 if(!jfc.getSelectedFile().getParentFile().exists())
                         jfc.getSelectedFile().mkdirs();
                 try {
-                    ImageIO.write(chart.screenshot(), "png", new File(jfc.getSelectedFile().toString()+".png"));
+                    chart.screenshot(new File(jfc.getSelectedFile().toString()+".png"));
+                    //ImageIO.write(chart.screenshot(), "png", new File(jfc.getSelectedFile().toString()+".png"));
                 } catch (IOException ex) {
                     JOptionPane.showMessageDialog(e.getComponent(), "Error saving file.");
                     Logger.getLogger(PNGKeyboardSaver.class.getName()).log(Level.SEVERE, null, ex);

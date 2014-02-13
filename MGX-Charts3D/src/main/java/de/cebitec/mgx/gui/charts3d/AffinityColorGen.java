@@ -10,7 +10,6 @@ import org.jzy3d.colors.colormaps.ColorMapRedAndGreen;
  */
 public class AffinityColorGen extends ColorMapRedAndGreen {
 
-    @Override
     public Color getColor(IColorMappable colorable, float z) {
         if (z > 2) {
             return Color.GREEN;
@@ -18,7 +17,6 @@ public class AffinityColorGen extends ColorMapRedAndGreen {
         return new Color(1f - z / 2.1f, 0.001f + z / 2.1f, 0.1f);
     }
 
-    @Override
     public Color getColor(IColorMappable colorable, float x, float y, float z) {
         return getColor(colorable, z);
     }

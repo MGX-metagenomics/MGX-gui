@@ -3,9 +3,9 @@ package de.cebitec.mgx.gui.charts3d;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import org.jzy3d.chart.Chart;
-import org.jzy3d.chart.controllers.mouse.ChartMouseController;
-import org.jzy3d.chart.controllers.mouse.MouseUtilities;
-import org.jzy3d.chart.controllers.thread.ChartThreadController;
+import org.jzy3d.chart.controllers.mouse.AWTMouseUtilities;
+import org.jzy3d.chart.controllers.mouse.camera.AWTCameraMouseController;
+import org.jzy3d.chart.controllers.thread.camera.CameraThreadController;
 import org.jzy3d.maths.BoundingBox3d;
 import org.jzy3d.maths.Coord2d;
 import org.jzy3d.maths.Scale;
@@ -14,7 +14,7 @@ import org.jzy3d.maths.Scale;
  *
  * @author sj
  */
-public class CustomMouseControl extends ChartMouseController {
+public class CustomMouseControl extends AWTCameraMouseController {
 
     private final Chart chart;
 
@@ -37,11 +37,11 @@ public class CustomMouseControl extends ChartMouseController {
         Coord2d mouse = new Coord2d(e.getX(), e.getY());
 
         // Rotate
-        if (MouseUtilities.isLeftDown(e)) {
+        if (AWTMouseUtilities.isLeftDown(e)) {
             Coord2d move = mouse.sub(prevMouse).div(150);
             rotate(move);
         } // Shift
-        else if (MouseUtilities.isRightDown(e)) {
+        else if (AWTMouseUtilities.isRightDown(e)) {
             Coord2d move = mouse.sub(prevMouse);
             if (move.y != 0) {
                 Scale s = chart.getScale();
@@ -64,7 +64,7 @@ public class CustomMouseControl extends ChartMouseController {
     }
 
     public void install() {
-        ChartThreadController threadCamera = new ChartThreadController(chart);
+        CameraThreadController threadCamera = new CameraThreadController(chart);
         this.addSlaveThreadController(threadCamera);
         chart.addController(this);
     }

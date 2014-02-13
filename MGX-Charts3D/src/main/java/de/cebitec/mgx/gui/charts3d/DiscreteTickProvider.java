@@ -9,21 +9,21 @@ import org.jzy3d.plot3d.primitives.axes.layout.providers.ITickProvider;
 class DiscreteTickProvider implements ITickProvider {
 
     @Override
-    public float[] generateTicks(float min, float max) {
+    public double[] generateTicks(double min, double max) {
         return generateTicks(min, max, getSteps(min, max));
     }
 
     @Override
-    public float[] generateTicks(float min, float max, int steps) {
+    public double[] generateTicks(double min, double max, int steps) {
         steps = Math.max(0, steps);
-        float[] ticks = new float[steps];
+        double[] ticks = new double[steps];
         for (int i = 0; i < steps; i++) {
             ticks[i] = min + BarChartBar.BAR_RADIUS + i * 2 * (BarChartBar.BAR_RADIUS + BarChartBar.BAR_FEAT_BUFFER_RADIUS);
         }
         return ticks;
     }
 
-    public int getSteps(float min, float max) {
+    public int getSteps(double min, double max) {
         return (int) Math.ceil(
                 //                        chart.getView().getBounds().getYRange().getRange()
                 (max - min)
