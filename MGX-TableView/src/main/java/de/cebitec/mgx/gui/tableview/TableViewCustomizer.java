@@ -73,6 +73,10 @@ public class TableViewCustomizer extends javax.swing.JPanel implements VisFilter
     public boolean includeHeaders() {
         return includeHeaders.isSelected();
     }
+    
+    public boolean useFractions() {
+        return fractions.isSelected();
+    }
 
     public void setAttributeType(final AttributeType aType) {
         if (aType.equals(at)) {
@@ -215,6 +219,7 @@ public class TableViewCustomizer extends javax.swing.JPanel implements VisFilter
         jScrollPane1 = new javax.swing.JScrollPane();
         listholder = new javax.swing.JPanel();
         attrTypeFilter = new javax.swing.JComboBox<AttributeType>();
+        fractions = new javax.swing.JCheckBox();
 
         org.openide.awt.Mnemonics.setLocalizedText(export, org.openide.util.NbBundle.getMessage(TableViewCustomizer.class, "TableViewCustomizer.export.text")); // NOI18N
         export.setEnabled(false);
@@ -237,6 +242,9 @@ public class TableViewCustomizer extends javax.swing.JPanel implements VisFilter
         attrTypeFilter.setModel(new AttrTypeModel());
         attrTypeFilter.setEnabled(false);
 
+        fractions.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(fractions, org.openide.util.NbBundle.getMessage(TableViewCustomizer.class, "TableViewCustomizer.fractions.text")); // NOI18N
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -245,13 +253,14 @@ public class TableViewCustomizer extends javax.swing.JPanel implements VisFilter
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(attrTypeFilter, 0, 153, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(fractions)
                             .addComponent(export)
                             .addComponent(includeHeaders)
                             .addComponent(jLabel4))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(attrTypeFilter, 0, 153, Short.MAX_VALUE))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -259,12 +268,14 @@ public class TableViewCustomizer extends javax.swing.JPanel implements VisFilter
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(includeHeaders)
-                .addGap(29, 29, 29)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(fractions)
+                .addGap(6, 6, 6)
                 .addComponent(jLabel4)
                 .addGap(4, 4, 4)
                 .addComponent(attrTypeFilter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 142, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 144, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
                 .addComponent(export)
                 .addContainerGap())
@@ -350,6 +361,7 @@ public class TableViewCustomizer extends javax.swing.JPanel implements VisFilter
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox<AttributeType> attrTypeFilter;
     private javax.swing.JButton export;
+    private javax.swing.JCheckBox fractions;
     private javax.swing.JCheckBox includeHeaders;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JScrollPane jScrollPane1;

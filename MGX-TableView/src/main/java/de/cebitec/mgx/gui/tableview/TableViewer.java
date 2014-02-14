@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.tableview;
 
 import de.cebitec.mgx.gui.attributevisualization.filter.SortOrder;
+import de.cebitec.mgx.gui.attributevisualization.filter.ToFractionFilter;
 import de.cebitec.mgx.gui.attributevisualization.viewer.ViewerI;
 import de.cebitec.mgx.gui.datamodel.Attribute;
 import de.cebitec.mgx.gui.datamodel.AttributeType;
@@ -51,6 +52,11 @@ public class TableViewer extends ViewerI<Distribution> {
     public void show(List<Pair<VisualizationGroup, Distribution>> dists) {
 
         dists = getCustomizer().filter(dists);
+        
+        if (getCustomizer().useFractions()) {
+            ToFractionFilter tff = new ToFractionFilter();
+            dists = tff.filter(dists);
+        }
 
         Set<Attribute> allAttrs = new HashSet<>();
         int numColumns = dists.size() + 1;
@@ -72,7 +78,7 @@ public class TableViewer extends ViewerI<Distribution> {
                     case 0:
                         return String.class;
                     default:
-                        return Long.class;
+                        return getCustomizer().useFractions() ? Double.class : Long.class;
                 }
             }
 
@@ -89,7 +95,9 @@ public class TableViewer extends ViewerI<Distribution> {
             int col = 1;
             for (Pair<VisualizationGroup, Distribution> p : dists) {
                 Distribution d = p.getSecond();
-                rowData[col++] = d.containsKey(a) ? d.get(a).longValue() : 0;
+                rowData[col++] = d.containsKey(a) 
+                        ? getCustomizer().useFractions() ? d.get(a).doubleValue() : d.get(a).longValue() 
+                        : 0;
             }
             model.addRow(rowData);
         }
