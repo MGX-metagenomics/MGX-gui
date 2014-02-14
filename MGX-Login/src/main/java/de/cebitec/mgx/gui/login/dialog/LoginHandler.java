@@ -148,14 +148,7 @@ public class LoginHandler implements ActionListener {
                         refresh = 0;
                         long now = System.currentTimeMillis();
                         long serverTime = gpms.ping();
-                        rtt = System.currentTimeMillis();
-
-                        if (serverTime < now || serverTime > rtt) {
-                            System.err.println("Client/server clocks out of sync.");
-                            return;
-                        }
-
-                        rtt = rtt - now;
+                        rtt = System.currentTimeMillis() - now;
                     }
                     StatusDisplayer.getDefault().setStatusText("Connected to " + gpms.getServerName() + " " + rtt + " ms RTT");
                     try {
