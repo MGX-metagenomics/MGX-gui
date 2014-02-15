@@ -19,6 +19,7 @@ import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.Lookup;
 import org.openide.util.Utilities;
+import de.cebitec.mgx.gui.mapping.viewer.TopComponentViewer;
 
 // An example action demonstrating how the wizard could be called from within
 // your code. You can move the code below wherever you need, or register an action:
@@ -67,6 +68,8 @@ public final class MappingWizardAction implements ActionListener {
         wiz.setTitle("Mapping Wizard");
         if (DialogDisplayer.getDefault().notify(wiz) == WizardDescriptor.FINISH_OPTION) {
             MappingEntry mapping = (MappingEntry) wiz.getProperty(MappingVisualPanel1.PROP_MAPPING);
+            TopComponentViewer component = new TopComponentViewer(mapping.getReference(), mapping.getMapping());
+            component.open();
         }
     }
 }
