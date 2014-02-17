@@ -10,13 +10,21 @@ import de.cebitec.mgx.gui.datamodel.MappedSequence;
 import de.cebitec.mgx.gui.mapping.viewer.positions.BoundsInfoManager;
 import de.cebitec.mgx.gui.mapping.viewer.positions.PaintingAreaInfo;
 import de.cebitec.mgx.gui.mapping.loader.Loader;
+import de.cebitec.mgx.gui.mapping.misc.ColorProperties;
 import de.cebitec.mgx.gui.mapping.viewer.positions.panel.ReadsBasePanel;
 import de.cebitec.mgx.gui.mapping.sequences.ReferenceHolder;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import org.openide.util.Exceptions;
@@ -29,16 +37,21 @@ public class ReadsViewer extends AbstractViewer<MappedSequence> {
 
     public ArrayList<MappedSequenceHolder> reads;
     private static int height = 1000;
-    private ArrayList<JMappedSequence> jReads;
+    private HashMap<Integer, List<JMappedSequence>> jReads;
     private static final Logger log = Logger.getLogger(TopComponentViewer.class.getName());
+    private int labelMargin = 3;
 
     public ReadsViewer(BoundsInfoManager boundsInfoManager, ReadsBasePanel basePanel, ReferenceHolder refGenome, Loader loader) {
         super(boundsInfoManager, basePanel, refGenome, loader);
         reads = new ArrayList();
-        jReads = new ArrayList();
+        jReads = new LinkedHashMap<>();
         super.setVerticalMargin(10);
         super.setHorizontalMargin(40);
         this.setViewerSize();
+
+        for (int i = 0; i < 100; i++) {
+            layersMap.put(i, new ArrayList<Layer>());
+        }
     }
 
     @Override
@@ -52,46 +65,6 @@ public class ReadsViewer extends AbstractViewer<MappedSequence> {
 
     @Override
     public void boundsChangedHook() {
-        this.setBorder(BorderFactory.createLineBorder(Color.GREEN));
-
-//        SwingWorker worker = new SwingWorker<Void, Void>() {
-//            @Override
-//            protected Void doInBackground() throws Exception {
-//
-//                try {
-//                    createSequences();
-//                } catch (Exception e) {
-//                }
-//
-//
-//                return null;
-//            }
-//        };
-//        worker.execute();
-
-
-//        log.info("draw something!!");
-
-//        SwingWorker worker = new SwingWorker<Void, Void>() {
-//            @Override
-//            protected Void doInBackground() throws Exception {
-//
-//                try {
-//                    createSequences();
-//                } catch (Exception e) {
-//                }
-//
-//
-//                return null;
-//            }
-//        };
-//        worker.execute();
-
-
-
-
-
-//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     private void setViewerSize() {
@@ -102,10 +75,16 @@ public class ReadsViewer extends AbstractViewer<MappedSequence> {
     @Override
     protected void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
+        Graphics2D g = (Graphics2D) graphics;
 
+        Iterator<Integer> iter = this.yCoordMap.keySet().iterator();
 
+        while (iter.hasNext()) {
+            Integer identity = iter.next();
+            Integer yCoord = yCoordMap.get(identity);
+            this.drawIdentityLine(g, ColorProperties.IDENTITY_LINES, yCoord + this.verticalMargin, identity.toString(), ColorProperties.IDENTITY_COLORS[identity]);
+        }
     }
-    int position = 10;
 
     private void addReadComponent(MappedSequenceHolder read) {
         int yCoord = read.getLayer();
@@ -142,25 +121,28 @@ public class ReadsViewer extends AbstractViewer<MappedSequence> {
             int yFrom = yCoord - (jRead.getHeight() / 2);
             jRead.setBounds((int) phyStart, yFrom, jRead.getSize().width, jRead.getHeight());
 
-            this.jReads.add(jRead);
+            if (jReads.containsKey(read.getIdentity())) {
+                this.jReads.get(read.getIdentity()).add(jRead);
+            } else {
+                ArrayList<JMappedSequence> list = new ArrayList<>();
+                list.add(jRead);
+                jReads.put(read.getIdentity(), list);
+            }
+//            this.jReads.put(j, jRead);
         }
     }
     public int maxHeight = 0;
-    private ArrayList<Layer> layers = new ArrayList<>();
 
     private synchronized void resetSequences(Iterator<MappedSequence> iter) {
         reads.clear();
-        position = 0;
         MappedSequence seq;
-        layers.clear();
+        layersMap.clear();
+        this.yCoordMap.clear();
         MappedSequenceHolder read = null;
 
         while (iter.hasNext()) {
             seq = iter.next();
-//            if (seq.getIdentity() == 100) {
-                read = computePosition(new MappedSequenceHolder(seq.getStart(), seq.getStop()));
-//            }
-           
+            read = computePositionIdentity(new MappedSequenceHolder(seq.getStart(), seq.getStop(), seq.getIdentity()));
             reads.add(read);
         }
         try {
@@ -170,9 +152,14 @@ public class ReadsViewer extends AbstractViewer<MappedSequence> {
         }
         this.repaint();
     }
+    private Map<Integer, ArrayList<Layer>> layersMap = new LinkedHashMap<>();
 
-    private MappedSequenceHolder computePosition(MappedSequenceHolder read) {
-
+    private MappedSequenceHolder computePositionIdentity(MappedSequenceHolder read) {
+        ArrayList<Layer> layers = layersMap.get(read.getIdentity());
+        if (!layersMap.containsKey(read.getIdentity())) {
+            layers = new ArrayList<Layer>();
+            layersMap.put(read.getIdentity(), layers);
+        }
 
         boolean found = false;
         for (Layer layer : layers) {
@@ -196,32 +183,82 @@ public class ReadsViewer extends AbstractViewer<MappedSequence> {
                 layer.setEnd(read.getStop());
             }
             layers.add(layer);
+            layersMap.put(read.getIdentity(), layers);
         }
         return read;
     }
+    private int marginToNextIdentity = 5;
+    private HashMap<Integer, Integer> yCoordMap = new LinkedHashMap<Integer, Integer>();
 
     protected void createSequences() {
         this.removeAll();
         this.repaint();
         jReads.clear();
-//        System.out.println("ReadsViewer:" + super.paintingAreaInfo.toString());
 
         for (MappedSequenceHolder read : reads) {
-            if (maxHeight < read.getLayer()) {
-                maxHeight = read.getLayer();
-            }
             this.addReadComponent(read);
         }
-        for (JMappedSequence jRead : jReads) {
-            jRead.setBorder(BorderFactory.createLineBorder(Color.BLUE));
-//            if (jRead.read.getLayer() > this.maxHeight - 10) {
-//                jRead.setBorder(BorderFactory.createLineBorder(Color.MAGENTA));
-//            } else {
-//               
-//            }
-            add(jRead);
+        int offset = 0;
+        ArrayList<Color> color = new ArrayList<Color>(Arrays.asList(ColorProperties.IDENTITY_COLORS));
+
+        for (int i = 100; i > -1; i--) {
+            if (jReads.containsKey(i)) {
+                yCoordMap.put(i, offset);
+                offset += marginToNextIdentity;
+                int layer = 0;
+                for (JMappedSequence jRead : jReads.get(i)) {
+                    Rectangle bounds = jRead.getBounds();
+                    bounds.setLocation(bounds.getLocation().x, bounds.getLocation().y + offset + this.verticalMargin);
+                    jRead.setBounds(bounds);
+                    jRead.setBorder(BorderFactory.createLineBorder(color.get(i)));
+                    add(jRead);
+                    if (layer < jRead.getSequence().getLayer()) {
+                        layer = jRead.getSequence().getLayer();
+                    }
+                }
+                offset += this.marginToNextIdentity + layer;
+            }
         }
+
         this.repaint();
+    }
+
+    /**
+     * Draws a line for a frame.
+     *
+     * @param g the graphics to paint on
+     * @param yCord the y-coordinate to start painting at
+     * @param label the frame to paint
+     */
+    private void drawIdentityLine(Graphics2D g, Color lineColor, int yCord, String label, Color stringColor) {
+        int labelHeight = g.getFontMetrics().getMaxAscent();
+        int labelWidth = g.getFontMetrics().stringWidth(label);
+
+        int maxLeft = getPaintingAreaInfo().getPhyLeft();
+        int maxRight = getPaintingAreaInfo().getPhyRight();
+
+        g.setColor(stringColor);
+
+        // draw left label
+        g.drawString(label, maxLeft - labelMargin - labelWidth, yCord + labelHeight);
+        // draw right label
+        g.drawString(label, maxRight + labelMargin, yCord + labelHeight);
+
+        // assign space for label and some extra space
+        int x1 = maxLeft;
+        int x2 = maxRight;
+
+        g.setColor(lineColor);
+
+        int linewidth = 15;
+        int i = x1;
+        while (i <= x2 - linewidth) {
+            g.drawLine(i, yCord, i + linewidth, yCord);
+            i += 2 * linewidth;
+        }
+        if (i <= x2) {
+            g.drawLine(i, yCord, x2, yCord);
+        }
     }
 
     @Override
@@ -263,12 +300,5 @@ public class ReadsViewer extends AbstractViewer<MappedSequence> {
         public Layer(int position) {
             this.position = this.position + position;
         }
-    }
-
-    private static boolean overlaps(MappedSequenceHolder r1, MappedSequenceHolder r2) {
-        return (r1.getStart() >= r2.getStart() && r1.getStart() <= r2.getStop())
-                || (r1.getStop() >= r2.getStart() && r1.getStop() <= r2.getStop())
-                || (r1.getStart() <= r2.getStart() && r1.getStop() >= r2.getStop())
-                || (r1.getStop() <= r2.getStart() && r1.getStart() >= r2.getStop());
     }
 }

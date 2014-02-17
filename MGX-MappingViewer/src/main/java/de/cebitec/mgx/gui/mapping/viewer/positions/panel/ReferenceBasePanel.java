@@ -5,7 +5,6 @@ import de.cebitec.mgx.gui.mapping.viewer.positions.BoundsInfoManager;
 import de.cebitec.mgx.gui.mapping.viewer.positions.MousePositionListenerI;
 import de.cebitec.mgx.gui.mapping.viewer.AbstractViewer;
 import de.cebitec.mgx.gui.mapping.viewer.ReferenceViewer;
-//import de.cebitec.vamp.view.dataVisualisation.trackViewer.TrackViewer;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -29,7 +28,6 @@ public class ReferenceBasePanel extends JPanel implements IBasePanel {
     private AbstractInfoPanel rightPanel;
     private AbstractInfoPanel leftPanel;
     private BoundsInfoManager boundsManager;
-    private MousePositionListenerI viewController;
     private List<MousePositionListenerI> currentMousePosListeners;
     private JPanel centerPanel;
     private AdjustmentPanel adjustmentPanelHorizontal;
@@ -42,7 +40,6 @@ public class ReferenceBasePanel extends JPanel implements IBasePanel {
         this.centerPanel = new JPanel(new BorderLayout());
         this.add(centerPanel, BorderLayout.CENTER);
         this.boundsManager = boundsManager;
-        this.viewController = viewController;
         this.currentMousePosListeners = new ArrayList();
     }
 
@@ -57,7 +54,6 @@ public class ReferenceBasePanel extends JPanel implements IBasePanel {
         this.shutdownInfoPanelAndAdjustmentPanel();
         this.remove(centerPanel);
         this.centerPanel = null;
-        this.viewController = null;
         this.updateUI();
     }
 

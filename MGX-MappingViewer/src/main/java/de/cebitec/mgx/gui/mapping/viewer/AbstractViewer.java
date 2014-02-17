@@ -48,8 +48,8 @@ public abstract class AbstractViewer<Sequence> extends JPanel implements ICurren
     // correlation factor to compute physical position from logical position
     private double correlationFactor;
     // gap at the sides of panel
-    private int horizontalMargin;
-    private int verticalMargin;
+    protected int horizontalMargin;
+    protected int verticalMargin;
     private int zoom = 1;
     private double basewidth;
     private BoundsInfoManager boundsManager;
@@ -92,8 +92,6 @@ public abstract class AbstractViewer<Sequence> extends JPanel implements ICurren
         isInMaxZoomLevel = true;
         inDrawingMode = true;
         isActive = true;
-
-        this.setBorder(BorderFactory.createLineBorder(Color.GREEN));
 
         // sets min, max and preferred size
         this.setSizes();

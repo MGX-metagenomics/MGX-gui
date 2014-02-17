@@ -28,14 +28,11 @@ public class ReferenceViewer extends AbstractViewer<Region> {
     private final static long serialVersionUID = 7964236;
     private static int height = 250;
     private static int FRAMEHEIGHT = 20;
-//    private Map<FeatureType, Integer> featureStats;
-    private JRegion currentlySelectedFeature;
     private int labelMargin;
     private ArrayList<JRegion> features;
     public final static String PROP_FEATURE_STATS_CHANGED = "feats changed";
     public final static String PROP_FEATURE_SELECTED = "feat selected";
     public static final String PROP_EXCLUDED_FEATURE_EVT = "excl feat evt";
-    private int trackCount = 0;
     protected ArrayList<de.cebitec.mgx.gui.datamodel.Region> list;
     private SequenceBar seqBar;
 
@@ -65,31 +62,6 @@ public class ReferenceViewer extends AbstractViewer<Region> {
         list = new ArrayList();
         this.list = new ArrayList<>();
         this.setViewerSize();
-    }
-
-    public void setSelectedFeature(JRegion feature) {
-
-        firePropertyChange(PROP_FEATURE_SELECTED, currentlySelectedFeature, feature);
-
-        // if the currently selected feature is clicked again, de-select it
-        if (currentlySelectedFeature == feature) {
-            currentlySelectedFeature.setSelected(false);
-            currentlySelectedFeature = null;
-        } else {
-
-            // if there was a feature selected before, de-select it
-            if (currentlySelectedFeature != null) {
-                currentlySelectedFeature.setSelected(false);
-            }
-
-            currentlySelectedFeature = feature;
-            currentlySelectedFeature.setSelected(true);
-        }
-
-        //only recalculate if reading frame was switched
-//        if (currentlySelectedFeature == null || this.getSequenceBar().getFrameCurrFeature() != this.determineFrame(currentlySelectedFeature.getPersistantFeature())) {
-//            this.getSequenceBar().findCodons(); //update codons for current selection
-//        }
     }
 
     @Override
@@ -173,20 +145,6 @@ public class ReferenceViewer extends AbstractViewer<Region> {
     }
 
     /**
-     * Registers the feature in the viewer statistics for displaying information
-     * about the currently viewed reference interval.
-     *
-     * @param feature the feature to register
-     */
-    private void registerFeatureInStats(ISequenceHolder feature) {
-//        FeatureType type = feature.getType();
-//        if (!this.featureStats.containsKey(type)) {
-//            this.featureStats.put(type, 0);
-//        }
-//        this.featureStats.put(type, this.featureStats.get(type) + 1);
-    }
-
-    /**
      * Creates a feature component for a given feature and adds it to the
      * reference viewer.
      *
@@ -223,11 +181,6 @@ public class ReferenceViewer extends AbstractViewer<Region> {
         JRegion jFeature = new JRegion(feature, length, this, border);
         int yFrom = yCoord - (jFeature.getHeight() / 2);
         jFeature.setBounds((int) phyStart, yFrom, jFeature.getSize().width, jFeature.getHeight());
-        if (currentlySelectedFeature != null) {
-            if (feature.getId() == currentlySelectedFeature.getPersistantFeature().getId()) {
-                setSelectedFeature(jFeature);
-            }
-        }
         this.features.add(jFeature);
 //        }
     }
@@ -267,7 +220,7 @@ public class ReferenceViewer extends AbstractViewer<Region> {
         Graphics2D g = (Graphics2D) graphics;
 
         // draw lines for frames
-        g.setColor(ColorProperties.TRACKPANEL_SCALE_LINES);
+        g.setColor(ColorProperties.FRAME_LINES);
         this.drawScales(g);
     }
 
@@ -329,50 +282,11 @@ public class ReferenceViewer extends AbstractViewer<Region> {
     }
 
     /**
-     * @return The feature statistics for the currently viewed reference
-     * interval.
-     */
-//    public Map<FeatureType, Integer> getFeatureStats() {
-//        return this.featureStats;
-//    }
-    /**
-     * @return The currently selected feature by the user.
-     */
-    public JRegion getCurrentlySelectedFeature() {
-        return this.currentlySelectedFeature;
-    }
-
-    /**
      * Sets the initial size of the reference viewer.
      */
     private void setViewerSize() {
         this.setPreferredSize(new Dimension(1, 230));
         this.revalidate();
-    }
-
-    /**
-     * Increases count of corresponding tracks. If more information is needed
-     * implement listener model with possibility to get track viewers.
-     */
-    public void increaseTrackCount() {
-        ++this.trackCount;
-    }
-
-    /**
-     * Decreases count of corresponding tracks. If more information is needed
-     * implement listener model with possibility to get track viewers.
-     */
-    public void decreaseTrackCount() {
-        if (this.trackCount > 0) {
-            --this.trackCount;
-        } //nothing to do if it is already 0
-    }
-
-    /**
-     * @return Number of corresponding tracks.
-     */
-    public int getTrackCount() {
-        return this.trackCount;
     }
 
 //    @Override

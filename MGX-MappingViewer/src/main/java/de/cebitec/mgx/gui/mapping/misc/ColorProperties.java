@@ -12,10 +12,11 @@ public class ColorProperties {
      * Private constructor so this utility class can not be instantiated.
      */
     private ColorProperties() {
+      
     }
-
     // global colors
-    public static final Color TRACKPANEL_SCALE_LINES = new Color(153, 153, 153);
+    public static final Color FRAME_LINES = new Color(153, 153, 153);
+    public static final Color IDENTITY_LINES = new Color(153, 153, 153);
     public static final Color TRACKPANEL_MIDDLE_LINE = new Color(25, 25, 25);
     public static final Color START_CODON = new Color(39, 116, 116, 80);
     public static final Color TITLE_BACKGROUND = Color.gray;
@@ -35,4 +36,29 @@ public class ColorProperties {
     public static final Color BACKGROUND_N = new Color(155, 42, 170, 100);
     public static final Color BACKGROUND_READGAP = new Color(178, 178, 178, 100);
     public static final Color BACKGROUND_BASE_UNDEF = UNDEF_FEATURE;
+    
+ //   http://phrogz.net/css/distinct-colors.html
+    public static final Color[] IDENTITY_COLORS =new  Color[]{
+        new Color(76, 130, 212), new Color(76, 185, 212), new Color(76, 212, 185), new Color(76, 212, 130), new Color(76, 212, 76),
+        new Color(130, 212, 76), new Color(185, 212, 76), new Color(212, 185, 76), new Color(212, 130, 76), new Color(212, 76, 76),
+        new Color(76, 130, 212), new Color(76, 185, 212), new Color(76, 212, 185), new Color(76, 212, 130), new Color(76, 212, 76),
+        new Color(130, 212, 76), new Color(185, 212, 76), new Color(212, 185, 76), new Color(212, 130, 76), new Color(212, 76, 76),
+        new Color(76, 130, 212), new Color(76, 185, 212), new Color(76, 212, 185), new Color(76, 212, 130), new Color(76, 212, 76),
+        new Color(130, 212, 76), new Color(185, 212, 76), new Color(212, 185, 76), new Color(212, 130, 76), new Color(212, 76, 76),
+        new Color(76, 130, 212), new Color(76, 185, 212), new Color(76, 212, 185), new Color(76, 212, 130), new Color(76, 212, 76),
+        new Color(130, 212, 76), new Color(185, 212, 76), new Color(212, 185, 76), new Color(212, 130, 76), new Color(212, 76, 76),
+        new Color(76, 130, 212), new Color(76, 185, 212), new Color(76, 212, 185), new Color(76, 212, 130), new Color(76, 212, 76),
+        new Color(130, 212, 76), new Color(185, 212, 76), new Color(212, 185, 76), new Color(212, 130, 76), new Color(212, 76, 76),
+        new Color(76, 130, 212), new Color(76, 185, 212), new Color(76, 212, 185), new Color(76, 212, 130), new Color(76, 212, 76),
+        new Color(130, 212, 76), new Color(185, 212, 76), new Color(212, 185, 76), new Color(212, 130, 76), new Color(212, 76, 76),
+        new Color(76, 130, 212), new Color(76, 185, 212), new Color(76, 212, 185), new Color(76, 212, 130), new Color(76, 212, 76),
+        new Color(130, 212, 76), new Color(185, 212, 76), new Color(212, 185, 76), new Color(212, 130, 76), new Color(212, 76, 76),
+        new Color(76, 130, 212), new Color(76, 185, 212), new Color(76, 212, 185), new Color(76, 212, 130), new Color(76, 212, 76),
+        new Color(130, 212, 76), new Color(185, 212, 76), new Color(212, 185, 76), new Color(212, 130, 76), new Color(212, 76, 76),
+        new Color(76, 130, 212), new Color(76, 185, 212), new Color(76, 212, 185), new Color(76, 212, 130), new Color(76, 212, 76),
+        new Color(130, 212, 76), new Color(185, 212, 76), new Color(212, 185, 76), new Color(212, 130, 76), new Color(212, 76, 76),
+        new Color(76, 130, 212), new Color(76, 185, 212), new Color(76, 212, 185), new Color(76, 212, 130), new Color(76, 212, 76),
+        new Color(130, 212, 76), new Color(185, 212, 76), new Color(212, 185, 76), new Color(212, 130, 76), new Color(212, 76, 76),
+        new Color(130, 212, 76)
+    };
 }

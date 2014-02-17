@@ -13,6 +13,15 @@ public class MappedSequenceHolder implements ISequenceHolder {
     private int start;
     private int stop;
     private int layer = 0;
+    private int identity = -1;
+
+    public int getIdentity() {
+        return identity;
+    }
+
+    public void setIdentity(int identity) {
+        this.identity = identity;
+    }
 
     public int getLayer() {
         return layer;
@@ -21,7 +30,7 @@ public class MappedSequenceHolder implements ISequenceHolder {
     public void setLayer(int layer) {
         this.layer = layer;
     }
-    
+
     @Override
     public int getStart() {
         return start;
@@ -40,8 +49,9 @@ public class MappedSequenceHolder implements ISequenceHolder {
         this.stop = stop;
     }
 
-    public MappedSequenceHolder(int lStart, int lStop) {
+    public MappedSequenceHolder(int lStart, int lStop, int lIdentity) {
         this.start = lStart;
+        this.identity = lIdentity;
         this.stop = lStop;
     }
 }
