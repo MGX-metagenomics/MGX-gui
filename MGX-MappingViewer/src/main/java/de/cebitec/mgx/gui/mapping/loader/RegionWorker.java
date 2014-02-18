@@ -88,7 +88,7 @@ public class RegionWorker extends SwingWorker<Iterator<Region>, Void> {
                     SwingWorker worker = new SwingWorker<Void, Void>() {
                         @Override
                         protected Void doInBackground() throws Exception {
-                            viewer.reloadSequences(iter);
+                            viewer.setSequences(iter);
                             return null;
                         }
                     };

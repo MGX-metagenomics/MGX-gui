@@ -25,14 +25,11 @@ import java.util.List;
 public class ReferenceViewer extends AbstractViewer<Region> {
 
     private final static long serialVersionUID = 7964236;
-    private static int height = 250;
+    private static int VIEWER_HEIGHT = 250;
     private static int FRAMEHEIGHT = 20;
-    private int labelMargin;
+    private static int LABEL_HEIGHT = 3;
     private ArrayList<JRegion> features;
-    public final static String PROP_FEATURE_STATS_CHANGED = "feats changed";
-    public final static String PROP_FEATURE_SELECTED = "feat selected";
-    public static final String PROP_EXCLUDED_FEATURE_EVT = "excl feat evt";
-    protected ArrayList<de.cebitec.mgx.gui.datamodel.Region> list;
+    private ArrayList<Region> regionList;
     private SequenceBar seqBar;
 
     /**
@@ -46,20 +43,11 @@ public class ReferenceViewer extends AbstractViewer<Region> {
     public ReferenceViewer(BoundsInfoManager boundsInfoManager, ReferenceBasePanel basePanel, ReferenceHolder referenceHolder, Loader loader) {
         super(boundsInfoManager, basePanel, referenceHolder, loader);
         this.features = new ArrayList();
-//        this.showSequenceBar(true, true);
-
-//        if (showSeqBar) {
         this.seqBar = new SequenceBar(this, referenceHolder);
         super.centerSeqBar = true;
-//        } else {
-//            seqBar = null;
-//        }
         this.updatePhysicalBounds();
-
-
-        this.labelMargin = 3;
-        list = new ArrayList();
-        this.list = new ArrayList<>();
+        regionList = new ArrayList();
+        this.regionList = new ArrayList<>();
         this.setViewerSize();
     }
 
@@ -71,7 +59,7 @@ public class ReferenceViewer extends AbstractViewer<Region> {
 
     @Override
     public int getMaximalHeight() {
-        return height;
+        return VIEWER_HEIGHT;
     }
 
     @Override
@@ -83,23 +71,12 @@ public class ReferenceViewer extends AbstractViewer<Region> {
      * Creates all feature components to display in this viewer.
      */
     protected void createSequences() {
-//        System.out.println("ReferenceViewer:" + super.paintingAreaInfo.toString());
-        this.removeAll();
-        this.features.clear();
-
-        if (this.hasLegend()) {
-            this.add(this.getLegendLabel());
-            this.add(this.getLegendPanel());
-        }
-//        if (this.hasSequenceBar()) {
         this.add(this.seqBar);
-//        }
-
         List<RegionHolder> featureList = new ArrayList<>();
         boolean isForward = true;
         int start = 0;
         int stop = 0;
-        for (Region reg : list) {
+        for (Region reg : regionList) {
 
             if (reg.getStart() > reg.getStop()) {
                 start = reg.getStop();
@@ -114,33 +91,15 @@ public class ReferenceViewer extends AbstractViewer<Region> {
             RegionHolder feature = new RegionHolder(reg.getId(), start, stop, isForward, reg.getName());
             featureList.add(feature);
         }
-        //refGenConnector.getFeaturesForRegion(
-        //  getBoundsInfo().getLogLeft(), getBoundsInfo().getLogRight(), FeatureType.ANY);
 
         for (RegionHolder feature : featureList) {
             feature.setFrame(this.determineFrame(feature));
             this.addFeatureComponent(feature);
         }
 
-
-//        List<Polytree> featureTrees = PersistantFeature.Utils.createFeatureTrees(featureList);
-//
-//        int frame = 0;
-//
-//        for (Polytree featTree : featureTrees) { //this means if two roots are on different frames,
-//            for (Node root : featTree.getRoots()) { //all children are painted on the frame of the last root node
-//                frame = this.determineFrame((PersistantFeature) root);
-//            }
-//            PaintNodeVisitor paintVisitor = new PaintNodeVisitor(frame);
-//            featTree.bottomUp(paintVisitor);
-//        }
-
-        //Correct painting order is guaranteed by the node visitor
         for (JRegion jFeature : this.features) {
             this.add(jFeature);
         }
-
-//        firePropertyChange(PROP_FEATURE_STATS_CHANGED, null, featureStats);
     }
 
     /**
@@ -154,7 +113,6 @@ public class ReferenceViewer extends AbstractViewer<Region> {
         int yCoord = this.determineYFromFrame(frame);
         PaintingAreaInfo bounds = getPaintingAreaInfo();
 
-//        if (!this.getExcludedFeatureTypes().contains(feature.getType())) {
         byte border = JRegion.BORDER_NONE;
         // get left boundary of the feature
         double phyStart = this.getPhysBoundariesForLogPos(feature.getStart()).getLeftPhysBound();
@@ -181,7 +139,6 @@ public class ReferenceViewer extends AbstractViewer<Region> {
         int yFrom = yCoord - (jFeature.getHeight() / 2);
         jFeature.setBounds((int) phyStart, yFrom, jFeature.getSize().width, jFeature.getHeight());
         this.features.add(jFeature);
-//        }
     }
 
     private int determineYFromFrame(int frame) {
@@ -252,9 +209,9 @@ public class ReferenceViewer extends AbstractViewer<Region> {
         int maxRight = getPaintingAreaInfo().getPhyRight();
 
         // draw left label
-        g.drawString(label, maxLeft - labelMargin - labelWidth, yCord + labelHeight / 2);
+        g.drawString(label, maxLeft - LABEL_HEIGHT - labelWidth, yCord + labelHeight / 2);
         // draw right label
-        g.drawString(label, maxRight + labelMargin, yCord + labelHeight / 2);
+        g.drawString(label, maxRight + LABEL_HEIGHT, yCord + labelHeight / 2);
 
         // assign space for label and some extra space
         int x1 = maxLeft;
@@ -288,28 +245,20 @@ public class ReferenceViewer extends AbstractViewer<Region> {
         this.revalidate();
     }
 
-//    @Override
-    public void resetSequences(Iterator<Region> iter) {
-        list.clear();
+    @Override
+    public void afterLoadingSequences(Iterator<Region> iter) {
+        removeAll();
+        features.clear();
+        regionList.clear();
         while (iter.hasNext()) {
-            list.add((Region) iter.next());
+            regionList.add((Region) iter.next());
         }
         createSequences();
         this.repaint();
     }
 
     @Override
-    protected void beforeLoadingSequences() {
-    }
-
-    @Override
-    public void afterLoadingSequences(Iterator<Region> iter) {
-        this.resetSequences(iter);
-    }
-
-    @Override
     protected void adjustAreaInfoHook() {
-
         if (centerSeqBar) {
             int y1 = this.getSize().height / 2 - seqBar.getSize().height / 2;
             int y2 = this.getSize().height / 2 + seqBar.getSize().height / 2;

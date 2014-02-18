@@ -12,7 +12,6 @@ public class ColorProperties {
      * Private constructor so this utility class can not be instantiated.
      */
     private ColorProperties() {
-      
     }
     // global colors
     public static final Color FRAME_LINES = new Color(153, 153, 153);
@@ -28,6 +27,7 @@ public class ColorProperties {
     public static final Color EXON_BORDER = new Color(45, 45, 45);
     public static final Color UNDEF_FEATURE = new Color(0, 255, 77);
     //histogram viewer specific colors for base background
+    public static final Color BACKGROUND_COLOR = new Color(240, 240, 240); //to prevent wrong color on mac
     public static final Color BACKGROUND_A = new Color(22, 0, 255, 100);
     public static final Color BACKGROUND_C = new Color(176, 4, 0, 100);
     public static final Color BACKGROUND_G = new Color(37, 201, 213, 100);
@@ -35,9 +35,8 @@ public class ColorProperties {
     public static final Color BACKGROUND_N = new Color(155, 42, 170, 100);
     public static final Color BACKGROUND_READGAP = new Color(178, 178, 178, 100);
     public static final Color BACKGROUND_BASE_UNDEF = UNDEF_FEATURE;
-    
- //   http://phrogz.net/css/distinct-colors.html
-    public static final Color[] IDENTITY_COLORS =new  Color[]{
+    //   http://phrogz.net/css/distinct-colors.html
+    public static final Color[] IDENTITY_COLORS = new Color[]{
         new Color(76, 130, 212), new Color(76, 185, 212), new Color(76, 212, 185), new Color(76, 212, 130), new Color(76, 212, 76),
         new Color(130, 212, 76), new Color(185, 212, 76), new Color(212, 185, 76), new Color(212, 130, 76), new Color(212, 76, 76),
         new Color(76, 130, 212), new Color(76, 185, 212), new Color(76, 212, 185), new Color(76, 212, 130), new Color(76, 212, 76),

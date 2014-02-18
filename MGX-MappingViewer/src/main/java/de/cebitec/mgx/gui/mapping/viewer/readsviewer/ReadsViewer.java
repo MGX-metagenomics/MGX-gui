@@ -36,6 +36,7 @@ public class ReadsViewer extends AbstractViewer<MappedSequence> {
     private static final int LABEL_MARGIN = 3;
     private Map<Integer, IdentityLayer> layersMap;
     private static final int MARGIN_TO_NEXT_IDENTITY_LAYER = 5;
+    private static final int MARGIN_TO_NEXT_IDENTITY_BORDER = 5;
 
     public ReadsViewer(BoundsInfoManager boundsInfoManager, ReadsBasePanel basePanel, ReferenceHolder refGenome, Loader loader) {
         super(boundsInfoManager, basePanel, refGenome, loader);
@@ -52,6 +53,12 @@ public class ReadsViewer extends AbstractViewer<MappedSequence> {
 
     @Override
     public void changeToolTipText(int logPos) {
+    }
+
+    @Override
+    public void close() {
+        super.close();
+        this.layersMap.clear();
     }
 
     @Override
@@ -155,14 +162,19 @@ public class ReadsViewer extends AbstractViewer<MappedSequence> {
         Iterator<Integer> iter = layersMap.keySet().iterator();
         while (iter.hasNext()) {
             Integer identity = iter.next();
+            boolean found = false;
             for (Layer layer : layersMap.get(identity).getLayers()) {
                 for (MappedSequenceHolder mappedSequence : layer.getSequences()) {
                     JMappedSequence jMappedSequence = transformMappedSequenceToJComponent(mappedSequence);
                     if (jMappedSequence != null) {
                         layer.addJComponent(jMappedSequence);
+                        found = true;
                     }
 
                 }
+            }
+            if(!found){
+                iter.remove();
             }
         }
         int offset = 0;
@@ -183,7 +195,7 @@ public class ReadsViewer extends AbstractViewer<MappedSequence> {
                         }
                     }
                 }
-                offset += MARGIN_TO_NEXT_IDENTITY_LAYER + layerPosition;
+                offset += MARGIN_TO_NEXT_IDENTITY_BORDER + layerPosition;
             }
         }
         this.repaint();
@@ -230,12 +242,8 @@ public class ReadsViewer extends AbstractViewer<MappedSequence> {
     }
 
     @Override
-    protected void beforeLoadingSequences() {
-        layersMap.clear();
-    }
-
-    @Override
     public void afterLoadingSequences(Iterator<MappedSequence> iter) {
+        layersMap.clear();
         MappedSequence seq;
         while (iter.hasNext()) {
             seq = iter.next();
