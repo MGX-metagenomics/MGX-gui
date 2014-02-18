@@ -53,7 +53,7 @@ public class JRegion extends JComponent {
         this.size = new Dimension((int) length, height);
         this.setSize(size);
         this.font = new Font(Font.MONOSPACED, Font.PLAIN, 10);
-        this.color = this.getColor(feature);
+        this.color = Color.ORANGE;
         this.border = border;
 
         this.addListeners(refViewer);
@@ -81,14 +81,6 @@ public class JRegion extends JComponent {
         return "<tr><td align=\"right\"><b>" + label + ":</b></td><td align=\"left\">" + value + "</td></tr>";
     }
 
-    public void setSelected(boolean selected) {
-        if (selected) {
-            color = ColorProperties.SELECTED_FEATURE;
-        } else {
-            color = this.getColor(feature);
-        }
-        this.repaint();
-    }
 
     @Override
     public void paintComponent(Graphics graphics) {
@@ -152,16 +144,6 @@ public class JRegion extends JComponent {
             text += "...";
         }
         return text;
-    }
-
-    /**
-     * Returns the color.
-     *
-     * @param feature the feature
-     * @return the color for this feature
-     */
-    private Color getColor(RegionHolder feature) {
-        return Color.ORANGE;
     }
 
     private void addListeners(final ReferenceViewer refViewer) {

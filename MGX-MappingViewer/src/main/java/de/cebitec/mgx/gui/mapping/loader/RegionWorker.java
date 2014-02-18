@@ -71,9 +71,7 @@ public class RegionWorker extends SwingWorker<Iterator<Region>, Void> {
                     if (get()) {
                         updateViewer();
                     }
-                } catch (InterruptedException ex) {
-                    Exceptions.printStackTrace(ex);
-                } catch (ExecutionException ex) {
+                } catch (        InterruptedException | ExecutionException ex) {
                     Exceptions.printStackTrace(ex);
                 }
             }
@@ -90,7 +88,7 @@ public class RegionWorker extends SwingWorker<Iterator<Region>, Void> {
                     SwingWorker worker = new SwingWorker<Void, Void>() {
                         @Override
                         protected Void doInBackground() throws Exception {
-                            viewer.afterLoadingSequences(iter);
+                            viewer.reloadSequences(iter);
                             return null;
                         }
                     };

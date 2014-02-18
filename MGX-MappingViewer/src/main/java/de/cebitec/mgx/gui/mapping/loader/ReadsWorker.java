@@ -90,7 +90,7 @@ public class ReadsWorker extends SwingWorker<Iterator<MappedSequence>, Void> {
                     SwingWorker worker = new SwingWorker<Void, Void>() {
                         @Override
                         protected Void doInBackground() throws Exception {
-                            viewer.afterLoadingSequences(iter);
+                            viewer.reloadSequences(iter);
                             return null;
                         }
                     };

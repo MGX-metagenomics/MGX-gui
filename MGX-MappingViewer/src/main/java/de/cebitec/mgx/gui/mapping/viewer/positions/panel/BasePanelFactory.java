@@ -8,7 +8,7 @@ import de.cebitec.mgx.gui.datamodel.Reference;
 import de.cebitec.mgx.gui.mapping.viewer.positions.BoundsInfo;
 import de.cebitec.mgx.gui.mapping.viewer.positions.BoundsInfoManager;
 import de.cebitec.mgx.gui.mapping.viewer.AbstractViewer;
-import de.cebitec.mgx.gui.mapping.viewer.ReadsViewer;
+import de.cebitec.mgx.gui.mapping.viewer.readsviewer.ReadsViewer;
 import de.cebitec.mgx.gui.mapping.viewer.ReferenceViewer;
 import de.cebitec.mgx.gui.mapping.loader.ReadsLoader;
 import de.cebitec.mgx.gui.mapping.loader.RegionLoader;

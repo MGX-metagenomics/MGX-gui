@@ -2,7 +2,6 @@ package de.cebitec.mgx.gui.mapping.viewer;
 
 import de.cebitec.mgx.gui.mapping.misc.ColorProperties;
 import de.cebitec.mgx.gui.mapping.sequences.ReferenceHolder;
-import de.cebitec.mgx.gui.mapping.sequences.ISequenceHolder;
 import de.cebitec.mgx.gui.mapping.sequences.RegionHolder;
 import de.cebitec.mgx.gui.mapping.sequences.JRegion;
 import de.cebitec.mgx.gui.datamodel.Region;

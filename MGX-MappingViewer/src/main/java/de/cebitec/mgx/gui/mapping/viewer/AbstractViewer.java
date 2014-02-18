@@ -8,7 +8,6 @@ import de.cebitec.mgx.gui.mapping.viewer.positions.BoundsInfo;
 import de.cebitec.mgx.gui.mapping.viewer.positions.panel.MenuLabel;
 import de.cebitec.mgx.gui.mapping.viewer.positions.PaintingAreaInfo;
 import de.cebitec.mgx.gui.mapping.viewer.positions.PhysicalBaseBounds;
-import de.cebitec.mgx.gui.mapping.viewer.positions.panel.SequenceBar;
 import de.cebitec.mgx.gui.mapping.viewer.positions.panel.IBasePanel;
 import de.cebitec.mgx.gui.mapping.loader.Loader;
 import de.cebitec.mgx.gui.mapping.misc.ICurrentTime;
@@ -701,10 +700,15 @@ public abstract class AbstractViewer<Sequence> extends JPanel implements ICurren
         this.scrollBar = scrollBar;
     }
 
+    public void reloadSequences(Iterator<Sequence> iter) {
+        beforeLoadingSequences();
+        afterLoadingSequences(iter);
+    }
+
     protected abstract void beforeLoadingSequences();
 
-    public abstract void afterLoadingSequences(Iterator<Sequence> iter);
-   
+    protected abstract void afterLoadingSequences(Iterator<Sequence> iter);
+    
     private long currentTime = System.nanoTime();
 
     @Override

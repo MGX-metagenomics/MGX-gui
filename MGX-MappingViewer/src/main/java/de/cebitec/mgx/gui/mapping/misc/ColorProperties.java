@@ -25,7 +25,6 @@ public class ColorProperties {
     public static final Color HIGHLIGHT_BORDER = new Color(51, 153, 255);
     // genome viewer specific colors
     public static final Color FEATURE_LABEL = new Color(0, 0, 0);
-    public static final Color SELECTED_FEATURE = new Color(73, 182, 241);
     public static final Color EXON_BORDER = new Color(45, 45, 45);
     public static final Color UNDEF_FEATURE = new Color(0, 255, 77);
     //histogram viewer specific colors for base background
