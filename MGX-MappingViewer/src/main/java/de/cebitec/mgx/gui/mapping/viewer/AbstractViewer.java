@@ -522,8 +522,7 @@ public abstract class AbstractViewer<Sequence> extends JPanel implements ICurren
     /**
      * This method defines a hook, that is called every time when the logical
      * positions change. Content of this method is executed after updating the
-     * logical position of AbstractViewer. Can be used for retrieving new data
-     * from a database for example.
+     * logical position of AbstractViewer. It is called before loading new data.
      */
     public abstract void boundsChangedHook();
 

@@ -63,6 +63,9 @@ public class ReadsViewer extends AbstractViewer<MappedSequence> {
 
     @Override
     public void boundsChangedHook() {
+        synchronized (this) {
+            this.removeAll();
+        }
     }
 
     private void setViewerSize() {
@@ -173,7 +176,7 @@ public class ReadsViewer extends AbstractViewer<MappedSequence> {
 
                 }
             }
-            if(!found){
+            if (!found) {
                 iter.remove();
             }
         }
