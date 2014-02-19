@@ -12,10 +12,10 @@ import java.util.Set;
  */
 public class Node<T> {
 
-    private long id;
-    private Attribute attr;
+    private final long id;
+    private final Attribute attr;
     private T value;
-    private Tree<T> tree;
+    private final Tree<T> tree;
     private Set<Node<T>> children = null;
 
     public Node(Tree<T> tree, long id, Attribute attr, T content) {

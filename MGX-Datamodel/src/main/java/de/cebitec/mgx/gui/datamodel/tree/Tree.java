@@ -9,7 +9,7 @@ import java.util.*;
  */
 public class Tree<T> {
 
-    private Map<Long, Node<T>> nodes;
+    private final Map<Long, Node<T>> nodes;
     Map<Long, Long> edges; // pointing upwards, from child to parent
     long id = 1;
     private Node<T> root = null;
@@ -60,5 +60,15 @@ public class Tree<T> {
 
     public boolean isEmpty() {
         return nodes.isEmpty();
+    }
+    
+    public Collection<Node<T>> getLeaves() {
+        Collection<Node<T>> ret = new HashSet<>();
+        for (Node<T> n : getNodes()) {
+            if (n.isLeaf()) {
+                ret.add(n);
+            }
+        }
+        return ret;
     }
 }
