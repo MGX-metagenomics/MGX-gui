@@ -70,8 +70,14 @@ public class JRegion extends JComponent {
         sb.append("<table>");
         sb.append(createTableRow("Name", feature.getName()));
         sb.append(createTableRow("Strand", (feature.isFwdStrand() ? "forward" : "reverse")));
-        sb.append(createTableRow("Start", String.valueOf(feature.getStart())));
-        sb.append(createTableRow("Stop", String.valueOf(feature.getStop())));
+
+        if (feature.isFwdStrand()) {
+            sb.append(createTableRow("Start", String.valueOf(feature.getStart())));
+            sb.append(createTableRow("Stop", String.valueOf(feature.getStop())));
+        } else {
+            sb.append(createTableRow("Start", String.valueOf(feature.getStop())));
+            sb.append(createTableRow("Stop", String.valueOf(feature.getStart())));
+        }
         sb.append("</table>");
         sb.append("</html>");
         return sb.toString();
@@ -80,7 +86,6 @@ public class JRegion extends JComponent {
     private String createTableRow(String label, String value) {
         return "<tr><td align=\"right\"><b>" + label + ":</b></td><td align=\"left\">" + value + "</td></tr>";
     }
-
 
     @Override
     public void paintComponent(Graphics graphics) {
