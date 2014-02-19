@@ -30,18 +30,19 @@ import org.openide.util.Utilities;
 @ActionReference(path = "Menu/Window", position = 333)
 @Messages({
     "CTL_MappingAction=ReferenceView",
-    "CTL_TopComponentViewer=Mapping Window",
-})
+    "CTL_TopComponentViewer=Mapping Window",})
 public final class TopComponentViewer extends TopComponent {
 
     private MGXMaster currentMaster = null;
     private final Lookup.Result<MGXMaster> mgxMasterResult;
     private Reference reference;
     private Mapping mapping;
-
+    private static TopComponentViewer instance;
+    
     public TopComponentViewer(Reference reference, Mapping mapping) {
         this.reference = reference;
         this.mapping = mapping;
+        instance = this;
         mgxMasterResult = Utilities.actionsGlobalContext().lookupResult(MGXMaster.class);
         setName(Bundle.CTL_TopComponentViewer());
     }
@@ -113,5 +114,9 @@ public final class TopComponentViewer extends TopComponent {
 
     void readProperties(java.util.Properties p) {
         String version = p.getProperty("version");
+    }
+
+    public static TopComponentViewer getInstance() {
+        return instance;
     }
 }

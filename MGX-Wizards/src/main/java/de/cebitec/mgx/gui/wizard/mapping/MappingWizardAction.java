@@ -67,8 +67,13 @@ public final class MappingWizardAction implements ActionListener {
         wiz.setTitleFormat(new MessageFormat("{0}"));
         wiz.setTitle("Mapping Wizard");
         if (DialogDisplayer.getDefault().notify(wiz) == WizardDescriptor.FINISH_OPTION) {
-            MappingEntry mapping = (MappingEntry) wiz.getProperty(MappingVisualPanel1.PROP_MAPPING);
+            MappingEntry mapping = (MappingEntry) wiz.getProperty(MappingVisualPanel1.PROP_MAPPING); 
+            if (TopComponentViewer.getInstance() != null) {
+                TopComponentViewer.getInstance().close();
+            }
             TopComponentViewer component = new TopComponentViewer(mapping.getReference(), mapping.getMapping());
+            
+           
             component.open();
         }
     }
