@@ -11,18 +11,25 @@ import de.cebitec.mgx.gui.datamodel.Reference;
 import de.cebitec.mgx.gui.datamodel.Region;
 import de.cebitec.mgx.gui.mapping.viewer.AbstractViewer;
 import de.cebitec.mgx.gui.mapping.sequences.ReferenceHolder;
+import de.cebitec.mgx.gui.mapping.viewer.positions.BoundsInfo;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import org.openide.util.Exceptions;
 
 /**
  *
  * @author belmann
  */
-public class RegionLoader extends Loader {
+public class RegionLoader implements Loader {
 
     private Cache<Set<Region>> cache;
+    private AbstractViewer viewer;
+    private MGXMaster master;
+    private Reference reference;
 
     public RegionLoader(MGXMaster master, Reference reference) {
-        super(master, reference);
+        this.reference = reference;
+        this.master = master;
         cache = CacheFactory.createRegionCache(master, reference);
     }
 
@@ -30,5 +37,10 @@ public class RegionLoader extends Loader {
     public void startWorker(AbstractViewer viewer) {
         RegionWorker regionsWorker = new RegionWorker(viewer, master, reference, cache);
         regionsWorker.execute();
+        try {
+            viewer.setSequences(regionsWorker.get());
+        } catch (InterruptedException | ExecutionException ex) {
+            Exceptions.printStackTrace(ex);
+        }
     }
 }

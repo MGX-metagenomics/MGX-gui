@@ -41,7 +41,7 @@ public class ReadsWorker extends SwingWorker<Iterator<MappedSequence>, Void> {
 
     @Override
     protected Iterator<MappedSequence> doInBackground() throws Exception {
-        Thread.currentThread().setName("MyReadsWorker");
+        Thread.currentThread().setName("ReadsWorker");
         int left = viewer.getBoundsInfo().getLogLeft();
         int right = viewer.getBoundsInfo().getLogRight();
         Iterator<MappedSequence> iter;
@@ -71,9 +71,7 @@ public class ReadsWorker extends SwingWorker<Iterator<MappedSequence>, Void> {
                     if (get()) {
                         updateViewer();
                     }
-                } catch (InterruptedException ex) {
-                    Exceptions.printStackTrace(ex);
-                } catch (ExecutionException ex) {
+                } catch (        InterruptedException | ExecutionException ex) {
                     Exceptions.printStackTrace(ex);
                 }
             }

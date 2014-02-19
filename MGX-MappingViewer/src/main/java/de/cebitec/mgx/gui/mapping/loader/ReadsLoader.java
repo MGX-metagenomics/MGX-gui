@@ -13,18 +13,20 @@ import de.cebitec.mgx.gui.mapping.viewer.AbstractViewer;
 import java.util.List;
 import java.util.UUID;
 
-
 /**
  *
  * @author belmann
  */
-public class ReadsLoader extends Loader {
+public class ReadsLoader implements Loader {
 
     private final Cache<List<MappedSequence>> cache;
+    private Reference reference;
+    private MGXMaster master;
 
     public ReadsLoader(MGXMaster master, Reference reference, UUID uuid) {
-        super(master, reference);
         this.cache = CacheFactory.createMappedSequenceCache(master, reference, uuid);
+        this.reference = reference;
+        this.master = master;
     }
 
     @Override
