@@ -5,7 +5,6 @@ import de.cebitec.mgx.gui.datamodel.misc.Task;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.UUID;
 
 /**
  *
@@ -42,20 +41,20 @@ public abstract class AccessBase<T> {
 
     public abstract Task delete(T obj);
 
-    /*
-     * from http://snippets.dzone.com/posts/show/91
-     */
-    protected static String join(Iterable< ? extends Object> pColl, String separator) {
-        Iterator< ? extends Object> oIter;
-        if (pColl == null || (!(oIter = pColl.iterator()).hasNext())) {
-            return "";
-        }
-        StringBuilder oBuilder = new StringBuilder(String.valueOf(oIter.next()));
-        while (oIter.hasNext()) {
-            oBuilder.append(separator).append(oIter.next());
-        }
-        return oBuilder.toString();
-    }
+//    /*
+//     * from http://snippets.dzone.com/posts/show/91
+//     */
+//    protected static String join(Iterable< ? extends Object> pColl, String separator) {
+//        Iterator< ? extends Object> oIter;
+//        if (pColl == null || (!(oIter = pColl.iterator()).hasNext())) {
+//            return "";
+//        }
+//        StringBuilder oBuilder = new StringBuilder(String.valueOf(oIter.next()));
+//        while (oIter.hasNext()) {
+//            oBuilder.append(separator).append(oIter.next());
+//        }
+//        return oBuilder.toString();
+//    }
 
     protected static List<String> split(String message, String separator) {
         return Arrays.asList(message.split(separator));

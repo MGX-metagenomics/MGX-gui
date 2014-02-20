@@ -12,7 +12,7 @@ import de.cebitec.mgx.gui.datamodel.misc.Point;
  *
  * @author sj
  */
-public class PointDTOFactory extends DTOConversionBase<Point, PointDTO> {
+public class PointDTOFactory extends DTOConversionBase<double[], PointDTO> {
 
     static {
         instance = new PointDTOFactory();
@@ -27,12 +27,12 @@ public class PointDTOFactory extends DTOConversionBase<Point, PointDTO> {
     }
 
     @Override
-    public PointDTO toDTO(Point a) {
+    public PointDTO toDTO(double[] a) {
         throw new UnsupportedOperationException("Not supported.");
     }
 
     @Override
-    public Point toModel(PointDTO dto) {
-        return new Point(dto.getX(), dto.getY());
+    public double[] toModel(PointDTO dto) {
+        return new double[]{dto.getX(), dto.getY()};
     }
 }

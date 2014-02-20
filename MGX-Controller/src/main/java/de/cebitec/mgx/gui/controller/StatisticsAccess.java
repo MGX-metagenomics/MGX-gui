@@ -27,14 +27,13 @@ import org.openide.util.Exceptions;
  */
 public class StatisticsAccess extends AccessBase<Point> {
 
-    public Iterator<Point> Rarefaction(Distribution dist) {
+    public Iterator<double[]> Rarefaction(Distribution dist) {
         try {
             Iterator<PointDTO> fetchall = getDTOmaster().Statistics().Rarefaction(dist.values());
-            return new BaseIterator<PointDTO, Point>(fetchall) {
+            return new BaseIterator<PointDTO, double[]>(fetchall) {
                 @Override
-                public Point next() {
-                    Point h = PointDTOFactory.getInstance().toModel(iter.next());
-                    return h;
+                public double[] next() {
+                    return PointDTOFactory.getInstance().toModel(iter.next());
                 }
             };
         } catch (MGXServerException | MGXClientException ex) {

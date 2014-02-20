@@ -98,13 +98,14 @@ public class AttributeAccess extends AccessBase<Attribute> {
 //        return res;
 //    }
     public Distribution getDistribution(long attrType_id, long job_id) {
-        Map<Attribute, Long> res = new HashMap<>();
+        Map<Attribute, Long> res;
         long total = 0;
         try {
             AttributeDistribution distribution = getDTOmaster().Attribute().getDistribution(attrType_id, job_id);
-
+            res = new HashMap<>(distribution.getAttributeCountsCount());
+            
             // convert and save types first
-            Map<Long, AttributeType> types = new HashMap<>();
+            Map<Long, AttributeType> types = new HashMap<>(distribution.getAttributeTypeCount());
             for (AttributeTypeDTO at : distribution.getAttributeTypeList()) {
                 types.put(at.getId(), AttributeTypeDTOFactory.getInstance().toModel(at));
             }
@@ -169,40 +170,34 @@ public class AttributeAccess extends AccessBase<Attribute> {
     }
 
     public Tree<Long> getHierarchy(long attrType_id, long job_id) {
-        Map<Attribute, Long> res = new HashMap<>();
+        Map<Attribute, Long> res;
         try {
             AttributeDistribution distribution = getDTOmaster().Attribute().getHierarchy(attrType_id, job_id);
-
+            res = new HashMap<>(distribution.getAttributeTypeCount());
+            
             // convert and save types first
             Map<Long, AttributeType> types = new HashMap<>();
             for (AttributeTypeDTO at : distribution.getAttributeTypeList()) {
                 types.put(at.getId(), AttributeTypeDTOFactory.getInstance().toModel(at));
             }
 
-            int numRoots = 0;
 
             // convert attribute and fill in the attributetypes
             for (AttributeCount ac : distribution.getAttributeCountsList()) {
                 Attribute attr = AttributeDTOFactory.getInstance().toModel(ac.getAttribute());
-                if (attr.getParentID() == Identifiable.INVALID_IDENTIFIER) {
-                    numRoots++;
-                }
                 attr.setAttributeType(types.get(ac.getAttribute().getAttributeTypeId()));
                 attr.setMaster(getMaster());
                 assert !res.containsKey(attr); // no duplicates allowed
                 res.put(attr, ac.getCount());
             }
 
-            assert numRoots == 1; //only one root
 
         } catch (MGXServerException ex) {
             Logger.getLogger(AttributeAccess.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
 
-        Checker.sanityCheck(res.keySet());
         Tree<Long> ret = TreeFactory.createTree(res);
-        assert ret.getNodes().size() == res.size();
         return ret;
     }
 
@@ -231,24 +226,24 @@ public class AttributeAccess extends AccessBase<Attribute> {
         return ret;
     }
 
-    private boolean checkHasValue(Set<Attribute> set, String value) {
-        for (Attribute a : set) {
-            if (a.getValue().equals(value)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private int countValues(Set<Attribute> set, String val) {
-        int cnt = 0;
-        for (Attribute a : set) {
-            if (a.getValue().equals(val)) {
-                cnt++;
-            }
-        }
-        return cnt;
-    }
+//    private boolean checkHasValue(Set<Attribute> set, String value) {
+//        for (Attribute a : set) {
+//            if (a.getValue().equals(value)) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
+//
+//    private int countValues(Set<Attribute> set, String val) {
+//        int cnt = 0;
+//        for (Attribute a : set) {
+//            if (a.getValue().equals(val)) {
+//                cnt++;
+//            }
+//        }
+//        return cnt;
+//    }
 //    private static void sanityCheck(Set<Attribute> map) {
 //        for (Attribute a : map) {
 //            if (a.getId() != Identifiable.INVALID_IDENTIFIER) {
