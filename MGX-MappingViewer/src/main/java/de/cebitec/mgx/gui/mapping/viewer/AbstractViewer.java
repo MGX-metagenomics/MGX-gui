@@ -89,6 +89,7 @@ public abstract class AbstractViewer<Sequence> extends JPanel implements ICurren
         inDrawingMode = true;
 
         // sets min, max and preferred size
+        this.setPreferredSize(new Dimension(1, 3));
         this.setSizes();
 
         // init physical bounds

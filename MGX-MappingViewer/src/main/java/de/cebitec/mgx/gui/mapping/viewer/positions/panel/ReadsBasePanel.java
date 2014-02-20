@@ -10,6 +10,8 @@ import de.cebitec.mgx.gui.mapping.viewer.positions.MousePositionListenerI;
 import de.cebitec.mgx.gui.mapping.viewer.AbstractViewer;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JPanel;
@@ -31,9 +33,7 @@ public class ReadsBasePanel extends JPanel implements IBasePanel {
     public ReadsBasePanel(BoundsInfoManager boundsManager) {
         this.setLayout(new BorderLayout());
         this.boundsManager = boundsManager;
-//        this.viewController = viewController;
         this.currentMousePosListeners = new ArrayList();
-//        this.setBorder(BorderFactory.createLineBorder(Color.BLUE));
     }
 
     @Override
@@ -65,7 +65,6 @@ public class ReadsBasePanel extends JPanel implements IBasePanel {
 
     @Override
     public void reportCurrentMousePos(int currentLogMousePos) {
-//        viewController.setCurrentMousePosition(currentLogMousePos);
     }
 
     @Override
@@ -128,11 +127,19 @@ public class ReadsBasePanel extends JPanel implements IBasePanel {
         this.centerScrollpane = new JScrollPane(this.viewer);
         this.centerScrollpane.setPreferredSize(new Dimension(490, 400));
         this.centerScrollpane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        this.centerScrollpane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        this.centerScrollpane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         this.add(this.centerScrollpane, BorderLayout.CENTER);
         this.centerScrollpane.setVisible(true);
         this.viewer.setVisible(true);
         this.viewer.setScrollBar(this.centerScrollpane.getVerticalScrollBar());
+        this.viewer.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                super.componentResized(e);
+                centerScrollpane.updateUI();
+
+            }
+        });
 
         this.updateSize();
     }
@@ -140,7 +147,6 @@ public class ReadsBasePanel extends JPanel implements IBasePanel {
     @Override
     public void setViewerInScrollpane(AbstractViewer viewer, JSlider verticalZoom) {
     }
-
 
     private void updateSize() {
         this.setMaximumSize(new Dimension(Integer.MAX_VALUE, this.getPreferredSize().height));

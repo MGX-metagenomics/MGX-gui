@@ -57,7 +57,6 @@ public class BasePanelFactory {
     public ReadsBasePanel getReadViewerBasePanel(final Mapping mapping) throws InterruptedException, ExecutionException {
 
         ReadsBasePanel readsBasePanel = new ReadsBasePanel(boundsManager);
-//        readsBasePanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
         UUID uuid = loadMapping(mapping);
 

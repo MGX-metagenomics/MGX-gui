@@ -15,7 +15,6 @@ import de.cebitec.mgx.gui.mapping.viewer.positions.panel.ReadsBasePanel;
 import de.cebitec.mgx.gui.mapping.sequences.ReferenceHolder;
 import de.cebitec.mgx.gui.mapping.viewer.AbstractViewer;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -32,7 +31,7 @@ import org.openide.util.Exceptions;
  */
 public class ReadsViewer extends AbstractViewer<MappedSequence> {
 
-    private static int VIEW_HEIGHT = 1000;
+    private int viewHeight = 250;
     private static final int LABEL_MARGIN = 3;
     private Map<Integer, IdentityLayer> layersMap;
     private static final int MARGIN_TO_NEXT_IDENTITY_LAYER = 5;
@@ -42,13 +41,12 @@ public class ReadsViewer extends AbstractViewer<MappedSequence> {
         super(boundsInfoManager, basePanel, refGenome, loader);
         super.setVerticalMargin(10);
         super.setHorizontalMargin(40);
-        setViewerSize();
         layersMap = new HashMap<>();
     }
 
     @Override
     protected int getMaximalHeight() {
-        return VIEW_HEIGHT;
+        return viewHeight;
     }
 
     @Override
@@ -66,11 +64,6 @@ public class ReadsViewer extends AbstractViewer<MappedSequence> {
         synchronized (this) {
             this.removeAll();
         }
-    }
-
-    private void setViewerSize() {
-        this.setPreferredSize(new Dimension(1, 230));
-        this.revalidate();
     }
 
     @Override
@@ -201,7 +194,8 @@ public class ReadsViewer extends AbstractViewer<MappedSequence> {
                 offset += MARGIN_TO_NEXT_IDENTITY_BORDER + layerPosition;
             }
         }
-        this.repaint();
+        this.viewHeight = offset + 10;
+        this.updatePhysicalBounds();
     }
 
     /**

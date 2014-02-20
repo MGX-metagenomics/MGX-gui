@@ -21,7 +21,6 @@ import org.openide.util.Exceptions;
 public class RegionLoader implements Loader {
 
     private Cache<Set<Region>> cache;
-    private AbstractViewer viewer;
     private MGXMaster master;
     private Reference reference;
 
