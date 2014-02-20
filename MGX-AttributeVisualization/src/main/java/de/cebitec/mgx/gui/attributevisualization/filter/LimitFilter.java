@@ -21,8 +21,8 @@ public class LimitFilter implements VisFilterI<Distribution> {
         TOP25("Top 25", 25),
         TOP50("Top 50", 50),
         TOP100("Top 100", 100);
-        private String s;
-        private int l;
+        private final String s;
+        private final int l;
 
         private LIMITS(String s, int c) {
             this.s = s;
