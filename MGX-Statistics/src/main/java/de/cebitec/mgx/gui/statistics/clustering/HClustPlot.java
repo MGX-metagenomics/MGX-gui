@@ -9,10 +9,11 @@ import de.cebitec.mgx.gui.datamodel.misc.Pair;
 import de.cebitec.mgx.gui.groups.ImageExporterI;
 import de.cebitec.mgx.gui.groups.VGroupManager;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
+import de.cebitec.mgx.newick.NewickParser;
+import de.cebitec.mgx.newick.NewickParser.TreeNode;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import javax.swing.JComponent;
-import javax.swing.JTextArea;
 import javax.swing.SwingWorker;
 import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
@@ -42,21 +43,22 @@ public class HClustPlot extends ViewerI<Distribution> {
 
         cPanel = new DelayedPlot();
 
-        SwingWorker<String, Void> worker = new SwingWorker<String, Void>() {
+        SwingWorker<TreeNode, Void> worker = new SwingWorker<TreeNode, Void>() {
 
             @Override
-            protected String doInBackground() throws Exception {
+            protected TreeNode doInBackground() throws Exception {
                 MGXMaster m = (MGXMaster) dists.get(0).getSecond().getMaster();
-                return m.Statistics().Clustering(dists, customizer.getDistanceMethod(), customizer.getAgglomeration());
+                String newick = m.Statistics().Clustering(dists, customizer.getDistanceMethod(), customizer.getAgglomeration());
+                return new NewickParser(newick).tree();
             }
 
             @Override
             protected void done() {
                 try {
                     DelayedPlot wp = HClustPlot.this.cPanel;
-                    String nwk = get();
-                    JTextArea area = new JTextArea(nwk);
-                    wp.setTarget(area);
+                    TreeNode nwk = get();
+                    //JTextArea area = new JTextArea(nwk);
+                    //wp.setTarget(area);
                 } catch (InterruptedException | ExecutionException ex) {
                     Exceptions.printStackTrace(ex);
                 }
