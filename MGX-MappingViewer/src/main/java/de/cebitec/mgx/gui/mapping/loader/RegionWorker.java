@@ -6,13 +6,11 @@ package de.cebitec.mgx.gui.mapping.loader;
 
 import de.cebitec.mgx.gui.cache.Cache;
 import de.cebitec.mgx.gui.controller.MGXMaster;
-import de.cebitec.mgx.gui.datamodel.MappedSequence;
 import de.cebitec.mgx.gui.datamodel.Reference;
 import de.cebitec.mgx.gui.datamodel.Region;
 import de.cebitec.mgx.gui.mapping.viewer.AbstractViewer;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
 import javax.swing.SwingWorker;

@@ -10,8 +10,6 @@ import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.Reference;
 import de.cebitec.mgx.gui.datamodel.Region;
 import de.cebitec.mgx.gui.mapping.viewer.AbstractViewer;
-import de.cebitec.mgx.gui.mapping.sequences.ReferenceHolder;
-import de.cebitec.mgx.gui.mapping.viewer.positions.BoundsInfo;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import org.openide.util.Exceptions;

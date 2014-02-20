@@ -31,7 +31,7 @@ public class ReadsLoader implements Loader {
 
     @Override
     public void startWorker(AbstractViewer viewer) {
-        ReadsWorker readsWorker = new ReadsWorker(master, viewer, reference, cache);
+        ReadsWorker readsWorker = new ReadsWorker(viewer, cache);
         readsWorker.execute();
     }
 }
