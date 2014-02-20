@@ -12,7 +12,6 @@ import de.cebitec.mgx.gui.rarefaction.Rarefaction;
 import de.cebitec.mgx.gui.swingutils.NonEDT;
 import de.cebitec.mgx.gui.util.FileChooserUtils;
 import de.cebitec.mgx.gui.util.FileType;
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
@@ -20,7 +19,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import javax.swing.JComponent;
-import javax.swing.JPanel;
 import javax.swing.SwingWorker;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -136,11 +134,10 @@ public class RarefactionCurve extends ViewerI<Distribution> {
                 public void run() {
                     XYSeries series = new XYSeries(groupDistribution.getFirst().getName());
                     Distribution dist = groupDistribution.getSecond();
-                    Iterator<Point> iter = Rarefaction.rarefy(dist);
+                    Iterator<double[]> iter = Rarefaction.rarefy(dist);
                     while (iter.hasNext()) {
-                        Point p = iter.next();
-                        //System.err.println(p.getX() + "/" + p.getY());
-                        series.add(p.getX(), p.getY());
+                        double[] p = iter.next();
+                        series.add(p[0], p[1]);
                     }
                     dataset.addSeries(series);
                 }
