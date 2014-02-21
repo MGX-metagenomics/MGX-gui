@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.cebitec.mgx.gui.mapping.viewer.readsviewer;
+package de.cebitec.mgx.gui.mapping.misc;
 
 import java.util.ArrayList;
 

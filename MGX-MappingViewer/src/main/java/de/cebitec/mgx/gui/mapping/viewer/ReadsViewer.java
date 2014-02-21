@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.cebitec.mgx.gui.mapping.viewer.readsviewer;
+package de.cebitec.mgx.gui.mapping.viewer;
 
 import de.cebitec.mgx.gui.mapping.sequences.MappedSequenceHolder;
 import de.cebitec.mgx.gui.mapping.sequences.JMappedSequence;
@@ -14,6 +14,8 @@ import de.cebitec.mgx.gui.mapping.misc.ColorProperties;
 import de.cebitec.mgx.gui.mapping.viewer.positions.panel.ReadsBasePanel;
 import de.cebitec.mgx.gui.mapping.sequences.ReferenceHolder;
 import de.cebitec.mgx.gui.mapping.viewer.AbstractViewer;
+import de.cebitec.mgx.gui.mapping.misc.IdentityLayer;
+import de.cebitec.mgx.gui.mapping.misc.Layer;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
