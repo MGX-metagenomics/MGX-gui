@@ -86,7 +86,7 @@ public class CacheTest {
             }
         }
         GPMSClientI gpms = new GPMS("MyServer", serverURI);
-        if (!gpms.login("mgx_unittest", "gut-isM5iNt")) {
+        if (!gpms.login("mgx_unittestRO", "gut-isM5iNt")) {
             fail();
         }
         for (MembershipI m : gpms.getMemberships()) {
