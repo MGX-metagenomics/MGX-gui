@@ -8,15 +8,22 @@ import de.cebitec.mgx.gui.mapping.viewer.positions.AdjustmentPanel;
 import de.cebitec.mgx.gui.mapping.viewer.positions.BoundsInfoManager;
 import de.cebitec.mgx.gui.mapping.viewer.positions.MousePositionListenerI;
 import de.cebitec.mgx.gui.mapping.viewer.AbstractViewer;
+import de.cebitec.mgx.gui.mapping.viewer.ReferenceViewer;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.BorderFactory;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 /**
  *
@@ -24,6 +31,7 @@ import javax.swing.JSlider;
  */
 public class ReadsBasePanel extends JPanel implements IBasePanel {
 
+    private JPanel horizontalScrollbarPlaceholder;
     private BoundsInfoManager boundsManager;
     private List<MousePositionListenerI> currentMousePosListeners;
     private MousePositionListenerI viewController;
@@ -34,6 +42,7 @@ public class ReadsBasePanel extends JPanel implements IBasePanel {
         this.setLayout(new BorderLayout());
         this.boundsManager = boundsManager;
         this.currentMousePosListeners = new ArrayList();
+        horizontalScrollbarPlaceholder = new JPanel();
     }
 
     @Override
@@ -121,15 +130,32 @@ public class ReadsBasePanel extends JPanel implements IBasePanel {
 
     @Override
     public void setViewerInScrollpane(AbstractViewer viewer) {
+
+        horizontalScrollbarPlaceholder.add(new JLabel(" "));
+        horizontalScrollbarPlaceholder.setLayout(new FlowLayout(FlowLayout.RIGHT));
         this.viewer = viewer;
         this.boundsManager.addBoundsListener(viewer);
         this.currentMousePosListeners.add(viewer);
+        this.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.BLACK));
         this.centerScrollpane = new JScrollPane(this.viewer);
+        this.centerScrollpane.setBorder(BorderFactory.createEmptyBorder());
+        this.centerScrollpane.setViewportBorder(BorderFactory.createEmptyBorder());
         this.centerScrollpane.setPreferredSize(new Dimension(490, 400));
         this.centerScrollpane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         this.centerScrollpane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         this.add(this.centerScrollpane, BorderLayout.CENTER);
         this.centerScrollpane.setVisible(true);
+        this.centerScrollpane.getViewport().addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                if (centerScrollpane.getVerticalScrollBar().isVisible()) {
+                    remove(horizontalScrollbarPlaceholder);
+                } else {
+                    add(horizontalScrollbarPlaceholder, BorderLayout.EAST);
+                }
+                revalidate();
+            }
+        });
         this.viewer.setVisible(true);
         this.viewer.setScrollBar(this.centerScrollpane.getVerticalScrollBar());
         this.viewer.addComponentListener(new ComponentAdapter() {

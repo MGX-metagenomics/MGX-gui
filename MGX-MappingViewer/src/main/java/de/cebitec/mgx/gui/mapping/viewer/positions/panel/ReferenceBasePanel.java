@@ -4,7 +4,6 @@ import de.cebitec.mgx.gui.mapping.viewer.positions.AdjustmentPanel;
 import de.cebitec.mgx.gui.mapping.viewer.positions.BoundsInfoManager;
 import de.cebitec.mgx.gui.mapping.viewer.positions.MousePositionListenerI;
 import de.cebitec.mgx.gui.mapping.viewer.AbstractViewer;
-import de.cebitec.mgx.gui.mapping.viewer.ReferenceViewer;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -176,12 +175,10 @@ public class ReferenceBasePanel extends JPanel implements IBasePanel {
      * Adds a placeholder in case this viewer is a ReferenceViewer
      */
     private void addPlaceholder() {
-        if (viewer instanceof ReferenceViewer) {
             JPanel p = new JPanel();
             p.add(new JLabel(" "));
             p.setLayout(new FlowLayout(FlowLayout.RIGHT));
             centerPanel.add(p, BorderLayout.EAST);
-        }
     }
 
     @Override
@@ -215,7 +212,6 @@ public class ReferenceBasePanel extends JPanel implements IBasePanel {
 
     @Override
     public void reportCurrentMousePos(int currentLogMousePos) {
-//        viewController.setCurrentMousePosition(currentLogMousePos);
     }
 
     @Override
@@ -227,7 +223,6 @@ public class ReferenceBasePanel extends JPanel implements IBasePanel {
 
     @Override
     public void reportMouseOverPaintingStatus(boolean b) {
-//        viewController.setMouseOverPaintingRequested(b);
     }
 
     @Override

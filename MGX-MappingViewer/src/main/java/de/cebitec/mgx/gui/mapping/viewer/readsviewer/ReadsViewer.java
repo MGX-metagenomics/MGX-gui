@@ -196,6 +196,7 @@ public class ReadsViewer extends AbstractViewer<MappedSequence> {
         }
         this.viewHeight = offset + 10;
         this.updatePhysicalBounds();
+        this.revalidate();
     }
 
     /**
