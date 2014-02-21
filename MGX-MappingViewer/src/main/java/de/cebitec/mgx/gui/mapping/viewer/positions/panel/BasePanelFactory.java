@@ -27,9 +27,9 @@ import org.openide.util.Exceptions;
  */
 public class BasePanelFactory {
 
-    private BoundsInfoManager boundsManager;
-    private ReferenceHolder refHolder;
-    private MGXMaster master;
+    private final BoundsInfoManager boundsManager;
+    private final ReferenceHolder refHolder;
+    private final MGXMaster master;
 
     public BasePanelFactory(Reference reference, MGXMaster master) {
         this.master = master;
@@ -105,7 +105,7 @@ public class BasePanelFactory {
             @Override
             protected String doInBackground() throws Exception {
                 int length = reference.getLength();
-                return master.Reference().getSequence(reference.getId(), 0, length - 1);
+                return master.Reference().getSequence(reference, 0, length - 1);
             }
         };
         referenceSequenceWorker.execute();

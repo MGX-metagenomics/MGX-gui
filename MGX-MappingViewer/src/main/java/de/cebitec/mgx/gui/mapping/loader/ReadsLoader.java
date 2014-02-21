@@ -20,13 +20,9 @@ import java.util.UUID;
 public class ReadsLoader implements Loader {
 
     private final Cache<List<MappedSequence>> cache;
-    private Reference reference;
-    private MGXMaster master;
 
     public ReadsLoader(MGXMaster master, Reference reference, UUID uuid) {
         this.cache = CacheFactory.createMappedSequenceCache(master, reference, uuid);
-        this.reference = reference;
-        this.master = master;
     }
 
     @Override
