@@ -7,7 +7,13 @@ import de.cebitec.mgx.gui.groups.ImageExporterI;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import de.cebitec.mgx.gui.util.FileChooserUtils;
 import de.cebitec.mgx.gui.util.FileType;
+import java.awt.Paint;
+import java.awt.PaintContext;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.ColorModel;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -16,6 +22,8 @@ import java.util.List;
 import java.util.Map;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.LegendItem;
+import org.jfree.chart.LegendItemCollection;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultKeyedValues2DDataset;
 import org.jfree.data.general.KeyedValues2DDataset;
@@ -32,15 +40,23 @@ import org.openide.util.Exceptions;
  */
 public class JFreeChartUtil {
 
+    public static LegendItemCollection createLegend(List<Pair<VisualizationGroup, Distribution>> in) {
+        LegendItemCollection ret = new LegendItemCollection();
+        for (Pair<VisualizationGroup, Distribution> gd : in) {
+            LegendItem li = new LegendItem(gd.getFirst().getName());
+            li.setFillPaint(gd.getFirst().getColor());
+            li.setToolTipText("Classified sequences in "+gd.getFirst().getName()+": "+ gd.getSecond().getTotalClassifiedElements());
+            ret.add(li);
+        }
+        return ret;
+    }
+
     public static DefaultCategoryDataset createCategoryDataset(List<Pair<VisualizationGroup, Distribution>> in) {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
         for (Pair<VisualizationGroup, Distribution> groupDistribution : in) {
             Distribution d = groupDistribution.getSecond();
 
             for (Map.Entry<Attribute, ? extends Number> entry : d.entrySet()) {
-//                if (entry.getValue().doubleValue() <= 0.0) {
-//                    System.err.println("error at " + entry.getKey().getValue());
-//                }
                 dataset.addValue(entry.getValue(), groupDistribution.getFirst().getName(), entry.getKey().getValue());
             }
         }

@@ -70,7 +70,9 @@ public class BarChartViewer extends CategoricalViewerI {
         chart.setBackgroundPaint(Color.WHITE);
         chart.setAntiAlias(true);
         cPanel = new ChartPanel(chart);
-        CategoryPlot plot = chart.getCategoryPlot();
+        CategoryPlot plot = chart.getCategoryPlot(); 
+        
+        plot.setFixedLegendItems(JFreeChartUtil.createLegend(dists));
 
         plot.setBackgroundPaint(Color.WHITE);
 
