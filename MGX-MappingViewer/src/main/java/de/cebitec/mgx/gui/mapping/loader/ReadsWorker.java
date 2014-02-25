@@ -6,7 +6,6 @@ package de.cebitec.mgx.gui.mapping.loader;
 
 import de.cebitec.mgx.gui.cache.Cache;
 import de.cebitec.mgx.gui.datamodel.MappedSequence;
-import de.cebitec.mgx.gui.mapping.misc.ICurrentTime;
 import de.cebitec.mgx.gui.mapping.viewer.AbstractViewer;
 import java.util.Iterator;
 import java.util.List;

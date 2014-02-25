@@ -16,6 +16,7 @@ import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import org.netbeans.api.progress.ProgressHandle;
 
 /**
  * Viewer for genome sequences / chromosomes.
@@ -31,6 +32,8 @@ public class ReferenceViewer extends AbstractViewer<Region> {
     private ArrayList<JRegion> features;
     private ArrayList<Region> regionList;
     private SequenceBar seqBar;
+    private ProgressHandle ph;
+    private boolean isRunning = false;
 
     /**
      * Creates a new reference viewer.
@@ -65,6 +68,10 @@ public class ReferenceViewer extends AbstractViewer<Region> {
     @Override
     public void boundsChangedHook() {
         this.seqBar.boundsChanged();
+        if (isRunning) {
+            ph.finish();
+            isRunning = false;
+        }
     }
 
     /**
@@ -247,6 +254,10 @@ public class ReferenceViewer extends AbstractViewer<Region> {
 
     @Override
     public void afterLoadingSequences(Iterator<Region> iter) {
+        if (isRunning) {
+            ph.finish();
+            isRunning = false;
+        }
         removeAll();
         features.clear();
         regionList.clear();

@@ -13,7 +13,6 @@ import de.cebitec.mgx.gui.mapping.loader.Loader;
 import de.cebitec.mgx.gui.mapping.misc.ColorProperties;
 import de.cebitec.mgx.gui.mapping.viewer.positions.panel.ReadsBasePanel;
 import de.cebitec.mgx.gui.mapping.sequences.ReferenceHolder;
-import de.cebitec.mgx.gui.mapping.viewer.AbstractViewer;
 import de.cebitec.mgx.gui.mapping.misc.IdentityLayer;
 import de.cebitec.mgx.gui.mapping.misc.Layer;
 import java.awt.Color;
@@ -25,6 +24,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import javax.swing.BorderFactory;
+import org.netbeans.api.progress.ProgressHandle;
+import org.netbeans.api.progress.ProgressHandleFactory;
 import org.openide.util.Exceptions;
 
 /**
@@ -38,6 +39,8 @@ public class ReadsViewer extends AbstractViewer<MappedSequence> {
     private Map<Integer, IdentityLayer> layersMap;
     private static final int MARGIN_TO_NEXT_IDENTITY_LAYER = 5;
     private static final int MARGIN_TO_NEXT_IDENTITY_BORDER = 5;
+    private ProgressHandle ph;
+    private boolean isRunning = false;
 
     public ReadsViewer(BoundsInfoManager boundsInfoManager, ReadsBasePanel basePanel, ReferenceHolder refGenome, Loader loader) {
         super(boundsInfoManager, basePanel, refGenome, loader);
@@ -63,8 +66,10 @@ public class ReadsViewer extends AbstractViewer<MappedSequence> {
 
     @Override
     public void boundsChangedHook() {
-        synchronized (this) {
-            this.removeAll();
+        if (!isRunning) {
+            ph = ProgressHandleFactory.createHandle("Loading Reads");
+            ph.start();
+            isRunning = true;
         }
     }
 
@@ -243,6 +248,10 @@ public class ReadsViewer extends AbstractViewer<MappedSequence> {
 
     @Override
     public void afterLoadingSequences(Iterator<MappedSequence> iter) {
+        if (isRunning) {
+            ph.finish();
+            isRunning = false;
+        }
         layersMap.clear();
         MappedSequence seq;
         while (iter.hasNext()) {
