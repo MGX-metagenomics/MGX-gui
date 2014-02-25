@@ -4,8 +4,8 @@ import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
+import java.awt.geom.RectangularShape;
 import java.awt.image.BufferedImage;
-import java.util.HashMap;
 import java.util.Map;
 import prefuse.Constants;
 import prefuse.render.LabelRenderer;
@@ -18,7 +18,6 @@ import prefuse.visual.VisualItem;
 public class PieNodeRenderer extends LabelRenderer {
 
     private final static int MIN_CIRCLE_SIZE = 30;
-    //private Map<VisualItem, Image> cache = new HashMap<>();
 
     public PieNodeRenderer() {
         setImagePosition(Constants.TOP);
@@ -26,22 +25,19 @@ public class PieNodeRenderer extends LabelRenderer {
     }
 
     @Override
-    protected Image getImage(VisualItem item) {
-        
-//        if (cache.containsKey(item)) {
-//            return cache.get(item);
-//        }
-        long totalCount = item.getLong(TreeView.nodeTotalElements);
-        String nodeLabel = item.getString(TreeView.nodeLabel);
-        
-        // create image and g2d object
-        int size = MIN_CIRCLE_SIZE + 10 * (int) Math.log(Math.round(2 * totalCount));
-        BufferedImage img = new BufferedImage(size + 1, size + 1, BufferedImage.TYPE_INT_ARGB);
-        final Graphics2D g2 = img.createGraphics();
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        Rectangle area = new Rectangle(size, size);
+    public void render(Graphics2D g2, VisualItem item) {
 
+        long totalCount = item.getLong(TreeView.nodeTotalElements);
+        int size = MIN_CIRCLE_SIZE + 10 * (int) Math.log(Math.round(2 * totalCount));
+        int radius = size / 2;
+
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        RectangularShape shape = (RectangularShape) getShape(item);
         
+        // bounding box for the pie chart
+        Rectangle area = new Rectangle((int) shape.getCenterX() - radius, (int) shape.getMinY(), size, size);
+
         Map<VisualizationGroup, Long> content = (Map<VisualizationGroup, Long>) item.get(TreeView.nodeContent);
         PieSlice[] slices = new PieSlice[content.size()];
         int i = 0;
@@ -50,7 +46,6 @@ public class PieNodeRenderer extends LabelRenderer {
             slices[i++] = new PieSlice(e.getValue(), e.getKey().getColor());
         }
 
-        
         // draw the slices, starting at 12 o'clock
         int startAngle = 90;
         for (i = slices.length - 1; i >= 0; i--) {
@@ -61,20 +56,26 @@ public class PieNodeRenderer extends LabelRenderer {
             g2.setColor(slices[i].color);
             startAngle = startAngle % 360;
 
+            // "angle overflow" - split into two separate parts
             if (startAngle + arcAngle > 360) {
                 int tmp = 360 - startAngle;
                 g2.fillArc(area.x, area.y, area.width, area.height, startAngle, tmp);
                 arcAngle = arcAngle - tmp;
                 startAngle = 0;
             }
-            g2.fillArc(area.x, area.y, area.width, area.height, startAngle, arcAngle);
+
+            if (i != 0) {
+                g2.fillArc(area.x, area.y, area.width, area.height, startAngle, arcAngle);
+            } else {
+                g2.fillArc(area.x, area.y, area.width, area.height, startAngle, 90 - startAngle);
+            }
 
             startAngle += arcAngle;
         }
 
         // pie chart border
         g2.setColor(Color.LIGHT_GRAY);
-        g2.drawOval(0, 0, size, size);
+        g2.drawOval(area.x, area.y, size, size);
 
         // centered label with total count 
         FontRenderContext frc = g2.getFontRenderContext();
@@ -82,16 +83,26 @@ public class PieNodeRenderer extends LabelRenderer {
         int height = fontMetrics.getHeight();
         int width = fontMetrics.stringWidth(String.valueOf(totalCount));
         TextLayout textlayout = new TextLayout(String.valueOf(totalCount), g2.getFont(), frc);
-        textlayout.draw(g2, size / 2 - width / 2, size / 2 + height / 2 - 1);
-        
-        //cache.put(item, img);
+        textlayout.draw(g2, area.x + (size / 2 - width / 2), area.y - 1 + (size / 2 + height / 2 - 1));
+
+        super.render(g2, item); // add the label itself
+    }
+
+    @Override
+    protected Image getImage(VisualItem item) {
+
+        long totalCount = item.getLong(TreeView.nodeTotalElements);
+
+        // create image and g2d object
+        int size = MIN_CIRCLE_SIZE + 10 * (int) Math.log(Math.round(2 * totalCount));
+        BufferedImage img = new BufferedImage(size + 1, size + 1, BufferedImage.TYPE_INT_ARGB);
         return img;
     }
 
     private class PieSlice {
 
-        double value;
-        Color color;
+        final double value;
+        final Color color;
 
         public PieSlice(double value, Color color) {
             this.value = value;

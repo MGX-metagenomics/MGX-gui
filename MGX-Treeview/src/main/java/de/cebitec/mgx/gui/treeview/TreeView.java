@@ -22,6 +22,7 @@ import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -111,6 +112,8 @@ public class TreeView extends HierarchicalViewerI {
         super.setAttributeType(aType);
         super.setTitle("Hierarchy view based on " + aType.getName());
     }
+    
+    private boolean showUnclassifieds = false;
 
     @Override
     public void show(List<Pair<VisualizationGroup, Tree<Long>>> trees) {
@@ -129,15 +132,15 @@ public class TreeView extends HierarchicalViewerI {
         Map<String, long[]> rankCounts = calculateRankCounts(combinedTree, groupOrder);
 
         initDisplay();
-
+        
         pTree = new prefuse.data.Tree();
-        pTree.getNodeTable().addColumn(nodeLabel, Attribute.class);
+        pTree.getNodeTable().addColumn(nodeLabel, String.class);
         pTree.getNodeTable().addColumn(nodeTotalElements, long.class);
-        pTree.getNodeTable().addColumn(sameRankCount, Map.class);
-        pTree.getNodeTable().addColumn(nodeContent, Map.class);
+        pTree.getNodeTable().addColumn(sameRankCount, Map.class);   
+        pTree.getNodeTable().addColumn(nodeContent, Map.class);  // map<vgroup, long>
 
         prefuse.data.Node rootNode = pTree.addRoot();
-        rootNode.set(nodeLabel, root.getAttribute());
+        rootNode.set(nodeLabel, root.getAttribute().getValue());
         rootNode.set(nodeContent, root.getContent());
         rootNode.set(nodeTotalElements, calculateNodeCount(root.getContent()));
         rootNode.set(sameRankCount, rankCounts);
@@ -165,28 +168,9 @@ public class TreeView extends HierarchicalViewerI {
         super.dispose();
     }
 
-//    private prefuse.data.Tree getPrefuseTree(Node<Map<VisualizationGroup, Long>> root, Map<String, Long[]> rankCounts) {
-//        prefuse.data.Tree  prefTree = new prefuse.data.Tree();
-//        prefTree.getNodeTable().addColumn(nodeLabel, Attribute.class);
-//        prefTree.getNodeTable().addColumn(nodeTotalElements, long.class);
-//        prefTree.getNodeTable().addColumn(sameRankCount, Map.class);
-//        prefTree.getNodeTable().addColumn(nodeContent, Map.class);
-//
-//
-//        prefuse.data.Node rootNode = prefTree.addRoot();
-//        rootNode.set(nodeLabel, root.getAttribute());
-//        rootNode.set(nodeContent, root.getContent());
-//        rootNode.set(nodeTotalElements, calculateNodeCount(root.getContent()));
-//        rootNode.set(sameRankCount, rankCounts);
-//
-//        for (Node<Map<VisualizationGroup, Long>> child : root.getChildren()) {
-//            addWithChildren(prefTree, rootNode, child, rankCounts);
-//        }
-//        return prefTree;
-//    }
     private static void addWithChildren(prefuse.data.Tree pTree, prefuse.data.Node parent, Node<Map<VisualizationGroup, Long>> node, Map<String, long[]> rankCounts) {
         prefuse.data.Node self = pTree.addChild(parent);
-        self.set(nodeLabel, node.getAttribute());
+        self.set(nodeLabel, node.getAttribute().getValue());
         self.set(nodeContent, node.getContent());
         self.set(nodeTotalElements, calculateNodeCount(node.getContent()));
         self.set(sameRankCount, rankCounts);
@@ -222,7 +206,7 @@ public class TreeView extends HierarchicalViewerI {
         //m_nodeRenderer = new LabelRenderer(nodeLabel);
         m_nodeRenderer = new PieNodeRenderer();
         m_nodeRenderer.setRenderType(ShapeRenderer.RENDER_TYPE_FILL);
-        m_nodeRenderer.setHorizontalAlignment(Constants.LEFT);
+        m_nodeRenderer.setHorizontalAlignment(Constants.CENTER); // was: left
         m_nodeRenderer.setRoundedCorner(8, 8);
         m_edgeRenderer = new EdgeRenderer(Constants.EDGE_TYPE_CURVE);
 
@@ -231,7 +215,7 @@ public class TreeView extends HierarchicalViewerI {
         visualization.setRendererFactory(rf);
 
         // colors
-        ItemAction nodeColor = new NodeColorAction(treeNodes);
+        //ItemAction nodeColor = new NodeColorAction(treeNodes);
         ItemAction textColor = new ColorAction(treeNodes,
                 VisualItem.TEXTCOLOR, ColorLib.rgb(0, 0, 0));
         visualization.putAction("textColor", textColor);
@@ -241,13 +225,13 @@ public class TreeView extends HierarchicalViewerI {
 
         // quick repaint
         ActionList repaint = new ActionList();
-        repaint.add(nodeColor);
+        //repaint.add(nodeColor);
         repaint.add(new RepaintAction());
         visualization.putAction("repaint", repaint);
 
         // full paint
         ActionList fullPaint = new ActionList();
-        fullPaint.add(nodeColor);
+        //fullPaint.add(nodeColor);
         visualization.putAction("fullPaint", fullPaint);
 
         // animate paint change
@@ -275,7 +259,7 @@ public class TreeView extends HierarchicalViewerI {
         filter.add(treeLayout);
         filter.add(subLayout);
         filter.add(textColor);
-        filter.add(nodeColor);
+      //  filter.add(nodeColor);
         filter.add(edgeColor);
         visualization.putAction("filter", filter);
 
@@ -356,9 +340,7 @@ public class TreeView extends HierarchicalViewerI {
             String rankName = node.getAttribute().getAttributeType().getName();
             if (!ret.containsKey(rankName)) {
                 long[] current = new long[groupOrder.length];
-                for (int i = 0; i < current.length; i++) {
-                    current[i] = 0;
-                }
+                Arrays.fill(current, 0);
                 ret.put(rankName, current);
             }
             long[] current = ret.get(rankName);
@@ -450,7 +432,7 @@ public class TreeView extends HierarchicalViewerI {
 
     public class OrientAction extends AbstractAction {
 
-        private int orientation;
+        private final int orientation;
 
         public OrientAction(int orientation) {
             this.orientation = orientation;
@@ -467,10 +449,10 @@ public class TreeView extends HierarchicalViewerI {
 
     public class AutoPanAction extends Action {
 
-        private Point2D m_start = new Point2D.Double();
-        private Point2D m_end = new Point2D.Double();
-        private Point2D m_cur = new Point2D.Double();
-        private int m_bias = 150;
+        private final Point2D m_start = new Point2D.Double();
+        private final Point2D m_end = new Point2D.Double();
+        private final Point2D m_cur = new Point2D.Double();
+        private final int m_bias = 150;
 
         @Override
         public void run(double frac) {
