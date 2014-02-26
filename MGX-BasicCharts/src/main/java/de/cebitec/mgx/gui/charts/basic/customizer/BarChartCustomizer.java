@@ -18,36 +18,35 @@ import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import de.cebitec.mgx.gui.swingutils.NonEDT;
 import de.cebitec.mgx.gui.util.Reference;
 import de.cebitec.mgx.gui.attributevisualization.sorter.SortByNumberOfValues;
-import java.awt.BorderLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.concurrent.ExecutionException;
 import javax.swing.AbstractListModel;
 import javax.swing.ComboBoxModel;
-import javax.swing.SwingWorker;
 import javax.swing.event.ListDataEvent;
-import org.openide.util.Exceptions;
 
 /**
  *
  * @author sjaenick
  */
-public class BarChartCustomizer extends javax.swing.JPanel implements VisFilterI<Distribution> {
+public class BarChartCustomizer extends javax.swing.JPanel implements VisFilterI<Distribution>, PropertyChangeListener {
 
     private AttributeType at;
     private final Map<AttributeType, SortedSet<Attribute>> parents = new HashMap<>();
-    private JCheckBoxList<Attribute> filterList = null;
+    private final JCheckBoxList<Attribute> filterList = new JCheckBoxList<>();
+    private final Set<Attribute> blackList = new HashSet<>();
+    private Tree<Long> guideTree = null;
 
     /**
      * Creates new form BasicCustomizer
@@ -56,6 +55,7 @@ public class BarChartCustomizer extends javax.swing.JPanel implements VisFilterI
         initComponents();
         AttrTypeModel atModel = (AttrTypeModel) attrTypeFilter.getModel();
         attrTypeFilter.addItemListener(atModel);
+        filterList.addPropertyChangeListener(this);
     }
 
     public void setAttributeType(final AttributeType aType) {
@@ -63,64 +63,46 @@ public class BarChartCustomizer extends javax.swing.JPanel implements VisFilterI
             return;
         }
         at = aType;
+        guideTree = null;
+        blackList.clear();
 
         AttrTypeModel atModel = (AttrTypeModel) attrTypeFilter.getModel();
         atModel.clear();
         attrTypeFilter.setEnabled(false);
         attrTypeFilter.setSelectedIndex(-1);
-        if (filterList != null) {
-            filterList.clear();
-            listholder.remove(filterList);
-            filterList = null;
-        }
+        filterList.clear();
+        listholder.remove(filterList);
 
         if (at.getStructure() == AttributeType.STRUCTURE_HIERARCHICAL) {
+            parents.clear();
+            guideTree = createGuideTree();
+            for (Node<Long> node : guideTree.getNodes()) {
+                // collect attributes and attributetypes for same layer and parent nodes only
+                if (at.equals(node.getAttribute().getAttributeType())) {
+                    Node<Long> cur = node;
+                    while (!cur.isRoot()) {
+                        Attribute attr = cur.getAttribute();
+                        AttributeType type = attr.getAttributeType();
 
-
-            SwingWorker<List<AttributeType>, Void> sw = new SwingWorker<List<AttributeType>, Void>() {
-                @Override
-                protected List<AttributeType> doInBackground() throws Exception {
-                    parents.clear();
-                    for (Pair<VisualizationGroup, Tree<Long>> p : VGroupManager.getInstance().getHierarchies()) {
-                        Tree<Long> tree = p.getSecond();
-                        for (Node<Long> node : tree.getNodes()) {
-
-                            // collect attributes and attributetypes for same layer and parent nodes only
-                            if (at.equals(node.getAttribute().getAttributeType())) {
-                                Node<Long> cur = node;
-                                while (!cur.isRoot()) {
-                                    Attribute attr = cur.getAttribute();
-                                    AttributeType type = attr.getAttributeType();
-
-                                    if (!parents.containsKey(type)) {
-                                        parents.put(type, new TreeSet<Attribute>());
-                                    }
-                                    parents.get(type).add(attr);
-                                    cur = cur.getParent();
-                                }
-                            }
+                        if (!parents.containsKey(type)) {
+                            parents.put(type, new TreeSet<Attribute>());
                         }
+                        parents.get(type).add(attr);
+                        cur = cur.getParent();
                     }
-                    SortByNumberOfValues sorter = new SortByNumberOfValues();
-                    sorter.setMap(parents);
-                    List<AttributeType> typesOrdered = new ArrayList<>(parents.size());
-                    typesOrdered.addAll(parents.keySet());
-                    Collections.sort(typesOrdered, sorter);
-                    return typesOrdered;
                 }
-            };
+            }
+            SortByNumberOfValues sorter = new SortByNumberOfValues();
+            sorter.setMap(parents);
+            List<AttributeType> typesOrdered = new ArrayList<>(parents.size());
+            typesOrdered.addAll(parents.keySet());
+            Collections.sort(typesOrdered, sorter);
 
-            sw.execute();
-            try {
-                List<AttributeType> typesOrdered = sw.get();
-
-                if (typesOrdered.size() > 0) {
-                    atModel.setData(typesOrdered);
-                    attrTypeFilter.setEnabled(true);
-                    attrTypeFilter.setSelectedIndex(0);
-                }
-            } catch (InterruptedException | ExecutionException ex) {
-                Exceptions.printStackTrace(ex);
+            if (typesOrdered.size() > 0) {
+                atModel.setData(typesOrdered);
+                attrTypeFilter.setEnabled(true);
+                attrTypeFilter.setSelectedIndex(0);
+                listholder.add(filterList);
             }
 
         }
@@ -296,37 +278,11 @@ public class BarChartCustomizer extends javax.swing.JPanel implements VisFilterI
             dists = fracFilter.filter(dists);
         }
 
-        if (getFilterEntries().size() > 0) {
-            Set<Attribute> filterEntries = getFilterEntries();
-            final Reference<Tree<Long>> result = new Reference<>();
-            NonEDT.invokeAndWait(new Runnable() {
-                @Override
-                public void run() {
-                    List<Pair<VisualizationGroup, Tree<Long>>> trees = VGroupManager.getInstance().getHierarchies();
-                    List<Tree<Long>> tmp = new LinkedList<>();
-                    for (Pair<VisualizationGroup, Tree<Long>> p : trees) {
-                        tmp.add(p.getSecond());
-                    }
-                    Tree<Long> merged = TreeFactory.mergeTrees(tmp);
-                    result.setValue(merged);
-                }
-            });
-
-            Tree<Long> merged = result.getValue();
-            Set<Attribute> blackList = new HashSet<>();
-
-            for (Node<Long> node : merged.getNodes()) {
-                if (at.equals(node.getAttribute().getAttributeType())) {
-                    for (Node<Long> pathNode : node.getPath()) {
-                        if (filterEntries.contains(pathNode.getAttribute())) {
-                            blackList.add(node.getAttribute());
-                            break;
-                        }
-                    }
-                }
+        if (at.getStructure() == AttributeType.STRUCTURE_HIERARCHICAL) {
+            if (blackList.size() > 0) {
+                ExcludeFilter ef = new ExcludeFilter(blackList);
+                dists = ef.filter(dists);
             }
-            ExcludeFilter ef = new ExcludeFilter(blackList);
-            dists = ef.filter(dists);
         }
 
         LimitFilter lf = new LimitFilter();
@@ -339,8 +295,70 @@ public class BarChartCustomizer extends javax.swing.JPanel implements VisFilterI
         return dists;
     }
 
-    public Set<Attribute> getFilterEntries() {
-        return filterList == null ? Collections.EMPTY_SET : filterList.getDeselectedEntries();
+//    public Set<Attribute> getFilterEntries() {
+//        //return filterList == null ? Collections.EMPTY_SET : filterList.getDeselectedEntries();
+//        blackList.addAll(filterList.getDeselectedEntries());
+//        return blackList;
+//    }
+    private Tree<Long> createGuideTree() {
+        final Reference<Tree<Long>> result = new Reference<>();
+        NonEDT.invokeAndWait(new Runnable() {
+            @Override
+            public void run() {
+                List<Pair<VisualizationGroup, Tree<Long>>> trees = VGroupManager.getInstance().getHierarchies();
+                List<Tree<Long>> tmp = new ArrayList<>(trees.size());
+                for (Pair<VisualizationGroup, Tree<Long>> p : trees) {
+                    tmp.add(p.getSecond());
+                }
+                Tree<Long> merged = TreeFactory.mergeTrees(tmp);
+                result.setValue(merged);
+            }
+        });
+
+        Tree<Long> merged = result.getValue();
+        return merged;
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (evt.getPropertyName().equals(JCheckBoxList.selectionChange)) {
+            Attribute attr = (Attribute) evt.getOldValue();
+            boolean isSelected = (boolean) evt.getNewValue();
+            Node<Long> n = findNode(attr);
+            if (isSelected) {
+                enableChildren(n);
+            } else {
+                disableChildren(n);
+            }
+
+        }
+    }
+
+    private void enableChildren(Node<Long> n) {
+        blackList.remove(n.getAttribute());
+        if (n.hasChildren()) {
+            for (Node<Long> c : n.getChildren()) {
+                enableChildren(c);
+            }
+        }
+    }
+
+    private void disableChildren(Node<Long> n) {
+        blackList.add(n.getAttribute());
+        if (n.hasChildren()) {
+            for (Node<Long> c : n.getChildren()) {
+                disableChildren(c);
+            }
+        }
+    }
+
+    private Node<Long> findNode(final Attribute a) {
+        for (Node<Long> n : guideTree.getNodes()) {
+            if (n.getAttribute().equals(a)) {
+                return n;
+            }
+        }
+        return null;
     }
 
     private class AttrTypeModel extends AbstractListModel implements ComboBoxModel, ItemListener {
@@ -377,7 +395,7 @@ public class BarChartCustomizer extends javax.swing.JPanel implements VisFilterI
         }
 
         @Override
-        public Object getSelectedItem() {
+        public AttributeType getSelectedItem() {
             return selectionIdx != -1 ? data.get(selectionIdx) : null;
         }
 
@@ -394,20 +412,20 @@ public class BarChartCustomizer extends javax.swing.JPanel implements VisFilterI
         @Override
         public void itemStateChanged(ItemEvent evt) {
             if (evt.getStateChange() == ItemEvent.SELECTED) {
-                Object item = getSelectedItem();
+                AttributeType item = getSelectedItem();
                 if (item != null) {
                     Set<Attribute> get = parents.get(item);
-                    if (filterList == null) {
-                        filterList = new JCheckBoxList<>();
-                        listholder.add(filterList, BorderLayout.CENTER);
-                    } else {
-                        filterList.clear();
-                    }
+//                    if (filterList == null) {
+//                        filterList = new JCheckBoxList<>();
+//                        listholder.add(filterList, BorderLayout.CENTER);
+//                    } else {
+                    filterList.clear();
+                    //}
 
                     for (Attribute pAttr : get) {
-                        filterList.addElement(pAttr);
+                        filterList.addElement(pAttr, !blackList.contains(pAttr));
                     }
-                    filterList.selectAll();
+                    //filterList.selectAll();
                 }
             }
         }
