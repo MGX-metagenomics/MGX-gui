@@ -29,6 +29,7 @@ import org.jfree.chart.labels.XYToolTipGenerator;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYDotRenderer;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYDataItem;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
@@ -87,15 +88,17 @@ public class MAPlot extends NumericalViewerI {
 
                 long numAssigned1 = Math.round(firstVal * first.getTotalClassifiedElements());
                 long numAssigned2 = Math.round(secondVal * second.getTotalClassifiedElements());
-                
-                String toolTipText = new StringBuilder(e.getKey().getValue())
-                        .append("<br><hr>")
+
+                String toolTipText = new StringBuilder("<html>")
+                        .append(e.getKey().getValue())
+                        .append("<br><br>")
                         .append(relevant.get(0).getFirst().getName())
                         .append(": ").append(numAssigned1).append(" sequences").append("<br>")
                         .append(relevant.get(1).getFirst().getName())
                         .append(": ").append(numAssigned2).append(" sequences")
+                        .append("</html>")
                         .toString();
-                
+
                 toolTips.put(item, toolTipText);
             }
         }
@@ -132,9 +135,7 @@ public class MAPlot extends NumericalViewerI {
         rangeAxis.setStandardTickUnits(tus);
         plot.setRangeAxis(rangeAxis);
 
-        XYDotRenderer dot = new XYDotRenderer();
-        dot.setDotHeight(5);
-        dot.setDotWidth(5);
+        XYLineAndShapeRenderer dot = new XYLineAndShapeRenderer();
         dot.setSeriesShape(0, new Ellipse2D.Double(0, 0, 5, 5));
 
         dot.setBaseToolTipGenerator(new XYToolTipGenerator() {
