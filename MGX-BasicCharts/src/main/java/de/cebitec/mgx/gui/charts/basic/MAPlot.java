@@ -119,7 +119,7 @@ public class MAPlot extends NumericalViewerI {
         plot.setBackgroundPaint(Color.WHITE);
 
         // x axis
-        ValueAxis valueAxis;
+        final ValueAxis valueAxis;
         final TickUnitSource tusX;
         valueAxis = (NumberAxis) plot.getDomainAxis();
         tusX = NumberAxis.createStandardTickUnits();
@@ -135,10 +135,11 @@ public class MAPlot extends NumericalViewerI {
         rangeAxis.setStandardTickUnits(tus);
         plot.setRangeAxis(rangeAxis);
 
-        XYLineAndShapeRenderer dot = new XYLineAndShapeRenderer();
-        dot.setSeriesShape(0, new Ellipse2D.Double(0, 0, 5, 5));
+        final XYLineAndShapeRenderer r = new XYLineAndShapeRenderer();
+        r.setBaseLinesVisible(false);
+        r.setSeriesShape(0, new Ellipse2D.Double(0, 0, 5, 5));
 
-        dot.setBaseToolTipGenerator(new XYToolTipGenerator() {
+        r.setBaseToolTipGenerator(new XYToolTipGenerator() {
 
             @Override
             public String generateToolTip(XYDataset xyd, int series, int item) {
@@ -148,7 +149,7 @@ public class MAPlot extends NumericalViewerI {
             }
         });
 
-        plot.setRenderer(dot);
+        plot.setRenderer(r);
     }
 
     @Override
