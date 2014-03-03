@@ -25,7 +25,7 @@ import org.openide.windows.TopComponent;
 autostore = false)
 @TopComponent.Description(preferredID = "TaskViewTopComponent",
 //iconBase="SET/PATH/TO/ICON/HERE", 
-persistenceType = TopComponent.PERSISTENCE_ALWAYS)
+persistenceType = TopComponent.PERSISTENCE_NEVER)
 @TopComponent.Registration(mode = "right", openAtStartup = false)
 @ActionID(category = "Window", id = "de.cebitec.mgx.gui.taskview.TaskViewTopComponent")
 @ActionReference(path = "Menu/Window", position = 370)
