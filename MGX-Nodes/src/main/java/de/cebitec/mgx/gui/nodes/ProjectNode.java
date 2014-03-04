@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.nodes;
 
 import de.cebitec.gpms.core.MembershipI;
+import de.cebitec.mgx.gui.actions.DownloadPluginDump;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.nodefactory.ProjectStructureNodeFactory;
 import javax.swing.Action;
@@ -34,7 +35,7 @@ public class ProjectNode extends MGXNodeBase<MGXMaster> {
 
     @Override
     public Action[] getActions(boolean popup) {
-        return new Action[0]; // disables context menu
+        return new Action[]{new DownloadPluginDump()};
     }
 
     @Override
