@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.controller;
 
 import de.cebitec.mgx.client.datatransfer.FileDownloader;
 import de.cebitec.mgx.client.datatransfer.FileUploader;
+import de.cebitec.mgx.client.datatransfer.PluginDumpDownloader;
 import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.FileDTO;
@@ -105,5 +106,9 @@ public class FileAccess extends AccessBase<MGXFile> {
             Exceptions.printStackTrace(ex);
         }
         return null;
+    }
+
+    public PluginDumpDownloader createPluginDumpDownloader(OutputStream out) throws MGXClientException {
+        return getDTOmaster().File().createPluginDumpDownloader(out);
     }
 }
