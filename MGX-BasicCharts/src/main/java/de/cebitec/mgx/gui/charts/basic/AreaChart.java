@@ -15,6 +15,7 @@ import javax.swing.JComponent;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.LegendItemCollection;
 import org.jfree.chart.axis.LogAxis;
 import org.jfree.chart.axis.LogarithmicAxis;
 import org.jfree.chart.axis.NumberAxis;
@@ -49,6 +50,9 @@ public class AreaChart extends NumericalViewerI {
 
     @Override
     public void show(List<Pair<VisualizationGroup, Distribution>> dists) {
+        
+        
+        LegendItemCollection legend = JFreeChartUtil.createLegend(dists);
 
         dists = getCustomizer().filter(dists);
         XYSeriesCollection dataset = JFreeChartUtil.createXYSeries(dists, getCustomizer().logY());
@@ -63,6 +67,8 @@ public class AreaChart extends NumericalViewerI {
         cPanel = new ChartPanel(chart);
         XYPlot plot = (XYPlot) chart.getPlot();
         plot.setBackgroundPaint(Color.WHITE);
+        
+        plot.setFixedLegendItems(legend);
 
         // x axis
         ValueAxis valueAxis;
