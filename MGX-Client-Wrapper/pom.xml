@@ -63,7 +63,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>DTO-Wrapper</artifactId>
+            <artifactId>MGX-DTO-Wrapper</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
