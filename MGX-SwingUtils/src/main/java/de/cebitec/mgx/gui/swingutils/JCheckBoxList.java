@@ -40,7 +40,7 @@ public class JCheckBoxList<T> extends JList<T> {
                     T elem = model.getElementAt(index);
                     boolean oldVal = selections.get(elem);
                     selections.put(elem, !oldVal);
-                    firePropertyChange(selectionChange, false, true);
+                    firePropertyChange(selectionChange, elem, !oldVal);
                     repaint();
                 }
             }
@@ -54,23 +54,31 @@ public class JCheckBoxList<T> extends JList<T> {
     }
 
     public void addElement(T elem) {
-        selections.put(elem, Boolean.TRUE);
+        addElement(elem, true);
+    }
+
+    public void addElement(T elem, boolean selected) {
+        selections.put(elem, Boolean.valueOf(selected));
         model.addElement(elem);
     }
 
     public void selectAll() {
         for (Entry<T, Boolean> e : selections.entrySet()) {
-            e.setValue(Boolean.TRUE);
+            if (!e.getValue()) {
+                e.setValue(Boolean.TRUE);
+                firePropertyChange(selectionChange, e.getKey(), true);
+            }
         }
-        firePropertyChange(selectionChange, false, true);
         repaint();
     }
 
     public void deselectAll() {
         for (Entry<T, Boolean> e : selections.entrySet()) {
-            e.setValue(Boolean.FALSE);
+            if (e.getValue()) {
+                e.setValue(Boolean.FALSE);
+                firePropertyChange(selectionChange, e.getKey(), false);
+            }
         }
-        firePropertyChange(selectionChange, false, true);
         repaint();
     }
 
@@ -94,15 +102,17 @@ public class JCheckBoxList<T> extends JList<T> {
         return elems;
     }
 
-    protected class CellRenderer implements ListCellRenderer<T> {
+    private class CellRenderer implements ListCellRenderer<T> {
 
-        private JCheckBox box = new JCheckBox();
+        private final JCheckBox box = new JCheckBox();
 
         @Override
         public Component getListCellRendererComponent(JList<? extends T> list, T value, int index, boolean isSelected, boolean cellHasFocus) {
 
             Boolean selected = selections.get(value);
-            box.setSelected(selected.booleanValue());
+            if (selected != null) {
+                box.setSelected(selected.booleanValue());
+            }
             box.setText(value.toString());
 
             if (isSelected) {
