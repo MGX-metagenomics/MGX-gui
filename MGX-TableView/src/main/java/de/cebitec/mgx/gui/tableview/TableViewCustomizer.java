@@ -39,7 +39,7 @@ public class TableViewCustomizer extends javax.swing.JPanel implements VisFilter
 
     public void setModel(AbstractTableModel m) {
         model = m;
-        export.setEnabled(model != null);
+        export.setEnabled(m != null && m.getColumnCount() > 0 && m.getRowCount() > 0);
     }
 
     public boolean includeHeaders() {
@@ -63,7 +63,7 @@ public class TableViewCustomizer extends javax.swing.JPanel implements VisFilter
 
         Set<Attribute> filterEntries = treeFilter1.getBlackList();
 
-        if (filterEntries.isEmpty()) {
+        if (filterEntries == null || filterEntries.isEmpty()) {
             return dists;
         }
 

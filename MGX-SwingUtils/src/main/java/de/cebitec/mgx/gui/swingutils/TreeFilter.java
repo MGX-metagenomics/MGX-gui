@@ -44,10 +44,22 @@ public class TreeFilter extends javax.swing.JPanel implements ItemListener, Prop
     private Tree<Long> guideTree = null;
     private final Map<AttributeType, SortedSet<Attribute>> parents = new HashMap<>();
     private final Set<Attribute> blackList = new HashSet<>();
+    private AttributeType curAttrType = null;
 
     public void setAttributeType(AttributeType at) {
+        if (at == null || at.equals(curAttrType)) {
+            return;
+        } else {
+            curAttrType = at;
+            atModel.clear();
+            attrList.clear();
+            attrTypes.setEnabled(false);
+            attrList.setEnabled(false);
+        }
+        
         parents.clear();
         blackList.clear();
+        guideTree = null;
         if (at.getStructure() != AttributeType.STRUCTURE_HIERARCHICAL) {
             atModel.clear();
             attrList.clear();
@@ -57,6 +69,9 @@ public class TreeFilter extends javax.swing.JPanel implements ItemListener, Prop
         }
 
         guideTree = createGuideTree();
+        if (guideTree == null) {
+            return;
+        }
         for (Node<Long> node : guideTree.getNodes()) {
             // collect attributes and attributetypes for same layer and parent nodes only
             if (at.equals(node.getAttribute().getAttributeType())) {
@@ -107,6 +122,9 @@ public class TreeFilter extends javax.swing.JPanel implements ItemListener, Prop
             @Override
             public void run() {
                 List<Pair<VisualizationGroup, Tree<Long>>> trees = VGroupManager.getInstance().getHierarchies();
+                if (trees == null) { // conflicts remain
+                    return;
+                }
                 List<Tree<Long>> tmp = new ArrayList<>(trees.size());
                 for (Pair<VisualizationGroup, Tree<Long>> p : trees) {
                     tmp.add(p.getSecond());
