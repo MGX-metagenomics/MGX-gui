@@ -10,6 +10,7 @@ import de.cebitec.mgx.gui.groups.ConflictingJobsException;
 import de.cebitec.mgx.gui.groups.VGroupManager;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import de.cebitec.mgx.gui.util.TestMaster;
+import de.cebitec.mgx.newick.NodeI;
 import java.util.List;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -43,13 +44,6 @@ public class StatisticsAccessTest {
     public void tearDown() {
     }
 
-//    @Test
-//    public void testClustering2() {
-//        for (int i = 0; i < 35; i++) {
-//            testClustering();
-//        }
-//    }
-
     @Test
     public void testClustering() {
         System.out.println("Clustering");
@@ -79,9 +73,9 @@ public class StatisticsAccessTest {
         assertNotNull(dists);
         assertEquals(2, dists.size());
 
-        String newick = master.Statistics().Clustering(dists, "euclidean", "ward");
-        assertNotNull(newick);
-        assertTrue(newick.equals("(grp1:5.74456264653803,grp2:5.74456264653803);") || newick.equals("(grp2:5.74456264653803,grp1:5.74456264653803);"));
+        NodeI root = master.Statistics().Clustering(dists, "euclidean", "ward");
+        assertNotNull(root);
+        assertEquals(2, root.getChildren().size());
     }
 
     private class Resolver implements VGroupManager.ConflictResolver {
