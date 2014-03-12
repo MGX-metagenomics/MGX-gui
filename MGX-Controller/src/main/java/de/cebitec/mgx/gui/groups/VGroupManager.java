@@ -1,5 +1,7 @@
 package de.cebitec.mgx.gui.groups;
 
+import de.cebitec.mgx.gui.datamodel.Job;
+import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.datamodel.misc.AttributeRank;
 import de.cebitec.mgx.gui.datamodel.misc.Distribution;
 import de.cebitec.mgx.gui.datamodel.misc.Pair;
@@ -111,10 +113,18 @@ public class VGroupManager implements PropertyChangeListener {
     }
 
     public List<Pair<VisualizationGroup, Tree<Long>>> getHierarchies() {
+        // make sure there are no unresolved ambiguities left
+        for (VisualizationGroup vg : getActiveGroups()) {
+            Map<SeqRun, List<Job>> conflicts = vg.getConflicts(AttributeRank.PRIMARY);
+            if (!conflicts.isEmpty()) {
+                return null;
+            }
+        }
+        
         List<Pair<VisualizationGroup, Tree<Long>>> ret = new ArrayList<>();
         for (VisualizationGroup vg : getActiveGroups()) {
             Tree<Long> tree = vg.getHierarchy();
-            if (!tree.isEmpty()) {
+            if (tree != null && !tree.isEmpty()) {
                 ret.add(new Pair<>(vg, tree));
             }
         }

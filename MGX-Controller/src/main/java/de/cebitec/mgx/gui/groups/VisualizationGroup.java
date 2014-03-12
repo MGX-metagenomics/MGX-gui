@@ -211,7 +211,7 @@ public class VisualizationGroup implements PropertyChangeListener {
         return ret;
     }
 
-    private Map<SeqRun, List<Job>> getConflicts(AttributeRank rank) {
+    Map<SeqRun, List<Job>> getConflicts(AttributeRank rank) {
         return needsResolval.get(rank);
     }
 
