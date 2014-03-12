@@ -240,7 +240,7 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>DTO-Wrapper</artifactId>
+                <artifactId>MGX-DTO-Wrapper</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -396,7 +396,7 @@
         <module>MGX-Wizards</module>
         <module>MGX-Datamodel</module>
         <module>MGX-Controller</module>
-        <module>DTO-Wrapper</module>
+        <module>MGX-DTO-Wrapper</module>
         <module>MGX-TaskView</module>
         <module>MGX-AttributeVisualization</module>
         <module>MGX-Prefuse</module>
@@ -411,12 +411,13 @@
         <module>MGX-Actions</module>
         <module>MGX-KeggViewer</module>
         <module>MGX-SwingUtils</module>
-        <!-- <module>MGX-ReferenceObservationView</module> -->
+        <module>MGX-MappingViewer</module>
         <module>MGX-UpdateCenter</module>
-        <!-- <module>MGX-IntervalCache</module> -->
+        <module>MGX-IntervalCache</module>
         <module>MGX-Biodiversity</module>
         <module>MGX-Rarefaction</module>
-    </modules>
+        <module>MGX-Newick-Wrapper</module>
+  </modules>
     <properties>
         <netbeans.version>RELEASE74</netbeans.version>
         <brandingToken>mgx_gui</brandingToken>
