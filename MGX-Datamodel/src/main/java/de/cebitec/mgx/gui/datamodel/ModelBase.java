@@ -15,7 +15,7 @@ import java.io.IOException;
 public abstract class ModelBase implements Transferable {
 
     protected MGXMasterI master;
-    protected PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+    protected final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
     public final static String OBJECT_DELETED = "objectDeleted";
     public final static String OBJECT_MODIFIED = "objectModified";
     private final DataFlavor dataflavor;
