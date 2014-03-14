@@ -7,6 +7,8 @@ import de.cebitec.mgx.gui.nodefactory.JobBySeqRunNodeFactory;
 import de.cebitec.mgx.gui.nodefactory.JobNodeFactory;
 import de.cebitec.mgx.gui.nodes.JobNode;
 import java.awt.Component;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Collection;
 import javax.swing.JPopupMenu;
 import org.netbeans.api.settings.ConvertAsProperties;
@@ -47,7 +49,7 @@ import org.openide.windows.TopComponent;
     "HINT_JobMonitorTopComponent=This is a JobMonitor window"
 })
 @ServiceProvider(service = JobMonitorTopComponent.class)
-public final class JobMonitorTopComponent extends TopComponent implements LookupListener, ExplorerManager.Provider {
+public final class JobMonitorTopComponent extends TopComponent implements LookupListener, ExplorerManager.Provider, PropertyChangeListener {
 
     private final Lookup.Result<MGXMaster> resultMaster;
     private final Lookup.Result<SeqRun> resultSeqRun;
@@ -153,6 +155,7 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
                     currentSeqRun = run;
                     currentMaster = null;
                     needUpdate = true;
+                    currentSeqRun.addPropertyChangeListener(this);
                 }
             }
         } else {
@@ -197,5 +200,10 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
     @Override
     public ExplorerManager getExplorerManager() {
         return explorerManager;
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        updateJobs();
     }
 }
