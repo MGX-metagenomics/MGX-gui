@@ -4,6 +4,8 @@ import de.cebitec.mgx.gui.attributevisualization.viewer.CategoricalViewerI;
 import de.cebitec.mgx.gui.attributevisualization.viewer.ViewerI;
 import de.cebitec.mgx.gui.charts.basic.customizer.BarChartCustomizer;
 import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
+import de.cebitec.mgx.gui.charts.basic.util.ScrollableBarChart;
+import de.cebitec.mgx.gui.charts.basic.util.SlidingCategoryDataset;
 import de.cebitec.mgx.gui.datamodel.misc.Distribution;
 import de.cebitec.mgx.gui.datamodel.misc.Pair;
 import de.cebitec.mgx.gui.groups.ImageExporterI;
@@ -35,8 +37,13 @@ public class BarChartViewer extends CategoricalViewerI {
     private ChartPanel cPanel = null;
     private BarChartCustomizer customizer = null;
     private JFreeChart chart = null;
+    private CategoryDataset dataset;
 
     public BarChartViewer() {
+        // disable the stupid glossy effect
+        ChartFactory.setChartTheme(StandardChartTheme.createLegacyTheme());
+        BarRenderer.setDefaultShadowsVisible(false);
+        XYBarRenderer.setDefaultShadowsVisible(false);
     }
 
     @Override
@@ -46,7 +53,11 @@ public class BarChartViewer extends CategoricalViewerI {
 
     @Override
     public JComponent getComponent() {
-        return cPanel;
+        if (dataset instanceof SlidingCategoryDataset) {
+            return new ScrollableBarChart(cPanel, (SlidingCategoryDataset) dataset);
+        } else {
+            return cPanel;
+        }
     }
 
     @Override
@@ -54,15 +65,10 @@ public class BarChartViewer extends CategoricalViewerI {
 
         dists = getCustomizer().filter(dists);
 
-        CategoryDataset dataset = JFreeChartUtil.createCategoryDataset(dists);
+        dataset = JFreeChartUtil.createCategoryDataset(dists);
 
         String xAxisLabel = "";
         String yAxisLabel = getCustomizer().useFractions() ? "Fraction" : "Count";
-
-        // disable the stupid glossy effect
-        ChartFactory.setChartTheme(StandardChartTheme.createLegacyTheme());
-        BarRenderer.setDefaultShadowsVisible(false);
-        XYBarRenderer.setDefaultShadowsVisible(false);
 
         chart = ChartFactory.createBarChart(getTitle(), xAxisLabel, yAxisLabel, dataset, PlotOrientation.VERTICAL, true, true, false);
 
@@ -70,10 +76,9 @@ public class BarChartViewer extends CategoricalViewerI {
         chart.setBackgroundPaint(Color.WHITE);
         chart.setAntiAlias(true);
         cPanel = new ChartPanel(chart);
-        CategoryPlot plot = chart.getCategoryPlot(); 
-        
-        plot.setFixedLegendItems(JFreeChartUtil.createLegend(dists));
+        CategoryPlot plot = chart.getCategoryPlot();
 
+        plot.setFixedLegendItems(JFreeChartUtil.createLegend(dists));
         plot.setBackgroundPaint(Color.WHITE);
 
         BarRenderer br = (BarRenderer) plot.getRenderer();
@@ -101,11 +106,16 @@ public class BarChartViewer extends CategoricalViewerI {
             }
         }
         rangeAxis.setStandardTickUnits(tus);
+        if (dataset instanceof SlidingCategoryDataset) {
+            SlidingCategoryDataset scd = (SlidingCategoryDataset) dataset;
+            rangeAxis.setAutoRange(false);
+            rangeAxis.setRange(0, scd.getMaxY());
+        }
         plot.setRangeAxis(rangeAxis);
 
         // colors
         int i = 0;
-        CategoryItemRenderer renderer = chart.getCategoryPlot().getRenderer();
+        CategoryItemRenderer renderer = plot.getRenderer();
         for (Pair<VisualizationGroup, Distribution> groupDistribution : dists) {
             renderer.setSeriesPaint(i++, groupDistribution.getFirst().getColor());
         }
