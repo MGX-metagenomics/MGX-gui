@@ -82,11 +82,11 @@ public class BarChartCustomizer extends javax.swing.JPanel implements VisFilterI
 
         sortOrderGroup.add(sortAscending);
         sortAscending.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
-        sortAscending.setSelected(true);
         sortAscending.setText(org.openide.util.NbBundle.getMessage(BarChartCustomizer.class, "BarChartCustomizer.sortAscending.text")); // NOI18N
 
         sortOrderGroup.add(sortDescending);
         sortDescending.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
+        sortDescending.setSelected(true);
         sortDescending.setText(org.openide.util.NbBundle.getMessage(BarChartCustomizer.class, "BarChartCustomizer.sortDescending.text")); // NOI18N
 
         useFractions.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
