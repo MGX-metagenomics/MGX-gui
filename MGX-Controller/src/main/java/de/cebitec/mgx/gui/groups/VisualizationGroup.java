@@ -44,7 +44,6 @@ public class VisualizationGroup implements PropertyChangeListener {
     private String name;
     private Color color;
     private boolean is_active = true;
-    //private boolean is_selected = false;
     private final Set<SeqRun> seqruns = new HashSet<>();
     //
     private String selectedAttributeType;
@@ -236,7 +235,7 @@ public class VisualizationGroup implements PropertyChangeListener {
         distCache.clear(); // invalidate caches
         hierarchyCache.clear();
 
-        seqruns.add(sr);
+        //seqruns.add(sr);
         sr.addPropertyChangeListener(this);
 
         CountDownLatch l = new CountDownLatch(1);
@@ -617,10 +616,12 @@ public class VisualizationGroup implements PropertyChangeListener {
                     try {
                         Map<Job, List<AttributeType>> ret = fetcher.get();
                         synchronized (seqruns) {
+                            SeqRun newRun = fetcher.getRun();
                             // make sure seqrun hasn't been removed from this group
-                            if (seqruns.contains(fetcher.getRun())) {
-                                attributeTypes.put(fetcher.getRun(), ret);
-                            }
+                            //if (seqruns.contains(fetcher.getRun())) {
+                            seqruns.add(newRun);
+                            attributeTypes.put(fetcher.getRun(), ret);
+                            //}
                         }
                     } catch (InterruptedException | ExecutionException ex) {
                         Exceptions.printStackTrace(ex);
