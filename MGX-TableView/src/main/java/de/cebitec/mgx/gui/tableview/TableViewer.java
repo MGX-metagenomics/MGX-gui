@@ -87,7 +87,6 @@ public class TableViewer extends ViewerI<Distribution> {
                 return false;
             }
         };
-        cust.setModel(model); // for tsv export
 
         for (Attribute a : allAttrs) {
             Object[] rowData = new Object[numColumns];
@@ -101,6 +100,8 @@ public class TableViewer extends ViewerI<Distribution> {
             }
             model.addRow(rowData);
         }
+        
+        cust.setModel(model); // for tsv export
 
         table = new JXTable(model);
         table.setFillsViewportHeight(true);
