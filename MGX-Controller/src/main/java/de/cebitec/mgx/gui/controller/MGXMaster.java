@@ -18,7 +18,7 @@ import java.util.logging.Logger;
  *
  * @author sjaenick
  */
-public class MGXMaster extends ModelBase implements MGXMasterI, PropertyChangeListener {
+public class MGXMaster extends ModelBase<MGXMasterI> implements MGXMasterI, PropertyChangeListener {
 
     private final MGXDTOMaster dtomaster;
     private static final Logger logger = Logger.getLogger("MGX");
@@ -139,5 +139,10 @@ public class MGXMaster extends ModelBase implements MGXMasterI, PropertyChangeLi
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public int compareTo(MGXMasterI o) {
+        return getProject().compareTo(o.getProject());
     }
 }
