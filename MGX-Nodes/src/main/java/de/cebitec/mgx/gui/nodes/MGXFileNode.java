@@ -12,7 +12,7 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sj
  */
-public class MGXFileNode extends MGXNodeBase<MGXFile> {
+public class MGXFileNode extends MGXNodeBase<MGXFile, MGXFileNode> {
 
     public MGXFileNode(MGXFile f, MGXMaster m) {
         super(Children.LEAF, Lookups.fixed(m, f), f);

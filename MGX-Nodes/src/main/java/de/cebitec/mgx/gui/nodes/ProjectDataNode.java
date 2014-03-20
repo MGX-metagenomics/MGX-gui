@@ -22,7 +22,7 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sj
  */
-public class ProjectDataNode extends MGXNodeBase<MGXMaster> {
+public class ProjectDataNode extends MGXNodeBase<MGXMaster, ProjectDataNode> {
 
     private HabitatNodeFactory hnf = null;
 

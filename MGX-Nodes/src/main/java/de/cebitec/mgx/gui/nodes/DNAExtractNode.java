@@ -38,7 +38,7 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sj
  */
-public class DNAExtractNode extends MGXNodeBase<DNAExtract> {
+public class DNAExtractNode extends MGXNodeBase<DNAExtract, DNAExtractNode> {
 
     private SeqRunNodeFactory snf = null;
 

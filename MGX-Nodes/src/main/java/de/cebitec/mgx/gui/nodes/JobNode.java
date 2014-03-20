@@ -31,7 +31,7 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sjaenick
  */
-public class JobNode extends MGXNodeBase<Job> {
+public class JobNode extends MGXNodeBase<Job, JobNode> {
 
     public static String TOOL_PROPERTY = "tool";
     public static String SEQRUN_PROPERTY = "seqrun";

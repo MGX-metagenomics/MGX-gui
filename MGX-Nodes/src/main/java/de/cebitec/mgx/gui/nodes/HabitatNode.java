@@ -29,7 +29,7 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sj
  */
-public class HabitatNode extends MGXNodeBase<Habitat> {
+public class HabitatNode extends MGXNodeBase<Habitat, HabitatNode> {
 
     private SampleNodeFactory snf = null;
 

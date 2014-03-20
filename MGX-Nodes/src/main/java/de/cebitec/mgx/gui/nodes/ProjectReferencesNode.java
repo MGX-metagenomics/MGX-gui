@@ -1,6 +1,5 @@
 package de.cebitec.mgx.gui.nodes;
 
-import de.cebitec.mgx.client.datatransfer.UploadBase;
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.gui.actions.UploadReference;
 import de.cebitec.mgx.gui.controller.MGXMaster;
@@ -9,20 +8,15 @@ import de.cebitec.mgx.gui.datamodel.Reference;
 import de.cebitec.mgx.gui.nodefactory.ReferenceNodeFactory;
 import de.cebitec.mgx.gui.swingutils.NonEDT;
 import de.cebitec.mgx.gui.taskview.MGXTask;
-import static de.cebitec.mgx.gui.taskview.MGXTask.TASK_FAILED;
 import de.cebitec.mgx.gui.taskview.TaskManager;
 import de.cebitec.mgx.gui.wizard.reference.InstallReferenceDescriptor;
 import java.awt.Dialog;
 import java.awt.event.ActionEvent;
-import java.beans.PropertyChangeEvent;
-import java.util.concurrent.ExecutionException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.SwingWorker;
 import org.openide.DialogDisplayer;
 import org.openide.WizardDescriptor;
 import org.openide.nodes.Children;
-import org.openide.util.Exceptions;
 import org.openide.util.Utilities;
 import org.openide.util.lookup.Lookups;
 
@@ -30,7 +24,7 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sj
  */
-public class ProjectReferencesNode extends MGXNodeBase<MGXMaster> {
+public class ProjectReferencesNode extends MGXNodeBase<MGXMaster, ProjectReferencesNode> {
 
     private ReferenceNodeFactory nf;
 

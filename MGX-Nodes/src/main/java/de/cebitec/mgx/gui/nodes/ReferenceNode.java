@@ -20,7 +20,7 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sj
  */
-public class ReferenceNode extends MGXNodeBase<Reference> {
+public class ReferenceNode extends MGXNodeBase<Reference, ReferenceNode> {
 
     public ReferenceNode(MGXMaster m, Reference ref) {
         this(ref, m);

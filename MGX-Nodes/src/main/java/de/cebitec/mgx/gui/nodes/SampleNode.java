@@ -30,7 +30,7 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sj
  */
-public class SampleNode extends MGXNodeBase<Sample> {
+public class SampleNode extends MGXNodeBase<Sample, SampleNode> {
 
     private DNAExtractNodeFactory nf = null;
 

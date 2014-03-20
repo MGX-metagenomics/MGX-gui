@@ -13,7 +13,7 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sj
  */
-public class ProjectFilesNode extends MGXNodeBase<MGXFile> {
+public class ProjectFilesNode extends MGXNodeBase<MGXFile, ProjectFilesNode> {
 
     private final FileNodeFactory nf;
 

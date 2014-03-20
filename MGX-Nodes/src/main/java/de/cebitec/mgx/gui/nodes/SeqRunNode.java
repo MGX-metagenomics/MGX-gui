@@ -44,7 +44,7 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sj
  */
-public class SeqRunNode extends MGXNodeBase<SeqRun> { // implements Transferable {
+public class SeqRunNode extends MGXNodeBase<SeqRun, SeqRunNode> {
 
     private final Action[] actions = new Action[]{new ExecuteAnalysis(), new EditSeqRun(), new DeleteSeqRun(), new DownloadSeqRun()};
     //
