@@ -28,7 +28,6 @@ public class VisualizationGroupNodeFactory extends ChildFactory<SeqRunNode> impl
 
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
-                //System.err.println("VGNF got event "+evt.getPropertyName());
                 refreshChildren();
             }
         });
@@ -91,8 +90,8 @@ public class VisualizationGroupNodeFactory extends ChildFactory<SeqRunNode> impl
 
     private class DisplayNode extends FilterNode implements NodeListener {
         
-        private SeqRunNode n;
-        private VisualizationGroupNodeFactory nf;
+        private final SeqRunNode n;
+        private final VisualizationGroupNodeFactory nf;
 
         public DisplayNode(SeqRunNode node, VisualizationGroupNodeFactory nodef) {
             super(node, Children.LEAF, Lookups.singleton(node.getContent()));
