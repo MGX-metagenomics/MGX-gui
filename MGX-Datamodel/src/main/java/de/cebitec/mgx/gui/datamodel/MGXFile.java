@@ -6,7 +6,7 @@ import java.awt.datatransfer.DataFlavor;
  *
  * @author sjaenick
  */
-public class MGXFile extends ModelBase implements Comparable<MGXFile> {
+public class MGXFile extends ModelBase<MGXFile> {
 
     protected  MGXFile parent;
     protected final String fullPath;

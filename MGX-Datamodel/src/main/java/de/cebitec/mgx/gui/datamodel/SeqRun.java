@@ -6,7 +6,7 @@ import java.awt.datatransfer.DataFlavor;
  *
  * @author sjaenick
  */
-public class SeqRun extends Identifiable implements Comparable<SeqRun> {
+public class SeqRun extends Identifiable<SeqRun> {
 
     protected Term sequencing_technology;
     protected Term sequencing_method;

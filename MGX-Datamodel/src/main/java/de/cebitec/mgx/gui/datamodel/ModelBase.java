@@ -14,7 +14,7 @@ import java.util.Set;
  *
  * @author sjaenick
  */
-public abstract class ModelBase implements Transferable {
+public abstract class ModelBase<T> implements Transferable, Comparable<T> {
 
     protected MGXMasterI master;
     //protected final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
@@ -119,4 +119,7 @@ public abstract class ModelBase implements Transferable {
             }
         }
     }
+
+    @Override
+    public abstract int compareTo(T o);
 }

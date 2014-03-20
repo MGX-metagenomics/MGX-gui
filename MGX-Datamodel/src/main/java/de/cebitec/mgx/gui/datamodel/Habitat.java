@@ -6,7 +6,7 @@ import java.awt.datatransfer.DataFlavor;
  *
  * @author sjaenick
  */
-public class Habitat extends Identifiable implements Comparable<Habitat> {
+public class Habitat extends Identifiable<Habitat> {
 
     protected String name;
     //

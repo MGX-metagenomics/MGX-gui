@@ -6,7 +6,7 @@ import java.awt.datatransfer.DataFlavor;
  *
  * @author sjaenick
  */
-public class AttributeType extends Identifiable implements Comparable<AttributeType> {
+public class AttributeType extends Identifiable<AttributeType> {
 
     public static final char VALUE_NUMERIC = 'N';
     public static final char VALUE_DISCRETE = 'D';

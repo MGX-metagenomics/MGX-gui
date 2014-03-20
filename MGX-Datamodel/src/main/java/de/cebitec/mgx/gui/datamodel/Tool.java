@@ -6,7 +6,7 @@ import java.awt.datatransfer.DataFlavor;
  *
  * @author sjaenick
  */
-public class Tool extends Identifiable {
+public class Tool extends Identifiable<Tool> {
 
     protected String name;
     protected String description;
@@ -80,6 +80,11 @@ public class Tool extends Identifiable {
         int hash = 0;
         hash = (int) (31 * hash + this.id);
         return hash;
+    }
+
+    @Override
+    public int compareTo(Tool o) {
+        return name.compareTo(o.name);
     }
 
     @Override

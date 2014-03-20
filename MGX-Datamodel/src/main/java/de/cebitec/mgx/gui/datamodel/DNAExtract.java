@@ -6,7 +6,7 @@ import java.awt.datatransfer.DataFlavor;
  *
  * @author sjaenick
  */
-public class DNAExtract extends Identifiable implements Comparable<DNAExtract> {
+public class DNAExtract extends Identifiable<DNAExtract> {
 
     protected String name;
     protected String method;

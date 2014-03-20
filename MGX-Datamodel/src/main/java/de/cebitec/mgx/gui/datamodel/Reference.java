@@ -6,7 +6,7 @@ import java.awt.datatransfer.DataFlavor;
  *
  * @author belmann
  */
-public class Reference extends Identifiable implements Comparable<Reference> {
+public class Reference extends Identifiable<Reference> {
 
     private String name;
     private int length;

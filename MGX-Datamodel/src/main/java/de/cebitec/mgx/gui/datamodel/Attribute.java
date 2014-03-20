@@ -7,7 +7,7 @@ import java.util.Objects;
  *
  * @author sjaenick
  */
-public class Attribute extends Identifiable implements Comparable<Attribute> {
+public class Attribute extends Identifiable<Attribute> {
 
     protected AttributeType atype;
     protected String value;

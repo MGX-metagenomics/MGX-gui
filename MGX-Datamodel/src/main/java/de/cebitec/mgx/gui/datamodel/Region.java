@@ -1,17 +1,13 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package de.cebitec.mgx.gui.datamodel;
 
-import static de.cebitec.mgx.gui.datamodel.Reference.DATA_FLAVOR;
 import java.awt.datatransfer.DataFlavor;
 
 /**
  *
  * @author belmann
  */
-public class Region extends Identifiable {
+public class Region extends Identifiable<Region> {
     
 
     protected long reference_id;
@@ -68,5 +64,10 @@ public class Region extends Identifiable {
 
     public void setStop(int stop) {
         this.stop = stop;
+    }
+
+    @Override
+    public int compareTo(Region o) {
+        return name.compareTo(o.name);
     }
 }

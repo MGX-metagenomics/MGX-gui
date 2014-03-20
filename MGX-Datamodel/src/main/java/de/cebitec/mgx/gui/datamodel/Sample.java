@@ -7,7 +7,7 @@ import java.util.Date;
  *
  * @author sjaenick
  */
-public class Sample extends Identifiable implements Comparable<Sample> {
+public class Sample extends Identifiable<Sample> {
 
     protected Date collectiondate;
     protected String material;

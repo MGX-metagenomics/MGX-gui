@@ -6,7 +6,7 @@ import java.awt.datatransfer.DataFlavor;
  *
  * @author sjaenick
  */
-public class Mapping extends Identifiable {
+public class Mapping extends Identifiable<Mapping> {
 
     public static final DataFlavor DATA_FLAVOR = new DataFlavor(Mapping.class, "Mapping");
     private long reference_id;
@@ -39,5 +39,10 @@ public class Mapping extends Identifiable {
 
     public void setJobID(long job_id) {
         this.job_id = job_id;
+    }
+
+    @Override
+    public int compareTo(Mapping o) {
+        return Long.compare(job_id, o.job_id);
     }
 }

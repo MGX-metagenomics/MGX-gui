@@ -8,7 +8,7 @@ import java.util.Date;
  *
  * @author sjaenick
  */
-public class Job extends Identifiable implements Comparable<Job> {
+public class Job extends Identifiable<Job> {
 
     protected SeqRun seqrun;
     //

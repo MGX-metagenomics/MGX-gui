@@ -7,7 +7,7 @@ import java.util.Map;
  *
  * @author sjaenick
  */
-public class JobParameter extends Identifiable {
+public class JobParameter extends Identifiable<JobParameter> {
 
     private long node_id;
     private String user_name;
@@ -113,5 +113,10 @@ public class JobParameter extends Identifiable {
 
     public void setParameterValue(String parameter_value) {
         this.parameter_value = parameter_value;
+    }
+
+    @Override
+    public int compareTo(JobParameter o) {
+        return Long.compare(node_id, o.node_id);
     }
 }

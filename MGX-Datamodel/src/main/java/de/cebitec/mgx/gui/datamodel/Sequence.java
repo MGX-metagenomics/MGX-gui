@@ -6,7 +6,7 @@ import java.awt.datatransfer.DataFlavor;
  *
  * @author sjaenick
  */
-public class Sequence extends Identifiable {
+public class Sequence extends Identifiable<Sequence> {
 
     protected String name;
     protected int length = -1;
@@ -45,6 +45,11 @@ public class Sequence extends Identifiable {
     @Override
     public String toString() {
         return name;
+    }
+
+    @Override
+    public int compareTo(Sequence o) {
+        return name.compareTo(o.name);
     }
 
     @Override

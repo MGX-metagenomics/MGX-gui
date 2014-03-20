@@ -6,7 +6,7 @@ import java.awt.datatransfer.DataFlavor;
  *
  * @author sjaenick
  */
-public class Observation extends ModelBase {
+public class Observation extends ModelBase<Observation> {
 
     private int start;
     private int stop;
@@ -49,5 +49,12 @@ public class Observation extends ModelBase {
 
     public void setAttributeTypeName(String attributeTypeName) {
         this.attributeTypeName = attributeTypeName;
+    }
+
+    @Override
+    public int compareTo(Observation o) {
+        int mymin = start < stop ? start : stop;
+        int omin = o.start < o.stop ? o.start : o.stop;
+        return Integer.compare(mymin, omin);
     }
 }
