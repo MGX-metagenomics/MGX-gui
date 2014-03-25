@@ -275,13 +275,16 @@ public class JobNode extends MGXNodeBase<Job, JobNode> {
             try {
                 sw.get();
             } catch (InterruptedException | ExecutionException ex) {
-                Exceptions.printStackTrace(ex);
+                NotifyDescriptor nd = new NotifyDescriptor("Could not cancel job.",
+                        "Job cancellation failed", NotifyDescriptor.OK_CANCEL_OPTION,
+                        NotifyDescriptor.ERROR_MESSAGE, null, null);
+                DialogDisplayer.getDefault().notifyLater(nd);
             }
         }
 
         @Override
         public boolean isEnabled() {
-            return super.isEnabled() && RBAC.isUser() 
+            return super.isEnabled() && RBAC.isUser()
                     && !(getContent().getStatus().equals(JobState.FINISHED) || getContent().getStatus().equals(JobState.FAILED));
         }
     }
