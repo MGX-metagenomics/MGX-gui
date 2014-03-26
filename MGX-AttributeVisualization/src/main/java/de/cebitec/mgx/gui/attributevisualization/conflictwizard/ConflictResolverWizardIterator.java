@@ -46,9 +46,6 @@ public final class ConflictResolverWizardIterator implements WizardDescriptor.It
         this.groups = groups;
     }
 
-//    public void setGroups(List<VisualizationGroup> g) {
-//        groups = g;
-//    }
     public List<Pair<VisualizationGroup, Triple<AttributeRank, SeqRun, Job>>> getSelection() {
         List<Pair<VisualizationGroup, Triple<AttributeRank, SeqRun, Job>>> l = new ArrayList<>();
         for (Panel<WizardDescriptor> p : panels) {
@@ -69,7 +66,7 @@ public final class ConflictResolverWizardIterator implements WizardDescriptor.It
                 // here, so we need to fetch them separately
                 //
 
-                for (final Triple<AttributeRank, SeqRun, List<Job>> e : vg.getConflicts()) {
+                for (final Triple<AttributeRank, SeqRun, Set<Job>> e : vg.getConflicts()) {
 
                     SwingWorker<Void, Void> fetchTool = new SwingWorker<Void, Void>() {
                         @Override

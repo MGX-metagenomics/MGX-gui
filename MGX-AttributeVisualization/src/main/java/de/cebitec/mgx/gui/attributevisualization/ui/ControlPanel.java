@@ -26,6 +26,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -185,9 +186,6 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-//        if (evt.getPropertyName() != null) {
-//            System.err.println("control received event " + evt.getPropertyName() + " " + evt.getOldValue() + " " + evt.getNewValue());
-//        }
 
         switch (evt.getPropertyName()) {
             case VisualizationGroup.VISGROUP_CHANGED:
@@ -234,7 +232,10 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
                 protected SortedSet<AttributeType> doInBackground() throws Exception {
                     SortedSet<AttributeType> types = new TreeSet<>();
                     for (VisualizationGroup vg : vgmgr.getActiveGroups()) {
-                        types.addAll(vg.getAttributeTypes());
+                        Iterator<AttributeType> atIter = vg.getAttributeTypes();
+                        while (atIter.hasNext()) {
+                            types.add(atIter.next());
+                        }
                     }
                     return types;
                 }

@@ -41,10 +41,8 @@ public class ResultCollector extends SwingWorker<Pair<List<Pair<VisualizationGro
             hierarchies = VGroupManager.getInstance().getHierarchies();
             assert hierarchies != null;
         }
-
         
-        Pair p = new Pair(distributions, hierarchies);
-        return p;
+        return new Pair(distributions, hierarchies);
     }
 
     @Override

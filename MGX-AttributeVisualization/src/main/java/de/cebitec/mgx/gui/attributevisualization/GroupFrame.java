@@ -13,6 +13,7 @@ import de.cebitec.mgx.gui.nodefactory.VisualizationGroupNodeFactory;
 import de.cebitec.mgx.gui.nodes.SeqRunNode;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -26,6 +27,8 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.HashSet;
+import java.util.Set;
 import javax.swing.JColorChooser;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -351,10 +354,19 @@ public class GroupFrame extends javax.swing.JInternalFrame implements ExplorerMa
                                         return;
                                     }
                                 }
-                                for (int i = 0; i < elems; i++) {
-                                    SeqRun run = (SeqRun) mto.getTransferData(i, SeqRun.DATA_FLAVOR);
-                                    SeqRunNode srn = new SeqRunNode((MGXMaster) run.getMaster(), run, Children.LEAF);
-                                    vgnf.addNode(srn);
+
+                                try {
+                                    setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+                                    Set<SeqRunNode> newRuns = new HashSet<>();
+                                    for (int i = 0; i < elems; i++) {
+                                        SeqRun run = (SeqRun) mto.getTransferData(i, SeqRun.DATA_FLAVOR);
+                                        SeqRunNode srn = new SeqRunNode((MGXMaster) run.getMaster(), run, Children.LEAF);
+                                        newRuns.add(srn);
+                                        
+                                    }
+                                    vgnf.addNodes(newRuns);
+                                } finally {
+                                    setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
                                 }
                                 dtde.dropComplete(true);
                                 return;
