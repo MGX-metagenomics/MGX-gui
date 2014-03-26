@@ -122,8 +122,6 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
     }
 
     void writeProperties(java.util.Properties p) {
-        // better to version settings since initial version as advocated at
-        // http://wiki.apidesign.org/wiki/PropertyFiles
         p.setProperty("version", "1.0");
     }
 
