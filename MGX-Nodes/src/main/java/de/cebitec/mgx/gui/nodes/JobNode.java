@@ -3,7 +3,9 @@ package de.cebitec.mgx.gui.nodes;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.controller.RBAC;
 import de.cebitec.mgx.gui.datamodel.Job;
+import de.cebitec.mgx.gui.datamodel.JobParameter;
 import de.cebitec.mgx.gui.datamodel.JobState;
+import de.cebitec.mgx.gui.datamodel.Tool;
 import de.cebitec.mgx.gui.datamodel.misc.Task;
 import de.cebitec.mgx.gui.datamodel.misc.Task.State;
 import de.cebitec.mgx.gui.swingutils.NonEDT;
@@ -40,9 +42,38 @@ public class JobNode extends MGXNodeBase<Job, JobNode> {
 
     public JobNode(MGXMaster m, Job job, Children c) {
         super(Children.LEAF, Lookups.fixed(m, job), job);
-        //this.job = job;
-        setDisplayName(job.getTool().getName());
+        Tool tool = job.getTool();
+        setDisplayName(tool.getName());
+        String shortDesc = new StringBuilder("<html><b>")
+                .append(tool.getName()).append("</b>")
+                .append("<br><hr><br>")
+                .append("Tool version: ")
+                .append(tool.getVersion())
+                .append("<br>")
+                .append(tool.getDescription())
+                .append("<br><br>")
+                .append("Job created by: ")
+                .append(job.getCreator())
+                .append("<br>")
+                .append(getParameterToolTip(job))
+                .append("</html>")
+                .toString();
+        setShortDescription(shortDesc);
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/AnalysisTasks.png");
+    }
+    
+    private String getParameterToolTip(Job job) {
+        if (job.getParameters() == null || job.getParameters().isEmpty()) {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder();
+        for (JobParameter jp : job.getParameters()) {
+            sb.append(jp.getParameterName())
+                    .append(": ")
+                    .append(jp.getParameterValue())
+                    .append("<br>");
+        }
+        return sb.toString();
     }
 
     @Override
@@ -112,7 +143,6 @@ public class JobNode extends MGXNodeBase<Job, JobNode> {
             }
         };
         stateProperty.setValue("suppressCustomEditor", Boolean.TRUE);
-        //stateProperty.setValue("valueIcon", ImageUtilities.loadImage("za/co/kitt/demo/nodesdemo/error_1.png", true));
         set.put(stateProperty);
 
         sheet.put(set);
