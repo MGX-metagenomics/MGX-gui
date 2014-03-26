@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  *
@@ -102,7 +103,7 @@ public class VGroupManager implements PropertyChangeListener {
     }
 
     public List<Pair<VisualizationGroup, Distribution>> getDistributions() throws ConflictingJobsException {
-        List<Pair<VisualizationGroup, Distribution>> ret = new ArrayList<>();
+        List<Pair<VisualizationGroup, Distribution>> ret = new ArrayList<>(getActiveGroups().size());
         for (VisualizationGroup vg : getActiveGroups()) {
             Distribution dist = vg.getDistribution();
             if (!dist.isEmpty()) {
@@ -115,7 +116,7 @@ public class VGroupManager implements PropertyChangeListener {
     public List<Pair<VisualizationGroup, Tree<Long>>> getHierarchies() {
         // make sure there are no unresolved ambiguities left
         for (VisualizationGroup vg : getActiveGroups()) {
-            Map<SeqRun, List<Job>> conflicts = vg.getConflicts(AttributeRank.PRIMARY);
+            Map<SeqRun, Set<Job>> conflicts = vg.getConflicts(AttributeRank.PRIMARY);
             if (!conflicts.isEmpty()) {
                 return null;
             }

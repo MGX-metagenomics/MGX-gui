@@ -2,8 +2,8 @@ package de.cebitec.mgx.gui.groups;
 
 import de.cebitec.mgx.gui.datamodel.Job;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  *
@@ -12,9 +12,9 @@ import java.util.Map;
 public class ConflictingJobsException extends Exception {
 
     private final VisualizationGroup group;
-    private final Map<SeqRun, List<Job>> conflicts;
+    private final Map<SeqRun, Set<Job>> conflicts;
 
-    public ConflictingJobsException(VisualizationGroup group, Map<SeqRun, List<Job>> data) {
+    public ConflictingJobsException(VisualizationGroup group, Map<SeqRun, Set<Job>> data) {
         this.group = group;
         this.conflicts = data;
     }
@@ -26,7 +26,7 @@ public class ConflictingJobsException extends Exception {
     @Override
     public String getMessage() {
         StringBuilder sb = new StringBuilder("Conflicts remain for group " + group.getName()+ ": \n");
-        for (Map.Entry<SeqRun, List<Job>> e : conflicts.entrySet()) {
+        for (Map.Entry<SeqRun, Set<Job>> e : conflicts.entrySet()) {
             sb.append(e.getKey().getName()).append(": ");
             for (Job j : e.getValue()) {
                 sb.append(j.getId()).append(" ");

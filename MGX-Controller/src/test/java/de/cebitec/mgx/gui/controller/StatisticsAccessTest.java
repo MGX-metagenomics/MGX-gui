@@ -12,6 +12,7 @@ import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import de.cebitec.mgx.gui.util.TestMaster;
 import de.cebitec.mgx.newick.NodeI;
 import java.util.List;
+import java.util.Set;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -84,13 +85,13 @@ public class StatisticsAccessTest {
         public boolean resolve(List<VisualizationGroup> vg) {
             for (VisualizationGroup g : vg.toArray(new VisualizationGroup[]{})) {
                 if (g.getName().equals("grp1")) {
-                    for (Triple<AttributeRank, SeqRun, List<Job>> t : g.getConflicts()) {
+                    for (Triple<AttributeRank, SeqRun, Set<Job>> t : g.getConflicts()) {
                         if (t.getSecond().getId() == 1) {
                             g.resolveConflict(t.getFirst(), t.getSecond(), extract(4, t.getThird()));
                         }
                     }
                 } else { // grp2
-                    for (Triple<AttributeRank, SeqRun, List<Job>> t : g.getConflicts()) {
+                    for (Triple<AttributeRank, SeqRun, Set<Job>> t : g.getConflicts()) {
                         if (t.getSecond().getId() == 2) {
                             g.resolveConflict(t.getFirst(), t.getSecond(), extract(7, t.getThird()));
                         }
@@ -101,7 +102,7 @@ public class StatisticsAccessTest {
             return true;
         }
 
-        private Job extract(long id, List<Job> jobs) {
+        private Job extract(long id, Set<Job> jobs) {
             for (Job j : jobs) {
                 if (j.getId() == id) {
                     return j;

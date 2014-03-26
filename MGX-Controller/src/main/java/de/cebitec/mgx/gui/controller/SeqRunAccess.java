@@ -16,11 +16,11 @@ import de.cebitec.mgx.gui.dtoconversion.AttributeTypeDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.JobDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.SeqRunDTOFactory;
 import de.cebitec.mgx.gui.util.BaseIterator;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import org.openide.util.Exceptions;
 
@@ -115,15 +115,15 @@ public class SeqRunAccess extends AccessBase<SeqRun> {
         return null;
     }
 
-    public Map<Job, List<AttributeType>> getJobsAndAttributeTypes(SeqRun run) {
-        Map<Job, List<AttributeType>> ret = new HashMap<>();
+    public Map<Job, Set<AttributeType>> getJobsAndAttributeTypes(SeqRun run) {
+        Map<Job, Set<AttributeType>> ret = new HashMap<>();
         try {
             for (JobAndAttributeTypes jat : getDTOmaster().SeqRun().getJobsAndAttributeTypes(run.getId())) {
                 Job job = JobDTOFactory.getInstance().toModel(jat.getJob());
                 job.setSeqrun(run);
-                job.setMaster(this.getMaster());
+                job.setMaster(getMaster());
 
-                List<AttributeType> all = new ArrayList<>();
+                Set<AttributeType> all = new HashSet<>();
                 for (AttributeTypeDTO atDTO : jat.getAttributeTypes().getAttributeTypeList()) {
                     AttributeType aType = AttributeTypeDTOFactory.getInstance().toModel(atDTO);
                     aType.setMaster(this.getMaster());

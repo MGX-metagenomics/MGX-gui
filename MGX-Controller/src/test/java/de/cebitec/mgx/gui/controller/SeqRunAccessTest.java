@@ -4,8 +4,8 @@ import de.cebitec.mgx.gui.datamodel.AttributeType;
 import de.cebitec.mgx.gui.datamodel.Job;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.util.TestMaster;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -43,7 +43,7 @@ public class SeqRunAccessTest {
         System.out.println("getJobsAndAttributeTypes");
         MGXMaster m = TestMaster.getRO();
         SeqRun sr1 = m.SeqRun().fetch(1);
-        Map<Job, List<AttributeType>> data = m.SeqRun().getJobsAndAttributeTypes(sr1);
+        Map<Job, Set<AttributeType>> data = m.SeqRun().getJobsAndAttributeTypes(sr1);
         assertNotNull(data);
         assertEquals(9, data.size());
         for (Job j : data.keySet()) {

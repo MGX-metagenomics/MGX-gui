@@ -9,6 +9,7 @@ import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.Attribute;
 import de.cebitec.mgx.gui.datamodel.AttributeType;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
+import de.cebitec.mgx.gui.datamodel.misc.AttributeRank;
 import de.cebitec.mgx.gui.datamodel.misc.Distribution;
 import de.cebitec.mgx.gui.datamodel.tree.Tree;
 import de.cebitec.mgx.gui.util.TestMaster;
@@ -24,6 +25,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -65,7 +67,7 @@ public class VisualizationGroupTest {
         VisualizationGroup vg = VGroupManager.getInstance().createGroup();
         MGXMaster master = TestMaster.getRO();
         Iterator<SeqRun> iter = master.SeqRun().fetchall();
-        long cnt=0;
+        long cnt = 0;
         while (iter.hasNext()) {
             SeqRun sr = iter.next();
             vg.addSeqRun(sr);
@@ -89,17 +91,86 @@ public class VisualizationGroupTest {
         assertEquals(runs, vg.getSeqRuns());
     }
 
-//    @Test
-//    public void testGetSelectedAttributeType() {
-//        System.out.println("getSelectedAttributeType");
-//        VisualizationGroup instance = null;
-//        String expResult = "";
-//        String result = instance.getSelectedAttributeType();
-//        assertEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
+    @Test
+    public void testGetAttributeTypes() {
+        System.out.println("getAttributeTypes");
+        VisualizationGroup vg = VGroupManager.getInstance().createGroup();
+        MGXMaster master = TestMaster.getRO();
+        Iterator<SeqRun> iter = master.SeqRun().fetchall();
+        while (iter.hasNext()) {
+            vg.addSeqRun(iter.next());
+        }
+        Iterator<AttributeType> atIter = vg.getAttributeTypes();
+        assertNotNull(atIter);
+        int cnt = 0;
+        while (atIter.hasNext()) {
+            AttributeType next = atIter.next();
+            System.err.println("  " + next.getName());
+            cnt++;
+        }
+        assertEquals(20, cnt);
+    }
 
+    @Test
+    public void testaddAndRemoveRuns() {
+        System.out.println("addAndRemoveRuns");
+        VisualizationGroup vg = VGroupManager.getInstance().createGroup();
+        MGXMaster master = TestMaster.getRO();
+
+        Iterator<SeqRun> iter = master.SeqRun().fetchall();
+        SeqRun run = null;
+        while (iter.hasNext()) {
+            run = iter.next();
+            if (run.getName().equals("dataset2")) {
+                break;
+            }
+        }
+        vg.addSeqRun(run);
+        Iterator<AttributeType> atIter = vg.getAttributeTypes();
+        assertNotNull(atIter);
+        int cnt = 0;
+        while (atIter.hasNext()) {
+            AttributeType next = atIter.next();
+            cnt++;
+        }
+        assertEquals(14, cnt);
+
+        // remove run again
+        vg.removeSeqRun(run);
+        Iterator<AttributeType> atIter2 = vg.getAttributeTypes();
+        assertNotNull(atIter);
+        int cnt2 = 0;
+        while (atIter2.hasNext()) {
+            AttributeType next = atIter2.next();
+            cnt2++;
+        }
+        assertEquals(0, cnt2);
+    }
+
+    @Test
+    public void testGetSelectedAttributeType() {
+        System.out.println("getSelectedAttributeType");
+        VisualizationGroup vg = VGroupManager.getInstance().createGroup();
+        MGXMaster master = TestMaster.getRO();
+        Iterator<SeqRun> iter = master.SeqRun().fetchall();
+        while (iter.hasNext()) {
+            vg.addSeqRun(iter.next());
+        }
+        Iterator<AttributeType> atIter = vg.getAttributeTypes();
+        assertNotNull(atIter);
+
+        AttributeType next = null;
+        while (atIter.hasNext()) {
+            next = atIter.next();
+        }
+        assertNotNull(next);
+        try {
+            vg.selectAttributeType(AttributeRank.PRIMARY, next.getName());
+        } catch (ConflictingJobsException ex) {
+            fail(ex.getMessage());
+        }
+        assertEquals(next.getName(), vg.getSelectedAttributeType());
+    }
 //    @Test
 //    public void testSelectAttributeType() throws Exception {
 //        System.out.println("selectAttributeType");
@@ -110,7 +181,6 @@ public class VisualizationGroupTest {
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
 //    }
-
 //    @Test
 //    public void testGetConflicts() {
 //        System.out.println("getConflicts");
@@ -121,7 +191,6 @@ public class VisualizationGroupTest {
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
 //    }
-
 //    @Test
 //    public void testResolveConflict() {
 //        System.out.println("resolveConflict");
@@ -133,7 +202,6 @@ public class VisualizationGroupTest {
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
 //    }
-
 //    @Test
 //    public void testAddSeqRun() {
 //        System.out.println("addSeqRun");
@@ -176,16 +244,6 @@ public class VisualizationGroupTest {
 //        fail("The test case is a prototype.");
 //    }
 //
-//    @Test
-//    public void testGetAttributeTypes() {
-//        System.out.println("getAttributeTypes");
-//        VisualizationGroup instance = null;
-//        List<AttributeType> expResult = null;
-//        List<AttributeType> result = instance.getAttributeTypes();
-//        assertEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
 //
 //    @Test
 //    public void testGetSaveSet() {

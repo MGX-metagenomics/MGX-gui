@@ -15,14 +15,11 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.SwingWorker;
 import org.openide.util.Exceptions;
 
 /**
@@ -44,20 +41,13 @@ public class VisualizationGroup implements PropertyChangeListener {
     private String name;
     private Color color;
     private boolean is_active = true;
-    private final Set<SeqRun> seqruns = new HashSet<>();
-    //
     private String selectedAttributeType;
     private String secondaryAttributeType; // 2nd attr type for correlation matrices
     private final Map<AttributeRank, Map<SeqRun, Job>> uniqueJobs = new HashMap<>();
-    private final Map<AttributeRank, Map<SeqRun, List<Job>>> needsResolval = new HashMap<>();
-    //
-    private final BlockingQueue<AttributeTypeFetcher> fetcherQueue = new LinkedBlockingQueue<>();
-    private final Thread fetchThread;
-    //
-    private final Map<SeqRun, Map<Job, List<AttributeType>>> attributeTypes;
+    private final Map<AttributeRank, Map<SeqRun, Set<Job>>> needsResolval = new HashMap<>();
+    private final Map<SeqRun, Map<Job, Set<AttributeType>>> attributeTypes;
     private final Map<SeqRun, Distribution> currentDistributions;
     //
-    //private List<Fetcher> attributeTypePrefetchers = new ArrayList<>();
     private final PropertyChangeSupport pcs;
     //
     private final Map<String, Distribution> distCache = new HashMap<>();
@@ -69,23 +59,18 @@ public class VisualizationGroup implements PropertyChangeListener {
         this.color = color;
         uniqueJobs.put(AttributeRank.PRIMARY, new HashMap<SeqRun, Job>());
         uniqueJobs.put(AttributeRank.SECONDARY, new HashMap<SeqRun, Job>());
-        needsResolval.put(AttributeRank.PRIMARY, new HashMap<SeqRun, List<Job>>());
-        needsResolval.put(AttributeRank.SECONDARY, new HashMap<SeqRun, List<Job>>());
+        needsResolval.put(AttributeRank.PRIMARY, new HashMap<SeqRun, Set<Job>>());
+        needsResolval.put(AttributeRank.SECONDARY, new HashMap<SeqRun, Set<Job>>());
         pcs = new PropertyChangeSupport(this);
         attributeTypes = new ConcurrentHashMap<>();
         currentDistributions = new ConcurrentHashMap<>();
-        fetchThread = new Thread(new QHandler(fetcherQueue));
-        fetchThread.setName("VisualizationGroup-" + id + "-AttributeType Manager");
-        fetchThread.start();
     }
 
     protected void close() {
-        fetchThread.interrupt();
-        try {
-            fetchThread.join();
-        } catch (InterruptedException ex) {
-            Exceptions.printStackTrace(ex);
+        for (SeqRun sr : getSeqRuns()) {
+            sr.removePropertyChangeListener(this);
         }
+        attributeTypes.clear();
     }
 
     public int getId() {
@@ -103,7 +88,7 @@ public class VisualizationGroup implements PropertyChangeListener {
     }
 
     public final boolean isActive() {
-        return is_active && seqruns.size() > 0;
+        return is_active && attributeTypes.size() > 0;
     }
 
     public final void setActive(boolean is_active) {
@@ -121,27 +106,20 @@ public class VisualizationGroup implements PropertyChangeListener {
 
     public final long getNumSequences() {
         long ret = 0;
-        for (SeqRun sr : seqruns) {
+        for (SeqRun sr : getSeqRuns()) {
             ret += sr.getNumSequences();
         }
         return ret;
     }
 
     public final Set<SeqRun> getSeqRuns() {
-        return seqruns;
+        return attributeTypes.keySet();
     }
 
     public final String getSelectedAttributeType() {
         return selectedAttributeType;
     }
 
-//    public final void selectAttributeType(String attrType) throws ConflictingJobsException {
-//        selectAttributeType(AttributeRank.PRIMARY, attrType);
-//    }
-//
-//    public final void selectSecondaryAttributeType(String attrType) throws ConflictingJobsException {
-//        selectAttributeType(AttributeRank.SECONDARY, attrType);
-//    }
     /**
      *
      * @param rank
@@ -172,9 +150,9 @@ public class VisualizationGroup implements PropertyChangeListener {
             hierarchyCache.remove(attrType);
         }
 
-        for (SeqRun run : seqruns) {
+        for (SeqRun run : getSeqRuns()) {
 
-            List<Job> validJobs = getJobsProvidingAttributeType(run, selectedAttributeType);
+            Set<Job> validJobs = getJobsProvidingAttributeType(run, selectedAttributeType);
             //
             // select the job to use - either we can automatically determine
             // the correct job or we have to ask the user
@@ -184,7 +162,7 @@ public class VisualizationGroup implements PropertyChangeListener {
                     // nothing to do, no job provides this attribute type
                     break;
                 case 1:
-                    uniqueJobs.get(rank).put(run, validJobs.get(0));
+                    uniqueJobs.get(rank).put(run, validJobs.toArray(new Job[]{})[0]);
                     break;
                 default:
                     needsResolval.get(rank).put(run, validJobs);
@@ -199,18 +177,18 @@ public class VisualizationGroup implements PropertyChangeListener {
         }
     }
 
-    public List<Triple<AttributeRank, SeqRun, List<Job>>> getConflicts() {
-        List<Triple<AttributeRank, SeqRun, List<Job>>> ret = new LinkedList<>();
-        for (Map.Entry<SeqRun, List<Job>> e : getConflicts(AttributeRank.PRIMARY).entrySet()) {
+    public List<Triple<AttributeRank, SeqRun, Set<Job>>> getConflicts() {
+        List<Triple<AttributeRank, SeqRun, Set<Job>>> ret = new LinkedList<>();
+        for (Map.Entry<SeqRun, Set<Job>> e : getConflicts(AttributeRank.PRIMARY).entrySet()) {
             ret.add(new Triple<>(AttributeRank.PRIMARY, e.getKey(), e.getValue()));
         }
-        for (Map.Entry<SeqRun, List<Job>> e : getConflicts(AttributeRank.SECONDARY).entrySet()) {
+        for (Map.Entry<SeqRun, Set<Job>> e : getConflicts(AttributeRank.SECONDARY).entrySet()) {
             ret.add(new Triple<>(AttributeRank.SECONDARY, e.getKey(), e.getValue()));
         }
         return ret;
     }
 
-    Map<SeqRun, List<Job>> getConflicts(AttributeRank rank) {
+    Map<SeqRun, Set<Job>> getConflicts(AttributeRank rank) {
         return needsResolval.get(rank);
     }
 
@@ -218,7 +196,7 @@ public class VisualizationGroup implements PropertyChangeListener {
         assert j != null;
         assert needsResolval.get(rank).containsKey(sr);
         synchronized (needsResolval) {
-            List<Job> options = needsResolval.get(rank).remove(sr);
+            Set<Job> options = needsResolval.get(rank).remove(sr);
             assert options.contains(j);
             uniqueJobs.get(rank).put(sr, j);
         }
@@ -228,39 +206,73 @@ public class VisualizationGroup implements PropertyChangeListener {
 //        }
     }
 
-    public final void addSeqRun(SeqRun sr) {
-        if (seqruns.contains(sr)) {
-            return;
-        }
-        distCache.clear(); // invalidate caches
-        hierarchyCache.clear();
-
-        //seqruns.add(sr);
-        sr.addPropertyChangeListener(this);
-
-        CountDownLatch l = new CountDownLatch(1);
-
-        AttributeTypeFetcher fetcher = new AttributeTypeFetcher(sr, l);
+    public final void addSeqRuns(final Set<SeqRun> runs) {
+        MultiAttributeTypeFetcher fetcher = new MultiAttributeTypeFetcher(runs);
         fetcher.execute();
-        fetcherQueue.add(fetcher);
         try {
-            l.await();
-        } catch (InterruptedException ex) {
+            Map<SeqRun, Map<Job, Set<AttributeType>>> get = fetcher.get();
+            for (Map.Entry<SeqRun, Map<Job, Set<AttributeType>>> e : get.entrySet()) {
+                e.getKey().addPropertyChangeListener(this);
+                attributeTypes.put(e.getKey(), e.getValue());
+
+                // remove cached data for modified attribute types
+                for (Set<AttributeType> s : e.getValue().values()) {
+                    for (AttributeType at : s) {
+                        distCache.remove(at.getName());
+                        hierarchyCache.remove(at.getName());
+                    }
+                }
+            }
+
+        } catch (InterruptedException | ExecutionException ex) {
             Exceptions.printStackTrace(ex);
         }
-        // fetcher thread will fire change event once task is complete
-        // fireVGroupChanged(VISGROUP_CHANGED);
 
+        fireVGroupChanged(VISGROUP_CHANGED);
     }
 
-    public void removeSeqRun(SeqRun sr) {
-        synchronized (seqruns) {
-            sr.removePropertyChangeListener(this);
-            seqruns.remove(sr);
-            distCache.clear(); // invalidate caches
-            hierarchyCache.clear();
-            attributeTypes.remove(sr);
+    public final void addSeqRun(final SeqRun sr) {
+        if (attributeTypes.containsKey(sr)) {
+            return;
         }
+
+        AttributeTypeFetcher fetcher = new AttributeTypeFetcher(sr);
+        fetcher.execute();
+        try {
+            Map<Job, Set<AttributeType>> get = fetcher.get();
+            sr.addPropertyChangeListener(this);
+            attributeTypes.put(sr, get);
+
+            // remove cached data for modified attribute types
+            for (Set<AttributeType> s : get.values()) {
+                for (AttributeType at : s) {
+                    distCache.remove(at.getName());
+                    hierarchyCache.remove(at.getName());
+                }
+            }
+        } catch (InterruptedException | ExecutionException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+
+        fireVGroupChanged(VISGROUP_CHANGED);
+    }
+
+    public final void removeSeqRun(final SeqRun sr) {
+        if (!attributeTypes.containsKey(sr)) {
+            return;
+        }
+
+        sr.removePropertyChangeListener(this);
+        Map<Job, Set<AttributeType>> remove = attributeTypes.remove(sr);
+
+        // remove cached data for modified attribute types
+        for (Set<AttributeType> s : remove.values()) {
+            for (AttributeType at : s) {
+                distCache.remove(at.getName());
+                hierarchyCache.remove(at.getName());
+            }
+        }
+
         fireVGroupChanged(VISGROUP_CHANGED);
     }
 
@@ -290,9 +302,9 @@ public class VisualizationGroup implements PropertyChangeListener {
 
         // start distribution retrieval workers in background
         //
-        CountDownLatch allDone = new CountDownLatch(seqruns.size());
+        CountDownLatch allDone = new CountDownLatch(attributeTypes.size());
 
-        for (SeqRun run : seqruns) {
+        for (SeqRun run : getSeqRuns()) {
             //
             // select the job to use - either we can automatically determine
             // the correct job or we have to ask the user
@@ -346,13 +358,12 @@ public class VisualizationGroup implements PropertyChangeListener {
         }
 
         currentDistributions.clear();
-        //List<Distribution> results = Collections.synchronizedList(new ArrayList<Distribution>());
 
         // start distribution retrieval workers in background
         //
-        CountDownLatch allDone = new CountDownLatch(seqruns.size());
+        CountDownLatch allDone = new CountDownLatch(attributeTypes.size());
 
-        for (SeqRun run : seqruns) {
+        for (SeqRun run : getSeqRuns()) {
 
             Job selectedJob = uniqueJobs.get(AttributeRank.PRIMARY).get(run);
             //
@@ -389,22 +400,18 @@ public class VisualizationGroup implements PropertyChangeListener {
         return ret;
     }
 
-    public final List<AttributeType> getAttributeTypes() {
+    public final Iterator<AttributeType> getAttributeTypes() {
+        Set<AttributeType> ret = new HashSet<>();
 
-        List<AttributeType> ret = new ArrayList<>();
-        synchronized (seqruns) {
-            assert attributeTypes.keySet().size() == seqruns.size();
-
-            for (Map<Job, List<AttributeType>> l : attributeTypes.values()) {
-                for (List<AttributeType> atypes : l.values()) {
-                    ret.addAll(atypes);
-                }
+        for (Map<Job, Set<AttributeType>> l : attributeTypes.values()) {
+            for (Set<AttributeType> atypes : l.values()) {
+                ret.addAll(atypes);
             }
         }
-        return ret;
+        return ret.iterator();
     }
 
-    private List<Job> getJobsProvidingAttributeType(SeqRun run, final String attrTypeName) {
+    private Set<Job> getJobsProvidingAttributeType(SeqRun run, final String attrTypeName) {
         //
         // process all jobs for a seqrun and keep only those
         // which provide the requested attribute type
@@ -412,8 +419,8 @@ public class VisualizationGroup implements PropertyChangeListener {
         assert attributeTypes.containsKey(run);
         assert attributeTypes.get(run) != null;
 
-        List<Job> validJobs = new ArrayList<>();
-        for (Entry<Job, List<AttributeType>> entrySet : attributeTypes.get(run).entrySet()) {
+        Set<Job> validJobs = new HashSet<>();
+        for (Entry<Job, Set<AttributeType>> entrySet : attributeTypes.get(run).entrySet()) {
             for (AttributeType atype : entrySet.getValue()) {
                 if (atype.getName().equals(attrTypeName)) {
                     validJobs.add(entrySet.getKey());
@@ -430,8 +437,8 @@ public class VisualizationGroup implements PropertyChangeListener {
             return null;
         }
         List<AttributeType> validTypes = new ArrayList<>();
-        Map<Job, List<AttributeType>> jobattrtypes = attributeTypes.get(run);
-        List<AttributeType> attributesForJob = jobattrtypes.get(job);
+        Map<Job, Set<AttributeType>> jobattrtypes = attributeTypes.get(run);
+        Set<AttributeType> attributesForJob = jobattrtypes.get(job);
         if (attributesForJob == null) {
             Logger.getGlobal().log(Level.SEVERE, "no attributes for run {0} from job {1}", new Object[]{run.getName(), job.getId()});
         }
@@ -444,26 +451,6 @@ public class VisualizationGroup implements PropertyChangeListener {
         return validTypes.get(0);
     }
 
-//    private static Distribution mergeDistributions(final Iterable<Distribution> dists) {
-//        Map<Attribute, Number> summary = new HashMap<>();
-//        long total = 0;
-//        MGXMasterI anyMaster = null;
-//
-//        for (Distribution d : dists) {
-//            anyMaster = (MGXMaster) d.getMaster();
-//            total += d.getTotalClassifiedElements();
-//            for (Entry<Attribute, ? extends Number> e : d.entrySet()) {
-//                Attribute attr = e.getKey();
-//                long count = e.getValue().longValue();
-//                if (summary.containsKey(attr)) {
-//                    count += summary.get(attr).longValue();
-//                }
-//                summary.put(attr, count);
-//            }
-//        }
-//
-//        return new Distribution(summary, total, anyMaster);
-//    }
     public Map<SeqRun, Set<Attribute>> getSaveSet(List<String> requestedAttrs) {
         assert needsResolval.get(AttributeRank.PRIMARY).isEmpty();
         Map<SeqRun, Set<Attribute>> filtered = new HashMap<>();
@@ -495,35 +482,39 @@ public class VisualizationGroup implements PropertyChangeListener {
         pcs.removePropertyChangeListener(p);
     }
 
-    public abstract class Fetcher<T> extends SwingWorker<T, Void> {
-    }
-
-    private final class AttributeTypeFetcher extends Fetcher<Map<Job, List<AttributeType>>> {
+    private final class AttributeTypeFetcher extends Fetcher<Map<Job, Set<AttributeType>>> {
 
         private final SeqRun run;
-        private final CountDownLatch latch;
 
-        public AttributeTypeFetcher(final SeqRun run, final CountDownLatch l) {
+        public AttributeTypeFetcher(final SeqRun run) {
             this.run = run;
-            this.latch = l;
-        }
-
-        public SeqRun getRun() {
-            return run;
-        }
-
-        public void processed() {
-            latch.countDown();
         }
 
         @Override
-        protected Map<Job, List<AttributeType>> doInBackground() throws Exception {
+        protected Map<Job, Set<AttributeType>> doInBackground() throws Exception {
             MGXMaster master = (MGXMaster) run.getMaster();
-            Map<Job, List<AttributeType>> ret = master.SeqRun().getJobsAndAttributeTypes(run);
-//            latch.countDown();
-            return ret;
+            return master.SeqRun().getJobsAndAttributeTypes(run);
+        }
+    }
+
+    private final class MultiAttributeTypeFetcher extends Fetcher< Map<SeqRun, Map<Job, Set<AttributeType>>>> {
+
+        private final Set<SeqRun> runs;
+
+        public MultiAttributeTypeFetcher(final Set<SeqRun> runs) {
+            this.runs = runs;
         }
 
+        @Override
+        protected Map<SeqRun, Map<Job, Set<AttributeType>>> doInBackground() throws Exception {
+            Map<SeqRun, Map<Job, Set<AttributeType>>> ret = new HashMap<>();
+            for (SeqRun run : runs) {
+                MGXMaster master = (MGXMaster) run.getMaster();
+                Map<Job, Set<AttributeType>> data = master.SeqRun().getJobsAndAttributeTypes(run);
+                ret.put(run, data);
+            }
+            return ret;
+        }
     }
 
     private class DistributionFetcher extends Fetcher<Distribution> {
@@ -600,41 +591,45 @@ public class VisualizationGroup implements PropertyChangeListener {
         }
     }
 
-    private final class QHandler implements Runnable {
-
-        private final BlockingQueue<AttributeTypeFetcher> queue;
-
-        public QHandler(BlockingQueue<AttributeTypeFetcher> queue) {
-            this.queue = queue;
+//    private final class QHandler implements Runnable {
+//
+//        private final BlockingQueue<AttributeTypeFetcher> queue;
+//
+//        public QHandler(BlockingQueue<AttributeTypeFetcher> queue) {
+//            this.queue = queue;
+//        }
+//
+//        @Override
+//        public void run() {
+//            try {
+//                while (true) {
+//                    AttributeTypeFetcher fetcher = queue.take();
+//                    System.err.println("fetching attrtypes for " + fetcher.getRun().getName());
+//                    try {
+//                        fetcher.getRun().addPropertyChangeListener(VisualizationGroup.this);
+//                        attributeTypes.put(fetcher.getRun(), fetcher.get());
+//                    } catch (InterruptedException | ExecutionException ex) {
+//                        Exceptions.printStackTrace(ex);
+//                    } finally {
+//                        fetcher.processed();
+//                    }
+//
+//                    if (queue.isEmpty()) {
+//                        fireVGroupChanged(VISGROUP_CHANGED);
+//                    }
+//                }
+//            } catch (InterruptedException ex) {
+//            }
+//        }
+//    }
+    private int getNumberOfAttributeTypes() {
+        // get current number of attribute types
+        int curAttrTypeCnt = 0;
+        Iterator<AttributeType> it = getAttributeTypes();
+        while (it.hasNext()) {
+            it.next();
+            curAttrTypeCnt++;
         }
-
-        @Override
-        public void run() {
-            try {
-                while (true) {
-                    AttributeTypeFetcher fetcher = queue.take();
-                    try {
-                        Map<Job, List<AttributeType>> ret = fetcher.get();
-                        synchronized (seqruns) {
-                            SeqRun newRun = fetcher.getRun();
-                            // make sure seqrun hasn't been removed from this group
-                            //if (seqruns.contains(fetcher.getRun())) {
-                            seqruns.add(newRun);
-                            attributeTypes.put(fetcher.getRun(), ret);
-                            //}
-                        }
-                    } catch (InterruptedException | ExecutionException ex) {
-                        Exceptions.printStackTrace(ex);
-                    } finally {
-                        fetcher.processed();
-                    }
-
-                    if (queue.isEmpty()) {
-                        fireVGroupChanged(VISGROUP_CHANGED);
-                    }
-                }
-            } catch (InterruptedException ex) {
-            }
-        }
+        return curAttrTypeCnt;
     }
 }
