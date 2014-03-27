@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.nodefactory;
 
 import de.cebitec.mgx.gui.controller.MGXMaster;
+import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import de.cebitec.mgx.gui.nodes.SeqRunNode;
 import java.awt.event.ActionEvent;
@@ -8,7 +9,9 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import org.openide.nodes.*;
@@ -33,7 +36,7 @@ public class VisualizationGroupNodeFactory extends ChildFactory<SeqRunNode> impl
             }
         });
     }
-    
+
     @Override
     protected boolean createKeys(List<SeqRunNode> toPopulate) {
         toPopulate.addAll(nodes);
@@ -41,14 +44,25 @@ public class VisualizationGroupNodeFactory extends ChildFactory<SeqRunNode> impl
         return true;
     }
 
-    public void addNode(SeqRunNode node) { 
+    public void addNode(SeqRunNode node) {
         node.addNodeListener(this);
         nodes.add(node);
         group.addSeqRun(node.getContent());
         refreshChildren();
     }
-    
-    public void removeNode(SeqRunNode node) { 
+
+    public void addNodes(Set<SeqRunNode> newNodes) {
+        Set<SeqRun> newRuns = new HashSet<>();
+        for (SeqRunNode node : newNodes) {
+            node.addNodeListener(this);
+            nodes.add(node);
+            newRuns.add(node.getContent());
+        }
+        group.addSeqRuns(newRuns);
+        refreshChildren();
+    }
+
+    public void removeNode(SeqRunNode node) {
         node.removeNodeListener(this);
         nodes.remove(node);
         group.removeSeqRun(node.getContent());
@@ -91,7 +105,7 @@ public class VisualizationGroupNodeFactory extends ChildFactory<SeqRunNode> impl
     }
 
     private class DisplayNode extends FilterNode implements NodeListener {
-        
+
         private final SeqRunNode n;
         private final VisualizationGroupNodeFactory nf;
 
@@ -99,7 +113,7 @@ public class VisualizationGroupNodeFactory extends ChildFactory<SeqRunNode> impl
             super(node, Children.LEAF, Lookups.singleton(node.getContent()));
             disableDelegation(DELEGATE_SET_DISPLAY_NAME + DELEGATE_GET_ACTIONS);
             n = node;
-            nf = nodef; 
+            nf = nodef;
             node.addNodeListener(this);
         }
 
@@ -108,7 +122,7 @@ public class VisualizationGroupNodeFactory extends ChildFactory<SeqRunNode> impl
             MGXMaster m = (MGXMaster) n.getContent().getMaster();
             return n.getContent().getName() + " (" + m.getProject() + ")";
         }
-        
+
         @Override
         public Action[] getActions(boolean context) {
             return new Action[]{new RemoveAction()};
