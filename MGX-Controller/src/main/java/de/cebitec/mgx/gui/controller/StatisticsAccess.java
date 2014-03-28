@@ -59,7 +59,6 @@ public class StatisticsAccess extends AccessBase<Point> {
         }
         Attribute[] ordered = attrs.toArray(new Attribute[]{});
         attrs.clear();
-        attrs = null; // allow GC
 
         // obfuscate group names
         Map<String, String> tmpNames = new HashMap<>();
@@ -67,22 +66,26 @@ public class StatisticsAccess extends AccessBase<Point> {
         for (Pair<VisualizationGroup, Distribution> dataset : groups) {
             String obfusName = generateName();
             tmpNames.put(obfusName, dataset.getFirst().getName());
-            
+
             ProfileDTO prof = ProfileDTO.newBuilder()
                     .setName(obfusName)
                     .setValues(buildVector(ordered, dataset.getSecond()))
                     .build();
             b.addRow(prof);
         }
+        String nwk = null;
         try {
-            String nwk = getDTOmaster().Statistics().Clustering(b.build(), distMethod, aggloMethod);
-            
+            nwk = getDTOmaster().Statistics().Clustering(b.build(), distMethod, aggloMethod);
+
             // de-obfuscate group names
             for (Entry<String, String> e : tmpNames.entrySet()) {
                 nwk = nwk.replace(e.getKey(), e.getValue());
             }
             return NewickParser.parse(nwk);
         } catch (MGXServerException | MGXClientException | ParserException ex) {
+            if (ex instanceof ParserException) {
+                System.err.println("Parser error for Newick string " + nwk);
+            }
             Exceptions.printStackTrace(ex);
         }
         return null;
