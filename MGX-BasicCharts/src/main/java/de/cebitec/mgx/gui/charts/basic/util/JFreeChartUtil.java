@@ -22,6 +22,8 @@ import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultKeyedValues2DDataset;
 import org.jfree.data.general.KeyedValues2DDataset;
+import org.jfree.data.xy.DefaultTableXYDataset;
+import org.jfree.data.xy.TableXYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.graphics2d.svg.SVGGraphics2D;
@@ -73,7 +75,6 @@ public class JFreeChartUtil {
 //        }
 //        return dataset;
 //    }
-
     public static XYSeriesCollection createXYSeries(List<Pair<VisualizationGroup, Distribution>> in) {
         return createXYSeries(in, false);
     }
@@ -114,11 +115,22 @@ public class JFreeChartUtil {
             if (createBounds) {
                 series.add(maxAttrVal + Double.MIN_VALUE, 0);
             }
+            dataset.addSeries(series);
+        }
+        return dataset;
+    }
 
-//            for (Map.Entry<Attribute, ? extends Number> entry : groupDistribution.getSecond().entrySet()) {
-//                double d = Double.parseDouble(entry.getKey().getValue());
-//                series.add(d, entry.getValue());
-//            }
+    public static TableXYDataset createTableXYDataset(List<Pair<VisualizationGroup, Distribution>> in) {
+        DefaultTableXYDataset dataset = new DefaultTableXYDataset();
+
+        for (Pair<VisualizationGroup, Distribution> groupDistribution : in) {
+            XYSeries series = new XYSeries(groupDistribution.getFirst().getName(), true, false);
+
+            for (Map.Entry<Attribute, ? extends Number> entry : groupDistribution.getSecond().entrySet()) {
+                double attrVal = Double.parseDouble(entry.getKey().getValue());
+                double value = entry.getValue().doubleValue();
+                series.add(attrVal, value);
+            }
             dataset.addSeries(series);
         }
         return dataset;

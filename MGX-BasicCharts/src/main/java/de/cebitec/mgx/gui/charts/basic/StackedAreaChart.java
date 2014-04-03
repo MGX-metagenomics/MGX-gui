@@ -12,15 +12,16 @@ import java.util.List;
 import java.util.Locale;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
-import org.jfree.chart.axis.CategoryAxis;
+import org.jfree.chart.LegendItemCollection;
 import org.jfree.chart.axis.LogAxis;
 import org.jfree.chart.axis.LogarithmicAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.TickUnitSource;
-import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.chart.renderer.category.CategoryItemRenderer;
-import org.jfree.data.category.CategoryDataset;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.StackedXYAreaRenderer2;
+import org.jfree.data.xy.TableXYDataset;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -37,43 +38,44 @@ public class StackedAreaChart extends AreaChart {
 
     @Override
     public boolean canHandle(AttributeType valueType) {
-        return ((super.canHandle(valueType)) && (VGroupManager.getInstance().getActiveGroups().size() > 1));
+        return super.canHandle(valueType) && VGroupManager.getInstance().getActiveGroups().size() > 1;
     }
-    
-    
 
     @Override
     public void show(List<Pair<VisualizationGroup, Distribution>> dists) {
 
+        LegendItemCollection legend = JFreeChartUtil.createLegend(dists);
         dists = getCustomizer().filter(dists);
-        CategoryDataset dataset = JFreeChartUtil.createCategoryDataset(dists);
+        TableXYDataset dataset = JFreeChartUtil.createTableXYDataset(dists);
 
         String xAxisLabel = "";
-        String yAxisLabel = getCustomizer().useFractions() ? "Fraction" : "Count";
+        String yAxisLabel = useFractions() ? "Fraction" : "Count";
 
-        chart = ChartFactory.createStackedAreaChart(getTitle(), xAxisLabel, yAxisLabel, dataset, PlotOrientation.VERTICAL, true, true, false);
+        chart = ChartFactory.createStackedXYAreaChart(getTitle(), xAxisLabel, yAxisLabel, dataset, PlotOrientation.VERTICAL, true, true, false);
+
         chart.setBorderPaint(Color.WHITE);
         chart.setBackgroundPaint(Color.WHITE);
         cPanel = new ChartPanel(chart);
-        CategoryPlot plot = (CategoryPlot) chart.getPlot();
+        XYPlot plot = (XYPlot) chart.getPlot();
         plot.setBackgroundPaint(Color.WHITE);
 
+        plot.setFixedLegendItems(legend);
+
         // x axis
-        CategoryAxis valueAxis;
-//        final TickUnitSource tusX;
-//        if (getCustomizer().logX()) {
-//            valueAxis = new LogarithmicAxis("log(" + xAxisLabel + ")");
-//            ((LogarithmicAxis) valueAxis).setStrictValuesFlag(false);
-//            tusX = LogAxis.createLogTickUnits(Locale.getDefault());
-//
-//        } else {
-//            valueAxis = (CategoryAxis) plot.getDomainAxis();
-//            tusX = NumberAxis.createIntegerTickUnits();
-//        }
-//        valueAxis.setStandardTickUnits(tusX);
-//        valueAxis.setInverted(!getCustomizer().getSortAscending());
-//        plot.setDomainAxis(valueAxis);
-        plot.getDomainAxis().setCategoryMargin(0); 
+        ValueAxis valueAxis;
+        final TickUnitSource tusX;
+        if (getCustomizer().logX()) {
+            valueAxis = new LogarithmicAxis("log(" + xAxisLabel + ")");
+            ((LogarithmicAxis) valueAxis).setStrictValuesFlag(false);
+            tusX = LogAxis.createLogTickUnits(Locale.getDefault());
+
+        } else {
+            valueAxis = (NumberAxis) plot.getDomainAxis();
+            tusX = NumberAxis.createIntegerTickUnits();
+        }
+        valueAxis.setStandardTickUnits(tusX);
+        valueAxis.setInverted(!getCustomizer().getSortAscending());
+        plot.setDomainAxis(valueAxis);
 
         // y axis
         final NumberAxis rangeAxis;
@@ -94,10 +96,9 @@ public class StackedAreaChart extends AreaChart {
         rangeAxis.setStandardTickUnits(tus);
         plot.setRangeAxis(rangeAxis);
 
-
-        // colors
+        // set the colors
         int i = 0;
-        CategoryItemRenderer renderer = chart.getCategoryPlot().getRenderer();
+        StackedXYAreaRenderer2 renderer = (StackedXYAreaRenderer2) plot.getRenderer();
         for (Pair<VisualizationGroup, Distribution> groupDistribution : dists) {
             renderer.setSeriesPaint(i++, groupDistribution.getFirst().getColor());
         }

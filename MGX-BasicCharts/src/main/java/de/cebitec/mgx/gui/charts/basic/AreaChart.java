@@ -51,7 +51,6 @@ public class AreaChart extends NumericalViewerI {
     @Override
     public void show(List<Pair<VisualizationGroup, Distribution>> dists) {
         
-        
         LegendItemCollection legend = JFreeChartUtil.createLegend(dists);
 
         dists = getCustomizer().filter(dists);
@@ -113,7 +112,6 @@ public class AreaChart extends NumericalViewerI {
         for (Pair<VisualizationGroup, Distribution> groupDistribution : dists) {
             renderer.setSeriesPaint(i++, groupDistribution.getFirst().getColor());
         }
-
     }
 
     @Override
@@ -135,7 +133,7 @@ public class AreaChart extends NumericalViewerI {
         return JFreeChartUtil.getImageExporter(chart);
     }
     
-    private boolean useFractions() {
+    protected boolean useFractions() {
         return getCustomizer().useFractions();
     }
 }
