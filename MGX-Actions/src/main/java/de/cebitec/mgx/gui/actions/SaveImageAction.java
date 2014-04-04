@@ -1,9 +1,12 @@
-
 package de.cebitec.mgx.gui.actions;
 
 import de.cebitec.mgx.gui.groups.ImageExporterI;
+import de.cebitec.mgx.gui.util.FileChooserUtils;
+import de.cebitec.mgx.gui.util.FileType;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import org.openide.DialogDisplayer;
+import org.openide.NotifyDescriptor;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -11,11 +14,11 @@ import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle.Messages;
 
 @ActionID(
-    category = "File",
-id = "de.cebitec.mgx.gui.actions.SaveImageAction")
+        category = "File",
+        id = "de.cebitec.mgx.gui.actions.SaveImageAction")
 @ActionRegistration(
-    iconBase = "de/cebitec/mgx/gui/actions/SavePicture.png",
-displayName = "#CTL_SaveImageAction")
+        iconBase = "de/cebitec/mgx/gui/actions/SavePicture.png",
+        displayName = "#CTL_SaveImageAction")
 @ActionReferences({
     @ActionReference(path = "Menu/File", position = 1760),
     @ActionReference(path = "Toolbars/UndoRedo", position = 520)
@@ -31,6 +34,44 @@ public final class SaveImageAction implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent ev) {
-        context.export();
+        FileType[] types = context.getSupportedTypes();
+        String fname = FileChooserUtils.selectNewFilename(types);
+        if (fname == null) {
+            return;
+        }
+
+        FileType ft = findType(fname, types);
+        if (ft != null) {
+            boolean success = false;
+            try {
+                success = context.export(ft, fname);
+            } catch (Exception ex) {
+                NotifyDescriptor nd = new NotifyDescriptor.Message("Error: " + ex.getMessage(), NotifyDescriptor.ERROR_MESSAGE);
+                DialogDisplayer.getDefault().notify(nd);
+                return;
+            }
+            if (success) {
+                NotifyDescriptor nd = new NotifyDescriptor.Message("Chart saved to " + fname, NotifyDescriptor.INFORMATION_MESSAGE);
+                DialogDisplayer.getDefault().notify(nd);
+            }
+        } else {
+            assert false;
+        }
+    }
+
+    private FileType findType(String fname, FileType[] options) {
+        int dotLoc = fname.lastIndexOf(".");
+        if (dotLoc == -1) {
+            return null;
+        }
+        String suffix = fname.substring(dotLoc);
+        for (FileType ft : options) {
+            for (String sfx : ft.getSuffices()) {
+                if (suffix.equals(sfx)) {
+                    return ft;
+                }
+            }
+        }
+        return null;
     }
 }
