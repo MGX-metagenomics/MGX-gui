@@ -32,4 +32,8 @@ public class SuffixFilter extends FileFilter {
     public String getDescription() {
         return ft.getDescription();
     }
+
+    public FileType getType() {
+        return ft;
+    }
 }
