@@ -67,6 +67,10 @@
             <artifactId>org-openide-windows</artifactId>
             <groupId>org.netbeans.api</groupId>
         </dependency>
+        <dependency>
+            <artifactId>org-openide-dialogs</artifactId>
+            <groupId>org.netbeans.api</groupId>
+        </dependency>
     </dependencies>
 
     <build>
