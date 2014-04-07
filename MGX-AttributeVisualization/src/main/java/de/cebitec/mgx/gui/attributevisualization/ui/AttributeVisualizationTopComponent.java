@@ -120,7 +120,7 @@ public final class AttributeVisualizationTopComponent extends TopComponent {
     public void setVisualization(ViewerI v) {
         chartpane.setViewportView(v.getComponent());
         ImageExporterI exporter = v.getImageExporter();
-        if (exporter != null) {
+        if (exporter != null && exporter.getSupportedTypes().length > 0) {
             content.add(exporter);
         }
     }
