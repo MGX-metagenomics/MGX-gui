@@ -6,6 +6,7 @@ import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.AttributeType;
 import de.cebitec.mgx.gui.datamodel.misc.Distribution;
 import de.cebitec.mgx.gui.datamodel.misc.Pair;
+import de.cebitec.mgx.gui.groups.ConflictingJobsException;
 import de.cebitec.mgx.gui.groups.ImageExporterI;
 import de.cebitec.mgx.gui.groups.VGroupManager;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
@@ -86,8 +87,13 @@ public class HClustPlot extends ViewerI<Distribution> {
 
     @Override
     public boolean canHandle(AttributeType valueType) {
-        return valueType.getValueType() == AttributeType.VALUE_DISCRETE
-                && VGroupManager.getInstance().getActiveGroups().size() > 1;
+        try {
+            return valueType.getValueType() == AttributeType.VALUE_DISCRETE
+                    && VGroupManager.getInstance().getActiveGroups().size() > 1
+                    && VGroupManager.getInstance().getDistributions().size() > 1;
+        } catch (ConflictingJobsException ex) {
+            return false;
+        }
     }
 
     @Override
