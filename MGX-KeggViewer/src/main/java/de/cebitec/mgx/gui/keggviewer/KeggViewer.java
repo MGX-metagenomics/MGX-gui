@@ -10,7 +10,6 @@ import de.cebitec.mgx.gui.groups.ConflictingJobsException;
 import de.cebitec.mgx.gui.groups.ImageExporterI;
 import de.cebitec.mgx.gui.groups.VGroupManager;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
-import de.cebitec.mgx.gui.util.FileChooserUtils;
 import de.cebitec.mgx.gui.util.FileType;
 import de.cebitec.mgx.kegg.pathways.KEGGException;
 import de.cebitec.mgx.kegg.pathways.KEGGMaster;
@@ -31,8 +30,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.JComponent;
 import javax.swing.SwingWorker;
-import org.openide.DialogDisplayer;
-import org.openide.NotifyDescriptor;
 import org.openide.modules.Places;
 import org.openide.util.Exceptions;
 import org.openide.util.RequestProcessor;
@@ -68,22 +65,20 @@ public class KeggViewer extends CategoricalViewerI {
     @Override
     public ImageExporterI getImageExporter() {
         return new ImageExporterI() {
-            @Override
-            public void export() {
-                String fname = FileChooserUtils.selectNewFilename(new FileType[]{FileType.PNG});
-                if (fname == null) {
-                    return;
-                }
 
+            @Override
+            public FileType[] getSupportedTypes() {
+                return new FileType[]{FileType.PNG};
+            }
+
+            @Override
+            public boolean export(FileType type, String fName) throws Exception {
                 try {
-                    panel.save(new File(fname));
+                    panel.save(new File(fName));
+                    return true;
                 } catch (IOException ex) {
-                    NotifyDescriptor nd = new NotifyDescriptor.Message("Error: " + ex.getMessage(), NotifyDescriptor.ERROR_MESSAGE);
-                    DialogDisplayer.getDefault().notify(nd);
-                    return;
+                    return false;
                 }
-                NotifyDescriptor nd = new NotifyDescriptor.Message("Chart saved to " + fname, NotifyDescriptor.INFORMATION_MESSAGE);
-                DialogDisplayer.getDefault().notify(nd);
             }
         };
     }
@@ -106,7 +101,7 @@ public class KeggViewer extends CategoricalViewerI {
         }
         try {
             panel.setPathway(customizer.getSelectedPathway(), dists.size());
-            
+
             int idx = 0;
             for (Pair<VisualizationGroup, Distribution> p : dists) {
                 VisualizationGroup group = p.getFirst();
