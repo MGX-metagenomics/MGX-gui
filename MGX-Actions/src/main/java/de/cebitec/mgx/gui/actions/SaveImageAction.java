@@ -35,8 +35,8 @@ public final class SaveImageAction implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent ev) {
         FileType[] types = context.getSupportedTypes();
-        String fname = FileChooserUtils.selectNewFilename(types);
-        if (fname == null) {
+        String fname = FileChooserUtils.selectNewFilename(types, "MGX_Image");
+        if (fname == null || fname.trim().isEmpty()) {
             return;
         }
 
@@ -55,7 +55,8 @@ public final class SaveImageAction implements ActionListener {
                 DialogDisplayer.getDefault().notify(nd);
             }
         } else {
-            assert false;
+            NotifyDescriptor nd = new NotifyDescriptor.Message("Unrecognized file suffix " + fname, NotifyDescriptor.ERROR_MESSAGE);
+            DialogDisplayer.getDefault().notify(nd);
         }
     }
 
@@ -64,7 +65,7 @@ public final class SaveImageAction implements ActionListener {
         if (dotLoc == -1) {
             return null;
         }
-        String suffix = fname.substring(dotLoc);
+        String suffix = fname.substring(dotLoc + 1);
         for (FileType ft : options) {
             for (String sfx : ft.getSuffices()) {
                 if (suffix.equals(sfx)) {
