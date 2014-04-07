@@ -5,12 +5,10 @@ import de.cebitec.mgx.gui.attributevisualization.viewer.ViewerI;
 import de.cebitec.mgx.gui.datamodel.AttributeType;
 import de.cebitec.mgx.gui.datamodel.misc.Distribution;
 import de.cebitec.mgx.gui.datamodel.misc.Pair;
-import de.cebitec.mgx.gui.datamodel.misc.Point;
 import de.cebitec.mgx.gui.groups.ImageExporterI;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import de.cebitec.mgx.gui.rarefaction.Rarefaction;
 import de.cebitec.mgx.gui.swingutils.NonEDT;
-import de.cebitec.mgx.gui.util.FileChooserUtils;
 import de.cebitec.mgx.gui.util.FileType;
 import java.awt.Color;
 import java.io.File;
@@ -32,8 +30,6 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
-import org.openide.DialogDisplayer;
-import org.openide.NotifyDescriptor;
 import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -135,6 +131,9 @@ public class RarefactionCurve extends ViewerI<Distribution> {
                     XYSeries series = new XYSeries(groupDistribution.getFirst().getName());
                     Distribution dist = groupDistribution.getSecond();
                     Iterator<double[]> iter = Rarefaction.rarefy(dist);
+                    if (iter == null) {
+                        return;
+                    }
                     while (iter.hasNext()) {
                         double[] p = iter.next();
                         series.add(p[0], p[1]);
@@ -160,22 +159,20 @@ public class RarefactionCurve extends ViewerI<Distribution> {
     @Override
     public ImageExporterI getImageExporter() {
         return new ImageExporterI() {
-            @Override
-            public void export() {
-                String fname = FileChooserUtils.selectNewFilename(new FileType[]{FileType.PNG});
-                if (fname == null) {
-                    return;
-                }
 
-                try {
-                    ChartUtilities.saveChartAsPNG(new File(fname), chart, 1280, 1024);
+            @Override
+            public FileType[] getSupportedTypes() {
+                return new FileType[]{FileType.PNG};
+            }
+
+            @Override
+            public boolean export(FileType type, String fName) throws Exception {
+                 try {
+                    ChartUtilities.saveChartAsPNG(new File(fName), chart, 1280, 1024);
+                    return true;
                 } catch (IOException ex) {
-                    NotifyDescriptor nd = new NotifyDescriptor.Message("Error: " + ex.getMessage(), NotifyDescriptor.ERROR_MESSAGE);
-                    DialogDisplayer.getDefault().notify(nd);
-                    return;
+                    return false;
                 }
-                NotifyDescriptor nd = new NotifyDescriptor.Message("Chart saved to " + fname, NotifyDescriptor.INFORMATION_MESSAGE);
-                DialogDisplayer.getDefault().notify(nd);
             }
         };
     }
