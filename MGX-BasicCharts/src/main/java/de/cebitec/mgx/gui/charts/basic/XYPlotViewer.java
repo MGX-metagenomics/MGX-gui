@@ -8,25 +8,18 @@ import de.cebitec.mgx.gui.datamodel.misc.Distribution;
 import de.cebitec.mgx.gui.datamodel.misc.Pair;
 import de.cebitec.mgx.gui.groups.ImageExporterI;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
-import de.cebitec.mgx.gui.util.FileChooserUtils;
-import de.cebitec.mgx.gui.util.FileType;
 import java.awt.Color;
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import javax.swing.JComponent;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
-import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.*;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYSeriesCollection;
-import org.openide.DialogDisplayer;
-import org.openide.NotifyDescriptor;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -128,24 +121,6 @@ public class XYPlotViewer extends NumericalViewerI {
 
     @Override
     public ImageExporterI getImageExporter() {
-        return new ImageExporterI() {
-            @Override
-            public void export() {
-                String fname = FileChooserUtils.selectNewFilename(new FileType[]{FileType.PNG});
-                if (fname == null) {
-                    return;
-                }
-
-                try {
-                    ChartUtilities.saveChartAsPNG(new File(fname), chart, 1280, 1024);
-                } catch (IOException ex) {
-                    NotifyDescriptor nd = new NotifyDescriptor.Message("Error: " + ex.getMessage(), NotifyDescriptor.ERROR_MESSAGE);
-                    DialogDisplayer.getDefault().notify(nd);
-                    return;
-                }
-                NotifyDescriptor nd = new NotifyDescriptor.Message("Chart saved to " + fname, NotifyDescriptor.INFORMATION_MESSAGE);
-                DialogDisplayer.getDefault().notify(nd);
-            }
-        };
+        return JFreeChartUtil.getImageExporter(chart);
     }
 }
