@@ -10,7 +10,6 @@ import de.cebitec.mgx.gui.groups.ImageExporterI;
 import de.cebitec.mgx.gui.groups.VGroupManager;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import de.cebitec.mgx.gui.radialtree.internal.*;
-import de.cebitec.mgx.gui.util.FileChooserUtils;
 import de.cebitec.mgx.gui.util.FileType;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -20,14 +19,11 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Iterator;
 import java.util.List;
 import javax.swing.JComponent;
 import javax.swing.SwingConstants;
-import org.openide.DialogDisplayer;
-import org.openide.NotifyDescriptor;
 import org.openide.util.lookup.ServiceProvider;
 import prefuse.Display;
 import prefuse.Visualization;
@@ -362,27 +358,30 @@ public class RadialTree extends HierarchicalViewerI {
     @Override
     public ImageExporterI getImageExporter() {
         return new ImageExporterI() {
+
             @Override
-            public void export() {
-                String fname = FileChooserUtils.selectNewFilename(new FileType[]{FileType.PNG});
-                if (fname == null) {
-                    return;
+            public FileType[] getSupportedTypes() {
+                return new FileType[]{FileType.PNG, FileType.JPEG};
+            }
+
+            @Override
+            public boolean export(FileType type, String fName) throws Exception {
+                switch (type) {
+                    case PNG:
+                        try (OutputStream os = new BufferedOutputStream(new FileOutputStream(fName))) {
+                            return display.saveImage(os, type.getSuffices()[0].toUpperCase(), 2);
+                        }
+                    default:
+                        return false;
                 }
-                try (OutputStream os = new BufferedOutputStream(new FileOutputStream(fname))) {
-                    display.saveImage(os, FileType.PNG.getSuffices()[0].toUpperCase(), 2);
-                } catch (IOException ex) {
-                    NotifyDescriptor nd = new NotifyDescriptor.Message("Error: " + ex.getMessage(), NotifyDescriptor.ERROR_MESSAGE);
-                    DialogDisplayer.getDefault().notify(nd);
-                    return;
-                }
-                NotifyDescriptor nd = new NotifyDescriptor.Message("Chart saved to " + fname, NotifyDescriptor.INFORMATION_MESSAGE);
-                DialogDisplayer.getDefault().notify(nd);
+
             }
         };
     }
 
     /**
-     * Switch the root of the tree by requesting a new spanning tree at the desired root and hiding all nodes above
+     * Switch the root of the tree by requesting a new spanning tree at the
+     * desired root and hiding all nodes above
      */
     public class TreeRootAction extends GroupAction {
 
