@@ -13,7 +13,11 @@ import org.openide.util.NbPreferences;
  */
 public class FileChooserUtils {
 
-    public static String selectNewFilename(FileType[] types) {
+    public static String selectNewFilename(FileType[] types, String suggestedPrefix) {
+        if (types.length == 0) {
+            return null;
+        }
+        
         String ret = null;
         JFileChooser chooser = new JFileChooser();
         chooser.setDialogType(JFileChooser.SAVE_DIALOG);
@@ -26,6 +30,19 @@ public class FileChooserUtils {
                 chooser.setCurrentDirectory(f);
             }
         }
+        
+        if (suggestedPrefix != null) {
+            if (!new File(chooser.getCurrentDirectory(), suggestedPrefix + "." + types[0].getSuffices()[0]).exists()) {
+                chooser.setSelectedFile(new File(chooser.getCurrentDirectory(), suggestedPrefix + "." + types[0].getSuffices()[0]));
+            } else {
+                int i = 1;
+                while (new File(chooser.getCurrentDirectory(), suggestedPrefix + "(" + i + ")." + types[0].getSuffices()[0]).exists()) {
+                    i++;
+                }
+                chooser.setSelectedFile(new File(chooser.getCurrentDirectory(),  suggestedPrefix + "(" + i + ")." + types[0].getSuffices()[0]));
+            }
+        }
+        
 
         chooser.setAcceptAllFileFilterUsed(false);
 
