@@ -33,12 +33,11 @@ public class SpiderWebChart extends CategoricalViewerI {
     private ChartPanel cPanel = null;
     private JFreeChart chart = null;
 
-    @Override
-    public boolean canHandle(AttributeType valueType) {
-        // currently broken, disable viewer
-        return false;
-    }
-
+//    @Override
+//    public boolean canHandle(AttributeType valueType) {
+//        // currently broken, disable viewer
+//        return false;
+//    }
     @Override
     public JComponent getComponent() {
         return cPanel;
@@ -72,7 +71,9 @@ public class SpiderWebChart extends CategoricalViewerI {
         plot.setBackgroundPaint(Color.WHITE);
         plot.setOutlineVisible(false);
         plot.setLabelFont(labelFont);
-
+        plot.setWebFilled(true);
+        //plot.setFixedLegendItems(JFreeChartUtil.createLegend(dists));
+        
         // colors
         int i = 0;
         for (Pair<VisualizationGroup, Distribution> groupDistribution : dists) {
@@ -88,7 +89,6 @@ public class SpiderWebChart extends CategoricalViewerI {
 //        legendtitle.setPosition(RectangleEdge.RIGHT);
 //        legendtitle.setFrame(new BlockBorder(1.0D, 1.0D, 1.0D, 1.0D));
 //        chart.addSubtitle(legendtitle);
-
         cPanel = new ChartPanel(chart);
     }
 

@@ -16,20 +16,20 @@ import org.jfree.data.category.CategoryDataset;
 
 /**
  *
- * @author sj  
- * 
+ * @author sj
+ *
  * http://tc.chinawin.net/it/softwaredev/article-1584c.html
- * 
+ *
  */
 public class TickedSpiderWebPlot extends SpiderWebPlot {
 
     private static final long serialVersionUID = 4005814203754627127L;
-    private int ticks = DEFAULT_TICKS;
+    private final int ticks = DEFAULT_TICKS;
     private static final int DEFAULT_TICKS = 5;
-    private NumberFormat format = NumberFormat.getInstance();
+    private final NumberFormat format = NumberFormat.getInstance();
     private static final double PERPENDICULAR = 90;
     private static final double TICK_SCALE = 0.015;
-    private int valueLabelGap = DEFAULT_GAP;
+    private final int valueLabelGap = DEFAULT_GAP;
     private static final int DEFAULT_GAP = 10;
     private static final double THRESHOLD = 15;
 
@@ -84,7 +84,7 @@ public class TickedSpiderWebPlot extends SpiderWebPlot {
             if (startAngle == this.getStartAngle()) {
                 final String label = format
                         .format(((double) i / (double) ticks)
-                        * this.getMaxValue());
+                                * this.getMaxValue());
                 final LineMetrics lm = getLabelFont()
                         .getLineMetrics(label, frc);
                 final double ascent = lm.getAscent();
