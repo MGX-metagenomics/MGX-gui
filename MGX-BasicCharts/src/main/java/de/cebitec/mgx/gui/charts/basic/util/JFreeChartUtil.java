@@ -166,52 +166,33 @@ public class JFreeChartUtil {
 //    }
     public static ImageExporterI getImageExporter(final JFreeChart chart) {
         return new ImageExporterI() {
-            @Override
-            public void export() {
-                String fname = FileChooserUtils.selectNewFilename(new FileType[]{FileType.PNG, FileType.SVG});
-                if (fname == null) {
-                    return;
-                }
 
-                if (fname.endsWith("png")) {
-                    try {
-                        ChartUtilities.saveChartAsPNG(new File(fname), chart, 1280, 1024);
-                    } catch (IOException ex) {
-                        NotifyDescriptor nd = new NotifyDescriptor.Message("Error: " + ex.getMessage(), NotifyDescriptor.ERROR_MESSAGE);
-                        DialogDisplayer.getDefault().notify(nd);
-                        return;
-                    }
-                } else { // SVG
-                    SVGGraphics2D g2 = new SVGGraphics2D(1280, 1024);
-                    chart.draw(g2, new Rectangle(0, 0, 1280, 1024));
-                    String svgElement = g2.getSVGElement();
-                    try (BufferedWriter bw = new BufferedWriter(new FileWriter(fname))) {
-                        bw.write(svgElement);
-                    } catch (IOException ex) {
-                        NotifyDescriptor nd = new NotifyDescriptor.Message("Error: " + ex.getMessage(), NotifyDescriptor.ERROR_MESSAGE);
-                        DialogDisplayer.getDefault().notify(nd);
-                        return;
-                    }
+            @Override
+            public FileType[] getSupportedTypes() {
+                return new FileType[]{FileType.PNG, FileType.JPEG, FileType.SVG};
+            }
+
+            @Override
+            public boolean export(FileType type, String fName) throws Exception {
+                switch (type) {
+                    case PNG:
+                        ChartUtilities.saveChartAsPNG(new File(fName), chart, 1280, 1024);
+                        return true;
+                    case JPEG:
+                        ChartUtilities.saveChartAsJPEG(new File(fName), chart, 1280, 1024);
+                        return true;
+                    case SVG:
+                        SVGGraphics2D g2 = new SVGGraphics2D(1280, 1024);
+                        chart.draw(g2, new Rectangle(0, 0, 1280, 1024));
+                        String svgElement = g2.getSVGElement();
+                        try (BufferedWriter bw = new BufferedWriter(new FileWriter(fName))) {
+                            bw.write(svgElement);
+                        }
+                        return true;
+                    default:
+                        return false;
                 }
-                NotifyDescriptor nd = new NotifyDescriptor.Message("Chart saved to " + fname, NotifyDescriptor.INFORMATION_MESSAGE);
-                DialogDisplayer.getDefault().notify(nd);
             }
         };
-    }
-
-    public static void savePNG(JFreeChart chart, File f) {
-        try {
-            ChartUtilities.saveChartAsPNG(f, chart, 800, 600);
-        } catch (IOException ex) {
-            Exceptions.printStackTrace(ex);
-        }
-    }
-
-    public static void saveJPEG(JFreeChart chart, File f) {
-        try {
-            ChartUtilities.saveChartAsJPEG(f, chart, 800, 600);
-        } catch (IOException ex) {
-            Exceptions.printStackTrace(ex);
-        }
     }
 }
