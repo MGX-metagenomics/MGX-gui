@@ -85,6 +85,12 @@
             <artifactId>MGX-Newick-Wrapper</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>de.cebitec.external</groupId>
+            <artifactId>prefuse</artifactId>
+            <version>20071021</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
 
     <build>

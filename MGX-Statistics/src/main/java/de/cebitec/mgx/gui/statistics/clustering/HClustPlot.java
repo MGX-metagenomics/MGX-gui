@@ -10,6 +10,9 @@ import de.cebitec.mgx.gui.groups.ConflictingJobsException;
 import de.cebitec.mgx.gui.groups.ImageExporterI;
 import de.cebitec.mgx.gui.groups.VGroupManager;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
+import de.cebitec.mgx.gui.statistics.clustering.model.DendrogramBuilder;
+import de.cebitec.mgx.gui.statistics.clustering.model.ITreeBuilder;
+import de.cebitec.mgx.gui.statistics.clustering.view.DendrogramDisplay;
 import de.cebitec.mgx.newick.NodeI;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -26,6 +29,8 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = ViewerI.class)
 public class HClustPlot extends ViewerI<Distribution> {
 
+    private final static String NODE_NAME_KEY = "nodeName";
+    private final static String X_COORD = "x";
     private DelayedPlot cPanel = null;
     private final HClustCustomizer customizer = new HClustCustomizer();
 
@@ -45,7 +50,6 @@ public class HClustPlot extends ViewerI<Distribution> {
         cPanel = new DelayedPlot();
 
         SwingWorker<NodeI, Void> worker = new SwingWorker<NodeI, Void>() {
-
             @Override
             protected NodeI doInBackground() throws Exception {
                 MGXMaster m = (MGXMaster) dists.get(0).getSecond().getMaster();
@@ -57,14 +61,17 @@ public class HClustPlot extends ViewerI<Distribution> {
                 try {
                     DelayedPlot wp = HClustPlot.this.cPanel;
                     NodeI root = get();
+
+                    ITreeBuilder builder = new DendrogramBuilder(NODE_NAME_KEY, X_COORD, root);
+                    DendrogramDisplay display = new DendrogramDisplay(builder);
+
                     JTextArea area = new JTextArea("Not yet implemented.");
-                    wp.setTarget(area);
+                    wp.setTarget(display);
                 } catch (InterruptedException | ExecutionException ex) {
                     Exceptions.printStackTrace(ex);
                 }
                 super.done();
             }
-
         };
         worker.execute();
 
