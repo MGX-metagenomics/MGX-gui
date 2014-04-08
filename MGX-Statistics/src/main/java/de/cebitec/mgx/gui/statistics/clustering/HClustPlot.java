@@ -13,7 +13,11 @@ import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import de.cebitec.mgx.gui.statistics.clustering.model.DendrogramBuilder;
 import de.cebitec.mgx.gui.statistics.clustering.model.ITreeBuilder;
 import de.cebitec.mgx.gui.statistics.clustering.view.DendrogramDisplay;
+import de.cebitec.mgx.gui.util.FileType;
 import de.cebitec.mgx.newick.NodeI;
+import java.io.BufferedOutputStream;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import javax.swing.JComponent;
@@ -33,6 +37,7 @@ public class HClustPlot extends ViewerI<Distribution> {
     private final static String X_COORD = "x";
     private DelayedPlot cPanel = null;
     private final HClustCustomizer customizer = new HClustCustomizer();
+    private DendrogramDisplay display;
 
     @Override
     public JComponent getComponent() {
@@ -63,7 +68,7 @@ public class HClustPlot extends ViewerI<Distribution> {
                     NodeI root = get();
 
                     ITreeBuilder builder = new DendrogramBuilder(NODE_NAME_KEY, X_COORD, root);
-                    DendrogramDisplay display = new DendrogramDisplay(builder);
+                    display = new DendrogramDisplay(builder);
 
                     JTextArea area = new JTextArea("Not yet implemented.");
                     wp.setTarget(display);
@@ -74,7 +79,6 @@ public class HClustPlot extends ViewerI<Distribution> {
             }
         };
         worker.execute();
-
     }
 
     @Override
@@ -89,7 +93,26 @@ public class HClustPlot extends ViewerI<Distribution> {
 
     @Override
     public ImageExporterI getImageExporter() {
-        return null;
+        return new ImageExporterI() {
+
+            @Override
+            public FileType[] getSupportedTypes() {
+                return new FileType[]{FileType.PNG, FileType.JPEG};
+            }
+
+            @Override
+            public boolean export(FileType type, String fName) throws Exception {
+                switch (type) {
+                    case PNG:
+                        try (OutputStream os = new BufferedOutputStream(new FileOutputStream(fName))) {
+                            return display.saveImage(os, type.getSuffices()[0].toUpperCase(), 2);
+                        }
+                    default:
+                        return false;
+                }
+
+            }
+        };
     }
 
     @Override

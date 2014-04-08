@@ -13,8 +13,8 @@ import prefuse.data.Tree;
 import prefuse.visual.VisualItem;
 
 /**
- *This class builds the model tree for a dendrogram.
- * 
+ * This class builds the model tree for a dendrogram.
+ *
  * @author belmann
  */
 public class DendrogramBuilder implements ITreeBuilder {
@@ -22,9 +22,9 @@ public class DendrogramBuilder implements ITreeBuilder {
     private Tree g;
     private final String X_COORD;
     private final String NODE_NAME;
-    private NodeI root;
-    
-    public DendrogramBuilder(String nodeNameKey, String xCoordKey,NodeI root) {
+    private final NodeI root;
+
+    public DendrogramBuilder(String nodeNameKey, String xCoordKey, NodeI root) {
         this.X_COORD = xCoordKey;
         this.NODE_NAME = nodeNameKey;
         this.root = root;
@@ -41,7 +41,7 @@ public class DendrogramBuilder implements ITreeBuilder {
         edgeData.addColumn(Tree.DEFAULT_SOURCE_KEY, int.class);
         edgeData.addColumn(Tree.DEFAULT_TARGET_KEY, int.class);
         edgeData.addColumn(VisualItem.LABEL, String.class);
-        
+
         g = new Tree(nodeData, edgeData);
         this.addNodes(null, root);
         return g;
@@ -60,10 +60,10 @@ public class DendrogramBuilder implements ITreeBuilder {
             n.setInt(X_COORD, (int) modelNode.getWeight());
             n.setString(NODE_NAME, modelNode.getName());
             Edge e = g.addEdge(parentNode, n);
-            
+
             DecimalFormat f = new DecimalFormat("#0.00");
-            String weight = modelNode.getWeight()== 0 ?  "0" : f.format(modelNode.getWeight());
-            
+            String weight = modelNode.getWeight() == 0 ? "0" : f.format(modelNode.getWeight());
+
             e.setString(VisualItem.LABEL, weight);
         }
         if (modelNode.getChildren() != null) {

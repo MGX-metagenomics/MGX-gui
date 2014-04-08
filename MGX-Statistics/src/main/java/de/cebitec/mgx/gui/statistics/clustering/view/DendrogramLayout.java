@@ -12,29 +12,31 @@ import prefuse.data.tuple.TupleSet;
 import prefuse.util.ArrayLib;
 import prefuse.visual.NodeItem;
 
-
 /**
- * 
- * <p>TreeLayout that computes a tidy layout of a node-link tree diagram.
- * algorithm lays out a rooted tree such that each depth level of the tree is on
- * a shared line. The orientation of the tree can be set such that the tree goes
+ *
+ * <p>
+ * TreeLayout that computes a tidy layout of a node-link tree diagram. algorithm
+ * lays out a rooted tree such that each depth level of the tree is on a shared
+ * line. The orientation of the tree can be set such that the tree goes
  * left-to-right (default), right-to-left, top-to-bottom, or bottom-to-top.</p>
  *
- * <p>The algorithm used is that of Christoph Buchheim, Michael Juenger, and
+ * <p>
+ * The algorithm used is that of Christoph Buchheim, Michael Juenger, and
  * Sebastian Leipert from their research paper
  * <a href="http://citeseer.ist.psu.edu/buchheim02improving.html">
  * Improving Walker's Algorithm to Run in Linear Time</a>, Graph Drawing 2002.
  * This algorithm corrects performance issues in Walker's algorithm, which
  * generalizes Reingold and Tilford's method for tidy drawings of trees to
  * support trees with an arbitrary number of children at any given node.</p>
- * 
+ *
  * Original author: jeffrey heer
-* @author <a href="http://jheer.org">Peter Belmann</a>
+ *
+ * @author <a href="http://jheer.org">Peter Belmann</a>
  */
 public class DendrogramLayout extends TreeLayout {
 
     private int m_orientation; // the orientation of the tree
-    private double m_bspace =100; // the spacing between sibling nodes
+    private double m_bspace = 100; // the spacing between sibling nodes
     private double m_tspace = 800; // the spacing between subtrees
     private double m_dspace = 50; // the spacing between depth levels
     private double m_offset = 50; // pixel offset for root node position
@@ -43,7 +45,7 @@ public class DendrogramLayout extends TreeLayout {
     private double m_ax, m_ay; // for holding anchor co-ordinates
     private int SCALE_FACTOR = 20;
     private String relHorizontalPositionPropertyName;
-    
+
     /**
      * Create a new NodeLinkTreeLayout. A left-to-right orientation is assumed.
      *
@@ -61,7 +63,7 @@ public class DendrogramLayout extends TreeLayout {
      * @param group the data group to layout. Must resolve to a Graph instance.
      * @param orientation the orientation of the tree layout. One of null null
      * null null null null null null null null null null null null null null
-     * null null     {@link prefuse.Constants#ORIENT_LEFT_RIGHT},
+     * null null null     {@link prefuse.Constants#ORIENT_LEFT_RIGHT},
 * {@link prefuse.Constants#ORIENT_RIGHT_LEFT},
      * {@link prefuse.Constants#ORIENT_TOP_BOTTOM}, or
      * {@link prefuse.Constants#ORIENT_BOTTOM_TOP}.
@@ -71,7 +73,7 @@ public class DendrogramLayout extends TreeLayout {
      */
     public DendrogramLayout(String group, int orientation,
             double dspace, double bspace, double tspace, String relHorizontalPositionPropertyName, int scaleFactor) {
-        this(group,relHorizontalPositionPropertyName);
+        this(group, relHorizontalPositionPropertyName);
         m_orientation = orientation;
         m_dspace = dspace;
         m_bspace = bspace;
@@ -84,7 +86,7 @@ public class DendrogramLayout extends TreeLayout {
      * Set the orientation of the tree layout.
      *
      * @param orientation the orientation value. One of null null null null null
-     * null null null null null null null null null null null null null     {@link prefuse.Constants#ORIENT_LEFT_RIGHT},
+     * null null null null null null null null null null null null null null     {@link prefuse.Constants#ORIENT_LEFT_RIGHT},
 * {@link prefuse.Constants#ORIENT_RIGHT_LEFT},
      * {@link prefuse.Constants#ORIENT_TOP_BOTTOM}, or
      * {@link prefuse.Constants#ORIENT_BOTTOM_TOP}.
@@ -103,7 +105,7 @@ public class DendrogramLayout extends TreeLayout {
      * Get the orientation of the tree layout.
      *
      * @return the orientation value. One of null null null null null null null
-     * null null null null null null null null null null null     {@link prefuse.Constants#ORIENT_LEFT_RIGHT},
+     * null null null null null null null null null null null null     {@link prefuse.Constants#ORIENT_LEFT_RIGHT},
 * {@link prefuse.Constants#ORIENT_RIGHT_LEFT},
      * {@link prefuse.Constants#ORIENT_TOP_BOTTOM}, or
      * {@link prefuse.Constants#ORIENT_BOTTOM_TOP}.
@@ -191,6 +193,7 @@ public class DendrogramLayout extends TreeLayout {
     /**
      * @see prefuse.action.layout.Layout#getLayoutAnchor()
      */
+    @Override
     public Point2D getLayoutAnchor() {
         if (m_anchor != null) {
             return m_anchor;
@@ -249,6 +252,7 @@ public class DendrogramLayout extends TreeLayout {
     /**
      * @see prefuse.action.Action#run(double)
      */
+    @Override
     public void run(double frac) {
         Graph g = (Graph) m_vis.getGroup(m_group);
         initSchema(g.getNodes());
@@ -447,7 +451,7 @@ public class DendrogramLayout extends TreeLayout {
         }
     }
 
-    private void setDepth(NodeItem n, NodeItem p, double d) {     
+    private void setDepth(NodeItem n, NodeItem p, double d) {
         switch (m_orientation) {
             case Constants.ORIENT_LEFT_RIGHT:
 //                System.out.println("Depth: " + n.getDepth());

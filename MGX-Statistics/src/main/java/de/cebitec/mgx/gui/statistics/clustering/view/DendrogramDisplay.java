@@ -55,7 +55,7 @@ public class DendrogramDisplay extends Display {
     private static final String EDGE_DECORATORS = "edgeDeco";
     private static final Schema DECORATOR_SCHEMA = PrefuseLib.getVisualItemSchema();
 
-    private ITreeBuilder graph;
+    private final ITreeBuilder graph;
     
     public DendrogramDisplay(ITreeBuilder graph) {
         super(new Visualization());
@@ -143,6 +143,7 @@ public class DendrogramDisplay extends Display {
             super(group);
         }
 
+        @Override
         public void run(double frac) {
             Iterator iter = m_vis.items(m_group);
             while (iter.hasNext()) {

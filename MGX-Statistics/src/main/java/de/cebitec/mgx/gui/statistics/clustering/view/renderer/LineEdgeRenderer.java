@@ -64,7 +64,7 @@ public class LineEdgeRenderer extends EdgeRenderer {
         }
 
         // create the edge shape
-        Shape shape = null;
+        //Shape shape = null;
         double n1x = m_tmpPoints[0].getX();
         double n1y = m_tmpPoints[0].getY();
         double n2x = m_tmpPoints[1].getX();
@@ -74,8 +74,8 @@ public class LineEdgeRenderer extends EdgeRenderer {
         path.moveTo(n1x, n1y);
         path.lineTo(n1x, n2y);
         path.lineTo(n2x, n2y);
-        shape = path;
+        //shape = path;
         // return the edge shape
-        return shape;
+        return path;
     }
 }
