@@ -157,7 +157,7 @@
             <dependency>
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
-                <version>1.8</version>
+                <version>1.9</version>
             </dependency>
             <dependency>
                 <groupId>commons-httpclient</groupId>
@@ -167,17 +167,17 @@
             <dependency>
                 <groupId>org.jfree</groupId>
                 <artifactId>jfreechart</artifactId>
-                <version>1.0.15</version>
+                <version>1.0.17</version>
             </dependency>
             <dependency>
                 <groupId>com.sun.jersey</groupId>
                 <artifactId>jersey-core</artifactId>
-                <version>1.18</version>
+                <version>1.18.1</version>
             </dependency>
             <dependency>
                 <groupId>com.sun.jersey</groupId>
                 <artifactId>jersey-client</artifactId>
-                <version>1.18</version>
+                <version>1.18.1</version>
             </dependency>
             <dependency>
                 <groupId>jcharts</groupId>
@@ -417,7 +417,7 @@
         <module>MGX-Biodiversity</module>
         <module>MGX-Rarefaction</module>
         <module>MGX-Newick-Wrapper</module>
-  </modules>
+    </modules>
     <properties>
         <netbeans.version>RELEASE74</netbeans.version>
         <brandingToken>mgx_gui</brandingToken>
