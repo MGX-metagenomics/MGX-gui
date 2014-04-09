@@ -1,6 +1,5 @@
 package de.cebitec.mgx.gui.keggviewer;
 
-import de.cebitec.mgx.kegg.pathways.KEGGMaster;
 import de.cebitec.mgx.kegg.pathways.api.PathwayI;
 import java.util.Set;
 
@@ -10,31 +9,23 @@ import java.util.Set;
  */
 public class KeggCustomizer extends javax.swing.JPanel {
 
-    private final KEGGMaster km;
-
     /**
      * Creates new form KeggCustomizer
      */
-    public KeggCustomizer(KEGGMaster k) {
-        this.km = k;
+    public KeggCustomizer() {
         initComponents();
-//        try {
-//            for (PathwayI p : k.Pathways().fetchall()) {
-//                pathwayList.addItem(p);
-//            }
-//        } catch (KEGGException ex) {
-//            Exceptions.printStackTrace(ex);
-//        }
     }
 
-    public void restrictPathways(Set<PathwayI> pathways) {
+    synchronized void restrictPathways(Set<PathwayI> pathways) {
+        pathwayList.setEnabled(false);
         pathwayList.removeAllItems();
         for (PathwayI p : pathways) {
             pathwayList.addItem(p);
         }
+        pathwayList.setEnabled(true);
     }
 
-    public PathwayI getSelectedPathway() {
+    PathwayI getSelectedPathway() {
         return (PathwayI) pathwayList.getSelectedItem();
     }
 

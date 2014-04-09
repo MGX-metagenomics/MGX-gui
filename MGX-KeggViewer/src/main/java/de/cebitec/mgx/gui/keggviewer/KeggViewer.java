@@ -47,11 +47,12 @@ public class KeggViewer extends CategoricalViewerI {
     private KeggCustomizer customizer;
 
     public KeggViewer() {
-        String cacheDir = Places.getUserDirectory().getAbsolutePath() + File.separator + "kegg" + File.separator;
+        File userDir = Places.getUserDirectory() != null ? Places.getUserDirectory() : new File(System.getProperty("java.io.tmpdir"));
+        String cacheDir = userDir.getAbsolutePath() + File.separator + "kegg" + File.separator;
         try {
             master = KEGGMaster.getInstance(cacheDir);
             panel = new KEGGPanel(master);
-            customizer = new KeggCustomizer(master);
+            customizer = new KeggCustomizer();
         } catch (KEGGException ex) {
             Exceptions.printStackTrace(ex);
         }
@@ -124,7 +125,7 @@ public class KeggViewer extends CategoricalViewerI {
     }
     private final static RequestProcessor RP = new RequestProcessor("KEGG-Viewer", 35, true);
 
-    private Set<PathwayI> selectPathways() throws ConflictingJobsException, KEGGException {
+    public Set<PathwayI> selectPathways() throws ConflictingJobsException, KEGGException {
         final Set<ECNumberI> ecNumbers = new HashSet<>();
         for (Pair<VisualizationGroup, Distribution> p : VGroupManager.getInstance().getDistributions()) {
             Distribution dist = p.getSecond();
@@ -140,25 +141,18 @@ public class KeggViewer extends CategoricalViewerI {
                 }
             }
         }
-        final CountDownLatch latch = new CountDownLatch(1);
         final Set<PathwayI> ret = Collections.synchronizedSet(new HashSet<PathwayI>());
-        RP.post(new Runnable() {
+        RequestProcessor.Task task = RP.post(new Runnable() {
             @Override
             public void run() {
                 try {
                     ret.addAll(master.Pathways().getMatchingPathways(ecNumbers));
                 } catch (KEGGException ex) {
                     Exceptions.printStackTrace(ex);
-                } finally {
-                    latch.countDown();
                 }
             }
         });
-        try {
-            latch.await();
-        } catch (InterruptedException ex) {
-            Exceptions.printStackTrace(ex);
-        }
+        task.waitFinished();
         return ret;
     }
 
@@ -169,18 +163,13 @@ public class KeggViewer extends CategoricalViewerI {
             protected Set<PathwayI> doInBackground() throws Exception {
                 return selectPathways();
             }
-
-            @Override
-            protected void done() {
-                try {
-                    customizer.restrictPathways(get());
-                } catch (InterruptedException | ExecutionException ex) {
-                    Exceptions.printStackTrace(ex);
-                }
-                super.done();
-            }
         };
         sw.execute();
+        try {
+            customizer.restrictPathways(sw.get());
+        } catch (InterruptedException | ExecutionException ex) {
+            Exceptions.printStackTrace(ex);
+        }
 
         return customizer;
     }
