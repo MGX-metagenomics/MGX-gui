@@ -163,13 +163,19 @@ public class KeggViewer extends CategoricalViewerI {
             protected Set<PathwayI> doInBackground() throws Exception {
                 return selectPathways();
             }
+
+            @Override
+            protected void done() {
+                try {
+                    customizer.restrictPathways(get());
+                } catch (InterruptedException | ExecutionException ex) {
+                    Exceptions.printStackTrace(ex);
+                }
+                super.done();
+            }
+
         };
         sw.execute();
-        try {
-            customizer.restrictPathways(sw.get());
-        } catch (InterruptedException | ExecutionException ex) {
-            Exceptions.printStackTrace(ex);
-        }
 
         return customizer;
     }
