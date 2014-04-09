@@ -108,7 +108,7 @@ public class VisualizationGroupTest {
             System.err.println("  " + next.getName());
             cnt++;
         }
-        assertEquals(20, cnt);
+        assertEquals(21, cnt);
     }
 
     @Test
@@ -133,7 +133,7 @@ public class VisualizationGroupTest {
             AttributeType next = atIter.next();
             cnt++;
         }
-        assertEquals(14, cnt);
+        assertEquals(15, cnt);
 
         // remove run again
         vg.removeSeqRun(run);

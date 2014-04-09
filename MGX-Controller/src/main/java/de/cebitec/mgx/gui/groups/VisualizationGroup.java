@@ -346,7 +346,7 @@ public class VisualizationGroup implements PropertyChangeListener {
 
     public final Distribution getDistribution() throws ConflictingJobsException {
 
-        assert !EventQueue.isDispatchThread();
+        //assert !EventQueue.isDispatchThread();
         assert selectedAttributeType != null;
         //assert needsResolval.get(AttributeRank.PRIMARY).isEmpty();
         if (!needsResolval.get(AttributeRank.PRIMARY).isEmpty()) {
