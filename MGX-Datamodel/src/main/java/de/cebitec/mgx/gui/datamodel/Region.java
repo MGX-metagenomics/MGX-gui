@@ -1,4 +1,3 @@
-
 package de.cebitec.mgx.gui.datamodel;
 
 import java.awt.datatransfer.DataFlavor;
@@ -8,7 +7,6 @@ import java.awt.datatransfer.DataFlavor;
  * @author belmann
  */
 public class Region extends Identifiable<Region> {
-    
 
     protected long reference_id;
 
@@ -25,7 +23,7 @@ public class Region extends Identifiable<Region> {
     public Region() {
         super(DATA_FLAVOR);
     }
-    
+
     public long getReferenceId() {
         return reference_id;
     }
@@ -64,6 +62,10 @@ public class Region extends Identifiable<Region> {
 
     public void setStop(int stop) {
         this.stop = stop;
+    }
+
+    public boolean isFwdStrand() {
+        return getStart() < getStop();
     }
 
     @Override
