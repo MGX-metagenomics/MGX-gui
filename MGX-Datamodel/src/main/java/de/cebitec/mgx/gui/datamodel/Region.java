@@ -68,6 +68,20 @@ public class Region extends Identifiable<Region> {
         return getStart() < getStop();
     }
 
+    /**
+     * @return 1, 2, 3, -1, -2, -3 depending on the reading frame of the feature
+     */
+    public int getFrame() {
+        int frame;
+
+        if (isFwdStrand()) { // forward strand
+            frame = (getStart() - 1) % 3 + 1;
+        } else {
+            frame = (getStop() - 1) % 3 - 3;
+        }
+        return frame;
+    }
+
     @Override
     public int compareTo(Region o) {
         return name.compareTo(o.name);
