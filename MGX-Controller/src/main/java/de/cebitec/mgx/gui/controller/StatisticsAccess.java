@@ -4,6 +4,9 @@ import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.MGXLongList;
 import de.cebitec.mgx.dto.dto.MGXMatrixDTO;
+import de.cebitec.mgx.dto.dto.MGXString;
+import de.cebitec.mgx.dto.dto.MGXStringList;
+import de.cebitec.mgx.dto.dto.PCAResultDTO;
 import de.cebitec.mgx.dto.dto.PointDTO;
 import de.cebitec.mgx.dto.dto.ProfileDTO;
 import de.cebitec.mgx.gui.datamodel.Attribute;
@@ -33,12 +36,12 @@ import org.openide.util.Exceptions;
  */
 public class StatisticsAccess extends AccessBase<Point> {
 
-    public Iterator<double[]> Rarefaction(Distribution dist) {
+    public Iterator<Point> Rarefaction(Distribution dist) {
         try {
             Iterator<PointDTO> fetchall = getDTOmaster().Statistics().Rarefaction(dist.values());
-            return new BaseIterator<PointDTO, double[]>(fetchall) {
+            return new BaseIterator<PointDTO, Point>(fetchall) {
                 @Override
-                public double[] next() {
+                public Point next() {
                     return PointDTOFactory.getInstance().toModel(iter.next());
                 }
             };
@@ -50,32 +53,14 @@ public class StatisticsAccess extends AccessBase<Point> {
     }
 
     public NodeI Clustering(Collection<Pair<VisualizationGroup, Distribution>> groups, String distMethod, String aggloMethod) {
-        MGXMatrixDTO.Builder b = MGXMatrixDTO.newBuilder();
 
-        // collect all attributes first
-        Set<Attribute> attrs = new HashSet<>();
-        for (Pair<VisualizationGroup, Distribution> dataset : groups) {
-            attrs.addAll(dataset.getSecond().keySet());
-        }
-        Attribute[] ordered = attrs.toArray(new Attribute[]{});
-        attrs.clear();
-
-        // obfuscate group names
+        // map to hold obfuscated group name mapping
         Map<String, String> tmpNames = new HashMap<>();
+        MGXMatrixDTO matrix = buildMatrix(groups, tmpNames, false);
 
-        for (Pair<VisualizationGroup, Distribution> dataset : groups) {
-            String obfusName = generateName();
-            tmpNames.put(obfusName, dataset.getFirst().getName());
-
-            ProfileDTO prof = ProfileDTO.newBuilder()
-                    .setName(obfusName)
-                    .setValues(buildVector(ordered, dataset.getSecond()))
-                    .build();
-            b.addRow(prof);
-        }
         String nwk = null;
         try {
-            nwk = getDTOmaster().Statistics().Clustering(b.build(), distMethod, aggloMethod);
+            nwk = getDTOmaster().Statistics().Clustering(matrix, distMethod, aggloMethod);
 
             // de-obfuscate group names
             for (Entry<String, String> e : tmpNames.entrySet()) {
@@ -91,6 +76,57 @@ public class StatisticsAccess extends AccessBase<Point> {
         return null;
     }
 
+    public void PCA(Collection<Pair<VisualizationGroup, Distribution>> groups) {
+
+        // map to hold obfuscated group name mapping
+        Map<String, String> tmpNames = new HashMap<>();
+        MGXMatrixDTO matrix = buildMatrix(groups, tmpNames, true);
+
+        try {
+            PCAResultDTO ret = getDTOmaster().Statistics().PCA(matrix);
+//
+//            // de-obfuscate group names
+//            for (Entry<String, String> e : tmpNames.entrySet()) {
+//                nwk = nwk.replace(e.getKey(), e.getValue());
+//            }
+        } catch (MGXServerException | MGXClientException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+    }
+
+    private static MGXMatrixDTO buildMatrix(Collection<Pair<VisualizationGroup, Distribution>> groups, Map<String, String> tmpNames, boolean includeColNames) {
+        MGXMatrixDTO.Builder b = MGXMatrixDTO.newBuilder();
+
+        // collect all attributes first
+        Set<Attribute> attrs = new HashSet<>();
+        for (Pair<VisualizationGroup, Distribution> dataset : groups) {
+            attrs.addAll(dataset.getSecond().keySet());
+        }
+        Attribute[] ordered = attrs.toArray(new Attribute[]{});
+        attrs.clear();
+
+        if (includeColNames) {
+            MGXStringList.Builder sb = MGXStringList.newBuilder();
+            for (Attribute attr : ordered) {
+                sb.addString(MGXString.newBuilder().setValue(attr.getValue()).build());
+            }
+            b.setColNames(sb.build());
+        }
+
+        for (Pair<VisualizationGroup, Distribution> dataset : groups) {
+            String obfusName = generateName();
+            tmpNames.put(obfusName, dataset.getFirst().getName());
+
+            ProfileDTO prof = ProfileDTO.newBuilder()
+                    .setName(obfusName)
+                    .setValues(buildVector(ordered, dataset.getSecond()))
+                    .build();
+            b.addRow(prof);
+        }
+
+        return b.build();
+    }
+
     private static MGXLongList buildVector(Attribute[] attrs, Distribution dist) {
         MGXLongList.Builder b = MGXLongList.newBuilder();
         for (Attribute a : attrs) {
@@ -99,12 +135,16 @@ public class StatisticsAccess extends AccessBase<Point> {
         }
         return b.build();
     }
-
+    
     private static String generateName() {
+        return generateName(8);
+    }
+
+    private static String generateName(int len) {
         char[] chars = "abcdefghijklmnopqrstuvwxyz".toCharArray();
         StringBuilder sb = new StringBuilder();
         Random random = new Random();
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < len; i++) {
             char c = chars[random.nextInt(chars.length)];
             sb.append(c);
         }
