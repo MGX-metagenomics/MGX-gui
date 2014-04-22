@@ -547,7 +547,7 @@ public class VisualizationGroup implements PropertyChangeListener {
 
         @Override
         protected void done() {
-            Distribution dist = null;
+            Distribution dist;
             try {
                 dist = get();
                 result.put(run, dist);
