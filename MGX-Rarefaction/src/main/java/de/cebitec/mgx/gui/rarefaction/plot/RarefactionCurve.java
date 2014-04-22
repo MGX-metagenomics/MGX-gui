@@ -5,6 +5,7 @@ import de.cebitec.mgx.gui.attributevisualization.viewer.ViewerI;
 import de.cebitec.mgx.gui.datamodel.AttributeType;
 import de.cebitec.mgx.gui.datamodel.misc.Distribution;
 import de.cebitec.mgx.gui.datamodel.misc.Pair;
+import de.cebitec.mgx.gui.datamodel.misc.Point;
 import de.cebitec.mgx.gui.groups.ImageExporterI;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import de.cebitec.mgx.gui.rarefaction.Rarefaction;
@@ -130,13 +131,13 @@ public class RarefactionCurve extends ViewerI<Distribution> {
                 public void run() {
                     XYSeries series = new XYSeries(groupDistribution.getFirst().getName());
                     Distribution dist = groupDistribution.getSecond();
-                    Iterator<double[]> iter = Rarefaction.rarefy(dist);
+                    Iterator<Point> iter = Rarefaction.rarefy(dist);
                     if (iter == null) {
                         return;
                     }
                     while (iter.hasNext()) {
-                        double[] p = iter.next();
-                        series.add(p[0], p[1]);
+                        Point p = iter.next();
+                        series.add(p.getX(), p.getY());
                     }
                     dataset.addSeries(series);
                 }
