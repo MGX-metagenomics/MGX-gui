@@ -11,9 +11,11 @@ import de.cebitec.mgx.dto.dto.PointDTO;
 import de.cebitec.mgx.dto.dto.ProfileDTO;
 import de.cebitec.mgx.gui.datamodel.Attribute;
 import de.cebitec.mgx.gui.datamodel.misc.Distribution;
+import de.cebitec.mgx.gui.datamodel.misc.PCAResult;
 import de.cebitec.mgx.gui.datamodel.misc.Pair;
 import de.cebitec.mgx.gui.datamodel.misc.Point;
 import de.cebitec.mgx.gui.datamodel.misc.Task;
+import de.cebitec.mgx.gui.dtoconversion.PCAResultDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.PointDTOFactory;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import de.cebitec.mgx.gui.util.BaseIterator;
@@ -76,7 +78,7 @@ public class StatisticsAccess extends AccessBase<Point> {
         return null;
     }
 
-    public void PCA(Collection<Pair<VisualizationGroup, Distribution>> groups) {
+    public PCAResult PCA(Collection<Pair<VisualizationGroup, Distribution>> groups) {
 
         // map to hold obfuscated group name mapping
         Map<String, String> tmpNames = new HashMap<>();
@@ -89,9 +91,11 @@ public class StatisticsAccess extends AccessBase<Point> {
 //            for (Entry<String, String> e : tmpNames.entrySet()) {
 //                nwk = nwk.replace(e.getKey(), e.getValue());
 //            }
+            return PCAResultDTOFactory.getInstance().toModel(ret);
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
+        return null;
     }
 
     private static MGXMatrixDTO buildMatrix(Collection<Pair<VisualizationGroup, Distribution>> groups, Map<String, String> tmpNames, boolean includeColNames) {
