@@ -417,6 +417,7 @@
         <module>MGX-Biodiversity</module>
         <module>MGX-Rarefaction</module>
         <module>MGX-Newick-Wrapper</module>
+        <module>MGX-PCA</module>
     </modules>
     <properties>
         <netbeans.version>RELEASE74</netbeans.version>
