@@ -11,11 +11,14 @@ import de.cebitec.mgx.gui.datamodel.misc.Point;
 import de.cebitec.mgx.gui.groups.ImageExporterI;
 import de.cebitec.mgx.gui.groups.VGroupManager;
 import de.cebitec.mgx.gui.groups.VisualizationGroup;
+import de.cebitec.mgx.gui.swingutils.NonEDT;
 import java.awt.Color;
 import java.awt.geom.Ellipse2D;
 import java.text.DecimalFormat;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import javax.swing.JComponent;
+import javax.swing.SwingWorker;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -31,6 +34,7 @@ import org.jfree.data.xy.XYDataItem;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
+import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -69,9 +73,25 @@ public class PCAPlot extends ViewerI<Distribution> {
     }
 
     @Override
-    public void show(List<Pair<VisualizationGroup, Distribution>> dists) {
-        MGXMaster master = (MGXMaster) dists.get(0).getSecond().getMaster();
-        PCAResult pca = master.Statistics().PCA(dists);
+    public void show(final List<Pair<VisualizationGroup, Distribution>> dists) {
+        final MGXMaster master = (MGXMaster) dists.get(0).getSecond().getMaster();
+        
+        SwingWorker<PCAResult, Void> sw = new SwingWorker<PCAResult, Void>() {
+
+            @Override
+            protected PCAResult doInBackground() throws Exception {
+                return master.Statistics().PCA(dists);
+            }
+        };
+        sw.execute();
+        
+        PCAResult pca = null;
+        try {
+            pca = sw.get();
+        } catch (InterruptedException | ExecutionException ex) {
+            Exceptions.printStackTrace(ex);
+            return;
+        }
 
         double[] variances = pca.getVariances();
         double varSum = 0;
@@ -118,6 +138,7 @@ public class PCAPlot extends ViewerI<Distribution> {
         };
         renderer.setSeriesItemLabelGenerator(1, labelGen);
         renderer.setSeriesItemLabelsVisible(1, Boolean.TRUE);
+        plot.setRenderer(1, renderer);
     }
 
     @Override
