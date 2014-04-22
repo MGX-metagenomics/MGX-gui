@@ -17,7 +17,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import javax.swing.JComponent;
 import org.jfree.chart.ChartFactory;
@@ -45,7 +44,7 @@ public class MAPlot extends NumericalViewerI {
 
     private ChartPanel cPanel = null;
     private JFreeChart chart = null;
-    private Map<XYDataItem, String> toolTips = new HashMap<>();
+    private final Map<XYDataItem, String> toolTips = new HashMap<>();
 
     @Override
     public JComponent getComponent() {
