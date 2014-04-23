@@ -72,9 +72,11 @@
                     <publicPackages>
                         <publicPackage>org.jfree.chart</publicPackage>
                         <publicPackage>org.jfree.chart.util</publicPackage>
+                        <publicPackage>org.jfree.util</publicPackage>
                         <publicPackage>org.jfree.chart.annotations</publicPackage>
                         <publicPackage>org.jfree.chart.axis</publicPackage>
                         <publicPackage>org.jfree.chart.labels</publicPackage>
+                        <publicPackage>org.jfree.chart.entity</publicPackage>
                         <publicPackage>org.jfree.chart.plot</publicPackage>
                         <publicPackage>org.jfree.chart.title</publicPackage>
                         <publicPackage>org.jfree.chart.renderer</publicPackage>
