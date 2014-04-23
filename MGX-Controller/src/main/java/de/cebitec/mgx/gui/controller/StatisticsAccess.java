@@ -86,12 +86,12 @@ public class StatisticsAccess extends AccessBase<Point> {
 
         try {
             PCAResultDTO ret = getDTOmaster().Statistics().PCA(matrix);
-//
-//            // de-obfuscate group names
-//            for (Entry<String, String> e : tmpNames.entrySet()) {
-//                nwk = nwk.replace(e.getKey(), e.getValue());
-//            }
-            return PCAResultDTOFactory.getInstance().toModel(ret);
+            PCAResult pca = PCAResultDTOFactory.getInstance().toModel(ret);
+            // de-obfuscate group names
+            for (Point p : pca.getDatapoints()) {
+                p.setName(tmpNames.get(p.getName()));
+            }
+            return pca;
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
