@@ -71,6 +71,7 @@
                 <configuration>
                     <publicPackages>
                         <publicPackage>org.jfree.chart</publicPackage>
+                        <publicPackage>org.jfree.chart.util</publicPackage>
                         <publicPackage>org.jfree.chart.annotations</publicPackage>
                         <publicPackage>org.jfree.chart.axis</publicPackage>
                         <publicPackage>org.jfree.chart.labels</publicPackage>
