@@ -46,6 +46,38 @@ public class StatisticsAccessTest {
     }
 
     @Test
+    public void testPCA() {
+        System.out.println("PCA");
+        MGXMaster master = TestMaster.getRO();
+
+        VGroupManager vgmgr = VGroupManager.getInstance();
+        for (VisualizationGroup vg : vgmgr.getAllGroups().toArray(new VisualizationGroup[]{})) {
+            vgmgr.removeGroup(vg);
+        }
+        vgmgr.registerResolver(new Resolver());
+        VisualizationGroup g1 = vgmgr.createGroup();
+        g1.setName("grp1");
+        g1.addSeqRun(master.SeqRun().fetch(1));
+
+        VisualizationGroup g2 = vgmgr.createGroup();
+        g2.setName("grp2");
+        g2.addSeqRun(master.SeqRun().fetch(2));
+
+        boolean ret = vgmgr.selectAttributeType(AttributeRank.PRIMARY, "NCBI_CLASS");
+        assertTrue(ret);
+        List<Pair<VisualizationGroup, Distribution>> dists = null;
+        try {
+            dists = vgmgr.getDistributions();
+        } catch (ConflictingJobsException ex) {
+            fail(ex.getMessage());
+        }
+        assertNotNull(dists);
+        assertEquals(2, dists.size());
+
+        master.Statistics().PCA(dists);
+    }
+
+    @Test
     public void testClustering() {
         System.out.println("Clustering");
         MGXMaster master = TestMaster.getRO();
