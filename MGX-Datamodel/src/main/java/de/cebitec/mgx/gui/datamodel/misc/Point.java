@@ -4,11 +4,11 @@ package de.cebitec.mgx.gui.datamodel.misc;
  *
  * @author sj
  */
-public class Point {
+public class Point implements Comparable<Point> {
 
     private final double x;
     private final double y;
-    private final String name;
+    private String name;
 
     public Point(double x, double y) {
         this(x, y, null);
@@ -28,7 +28,20 @@ public class Point {
         return y;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+    
     public String getName() {
         return name;
+    }
+    
+    public double getLength() {
+        return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+    }
+
+    @Override
+    public int compareTo(Point o) {
+        return Double.compare(getLength(), o.getLength());
     }
 }
