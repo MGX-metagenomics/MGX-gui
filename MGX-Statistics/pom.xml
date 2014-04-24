@@ -39,27 +39,6 @@
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-netbeans-api-annotations-common</artifactId>
         </dependency>
-        <!-- 
-        <dependency>
-            <groupId>de.cebitec.external</groupId>
-            <artifactId>jmathplot</artifactId>
-            <version>20121101</version>
-        </dependency>
-        <dependency>
-            <groupId>de.cebitec.external</groupId>
-            <artifactId>jmatharray</artifactId>
-            <version>20121101</version>
-        </dependency>
-        <dependency>
-            <groupId>de.cebitec.external</groupId>
-            <artifactId>jmathio</artifactId>
-            <version>20121101</version>
-        </dependency>
-        <dependency>
-            <groupId>de.cebitec.external</groupId>
-            <artifactId>groovylab</artifactId>
-            <version>20121101</version>
-        </dependency> -->
         <dependency>
             <groupId>de.cebitec.mgx.gui</groupId>
             <artifactId>MGX-AttributeVisualization</artifactId>
@@ -86,10 +65,9 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>de.cebitec.external</groupId>
-            <artifactId>prefuse</artifactId>
-            <version>20071021</version>
-            <type>jar</type>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>MGX-Prefuse</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 
