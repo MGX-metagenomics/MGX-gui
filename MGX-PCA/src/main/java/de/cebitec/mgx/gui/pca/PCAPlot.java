@@ -1,5 +1,7 @@
 package de.cebitec.mgx.gui.pca;
 
+import de.cebitec.mgx.gui.attributevisualization.filter.ToFractionFilter;
+import de.cebitec.mgx.gui.attributevisualization.filter.VisFilterI;
 import de.cebitec.mgx.gui.attributevisualization.viewer.ViewerI;
 import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
 import de.cebitec.mgx.gui.controller.MGXMaster;
@@ -49,6 +51,7 @@ public class PCAPlot extends ViewerI<Distribution> {
 
     private ChartPanel cPanel = null;
     private JFreeChart chart = null;
+    private PCACustomizer cust = null;
 
     @Override
     public JComponent getComponent() {
@@ -83,14 +86,21 @@ public class PCAPlot extends ViewerI<Distribution> {
     }
 
     @Override
-    public void show(final List<Pair<VisualizationGroup, Distribution>> dists) {
+    public void show(List<Pair<VisualizationGroup, Distribution>> dists) {
         final MGXMaster master = (MGXMaster) dists.get(0).getSecond().getMaster();
+
+        if (getCustomizer().useFractions()) {
+            VisFilterI fracFilter = new ToFractionFilter();
+            dists = fracFilter.filter(dists);
+        }
+        final Pair<PC, PC> comps = getCustomizer().getPCs();
+        final List<Pair<VisualizationGroup, Distribution>> data = dists;
 
         SwingWorker<PCAResult, Void> sw = new SwingWorker<PCAResult, Void>() {
 
             @Override
             protected PCAResult doInBackground() throws Exception {
-                return master.Statistics().PCA(dists);
+                return master.Statistics().PCA(data, comps.getFirst().getValue(), comps.getSecond().getValue());
             }
         };
         sw.execute();
@@ -108,8 +118,8 @@ public class PCAPlot extends ViewerI<Distribution> {
         for (double d : variances) {
             varSum += d;
         }
-        String pc1rel = String.format("%2.2f%n", variances[0] * 100 / varSum);
-        String pc2rel = String.format("%2.2f%n", variances[1] * 100 / varSum);
+        String pc1rel = String.format("%2.2f%n", variances[comps.getFirst().getValue() - 1] * 100 / varSum);
+        String pc2rel = String.format("%2.2f%n", variances[comps.getSecond().getValue() - 1] * 100 / varSum);
 
         final Map<XYDataItem, String> toolTips = new HashMap<>();
 
@@ -132,7 +142,8 @@ public class PCAPlot extends ViewerI<Distribution> {
         }
         loadingset.addSeries(loadings);
 
-        chart = ChartFactory.createScatterPlot(getTitle(), "PC1 (" + pc1rel + "%)", "PC2 (" + pc2rel + "%)", dataset, PlotOrientation.VERTICAL, false, true, false);
+        chart = ChartFactory.createScatterPlot(getTitle(), comps.getFirst().toString()
+                + " (" + pc1rel + "%)", comps.getSecond().toString() + " (" + pc2rel + "%)", dataset, PlotOrientation.VERTICAL, false, true, false);
         chart.setBorderPaint(Color.WHITE);
         chart.setBackgroundPaint(Color.WHITE);
         cPanel = new ChartPanel(chart);
@@ -172,8 +183,11 @@ public class PCAPlot extends ViewerI<Distribution> {
     }
 
     @Override
-    public JComponent getCustomizer() {
-        return null;
+    public PCACustomizer getCustomizer() {
+        if (cust == null) {
+            cust = new PCACustomizer();
+        }
+        return cust;
     }
 
     @Override
