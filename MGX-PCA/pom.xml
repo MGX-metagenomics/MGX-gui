@@ -72,6 +72,10 @@
             <artifactId>org-openide-util</artifactId>
             <groupId>org.netbeans.api</groupId>
         </dependency>
+        <dependency>
+            <artifactId>org-openide-awt</artifactId>
+            <groupId>org.netbeans.api</groupId>
+        </dependency>
     </dependencies>
 
     <build>
