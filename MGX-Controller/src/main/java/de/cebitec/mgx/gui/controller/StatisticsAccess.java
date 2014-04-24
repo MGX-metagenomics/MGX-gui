@@ -2,7 +2,7 @@ package de.cebitec.mgx.gui.controller;
 
 import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
-import de.cebitec.mgx.dto.dto.MGXLongList;
+import de.cebitec.mgx.dto.dto.MGXDoubleList;
 import de.cebitec.mgx.dto.dto.MGXMatrixDTO;
 import de.cebitec.mgx.dto.dto.MGXString;
 import de.cebitec.mgx.dto.dto.MGXStringList;
@@ -131,11 +131,11 @@ public class StatisticsAccess extends AccessBase<Point> {
         return b.build();
     }
 
-    private static MGXLongList buildVector(Attribute[] attrs, Distribution dist) {
-        MGXLongList.Builder b = MGXLongList.newBuilder();
+    private static MGXDoubleList buildVector(Attribute[] attrs, Distribution dist) {
+        MGXDoubleList.Builder b = MGXDoubleList.newBuilder();
         for (Attribute a : attrs) {
             Number n = dist.get(a);
-            b.addLong(n != null ? n.longValue() : 0);
+            b.addValue(n != null ? n.doubleValue() : 0);
         }
         return b.build();
     }
