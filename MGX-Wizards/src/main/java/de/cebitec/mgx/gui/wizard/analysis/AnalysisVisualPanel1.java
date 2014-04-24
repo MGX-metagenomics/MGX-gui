@@ -7,10 +7,7 @@ import de.cebitec.mgx.gui.wizard.analysis.misc.ToolPanel;
 import java.awt.Component;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -48,6 +45,10 @@ public final class AnalysisVisualPanel1 extends JPanel implements ListSelectionL
 
     public void setProjectTools(Collection<Tool> pTools) {
         projectTools.setListData(pTools.toArray(new Tool[]{}));
+        // if no tools are available, switch to repository tab
+        if (pTools.isEmpty()) {
+            tabs.setSelectedIndex(1);
+        }
     }
 
     public void setServerTools(Collection<Tool> sTools) {
@@ -185,7 +186,7 @@ public final class AnalysisVisualPanel1 extends JPanel implements ListSelectionL
 
     private final class ToolListRenderer implements ListCellRenderer<Tool> {
 
-        private ToolPanel panel = new ToolPanel();
+        private final ToolPanel panel = new ToolPanel();
         protected Border noFocusBorder = LineBorder.createGrayLineBorder();
         protected Border focusBorder = LineBorder.createBlackLineBorder();
 
