@@ -78,14 +78,14 @@ public class StatisticsAccess extends AccessBase<Point> {
         return null;
     }
 
-    public PCAResult PCA(Collection<Pair<VisualizationGroup, Distribution>> groups) {
+    public PCAResult PCA(Collection<Pair<VisualizationGroup, Distribution>> groups, int pc1, int pc2) {
 
         // map to hold obfuscated group name mapping
         Map<String, String> tmpNames = new HashMap<>();
         MGXMatrixDTO matrix = buildMatrix(groups, tmpNames, true);
 
         try {
-            PCAResultDTO ret = getDTOmaster().Statistics().PCA(matrix);
+            PCAResultDTO ret = getDTOmaster().Statistics().PCA(matrix, pc1, pc2);
             PCAResult pca = PCAResultDTOFactory.getInstance().toModel(ret);
             // de-obfuscate group names
             for (Point p : pca.getDatapoints()) {
