@@ -4,6 +4,7 @@ import de.cebitec.mgx.gui.datamodel.Job;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.datamodel.misc.AttributeRank;
 import de.cebitec.mgx.gui.datamodel.misc.Distribution;
+import de.cebitec.mgx.gui.datamodel.misc.PCAResult;
 import de.cebitec.mgx.gui.datamodel.misc.Pair;
 import de.cebitec.mgx.gui.datamodel.misc.Triple;
 import de.cebitec.mgx.gui.groups.ConflictingJobsException;
@@ -73,8 +74,8 @@ public class StatisticsAccessTest {
         }
         assertNotNull(dists);
         assertEquals(2, dists.size());
-
-        master.Statistics().PCA(dists);
+        PCAResult pca = master.Statistics().PCA(dists, 1, 2);
+        assertNotNull(pca);
     }
 
     @Test
