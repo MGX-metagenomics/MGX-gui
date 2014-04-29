@@ -1,10 +1,8 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package de.cebitec.mgx.gui.wizard.mapping;
 
 import de.cebitec.mgx.gui.controller.MGXMaster;
+import de.cebitec.mgx.gui.mapping.MappingCtx;
 import de.cebitec.mgx.gui.wizard.mapping.MappingVisualPanel1.MappingEntry;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -29,7 +27,7 @@ import de.cebitec.mgx.gui.mapping.viewer.TopComponentViewer;
 public final class MappingWizardAction implements ActionListener {
 
     private final Lookup.Result<MGXMaster> mgxMasterResult;
-    private MGXMaster currentMaster;
+    private final MGXMaster currentMaster;
 
     private MappingWizardAction() {
         mgxMasterResult = Utilities.actionsGlobalContext().lookupResult(MGXMaster.class);
@@ -47,13 +45,13 @@ public final class MappingWizardAction implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        ArrayList<WizardDescriptor.FinishablePanel<WizardDescriptor>> panels = new ArrayList<WizardDescriptor.FinishablePanel<WizardDescriptor>>();
+        ArrayList<WizardDescriptor.FinishablePanel<WizardDescriptor>> panels = new ArrayList<>();
         panels.add(new MappingWizardPanel1(currentMaster));
-        String[] steps = new String[panels.size()];
+        //String[] steps = new String[panels.size()];
         for (int i = 0; i < panels.size(); i++) {
             Component c = panels.get(i).getComponent();
             // Default step name to component name of panel.
-            steps[i] = c.getName();
+            //steps[i] = c.getName();
             if (c instanceof JComponent) { // assume Swing components
                 JComponent jc = (JComponent) c;
                 jc.putClientProperty(WizardDescriptor.PROP_CONTENT_SELECTED_INDEX, i);
@@ -67,13 +65,9 @@ public final class MappingWizardAction implements ActionListener {
         wiz.setTitleFormat(new MessageFormat("{0}"));
         wiz.setTitle("Mapping Wizard");
         if (DialogDisplayer.getDefault().notify(wiz) == WizardDescriptor.FINISH_OPTION) {
-            MappingEntry mapping = (MappingEntry) wiz.getProperty(MappingVisualPanel1.PROP_MAPPING); 
-            if (TopComponentViewer.getInstance() != null) {
-                TopComponentViewer.getInstance().close();
-            }
-            TopComponentViewer component = new TopComponentViewer(mapping.getReference(), mapping.getMapping());
-            
-           
+            MappingEntry mentry = (MappingEntry) wiz.getProperty(MappingVisualPanel1.PROP_MAPPING); 
+            MappingCtx ctx = new MappingCtx(mentry.getMapping(), mentry.getReference());
+            TopComponentViewer component = new TopComponentViewer(ctx);
             component.open();
         }
     }
