@@ -8,6 +8,7 @@ import de.cebitec.mgx.dto.dto.MGXString;
 import de.cebitec.mgx.dto.dto.MGXStringList;
 import de.cebitec.mgx.dto.dto.PCAResultDTO;
 import de.cebitec.mgx.dto.dto.PointDTO;
+import de.cebitec.mgx.dto.dto.PointDTOList;
 import de.cebitec.mgx.dto.dto.ProfileDTO;
 import de.cebitec.mgx.gui.datamodel.Attribute;
 import de.cebitec.mgx.gui.datamodel.misc.Distribution;
@@ -26,6 +27,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
@@ -98,6 +101,27 @@ public class StatisticsAccess extends AccessBase<Point> {
         return null;
     }
 
+    public List<Point> PCoA(Collection<Pair<VisualizationGroup, Distribution>> groups) {
+
+        // map to hold obfuscated group name mapping
+        Map<String, String> tmpNames = new HashMap<>();
+        MGXMatrixDTO matrix = buildMatrix(groups, tmpNames, true);
+
+        List<Point> pcoa = new LinkedList<>();
+        try {
+            PointDTOList ret = getDTOmaster().Statistics().PCoA(matrix);
+            for (PointDTO pdto : ret.getPointList()) {
+                Point p = PointDTOFactory.getInstance().toModel(pdto);
+                p.setName(tmpNames.get(p.getName())); // de-obfuscate group name
+                pcoa.add(p);
+            }
+            return pcoa;
+        } catch (MGXServerException | MGXClientException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+        return null;
+    }
+
     private static MGXMatrixDTO buildMatrix(Collection<Pair<VisualizationGroup, Distribution>> groups, Map<String, String> tmpNames, boolean includeColNames) {
         MGXMatrixDTO.Builder b = MGXMatrixDTO.newBuilder();
 
@@ -139,7 +163,7 @@ public class StatisticsAccess extends AccessBase<Point> {
         }
         return b.build();
     }
-    
+
     private static String generateName() {
         return generateName(8);
     }
@@ -178,6 +202,10 @@ public class StatisticsAccess extends AccessBase<Point> {
     @Override
     public Task delete(Point obj) {
         throw new UnsupportedOperationException("Not supported.");
+    }
+
+    public PCAResult PCoA(List<Pair<VisualizationGroup, Distribution>> data) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }
