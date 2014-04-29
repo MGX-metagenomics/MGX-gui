@@ -203,9 +203,4 @@ public class StatisticsAccess extends AccessBase<Point> {
     public Task delete(Point obj) {
         throw new UnsupportedOperationException("Not supported.");
     }
-
-    public PCAResult PCoA(List<Pair<VisualizationGroup, Distribution>> data) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
 }
