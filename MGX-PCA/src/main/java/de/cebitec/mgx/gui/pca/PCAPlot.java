@@ -71,13 +71,15 @@ public class PCAPlot extends ViewerI<Distribution> {
     @Override
     public boolean canHandle(AttributeType valueType) {
         Set<Attribute> attrs = new HashSet<>();
+        int distCnt = 0;
         try {
             for (Pair<VisualizationGroup, Distribution> p : VGroupManager.getInstance().getDistributions()) {
                 attrs.addAll(p.getSecond().keySet());
+                distCnt++;
             }
         } catch (ConflictingJobsException ex) {
         }
-        return attrs.size() > 1 && VGroupManager.getInstance().getActiveGroups().size() > 1;
+        return attrs.size() > 1 && distCnt > 1;
     }
 
     @Override
