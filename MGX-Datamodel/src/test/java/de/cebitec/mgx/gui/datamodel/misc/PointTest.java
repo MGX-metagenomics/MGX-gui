@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package de.cebitec.mgx.gui.datamodel.misc;
 
 import java.util.ArrayList;
@@ -21,26 +20,26 @@ import static org.junit.Assert.*;
  * @author sjaenick
  */
 public class PointTest {
-    
+
     public PointTest() {
     }
-    
+
     @BeforeClass
     public static void setUpClass() {
     }
-    
+
     @AfterClass
     public static void tearDownClass() {
     }
-    
+
     @Before
     public void setUp() {
     }
-    
+
     @After
     public void tearDown() {
     }
-    
+
     @Test
     public void testCompareTo() {
         System.out.println("comparePoints");
@@ -52,6 +51,7 @@ public class PointTest {
         l.add(p2);
         Collections.sort(l);
         assertEquals(p1, l.get(0));
+        assertEquals(p2, l.get(1));
     }
-    
+
 }
