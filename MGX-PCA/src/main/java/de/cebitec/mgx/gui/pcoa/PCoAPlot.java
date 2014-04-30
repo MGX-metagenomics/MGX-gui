@@ -1,5 +1,7 @@
 package de.cebitec.mgx.gui.pcoa;
 
+import de.cebitec.mgx.gui.attributevisualization.filter.ToFractionFilter;
+import de.cebitec.mgx.gui.attributevisualization.filter.VisFilterI;
 import de.cebitec.mgx.gui.attributevisualization.viewer.ViewerI;
 import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
 import de.cebitec.mgx.gui.controller.MGXMaster;
@@ -45,7 +47,7 @@ public class PCoAPlot extends ViewerI<Distribution> {
 
     private ChartPanel cPanel = null;
     private JFreeChart chart = null;
-    //private PCACustomizer cust = null;
+    private PCoACustomizer cust = null;
 
     @Override
     public JComponent getComponent() {
@@ -54,7 +56,7 @@ public class PCoAPlot extends ViewerI<Distribution> {
 
     @Override
     public String getName() {
-        return "PCoA Plot";
+        return "PCoA/MDS Plot";
     }
 
     @Override
@@ -85,11 +87,11 @@ public class PCoAPlot extends ViewerI<Distribution> {
     public void show(List<Pair<VisualizationGroup, Distribution>> dists) {
         final MGXMaster master = (MGXMaster) dists.get(0).getSecond().getMaster();
 
-//        if (getCustomizer().useFractions()) {
-//            VisFilterI fracFilter = new ToFractionFilter();
-//            dists = fracFilter.filter(dists);
-//        }
-        
+        if (getCustomizer().useFractions()) {
+            VisFilterI fracFilter = new ToFractionFilter();
+            dists = fracFilter.filter(dists);
+        }
+
         final List<Pair<VisualizationGroup, Distribution>> data = dists;
 
         SwingWorker<List<Point>, Void> sw = new SwingWorker<List<Point>, Void>() {
@@ -108,7 +110,7 @@ public class PCoAPlot extends ViewerI<Distribution> {
             Exceptions.printStackTrace(ex);
             return;
         }
-        
+
         if (pcoa == null) {
             return;
         }
@@ -124,8 +126,7 @@ public class PCoAPlot extends ViewerI<Distribution> {
         }
         dataset.addSeries(series);
 
-        chart = ChartFactory.createScatterPlot(getTitle(), "C1"
-               , "C2", dataset, PlotOrientation.VERTICAL, false, true, false);
+        chart = ChartFactory.createScatterPlot(getTitle(), "C1", "C2", dataset, PlotOrientation.VERTICAL, false, true, false);
         chart.setBorderPaint(Color.WHITE);
         chart.setBackgroundPaint(Color.WHITE);
         cPanel = new ChartPanel(chart);
@@ -152,8 +153,11 @@ public class PCoAPlot extends ViewerI<Distribution> {
     }
 
     @Override
-    public JComponent getCustomizer() {
-        return null;
+    public PCoACustomizer getCustomizer() {
+        if (cust == null) {
+            cust = new PCoACustomizer();
+        }
+        return cust;
     }
 
     @Override
