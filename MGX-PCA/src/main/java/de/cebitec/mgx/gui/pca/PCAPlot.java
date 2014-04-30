@@ -115,6 +115,9 @@ public class PCAPlot extends ViewerI<Distribution> {
             return;
         }
 
+        final Map<XYDataItem, String> toolTips = new HashMap<>();
+        getCustomizer().setLoadings(pca, toolTips);
+
         double[] variances = pca.getVariances();
         double varSum = 0;
         for (double d : variances) {
@@ -122,8 +125,6 @@ public class PCAPlot extends ViewerI<Distribution> {
         }
         String pc1rel = String.format("%2.2f%n", variances[comps.getFirst().getValue() - 1] * 100 / varSum);
         String pc2rel = String.format("%2.2f%n", variances[comps.getSecond().getValue() - 1] * 100 / varSum);
-
-        final Map<XYDataItem, String> toolTips = new HashMap<>();
 
         XYSeriesCollection dataset = new XYSeriesCollection();
         XYSeries series = new XYSeries("");
@@ -136,12 +137,7 @@ public class PCAPlot extends ViewerI<Distribution> {
 
         // second dataseries with loadings
         XYSeriesCollection loadingset = new XYSeriesCollection();
-        XYSeries loadings = new XYSeries("");
-        for (Point p : pca.getLoadings()) {
-            XYDataItem item = new XYDataItem(p.getX(), p.getY());
-            loadings.add(item);
-            toolTips.put(item, p.getName());
-        }
+        XYSeries loadings = getCustomizer().getLoadings();
         loadingset.addSeries(loadings);
 
         chart = ChartFactory.createScatterPlot(getTitle(), comps.getFirst().toString()
