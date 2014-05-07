@@ -118,4 +118,41 @@ public class Distribution implements Map<Attribute, Number> {
         keys.addAll(_data.keySet());
         filtered.putAll(_data);
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 71 * hash + Objects.hashCode(this.master);
+        hash = 71 * hash + (int) (this.totalClassifiedElements ^ (this.totalClassifiedElements >>> 32));
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Distribution other = (Distribution) obj;
+        if (!Objects.equals(this.master, other.master)) {
+            return false;
+        }
+        if (!Objects.equals(this._data, other._data)) {
+            return false;
+        }
+        if (!Objects.equals(this.keys, other.keys)) {
+            return false;
+        }
+        if (!Objects.equals(this.filtered, other.filtered)) {
+            return false;
+        }
+        if (this.totalClassifiedElements != other.totalClassifiedElements) {
+            return false;
+        }
+        return true;
+    }
+    
+    
 }
