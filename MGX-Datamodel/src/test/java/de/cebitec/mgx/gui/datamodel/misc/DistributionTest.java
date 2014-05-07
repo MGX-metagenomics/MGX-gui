@@ -55,14 +55,22 @@ public class DistributionTest {
         a2.setValue("FOO");
         d2.put(a2, Long.valueOf(5));
         Distribution dist2 = new Distribution(d2, 3, null);
-        assertEquals(dist1, dist2);
 
         Map<Attribute, Long> d3 = new HashMap<>();
         Attribute a3 = new Attribute();
         a3.setValue("BAR");
         d3.put(a3, Long.valueOf(5));
         Distribution dist3 = new Distribution(d3, 3, null);
+
+        Map<Attribute, Long> d4 = new HashMap<>();
+        Attribute a4 = new Attribute();
+        a4.setValue("BAR");
+        d4.put(a4, Long.valueOf(6));
+        Distribution dist4 = new Distribution(d4, 3, null);
+
+        assertEquals(dist1, dist2);
         assertNotEquals(dist2, dist3);
+        assertNotEquals(dist3, dist4);
     }
 
 }
