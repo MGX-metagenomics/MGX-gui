@@ -72,6 +72,10 @@
             <artifactId>org-openide-awt</artifactId>
             <groupId>org.netbeans.api</groupId>
         </dependency>
+        <dependency>
+            <groupId>de.cebitec.mgx.gui</groupId>
+            <artifactId>MGX-BasicCharts</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

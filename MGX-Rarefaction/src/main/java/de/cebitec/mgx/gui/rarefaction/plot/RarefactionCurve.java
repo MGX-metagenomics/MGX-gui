@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.rarefaction.plot;
 
 import de.cebitec.mgx.gui.attributevisualization.ui.DelayedPlot;
 import de.cebitec.mgx.gui.attributevisualization.viewer.ViewerI;
+import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
 import de.cebitec.mgx.gui.datamodel.AttributeType;
 import de.cebitec.mgx.gui.datamodel.misc.Distribution;
 import de.cebitec.mgx.gui.datamodel.misc.Pair;
@@ -75,6 +76,7 @@ public class RarefactionCurve extends ViewerI<Distribution> {
                 ret = new ChartPanel(chart);
                 XYPlot plot = (XYPlot) chart.getPlot();
                 plot.setBackgroundPaint(Color.WHITE);
+                plot.setFixedLegendItems(JFreeChartUtil.createLegend(dists));
 
                 // x axis
                 ValueAxis valueAxis;
