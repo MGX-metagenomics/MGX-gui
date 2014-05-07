@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.datamodel.misc;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -36,6 +37,7 @@ public class PCAResult {
     }
 
     public List<Point> getLoadings() {
+        Collections.sort(loadings);
         return loadings;
     }
 }
