@@ -25,8 +25,6 @@ import static org.junit.Assert.*;
  */
 public class AttributeAccessTest {
 
-    private MGXMaster master;
-
     public AttributeAccessTest() {
     }
 
@@ -40,7 +38,6 @@ public class AttributeAccessTest {
 
     @Before
     public void setUp() {
-        master = TestMaster.getRO();
     }
 
     @After
@@ -50,7 +47,7 @@ public class AttributeAccessTest {
     @Test
     public void testGetDistribution() {
         System.out.println("getDistribution");
-        Distribution dist = master.Attribute().getDistribution(6, 3);
+        Distribution dist = TestMaster.getRO().Attribute().getDistribution(6, 3);
         assertNotNull(dist);
         assertEquals(5, dist.size());
         assertEquals(24, dist.getTotalClassifiedElements());
@@ -59,7 +56,7 @@ public class AttributeAccessTest {
     @Test
     public void testFetch() {
         System.out.println("fetch");
-        Attribute attr = master.Attribute().fetch(1);
+        Attribute attr = TestMaster.getRO().Attribute().fetch(1);
         assertNotNull(attr);
         assertNotNull(attr.getAttributeType());
         assertEquals("50.8", attr.getValue());
@@ -69,7 +66,7 @@ public class AttributeAccessTest {
     @Test
     public void testGetHierarchy() {
         System.out.println("getHierarchy");
-        Tree<Long> tree = master.Attribute().getHierarchy(6, 3);
+        Tree<Long> tree = TestMaster.getRO().Attribute().getHierarchy(6, 3);
         assertNotNull(tree);
         assertEquals(30, tree.getNodes().size());
         assertNotNull(tree.getRoot());
@@ -95,7 +92,7 @@ public class AttributeAccessTest {
     @Test
     public void testFilterTree() {
         System.out.println("filterTree");
-        Tree<Long> tree = master.Attribute().getHierarchy(6, 3);
+        Tree<Long> tree = TestMaster.getRO().Attribute().getHierarchy(6, 3);
         assertNotNull(tree);
         assertEquals(30, tree.getNodes().size());
         assertNotNull(tree.getRoot());
@@ -122,7 +119,7 @@ public class AttributeAccessTest {
     @Test
     public void testCloneTree() {
         System.out.println("cloneTree");
-        Tree<Long> tree = master.Attribute().getHierarchy(6, 3);
+        Tree<Long> tree = TestMaster.getRO().Attribute().getHierarchy(6, 3);
         assertNotNull(tree);
         assertEquals(30, tree.getNodes().size());
         assertNotNull(tree.getRoot());
@@ -251,7 +248,7 @@ public class AttributeAccessTest {
     @Test
     public void verifyTreeStructure() {
         System.out.println("verifyTreeStructure");
-        Tree<Long> tree = master.Attribute().getHierarchy(6, 3);
+        Tree<Long> tree = TestMaster.getRO().Attribute().getHierarchy(6, 3);
         assertNotNull(tree);
 
         for (Node<Long> node : tree.getNodes()) {
@@ -280,7 +277,7 @@ public class AttributeAccessTest {
     @Test
     public void testDistFromTree() {
         System.out.println("distFromTree");
-        Distribution dist = master.Attribute().getDistribution(6, 3);
+        Distribution dist = TestMaster.getRO().Attribute().getDistribution(6, 3);
         assertNotNull(dist);
         assertEquals(5, dist.size());
         assertEquals(24, dist.getTotalClassifiedElements());
@@ -289,7 +286,7 @@ public class AttributeAccessTest {
         assertNotNull(aType);
         assertEquals("Bergey_class", aType.getName());
 
-        Tree<Long> tree = master.Attribute().getHierarchy(6, 3);
+        Tree<Long> tree = TestMaster.getRO().Attribute().getHierarchy(6, 3);
         assertNotNull(tree);
 
         // count manually
@@ -310,7 +307,7 @@ public class AttributeAccessTest {
     @Test
     public void testMergeDist() {
         System.out.println("mergeDistributions");
-        Distribution dist = master.Attribute().getDistribution(6, 3);
+        Distribution dist = TestMaster.getRO().Attribute().getDistribution(6, 3);
         assertNotNull(dist);
         assertEquals(5, dist.size());
         assertEquals(24, dist.getTotalClassifiedElements());
@@ -324,7 +321,7 @@ public class AttributeAccessTest {
         assertEquals(48, merged.getTotalClassifiedElements());
 
         // bergey_order
-        Distribution dist2 = master.Attribute().getDistribution(7, 3);
+        Distribution dist2 = TestMaster.getRO().Attribute().getDistribution(7, 3);
         assertNotNull(dist2);
         assertEquals(4, dist2.size());
         assertEquals(21, dist2.getTotalClassifiedElements());
