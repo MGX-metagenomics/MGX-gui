@@ -76,7 +76,6 @@ public class StatisticsAccess extends AccessBase<Point> {
             if (ex instanceof ParserException) {
                 System.err.println("Parser error for Newick string " + nwk);
             }
-            Exceptions.printStackTrace(ex);
         }
         return null;
     }
