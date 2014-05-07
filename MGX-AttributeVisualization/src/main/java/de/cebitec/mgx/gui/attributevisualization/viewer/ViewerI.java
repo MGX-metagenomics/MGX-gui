@@ -66,14 +66,6 @@ public abstract class ViewerI<T> implements Comparable<ViewerI<T>> { //, VisFilt
     public void dispose() {
     }
 
-    ;
-
-//    @Override
-//    public List<Pair<VisualizationGroup, T>> filter(List<Pair<VisualizationGroup, T>> dists) {
-//        show(dists);
-//        return null;
-//    }
-    
     /**
      * 
      * @param aType indicates the attribute type to be displayed
