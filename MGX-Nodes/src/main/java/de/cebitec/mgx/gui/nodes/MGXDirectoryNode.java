@@ -18,7 +18,7 @@ public class MGXDirectoryNode extends MGXNodeBase<MGXFile, MGXDirectoryNode> {
 
     private FileNodeFactory nf = null;
 
-    public MGXDirectoryNode(MGXMaster m, MGXFile f) {
+    public MGXDirectoryNode(MGXFile f, MGXMaster m) {
         this(f, m, new FileNodeFactory(m, f));
     }
 

@@ -19,7 +19,7 @@ public class MGXFileNode extends MGXNodeBase<MGXFile, MGXFileNode> {
         master = m;
         setDisplayName(f.getName());
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/File.png");
-        setShortDescription(f.getName());
+        setShortDescription(f.getName() + " (" + f.getSize() + " bytes)");
     }
 
     @Override
@@ -44,6 +44,6 @@ public class MGXFileNode extends MGXNodeBase<MGXFile, MGXFileNode> {
     @Override
     public void updateModified() {
         setDisplayName(getContent().getName());
-        setShortDescription(getContent().getName());
+        setShortDescription(getContent().getName() + " (" + getContent().getSize() + " bytes)");
     }
 }
