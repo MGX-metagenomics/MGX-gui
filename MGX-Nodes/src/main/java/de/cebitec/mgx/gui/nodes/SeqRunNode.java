@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.nodes;
 
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.gui.actions.DownloadSeqRun;
+import de.cebitec.mgx.gui.actions.OpenMappingBySeqRun;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.controller.RBAC;
 import de.cebitec.mgx.gui.datamodel.Job;
@@ -24,7 +25,6 @@ import java.awt.Dialog;
 import java.awt.event.ActionEvent;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -46,7 +46,7 @@ import org.openide.util.lookup.Lookups;
  */
 public class SeqRunNode extends MGXNodeBase<SeqRun, SeqRunNode> {
 
-    private final Action[] actions = new Action[]{new ExecuteAnalysis(), new EditSeqRun(), new DeleteSeqRun(), new DownloadSeqRun()};
+    private final Action[] actions = new Action[]{new ExecuteAnalysis(), new OpenMappingBySeqRun(), new EditSeqRun(), new DeleteSeqRun(), new DownloadSeqRun()};
     //
     //public static final DataFlavor DATA_FLAVOR = new DataFlavor(SeqRunNode.class, "SeqRunNode");
 

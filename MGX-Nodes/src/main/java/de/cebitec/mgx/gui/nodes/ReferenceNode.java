@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.nodes;
 
+import de.cebitec.mgx.gui.actions.OpenMappingByReference;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.controller.RBAC;
 import de.cebitec.mgx.gui.datamodel.Reference;
@@ -49,7 +50,7 @@ public class ReferenceNode extends MGXNodeBase<Reference, ReferenceNode> {
 
     @Override
     public Action[] getActions(boolean context) {
-        return new Action[]{new DeleteReference()};
+        return new Action[]{new OpenMappingByReference(), new DeleteReference()};
     }
 
     @Override
