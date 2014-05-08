@@ -4,8 +4,6 @@ import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.MGXFile;
 import de.cebitec.mgx.gui.nodes.MGXDirectoryNode;
 import de.cebitec.mgx.gui.nodes.MGXFileNode;
-import de.cebitec.mgx.gui.swingutils.NonEDT;
-import java.awt.EventQueue;
 import java.beans.PropertyChangeEvent;
 import java.util.Collections;
 import java.util.Iterator;
@@ -43,7 +41,7 @@ public class FileNodeFactory extends MGXNodeFactoryBase<MGXFile> {
         if (!file.isDirectory()) {
             node = new MGXFileNode(file, master);
         } else {
-            node = new MGXDirectoryNode(master, file);
+            node = new MGXDirectoryNode(file, master);
         }
         node.addNodeListener(this);
         return node;
