@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.net.Authenticator;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.NotificationLineSupport;
@@ -26,7 +27,7 @@ import org.openide.windows.WindowManager;
  */
 public class LoginHandler implements ActionListener {
 
-    private static final LoginHandler instance = new LoginHandler();
+    private final static LoginHandler instance = new LoginHandler();
     //
     private final LoginPanel panel = new LoginPanel();
     private DialogDescriptor dialog = null;
@@ -36,6 +37,7 @@ public class LoginHandler implements ActionListener {
     private String serveruri = null;
 
     private LoginHandler() {
+        Authenticator.setDefault(null);
     }
 
     public static LoginHandler getDefault() {
@@ -63,9 +65,9 @@ public class LoginHandler implements ActionListener {
         panel.setPassword("");
 
         servername = NbPreferences.forModule(MGXserverPanel.class).get("servername", "CeBiTec");
-        servername = NbPreferences.forModule(MGXserverPanel.class).get("servername", "scooter-TEST");
+        //servername = NbPreferences.forModule(MGXserverPanel.class).get("servername", "scooter-TEST");
         serveruri = NbPreferences.forModule(MGXserverPanel.class).get("serveruri", "https://mgx.cebitec.uni-bielefeld.de/MGX-maven-web/webresources/");
-        serveruri = NbPreferences.forModule(MGXserverPanel.class).get("serveruri", "http://scooter.cebitec.uni-bielefeld.de:8080/MGX-maven-web/webresources/");
+        //serveruri = NbPreferences.forModule(MGXserverPanel.class).get("serveruri", "http://scooter.cebitec.uni-bielefeld.de:8080/MGX-maven-web/webresources/");
         if ("".equals(serveruri)) {
             dialog.setClosingOptions(new Object[]{DialogDescriptor.CANCEL_OPTION});
             nline.setErrorMessage("No server configured!");
