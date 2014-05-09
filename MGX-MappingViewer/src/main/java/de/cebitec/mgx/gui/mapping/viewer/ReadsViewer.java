@@ -7,12 +7,11 @@ package de.cebitec.mgx.gui.mapping.viewer;
 import de.cebitec.mgx.gui.mapping.sequences.MappedSequenceHolder;
 import de.cebitec.mgx.gui.mapping.sequences.JMappedSequence;
 import de.cebitec.mgx.gui.datamodel.MappedSequence;
+import de.cebitec.mgx.gui.mapping.MappingCtx;
 import de.cebitec.mgx.gui.mapping.viewer.positions.BoundsInfoManager;
 import de.cebitec.mgx.gui.mapping.viewer.positions.PaintingAreaInfo;
-import de.cebitec.mgx.gui.mapping.loader.Loader;
 import de.cebitec.mgx.gui.mapping.misc.ColorProperties;
 import de.cebitec.mgx.gui.mapping.viewer.positions.panel.ReadsBasePanel;
-import de.cebitec.mgx.gui.mapping.sequences.ReferenceHolder;
 import de.cebitec.mgx.gui.mapping.misc.IdentityLayer;
 import de.cebitec.mgx.gui.mapping.misc.Layer;
 import java.awt.Color;
@@ -22,6 +21,7 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import javax.swing.BorderFactory;
 import org.netbeans.api.progress.ProgressHandle;
@@ -36,15 +36,17 @@ public class ReadsViewer extends AbstractViewer<MappedSequence> {
 
     private int viewHeight = 250;
     private static final int LABEL_MARGIN = 3;
-    private Map<Integer, IdentityLayer> layersMap;
+    private final Map<Integer, IdentityLayer> layersMap;
     private static final int MARGIN_TO_NEXT_IDENTITY_LAYER = 5;
     private static final int MARGIN_TO_NEXT_IDENTITY_BORDER = 5;
     private ProgressHandle ph;
     private boolean isRunning = false;
+    private final MappingCtx ctx;
 
-    public ReadsViewer(BoundsInfoManager boundsInfoManager, ReadsBasePanel basePanel, ReferenceHolder refGenome, Loader loader) {
-        super(boundsInfoManager, basePanel, refGenome, loader);
+    public ReadsViewer(MappingCtx ctx, BoundsInfoManager boundsInfoManager, ReadsBasePanel basePanel) {
+        super(boundsInfoManager, basePanel);
         super.setVerticalMargin(10);
+        this.ctx = ctx;
         super.setHorizontalMargin(40);
         layersMap = new HashMap<>();
     }
@@ -60,8 +62,8 @@ public class ReadsViewer extends AbstractViewer<MappedSequence> {
 
     @Override
     public void close() {
+        layersMap.clear();
         super.close();
-        this.layersMap.clear();
     }
 
     @Override
@@ -121,7 +123,7 @@ public class ReadsViewer extends AbstractViewer<MappedSequence> {
     }
 
     private void setInLayer(MappedSequenceHolder mappedSequence) {
-        ArrayList<Layer> layers;
+        List<Layer> layers;
         if (!layersMap.containsKey(mappedSequence.getIdentity())) {
             layers = new ArrayList<>();
             IdentityLayer identityLayer = new IdentityLayer();

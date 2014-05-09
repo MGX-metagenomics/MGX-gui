@@ -8,11 +8,6 @@ import java.awt.Color;
  */
 public class ColorProperties {
 
-    /**
-     * Private constructor so this utility class can not be instantiated.
-     */
-    private ColorProperties() {
-    }
     // global colors
     public static final Color FRAME_LINES = new Color(153, 153, 153);
     public static final Color IDENTITY_LINES = new Color(153, 153, 153);

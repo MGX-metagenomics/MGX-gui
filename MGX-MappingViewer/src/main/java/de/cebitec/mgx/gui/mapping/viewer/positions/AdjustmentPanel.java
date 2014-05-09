@@ -1,6 +1,5 @@
 package de.cebitec.mgx.gui.mapping.viewer.positions;
 
-import de.cebitec.mgx.gui.mapping.viewer.positions.SynchronousNavigatorI;
 import de.cebitec.mgx.gui.mapping.viewer.positions.panel.ExtendedScroller;
 import de.cebitec.mgx.gui.mapping.viewer.positions.panel.ExtendedSlider;
 import javax.swing.BoxLayout;

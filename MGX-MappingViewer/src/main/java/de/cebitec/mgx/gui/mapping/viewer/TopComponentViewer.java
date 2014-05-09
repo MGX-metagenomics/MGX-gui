@@ -7,11 +7,11 @@ package de.cebitec.mgx.gui.mapping.viewer;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.Mapping;
 import de.cebitec.mgx.gui.datamodel.Reference;
+import de.cebitec.mgx.gui.mapping.MappingCtx;
 import de.cebitec.mgx.gui.mapping.viewer.positions.panel.ReadsBasePanel;
 import de.cebitec.mgx.gui.mapping.viewer.positions.panel.ReferenceBasePanel;
 import de.cebitec.mgx.gui.mapping.viewer.positions.panel.BasePanelFactory;
 import java.awt.BorderLayout;
-import java.awt.GridBagConstraints;
 import java.util.concurrent.ExecutionException;
 import javax.swing.JPanel;
 import org.openide.awt.ActionID;
@@ -35,25 +35,20 @@ public final class TopComponentViewer extends TopComponent {
 
     private MGXMaster currentMaster = null;
     private final Lookup.Result<MGXMaster> mgxMasterResult;
-    private Reference reference;
-    private Mapping mapping;
-    private static TopComponentViewer instance;
-    
-    public TopComponentViewer(Reference reference, Mapping mapping) {
-        this.reference = reference;
-        this.mapping = mapping;
-        instance = this;
+    private final MappingCtx ctx;
+
+    public TopComponentViewer(MappingCtx ctx) {
+        this.ctx = ctx;
         mgxMasterResult = Utilities.actionsGlobalContext().lookupResult(MGXMaster.class);
         setName(Bundle.CTL_TopComponentViewer());
     }
 
-    private void createView() throws InterruptedException, ExecutionException {
-        BasePanelFactory factory = new BasePanelFactory(reference, currentMaster);
+    private void createView() {
+        BasePanelFactory factory = new BasePanelFactory(ctx);
         setLayout(new BorderLayout());
-        GridBagConstraints c = new GridBagConstraints();
 
         ReferenceBasePanel refBasePanel = factory.getGenomeViewerBasePanel();
-        ReadsBasePanel readsBasePanel = factory.getReadViewerBasePanel(mapping);
+        ReadsBasePanel readsBasePanel = factory.getReadViewerBasePanel(ctx);
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
         panel.add(refBasePanel, BorderLayout.NORTH);
@@ -95,11 +90,7 @@ public final class TopComponentViewer extends TopComponent {
     @Override
     public void componentOpened() {
         loadMGXMaster();
-        try {
-            this.createView();
-        } catch (InterruptedException | ExecutionException ex) {
-            Exceptions.printStackTrace(ex);
-        }
+        createView();
     }
 
     @Override
@@ -114,9 +105,5 @@ public final class TopComponentViewer extends TopComponent {
 
     void readProperties(java.util.Properties p) {
         String version = p.getProperty("version");
-    }
-
-    public static TopComponentViewer getInstance() {
-        return instance;
     }
 }

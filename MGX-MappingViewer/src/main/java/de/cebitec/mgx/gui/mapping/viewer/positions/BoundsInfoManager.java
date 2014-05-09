@@ -1,7 +1,6 @@
 package de.cebitec.mgx.gui.mapping.viewer.positions;
 
-//import de.cebitec.vamp.databackend.dataObjects.PersistantReference;
-import de.cebitec.mgx.gui.mapping.sequences.ReferenceHolder;
+import de.cebitec.mgx.gui.datamodel.Reference;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,12 +13,12 @@ public class BoundsInfoManager implements AdjustmentPanelListenerI {
 
     private int currentHorizontalPosition;
     private int zoomfactor;
-    private ReferenceHolder currentRefGen;
+    private Reference reference;
     private List<LogicalBoundsListener> boundListeners;
     private List<SynchronousNavigatorI> syncedNavigators;
 
-    public BoundsInfoManager(ReferenceHolder refGen) {
-        this.currentRefGen = refGen;
+    public BoundsInfoManager(Reference refGen) {
+        this.reference = refGen;
         this.boundListeners = new ArrayList();
         this.syncedNavigators = new ArrayList();
         this.zoomfactor = 1;
@@ -85,7 +84,7 @@ public class BoundsInfoManager implements AdjustmentPanelListenerI {
     private BoundsInfo computeBounds(Dimension d) {
         int logWidth = (int) (d.getWidth() * 0.1 * zoomfactor);
 
-        BoundsInfo bounds = new BoundsInfo(1, currentRefGen.getRefLength(), currentHorizontalPosition, zoomfactor, logWidth);
+        BoundsInfo bounds = new BoundsInfo(1, reference.getLength(), currentHorizontalPosition, zoomfactor, logWidth);
         return bounds;
     }
 

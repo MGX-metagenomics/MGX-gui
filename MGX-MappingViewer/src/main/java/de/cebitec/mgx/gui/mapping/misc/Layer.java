@@ -7,6 +7,7 @@ package de.cebitec.mgx.gui.mapping.misc;
 import de.cebitec.mgx.gui.mapping.sequences.JMappedSequence;
 import de.cebitec.mgx.gui.mapping.sequences.MappedSequenceHolder;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -15,8 +16,8 @@ import java.util.ArrayList;
 public class Layer {
     private int horizontalEnd = 0;
     private int verticalPosition = 0;
-    private ArrayList<MappedSequenceHolder> sequences;
-    private ArrayList<JMappedSequence> jComponents;
+    private List<MappedSequenceHolder> sequences;
+    private List<JMappedSequence> jComponents;
 
     public Layer(int verticalPosition) {
         this.verticalPosition = this.verticalPosition + verticalPosition;
@@ -24,11 +25,11 @@ public class Layer {
         this.jComponents = new ArrayList<>();
     }
 
-    public ArrayList<JMappedSequence> getJComponents() {
+    public List<JMappedSequence> getJComponents() {
         return jComponents;
     }
 
-    public void setJComponents(ArrayList<JMappedSequence> jComponents) {
+    public void setJComponents(List<JMappedSequence> jComponents) {
         this.jComponents = jComponents;
     }
 
@@ -36,7 +37,7 @@ public class Layer {
         this.jComponents.add(jSequence);
     }
 
-    public ArrayList<MappedSequenceHolder> getSequences() {
+    public List<MappedSequenceHolder> getSequences() {
         return sequences;
     }
 
@@ -44,7 +45,7 @@ public class Layer {
         this.sequences.add(sequence);
     }
 
-    public void setSequences(ArrayList<MappedSequenceHolder> sequences) {
+    public void setSequences(List<MappedSequenceHolder> sequences) {
         this.sequences = sequences;
     }
 

@@ -1,14 +1,12 @@
 package de.cebitec.mgx.gui.mapping.viewer;
 
 import de.cebitec.mgx.gui.mapping.misc.ColorProperties;
-import de.cebitec.mgx.gui.mapping.sequences.ReferenceHolder;
-import de.cebitec.mgx.gui.mapping.sequences.RegionHolder;
 import de.cebitec.mgx.gui.mapping.sequences.JRegion;
 import de.cebitec.mgx.gui.datamodel.Region;
+import de.cebitec.mgx.gui.mapping.MappingCtx;
 import de.cebitec.mgx.gui.mapping.viewer.positions.BoundsInfoManager;
 import de.cebitec.mgx.gui.mapping.viewer.positions.PaintingAreaInfo;
 import de.cebitec.mgx.gui.mapping.viewer.positions.panel.SequenceBar;
-import de.cebitec.mgx.gui.mapping.loader.Loader;
 import de.cebitec.mgx.gui.mapping.viewer.positions.panel.ReferenceBasePanel;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -26,38 +24,37 @@ import org.netbeans.api.progress.ProgressHandle;
 public class ReferenceViewer extends AbstractViewer<Region> {
 
     private final static long serialVersionUID = 7964236;
-    private static int VIEWER_HEIGHT = 250;
-    private static int FRAMEHEIGHT = 20;
-    private static int LABEL_HEIGHT = 3;
-    private ArrayList<JRegion> features;
-    private ArrayList<Region> regionList;
-    private SequenceBar seqBar;
+    private static final int VIEWER_HEIGHT = 250;
+    private static final int FRAMEHEIGHT = 20;
+    private static final int LABEL_HEIGHT = 3;
+    private final List<JRegion> features;
+    private List<Region> regionList;
+    private final SequenceBar seqBar;
     private ProgressHandle ph;
     private boolean isRunning = false;
+    private final MappingCtx ctx;
 
     /**
      * Creates a new reference viewer.
      *
      * @param boundsInfoManager the global bounds info manager
      * @param basePanel the base panel
-     * @param referenceHolder the persistant reference, which is always
-     * accessible through the getReference method in any abstract viewer.
      */
-    public ReferenceViewer(BoundsInfoManager boundsInfoManager, ReferenceBasePanel basePanel, ReferenceHolder referenceHolder, Loader loader) {
-        super(boundsInfoManager, basePanel, referenceHolder, loader);
-        this.features = new ArrayList();
-        this.seqBar = new SequenceBar(this, referenceHolder);
-        super.centerSeqBar = true;
+    public ReferenceViewer(MappingCtx ctx, BoundsInfoManager boundsInfoManager, ReferenceBasePanel basePanel) {
+        super(boundsInfoManager, basePanel);
+        this.ctx = ctx;
+        this.features = new ArrayList<>();
+        this.seqBar = new SequenceBar(this, ctx);
+        centerSeqBar = true;
         this.updatePhysicalBounds();
-        regionList = new ArrayList();
-        this.regionList = new ArrayList<>();
+        regionList = new ArrayList<>();
         this.setViewerSize();
     }
 
     @Override
     public void close() {
+        features.clear();
         super.close();
-        this.features.clear();
     }
 
     @Override
@@ -78,33 +75,13 @@ public class ReferenceViewer extends AbstractViewer<Region> {
      * Creates all feature components to display in this viewer.
      */
     protected void createSequences() {
-        this.add(this.seqBar);
-        List<RegionHolder> featureList = new ArrayList<>();
-        boolean isForward = true;
+        this.add(seqBar);
         int start = 0;
         int stop = 0;
         for (Region reg : regionList) {
-
-            if (reg.getStart() > reg.getStop()) {
-                start = reg.getStop();
-                stop = reg.getStart();
-                isForward = false;
-            } else {
-                start = reg.getStart();
-                stop = reg.getStop();
-                isForward = true;
-            }
-
-            RegionHolder feature = new RegionHolder(reg.getId(), start, stop, isForward, reg.getName());
-            featureList.add(feature);
+            addFeatureComponent(reg);
         }
-
-        for (RegionHolder feature : featureList) {
-            feature.setFrame(this.determineFrame(feature));
-            this.addFeatureComponent(feature);
-        }
-
-        for (JRegion jFeature : this.features) {
+        for (JRegion jFeature : features) {
             this.add(jFeature);
         }
     }
@@ -115,21 +92,21 @@ public class ReferenceViewer extends AbstractViewer<Region> {
      *
      * @param feature the feature to add to the viewer.
      */
-    private void addFeatureComponent(RegionHolder feature) {
-        int frame = feature.getFrame();
+    private void addFeatureComponent(Region r) {
+        int frame = r.getFrame();
         int yCoord = this.determineYFromFrame(frame);
         PaintingAreaInfo bounds = getPaintingAreaInfo();
 
         byte border = JRegion.BORDER_NONE;
         // get left boundary of the feature
-        double phyStart = this.getPhysBoundariesForLogPos(feature.getStart()).getLeftPhysBound();
+        double phyStart = this.getPhysBoundariesForLogPos(r.getStart()).getLeftPhysBound();
         if (phyStart < bounds.getPhyLeft()) {
             phyStart = bounds.getPhyLeft();
             border = JRegion.BORDER_LEFT;
         }
 
         // get right boundary of the feature
-        double phyStop = this.getPhysBoundariesForLogPos(feature.getStop()).getRightPhysBound();
+        double phyStop = this.getPhysBoundariesForLogPos(r.getStop()).getRightPhysBound();
         if (phyStop > bounds.getPhyRight()) {
             phyStop = bounds.getPhyRight();
             border = border == JRegion.BORDER_LEFT ? JRegion.BORDER_BOTH : JRegion.BORDER_RIGHT;
@@ -142,7 +119,7 @@ public class ReferenceViewer extends AbstractViewer<Region> {
             length = 3;
         }
 
-        JRegion jFeature = new JRegion(feature, length, this, border);
+        JRegion jFeature = new JRegion(r, length, this, border);
         int yFrom = yCoord - (jFeature.getHeight() / 2);
         jFeature.setBounds((int) phyStart, yFrom, jFeature.getSize().width, jFeature.getHeight());
         this.features.add(jFeature);
@@ -160,21 +137,6 @@ public class ReferenceViewer extends AbstractViewer<Region> {
             result -= offset;
         }
         return result;
-    }
-
-    /**
-     * @param feature feature whose frame has to be determined
-     * @return 1, 2, 3, -1, -2, -3 depending on the reading frame of the feature
-     */
-    public int determineFrame(RegionHolder feature) {
-        int frame;
-
-        if (feature.isFwdStrand()) { // forward strand
-            frame = (feature.getStart() - 1) % 3 + 1;
-        } else { // reverse strand. start <= stop ALWAYS! so use stop for reverse strand
-            frame = (feature.getStop() - 1) % 3 - 3;
-        }
-        return frame;
     }
 
     @Override

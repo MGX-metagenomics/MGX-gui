@@ -5,6 +5,7 @@
 package de.cebitec.mgx.gui.mapping.misc;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -12,7 +13,7 @@ import java.util.ArrayList;
  */
 public class IdentityLayer {
 
-    private ArrayList<Layer> layers;
+    private List<Layer> layers;
     private int verticalPosition;
 
     public IdentityLayer() {
@@ -27,11 +28,11 @@ public class IdentityLayer {
         this.verticalPosition = verticalPosition;
     }
 
-    public ArrayList<Layer> getLayers() {
+    public List<Layer> getLayers() {
         return layers;
     }
 
-    public void setLayers(ArrayList<Layer> layers) {
+    public void setLayers(List<Layer> layers) {
         this.layers = layers;
     }
 

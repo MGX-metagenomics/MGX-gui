@@ -1,6 +1,5 @@
 package de.cebitec.mgx.gui.mapping.viewer;
 
-import de.cebitec.mgx.gui.mapping.sequences.ReferenceHolder;
 import de.cebitec.mgx.gui.mapping.viewer.positions.MousePositionListenerI;
 import de.cebitec.mgx.gui.mapping.viewer.positions.BoundsInfoManager;
 import de.cebitec.mgx.gui.mapping.viewer.positions.LogicalBoundsListener;
@@ -9,9 +8,7 @@ import de.cebitec.mgx.gui.mapping.viewer.positions.panel.MenuLabel;
 import de.cebitec.mgx.gui.mapping.viewer.positions.PaintingAreaInfo;
 import de.cebitec.mgx.gui.mapping.viewer.positions.PhysicalBaseBounds;
 import de.cebitec.mgx.gui.mapping.viewer.positions.panel.IBasePanel;
-import de.cebitec.mgx.gui.mapping.loader.Loader;
 import de.cebitec.mgx.gui.mapping.misc.ColorProperties;
-import de.cebitec.mgx.gui.mapping.misc.ICurrentTime;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -36,7 +33,7 @@ import javax.swing.*;
  *
  * @author ddoppmeier, rhilker
  */
-public abstract class AbstractViewer<Sequence> extends JPanel implements ICurrentTime, LogicalBoundsListener, MousePositionListenerI {
+public abstract class AbstractViewer<Sequence> extends JPanel implements LogicalBoundsListener, MousePositionListenerI {
 
     private static final long serialVersionUID = 1L;
     // logical coordinates for genome interval
@@ -57,7 +54,6 @@ public abstract class AbstractViewer<Sequence> extends JPanel implements ICurren
     private IBasePanel basePanel;
     protected boolean centerSeqBar;
     public PaintingAreaInfo paintingAreaInfo;
-    private ReferenceHolder reference;
     private boolean isInMaxZoomLevel;
     private boolean inDrawingMode;
     private MenuLabel legendLabel;
@@ -67,22 +63,18 @@ public abstract class AbstractViewer<Sequence> extends JPanel implements ICurren
     private JPanel options;
     private boolean hasOptions;
     private boolean pAInfoIsAviable = false;
-    private long currentTime = System.nanoTime();
     public static final String PROP_MOUSEPOSITION_CHANGED = "mousePos changed";
     public static final String PROP_MOUSEOVER_REQUESTED = "mouseOver requested";
     private JScrollBar scrollBar; /* Scrollbar, which should adapt, when component is repainted. */
 
     private boolean centerScrollBar = false;
-    private Loader loader;
 
-    public AbstractViewer(BoundsInfoManager boundsManager, IBasePanel basePanel, ReferenceHolder reference, Loader loader) {
+    public AbstractViewer(BoundsInfoManager boundsManager, IBasePanel basePanel) {
         super();
         this.setLayout(null);
         this.setBackground(ColorProperties.BACKGROUND_COLOR);
         this.boundsManager = boundsManager;
         this.basePanel = basePanel;
-        this.reference = reference;
-        this.loader = loader;
 
         // per default, show every available detail
         isInMaxZoomLevel = true;
@@ -355,10 +347,8 @@ public abstract class AbstractViewer<Sequence> extends JPanel implements ICurren
             //mouse on the right side of currentLog
             if (currentLog < pos) {
                 pos = (int) (((double) physPos - horizontalMargin) / correlationFactor + leftbound);
-//                Logger.getLogger(this.getClass().getName()).log(Level.INFO, "rightside plus " + pos);
             } else {
                 pos = (int) (((double) physPos - horizontalMargin) / correlationFactor + rightBound);
-//                Logger.getLogger(this.getClass().getName()).log(Level.INFO, "leftside plus " + pos);
             }
 
         }
@@ -411,7 +401,7 @@ public abstract class AbstractViewer<Sequence> extends JPanel implements ICurren
                 this.setIsInMaxZoomLevel(false);
             }
             this.boundsChangedHook();
-            this.loader.startWorker(this);
+            //loader.startWorker(this);
             this.repaint();
         }
 
@@ -582,10 +572,6 @@ public abstract class AbstractViewer<Sequence> extends JPanel implements ICurren
         this.inDrawingMode = inDrawingMode;
     }
 
-    public ReferenceHolder getReference() {
-        return this.reference;
-    }
-
     public MenuLabel getLegendLabel() {
         return this.legendLabel;
     }
@@ -663,15 +649,15 @@ public abstract class AbstractViewer<Sequence> extends JPanel implements ICurren
         afterLoadingSequences(iter);
     }
 
-    @Override
-    public long getCurrentTime() {
-        return currentTime;
-    }
-
-    @Override
-    public void setCurrentTime(long currentTime) {
-        this.currentTime = currentTime;
-    }
+//    @Override
+//    public long getCurrentTime() {
+//        return currentTime;
+//    }
+//
+//    @Override
+//    public void setCurrentTime(long currentTime) {
+//        this.currentTime = currentTime;
+//    }
 
     /**
      * Sets the property for centering the scrollbar around the center (sequence

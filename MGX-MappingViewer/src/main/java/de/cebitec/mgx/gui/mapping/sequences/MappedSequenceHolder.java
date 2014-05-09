@@ -8,10 +8,8 @@ package de.cebitec.mgx.gui.mapping.sequences;
  *
  * @author belmann
  */
-public class MappedSequenceHolder implements ISequenceHolder {
+public class MappedSequenceHolder extends ISequenceHolder {
 
-    private int start;
-    private int stop;
     private int layer = 0;
     private int identity = -1;
 
@@ -31,27 +29,8 @@ public class MappedSequenceHolder implements ISequenceHolder {
         this.layer = layer;
     }
 
-    @Override
-    public int getStart() {
-        return start;
-    }
-
-    public void setStart(int start) {
-        this.start = start;
-    }
-
-    @Override
-    public int getStop() {
-        return stop;
-    }
-
-    public void setStop(int stop) {
-        this.stop = stop;
-    }
-
     public MappedSequenceHolder(int lStart, int lStop, int lIdentity) {
-        this.start = lStart;
+        super(lStart, lStop);
         this.identity = lIdentity;
-        this.stop = lStop;
     }
 }

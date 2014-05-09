@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.mapping.sequences;
 
+import de.cebitec.mgx.gui.datamodel.Region;
 import de.cebitec.mgx.gui.mapping.viewer.ReferenceViewer;
 import de.cebitec.mgx.gui.mapping.misc.ColorProperties;
 import java.awt.Color;
@@ -23,7 +24,7 @@ import javax.swing.JPopupMenu;
 public class JRegion extends JComponent {
 
     private static final long serialVersionUID = 347348234;
-    private RegionHolder feature;
+    private Region feature;
     private Dimension size;
     public static final int NORMAL_HEIGHT = 12;
     public static final int PARENT_FEATURE_HEIGHT = 8;
@@ -46,7 +47,7 @@ public class JRegion extends JComponent {
      * @param border value among JFeature.BORDER_NONE, JFeature.BORDER_LEFT,
      * JFeature.BORDER_RIGHT, JFeature.BORDER_BOTH
      */
-    public JRegion(final RegionHolder feature, double length, final ReferenceViewer refViewer, short border) {
+    public JRegion(final Region feature, double length, final ReferenceViewer refViewer, short border) {
         super();
         this.feature = feature;
         this.height = NORMAL_HEIGHT;
@@ -60,7 +61,7 @@ public class JRegion extends JComponent {
         this.setToolTipText(createToolTipText());
     }
 
-    public RegionHolder getPersistantFeature() {
+    public Region getPersistantFeature() {
         return feature;
     }
 

@@ -8,10 +8,10 @@ package de.cebitec.mgx.gui.mapping.sequences;
 public final class SequenceUtils {
 
 
-    /** Indicates that something is located on the forward strand (Fwd). */
-    public static final String STRAND_FWD_STRING = "Fwd";
-    /** Indicates that something is located on the reverse strand (Rev). */
-    public static final String STRAND_REV_STRING = "Rev";
+//    /** Indicates that something is located on the forward strand (Fwd). */
+//    public static final String STRAND_FWD_STRING = "Fwd";
+//    /** Indicates that something is located on the reverse strand (Rev). */
+//    public static final String STRAND_REV_STRING = "Rev";
 
     /**
      * Reverses a string.

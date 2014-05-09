@@ -1,17 +1,15 @@
 package de.cebitec.mgx.gui.mapping.viewer.positions.panel;
 
 import de.cebitec.mgx.gui.mapping.viewer.positions.AdjustmentPanel;
-import de.cebitec.mgx.gui.mapping.sequences.ReferenceHolder;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.Mapping;
 import de.cebitec.mgx.gui.datamodel.Reference;
+import de.cebitec.mgx.gui.mapping.MappingCtx;
 import de.cebitec.mgx.gui.mapping.viewer.positions.BoundsInfo;
 import de.cebitec.mgx.gui.mapping.viewer.positions.BoundsInfoManager;
 import de.cebitec.mgx.gui.mapping.viewer.AbstractViewer;
 import de.cebitec.mgx.gui.mapping.viewer.ReadsViewer;
 import de.cebitec.mgx.gui.mapping.viewer.ReferenceViewer;
-import de.cebitec.mgx.gui.mapping.loader.ReadsLoader;
-import de.cebitec.mgx.gui.mapping.loader.RegionLoader;
 import de.cebitec.mgx.gui.mapping.misc.ColorProperties;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
@@ -28,13 +26,11 @@ import org.openide.util.Exceptions;
 public class BasePanelFactory {
 
     private final BoundsInfoManager boundsManager;
-    private final ReferenceHolder refHolder;
-    private final MGXMaster master;
+    private final MappingCtx ctx;
 
-    public BasePanelFactory(Reference reference, MGXMaster master) {
-        this.master = master;
-        this.refHolder = new ReferenceHolder(reference, this.loadReferenceSequence(master, reference));
-        this.boundsManager = new BoundsInfoManager(refHolder);
+    public BasePanelFactory(MappingCtx ctx) {
+        this.ctx = ctx;
+        this.boundsManager = new BoundsInfoManager(ctx.getReference());
     }
 
     public ReferenceBasePanel getGenomeViewerBasePanel() {
@@ -42,7 +38,7 @@ public class BasePanelFactory {
         ReferenceBasePanel b = new ReferenceBasePanel(boundsManager);
 
         // create viewer
-        ReferenceViewer genomeViewer = new ReferenceViewer(boundsManager, b, refHolder, new RegionLoader(master, refHolder.getReference()));
+        ReferenceViewer genomeViewer = new ReferenceViewer(ctx, boundsManager, b);
         b.getBoundsManager().addBoundsListener(genomeViewer);
 
         // add panels to basepanel
@@ -53,13 +49,13 @@ public class BasePanelFactory {
         return b;
     }
 
-    public ReadsBasePanel getReadViewerBasePanel(final Mapping mapping) throws InterruptedException, ExecutionException {
+    public ReadsBasePanel getReadViewerBasePanel(final MappingCtx ctx) {
 
         ReadsBasePanel readsBasePanel = new ReadsBasePanel(boundsManager);
 
-        UUID uuid = loadMapping(mapping);
+        UUID uuid = loadMapping(ctx.getMapping());
 
-        ReadsViewer readsViewer = new ReadsViewer(boundsManager, readsBasePanel, refHolder, new ReadsLoader(master, refHolder.getReference(), uuid));
+        ReadsViewer readsViewer = new ReadsViewer(ctx, boundsManager, readsBasePanel);
 
         JPanel genomePanelLegend = this.getGenomeViewerLegend(readsViewer);
         readsViewer.setupLegend(new MenuLabel(genomePanelLegend, MenuLabel.TITLE_LEGEND), genomePanelLegend);
@@ -75,7 +71,7 @@ public class BasePanelFactory {
     private AdjustmentPanel createAdjustmentPanel(boolean hasScrollbar, boolean hasSlider, int sliderMax) {
         // create control panel
         BoundsInfo bounds = boundsManager.getUpdatedBoundsInfo(new Dimension(10, 10));
-        AdjustmentPanel control = new AdjustmentPanel(1, refHolder.getRefLength(),
+        AdjustmentPanel control = new AdjustmentPanel(1, ctx.getReference().getLength(),
                 bounds.getCurrentLogPos(), bounds.getZoomValue(), sliderMax, hasScrollbar, hasSlider);
         control.addAdjustmentListener(boundsManager);
         boundsManager.addSynchronousNavigator(control);
@@ -87,7 +83,7 @@ public class BasePanelFactory {
         SwingWorker<UUID, Void> worker = new SwingWorker<UUID, Void>() {
             @Override
             protected UUID doInBackground() throws Exception {
-                final UUID uuid = master.Mapping().openMapping(mapping.getId());
+                final UUID uuid = ctx.getMaster().Mapping().openMapping(mapping.getId());
                 return uuid;
             }
         };

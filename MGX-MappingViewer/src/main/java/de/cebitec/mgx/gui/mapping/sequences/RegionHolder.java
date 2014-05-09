@@ -6,33 +6,21 @@ package de.cebitec.mgx.gui.mapping.sequences;
  *
  * @author ddoppmeier, rhilker
  */
-public class RegionHolder implements ISequenceHolder, Comparable<RegionHolder> {
+public class RegionHolder extends ISequenceHolder {
 
-    private long id;
+    private final long id;
     private String name = "";
-    private int start;
-    private int stop;
-    private boolean isFwdStrand;
     private int frame;
 
     /**
      * @param id id of the feature in db
-     * @param parentIds The string containing all ids of the parents of this
-     * feature separated by ";", if it has at least one. If not this string is
-     * empty.
      * @param start start position
      * @param stop stop position
-     * @param isFwdStrand SequenceUtils.STRAND_FWD for featues on forward and
-     * SequenceUtils.STRAND_REV on reverse strand
-     * @param locus locus information
      * @param regionName name of the feature, if it exists (e.g. "dnaA")
      */
-    public RegionHolder(long id,
-            int start, int stop, boolean isFwdStrand, String regionName) {
+    public RegionHolder(long id, int start, int stop, String regionName) {
+        super(start, stop);
         this.id = id;
-        this.start = start;
-        this.stop = stop;
-        this.isFwdStrand = isFwdStrand;
         if (regionName != null) {
             this.name = regionName;
         }
@@ -52,31 +40,13 @@ public class RegionHolder implements ISequenceHolder, Comparable<RegionHolder> {
         return name;
     }
 
-    @Override
-    public int getStart() {
-        return start;
-    }
-
-    @Override
-    public int getStop() {
-        return stop;
-    }
-
     /**
      * Returns if the feature is located on the fwd or rev strand.
      *
      * @return true for featues on forward and false on reverse strand
      */
     public boolean isFwdStrand() {
-        return isFwdStrand;
-    }
-
-    /**
-     * @return SequenceUtils.STRAND_FWD_STRING ("Fwd") or
-     * SequenceUtils.STRAND_REV_STRING ("Rev")
-     */
-    public String isFwdStrandString() {
-        return isFwdStrand ? SequenceUtils.STRAND_FWD_STRING : SequenceUtils.STRAND_REV_STRING;
+        return getStart() < getStop();
     }
 
     /**
@@ -95,7 +65,7 @@ public class RegionHolder implements ISequenceHolder, Comparable<RegionHolder> {
         } else if (this.name != null && !this.name.isEmpty()) {
             returnString = this.name;
         } else {
-            returnString = "Feature with start: " + this.start + ", stop: " + this.stop;
+            returnString = "Feature with start: " + getStart() + ", stop: " + getStop();
         }
         return returnString;
     }
@@ -113,25 +83,4 @@ public class RegionHolder implements ISequenceHolder, Comparable<RegionHolder> {
     public int getFrame() {
         return frame;
     }
-
-    /**
-     * Compares two PersistantFeature based on their start position. '0' is
-     * returned for equal start positions, 1, if the start position of the other
-     * is larger and -1, if the start position of this mapping is larger.
-     *
-     * @param feature mapping to compare to this mapping
-     * @return '0' for equal start positions, 1, if the start position of the
-     * other is larger and -1, if the start position of this mapping is larger.
-     */
-    @Override
-    public int compareTo(RegionHolder feature) {
-        int ret = 0;
-        if (this.start < feature.getStart()) {
-            ret = -1;
-        } else if (this.start > feature.getStart()) {
-            ret = 1;
-        }
-        return ret;
-    }
-
 }

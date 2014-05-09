@@ -1,34 +1,37 @@
 package de.cebitec.mgx.gui.mapping.viewer.positions.panel;
 
+import de.cebitec.mgx.gui.datamodel.Reference;
+import de.cebitec.mgx.gui.mapping.MappingCtx;
 import de.cebitec.mgx.gui.mapping.viewer.positions.PaintingAreaInfo;
 import de.cebitec.mgx.gui.mapping.viewer.positions.PhysicalBaseBounds;
 import de.cebitec.mgx.gui.mapping.viewer.AbstractViewer;
 import de.cebitec.mgx.gui.mapping.viewer.positions.BoundsInfoManager;
 import de.cebitec.mgx.gui.mapping.viewer.positions.BoundsInfo;
 import de.cebitec.mgx.gui.mapping.misc.ColorProperties;
-import de.cebitec.mgx.gui.mapping.sequences.ReferenceHolder;
 import de.cebitec.mgx.gui.mapping.sequences.SequenceUtils;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.Line2D;
+import java.util.concurrent.ExecutionException;
 import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
+import org.openide.util.Exceptions;
 //import de.cebitec.mgx.gui.datamodel.Region;
+
 /**
  * @author ddoppmeier, rhilker
  *
- * A sequence bar is used to display the sequence of a reference genome within another
- * AbstractViewer. Further, it contains several options for highlighting areas,
- * start or stop codons and patterns.
+ * A sequence bar is used to display the sequence of a reference genome within
+ * another AbstractViewer. Further, it contains several options for highlighting
+ * areas, start or stop codons and patterns.
  */
-public class SequenceBar extends JComponent{
+public class SequenceBar extends JComponent {
 
     private static final long serialVersionUID = 23446398;
-    private int height = 50;
-    private AbstractViewer parentViewer;
-    private ReferenceHolder refGen;
+    private final int height = 50;
+    private final AbstractViewer parentViewer;
     private Font font;
     private FontMetrics metrics;
     private boolean printSeq;
@@ -46,20 +49,22 @@ public class SequenceBar extends JComponent{
 //    private HighlightAreaListener highlightListener;
 //    private RegionManager regionManager;
     private byte frameCurrFeature;
+    private final MappingCtx ctx;
 
     /**
      * A sequence bar is used to display the sequence of a reference genome
      * within another AbstractViewer. Further, it contains several options for
      * highlighting areas, start or stop codons and patterns.
+     *
      * @param parentViewer the viewer containing the sequence bar
      * @param refGen the reference genome object
      */
-    public SequenceBar(AbstractViewer parentViewer, ReferenceHolder refGen) {
+    public SequenceBar(AbstractViewer parentViewer, MappingCtx ctx) {
         super();
+        this.ctx = ctx;
         this.parentViewer = parentViewer;
         this.setSize(new Dimension(0, this.height));
         this.font = new Font(Font.MONOSPACED, Font.PLAIN, 10);
-        this.refGen = refGen;
         this.baseLineY = 30;
         this.offsetY = 10;
         this.largeBar = 11;
@@ -80,7 +85,6 @@ public class SequenceBar extends JComponent{
 //        this.addMouseListener(highlightListener);
 //        this.addMouseMotionListener(highlightListener);
     }
-
 
     private void initMouseListener() {
         this.addMouseListener(new MouseListener() {
@@ -117,20 +121,12 @@ public class SequenceBar extends JComponent{
         });
     }
 
-//    public void setGenomeGapManager(GenomeGapManager gapManager) {
-//        this.gapManager = gapManager;
-//    }
-
     /**
      * Should be called, when the bounds have been changed. Updates the content
      * of the sequence bar.
      */
     public void boundsChanged() {
         this.adjustMarkingInterval();
-//        this.regionManager.findCodons();
-//        this.regionManager.findPattern();
-//        this.regionManager.showCdsRegions();
-//        this.highlightListener.boundsChangedHook();
     }
 
     @Override
@@ -169,6 +165,7 @@ public class SequenceBar extends JComponent{
 
     /**
      * Draw sequence, if current zoom allows it.
+     *
      * @param g Graphics2D object to print on
      */
     private void drawSequence(Graphics2D g) {
@@ -195,9 +192,11 @@ public class SequenceBar extends JComponent{
 
     /**
      * Draw base of the sequence.
+     *
      * @param g Graphics2D object to paint on
-     * @param pos position of the base in the reference genome starting with 1 (not 0!).
-     *      To get the correct base 1 is substracted from pos within this method.
+     * @param pos position of the base in the reference genome starting with 1
+     * (not 0!). To get the correct base 1 is substracted from pos within this
+     * method.
      */
     private void drawChar(Graphics2D g, int pos) {
         // pos depents on slider value and cannot be smaller 1
@@ -216,16 +215,22 @@ public class SequenceBar extends JComponent{
 //            }
 //            physX += numOfGaps * bounds.getPhysWidth();
 //        }
-        String base = refGen.getSequence().substring(basePosition, basePosition + 1);
+        String base = "";
+        try {
+            base = ctx.getSequence(basePosition, basePosition + 1);
+        } catch (ExecutionException ex) {
+            Exceptions.printStackTrace(ex);
+        }
         int offset = metrics.stringWidth(base) / 2;
         /*BaseBackground b = new BaseBackground(12,5, base);
-        b.setBounds((int)physX-offset,baseLineY-10,b.getSize().width, b.getSize().height);
-        this.add(b);*/
+         b.setBounds((int)physX-offset,baseLineY-10,b.getSize().width, b.getSize().height);
+         this.add(b);*/
         g.drawString(base, (float) physX - offset, (float) baseLineY - offsetY);
     }
 
     /**
      * draws the a character of the reverse strand of the sequence.
+     *
      * @param g the graphics object to paint on
      * @param pos position of the base in the reference genome
      */
@@ -236,19 +241,12 @@ public class SequenceBar extends JComponent{
 
         PhysicalBaseBounds bounds = parentViewer.getPhysBoundariesForLogPos(pos);
         double physX = bounds.getPhyMiddle();
-//        if (gapManager != null && gapManager.hasGapAt(pos)) {
-//            int numOfGaps = gapManager.getNumOfGapsAt(pos);
-//            for (int i = 0; i < numOfGaps; i++) {
-//                int tmp = (int) (physX + i * bounds.getPhysWidth());
-//                String base = "-";
-//                int offset = metrics.stringWidth(base) / 2;
-//                g.drawString(base,
-//                        (float) tmp - offset,
-//                        (float) baseLineY + offsetY);
-//            }
-//            physX += numOfGaps * bounds.getPhysWidth();
-//        }
-        String base = refGen.getSequence().substring(basePosition, basePosition + 1);
+        String base = "";
+        try {
+            base = ctx.getSequence(basePosition, basePosition + 1);
+        } catch (ExecutionException ex) {
+            Exceptions.printStackTrace(ex);
+        }
         String revBase = SequenceUtils.complementDNA(base);
         int offset = metrics.stringWidth(revBase) / 2;
         g.drawString(revBase,
@@ -258,6 +256,7 @@ public class SequenceBar extends JComponent{
 
     /**
      * draw a thick vertical line with length largeBar
+     *
      * @param g Graphics2D object to paint on
      * @param logPos logical position, that should be marked
      */
@@ -270,7 +269,7 @@ public class SequenceBar extends JComponent{
 //        }
         g.draw(
                 new Line2D.Double(
-                physX, baseLineY - largeBar / 2, physX, baseLineY + largeBar / 2));
+                        physX, baseLineY - largeBar / 2, physX, baseLineY + largeBar / 2));
 
         String label = getRulerLabel(logPos);
 
@@ -280,8 +279,10 @@ public class SequenceBar extends JComponent{
 
     /**
      * Return the label for a marking position
+     *
      * @param logPos the position that is intended to be marked
-     * @return the label used at that mark. 4000 is abbreviated by 4k, for example.
+     * @return the label used at that mark. 4000 is abbreviated by 4k, for
+     * example.
      */
     private String getRulerLabel(int logPos) {
         String label = null;
@@ -303,6 +304,7 @@ public class SequenceBar extends JComponent{
 
     /**
      * draw a thin vertical line with length smallBar
+     *
      * @param g Graphics2D object to paint on
      * @param logPos logical position, that should be marked
      */
@@ -355,6 +357,7 @@ public class SequenceBar extends JComponent{
 
     /**
      * Calculates which start codons should be highlighted and updates the gui.
+     *
      * @param i the index of the codon to update
      * @param isSelected true, if the codon should be selected
      */
@@ -364,6 +367,7 @@ public class SequenceBar extends JComponent{
 
     /**
      * Calculates which stop codons should be highlighted and updates the gui.
+     *
      * @param i the index of the codon to update
      * @param isSelected true, if the codon should be selected
      */
@@ -373,23 +377,23 @@ public class SequenceBar extends JComponent{
 
     /**
      * Returns if the codon with the index i is currently selected.
+     *
      * @param i the index of the codon
      * @return true, if the codon with the index i is currently selected
      */
 //    public boolean isStartCodonShown(final int i) {
 ////        return this.regionManager.isStartCodonShown(i);
 //    }
-
     /**
      * Detects the occurences of the given pattern in the currently shown
      * interval or the next occurence of the pattern in the genome.
+     *
      * @param pattern Pattern to search for
      * @return the next (closest) occurrence of the pattern
      */
 //    public int showPattern(String pattern) {
 ////        return this.regionManager.showPattern(pattern);
 //    }
-
     /**
      * Identifies the codons according to the currently selected codons to show
      * and adds JRegions for highlighting into the sequence bar.
@@ -399,22 +403,6 @@ public class SequenceBar extends JComponent{
     }
 
     /**
-     * Identifies the currently in this object stored pattern in the genome sequence.
-     */
-//    public void findPattern() {
-//        this.regionManager.findPattern();
-//    }
-
-    /**
-     * Identifies next (closest) occurrence from either forward or reverse
-     * strand of a pattern in the current reference genome.
-     * @return the position of the next occurrence of the pattern
-     */
-//    public int findNextPatternOccurrence() {
-//        return this.regionManager.findNextPatternOccurrence();
-//    }
-
-    /**
      * @return The frame of the current feature
      */
     public byte getFrameCurrFeature() {
@@ -422,9 +410,10 @@ public class SequenceBar extends JComponent{
     }
 
     /**
-     * Paints the background of each base with a base specific color.
-     * Before calling this method make sure to call "removeAll" on this sequence
-     * bar! Otherwise the colors accumulate.
+     * Paints the background of each base with a base specific color. Before
+     * calling this method make sure to call "removeAll" on this sequence bar!
+     * Otherwise the colors accumulate.
+     *
      * @param logX
      */
     public void paintBaseBackgroundColor(int logX) {
@@ -440,8 +429,12 @@ public class SequenceBar extends JComponent{
 //                physX += numOfGaps * bounds.getPhysWidth();
 //            }
 
-            String base = refGen.getSequence().substring(basePosition, basePosition + 1);
-
+            String base = "";
+            try {
+                base = ctx.getSequence(basePosition, basePosition + 1);
+            } catch (ExecutionException ex) {
+                Exceptions.printStackTrace(ex);
+            }
             if (base != null && metrics != null) {
                 int offset = metrics.stringWidth(base) / 2;
                 BaseBackground b = new BaseBackground(12, 12, base);
@@ -456,19 +449,12 @@ public class SequenceBar extends JComponent{
 
     /**
      * Sets the rectangle used for highlighting something in this sequence bar.
+     *
      * @param rect the rectangle to set
      */
     public void setHighlightRectangle(final Rectangle rect) {
         this.highlightRect = rect;
         this.repaint();
-    }
-
-    /**
-     * Returns the persistant reference used for this sequence bar.
-     * @return the persistant reference used for this sequence bar
-     */
-    public ReferenceHolder getPersistantReference() {
-        return this.refGen;
     }
 
     /**
@@ -498,7 +484,8 @@ public class SequenceBar extends JComponent{
 
     /**
      * @param pixelPos physical position (pixel) in the sequence bar sequence
-     * @return the physical pixel position converted into the logical sequence position.
+     * @return the physical pixel position converted into the logical sequence
+     * position.
      */
     public int getLogicalPosForPixel(int pixelPos) {
         return parentViewer.getLogicalPosForPixel(pixelPos);
@@ -519,8 +506,9 @@ public class SequenceBar extends JComponent{
     }
 
     /**
-     * This method is to be called, when a mouse listener associated to this component
-     * registered a mouse moved event.
+     * This method is to be called, when a mouse listener associated to this
+     * component registered a mouse moved event.
+     *
      * @param e the mouse event which triggered this call
      */
     public void updateMouseListeners(MouseEvent e) {
