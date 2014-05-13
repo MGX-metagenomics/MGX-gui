@@ -71,11 +71,7 @@ public class MappingCtx {
 
     public Set<Region> getRegions(int from, int to) throws ExecutionException {
         if (regCache == null) {
-            synchronized (this) {
-                if (regCache == null) {
-                    regCache = CacheFactory.createRegionCache((MGXMaster) ref.getMaster(), ref);
-                }
-            }
+            regCache = CacheFactory.createRegionCache((MGXMaster) ref.getMaster(), ref);
         }
         return regCache.get(from, to);
     }
