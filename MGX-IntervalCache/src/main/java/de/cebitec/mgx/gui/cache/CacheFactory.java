@@ -28,11 +28,11 @@ import java.util.logging.Logger;
 public class CacheFactory {
 
     public static Cache<String> createSequenceCache(final MGXMaster master, final Reference ref) {
-
+        final int refLength = ref.getLength() - 1;
         CacheLoader<Interval<String>, String> loader = new CacheLoader<Interval<String>, String>() {
             @Override
             public String load(Interval<String> k) {
-                return master.Reference().getSequence(ref, k.getFrom(), k.getTo());
+                return master.Reference().getSequence(ref, k.getFrom(), Math.min(k.getTo(), refLength));
             }
         };
 
@@ -44,10 +44,13 @@ public class CacheFactory {
 
     public static Cache<Set<Region>> createRegionCache(final MGXMaster master, final Reference ref) {
 
+        final int refLength = ref.getLength() - 1;
+
         CacheLoader<Interval<Set<Region>>, Set<Region>> loader = new CacheLoader<Interval<Set<Region>>, Set<Region>>() {
             @Override
             public Set<Region> load(Interval<Set<Region>> k) {
-                Iterator<Region> iter = master.Reference().byReferenceInterval(ref.getId(), k.getFrom(), k.getTo());
+                Logger.getLogger(getClass().getName()).log(Level.INFO, "server fetch " + k.getFrom() + " - " + k.getTo());
+                Iterator<Region> iter = master.Reference().byReferenceInterval(ref.getId(), k.getFrom(), Math.min(k.getTo(), refLength));
                 Set<Region> ret = new HashSet<>();
                 while (iter.hasNext()) {
                     ret.add(iter.next());
@@ -63,11 +66,11 @@ public class CacheFactory {
     }
 
     public static Cache<List<MappedSequence>> createMappedSequenceCache(final MGXMaster master, final Reference ref, final UUID uuid) {
-
+        final int refLength = ref.getLength() - 1;
         CacheLoader<Interval<List<MappedSequence>>, List<MappedSequence>> loader = new CacheLoader<Interval<List<MappedSequence>>, List<MappedSequence>>() {
             @Override
             public List<MappedSequence> load(Interval<List<MappedSequence>> k) {
-                Iterator<MappedSequence> iter = master.Mapping().byReferenceInterval(uuid, k.getFrom(), k.getTo());
+                Iterator<MappedSequence> iter = master.Mapping().byReferenceInterval(uuid, k.getFrom(), Math.min(k.getTo(), refLength));
                 List<MappedSequence> ret = new ArrayList<>();
                 while (iter.hasNext()) {
                     ret.add(iter.next());

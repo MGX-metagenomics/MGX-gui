@@ -44,10 +44,10 @@ public abstract class Cache<T> {
         assert to < ref.getLength();
 
         final int fromInterval = from / segmentSize;
-        final int toInterval = Math.min(fromInterval * segmentSize + getSegmentSize() - 1, getReference().getLength() - 1);
+        //final int toInterval = Math.min(fromInterval * segmentSize + getSegmentSize() - 1, getReference().getLength() - 1);
 
         return new Iterator<Interval<T>>() {
-            private Interval<T> cur = new Interval(Cache.this, fromInterval * segmentSize, Math.min(to, toInterval));
+            private Interval<T> cur = new Interval(Cache.this, fromInterval * segmentSize); //, Math.min(to, toInterval));
 
             @Override
             public boolean hasNext() {

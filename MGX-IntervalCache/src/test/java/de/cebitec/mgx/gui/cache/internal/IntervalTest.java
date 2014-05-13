@@ -57,9 +57,9 @@ public class IntervalTest {
         Cache<String> cache = CacheFactory.createSequenceCache(master, ref);
         assertNotNull(cache);
 
-        Interval<String> i1 = new Interval<>(cache, 0, 1);
-        Interval<String> i2 = new Interval<>(cache, 0, 1);
-        Interval<String> i3 = new Interval<>(cache, 0, 2);
+        Interval<String> i1 = new Interval<>(cache, 0);
+        Interval<String> i2 = new Interval<>(cache, 0);
+        Interval<String> i3 = new Interval<>(cache, 1);
         assertEquals(i1, i2);
         assertNotEquals(i1, i3);
     }
@@ -72,9 +72,9 @@ public class IntervalTest {
         Cache<String> cache = CacheFactory.createSequenceCache(master, ref);
         assertNotNull(cache);
 
-        Interval<String> i1 = new Interval<>(cache, 0, 1);
-        Interval<String> i2 = new Interval<>(cache, 0, 1);
-        Interval<String> i3 = new Interval<>(cache, 0, 2);
+        Interval<String> i1 = new Interval<>(cache, 0);
+        Interval<String> i2 = new Interval<>(cache, 0);
+        Interval<String> i3 = new Interval<>(cache, 1);
         assertEquals(i1.hashCode(), i2.hashCode());
         assertNotEquals(i1.hashCode(), i3.hashCode());
     }

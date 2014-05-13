@@ -109,7 +109,7 @@ public class CacheTest {
         assertNotNull(interval);
         assertFalse(iter.hasNext());
         assertEquals(0, interval.getFrom());
-        assertEquals(10, interval.getTo());
+        assertEquals(cache.getSegmentSize() - 1, interval.getTo());
     }
 
     @Test
@@ -132,19 +132,10 @@ public class CacheTest {
             assertTrue(interval.getFrom() > -1);
             assertTrue(interval.getTo() > -1);
             assertTrue(interval.getFrom() < ref.getLength());
-            assertTrue(interval.getTo() < ref.getLength());
             assertTrue(interval.getFrom() <= interval.getTo());
-
-            if (!iter.hasNext()) {
-                // last interval has to end at sequence end
-                assertEquals(ref.getLength() - 1, interval.getTo());
-            } else {
-                assertEquals(cache.getSegmentSize(), interval.getTo() - interval.getFrom() + 1);
-            }
+            assertEquals(cache.getSegmentSize(), interval.length());
         }
         assertEquals(214, numSegments);
-        // last interval has to end at sequence end
-        assertEquals(ref.getLength() - 1, interval.getTo());
     }
 
     @Test
@@ -199,8 +190,7 @@ public class CacheTest {
             assertTrue(interval.getTo() < ref.getLength());
             assertTrue(interval.getFrom() < interval.getTo());
         }
-        // last interval has to end at requested position
-        assertEquals(to, interval.getTo());
+        assertEquals(149999, interval.getTo());
         assertEquals(2, numSegments);
     }
 
@@ -211,12 +201,12 @@ public class CacheTest {
         Reference ref = master.Reference().fetch(4);
         Cache<String> cache = CacheFactory.createSequenceCache(master, ref);
         assertNotNull(cache);
-        
+
         Iterator<Interval<String>> iter = cache.getIntervals(0, 99);
         assertTrue(iter.hasNext());
         Interval<String> interval = iter.next();
         assertFalse(cache.contains(interval));
-        
+
         String seq = null;
         try {
             seq = cache.get(0, 99);
@@ -224,10 +214,10 @@ public class CacheTest {
             fail(ex.getMessage());
         }
         assertNotNull(seq);
-        
+
         // same ref
         assertTrue(cache.contains(interval));
-        
+
         iter = cache.getIntervals(0, 99);
         assertTrue(iter.hasNext());
         interval = iter.next();
