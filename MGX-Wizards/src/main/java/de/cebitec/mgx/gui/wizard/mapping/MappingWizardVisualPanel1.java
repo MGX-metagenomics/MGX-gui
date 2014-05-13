@@ -47,7 +47,7 @@ public final class MappingWizardVisualPanel1 extends JPanel implements ListSelec
 
     @Override
     public String getName() {
-        return "Step #1";
+        return "Select mapping";
     }
 
     /**
