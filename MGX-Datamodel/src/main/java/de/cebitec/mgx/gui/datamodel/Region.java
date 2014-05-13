@@ -59,6 +59,10 @@ public class Region extends Identifiable<Region> {
     public int getStop() {
         return stop;
     }
+    
+    public int getLength() {
+        return isFwdStrand() ? getStop() - getStart() + 1 : getStart() - getStop() + 1;
+    }
 
     public void setStop(int stop) {
         this.stop = stop;
