@@ -124,7 +124,7 @@ public class MappingAccess extends AccessBase<Mapping> {
         }
     }
 
-    public Iterator<MappedSequence> byReferenceInterval(UUID uuid, int from, int to) throws MGXServerException, MGXClientException {
+    public Iterator<MappedSequence> byReferenceInterval(UUID uuid, int from, int to) {
         try {
             Iterator<MappedSequenceDTO> mapped = getDTOmaster().Mapping().byReferenceInterval(uuid, from, to);
             return new BaseIterator<MappedSequenceDTO, MappedSequence>(mapped) {
