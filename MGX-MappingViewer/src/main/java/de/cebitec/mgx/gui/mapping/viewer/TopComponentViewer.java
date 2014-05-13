@@ -9,6 +9,8 @@ import de.cebitec.mgx.gui.mapping.ViewController;
 import de.cebitec.mgx.gui.mapping.panel.FeaturePanel;
 import de.cebitec.mgx.gui.mapping.panel.NavigationPanel;
 import java.awt.BorderLayout;
+import javax.swing.JPanel;
+import javax.swing.SwingWorker;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.windows.TopComponent;
@@ -37,17 +39,28 @@ public final class TopComponentViewer extends TopComponent {
 //        JPanel panel = new JPanel();
 //        panel.setLayout(new BorderLayout());
 
-        ViewController vc = new ViewController(ctx);
-        
+        final ViewController vc = new ViewController(ctx);
+
         NavigationPanel np = new NavigationPanel(vc);
         add(np, BorderLayout.NORTH);
+
+        // precache regions
+        SwingWorker<Void, Void> sw = new SwingWorker<Void, Void>() {
+
+            @Override
+            protected Void doInBackground() throws Exception {
+                vc.getRegions(0, vc.getReference().getLength() - 1);
+                return null;
+            }
+        };
+        sw.execute();
         FeaturePanel fp = new FeaturePanel(vc);
         add(fp, BorderLayout.CENTER);
+        add(new JPanel(), BorderLayout.SOUTH);
 
 //        BasePanelFactory factory = new BasePanelFactory(ctx);
 //        ReferenceBasePanel refBasePanel = factory.getGenomeViewerBasePanel();
 //        ReadsBasePanel readsBasePanel = factory.getReadViewerBasePanel();
-
 //        panel.add(refBasePanel, BorderLayout.NORTH);
 //        panel.add(readsBasePanel, BorderLayout.CENTER);
 //        add(panel);
