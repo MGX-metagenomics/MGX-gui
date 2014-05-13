@@ -1,9 +1,9 @@
 package de.cebitec.mgx.gui.cache;
 
-import de.cebitec.mgx.gui.cache.internal.Interval;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import de.cebitec.mgx.gui.cache.internal.Interval;
 import de.cebitec.mgx.gui.cache.internal.MappedSequenceCache;
 import de.cebitec.mgx.gui.cache.internal.RegionCache;
 import de.cebitec.mgx.gui.cache.internal.SequenceCache;
@@ -17,6 +17,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -28,15 +31,13 @@ public class CacheFactory {
 
         CacheLoader<Interval<String>, String> loader = new CacheLoader<Interval<String>, String>() {
             @Override
-            public String load(Interval<String> k) throws Exception {
-                String seq = master.Reference().getSequence(ref, k.getFrom(), k.getTo());
-                //System.err.println("segment "+k.getFrom()+"-"+k.getTo()+" "+ seq);
-                return seq;
+            public String load(Interval<String> k) {
+                return master.Reference().getSequence(ref, k.getFrom(), k.getTo());
             }
         };
 
         LoadingCache<Interval<String>, String> lcache = CacheBuilder.newBuilder()
-                .weakKeys()
+                .expireAfterAccess(10, TimeUnit.MINUTES)
                 .build(loader);
         return new SequenceCache(ref, lcache);
     }
@@ -45,13 +46,8 @@ public class CacheFactory {
 
         CacheLoader<Interval<Set<Region>>, Set<Region>> loader = new CacheLoader<Interval<Set<Region>>, Set<Region>>() {
             @Override
-            public Set<Region> load(Interval<Set<Region>> k) throws Exception {
-
-                int to = k.getTo();
-                if (ref.getLength() < to) {
-                    to = ref.getLength() - 1;
-                }
-                Iterator<Region> iter = master.Reference().byReferenceInterval(ref.getId(), k.getFrom(), to);
+            public Set<Region> load(Interval<Set<Region>> k) {
+                Iterator<Region> iter = master.Reference().byReferenceInterval(ref.getId(), k.getFrom(), k.getTo());
                 Set<Region> ret = new HashSet<>();
                 while (iter.hasNext()) {
                     ret.add(iter.next());
@@ -61,7 +57,7 @@ public class CacheFactory {
         };
 
         LoadingCache<Interval<Set<Region>>, Set<Region>> lcache = CacheBuilder.newBuilder()
-                .weakKeys()
+                .expireAfterAccess(10, TimeUnit.MINUTES)
                 .build(loader);
         return new RegionCache(ref, lcache);
     }
@@ -70,13 +66,8 @@ public class CacheFactory {
 
         CacheLoader<Interval<List<MappedSequence>>, List<MappedSequence>> loader = new CacheLoader<Interval<List<MappedSequence>>, List<MappedSequence>>() {
             @Override
-            public List<MappedSequence> load(Interval<List<MappedSequence>> k) throws Exception {
-
-                int to = k.getTo();
-                if (ref.getLength() < to) {
-                    to = ref.getLength() - 1;
-                }
-                Iterator<MappedSequence> iter = master.Mapping().byReferenceInterval(uuid, k.getFrom(), to);
+            public List<MappedSequence> load(Interval<List<MappedSequence>> k) {
+                Iterator<MappedSequence> iter = master.Mapping().byReferenceInterval(uuid, k.getFrom(), k.getTo());
                 List<MappedSequence> ret = new ArrayList<>();
                 while (iter.hasNext()) {
                     ret.add(iter.next());
@@ -86,7 +77,7 @@ public class CacheFactory {
         };
 
         LoadingCache<Interval<List<MappedSequence>>, List<MappedSequence>> lcache = CacheBuilder.newBuilder()
-                .weakKeys()
+                .expireAfterAccess(10, TimeUnit.MINUTES)
                 .build(loader);
         return new MappedSequenceCache(ref, lcache);
     }

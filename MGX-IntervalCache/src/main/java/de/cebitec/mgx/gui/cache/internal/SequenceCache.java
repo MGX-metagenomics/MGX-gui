@@ -23,8 +23,9 @@ public class SequenceCache extends Cache<String> {
 
     @Override
     public String get(int from, int to) throws ExecutionException {
+        assert from > -1;
         assert from < to;
-        assert to < ref.getLength() - 1; 
+        assert to < ref.getLength(); 
         int fromInterval = from / getSegmentSize();
 
         StringBuilder sb = new StringBuilder();

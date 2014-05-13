@@ -16,7 +16,7 @@ public abstract class Cache<T> {
     protected final LoadingCache<Interval<T>, T> lcache;
     private final int segmentSize;
     //
-    private static int SEGMENT_SIZE = 9999;
+    private static int SEGMENT_SIZE = 50000;
 
     public Cache(Reference ref, LoadingCache<Interval<T>, T> lcache) {
         this(ref, lcache, SEGMENT_SIZE);
@@ -28,16 +28,26 @@ public abstract class Cache<T> {
         this.segmentSize = segSize;
     }
 
-    public int getSegmentSize() {
+    public final int getSegmentSize() {
         return segmentSize;
+    }
+    
+    public boolean contains(Interval<T> interval) {
+        return lcache.getIfPresent(interval) != null;
+    }
+
+    public final Reference getReference() {
+        return ref;
     }
 
     protected Iterator<Interval<T>> getIntervals(final int from, final int to) {
+        assert to < ref.getLength();
 
         final int fromInterval = from / segmentSize;
+        final int toInterval = Math.min(fromInterval * segmentSize + getSegmentSize() - 1, getReference().getLength() - 1);
 
         return new Iterator<Interval<T>>() {
-            private Interval<T> cur = new Interval(Cache.this, fromInterval * segmentSize);
+            private Interval<T> cur = new Interval(Cache.this, fromInterval * segmentSize, Math.min(to, toInterval));
 
             @Override
             public boolean hasNext() {
@@ -48,7 +58,7 @@ public abstract class Cache<T> {
             public Interval next() {
                 Interval<T> i = cur;
                 if (cur.getTo() <= to) {
-                    cur = cur.next();
+                    cur = cur.next(to);
                 } else {
                     cur = null;
                 }
@@ -57,11 +67,11 @@ public abstract class Cache<T> {
 
             @Override
             public void remove() {
-                throw new UnsupportedOperationException("Not supported yet.");
+                throw new UnsupportedOperationException("Not supported.");
             }
         };
     }
-    
+
     public abstract T get(int from, int to) throws ExecutionException;
 
 }
