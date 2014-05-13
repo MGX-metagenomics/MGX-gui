@@ -4,23 +4,15 @@
  */
 package de.cebitec.mgx.gui.mapping.viewer;
 
-import de.cebitec.mgx.gui.controller.MGXMaster;
-import de.cebitec.mgx.gui.datamodel.Mapping;
-import de.cebitec.mgx.gui.datamodel.Reference;
 import de.cebitec.mgx.gui.mapping.MappingCtx;
-import de.cebitec.mgx.gui.mapping.viewer.positions.panel.ReadsBasePanel;
-import de.cebitec.mgx.gui.mapping.viewer.positions.panel.ReferenceBasePanel;
-import de.cebitec.mgx.gui.mapping.viewer.positions.panel.BasePanelFactory;
+import de.cebitec.mgx.gui.mapping.ViewController;
+import de.cebitec.mgx.gui.mapping.panel.FeaturePanel;
+import de.cebitec.mgx.gui.mapping.panel.NavigationPanel;
 import java.awt.BorderLayout;
-import java.util.concurrent.ExecutionException;
-import javax.swing.JPanel;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
-import org.openide.util.Exceptions;
-import org.openide.util.Lookup;
 import org.openide.windows.TopComponent;
 import org.openide.util.NbBundle.Messages;
-import org.openide.util.Utilities;
 
 @TopComponent.Description(
         preferredID = "TopComponentViewer",
@@ -33,36 +25,32 @@ import org.openide.util.Utilities;
     "CTL_TopComponentViewer=Mapping Window",})
 public final class TopComponentViewer extends TopComponent {
 
-    private MGXMaster currentMaster = null;
-    private final Lookup.Result<MGXMaster> mgxMasterResult;
     private final MappingCtx ctx;
 
     public TopComponentViewer(MappingCtx ctx) {
         this.ctx = ctx;
-        mgxMasterResult = Utilities.actionsGlobalContext().lookupResult(MGXMaster.class);
         setName(Bundle.CTL_TopComponentViewer());
     }
 
     private void createView() {
-        BasePanelFactory factory = new BasePanelFactory(ctx);
         setLayout(new BorderLayout());
+//        JPanel panel = new JPanel();
+//        panel.setLayout(new BorderLayout());
 
-        ReferenceBasePanel refBasePanel = factory.getGenomeViewerBasePanel();
-        ReadsBasePanel readsBasePanel = factory.getReadViewerBasePanel(ctx);
-        JPanel panel = new JPanel();
-        panel.setLayout(new BorderLayout());
-        panel.add(refBasePanel, BorderLayout.NORTH);
-        panel.add(readsBasePanel, BorderLayout.CENTER);
-        add(panel);
-    }
+        ViewController vc = new ViewController(ctx);
+        
+        NavigationPanel np = new NavigationPanel(vc);
+        add(np, BorderLayout.NORTH);
+        FeaturePanel fp = new FeaturePanel(vc);
+        add(fp, BorderLayout.CENTER);
 
-    private void loadMGXMaster() {
-        for (MGXMaster newMaster : mgxMasterResult.allInstances()) {
-            if (currentMaster == null || !newMaster.equals(currentMaster)) {
-                currentMaster = newMaster;
-                return;
-            }
-        }
+//        BasePanelFactory factory = new BasePanelFactory(ctx);
+//        ReferenceBasePanel refBasePanel = factory.getGenomeViewerBasePanel();
+//        ReadsBasePanel readsBasePanel = factory.getReadViewerBasePanel();
+
+//        panel.add(refBasePanel, BorderLayout.NORTH);
+//        panel.add(readsBasePanel, BorderLayout.CENTER);
+//        add(panel);
     }
 
     /**
@@ -89,7 +77,6 @@ public final class TopComponentViewer extends TopComponent {
     // End of variables declaration//GEN-END:variables
     @Override
     public void componentOpened() {
-        loadMGXMaster();
         createView();
     }
 

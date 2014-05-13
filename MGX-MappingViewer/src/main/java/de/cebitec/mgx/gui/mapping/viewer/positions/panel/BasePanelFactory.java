@@ -49,11 +49,11 @@ public class BasePanelFactory {
         return b;
     }
 
-    public ReadsBasePanel getReadViewerBasePanel(final MappingCtx ctx) {
+    public ReadsBasePanel getReadViewerBasePanel() {
 
         ReadsBasePanel readsBasePanel = new ReadsBasePanel(boundsManager);
 
-        UUID uuid = loadMapping(ctx.getMapping());
+        loadMapping(ctx.getMapping());
 
         ReadsViewer readsViewer = new ReadsViewer(ctx, boundsManager, readsBasePanel);
 

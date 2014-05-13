@@ -13,12 +13,12 @@ public class BoundsInfoManager implements AdjustmentPanelListenerI {
 
     private int currentHorizontalPosition;
     private int zoomfactor;
-    private Reference reference;
+    private final int refLength;
     private List<LogicalBoundsListener> boundListeners;
     private List<SynchronousNavigatorI> syncedNavigators;
 
     public BoundsInfoManager(Reference refGen) {
-        this.reference = refGen;
+        this.refLength = refGen.getLength();
         this.boundListeners = new ArrayList();
         this.syncedNavigators = new ArrayList();
         this.zoomfactor = 1;
@@ -84,7 +84,7 @@ public class BoundsInfoManager implements AdjustmentPanelListenerI {
     private BoundsInfo computeBounds(Dimension d) {
         int logWidth = (int) (d.getWidth() * 0.1 * zoomfactor);
 
-        BoundsInfo bounds = new BoundsInfo(1, reference.getLength(), currentHorizontalPosition, zoomfactor, logWidth);
+        BoundsInfo bounds = new BoundsInfo(1, refLength, currentHorizontalPosition, zoomfactor, logWidth);
         return bounds;
     }
 
