@@ -6,6 +6,7 @@ import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.nodes.ProjectNode;
 import java.beans.PropertyChangeEvent;
+import java.util.Iterator;
 import java.util.List;
 import org.openide.nodes.ChildFactory;
 import org.openide.nodes.Node;
@@ -28,7 +29,9 @@ public class ProjectNodeFactory extends ChildFactory<MembershipI> implements Nod
 
     @Override
     protected boolean createKeys(List<MembershipI> list) {
-        for (MembershipI m : gpms.getMemberships()) {
+        Iterator<MembershipI> iter = gpms.getMemberships();
+        while(iter.hasNext()) {
+            MembershipI m = iter.next();
             if ("MGX".equals(m.getProject().getProjectClass().getName())) {
                 list.add(m);
             }
