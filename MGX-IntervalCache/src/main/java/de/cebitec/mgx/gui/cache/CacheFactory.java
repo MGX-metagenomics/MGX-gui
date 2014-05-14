@@ -49,7 +49,7 @@ public class CacheFactory {
         CacheLoader<Interval<Set<Region>>, Set<Region>> loader = new CacheLoader<Interval<Set<Region>>, Set<Region>>() {
             @Override
             public Set<Region> load(Interval<Set<Region>> k) {
-                Logger.getLogger(getClass().getName()).log(Level.INFO, "server fetch " + k.getFrom() + " - " + k.getTo());
+                //Logger.getLogger(getClass().getName()).log(Level.INFO, "server fetch " + k.getFrom() + " - " + k.getTo());
                 Iterator<Region> iter = master.Reference().byReferenceInterval(ref.getId(), k.getFrom(), Math.min(k.getTo(), refLength));
                 Set<Region> ret = new HashSet<>();
                 while (iter.hasNext()) {

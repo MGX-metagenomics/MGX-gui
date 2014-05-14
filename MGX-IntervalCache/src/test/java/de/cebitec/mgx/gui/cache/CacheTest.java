@@ -5,6 +5,8 @@ import de.cebitec.gpms.rest.GPMSClientI;
 import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.gui.cache.internal.Interval;
 import de.cebitec.mgx.gui.controller.MGXMaster;
+import de.cebitec.mgx.gui.datamodel.MappedSequence;
+import de.cebitec.mgx.gui.datamodel.Mapping;
 import de.cebitec.mgx.gui.datamodel.Reference;
 import de.cebitec.mgx.gui.datamodel.Region;
 import de.cebitec.mgx.restgpms.GPMS;
@@ -12,16 +14,16 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
+import java.util.UUID;
 import org.junit.After;
 import org.junit.AfterClass;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
-import org.openide.util.Exceptions;
 
 /**
  *
@@ -60,6 +62,26 @@ public class CacheTest {
 
         seq = cache.get(97, 101);
         assertEquals("attcg", seq);
+    }
+
+    @Test
+    public void testGetMappedSeqs() throws Exception {
+        System.out.println("getMappedSeqs");
+        MGXMaster master = get();
+        Reference ref = master.Reference().fetch(8);
+        assertNotNull(ref);
+        Mapping m = master.Mapping().fetch(30);
+        assertNotNull(m);
+        assertEquals(8, m.getReferenceID());
+        UUID sessionUUID = master.Mapping().openMapping(m.getId());
+        Cache<List<MappedSequence>> cache = CacheFactory.createMappedSequenceCache(master, ref, sessionUUID);
+        assertNotNull(cache);
+        
+        List<MappedSequence> ret = cache.get(0, 1000);
+        assertNotNull(ret);
+        assertEquals(4, ret.size());
+        
+        master.Mapping().closeMapping(sessionUUID);
     }
 
     @Test
@@ -190,6 +212,7 @@ public class CacheTest {
             assertTrue(interval.getTo() < ref.getLength());
             assertTrue(interval.getFrom() < interval.getTo());
         }
+        assertNotNull(interval);
         assertEquals(149999, interval.getTo());
         assertEquals(2, numSegments);
     }

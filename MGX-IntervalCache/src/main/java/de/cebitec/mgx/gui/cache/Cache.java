@@ -4,7 +4,6 @@ import de.cebitec.mgx.gui.cache.internal.Interval;
 import com.google.common.cache.LoadingCache;
 import de.cebitec.mgx.gui.datamodel.Reference;
 import java.util.Iterator;
-import java.util.concurrent.ExecutionException;
 
 /**
  *
