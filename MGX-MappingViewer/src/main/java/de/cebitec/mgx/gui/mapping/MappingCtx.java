@@ -10,10 +10,10 @@ import de.cebitec.mgx.gui.datamodel.Reference;
 import de.cebitec.mgx.gui.datamodel.Region;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.datamodel.Tool;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
 
 /**
  *
@@ -77,5 +77,23 @@ public class MappingCtx {
             mapCache = CacheFactory.createMappedSequenceCache((MGXMaster) ref.getMaster(), ref, sessionUUID);
         }
         return mapCache.get(from, to);
+    }
+
+    public int[] getCoverage(int from, int to) {
+        int[] ret = new int[to - from + 1];
+        Arrays.fill(ret, 0);
+        for (MappedSequence ms : getMappings(from, to)) {
+            assert ms.getStart() <= ms.getStop();
+            // mapping positions are 1-based, convert to 0-based
+            for (int i = ms.getStart() - 1; i < ms.getStop(); i++) {
+                int genomePos = i - from;
+                // we need to check extra since we also receive mappings
+                // which only partially overlap with the interval
+                if (genomePos >= from && genomePos <= to) {
+                    ret[genomePos-from]++;
+                }
+            }
+        }
+        return ret;
     }
 }

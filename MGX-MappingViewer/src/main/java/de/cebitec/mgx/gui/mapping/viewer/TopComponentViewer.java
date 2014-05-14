@@ -7,6 +7,7 @@ package de.cebitec.mgx.gui.mapping.viewer;
 import de.cebitec.mgx.gui.mapping.MappingCtx;
 import de.cebitec.mgx.gui.mapping.ViewController;
 import de.cebitec.mgx.gui.mapping.panel.FeaturePanel;
+import de.cebitec.mgx.gui.mapping.panel.MappingPanel;
 import de.cebitec.mgx.gui.mapping.panel.NavigationPanel;
 import java.awt.BorderLayout;
 import javax.swing.JPanel;
@@ -35,6 +36,7 @@ public final class TopComponentViewer extends TopComponent {
     }
 
     private void createView() {
+        removeAll();
         setLayout(new BorderLayout());
 //        JPanel panel = new JPanel();
 //        panel.setLayout(new BorderLayout());
@@ -54,9 +56,21 @@ public final class TopComponentViewer extends TopComponent {
             }
         };
         sw.execute();
+        // precache mappings/coverage
+        SwingWorker<Void, Void> sw2 = new SwingWorker<Void, Void>() {
+
+            @Override
+            protected Void doInBackground() throws Exception {
+                vc.getCoverage(0, vc.getReference().getLength() - 1);
+                return null;
+            }
+        };
+        sw2.execute();
         FeaturePanel fp = new FeaturePanel(vc);
         add(fp, BorderLayout.CENTER);
-        add(new JPanel(), BorderLayout.SOUTH);
+        
+        MappingPanel mp = new MappingPanel(vc);
+        add(mp, BorderLayout.SOUTH);
 
 //        BasePanelFactory factory = new BasePanelFactory(ctx);
 //        ReferenceBasePanel refBasePanel = factory.getGenomeViewerBasePanel();

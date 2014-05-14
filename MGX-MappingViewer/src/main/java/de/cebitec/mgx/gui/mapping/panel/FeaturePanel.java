@@ -23,6 +23,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.HashSet;
@@ -45,14 +46,16 @@ public class FeaturePanel extends javax.swing.JPanel implements PropertyChangeLi
     private float scale;
     private int midY;
     private final static int[] frameOffsets = new int[]{
-        14 + -1 * FRAME_VOFFSET * -3,
-        14 + -1 * FRAME_VOFFSET * -2,
-        14 + -1 * FRAME_VOFFSET * -1,
+        12 + -1 * FRAME_VOFFSET * -3,
+        12 + -1 * FRAME_VOFFSET * -2,
+        12 + -1 * FRAME_VOFFSET * -1,
         -1 * FRAME_VOFFSET * 1,
         -1 * FRAME_VOFFSET * 2,
         -1 * FRAME_VOFFSET * 3};
     private static final RenderingHints antiAlias = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-    private Set<Arrow> regs = new HashSet<>();
+    private Set<Arrow> regs = null; // new HashSet<>();
+    private Set<Point2D> coverage = new HashSet<>();
+    private int maxCoverage = 0;
 
     /**
      * Creates new form FeaturePanel
@@ -84,6 +87,8 @@ public class FeaturePanel extends javax.swing.JPanel implements PropertyChangeLi
         intervalLen = bounds[1] - bounds[0] + 1;
         scale = 1f / (1f * intervalLen / getWidth());
         midY = getHeight() / 2;
+
+        drawCoverage(g2);
 
         g2.drawLine(0, midY, getWidth(), midY); // midline
         g2.setColor(Color.DARK_GRAY);
@@ -145,6 +150,13 @@ public class FeaturePanel extends javax.swing.JPanel implements PropertyChangeLi
         }
     }
 
+    private void drawCoverage(Graphics2D g2) {
+        if (maxCoverage == 0 || coverage == null) {
+            return;
+        }
+
+    }
+
     private float getScaledValue(int i) {
         float f = i * scale;
         return f;
@@ -173,6 +185,7 @@ public class FeaturePanel extends javax.swing.JPanel implements PropertyChangeLi
         intervalLen = bounds[1] - bounds[0] + 1;
         scale = 1f / (1f * intervalLen / getWidth());
         midY = getHeight() / 2;
+        maxCoverage = 0;
 
         if (!EventQueue.isDispatchThread()) {
             regs.clear();
@@ -192,8 +205,33 @@ public class FeaturePanel extends javax.swing.JPanel implements PropertyChangeLi
                 }
             };
             sw.execute();
+            SwingWorker<Set<Point2D>, Void> sw2 = new SwingWorker<Set<Point2D>, Void>() {
+
+                @Override
+                protected Set<Point2D> doInBackground() throws Exception {
+                    Set<Point2D> ret = new HashSet<>();
+                    int[] coverage = vc.getCoverage(bounds[0], bounds[1]);
+                    maxCoverage = 0;
+                    for (int c : coverage) {
+                        if (c > maxCoverage) {
+                            maxCoverage = c;
+                        }
+                    }
+                    if (maxCoverage == 0) {
+                        return null;
+                    }
+                    int pos = bounds[0];
+                    for (int i : coverage) {
+                        ret.add(cov2p(pos++, i));
+                    }
+                    return ret;
+                }
+            };
+            sw.execute();
+            sw2.execute();
             try {
                 regs = sw.get();
+                coverage = sw2.get();
             } catch (InterruptedException | ExecutionException ex) {
                 Exceptions.printStackTrace(ex);
             }
@@ -209,6 +247,12 @@ public class FeaturePanel extends javax.swing.JPanel implements PropertyChangeLi
             int frameOffset = frameOffsets[r.getFrame() + 2];
             return new Arrow(r, pos[0], midY + frameOffset - Arrow.HALF_HEIGHT, pos[1] - pos[0]);
         }
+    }
+
+    private Point2D cov2p(final int pos, final int cov) {
+        float drawPos = getScaledValue(pos);
+        float covPos = midY - cov * (midY / maxCoverage);
+        return new Point2D.Float(drawPos, covPos);
     }
 
     @Override

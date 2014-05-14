@@ -13,7 +13,6 @@ import java.beans.PropertyChangeSupport;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
 
 /**
  *
@@ -61,6 +60,10 @@ public class ViewController {
 
     public List<MappedSequence> getMappings(int from, int to) {
         return ctx.getMappings(from, to);
+    }
+
+    public int[] getCoverage(int from, int to) {
+        return ctx.getCoverage(from, to);
     }
 
     public void addPropertyChangeListener(PropertyChangeListener listener) {
