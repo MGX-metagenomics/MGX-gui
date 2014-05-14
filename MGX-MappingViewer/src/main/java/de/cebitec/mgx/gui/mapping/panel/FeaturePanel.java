@@ -7,23 +7,29 @@ package de.cebitec.mgx.gui.mapping.panel;
 
 import de.cebitec.mgx.gui.datamodel.Region;
 import de.cebitec.mgx.gui.mapping.ViewController;
+import java.awt.AlphaComposite;
 import java.awt.Color;
+import java.awt.Composite;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.RenderingHints;
+import java.awt.Shape;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.geom.AffineTransform;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import javax.swing.SwingWorker;
+import javax.swing.ToolTipManager;
 import org.openide.util.Exceptions;
 
 /**
@@ -39,9 +45,9 @@ public class FeaturePanel extends javax.swing.JPanel implements PropertyChangeLi
     private float scale;
     private int midY;
     private final static int[] frameOffsets = new int[]{
-        15 + -1 * FRAME_VOFFSET * -3,
-        15 + -1 * FRAME_VOFFSET * -2,
-        15 + -1 * FRAME_VOFFSET * -1,
+        14 + -1 * FRAME_VOFFSET * -3,
+        14 + -1 * FRAME_VOFFSET * -2,
+        14 + -1 * FRAME_VOFFSET * -1,
         -1 * FRAME_VOFFSET * 1,
         -1 * FRAME_VOFFSET * 2,
         -1 * FRAME_VOFFSET * 3};
@@ -61,8 +67,11 @@ public class FeaturePanel extends javax.swing.JPanel implements PropertyChangeLi
         vc.addPropertyChangeListener(this);
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
+        ToolTipManager.sharedInstance().registerComponent(this);
+        ToolTipManager.sharedInstance().setDismissDelay(5000);
+
         update();
-        repaint();
+        //repaint();
     }
 
     @Override
@@ -70,36 +79,69 @@ public class FeaturePanel extends javax.swing.JPanel implements PropertyChangeLi
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHints(antiAlias);
-        g2.drawLine(0,  midY, getWidth(),  midY); // midline
+
+        bounds = vc.getBounds();
+        intervalLen = bounds[1] - bounds[0] + 1;
+        scale = 1f / (1f * intervalLen / getWidth());
+        midY = getHeight() / 2;
+
+        g2.drawLine(0, midY, getWidth(), midY); // midline
+        g2.setColor(Color.DARK_GRAY);
+        g2.setFont(new Font(g2.getFont().getFontName(), Font.PLAIN, 10));
+        int textHeight = -1 + g2.getFontMetrics(g2.getFont()).getHeight() / 2;
+        int textWidth = g2.getFontMetrics(g2.getFont()).stringWidth("+3");
+        g2.drawString("-1", 0, midY + frameOffsets[0] + textHeight);
+        g2.drawString("-2", 0, midY + frameOffsets[1] + textHeight);
+        g2.drawString("-3", 0, midY + frameOffsets[2] + textHeight);
+        g2.drawString("+1", 0, midY + frameOffsets[3] + textHeight);
+        g2.drawString("+2", 0, midY + frameOffsets[4] + textHeight);
+        g2.drawString("+3", 0, midY + frameOffsets[5] + textHeight);
         g2.setColor(Color.LIGHT_GRAY);
         for (int f : frameOffsets) {
-            g2.drawLine(0, midY + f, getWidth(),  midY + f);
+            g2.drawLine(textWidth + 2, midY + f, getWidth(), midY + f);
         }
-        g.setColor(Color.DARK_GRAY);
-        g.setFont(new Font(g.getFont().getFontName(), Font.PLAIN, 10));
+        g2.setColor(Color.DARK_GRAY);
 
         int separate = 500;
-        if (intervalLen > 5000) {
-            separate = 5000;
+        while (intervalLen / separate > 10) {
+            separate += 500;
         }
         for (int i = bounds[0]; i < bounds[1]; i++) {
             if (i % separate == 0) {
                 float pos = getScaledValue(i - bounds[0]);
-                g2.drawLine((int) pos,  midY - 3, (int) pos,  midY + 3);
+                g2.drawLine((int) pos, midY - 3, (int) pos, midY + 3);
                 String text1 = String.valueOf(i);
-                g2.drawString(text1, pos - textWidth(g, text1) / 2, midY + 13);
+                g2.drawString(text1, pos - textWidth(g2, text1) / 2, midY + 13);
             }
         }
-        g2.setColor(Color.GREEN);
+
+        /*
+         * create shadow effects
+         */
+        Composite oldComp = g2.getComposite();
+        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.7f));
+
+        g2.setColor(Color.LIGHT_GRAY);
         for (Arrow r : regs) {
-//            Rectangle2D b = r.getBounds2D();
-//            g2.setColor(Color.LIGHT_GRAY);
-//            g2.drawRect((int) b.getX(), (int) b.getY(), (int) b.getWidth(), (int) b.getHeight());
-//            g2.setColor(Color.GREEN);
+            Shape shadow = AffineTransform.getTranslateInstance(4, 3).createTransformedShape(r);
+            g2.fill(shadow);
+        }
+        g2.setColor(new Color(210, 210, 210));
+        for (Arrow r : regs) {
+            Shape shadow = AffineTransform.getTranslateInstance(4, 3).createTransformedShape(r);
+            g2.draw(shadow);
+        }
+
+        g2.setComposite(oldComp);
+        g2.setColor(Color.GREEN);
+
+        // draw arrows (and borders)
+        for (Arrow r : regs) {
             g2.fill(r);
-//            g2.setColor(Color.LIGHT_GRAY);
-//            g2.draw(r);
-            //g2.drawString(r.getRegion().getName(), r.getBounds().x, r.getBounds().y + 2);
+        }
+        g2.setColor(Color.DARK_GRAY);
+        for (Arrow r : regs) {
+            g2.draw(r);
         }
     }
 
@@ -121,7 +163,7 @@ public class FeaturePanel extends javax.swing.JPanel implements PropertyChangeLi
         repaint();
     }
 
-    private static int textWidth(Graphics g, String text) {
+    private static int textWidth(Graphics2D g, String text) {
         FontMetrics metrics = g.getFontMetrics(g.getFont());
         return metrics.stringWidth(text);
     }
@@ -158,7 +200,7 @@ public class FeaturePanel extends javax.swing.JPanel implements PropertyChangeLi
         }
     }
 
-    private final Arrow r2a(final Region r) {
+    private Arrow r2a(final Region r) {
         int[] pos = getScaledValues(r.getStart() - bounds[0] - 1, r.getStop() - bounds[0] - 1);
         if (r.getFrame() < 0) {
             int frameOffset = frameOffsets[r.getFrame() + 3];
@@ -169,18 +211,16 @@ public class FeaturePanel extends javax.swing.JPanel implements PropertyChangeLi
         }
     }
 
-//    @Override
-//    public String getToolTipText(MouseEvent m) {
-//        Point loc = m.getPoint();
-//        Iterator iter = this.arrows.iterator();
-//        while (iter.hasNext()) {
-//            Arrow a = (Arrow) iter.next();
-//            if (a.contains(loc)) {
-//                return a.getToolTipText();
-//            }
-//        }
-//        return null;
-//    }
+    @Override
+    public String getToolTipText(MouseEvent m) {
+        Point loc = m.getPoint();
+        for (Arrow a : regs) {
+            if (a.contains(loc)) {
+                return a.getToolTipText();
+            }
+        }
+        return null;
+    }
     private boolean inDrag = false;
     private int dragStart = -1;
 

@@ -9,10 +9,10 @@ import de.cebitec.mgx.gui.datamodel.Region;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Area;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
+import java.awt.geom.Area;
 import java.awt.geom.Rectangle2D;
 
 /**
@@ -61,25 +61,39 @@ public class Arrow implements Shape {
 
         if (r.isFwdStrand()) {
             GeneralPath triangle = new GeneralPath();
-            triangle.moveTo(x, mid - RECT_HEIGHT / 2);  // 1
-            triangle.lineTo(x + length - TRIANGLE_WIDTH, mid - RECT_HEIGHT / 2); //2
-            triangle.lineTo(x + length - TRIANGLE_WIDTH, mid - HALF_HEIGHT - 1);   // 3
-            triangle.lineTo(x + length, mid);   // 4
-            triangle.lineTo(x + length - TRIANGLE_WIDTH, mid + HALF_HEIGHT); // 5
-            triangle.lineTo(x + length - TRIANGLE_WIDTH, mid + RECT_HEIGHT / 2);  // 6
-            triangle.lineTo(x, mid + RECT_HEIGHT / 2); // 7
-            triangle.lineTo(x, mid - RECT_HEIGHT / 2); // 1/8
+            if (length < TRIANGLE_WIDTH) {
+                triangle.moveTo(x , mid - HALF_HEIGHT - 1);   // 3
+                triangle.lineTo(x + length, mid);   // 4
+                triangle.lineTo(x, mid + HALF_HEIGHT); // 5
+                triangle.lineTo(x, mid - HALF_HEIGHT - 1);   // 3
+            } else {
+                triangle.moveTo(x, mid - RECT_HEIGHT / 2);  // 1
+                triangle.lineTo(x + length - TRIANGLE_WIDTH, mid - RECT_HEIGHT / 2); //2
+                triangle.lineTo(x + length - TRIANGLE_WIDTH, mid - HALF_HEIGHT - 1);   // 3
+                triangle.lineTo(x + length, mid);   // 4
+                triangle.lineTo(x + length - TRIANGLE_WIDTH, mid + HALF_HEIGHT); // 5
+                triangle.lineTo(x + length - TRIANGLE_WIDTH, mid + RECT_HEIGHT / 2);  // 6
+                triangle.lineTo(x, mid + RECT_HEIGHT / 2); // 7
+                triangle.lineTo(x, mid - RECT_HEIGHT / 2); // 1/8
+            }
             shape = new Area(triangle);
         } else {
             GeneralPath triangle = new GeneralPath();
-            triangle.moveTo(x, mid);     // 1
-            triangle.lineTo(x + TRIANGLE_WIDTH, y - 1);  //2 
-            triangle.lineTo(x + TRIANGLE_WIDTH, mid - RECT_HEIGHT / 2); // 3
-            triangle.lineTo(x + length, mid - RECT_HEIGHT / 2); // 4
-            triangle.lineTo(x + length, mid + RECT_HEIGHT / 2);  // 5
-            triangle.lineTo(x + TRIANGLE_WIDTH, mid + RECT_HEIGHT / 2); // 6
-            triangle.lineTo(x + TRIANGLE_WIDTH, y + HEIGHT + 1); // 7
-            triangle.lineTo(x, mid);  // 1/8
+            if (length < TRIANGLE_WIDTH) {
+                triangle.moveTo(x, mid);     // 1
+                triangle.lineTo(x + length, y - 1);  //2 
+                triangle.lineTo(x + length, y + HEIGHT + 1); // 7
+                triangle.lineTo(x, mid);  // 1/8
+            } else {
+                triangle.moveTo(x, mid);     // 1
+                triangle.lineTo(x + TRIANGLE_WIDTH, y - 1);  //2 
+                triangle.lineTo(x + TRIANGLE_WIDTH, mid - RECT_HEIGHT / 2); // 3
+                triangle.lineTo(x + length, mid - RECT_HEIGHT / 2); // 4
+                triangle.lineTo(x + length, mid + RECT_HEIGHT / 2);  // 5
+                triangle.lineTo(x + TRIANGLE_WIDTH, mid + RECT_HEIGHT / 2); // 6
+                triangle.lineTo(x + TRIANGLE_WIDTH, y + HEIGHT + 1); // 7
+                triangle.lineTo(x, mid);  // 1/8
+            }
             shape = new Area(triangle);
         }
 
@@ -137,5 +151,10 @@ public class Arrow implements Shape {
     @Override
     public PathIterator getPathIterator(AffineTransform at, double flatness) {
         return shape.getPathIterator(at, flatness);
+    }
+
+    public String getToolTipText() {
+        return "<html>" + region.getName() + "<hr>"
+                + region.getDescription() + "</html>";
     }
 }

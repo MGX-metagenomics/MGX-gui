@@ -16,10 +16,12 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
@@ -33,6 +35,9 @@ public class NavigationPanel extends javax.swing.JPanel implements PropertyChang
     private final ViewController vc;
     private int[] previewBounds = null;
     private int[] offSet = null;
+    private int intervalLen;
+    private float scale;
+    private int midY;
 
     /**
      * Creates new form NavigationPanel
@@ -49,34 +54,37 @@ public class NavigationPanel extends javax.swing.JPanel implements PropertyChang
     }
 
     @Override
-    public void paint(Graphics g) {
-        super.paint(g);
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
         RenderingHints rh = new RenderingHints(
                 RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setRenderingHints(rh);
-        int midY = getHeight() / 2;
-        g.drawLine(0, midY, getWidth(), midY); // midline
+
+        scale = 1f * vc.getReference().getLength() / getWidth();
+        midY = getHeight() / 2;
+        
+        g2.drawLine(0, midY, getWidth(), midY); // midline
 
         int refLength = vc.getReference().getLength();
 
-        g.setFont(new Font(g.getFont().getFontName(), Font.PLAIN, 10));
+        g2.setFont(new Font(g2.getFont().getFontName(), Font.PLAIN, 10));
 
-        g.drawLine(getWidth() / 4, midY - 3, getWidth() / 4, midY + 3);
+        g2.drawLine(getWidth() / 4, midY - 3, getWidth() / 4, midY + 3);
         String text1 = String.valueOf(refLength / 4);
-        g.drawString(text1, getWidth() / 4 - textWidth(g, text1) / 2, midY + 13);
+        g2.drawString(text1, getWidth() / 4 - textWidth(g2, text1) / 2, midY + 13);
 
-        g.drawLine(getWidth() / 2, midY - 3, getWidth() / 2, midY + 3);
+        g2.drawLine(getWidth() / 2, midY - 3, getWidth() / 2, midY + 3);
         String text2 = String.valueOf(refLength / 2);
-        g.drawString(text2, getWidth() / 2 - textWidth(g, text2) / 2, midY + 13);
+        g2.drawString(text2, getWidth() / 2 - textWidth(g2, text2) / 2, midY + 13);
 
-        g.drawLine(3 * getWidth() / 4, midY - 3, 3 * getWidth() / 4, midY + 3);
+        g2.drawLine(3 * getWidth() / 4, midY - 3, 3 * getWidth() / 4, midY + 3);
         String text3 = String.valueOf(3 * refLength / 4);
-        g.drawString(text3, 3 * getWidth() / 4 - textWidth(g, text3) / 2, midY + 13);
+        g2.drawString(text3, 3 * getWidth() / 4 - textWidth(g2, text3) / 2, midY + 13);
 
         if (previewBounds != null) {
-            int[] scaledPreview = getScaledValues(previewBounds);
+            float[] scaledPreview = getScaledValues(previewBounds);
             float dash1[] = {5.0f};
             BasicStroke dashed = new BasicStroke(1.0f,
                     BasicStroke.CAP_BUTT,
@@ -86,7 +94,9 @@ public class NavigationPanel extends javax.swing.JPanel implements PropertyChang
             Stroke oldStroke = g2.getStroke();
             g2.setStroke(dashed);
             g2.setColor(Color.BLACK);
-            g2.drawRect(scaledPreview[0], 0, scaledPreview[1] - scaledPreview[0] + 1, getHeight() - 1);
+            Shape curScope = new Rectangle2D.Float(scaledPreview[0], 0, scaledPreview[1] - scaledPreview[0] + 1, getHeight() - 1);
+            g2.draw(curScope);
+            //g2.drawRect(scaledPreview[0], 0, scaledPreview[1] - scaledPreview[0] + 1, getHeight() - 1);
             g2.setStroke(oldStroke);
         }
 
@@ -94,33 +104,32 @@ public class NavigationPanel extends javax.swing.JPanel implements PropertyChang
         AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.4f);
 
         // draw box indicating current scope
-        int[] scaledBounds = getScaledValues(vc.getBounds());
+        float[] scaledBounds = getScaledValues(vc.getBounds());
         g2.setComposite(ac);
         g2.setColor(Color.red);
-        g2.fillRect(scaledBounds[0], 0, scaledBounds[1] - scaledBounds[0] + 1, getHeight() - 1);
+        Shape curScope = new Rectangle2D.Float(scaledBounds[0], 0, scaledBounds[1] - scaledBounds[0] + 1, getHeight() - 1);
+        g2.fill(curScope);
+        //g2.fillRect(scaledBounds[0], 0, scaledBounds[1] - scaledBounds[0] + 1, getHeight() - 1);
         g2.setComposite(oldcomp);
 
     }
 
-    private int textWidth(Graphics g, String text) {
+    private int textWidth(Graphics2D g, String text) {
         FontMetrics metrics = g.getFontMetrics(g.getFont());
         return metrics.stringWidth(text);
     }
 
-    private int getScaledValue(int i) {
-        float scale = vc.getReference().getLength() / getWidth();
-        float f = i * 1f / scale;
-        return (int) f;
-    }
-
-    private int[] getScaledValues(int[] in) {
-        int[] ret = new int[in.length];
-        float scale = 1f * vc.getReference().getLength() / getWidth();
-
+//    private int getScaledValue(int i) {
+//        float scale = vc.getReference().getLength() / getWidth();
+//        float f = i * 1f / scale;
+//        return (int) f;
+//    }
+    private float[] getScaledValues(int[] in) {
+        float[] ret = new float[in.length];
         int pos = 0;
         for (int i : in) {
             float f = i * 1f / scale;
-            ret[pos++] = (int) f;
+            ret[pos++] = f;
         }
         return ret;
     }
@@ -153,7 +162,13 @@ public class NavigationPanel extends javax.swing.JPanel implements PropertyChang
     // End of variables declaration//GEN-END:variables
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
+        update();
         repaint();
+    }
+
+    private synchronized void update() {
+//        scale = 1f * vc.getReference().getLength() / getWidth();
+//        midY = getHeight() / 2;
     }
 
     @Override
@@ -162,7 +177,6 @@ public class NavigationPanel extends javax.swing.JPanel implements PropertyChang
             return;
         }
         int x = e.getX();
-        float scale = 1f * vc.getReference().getLength() / getWidth();
         int posInRef = (int) (x * scale);
         e.consume();
 
@@ -179,18 +193,17 @@ public class NavigationPanel extends javax.swing.JPanel implements PropertyChang
             return;
         }
         int[] bounds = vc.getBounds();
-        int[] scaledBounds = getScaledValues(bounds);
+        float[] scaledBounds = getScaledValues(bounds);
 
         int x = e.getX();
-        float scale = 1f * vc.getReference().getLength() / getWidth();
         int posInRef = (int) (x * scale);
 
         int distToStart = Math.abs(bounds[0] - posInRef);  // in bp
         int distToEnd = Math.abs(bounds[1] - posInRef);
         int distToMid = Math.abs((bounds[0] + (bounds[1] - bounds[0] + 1) / 2) - posInRef);
 
-        int scaledDistToStart = Math.abs(scaledBounds[0] - x);  // in px
-        int scaledDistToEnd = Math.abs(scaledBounds[1] - x);
+        int scaledDistToStart = (int) Math.abs(scaledBounds[0] - x);  // in px
+        int scaledDistToEnd = (int) Math.abs(scaledBounds[1] - x);
 
         if (scaledDistToStart <= CAPTURE_DIST && distToStart < distToEnd && distToStart < distToMid) {
             dragType = 1;
@@ -214,7 +227,6 @@ public class NavigationPanel extends javax.swing.JPanel implements PropertyChang
         }
 
         int x = e.getX();
-        float scale = 1f * vc.getReference().getLength() / getWidth();
         int posInRef = (int) (x * scale);
 
         int[] bounds = vc.getBounds();
@@ -266,7 +278,6 @@ public class NavigationPanel extends javax.swing.JPanel implements PropertyChang
         }
 
         int x = e.getX();
-        float scale = 1f * vc.getReference().getLength() / getWidth();
         int posInRef = (int) (x * scale);
 
         int[] bounds = vc.getBounds();
