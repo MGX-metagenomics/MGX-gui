@@ -22,22 +22,26 @@ import org.openide.windows.TopComponent;
  * Top component which displays something.
  */
 @ConvertAsProperties(dtd = "-//de.cebitec.mgx.gui.explorer//ProjectExplorer//EN",
-autostore = false)
+        autostore = false)
 @TopComponent.Description(preferredID = "ProjectExplorerTopComponent",
-//iconBase="SET/PATH/TO/ICON/HERE",
-persistenceType = TopComponent.PERSISTENCE_NEVER)
+        //iconBase="SET/PATH/TO/ICON/HERE",
+        persistenceType = TopComponent.PERSISTENCE_NEVER)
 @TopComponent.Registration(mode = "explorer", openAtStartup = false, position = 1)
 @ActionID(category = "Window", id = "de.cebitec.mgx.gui.explorer.ProjectExplorerTopComponent")
 @TopComponent.OpenActionRegistration(displayName = "#CTL_ProjectExplorerAction",
-preferredID = "ProjectExplorerTopComponent")
+        preferredID = "ProjectExplorerTopComponent")
 @ServiceProvider(service = ProjectExplorerTopComponent.class)
 public final class ProjectExplorerTopComponent extends TopComponent implements ExplorerManager.Provider {
 
-    private ExplorerManager exmngr = new ExplorerManager();
-    private BeanTreeView btv;
+    private final ExplorerManager exmngr = new ExplorerManager();
+    private final BeanTreeView btv;
 
     public ProjectExplorerTopComponent() {
-        initComponents();
+        btv = new BeanTreeView();
+        btv.setRootVisible(false);
+        setLayout(new BorderLayout());
+        add(btv, BorderLayout.CENTER);
+//        initComponents();
         setName(NbBundle.getMessage(ProjectExplorerTopComponent.class, "CTL_ProjectExplorerTopComponent"));
         setToolTipText(NbBundle.getMessage(ProjectExplorerTopComponent.class, "HINT_ProjectExplorerTopComponent"));
         putClientProperty(TopComponent.PROP_DRAGGING_DISABLED, Boolean.TRUE);
@@ -50,12 +54,12 @@ public final class ProjectExplorerTopComponent extends TopComponent implements E
         getActionMap().put("delete", ExplorerUtils.actionDelete(exmngr, true));
     }
 
-    private void initComponents() {
-        btv = new BeanTreeView();
-        btv.setRootVisible(false);
-        setLayout(new BorderLayout());
-        add(btv, BorderLayout.CENTER);
-    }
+//    private void initComponents() {
+//        btv = new BeanTreeView();
+//        btv.setRootVisible(false);
+//        setLayout(new BorderLayout());
+//        add(btv, BorderLayout.CENTER);
+//    }
 
     @Override
     public void componentOpened() {
@@ -80,7 +84,7 @@ public final class ProjectExplorerTopComponent extends TopComponent implements E
     }
 
     void readProperties(java.util.Properties p) {
-        String version = p.getProperty("version");
+        //String version = p.getProperty("version");
     }
 
     @Override
@@ -115,8 +119,4 @@ public final class ProjectExplorerTopComponent extends TopComponent implements E
         };
         sw.execute();
     }
-//    @Override
-//    public int getPersistenceType() {
-//        return PERSISTENCE_NEVER;
-//    }
 }
