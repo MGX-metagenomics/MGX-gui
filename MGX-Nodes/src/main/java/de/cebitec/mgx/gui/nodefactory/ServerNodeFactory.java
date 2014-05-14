@@ -15,7 +15,7 @@ import org.openide.util.lookup.Lookups;
  */
 public class ServerNodeFactory extends ChildFactory<GPMSClientI> {
 
-    private GPMS gpms;
+    private final GPMS gpms;
 
     public ServerNodeFactory(GPMS gpms) {
         this.gpms = gpms;
