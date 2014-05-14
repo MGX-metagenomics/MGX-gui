@@ -1,6 +1,5 @@
 package de.cebitec.mgx.gui.mapping.viewer.positions.panel;
 
-import de.cebitec.mgx.gui.datamodel.Reference;
 import de.cebitec.mgx.gui.mapping.MappingCtx;
 import de.cebitec.mgx.gui.mapping.viewer.positions.PaintingAreaInfo;
 import de.cebitec.mgx.gui.mapping.viewer.positions.PhysicalBaseBounds;
@@ -14,10 +13,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.Line2D;
-import java.util.concurrent.ExecutionException;
 import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
-import org.openide.util.Exceptions;
 //import de.cebitec.mgx.gui.datamodel.Region;
 
 /**
@@ -215,12 +212,7 @@ public class SequenceBar extends JComponent {
 //            }
 //            physX += numOfGaps * bounds.getPhysWidth();
 //        }
-        String base = "";
-        try {
-            base = ctx.getSequence(basePosition, basePosition + 1);
-        } catch (ExecutionException ex) {
-            Exceptions.printStackTrace(ex);
-        }
+        String base = ctx.getSequence(basePosition, basePosition + 1);
         int offset = metrics.stringWidth(base) / 2;
         /*BaseBackground b = new BaseBackground(12,5, base);
          b.setBounds((int)physX-offset,baseLineY-10,b.getSize().width, b.getSize().height);
@@ -241,12 +233,8 @@ public class SequenceBar extends JComponent {
 
         PhysicalBaseBounds bounds = parentViewer.getPhysBoundariesForLogPos(pos);
         double physX = bounds.getPhyMiddle();
-        String base = "";
-        try {
-            base = ctx.getSequence(basePosition, basePosition + 1);
-        } catch (ExecutionException ex) {
-            Exceptions.printStackTrace(ex);
-        }
+        String base = ctx.getSequence(basePosition, basePosition + 1);
+       
         String revBase = SequenceUtils.complementDNA(base);
         int offset = metrics.stringWidth(revBase) / 2;
         g.drawString(revBase,
@@ -429,12 +417,7 @@ public class SequenceBar extends JComponent {
 //                physX += numOfGaps * bounds.getPhysWidth();
 //            }
 
-            String base = "";
-            try {
-                base = ctx.getSequence(basePosition, basePosition + 1);
-            } catch (ExecutionException ex) {
-                Exceptions.printStackTrace(ex);
-            }
+            String base = ctx.getSequence(basePosition, basePosition + 1);
             if (base != null && metrics != null) {
                 int offset = metrics.stringWidth(base) / 2;
                 BaseBackground b = new BaseBackground(12, 12, base);

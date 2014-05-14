@@ -58,31 +58,23 @@ public class MappingCtx {
         return job.getTool();
     }
 
-    public String getSequence(int from, int to) throws ExecutionException {
+    public String getSequence(int from, int to) {
         if (seqCache == null) {
-            synchronized (this) {
-                if (seqCache == null) {
-                    seqCache = CacheFactory.createSequenceCache((MGXMaster) ref.getMaster(), ref);
-                }
-            }
+            seqCache = CacheFactory.createSequenceCache((MGXMaster) ref.getMaster(), ref);
         }
         return seqCache.get(from, to);
     }
 
-    public Set<Region> getRegions(int from, int to) throws ExecutionException {
+    public Set<Region> getRegions(int from, int to) {
         if (regCache == null) {
             regCache = CacheFactory.createRegionCache((MGXMaster) ref.getMaster(), ref);
         }
         return regCache.get(from, to);
     }
 
-    public List<MappedSequence> getMappings(int from, int to) throws ExecutionException {
+    public List<MappedSequence> getMappings(int from, int to) {
         if (mapCache == null) {
-            synchronized (this) {
-                if (mapCache == null) {
-                    mapCache = CacheFactory.createMappedSequenceCache((MGXMaster) ref.getMaster(), ref, sessionUUID);
-                }
-            }
+            mapCache = CacheFactory.createMappedSequenceCache((MGXMaster) ref.getMaster(), ref, sessionUUID);
         }
         return mapCache.get(from, to);
     }

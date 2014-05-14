@@ -51,15 +51,15 @@ public class ViewController {
         pcs.firePropertyChange("boundsChange", 0, 1);
     }
 
-    public String getSequence(int from, int to) throws ExecutionException {
+    public String getSequence(int from, int to) {
         return ctx.getSequence(from, to);
     }
 
-    public Set<Region> getRegions(int from, int to) throws ExecutionException {
+    public Set<Region> getRegions(int from, int to) {
         return ctx.getRegions(from, to);
     }
 
-    public List<MappedSequence> getMappings(int from, int to) throws ExecutionException {
+    public List<MappedSequence> getMappings(int from, int to) {
         return ctx.getMappings(from, to);
     }
 

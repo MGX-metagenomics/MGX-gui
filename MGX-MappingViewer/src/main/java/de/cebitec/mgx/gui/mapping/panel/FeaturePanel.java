@@ -20,6 +20,8 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import javax.swing.SwingWorker;
 import org.openide.util.Exceptions;
@@ -35,7 +37,16 @@ public class FeaturePanel extends javax.swing.JPanel implements PropertyChangeLi
     private int[] bounds;
     private int intervalLen;
     private float scale;
-    private final int[] frames = new int[]{-3, -2, -1, 1, 2, 3};
+    private int midY;
+    private final static int[] frameOffsets = new int[]{
+        15 + -1 * FRAME_VOFFSET * -3,
+        15 + -1 * FRAME_VOFFSET * -2,
+        15 + -1 * FRAME_VOFFSET * -1,
+        -1 * FRAME_VOFFSET * 1,
+        -1 * FRAME_VOFFSET * 2,
+        -1 * FRAME_VOFFSET * 3};
+    private static final RenderingHints antiAlias = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+    private Set<Arrow> regs = new HashSet<>();
 
     /**
      * Creates new form FeaturePanel
@@ -55,27 +66,16 @@ public class FeaturePanel extends javax.swing.JPanel implements PropertyChangeLi
     }
 
     @Override
-    public void paint(Graphics g) {
-        super.paint(g);
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
-        RenderingHints rh = new RenderingHints(
-                RenderingHints.KEY_ANTIALIASING,
-                RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setRenderingHints(rh);
-        int midY = getHeight() / 2;
-        g.drawLine(0, midY, getWidth(), midY); // midline
-
-        g.setColor(Color.LIGHT_GRAY);
-        for (int f : frames) {
-            int frameOffset = -1 * FRAME_VOFFSET * f;
-            if (f < 0) {
-                // add some more space to make room for the position text
-                frameOffset += 15;
-            }
-            g.drawLine(0, midY + frameOffset, getWidth(), midY + frameOffset);
+        g2.setRenderingHints(antiAlias);
+        g2.drawLine(0,  midY, getWidth(),  midY); // midline
+        g2.setColor(Color.LIGHT_GRAY);
+        for (int f : frameOffsets) {
+            g2.drawLine(0, midY + f, getWidth(),  midY + f);
         }
         g.setColor(Color.DARK_GRAY);
-
         g.setFont(new Font(g.getFont().getFontName(), Font.PLAIN, 10));
 
         int separate = 500;
@@ -84,45 +84,28 @@ public class FeaturePanel extends javax.swing.JPanel implements PropertyChangeLi
         }
         for (int i = bounds[0]; i < bounds[1]; i++) {
             if (i % separate == 0) {
-                int pos = getScaledValue(i - bounds[0]);
-                g.drawLine(pos, midY - 3, pos, midY + 3);
+                float pos = getScaledValue(i - bounds[0]);
+                g2.drawLine((int) pos,  midY - 3, (int) pos,  midY + 3);
                 String text1 = String.valueOf(i);
-                g.drawString(text1, pos - textWidth(g, text1) / 2, midY + 13);
+                g2.drawString(text1, pos - textWidth(g, text1) / 2, midY + 13);
             }
         }
-
-        for (Region r : regs) {
-            // convert to relative 0-based positions
-            int[] pos = getScaledValues(r.getStart() - bounds[0] - 1, r.getStop() - bounds[0] - 1);
-            int frameOffset = -1 * FRAME_VOFFSET * r.getFrame();
-            if (r.getFrame() < 0) {
-                // add some more space to make room for the position text
-                frameOffset += 15;
-            }
-            Arrow a = null;
-            if (r.isFwdStrand()) {
-                a = new Arrow(Arrow.FORWARD, pos[1] - pos[0]);
-                int h = (int) Math.round(a.getBounds().getHeight() / 2);
-                a.translate(pos[0], midY + frameOffset - h);
-                g2.draw(a);
-                g2.fill(a);
-            } else {
-                a = new Arrow(Arrow.REVERSE, pos[1] - pos[0]);
-                int h = (int) Math.round(a.getBounds().getHeight() / 2);
-                a.translate(pos[1], midY + frameOffset - h);
-                g2.draw(a);
-                g2.fill(a);
-
-            }
-
-//            g.drawLine(pos[0], midY + frameOffset, pos[1], midY + frameOffset);
-//            g.drawString(r.getName(), pos[0] < pos[1] ? pos[0] : pos[1], midY + frameOffset - 3);
+        g2.setColor(Color.GREEN);
+        for (Arrow r : regs) {
+//            Rectangle2D b = r.getBounds2D();
+//            g2.setColor(Color.LIGHT_GRAY);
+//            g2.drawRect((int) b.getX(), (int) b.getY(), (int) b.getWidth(), (int) b.getHeight());
+//            g2.setColor(Color.GREEN);
+            g2.fill(r);
+//            g2.setColor(Color.LIGHT_GRAY);
+//            g2.draw(r);
+            //g2.drawString(r.getRegion().getName(), r.getBounds().x, r.getBounds().y + 2);
         }
     }
 
-    private int getScaledValue(int i) {
+    private float getScaledValue(int i) {
         float f = i * scale;
-        return (int) f;
+        return f;
     }
 
     private int[] getScaledValues(int i, int j) {
@@ -132,24 +115,13 @@ public class FeaturePanel extends javax.swing.JPanel implements PropertyChangeLi
         return ret;
     }
 
-//    private int[] getScaledValues(int[] in) {
-//        int[] ret = new int[2];
-//        //int[] bounds = vc.getBounds();
-//        //int interValLen = bounds[1] - bounds[0] + 1;
-//        //float scale = 1f * intervalLen / getWidth();
-//        ret[0] = (int) (in[0] *  scale);
-//        ret[1] = (int) (in[1] *  scale);
-//        return ret;
-//    }
-    private Region[] regs = null;
-
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         update();
         repaint();
     }
 
-    private int textWidth(Graphics g, String text) {
+    private static int textWidth(Graphics g, String text) {
         FontMetrics metrics = g.getFontMetrics(g.getFont());
         return metrics.stringWidth(text);
     }
@@ -158,21 +130,23 @@ public class FeaturePanel extends javax.swing.JPanel implements PropertyChangeLi
         bounds = vc.getBounds();
         intervalLen = bounds[1] - bounds[0] + 1;
         scale = 1f / (1f * intervalLen / getWidth());
+        midY = getHeight() / 2;
 
         if (!EventQueue.isDispatchThread()) {
-            try {
-                Region[] regions = vc.getRegions(bounds[0], bounds[1]).toArray(new Region[]{});
-                regs = regions;
-            } catch (ExecutionException ex) {
-                Exceptions.printStackTrace(ex);
+            regs.clear();
+            for (Region r : vc.getRegions(bounds[0], bounds[1])) {
+                regs.add(r2a(r));
             }
         } else {
-            SwingWorker<Region[], Void> sw = new SwingWorker<Region[], Void>() {
+            SwingWorker<Set<Arrow>, Void> sw = new SwingWorker<Set<Arrow>, Void>() {
 
                 @Override
-                protected Region[] doInBackground() throws Exception {
-                    Region[] ret = vc.getRegions(bounds[0], bounds[1]).toArray(new Region[]{});
-                    return ret;
+                protected Set<Arrow> doInBackground() throws Exception {
+                    Set<Arrow> newData = new HashSet<>();
+                    for (Region r : vc.getRegions(bounds[0], bounds[1])) {
+                        newData.add(r2a(r));
+                    }
+                    return newData;
                 }
             };
             sw.execute();
@@ -181,6 +155,17 @@ public class FeaturePanel extends javax.swing.JPanel implements PropertyChangeLi
             } catch (InterruptedException | ExecutionException ex) {
                 Exceptions.printStackTrace(ex);
             }
+        }
+    }
+
+    private final Arrow r2a(final Region r) {
+        int[] pos = getScaledValues(r.getStart() - bounds[0] - 1, r.getStop() - bounds[0] - 1);
+        if (r.getFrame() < 0) {
+            int frameOffset = frameOffsets[r.getFrame() + 3];
+            return new Arrow(r, pos[1], midY + frameOffset - Arrow.HALF_HEIGHT, pos[0] - pos[1]);
+        } else {
+            int frameOffset = frameOffsets[r.getFrame() + 2];
+            return new Arrow(r, pos[0], midY + frameOffset - Arrow.HALF_HEIGHT, pos[1] - pos[0]);
         }
     }
 
