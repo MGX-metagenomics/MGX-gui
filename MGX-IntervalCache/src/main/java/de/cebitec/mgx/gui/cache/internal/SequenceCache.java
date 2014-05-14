@@ -1,11 +1,9 @@
-
 package de.cebitec.mgx.gui.cache.internal;
 
 import com.google.common.cache.LoadingCache;
 import de.cebitec.mgx.gui.cache.Cache;
 import de.cebitec.mgx.gui.datamodel.Reference;
 import java.util.Iterator;
-import java.util.concurrent.ExecutionException;
 
 /**
  *
@@ -22,16 +20,16 @@ public class SequenceCache extends Cache<String> {
     }
 
     @Override
-    public String get(int from, int to) throws ExecutionException {
+    public String get(int from, int to) {
         assert from > -1;
         assert from < to;
-        assert to < ref.getLength(); 
+        assert to < ref.getLength();
         int fromInterval = from / getSegmentSize();
 
         StringBuilder sb = new StringBuilder();
         Iterator<Interval<String>> iter = getIntervals(from, to);
         while (iter.hasNext()) {
-            sb.append(lcache.get(iter.next()));
+            sb.append(lcache.getUnchecked(iter.next()));
         }
         String seq = sb.substring(from - (fromInterval * getSegmentSize()), to - (fromInterval * getSegmentSize()) + 1);
         return seq;

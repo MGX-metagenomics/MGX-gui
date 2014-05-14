@@ -11,7 +11,6 @@ import de.cebitec.mgx.gui.datamodel.Reference;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 /**
  *
@@ -28,11 +27,11 @@ public class MappedSequenceCache extends Cache<List<MappedSequence>> {
     }
 
     @Override
-    public List<MappedSequence> get(int from, int to) throws ExecutionException {
+    public List<MappedSequence> get(int from, int to)  {
         Iterator<Interval<List<MappedSequence>>> iter = getIntervals(from, to);
-        List<MappedSequence> mappedSequences = new ArrayList<MappedSequence>();
+        List<MappedSequence> mappedSequences = new ArrayList<>();
         while (iter.hasNext()) {
-            List<MappedSequence> get = lcache.get(iter.next());
+            List<MappedSequence> get = lcache.getUnchecked(iter.next());
             for (MappedSequence seq : get) {
                 mappedSequences.add(seq);
             }

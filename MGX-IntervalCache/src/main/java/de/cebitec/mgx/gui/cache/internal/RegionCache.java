@@ -24,11 +24,11 @@ public class RegionCache extends Cache<Set<Region>> {
     }
 
     @Override
-    public Set<Region> get(int from, int to) throws ExecutionException {
+    public Set<Region> get(int from, int to) {
         Iterator<Interval<Set<Region>>> iter = getIntervals(from, to);
         Set<Region> ret = new HashSet<>();
         while (iter.hasNext()) {
-            Set<Region> get = lcache.get(iter.next());
+            Set<Region> get = lcache.getUnchecked(iter.next());
             for (Region r : get) {
                 if (overlaps(r, from, to)) {
                     ret.add(r);

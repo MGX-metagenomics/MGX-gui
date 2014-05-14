@@ -208,11 +208,7 @@ public class CacheTest {
         assertFalse(cache.contains(interval));
 
         String seq = null;
-        try {
-            seq = cache.get(0, 99);
-        } catch (ExecutionException ex) {
-            fail(ex.getMessage());
-        }
+        seq = cache.get(0, 99);
         assertNotNull(seq);
 
         // same ref

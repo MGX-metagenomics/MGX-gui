@@ -72,6 +72,6 @@ public abstract class Cache<T> {
         };
     }
 
-    public abstract T get(int from, int to) throws ExecutionException;
+    public abstract T get(int from, int to);
 
 }
