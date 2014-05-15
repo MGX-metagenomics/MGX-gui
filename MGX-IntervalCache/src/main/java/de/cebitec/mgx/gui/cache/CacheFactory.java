@@ -65,7 +65,7 @@ public class CacheFactory {
         return new RegionCache(ref, lcache);
     }
 
-    public static Cache<List<MappedSequence>> createMappedSequenceCache(final MGXMaster master, final Reference ref, final UUID uuid) {
+    public static CoverageInfoCache<List<MappedSequence>> createMappedSequenceCache(final MGXMaster master, final Reference ref, final UUID uuid) {
         final int refLength = ref.getLength() - 1;
         CacheLoader<Interval<List<MappedSequence>>, List<MappedSequence>> loader = new CacheLoader<Interval<List<MappedSequence>>, List<MappedSequence>>() {
             @Override

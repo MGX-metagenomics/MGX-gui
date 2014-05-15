@@ -5,7 +5,7 @@
 package de.cebitec.mgx.gui.cache.internal;
 
 import com.google.common.cache.LoadingCache;
-import de.cebitec.mgx.gui.cache.Cache;
+import de.cebitec.mgx.gui.cache.CoverageInfoCache;
 import de.cebitec.mgx.gui.datamodel.MappedSequence;
 import de.cebitec.mgx.gui.datamodel.Reference;
 import java.util.ArrayList;
@@ -17,7 +17,7 @@ import java.util.List;
  *
  * @author belmann
  */
-public class MappedSequenceCache extends Cache<List<MappedSequence>> {
+public class MappedSequenceCache extends CoverageInfoCache<List<MappedSequence>> {
 
     public MappedSequenceCache(Reference ref, LoadingCache<Interval<List<MappedSequence>>, List<MappedSequence>> lcache) {
         super(ref, lcache);
@@ -40,6 +40,7 @@ public class MappedSequenceCache extends Cache<List<MappedSequence>> {
         return mappedSequences;
     }
 
+    @Override
     public int getMaxCoverage(int from, int to) {
         Iterator<Interval<List<MappedSequence>>> iter = getIntervals(from, to);
         int ret = 0;
