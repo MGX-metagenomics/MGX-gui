@@ -77,7 +77,9 @@ public class TestMaster {
             return null;
         }
 
-        for (MembershipI m : gpms.getMemberships()) {
+        Iterator<MembershipI> mIter = gpms.getMemberships();
+        while (mIter.hasNext()) {
+            MembershipI m = mIter.next();
             if ("MGX".equals(m.getProject().getProjectClass().getName()) && ("MGX_Viersen".equals(m.getProject().getName()))) {
                 MGXDTOMaster dtomaster = new MGXDTOMaster(gpms, m);
                 master = new MGXMaster(dtomaster);
