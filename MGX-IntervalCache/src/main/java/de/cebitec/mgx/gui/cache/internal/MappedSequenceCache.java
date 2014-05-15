@@ -9,6 +9,7 @@ import de.cebitec.mgx.gui.cache.Cache;
 import de.cebitec.mgx.gui.datamodel.MappedSequence;
 import de.cebitec.mgx.gui.datamodel.Reference;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -27,7 +28,7 @@ public class MappedSequenceCache extends Cache<List<MappedSequence>> {
     }
 
     @Override
-    public List<MappedSequence> get(int from, int to)  {
+    public List<MappedSequence> get(int from, int to) {
         Iterator<Interval<List<MappedSequence>>> iter = getIntervals(from, to);
         List<MappedSequence> mappedSequences = new ArrayList<>();
         while (iter.hasNext()) {
@@ -37,5 +38,36 @@ public class MappedSequenceCache extends Cache<List<MappedSequence>> {
             }
         }
         return mappedSequences;
+    }
+
+    public int getMaxCoverage(int from, int to) {
+        Iterator<Interval<List<MappedSequence>>> iter = getIntervals(from, to);
+        int ret = 0;
+        while (iter.hasNext()) {
+            Interval<List<MappedSequence>> interval = iter.next();
+            int[] cov = new int[interval.length()];
+            Arrays.fill(cov, 0);
+            List<MappedSequence> get = lcache.getUnchecked(iter.next());
+            for (MappedSequence seq : get) {
+                if (overlaps(seq, from, to)) {
+                    for (int i = seq.getStart(); i <= seq.getStop(); i++) {
+                        cov[i - seq.getStart()]++;
+                    }
+                }
+            }
+            for (int c : cov) {
+                if (c > ret) {
+                    ret = c;
+                }
+            }
+        }
+        return ret;
+    }
+
+    private static boolean overlaps(MappedSequence r, int from, int to) {
+        return (r.getStart() >= from && r.getStart() <= to)
+                || (r.getStop() >= from && r.getStop() <= to)
+                || (r.getStart() <= from && r.getStop() >= to)
+                || (r.getStop() <= from && r.getStart() >= to);
     }
 }
