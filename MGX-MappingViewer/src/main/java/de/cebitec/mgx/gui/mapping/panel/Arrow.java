@@ -9,10 +9,10 @@ import de.cebitec.mgx.gui.datamodel.Region;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Area;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
-import java.awt.geom.Area;
 import java.awt.geom.Rectangle2D;
 
 /**
@@ -58,6 +58,10 @@ public class Arrow implements Shape {
 
         //float height = 14;
         double mid = y + HALF_HEIGHT;
+        
+        if (length < 1) {
+            length = 1;
+        }
 
         if (r.isFwdStrand()) {
             GeneralPath triangle = new GeneralPath();
