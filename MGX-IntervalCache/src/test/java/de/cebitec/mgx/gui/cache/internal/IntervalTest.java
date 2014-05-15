@@ -16,6 +16,7 @@ import de.cebitec.mgx.restgpms.GPMS;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.Properties;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -99,7 +100,9 @@ public class IntervalTest {
         if (!gpms.login("mgx_unittestRO", "gut-isM5iNt")) {
             fail();
         }
-        for (MembershipI m : gpms.getMemberships()) {
+        Iterator<MembershipI> mIter = gpms.getMemberships();
+        while (mIter.hasNext()) {
+            MembershipI m = mIter.next();
             if ("MGX".equals(m.getProject().getProjectClass().getName()) && ("MGX_Unittest".equals(m.getProject().getName()))) {
                 MGXDTOMaster dtomaster = new MGXDTOMaster(gpms, m);
                 master = new MGXMaster(dtomaster);
