@@ -107,7 +107,7 @@ public class MappingAccess extends AccessBase<Mapping> {
         return ret;
     }
 
-    public UUID openMapping(Long id) {
+    public UUID openMapping(long id) {
         try {
             return getDTOmaster().Mapping().openMapping(id);
         } catch (MGXServerException ex) {
