@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.mapping;
 
 import de.cebitec.mgx.gui.cache.Cache;
 import de.cebitec.mgx.gui.cache.CacheFactory;
+import de.cebitec.mgx.gui.cache.CoverageInfoCache;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.Job;
 import de.cebitec.mgx.gui.datamodel.MappedSequence;
@@ -26,7 +27,7 @@ public class MappingCtx {
     private final Job job;
     private Cache<String> seqCache = null;
     private Cache<Set<Region>> regCache = null;
-    private Cache<List<MappedSequence>> mapCache = null;
+    private CoverageInfoCache<List<MappedSequence>> mapCache = null;
     private UUID sessionUUID = null;
 
     public MappingCtx(Mapping m, Reference ref, Job job) {
@@ -95,5 +96,9 @@ public class MappingCtx {
             }
         }
         return ret;
+    }
+    
+    public int getMaxCoverage() {
+        return mapCache.getMaxCoverage(0, ref.getLength() - 1);
     }
 }
