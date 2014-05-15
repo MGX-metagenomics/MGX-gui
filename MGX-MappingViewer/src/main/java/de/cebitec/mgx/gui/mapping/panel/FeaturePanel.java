@@ -23,9 +23,11 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
+import java.awt.geom.Area;
+import java.awt.geom.GeneralPath;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.security.SecureRandom;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -43,7 +45,7 @@ public class FeaturePanel extends javax.swing.JPanel implements PropertyChangeLi
     private final ViewController vc;
     private int[] bounds;
     private int intervalLen;
-    private float scale;
+    private double scale;
     private int midY;
     private final static int[] frameOffsets = new int[]{
         12 + -1 * FRAME_VOFFSET * -3,
@@ -53,8 +55,9 @@ public class FeaturePanel extends javax.swing.JPanel implements PropertyChangeLi
         -1 * FRAME_VOFFSET * 2,
         -1 * FRAME_VOFFSET * 3};
     private static final RenderingHints antiAlias = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-    private Set<Arrow> regs = null; // new HashSet<>();
-    private Set<Point2D> coverage = new HashSet<>();
+    private static final RenderingHints antiAliasText = new RenderingHints(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+    private Set<Arrow> regs = null;
+    private Set<Area> coverage = null;
     private int maxCoverage = 0;
 
     /**
@@ -74,7 +77,9 @@ public class FeaturePanel extends javax.swing.JPanel implements PropertyChangeLi
         ToolTipManager.sharedInstance().setDismissDelay(5000);
 
         update();
-        //repaint();
+        updateUI();
+        invalidate();
+        repaint();
     }
 
     @Override
@@ -82,16 +87,17 @@ public class FeaturePanel extends javax.swing.JPanel implements PropertyChangeLi
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHints(antiAlias);
+        //g2.setRenderingHints(antiAliasText);
 
         bounds = vc.getBounds();
         intervalLen = bounds[1] - bounds[0] + 1;
-        scale = 1f / (1f * intervalLen / getWidth());
+        scale = 1d / (1d * intervalLen / getWidth());
         midY = getHeight() / 2;
 
         drawCoverage(g2);
 
-        g2.drawLine(0, midY, getWidth(), midY); // midline
         g2.setColor(Color.DARK_GRAY);
+        g2.drawLine(0, midY, getWidth(), midY); // midline
         g2.setFont(new Font(g2.getFont().getFontName(), Font.PLAIN, 10));
         int textHeight = -1 + g2.getFontMetrics(g2.getFont()).getHeight() / 2;
         int textWidth = g2.getFontMetrics(g2.getFont()).stringWidth("+3");
@@ -107,22 +113,26 @@ public class FeaturePanel extends javax.swing.JPanel implements PropertyChangeLi
         }
         g2.setColor(Color.DARK_GRAY);
 
+        /*
+         * add tick marks with genome positions
+         */
         int separate = 500;
         while (intervalLen / separate > 10) {
             separate += 500;
         }
         for (int i = bounds[0]; i < bounds[1]; i++) {
             if (i % separate == 0) {
-                float pos = getScaledValue(i - bounds[0]);
+                double pos = getScaledValue(i - bounds[0]);
                 g2.drawLine((int) pos, midY - 3, (int) pos, midY + 3);
                 String text1 = String.valueOf(i);
-                g2.drawString(text1, pos - textWidth(g2, text1) / 2, midY + 13);
+                g2.drawString(text1, (int) pos - textWidth(g2, text1) / 2, midY + 13);
             }
         }
 
         /*
          * create shadow effects
          */
+        System.err.println("arrows: " + regs.size());
         Composite oldComp = g2.getComposite();
         g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.7f));
 
@@ -154,18 +164,26 @@ public class FeaturePanel extends javax.swing.JPanel implements PropertyChangeLi
         if (maxCoverage == 0 || coverage == null) {
             return;
         }
+        System.err.println("coverage areas: " + coverage.size());
 
+        Composite oldcomp = g2.getComposite();
+        AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f);
+        g2.setComposite(ac);
+        g2.setColor(Color.red);
+        for (Area l : coverage) {
+            g2.fill(l);
+        }
+        g2.setComposite(oldcomp);
     }
 
-    private float getScaledValue(int i) {
-        float f = i * scale;
-        return f;
+    private double getScaledValue(int i) {
+        return scale * i;
     }
 
-    private int[] getScaledValues(int i, int j) {
-        int[] ret = new int[2];
-        ret[0] = (int) (i * scale);
-        ret[1] = (int) (j * scale);
+    private double[] getScaledValues(int i, int j) {
+        double[] ret = new double[2];
+        ret[0] = i * scale;
+        ret[1] = j * scale;
         return ret;
     }
 
@@ -205,11 +223,11 @@ public class FeaturePanel extends javax.swing.JPanel implements PropertyChangeLi
                 }
             };
             sw.execute();
-            SwingWorker<Set<Point2D>, Void> sw2 = new SwingWorker<Set<Point2D>, Void>() {
+            SwingWorker<Set<Area>, Void> sw2 = new SwingWorker<Set<Area>, Void>() {
 
                 @Override
-                protected Set<Point2D> doInBackground() throws Exception {
-                    Set<Point2D> ret = new HashSet<>();
+                protected Set<Area> doInBackground() throws Exception {
+                    Set<Area> ret = new HashSet<>();
                     int[] coverage = vc.getCoverage(bounds[0], bounds[1]);
                     maxCoverage = 0;
                     for (int c : coverage) {
@@ -220,9 +238,52 @@ public class FeaturePanel extends javax.swing.JPanel implements PropertyChangeLi
                     if (maxCoverage == 0) {
                         return null;
                     }
-                    int pos = bounds[0];
-                    for (int i : coverage) {
-                        ret.add(cov2p(pos++, i));
+                    int baseY = midY - 1;
+                    int pos = 0;
+
+                    GeneralPath gp = null;
+                    double[] gpStart = new double[2];
+                    double[] lastPoint = new double[2];
+                    for (int cov : coverage) {
+                        if (cov == 0) {
+                            if (gp != null) {
+                                gp.lineTo(lastPoint[0], baseY); // down to center line
+                                gp.lineTo(gpStart[0], gpStart[1]); // close shape
+                                lastPoint[0] = gpStart[0];
+                                lastPoint[1] = gpStart[1];
+                                ret.add(new Area(gp));
+                                gp = null;
+                            }
+                        } else {
+                            // we have some coverage..
+                            double drawPos = getScaledValue(pos);
+                            double covScale = (midY * 1d) / (maxCoverage * 1d);
+                            double covPos = midY - (cov * covScale);
+
+                            if (gp == null) {
+                                gp = new GeneralPath();
+                                gpStart[0] = drawPos; // remember positions so we can close the shape later
+                                gpStart[1] = baseY;
+                                gp.moveTo(drawPos, baseY);
+                                lastPoint[0] = drawPos;
+                                lastPoint[1] = baseY;
+                            } else {
+                                // add a new point if distance >= 3px
+                                if (Math.abs(lastPoint[0] - drawPos) > 4 || Math.abs(lastPoint[1] - covPos) > 4) {
+                                    gp.lineTo(drawPos, covPos);
+                                    lastPoint[0] = drawPos;
+                                    lastPoint[1] = covPos;
+                                }
+                            }
+                            //ret.add(cov2p(pos, i));
+                        }
+                        pos++;
+                    }
+                    if (gp != null) {
+                        gp.lineTo(lastPoint[0], baseY); // down to center line
+                        gp.lineTo(gpStart[0], gpStart[1]); // close shape
+                        ret.add(new Area(gp));
+                        gp = null;
                     }
                     return ret;
                 }
@@ -238,8 +299,13 @@ public class FeaturePanel extends javax.swing.JPanel implements PropertyChangeLi
         }
     }
 
+//    private Line2D.Float cov2p(final int pos, final int cov) {
+//        double drawPos = getScaledValue(pos);
+//        float covPos = midY - cov * (midY / maxCoverage);
+//        return new Line2D.Float(drawPos, covPos, drawPos, midY - 1);
+//    }
     private Arrow r2a(final Region r) {
-        int[] pos = getScaledValues(r.getStart() - bounds[0] - 1, r.getStop() - bounds[0] - 1);
+        double[] pos = getScaledValues(r.getStart() - bounds[0] - 1, r.getStop() - bounds[0] - 1);
         if (r.getFrame() < 0) {
             int frameOffset = frameOffsets[r.getFrame() + 3];
             return new Arrow(r, pos[1], midY + frameOffset - Arrow.HALF_HEIGHT, pos[0] - pos[1]);
@@ -247,12 +313,6 @@ public class FeaturePanel extends javax.swing.JPanel implements PropertyChangeLi
             int frameOffset = frameOffsets[r.getFrame() + 2];
             return new Arrow(r, pos[0], midY + frameOffset - Arrow.HALF_HEIGHT, pos[1] - pos[0]);
         }
-    }
-
-    private Point2D cov2p(final int pos, final int cov) {
-        float drawPos = getScaledValue(pos);
-        float covPos = midY - cov * (midY / maxCoverage);
-        return new Point2D.Float(drawPos, covPos);
     }
 
     @Override

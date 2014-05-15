@@ -52,12 +52,12 @@ public class Arrow implements Shape {
     public final static int HEIGHT = TRIANGLE_HEIGHT;
     public final static int HALF_HEIGHT = HEIGHT / 2;
 
-    public Arrow(final Region r, float x, float y, float length) {
+    public Arrow(final Region r, double x, double y, double length) {
 
         region = r;
 
         //float height = 14;
-        float mid = y + HALF_HEIGHT;
+        double mid = y + HALF_HEIGHT;
 
         if (r.isFwdStrand()) {
             GeneralPath triangle = new GeneralPath();
