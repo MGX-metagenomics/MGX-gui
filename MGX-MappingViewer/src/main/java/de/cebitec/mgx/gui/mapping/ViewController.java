@@ -8,6 +8,7 @@ package de.cebitec.mgx.gui.mapping;
 import de.cebitec.mgx.gui.datamodel.MappedSequence;
 import de.cebitec.mgx.gui.datamodel.Reference;
 import de.cebitec.mgx.gui.datamodel.Region;
+import de.cebitec.mgx.gui.swingutils.NonEDT;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.Arrays;
@@ -26,12 +27,16 @@ public class ViewController {
 
     public ViewController(MappingCtx ctx) {
         this.ctx = ctx;
-        curBounds = new int[]{0, Math.min(10000, ctx.getReference().getLength() - 1)};
+        curBounds = new int[]{0, Math.min(15000, ctx.getReference().getLength() - 1)};
         pcs = new PropertyChangeSupport(this);
     }
 
     public Reference getReference() {
         return ctx.getReference();
+    }
+
+    public int getMaxCoverage() {
+        return ctx.getMaxCoverage();
     }
 
     public int[] getBounds() {
