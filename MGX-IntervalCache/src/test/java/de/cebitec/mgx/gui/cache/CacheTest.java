@@ -76,11 +76,11 @@ public class CacheTest {
         UUID sessionUUID = master.Mapping().openMapping(m.getId());
         Cache<List<MappedSequence>> cache = CacheFactory.createMappedSequenceCache(master, ref, sessionUUID);
         assertNotNull(cache);
-        
+
         List<MappedSequence> ret = cache.get(0, 1000);
         assertNotNull(ret);
         assertEquals(4, ret.size());
-        
+
         master.Mapping().closeMapping(sessionUUID);
     }
 
@@ -144,7 +144,7 @@ public class CacheTest {
         System.err.println("  generating " + 0 + " to " + (ref.getLength() - 1));
         Iterator<Interval<String>> iter = cache.getIntervals(0, ref.getLength() - 1);
         assertNotNull(iter);
-        Interval<String> interval = null;
+        Interval<String> interval;
         int numSegments = 0;
         while (iter.hasNext()) {
             interval = iter.next();
@@ -230,8 +230,7 @@ public class CacheTest {
         Interval<String> interval = iter.next();
         assertFalse(cache.contains(interval));
 
-        String seq = null;
-        seq = cache.get(0, 99);
+        String seq = cache.get(0, 99);
         assertNotNull(seq);
 
         // same ref
@@ -264,7 +263,9 @@ public class CacheTest {
         if (!gpms.login("mgx_unittestRO", "gut-isM5iNt")) {
             fail();
         }
-        for (MembershipI m : gpms.getMemberships()) {
+        Iterator<MembershipI> mIter = gpms.getMemberships();
+        while (mIter.hasNext()) {
+            MembershipI m = mIter.next();
             if ("MGX".equals(m.getProject().getProjectClass().getName()) && ("MGX_Unittest".equals(m.getProject().getName()))) {
                 MGXDTOMaster dtomaster = new MGXDTOMaster(gpms, m);
                 master = new MGXMaster(dtomaster);
