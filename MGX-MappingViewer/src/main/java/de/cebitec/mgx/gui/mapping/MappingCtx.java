@@ -81,9 +81,12 @@ public class MappingCtx {
     }
 
     public int[] getCoverage(int from, int to) {
+        if (mapCache == null) {
+            mapCache = CacheFactory.createMappedSequenceCache((MGXMaster) ref.getMaster(), ref, sessionUUID);
+        }
         return mapCache.getCoverage(from, to);
     }
-    
+
     public int getMaxCoverage() {
         return 25; //mapCache.getMaxCoverage(0, ref.getLength() - 1);
     }
