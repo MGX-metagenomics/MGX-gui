@@ -5,15 +5,23 @@
  */
 package de.cebitec.mgx.gui.mapping.panel;
 
+import de.cebitec.mgx.gui.datamodel.MappedSequence;
 import de.cebitec.mgx.gui.mapping.ViewController;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.geom.Area;
+import java.awt.geom.GeneralPath;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import javax.swing.SwingWorker;
 import javax.swing.ToolTipManager;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -24,9 +32,10 @@ public class MappingPanel extends javax.swing.JPanel implements PropertyChangeLi
     private final ViewController vc;
     private int[] bounds;
     private int intervalLen;
-    private float scale;
-    private int midY;
+    private double scale;
     private static final RenderingHints antiAlias = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+    private Set<Area> coverage = null;
+    private final Color[] gradient = new Color[100];
 
     /**
      * Creates new form MappingPanel
@@ -37,10 +46,14 @@ public class MappingPanel extends javax.swing.JPanel implements PropertyChangeLi
         initComponents();
         setBackground(Color.WHITE);
         setForeground(Color.DARK_GRAY);
+        generateGradient();
         vc.addPropertyChangeListener(this);
         ToolTipManager.sharedInstance().registerComponent(this);
         ToolTipManager.sharedInstance().setDismissDelay(5000);
         setMinimumSize(new Dimension(300, 300));
+
+        update();
+        repaint();
     }
 
     @Override
@@ -48,18 +61,54 @@ public class MappingPanel extends javax.swing.JPanel implements PropertyChangeLi
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHints(antiAlias);
+        g2.setColor(Color.BLACK);
+        if (coverage != null) {
+            System.err.println("mappings number " + coverage.size());
+            for (Area l : coverage) {
+                g2.fill(l);
+            }
+        }
 
-        bounds = vc.getBounds();
-        intervalLen = bounds[1] - bounds[0] + 1;
-        scale = 1f / (1f * intervalLen / getWidth());
-        midY = getHeight() / 2;
     }
 
     private synchronized void update() {
         bounds = vc.getBounds();
         intervalLen = bounds[1] - bounds[0] + 1;
-        scale = 1f / (1f * intervalLen / getWidth());
-        midY = getHeight() / 2;
+        assert intervalLen > 0;
+
+        scale = (1d * intervalLen) / getWidth();
+        System.err.println("TEST " + px2bp(bp2px(100)));
+        System.err.println("height " + getHeight());
+
+        SwingWorker<Set<Area>, Void> sw2 = new SwingWorker<Set<Area>, Void>() {
+
+            @Override
+            protected Set<Area> doInBackground() throws Exception {
+                Set<Area> ret = new HashSet<>();
+
+                double heightScale = getHeight() / 100;
+                for (MappedSequence ms : vc.getMappings(bounds[0], bounds[1])) {
+                    GeneralPath gp = new GeneralPath();
+                    double pos0 = bp2px(ms.getStart());
+                    double pos1 = bp2px(ms.getStop());
+                    double height = (Math.random() * 100) * heightScale; //heightScale * ms.getIdentity();
+                    gp.moveTo(pos0, height);
+                    gp.lineTo(pos1, height);
+                    gp.lineTo(pos1, height + 5);
+                    gp.lineTo(pos0, height + 5);
+                    gp.lineTo(pos0, height);
+                    ret.add(new Area(gp));
+                }
+                return ret;
+            }
+        };
+        sw2.execute();
+        try {
+            coverage = sw2.get();
+        } catch (InterruptedException | ExecutionException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+
     }
 
     /**
@@ -71,15 +120,18 @@ public class MappingPanel extends javax.swing.JPanel implements PropertyChangeLi
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        setMinimumSize(new java.awt.Dimension(200, 200));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 948, Short.MAX_VALUE)
+            .addGap(0, 946, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 388, Short.MAX_VALUE)
+            .addGap(0, 386, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -90,5 +142,26 @@ public class MappingPanel extends javax.swing.JPanel implements PropertyChangeLi
     public void propertyChange(PropertyChangeEvent evt) {
         update();
         repaint();
+    }
+
+    private double bp2px(int i) {
+        return scale * (i - bounds[0]);
+    }
+
+    private int px2bp(double d) {
+        return (int) (d / scale) + bounds[0];
+    }
+
+    private void generateGradient() {
+        Color color1 = Color.RED;
+        Color color2 = Color.GREEN;
+        for (int i = 0; i < 100; i++) {
+            float ratio = (float) i / (float) 100;
+            int red = (int) (color2.getRed() * ratio + color1.getRed() * (1 - ratio));
+            int green = (int) (color2.getGreen() * ratio + color1.getGreen() * (1 - ratio));
+            int blue = (int) (color2.getBlue() * ratio + color1.getBlue() * (1 - ratio));
+            gradient[i] = new Color(red, green, blue);
+        }
+
     }
 }

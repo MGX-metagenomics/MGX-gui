@@ -35,8 +35,7 @@ public class NavigationPanel extends javax.swing.JPanel implements PropertyChang
     private final ViewController vc;
     private int[] previewBounds = null;
     private int[] offSet = null;
-    private int intervalLen;
-    private float scale;
+    private double scale;
     private int midY;
 
     /**
@@ -62,7 +61,7 @@ public class NavigationPanel extends javax.swing.JPanel implements PropertyChang
                 RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setRenderingHints(rh);
 
-        scale = 1f * vc.getReference().getLength() / getWidth();
+        scale = 1d * vc.getReference().getLength() / getWidth();
         midY = getHeight() / 2;
         
         g2.drawLine(0, midY, getWidth(), midY); // midline
@@ -84,7 +83,7 @@ public class NavigationPanel extends javax.swing.JPanel implements PropertyChang
         g2.drawString(text3, 3 * getWidth() / 4 - textWidth(g2, text3) / 2, midY + 13);
 
         if (previewBounds != null) {
-            float[] scaledPreview = getScaledValues(previewBounds);
+            double[] scaledPreview = getScaledValues(previewBounds);
             float dash1[] = {5.0f};
             BasicStroke dashed = new BasicStroke(1.0f,
                     BasicStroke.CAP_BUTT,
@@ -94,7 +93,7 @@ public class NavigationPanel extends javax.swing.JPanel implements PropertyChang
             Stroke oldStroke = g2.getStroke();
             g2.setStroke(dashed);
             g2.setColor(Color.BLACK);
-            Shape curScope = new Rectangle2D.Float(scaledPreview[0], 0, scaledPreview[1] - scaledPreview[0] + 1, getHeight() - 1);
+            Shape curScope = new Rectangle2D.Double(scaledPreview[0], 0, scaledPreview[1] - scaledPreview[0] + 1, getHeight() - 1);
             g2.draw(curScope);
             //g2.drawRect(scaledPreview[0], 0, scaledPreview[1] - scaledPreview[0] + 1, getHeight() - 1);
             g2.setStroke(oldStroke);
@@ -104,10 +103,10 @@ public class NavigationPanel extends javax.swing.JPanel implements PropertyChang
         AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.4f);
 
         // draw box indicating current scope
-        float[] scaledBounds = getScaledValues(vc.getBounds());
+        double[] scaledBounds = getScaledValues(vc.getBounds());
         g2.setComposite(ac);
         g2.setColor(Color.red);
-        Shape curScope = new Rectangle2D.Float(scaledBounds[0], 0, scaledBounds[1] - scaledBounds[0] + 1, getHeight() - 1);
+        Shape curScope = new Rectangle2D.Double(scaledBounds[0], 0, scaledBounds[1] - scaledBounds[0] + 1, getHeight() - 1);
         g2.fill(curScope);
         //g2.fillRect(scaledBounds[0], 0, scaledBounds[1] - scaledBounds[0] + 1, getHeight() - 1);
         g2.setComposite(oldcomp);
@@ -115,8 +114,7 @@ public class NavigationPanel extends javax.swing.JPanel implements PropertyChang
     }
 
     private int textWidth(Graphics2D g, String text) {
-        FontMetrics metrics = g.getFontMetrics(g.getFont());
-        return metrics.stringWidth(text);
+        return g.getFontMetrics(g.getFont()).stringWidth(text);
     }
 
 //    private int getScaledValue(int i) {
@@ -124,16 +122,16 @@ public class NavigationPanel extends javax.swing.JPanel implements PropertyChang
 //        float f = i * 1f / scale;
 //        return (int) f;
 //    }
-    private float[] getScaledValues(int[] in) {
-        float[] ret = new float[in.length];
+    private double[] getScaledValues(int[] in) {
+        double[] ret = new double[in.length];
         int pos = 0;
         for (int i : in) {
-            float f = i * 1f / scale;
+            double f = i * 1d / scale;
             ret[pos++] = f;
         }
         return ret;
     }
-
+   
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -193,7 +191,7 @@ public class NavigationPanel extends javax.swing.JPanel implements PropertyChang
             return;
         }
         int[] bounds = vc.getBounds();
-        float[] scaledBounds = getScaledValues(bounds);
+        double[] scaledBounds = getScaledValues(bounds);
 
         int x = e.getX();
         int posInRef = (int) (x * scale);
