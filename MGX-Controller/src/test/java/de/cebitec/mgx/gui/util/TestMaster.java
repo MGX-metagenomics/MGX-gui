@@ -26,7 +26,7 @@ public class TestMaster {
             return masterRO;
         }
 
-        String serverURI = "http://scooter.cebitec.uni-bielefeld.de:8080/MGX-maven-web/webresources/";
+        String serverURI = "https://mgx.cebitec.uni-bielefeld.de/MGX-maven-web/webresources/";
 
         String config = System.getProperty("user.home") + "/.m2/mgx.junit";
         File f = new File(config);
