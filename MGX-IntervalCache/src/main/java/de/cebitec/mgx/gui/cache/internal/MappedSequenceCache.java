@@ -43,6 +43,28 @@ public class MappedSequenceCache extends CoverageInfoCache<Set<MappedSequence>> 
     }
 
     @Override
+    public int[] getCoverage(int from, int to) {
+        int[] ret = new int[to - from + 1];
+        Arrays.fill(ret, 0);
+        Iterator<Interval<Set<MappedSequence>>> iter = getIntervals(from, to);
+        Set<MappedSequence> mappedSequences = new HashSet<>();
+        while (iter.hasNext()) {
+            Set<MappedSequence> get = lcache.getUnchecked(iter.next());
+            for (MappedSequence ms : get) {
+                for (int i = ms.getStart(); i < ms.getStop(); i++) {
+                    // we need to check extra since we also receive mappings
+                    // which only partially overlap with the interval
+                    if (i >= from && i <= to) {
+                        ret[i - from]++;
+                    }
+                }
+            }
+
+        }
+        return ret;
+    }
+
+    @Override
     public int getMaxCoverage(int from, int to) {
         Iterator<Interval<Set<MappedSequence>>> iter = getIntervals(from, to);
         int ret = 0;

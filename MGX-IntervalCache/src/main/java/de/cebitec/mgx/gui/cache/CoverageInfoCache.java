@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package de.cebitec.mgx.gui.cache;
 
 import com.google.common.cache.LoadingCache;
@@ -23,7 +22,8 @@ public abstract class CoverageInfoCache<T> extends Cache<T> {
     public CoverageInfoCache(Reference ref, LoadingCache<Interval<T>, T> lcache, int segSize) {
         super(ref, lcache, segSize);
     }
-    
+
+    public abstract int[] getCoverage(int from, int to);
+
     public abstract int getMaxCoverage(int from, int to);
-    
 }
