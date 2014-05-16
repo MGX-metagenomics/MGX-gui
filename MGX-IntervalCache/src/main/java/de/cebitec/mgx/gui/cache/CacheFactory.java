@@ -11,15 +11,11 @@ import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.MappedSequence;
 import de.cebitec.mgx.gui.datamodel.Reference;
 import de.cebitec.mgx.gui.datamodel.Region;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -65,13 +61,13 @@ public class CacheFactory {
         return new RegionCache(ref, lcache);
     }
 
-    public static CoverageInfoCache<List<MappedSequence>> createMappedSequenceCache(final MGXMaster master, final Reference ref, final UUID uuid) {
+    public static CoverageInfoCache<Set<MappedSequence>> createMappedSequenceCache(final MGXMaster master, final Reference ref, final UUID uuid) {
         final int refLength = ref.getLength() - 1;
-        CacheLoader<Interval<List<MappedSequence>>, List<MappedSequence>> loader = new CacheLoader<Interval<List<MappedSequence>>, List<MappedSequence>>() {
+        CacheLoader<Interval<Set<MappedSequence>>, Set<MappedSequence>> loader = new CacheLoader<Interval<Set<MappedSequence>>, Set<MappedSequence>>() {
             @Override
-            public List<MappedSequence> load(Interval<List<MappedSequence>> k) {
+            public Set<MappedSequence> load(Interval<Set<MappedSequence>> k) {
                 Iterator<MappedSequence> iter = master.Mapping().byReferenceInterval(uuid, k.getFrom(), Math.min(k.getTo(), refLength));
-                List<MappedSequence> ret = new ArrayList<>();
+                Set<MappedSequence> ret = new HashSet<>();
                 while (iter.hasNext()) {
                     ret.add(iter.next());
                 }
@@ -79,7 +75,7 @@ public class CacheFactory {
             }
         };
 
-        LoadingCache<Interval<List<MappedSequence>>, List<MappedSequence>> lcache = CacheBuilder.newBuilder()
+        LoadingCache<Interval<Set<MappedSequence>>, Set<MappedSequence>> lcache = CacheBuilder.newBuilder()
                 .expireAfterAccess(10, TimeUnit.MINUTES)
                 .build(loader);
         return new MappedSequenceCache(ref, lcache);

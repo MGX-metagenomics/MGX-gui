@@ -74,10 +74,10 @@ public class CacheTest {
         assertNotNull(m);
         assertEquals(8, m.getReferenceID());
         UUID sessionUUID = master.Mapping().openMapping(m.getId());
-        Cache<List<MappedSequence>> cache = CacheFactory.createMappedSequenceCache(master, ref, sessionUUID);
+        Cache<Set<MappedSequence>> cache = CacheFactory.createMappedSequenceCache(master, ref, sessionUUID);
         assertNotNull(cache);
 
-        List<MappedSequence> ret = cache.get(0, 1000);
+        Set<MappedSequence> ret = cache.get(0, 1000);
         assertNotNull(ret);
         assertEquals(4, ret.size());
 
