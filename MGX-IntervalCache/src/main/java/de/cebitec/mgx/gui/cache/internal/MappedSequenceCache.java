@@ -34,7 +34,9 @@ public class MappedSequenceCache extends CoverageInfoCache<Set<MappedSequence>> 
         while (iter.hasNext()) {
             Set<MappedSequence> get = lcache.getUnchecked(iter.next());
             for (MappedSequence seq : get) {
-                mappedSequences.add(seq);
+                if (overlaps(seq, from, to)) {
+                    mappedSequences.add(seq);
+                }
             }
         }
         return mappedSequences;

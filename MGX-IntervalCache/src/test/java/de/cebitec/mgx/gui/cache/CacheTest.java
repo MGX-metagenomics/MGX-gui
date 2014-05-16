@@ -79,7 +79,7 @@ public class CacheTest {
 
         Set<MappedSequence> ret = cache.get(0, 1000);
         assertNotNull(ret);
-        assertEquals(4, ret.size());
+        assertEquals(0, ret.size());
 
         master.Mapping().closeMapping(sessionUUID);
     }
