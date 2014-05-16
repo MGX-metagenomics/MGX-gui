@@ -27,7 +27,7 @@ public class MappingCtx {
     private final Job job;
     private Cache<String> seqCache = null;
     private Cache<Set<Region>> regCache = null;
-    private CoverageInfoCache<List<MappedSequence>> mapCache = null;
+    private CoverageInfoCache<Set<MappedSequence>> mapCache = null;
     private UUID sessionUUID = null;
 
     public MappingCtx(Mapping m, Reference ref, Job job) {
@@ -73,7 +73,7 @@ public class MappingCtx {
         return regCache.get(from, to);
     }
 
-    public List<MappedSequence> getMappings(int from, int to) {
+    public Set<MappedSequence> getMappings(int from, int to) {
         if (mapCache == null) {
             mapCache = CacheFactory.createMappedSequenceCache((MGXMaster) ref.getMaster(), ref, sessionUUID);
         }
@@ -81,24 +81,10 @@ public class MappingCtx {
     }
 
     public int[] getCoverage(int from, int to) {
-        int[] ret = new int[to - from + 1];
-        Arrays.fill(ret, 0);
-        for (MappedSequence ms : getMappings(from, to)) {
-            assert ms.getStart() <= ms.getStop();
-            // mapping positions are 1-based, convert to 0-based
-            for (int i = ms.getStart() - 1; i < ms.getStop(); i++) {
-                int genomePos = i - from;
-                // we need to check extra since we also receive mappings
-                // which only partially overlap with the interval
-                if (genomePos >= from && genomePos <= to) {
-                    ret[genomePos-from]++;
-                }
-            }
-        }
-        return ret;
+        return mapCache.getCoverage(from, to);
     }
     
     public int getMaxCoverage() {
-        return mapCache.getMaxCoverage(0, ref.getLength() - 1);
+        return 25; //mapCache.getMaxCoverage(0, ref.getLength() - 1);
     }
 }

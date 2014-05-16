@@ -63,7 +63,7 @@ public class ViewController {
         return ctx.getRegions(from, to);
     }
 
-    public List<MappedSequence> getMappings(int from, int to) {
+    public Set<MappedSequence> getMappings(int from, int to) {
         return ctx.getMappings(from, to);
     }
 

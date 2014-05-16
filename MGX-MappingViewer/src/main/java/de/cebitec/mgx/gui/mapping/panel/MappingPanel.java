@@ -34,8 +34,8 @@ public class MappingPanel extends javax.swing.JPanel implements PropertyChangeLi
     private int intervalLen;
     private double scale;
     private static final RenderingHints antiAlias = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-    private Set<Area> coverage = null;
-    private final Color[] gradient = new Color[100];
+    private Set<MappedRead2D> coverage = null;
+   
 
     /**
      * Creates new form MappingPanel
@@ -46,14 +46,13 @@ public class MappingPanel extends javax.swing.JPanel implements PropertyChangeLi
         initComponents();
         setBackground(Color.WHITE);
         setForeground(Color.DARK_GRAY);
-        generateGradient();
         vc.addPropertyChangeListener(this);
         ToolTipManager.sharedInstance().registerComponent(this);
         ToolTipManager.sharedInstance().setDismissDelay(5000);
         setMinimumSize(new Dimension(300, 300));
 
-        update();
-        repaint();
+//        update();
+//        repaint();
     }
 
     @Override
@@ -64,7 +63,8 @@ public class MappingPanel extends javax.swing.JPanel implements PropertyChangeLi
         g2.setColor(Color.BLACK);
         if (coverage != null) {
             System.err.println("mappings number " + coverage.size());
-            for (Area l : coverage) {
+            for (MappedRead2D l : coverage) {
+                g2.setColor(l.getColor());
                 g2.fill(l);
             }
         }
@@ -80,24 +80,18 @@ public class MappingPanel extends javax.swing.JPanel implements PropertyChangeLi
         System.err.println("TEST " + px2bp(bp2px(100)));
         System.err.println("height " + getHeight());
 
-        SwingWorker<Set<Area>, Void> sw2 = new SwingWorker<Set<Area>, Void>() {
+        SwingWorker<Set<MappedRead2D>, Void> sw2 = new SwingWorker<Set<MappedRead2D>, Void>() {
 
             @Override
-            protected Set<Area> doInBackground() throws Exception {
-                Set<Area> ret = new HashSet<>();
+            protected Set<MappedRead2D> doInBackground() throws Exception {
+                Set<MappedRead2D> ret = new HashSet<>();
 
-                double heightScale = getHeight() / 100;
+                //double heightScale = getHeight() / 100;
                 for (MappedSequence ms : vc.getMappings(bounds[0], bounds[1])) {
-                    GeneralPath gp = new GeneralPath();
                     double pos0 = bp2px(ms.getStart());
                     double pos1 = bp2px(ms.getStop());
-                    double height = (Math.random() * 100) * heightScale; //heightScale * ms.getIdentity();
-                    gp.moveTo(pos0, height);
-                    gp.lineTo(pos1, height);
-                    gp.lineTo(pos1, height + 5);
-                    gp.lineTo(pos0, height + 5);
-                    gp.lineTo(pos0, height);
-                    ret.add(new Area(gp));
+                    MappedRead2D rect = new MappedRead2D(ms, pos0, 25, pos1-pos0+1);
+                    ret.add(rect);
                 }
                 return ret;
             }
@@ -140,7 +134,7 @@ public class MappingPanel extends javax.swing.JPanel implements PropertyChangeLi
     // End of variables declaration//GEN-END:variables
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        update();
+        //update();
         repaint();
     }
 
@@ -152,16 +146,5 @@ public class MappingPanel extends javax.swing.JPanel implements PropertyChangeLi
         return (int) (d / scale) + bounds[0];
     }
 
-    private void generateGradient() {
-        Color color1 = Color.RED;
-        Color color2 = Color.GREEN;
-        for (int i = 0; i < 100; i++) {
-            float ratio = (float) i / (float) 100;
-            int red = (int) (color2.getRed() * ratio + color1.getRed() * (1 - ratio));
-            int green = (int) (color2.getGreen() * ratio + color1.getGreen() * (1 - ratio));
-            int blue = (int) (color2.getBlue() * ratio + color1.getBlue() * (1 - ratio));
-            gradient[i] = new Color(red, green, blue);
-        }
-
-    }
+  
 }

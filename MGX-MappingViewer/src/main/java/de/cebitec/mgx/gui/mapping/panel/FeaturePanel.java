@@ -56,7 +56,7 @@ public class FeaturePanel extends javax.swing.JPanel implements PropertyChangeLi
     private Set<Arrow> regs = null;
     private Set<Area> coverage = null;
     private int maxCoverage = 0;
-    private boolean showShadow = false;
+    private boolean showShadow = true;
     private final static Color lighterGray = new Color(210, 210, 210);
 
     /**
@@ -242,15 +242,7 @@ public class FeaturePanel extends javax.swing.JPanel implements PropertyChangeLi
             protected Set<Area> doInBackground() throws Exception {
                 Set<Area> ret = new HashSet<>();
                 int[] coverage = vc.getCoverage(bounds[0], bounds[1]);
-//                    maxCoverage = 0;
-//                    for (int c : coverage) {
-//                        if (c > maxCoverage) {
-//                            maxCoverage = c;
-//                        }
-//                    }
-//                    if (maxCoverage == 0) {
-//                        return null;
-//                    }
+                assert coverage.length == bounds[1]-bounds[0]+1;
                 int baseY = midY - 1;
                 int pos = bounds[0];
 
@@ -312,11 +304,6 @@ public class FeaturePanel extends javax.swing.JPanel implements PropertyChangeLi
 
     }
 
-//    private Line2D.Float cov2p(final int pos, final int cov) {
-//        double drawPos = getScaledValue(pos);
-//        float covPos = midY - cov * (midY / maxCoverage);
-//        return new Line2D.Float(drawPos, covPos, drawPos, midY - 1);
-//    }
     private Arrow r2a(final Region r) {
         //double[] pos = getScaledValues(r.getStart() - bounds[0] - 1, r.getStop() - bounds[0] - 1);
         double pos0 = bp2px(r.getStart() - 1);

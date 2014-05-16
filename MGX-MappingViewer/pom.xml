@@ -82,6 +82,12 @@
             <groupId>de.cebitec.mgx.gui</groupId>
             <artifactId>MGX-SwingUtils</artifactId>
         </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.10</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
