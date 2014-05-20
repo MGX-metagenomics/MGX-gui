@@ -17,11 +17,12 @@ import java.awt.geom.Rectangle2D;
  *
  * @author sj
  */
-public class MappedRead2D implements Shape {
+public class MappedRead2D implements Shape, Comparable<MappedRead2D> {
 
     private final MappedSequence ms;
     private final Shape shape;
-    private final static Color[] gradient = new Color[100];
+    private final static Color[] gradient = new Color[101];
+    private final static double DEFAULT_HEIGHT = 4;
 
     static {
         generateGradient();
@@ -29,7 +30,7 @@ public class MappedRead2D implements Shape {
 
     public MappedRead2D(MappedSequence ms, double x, double y, double length) {
         this.ms = ms;
-        shape = new Rectangle2D.Double(x, y, length, 4);
+        shape = new Rectangle2D.Double(x, y, length, DEFAULT_HEIGHT);
     }
     
     public Color getColor() {
@@ -89,12 +90,21 @@ public class MappedRead2D implements Shape {
     private static void generateGradient() {
         Color color1 = Color.RED;
         Color color2 = Color.GREEN;
-        for (int i = 0; i < 100; i++) {
-            float ratio = (float) i / (float) 100;
+        for (int i = 0; i < 101; i++) {
+            float ratio = (float) i / (float) 101;
             int red = (int) (color2.getRed() * ratio + color1.getRed() * (1 - ratio));
             int green = (int) (color2.getGreen() * ratio + color1.getGreen() * (1 - ratio));
             int blue = (int) (color2.getBlue() * ratio + color1.getBlue() * (1 - ratio));
             gradient[i] = new Color(red, green, blue);
         }
+    }
+
+    @Override
+    public int compareTo(MappedRead2D o) {
+        return Integer.compare(ms.getIdentity(), o.ms.getIdentity());
+    }
+
+    String getToolTipText() {
+        return String.valueOf(ms.getIdentity()) + "% identity";
     }
 }

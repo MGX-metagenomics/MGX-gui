@@ -4,14 +4,14 @@
  */
 package de.cebitec.mgx.gui.mapping;
 
+import de.cebitec.mgx.gui.cache.IntIterator;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.Job;
 import de.cebitec.mgx.gui.datamodel.MappedSequence;
 import de.cebitec.mgx.gui.datamodel.Mapping;
 import de.cebitec.mgx.gui.datamodel.Reference;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.SortedSet;
 import java.util.UUID;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -60,8 +60,6 @@ public class MappingCtxTest {
     public void testGetRegions() {
         System.out.println("getRegions");
 
-
-
     }
 
     /**
@@ -88,14 +86,13 @@ public class MappingCtxTest {
 
         MappingCtx ctx = new MappingCtx(mapping, ref, job);
 
-        Set<MappedSequence> mappings = ctx.getMappings(6385, 6395);
+        SortedSet<MappedSequence> mappings = ctx.getMappings(6385, 6395);
         master.Mapping().closeMapping(uuid);
 
         for (MappedSequence ms : mappings) {
             System.err.println(ms.getStart() + " - " + ms.getStop());
         }
         assertEquals(1, mappings.size());
-
     }
 
     /**
@@ -132,8 +129,49 @@ public class MappingCtxTest {
         assertEquals(0, mappings[1]); // 6390
         assertEquals(1, mappings[2]); // 6391
         assertEquals(1, mappings[3]); // 6392
-        
-        master.Mapping().closeMapping(uuid);
 
+        master.Mapping().closeMapping(uuid);
+    }
+
+    @Test
+    public void testGetCoverageIterator() {
+        System.out.println("getCoverageIterator");
+        MGXMaster master = TestMaster.getRO();
+        Iterator<Mapping> iter = master.Mapping().fetchall();
+        int cnt = 0;
+        Mapping mapping = null;
+        while (iter.hasNext()) {
+            mapping = iter.next();
+            cnt++;
+        }
+        assertEquals(1, cnt);
+        assertNotNull(mapping);
+
+        Reference ref = master.Reference().fetch(mapping.getReferenceID());
+        Job job = master.Job().fetch(mapping.getJobID());
+
+        UUID uuid = master.Mapping().openMapping(mapping.getId());
+
+        MappingCtx ctx = new MappingCtx(mapping, ref, job);
+
+        IntIterator intIter = ctx.getCoverageIterator(6389, 6392);
+        assertNotNull(intIter);
+
+        int poscnt = 0;
+        int[] mappings = new int[4];
+        while (intIter.hasNext()) {
+            //System.err.println(intIter.next());
+            mappings[poscnt] = intIter.next();
+            poscnt++;
+        }
+
+        assertEquals(4, poscnt);
+
+        assertEquals(0, mappings[0]); // 6389
+        assertEquals(0, mappings[1]); // 6390
+        assertEquals(1, mappings[2]); // 6391
+        assertEquals(1, mappings[3]); // 6392
+
+        master.Mapping().closeMapping(uuid);
     }
 }

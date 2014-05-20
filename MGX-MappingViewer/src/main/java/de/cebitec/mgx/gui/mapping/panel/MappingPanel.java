@@ -9,100 +9,110 @@ import de.cebitec.mgx.gui.datamodel.MappedSequence;
 import de.cebitec.mgx.gui.mapping.ViewController;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.geom.Area;
-import java.awt.geom.GeneralPath;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import javax.swing.SwingWorker;
+import java.awt.Point;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import javax.swing.ToolTipManager;
-import org.openide.util.Exceptions;
 
 /**
  *
  * @author sj
  */
-public class MappingPanel extends javax.swing.JPanel implements PropertyChangeListener {
+public class MappingPanel extends PanelBase {
 
-    private final ViewController vc;
-    private int[] bounds;
-    private int intervalLen;
-    private double scale;
-    private static final RenderingHints antiAlias = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-    private Set<MappedRead2D> coverage = null;
-   
+    private final SortedSet<MappedRead2D> coverage = new TreeSet<>();
 
     /**
      * Creates new form MappingPanel
      */
     public MappingPanel(ViewController vc) {
-        super();
-        this.vc = vc;
+        super(vc);
         initComponents();
-        setBackground(Color.WHITE);
-        setForeground(Color.DARK_GRAY);
-        vc.addPropertyChangeListener(this);
         ToolTipManager.sharedInstance().registerComponent(this);
         ToolTipManager.sharedInstance().setDismissDelay(5000);
         setMinimumSize(new Dimension(300, 300));
-
-//        update();
-//        repaint();
     }
 
     @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        Graphics2D g2 = (Graphics2D) g;
-        g2.setRenderingHints(antiAlias);
-        g2.setColor(Color.BLACK);
+    void draw(Graphics2D g2) {
         if (coverage != null) {
             System.err.println("mappings number " + coverage.size());
-            for (MappedRead2D l : coverage) {
-                g2.setColor(l.getColor());
-                g2.fill(l);
+            Color col = Color.BLACK;
+            synchronized (coverage) {
+                for (MappedRead2D mr2d : coverage) {
+                    if (!col.equals(mr2d.getColor())) {
+                        g2.setColor(mr2d.getColor());
+                    }
+                    g2.fill(mr2d);
+                }
             }
         }
-
     }
 
-    private synchronized void update() {
-        bounds = vc.getBounds();
-        intervalLen = bounds[1] - bounds[0] + 1;
-        assert intervalLen > 0;
-
-        scale = (1d * intervalLen) / getWidth();
-        System.err.println("TEST " + px2bp(bp2px(100)));
-        System.err.println("height " + getHeight());
-
-        SwingWorker<Set<MappedRead2D>, Void> sw2 = new SwingWorker<Set<MappedRead2D>, Void>() {
-
-            @Override
-            protected Set<MappedRead2D> doInBackground() throws Exception {
-                Set<MappedRead2D> ret = new HashSet<>();
-
-                //double heightScale = getHeight() / 100;
-                for (MappedSequence ms : vc.getMappings(bounds[0], bounds[1])) {
-                    double pos0 = bp2px(ms.getStart());
-                    double pos1 = bp2px(ms.getStop());
-                    MappedRead2D rect = new MappedRead2D(ms, pos0, 25, pos1-pos0+1);
-                    ret.add(rect);
+    @Override
+    public String getToolTipText(MouseEvent m) {
+        Point loc = m.getPoint();
+        if (coverage != null) {
+            for (MappedRead2D a : coverage) {
+                if (a.getBounds().contains(loc)) {
+                    return a.getToolTipText();
                 }
-                return ret;
             }
-        };
-        sw2.execute();
-        try {
-            coverage = sw2.get();
-        } catch (InterruptedException | ExecutionException ex) {
-            Exceptions.printStackTrace(ex);
+        }
+        return null;
+    }
+
+    @Override
+    void update() {
+
+        int vStart = 5;
+        int idx = 0;
+        double vOffset = 5;
+        SortedSet<MappedSequence> mappings = vc.getMappings(bounds[0], bounds[1]);
+        List<Track> tracks = new ArrayList<>();
+
+        for (MappedSequence ms : mappings) {
+            boolean placed = false;
+            for (Track t : tracks) {
+                if (!placed && !t.overlaps(ms)) {
+                    t.add(ms);
+                    placed = true;
+                }
+            }
+            if (!placed) {
+                Track t = new Track(vStart + (vOffset * idx));
+                idx++;
+                t.add(ms);
+                tracks.add(t);
+                placed = true;
+            }
+            assert placed;
         }
 
+        SortedSet<MappedRead2D> ret = new TreeSet<>();
+
+        for (Track t : tracks) {
+            Iterator<MappedSequence> iter = t.getSequences();
+            {
+                while (iter.hasNext()) {
+                    MappedSequence ms = iter.next();
+                    double pos0 = bp2px(ms.getStart());
+                    double pos1 = bp2px(ms.getStop());
+                    MappedRead2D rect = new MappedRead2D(ms, pos0, t.getVOffset(), pos1 - pos0 + 1);
+                    ret.add(rect);
+                }
+            }
+        }
+
+        synchronized (coverage) {
+            coverage.clear();
+            coverage.addAll(ret);
+        }
     }
 
     /**
@@ -132,19 +142,4 @@ public class MappingPanel extends javax.swing.JPanel implements PropertyChangeLi
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-        //update();
-        repaint();
-    }
-
-    private double bp2px(int i) {
-        return scale * (i - bounds[0]);
-    }
-
-    private int px2bp(double d) {
-        return (int) (d / scale) + bounds[0];
-    }
-
-  
 }

@@ -11,42 +11,27 @@ import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Composite;
 import java.awt.Dimension;
-import java.awt.EventQueue;
 import java.awt.Font;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.RenderingHints;
 import java.awt.Shape;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.geom.GeneralPath;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import javax.swing.SwingWorker;
 import javax.swing.ToolTipManager;
-import org.openide.util.Exceptions;
 
 /**
  *
  * @author sjaenick
  */
-public class FeaturePanel extends javax.swing.JPanel implements PropertyChangeListener, MouseListener, MouseMotionListener {
+public class FeaturePanel extends PanelBase implements MouseListener, MouseMotionListener {
 
     private final static int FRAME_VOFFSET = 20;
-    private final ViewController vc;
-    private int[] bounds;
-    private int intervalLen;
-    private double scale;
-    private int midY;
     private final static int[] frameOffsets = new int[]{
         12 + -1 * FRAME_VOFFSET * -3,
         12 + -1 * FRAME_VOFFSET * -2,
@@ -54,77 +39,33 @@ public class FeaturePanel extends javax.swing.JPanel implements PropertyChangeLi
         -1 * FRAME_VOFFSET * 1,
         -1 * FRAME_VOFFSET * 2,
         -1 * FRAME_VOFFSET * 3};
-    private static final RenderingHints antiAlias = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-    private static final RenderingHints antiAliasText = new RenderingHints(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
     private Set<Arrow> regs = null;
     private Set<Area> coverage = null;
     private int maxCoverage = 0;
-    private boolean showShadow = true;
     private final static Color lighterGray = new Color(210, 210, 210);
+    private int[] previewBounds = null;
 
     /**
      * Creates new form FeaturePanel
      */
     public FeaturePanel(ViewController vc) {
-        super();
-        this.vc = vc;
+        super(vc);
         initComponents();
-        setBackground(Color.WHITE);
-        setForeground(Color.DARK_GRAY);
         setMaximumSize(new Dimension(5000, 150));
-        vc.addPropertyChangeListener(this);
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
         ToolTipManager.sharedInstance().registerComponent(this);
         ToolTipManager.sharedInstance().setDismissDelay(5000);
 
-        addComponentListener(new ComponentAdapter() {
-
-            @Override
-            public void componentResized(ComponentEvent e) {
-                SwingWorker<Void, Void> sw = new SwingWorker<Void, Void>() {
-
-                    @Override
-                    protected Void doInBackground() throws Exception {
-                        update();
-                        repaint();
-                        return null;
-                    }
-
-                };
-                sw.execute();
-                super.componentResized(e);
-            }
-
-        });
-
         doLayout();
         updateUI();
         invalidate();
-        this.setPreferredSize(new Dimension(1, 230));
+        this.setPreferredSize(new Dimension(1, 60));
         this.revalidate();
-
-        update();
-
-        repaint();
     }
 
     @Override
-    public void paint(Graphics g) {
-        super.paint(g);
-    }
-
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        Graphics2D g2 = (Graphics2D) g;
-        g2.setRenderingHints(antiAlias);
-        //g2.setRenderingHints(antiAliasText);
-
-        if (getHeight() == 0) {
-            return;
-        }
-
+    void draw(Graphics2D g2) {
         drawCoverage(g2);
 
         g2.setColor(Color.DARK_GRAY);
@@ -167,26 +108,24 @@ public class FeaturePanel extends javax.swing.JPanel implements PropertyChangeLi
         /*
          * create shadow effects
          */
-        if (showShadow) {
-            Composite oldComp = g2.getComposite();
-            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.7f));
+        Composite oldComp = g2.getComposite();
+        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.7f));
 
-            g2.setColor(Color.LIGHT_GRAY);
-            for (Arrow r : regs) {
-                Shape shadow = AffineTransform.getTranslateInstance(4, 3).createTransformedShape(r);
-                g2.fill(shadow);
-            }
-            g2.setColor(lighterGray);
-            for (Arrow r : regs) {
-                Shape shadow = AffineTransform.getTranslateInstance(4, 3).createTransformedShape(r);
-                g2.draw(shadow);
-            }
-
-            g2.setComposite(oldComp);
+        g2.setColor(Color.LIGHT_GRAY);
+        for (Arrow r : regs) {
+            Shape shadow = AffineTransform.getTranslateInstance(4, 3).createTransformedShape(r);
+            g2.fill(shadow);
         }
-        g2.setColor(Color.GREEN);
+        g2.setColor(lighterGray);
+        for (Arrow r : regs) {
+            Shape shadow = AffineTransform.getTranslateInstance(4, 3).createTransformedShape(r);
+            g2.draw(shadow);
+        }
+
+        g2.setComposite(oldComp);
 
         // draw arrows (and borders)
+        g2.setColor(Color.GREEN);
         for (Arrow r : regs) {
             g2.fill(r);
         }
@@ -213,41 +152,22 @@ public class FeaturePanel extends javax.swing.JPanel implements PropertyChangeLi
     }
 
     @Override
-    public synchronized void propertyChange(PropertyChangeEvent evt) {
-        update();
-        repaint();
-    }
+    void update() {
 
-    private static int textWidth(Graphics2D g, String text) {
-        return g.getFontMetrics(g.getFont()).stringWidth(text);
-    }
-
-    private void update() {
-
-        assert !EventQueue.isDispatchThread();
-
-        bounds = vc.getBounds();
-        intervalLen = bounds[1] - bounds[0] + 1;
-        scale = 1d / (1d * intervalLen / getWidth());
-        //scale = 1d * intervalLen / getWidth();
-        midY = getHeight() / 2;
-        //maxCoverage = 0;
-        //System.err.println("midy is " + midY);
         if (midY == 0) {
             return;
         }
 
         fetchMaxCoverage();
-        
+
         // fetch features
         Set<Arrow> newData = new HashSet<>();
         for (Region r : vc.getRegions(bounds[0], bounds[1])) {
             newData.add(r2a(r));
         }
         regs = newData;
-        
-        // 
 
+        // 
         Set<Area> ret = new HashSet<>();
         int[] cove = vc.getCoverage(bounds[0], bounds[1]);
         assert cove.length == bounds[1] - bounds[0] + 1;
@@ -299,11 +219,9 @@ public class FeaturePanel extends javax.swing.JPanel implements PropertyChangeLi
             gp = null;
         }
         coverage = ret;
-
     }
 
     private Arrow r2a(final Region r) {
-        //double[] pos = getScaledValues(r.getStart() - bounds[0] - 1, r.getStop() - bounds[0] - 1);
         double pos0 = bp2px(r.getStart() - 1);
         double pos1 = bp2px(r.getStop() - 1);
         if (r.getFrame() < 0) {
@@ -340,22 +258,8 @@ public class FeaturePanel extends javax.swing.JPanel implements PropertyChangeLi
         //  if (e.getButton() == MouseEvent.BUTTON1) {
         inDrag = true;
         int x = e.getX();
-//            float sc = 1f * intervalLen / getWidth();
-//            int posInRef = (int) (bounds[0] + (x * sc));
         dragStart = px2bp(x);
         System.err.println("drag started at " + dragStart);
-        //   }
-    }
-
-    private double bp2px(int i) {
-        return scale * (i - bounds[0]);
-    }
-
-    private int px2bp(int i) {
-        //double sc = 1d * intervalLen / getWidth();
-        //int posInRef = (int) (bounds[0] + (i * sc));
-        return bounds[0] + (int) (i / scale);
-        //return  posInRef;
     }
 
     @Override
@@ -375,15 +279,11 @@ public class FeaturePanel extends javax.swing.JPanel implements PropertyChangeLi
     public void mouseDragged(MouseEvent e) {
         //
         if (inDrag && dragStart != -1) {
-            int x = e.getX();
-//                float sc = 1f * intervalLen / getWidth();
-//                int posInRef = (int) (bounds[0] + (x * sc));
-            int posInRef = px2bp(x);
+            int posInRef = px2bp(e.getX());
             int offset = posInRef - dragStart + 1;
             dragStart = posInRef;
             vc.setBounds(Math.max(0, bounds[0] - offset), Math.min(vc.getReference().getLength() - 1, bounds[1] - offset));
         }
-        //  }
     }
 
     @Override
@@ -398,16 +298,6 @@ public class FeaturePanel extends javax.swing.JPanel implements PropertyChangeLi
         maxCoverage = vc.getMaxCoverage();
     }
 
-//    private final class RegionSort implements Comparator<Region> {
-//
-//        @Override
-//        public int compare(Region r1, Region r2) {
-//            int min1 = Math.min(r1.getStart(), r1.getStop());
-//            int min2 = Math.min(r2.getStart(), r2.getStop());
-//            return Integer.compare(min2, min2);
-//        }
-//
-//    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -417,7 +307,9 @@ public class FeaturePanel extends javax.swing.JPanel implements PropertyChangeLi
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        setMinimumSize(new java.awt.Dimension(5, 5));
+        setMaximumSize(new java.awt.Dimension(32767, 50));
+        setMinimumSize(new java.awt.Dimension(5, 50));
+        setPreferredSize(new java.awt.Dimension(852, 50));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);

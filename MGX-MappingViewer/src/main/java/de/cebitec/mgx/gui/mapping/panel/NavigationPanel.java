@@ -5,6 +5,7 @@
  */
 package de.cebitec.mgx.gui.mapping.panel;
 
+import de.cebitec.mgx.gui.cache.IntIterator;
 import de.cebitec.mgx.gui.mapping.ViewController;
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
@@ -12,61 +13,54 @@ import java.awt.Color;
 import java.awt.Composite;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.geom.Area;
+import java.awt.geom.GeneralPath;
 import java.awt.geom.Rectangle2D;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
+import java.util.HashSet;
+import java.util.Set;
+import javax.swing.SwingWorker;
 
 /**
  *
  * @author sjaenick
  */
-public class NavigationPanel extends javax.swing.JPanel implements PropertyChangeListener, MouseListener, MouseMotionListener {
+public class NavigationPanel extends PanelBase implements MouseListener, MouseMotionListener {
 
     private final static int CAPTURE_DIST = 3; // px
-    private final ViewController vc;
+    private final int refLength;
     private int[] previewBounds = null;
     private int[] offSet = null;
-    private double scale;
-    private int midY;
+    private double scaleFactor;
+    private Set<Area> coverage = null;
 
     /**
      * Creates new form NavigationPanel
      */
     public NavigationPanel(ViewController vc) {
-        this.vc = vc;
+        super(vc);
+        refLength = vc.getReference().getLength();
         initComponents();
-        setBackground(Color.WHITE);
-        setForeground(Color.DARK_GRAY);
         setMaximumSize(new Dimension(5000, 50));
-        vc.addPropertyChangeListener(this);
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
     }
 
     @Override
-    public void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        Graphics2D g2 = (Graphics2D) g;
-        RenderingHints rh = new RenderingHints(
-                RenderingHints.KEY_ANTIALIASING,
-                RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setRenderingHints(rh);
+    void draw(Graphics2D g2) {
 
-        scale = 1d * vc.getReference().getLength() / getWidth();
-        midY = getHeight() / 2;
-        
+        if (coverage != null) {
+            drawCoverage(g2);
+        }
+
+        g2.setColor(Color.DARK_GRAY);
+
         g2.drawLine(0, midY, getWidth(), midY); // midline
-
-        int refLength = vc.getReference().getLength();
 
         g2.setFont(new Font(g2.getFont().getFontName(), Font.PLAIN, 10));
 
@@ -95,7 +89,6 @@ public class NavigationPanel extends javax.swing.JPanel implements PropertyChang
             g2.setColor(Color.BLACK);
             Shape curScope = new Rectangle2D.Double(scaledPreview[0], 0, scaledPreview[1] - scaledPreview[0] + 1, getHeight() - 1);
             g2.draw(curScope);
-            //g2.drawRect(scaledPreview[0], 0, scaledPreview[1] - scaledPreview[0] + 1, getHeight() - 1);
             g2.setStroke(oldStroke);
         }
 
@@ -113,25 +106,27 @@ public class NavigationPanel extends javax.swing.JPanel implements PropertyChang
 
     }
 
-    private int textWidth(Graphics2D g, String text) {
-        return g.getFontMetrics(g.getFont()).stringWidth(text);
+    private void drawCoverage(Graphics2D g2) {
+        Composite oldcomp = g2.getComposite();
+        AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f);
+        g2.setComposite(ac);
+        g2.setColor(Color.LIGHT_GRAY);
+        for (Area l : coverage) {
+            g2.fill(l);
+        }
+        g2.setComposite(oldcomp);
     }
 
-//    private int getScaledValue(int i) {
-//        float scale = vc.getReference().getLength() / getWidth();
-//        float f = i * 1f / scale;
-//        return (int) f;
-//    }
     private double[] getScaledValues(int[] in) {
         double[] ret = new double[in.length];
         int pos = 0;
         for (int i : in) {
-            double f = i * 1d / scale;
+            double f = bp2px(i);
             ret[pos++] = f;
         }
         return ret;
     }
-   
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -159,23 +154,11 @@ public class NavigationPanel extends javax.swing.JPanel implements PropertyChang
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
     @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-        update();
-        repaint();
-    }
-
-    private synchronized void update() {
-//        scale = 1f * vc.getReference().getLength() / getWidth();
-//        midY = getHeight() / 2;
-    }
-
-    @Override
     public void mouseClicked(MouseEvent e) {
         if (e.isConsumed()) {
             return;
         }
-        int x = e.getX();
-        int posInRef = (int) (x * scale);
+        int posInRef = px2bp(e.getX());
         e.consume();
 
         int[] oldBounds = vc.getBounds();
@@ -190,11 +173,10 @@ public class NavigationPanel extends javax.swing.JPanel implements PropertyChang
         if (e.isConsumed()) {
             return;
         }
-        int[] bounds = vc.getBounds();
         double[] scaledBounds = getScaledValues(bounds);
 
         int x = e.getX();
-        int posInRef = (int) (x * scale);
+        int posInRef = px2bp(e.getX());
 
         int distToStart = Math.abs(bounds[0] - posInRef);  // in bp
         int distToEnd = Math.abs(bounds[1] - posInRef);
@@ -224,10 +206,7 @@ public class NavigationPanel extends javax.swing.JPanel implements PropertyChang
             return;
         }
 
-        int x = e.getX();
-        int posInRef = (int) (x * scale);
-
-        int[] bounds = vc.getBounds();
+        int posInRef = px2bp(e.getX());
 
         switch (dragType) {
             case 1:
@@ -275,8 +254,7 @@ public class NavigationPanel extends javax.swing.JPanel implements PropertyChang
             return;
         }
 
-        int x = e.getX();
-        int posInRef = (int) (x * scale);
+        int posInRef = px2bp(e.getX());
 
         int[] bounds = vc.getBounds();
 
@@ -305,5 +283,94 @@ public class NavigationPanel extends javax.swing.JPanel implements PropertyChang
     @Override
     public void mouseMoved(MouseEvent e) {
         // nop
+    }
+
+    @Override
+    protected double bp2px(int i) {
+        return i * 1d / scaleFactor;
+    }
+
+    @Override
+    protected int px2bp(double d) {
+        return (int) (d * scaleFactor);
+    }
+
+    @Override
+    void update() {
+        scaleFactor = 1d * refLength / getWidth();
+        midY = getHeight() / 2;
+
+        if (coverage == null) {
+            coverage = new HashSet<>();
+            SwingWorker<Void, Void> sw = new SwingWorker<Void, Void>() {
+
+                @Override
+                protected Void doInBackground() throws Exception {
+                    generateCoverage();
+                    return null;
+                }
+
+            };
+            sw.execute();
+        }
+    }
+
+    private void generateCoverage() {
+        IntIterator covIter = vc.getCoverageIterator();
+        Set<Area> ret = new HashSet<>();
+
+        int baseY = getHeight() - 1;
+        int pos = 0;
+        double covScale = (baseY * 1d) / (vc.getMaxCoverage() * 1d);
+
+        GeneralPath gp = null;
+        double[] gpStart = new double[2];
+        double[] lastPoint = new double[2];
+        while (covIter.hasNext()) {
+            int cov = covIter.next();
+            if (cov == 0) {
+                if (gp != null) {
+                    gp.lineTo(lastPoint[0], baseY); // down to bottom line
+                    gp.lineTo(gpStart[0], gpStart[1]); // close shape
+                    lastPoint[0] = gpStart[0];
+                    lastPoint[1] = gpStart[1];
+                    ret.add(new Area(gp));
+                    gp = null;
+                }
+            } else {
+                // we have some coverage..
+                double drawPos = bp2px(pos);
+                double covPos = baseY - (cov * covScale);
+
+                if (gp == null) {
+                    gp = new GeneralPath();
+                    gpStart[0] = drawPos; // remember positions so we can close the shape later
+                    gpStart[1] = baseY;
+                    gp.moveTo(drawPos, baseY);
+                    lastPoint[0] = drawPos;
+                    lastPoint[1] = baseY;
+                } else {
+                    // add a new point if distance >= 3px
+                    if (Math.abs(lastPoint[0] - drawPos) > 4 || Math.abs(lastPoint[1] - covPos) > 4) {
+                        gp.lineTo(drawPos, covPos);
+                        lastPoint[0] = drawPos;
+                        lastPoint[1] = covPos;
+                    }
+                }
+            }
+            pos++;
+        }
+        if (gp != null) {
+            gp.lineTo(lastPoint[0], baseY); // down to bottom line
+            gp.lineTo(gpStart[0], gpStart[1]); // close shape
+            ret.add(new Area(gp));
+            gp = null;
+        }
+
+        synchronized (coverage) {
+            coverage.clear();
+            coverage.addAll(ret);
+        }
+        repaint();
     }
 }

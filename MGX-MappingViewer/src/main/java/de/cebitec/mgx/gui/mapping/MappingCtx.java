@@ -3,6 +3,7 @@ package de.cebitec.mgx.gui.mapping;
 import de.cebitec.mgx.gui.cache.Cache;
 import de.cebitec.mgx.gui.cache.CacheFactory;
 import de.cebitec.mgx.gui.cache.CoverageInfoCache;
+import de.cebitec.mgx.gui.cache.IntIterator;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.Job;
 import de.cebitec.mgx.gui.datamodel.MappedSequence;
@@ -11,9 +12,8 @@ import de.cebitec.mgx.gui.datamodel.Reference;
 import de.cebitec.mgx.gui.datamodel.Region;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.datamodel.Tool;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.UUID;
 
 /**
@@ -27,7 +27,7 @@ public class MappingCtx {
     private final Job job;
     private Cache<String> seqCache = null;
     private Cache<Set<Region>> regCache = null;
-    private CoverageInfoCache<Set<MappedSequence>> mapCache = null;
+    private CoverageInfoCache<SortedSet<MappedSequence>> mapCache = null;
     private UUID sessionUUID = null;
 
     public MappingCtx(Mapping m, Reference ref, Job job) {
@@ -73,7 +73,7 @@ public class MappingCtx {
         return regCache.get(from, to);
     }
 
-    public Set<MappedSequence> getMappings(int from, int to) {
+    public SortedSet<MappedSequence> getMappings(int from, int to) {
         if (mapCache == null) {
             mapCache = CacheFactory.createMappedSequenceCache((MGXMaster) ref.getMaster(), ref, sessionUUID);
         }
@@ -87,7 +87,23 @@ public class MappingCtx {
         return mapCache.getCoverage(from, to);
     }
 
+    public IntIterator getCoverageIterator(int from, int to) {
+        if (mapCache == null) {
+            mapCache = CacheFactory.createMappedSequenceCache((MGXMaster) ref.getMaster(), ref, sessionUUID);
+        }
+        return mapCache.getCoverageIterator(from, to);
+    }
+
     public int getMaxCoverage() {
-        return 25; //mapCache.getMaxCoverage(0, ref.getLength() - 1);
+        int ret = 0;
+        IntIterator iter = getCoverageIterator(0, ref.getLength() -1);
+        while (iter.hasNext()) {
+            int i = iter.next();
+            if (i > ret) {
+                ret = i;
+                System.err.println("new max "+ ret);
+            }
+        }
+        return ret;
     }
 }
