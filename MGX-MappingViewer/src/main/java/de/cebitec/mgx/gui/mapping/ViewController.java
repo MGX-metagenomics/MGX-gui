@@ -8,11 +8,10 @@ package de.cebitec.mgx.gui.mapping;
 import de.cebitec.mgx.gui.datamodel.MappedSequence;
 import de.cebitec.mgx.gui.datamodel.Reference;
 import de.cebitec.mgx.gui.datamodel.Region;
-import de.cebitec.mgx.gui.swingutils.NonEDT;
+import de.cebitec.mgx.pevents.ParallelPropertyChangeSupport;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -28,7 +27,7 @@ public class ViewController {
     public ViewController(MappingCtx ctx) {
         this.ctx = ctx;
         curBounds = new int[]{0, Math.min(15000, ctx.getReference().getLength() - 1)};
-        pcs = new PropertyChangeSupport(this);
+        pcs = new ParallelPropertyChangeSupport(this);
     }
 
     public Reference getReference() {
