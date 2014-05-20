@@ -1,7 +1,5 @@
 package de.cebitec.mgx.gui.cache.internal;
 
-import de.cebitec.mgx.gui.cache.Cache;
-
 /**
  *
  * @author sjaenick

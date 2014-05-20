@@ -6,6 +6,7 @@ package de.cebitec.mgx.gui.cache.internal;
 
 import com.google.common.cache.LoadingCache;
 import de.cebitec.mgx.gui.cache.CoverageInfoCache;
+import de.cebitec.mgx.gui.cache.IntIterator;
 import de.cebitec.mgx.gui.datamodel.MappedSequence;
 import de.cebitec.mgx.gui.datamodel.Reference;
 import java.util.Arrays;
@@ -64,6 +65,12 @@ public class MappedSequenceCache extends CoverageInfoCache<SortedSet<MappedSeque
 
         }
         return ret;
+    }
+    
+    
+    @Override
+    public IntIterator getCoverageIterator(int from, int to) {
+        return new IntIterator(from, to, this);
     }
 
     @Override

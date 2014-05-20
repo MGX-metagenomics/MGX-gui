@@ -24,6 +24,8 @@ public abstract class CoverageInfoCache<T> extends Cache<T> {
     }
 
     public abstract int[] getCoverage(int from, int to);
-
+    
+    public abstract IntIterator getCoverageIterator(int from, int to);
+    
     public abstract int getMaxCoverage(int from, int to);
 }
