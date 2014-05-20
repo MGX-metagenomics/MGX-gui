@@ -333,6 +333,16 @@
                 <artifactId>MGX-SwingUtils</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>MGX-IntervalCache</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <artifactId>MGX-util</artifactId>
+                <groupId>de.cebitec.mgx.gui</groupId>
+                <version>${project.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -418,6 +428,7 @@
         <module>MGX-Rarefaction</module>
         <module>MGX-Newick-Wrapper</module>
         <module>MGX-PCA</module>
+        <module>MGX-util</module>
     </modules>
     <properties>
         <netbeans.version>RELEASE74</netbeans.version>
