@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Properties;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.UUID;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -73,10 +74,10 @@ public class CacheTest {
         assertNotNull(m);
         assertEquals(8, m.getReferenceID());
         UUID sessionUUID = master.Mapping().openMapping(m.getId());
-        Cache<Set<MappedSequence>> cache = CacheFactory.createMappedSequenceCache(master, ref, sessionUUID);
+        Cache<SortedSet<MappedSequence>> cache = CacheFactory.createMappedSequenceCache(master, ref, sessionUUID);
         assertNotNull(cache);
 
-        Set<MappedSequence> ret = cache.get(0, 1000);
+        SortedSet<MappedSequence> ret = cache.get(0, 1000);
         assertNotNull(ret);
         assertEquals(0, ret.size());
 
