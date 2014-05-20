@@ -6,20 +6,20 @@ import de.cebitec.mgx.gui.cache.Cache;
  *
  * @author sjaenick
  */
-public class Interval<T> {
+public class Interval {
 
     // lower bound is always segment-aligned, 
     // upper bound isn't (but might be, if not last segment)
     private final int from;
     //private final int to;
-    private final Cache<T> cache;
+    private final int segmentSize;
 
 //    public Interval(Cache<T> cache, int from) {
 //        this(cache, from, Math.min(from + cache.getSegmentSize() - 1, cache.getReference().getLength() - 1));
 //    }
 
-    public Interval(Cache<T> cache, int from) { //, int to) {
-        this.cache = cache;
+    public Interval(int segmentSize, int from) { //, int to) {
+        this.segmentSize = segmentSize;
         this.from = from;
         //this.to = to;
     }
@@ -29,7 +29,7 @@ public class Interval<T> {
     }
 
     public int getTo() {
-        return from + cache.getSegmentSize() - 1;
+        return from + segmentSize - 1;
     }
 
     public int length() {
@@ -41,13 +41,7 @@ public class Interval<T> {
         if (start >= upto) {
             return null;
         }
-//        int newTo = Math.min(getTo() + cache.getSegmentSize(), cache.getReference().getLength() - 1);
-//        if (upto > newTo) {
-//            // next full segment
-//            return new Interval(cache, start); //, newTo);
-//        }
-//        // partial segment
-        return new Interval(cache, start); //, upto);
+        return new Interval(segmentSize, start); //, upto);
     }
 
     @Override
@@ -72,7 +66,6 @@ public class Interval<T> {
     public int hashCode() {
         int hash = 5;
         hash = 83 * hash + this.from;
-        //hash = 83 * hash + this.to;
         return hash;
     }
 }

@@ -15,11 +15,11 @@ import de.cebitec.mgx.gui.datamodel.Reference;
  */
 public abstract class CoverageInfoCache<T> extends Cache<T> {
 
-    public CoverageInfoCache(Reference ref, LoadingCache<Interval<T>, T> lcache) {
+    public CoverageInfoCache(Reference ref, LoadingCache<Interval, T> lcache) {
         super(ref, lcache);
     }
 
-    public CoverageInfoCache(Reference ref, LoadingCache<Interval<T>, T> lcache, int segSize) {
+    public CoverageInfoCache(Reference ref, LoadingCache<Interval, T> lcache, int segSize) {
         super(ref, lcache, segSize);
     }
 

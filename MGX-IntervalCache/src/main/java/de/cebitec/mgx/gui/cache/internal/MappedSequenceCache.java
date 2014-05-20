@@ -19,17 +19,17 @@ import java.util.Set;
  */
 public class MappedSequenceCache extends CoverageInfoCache<Set<MappedSequence>> {
 
-    public MappedSequenceCache(Reference ref, LoadingCache<Interval<Set<MappedSequence>>, Set<MappedSequence>> lcache) {
+    public MappedSequenceCache(Reference ref, LoadingCache<Interval, Set<MappedSequence>> lcache) {
         super(ref, lcache);
     }
 
-    public MappedSequenceCache(Reference ref, LoadingCache<Interval<Set<MappedSequence>>, Set<MappedSequence>> lcache, int segSize) {
+    public MappedSequenceCache(Reference ref, LoadingCache<Interval, Set<MappedSequence>> lcache, int segSize) {
         super(ref, lcache, segSize);
     }
 
     @Override
     public Set<MappedSequence> get(int from, int to) {
-        Iterator<Interval<Set<MappedSequence>>> iter = getIntervals(from, to);
+        Iterator<Interval> iter = getIntervals(from, to);
         Set<MappedSequence> mappedSequences = new HashSet<>();
         while (iter.hasNext()) {
             Set<MappedSequence> get = lcache.getUnchecked(iter.next());
@@ -46,7 +46,7 @@ public class MappedSequenceCache extends CoverageInfoCache<Set<MappedSequence>> 
     public int[] getCoverage(int from, int to) {
         int[] ret = new int[to - from + 1];
         Arrays.fill(ret, 0);
-        Iterator<Interval<Set<MappedSequence>>> iter = getIntervals(from, to);
+        Iterator<Interval> iter = getIntervals(from, to);
         Set<MappedSequence> mappedSequences = new HashSet<>();
         while (iter.hasNext()) {
             Set<MappedSequence> get = lcache.getUnchecked(iter.next());
@@ -66,10 +66,10 @@ public class MappedSequenceCache extends CoverageInfoCache<Set<MappedSequence>> 
 
     @Override
     public int getMaxCoverage(int from, int to) {
-        Iterator<Interval<Set<MappedSequence>>> iter = getIntervals(from, to);
+        Iterator<Interval> iter = getIntervals(from, to);
         int ret = 0;
         while (iter.hasNext()) {
-            Interval<Set<MappedSequence>> interval = iter.next();
+            Interval interval = iter.next();
             int[] cov = new int[interval.length()];
             Arrays.fill(cov, 0);
             Set<MappedSequence> get = lcache.getUnchecked(iter.next());

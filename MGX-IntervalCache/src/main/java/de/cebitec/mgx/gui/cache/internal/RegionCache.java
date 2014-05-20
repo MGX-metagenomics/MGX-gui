@@ -14,17 +14,17 @@ import java.util.Set;
  */
 public class RegionCache extends Cache<Set<Region>> {
 
-    public RegionCache(Reference ref, LoadingCache<Interval<Set<Region>>, Set<Region>> lcache) {
+    public RegionCache(Reference ref, LoadingCache<Interval, Set<Region>> lcache) {
         super(ref, lcache);
     }
 
-    public RegionCache(Reference ref, LoadingCache<Interval<Set<Region>>, Set<Region>> lcache, int segSize) {
+    public RegionCache(Reference ref, LoadingCache<Interval, Set<Region>> lcache, int segSize) {
         super(ref, lcache, segSize);
     }
 
     @Override
     public Set<Region> get(int from, int to) {
-        Iterator<Interval<Set<Region>>> iter = getIntervals(from, to);
+        Iterator<Interval> iter = getIntervals(from, to);
         Set<Region> ret = new HashSet<>();
         while (iter.hasNext()) {
             Set<Region> get = lcache.getUnchecked(iter.next());

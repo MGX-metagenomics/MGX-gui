@@ -11,11 +11,11 @@ import java.util.Iterator;
  */
 public class SequenceCache extends Cache<String> {
 
-    public SequenceCache(Reference ref, LoadingCache<Interval<String>, String> lcache) {
+    public SequenceCache(Reference ref, LoadingCache<Interval, String> lcache) {
         super(ref, lcache);
     }
 
-    public SequenceCache(Reference ref, LoadingCache<Interval<String>, String> lcache, int segSize) {
+    public SequenceCache(Reference ref, LoadingCache<Interval, String> lcache, int segSize) {
         super(ref, lcache, segSize);
     }
 
@@ -27,7 +27,7 @@ public class SequenceCache extends Cache<String> {
         int fromInterval = from / getSegmentSize();
 
         StringBuilder sb = new StringBuilder();
-        Iterator<Interval<String>> iter = getIntervals(from, to);
+        Iterator<Interval> iter = getIntervals(from, to);
         while (iter.hasNext()) {
             sb.append(lcache.getUnchecked(iter.next()));
         }

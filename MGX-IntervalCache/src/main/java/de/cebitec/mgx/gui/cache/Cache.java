@@ -12,16 +12,16 @@ import java.util.Iterator;
 public abstract class Cache<T> {
 
     protected final Reference ref;
-    protected final LoadingCache<Interval<T>, T> lcache;
+    protected final LoadingCache<Interval, T> lcache;
     private final int segmentSize;
     //
     private static int SEGMENT_SIZE = 50000;
 
-    public Cache(Reference ref, LoadingCache<Interval<T>, T> lcache) {
+    public Cache(Reference ref, LoadingCache<Interval, T> lcache) {
         this(ref, lcache, SEGMENT_SIZE);
     }
 
-    public Cache(Reference ref, LoadingCache<Interval<T>, T> lcache, int segSize) {
+    public Cache(Reference ref, LoadingCache<Interval, T> lcache, int segSize) {
         this.ref = ref;
         this.lcache = lcache;
         this.segmentSize = segSize;
@@ -31,7 +31,7 @@ public abstract class Cache<T> {
         return segmentSize;
     }
     
-    public boolean contains(Interval<T> interval) {
+    public boolean contains(Interval interval) {
         return lcache.getIfPresent(interval) != null;
     }
 
@@ -39,14 +39,14 @@ public abstract class Cache<T> {
         return ref;
     }
 
-    protected Iterator<Interval<T>> getIntervals(final int from, final int to) {
+    protected Iterator<Interval> getIntervals(final int from, final int to) {
         assert to < ref.getLength();
 
         final int fromInterval = from / segmentSize;
         //final int toInterval = Math.min(fromInterval * segmentSize + getSegmentSize() - 1, getReference().getLength() - 1);
 
-        return new Iterator<Interval<T>>() {
-            private Interval<T> cur = new Interval(Cache.this, fromInterval * segmentSize); //, Math.min(to, toInterval));
+        return new Iterator<Interval>() {
+            private Interval cur = new Interval(Cache.this.getSegmentSize(), fromInterval * segmentSize); //, Math.min(to, toInterval));
 
             @Override
             public boolean hasNext() {
@@ -55,7 +55,7 @@ public abstract class Cache<T> {
 
             @Override
             public Interval next() {
-                Interval<T> i = cur;
+                Interval i = cur;
                 if (cur.getTo() <= to) {
                     cur = cur.next(to);
                 } else {

@@ -14,7 +14,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
@@ -124,10 +123,10 @@ public class CacheTest {
         Reference ref = master.Reference().fetch(4);
         Cache<String> cache = CacheFactory.createSequenceCache(master, ref);
         assertNotNull(cache);
-        Iterator<Interval<String>> iter = cache.getIntervals(5, 10);
+        Iterator<Interval> iter = cache.getIntervals(5, 10);
         assertNotNull(iter);
         assertTrue(iter.hasNext());
-        Interval<String> interval = iter.next();
+        Interval interval = iter.next();
         assertNotNull(interval);
         assertFalse(iter.hasNext());
         assertEquals(0, interval.getFrom());
@@ -142,9 +141,9 @@ public class CacheTest {
         Cache<String> cache = CacheFactory.createSequenceCache(master, ref);
         assertNotNull(cache);
         System.err.println("  generating " + 0 + " to " + (ref.getLength() - 1));
-        Iterator<Interval<String>> iter = cache.getIntervals(0, ref.getLength() - 1);
+        Iterator<Interval> iter = cache.getIntervals(0, ref.getLength() - 1);
         assertNotNull(iter);
-        Interval<String> interval;
+        Interval interval;
         int numSegments = 0;
         while (iter.hasNext()) {
             interval = iter.next();
@@ -167,10 +166,10 @@ public class CacheTest {
         Reference ref = master.Reference().fetch(4);
         Cache<String> cache = CacheFactory.createSequenceCache(master, ref);
         assertNotNull(cache);
-        Iterator<Interval<String>> iter = cache.getIntervals(5, 999999);
+        Iterator<Interval> iter = cache.getIntervals(5, 999999);
         assertNotNull(iter);
         assertTrue(iter.hasNext());
-        Interval<String> interval = iter.next();
+        Interval interval = iter.next();
         assertNotNull(interval);
         System.err.println("  " + interval.getFrom() + " - " + interval.getTo() + " with len " + ref.getLength());
         assertEquals(0, interval.getFrom());
@@ -188,11 +187,11 @@ public class CacheTest {
         int from = cache.getSegmentSize() + 5;
         int to = 2 * cache.getSegmentSize() + 5;
         System.err.println("  generating " + from + " to " + to);
-        Iterator<Interval<String>> iter = cache.getIntervals(from, to);
+        Iterator<Interval> iter = cache.getIntervals(from, to);
         assertNotNull(iter);
         assertTrue(iter.hasNext());
         int numSegments = 0;
-        Interval<String> interval = null;
+        Interval interval = null;
         while (iter.hasNext()) {
             if (interval == null) {
                 interval = iter.next();
@@ -225,9 +224,9 @@ public class CacheTest {
         Cache<String> cache = CacheFactory.createSequenceCache(master, ref);
         assertNotNull(cache);
 
-        Iterator<Interval<String>> iter = cache.getIntervals(0, 99);
+        Iterator<Interval> iter = cache.getIntervals(0, 99);
         assertTrue(iter.hasNext());
-        Interval<String> interval = iter.next();
+        Interval interval = iter.next();
         assertFalse(cache.contains(interval));
 
         String seq = cache.get(0, 99);

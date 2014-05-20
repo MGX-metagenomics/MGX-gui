@@ -25,14 +25,14 @@ public class CacheFactory {
 
     public static Cache<String> createSequenceCache(final MGXMaster master, final Reference ref) {
         final int refLength = ref.getLength() - 1;
-        CacheLoader<Interval<String>, String> loader = new CacheLoader<Interval<String>, String>() {
+        CacheLoader<Interval, String> loader = new CacheLoader<Interval, String>() {
             @Override
-            public String load(Interval<String> k) {
+            public String load(Interval k) {
                 return master.Reference().getSequence(ref, k.getFrom(), Math.min(k.getTo(), refLength));
             }
         };
 
-        LoadingCache<Interval<String>, String> lcache = CacheBuilder.newBuilder()
+        LoadingCache<Interval, String> lcache = CacheBuilder.newBuilder()
                 .expireAfterAccess(10, TimeUnit.MINUTES)
                 .build(loader);
         return new SequenceCache(ref, lcache);
@@ -42,9 +42,9 @@ public class CacheFactory {
 
         final int refLength = ref.getLength() - 1;
 
-        CacheLoader<Interval<Set<Region>>, Set<Region>> loader = new CacheLoader<Interval<Set<Region>>, Set<Region>>() {
+        CacheLoader<Interval, Set<Region>> loader = new CacheLoader<Interval, Set<Region>>() {
             @Override
-            public Set<Region> load(Interval<Set<Region>> k) {
+            public Set<Region> load(Interval k) {
                 //Logger.getLogger(getClass().getName()).log(Level.INFO, "server fetch " + k.getFrom() + " - " + k.getTo());
                 Iterator<Region> iter = master.Reference().byReferenceInterval(ref.getId(), k.getFrom(), Math.min(k.getTo(), refLength));
                 Set<Region> ret = new HashSet<>();
@@ -55,7 +55,7 @@ public class CacheFactory {
             }
         };
 
-        LoadingCache<Interval<Set<Region>>, Set<Region>> lcache = CacheBuilder.newBuilder()
+        LoadingCache<Interval, Set<Region>> lcache = CacheBuilder.newBuilder()
                 .expireAfterAccess(10, TimeUnit.MINUTES)
                 .build(loader);
         return new RegionCache(ref, lcache);
@@ -63,9 +63,9 @@ public class CacheFactory {
 
     public static CoverageInfoCache<Set<MappedSequence>> createMappedSequenceCache(final MGXMaster master, final Reference ref, final UUID uuid) {
         final int refLength = ref.getLength() - 1;
-        CacheLoader<Interval<Set<MappedSequence>>, Set<MappedSequence>> loader = new CacheLoader<Interval<Set<MappedSequence>>, Set<MappedSequence>>() {
+        CacheLoader<Interval, Set<MappedSequence>> loader = new CacheLoader<Interval, Set<MappedSequence>>() {
             @Override
-            public Set<MappedSequence> load(Interval<Set<MappedSequence>> k) {
+            public Set<MappedSequence> load(Interval k) {
                 Iterator<MappedSequence> iter = master.Mapping().byReferenceInterval(uuid, k.getFrom(), Math.min(k.getTo(), refLength));
                 Set<MappedSequence> ret = new HashSet<>();
                 while (iter.hasNext()) {
@@ -75,7 +75,7 @@ public class CacheFactory {
             }
         };
 
-        LoadingCache<Interval<Set<MappedSequence>>, Set<MappedSequence>> lcache = CacheBuilder.newBuilder()
+        LoadingCache<Interval, Set<MappedSequence>> lcache = CacheBuilder.newBuilder()
                 .expireAfterAccess(10, TimeUnit.MINUTES)
                 .build(loader);
         return new MappedSequenceCache(ref, lcache);
