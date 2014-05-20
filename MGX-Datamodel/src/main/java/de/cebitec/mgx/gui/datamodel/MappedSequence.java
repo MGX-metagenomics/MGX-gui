@@ -34,6 +34,14 @@ public class MappedSequence implements Comparable<MappedSequence> {
         return identity;
     }
 
+    public int getMax() {
+        return Math.max(getStart(), getStop());
+    }
+
+    public int getMin() {
+        return Math.min(getStart(), getStop());
+    }
+
     @Override
     public int compareTo(MappedSequence o) {
         int mymin = Math.min(getStart(), getStop());
