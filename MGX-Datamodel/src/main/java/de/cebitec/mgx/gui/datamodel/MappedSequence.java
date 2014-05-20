@@ -4,7 +4,7 @@ package de.cebitec.mgx.gui.datamodel;
  *
  * @author sj
  */
-public class MappedSequence {
+public class MappedSequence implements Comparable<MappedSequence> {
 
     private final long seq_id;
     private final int start;
@@ -32,5 +32,12 @@ public class MappedSequence {
 
     public int getIdentity() {
         return identity;
+    }
+
+    @Override
+    public int compareTo(MappedSequence o) {
+        int mymin = Math.min(getStart(), getStop());
+        int omin = Math.min(o.getStart(), o.getStop());
+        return Integer.compare(mymin, omin);
     }
 }
