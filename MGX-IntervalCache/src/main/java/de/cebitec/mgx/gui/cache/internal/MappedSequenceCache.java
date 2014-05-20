@@ -12,25 +12,27 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  *
  * @author belmann
  */
-public class MappedSequenceCache extends CoverageInfoCache<Set<MappedSequence>> {
+public class MappedSequenceCache extends CoverageInfoCache<SortedSet<MappedSequence>> {
 
-    public MappedSequenceCache(Reference ref, LoadingCache<Interval, Set<MappedSequence>> lcache) {
+    public MappedSequenceCache(Reference ref, LoadingCache<Interval, SortedSet<MappedSequence>> lcache) {
         super(ref, lcache);
     }
 
-    public MappedSequenceCache(Reference ref, LoadingCache<Interval, Set<MappedSequence>> lcache, int segSize) {
+    public MappedSequenceCache(Reference ref, LoadingCache<Interval, SortedSet<MappedSequence>> lcache, int segSize) {
         super(ref, lcache, segSize);
     }
 
     @Override
-    public Set<MappedSequence> get(int from, int to) {
+    public SortedSet<MappedSequence> get(int from, int to) {
         Iterator<Interval> iter = getIntervals(from, to);
-        Set<MappedSequence> mappedSequences = new HashSet<>();
+        SortedSet<MappedSequence> mappedSequences = new TreeSet<>();
         while (iter.hasNext()) {
             Set<MappedSequence> get = lcache.getUnchecked(iter.next());
             for (MappedSequence seq : get) {

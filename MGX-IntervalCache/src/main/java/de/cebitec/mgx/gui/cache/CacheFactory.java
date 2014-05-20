@@ -14,6 +14,8 @@ import de.cebitec.mgx.gui.datamodel.Region;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -61,13 +63,13 @@ public class CacheFactory {
         return new RegionCache(ref, lcache);
     }
 
-    public static CoverageInfoCache<Set<MappedSequence>> createMappedSequenceCache(final MGXMaster master, final Reference ref, final UUID uuid) {
+    public static CoverageInfoCache<SortedSet<MappedSequence>> createMappedSequenceCache(final MGXMaster master, final Reference ref, final UUID uuid) {
         final int refLength = ref.getLength() - 1;
-        CacheLoader<Interval, Set<MappedSequence>> loader = new CacheLoader<Interval, Set<MappedSequence>>() {
+        CacheLoader<Interval, SortedSet<MappedSequence>> loader = new CacheLoader<Interval, SortedSet<MappedSequence>>() {
             @Override
-            public Set<MappedSequence> load(Interval k) {
+            public SortedSet<MappedSequence> load(Interval k) {
                 Iterator<MappedSequence> iter = master.Mapping().byReferenceInterval(uuid, k.getFrom(), Math.min(k.getTo(), refLength));
-                Set<MappedSequence> ret = new HashSet<>();
+                SortedSet<MappedSequence> ret = new TreeSet<>();
                 while (iter.hasNext()) {
                     ret.add(iter.next());
                 }
@@ -75,7 +77,7 @@ public class CacheFactory {
             }
         };
 
-        LoadingCache<Interval, Set<MappedSequence>> lcache = CacheBuilder.newBuilder()
+        LoadingCache<Interval, SortedSet<MappedSequence>> lcache = CacheBuilder.newBuilder()
                 .expireAfterAccess(10, TimeUnit.MINUTES)
                 .build(loader);
         return new MappedSequenceCache(ref, lcache);
