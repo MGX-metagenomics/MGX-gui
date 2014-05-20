@@ -5,10 +5,9 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  *
@@ -17,12 +16,13 @@ import java.util.Set;
 public abstract class ModelBase<T> implements Transferable, Comparable<T> {
 
     protected MGXMasterI master;
-    //protected final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+    private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+    //private final PropertyChangeSupport pcs = new ParallelPropertyChangeSupport(this);
     public final static String OBJECT_DELETED = "objectDeleted";
     public final static String OBJECT_MODIFIED = "objectModified";
     private final DataFlavor dataflavor;
     //
-    private final Set<WeakReference<PropertyChangeListener>> listeners = new HashSet<>();
+    //private final Set<WeakReference<PropertyChangeListener>> listeners = new HashSet<>();
 
     public ModelBase(DataFlavor dataflavor) {
         this.dataflavor = dataflavor;
@@ -70,27 +70,19 @@ public abstract class ModelBase<T> implements Transferable, Comparable<T> {
     }
 
     public void addPropertyChangeListener(PropertyChangeListener listener) {
-        boolean present = false;
-        for (WeakReference<PropertyChangeListener> wr : listeners) {
-              if (wr.get() != null && wr.get().equals(listener)) {
-                present = true;
-            }
-        }
-        if  (!present) {
-            listeners.add(new WeakReference<>(listener));
-        }
-        //pcs.addPropertyChangeListener(listener);
+        //listeners.add(new WeakReference<>(listener));
+        pcs.addPropertyChangeListener(listener);
     }
 
     public void removePropertyChangeListener(PropertyChangeListener listener) {
-        WeakReference<PropertyChangeListener> removeMe = null;
-        for (WeakReference<PropertyChangeListener> wr : listeners) {
-            if (wr.get() != null && wr.get().equals(listener)) {
-                removeMe = wr;
-            }
-        }
-        listeners.remove(removeMe);
-        //pcs.removePropertyChangeListener(listener);
+//        WeakReference<PropertyChangeListener> removeMe = null;
+//        for (WeakReference<PropertyChangeListener> wr : listeners) {
+//            if (wr.get() != null && wr.get().equals(listener)) {
+//                removeMe = wr;
+//            }
+//        }
+//        listeners.remove(removeMe);
+        pcs.removePropertyChangeListener(listener);
     }
 
     public void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
@@ -111,13 +103,13 @@ public abstract class ModelBase<T> implements Transferable, Comparable<T> {
     }
 
     public void firePropertyChange(PropertyChangeEvent event) {
-        //pcs.firePropertyChange(event);
-        for (WeakReference<PropertyChangeListener> wr : listeners) {
-            PropertyChangeListener target = wr.get();
-            if (target != null) {
-                target.propertyChange(event);
-            }
-        }
+        pcs.firePropertyChange(event);
+//        for (WeakReference<PropertyChangeListener> wr : listeners) {
+//            PropertyChangeListener target = wr.get();
+//            if (target != null) {
+//                target.propertyChange(event);
+//            }
+//        }
     }
 
     @Override
