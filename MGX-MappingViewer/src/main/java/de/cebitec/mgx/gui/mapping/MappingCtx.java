@@ -94,16 +94,16 @@ public class MappingCtx {
         return mapCache.getCoverageIterator(from, to);
     }
 
-    public int getMaxCoverage() {
-        int ret = 0;
-        IntIterator iter = getCoverageIterator(0, ref.getLength() -1);
-        while (iter.hasNext()) {
-            int i = iter.next();
-            if (i > ret) {
-                ret = i;
-                System.err.println("new max "+ ret);
-            }
-        }
-        return ret;
-    }
+//    public int getMaxCoverage() {
+//        int ret = 0;
+//        IntIterator iter = getCoverageIterator(0, ref.getLength() -1);
+//        while (iter.hasNext()) {
+//            int i = iter.next();
+//            if (i > ret) {
+//                ret = i;
+//                System.err.println("new max "+ ret);
+//            }
+//        }
+//        return ret;
+//    }
 }

@@ -22,15 +22,14 @@ public class MappedRead2D implements Shape, Comparable<MappedRead2D> {
     private final MappedSequence ms;
     private final Shape shape;
     private final static Color[] gradient = new Color[101];
-    private final static double DEFAULT_HEIGHT = 4;
 
     static {
         generateGradient();
     }
 
-    public MappedRead2D(MappedSequence ms, double x, double y, double length) {
+    public MappedRead2D(MappedSequence ms, double x, double y, double height, double length) {
         this.ms = ms;
-        shape = new Rectangle2D.Double(x, y, length, DEFAULT_HEIGHT);
+        shape = new Rectangle2D.Double(x, y, length, height);
     }
     
     public Color getColor() {

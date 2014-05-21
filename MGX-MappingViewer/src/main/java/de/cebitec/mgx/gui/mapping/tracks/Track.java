@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.cebitec.mgx.gui.mapping.panel;
+package de.cebitec.mgx.gui.mapping.tracks;
 
 import de.cebitec.mgx.gui.datamodel.MappedSequence;
 import java.util.ArrayList;
@@ -16,12 +16,10 @@ import java.util.List;
  */
 public class Track {
 
-    private final double vOffset;
     private final List<MappedSequence> content = new ArrayList<>();
-    private final static int padding = 2;
+    private final static int padding = 1;
 
-    public Track(double vOffset) {
-        this.vOffset = vOffset;
+    public Track() {
     }
 
     public void add(MappedSequence ms) {
@@ -37,20 +35,27 @@ public class Track {
         return false;
     }
 
-    public double getVOffset() {
-        return vOffset;
-    }
-
     public Iterator<MappedSequence> getSequences() {
         return content.iterator();
     }
     
-    private final static boolean overlaps(MappedSequence ms1, MappedSequence ms2) {
+    public int size() {
+        return content.size();
+    }
+
+    private static boolean overlaps(MappedSequence ms1, MappedSequence ms2) {
+//        if (within(ms1.getMin(), ms2.getMin(), ms2.getMax())) {
+//            System.err.println(ms1.getSeqId() + " min ");
+//        }
+//        if (within(ms1.getMax(), ms2.getMin(), ms2.getMax())) {
+//            System.err.println(ms1.getSeqId() + " max ");
+//        }
+
         return within(ms1.getMin(), ms2.getMin(), ms2.getMax())
                 || within(ms1.getMax(), ms2.getMin(), ms2.getMax());
     }
-    
-    private final static boolean within(int pos, int from, int to) {
-        return pos >= from - padding || pos <= to + padding;
+
+    private static boolean within(int pos, int from, int to) {
+        return pos >= from - padding && pos <= to + padding;
     }
 }

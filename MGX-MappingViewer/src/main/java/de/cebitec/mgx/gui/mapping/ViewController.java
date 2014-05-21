@@ -15,6 +15,7 @@ import java.beans.PropertyChangeSupport;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.SortedSet;
+import javax.swing.SwingWorker;
 
 /**
  *
@@ -27,7 +28,10 @@ public class ViewController {
     private int[] previewBounds;
     private final int[] newBounds;
     private final PropertyChangeSupport pcs;
+    private volatile int maxCoverage = -1;
+    //
     public static final String BOUNDS_CHANGE = "boundsChange";
+    public static final String MAX_COV_CHANGE = "maxCoverageChange";
     public static final String PREVIEWBOUNDS_CHANGE = "previewBoundsChange";
 
     public ViewController(MappingCtx ctx) {
@@ -42,7 +46,31 @@ public class ViewController {
     }
 
     public int getMaxCoverage() {
-        return 5; // ctx.getMaxCoverage();
+        if (maxCoverage != -1) {
+            return maxCoverage;
+        }
+        SwingWorker<Void, Void> sw = new SwingWorker<Void, Void>() {
+
+            @Override
+            protected Void doInBackground() throws Exception {
+                int max = 0;
+                IntIterator iter = ctx.getCoverageIterator(0, getReference().getLength() - 1);
+                while (iter.hasNext()) {
+                    int i = iter.next();
+                    if (i > max) {
+                        max = i;
+                    }
+                }
+                maxCoverage = max;
+                pcs.firePropertyChange(MAX_COV_CHANGE, 0, max);
+                return null;
+            }
+
+        };
+        sw.execute();
+
+        return maxCoverage;
+        //return ctx.getMaxCoverage();
     }
 
     public int[] getBounds() {
@@ -97,9 +125,9 @@ public class ViewController {
     public int[] getCoverage(int from, int to) {
         return ctx.getCoverage(from, to);
     }
-    
+
     public IntIterator getCoverageIterator() {
-        return ctx.getCoverageIterator(0, ctx.getReference().getLength() -1);
+        return ctx.getCoverageIterator(0, ctx.getReference().getLength() - 1);
     }
 
     public void addPropertyChangeListener(PropertyChangeListener listener) {

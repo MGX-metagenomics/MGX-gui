@@ -26,6 +26,7 @@ public abstract class PanelBase extends JPanel implements PropertyChangeListener
     protected final ViewController vc;
     protected int[] bounds;
     protected int intervalLen;
+    private int maxCoverage = 0;
     private double scale;
     protected int midY;
     //
@@ -98,11 +99,20 @@ public abstract class PanelBase extends JPanel implements PropertyChangeListener
                     repaint();
                 }
                 break;
+            case ViewController.MAX_COV_CHANGE:
+                maxCoverage = (int) evt.getNewValue();
+                update();
+                repaint();
+                break;
             default:
                 System.err.println("Unknown event: " + evt.getPropertyName());
                 assert false;
         }
 
+    }
+
+    protected int getMaxCoverage() {
+        return maxCoverage;
     }
 
     protected double bp2px(int i) {

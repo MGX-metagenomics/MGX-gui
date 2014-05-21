@@ -41,7 +41,6 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
         -1 * FRAME_VOFFSET * 3};
     private Set<Arrow> regs = null;
     private Set<Area> coverage = null;
-    private int maxCoverage = 0;
     private final static Color lighterGray = new Color(210, 210, 210);
     private int[] previewBounds = null;
 
@@ -51,7 +50,9 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
     public FeaturePanel(ViewController vc) {
         super(vc);
         initComponents();
-        setMaximumSize(new Dimension(5000, 150));
+        setMaximumSize(new Dimension(5000, 50));
+        setPreferredSize(new Dimension(150, 50));
+        setMinimumSize(new Dimension(150, 50));
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
         ToolTipManager.sharedInstance().registerComponent(this);
@@ -60,7 +61,6 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
         doLayout();
         updateUI();
         invalidate();
-        this.setPreferredSize(new Dimension(1, 60));
         this.revalidate();
     }
 
@@ -136,11 +136,9 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
     }
 
     private void drawCoverage(Graphics2D g2) {
-        if (maxCoverage == 0 || coverage == null) {
+        if (getMaxCoverage() == 0 || coverage == null) {
             return;
         }
-        //System.err.println("coverage areas: " + coverage.size());
-
         Composite oldcomp = g2.getComposite();
         AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f);
         g2.setComposite(ac);
@@ -157,8 +155,6 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
         if (midY == 0) {
             return;
         }
-
-        fetchMaxCoverage();
 
         // fetch features
         Set<Arrow> newData = new HashSet<>();
@@ -291,12 +287,12 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
         // nop
     }
 
-    private void fetchMaxCoverage() {
-        if (maxCoverage != 0) {
-            return;
-        }
-        maxCoverage = vc.getMaxCoverage();
-    }
+//    private void fetchMaxCoverage() {
+//        if (maxCoverage != 0) {
+//            return;
+//        }
+//        maxCoverage = vc.getMaxCoverage();
+//    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -319,7 +315,7 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 78, Short.MAX_VALUE)
+            .addGap(0, 110, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
 
