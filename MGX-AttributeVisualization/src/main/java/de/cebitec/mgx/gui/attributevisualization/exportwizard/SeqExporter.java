@@ -98,13 +98,18 @@ public final class SeqExporter implements SequenceExporterI {
                     }
 
                     Map<SeqRun, Set<Attribute>> saveSet = vgroup.getSaveSet(attrs);
-                    CountDownLatch latch = new CountDownLatch(saveSet.size());
+                    CountDownLatch latch = new CountDownLatch(1);
+
+                    List<SeqByAttributeDownloader> downloaders = new ArrayList<>();
+
                     for (Entry<SeqRun, Set<Attribute>> e : saveSet.entrySet()) {
                         MGXMaster m = (MGXMaster) e.getKey().getMaster();
-                        SeqByAttributeDownloader downloader = m.Sequence().createDownloaderByAttributes(e.getValue(), writer);
-                        MGXTask task = new DownloadTask("Export " + e.getKey().getName() + " to " + target.getName(), downloader, latch);
-                        TaskManager.getInstance().addTask(task);
+                        SeqByAttributeDownloader downloader = m.Sequence().createDownloaderByAttributes(e.getValue(), writer, false);
+                        downloaders.add(downloader);
                     }
+
+                    MGXTask task = new DownloadTask("Export to " + target.getName(), downloaders, latch);
+                    TaskManager.getInstance().addTask(task);
                     latch.await();
                     return writer;
                 }
@@ -116,6 +121,9 @@ public final class SeqExporter implements SequenceExporterI {
                         fw = get();
                         fw.close();
                     } catch (IOException | InterruptedException | ExecutionException ex) {
+                        if (target.exists()) {
+                            target.delete();
+                        }
                         Exceptions.printStackTrace(ex);
                     }
                     super.done();
@@ -127,20 +135,30 @@ public final class SeqExporter implements SequenceExporterI {
 
     private final class DownloadTask extends MGXTask {
 
-        private final SeqByAttributeDownloader downloader;
+        private final List<SeqByAttributeDownloader> downloaders;
         private final CountDownLatch latch;
+        private long numSeqs = 0;
+        private long numSeqsTotal = 0;
 
-        public DownloadTask(String taskName, SeqByAttributeDownloader downloader, CountDownLatch latch) {
+        public DownloadTask(String taskName, List<SeqByAttributeDownloader> downloaders, CountDownLatch latch) {
             super(taskName);
-            this.downloader = downloader;
+            this.downloaders = downloaders;
             this.latch = latch;
         }
 
         @Override
         public boolean process() {
-            downloader.addPropertyChangeListener(this);
-            boolean ret = downloader.download();
-            downloader.removePropertyChangeListener(this);
+            boolean ret = false;
+            for (SeqByAttributeDownloader downloader : downloaders) {
+                downloader.addPropertyChangeListener(this);
+                ret = downloader.download();
+                downloader.removePropertyChangeListener(this);
+                if (!ret) {
+                    failed();
+                }
+                numSeqsTotal += numSeqs;
+                numSeqs = 0;
+            }
             return ret;
         }
 
@@ -160,7 +178,8 @@ public final class SeqExporter implements SequenceExporterI {
         public void propertyChange(PropertyChangeEvent pce) {
             switch (pce.getPropertyName()) {
                 case DownloadBase.NUM_ELEMENTS_RECEIVED:
-                    setStatus(String.format("%1$d sequences received", pce.getNewValue()));
+                    numSeqs = (long) pce.getNewValue();
+                    setStatus(String.format("%1$d sequences received", numSeqsTotal + numSeqs));
                     break;
                 case DownloadBase.TRANSFER_FAILED:
                     failed();
