@@ -48,6 +48,14 @@
                     <groupId>de.cebitec.mgx</groupId>
                 </exclusion>
                 <exclusion>
+                    <artifactId>GPMS-DTO</artifactId>
+                    <groupId>de.cebitec.gpms</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>ProtoBuf-Serializer</artifactId>
+                    <groupId>de.cebitec.mgx</groupId>
+                </exclusion>
+                <exclusion>
                     <artifactId>jersey-client</artifactId>
                     <groupId>com.sun.jersey</groupId>
                 </exclusion>
