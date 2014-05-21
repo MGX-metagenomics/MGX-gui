@@ -283,6 +283,9 @@ public class VisualizationGroup implements PropertyChangeListener {
                 removeSeqRun((SeqRun) evt.getOldValue());
                 pcs.firePropertyChange(evt);
                 break;
+            case ModelBase.OBJECT_MODIFIED:
+                pcs.firePropertyChange(evt);
+                break;
             default:
                 System.err.println("unhandled PCE: " + evt.getPropertyName());
                 assert false;
