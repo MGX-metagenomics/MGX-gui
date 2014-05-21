@@ -48,4 +48,9 @@ public class MappedSequence implements Comparable<MappedSequence> {
         int omin = Math.min(o.getStart(), o.getStop());
         return Integer.compare(mymin, omin);
     }
+
+    @Override
+    public String toString() {
+        return "MappedSequence{" + "seq_id=" + seq_id + ", start=" + start + ", stop=" + stop + '}';
+    }
 }
