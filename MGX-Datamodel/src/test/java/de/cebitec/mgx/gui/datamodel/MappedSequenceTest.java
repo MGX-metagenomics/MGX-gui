@@ -10,10 +10,11 @@ import java.util.Collections;
 import java.util.List;
 import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import static org.junit.Assert.*;
+
 
 /**
  *
@@ -49,7 +50,15 @@ public class MappedSequenceTest {
         tmp.add(ms1);
         tmp.add(ms2);
         Collections.sort(tmp);
-        Assert.assertEquals(ms1, tmp.get(0));
+        assertEquals(ms1, tmp.get(0));
+    }
+
+    @Test
+    public void testMinMax() {
+        System.err.println("MinMax");
+        MappedSequence ms1 = new MappedSequence(1, 10, 20, 5);
+        assertEquals(10, ms1.getMin());
+        assertEquals(20, ms1.getMax());
     }
 
 }
