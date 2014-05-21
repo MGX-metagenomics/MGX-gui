@@ -9,8 +9,8 @@ import de.cebitec.mgx.gui.cache.CoverageInfoCache;
 import de.cebitec.mgx.gui.cache.IntIterator;
 import de.cebitec.mgx.gui.datamodel.MappedSequence;
 import de.cebitec.mgx.gui.datamodel.Reference;
+import java.awt.EventQueue;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.SortedSet;
@@ -32,6 +32,8 @@ public class MappedSequenceCache extends CoverageInfoCache<SortedSet<MappedSeque
 
     @Override
     public SortedSet<MappedSequence> get(int from, int to) {
+        assert from >= 0;
+        assert to < ref.getLength();
         Iterator<Interval> iter = getIntervals(from, to);
         SortedSet<MappedSequence> mappedSequences = new TreeSet<>();
         while (iter.hasNext()) {
@@ -47,10 +49,11 @@ public class MappedSequenceCache extends CoverageInfoCache<SortedSet<MappedSeque
 
     @Override
     public int[] getCoverage(int from, int to) {
+        assert from >= 0;
+        to = Math.min(ref.getLength() - 1, to);
         int[] ret = new int[to - from + 1];
         Arrays.fill(ret, 0);
         Iterator<Interval> iter = getIntervals(from, to);
-        Set<MappedSequence> mappedSequences = new HashSet<>();
         while (iter.hasNext()) {
             Set<MappedSequence> get = lcache.getUnchecked(iter.next());
             for (MappedSequence ms : get) {
@@ -66,11 +69,11 @@ public class MappedSequenceCache extends CoverageInfoCache<SortedSet<MappedSeque
         }
         return ret;
     }
-    
-    
+
     @Override
     public IntIterator getCoverageIterator(int from, int to) {
-        return new IntIterator(from, to, this);
+        assert !EventQueue.isDispatchThread();
+        return new IntIterator(from, Math.min(to, ref.getLength() - 1), this);
     }
 
     @Override

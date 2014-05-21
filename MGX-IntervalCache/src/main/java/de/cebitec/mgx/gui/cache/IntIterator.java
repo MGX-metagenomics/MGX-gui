@@ -52,7 +52,7 @@ public class IntIterator {
         curInterval = iter.next();
         curPos = Math.max(curPos, curInterval.getFrom());
         coverage = lcache.getCoverage(curInterval.getFrom(), curInterval.getTo());
-        assert coverage.length == curInterval.getTo() - curInterval.getFrom() + 1;
+        //assert coverage.length == curInterval.getTo() - curInterval.getFrom() + 1;
     }
 
 }
