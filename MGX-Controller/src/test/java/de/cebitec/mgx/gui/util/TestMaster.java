@@ -39,9 +39,9 @@ public class TestMaster {
                 System.out.println(ex.getMessage());
             }
         }
-        GPMSClientI gpms = new GPMS("MyServer", serverURI);
+        GPMS gpms = new GPMS("MyServer", serverURI);
         if (!gpms.login("mgx_unittestRO", "gut-isM5iNt")) {
-            fail();
+            fail(gpms.getError());
         }
 
         Iterator<MembershipI> mbr = gpms.getMemberships();
