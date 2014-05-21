@@ -41,8 +41,8 @@ public class MappingPanel extends PanelBase {
 
     @Override
     void draw(Graphics2D g2) {
-        if (coverage != null) {
-            System.err.println("mappings number " + coverage.size());
+        if (!coverage.isEmpty()) {
+            //System.err.println("mappings number " + coverage.size());
             Color col = Color.BLACK;
             synchronized (coverage) {
                 for (MappedRead2D mr2d : coverage) {
@@ -58,7 +58,7 @@ public class MappingPanel extends PanelBase {
     @Override
     public String getToolTipText(MouseEvent m) {
         Point loc = m.getPoint();
-        if (coverage != null) {
+        if (!coverage.isEmpty()) {
             for (MappedRead2D a : coverage) {
                 if (a.getBounds().contains(loc)) {
                     return a.getToolTipText();
@@ -77,32 +77,34 @@ public class MappingPanel extends PanelBase {
             assert t.size() > 0;
         }
 
-        int vStart = 5; // padding in px from top
-        int usableHeight = getHeight() - vStart;
+        if (!tracks.isEmpty()) {
 
-        double trackHeight = Math.min(usableHeight / tracks.size(), 5d); // at least 5px track height
-        
-        double spaceing = trackHeight * 0.1;
+            int vStart = 5; // padding in px from top
+            int usableHeight = getHeight() - vStart;
 
-        SortedSet<MappedRead2D> ret = new TreeSet<>();
+            double trackHeight = Math.min(usableHeight / tracks.size(), 5d); // at least 5px track height
+            double spaceing = trackHeight * 0.1;
 
-        int trackNum = 0;
-        for (Track t : tracks) {
-            Iterator<MappedSequence> iter = t.getSequences();
-            double vOffset = vStart + (trackNum * trackHeight);
-            while (iter.hasNext()) {
-                MappedSequence ms = iter.next();
-                double pos0 = bp2px(ms.getStart());
-                double pos1 = bp2px(ms.getStop());
-                MappedRead2D rect = new MappedRead2D(ms, pos0, vOffset + spaceing, trackHeight * 0.8, pos1 - pos0 + 1);
-                ret.add(rect);
+            SortedSet<MappedRead2D> ret = new TreeSet<>();
+
+            int trackNum = 0;
+            for (Track t : tracks) {
+                Iterator<MappedSequence> iter = t.getSequences();
+                double vOffset = vStart + (trackNum * trackHeight);
+                while (iter.hasNext()) {
+                    MappedSequence ms = iter.next();
+                    double pos0 = bp2px(ms.getStart());
+                    double pos1 = bp2px(ms.getStop());
+                    MappedRead2D rect = new MappedRead2D(ms, pos0, vOffset + spaceing, trackHeight * 0.8, pos1 - pos0 + 1);
+                    ret.add(rect);
+                }
+                trackNum++;
             }
-            trackNum++;
-        }
 
-        synchronized (coverage) {
-            coverage.clear();
-            coverage.addAll(ret);
+            synchronized (coverage) {
+                coverage.clear();
+                coverage.addAll(ret);
+            }
         }
     }
 

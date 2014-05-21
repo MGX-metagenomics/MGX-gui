@@ -37,7 +37,7 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
     private int[] previewBounds = null;
     private int[] offSet = null;
     private double scaleFactor;
-    private Set<Area> coverage = null;
+    private final Set<Area> coverage = new HashSet<>();
 
     /**
      * Creates new form NavigationPanel
@@ -54,9 +54,7 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
     @Override
     void draw(Graphics2D g2) {
 
-        if (coverage != null) {
-            drawCoverage(g2);
-        }
+        drawCoverage(g2);
 
         g2.setColor(Color.DARK_GRAY);
 
@@ -107,15 +105,25 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
     }
 
     private void drawCoverage(Graphics2D g2) {
+        Area[] areas = null;
+        synchronized (coverage) {
+            areas = coverage.toArray(new Area[]{});
+        }
+
+        if (areas == null) {
+            return;
+        }
+
         Composite oldcomp = g2.getComposite();
         AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f);
         g2.setComposite(ac);
         g2.setColor(Color.LIGHT_GRAY);
-        for (Area l : coverage) {
+
+        for (Area l : areas) {
             g2.fill(l);
         }
         g2.setColor(Color.DARK_GRAY);
-        for (Area l : coverage) {
+        for (Area l : areas) {
             g2.draw(l);
         }
         g2.setComposite(oldcomp);
@@ -304,8 +312,7 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
         scaleFactor = 1d * refLength / getWidth();
         midY = getHeight() / 2;
 
-        if (coverage == null) {
-            coverage = new HashSet<>();
+        if (coverage.isEmpty()) {
             SwingWorker<Void, Void> sw = new SwingWorker<Void, Void>() {
 
                 @Override
