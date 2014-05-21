@@ -10,19 +10,18 @@ import de.cebitec.mgx.gui.mapping.panel.FeaturePanel;
 import de.cebitec.mgx.gui.mapping.panel.MappingPanel;
 import de.cebitec.mgx.gui.mapping.panel.NavigationPanel;
 import java.awt.BorderLayout;
-import javax.swing.JPanel;
 import javax.swing.SwingWorker;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
-import org.openide.windows.TopComponent;
 import org.openide.util.NbBundle.Messages;
+import org.openide.windows.TopComponent;
 
 @TopComponent.Description(
         preferredID = "TopComponentViewer",
         persistenceType = TopComponent.PERSISTENCE_NEVER)
 @TopComponent.Registration(mode = "editor", openAtStartup = false)
 @ActionID(category = "Window", id = "de.cebitec.mgx.gui.mapping.viewer")
-@ActionReference(path = "Menu/Window", position = 333)
+@ActionReference(path = "Menu/Window", position = 334)
 @Messages({
     "CTL_MappingAction=ReferenceView",
     "CTL_TopComponentViewer=Mapping Window",})
