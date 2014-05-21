@@ -52,6 +52,7 @@ public class DownloadTest {
         cnt.set(new Integer(0));
         final Holder<Boolean> closed = new Holder<>();
         closed.set(Boolean.FALSE);
+        
         SeqWriterI dummy = new SeqWriterI() {
             @Override
             public void addSequence(DNASequenceI seq) throws IOException {
@@ -63,7 +64,7 @@ public class DownloadTest {
                 closed.set(Boolean.TRUE);
             }
         };
-        master.Sequence().downloadSequencesForAttributes(set, dummy);
+        master.Sequence().downloadSequencesForAttributes(set, dummy, true);
         assertEquals(220, cnt.get().intValue());
         assertTrue(closed.get());
     }

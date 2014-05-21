@@ -41,33 +41,33 @@ public class SequenceAccess extends AccessBase<Sequence> {
         return getDTOmaster().Sequence().createUploader(seqrun_id, reader);
     }
 
-    public SeqDownloader createDownloader(long seqrun_id, SeqWriterI writer) {
-        return getDTOmaster().Sequence().createDownloader(seqrun_id, writer);
+    public SeqDownloader createDownloader(long seqrun_id, SeqWriterI writer, boolean closeWriter) {
+        return getDTOmaster().Sequence().createDownloader(seqrun_id, writer, closeWriter);
     }
 
-    public void downloadSequences(long seqrun_id, SeqWriterI writer) {
+    public void downloadSequences(long seqrun_id, SeqWriterI writer, boolean closeWriter) {
         try {
-            getDTOmaster().Sequence().downloadSequences(seqrun_id, writer);
+            getDTOmaster().Sequence().downloadSequences(seqrun_id, writer, closeWriter);
         } catch (MGXServerException ex) {
             Exceptions.printStackTrace(ex);
         }
     }
 
-    public SeqByAttributeDownloader createDownloaderByAttributes(Set<Attribute> attrs, SeqWriterI<DNASequenceI> writer) {
+    public SeqByAttributeDownloader createDownloaderByAttributes(Set<Attribute> attrs, SeqWriterI<DNASequenceI> writer, boolean closeWriter) {
         Builder b = AttributeDTOList.newBuilder();
         for (Attribute a : attrs) {
             b.addAttribute(AttributeDTOFactory.getInstance().toDTO(a));
         }
-        return getDTOmaster().Sequence().createDownloaderByAttributes(b.build(), writer);
+        return getDTOmaster().Sequence().createDownloaderByAttributes(b.build(), writer, closeWriter);
     }
 
-    public void downloadSequencesForAttributes(Set<Attribute> attrs, SeqWriterI writer) {
+    public void downloadSequencesForAttributes(Set<Attribute> attrs, SeqWriterI writer, boolean closeWriter) {
         try {
             Builder b = AttributeDTOList.newBuilder();
             for (Attribute a : attrs) {
                 b.addAttribute(AttributeDTOFactory.getInstance().toDTO(a));
             }
-            getDTOmaster().Sequence().fetchAnnotatedReads(b.build(), writer);
+            getDTOmaster().Sequence().fetchAnnotatedReads(b.build(), writer, closeWriter);
         } catch (MGXServerException ex) {
             Exceptions.printStackTrace(ex);
         }
