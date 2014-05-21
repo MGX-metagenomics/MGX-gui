@@ -70,7 +70,7 @@ public class MappingPanel extends PanelBase {
     @Override
     void update() {
 
-        int vStart = 5;
+        int vStart = 5; // px from top
         int idx = 0;
         double vOffset = 5;
         SortedSet<MappedSequence> mappings = vc.getMappings(bounds[0], bounds[1]);
