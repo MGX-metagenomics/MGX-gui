@@ -129,11 +129,6 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>MGX-Biodiversity</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>MGX-Rarefaction</artifactId>
             <version>${project.version}</version>
         </dependency>
