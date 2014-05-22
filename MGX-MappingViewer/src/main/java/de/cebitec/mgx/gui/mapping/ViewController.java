@@ -10,12 +10,12 @@ import de.cebitec.mgx.gui.datamodel.MappedSequence;
 import de.cebitec.mgx.gui.datamodel.Reference;
 import de.cebitec.mgx.gui.datamodel.Region;
 import de.cebitec.mgx.pevents.ParallelPropertyChangeSupport;
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.SortedSet;
-import javax.swing.SwingWorker;
 
 /**
  *
@@ -28,7 +28,6 @@ public class ViewController {
     private int[] previewBounds;
     private final int[] newBounds;
     private final PropertyChangeSupport pcs;
-    private volatile int maxCoverage = -1;
     //
     public static final String BOUNDS_CHANGE = "boundsChange";
     public static final String MAX_COV_CHANGE = "maxCoverageChange";
@@ -45,32 +44,8 @@ public class ViewController {
         return ctx.getReference();
     }
 
-    public int getMaxCoverage() {
-        if (maxCoverage != -1) {
-            return maxCoverage;
-        }
-        SwingWorker<Void, Void> sw = new SwingWorker<Void, Void>() {
-
-            @Override
-            protected Void doInBackground() throws Exception {
-                int max = 0;
-                IntIterator iter = ctx.getCoverageIterator(0, getReference().getLength() - 1);
-                while (iter.hasNext()) {
-                    int i = iter.next();
-                    if (i > max) {
-                        max = i;
-                    }
-                }
-                maxCoverage = max;
-                pcs.firePropertyChange(MAX_COV_CHANGE, 0, max);
-                return null;
-            }
-
-        };
-        sw.execute();
-
-        return maxCoverage;
-        //return ctx.getMaxCoverage();
+    public long getMaxCoverage() {
+        return ctx.getMaxCoverage();
     }
 
     public int[] getBounds() {
@@ -131,6 +106,7 @@ public class ViewController {
     }
 
     public void addPropertyChangeListener(PropertyChangeListener listener) {
+        listener.propertyChange(new PropertyChangeEvent(this, BOUNDS_CHANGE, Integer.valueOf(0), Integer.valueOf(1)));
         pcs.addPropertyChangeListener(listener);
     }
 

@@ -29,6 +29,7 @@ public class MappingCtx {
     private Cache<Set<Region>> regCache = null;
     private CoverageInfoCache<SortedSet<MappedSequence>> mapCache = null;
     private UUID sessionUUID = null;
+    private long maxCoverage = -1;
 
     public MappingCtx(Mapping m, Reference ref, Job job) {
         assert m.getReferenceID() == ref.getId();
@@ -92,6 +93,14 @@ public class MappingCtx {
             mapCache = CacheFactory.createMappedSequenceCache((MGXMaster) ref.getMaster(), ref, sessionUUID);
         }
         return mapCache.getCoverageIterator(from, to);
+    }
+
+    public long getMaxCoverage() {
+        if (maxCoverage == -1) {
+            MGXMaster master = (MGXMaster) ref.getMaster();
+            maxCoverage = master.Mapping().getMaxCoverage(sessionUUID);
+        }
+        return maxCoverage;
     }
 
 //    public int getMaxCoverage() {

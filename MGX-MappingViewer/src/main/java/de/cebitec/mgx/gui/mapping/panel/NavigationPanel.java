@@ -24,7 +24,6 @@ import java.awt.geom.GeneralPath;
 import java.awt.geom.Rectangle2D;
 import java.util.HashSet;
 import java.util.Set;
-import javax.swing.SwingWorker;
 
 /**
  *
@@ -38,6 +37,7 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
     private int[] offSet = null;
     private double scaleFactor;
     private final Set<Area> coverage = new HashSet<>();
+    private long maxCov = -1;
 
     /**
      * Creates new form NavigationPanel
@@ -49,6 +49,9 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
         setMaximumSize(new Dimension(5000, 50));
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
+
+        //update();
+        repaint();
     }
 
     @Override
@@ -105,25 +108,16 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
     }
 
     private void drawCoverage(Graphics2D g2) {
-        Area[] areas = null;
-        synchronized (coverage) {
-            areas = coverage.toArray(new Area[]{});
-        }
-
-        if (areas == null) {
-            return;
-        }
-
         Composite oldcomp = g2.getComposite();
         AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f);
         g2.setComposite(ac);
         g2.setColor(Color.LIGHT_GRAY);
 
-        for (Area l : areas) {
+        for (Area l : coverage) {
             g2.fill(l);
         }
         g2.setColor(Color.DARK_GRAY);
-        for (Area l : areas) {
+        for (Area l : coverage) {
             g2.draw(l);
         }
         g2.setComposite(oldcomp);
@@ -313,26 +307,25 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
         midY = getHeight() / 2;
 
         if (coverage.isEmpty()) {
-            SwingWorker<Void, Void> sw = new SwingWorker<Void, Void>() {
-
-                @Override
-                protected Void doInBackground() throws Exception {
-                    generateCoverage();
-                    return null;
-                }
-
-            };
-            sw.execute();
+            generateCoverage();
         }
     }
 
     private void generateCoverage() {
+
+        if (maxCov == -1) {
+            maxCov = vc.getMaxCoverage();
+        }
+        if (maxCov == -1) {
+            return;
+        }
+
         IntIterator covIter = vc.getCoverageIterator();
         Set<Area> ret = new HashSet<>();
 
         int baseY = getHeight() - 1;
         int pos = 0;
-        double covScale = (baseY * 1d) / (vc.getMaxCoverage() * 1d);
+        double covScale = (baseY * 1d) / (maxCov * 1d);
 
         GeneralPath gp = null;
         double[] gpStart = new double[2];
