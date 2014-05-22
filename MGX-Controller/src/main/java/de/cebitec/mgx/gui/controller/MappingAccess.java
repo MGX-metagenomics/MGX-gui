@@ -123,6 +123,15 @@ public class MappingAccess extends AccessBase<Mapping> {
             Exceptions.printStackTrace(ex);
         }
     }
+    
+    public long getMaxCoverage(UUID uuid) {
+        try {
+            return getDTOmaster().Mapping().getMaxCoverage(uuid);
+        } catch (MGXServerException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+        return -1;
+    }
 
     public Iterator<MappedSequence> byReferenceInterval(UUID uuid, int from, int to) {
         try {
