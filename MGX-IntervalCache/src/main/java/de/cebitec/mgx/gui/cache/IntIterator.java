@@ -7,6 +7,7 @@ package de.cebitec.mgx.gui.cache;
 
 import de.cebitec.mgx.gui.cache.internal.Interval;
 import de.cebitec.mgx.gui.datamodel.MappedSequence;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.SortedSet;
 
@@ -25,34 +26,32 @@ public class IntIterator {
 
     public IntIterator(int from, int to, CoverageInfoCache<SortedSet<MappedSequence>> lcache) {
         this.to = to;
-        this.curPos = from;
+        this.curPos = from-1;
         this.lcache = lcache;
         iter = lcache.getIntervals(from, to);
         if (iter != null && iter.hasNext()) {
-            fill();
+            curInterval = iter.next();
+            coverage = new int[curInterval.getTo() - curInterval.getFrom() + 1];
+            lcache.getCoverage(curInterval.getFrom(), curInterval.getTo(), coverage);
         } else {
             throw new NullPointerException();
         }
     }
 
     public boolean hasNext() {
-        return curPos <= to;
+        return curPos < to;
     }
 
     public int next() {
-        int ret = coverage[curPos - curInterval.getFrom()];
         curPos++;
-        if (curPos == curInterval.getTo() && iter.hasNext()) {
-            fill();
+        if (curPos > curInterval.getTo()) {
+            assert iter.hasNext();
+            curInterval = iter.next();
+            //Arrays.fill(coverage, 0);
+            lcache.getCoverage(curInterval.getFrom(), curInterval.getTo(), coverage);
         }
+        int ret = coverage[curPos - curInterval.getFrom()];
         return ret;
-    }
-
-    private void fill() {
-        curInterval = iter.next();
-        curPos = Math.max(curPos, curInterval.getFrom());
-        coverage = lcache.getCoverage(curInterval.getFrom(), curInterval.getTo());
-        //assert coverage.length == curInterval.getTo() - curInterval.getFrom() + 1;
     }
 
 }

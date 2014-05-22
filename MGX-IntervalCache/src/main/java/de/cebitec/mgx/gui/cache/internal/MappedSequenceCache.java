@@ -48,26 +48,28 @@ public class MappedSequenceCache extends CoverageInfoCache<SortedSet<MappedSeque
     }
 
     @Override
-    public int[] getCoverage(int from, int to) {
+    public void getCoverage(int from, int to, int[] dest) {
         assert from >= 0;
         to = Math.min(ref.getLength() - 1, to);
-        int[] ret = new int[to - from + 1];
-        Arrays.fill(ret, 0);
+        if (dest.length < to - from + 1) {
+            throw new IllegalArgumentException("Destination array too small.");
+        }
+        Arrays.fill(dest, 0);
         Iterator<Interval> iter = getIntervals(from, to);
         while (iter.hasNext()) {
-            Set<MappedSequence> get = lcache.getUnchecked(iter.next());
+            Interval interval = iter.next();
+            Set<MappedSequence> get = lcache.getUnchecked(interval);
             for (MappedSequence ms : get) {
                 for (int i = ms.getStart(); i < ms.getStop(); i++) {
                     // we need to check extra since we also receive mappings
                     // which only partially overlap with the interval
                     if (i >= from && i <= to) {
-                        ret[i - from]++;
+                        dest[i - from]++;
                     }
                 }
             }
 
         }
-        return ret;
     }
 
     @Override

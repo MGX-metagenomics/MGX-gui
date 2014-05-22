@@ -247,6 +247,26 @@ public class CacheTest {
         assertTrue(cache.contains(interval));
     }
 
+    @Test
+    public void testIterator() throws Exception {
+        System.out.println("getCovIterator");
+        MGXMaster master = get();
+        Reference ref = master.Reference().fetch(8);
+        assertNotNull(ref);
+        UUID uuid = master.Mapping().openMapping(30);
+        
+        CoverageInfoCache<SortedSet<MappedSequence>> cache = CacheFactory.createMappedSequenceCache(master, ref, uuid);
+        assertNotNull(cache);
+        
+        IntIterator iter = cache.getCoverageIterator(0, ref.getLength()-1);
+        int cnt=0;
+        while (iter.hasNext()) {
+            iter.next();
+            cnt++;
+        }
+        assertEquals(cnt, ref.getLength());
+    }
+
     public static MGXMaster get() {
         MGXMaster master = null;
 
