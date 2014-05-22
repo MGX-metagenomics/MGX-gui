@@ -54,9 +54,9 @@ public class Interval {
         if (this.from != other.from) {
             return false;
         }
-//        if (this.to != other.to) {
-//            return false;
-//        }
+        if (this.segmentSize != other.segmentSize) {
+            return false;
+        }
         return true;
     }
 
