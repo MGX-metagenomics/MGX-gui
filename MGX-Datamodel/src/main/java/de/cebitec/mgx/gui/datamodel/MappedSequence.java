@@ -50,6 +50,38 @@ public class MappedSequence implements Comparable<MappedSequence> {
     }
 
     @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 29 * hash + (int) (this.seq_id ^ (this.seq_id >>> 32));
+        hash = 29 * hash + this.start;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final MappedSequence other = (MappedSequence) obj;
+        if (this.seq_id != other.seq_id) {
+            return false;
+        }
+        if (this.start != other.start) {
+            return false;
+        }
+        if (this.stop != other.stop) {
+            return false;
+        }
+        if (this.identity != other.identity) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
     public String toString() {
         return "MappedSequence{" + "seq_id=" + seq_id + ", start=" + start + ", stop=" + stop + '}';
     }
