@@ -59,7 +59,15 @@ public class Region extends Identifiable<Region> {
     public int getStop() {
         return stop;
     }
-    
+
+    public int getMax() {
+        return Math.max(getStart(), getStop());
+    }
+
+    public int getMin() {
+        return Math.min(getStart(), getStop());
+    }
+
     public int getLength() {
         return isFwdStrand() ? getStop() - getStart() + 1 : getStart() - getStop() + 1;
     }
