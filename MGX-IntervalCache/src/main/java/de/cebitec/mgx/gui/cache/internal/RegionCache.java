@@ -38,9 +38,16 @@ public class RegionCache extends Cache<Set<Region>> {
     }
     
     private static boolean overlaps(Region r, int from, int to) {
-        return (r.getStart() >= from && r.getStart() <= to) 
-                || (r.getStop() >= from && r.getStop() <= to)
-                || (r.getStart() <= from && r.getStop() >= to)
-                || (r.getStop() <= from && r.getStart() >= to);
+                int min = r.getMin();
+        int max = r.getMax();
+
+        return (min >= from && min <= to) // start in interval
+                || (max >= from && max <= to) // stop in interval
+                || (min <= from && max >= to); // mapping longer than interval
+        
+//        return (r.getStart() >= from && r.getStart() <= to) 
+//                || (r.getStop() >= from && r.getStop() <= to)
+//                || (r.getStart() <= from && r.getStop() >= to)
+//                || (r.getStop() <= from && r.getStart() >= to);
     }
 }

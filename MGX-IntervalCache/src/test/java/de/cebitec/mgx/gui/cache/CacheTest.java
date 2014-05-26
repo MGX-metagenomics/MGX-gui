@@ -98,7 +98,7 @@ public class CacheTest {
         String seq = cache.get(0, ref.getLength() - 1);
         assertEquals(seq.length(), ref.getLength());
     }
-
+    
     @Test
     public void testGetRegions() throws Exception {
         System.out.println("getRegions");
@@ -145,7 +145,7 @@ public class CacheTest {
         Reference ref = master.Reference().fetch(4);
         Cache<String> cache = CacheFactory.createSequenceCache(master, ref);
         assertNotNull(cache);
-        System.err.println("  generating " + 0 + " to " + (ref.getLength() - 1));
+        //System.err.println("  generating " + 0 + " to " + (ref.getLength() - 1));
         Iterator<Interval> iter = cache.getIntervals(0, ref.getLength() - 1);
         assertNotNull(iter);
         Interval interval;
@@ -154,7 +154,7 @@ public class CacheTest {
             interval = iter.next();
             assertNotNull(interval);
             numSegments++;
-            System.err.println("  " + interval.getFrom() + " - " + interval.getTo() + " with len " + ref.getLength());
+            //System.err.println("  " + interval.getFrom() + " - " + interval.getTo() + " with len " + ref.getLength());
             assertTrue(interval.getFrom() > -1);
             assertTrue(interval.getTo() > -1);
             assertTrue(interval.getFrom() < ref.getLength());
@@ -162,6 +162,28 @@ public class CacheTest {
             assertEquals(cache.getSegmentSize(), interval.length());
         }
         assertEquals(214, numSegments);
+    }
+
+    @Test
+    public void testShortInterval() {
+        System.out.println("getShortintervals");
+        MGXMaster master = get();
+        Reference ref = master.Reference().fetch(4);
+        Cache<String> cache = CacheFactory.createSequenceCache(master, ref);
+        assertNotNull(cache);
+        System.err.println("  generating " + 0 + " to " + 5);
+        Iterator<Interval> iter = cache.getIntervals(0, 5);
+        assertNotNull(iter);
+        Interval interval;
+        int numSegments = 0;
+        while (iter.hasNext()) {
+            interval = iter.next();
+            assertNotNull(interval);
+            assertEquals(0, interval.getFrom());
+            assertEquals(49999, interval.getTo());
+            numSegments++;
+        }
+        assertEquals(1, numSegments);
     }
 
     @Test
@@ -254,17 +276,72 @@ public class CacheTest {
         Reference ref = master.Reference().fetch(8);
         assertNotNull(ref);
         UUID uuid = master.Mapping().openMapping(30);
-        
+
         CoverageInfoCache<SortedSet<MappedSequence>> cache = CacheFactory.createMappedSequenceCache(master, ref, uuid);
         assertNotNull(cache);
-        
-        IntIterator iter = cache.getCoverageIterator(0, ref.getLength()-1);
-        int cnt=0;
+
+        IntIterator iter = cache.getCoverageIterator(0, ref.getLength() - 1);
+        int cnt = 0;
         while (iter.hasNext()) {
             iter.next();
             cnt++;
         }
         assertEquals(cnt, ref.getLength());
+    }
+
+    @Test
+    public void testMaxCoverage() throws Exception {
+        System.out.println("maxCoverage");
+        MGXMaster master = get();
+        Reference ref = master.Reference().fetch(8);
+        assertNotNull(ref);
+        UUID uuid = master.Mapping().openMapping(30);
+
+        CoverageInfoCache<SortedSet<MappedSequence>> cache = CacheFactory.createMappedSequenceCache(master, ref, uuid);
+        assertNotNull(cache);
+
+//        int maxCoverage = cache.getMaxCoverage(0, 5);
+//        assertEquals(0, maxCoverage);
+//
+//        maxCoverage = cache.getMaxCoverage(150000, 150020);
+//        assertEquals(0, maxCoverage);
+//
+//        maxCoverage = cache.getMaxCoverage(12780, 12785);
+//        assertEquals(0, maxCoverage);
+//        int[] foo = new int[15];
+//        cache.getCoverage(566470, 566480, foo);
+//        for (int i : foo) { System.err.println(foo[i]); }
+        // expect seqs 53748, 3436, 26467
+        SortedSet<MappedSequence> seqs = cache.get(566470, 566480);
+        assertTrue(containsSeqId(seqs, 53748));
+        assertTrue(containsSeqId(seqs, 3436));
+        assertTrue(containsSeqId(seqs, 26467));
+        assertEquals(3, seqs.size());
+
+        int maxCoverage = cache.getMaxCoverage(566470, 566480);
+        assertEquals(3, maxCoverage);
+
+        maxCoverage = cache.getMaxCoverage(0, ref.getLength() - 1);
+        assertEquals(3, maxCoverage);
+//
+//        IntIterator iter = cache.getCoverageIterator(0, ref.getLength() - 1);
+//        int max = 0;
+//        while (iter.hasNext()) {
+//            int next = iter.next();
+//            if (next > max) {
+//                max = next;
+//            }
+//        }
+//        assertEquals(maxCoverage, max);
+    }
+
+    private boolean containsSeqId(Set<MappedSequence> set, long id) {
+        for (MappedSequence ms : set) {
+            if (id == ms.getSeqId()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static MGXMaster get() {

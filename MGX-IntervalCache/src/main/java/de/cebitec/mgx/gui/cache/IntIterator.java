@@ -26,7 +26,7 @@ public class IntIterator {
 
     public IntIterator(int from, int to, CoverageInfoCache<SortedSet<MappedSequence>> lcache) {
         this.to = to;
-        this.curPos = from-1;
+        this.curPos = from - 1;
         this.lcache = lcache;
         iter = lcache.getIntervals(from, to);
         if (iter != null && iter.hasNext()) {
@@ -39,7 +39,7 @@ public class IntIterator {
     }
 
     public boolean hasNext() {
-        return curPos < to;
+        return curPos < to && curInterval != null;
     }
 
     public int next() {

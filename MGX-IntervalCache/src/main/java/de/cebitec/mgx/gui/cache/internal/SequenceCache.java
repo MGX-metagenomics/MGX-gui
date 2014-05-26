@@ -26,7 +26,7 @@ public class SequenceCache extends Cache<String> {
         assert to < ref.getLength();
         int fromInterval = from / getSegmentSize();
 
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder(to-from+1);
         Iterator<Interval> iter = getIntervals(from, to);
         while (iter.hasNext()) {
             sb.append(lcache.getUnchecked(iter.next()));

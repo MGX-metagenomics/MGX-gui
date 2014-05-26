@@ -32,15 +32,22 @@ public class MappedSequenceCache extends CoverageInfoCache<SortedSet<MappedSeque
 
     @Override
     public SortedSet<MappedSequence> get(int from, int to) {
-        assert from >= 0;
-        assert to < ref.getLength();
+        if (from < 0 || from > to || to > ref.getLength() - 1) {
+            throw new IllegalArgumentException();
+        }
         Iterator<Interval> iter = getIntervals(from, to);
         SortedSet<MappedSequence> mappedSequences = new TreeSet<>();
         while (iter.hasNext()) {
-            Set<MappedSequence> get = lcache.getUnchecked(iter.next());
+            Interval i = iter.next();
+            Set<MappedSequence> get = lcache.getUnchecked(i);
             for (MappedSequence seq : get) {
                 if (overlaps(seq, from, to)) {
+//                    if (mappedSequences.contains(seq)) {
+//                        System.err.println("already there?");
+//                    }
                     mappedSequences.add(seq);
+//                } else {
+//                    System.err.println(seq.getSeqId() + ": " + seq.getStart() + "-" + seq.getStop() + " outside of " + from + "-" + to);
                 }
             }
         }
@@ -49,7 +56,9 @@ public class MappedSequenceCache extends CoverageInfoCache<SortedSet<MappedSeque
 
     @Override
     public void getCoverage(int from, int to, int[] dest) {
-        assert from >= 0;
+        if (from < 0 || from > to) {
+            throw new IllegalArgumentException();
+        }
         to = Math.min(ref.getLength() - 1, to);
         if (dest.length < to - from + 1) {
             throw new IllegalArgumentException("Destination array too small.");
@@ -60,7 +69,7 @@ public class MappedSequenceCache extends CoverageInfoCache<SortedSet<MappedSeque
             Interval interval = iter.next();
             Set<MappedSequence> get = lcache.getUnchecked(interval);
             for (MappedSequence ms : get) {
-                for (int i = ms.getStart(); i < ms.getStop(); i++) {
+                for (int i = ms.getMin(); i < ms.getMax(); i++) {
                     // we need to check extra since we also receive mappings
                     // which only partially overlap with the interval
                     if (i >= from && i <= to) {
@@ -74,39 +83,62 @@ public class MappedSequenceCache extends CoverageInfoCache<SortedSet<MappedSeque
 
     @Override
     public IntIterator getCoverageIterator(int from, int to) {
+        if (from < 0 || from > to || to > ref.getLength() - 1) {
+            throw new IllegalArgumentException();
+        }
         assert !EventQueue.isDispatchThread();
         return new IntIterator(from, Math.min(to, ref.getLength() - 1), this);
     }
 
     @Override
     public int getMaxCoverage(int from, int to) {
+        if (from < 0 || from > to || to > ref.getLength() - 1) {
+            throw new IllegalArgumentException();
+        }
         Iterator<Interval> iter = getIntervals(from, to);
         int ret = 0;
+        int[] cov = null;
         while (iter.hasNext()) {
             Interval interval = iter.next();
-            int[] cov = new int[interval.length()];
+            if (cov == null) {
+                cov = new int[interval.length()];
+            }
             Arrays.fill(cov, 0);
-            Set<MappedSequence> get = lcache.getUnchecked(iter.next());
+
+            Set<MappedSequence> get = lcache.getUnchecked(interval);
             for (MappedSequence seq : get) {
                 if (overlaps(seq, from, to)) {
-                    for (int i = seq.getStart(); i <= seq.getStop(); i++) {
-                        cov[i - seq.getStart()]++;
+                    for (int i = seq.getMin(); i <= seq.getMax(); i++) {
+                        int offset = i - interval.getFrom();
+                        if (offset >= 0 && offset < interval.length()) {
+                            cov[offset]++;
+                        }
                     }
+                } else {
+                    //System.err.println(seq.getStart()+"-"+seq.getStop()+" outside of "+interval.getFrom()+"-"+interval.getTo());
                 }
             }
+
+            int x = 0;
             for (int c : cov) {
                 if (c > ret) {
                     ret = c;
+                    //System.err.println("max " + ret + " at position " + (interval.getFrom() + x));
                 }
+                x++;
             }
+            //System.err.println("max " + ret + " after interval " + interval.getFrom() + "-" + interval.getTo());
         }
         return ret;
     }
 
-    private static boolean overlaps(MappedSequence r, int from, int to) {
-        return (r.getStart() >= from && r.getStart() <= to)
-                || (r.getStop() >= from && r.getStop() <= to)
-                || (r.getStart() <= from && r.getStop() >= to)
-                || (r.getStop() <= from && r.getStart() >= to);
+    static boolean overlaps(MappedSequence r, int from, int to) {
+        int min = r.getMin();
+        int max = r.getMax();
+
+        return (min >= from && min <= to) // start in interval
+                || (max >= from && max <= to) // stop in interval
+                || (min <= from && max >= to); // mapping longer than interval
+                // || (min >= from && max <= to);   // mapping within interval
     }
 }
