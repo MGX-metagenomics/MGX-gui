@@ -44,19 +44,28 @@ public class MappedSequence implements Comparable<MappedSequence> {
 
     @Override
     public int compareTo(MappedSequence o) {
-        int mymin = Math.min(getStart(), getStop());
-        int omin = Math.min(o.getStart(), o.getStop());
-        return Integer.compare(mymin, omin);
+        int ret = Integer.compare(getMin(), o.getMin());
+        if (ret != 0) {
+            return ret;
+        }
+        ret = Integer.compare(getMax(), o.getMax());
+        if (ret != 0) {
+            return ret;
+        }
+        ret = Integer.compare(getIdentity(), o.getIdentity());
+        if (ret != 0) {
+            return ret;
+        }
+        return Long.compare(getSeqId(), o.getSeqId());
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 29 * hash + (int) (this.seq_id ^ (this.seq_id >>> 32));
-        hash = 29 * hash + this.start;
-        return hash;
-    }
-
+//    @Override
+//    public int hashCode() {
+//        int hash = 7;
+//        hash = 29 * hash + (int) (this.seq_id ^ (this.seq_id >>> 32));
+//        hash = 29 * hash + this.start;
+//        return hash;
+//    }
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -82,7 +91,18 @@ public class MappedSequence implements Comparable<MappedSequence> {
     }
 
     @Override
-    public String toString() {
-        return "MappedSequence{" + "seq_id=" + seq_id + ", start=" + start + ", stop=" + stop + '}';
+    public int hashCode() {
+        int hash = 7;
+        hash = 11 * hash + (int) (this.seq_id ^ (this.seq_id >>> 32));
+        hash = 11 * hash + this.start;
+        hash = 11 * hash + this.stop;
+        hash = 11 * hash + this.identity;
+        return hash;
     }
+
+    @Override
+    public String toString() {
+        return "MappedSequence{" + "seq_id=" + seq_id + ", start=" + start + ", stop=" + stop + ", identity=" + identity + '}';
+    }
+
 }
