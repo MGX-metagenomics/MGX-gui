@@ -40,7 +40,7 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
         -1 * FRAME_VOFFSET * 2,
         -1 * FRAME_VOFFSET * 3};
     private Set<Arrow> regs = null;
-    private Set<Area> coverage = null;
+    //private Set<Area> coverage = null;
     private final static Color lighterGray = new Color(210, 210, 210);
     private int[] previewBounds = null;
 
@@ -66,7 +66,7 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
 
     @Override
     void draw(Graphics2D g2) {
-        drawCoverage(g2);
+        //drawCoverage(g2);
 
         g2.setColor(Color.DARK_GRAY);
         g2.drawLine(0, midY, getWidth(), midY); // midline
@@ -135,19 +135,19 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
         }
     }
 
-    private void drawCoverage(Graphics2D g2) {
-        if (getMaxCoverage() == 0 || coverage == null) {
-            return;
-        }
-        Composite oldcomp = g2.getComposite();
-        AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f);
-        g2.setComposite(ac);
-        g2.setColor(Color.red);
-        for (Area l : coverage) {
-            g2.fill(l);
-        }
-        g2.setComposite(oldcomp);
-    }
+//    private void drawCoverage(Graphics2D g2) {
+//        if (getMaxCoverage() == 0 || coverage == null) {
+//            return;
+//        }
+//        Composite oldcomp = g2.getComposite();
+//        AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f);
+//        g2.setComposite(ac);
+//        g2.setColor(Color.red);
+//        for (Area l : coverage) {
+//            g2.fill(l);
+//        }
+//        g2.setComposite(oldcomp);
+//    }
 
     @Override
     void update() {
@@ -164,57 +164,58 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
         regs = newData;
 
         // 
-        Set<Area> ret = new HashSet<>();
-        int[] cove = vc.getCoverage(bounds[0], bounds[1]);
-        assert cove.length == bounds[1] - bounds[0] + 1;
-        int baseY = midY - 1;
-        int pos = bounds[0];
-
-        GeneralPath gp = null;
-        double[] gpStart = new double[2];
-        double[] lastPoint = new double[2];
-        for (int cov : cove) {
-            if (cov == 0) {
-                if (gp != null) {
-                    gp.lineTo(lastPoint[0], baseY); // down to center line
-                    gp.lineTo(gpStart[0], gpStart[1]); // close shape
-                    lastPoint[0] = gpStart[0];
-                    lastPoint[1] = gpStart[1];
-                    ret.add(new Area(gp));
-                    gp = null;
-                }
-            } else {
-                // we have some coverage..
-                double drawPos = bp2px(pos);
-                double covScale = (midY * 1d) / (vc.getMaxCoverage() * 1d);
-                double covPos = midY - (cov * covScale);
-
-                if (gp == null) {
-                    gp = new GeneralPath();
-                    gpStart[0] = drawPos; // remember positions so we can close the shape later
-                    gpStart[1] = baseY;
-                    gp.moveTo(drawPos, baseY);
-                    lastPoint[0] = drawPos;
-                    lastPoint[1] = baseY;
-                } else {
-                    // add a new point if distance >= 3px
-                    if (Math.abs(lastPoint[0] - drawPos) > 4 || Math.abs(lastPoint[1] - covPos) > 4) {
-                        gp.lineTo(drawPos, covPos);
-                        lastPoint[0] = drawPos;
-                        lastPoint[1] = covPos;
-                    }
-                }
-                //ret.add(cov2p(pos, i));
-            }
-            pos++;
-        }
-        if (gp != null) {
-            gp.lineTo(lastPoint[0], baseY); // down to center line
-            gp.lineTo(gpStart[0], gpStart[1]); // close shape
-            ret.add(new Area(gp));
-            gp = null;
-        }
-        coverage = ret;
+//        Set<Area> ret = new HashSet<>();
+//        int[] cove = new int[bounds[1]-bounds[0]+1];
+//        vc.getCoverage(bounds[0], bounds[1], cove);
+//        assert cove.length == bounds[1] - bounds[0] + 1;
+//        int baseY = midY - 1;
+//        int pos = bounds[0];
+//
+//        GeneralPath gp = null;
+//        double[] gpStart = new double[2];
+//        double[] lastPoint = new double[2];
+//        for (int cov : cove) {
+//            if (cov == 0) {
+//                if (gp != null) {
+//                    gp.lineTo(lastPoint[0], baseY); // down to center line
+//                    gp.lineTo(gpStart[0], gpStart[1]); // close shape
+//                    lastPoint[0] = gpStart[0];
+//                    lastPoint[1] = gpStart[1];
+//                    ret.add(new Area(gp));
+//                    gp = null;
+//                }
+//            } else {
+//                // we have some coverage..
+//                double drawPos = bp2px(pos);
+//                double covScale = (midY * 1d) / (vc.getMaxCoverage() * 1d);
+//                double covPos = midY - (cov * covScale);
+//
+//                if (gp == null) {
+//                    gp = new GeneralPath();
+//                    gpStart[0] = drawPos; // remember positions so we can close the shape later
+//                    gpStart[1] = baseY;
+//                    gp.moveTo(drawPos, baseY);
+//                    lastPoint[0] = drawPos;
+//                    lastPoint[1] = baseY;
+//                } else {
+//                    // add a new point if distance >= 3px
+//                    if (Math.abs(lastPoint[0] - drawPos) > 4 || Math.abs(lastPoint[1] - covPos) > 4) {
+//                        gp.lineTo(drawPos, covPos);
+//                        lastPoint[0] = drawPos;
+//                        lastPoint[1] = covPos;
+//                    }
+//                }
+//                //ret.add(cov2p(pos, i));
+//            }
+//            pos++;
+//        }
+//        if (gp != null) {
+//            gp.lineTo(lastPoint[0], baseY); // down to center line
+//            gp.lineTo(gpStart[0], gpStart[1]); // close shape
+//            ret.add(new Area(gp));
+//            gp = null;
+//        }
+//        coverage = ret;
     }
 
     private Arrow r2a(final Region r) {

@@ -22,17 +22,18 @@ public class Track {
     public Track() {
     }
 
-    public void add(MappedSequence ms) {
-        content.add(ms);
-    }
+//    public void add(MappedSequence ms) {
+//        content.add(ms);
+//    }
 
-    public boolean overlaps(MappedSequence ms) {
+    public boolean add(MappedSequence ms) {
         for (MappedSequence m : content) {
             if (overlaps(m, ms)) {
-                return true;
+                return false;
             }
         }
-        return false;
+        content.add(ms);
+        return true;
     }
 
     public Iterator<MappedSequence> getSequences() {

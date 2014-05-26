@@ -119,7 +119,8 @@ public class MappingCtxTest {
 
         MappingCtx ctx = new MappingCtx(mapping, ref, job);
 
-        int[] mappings = ctx.getCoverage(6389, 6392);
+        int[] mappings = new int[6392-6389+1];
+        ctx.getCoverage(6389, 6392, mappings);
         assertEquals(4, mappings.length);
         for (int i : mappings) {
             System.err.print(i + " ");

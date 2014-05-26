@@ -21,16 +21,14 @@ public class TrackFactory {
         for (MappedSequence ms : mappings) {
             boolean placed = false;
             for (Track t : tracks) {
-                if (!placed && !t.overlaps(ms)) {
-                    t.add(ms);
-                    placed = true;
+                if (!placed) {
+                    placed = t.add(ms);
                 }
             }
             if (!placed) {
                 Track t = new Track();
-                t.add(ms);
                 tracks.add(t);
-                placed = true;
+                placed = t.add(ms);
             }
             assert placed;
         }

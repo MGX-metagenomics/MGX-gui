@@ -55,16 +55,16 @@ public final class TopComponentViewer extends TopComponent {
             }
         };
         sw.execute();
-        // precache mappings/coverage
-        SwingWorker<Void, Void> sw2 = new SwingWorker<Void, Void>() {
-
-            @Override
-            protected Void doInBackground() throws Exception {
-                vc.getCoverage(0, vc.getReference().getLength() - 1);
-                return null;
-            }
-        };
-        sw2.execute();
+//        // precache mappings/coverage
+//        SwingWorker<Void, Void> sw2 = new SwingWorker<Void, Void>() {
+//
+//            @Override
+//            protected Void doInBackground() throws Exception {
+//                vc.getCoverage(0, vc.getReference().getLength() - 1);
+//                return null;
+//            }
+//        };
+//        sw2.execute();
         FeaturePanel fp = new FeaturePanel(vc);
         add(fp, BorderLayout.CENTER);
         

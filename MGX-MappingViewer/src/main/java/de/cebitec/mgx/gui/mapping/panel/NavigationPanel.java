@@ -325,13 +325,20 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
 
         int baseY = getHeight() - 1;
         int pos = 0;
-        double covScale = (baseY * 1d) / (maxCov * 1d);
+        int max = -1;
+        double covScale = (getHeight() * 1d) / (Math.log(maxCov * 1d));
 
         GeneralPath gp = null;
         double[] gpStart = new double[2];
         double[] lastPoint = new double[2];
         while (covIter.hasNext()) {
             int cov = covIter.next();
+            if (cov == maxCov) {
+                System.err.println("found max at "+pos);
+            }
+            if (cov > max) {
+                max = cov;
+            }
             if (cov == 0) {
                 if (gp != null) {
                     gp.lineTo(lastPoint[0], baseY); // down to bottom line
@@ -344,22 +351,24 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
             } else {
                 // we have some coverage..
                 double drawPos = bp2px(pos);
-                double covPos = baseY - (cov * covScale);
+                double covPos = baseY - (Math.log(cov) * covScale);
 
                 if (gp == null) {
                     gp = new GeneralPath();
                     gpStart[0] = drawPos; // remember positions so we can close the shape later
                     gpStart[1] = baseY;
                     gp.moveTo(drawPos, baseY);
+                    
+                    gp.lineTo(drawPos, covPos);
                     lastPoint[0] = drawPos;
                     lastPoint[1] = baseY;
                 } else {
                     // add a new point if distance >= 3px
-                    if (Math.abs(lastPoint[0] - drawPos) > 4 || Math.abs(lastPoint[1] - covPos) > 4) {
+                    //if (Math.abs(lastPoint[0] - drawPos) > 1 || Math.abs(lastPoint[1] - covPos) > 1) {
                         gp.lineTo(drawPos, covPos);
                         lastPoint[0] = drawPos;
                         lastPoint[1] = covPos;
-                    }
+                    //}
                 }
             }
             pos++;
@@ -370,6 +379,8 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
             ret.add(new Area(gp));
             gp = null;
         }
+        
+        System.err.println("saw max "+max+ " expected"+maxCov);
 
         synchronized (coverage) {
             coverage.clear();

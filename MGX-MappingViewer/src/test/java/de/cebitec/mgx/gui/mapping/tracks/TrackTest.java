@@ -39,33 +39,33 @@ public class TrackTest {
     public void tearDown() {
     }
 
-    @Test
-    public void testOverlap() {
-        System.out.println("overlap");
-        Track t = new Track();
+//    @Test
+//    public void testOverlap() {
+//        System.out.println("overlap");
+//        Track t = new Track();
+//
+//        MappedSequence ms1 = new MappedSequence(1, 5, 20, 0);
+//        MappedSequence ms2 = new MappedSequence(1, 15, 25, 0);
+//
+//        assertFalse(t.overlaps(ms1));
+//
+//        t.add(ms1);
+//
+//        assertTrue(t.overlaps(ms2));
+//    }
 
-        MappedSequence ms1 = new MappedSequence(1, 5, 20, 0);
-        MappedSequence ms2 = new MappedSequence(1, 15, 25, 0);
-
-        assertFalse(t.overlaps(ms1));
-
-        t.add(ms1);
-
-        assertTrue(t.overlaps(ms2));
-    }
-
-    @Test
-    public void testOverlap2() {
-        System.out.println("overlap2");
-        Track t = new Track();
-
-        MappedSequence ms1 = new MappedSequence(1, 5, 20, 0);
-        MappedSequence ms3 = new MappedSequence(2, 25, 45, 0);
-
-        t.add(ms1);
-
-        assertFalse(t.overlaps(ms3));
-    }
+//    @Test
+//    public void testOverlap2() {
+//        System.out.println("overlap2");
+//        Track t = new Track();
+//
+//        MappedSequence ms1 = new MappedSequence(1, 5, 20, 0);
+//        MappedSequence ms3 = new MappedSequence(2, 25, 45, 0);
+//
+//        t.add(ms1);
+//
+//        assertFalse(t.overlaps(ms3));
+//    }
 
 //    @Test
 //    public void testOverlaps() {

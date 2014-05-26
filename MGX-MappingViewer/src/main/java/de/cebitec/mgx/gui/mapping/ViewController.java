@@ -97,8 +97,8 @@ public class ViewController {
         return ctx.getMappings(from, to);
     }
 
-    public int[] getCoverage(int from, int to) {
-        return ctx.getCoverage(from, to);
+    public void getCoverage(int from, int to, int[] dest) {
+        ctx.getCoverage(from, to, dest);
     }
 
     public IntIterator getCoverageIterator() {
