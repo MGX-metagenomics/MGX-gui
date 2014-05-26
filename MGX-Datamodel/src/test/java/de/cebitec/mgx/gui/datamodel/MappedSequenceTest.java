@@ -90,4 +90,17 @@ public class MappedSequenceTest {
         assertEquals(2, set.size());
     }
 
+    @Test
+    public void testSortedSet2() {
+        System.err.println("testSortedSet2");
+        SortedSet<MappedSequence> set = new TreeSet<>();
+
+        MappedSequence ms1 = new MappedSequence(3436, 566474, 566528, 12);
+        set.add(ms1);
+        MappedSequence ms2 = new MappedSequence(3436, 566474, 566528, 12);
+        set.add(ms2);
+
+        assertEquals(1, set.size());
+    }
+
 }
