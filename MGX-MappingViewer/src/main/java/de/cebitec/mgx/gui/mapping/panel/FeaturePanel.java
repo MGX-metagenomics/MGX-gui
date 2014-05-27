@@ -48,7 +48,7 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
      * Creates new form FeaturePanel
      */
     public FeaturePanel(ViewController vc) {
-        super(vc);
+        super(vc, true);
         initComponents();
         setMaximumSize(new Dimension(5000, 50));
         setPreferredSize(new Dimension(150, 50));
@@ -150,10 +150,10 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
 //    }
 
     @Override
-    void update() {
+    boolean update() {
 
         if (midY == 0) {
-            return;
+            return false;
         }
 
         // fetch features
@@ -162,6 +162,8 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
             newData.add(r2a(r));
         }
         regs = newData;
+        
+        return true;
 
         // 
 //        Set<Area> ret = new HashSet<>();

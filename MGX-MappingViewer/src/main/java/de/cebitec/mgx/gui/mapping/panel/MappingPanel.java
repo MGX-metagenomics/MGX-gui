@@ -23,7 +23,7 @@ import javax.swing.ToolTipManager;
 
 /**
  *
- * @author sj
+ * @author sjaenick
  */
 public class MappingPanel extends PanelBase {
 
@@ -33,11 +33,11 @@ public class MappingPanel extends PanelBase {
      * Creates new form MappingPanel
      */
     public MappingPanel(ViewController vc) {
-        super(vc);
+        super(vc, false);
         initComponents();
         ToolTipManager.sharedInstance().registerComponent(this);
         ToolTipManager.sharedInstance().setDismissDelay(5000);
-        setMinimumSize(new Dimension(300, 300));
+        setMinimumSize(new Dimension(300, 400));
     }
 
     @Override
@@ -75,11 +75,11 @@ public class MappingPanel extends PanelBase {
     }
 
     @Override
-    void update() {
+    boolean update() {
 
         SortedSet<MappedSequence> mappings = vc.getMappings(bounds[0], bounds[1]);
         if (mappings.isEmpty()) {
-            return;
+            return true;
         }
 
         List<Track> tracks = TrackFactory.createTracks(mappings);
@@ -116,6 +116,7 @@ public class MappingPanel extends PanelBase {
             coverage.clear();
             coverage.addAll(ret);
         }
+        return true;
     }
 
     /**

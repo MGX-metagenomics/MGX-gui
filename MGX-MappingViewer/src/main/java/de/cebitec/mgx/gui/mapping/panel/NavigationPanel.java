@@ -22,7 +22,9 @@ import java.awt.event.MouseMotionListener;
 import java.awt.geom.Area;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -43,7 +45,7 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
      * Creates new form NavigationPanel
      */
     public NavigationPanel(ViewController vc) {
-        super(vc);
+        super(vc, true);
         refLength = vc.getReference().getLength();
         initComponents();
         setMaximumSize(new Dimension(5000, 50));
@@ -302,13 +304,14 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
     }
 
     @Override
-    void update() {
+    boolean update() {
         scaleFactor = 1d * refLength / getWidth();
         midY = getHeight() / 2;
 
         if (coverage.isEmpty()) {
             generateCoverage();
         }
+        return true;
     }
 
     private void generateCoverage() {
@@ -321,7 +324,7 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
         }
 
         IntIterator covIter = vc.getCoverageIterator();
-        Set<Area> ret = new HashSet<>();
+        List<Area> ret = new ArrayList<>();
 
         int baseY = getHeight() - 1;
         int pos = 0;
@@ -343,6 +346,7 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
                 if (gp != null) {
                     gp.lineTo(lastPoint[0], baseY); // down to bottom line
                     gp.lineTo(gpStart[0], gpStart[1]); // close shape
+                    gp.closePath();
                     lastPoint[0] = gpStart[0];
                     lastPoint[1] = gpStart[1];
                     ret.add(new Area(gp));
@@ -364,11 +368,11 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
                     lastPoint[1] = baseY;
                 } else {
                     // add a new point if distance >= 3px
-                    //if (Math.abs(lastPoint[0] - drawPos) > 1 || Math.abs(lastPoint[1] - covPos) > 1) {
+                    if (Math.abs(lastPoint[0] - drawPos) > 2 || Math.abs(lastPoint[1] - covPos) > 2) {
                         gp.lineTo(drawPos, covPos);
                         lastPoint[0] = drawPos;
                         lastPoint[1] = covPos;
-                    //}
+                    }
                 }
             }
             pos++;
@@ -376,6 +380,7 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
         if (gp != null) {
             gp.lineTo(lastPoint[0], baseY); // down to bottom line
             gp.lineTo(gpStart[0], gpStart[1]); // close shape
+            gp.closePath();
             ret.add(new Area(gp));
             gp = null;
         }

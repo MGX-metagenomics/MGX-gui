@@ -30,10 +30,12 @@ public abstract class PanelBase extends JPanel implements PropertyChangeListener
     private double scale;
     protected int midY;
     //
-    private static final RenderingHints antiAlias = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+    protected static final RenderingHints antiAlias = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+    private final boolean useAntialiasing;
 
-    public PanelBase(final ViewController vc) {
+    public PanelBase(final ViewController vc, boolean antiAlias) {
         super(true);
+        this.useAntialiasing = antiAlias;
         this.vc = vc;
         bounds = vc.getBounds();
         intervalLen = bounds[1] - bounds[0] + 1;
@@ -78,13 +80,16 @@ public abstract class PanelBase extends JPanel implements PropertyChangeListener
         }
 
         Graphics2D g2 = (Graphics2D) g;
-        g2.setRenderingHints(antiAlias);
+
+        if (useAntialiasing) {
+            g2.setRenderingHints(antiAlias);
+        }
         draw(g2);
     }
 
     abstract void draw(Graphics2D g2);
 
-    abstract void update();
+    abstract boolean update();
 
     @Override
     public final void propertyChange(PropertyChangeEvent evt) {
@@ -95,14 +100,16 @@ public abstract class PanelBase extends JPanel implements PropertyChangeListener
                 scale = 1d / (1d * intervalLen / getWidth());
                 midY = getHeight() / 2;
                 if (midY > 0) {
-                    update();
-                    repaint();
+                    if (update()) {
+                        repaint();
+                    }
                 }
                 break;
             case ViewController.MAX_COV_CHANGE:
                 maxCoverage = (int) evt.getNewValue();
-                update();
-                repaint();
+                if (update()) {
+                    repaint();
+                }
                 break;
             default:
                 System.err.println("Unknown event: " + evt.getPropertyName());
