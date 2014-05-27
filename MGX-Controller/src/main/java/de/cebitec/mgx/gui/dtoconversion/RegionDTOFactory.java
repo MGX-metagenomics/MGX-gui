@@ -13,8 +13,7 @@ import de.cebitec.mgx.gui.datamodel.Identifiable;
  *
  * @author belmann
  */
-public class RegionDTOFactory extends DTOConversionBase<Region, RegionDTO>{
-    
+public class RegionDTOFactory extends DTOConversionBase<Region, RegionDTO> {
 
     static {
         instance = new RegionDTOFactory();
@@ -27,8 +26,7 @@ public class RegionDTOFactory extends DTOConversionBase<Region, RegionDTO>{
     public static RegionDTOFactory getInstance() {
         return instance;
     }
-    
-    
+
     @Override
     public RegionDTO toDTO(Region reg) {
         Builder b = RegionDTO.newBuilder();
@@ -44,14 +42,11 @@ public class RegionDTOFactory extends DTOConversionBase<Region, RegionDTO>{
 
     @Override
     public Region toModel(RegionDTO dto) {
-       Region d = new Region();
+        Region d = new Region(dto.getStart(), dto.getStop());
         d.setName(dto.getName());
         d.setDescription(dto.getDescription());
-        d.setStart(dto.getStart());
-        d.setStop(dto.getStop());
         d.setId(dto.getId());
         return d;
     }
-
 
 }
