@@ -62,57 +62,70 @@ public class MappingCtx {
 
     public String getSequence(int from, int to) {
         if (seqCache == null) {
-            seqCache = CacheFactory.createSequenceCache((MGXMaster) ref.getMaster(), ref);
+            synchronized (this) {
+                if (seqCache == null) {
+                    seqCache = CacheFactory.createSequenceCache((MGXMaster) ref.getMaster(), ref);
+                }
+            }
         }
         return seqCache.get(from, to);
     }
 
     public Set<Region> getRegions(int from, int to) {
         if (regCache == null) {
-            regCache = CacheFactory.createRegionCache((MGXMaster) ref.getMaster(), ref);
+            synchronized (this) {
+                if (regCache == null) {
+                    regCache = CacheFactory.createRegionCache((MGXMaster) ref.getMaster(), ref);
+                }
+            }
         }
         return regCache.get(from, to);
     }
 
     public SortedSet<MappedSequence> getMappings(int from, int to) {
         if (mapCache == null) {
-            mapCache = CacheFactory.createMappedSequenceCache((MGXMaster) ref.getMaster(), ref, sessionUUID);
+            synchronized (this) {
+                if (mapCache == null) {
+                    mapCache = CacheFactory.createMappedSequenceCache((MGXMaster) ref.getMaster(), ref, sessionUUID);
+                }
+            }
         }
         return mapCache.get(from, to);
     }
 
     public void getCoverage(int from, int to, int[] dest) {
         if (mapCache == null) {
-            mapCache = CacheFactory.createMappedSequenceCache((MGXMaster) ref.getMaster(), ref, sessionUUID);
+            synchronized (this) {
+                if (mapCache == null) {
+                    mapCache = CacheFactory.createMappedSequenceCache((MGXMaster) ref.getMaster(), ref, sessionUUID);
+                }
+            }
         }
         mapCache.getCoverage(from, to, dest);
     }
 
     public IntIterator getCoverageIterator(int from, int to) {
         if (mapCache == null) {
-            mapCache = CacheFactory.createMappedSequenceCache((MGXMaster) ref.getMaster(), ref, sessionUUID);
+            synchronized (this) {
+                if (mapCache == null) {
+                    mapCache = CacheFactory.createMappedSequenceCache((MGXMaster) ref.getMaster(), ref, sessionUUID);
+
+                }
+            }
         }
         return mapCache.getCoverageIterator(from, to);
     }
 
     public long getMaxCoverage() {
         if (maxCoverage == -1) {
-            MGXMaster master = (MGXMaster) ref.getMaster();
-            maxCoverage = master.Mapping().getMaxCoverage(sessionUUID);
+            synchronized (this) {
+                if (maxCoverage == -1) {
+                    MGXMaster master = (MGXMaster) ref.getMaster();
+                    maxCoverage = master.Mapping().getMaxCoverage(sessionUUID);
+                }
+            }
         }
         return maxCoverage;
     }
 
-//    public int getMaxCoverage() {
-//        int ret = 0;
-//        IntIterator iter = getCoverageIterator(0, ref.getLength() -1);
-//        while (iter.hasNext()) {
-//            int i = iter.next();
-//            if (i > ret) {
-//                ret = i;
-//                System.err.println("new max "+ ret);
-//            }
-//        }
-//        return ret;
-//    }
 }
