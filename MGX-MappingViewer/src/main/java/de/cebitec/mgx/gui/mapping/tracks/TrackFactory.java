@@ -6,9 +6,7 @@
 package de.cebitec.mgx.gui.mapping.tracks;
 
 import de.cebitec.mgx.gui.datamodel.MappedSequence;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.SortedSet;
+import java.util.Collection;
 
 /**
  *
@@ -16,13 +14,16 @@ import java.util.SortedSet;
  */
 public class TrackFactory {
 
-    public static List<Track> createTracks(SortedSet<MappedSequence> mappings) {
-        List<Track> tracks = new ArrayList<>();
+    public static void createTracks(Iterable<MappedSequence> mappings, Collection<Track> tracks) {
+        tracks.clear(); 
         for (MappedSequence ms : mappings) {
             boolean placed = false;
             for (Track t : tracks) {
                 if (!placed) {
                     placed = t.add(ms);
+                    if (placed) {
+                        break;
+                    }
                 }
             }
             if (!placed) {
@@ -30,9 +31,7 @@ public class TrackFactory {
                 tracks.add(t);
                 placed = t.add(ms);
             }
-            assert placed;
         }
-        return tracks;
     }
 
 }

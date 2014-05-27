@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.cebitec.mgx.gui.mapping.panel;
+package de.cebitec.mgx.gui.mapping.shapes;
 
 import de.cebitec.mgx.gui.datamodel.MappedSequence;
 import java.awt.Color;
@@ -31,7 +31,11 @@ public class MappedRead2D implements Shape, Comparable<MappedRead2D> {
         this.ms = ms;
         shape = new Rectangle2D.Double(x, y, length, height);
     }
-    
+
+    public MappedSequence getSequence() {
+        return ms;
+    }
+
     public Color getColor() {
         return gradient[ms.getIdentity()];
     }
@@ -100,10 +104,14 @@ public class MappedRead2D implements Shape, Comparable<MappedRead2D> {
 
     @Override
     public int compareTo(MappedRead2D o) {
-        return Integer.compare(ms.getIdentity(), o.ms.getIdentity());
+        int ret = Integer.compare(ms.getIdentity(), o.ms.getIdentity());
+        if (ret != 0) {
+            return ret;
+        }
+        return ms.compareTo(o.ms);
     }
 
-    String getToolTipText() {
-        return String.valueOf(ms.getIdentity()) + "% identity";
+    public String getToolTipText() {
+        return "<html>Start: " + ms.getStart() + "<br>Stop: " + ms.getStop() + "<br>" + String.valueOf(ms.getIdentity()) + "% identity</html>";
     }
 }

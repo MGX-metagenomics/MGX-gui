@@ -5,6 +5,7 @@
  */
 package de.cebitec.mgx.gui.mapping.panel;
 
+import de.cebitec.mgx.gui.mapping.shapes.Arrow;
 import de.cebitec.mgx.gui.datamodel.Region;
 import de.cebitec.mgx.gui.mapping.ViewController;
 import java.awt.AlphaComposite;
@@ -50,9 +51,9 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
     public FeaturePanel(ViewController vc) {
         super(vc, true);
         initComponents();
-        setMaximumSize(new Dimension(5000, 50));
-        setPreferredSize(new Dimension(150, 50));
-        setMinimumSize(new Dimension(150, 50));
+        setMaximumSize(new Dimension(5000, 45));
+        setPreferredSize(new Dimension(150, 45));
+        setMinimumSize(new Dimension(150, 45));
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
         ToolTipManager.sharedInstance().registerComponent(this);
@@ -253,12 +254,12 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
 
     @Override
     public void mousePressed(MouseEvent e) {
-        System.err.println("button is " + e.getButton());
+        //System.err.println("button is " + e.getButton());
         //  if (e.getButton() == MouseEvent.BUTTON1) {
         inDrag = true;
         int x = e.getX();
         dragStart = px2bp(x);
-        System.err.println("drag started at " + dragStart);
+        //System.err.println("drag started at " + dragStart);
     }
 
     @Override

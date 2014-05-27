@@ -98,81 +98,81 @@ public class MappingCtxTest {
     /**
      * Test of getCoverage method, of class MappingCtx.
      */
-    @Test
-    public void testGetCoverage() {
-        System.out.println("getCoverage");
-        MGXMaster master = TestMaster.getRO();
-        Iterator<Mapping> iter = master.Mapping().fetchall();
-        int cnt = 0;
-        Mapping mapping = null;
-        while (iter.hasNext()) {
-            mapping = iter.next();
-            cnt++;
-        }
-        assertEquals(1, cnt);
-        assertNotNull(mapping);
+//    @Test
+//    public void testGetCoverage() {
+//        System.out.println("getCoverage");
+//        MGXMaster master = TestMaster.getRO();
+//        Iterator<Mapping> iter = master.Mapping().fetchall();
+//        int cnt = 0;
+//        Mapping mapping = null;
+//        while (iter.hasNext()) {
+//            mapping = iter.next();
+//            cnt++;
+//        }
+//        assertEquals(1, cnt);
+//        assertNotNull(mapping);
+//
+//        Reference ref = master.Reference().fetch(mapping.getReferenceID());
+//        Job job = master.Job().fetch(mapping.getJobID());
+//
+//        UUID uuid = master.Mapping().openMapping(mapping.getId());
+//
+//        MappingCtx ctx = new MappingCtx(mapping, ref, job);
+//
+//        int[] mappings = new int[6392-6389+1];
+//        ctx.getCoverage(6389, 6392, mappings);
+//        assertEquals(4, mappings.length);
+//        for (int i : mappings) {
+//            System.err.print(i + " ");
+//        }
+//
+//        assertEquals(0, mappings[0]); // 6389
+//        assertEquals(0, mappings[1]); // 6390
+//        assertEquals(1, mappings[2]); // 6391
+//        assertEquals(1, mappings[3]); // 6392
+//
+//        master.Mapping().closeMapping(uuid);
+//    }
 
-        Reference ref = master.Reference().fetch(mapping.getReferenceID());
-        Job job = master.Job().fetch(mapping.getJobID());
-
-        UUID uuid = master.Mapping().openMapping(mapping.getId());
-
-        MappingCtx ctx = new MappingCtx(mapping, ref, job);
-
-        int[] mappings = new int[6392-6389+1];
-        ctx.getCoverage(6389, 6392, mappings);
-        assertEquals(4, mappings.length);
-        for (int i : mappings) {
-            System.err.print(i + " ");
-        }
-
-        assertEquals(0, mappings[0]); // 6389
-        assertEquals(0, mappings[1]); // 6390
-        assertEquals(1, mappings[2]); // 6391
-        assertEquals(1, mappings[3]); // 6392
-
-        master.Mapping().closeMapping(uuid);
-    }
-
-    @Test
-    public void testGetCoverageIterator() {
-        System.out.println("getCoverageIterator");
-        MGXMaster master = TestMaster.getRO();
-        Iterator<Mapping> iter = master.Mapping().fetchall();
-        int cnt = 0;
-        Mapping mapping = null;
-        while (iter.hasNext()) {
-            mapping = iter.next();
-            cnt++;
-        }
-        assertEquals(1, cnt);
-        assertNotNull(mapping);
-
-        Reference ref = master.Reference().fetch(mapping.getReferenceID());
-        Job job = master.Job().fetch(mapping.getJobID());
-
-        UUID uuid = master.Mapping().openMapping(mapping.getId());
-
-        MappingCtx ctx = new MappingCtx(mapping, ref, job);
-
-        IntIterator intIter = ctx.getCoverageIterator(6389, 6392);
-        assertNotNull(intIter);
-
-        int poscnt = 0;
-        int[] mappings = new int[4];
-        while (intIter.hasNext()) {
-            //System.err.println(intIter.next());
-            mappings[poscnt] = intIter.next();
-            poscnt++;
-        }
-
-        assertEquals(4, poscnt);
-
-        assertEquals(0, mappings[0]); // 6389
-        assertEquals(0, mappings[1]); // 6390
-        assertEquals(1, mappings[2]); // 6391
-        assertEquals(1, mappings[3]); // 6392
-
-        master.Mapping().closeMapping(uuid);
-    }
+//    @Test
+//    public void testGetCoverageIterator() {
+//        System.out.println("getCoverageIterator");
+//        MGXMaster master = TestMaster.getRO();
+//        Iterator<Mapping> iter = master.Mapping().fetchall();
+//        int cnt = 0;
+//        Mapping mapping = null;
+//        while (iter.hasNext()) {
+//            mapping = iter.next();
+//            cnt++;
+//        }
+//        assertEquals(1, cnt);
+//        assertNotNull(mapping);
+//
+//        Reference ref = master.Reference().fetch(mapping.getReferenceID());
+//        Job job = master.Job().fetch(mapping.getJobID());
+//
+//        UUID uuid = master.Mapping().openMapping(mapping.getId());
+//
+//        MappingCtx ctx = new MappingCtx(mapping, ref, job);
+//
+//        IntIterator intIter = ctx.getCoverageIterator(6389, 6392);
+//        assertNotNull(intIter);
+//
+//        int poscnt = 0;
+//        int[] mappings = new int[4];
+//        while (intIter.hasNext()) {
+//            //System.err.println(intIter.next());
+//            mappings[poscnt] = intIter.next();
+//            poscnt++;
+//        }
+//
+//        assertEquals(4, poscnt);
+//
+//        assertEquals(0, mappings[0]); // 6389
+//        assertEquals(0, mappings[1]); // 6390
+//        assertEquals(1, mappings[2]); // 6391
+//        assertEquals(1, mappings[3]); // 6392
+//
+//        master.Mapping().closeMapping(uuid);
+//    }
 }

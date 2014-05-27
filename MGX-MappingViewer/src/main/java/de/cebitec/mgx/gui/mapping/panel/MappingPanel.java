@@ -5,16 +5,18 @@
  */
 package de.cebitec.mgx.gui.mapping.panel;
 
-import de.cebitec.mgx.gui.mapping.tracks.Track;
 import de.cebitec.mgx.gui.datamodel.MappedSequence;
 import de.cebitec.mgx.gui.mapping.ViewController;
+import de.cebitec.mgx.gui.mapping.shapes.MappedRead2D;
+import de.cebitec.mgx.gui.mapping.tracks.Track;
 import de.cebitec.mgx.gui.mapping.tracks.TrackFactory;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.SortedSet;
@@ -28,6 +30,7 @@ import javax.swing.ToolTipManager;
 public class MappingPanel extends PanelBase {
 
     private final SortedSet<MappedRead2D> coverage = new TreeSet<>();
+    private final List<Track> tracks = new ArrayList<>();
 
     /**
      * Creates new form MappingPanel
@@ -42,24 +45,26 @@ public class MappingPanel extends PanelBase {
 
     @Override
     void draw(Graphics2D g2) {
-        if (!coverage.isEmpty()) {
-            //System.err.println("mappings number " + coverage.size());
-            Color col = Color.BLACK;
-            synchronized (coverage) {
-                for (MappedRead2D mr2d : coverage) {
-                    if (!col.equals(mr2d.getColor())) {
-                        g2.setColor(mr2d.getColor());
-                    }
-                    g2.fill(mr2d);
+
+        Color col = Color.BLACK;
+        synchronized (coverage) {
+            for (MappedRead2D mr2d : coverage) {
+                if (!col.equals(mr2d.getColor())) {
+                    g2.setColor(mr2d.getColor());
                 }
-                g2.setColor(Color.BLACK);
-                for (MappedRead2D mr2d : coverage) {
-                    Rectangle r = mr2d.getBounds();
-                    g2.draw(r);
-                }
+                g2.fill(mr2d);
+            }
+            g2.setColor(Color.BLACK);
+            g2.setStroke(new BasicStroke(0.7f));
+            for (MappedRead2D mr2d : coverage) {
+                g2.draw(mr2d);
             }
         }
     }
+
+    private final static int TRACKHEIGHT = 5;
+    private final static int TRACK_VOFFSET = 1;
+    private final static int MIN_MAPPING_WIDTH = 4;
 
     @Override
     public String getToolTipText(MouseEvent m) {
@@ -71,45 +76,42 @@ public class MappingPanel extends PanelBase {
                 }
             }
         }
-        return null;
+        int bpPos = px2bp(m.getX());
+        int[] buf = new int[]{0};
+        vc.getCoverage(bpPos, bpPos, buf);
+        return "<html>Position: " + bpPos + "<br>Coverage: "
+                + buf[0] + "</html>";
     }
 
     @Override
-    boolean update() {
+    synchronized boolean update() {
 
         SortedSet<MappedSequence> mappings = vc.getMappings(bounds[0], bounds[1]);
         if (mappings.isEmpty()) {
             return true;
         }
 
-        List<Track> tracks = TrackFactory.createTracks(mappings);
-        for (Track t : tracks) {
-            assert t.size() > 0;
-        }
+        TrackFactory.createTracks(mappings, tracks);
 
-        int vStart = 5; // padding in px from top
-        int usableHeight = getHeight() - vStart;
-
-        double trackHeight = 3; // Math.max(usableHeight / tracks.size(), 3d); // at least 3px track height
-        double spaceing = trackHeight * 0.1;
+        double spaceing = TRACKHEIGHT * 0.1;
 
         SortedSet<MappedRead2D> ret = new TreeSet<>();
-
-        int trackNum = 0;
+        int vOffset = TRACK_VOFFSET;
         for (Track t : tracks) {
             Iterator<MappedSequence> iter = t.getSequences();
-            double vOffset = vStart + (trackNum * trackHeight);
+            vOffset += TRACKHEIGHT;
             while (iter.hasNext()) {
                 MappedSequence ms = iter.next();
                 double pos0 = bp2px(ms.getMin());
                 double pos1 = bp2px(ms.getMax());
-                if (pos1 - pos0 < 1) {
-                    pos1 = pos0 + 1;
+                assert pos0 >= 0 || pos1 >= 0;
+                assert pos0 <= getWidth() || pos1 <= getWidth();
+                if (pos1 - pos0 < MIN_MAPPING_WIDTH) {
+                    pos1 = pos0 + MIN_MAPPING_WIDTH;
                 }
-                MappedRead2D rect = new MappedRead2D(ms, pos0, vOffset + spaceing, trackHeight * 0.8, pos1 - pos0 + 1);
+                MappedRead2D rect = new MappedRead2D(ms, pos0, vOffset + spaceing, 1d * TRACKHEIGHT * 0.75, pos1 - pos0 + 1);
                 ret.add(rect);
             }
-            trackNum++;
         }
 
         synchronized (coverage) {
@@ -139,7 +141,7 @@ public class MappingPanel extends PanelBase {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 386, Short.MAX_VALUE)
+            .addGap(0, 373, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
 

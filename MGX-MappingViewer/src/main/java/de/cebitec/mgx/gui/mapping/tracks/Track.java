@@ -6,8 +6,8 @@
 package de.cebitec.mgx.gui.mapping.tracks;
 
 import de.cebitec.mgx.gui.datamodel.MappedSequence;
-import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -16,15 +16,11 @@ import java.util.List;
  */
 public class Track {
 
-    private final List<MappedSequence> content = new ArrayList<>();
-    private final static int padding = 1;
+    private final List<MappedSequence> content = new LinkedList<>();
+    private final int padding = 25; // bp, should be px
 
-    public Track() {
+    Track() {
     }
-
-//    public void add(MappedSequence ms) {
-//        content.add(ms);
-//    }
 
     public boolean add(MappedSequence ms) {
         for (MappedSequence m : content) {
@@ -39,24 +35,19 @@ public class Track {
     public Iterator<MappedSequence> getSequences() {
         return content.iterator();
     }
-    
+
     public int size() {
         return content.size();
     }
 
-    private static boolean overlaps(MappedSequence ms1, MappedSequence ms2) {
-//        if (within(ms1.getMin(), ms2.getMin(), ms2.getMax())) {
-//            System.err.println(ms1.getSeqId() + " min ");
-//        }
-//        if (within(ms1.getMax(), ms2.getMin(), ms2.getMax())) {
-//            System.err.println(ms1.getSeqId() + " max ");
-//        }
-
-        return within(ms1.getMin(), ms2.getMin(), ms2.getMax())
-                || within(ms1.getMax(), ms2.getMin(), ms2.getMax());
+    private boolean overlaps(MappedSequence ms1, MappedSequence ms2) {
+        int ms2min = ms2.getMin() - padding;
+        int ms2max = ms2.getMax() + padding;
+        return within(ms1.getMin(), ms2min, ms2max)
+                || within(ms1.getMax(), ms2min, ms2max);
     }
 
     private static boolean within(int pos, int from, int to) {
-        return pos >= from - padding && pos <= to + padding;
+        return pos >= from && pos <= to;
     }
 }

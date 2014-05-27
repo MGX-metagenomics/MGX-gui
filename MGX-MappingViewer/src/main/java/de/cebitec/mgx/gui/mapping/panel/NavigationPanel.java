@@ -14,6 +14,7 @@ import java.awt.Composite;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.event.MouseEvent;
@@ -26,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import javax.swing.ToolTipManager;
 
 /**
  *
@@ -51,7 +53,8 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
         setMaximumSize(new Dimension(5000, 50));
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
-
+        ToolTipManager.sharedInstance().registerComponent(this);
+        ToolTipManager.sharedInstance().setDismissDelay(5000);
         //update();
         repaint();
     }
@@ -337,7 +340,7 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
         while (covIter.hasNext()) {
             int cov = covIter.next();
             if (cov == maxCov) {
-                System.err.println("found max at "+pos);
+                System.err.println("found max at " + pos);
             }
             if (cov > max) {
                 max = cov;
@@ -362,13 +365,13 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
                     gpStart[0] = drawPos; // remember positions so we can close the shape later
                     gpStart[1] = baseY;
                     gp.moveTo(drawPos, baseY);
-                    
+
                     gp.lineTo(drawPos, covPos);
                     lastPoint[0] = drawPos;
                     lastPoint[1] = baseY;
                 } else {
                     // add a new point if distance >= 3px
-                    if (Math.abs(lastPoint[0] - drawPos) > 2 || Math.abs(lastPoint[1] - covPos) > 2) {
+                    if (Math.abs(lastPoint[0] - drawPos) > 3 || Math.abs(lastPoint[1] - covPos) > 3) {
                         gp.lineTo(drawPos, covPos);
                         lastPoint[0] = drawPos;
                         lastPoint[1] = covPos;
@@ -384,13 +387,22 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
             ret.add(new Area(gp));
             gp = null;
         }
-        
-        System.err.println("saw max "+max+ " expected"+maxCov);
+
+        System.err.println("saw max " + max + " expected" + maxCov);
 
         synchronized (coverage) {
             coverage.clear();
             coverage.addAll(ret);
         }
         repaint();
+    }
+
+    @Override
+    public String getToolTipText(MouseEvent m) {
+        int bpPos = px2bp(m.getX());
+        int[] buf = new int[]{0};
+        vc.getCoverage(bpPos, bpPos, buf);
+        return "<html>Position: " + bpPos + "<br>Coverage: "
+                + buf[0] + "</html>";
     }
 }

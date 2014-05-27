@@ -12,6 +12,7 @@ import de.cebitec.mgx.gui.datamodel.Reference;
 import de.cebitec.mgx.gui.datamodel.Region;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.datamodel.Tool;
+import de.cebitec.mgx.gui.swingutils.NonEDT;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.UUID;
@@ -120,8 +121,15 @@ public class MappingCtx {
         if (maxCoverage == -1) {
             synchronized (this) {
                 if (maxCoverage == -1) {
-                    MGXMaster master = (MGXMaster) ref.getMaster();
-                    maxCoverage = master.Mapping().getMaxCoverage(sessionUUID);
+                    final MGXMaster master = (MGXMaster) ref.getMaster();
+                    NonEDT.invokeAndWait(new Runnable() {
+
+                        @Override
+                        public void run() {
+                             maxCoverage = master.Mapping().getMaxCoverage(sessionUUID);
+                        }
+                    });
+                    //maxCoverage = master.Mapping().getMaxCoverage(sessionUUID);
                 }
             }
         }
