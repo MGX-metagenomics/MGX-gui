@@ -45,7 +45,7 @@ public abstract class Cache<T> {
 
         return new Iterator<Interval>() {
 
-            private Interval cur = new Interval(Cache.this.getSegmentSize(), fromInterval * segmentSize); //, Math.min(to, toInterval));
+            private Interval cur = new Interval(segmentSize, fromInterval * segmentSize); //, Math.min(to, toInterval));
 
             @Override
             public boolean hasNext() {
