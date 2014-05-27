@@ -6,7 +6,7 @@ import java.awt.datatransfer.DataFlavor;
  *
  * @author belmann
  */
-public class Region extends Identifiable<Region> {
+public class Region extends LocationBase<Region> {
 
     protected long reference_id;
 
@@ -14,14 +14,10 @@ public class Region extends Identifiable<Region> {
 
     private String description;
 
-    private int start;
-
-    private int stop;
-
     public static final DataFlavor DATA_FLAVOR = new DataFlavor(Region.class, "Region");
 
-    public Region() {
-        super(DATA_FLAVOR);
+    public Region(int start, int stop) {
+        super(start, stop, DATA_FLAVOR);
     }
 
     public long getReferenceId() {
@@ -48,32 +44,8 @@ public class Region extends Identifiable<Region> {
         this.description = description;
     }
 
-    public int getStart() {
-        return start;
-    }
-
-    public void setStart(int start) {
-        this.start = start;
-    }
-
-    public int getStop() {
-        return stop;
-    }
-
-    public int getMax() {
-        return Math.max(getStart(), getStop());
-    }
-
-    public int getMin() {
-        return Math.min(getStart(), getStop());
-    }
-
     public int getLength() {
         return isFwdStrand() ? getStop() - getStart() + 1 : getStart() - getStop() + 1;
-    }
-
-    public void setStop(int stop) {
-        this.stop = stop;
     }
 
     public boolean isFwdStrand() {

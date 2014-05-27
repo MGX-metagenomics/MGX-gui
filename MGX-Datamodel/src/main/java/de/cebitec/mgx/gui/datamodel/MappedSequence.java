@@ -1,20 +1,21 @@
 package de.cebitec.mgx.gui.datamodel;
 
+import java.awt.datatransfer.DataFlavor;
+
 /**
  *
- * @author sj
+ * @author sjaenick
  */
-public class MappedSequence implements Comparable<MappedSequence> {
+public class MappedSequence extends LocationBase<MappedSequence> {
 
     private final long seq_id;
-    private final int start;
-    private final int stop;
     private final int identity; // range 0-100
+    //
+    public static final DataFlavor DATA_FLAVOR = new DataFlavor(MappedSequence.class, "MappedSequence");
 
     public MappedSequence(long seq_id, int start, int stop, int identity) {
+        super(start, stop, DATA_FLAVOR);
         this.seq_id = seq_id;
-        this.start = start;
-        this.stop = stop;
         this.identity = identity;
     }
 
@@ -22,24 +23,8 @@ public class MappedSequence implements Comparable<MappedSequence> {
         return seq_id;
     }
 
-    public int getStart() {
-        return start;
-    }
-
-    public int getStop() {
-        return stop;
-    }
-
     public int getIdentity() {
         return identity;
-    }
-
-    public int getMax() {
-        return Math.max(getStart(), getStop());
-    }
-
-    public int getMin() {
-        return Math.min(getStart(), getStop());
     }
 
     @Override
@@ -78,10 +63,10 @@ public class MappedSequence implements Comparable<MappedSequence> {
         if (this.seq_id != other.seq_id) {
             return false;
         }
-        if (this.start != other.start) {
+        if (this.getStart() != other.getStart()) {
             return false;
         }
-        if (this.stop != other.stop) {
+        if (this.getStop() != other.getStop()) {
             return false;
         }
         if (this.identity != other.identity) {
@@ -94,15 +79,15 @@ public class MappedSequence implements Comparable<MappedSequence> {
     public int hashCode() {
         int hash = 7;
         hash = 11 * hash + (int) (this.seq_id ^ (this.seq_id >>> 32));
-        hash = 11 * hash + this.start;
-        hash = 11 * hash + this.stop;
+        hash = 11 * hash + this.getStart();
+        hash = 11 * hash + this.getStop();
         hash = 11 * hash + this.identity;
         return hash;
     }
 
     @Override
     public String toString() {
-        return "MappedSequence{" + "seq_id=" + seq_id + ", start=" + start + ", stop=" + stop + ", identity=" + identity + '}';
+        return "MappedSequence{" + "seq_id=" + seq_id + ", start=" + getStart() + ", stop=" + getStop() + ", identity=" + identity + '}';
     }
 
 }
