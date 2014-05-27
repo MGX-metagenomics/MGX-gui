@@ -6,6 +6,7 @@ import de.cebitec.mgx.gui.datamodel.misc.AttributeRank;
 import de.cebitec.mgx.gui.datamodel.misc.Distribution;
 import de.cebitec.mgx.gui.datamodel.misc.Pair;
 import de.cebitec.mgx.gui.datamodel.tree.Tree;
+import de.cebitec.mgx.pevents.ParallelPropertyChangeSupport;
 import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -38,7 +39,7 @@ public class VGroupManager implements PropertyChangeListener {
     private static final Color colors[] = {Color.RED, Color.BLUE, Color.YELLOW, Color.PINK, Color.GREEN};
 
     private VGroupManager() {
-        pcs = new PropertyChangeSupport(this);
+        pcs = new ParallelPropertyChangeSupport(this);
     }
 
     public synchronized static VGroupManager getInstance() {

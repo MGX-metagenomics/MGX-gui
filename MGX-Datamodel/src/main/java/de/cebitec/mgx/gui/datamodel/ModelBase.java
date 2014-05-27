@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.datamodel;
 
+import de.cebitec.mgx.pevents.ParallelPropertyChangeSupport;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -7,7 +8,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 
 /**
  *
@@ -16,13 +16,11 @@ import java.lang.ref.WeakReference;
 public abstract class ModelBase<T> implements Transferable, Comparable<T> {
 
     protected MGXMasterI master;
-    private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
-    //private final PropertyChangeSupport pcs = new ParallelPropertyChangeSupport(this);
+    //private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+    private final PropertyChangeSupport pcs = new ParallelPropertyChangeSupport(this);
     public final static String OBJECT_DELETED = "objectDeleted";
     public final static String OBJECT_MODIFIED = "objectModified";
     private final DataFlavor dataflavor;
-    //
-    //private final Set<WeakReference<PropertyChangeListener>> listeners = new HashSet<>();
 
     public ModelBase(DataFlavor dataflavor) {
         this.dataflavor = dataflavor;
@@ -70,18 +68,10 @@ public abstract class ModelBase<T> implements Transferable, Comparable<T> {
     }
 
     public void addPropertyChangeListener(PropertyChangeListener listener) {
-        //listeners.add(new WeakReference<>(listener));
         pcs.addPropertyChangeListener(listener);
     }
 
     public void removePropertyChangeListener(PropertyChangeListener listener) {
-//        WeakReference<PropertyChangeListener> removeMe = null;
-//        for (WeakReference<PropertyChangeListener> wr : listeners) {
-//            if (wr.get() != null && wr.get().equals(listener)) {
-//                removeMe = wr;
-//            }
-//        }
-//        listeners.remove(removeMe);
         pcs.removePropertyChangeListener(listener);
     }
 
@@ -99,17 +89,10 @@ public abstract class ModelBase<T> implements Transferable, Comparable<T> {
     public void firePropertyChange(String propertyName, boolean oldValue, boolean newValue) {
         PropertyChangeEvent evt = new PropertyChangeEvent(this, propertyName, oldValue, newValue);
         firePropertyChange(evt);
-        //pcs.firePropertyChange(propertyName, oldValue, newValue);
     }
 
     public void firePropertyChange(PropertyChangeEvent event) {
         pcs.firePropertyChange(event);
-//        for (WeakReference<PropertyChangeListener> wr : listeners) {
-//            PropertyChangeListener target = wr.get();
-//            if (target != null) {
-//                target.propertyChange(event);
-//            }
-//        }
     }
 
     @Override

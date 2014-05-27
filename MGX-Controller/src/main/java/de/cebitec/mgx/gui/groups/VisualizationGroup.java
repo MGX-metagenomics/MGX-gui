@@ -8,6 +8,7 @@ import de.cebitec.mgx.gui.datamodel.misc.DistributionFactory;
 import de.cebitec.mgx.gui.datamodel.misc.Triple;
 import de.cebitec.mgx.gui.datamodel.tree.Tree;
 import de.cebitec.mgx.gui.datamodel.tree.TreeFactory;
+import de.cebitec.mgx.pevents.ParallelPropertyChangeSupport;
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.beans.PropertyChangeEvent;
@@ -61,7 +62,7 @@ public class VisualizationGroup implements PropertyChangeListener {
         uniqueJobs.put(AttributeRank.SECONDARY, new HashMap<SeqRun, Job>());
         needsResolval.put(AttributeRank.PRIMARY, new HashMap<SeqRun, Set<Job>>());
         needsResolval.put(AttributeRank.SECONDARY, new HashMap<SeqRun, Set<Job>>());
-        pcs = new PropertyChangeSupport(this);
+        pcs = new ParallelPropertyChangeSupport(this);
         attributeTypes = new ConcurrentHashMap<>();
         currentDistributions = new ConcurrentHashMap<>();
     }
