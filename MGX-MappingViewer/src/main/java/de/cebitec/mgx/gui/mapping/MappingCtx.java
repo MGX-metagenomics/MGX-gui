@@ -13,6 +13,7 @@ import de.cebitec.mgx.gui.datamodel.Region;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.datamodel.Tool;
 import de.cebitec.mgx.gui.swingutils.NonEDT;
+import java.awt.EventQueue;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.UUID;
@@ -94,7 +95,7 @@ public class MappingCtx {
         return mapCache.get(from, to);
     }
 
-    public void getCoverage(int from, int to, int[] dest) {
+    public void getCoverage(final int from, final int to, final int[] dest) {
         if (mapCache == null) {
             synchronized (this) {
                 if (mapCache == null) {
@@ -102,7 +103,18 @@ public class MappingCtx {
                 }
             }
         }
-        mapCache.getCoverage(from, to, dest);
+        if (EventQueue.isDispatchThread()) {
+            NonEDT.invokeAndWait(new Runnable() {
+
+                @Override
+                public void run() {
+                    mapCache.getCoverage(from, to, dest);
+                }
+            });
+
+        } else {
+            mapCache.getCoverage(from, to, dest);
+        }
     }
 
     public IntIterator getCoverageIterator(int from, int to) {
@@ -126,7 +138,7 @@ public class MappingCtx {
 
                         @Override
                         public void run() {
-                             maxCoverage = master.Mapping().getMaxCoverage(sessionUUID);
+                            maxCoverage = master.Mapping().getMaxCoverage(sessionUUID);
                         }
                     });
                     //maxCoverage = master.Mapping().getMaxCoverage(sessionUUID);
