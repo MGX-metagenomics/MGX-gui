@@ -111,9 +111,23 @@ public class TrackFactoryTest {
             TrackFactory.createTracks(mappings, tracks);
         }
         start = (System.currentTimeMillis() - start);
-        System.err.println("  arraylist took " + start + " ms");
+        System.err.println("  first took " + start + " ms");
 
         int sum = 0;
+        for (Track t : tracks) {
+            sum += t.size();
+        }
+        assertEquals(numMappings, sum);
+        
+        start = System.currentTimeMillis();
+        for (int i = 0; i < 50000; i++) {
+            tracks.clear();
+            TrackFactory.createTracks2(mappings, tracks);
+        }
+        start = (System.currentTimeMillis() - start);
+        System.err.println("  second took " + start + " ms");
+
+        sum = 0;
         for (Track t : tracks) {
             sum += t.size();
         }

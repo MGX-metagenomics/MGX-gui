@@ -22,13 +22,26 @@ public class Track {
     Track() {
     }
 
-    public boolean add(MappedSequence ms) {
+    public boolean tryAdd(MappedSequence ms) {
         for (MappedSequence m : content) {
             if (overlaps(m, ms)) {
                 return false;
             }
         }
         content.add(ms);
+        return true;
+    }
+    
+    public void add(MappedSequence ms) {
+        content.add(ms);
+    }
+
+    public boolean canAdd(MappedSequence ms) {
+        for (MappedSequence m : content) {
+            if (overlaps(m, ms)) {
+                return false;
+            }
+        }
         return true;
     }
 
