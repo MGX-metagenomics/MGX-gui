@@ -17,7 +17,7 @@ import java.util.concurrent.RecursiveTask;
  */
 public class TrackFactory {
 
-    private static ForkJoinPool pool = new ForkJoinPool();
+    private static final ForkJoinPool pool = new ForkJoinPool();
 
     public static void createTracks(Iterable<MappedSequence> mappings, Collection<Track> tracks) {
         tracks.clear();
@@ -43,7 +43,7 @@ public class TrackFactory {
         tracks.clear();
         tracks.add(new Track());
         for (MappedSequence ms : mappings) {
-            FindTrack ft = new FindTrack(0, tracks.size() - 1, tracks, ms);
+            FindTrack ft = new FindTrack(tracks, ms);
             Track t = pool.invoke(ft);
             if (t != null) {
                 t.add(ms);
@@ -59,41 +59,40 @@ public class TrackFactory {
 
         private final List<Track> tracks;
         private final MappedSequence ms;
-        private final int from;
-        private final int to;
 
         private final static int THRESHOLD = 1;
 
-        public FindTrack(int from, int to, List<Track> tracks, MappedSequence ms) {
-            this.from = from;
-            this.to = to;
+        public FindTrack(List<Track> tracks, MappedSequence ms) {
             this.tracks = tracks;
             this.ms = ms;
         }
 
         @Override
         protected Track compute() {
-            int len = to - from + 1;
+            int len = tracks.size();
 
             if (len <= THRESHOLD) {
-                List<Track> subList = tracks.subList(from, to);
-                for (Track t : subList) {
+                for (Track t : tracks) {
                     if (t.canAdd(ms)) {
                         return t;
                     }
                 }
+                System.err.println("analyzed "+len);
                 return null;
-            }
+            } else {
 
-            int mid = len / 2;
+                int mid = len / 2;
+                List<Track> subList1 = tracks.subList(0, mid);
+                List<Track> subList2 = tracks.subList(mid, len);
 
-//            System.err.println(from + "-" + mid);
-//            System.err.println((mid + 1) + "-" + to);
-            if (mid > from && mid < to) {
-                FindTrack left = new FindTrack(from, mid, tracks, ms);
+                assert subList1.size() + subList2.size() == len;
+                
+                System.err.println("processing lists "+ subList1.size() + " and " + subList2.size());
+
+                FindTrack left = new FindTrack(subList1, ms);
                 left.fork();
 
-                FindTrack right = new FindTrack(mid + 1, to, tracks, ms);
+                FindTrack right = new FindTrack(subList2, ms);
                 Track tr = right.compute();
 
                 Track tl = left.join();
@@ -101,19 +100,10 @@ public class TrackFactory {
                 if (tl != null) {
                     return tl;
                 }
+
                 return tr;
+
             }
-
-            System.err.println("len " + len);
-            System.err.println("from " + from);
-            System.err.println("to " + to);
-            System.err.println("mid " + mid);
-            assert false;
-
-            System.err.println("first " + from + "-" + mid);
-            System.err.println("second " + (mid + 1) + "-" + to);
-
-            return null;
 
         }
 
