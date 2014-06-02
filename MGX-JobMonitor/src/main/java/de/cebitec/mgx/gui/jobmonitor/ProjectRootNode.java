@@ -1,7 +1,7 @@
 
 package de.cebitec.mgx.gui.jobmonitor;
 
-import de.cebitec.mgx.gui.controller.MGXMaster;
+import de.cebitec.mgx.api.MGXMasterI;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.util.lookup.Lookups;
@@ -12,7 +12,7 @@ import org.openide.util.lookup.Lookups;
  */
 public class ProjectRootNode extends AbstractNode {
     
-    public ProjectRootNode(MGXMaster master, Children children) {
+    public ProjectRootNode(MGXMasterI master, Children children) {
         super(children, Lookups.fixed(master));
         setDisplayName(master.getProject());
     }

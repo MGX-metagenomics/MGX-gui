@@ -1,8 +1,8 @@
 package de.cebitec.mgx.gui.jobmonitor;
 
-import de.cebitec.mgx.gui.controller.MGXMaster;
-import de.cebitec.mgx.gui.datamodel.Job;
-import de.cebitec.mgx.gui.datamodel.SeqRun;
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.JobI;
+import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.nodefactory.JobBySeqRunNodeFactory;
 import de.cebitec.mgx.gui.nodefactory.JobNodeFactory;
 import de.cebitec.mgx.gui.nodes.JobNode;
@@ -51,11 +51,11 @@ import org.openide.windows.TopComponent;
 @ServiceProvider(service = JobMonitorTopComponent.class)
 public final class JobMonitorTopComponent extends TopComponent implements LookupListener, ExplorerManager.Provider, PropertyChangeListener {
 
-    private final Lookup.Result<MGXMaster> resultMaster;
-    private final Lookup.Result<SeqRun> resultSeqRun;
-    private final Lookup.Result<Job> resultJobs;
-    private MGXMaster currentMaster = null;
-    private SeqRun currentSeqRun = null;
+    private final Lookup.Result<MGXMasterI> resultMaster;
+    private final Lookup.Result<SeqRunI> resultSeqRun;
+    private final Lookup.Result<JobI> resultJobs;
+    private MGXMasterI currentMaster = null;
+    private SeqRunI currentSeqRun = null;
     private transient ExplorerManager explorerManager = new ExplorerManager();
     private final static int MASTER_MODE = 1;
     private final static int SEQRUN_MODE = 2;
@@ -83,9 +83,9 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
             }
         };
         view.setNodePopupFactory(npf);
-        resultMaster = Utilities.actionsGlobalContext().lookupResult(MGXMaster.class);
-        resultSeqRun = Utilities.actionsGlobalContext().lookupResult(SeqRun.class);
-        resultJobs = Utilities.actionsGlobalContext().lookupResult(Job.class);
+        resultMaster = Utilities.actionsGlobalContext().lookupResult(MGXMasterI.class);
+        resultSeqRun = Utilities.actionsGlobalContext().lookupResult(SeqRunI.class);
+        resultJobs = Utilities.actionsGlobalContext().lookupResult(JobI.class);
 
         update();
     }
@@ -137,9 +137,9 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
     private void update() {
         boolean needUpdate = false;
 
-        Collection<? extends SeqRun> runs = resultSeqRun.allInstances();
-        Collection<? extends MGXMaster> m = resultMaster.allInstances();
-        Collection<? extends Job> jobs = resultJobs.allInstances();
+        Collection<? extends SeqRunI> runs = resultSeqRun.allInstances();
+        Collection<? extends MGXMasterI> m = resultMaster.allInstances();
+        Collection<? extends JobI> jobs = resultJobs.allInstances();
 
         if (!jobs.isEmpty()) {
             return; // selection within own topcomponent, no update
@@ -148,7 +148,7 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
         if (runs.size() > 0) {
             currentMode = SEQRUN_MODE;
 
-            for (SeqRun run : runs) {
+            for (SeqRunI run : runs) {
                 if (currentSeqRun == null || !run.equals(currentSeqRun)) {
                     currentSeqRun = run;
                     currentMaster = null;
@@ -159,7 +159,7 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
         } else {
             currentMode = MASTER_MODE;
 
-            for (MGXMaster newMaster : m) {
+            for (MGXMasterI newMaster : m) {
                 if (currentMaster == null || !newMaster.equals(currentMaster)) {
                     currentMaster = newMaster;
                     currentSeqRun = null;
@@ -191,7 +191,7 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
                 return;
             }
             Children chld = Children.create(new JobBySeqRunNodeFactory(currentSeqRun), true);
-            explorerManager.setRootContext(new ProjectRootNode((MGXMaster) currentSeqRun.getMaster(), chld));
+            explorerManager.setRootContext(new ProjectRootNode(currentSeqRun.getMaster(), chld));
         }
     }
 
