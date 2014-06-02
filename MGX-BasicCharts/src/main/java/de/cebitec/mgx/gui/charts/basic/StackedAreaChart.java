@@ -1,12 +1,12 @@
 package de.cebitec.mgx.gui.charts.basic;
 
-import de.cebitec.mgx.gui.attributevisualization.viewer.ViewerI;
+import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.misc.DistributionI;
+import de.cebitec.mgx.api.misc.Pair;
+import de.cebitec.mgx.api.model.AttributeTypeI;
+import de.cebitec.mgx.common.VGroupManager;
+import de.cebitec.mgx.common.visualization.ViewerI;
 import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
-import de.cebitec.mgx.gui.datamodel.AttributeType;
-import de.cebitec.mgx.gui.datamodel.misc.Distribution;
-import de.cebitec.mgx.gui.datamodel.misc.Pair;
-import de.cebitec.mgx.gui.groups.VGroupManager;
-import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import java.awt.Color;
 import java.util.List;
 import java.util.Locale;
@@ -37,12 +37,12 @@ public class StackedAreaChart extends AreaChart {
     }
 
     @Override
-    public boolean canHandle(AttributeType valueType) {
+    public boolean canHandle(AttributeTypeI valueType) {
         return super.canHandle(valueType) && VGroupManager.getInstance().getActiveGroups().size() > 1;
     }
 
     @Override
-    public void show(List<Pair<VisualizationGroup, Distribution>> dists) {
+    public void show(List<Pair<VisualizationGroupI, DistributionI>> dists) {
 
         LegendItemCollection legend = JFreeChartUtil.createLegend(dists);
         dists = getCustomizer().filter(dists);
@@ -99,7 +99,7 @@ public class StackedAreaChart extends AreaChart {
         // set the colors
         int i = 0;
         StackedXYAreaRenderer2 renderer = (StackedXYAreaRenderer2) plot.getRenderer();
-        for (Pair<VisualizationGroup, Distribution> groupDistribution : dists) {
+        for (Pair<VisualizationGroupI, DistributionI> groupDistribution : dists) {
             renderer.setSeriesPaint(i++, groupDistribution.getFirst().getColor());
         }
     }

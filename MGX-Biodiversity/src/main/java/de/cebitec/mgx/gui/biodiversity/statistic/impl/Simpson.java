@@ -1,18 +1,18 @@
 package de.cebitec.mgx.gui.biodiversity.statistic.impl;
 
+import de.cebitec.mgx.api.misc.DistributionI;
+import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.gui.biodiversity.statistic.Statistic;
-import de.cebitec.mgx.gui.datamodel.Attribute;
-import de.cebitec.mgx.gui.datamodel.misc.Distribution;
 import java.util.Map;
 
 /**
  *
  * @author sjaenick
  */
-public class Simpson implements Statistic<Distribution> {
+public class Simpson implements Statistic<DistributionI> {
 
     @Override
-    public String measure(Distribution data) {
+    public String measure(DistributionI data) {
         
         if (data.size() == 1) {
             return "0.00";
@@ -21,7 +21,7 @@ public class Simpson implements Statistic<Distribution> {
         double value = 0;
         long n = data.getTotalClassifiedElements();
         n = n * (n - 1);
-        for (Map.Entry<Attribute, Number> e : data.entrySet()) {
+        for (Map.Entry<AttributeI, Number> e : data.entrySet()) {
             double tmp = e.getValue().doubleValue();
             value += (tmp * (tmp - 1)) / n;
         }

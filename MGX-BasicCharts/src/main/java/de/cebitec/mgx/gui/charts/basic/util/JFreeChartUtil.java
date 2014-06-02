@@ -1,11 +1,11 @@
 package de.cebitec.mgx.gui.charts.basic.util;
 
-import de.cebitec.mgx.gui.datamodel.Attribute;
-import de.cebitec.mgx.gui.datamodel.misc.Distribution;
-import de.cebitec.mgx.gui.datamodel.misc.Pair;
-import de.cebitec.mgx.gui.groups.ImageExporterI;
-import de.cebitec.mgx.gui.groups.VisualizationGroup;
-import de.cebitec.mgx.gui.util.FileType;
+import de.cebitec.mgx.api.groups.FileType;
+import de.cebitec.mgx.api.groups.ImageExporterI;
+import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.misc.DistributionI;
+import de.cebitec.mgx.api.misc.Pair;
+import de.cebitec.mgx.api.model.AttributeI;
 import java.awt.Rectangle;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -32,9 +32,9 @@ import org.jfree.graphics2d.svg.SVGGraphics2D;
  */
 public class JFreeChartUtil {
 
-    public static LegendItemCollection createLegend(List<Pair<VisualizationGroup, Distribution>> in) {
+    public static LegendItemCollection createLegend(List<Pair<VisualizationGroupI, DistributionI>> in) {
         LegendItemCollection ret = new LegendItemCollection();
-        for (Pair<VisualizationGroup, Distribution> gd : in) {
+        for (Pair<VisualizationGroupI, DistributionI> gd : in) {
             LegendItem li = new LegendItem(gd.getFirst().getName());
             li.setFillPaint(gd.getFirst().getColor());
             li.setToolTipText("Classified sequences in " + gd.getFirst().getName() + ": " + gd.getSecond().getTotalClassifiedElements());
@@ -43,12 +43,12 @@ public class JFreeChartUtil {
         return ret;
     }
 
-    public static CategoryDataset createCategoryDataset(List<Pair<VisualizationGroup, Distribution>> in) {
+    public static CategoryDataset createCategoryDataset(List<Pair<VisualizationGroupI, DistributionI>> in) {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-        for (Pair<VisualizationGroup, Distribution> groupDistribution : in) {
-            Distribution d = groupDistribution.getSecond();
+        for (Pair<VisualizationGroupI, DistributionI> groupDistribution : in) {
+            DistributionI d = groupDistribution.getSecond();
 
-            for (Map.Entry<Attribute, ? extends Number> entry : d.entrySet()) {
+            for (Map.Entry<AttributeI, ? extends Number> entry : d.entrySet()) {
                 dataset.addValue(entry.getValue(), groupDistribution.getFirst().getName(), entry.getKey().getValue());
             }
         }
@@ -70,14 +70,14 @@ public class JFreeChartUtil {
 //        }
 //        return dataset;
 //    }
-    public static XYSeriesCollection createXYSeries(List<Pair<VisualizationGroup, Distribution>> in) {
+    public static XYSeriesCollection createXYSeries(List<Pair<VisualizationGroupI, DistributionI>> in) {
         return createXYSeries(in, false);
     }
 
-    public static XYSeriesCollection createXYSeries(List<Pair<VisualizationGroup, Distribution>> in, boolean createBounds) {
+    public static XYSeriesCollection createXYSeries(List<Pair<VisualizationGroupI, DistributionI>> in, boolean createBounds) {
         XYSeriesCollection dataset = new XYSeriesCollection();
 
-        for (Pair<VisualizationGroup, Distribution> groupDistribution : in) {
+        for (Pair<VisualizationGroupI, DistributionI> groupDistribution : in) {
             XYSeries series = new XYSeries(groupDistribution.getFirst().getName());
 
             double[][] values = new double[groupDistribution.getSecond().size()][];
@@ -86,7 +86,7 @@ public class JFreeChartUtil {
             double minAttrVal = Double.MAX_VALUE;
             double maxAttrVal = Double.MIN_VALUE;
 
-            for (Map.Entry<Attribute, ? extends Number> entry : groupDistribution.getSecond().entrySet()) {
+            for (Map.Entry<AttributeI, ? extends Number> entry : groupDistribution.getSecond().entrySet()) {
                 double attrVal = Double.parseDouble(entry.getKey().getValue());
                 double value = entry.getValue().doubleValue();
 
@@ -115,13 +115,13 @@ public class JFreeChartUtil {
         return dataset;
     }
 
-    public static TableXYDataset createTableXYDataset(List<Pair<VisualizationGroup, Distribution>> in) {
+    public static TableXYDataset createTableXYDataset(List<Pair<VisualizationGroupI, DistributionI>> in) {
         DefaultTableXYDataset dataset = new DefaultTableXYDataset();
 
-        for (Pair<VisualizationGroup, Distribution> groupDistribution : in) {
+        for (Pair<VisualizationGroupI, DistributionI> groupDistribution : in) {
             XYSeries series = new XYSeries(groupDistribution.getFirst().getName(), true, false);
 
-            for (Map.Entry<Attribute, ? extends Number> entry : groupDistribution.getSecond().entrySet()) {
+            for (Map.Entry<AttributeI, ? extends Number> entry : groupDistribution.getSecond().entrySet()) {
                 double attrVal = Double.parseDouble(entry.getKey().getValue());
                 double value = entry.getValue().doubleValue();
                 series.add(attrVal, value);
@@ -131,12 +131,12 @@ public class JFreeChartUtil {
         return dataset;
     }
 
-    public static KeyedValues2DDataset createKeyedValues2DDataset(List<Pair<VisualizationGroup, Distribution>> in) {
+    public static KeyedValues2DDataset createKeyedValues2DDataset(List<Pair<VisualizationGroupI, DistributionI>> in) {
         DefaultKeyedValues2DDataset dataset = new DefaultKeyedValues2DDataset();
-        for (Pair<VisualizationGroup, Distribution> groupDistribution : in) {
-            Distribution d = groupDistribution.getSecond();
+        for (Pair<VisualizationGroupI, DistributionI> groupDistribution : in) {
+            DistributionI d = groupDistribution.getSecond();
 
-            for (Map.Entry<Attribute, ? extends Number> entry : d.entrySet()) {
+            for (Map.Entry<AttributeI, ? extends Number> entry : d.entrySet()) {
                 dataset.addValue(entry.getValue(), groupDistribution.getFirst().getName(), entry.getKey().getValue());
             }
         }

@@ -1,13 +1,13 @@
 package de.cebitec.mgx.gui.charts.basic;
 
+import de.cebitec.mgx.api.groups.ImageExporterI;
+import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.misc.DistributionI;
+import de.cebitec.mgx.api.misc.Pair;
+import de.cebitec.mgx.common.visualization.NumericalViewerI;
+import de.cebitec.mgx.common.visualization.ViewerI;
 import de.cebitec.mgx.gui.charts.basic.customizer.XYPlotCustomizer;
-import de.cebitec.mgx.gui.attributevisualization.viewer.NumericalViewerI;
-import de.cebitec.mgx.gui.attributevisualization.viewer.ViewerI;
 import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
-import de.cebitec.mgx.gui.datamodel.misc.Distribution;
-import de.cebitec.mgx.gui.datamodel.misc.Pair;
-import de.cebitec.mgx.gui.groups.ImageExporterI;
-import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import java.awt.Color;
 import java.util.List;
 import java.util.Locale;
@@ -15,7 +15,11 @@ import javax.swing.JComponent;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.*;
+import org.jfree.chart.axis.LogAxis;
+import org.jfree.chart.axis.LogarithmicAxis;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.TickUnitSource;
+import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
@@ -44,7 +48,7 @@ public class XYPlotViewer extends NumericalViewerI {
     }
 
     @Override
-    public void show(List<Pair<VisualizationGroup, Distribution>> dists) {
+    public void show(List<Pair<VisualizationGroupI, DistributionI>> dists) {
 
         dists = getCustomizer().filter(dists);
         XYSeriesCollection dataset = JFreeChartUtil.createXYSeries(dists);
@@ -99,7 +103,7 @@ public class XYPlotViewer extends NumericalViewerI {
         // set the colors
         int i = 0;
         XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) plot.getRenderer();
-        for (Pair<VisualizationGroup, Distribution> groupDistribution : dists) {
+        for (Pair<VisualizationGroupI, DistributionI> groupDistribution : dists) {
             renderer.setSeriesPaint(i++, groupDistribution.getFirst().getColor());
         }
 
@@ -116,7 +120,7 @@ public class XYPlotViewer extends NumericalViewerI {
 
     @Override
     public Class getInputType() {
-        return Distribution.class;
+        return DistributionI.class;
     }
 
     @Override

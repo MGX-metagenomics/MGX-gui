@@ -1,22 +1,22 @@
 package de.cebitec.mgx.gui.biodiversity.statistic.impl;
 
+import de.cebitec.mgx.api.misc.DistributionI;
+import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.gui.biodiversity.statistic.Statistic;
-import de.cebitec.mgx.gui.datamodel.Attribute;
-import de.cebitec.mgx.gui.datamodel.misc.Distribution;
 import java.util.Map;
 
 /**
  *
  * @author sjaenick
  */
-public class ACE implements Statistic<Distribution> {
+public class ACE implements Statistic<DistributionI> {
 
     @Override
-    public String measure(Distribution data) {
+    public String measure(DistributionI data) {
         double ret = 0;
         double Sabundant = 0;
         double Srare = 0;
-        for (Map.Entry<Attribute, Number> e : data.entrySet()) {
+        for (Map.Entry<AttributeI, Number> e : data.entrySet()) {
 
             long val = e.getValue().longValue();
 
@@ -40,7 +40,7 @@ public class ACE implements Statistic<Distribution> {
         return "ACE";
     }
 
-    private double getGamma(Distribution data) {
+    private double getGamma(DistributionI data) {
         double ret = 0;
         
         // zaehler
@@ -59,9 +59,9 @@ public class ACE implements Statistic<Distribution> {
         return Math.max(ret, 0);
     }
 
-    private double getSrare(Distribution data) {
+    private double getSrare(DistributionI data) {
         double ret = 0;
-        for (Map.Entry<Attribute, Number> e : data.entrySet()) {
+        for (Map.Entry<AttributeI, Number> e : data.entrySet()) {
             long val = e.getValue().longValue();
             if (val <= 10) {
                 ret++;
@@ -70,7 +70,7 @@ public class ACE implements Statistic<Distribution> {
         return ret;
     }
 
-    private double getNrare(Distribution data) {
+    private double getNrare(DistributionI data) {
         double ret = 0;
         for (int i = 1; i <= 10; i++) {
             ret += getF(data, i);
@@ -78,9 +78,9 @@ public class ACE implements Statistic<Distribution> {
         return ret;
     }
 
-    private double getF(Distribution data, int num) {
+    private double getF(DistributionI data, int num) {
         double ret = 0;
-        for (Map.Entry<Attribute, Number> e : data.entrySet()) {
+        for (Map.Entry<AttributeI, Number> e : data.entrySet()) {
             if (e.getValue().intValue() == num) {
                 ret++;
             }

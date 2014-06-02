@@ -1,15 +1,14 @@
 package de.cebitec.mgx.gui.charts.basic;
 
-import de.cebitec.mgx.gui.attributevisualization.filter.SortOrder;
-import de.cebitec.mgx.gui.attributevisualization.viewer.CategoricalViewerI;
-import de.cebitec.mgx.gui.attributevisualization.viewer.ViewerI;
+import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.misc.DistributionI;
+import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
 import de.cebitec.mgx.gui.charts.basic.util.TickedSpiderWebPlot;
-import de.cebitec.mgx.gui.datamodel.AttributeType;
-import de.cebitec.mgx.gui.datamodel.misc.Distribution;
-import de.cebitec.mgx.gui.datamodel.misc.Pair;
-import de.cebitec.mgx.gui.groups.ImageExporterI;
-import de.cebitec.mgx.gui.groups.VisualizationGroup;
+import de.cebitec.mgx.api.groups.ImageExporterI;
+import de.cebitec.mgx.api.visualization.filter.SortOrder;
+import de.cebitec.mgx.common.visualization.CategoricalViewerI;
+import de.cebitec.mgx.common.visualization.ViewerI;
 import java.awt.Color;
 import java.awt.Font;
 import java.util.List;
@@ -50,11 +49,11 @@ public class SpiderWebChart extends CategoricalViewerI {
 
     @Override
     public Class getInputType() {
-        return Distribution.class;
+        return DistributionI.class;
     }
 
     @Override
-    public void show(List<Pair<VisualizationGroup, Distribution>> dists) {
+    public void show(List<Pair<VisualizationGroupI, DistributionI>> dists) {
 
         SortOrder sorter = new SortOrder(getAttributeType(), SortOrder.DESCENDING);
         dists = sorter.filter(dists);
@@ -76,7 +75,7 @@ public class SpiderWebChart extends CategoricalViewerI {
         
         // colors
         int i = 0;
-        for (Pair<VisualizationGroup, Distribution> groupDistribution : dists) {
+        for (Pair<VisualizationGroupI, DistributionI> groupDistribution : dists) {
             plot.setSeriesPaint(i++, groupDistribution.getFirst().getColor());
         }
 

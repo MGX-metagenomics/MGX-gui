@@ -1,22 +1,22 @@
 package de.cebitec.mgx.gui.biodiversity.statistic.impl;
 
+import de.cebitec.mgx.api.misc.DistributionI;
+import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.gui.biodiversity.statistic.Statistic;
-import de.cebitec.mgx.gui.datamodel.Attribute;
-import de.cebitec.mgx.gui.datamodel.misc.Distribution;
 import java.util.Map.Entry;
 
 /**
  *
  * @author sjaenick
  */
-public class Chao1 implements Statistic<Distribution> {
+public class Chao1 implements Statistic<DistributionI> {
 
     @Override
-    public String measure(Distribution data) {
+    public String measure(DistributionI data) {
         long numCategories = 0;
         long numSingletons = 0;
         long numDoubletons = 0;
-        for (Entry<Attribute, Number> e : data.entrySet()) {
+        for (Entry<AttributeI, Number> e : data.entrySet()) {
             numCategories++;
             switch (e.getValue().intValue()) {
                 case 1:

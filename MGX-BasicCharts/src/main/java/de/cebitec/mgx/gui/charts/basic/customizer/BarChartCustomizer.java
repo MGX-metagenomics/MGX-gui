@@ -1,23 +1,23 @@
 package de.cebitec.mgx.gui.charts.basic.customizer;
 
-import de.cebitec.mgx.gui.attributevisualization.filter.ExcludeFilter;
-import de.cebitec.mgx.gui.attributevisualization.filter.LimitFilter;
-import de.cebitec.mgx.gui.attributevisualization.filter.SortOrder;
-import de.cebitec.mgx.gui.attributevisualization.filter.ToFractionFilter;
-import de.cebitec.mgx.gui.attributevisualization.filter.VisFilterI;
-import de.cebitec.mgx.gui.datamodel.AttributeType;
-import de.cebitec.mgx.gui.datamodel.misc.Distribution;
-import de.cebitec.mgx.gui.datamodel.misc.Pair;
-import de.cebitec.mgx.gui.groups.VisualizationGroup;
+import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.misc.DistributionI;
+import de.cebitec.mgx.api.misc.Pair;
+import de.cebitec.mgx.api.model.AttributeTypeI;
+import de.cebitec.mgx.api.visualization.filter.ExcludeFilter;
+import de.cebitec.mgx.api.visualization.filter.LimitFilter;
+import de.cebitec.mgx.api.visualization.filter.SortOrder;
+import de.cebitec.mgx.api.visualization.filter.ToFractionFilter;
+import de.cebitec.mgx.api.visualization.filter.VisFilterI;
 import java.util.List;
 
 /**
  *
  * @author sjaenick
  */
-public class BarChartCustomizer extends javax.swing.JPanel implements VisFilterI<Distribution> {
+public class BarChartCustomizer extends javax.swing.JPanel implements VisFilterI<DistributionI> {
 
-    private AttributeType at;
+    private AttributeTypeI at;
 
     /**
      * Creates new form BasicCustomizer
@@ -26,7 +26,7 @@ public class BarChartCustomizer extends javax.swing.JPanel implements VisFilterI
         initComponents();
     }
 
-    public void setAttributeType(final AttributeType aType) {
+    public void setAttributeType(final AttributeTypeI aType) {
         if (aType.equals(at)) {
             return;
         }
@@ -187,13 +187,13 @@ public class BarChartCustomizer extends javax.swing.JPanel implements VisFilterI
     // End of variables declaration//GEN-END:variables
 
     @Override
-    public List<Pair<VisualizationGroup, Distribution>> filter(List<Pair<VisualizationGroup, Distribution>> dists) {
+    public List<Pair<VisualizationGroupI, DistributionI>> filter(List<Pair<VisualizationGroupI, DistributionI>> dists) {
         if (useFractions()) {
             VisFilterI fracFilter = new ToFractionFilter();
             dists = fracFilter.filter(dists);
         }
 
-        if (at.getStructure() == AttributeType.STRUCTURE_HIERARCHICAL) {
+        if (at.getStructure() == AttributeTypeI.STRUCTURE_HIERARCHICAL) {
             if (treeFilter.getBlackList().size() > 0) {
                 ExcludeFilter ef = new ExcludeFilter(treeFilter.getBlackList());
                 dists = ef.filter(dists);

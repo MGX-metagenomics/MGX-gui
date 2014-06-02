@@ -1,16 +1,16 @@
 package de.cebitec.mgx.gui.charts.basic;
 
-import de.cebitec.mgx.gui.attributevisualization.filter.ToFractionFilter;
-import de.cebitec.mgx.gui.attributevisualization.viewer.NumericalViewerI;
-import de.cebitec.mgx.gui.attributevisualization.viewer.ViewerI;
+import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.misc.DistributionI;
+import de.cebitec.mgx.api.misc.Pair;
+import de.cebitec.mgx.api.model.AttributeI;
+import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
-import de.cebitec.mgx.gui.datamodel.Attribute;
-import de.cebitec.mgx.gui.datamodel.AttributeType;
-import de.cebitec.mgx.gui.datamodel.misc.Distribution;
-import de.cebitec.mgx.gui.datamodel.misc.Pair;
-import de.cebitec.mgx.gui.groups.ImageExporterI;
-import de.cebitec.mgx.gui.groups.VGroupManager;
-import de.cebitec.mgx.gui.groups.VisualizationGroup;
+import de.cebitec.mgx.api.groups.ImageExporterI;
+import de.cebitec.mgx.api.visualization.filter.ToFractionFilter;
+import de.cebitec.mgx.common.VGroupManager;
+import de.cebitec.mgx.common.visualization.NumericalViewerI;
+import de.cebitec.mgx.common.visualization.ViewerI;
 import java.awt.Color;
 import java.awt.geom.Ellipse2D;
 import java.util.HashMap;
@@ -58,12 +58,12 @@ public class MAPlot extends NumericalViewerI {
 
     @Override
     public Class getInputType() {
-        return Distribution.class;
+        return DistributionI.class;
     }
 
     @Override
-    public void show(List<Pair<VisualizationGroup, Distribution>> dists) {
-        List<Pair<VisualizationGroup, Distribution>> relevant = dists.subList(0, 2);
+    public void show(List<Pair<VisualizationGroupI, DistributionI>> dists) {
+        List<Pair<VisualizationGroupI, DistributionI>> relevant = dists.subList(0, 2);
 
         ToFractionFilter tof = new ToFractionFilter();
         relevant = tof.filter(relevant);
@@ -71,14 +71,14 @@ public class MAPlot extends NumericalViewerI {
         XYSeriesCollection dataset = new XYSeriesCollection();
         XYSeries series = new XYSeries("");
 
-        Distribution first = relevant.get(0).getSecond();
-        Distribution second = relevant.get(1).getSecond();
+        DistributionI first = relevant.get(0).getSecond();
+        DistributionI second = relevant.get(1).getSecond();
 
-        Set<Attribute> attrs = new HashSet<>();
+        Set<AttributeI> attrs = new HashSet<>();
         attrs.addAll(first.keySet());
         attrs.addAll(second.keySet());
 
-        for (Attribute a : attrs) {
+        for (AttributeI a : attrs) {
             XYDataItem item = null;
             double x, y;
             double firstVal = 0, secondVal = 0;
@@ -182,13 +182,13 @@ public class MAPlot extends NumericalViewerI {
     }
 
     @Override
-    public boolean canHandle(AttributeType valueType) {
-        return valueType.getValueType() == AttributeType.VALUE_DISCRETE
+    public boolean canHandle(AttributeTypeI valueType) {
+        return valueType.getValueType() == AttributeTypeI.VALUE_DISCRETE
                 && VGroupManager.getInstance().getActiveGroups().size() == 2;
     }
 
     @Override
-    public void setAttributeType(AttributeType aType) {
+    public void setAttributeType(AttributeTypeI aType) {
         super.setAttributeType(aType);
         super.setTitle("M/A plot for " + aType.getName());
     }

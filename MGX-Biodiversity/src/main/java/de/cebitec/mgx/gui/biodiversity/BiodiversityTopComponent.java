@@ -1,12 +1,12 @@
 package de.cebitec.mgx.gui.biodiversity;
 
-import de.cebitec.mgx.gui.biodiversity.statistic.impl.ACE;
-import de.cebitec.mgx.gui.biodiversity.statistic.impl.Shannon;
+import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.gui.biodiversity.statistic.Statistic;
+import de.cebitec.mgx.gui.biodiversity.statistic.impl.ACE;
 import de.cebitec.mgx.gui.biodiversity.statistic.impl.Chao1;
+import de.cebitec.mgx.gui.biodiversity.statistic.impl.Shannon;
 import de.cebitec.mgx.gui.biodiversity.statistic.impl.Simpson;
-import de.cebitec.mgx.gui.datamodel.misc.Distribution;
-import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import java.awt.GridLayout;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -22,9 +22,9 @@ import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
-import org.openide.windows.TopComponent;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.Utilities;
+import org.openide.windows.TopComponent;
 
 /**
  * Top component which displays something.
@@ -52,16 +52,16 @@ import org.openide.util.Utilities;
 })
 public final class BiodiversityTopComponent extends TopComponent implements LookupListener, PropertyChangeListener {
 
-    private final Lookup.Result<VisualizationGroup> result;
-    private VisualizationGroup curGroup = null;
-    private final List<Statistic<Distribution>> stats = new ArrayList<>();
+    private final Lookup.Result<VisualizationGroupI> result;
+    private VisualizationGroupI curGroup = null;
+    private final List<Statistic<DistributionI>> stats = new ArrayList<>();
 
     public BiodiversityTopComponent() {
         initComponents();
         setName(Bundle.CTL_BiodiversityTopComponent());
         setToolTipText(Bundle.HINT_BiodiversityTopComponent());
         putClientProperty(TopComponent.PROP_MAXIMIZATION_DISABLED, Boolean.TRUE);
-        result = Utilities.actionsGlobalContext().lookupResult(VisualizationGroup.class);
+        result = Utilities.actionsGlobalContext().lookupResult(VisualizationGroupI.class);
 
         stats.add(new Shannon());
         stats.add(new ACE());
@@ -163,24 +163,24 @@ public final class BiodiversityTopComponent extends TopComponent implements Look
             attrType.setText(curGroup.getSelectedAttributeType());
         }
 
-        Distribution dist = getDistribution();
+        DistributionI dist = getDistribution();
         if (dist == null) {
             return;
         }
 
         panel.removeAll();
         panel.setLayout(new GridLayout(stats.size(), 1));
-        for (Statistic<Distribution> s : stats) {
+        for (Statistic<DistributionI> s : stats) {
             panel.add(new StatisticsPanel(s, dist));
         }
     }
 
-    private Distribution getDistribution() {
+    private DistributionI getDistribution() {
 
-        SwingWorker<Distribution, Void> worker = new SwingWorker<Distribution, Void>() {
+        SwingWorker<DistributionI, Void> worker = new SwingWorker<DistributionI, Void>() {
 
             @Override
-            protected Distribution doInBackground() throws Exception {
+            protected DistributionI doInBackground() throws Exception {
                 return curGroup.getDistribution();
             }
 
@@ -206,13 +206,13 @@ public final class BiodiversityTopComponent extends TopComponent implements Look
 
     @Override
     public void resultChanged(LookupEvent le) {
-        Collection<? extends VisualizationGroup> groups = result.allInstances();
+        Collection<? extends VisualizationGroupI> groups = result.allInstances();
         if (groups.isEmpty()) {
             return;
         }
 
-        VisualizationGroup newGroup = null;
-        for (VisualizationGroup vg : groups) {
+        VisualizationGroupI newGroup = null;
+        for (VisualizationGroupI vg : groups) {
             newGroup = vg;
         }
 
@@ -230,16 +230,16 @@ public final class BiodiversityTopComponent extends TopComponent implements Look
     public void propertyChange(PropertyChangeEvent evt) {
         //       System.err.println("BioDiversityTC got " + evt.getPropertyName());
         switch (evt.getPropertyName()) {
-            case VisualizationGroup.VISGROUP_RENAMED:
+            case VisualizationGroupI.VISGROUP_RENAMED:
                 groupName.setText(curGroup.getName());
                 break;
-            case VisualizationGroup.VISGROUP_DEACTIVATED:
+            case VisualizationGroupI.VISGROUP_DEACTIVATED:
                 // ignore
                 break;
-            case VisualizationGroup.VISGROUP_HAS_DIST:
+            case VisualizationGroupI.VISGROUP_HAS_DIST:
                 update();
                 break;
-            case VisualizationGroup.VISGROUP_ATTRTYPE_CHANGED:
+            case VisualizationGroupI.VISGROUP_ATTRTYPE_CHANGED:
                 update();
                 break;
             default:

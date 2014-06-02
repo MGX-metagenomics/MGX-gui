@@ -44,18 +44,6 @@
             <artifactId>JFreeChart-Wrapper</artifactId>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>MGX-AttributeVisualization</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>MGX-Datamodel</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>MGX-Controller</artifactId>
-        </dependency>
-        <dependency>
             <artifactId>org-openide-util</artifactId>
             <groupId>org.netbeans.api</groupId>
         </dependency>
@@ -76,18 +64,45 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.10</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <artifactId>MGX-API</artifactId>
+            <groupId>de.cebitec.mgx</groupId>
+        </dependency>
+        <dependency>
+            <groupId>de.cebitec.mgx.gui</groupId>
+            <artifactId>MGX-Common</artifactId>
         </dependency>
     </dependencies>
 
     <build>
         <plugins>
+<!--              <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>2.4.0</version>
+                <extensions>true</extensions>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>bundle</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <instructions>
+                        <Export-Package>de.cebitec.mgx.gui.charts.basic,de.cebitec.mgx.gui.charts.basic.customizer,de.cebitec.mgx.gui.charts.basic.util</Export-Package>
+                        <Private-Package></Private-Package>
+                    </instructions>
+                </configuration>
+            </plugin>-->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>nbm-maven-plugin</artifactId>
                 <extensions>true</extensions>
                 <configuration>
+                    <useOSGiDependencies>true</useOSGiDependencies>
                     <publicPackages>
                         <publicPackage>de.cebitec.mgx.gui.charts.basic.util</publicPackage>
                     </publicPackages>

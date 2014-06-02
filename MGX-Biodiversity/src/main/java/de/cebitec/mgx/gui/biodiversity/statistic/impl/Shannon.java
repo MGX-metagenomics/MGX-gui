@@ -1,22 +1,22 @@
 
 package de.cebitec.mgx.gui.biodiversity.statistic.impl;
 
+import de.cebitec.mgx.api.misc.DistributionI;
+import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.gui.biodiversity.statistic.Statistic;
-import de.cebitec.mgx.gui.datamodel.Attribute;
-import de.cebitec.mgx.gui.datamodel.misc.Distribution;
 import java.util.Map.Entry;
 
 /**
  *
  * @author sjaenick
  */
-public class Shannon implements Statistic<Distribution> {
+public class Shannon implements Statistic<DistributionI> {
 
     @Override
-    public String measure(Distribution data) {
+    public String measure(DistributionI data) {
         double ret = 0;
         long numElem = data.getTotalClassifiedElements();
-        for (Entry<Attribute, Number> e : data.entrySet()) {
+        for (Entry<AttributeI, Number> e : data.entrySet()) {
             double relAbun = e.getValue().doubleValue() / (double)numElem;
             ret += relAbun * Math.log(relAbun);
         }
