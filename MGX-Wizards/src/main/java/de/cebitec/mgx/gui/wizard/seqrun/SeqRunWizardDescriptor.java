@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.wizard.seqrun;
 
-import de.cebitec.mgx.gui.controller.MGXMaster;
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.controller.TermAccess;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.datamodel.Term;
@@ -22,7 +23,7 @@ public class SeqRunWizardDescriptor extends WizardDescriptor {
 
     private SeqRunWizardPanel1 p1 = new SeqRunWizardPanel1();
     private SeqRunWizardPanel2 p2 = new SeqRunWizardPanel2();
-    private SeqRun seqrun = null;
+    private SeqRunI seqrun = null;
     
     public static final String INVOCATION_MODE = "invocationMode";
     public static final String CREATE_MODE = "CREATE";
@@ -43,7 +44,7 @@ public class SeqRunWizardDescriptor extends WizardDescriptor {
         setData();
     }
 
-    public SeqRunWizardDescriptor(SeqRun d) {
+    public SeqRunWizardDescriptor(SeqRunI d) {
         List<Panel<WizardDescriptor>> panels = new ArrayList<>();
         panels.add(p1);
 
@@ -67,7 +68,7 @@ public class SeqRunWizardDescriptor extends WizardDescriptor {
     }
 
     private void setData() {
-        final MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
+        final MGXMasterI m = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
         SwingWorker<Void, Void> sw = new SwingWorker<Void, Void>() {
 
             @Override
@@ -86,9 +87,9 @@ public class SeqRunWizardDescriptor extends WizardDescriptor {
         }
     }
 
-    public SeqRun getSeqRun() {
+    public SeqRunI getSeqRun(MGXMasterI m) {
         if (seqrun == null) {
-            seqrun = new SeqRun();
+            seqrun = new SeqRun(m);
         }
 
         seqrun.setSequencingMethod((Term) getProperty(SeqRunVisualPanel1.PROP_METHOD))

@@ -1,7 +1,7 @@
 
 package de.cebitec.mgx.gui.wizard.reference;
 
-import de.cebitec.mgx.gui.datamodel.Reference;
+import de.cebitec.mgx.api.model.MGXReferenceI;
 import java.util.Set;
 import javax.swing.JPanel;
 import javax.swing.event.ListSelectionEvent;
@@ -22,12 +22,12 @@ public final class InstallReferenceVisualPanel1 extends JPanel implements ListSe
         return "Select reference";
     }
     
-    public Reference getReference() {
+    public MGXReferenceI getReference() {
         return jList1.getSelectedValue();
     }
     
-    public void setReferences(Set<Reference> refs) {
-        jList1.setListData(refs.toArray(new Reference[]{}));
+    public void setReferences(Set<MGXReferenceI> refs) {
+        jList1.setListData(refs.toArray(new MGXReferenceI[]{}));
     }
 
     /**
@@ -38,7 +38,7 @@ public final class InstallReferenceVisualPanel1 extends JPanel implements ListSe
     private void initComponents() {
 
         jScrollPane1 = new javax.swing.JScrollPane();
-        jList1 = new javax.swing.JList<Reference>();
+        jList1 = new javax.swing.JList<MGXReferenceI>();
 
         jList1.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         jList1.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
@@ -62,7 +62,7 @@ public final class InstallReferenceVisualPanel1 extends JPanel implements ListSe
         );
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JList<Reference> jList1;
+    private javax.swing.JList<MGXReferenceI> jList1;
     private javax.swing.JScrollPane jScrollPane1;
     // End of variables declaration//GEN-END:variables
 

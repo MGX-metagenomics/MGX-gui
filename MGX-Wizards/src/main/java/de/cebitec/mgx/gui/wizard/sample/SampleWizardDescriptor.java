@@ -1,16 +1,13 @@
 package de.cebitec.mgx.gui.wizard.sample;
 
-import de.cebitec.mgx.gui.controller.MGXMaster;
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.SampleI;
 import de.cebitec.mgx.gui.datamodel.Sample;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import javax.swing.SwingWorker;
 import org.openide.WizardDescriptor;
-import org.openide.util.Exceptions;
-import org.openide.util.Utilities;
 
 /**
  *
@@ -21,9 +18,11 @@ public class SampleWizardDescriptor extends WizardDescriptor {
     private SampleWizardPanel1 p1 = new SampleWizardPanel1();
     private SampleWizardPanel2 p2 = new SampleWizardPanel2();
     
-    private Sample sample = null;
+    private SampleI sample = null;
+    private final MGXMasterI master;
 
-    public SampleWizardDescriptor() {
+    public SampleWizardDescriptor(MGXMasterI master) {
+        this.master = master;
         List<Panel<WizardDescriptor>> panels = new ArrayList<>();
         panels.add(p1);
         panels.add(p2);
@@ -37,8 +36,8 @@ public class SampleWizardDescriptor extends WizardDescriptor {
         
     }
     
-    public SampleWizardDescriptor(Sample s) {
-        this();
+    public SampleWizardDescriptor(MGXMasterI master, SampleI s) {
+        this(master);
         this.sample = s; 
         putProperty(SampleVisualPanel1.PROP_COLLECTIONDATE, s.getCollectionDate());
         putProperty(SampleVisualPanel2.PROP_MATERIAL, s.getMaterial());
@@ -49,9 +48,9 @@ public class SampleWizardDescriptor extends WizardDescriptor {
         p2.setProperties(this);
     }
     
-    public Sample getSample() {
+    public SampleI getSample() {
         if (sample == null) {
-            sample = new Sample();
+            sample = new Sample(master);
         }
         
         sample.setCollectionDate((Date)getProperty(SampleVisualPanel1.PROP_COLLECTIONDATE))

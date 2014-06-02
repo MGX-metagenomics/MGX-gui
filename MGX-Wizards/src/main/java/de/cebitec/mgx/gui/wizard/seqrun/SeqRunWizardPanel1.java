@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.wizard.seqrun;
 
+import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.datamodel.Term;
 import java.beans.PropertyChangeEvent;
@@ -24,7 +25,7 @@ public class SeqRunWizardPanel1 implements WizardDescriptor.Panel<WizardDescript
     private WizardDescriptor model = null;
     private boolean isValid = true;
     private final EventListenerList listeners = new EventListenerList();
-    private Collection<SeqRun> allRuns;
+    private Collection<SeqRunI> allRuns;
 
     @Override
     public SeqRunVisualPanel1 getComponent() {
@@ -145,7 +146,7 @@ public class SeqRunWizardPanel1 implements WizardDescriptor.Panel<WizardDescript
         getComponent().setPlatforms(terms);
     }
 
-    public void setSeqRuns(Iterator<SeqRun> runs) {
+    public void setSeqRuns(Iterator<SeqRunI> runs) {
         allRuns = new ArrayList<>();
         while (runs.hasNext()) {
             allRuns.add(runs.next());
@@ -155,13 +156,13 @@ public class SeqRunWizardPanel1 implements WizardDescriptor.Panel<WizardDescript
     private boolean checkDuplicate(String name) {
         boolean alreadyExists = false;
         if (model.getProperty(SeqRunWizardDescriptor.INVOCATION_MODE).equals(SeqRunWizardDescriptor.CREATE_MODE)) {
-            for (SeqRun seqrun : allRuns) {
+            for (SeqRunI seqrun : allRuns) {
                 if (seqrun.getName().equals(name)) {
                     alreadyExists = true;
                 }
             }
         } else if(model.getProperty(SeqRunWizardDescriptor.INVOCATION_MODE).equals(SeqRunWizardDescriptor.EDIT_MODE)){
-            for (SeqRun seqrun : allRuns) {
+            for (SeqRunI seqrun : allRuns) {
                 if (seqrun.getName().equals(name) && !seqrun.getName().equals(model.getProperty(SeqRunVisualPanel1.PROP_NAME))) {
                     alreadyExists = true;
                 }

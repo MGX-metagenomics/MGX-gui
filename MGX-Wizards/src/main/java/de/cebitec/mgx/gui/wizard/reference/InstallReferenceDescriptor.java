@@ -1,8 +1,7 @@
 package de.cebitec.mgx.gui.wizard.reference;
 
-import de.cebitec.mgx.gui.controller.MGXMaster;
-import de.cebitec.mgx.gui.datamodel.Reference;
-import java.awt.Dimension;
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.MGXReferenceI;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -40,24 +39,24 @@ public class InstallReferenceDescriptor extends WizardDescriptor {
 
     }
 
-    public Reference getSelectedReference() {
-        return (Reference) getProperty(PROP_REFERENCE);
+    public MGXReferenceI getSelectedReference() {
+        return (MGXReferenceI) getProperty(PROP_REFERENCE);
     }
 
     private void setData() {
-        final MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
+        final MGXMasterI m = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
         SwingWorker<Void, Void> sw = new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() {
-                Set<Reference> refs = new TreeSet<>();
+                Set<MGXReferenceI> refs = new TreeSet<>();
                 Set<String> projRefNames = new HashSet<>();
-                java.util.Iterator<Reference> projrefiter = m.Reference().fetchall();
+                java.util.Iterator<MGXReferenceI> projrefiter = m.Reference().fetchall();
                 while (projrefiter.hasNext()) {
                     projRefNames.add(projrefiter.next().getName());
                 }
-                java.util.Iterator<Reference> refiter = m.Reference().listGlobalReferences();
+                java.util.Iterator<MGXReferenceI> refiter = m.Reference().listGlobalReferences();
                 while (refiter.hasNext()) {
-                    Reference r = refiter.next();
+                    MGXReferenceI r = refiter.next();
                     if (!projRefNames.contains(r.getName())) {
                         refs.add(r);
                     }

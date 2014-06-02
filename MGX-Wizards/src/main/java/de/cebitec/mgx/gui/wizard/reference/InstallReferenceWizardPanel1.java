@@ -1,6 +1,6 @@
 package de.cebitec.mgx.gui.wizard.reference;
 
-import de.cebitec.mgx.gui.datamodel.Reference;
+import de.cebitec.mgx.api.model.MGXReferenceI;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Set;
@@ -30,7 +30,7 @@ public class InstallReferenceWizardPanel1 implements WizardDescriptor.Panel<Wiza
         return component;
     }
 
-    public void setReferences(Set<Reference> refs) {
+    public void setReferences(Set<MGXReferenceI> refs) {
         getComponent().setReferences(refs);
     }
 
