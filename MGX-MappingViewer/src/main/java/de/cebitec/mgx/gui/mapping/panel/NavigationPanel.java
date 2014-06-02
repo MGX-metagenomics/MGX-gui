@@ -51,7 +51,8 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
         super(vc, true);
         refLength = vc.getReference().getLength();
         initComponents();
-        setMaximumSize(new Dimension(5000, 50));
+        setPreferredSize(new Dimension(5000, 35));
+        setMaximumSize(new Dimension(5000, 35));
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
         ToolTipManager.sharedInstance().registerComponent(this);

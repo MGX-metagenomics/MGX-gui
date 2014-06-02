@@ -16,6 +16,7 @@ import de.cebitec.mgx.gui.swingutils.NonEDT;
 import java.awt.EventQueue;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.UUID;
 
 /**
@@ -84,7 +85,7 @@ public class MappingCtx {
         return regCache.get(from, to);
     }
 
-    public SortedSet<MappedSequenceI> getMappings(int from, int to) {
+    public SortedSet<MappedSequenceI> getMappings(final int from, final int to) {
         if (mapCache == null) {
             synchronized (this) {
                 if (mapCache == null) {
@@ -92,7 +93,20 @@ public class MappingCtx {
                 }
             }
         }
-        return mapCache.get(from, to);
+        if (EventQueue.isDispatchThread()) {
+            final SortedSet<MappedSequenceI> ret = new TreeSet<>();
+            NonEDT.invokeAndWait(new Runnable() {
+
+                @Override
+                public void run() {
+                    SortedSet<MappedSequenceI> get = mapCache.get(from, to);
+                    ret.addAll(get);
+                }
+            });
+            return ret;
+        } else {
+            return mapCache.get(from, to);
+        }
     }
 
     public void getCoverage(final int from, final int to, final int[] dest) {

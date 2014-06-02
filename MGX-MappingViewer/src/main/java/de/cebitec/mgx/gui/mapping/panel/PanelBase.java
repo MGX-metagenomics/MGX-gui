@@ -12,16 +12,19 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import javax.swing.JPanel;
 import javax.swing.SwingWorker;
+import org.apache.commons.math3.util.FastMath;
 
 /**
  *
  * @author sj
  */
-public abstract class PanelBase extends JPanel implements PropertyChangeListener {
+public abstract class PanelBase extends JPanel implements PropertyChangeListener, MouseWheelListener {
 
     protected final ViewController vc;
     protected int[] bounds;
@@ -69,6 +72,7 @@ public abstract class PanelBase extends JPanel implements PropertyChangeListener
                 super.componentResized(e);
             }
         });
+        addMouseWheelListener(this);
     }
 
     @Override
@@ -132,5 +136,22 @@ public abstract class PanelBase extends JPanel implements PropertyChangeListener
 
     protected static int textWidth(Graphics2D g, String text) {
         return g.getFontMetrics(g.getFont()).stringWidth(text);
+    }
+
+    @Override
+    public void mouseWheelMoved(MouseWheelEvent e) {
+        int notches = e.getWheelRotation();
+        int[] b = vc.getBounds();
+        int len = b[1] - b[0] + 1;
+        int adjust = len / 25;
+
+        if (notches < 0) {
+            b[0] += adjust;
+            b[1] -= adjust;
+        } else {
+            b[0] -= adjust;
+            b[1] += adjust;
+        }
+        vc.setBounds(FastMath.max(b[0], 0), FastMath.min(b[1], vc.getReference().getLength() - 1));
     }
 }

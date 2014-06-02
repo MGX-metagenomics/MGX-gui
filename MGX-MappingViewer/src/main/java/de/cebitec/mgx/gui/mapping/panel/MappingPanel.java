@@ -21,16 +21,23 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import javax.swing.SwingWorker;
 import javax.swing.ToolTipManager;
+import javax.swing.UIDefaults;
+import javax.swing.UIManager;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.plaf.basic.BasicSliderUI;
 
 /**
  *
  * @author sjaenick
  */
-public class MappingPanel extends PanelBase {
+public class MappingPanel extends PanelBase implements ChangeListener {
 
     private final SortedSet<MappedRead2D> coverage = new TreeSet<>();
     private final List<Track> tracks = new ArrayList<>();
+    private int minIdentity = 0;
 
     /**
      * Creates new form MappingPanel
@@ -40,7 +47,15 @@ public class MappingPanel extends PanelBase {
         initComponents();
         ToolTipManager.sharedInstance().registerComponent(this);
         ToolTipManager.sharedInstance().setDismissDelay(5000);
-        setMinimumSize(new Dimension(300, 400));
+        identityFilter.addChangeListener(this);
+        identityFilter.setToolTipText("Showing >= " + minIdentity + "% identity");
+        BasicSliderUI sliderUI = new javax.swing.plaf.basic.BasicSliderUI(identityFilter) {
+            @Override
+            protected Dimension getThumbSize() {
+                return new Dimension(5, 10);
+            }
+        };
+        identityFilter.setUI(sliderUI);
     }
 
     @Override
@@ -54,10 +69,12 @@ public class MappingPanel extends PanelBase {
                 }
                 g2.fill(mr2d);
             }
-            g2.setColor(Color.BLACK);
-            g2.setStroke(new BasicStroke(0.7f));
-            for (MappedRead2D mr2d : coverage) {
-                g2.draw(mr2d);
+            if (intervalLen < 10000) {
+                g2.setColor(Color.BLACK);
+                g2.setStroke(new BasicStroke(0.7f));
+                for (MappedRead2D mr2d : coverage) {
+                    g2.draw(mr2d);
+                }
             }
         }
     }
@@ -91,7 +108,7 @@ public class MappingPanel extends PanelBase {
             return true;
         }
 
-        TrackFactory.createTracks(mappings, tracks);
+        TrackFactory.createTracks(minIdentity, mappings, tracks);
 
         double spaceing = TRACKHEIGHT * 0.1;
 
@@ -130,22 +147,44 @@ public class MappingPanel extends PanelBase {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        identityFilter = new javax.swing.JSlider();
+
         setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         setMinimumSize(new java.awt.Dimension(200, 200));
+
+        identityFilter.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
+        identityFilter.setValue(0);
+        identityFilter.setOpaque(false);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 946, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(identityFilter, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(822, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 373, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(345, Short.MAX_VALUE)
+                .addComponent(identityFilter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JSlider identityFilter;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void stateChanged(ChangeEvent e) {
+        minIdentity = identityFilter.getValue();
+        identityFilter.setToolTipText("Showing >= " + minIdentity + "% identity");
+        update();
+        repaint();
+    }
+
 }

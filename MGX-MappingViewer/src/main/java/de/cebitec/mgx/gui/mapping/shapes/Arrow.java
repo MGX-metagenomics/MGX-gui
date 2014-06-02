@@ -159,6 +159,7 @@ public class Arrow implements Shape {
 
     public String getToolTipText() {
         return "<html>" + region.getName() + "<hr>"
+                + "Frame: " + region.getFrame() + "<hr>"
                 + region.getDescription() + "</html>";
     }
 }

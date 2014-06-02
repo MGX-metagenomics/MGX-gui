@@ -33,9 +33,9 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
 
     private final static int FRAME_VOFFSET = 20;
     private final static int[] frameOffsets = new int[]{
-        12 + -1 * FRAME_VOFFSET * -3,
-        12 + -1 * FRAME_VOFFSET * -2,
-        12 + -1 * FRAME_VOFFSET * -1,
+        10 + -1 * FRAME_VOFFSET * -3,
+        10 + -1 * FRAME_VOFFSET * -2,
+        10 + -1 * FRAME_VOFFSET * -1,
         -1 * FRAME_VOFFSET * 1,
         -1 * FRAME_VOFFSET * 2,
         -1 * FRAME_VOFFSET * 3};
@@ -50,18 +50,20 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
     public FeaturePanel(ViewController vc) {
         super(vc, true);
         initComponents();
-        setMaximumSize(new Dimension(5000, 45));
-        setPreferredSize(new Dimension(150, 45));
-        setMinimumSize(new Dimension(150, 45));
+        setMinimumSize(new Dimension(500, 175));
+        setPreferredSize(new Dimension(5000, 175));
+        //setMaximumSize(new Dimension(5000, 80));
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
         ToolTipManager.sharedInstance().registerComponent(this);
         ToolTipManager.sharedInstance().setDismissDelay(5000);
 
-        doLayout();
-        updateUI();
-        invalidate();
-        this.revalidate();
+        repaint();
+
+//        doLayout();
+//        updateUI();
+//        invalidate();
+//        this.revalidate();
     }
 
     @Override
@@ -73,9 +75,9 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
         g2.setFont(new Font(g2.getFont().getFontName(), Font.PLAIN, 10));
         int textHeight = -1 + g2.getFontMetrics(g2.getFont()).getHeight() / 2;
         int textWidth = g2.getFontMetrics(g2.getFont()).stringWidth("+3");
-        g2.drawString("-1", 0, midY + frameOffsets[0] + textHeight);
+        g2.drawString("-3", 0, midY + frameOffsets[0] + textHeight);
         g2.drawString("-2", 0, midY + frameOffsets[1] + textHeight);
-        g2.drawString("-3", 0, midY + frameOffsets[2] + textHeight);
+        g2.drawString("-1", 0, midY + frameOffsets[2] + textHeight);
         g2.drawString("+1", 0, midY + frameOffsets[3] + textHeight);
         g2.drawString("+2", 0, midY + frameOffsets[4] + textHeight);
         g2.drawString("+3", 0, midY + frameOffsets[5] + textHeight);
@@ -148,7 +150,6 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
 //        }
 //        g2.setComposite(oldcomp);
 //    }
-
     @Override
     boolean update() {
 
@@ -162,7 +163,7 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
             newData.add(r2a(r));
         }
         regs = newData;
-        
+
         return true;
 
         // 
@@ -296,7 +297,6 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
 //        }
 //        maxCoverage = vc.getMaxCoverage();
 //    }
-
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always

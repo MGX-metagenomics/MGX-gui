@@ -61,6 +61,31 @@ public class MappingCtxTest {
 
     }
 
+    @Test
+    public void testGetMappedReadCount() {
+        System.out.println("testGetMappedReadCount");
+        MGXMasterI master = TestMaster.getRO();
+        Iterator<MappingI> iter = master.Mapping().fetchall();
+        int cnt = 0;
+        MappingI mapping = null;
+        while (iter.hasNext()) {
+            mapping = iter.next();
+            cnt++;
+        }
+        assertEquals(1, cnt);
+        assertNotNull(mapping);
+        assertEquals(30, mapping.getId());
+
+        MGXReferenceI ref = master.Reference().fetch(mapping.getReferenceID());
+        JobI job = master.Job().fetch(mapping.getJobID());
+        MappingCtx ctx = new MappingCtx(mapping, ref, job);
+        
+        SortedSet<MappedSequenceI> mappings = ctx.getMappings(0, ref.getLength()-1);
+        // $ samtools view 124.bam | wc -l
+        // 405
+        assertEquals(405, mappings.size());
+    }
+
     /**
      * Test of getMappings method, of class MappingCtx.
      */
@@ -132,7 +157,6 @@ public class MappingCtxTest {
 //
 //        master.Mapping().closeMapping(uuid);
 //    }
-
 //    @Test
 //    public void testGetCoverageIterator() {
 //        System.out.println("getCoverageIterator");

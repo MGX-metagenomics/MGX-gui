@@ -109,7 +109,7 @@ public class TrackFactoryTest {
         long start = System.currentTimeMillis();
         for (int i = 0; i < 500; i++) {
             tracks.clear();
-            TrackFactory.createTracks(mappings, tracks);
+            TrackFactory.createTracks(0, mappings, tracks);
         }
         start = (System.currentTimeMillis() - start);
         System.err.println("  first took " + start + " ms");
