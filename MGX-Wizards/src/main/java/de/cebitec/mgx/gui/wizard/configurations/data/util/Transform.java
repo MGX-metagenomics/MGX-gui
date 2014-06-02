@@ -4,14 +4,19 @@
  */
 package de.cebitec.mgx.gui.wizard.configurations.data.util;
 
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.JobParameterI;
 import de.cebitec.mgx.gui.datamodel.JobParameter;
 import de.cebitec.mgx.gui.wizard.configurations.data.impl.Choices;
 import de.cebitec.mgx.gui.wizard.configurations.data.impl.ConfigItem;
 import de.cebitec.mgx.gui.wizard.configurations.data.impl.Node;
 import de.cebitec.mgx.gui.wizard.configurations.data.impl.Store;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * Sorgt fuer die Umwandlung zwischne Store und JobParameter.
@@ -26,9 +31,8 @@ public class Transform {
      * @param store
      * @return Liste von JobParametern
      */
-    public static List<JobParameter> getFromNodeStoreJobParameter(Store store) {
-        List<JobParameter> parameters = new ArrayList<>();
-
+    public static List<JobParameterI> getFromNodeStoreJobParameter(MGXMasterI master, Store store) {
+        List<JobParameterI> parameters = new ArrayList<>();
 
         Iterator<Entry<String, Node>> nodeIterator = store.getIterator();
         while (nodeIterator.hasNext()) {
@@ -46,7 +50,7 @@ public class Transform {
                 ConfigItem configItem = configItemME.getValue();
                 configItemName = configItemME.getKey();
 
-                JobParameter jobParameter = new JobParameter();
+                JobParameterI jobParameter = new JobParameter(master);
                 jobParameter.setParameterName(configItemName);
                 jobParameter.setParameterValue(configItem.getAnswer());
                 jobParameter.setClassName(node.getClassName());
@@ -71,10 +75,10 @@ public class Transform {
      * @param parameters
      * @return NodeStore.
      */
-    public static Store getFromJobParameterNodeStore(Iterable<JobParameter> parameters) {
+    public static Store getFromJobParameterNodeStore(Iterable<JobParameterI> parameters) {
         Store store = new Store();
 
-        for (JobParameter parameter : parameters) {
+        for (JobParameterI parameter : parameters) {
             Node node = null;
             if (store.getNode(Long.toString(parameter.getNodeId())) == null) {
                 node = new Node(parameter.getClassName(), Long.toString(parameter.getNodeId()));
