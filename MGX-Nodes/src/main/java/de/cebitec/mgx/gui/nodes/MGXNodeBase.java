@@ -1,7 +1,7 @@
 package de.cebitec.mgx.gui.nodes;
 
-import de.cebitec.mgx.gui.controller.MGXMaster;
-import de.cebitec.mgx.gui.datamodel.ModelBase;
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.ModelBase;
 import java.awt.datatransfer.Transferable;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -18,7 +18,7 @@ import org.openide.util.Lookup;
  */
 public abstract class MGXNodeBase<T extends ModelBase, U extends MGXNodeBase> extends AbstractNode implements PropertyChangeListener, Comparable<U> {
 
-    protected MGXMaster master;
+    protected MGXMasterI master;
     protected T content;
 
     protected MGXNodeBase(Children children, Lookup lookup, T data) {

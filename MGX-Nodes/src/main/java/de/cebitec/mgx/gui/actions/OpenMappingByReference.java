@@ -5,10 +5,10 @@
  */
 package de.cebitec.mgx.gui.actions;
 
-import de.cebitec.mgx.gui.controller.MGXMaster;
-import de.cebitec.mgx.gui.datamodel.Job;
-import de.cebitec.mgx.gui.datamodel.Mapping;
-import de.cebitec.mgx.gui.datamodel.Reference;
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.JobI;
+import de.cebitec.mgx.api.model.MGXReferenceI;
+import de.cebitec.mgx.api.model.MappingI;
 import de.cebitec.mgx.gui.mapping.MappingCtx;
 import de.cebitec.mgx.gui.mapping.viewer.TopComponentViewer;
 import de.cebitec.mgx.gui.swingutils.NonEDT;
@@ -32,8 +32,8 @@ public class OpenMappingByReference extends OpenMappingBase {
 
     public OpenMappingByReference() {
         super();
-        final MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
-        final Reference ref = Utilities.actionsGlobalContext().lookup(Reference.class);
+        final MGXMasterI m = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
+        final MGXReferenceI ref = Utilities.actionsGlobalContext().lookup(MGXReferenceI.class);
 
         if (m == null || ref == null) {
             return;
@@ -42,7 +42,7 @@ public class OpenMappingByReference extends OpenMappingBase {
 
             @Override
             public void run() {
-                Iterator<Mapping> mappings = m.Mapping().ByReference(ref.getId());
+                Iterator<MappingI> mappings = m.Mapping().ByReference(ref.getId());
                 hasData = mappings.hasNext();
             }
         });
@@ -51,19 +51,19 @@ public class OpenMappingByReference extends OpenMappingBase {
     @Override
     public void actionPerformed(ActionEvent e) {
 
-        final MGXMaster master = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
-        final Reference ref = Utilities.actionsGlobalContext().lookup(Reference.class);
+        final MGXMasterI master = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
+        final MGXReferenceI ref = Utilities.actionsGlobalContext().lookup(MGXReferenceI.class);
 
         SwingWorker<List<MappingCtx>, Void> worker = new SwingWorker<List<MappingCtx>, Void>() {
 
             @Override
             protected List<MappingCtx> doInBackground() throws Exception {
                 List<MappingCtx> ctxs = new LinkedList<>();
-                Iterator<Mapping> mappings = master.Mapping().ByReference(ref.getId());
+                Iterator<MappingI> mappings = master.Mapping().ByReference(ref.getId());
                 while (mappings.hasNext()) {
-                    Mapping m = mappings.next();
+                    MappingI m = mappings.next();
 
-                    Job job = master.Job().fetch(m.getJobID());
+                    JobI job = master.Job().fetch(m.getJobID());
                     if (job.getSeqrun() == null) {
                         job.setSeqrun(master.SeqRun().fetch(m.getSeqrunID()));
                     }

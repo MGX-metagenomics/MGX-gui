@@ -1,8 +1,8 @@
 package de.cebitec.mgx.gui.nodefactory;
 
-import de.cebitec.mgx.gui.controller.MGXMaster;
-import de.cebitec.mgx.gui.datamodel.SeqRun;
-import de.cebitec.mgx.gui.groups.VisualizationGroup;
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.nodes.SeqRunNode;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
@@ -14,7 +14,13 @@ import java.util.List;
 import java.util.Set;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import org.openide.nodes.*;
+import org.openide.nodes.ChildFactory;
+import org.openide.nodes.FilterNode;
+import org.openide.nodes.Node;
+import org.openide.nodes.NodeEvent;
+import org.openide.nodes.NodeListener;
+import org.openide.nodes.NodeMemberEvent;
+import org.openide.nodes.NodeReorderEvent;
 import org.openide.util.lookup.Lookups;
 
 /**
@@ -23,10 +29,10 @@ import org.openide.util.lookup.Lookups;
  */
 public class VisualizationGroupNodeFactory extends ChildFactory<SeqRunNode> implements NodeListener {
 
-    private final VisualizationGroup group;
+    private final VisualizationGroupI group;
     private final List<SeqRunNode> nodes = new ArrayList<>();
 
-    public VisualizationGroupNodeFactory(VisualizationGroup group) {
+    public VisualizationGroupNodeFactory(VisualizationGroupI group) {
         this.group = group;
         group.addPropertyChangeListener(new PropertyChangeListener() {
 
@@ -52,7 +58,7 @@ public class VisualizationGroupNodeFactory extends ChildFactory<SeqRunNode> impl
     }
 
     public void addNodes(Set<SeqRunNode> newNodes) {
-        Set<SeqRun> newRuns = new HashSet<>();
+        Set<SeqRunI> newRuns = new HashSet<>();
         for (SeqRunNode node : newNodes) {
             node.addNodeListener(this);
             nodes.add(node);
@@ -119,7 +125,7 @@ public class VisualizationGroupNodeFactory extends ChildFactory<SeqRunNode> impl
 
         @Override
         public String getDisplayName() {
-            MGXMaster m = (MGXMaster) n.getContent().getMaster();
+            MGXMasterI m = n.getContent().getMaster();
             return n.getContent().getName() + " (" + m.getProject() + ")";
         }
 

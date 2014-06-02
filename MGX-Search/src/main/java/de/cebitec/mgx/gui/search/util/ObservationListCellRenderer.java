@@ -1,7 +1,7 @@
 package de.cebitec.mgx.gui.search.util;
 
-import de.cebitec.mgx.gui.controller.MGXMaster;
-import de.cebitec.mgx.gui.datamodel.Sequence;
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.SequenceI;
 import de.cebitec.mgx.gui.search.Layer;
 import de.cebitec.mgx.gui.search.ObservationViewPanel;
 import de.cebitec.mgx.gui.search.OrderedObservations;
@@ -16,21 +16,21 @@ import org.openide.util.RequestProcessor;
  *
  * @author sjaenick
  */
-public final class ObservationListCellRenderer implements ListCellRenderer<Sequence> {
+public final class ObservationListCellRenderer implements ListCellRenderer<SequenceI> {
 
     private List<List<Layer>> toolTips = new ArrayList<>();
     private List<String> readNames = new ArrayList<>();
     private ServerDataWrapper model = new ServerDataWrapper();
-    private MGXMaster currentMaster;
+    private MGXMasterI currentMaster;
     private RequestProcessor proc = new RequestProcessor("MGX-ObservationFetch-Pool", Runtime.getRuntime().availableProcessors() + 4);
     
-    public void setMaster(MGXMaster m) {
+    public void setMaster(MGXMasterI m) {
         currentMaster = m;
     }
 
     @Override
-    public ObservationViewPanel getListCellRendererComponent(JList<? extends Sequence> list,
-            final Sequence seq, int index, boolean isSelected, boolean cellHasFocus) {
+    public ObservationViewPanel getListCellRendererComponent(JList<? extends SequenceI> list,
+            final SequenceI seq, int index, boolean isSelected, boolean cellHasFocus) {
 
         OrderedObservations compute = model.getOrderedObervations(currentMaster, seq, proc);
         readNames.add(seq.getName());

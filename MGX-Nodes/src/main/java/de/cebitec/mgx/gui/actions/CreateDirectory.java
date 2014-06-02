@@ -39,7 +39,7 @@ public class CreateDirectory extends AbstractAction {
             String dirName = nd.getInputText().trim();
             if (!dirName.isEmpty()) {
                 String targetPath = currentDir.getFullPath() + MGXFile.separator + dirName;
-                final MGXFile newDir = new MGXFile(targetPath, true, 0);
+                final MGXFile newDir = new MGXFile(m, targetPath, true, 0);
                 newDir.setParent(currentDir);
 
                 SwingWorker<Boolean, String> sw = new SwingWorker<Boolean, String>() {

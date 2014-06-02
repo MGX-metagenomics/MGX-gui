@@ -10,7 +10,7 @@
     <groupId>de.cebitec.mgx.gui</groupId>
     <artifactId>MGX-JOGL-Wrapper</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <packaging>nbm</packaging>
+    <packaging>bundle</packaging>
 
     <name>MGX-JOGL-Wrapper</name>
 
@@ -61,6 +61,26 @@
                 <configuration>
                     <source>1.7</source>
                     <target>1.7</target>
+                </configuration>
+            </plugin>
+             <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>2.4.0</version>
+                <extensions>true</extensions>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>bundle</goal>
+                        </goals>
+                    </execution>
+                </executions>
+
+                <configuration>
+                    <instructions>
+                        <Export-Package>com.jogamp.newt,jogamp.newt.awt.event,javax.media.nativewindow.util,javax.media.opengl,javax.media.opengl.awt,javax.media.opengl.glu</Export-Package>
+                        <Private-Package></Private-Package>
+                    </instructions>
                 </configuration>
             </plugin>
 

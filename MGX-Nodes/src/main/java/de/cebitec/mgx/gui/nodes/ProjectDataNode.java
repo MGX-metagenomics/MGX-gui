@@ -1,5 +1,7 @@
 package de.cebitec.mgx.gui.nodes;
 
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.HabitatI;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.controller.RBAC;
 import de.cebitec.mgx.gui.datamodel.Habitat;
@@ -22,15 +24,15 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sj
  */
-public class ProjectDataNode extends MGXNodeBase<MGXMaster, ProjectDataNode> {
+public class ProjectDataNode extends MGXNodeBase<MGXMasterI, ProjectDataNode> {
 
     private HabitatNodeFactory hnf = null;
 
-    public ProjectDataNode(MGXMaster m) {
+    public ProjectDataNode(MGXMasterI m) {
         this(m, new HabitatNodeFactory(m));
     }
 
-    private ProjectDataNode(MGXMaster m, HabitatNodeFactory hnf) {
+    private ProjectDataNode(MGXMasterI m, HabitatNodeFactory hnf) {
         super(Children.create(hnf, true), Lookups.fixed(m), m);
         master = m;
         this.hnf = hnf;
@@ -67,7 +69,7 @@ public class ProjectDataNode extends MGXNodeBase<MGXMaster, ProjectDataNode> {
             dialog.toFront();
             boolean cancelled = hwd.getValue() != WizardDescriptor.FINISH_OPTION;
             if (!cancelled) {
-                final Habitat h = hwd.getHabitat();
+                final HabitatI h = hwd.getHabitat(master);
                 SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
                     @Override
                     protected Void doInBackground() throws Exception {

@@ -1,7 +1,7 @@
 package de.cebitec.mgx.gui.nodefactory;
 
-import de.cebitec.mgx.gui.controller.MGXMaster;
-import de.cebitec.mgx.gui.datamodel.Habitat;
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.HabitatI;
 import de.cebitec.mgx.gui.nodes.HabitatNode;
 import java.beans.PropertyChangeEvent;
 import java.util.Collections;
@@ -13,17 +13,17 @@ import org.openide.nodes.*;
  *
  * @author sj
  */
-public class HabitatNodeFactory extends MGXNodeFactoryBase<Habitat> {
+public class HabitatNodeFactory extends MGXNodeFactoryBase<HabitatI> {
 
-    private final MGXMaster master;
+    private final MGXMasterI master;
 
-    public HabitatNodeFactory(MGXMaster m) {
+    public HabitatNodeFactory(MGXMasterI m) {
         this.master = m;
     }
 
     @Override
-    protected boolean createKeys(List<Habitat> toPopulate) {
-        Iterator<Habitat> iter = master.Habitat().fetchall();
+    protected boolean createKeys(List<HabitatI> toPopulate) {
+        Iterator<HabitatI> iter = master.Habitat().fetchall();
         while (iter.hasNext()) {
             toPopulate.add(iter.next());
         }
@@ -32,7 +32,7 @@ public class HabitatNodeFactory extends MGXNodeFactoryBase<Habitat> {
     }
 
     @Override
-    protected Node createNodeForKey(Habitat key) {
+    protected Node createNodeForKey(HabitatI key) {
         HabitatNode node = new HabitatNode(master, key);
         node.addNodeListener(this);
         return node;

@@ -1,21 +1,19 @@
 package de.cebitec.mgx.gui.nodes;
 
-import de.cebitec.mgx.client.exception.MGXServerException;
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.misc.TaskI;
+import de.cebitec.mgx.api.misc.ToolType;
+import de.cebitec.mgx.api.model.JobI;
+import de.cebitec.mgx.api.model.JobParameterI;
+import de.cebitec.mgx.api.model.JobState;
+import de.cebitec.mgx.api.model.MGXReferenceI;
+import de.cebitec.mgx.api.model.SeqRunI;
+import de.cebitec.mgx.api.model.ToolI;
 import de.cebitec.mgx.gui.actions.DownloadSeqRun;
 import de.cebitec.mgx.gui.actions.OpenMappingBySeqRun;
-import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.controller.RBAC;
 import de.cebitec.mgx.gui.datamodel.Job;
-import de.cebitec.mgx.gui.datamodel.JobParameter;
-import de.cebitec.mgx.gui.datamodel.JobState;
-import de.cebitec.mgx.gui.datamodel.Reference;
-import de.cebitec.mgx.gui.datamodel.SeqRun;
-import de.cebitec.mgx.gui.datamodel.Tool;
-import de.cebitec.mgx.gui.datamodel.misc.Task;
-import de.cebitec.mgx.gui.datamodel.misc.ToolType;
-import static de.cebitec.mgx.gui.datamodel.misc.ToolType.GLOBAL;
-import static de.cebitec.mgx.gui.datamodel.misc.ToolType.PROJECT;
-import static de.cebitec.mgx.gui.datamodel.misc.ToolType.USER_PROVIDED;
 import de.cebitec.mgx.gui.swingutils.NonEDT;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
@@ -44,13 +42,13 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sj
  */
-public class SeqRunNode extends MGXNodeBase<SeqRun, SeqRunNode> {
+public class SeqRunNode extends MGXNodeBase<SeqRunI, SeqRunNode> {
 
     private final Action[] actions = new Action[]{new ExecuteAnalysis(), new OpenMappingBySeqRun(), new EditSeqRun(), new DeleteSeqRun(), new DownloadSeqRun()};
     //
     //public static final DataFlavor DATA_FLAVOR = new DataFlavor(SeqRunNode.class, "SeqRunNode");
 
-    public SeqRunNode(MGXMaster m, SeqRun s, Children children) {
+    public SeqRunNode(MGXMasterI m, SeqRunI s, Children children) {
         super(children, Lookups.fixed(m, s), s);
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/SeqRun.png");
         setShortDescription(getToolTipText(s));
@@ -58,7 +56,7 @@ public class SeqRunNode extends MGXNodeBase<SeqRun, SeqRunNode> {
         setDisplayName(s.getName());
     }
 
-    private String getToolTipText(SeqRun run) {
+    private String getToolTipText(SeqRunI run) {
         return new StringBuilder("<html><b>Sequencing run: </b>").append(run.getName())
                 .append("<br><hr><br>")
                 .append(run.getSequencingTechnology().getName()).append(" ")
@@ -87,13 +85,12 @@ public class SeqRunNode extends MGXNodeBase<SeqRun, SeqRunNode> {
 
         @Override
         public void actionPerformed(final ActionEvent e) {
-            SeqRun seqrun = getLookup().lookup(SeqRun.class);
-            final MGXMaster m = getLookup().lookup(MGXMaster.class);
-            final List<Reference> references = new ArrayList<>();
+            final MGXMasterI m = getLookup().lookup(MGXMasterI.class);
+            final List<MGXReferenceI> references = new ArrayList<>();
             NonEDT.invokeAndWait(new Runnable() {
                 @Override
                 public void run() {
-                    Iterator<Reference> refiter = m.Reference().fetchall();
+                    Iterator<MGXReferenceI> refiter = m.Reference().fetchall();
                     while (refiter.hasNext()) {
                         references.add(refiter.next());
                     }
@@ -109,16 +106,16 @@ public class SeqRunNode extends MGXNodeBase<SeqRun, SeqRunNode> {
             wiz.setTitleFormat(new MessageFormat("{0}"));
             wiz.setTitle("Tool selection");
             if (DialogDisplayer.getDefault().notify(wiz) == WizardDescriptor.FINISH_OPTION) {
-                final Tool tool = (Tool) wiz.getProperty(AnalysisWizardIterator.PROP_TOOL);
+                final ToolI tool = (ToolI) wiz.getProperty(AnalysisWizardIterator.PROP_TOOL);
                 final ToolType tooltype = (ToolType) wiz.getProperty(AnalysisWizardIterator.PROP_TOOLTYPE);
-                final List<JobParameter> params = (List<JobParameter>) wiz.getProperty(AnalysisWizardIterator.PROP_PARAMETERS);
+                final List<JobParameterI> params = (List<JobParameterI>) wiz.getProperty(AnalysisWizardIterator.PROP_PARAMETERS);
 
                 final MGXTask submit = new MGXTask("Submit " + getContent().getName() + " / " + tool.getName()) {
                     @Override
                     public boolean process() {
                         try {
 
-                            Tool selectedTool = null;
+                            ToolI selectedTool = null;
 
                             switch (tooltype) {
                                 case GLOBAL:
@@ -136,7 +133,7 @@ public class SeqRunNode extends MGXNodeBase<SeqRun, SeqRunNode> {
                                     assert false;
                             }
 
-                            final Job job = new Job();
+                            final JobI job = new Job(m);
                             job.setCreator(master.getLogin());
                             job.setTool(selectedTool);
                             job.setStatus(JobState.CREATED);
@@ -149,7 +146,7 @@ public class SeqRunNode extends MGXNodeBase<SeqRun, SeqRunNode> {
                             master.Job().verify(job);
                             setStatus("Submitting..");
                             return master.Job().execute(job);
-                        } catch (MGXServerException ex) {
+                        } catch (MGXException ex) {
                             setStatus(ex.getMessage());
                             Exceptions.printStackTrace(ex);
                         }
@@ -183,7 +180,7 @@ public class SeqRunNode extends MGXNodeBase<SeqRun, SeqRunNode> {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            SeqRun seqrun = getLookup().lookup(SeqRun.class);
+            final SeqRunI seqrun = getLookup().lookup(SeqRunI.class);
             SeqRunWizardDescriptor wd = new SeqRunWizardDescriptor(seqrun);
             Dialog dialog = DialogDisplayer.getDefault().createDialog(wd);
             dialog.setVisible(true);
@@ -191,11 +188,11 @@ public class SeqRunNode extends MGXNodeBase<SeqRun, SeqRunNode> {
             boolean cancelled = wd.getValue() != WizardDescriptor.FINISH_OPTION;
             if (!cancelled) {
 
-                final SeqRun run = wd.getSeqRun();
+                final SeqRunI run = wd.getSeqRun(seqrun.getMaster());
                 SwingWorker<Void, Void> sw = new SwingWorker<Void, Void>() {
                     @Override
                     protected Void doInBackground() throws Exception {
-                        MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
+                        MGXMasterI m = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
                         m.SeqRun().update(run);
                         return null;
                     }
@@ -232,7 +229,7 @@ public class SeqRunNode extends MGXNodeBase<SeqRun, SeqRunNode> {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            final SeqRun sr = getLookup().lookup(SeqRun.class);
+            final SeqRunI sr = getLookup().lookup(SeqRunI.class);
             NotifyDescriptor d = new NotifyDescriptor("Really delete sequencing run " + sr.getName() + "?",
                     "Delete sequencing run",
                     NotifyDescriptor.YES_NO_OPTION,
@@ -246,15 +243,15 @@ public class SeqRunNode extends MGXNodeBase<SeqRun, SeqRunNode> {
                     @Override
                     public boolean process() {
                         setStatus("Deleting..");
-                        MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
-                        Task task = m.SeqRun().delete(sr);
+                        MGXMasterI m = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
+                        TaskI task = m.SeqRun().delete(sr);
                         while (!task.done()) {
                             setStatus(task.getStatusMessage());
                             task = m.Task().refresh(task);
                             sleep();
                         }
                         task.finish();
-                        return task.getState() == Task.State.FINISHED;
+                        return task.getState() == TaskI.State.FINISHED;
                     }
 
                     @Override

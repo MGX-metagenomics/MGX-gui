@@ -1,9 +1,9 @@
 package de.cebitec.mgx.gui.nodefactory;
 
-import de.cebitec.mgx.gui.controller.MGXMaster;
-import de.cebitec.mgx.gui.datamodel.Job;
-import de.cebitec.mgx.gui.datamodel.SeqRun;
-import de.cebitec.mgx.gui.datamodel.Tool;
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.JobI;
+import de.cebitec.mgx.api.model.SeqRunI;
+import de.cebitec.mgx.api.model.ToolI;
 import de.cebitec.mgx.gui.nodes.JobNode;
 import de.cebitec.mgx.gui.swingutils.NonEDT;
 import java.awt.EventQueue;
@@ -26,11 +26,11 @@ import org.openide.nodes.NodeReorderEvent;
  *
  * @author sjaenick
  */
-public class JobNodeFactory extends ChildFactory<Job> implements NodeListener {
+public class JobNodeFactory extends ChildFactory<JobI> implements NodeListener {
 
-    private MGXMaster master;
+    private MGXMasterI master;
 
-    public JobNodeFactory(MGXMaster master) {
+    public JobNodeFactory(MGXMasterI master) {
         this();
         this.master = master;
     }
@@ -46,13 +46,13 @@ public class JobNodeFactory extends ChildFactory<Job> implements NodeListener {
     }
 
     @Override
-    protected boolean createKeys(List<Job> toPopulate) {
-        Iterator<SeqRun> iter = master.SeqRun().fetchall();
+    protected boolean createKeys(List<JobI> toPopulate) {
+        Iterator<SeqRunI> iter = master.SeqRun().fetchall();
         while (iter.hasNext()) {
-            SeqRun sr = iter.next();
-            for (Job j : master.Job().BySeqRun(sr)) {
+            SeqRunI sr = iter.next();
+            for (JobI j : master.Job().BySeqRun(sr)) {
                 j.setSeqrun(sr);
-                Tool t = master.Tool().ByJob(j.getId());
+                ToolI t = master.Tool().ByJob(j.getId());
                 j.setTool(t);
                 toPopulate.add(j);
             }
@@ -62,7 +62,7 @@ public class JobNodeFactory extends ChildFactory<Job> implements NodeListener {
     }
 
     @Override
-    protected Node createNodeForKey(Job key) {
+    protected Node createNodeForKey(JobI key) {
         JobNode node = new JobNode(master, key, Children.LEAF);
         node.addNodeListener(this);
         return node;

@@ -143,21 +143,21 @@ public class LoginHandler implements ActionListener {
 
             @Override
             public void run() {
-                while (true) {
-
+                while (LoginState.getInstance().loggedIn()) {
                     refresh++;
                     if (refresh == 30) {
                         refresh = 0;
                         long now = System.currentTimeMillis();
                         long serverTime = gpms.ping();
                         rtt = System.currentTimeMillis() - now;
-                    }
+                    } 
                     StatusDisplayer.getDefault().setStatusText("Connected to " + gpms.getServerName() + " " + rtt + " ms RTT");
                     try {
-                        Thread.sleep(500);
+                        Thread.sleep(2500);
                     } catch (InterruptedException ex) {
                     }
                 }
+                StatusDisplayer.getDefault().setStatusText("");
             }
         });
         t.setName("Ping-" + gpms.getServerName());

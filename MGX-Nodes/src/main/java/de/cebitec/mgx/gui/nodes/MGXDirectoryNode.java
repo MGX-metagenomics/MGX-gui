@@ -1,10 +1,10 @@
 package de.cebitec.mgx.gui.nodes;
 
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.MGXFileI;
 import de.cebitec.mgx.gui.actions.CreateDirectory;
 import de.cebitec.mgx.gui.actions.DeleteFileOrDirectory;
 import de.cebitec.mgx.gui.actions.UploadFile;
-import de.cebitec.mgx.gui.controller.MGXMaster;
-import de.cebitec.mgx.gui.datamodel.MGXFile;
 import de.cebitec.mgx.gui.nodefactory.FileNodeFactory;
 import javax.swing.Action;
 import org.openide.nodes.Children;
@@ -14,15 +14,15 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sj
  */
-public class MGXDirectoryNode extends MGXNodeBase<MGXFile, MGXDirectoryNode> {
+public class MGXDirectoryNode extends MGXNodeBase<MGXFileI, MGXDirectoryNode> {
 
     private FileNodeFactory nf = null;
 
-    public MGXDirectoryNode(MGXFile f, MGXMaster m) {
+    public MGXDirectoryNode(MGXFileI f, MGXMasterI m) {
         this(f, m, new FileNodeFactory(m, f));
     }
 
-    private MGXDirectoryNode(MGXFile f, MGXMaster m, FileNodeFactory fnf) {
+    private MGXDirectoryNode(MGXFileI f, MGXMasterI m, FileNodeFactory fnf) {
         super(Children.create(fnf, true), Lookups.fixed(m, f), f);
         master = m;
         setDisplayName(f.getName());

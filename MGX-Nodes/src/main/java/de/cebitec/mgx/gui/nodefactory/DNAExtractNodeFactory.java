@@ -1,32 +1,37 @@
 package de.cebitec.mgx.gui.nodefactory;
 
-import de.cebitec.mgx.gui.controller.MGXMaster;
-import de.cebitec.mgx.gui.datamodel.DNAExtract;
-import de.cebitec.mgx.gui.datamodel.Sample;
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.DNAExtractI;
+import de.cebitec.mgx.api.model.SampleI;
 import de.cebitec.mgx.gui.nodes.DNAExtractNode;
 import java.beans.PropertyChangeEvent;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import org.openide.nodes.*;
+import org.openide.nodes.ChildFactory;
+import org.openide.nodes.Node;
+import org.openide.nodes.NodeEvent;
+import org.openide.nodes.NodeListener;
+import org.openide.nodes.NodeMemberEvent;
+import org.openide.nodes.NodeReorderEvent;
 
 /**
  *
  * @author sj
  */
-public class DNAExtractNodeFactory extends ChildFactory<DNAExtract> implements NodeListener {
+public class DNAExtractNodeFactory extends ChildFactory<DNAExtractI> implements NodeListener {
 
-    private final MGXMaster master;
+    private final MGXMasterI master;
     private final long sample_id;
 
-    public DNAExtractNodeFactory(MGXMaster master, Sample s) {
+    public DNAExtractNodeFactory(MGXMasterI master, SampleI s) {
         this.master = master;
         this.sample_id = s.getId();
     }
 
     @Override
-    protected boolean createKeys(List<DNAExtract> toPopulate) {
-        Iterator<DNAExtract> iter = master.DNAExtract().BySample(sample_id);
+    protected boolean createKeys(List<DNAExtractI> toPopulate) {
+        Iterator<DNAExtractI> iter = master.DNAExtract().BySample(sample_id);
         while (iter.hasNext()) {
             toPopulate.add(iter.next());
         }
@@ -35,7 +40,7 @@ public class DNAExtractNodeFactory extends ChildFactory<DNAExtract> implements N
     }
 
     @Override
-    protected Node createNodeForKey(DNAExtract key) {
+    protected Node createNodeForKey(DNAExtractI key) {
         DNAExtractNode node = new DNAExtractNode(master, key);
         node.addNodeListener(this);
         return node;

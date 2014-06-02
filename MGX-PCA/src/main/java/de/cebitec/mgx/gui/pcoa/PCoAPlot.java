@@ -1,19 +1,18 @@
 package de.cebitec.mgx.gui.pcoa;
 
-import de.cebitec.mgx.gui.attributevisualization.filter.ToFractionFilter;
-import de.cebitec.mgx.gui.attributevisualization.filter.VisFilterI;
-import de.cebitec.mgx.gui.attributevisualization.viewer.ViewerI;
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.groups.ConflictingJobsException;
+import de.cebitec.mgx.api.groups.ImageExporterI;
+import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.misc.DistributionI;
+import de.cebitec.mgx.api.misc.Pair;
+import de.cebitec.mgx.api.misc.Point;
+import de.cebitec.mgx.api.model.AttributeI;
+import de.cebitec.mgx.api.model.AttributeTypeI;
+import de.cebitec.mgx.api.visualization.filter.ToFractionFilter;
+import de.cebitec.mgx.api.visualization.filter.VisFilterI;
+import de.cebitec.mgx.common.visualization.ViewerI;
 import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
-import de.cebitec.mgx.gui.controller.MGXMaster;
-import de.cebitec.mgx.gui.datamodel.Attribute;
-import de.cebitec.mgx.gui.datamodel.AttributeType;
-import de.cebitec.mgx.gui.datamodel.misc.Distribution;
-import de.cebitec.mgx.gui.datamodel.misc.Pair;
-import de.cebitec.mgx.gui.datamodel.misc.Point;
-import de.cebitec.mgx.gui.groups.ConflictingJobsException;
-import de.cebitec.mgx.gui.groups.ImageExporterI;
-import de.cebitec.mgx.gui.groups.VGroupManager;
-import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import java.awt.Color;
 import java.awt.geom.Ellipse2D;
 import java.util.HashMap;
@@ -43,7 +42,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author sj
  */
 @ServiceProvider(service = ViewerI.class)
-public class PCoAPlot extends ViewerI<Distribution> {
+public class PCoAPlot extends ViewerI<DistributionI> {
 
     private ChartPanel cPanel = null;
     private JFreeChart chart = null;
@@ -65,11 +64,11 @@ public class PCoAPlot extends ViewerI<Distribution> {
     }
 
     @Override
-    public boolean canHandle(AttributeType valueType) {
-        Set<Attribute> attrs = new HashSet<>();
+    public boolean canHandle(AttributeTypeI valueType) {
+        Set<AttributeI> attrs = new HashSet<>();
         int distCnt = 0;
         try {
-            for (Pair<VisualizationGroup, Distribution> p : VGroupManager.getInstance().getDistributions()) {
+            for (Pair<VisualizationGroupI, DistributionI> p : getVGroupManager().getDistributions()) {
                 attrs.addAll(p.getSecond().keySet());
                 distCnt++;
             }
@@ -80,19 +79,19 @@ public class PCoAPlot extends ViewerI<Distribution> {
 
     @Override
     public Class getInputType() {
-        return Distribution.class;
+        return DistributionI.class;
     }
 
     @Override
-    public void show(List<Pair<VisualizationGroup, Distribution>> dists) {
-        final MGXMaster master = (MGXMaster) dists.get(0).getSecond().getMaster();
+    public void show(List<Pair<VisualizationGroupI, DistributionI>> dists) {
+        final MGXMasterI master =dists.get(0).getSecond().getMaster();
 
         if (getCustomizer().useFractions()) {
             VisFilterI fracFilter = new ToFractionFilter();
             dists = fracFilter.filter(dists);
         }
 
-        final List<Pair<VisualizationGroup, Distribution>> data = dists;
+        final List<Pair<VisualizationGroupI, DistributionI>> data = dists;
 
         SwingWorker<List<Point>, Void> sw = new SwingWorker<List<Point>, Void>() {
 

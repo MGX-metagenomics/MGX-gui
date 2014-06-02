@@ -1,7 +1,7 @@
 package de.cebitec.mgx.gui.search;
 
-import de.cebitec.mgx.gui.controller.MGXMaster;
-import de.cebitec.mgx.gui.datamodel.Sequence;
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.SequenceI;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import javax.swing.JLabel;
@@ -19,7 +19,7 @@ public class ObservationViewPanel extends javax.swing.JPanel {
    /**
     * Der Read, zu dem die einzelnen Observations dargestellt werden sollen.
     */
-   private final Sequence seq;
+   private final SequenceI seq;
    /**
     * Observations die in Ebenen angeordnet sind.
     */
@@ -33,7 +33,7 @@ public class ObservationViewPanel extends javax.swing.JPanel {
     */
    private JPanel obsview;
 
-   private final MGXMaster master;
+   private final MGXMasterI master;
 
 
    /**
@@ -42,7 +42,7 @@ public class ObservationViewPanel extends javax.swing.JPanel {
     * @param lOrderedObservations geordnete Observations
     * @param lSeq Sequenz des Reads.
     */
-   public ObservationViewPanel(OrderedObservations lOrderedObservations, Sequence lSeq, MGXMaster lMaster) {
+   public ObservationViewPanel(OrderedObservations lOrderedObservations, SequenceI lSeq, MGXMasterI lMaster) {
 	super();
 
 	this.master = lMaster;

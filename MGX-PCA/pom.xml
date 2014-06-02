@@ -44,21 +44,9 @@
             <artifactId>org-openide-util-lookup</artifactId>
         </dependency>
         <dependency>
-            <groupId>de.cebitec.mgx.gui</groupId>
-            <artifactId>MGX-AttributeVisualization</artifactId>
-        </dependency>
-        <dependency>
-            <artifactId>MGX-Datamodel</artifactId>
-            <groupId>de.cebitec.mgx.gui</groupId>
-        </dependency>
-        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>JFreeChart-Wrapper</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <artifactId>MGX-Controller</artifactId>
-            <groupId>de.cebitec.mgx.gui</groupId>
         </dependency>
         <dependency>
             <groupId>de.cebitec.mgx.gui</groupId>
@@ -76,10 +64,38 @@
             <artifactId>org-openide-awt</artifactId>
             <groupId>org.netbeans.api</groupId>
         </dependency>
+        <dependency>
+            <artifactId>MGX-API</artifactId>
+            <groupId>de.cebitec.mgx</groupId>
+        </dependency>
+        <dependency>
+            <groupId>de.cebitec.mgx.gui</groupId>
+            <artifactId>MGX-Common</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
         <plugins>
+<!--             <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>2.4.0</version>
+                <extensions>true</extensions>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>bundle</goal>
+                        </goals>
+                    </execution>
+                </executions>
+
+                <configuration>
+                    <instructions>
+                        <Export-Package>de.cebitec.mgx.gui.pca,de.cebitec.mgx.gui.pcoa</Export-Package>
+                        <Private-Package></Private-Package>
+                    </instructions>
+                </configuration>
+            </plugin>-->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>nbm-maven-plugin</artifactId>

@@ -1,7 +1,6 @@
 package de.cebitec.mgx.gui.search;
 
-import de.cebitec.mgx.gui.datamodel.Observation;
-
+import de.cebitec.mgx.api.model.ObservationI;
 import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -25,7 +24,7 @@ public class PaintReadObservations {
     /**
      * Observations.
      */
-    private List<Observation> observations;
+    private List<ObservationI> observations;
 
     /**
      * Die Breite der Observations und der Reads.
@@ -179,7 +178,7 @@ public class PaintReadObservations {
      * @param observations Observations
      * @param lGraphics Graphics
      */
-    private void drawObservations(List<Observation> observations,
+    private void drawObservations(List<ObservationI> observations,
             Graphics lGraphics) {
 
 
@@ -189,7 +188,7 @@ public class PaintReadObservations {
         int observationCounter = 0;
 
         for (Layer layer : layers) {
-            for (Observation observation : layer.getObservations()) {
+            for (ObservationI observation : layer.getObservations()) {
 
                 scaledObservationStop = (int) Math.round(observation.getStop() * scaleFactor);
                 scaledObservationStart = (int) Math.round(observation.getStart() * scaleFactor);

@@ -1,9 +1,10 @@
 package de.cebitec.mgx.gui.search.ui;
 
-import de.cebitec.mgx.gui.controller.MGXMaster;
-import de.cebitec.mgx.gui.datamodel.Observation;
-import de.cebitec.mgx.gui.datamodel.SeqRun;
-import de.cebitec.mgx.gui.datamodel.Sequence;
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.misc.SearchRequestI;
+import de.cebitec.mgx.api.model.ObservationI;
+import de.cebitec.mgx.api.model.SeqRunI;
+import de.cebitec.mgx.api.model.SequenceI;
 import de.cebitec.mgx.gui.search.util.ObservationFetcher;
 import java.awt.Component;
 import java.awt.Cursor;
@@ -21,19 +22,14 @@ import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
-import javax.swing.JList;
 import javax.swing.JTable;
-import javax.swing.ListCellRenderer;
 import javax.swing.SwingWorker;
-import javax.swing.UIManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableModel;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -42,10 +38,10 @@ import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
-import org.openide.windows.TopComponent;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.RequestProcessor;
 import org.openide.util.Utilities;
+import org.openide.windows.TopComponent;
 
 /**
  * Top component which displays something.
@@ -73,16 +69,16 @@ import org.openide.util.Utilities;
 })
 public final class SearchTopComponent extends TopComponent implements LookupListener, ActionListener, DocumentListener {
 
-    private final Lookup.Result<MGXMaster> result;
-    private MGXMaster currentMaster = null;
-    private final DefaultListModel<SeqRun> runListModel = new DefaultListModel<>();
+    private final Lookup.Result<MGXMasterI> result;
+    private MGXMasterI currentMaster = null;
+    private final DefaultListModel<SeqRunI> runListModel = new DefaultListModel<>();
     private RequestProcessor proc;
 
     public SearchTopComponent() {
         initComponents();
         setName(Bundle.CTL_SearchTopComponent());
         setToolTipText(Bundle.HINT_SearchTopComponent());
-        result = Utilities.actionsGlobalContext().lookupResult(MGXMaster.class);
+        result = Utilities.actionsGlobalContext().lookupResult(MGXMasterI.class);
         runList.setModel(runListModel);
 
         runList.addListSelectionListener(new ListSelectionListener() {
@@ -162,8 +158,8 @@ public final class SearchTopComponent extends TopComponent implements LookupList
         // set up button listener
         executeSearch.addActionListener(this);
     }
-    private final ConcurrentMap<Sequence, WeakReference<Observation[]>> cache = new ConcurrentHashMap<>();
-    private final Set<Sequence> activeTasks = Collections.<Sequence>synchronizedSet(new HashSet<Sequence>());
+    private final ConcurrentMap<SequenceI, WeakReference<ObservationI[]>> cache = new ConcurrentHashMap<>();
+    private final Set<SequenceI> activeTasks = Collections.<SequenceI>synchronizedSet(new HashSet<SequenceI>());
 
     /**
      * This method is called from within the constructor to initialize the form. WARNING: Do NOT modify this code. The content of this method is always
@@ -176,7 +172,7 @@ public final class SearchTopComponent extends TopComponent implements LookupList
         runList = new javax.swing.JList();
         jSplitPane1 = new javax.swing.JSplitPane();
         jScrollPane2 = new javax.swing.JScrollPane();
-        readList = new de.cebitec.mgx.gui.search.JCheckBoxList<Sequence>();
+        readList = new de.cebitec.mgx.gui.search.JCheckBoxList<SequenceI>();
         jScrollPane4 = new javax.swing.JScrollPane();
         obsTable = new javax.swing.JTable();
         searchTerm = new javax.swing.JTextField();
@@ -285,7 +281,7 @@ public final class SearchTopComponent extends TopComponent implements LookupList
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JTable obsTable;
-    private de.cebitec.mgx.gui.search.JCheckBoxList<Sequence> readList;
+    private de.cebitec.mgx.gui.search.JCheckBoxList<SequenceI> readList;
     private javax.swing.JList runList;
     private javax.swing.JProgressBar searchProgress;
     private javax.swing.JTextField searchTerm;
@@ -332,11 +328,11 @@ public final class SearchTopComponent extends TopComponent implements LookupList
         statusLine.setText("Searching..");
         searchProgress.setIndeterminate(true);
 
-        SwingWorker<Sequence[], Void> worker = new SwingWorker<Sequence[], Void>() {
+        SwingWorker<SequenceI[], Void> worker = new SwingWorker<SequenceI[], Void>() {
             @Override
-            protected Sequence[] doInBackground() throws Exception {
+            protected SequenceI[] doInBackground() throws Exception {
                 long start = System.currentTimeMillis();
-                Sequence[] ret = currentMaster.Attribute().search(getSelectedSeqRuns(), searchTerm.getText(), exact.isSelected());
+                SequenceI[] ret = currentMaster.Attribute().search(searchTerm.getText(), exact.isSelected(), getSelectedSeqRuns());
                 start = System.currentTimeMillis() - start;
                 Logger.getGlobal().log(Level.INFO, "search for {0} took {1}ms, got {2} hits", new Object[]{searchTerm.getText(), start, ret.length});
                 return ret;
@@ -344,14 +340,14 @@ public final class SearchTopComponent extends TopComponent implements LookupList
 
             @Override
             protected void done() {
-                Sequence[] hits;
+                SequenceI[] hits;
                 try {
                     hits = get();
                     statusLine.setText("Results found: " + hits.length);
                     searchProgress.setIndeterminate(false);
                     searchProgress.setValue(100);
                     readList.clear();
-                    for (Sequence s : hits) {
+                    for (SequenceI s : hits) {
                         readList.addElement(s);
 
                         // pre-start observation fetchers
@@ -397,13 +393,13 @@ public final class SearchTopComponent extends TopComponent implements LookupList
         executeSearch.setEnabled(!"".equals(searchTerm.getText()) && getSelectedSeqRuns().length > 0);
     }
 
-    private SeqRun[] getSelectedSeqRuns() {
-        List<SeqRun> selected = runList.getSelectedValuesList();
-        return selected.toArray(new SeqRun[selected.size()]);
+    private SeqRunI[] getSelectedSeqRuns() {
+        List<SeqRunI> selected = runList.getSelectedValuesList();
+        return selected.toArray(new SeqRunI[selected.size()]);
     }
 
     private void updateSeqRunList() {
-        for (MGXMaster newMaster : result.allInstances()) {
+        for (MGXMasterI newMaster : result.allInstances()) {
             if (currentMaster == null || !newMaster.equals(currentMaster)) {
 
                 /*
@@ -412,9 +408,9 @@ public final class SearchTopComponent extends TopComponent implements LookupList
                  */
                 currentMaster = newMaster;
 
-                SwingWorker worker = new SwingWorker<Iterator<SeqRun>, Void>() {
+                SwingWorker worker = new SwingWorker<Iterator<SeqRunI>, Void>() {
                     @Override
-                    protected Iterator<SeqRun> doInBackground() throws Exception {
+                    protected Iterator<SeqRunI> doInBackground() throws Exception {
                         return currentMaster.SeqRun().fetchall();
                     }
 
@@ -422,7 +418,7 @@ public final class SearchTopComponent extends TopComponent implements LookupList
                     protected void done() {
                         runListModel.removeAllElements();
                         try {
-                            Iterator<SeqRun> iter = get();
+                            Iterator<SeqRunI> iter = get();
                             while (iter.hasNext()) {
                                 runListModel.addElement(iter.next());
                             }
@@ -456,7 +452,7 @@ public final class SearchTopComponent extends TopComponent implements LookupList
         public Component getTableCellRendererComponent(JTable table, Object obj, boolean isSelected, boolean hasFocus, int row, int column) {
 
 
-            Sequence value = (Sequence) obj;
+            SequenceI value = (SequenceI) obj;
             if (cache.containsKey(value) && cache.get(value).get() != null) {
                 oview.show(value, cache.get(value).get(), hasFocus, searchTerm.getText());
             } else {

@@ -1,5 +1,8 @@
 package de.cebitec.mgx.gui.nodes;
 
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.misc.TaskI;
+import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.gui.actions.OpenMappingByReference;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.controller.RBAC;
@@ -21,13 +24,13 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sj
  */
-public class ReferenceNode extends MGXNodeBase<Reference, ReferenceNode> {
+public class ReferenceNode extends MGXNodeBase<MGXReferenceI, ReferenceNode> {
 
-    public ReferenceNode(MGXMaster m, Reference ref) {
+    public ReferenceNode(MGXMasterI m, MGXReferenceI ref) {
         this(ref, m);
     }
 
-    private ReferenceNode(Reference ref, MGXMaster m) {
+    private ReferenceNode(MGXReferenceI ref, MGXMasterI m) {
         super(Children.LEAF, Lookups.fixed(m, ref), ref);
         master = m;
         setDisplayName(ref.getName());
@@ -35,7 +38,7 @@ public class ReferenceNode extends MGXNodeBase<Reference, ReferenceNode> {
         setShortDescription(getToolTipText(ref));
     }
 
-    private String getToolTipText(Reference ref) {
+    private String getToolTipText(MGXReferenceI ref) {
         return new StringBuilder("<html>").append("<b>Reference: </b>")
                 .append(ref.getName())
                 .append("<br><hr><br>")
@@ -83,7 +86,7 @@ public class ReferenceNode extends MGXNodeBase<Reference, ReferenceNode> {
                     public boolean process() {
                         setStatus("Deleting..");
                         MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
-                        Task task = m.Reference().delete(ref);
+                        TaskI task = m.Reference().delete(ref);
                         while (!task.done()) {
                             setStatus(task.getStatusMessage());
                             task = m.Task().refresh(task);

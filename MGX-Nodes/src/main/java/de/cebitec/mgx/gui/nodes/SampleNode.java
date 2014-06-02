@@ -1,10 +1,10 @@
 package de.cebitec.mgx.gui.nodes;
 
-import de.cebitec.mgx.gui.controller.MGXMaster;
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.misc.TaskI;
+import de.cebitec.mgx.api.model.DNAExtractI;
+import de.cebitec.mgx.api.model.SampleI;
 import de.cebitec.mgx.gui.controller.RBAC;
-import de.cebitec.mgx.gui.datamodel.DNAExtract;
-import de.cebitec.mgx.gui.datamodel.Sample;
-import de.cebitec.mgx.gui.datamodel.misc.Task;
 import de.cebitec.mgx.gui.nodefactory.DNAExtractNodeFactory;
 import de.cebitec.mgx.gui.swingutils.NonEDT;
 import de.cebitec.mgx.gui.taskview.MGXTask;
@@ -30,16 +30,16 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sj
  */
-public class SampleNode extends MGXNodeBase<Sample, SampleNode> {
+public class SampleNode extends MGXNodeBase<SampleI, SampleNode> {
 
     private DNAExtractNodeFactory nf = null;
 
-    public SampleNode(MGXMaster m, Sample s) {
+    public SampleNode(MGXMasterI m, SampleI s) {
         this(m, s, new DNAExtractNodeFactory(m, s));
         master = m;
     }
 
-    private SampleNode(MGXMaster m, Sample s, DNAExtractNodeFactory snf) {
+    private SampleNode(MGXMasterI m, SampleI s, DNAExtractNodeFactory snf) {
         super(Children.create(snf, true), Lookups.fixed(m, s), s);
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/Sample.png");
         setShortDescription(getToolTipText(s));
@@ -47,7 +47,7 @@ public class SampleNode extends MGXNodeBase<Sample, SampleNode> {
         this.nf = snf;
     }
 
-    private String getToolTipText(Sample s) {
+    private String getToolTipText(SampleI s) {
         String date = DateFormat.getDateInstance(DateFormat.MEDIUM).format(s.getCollectionDate());
         return new StringBuilder("<html><b>Sample: </b>").append(s.getMaterial())
                 .append("<br><hr><br>")
@@ -80,19 +80,20 @@ public class SampleNode extends MGXNodeBase<Sample, SampleNode> {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            Sample sample = getLookup().lookup(Sample.class);
-            SampleWizardDescriptor swd = new SampleWizardDescriptor(sample);
+            final MGXMasterI m = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
+            SampleI sample = getLookup().lookup(SampleI.class);
+
+            SampleWizardDescriptor swd = new SampleWizardDescriptor(m, sample);
             Dialog dialog = DialogDisplayer.getDefault().createDialog(swd);
             dialog.setVisible(true);
             dialog.toFront();
             boolean cancelled = swd.getValue() != WizardDescriptor.FINISH_OPTION;
             if (!cancelled) {
                 final String oldDisplayName = sample.getMaterial();
-                final Sample s = swd.getSample();
+                final SampleI s = swd.getSample();
                 SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
                     @Override
                     protected Void doInBackground() throws Exception {
-                        MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
                         m.Sample().update(s);
                         return null;
                     }
@@ -128,7 +129,8 @@ public class SampleNode extends MGXNodeBase<Sample, SampleNode> {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            final Sample sample = getLookup().lookup(Sample.class);
+            final SampleI sample = getLookup().lookup(SampleI.class);
+            final MGXMasterI m = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
             NotifyDescriptor d = new NotifyDescriptor("Really delete sample " + sample.getMaterial() + "?",
                     "Delete sample",
                     NotifyDescriptor.YES_NO_OPTION,
@@ -136,24 +138,23 @@ public class SampleNode extends MGXNodeBase<Sample, SampleNode> {
                     null,
                     null);
             Object ret = DialogDisplayer.getDefault().notify(d);
-            final MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
             if (NotifyDescriptor.YES_OPTION.equals(ret)) {
                 final MGXTask deleteTask = new MGXTask("Delete " + sample.getMaterial()) {
                     @Override
                     public boolean process() {
                         setStatus("Deleting..");
-                        Task task = m.Sample().delete(sample);
+                        TaskI task = m.Sample().delete(sample);
                         while (!task.done()) {
                             setStatus(task.getStatusMessage());
                             task = m.Task().refresh(task);
                             sleep();
                         }
                         task.finish();
-                        return task.getState() == Task.State.FINISHED;
+                        return task.getState() == TaskI.State.FINISHED;
 
                     }
                 };
-                
+
                 NonEDT.invoke(new Runnable() {
 
                     @Override
@@ -178,15 +179,15 @@ public class SampleNode extends MGXNodeBase<Sample, SampleNode> {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            DNAExtractWizardDescriptor wd = new DNAExtractWizardDescriptor();
+            final MGXMasterI m = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
+            DNAExtractWizardDescriptor wd = new DNAExtractWizardDescriptor(m);
             Dialog dialog = DialogDisplayer.getDefault().createDialog(wd);
             dialog.setVisible(true);
             dialog.toFront();
             boolean cancelled = wd.getValue() != WizardDescriptor.FINISH_OPTION;
             if (!cancelled) {
-                final MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
-                Sample s = getLookup().lookup(Sample.class);
-                final DNAExtract extract = wd.getDNAExtract();
+                SampleI s = getLookup().lookup(SampleI.class);
+                final DNAExtractI extract = wd.getDNAExtract();
                 extract.setSampleId(s.getId());
                 SwingWorker<Long, Void> worker = new SwingWorker<Long, Void>() {
                     @Override

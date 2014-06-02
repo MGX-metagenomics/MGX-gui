@@ -1,9 +1,10 @@
 package de.cebitec.mgx.gui.nodefactory;
 
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.JobI;
+import de.cebitec.mgx.api.model.SeqRunI;
+import de.cebitec.mgx.api.model.ToolI;
 import de.cebitec.mgx.gui.controller.MGXMaster;
-import de.cebitec.mgx.gui.datamodel.Job;
-import de.cebitec.mgx.gui.datamodel.SeqRun;
-import de.cebitec.mgx.gui.datamodel.Tool;
 import de.cebitec.mgx.gui.nodes.JobNode;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -19,9 +20,9 @@ import org.openide.nodes.Node;
  */
 public class JobBySeqRunNodeFactory extends JobNodeFactory {
 
-    private final SeqRun run;
+    private final SeqRunI run;
 
-    public JobBySeqRunNodeFactory(SeqRun run) {
+    public JobBySeqRunNodeFactory(SeqRunI run) {
         super();
         this.run = run;
         Timer timer = new Timer(1000 * 10, new ActionListener() {
@@ -34,11 +35,11 @@ public class JobBySeqRunNodeFactory extends JobNodeFactory {
     }
 
     @Override
-    protected boolean createKeys(List<Job> toPopulate) {
-        MGXMaster master = (MGXMaster) run.getMaster();
-        for (Job j : master.Job().BySeqRun(run)) {
+    protected boolean createKeys(List<JobI> toPopulate) {
+        MGXMasterI master =  run.getMaster();
+        for (JobI j : master.Job().BySeqRun(run)) {
             j.setSeqrun(run);
-            Tool t = master.Tool().ByJob(j.getId());
+            ToolI t = master.Tool().ByJob(j.getId());
             j.setTool(t);
             toPopulate.add(j);
         }
@@ -47,7 +48,7 @@ public class JobBySeqRunNodeFactory extends JobNodeFactory {
     }
 
     @Override
-    protected Node createNodeForKey(Job key) {
+    protected Node createNodeForKey(JobI key) {
         JobNode node = new JobNode((MGXMaster) key.getMaster(), key, Children.LEAF);
         node.addNodeListener(this);
         return node;

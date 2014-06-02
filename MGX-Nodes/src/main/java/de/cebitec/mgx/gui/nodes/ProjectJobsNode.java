@@ -1,6 +1,6 @@
 package de.cebitec.mgx.gui.nodes;
 
-import de.cebitec.mgx.gui.controller.MGXMaster;
+import de.cebitec.mgx.api.MGXMasterI;
 import javax.swing.Action;
 import org.openide.nodes.Children;
 import org.openide.util.lookup.Lookups;
@@ -9,9 +9,9 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sj
  */
-public class ProjectJobsNode extends MGXNodeBase<MGXMaster, ProjectJobsNode> {
+public class ProjectJobsNode extends MGXNodeBase<MGXMasterI, ProjectJobsNode> {
 
-    public ProjectJobsNode(MGXMaster m) {
+    public ProjectJobsNode(MGXMasterI m) {
         super(Children.LEAF, Lookups.singleton(m), m);
         master = m;
         setDisplayName("Jobs");

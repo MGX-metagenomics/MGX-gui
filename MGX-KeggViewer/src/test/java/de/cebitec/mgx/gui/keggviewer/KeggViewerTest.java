@@ -1,15 +1,13 @@
 package de.cebitec.mgx.gui.keggviewer;
 
-import de.cebitec.mgx.gui.controller.MGXMaster;
-import de.cebitec.mgx.gui.datamodel.SeqRun;
-import de.cebitec.mgx.gui.datamodel.misc.AttributeRank;
-import de.cebitec.mgx.gui.groups.ConflictingJobsException;
-import de.cebitec.mgx.gui.groups.VGroupManager;
-import de.cebitec.mgx.gui.groups.VisualizationGroup;
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.groups.ConflictingJobsException;
+import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.misc.AttributeRank;
+import de.cebitec.mgx.api.model.SeqRunI;
+import de.cebitec.mgx.common.VGroupManager;
 import de.cebitec.mgx.kegg.pathways.KEGGException;
-import de.cebitec.mgx.kegg.pathways.api.PathwayI;
 import java.util.Iterator;
-import java.util.Set;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -47,13 +45,13 @@ public class KeggViewerTest {
     public void testRegressionInterrupted() {
         System.out.println("regressionInterrupted");
 
-        VisualizationGroup vg = VGroupManager.getInstance().createGroup();
-        MGXMaster master = TestMaster.getRO();
+        VisualizationGroupI vg = VGroupManager.getInstance().createGroup();
+        MGXMasterI master = TestMaster.getRO();
 
         // add first run
-        Iterator<SeqRun> iter = master.SeqRun().fetchall();
+        Iterator<SeqRunI> iter = master.SeqRun().fetchall();
         while (iter.hasNext()) {
-            SeqRun sr = iter.next();
+            SeqRunI sr = iter.next();
             if (sr.getName().equals("dataset1")) {
                 vg.addSeqRun(sr);
             }
@@ -72,7 +70,7 @@ public class KeggViewerTest {
         // add second run
         iter = master.SeqRun().fetchall();
         while (iter.hasNext()) {
-            SeqRun sr = iter.next();
+            SeqRunI sr = iter.next();
             if (sr.getName().equals("dataset2")) {
                 vg.addSeqRun(sr);
             }

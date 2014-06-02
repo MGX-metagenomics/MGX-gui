@@ -1,9 +1,9 @@
 package de.cebitec.mgx.gui.nodes;
 
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.MGXFileI;
 import de.cebitec.mgx.gui.actions.DeleteFileOrDirectory;
 import de.cebitec.mgx.gui.actions.DownloadFile;
-import de.cebitec.mgx.gui.controller.MGXMaster;
-import de.cebitec.mgx.gui.datamodel.MGXFile;
 import javax.swing.Action;
 import org.openide.nodes.Children;
 import org.openide.util.lookup.Lookups;
@@ -12,9 +12,9 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sj
  */
-public class MGXFileNode extends MGXNodeBase<MGXFile, MGXFileNode> {
+public class MGXFileNode extends MGXNodeBase<MGXFileI, MGXFileNode> {
 
-    public MGXFileNode(MGXFile f, MGXMaster m) {
+    public MGXFileNode(MGXFileI f, MGXMasterI m) {
         super(Children.LEAF, Lookups.fixed(m, f), f);
         master = m;
         setDisplayName(f.getName());

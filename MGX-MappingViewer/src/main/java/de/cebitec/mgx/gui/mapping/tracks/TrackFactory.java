@@ -26,7 +26,7 @@ public class TrackFactory {
         return t;
     }
 
-    public static void createTracks(int minIdentity, Collection<MappedSequenceI> mappings, List<Track> tracks) {
+    public static void createTracks(int minIdentity, Collection<MappedSequenceI> mappings, Collection<Track> tracks) {
         tracks.clear();
         boolean placed;
         Track last = null;

@@ -1,8 +1,9 @@
 package de.cebitec.mgx.gui.pca;
 
+import de.cebitec.mgx.api.misc.PCAResultI;
+import de.cebitec.mgx.api.misc.Pair;
+import de.cebitec.mgx.api.misc.Point;
 import de.cebitec.mgx.gui.datamodel.misc.PCAResult;
-import de.cebitec.mgx.gui.datamodel.misc.Pair;
-import de.cebitec.mgx.gui.datamodel.misc.Point;
 import java.util.List;
 import java.util.Map;
 import org.jfree.data.xy.XYDataItem;
@@ -18,7 +19,7 @@ public class PCACustomizer extends javax.swing.JPanel {
     private static final Pair<PC, PC> pc23 = new Pair<>(PC.PC2, PC.PC3);
     private static final Pair<PC, PC> pc13 = new Pair<>(PC.PC1, PC.PC3);
     private XYSeries series = null;
-    private PCAResult pca = null;
+    private PCAResultI pca = null;
     private Map<XYDataItem, String> toolTips = null;
 
     /**
@@ -32,7 +33,7 @@ public class PCACustomizer extends javax.swing.JPanel {
         pcSel.setSelectedIndex(0);
     }
 
-    public void setLoadings(PCAResult pca, Map<XYDataItem, String> toolTips) {
+    public void setLoadings(PCAResultI pca, Map<XYDataItem, String> toolTips) {
         this.pca = pca;
         this.toolTips = toolTips;
         series = new XYSeries("");

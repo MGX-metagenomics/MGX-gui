@@ -1,9 +1,8 @@
 package de.cebitec.mgx.gui.search;
 
-import de.cebitec.mgx.gui.controller.MGXMaster;
-import de.cebitec.mgx.gui.datamodel.Observation;
-import de.cebitec.mgx.gui.datamodel.Sequence;
-import de.cebitec.mgx.gui.search.util.ObservationFetcher;
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.ObservationI;
+import de.cebitec.mgx.api.model.SequenceI;
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,13 +25,13 @@ public class ServerDataWrapper {
     /**
      * Map fuer den Read und den dazugehoerigen Observations.
      */
-    private static Map<Sequence, WeakReference<Observation[]>> cache =
-            Collections.<Sequence, WeakReference<Observation[]>>synchronizedMap(
-            new HashMap<Sequence, WeakReference<Observation[]>>());
+    private static final Map<SequenceI, WeakReference<ObservationI[]>> cache =
+            Collections.<SequenceI, WeakReference<ObservationI[]>>synchronizedMap(
+            new HashMap<SequenceI, WeakReference<ObservationI[]>>());
     /**
      * Array an Observations.
      */
-    private Observation[] observations;
+    private ObservationI[] observations;
 
     /**
      * Laedt die Observations aus dem Server.
@@ -42,7 +41,7 @@ public class ServerDataWrapper {
      * @param proc RequestProcessor.
      * @return Array an Observations.
      */
-    private Observation[] getObservations(MGXMaster m, Sequence seq, RequestProcessor proc) {
+    private ObservationI[] getObservations(MGXMasterI m, SequenceI seq, RequestProcessor proc) {
         // if task is still running, wait for it to finish
         if (myTask != null) {
             myTask.waitFinished();
@@ -50,7 +49,7 @@ public class ServerDataWrapper {
         }
 
         if (cache.containsKey(seq)) {
-            Observation[] obs = cache.get(seq).get(); // create strong reference
+            ObservationI[] obs = cache.get(seq).get(); // create strong reference
             if (obs == null) {
                 // weak ref expired, start new fetcher and invoke self
                 fetchFromServer(m, seq, proc);
@@ -72,7 +71,7 @@ public class ServerDataWrapper {
      * @param seq Sequenz des Reads.
      * @param proc RequestProcessor
      */
-    public void fetchFromServer(MGXMaster m, Sequence seq, RequestProcessor proc) {
+    public void fetchFromServer(MGXMasterI m, SequenceI seq, RequestProcessor proc) {
        // myTask = proc.post(new ObservationFetcher(m, seq, cache));
     }
 
@@ -84,7 +83,7 @@ public class ServerDataWrapper {
      * @param proc PrequestProcessor.
      * @return geordnete Observations.
      */
-    public OrderedObservations getOrderedObervations(final MGXMaster m, final Sequence seq, final RequestProcessor proc) {
+    public OrderedObservations getOrderedObervations(final MGXMasterI m, final SequenceI seq, final RequestProcessor proc) {
         if (!cache.containsKey(seq)) {
             // submit observation fetcher task
             fetchFromServer(m, seq, proc);

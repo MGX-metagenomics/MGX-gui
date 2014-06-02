@@ -10,8 +10,8 @@ import java.beans.PropertyChangeSupport;
 public class LoginState {
 
     private boolean loggedIn = false;
-    private PropertyChangeSupport pcs = new PropertyChangeSupport(this);
-    private static LoginState instance = new LoginState();
+    private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+    private static final LoginState instance = new LoginState();
 
     private LoginState() {
     }

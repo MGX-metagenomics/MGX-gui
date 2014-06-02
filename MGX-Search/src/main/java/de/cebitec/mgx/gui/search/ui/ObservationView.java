@@ -1,7 +1,7 @@
 package de.cebitec.mgx.gui.search.ui;
 
-import de.cebitec.mgx.gui.datamodel.Observation;
-import de.cebitec.mgx.gui.datamodel.Sequence;
+import de.cebitec.mgx.api.model.ObservationI;
+import de.cebitec.mgx.api.model.SequenceI;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -11,7 +11,6 @@ import java.awt.RenderingHints;
 import java.awt.geom.Line2D;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.border.Border;
@@ -35,13 +34,13 @@ public class ObservationView extends javax.swing.JPanel {
     }
     private final View view = new View();
 
-    public void show(Sequence seq, Observation[] obs, boolean selected, final String searchTerm) {
+    public void show(SequenceI seq, ObservationI[] obs, boolean selected, final String searchTerm) {
         readName.setText(seq.getName() + " (" + seq.getLength() + "bp)");
         setBorder(selected ? selectedBorder : unselectedBorder);
         view.setData(seq, obs, null, searchTerm);
     }
 
-    public void show(Sequence seq, String msg, boolean selected) {
+    public void show(SequenceI seq, String msg, boolean selected) {
         readName.setText(seq.getName() + " (" + seq.getLength() + "bp)");
         setBorder(selected ? selectedBorder : unselectedBorder);
         view.setData(seq, null, msg, null);
@@ -49,8 +48,8 @@ public class ObservationView extends javax.swing.JPanel {
 
     private class View extends JComponent {
 
-        private Sequence seq;
-        private Observation[] obs;
+        private SequenceI seq;
+        private ObservationI[] obs;
         private String searchTerm;
         private String message;
         //
@@ -103,7 +102,7 @@ public class ObservationView extends javax.swing.JPanel {
             float scaleX = paintableX / seqLen; // internal scale factor
 
             int layerY = height - borderWidth - 5;
-            for (Observation o : obs) {
+            for (ObservationI o : obs) {
                 int scaledStart = Math.round(o.getStart() * scaleX);
                 int scaledStop = Math.round(o.getStop() * scaleX);
 
@@ -126,7 +125,7 @@ public class ObservationView extends javax.swing.JPanel {
 
         }
 
-        public void setData(Sequence s, Observation[] o, String msg, String term) {
+        public void setData(SequenceI s, ObservationI[] o, String msg, String term) {
             seq = s;
             obs = o;
             message = msg;
@@ -143,9 +142,9 @@ public class ObservationView extends javax.swing.JPanel {
         }
         private List<Layer> layers = new LinkedList<>();
 
-        private void createLayers(Observation[] obs) {
+        private void createLayers(ObservationI[] obs) {
             layers.clear();
-            for (Observation o : obs) {
+            for (ObservationI o : obs) {
                 boolean placed = false;
                 for (Layer l : layers) {
                     if (l.add(o)) { // layer accepts this observation

@@ -1,6 +1,6 @@
 package de.cebitec.mgx.gui.nodefactory;
 
-import de.cebitec.mgx.gui.controller.MGXMaster;
+import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.gui.datamodel.MGXFile;
 import de.cebitec.mgx.gui.nodes.ProjectDataNode;
 import de.cebitec.mgx.gui.nodes.ProjectFilesNode;
@@ -19,7 +19,7 @@ public class ProjectStructureNodeFactory extends ChildFactory<String> {
 
     private final Map<String, Node> project_structure;
 
-    public ProjectStructureNodeFactory(MGXMaster master) {
+    public ProjectStructureNodeFactory(MGXMasterI master) {
 
         // all these nodes have to provide an MGXMaster instance via lookup, 
         // since creation of the "top-level" data objects require a master

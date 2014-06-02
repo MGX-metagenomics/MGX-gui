@@ -1,7 +1,7 @@
 package de.cebitec.mgx.gui.nodefactory;
 
-import de.cebitec.mgx.gui.controller.MGXMaster;
-import de.cebitec.mgx.gui.datamodel.Reference;
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.gui.nodes.ReferenceNode;
 import java.beans.PropertyChangeEvent;
 import java.util.Collections;
@@ -13,19 +13,19 @@ import org.openide.nodes.*;
  *
  * @author sj
  */
-public class ReferenceNodeFactory extends ChildFactory<Reference> implements NodeListener {
+public class ReferenceNodeFactory extends ChildFactory<MGXReferenceI> implements NodeListener {
 
-    private final MGXMaster master;
+    private final MGXMasterI master;
     //
     private boolean refreshing = false;
 
-    public ReferenceNodeFactory(MGXMaster master) {
+    public ReferenceNodeFactory(MGXMasterI master) {
         this.master = master;
     }
 
     @Override
-    protected boolean createKeys(List<Reference> toPopulate) {
-        Iterator<Reference> iter = master.Reference().fetchall();
+    protected boolean createKeys(List<MGXReferenceI> toPopulate) {
+        Iterator<MGXReferenceI> iter = master.Reference().fetchall();
         while (iter.hasNext()) {
             toPopulate.add(iter.next());
         }
@@ -34,7 +34,7 @@ public class ReferenceNodeFactory extends ChildFactory<Reference> implements Nod
     }
 
     @Override
-    protected Node createNodeForKey(Reference ref) {
+    protected Node createNodeForKey(MGXReferenceI ref) {
         Node node = new ReferenceNode(master, ref);
         node.addNodeListener(this);
         return node;

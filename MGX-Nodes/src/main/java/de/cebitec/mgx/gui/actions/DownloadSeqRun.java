@@ -1,20 +1,19 @@
 package de.cebitec.mgx.gui.actions;
 
-import de.cebitec.mgx.client.datatransfer.DownloadBase;
-import de.cebitec.mgx.client.datatransfer.SeqDownloader;
-import de.cebitec.mgx.gui.controller.MGXMaster;
-import de.cebitec.mgx.gui.datamodel.SeqRun;
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.access.datatransfer.DownloadBaseI;
+import de.cebitec.mgx.api.groups.FileType;
+import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.swingutils.NonEDT;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
-import de.cebitec.mgx.gui.util.FileType;
 import de.cebitec.mgx.gui.util.SuffixFilter;
 import de.cebitec.mgx.seqstorage.FastaWriter;
 import de.cebitec.mgx.sequence.SeqStoreException;
+import de.cebitec.mgx.sequence.SeqWriterI;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.io.File;
-import java.io.IOException;
 import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
@@ -36,7 +35,7 @@ public class DownloadSeqRun extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        final SeqRun seqrun = Utilities.actionsGlobalContext().lookup(SeqRun.class);
+        final SeqRunI seqrun = Utilities.actionsGlobalContext().lookup(SeqRunI.class);
 
         JFileChooser fchooser = new JFileChooser();
         fchooser.setDialogType(JFileChooser.SAVE_DIALOG);
@@ -92,10 +91,10 @@ public class DownloadSeqRun extends AbstractAction {
         }
 
         try {
-            final FastaWriter writer = new FastaWriter(target.getAbsolutePath());
+            final SeqWriterI writer = new FastaWriter(target.getAbsolutePath());
 
-            MGXMaster master = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
-            final SeqDownloader downloader = master.Sequence().createDownloader(seqrun.getId(), writer, false);
+            MGXMasterI master = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
+            final DownloadBaseI downloader = master.Sequence().createDownloader(seqrun.getId(), writer, false);
 
             final MGXTask run = new MGXTask("Export to " + fchooser.getSelectedFile().getName()) {
                 @Override
@@ -111,7 +110,7 @@ public class DownloadSeqRun extends AbstractAction {
                     try {
                         writer.close();
                         super.finished();
-                    } catch (IOException ex) {
+                    } catch (Exception ex) {
                         failed();
                     }
                 }
@@ -127,10 +126,10 @@ public class DownloadSeqRun extends AbstractAction {
                 @Override
                 public void propertyChange(PropertyChangeEvent pce) {
                     switch (pce.getPropertyName()) {
-                        case DownloadBase.NUM_ELEMENTS_RECEIVED:
+                        case DownloadBaseI.NUM_ELEMENTS_RECEIVED:
                             setStatus(String.format("%1$d sequences received", pce.getNewValue()));
                             break;
-                        case DownloadBase.TRANSFER_FAILED:
+                        case DownloadBaseI.TRANSFER_FAILED:
                             failed();
                             break;
                         default:

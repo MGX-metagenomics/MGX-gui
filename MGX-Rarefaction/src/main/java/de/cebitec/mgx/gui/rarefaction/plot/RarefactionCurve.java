@@ -1,17 +1,17 @@
 package de.cebitec.mgx.gui.rarefaction.plot;
 
-import de.cebitec.mgx.gui.attributevisualization.ui.DelayedPlot;
-import de.cebitec.mgx.gui.attributevisualization.viewer.ViewerI;
+import de.cebitec.mgx.api.groups.FileType;
+import de.cebitec.mgx.api.groups.ImageExporterI;
+import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.misc.DistributionI;
+import de.cebitec.mgx.api.misc.Pair;
+import de.cebitec.mgx.api.misc.Point;
+import de.cebitec.mgx.api.model.AttributeTypeI;
+import de.cebitec.mgx.common.visualization.ViewerI;
 import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
-import de.cebitec.mgx.gui.datamodel.AttributeType;
-import de.cebitec.mgx.gui.datamodel.misc.Distribution;
-import de.cebitec.mgx.gui.datamodel.misc.Pair;
-import de.cebitec.mgx.gui.datamodel.misc.Point;
-import de.cebitec.mgx.gui.groups.ImageExporterI;
-import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import de.cebitec.mgx.gui.rarefaction.Rarefaction;
+import de.cebitec.mgx.gui.swingutils.DelayedPlot;
 import de.cebitec.mgx.gui.swingutils.NonEDT;
-import de.cebitec.mgx.gui.util.FileType;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
@@ -40,7 +40,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author sj
  */
 @ServiceProvider(service = ViewerI.class)
-public class RarefactionCurve extends ViewerI<Distribution> {
+public class RarefactionCurve extends ViewerI<DistributionI> {
 
     private DelayedPlot cPanel = null;
     private JFreeChart chart = null;
@@ -56,7 +56,7 @@ public class RarefactionCurve extends ViewerI<Distribution> {
     }
 
     @Override
-    public void show(final List<Pair<VisualizationGroup, Distribution>> dists) {
+    public void show(final List<Pair<VisualizationGroupI, DistributionI>> dists) {
 
         cPanel = new DelayedPlot();
 
@@ -100,7 +100,7 @@ public class RarefactionCurve extends ViewerI<Distribution> {
                 // set the colors
                 int i = 0;
                 XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) plot.getRenderer();
-                for (Pair<VisualizationGroup, Distribution> groupDistribution : dists) {
+                for (Pair<VisualizationGroupI, DistributionI> groupDistribution : dists) {
                     renderer.setSeriesPaint(i++, groupDistribution.getFirst().getColor());
                 }
                 return ret;
@@ -122,17 +122,17 @@ public class RarefactionCurve extends ViewerI<Distribution> {
 
     }
 
-    private static XYSeriesCollection createXYSeries(List<Pair<VisualizationGroup, Distribution>> in) {
+    private static XYSeriesCollection createXYSeries(List<Pair<VisualizationGroupI, DistributionI>> in) {
         final XYSeriesCollection dataset = new XYSeriesCollection();
 
-        for (final Pair<VisualizationGroup, Distribution> groupDistribution : in) {
+        for (final Pair<VisualizationGroupI, DistributionI> groupDistribution : in) {
 
             NonEDT.invokeAndWait(new Runnable() {
 
                 @Override
                 public void run() {
                     XYSeries series = new XYSeries(groupDistribution.getFirst().getName());
-                    Distribution dist = groupDistribution.getSecond();
+                    DistributionI dist = groupDistribution.getSecond();
                     Iterator<Point> iter = Rarefaction.rarefy(dist);
                     if (iter == null) {
                         return;
@@ -156,7 +156,7 @@ public class RarefactionCurve extends ViewerI<Distribution> {
 
     @Override
     public Class getInputType() {
-        return Distribution.class;
+        return DistributionI.class;
     }
 
     @Override
@@ -181,12 +181,12 @@ public class RarefactionCurve extends ViewerI<Distribution> {
     }
 
     @Override
-    public boolean canHandle(AttributeType valueType) {
-        return valueType.getValueType() == AttributeType.VALUE_DISCRETE;
+    public boolean canHandle(AttributeTypeI valueType) {
+        return valueType.getValueType() == AttributeTypeI.VALUE_DISCRETE;
     }
 
     @Override
-    public void setAttributeType(AttributeType aType) {
+    public void setAttributeType(AttributeTypeI aType) {
         super.setAttributeType(aType);
         super.setTitle("Rarefaction of " + aType.getName());
     }

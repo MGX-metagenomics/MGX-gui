@@ -1,16 +1,16 @@
 package de.cebitec.mgx.gui.keggviewer;
 
-import de.cebitec.mgx.gui.attributevisualization.viewer.CategoricalViewerI;
-import de.cebitec.mgx.gui.attributevisualization.viewer.ViewerI;
-import de.cebitec.mgx.gui.datamodel.Attribute;
-import de.cebitec.mgx.gui.datamodel.AttributeType;
-import de.cebitec.mgx.gui.datamodel.misc.Distribution;
-import de.cebitec.mgx.gui.datamodel.misc.Pair;
-import de.cebitec.mgx.gui.groups.ConflictingJobsException;
-import de.cebitec.mgx.gui.groups.ImageExporterI;
-import de.cebitec.mgx.gui.groups.VGroupManager;
-import de.cebitec.mgx.gui.groups.VisualizationGroup;
-import de.cebitec.mgx.gui.util.FileType;
+import de.cebitec.mgx.api.groups.ConflictingJobsException;
+import de.cebitec.mgx.api.groups.FileType;
+import de.cebitec.mgx.api.groups.ImageExporterI;
+import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.misc.DistributionI;
+import de.cebitec.mgx.api.misc.Pair;
+import de.cebitec.mgx.api.model.AttributeI;
+import de.cebitec.mgx.api.model.AttributeTypeI;
+import de.cebitec.mgx.common.VGroupManager;
+import de.cebitec.mgx.common.visualization.CategoricalViewerI;
+import de.cebitec.mgx.common.visualization.ViewerI;
 import de.cebitec.mgx.kegg.pathways.KEGGException;
 import de.cebitec.mgx.kegg.pathways.KEGGMaster;
 import de.cebitec.mgx.kegg.pathways.api.ECNumberI;
@@ -24,7 +24,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -91,12 +90,12 @@ public class KeggViewer extends CategoricalViewerI {
 
     @Override
     public Class getInputType() {
-        return Distribution.class;
+        return DistributionI.class;
     }
     private final Pattern ecNumber = Pattern.compile("\\d+[.](-|\\d+)[.](-|\\d+)[.](-|\\d+)");
 
     @Override
-    public void show(List<Pair<VisualizationGroup, Distribution>> dists) {
+    public void show(List<Pair<VisualizationGroupI, DistributionI>> dists) {
         if (customizer.getSelectedPathway() == null) {
             return;
         }
@@ -104,10 +103,10 @@ public class KeggViewer extends CategoricalViewerI {
             panel.setPathway(customizer.getSelectedPathway(), dists.size());
 
             int idx = 0;
-            for (Pair<VisualizationGroup, Distribution> p : dists) {
-                VisualizationGroup group = p.getFirst();
-                Distribution dist = p.getSecond();
-                for (Entry<Attribute, Number> e : dist.entrySet()) {
+            for (Pair<VisualizationGroupI, DistributionI> p : dists) {
+                VisualizationGroupI group = p.getFirst();
+                DistributionI dist = p.getSecond();
+                for (Entry<AttributeI, Number> e : dist.entrySet()) {
                     Matcher matcher = ecNumber.matcher(e.getKey().getValue());
                     if (matcher.find()) {
                         ECNumberI ec = ECNumberFactory.fromString(e.getKey().getValue().substring(matcher.start(), matcher.end()));
@@ -127,9 +126,9 @@ public class KeggViewer extends CategoricalViewerI {
 
     public Set<PathwayI> selectPathways() throws ConflictingJobsException, KEGGException {
         final Set<ECNumberI> ecNumbers = new HashSet<>();
-        for (Pair<VisualizationGroup, Distribution> p : VGroupManager.getInstance().getDistributions()) {
-            Distribution dist = p.getSecond();
-            for (Entry<Attribute, Number> e : dist.entrySet()) {
+        for (Pair<VisualizationGroupI, DistributionI> p : VGroupManager.getInstance().getDistributions()) {
+            DistributionI dist = p.getSecond();
+            for (Entry<AttributeI, Number> e : dist.entrySet()) {
                 Matcher matcher = ecNumber.matcher(e.getKey().getValue());
                 if (matcher.find()) {
                     try {
@@ -181,7 +180,7 @@ public class KeggViewer extends CategoricalViewerI {
     }
 
     @Override
-    public boolean canHandle(AttributeType valueType) {
+    public boolean canHandle(AttributeTypeI valueType) {
         return Installer.keggLoaded && super.canHandle(valueType) && valueType.getName().equals("EC_number");
     }
 

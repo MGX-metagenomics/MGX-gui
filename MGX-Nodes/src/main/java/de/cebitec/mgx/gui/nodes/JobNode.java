@@ -1,13 +1,17 @@
 package de.cebitec.mgx.gui.nodes;
 
-import de.cebitec.mgx.gui.controller.MGXMaster;
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.misc.TaskI;
+import de.cebitec.mgx.api.misc.TaskI.State;
+import de.cebitec.mgx.api.model.JobI;
+import de.cebitec.mgx.api.model.JobParameterI;
+import de.cebitec.mgx.api.model.JobState;
+import static de.cebitec.mgx.api.model.JobState.FAILED;
+import static de.cebitec.mgx.api.model.JobState.FINISHED;
+import static de.cebitec.mgx.api.model.JobState.RUNNING;
+import de.cebitec.mgx.api.model.ToolI;
 import de.cebitec.mgx.gui.controller.RBAC;
-import de.cebitec.mgx.gui.datamodel.Job;
-import de.cebitec.mgx.gui.datamodel.JobParameter;
-import de.cebitec.mgx.gui.datamodel.JobState;
-import de.cebitec.mgx.gui.datamodel.Tool;
-import de.cebitec.mgx.gui.datamodel.misc.Task;
-import de.cebitec.mgx.gui.datamodel.misc.Task.State;
 import de.cebitec.mgx.gui.swingutils.NonEDT;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
@@ -33,16 +37,16 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sjaenick
  */
-public class JobNode extends MGXNodeBase<Job, JobNode> {
+public class JobNode extends MGXNodeBase<JobI, JobNode> {
 
     public static String TOOL_PROPERTY = "tool";
     public static String SEQRUN_PROPERTY = "seqrun";
     public static String STATE_PROPERTY = "state";
     //private final Job job;
 
-    public JobNode(MGXMaster m, Job job, Children c) {
+    public JobNode(MGXMasterI m, JobI job, Children c) {
         super(Children.LEAF, Lookups.fixed(m, job), job);
-        Tool tool = job.getTool();
+        ToolI tool = job.getTool();
         setDisplayName(tool.getName());
         String shortDesc = new StringBuilder("<html><b>")
                 .append(tool.getName()).append("</b>")
@@ -61,13 +65,13 @@ public class JobNode extends MGXNodeBase<Job, JobNode> {
         setShortDescription(shortDesc);
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/AnalysisTasks.png");
     }
-    
-    private String getParameterToolTip(Job job) {
+
+    private String getParameterToolTip(JobI job) {
         if (job.getParameters() == null || job.getParameters().isEmpty()) {
             return "";
         }
         StringBuilder sb = new StringBuilder();
-        for (JobParameter jp : job.getParameters()) {
+        for (JobParameterI jp : job.getParameters()) {
             sb.append(jp.getParameterName())
                     .append(": ")
                     .append(jp.getParameterValue())
@@ -163,7 +167,7 @@ public class JobNode extends MGXNodeBase<Job, JobNode> {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            final Job job = getLookup().lookup(Job.class);
+            final JobI job = getLookup().lookup(JobI.class);
             NotifyDescriptor d = new NotifyDescriptor("Really delete job?",
                     "Delete job",
                     NotifyDescriptor.YES_NO_OPTION,
@@ -176,8 +180,8 @@ public class JobNode extends MGXNodeBase<Job, JobNode> {
                     @Override
                     public boolean process() {
                         setStatus("Deleting..");
-                        MGXMaster m = getLookup().lookup(MGXMaster.class);
-                        Task task = m.Job().delete(job);
+                        MGXMasterI m = getLookup().lookup(MGXMasterI.class);
+                        TaskI task = m.Job().delete(job);
                         while (!task.done()) {
                             setStatus(task.getStatusMessage());
                             task = m.Task().refresh(task);
@@ -211,8 +215,8 @@ public class JobNode extends MGXNodeBase<Job, JobNode> {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            final Job job = getLookup().lookup(Job.class);
-            final MGXMaster m = getLookup().lookup(MGXMaster.class);
+            final JobI job = getLookup().lookup(JobI.class);
+            final MGXMasterI m = getLookup().lookup(MGXMasterI.class);
 
             SwingWorker<String, Void> sw = new SwingWorker<String, Void>() {
                 @Override
@@ -250,21 +254,29 @@ public class JobNode extends MGXNodeBase<Job, JobNode> {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            final Job job = getLookup().lookup(Job.class);
-            final MGXMaster m = getLookup().lookup(MGXMaster.class);
+            final JobI job = getLookup().lookup(JobI.class);
+            final MGXMasterI m = getLookup().lookup(MGXMasterI.class);
 
             final MGXTask restartTask = new MGXTask("Restart " + job.getTool().getName()) {
                 @Override
                 public boolean process() {
                     setStatus("Restarting job..");
-                    Task task = m.Job().restart(job);
-                    while (!task.done()) {
+                    TaskI task = null;
+                    try {
+                        task = m.Job().restart(job);
+                    } catch (MGXException ex) {
+                        Exceptions.printStackTrace(ex);
+                    }
+                    while (task != null && !task.done()) {
                         setStatus(task.getStatusMessage());
                         task = m.Task().refresh(task);
                         sleep();
                     }
-                    task.finish();
-                    return task.getState() == Task.State.FINISHED;
+                    if (task != null) {
+                        task.finish();
+                        return task.getState() == TaskI.State.FINISHED;
+                    }
+                    return false;
                 }
             };
 
@@ -290,8 +302,8 @@ public class JobNode extends MGXNodeBase<Job, JobNode> {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            final Job job = getLookup().lookup(Job.class);
-            final MGXMaster m = getLookup().lookup(MGXMaster.class);
+            final JobI job = getLookup().lookup(JobI.class);
+            final MGXMasterI m = getLookup().lookup(MGXMasterI.class);
 
             SwingWorker<Void, Void> sw = new SwingWorker<Void, Void>() {
 

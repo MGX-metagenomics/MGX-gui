@@ -1,9 +1,10 @@
 package de.cebitec.mgx.gui.actions;
 
-import de.cebitec.mgx.gui.controller.MGXMaster;
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.misc.TaskI;
+import de.cebitec.mgx.api.model.MGXFileI;
 import de.cebitec.mgx.gui.controller.RBAC;
 import de.cebitec.mgx.gui.datamodel.MGXFile;
-import de.cebitec.mgx.gui.datamodel.misc.Task;
 import de.cebitec.mgx.gui.swingutils.NonEDT;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
@@ -26,7 +27,7 @@ public class DeleteFileOrDirectory extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         final MGXFile file = Utilities.actionsGlobalContext().lookup(MGXFile.class);
-        final MGXMaster master = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
+        final MGXMasterI master = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
         NotifyDescriptor d = new NotifyDescriptor("Really delete " + file.getName() + "?",
                 "Delete file/directory",
                 NotifyDescriptor.YES_NO_OPTION,
@@ -54,10 +55,10 @@ public class DeleteFileOrDirectory extends AbstractAction {
 
     private final class DeleteTask extends MGXTask {
 
-        private final MGXMaster master;
-        private final MGXFile file;
+        private final MGXMasterI master;
+        private final MGXFileI file;
 
-        public DeleteTask(MGXMaster master, MGXFile file, String name) {
+        public DeleteTask(MGXMasterI master, MGXFileI file, String name) {
             super(name);
             this.master = master;
             this.file = file;
@@ -66,7 +67,7 @@ public class DeleteFileOrDirectory extends AbstractAction {
         @Override
         public boolean process() {
             setStatus("Deleting..");
-            Task delTask = master.File().delete(file);
+            TaskI delTask = master.File().delete(file);
             while (!delTask.done()) {
                 delTask = master.Task().refresh(delTask);
                 sleep();

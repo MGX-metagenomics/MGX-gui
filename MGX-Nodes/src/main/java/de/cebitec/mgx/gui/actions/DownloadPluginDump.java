@@ -1,11 +1,7 @@
 package de.cebitec.mgx.gui.actions;
 
-import de.cebitec.mgx.client.datatransfer.DownloadBase;
-import de.cebitec.mgx.client.datatransfer.FileDownloader;
-import de.cebitec.mgx.client.datatransfer.PluginDumpDownloader;
-import de.cebitec.mgx.client.exception.MGXClientException;
-import de.cebitec.mgx.gui.controller.MGXMaster;
-import de.cebitec.mgx.gui.datamodel.MGXFile;
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.access.datatransfer.DownloadBaseI;
 import de.cebitec.mgx.gui.swingutils.NonEDT;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
@@ -36,7 +32,7 @@ public class DownloadPluginDump extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        final MGXMaster master = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
+        final MGXMasterI master = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
 
         JFileChooser fchooser = new JFileChooser();
         fchooser.setDialogType(JFileChooser.SAVE_DIALOG);
@@ -81,7 +77,7 @@ public class DownloadPluginDump extends AbstractAction {
 
         try {
             final OutputStream writer = new FileOutputStream(target);
-            final PluginDumpDownloader downloader = master.File().createPluginDumpDownloader(writer);
+            final DownloadBaseI downloader = master.File().createPluginDumpDownloader(writer);
 
             final MGXTask run = new MGXTask("Save to " + fchooser.getSelectedFile().getName()) {
                 @Override
@@ -113,10 +109,10 @@ public class DownloadPluginDump extends AbstractAction {
                 @Override
                 public void propertyChange(PropertyChangeEvent pce) {
                     switch (pce.getPropertyName()) {
-                        case DownloadBase.NUM_ELEMENTS_RECEIVED:
+                        case DownloadBaseI.NUM_ELEMENTS_RECEIVED:
                             setStatus(String.format("%1$d bytes received", pce.getNewValue()));
                             break;
-                        case DownloadBase.TRANSFER_FAILED:
+                        case DownloadBaseI.TRANSFER_FAILED:
                             failed();
                             break;
                         default:
@@ -132,7 +128,7 @@ public class DownloadPluginDump extends AbstractAction {
                     TaskManager.getInstance().addTask(run);
                 }
             });
-        } catch (MGXClientException | FileNotFoundException ex) {
+        } catch (FileNotFoundException ex) {
             Exceptions.printStackTrace(ex);
         }
     }

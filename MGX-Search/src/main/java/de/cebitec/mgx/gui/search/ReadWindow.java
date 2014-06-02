@@ -1,7 +1,7 @@
 package de.cebitec.mgx.gui.search;
 
-import de.cebitec.mgx.gui.controller.MGXMaster;
-import de.cebitec.mgx.gui.datamodel.Sequence;
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.SequenceI;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -36,11 +36,11 @@ public class ReadWindow extends JFrame {
     /*
      * Master zum Laden der Sequenzen.
      */
-    private final MGXMaster master;
+    private final MGXMasterI master;
     /*
      * Sequenzen die geladen werden muessen.
      */
-    private final List<Sequence> sequences;
+    private final List<SequenceI> sequences;
     /*
      * ProgressBar fuer das Anzeigen des Lade Fortschritts.
      * 
@@ -58,7 +58,7 @@ public class ReadWindow extends JFrame {
      * 
      * @param sequences Sequenzen die geladen werden sollen.
      */
-    public ReadWindow(MGXMaster lMaster, List<Sequence> sequences) {
+    public ReadWindow(MGXMasterI lMaster, List<SequenceI> sequences) {
         this.sequences = sequences;
         this.master = lMaster;
         JPanel panel = new JPanel(new BorderLayout());
@@ -118,7 +118,7 @@ public class ReadWindow extends JFrame {
                 master.Sequence().fetchSeqData(sequences);
 
                 StringBuilder sb = new StringBuilder();
-                for (Sequence seq : sequences) {
+                for (SequenceI seq : sequences) {
                     sb.append(">").append(seq.getName())
                             .append("\n")
                             .append(seq.getSequence())

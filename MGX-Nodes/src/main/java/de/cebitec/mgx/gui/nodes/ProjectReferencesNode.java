@@ -1,5 +1,9 @@
 package de.cebitec.mgx.gui.nodes;
 
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.model.Identifiable;
+import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.gui.actions.UploadReference;
 import de.cebitec.mgx.gui.controller.MGXMaster;
@@ -24,18 +28,18 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sj
  */
-public class ProjectReferencesNode extends MGXNodeBase<MGXMaster, ProjectReferencesNode> {
+public class ProjectReferencesNode extends MGXNodeBase<MGXMasterI, ProjectReferencesNode> {
 
     private ReferenceNodeFactory nf;
 
-    public ProjectReferencesNode(final MGXMaster m) {
+    public ProjectReferencesNode(final MGXMasterI m) {
         this(new ReferenceNodeFactory(m), m);
         master = m;
         setDisplayName("Reference sequences");
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/ProjectFiles.png");
     }
 
-    private ProjectReferencesNode(ReferenceNodeFactory rnf, MGXMaster m) {
+    private ProjectReferencesNode(ReferenceNodeFactory rnf, MGXMasterI m) {
         super(Children.create(rnf, true), Lookups.fixed(m), m);
         nf = rnf;
     }
@@ -74,8 +78,8 @@ public class ProjectReferencesNode extends MGXNodeBase<MGXMaster, ProjectReferen
             dialog.toFront();
             boolean cancelled = wd.getValue() != WizardDescriptor.FINISH_OPTION;
             if (!cancelled) {
-                final Reference ref = wd.getSelectedReference();
-                final MGXMaster master = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
+                final MGXReferenceI ref = wd.getSelectedReference();
+                final MGXMasterI master = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
 
 
                 final MGXTask run = new MGXTask("Install " + ref.getName()) {
@@ -85,8 +89,8 @@ public class ProjectReferencesNode extends MGXNodeBase<MGXMaster, ProjectReferen
                     public boolean process() {
                         try {
                             setStatus("Installing reference");
-                            master.Reference().installGlobalReference(ref.getId());
-                        } catch (MGXServerException ex) {
+                            long refId = master.Reference().installGlobalReference(ref.getId());
+                        } catch (MGXException ex) {
                             err = ex.getMessage();
                             return false;
                         }

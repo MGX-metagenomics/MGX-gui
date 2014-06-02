@@ -1,7 +1,7 @@
 
 package de.cebitec.mgx.gui.search;
 
-import de.cebitec.mgx.gui.datamodel.Observation;
+import de.cebitec.mgx.api.model.ObservationI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +14,7 @@ import java.util.List;
         /**
          * Liste von Observations, die in der Ebene gezeichnet werden sollen.
          */
-        private List<Observation> observations;
+        private List<ObservationI> observations;
         /**
          * y Position der Ebene.
          */
@@ -37,9 +37,9 @@ import java.util.List;
          * @param newObservation neue Observation
          * @return Boolean ob es passt oder nicht.
          */
-        public boolean fits(Observation newObservation) {
+        public boolean fits(ObservationI newObservation) {
 
-            for (Observation observation : getObservations()) {
+            for (ObservationI observation : getObservations()) {
                 if (newObservation.getStart() > newObservation.getStop()) {
                     if (observation.getStart() < observation.getStop()) {
 
@@ -87,7 +87,7 @@ import java.util.List;
          *
          * @param lObservation Observation
          */
-        public void addObservation(Observation lObservation) {
+        public void addObservation(ObservationI lObservation) {
             getObservations().add(lObservation);
         }
 
@@ -105,7 +105,7 @@ import java.util.List;
          * Gibt die Observations wider.
          * @return the observations
          */
-        public List<Observation> getObservations() {
+        public List<ObservationI> getObservations() {
             return observations;
         }
     }

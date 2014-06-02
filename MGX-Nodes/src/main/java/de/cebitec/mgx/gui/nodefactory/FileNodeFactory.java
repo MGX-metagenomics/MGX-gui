@@ -1,33 +1,36 @@
 package de.cebitec.mgx.gui.nodefactory;
 
-import de.cebitec.mgx.gui.controller.MGXMaster;
-import de.cebitec.mgx.gui.datamodel.MGXFile;
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.MGXFileI;
 import de.cebitec.mgx.gui.nodes.MGXDirectoryNode;
 import de.cebitec.mgx.gui.nodes.MGXFileNode;
 import java.beans.PropertyChangeEvent;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import org.openide.nodes.*;
+import org.openide.nodes.Node;
+import org.openide.nodes.NodeEvent;
+import org.openide.nodes.NodeMemberEvent;
+import org.openide.nodes.NodeReorderEvent;
 
 /**
  *
  * @author sj
  */
-public class FileNodeFactory extends MGXNodeFactoryBase<MGXFile> {
+public class FileNodeFactory extends MGXNodeFactoryBase<MGXFileI> {
 
-    private final MGXMaster master;
-    private final MGXFile curDirectory;
+    private final MGXMasterI master;
+    private final MGXFileI curDirectory;
     //
 
-    public FileNodeFactory(MGXMaster master, MGXFile curDir) {
+    public FileNodeFactory(MGXMasterI master, MGXFileI curDir) {
         this.master = master;
         curDirectory = curDir;
     }
 
     @Override
-    protected boolean createKeys(List<MGXFile> toPopulate) {
-        Iterator<MGXFile> iter = master.File().fetchall(curDirectory);
+    protected boolean createKeys(List<MGXFileI> toPopulate) {
+        Iterator<MGXFileI> iter = master.File().fetchall(curDirectory);
         while (iter.hasNext()) {
             toPopulate.add(iter.next());
         }
@@ -36,7 +39,7 @@ public class FileNodeFactory extends MGXNodeFactoryBase<MGXFile> {
     }
 
     @Override
-    protected Node createNodeForKey(MGXFile file) {
+    protected Node createNodeForKey(MGXFileI file) {
         Node node;
         if (!file.isDirectory()) {
             node = new MGXFileNode(file, master);

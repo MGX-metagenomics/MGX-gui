@@ -1,7 +1,7 @@
 
 package de.cebitec.mgx.gui.search;
 
-import de.cebitec.mgx.gui.datamodel.Observation;
+import de.cebitec.mgx.api.model.ObservationI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +21,7 @@ public class OrderedObservations {
     /**
      * Observations
      */
-    private List<Observation> observations;
+    private List<ObservationI> observations;
    
     /**
      * Abstand nach oben zum Rand.
@@ -44,7 +44,7 @@ public class OrderedObservations {
      * @param lObservations Observations, die angeordnet werden sollen.
      */
     public OrderedObservations(double lReadLength,
-            List<Observation> lObservations) {
+            List<ObservationI> lObservations) {
 
         this.readLength = lReadLength;
         this.observations = lObservations;
@@ -72,14 +72,14 @@ public class OrderedObservations {
      * @param observations Observations die angeordnet werden sollen.
      * @param lGraphics Graphics der jeweiligen Komponente.
      */
-    private void computeObservations(List<Observation> observations) {
+    private void computeObservations(List<ObservationI> observations) {
 
         int yPosition = paddingNorth + paddingBetween;
         layers = new ArrayList<>();
         layers.add(new Layer(yPosition));
         boolean isObservationSet = false;
 
-        for (Observation observation : observations) {
+        for (ObservationI observation : observations) {
 
             isObservationSet = false;
             for (Layer layer : layers) {

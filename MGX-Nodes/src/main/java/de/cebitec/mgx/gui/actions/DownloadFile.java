@@ -1,15 +1,12 @@
 package de.cebitec.mgx.gui.actions;
 
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.access.datatransfer.DownloadBaseI;
+import de.cebitec.mgx.api.model.MGXFileI;
 import de.cebitec.mgx.client.datatransfer.DownloadBase;
-import de.cebitec.mgx.client.datatransfer.FileDownloader;
-import de.cebitec.mgx.client.exception.MGXClientException;
-import de.cebitec.mgx.gui.controller.MGXMaster;
-import de.cebitec.mgx.gui.datamodel.MGXFile;
 import de.cebitec.mgx.gui.swingutils.NonEDT;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
-import de.cebitec.mgx.gui.util.FileType;
-import de.cebitec.mgx.gui.util.SuffixFilter;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.io.File;
@@ -19,7 +16,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileFilter;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.util.Exceptions;
@@ -38,7 +34,7 @@ public class DownloadFile extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        final MGXFile file = Utilities.actionsGlobalContext().lookup(MGXFile.class);
+        final MGXFileI file = Utilities.actionsGlobalContext().lookup(MGXFileI.class);
 
         JFileChooser fchooser = new JFileChooser();
         fchooser.setDialogType(JFileChooser.SAVE_DIALOG);
@@ -84,8 +80,8 @@ public class DownloadFile extends AbstractAction {
         try {
             final OutputStream writer = new FileOutputStream(target);
 
-            MGXMaster master = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
-            final FileDownloader downloader = master.File().createDownloader(file.getFullPath(), writer);
+            MGXMasterI master = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
+            final DownloadBaseI downloader = master.File().createDownloader(file.getFullPath(), writer);
 
             final MGXTask run = new MGXTask("Save to " + fchooser.getSelectedFile().getName()) {
                 @Override
@@ -117,10 +113,10 @@ public class DownloadFile extends AbstractAction {
                 @Override
                 public void propertyChange(PropertyChangeEvent pce) {
                     switch (pce.getPropertyName()) {
-                        case DownloadBase.NUM_ELEMENTS_RECEIVED:
+                        case DownloadBaseI.NUM_ELEMENTS_RECEIVED:
                             setStatus(String.format("%1$d bytes received", pce.getNewValue()));
                             break;
-                        case DownloadBase.TRANSFER_FAILED:
+                        case DownloadBaseI.TRANSFER_FAILED:
                             failed();
                             break;
                         default:
@@ -148,7 +144,7 @@ public class DownloadFile extends AbstractAction {
                     TaskManager.getInstance().addTask(run);
                 }
             });
-        } catch (MGXClientException | FileNotFoundException ex) {
+        } catch ( FileNotFoundException ex) {
             Exceptions.printStackTrace(ex);
         }
     }

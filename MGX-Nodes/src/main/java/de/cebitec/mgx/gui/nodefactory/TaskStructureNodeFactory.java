@@ -1,6 +1,6 @@
 package de.cebitec.mgx.gui.nodefactory;
 
-import de.cebitec.mgx.gui.controller.MGXMaster;
+import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.gui.nodes.ProjectJobsNode;
 import de.cebitec.mgx.gui.nodes.ProjectToolsNode;
 import java.util.HashMap;
@@ -16,7 +16,7 @@ import org.openide.nodes.Node;
 public class TaskStructureNodeFactory extends ChildFactory<String>  {
         private Map<String, Node> structure;
 
-    public TaskStructureNodeFactory(MGXMaster master) {
+    public TaskStructureNodeFactory(MGXMasterI master) {
         
         // all these nodes have to provide an MGXMaster instance via lookup, 
         // since creation of further server objects require a master

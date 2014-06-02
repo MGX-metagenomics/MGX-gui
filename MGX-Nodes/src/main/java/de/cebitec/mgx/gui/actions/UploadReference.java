@@ -1,15 +1,14 @@
 package de.cebitec.mgx.gui.actions;
 
-import de.cebitec.mgx.client.datatransfer.ReferenceUploader;
-import de.cebitec.mgx.client.datatransfer.UploadBase;
-import de.cebitec.mgx.gui.controller.MGXMaster;
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.access.datatransfer.UploadBaseI;
+import de.cebitec.mgx.api.groups.FileType;
 import de.cebitec.mgx.gui.controller.RBAC;
 import de.cebitec.mgx.gui.nodefactory.ReferenceNodeFactory;
 import de.cebitec.mgx.gui.swingutils.NonEDT;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
 import de.cebitec.mgx.gui.util.FileChooserUtils;
-import de.cebitec.mgx.gui.util.FileType;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.io.File;
@@ -37,8 +36,8 @@ public class UploadReference extends AbstractAction {
             return;
         }
         File localFile = new File(fName);
-        MGXMaster master = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
-        final ReferenceUploader uploader = master.Reference().createUploader(localFile);
+        MGXMasterI master = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
+        final UploadBaseI uploader = master.Reference().createUploader(localFile);
 
         final MGXTask run = new MGXTask("Upload " + fName) {
             @Override
@@ -60,7 +59,7 @@ public class UploadReference extends AbstractAction {
 
             @Override
             public void propertyChange(PropertyChangeEvent pce) {
-                if (pce.getPropertyName().equals(UploadBase.NUM_ELEMENTS_SENT)) {
+                if (pce.getPropertyName().equals(UploadBaseI.NUM_ELEMENTS_SENT)) {
                     setStatus(String.format("%1$d subregions sent", pce.getNewValue()));
                 } else {
                     super.propertyChange(pce);

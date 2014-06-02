@@ -40,27 +40,8 @@
             <artifactId>org-netbeans-api-annotations-common</artifactId>
         </dependency>
         <dependency>
-            <groupId>de.cebitec.mgx.gui</groupId>
-            <artifactId>MGX-AttributeVisualization</artifactId>
-        </dependency>
-        <dependency>
             <groupId>de.cebitec.mgx</groupId>
             <artifactId>KEGG-Pathways</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>jersey-client</artifactId>
-                    <groupId>com.sun.jersey</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <artifactId>MGX-Datamodel</artifactId>
-            <groupId>de.cebitec.mgx.gui</groupId>
-        </dependency>
-        <dependency>
-            <artifactId>MGX-Controller</artifactId>
-            <groupId>de.cebitec.mgx.gui</groupId>
         </dependency>
         <dependency>
             <artifactId>org-openide-awt</artifactId>
@@ -95,10 +76,53 @@
             <artifactId>jersey-core</artifactId>
             <groupId>com.sun.jersey</groupId>
         </dependency>
+<!--         <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <version>4.3.0</version>
+            <scope>provided</scope>
+        </dependency>-->
+        <dependency>
+            <artifactId>h2</artifactId>
+            <groupId>com.h2database</groupId>
+        </dependency>
+        <dependency>
+            <artifactId>MGX-API</artifactId>
+            <groupId>de.cebitec.mgx</groupId>
+        </dependency>
+        <dependency>
+            <groupId>de.cebitec.mgx.gui</groupId>
+            <artifactId>MGX-Common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.cebitec.mgx.gui</groupId>
+            <artifactId>MGX-Controller</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
         <plugins>
+<!--            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>2.4.0</version>
+                <extensions>true</extensions>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>bundle</goal>
+                        </goals>
+                    </execution>
+                </executions>
+
+                <configuration>
+                    <instructions>
+                        <Export-Package>de.cebitec.mgx.gui.keggviewer</Export-Package>
+                        <Private-Package></Private-Package>
+                    </instructions>
+                </configuration>
+            </plugin>-->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>nbm-maven-plugin</artifactId>
