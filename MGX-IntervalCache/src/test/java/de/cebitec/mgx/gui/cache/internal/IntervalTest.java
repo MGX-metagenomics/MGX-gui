@@ -7,11 +7,12 @@ package de.cebitec.mgx.gui.cache.internal;
 
 import de.cebitec.gpms.core.MembershipI;
 import de.cebitec.gpms.rest.GPMSClientI;
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.gui.cache.Cache;
 import de.cebitec.mgx.gui.cache.CacheFactory;
 import de.cebitec.mgx.gui.controller.MGXMaster;
-import de.cebitec.mgx.gui.datamodel.Reference;
 import de.cebitec.mgx.restgpms.GPMS;
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,10 +21,10 @@ import java.util.Iterator;
 import java.util.Properties;
 import org.junit.After;
 import org.junit.AfterClass;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -53,8 +54,8 @@ public class IntervalTest {
     @Test
     public void testEquals() {
         System.out.println("equals");
-        MGXMaster master = get();
-        Reference ref = master.Reference().fetch(4);
+        MGXMasterI master = get();
+        MGXReferenceI ref = master.Reference().fetch(4);
         Cache<String> cache = CacheFactory.createSequenceCache(master, ref);
         assertNotNull(cache);
 
@@ -68,8 +69,8 @@ public class IntervalTest {
     @Test
     public void testHashCode() {
         System.out.println("hashCode");
-        MGXMaster master = get();
-        Reference ref = master.Reference().fetch(4);
+        MGXMasterI master = get();
+        MGXReferenceI ref = master.Reference().fetch(4);
         Cache<String> cache = CacheFactory.createSequenceCache(master, ref);
         assertNotNull(cache);
 
@@ -80,8 +81,8 @@ public class IntervalTest {
         assertNotEquals(i1.hashCode(), i3.hashCode());
     }
 
-    public static MGXMaster get() {
-        MGXMaster master = null;
+    public static MGXMasterI get() {
+        MGXMasterI master = null;
 
         String serverURI = "https://mgx.cebitec.uni-bielefeld.de/MGX-maven-web/webresources/";
 

@@ -5,10 +5,10 @@
 package de.cebitec.mgx.gui.cache.internal;
 
 import com.google.common.cache.LoadingCache;
+import de.cebitec.mgx.api.model.MGXReferenceI;
+import de.cebitec.mgx.api.model.MappedSequenceI;
 import de.cebitec.mgx.gui.cache.CoverageInfoCache;
 import de.cebitec.mgx.gui.cache.IntIterator;
-import de.cebitec.mgx.gui.datamodel.MappedSequence;
-import de.cebitec.mgx.gui.datamodel.Reference;
 import java.awt.EventQueue;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -20,27 +20,27 @@ import java.util.TreeSet;
  *
  * @author belmann
  */
-public class MappedSequenceCache extends CoverageInfoCache<SortedSet<MappedSequence>> {
+public class MappedSequenceCache extends CoverageInfoCache<SortedSet<MappedSequenceI>> {
 
-    public MappedSequenceCache(Reference ref, LoadingCache<Interval, SortedSet<MappedSequence>> lcache) {
+    public MappedSequenceCache(MGXReferenceI ref, LoadingCache<Interval, SortedSet<MappedSequenceI>> lcache) {
         super(ref, lcache);
     }
 
-    public MappedSequenceCache(Reference ref, LoadingCache<Interval, SortedSet<MappedSequence>> lcache, int segSize) {
+    public MappedSequenceCache(MGXReferenceI ref, LoadingCache<Interval, SortedSet<MappedSequenceI>> lcache, int segSize) {
         super(ref, lcache, segSize);
     }
 
     @Override
-    public SortedSet<MappedSequence> get(int from, int to) {
+    public SortedSet<MappedSequenceI> get(int from, int to) {
         if (from < 0 || from > to || to > ref.getLength() - 1) {
             throw new IllegalArgumentException();
         }
         Iterator<Interval> iter = getIntervals(from, to);
-        SortedSet<MappedSequence> mappedSequences = new TreeSet<>();
+        SortedSet<MappedSequenceI> mappedSequences = new TreeSet<>();
         while (iter.hasNext()) {
             Interval i = iter.next();
-            Set<MappedSequence> get = lcache.getUnchecked(i);
-            for (MappedSequence seq : get) {
+            Set<MappedSequenceI> get = lcache.getUnchecked(i);
+            for (MappedSequenceI seq : get) {
                 if (overlaps(seq, from, to)) {
 //                    if (mappedSequences.contains(seq)) {
 //                        System.err.println("already there?");
@@ -67,8 +67,8 @@ public class MappedSequenceCache extends CoverageInfoCache<SortedSet<MappedSeque
         Iterator<Interval> iter = getIntervals(from, to);
         while (iter.hasNext()) {
             Interval interval = iter.next();
-            Set<MappedSequence> get = lcache.getUnchecked(interval);
-            for (MappedSequence ms : get) {
+            Set<MappedSequenceI> get = lcache.getUnchecked(interval);
+            for (MappedSequenceI ms : get) {
                 for (int i = ms.getMin(); i < ms.getMax(); i++) {
                     // we need to check extra since we also receive mappings
                     // which only partially overlap with the interval
@@ -105,8 +105,8 @@ public class MappedSequenceCache extends CoverageInfoCache<SortedSet<MappedSeque
             }
             Arrays.fill(cov, 0);
 
-            Set<MappedSequence> get = lcache.getUnchecked(interval);
-            for (MappedSequence seq : get) {
+            Set<MappedSequenceI> get = lcache.getUnchecked(interval);
+            for (MappedSequenceI seq : get) {
                 if (overlaps(seq, from, to)) {
                     for (int i = seq.getMin(); i <= seq.getMax(); i++) {
                         int offset = i - interval.getFrom();
@@ -132,7 +132,7 @@ public class MappedSequenceCache extends CoverageInfoCache<SortedSet<MappedSeque
         return ret;
     }
 
-    static boolean overlaps(MappedSequence r, int from, int to) {
+    static boolean overlaps(MappedSequenceI r, int from, int to) {
         int min = r.getMin();
         int max = r.getMax();
 

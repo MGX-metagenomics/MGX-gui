@@ -1,8 +1,8 @@
 package de.cebitec.mgx.gui.cache.internal;
 
 import com.google.common.cache.LoadingCache;
+import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.gui.cache.Cache;
-import de.cebitec.mgx.gui.datamodel.Reference;
 import java.util.Iterator;
 
 /**
@@ -11,11 +11,11 @@ import java.util.Iterator;
  */
 public class SequenceCache extends Cache<String> {
 
-    public SequenceCache(Reference ref, LoadingCache<Interval, String> lcache) {
+    public SequenceCache(MGXReferenceI ref, LoadingCache<Interval, String> lcache) {
         super(ref, lcache);
     }
 
-    public SequenceCache(Reference ref, LoadingCache<Interval, String> lcache, int segSize) {
+    public SequenceCache(MGXReferenceI ref, LoadingCache<Interval, String> lcache, int segSize) {
         super(ref, lcache, segSize);
     }
 

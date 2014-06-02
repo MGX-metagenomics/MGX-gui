@@ -1,8 +1,8 @@
 package de.cebitec.mgx.gui.cache;
 
 import com.google.common.cache.LoadingCache;
+import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.gui.cache.internal.Interval;
-import de.cebitec.mgx.gui.datamodel.Reference;
 import java.util.Iterator;
 
 /**
@@ -11,17 +11,17 @@ import java.util.Iterator;
  */
 public abstract class Cache<T> {
 
-    protected final Reference ref;
+    protected final MGXReferenceI ref;
     protected final LoadingCache<Interval, T> lcache;
     private final int segmentSize;
     //
     private static int SEGMENT_SIZE = 50000;
 
-    public Cache(Reference ref, LoadingCache<Interval, T> lcache) {
+    public Cache(MGXReferenceI ref, LoadingCache<Interval, T> lcache) {
         this(ref, lcache, SEGMENT_SIZE);
     }
 
-    public Cache(Reference ref, LoadingCache<Interval, T> lcache, int segSize) {
+    public Cache(MGXReferenceI ref, LoadingCache<Interval, T> lcache, int segSize) {
         this.ref = ref;
         this.lcache = lcache;
         this.segmentSize = segSize;
@@ -35,7 +35,7 @@ public abstract class Cache<T> {
         return lcache.getIfPresent(interval) != null;
     }
 
-    public final Reference getReference() {
+    public final MGXReferenceI getReference() {
         return ref;
     }
 

@@ -6,8 +6,8 @@
 package de.cebitec.mgx.gui.cache;
 
 import com.google.common.cache.LoadingCache;
+import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.gui.cache.internal.Interval;
-import de.cebitec.mgx.gui.datamodel.Reference;
 
 /**
  *
@@ -15,11 +15,11 @@ import de.cebitec.mgx.gui.datamodel.Reference;
  */
 public abstract class CoverageInfoCache<T> extends Cache<T> {
 
-    public CoverageInfoCache(Reference ref, LoadingCache<Interval, T> lcache) {
+    public CoverageInfoCache(MGXReferenceI ref, LoadingCache<Interval, T> lcache) {
         super(ref, lcache);
     }
 
-    public CoverageInfoCache(Reference ref, LoadingCache<Interval, T> lcache, int segSize) {
+    public CoverageInfoCache(MGXReferenceI ref, LoadingCache<Interval, T> lcache, int segSize) {
         super(ref, lcache, segSize);
     }
 

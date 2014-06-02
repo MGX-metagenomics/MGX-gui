@@ -5,13 +5,13 @@
  */
 package de.cebitec.mgx.gui.cache.internal;
 
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.MGXReferenceI;
+import de.cebitec.mgx.api.model.MappedSequenceI;
 import de.cebitec.mgx.gui.cache.CacheFactory;
 import static de.cebitec.mgx.gui.cache.CacheTest.get;
 import de.cebitec.mgx.gui.cache.CoverageInfoCache;
-import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.MappedSequence;
-import de.cebitec.mgx.gui.datamodel.Reference;
-import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.UUID;
 import org.junit.After;
@@ -49,8 +49,9 @@ public class MappedSequenceCacheTest {
     @Test
     public void testOverlaps() {
         System.err.println("testOverlaps");
+        MGXMasterI master = get();
         // 6391-6796 outside of 0-49999
-        MappedSequence ms = new MappedSequence(1, 6391, 6796, 1);
+        MappedSequenceI ms = new MappedSequence(master, 1, 6391, 6796, 1);
         boolean overlaps = MappedSequenceCache.overlaps(ms, 0, 49999);
         assertTrue(overlaps);
     }
@@ -58,22 +59,22 @@ public class MappedSequenceCacheTest {
     @Test
     public void testMappedSeqs() throws Exception {
         System.out.println("testMappedSeqs");
-        MGXMaster master = get();
-        Reference ref = master.Reference().fetch(8);
+        MGXMasterI master = get();
+        MGXReferenceI ref = master.Reference().fetch(8);
         UUID uuid = master.Mapping().openMapping(30);
         assertNotNull(uuid);
         
-        CoverageInfoCache<SortedSet<MappedSequence>> cache = CacheFactory.createMappedSequenceCache(master, ref, uuid);
+        CoverageInfoCache<SortedSet<MappedSequenceI>> cache = CacheFactory.createMappedSequenceCache(master, ref, uuid);
         assertNotNull(cache);
         
-        SortedSet<MappedSequence> set = cache.get(566470, 566480);
+        SortedSet<MappedSequenceI> set = cache.get(566470, 566480);
         
         master.Mapping().closeMapping(uuid);
         //assertEquals(3, set.size());
         
         for (long l : new long[]{53748, 3436, 26467}) {
             boolean present = false;
-            for (MappedSequence ms : set) {
+            for (MappedSequenceI ms : set) {
                 if (ms.getSeqId() == l) {
                     present = true;
                 }
