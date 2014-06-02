@@ -1,7 +1,7 @@
 
 package de.cebitec.mgx.gui.actions;
 
-import de.cebitec.mgx.gui.groups.SequenceExporterI;
+import de.cebitec.mgx.api.groups.SequenceExporterI;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;

@@ -1,6 +1,6 @@
 package de.cebitec.mgx.gui.actions;
 
-import de.cebitec.mgx.gui.datamodel.MGXMasterI;
+import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.gui.jobmonitor.JobMonitorTopComponent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
