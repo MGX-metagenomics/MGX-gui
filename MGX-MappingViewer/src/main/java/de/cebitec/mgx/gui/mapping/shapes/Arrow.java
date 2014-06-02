@@ -58,7 +58,7 @@ public class Arrow implements Shape {
 
         //float height = 14;
         double mid = y + HALF_HEIGHT;
-        
+
         if (length < 1) {
             length = 1;
         }
@@ -66,7 +66,7 @@ public class Arrow implements Shape {
         if (r.isFwdStrand()) {
             GeneralPath triangle = new GeneralPath();
             if (length < TRIANGLE_WIDTH) {
-                triangle.moveTo(x , mid - HALF_HEIGHT - 1);   // 3
+                triangle.moveTo(x, mid - HALF_HEIGHT - 1);   // 3
                 triangle.lineTo(x + length, mid);   // 4
                 triangle.lineTo(x, mid + HALF_HEIGHT); // 5
                 triangle.lineTo(x, mid - HALF_HEIGHT - 1);   // 3
@@ -158,8 +158,9 @@ public class Arrow implements Shape {
     }
 
     public String getToolTipText() {
-        return "<html>" + region.getName() + "<hr>"
-                + "Frame: " + region.getFrame() + "<hr>"
+        return "<html><b>" + region.getName() + "</b><hr>"
+                + "Location: " + region.getStart() + "-"+ region.getStop() + "<br>"
+                + "Frame: " + region.getFrame() + "<br><br>"
                 + region.getDescription() + "</html>";
     }
 }
