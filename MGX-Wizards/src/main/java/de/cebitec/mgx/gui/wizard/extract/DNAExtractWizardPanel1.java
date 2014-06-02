@@ -1,8 +1,6 @@
 package de.cebitec.mgx.gui.wizard.extract;
 
-import de.cebitec.mgx.gui.datamodel.DNAExtract;
-import de.cebitec.mgx.gui.datamodel.SeqRun;
-import de.cebitec.mgx.gui.wizard.seqrun.SeqRunWizardDescriptor;
+import de.cebitec.mgx.api.model.DNAExtractI;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -11,7 +9,6 @@ import java.util.Iterator;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
-import org.openide.NotificationLineSupport;
 import org.openide.WizardDescriptor;
 import org.openide.util.HelpCtx;
 
@@ -25,7 +22,7 @@ public class DNAExtractWizardPanel1 implements WizardDescriptor.Panel<WizardDesc
     private WizardDescriptor model = null;
     private boolean isValid = true;
     private final EventListenerList listeners = new EventListenerList();
-    private Collection<DNAExtract> allExtracts;
+    private Collection<DNAExtractI> allExtracts;
 
     @Override
     public DNAExtractVisualPanel1 getComponent() {
@@ -136,7 +133,7 @@ public class DNAExtractWizardPanel1 implements WizardDescriptor.Panel<WizardDesc
         return isValid;
     }
 
-    public void setDNAExtracts(Iterator<DNAExtract> iter) {
+    public void setDNAExtracts(Iterator<DNAExtractI> iter) {
         allExtracts = new ArrayList<>();
         while (iter.hasNext()) {
             allExtracts.add(iter.next());
@@ -147,13 +144,13 @@ public class DNAExtractWizardPanel1 implements WizardDescriptor.Panel<WizardDesc
         // prevent creating duplicate extract names
         boolean alreadyExists = false;
         if (model.getProperty(DNAExtractWizardDescriptor.INVOCATION_MODE).equals(DNAExtractWizardDescriptor.CREATE_MODE)) {
-            for (DNAExtract extract : allExtracts) {
+            for (DNAExtractI extract : allExtracts) {
                 if (extract.getName().equals(name)) {
                     alreadyExists = true;
                 }
             }
         } else if(model.getProperty(DNAExtractWizardDescriptor.INVOCATION_MODE).equals(DNAExtractWizardDescriptor.EDIT_MODE)){
-            for (DNAExtract extract : allExtracts) {
+            for (DNAExtractI extract : allExtracts) {
                 if (extract.getName().equals(name) && !extract.getName().equals(model.getProperty(DNAExtractVisualPanel1.PROP_NAME))) {
                     alreadyExists = true;
                 }

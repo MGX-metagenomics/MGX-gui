@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.wizard.habitat;
 
-import de.cebitec.mgx.gui.controller.MGXMaster;
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.HabitatI;
 import de.cebitec.mgx.gui.datamodel.Habitat;
 import de.cebitec.mgx.gui.wizard.extract.DNAExtractWizardDescriptor;
 import java.text.MessageFormat;
@@ -21,7 +22,7 @@ public class HabitatWizardDescriptor extends WizardDescriptor {
 
     private HabitatWizardPanel1 p1 = new HabitatWizardPanel1();
     private HabitatWizardPanel2 p2 = new HabitatWizardPanel2();
-    private Habitat habitat = null;
+    private HabitatI habitat = null;
     public static final String INVOCATION_MODE = "invocationMode";
     public static final String CREATE_MODE = "CREATE";
     public static final String EDIT_MODE = "EDIT";
@@ -41,7 +42,7 @@ public class HabitatWizardDescriptor extends WizardDescriptor {
         setData();
     }
 
-    public HabitatWizardDescriptor(Habitat h) {
+    public HabitatWizardDescriptor(HabitatI h) {
         this();
         this.habitat = h;
         putProperty(HabitatVisualPanel1.PROP_NAME, habitat.getName());
@@ -58,7 +59,7 @@ public class HabitatWizardDescriptor extends WizardDescriptor {
     }
 
     private void setData() {
-        final MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
+        final MGXMasterI m = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
         SwingWorker<Void, Void> sw = new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() {
@@ -74,9 +75,9 @@ public class HabitatWizardDescriptor extends WizardDescriptor {
         }
     }
 
-    public Habitat getHabitat() {
+    public HabitatI getHabitat(MGXMasterI m) {
         if (habitat == null) {
-            habitat = new Habitat();
+            habitat = new Habitat(m);
         }
 
         habitat.setName((String) getProperty(HabitatVisualPanel1.PROP_NAME))

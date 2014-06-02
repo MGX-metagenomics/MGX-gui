@@ -1,6 +1,6 @@
 package de.cebitec.mgx.gui.wizard.habitat;
 
-import de.cebitec.mgx.gui.datamodel.Habitat;
+import de.cebitec.mgx.api.model.HabitatI;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -22,7 +22,7 @@ public class HabitatWizardPanel1 implements WizardDescriptor.Panel<WizardDescrip
     private WizardDescriptor model = null;
     private boolean isValid = false;
     private final EventListenerList listeners = new EventListenerList();
-    private Collection<Habitat> allHabitat;
+    private Collection<HabitatI> allHabitat;
     
     
     // Get the visual component for the panel. In this template, the component
@@ -152,7 +152,7 @@ public class HabitatWizardPanel1 implements WizardDescriptor.Panel<WizardDescrip
         return isValid;
     }
     
-    public void setHabitat(Iterator<Habitat> iter) {
+    public void setHabitat(Iterator<HabitatI> iter) {
         allHabitat = new ArrayList<>();
         while (iter.hasNext()) {
             allHabitat.add(iter.next());
@@ -163,13 +163,13 @@ public class HabitatWizardPanel1 implements WizardDescriptor.Panel<WizardDescrip
         // prevent creating duplicate extract names
         boolean alreadyExists = false;
         if (model.getProperty(HabitatWizardDescriptor.INVOCATION_MODE).equals(HabitatWizardDescriptor.CREATE_MODE)) {
-            for (Habitat habitat : allHabitat) {
+            for (HabitatI habitat : allHabitat) {
                 if (habitat.getName().equals(name)) {
                     alreadyExists = true;
                 }
             }
         } else if(model.getProperty(HabitatWizardDescriptor.INVOCATION_MODE).equals(HabitatWizardDescriptor.EDIT_MODE)){
-            for (Habitat habitat : allHabitat) {
+            for (HabitatI habitat : allHabitat) {
                 if (habitat.getName().equals(name) && !habitat.getName().equals(model.getProperty(HabitatVisualPanel1.PROP_NAME))) {
                     alreadyExists = true;
                 }

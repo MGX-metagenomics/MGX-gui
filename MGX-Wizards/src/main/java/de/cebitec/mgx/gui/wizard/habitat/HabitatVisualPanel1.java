@@ -5,6 +5,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.geom.Point2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.HashSet;
@@ -18,6 +19,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.text.Document;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import org.jdesktop.swingx.JXMapKit;
 import org.jdesktop.swingx.JXMapKit.DefaultProviders;
@@ -43,6 +45,7 @@ public final class HabitatVisualPanel1 extends JPanel implements DocumentListene
     private Set<Waypoint> waypoints;
     private Double latitude = null;
     private Double longitude = null;
+    private final static GeoPosition GP_BIELEFELD = new GeoPosition(52.03697, 8.49406);
 
     /** Creates new form HabitatVisualPanel1 */
     public HabitatVisualPanel1() {
@@ -52,7 +55,7 @@ public final class HabitatVisualPanel1 extends JPanel implements DocumentListene
         habitatname.getDocument().addDocumentListener(this);
         biomename.getDocument().addDocumentListener(this);
         gpslocation.getDocument().addDocumentListener(this);
-        gpslocation.setEditable(false);
+        //gpslocation.setEditable(false);
     }
 
     @Override
@@ -117,6 +120,7 @@ public final class HabitatVisualPanel1 extends JPanel implements DocumentListene
 
         org.openide.awt.Mnemonics.setLocalizedText(jLabel3, org.openide.util.NbBundle.getMessage(HabitatVisualPanel1.class, "HabitatVisualPanel1.jLabel3.text")); // NOI18N
 
+        gpslocation.setEditable(false);
         gpslocation.setText(org.openide.util.NbBundle.getMessage(HabitatVisualPanel1.class, "HabitatVisualPanel1.gpslocation.text")); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -288,10 +292,10 @@ public final class HabitatVisualPanel1 extends JPanel implements DocumentListene
         kit.setAddressLocation(new GeoPosition(51.5, 0));
         kit.getMainMap().setDrawTileBorders(false);
         kit.getMainMap().setRestrictOutsidePanning(true);
-        kit.getMainMap().setRecenterOnClickEnabled(true);
+        //kit.getMainMap().setRecenterOnClickEnabled(true);
         ((DefaultTileFactory) kit.getMainMap().getTileFactory()).setThreadPoolSize(8);
-        waypoints = new HashSet<Waypoint>();
-        waypoints.add(new Waypoint(kit.getMainMap().getCenterPosition()));
+        waypoints = new HashSet<>();
+        waypoints.add(new WaypointImpl(kit.getMainMap().getCenterPosition()));
         WaypointPainter painter = new WaypointPainter();
         painter.setWaypoints(waypoints);
         kit.getMainMap().setOverlayPainter(painter);
@@ -312,19 +316,19 @@ public final class HabitatVisualPanel1 extends JPanel implements DocumentListene
                 kit.getMainMap().setCenterPosition(kit.getCenterPosition());
                 Point2D pt = kit.getMiniMap().getTileFactory().geoToPixel(kit.getMainMap().getCenterPosition(), kit.getMiniMap().getZoom());
                 waypoints.clear();
-                waypoints.add(new Waypoint(kit.getMainMap().getCenterPosition()));
+                waypoints.add(new WaypointImpl(kit.getMainMap().getCenterPosition()));
                 kit.getMiniMap().setCenter(pt);
                 kit.getMiniMap().repaint();
             }
         });
         GeoPosition gp;
         if (latitude == null || longitude == null) {
-            gp = new GeoPosition(51.5, 0);
+            gp = GP_BIELEFELD; // Bielefeld University
         } else {
             gp = new GeoPosition(latitude, longitude);
         }
         kit.getMainMap().setCenterPosition(gp);
-        waypoints.add(new Waypoint(kit.getMainMap().getCenterPosition()));
+        waypoints.add(new WaypointImpl(kit.getMainMap().getCenterPosition()));
     }
 
     //search by name for geolocation and put them into selectionList
@@ -365,7 +369,7 @@ public final class HabitatVisualPanel1 extends JPanel implements DocumentListene
                 }
             });
 
-        } catch (Exception ex) {
+        } catch (IOException | XPathExpressionException ex) {
         }
     }
 
@@ -428,5 +432,20 @@ public final class HabitatVisualPanel1 extends JPanel implements DocumentListene
             gpslocation.setText(gpsloc);
             jXMapKit1.setCenterPosition(new GeoPosition(latitude, longitude));
         }
+    }
+    
+    private final class WaypointImpl implements Waypoint {
+
+        private final GeoPosition pos;
+
+        public WaypointImpl(GeoPosition pos) {
+            this.pos = pos;
+        }
+        
+        @Override
+        public GeoPosition getPosition() {
+            return pos;
+        }
+        
     }
 }

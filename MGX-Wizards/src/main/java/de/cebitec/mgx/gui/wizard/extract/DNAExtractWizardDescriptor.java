@@ -1,9 +1,8 @@
 package de.cebitec.mgx.gui.wizard.extract;
 
-import de.cebitec.mgx.gui.controller.MGXMaster;
-import de.cebitec.mgx.gui.controller.TermAccess;
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.DNAExtractI;
 import de.cebitec.mgx.gui.datamodel.DNAExtract;
-import de.cebitec.mgx.gui.datamodel.Term;
 import de.cebitec.mgx.gui.wizard.seqrun.SeqRunWizardDescriptor;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -22,14 +21,16 @@ public class DNAExtractWizardDescriptor extends WizardDescriptor {
 
     private DNAExtractWizardPanel1 p1 = new DNAExtractWizardPanel1();
     private DNAExtractWizardPanel2 p2 = new DNAExtractWizardPanel2();
-    private DNAExtract extract = null;
+    private DNAExtractI extract = null;
+    private final MGXMasterI master;
 
     public static final String INVOCATION_MODE = "invocationMode";
     public static final String CREATE_MODE = "CREATE";
     public static final String EDIT_MODE = "EDIT";
     
     
-    public DNAExtractWizardDescriptor() {
+    public DNAExtractWizardDescriptor(MGXMasterI master) {
+        this.master = master;
         List<Panel<WizardDescriptor>> panels = new ArrayList<>();
         panels.add(p1);
         panels.add(p2);
@@ -44,8 +45,8 @@ public class DNAExtractWizardDescriptor extends WizardDescriptor {
         setData();
     }
 
-    public DNAExtractWizardDescriptor(DNAExtract d) {
-        this();
+    public DNAExtractWizardDescriptor(MGXMasterI master, DNAExtractI d) {
+        this(master);
         this.extract = d;
         putProperty(DNAExtractVisualPanel1.PROP_NAME, d.getName());
         putProperty(DNAExtractVisualPanel1.PROP_METHOD, d.getMethod());
@@ -65,7 +66,7 @@ public class DNAExtractWizardDescriptor extends WizardDescriptor {
     
     
     private void setData() {
-        final MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
+        final MGXMasterI m = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
         SwingWorker<Void, Void> sw = new SwingWorker<Void, Void>() {
 
             @Override
@@ -83,9 +84,9 @@ public class DNAExtractWizardDescriptor extends WizardDescriptor {
     }
     
 
-    public DNAExtract getDNAExtract() {
+    public DNAExtractI getDNAExtract() {
         if (extract == null) {
-            extract = new DNAExtract();
+            extract = new DNAExtract(master);
         }
 
         extract.setName((String) getProperty(DNAExtractVisualPanel1.PROP_NAME))
