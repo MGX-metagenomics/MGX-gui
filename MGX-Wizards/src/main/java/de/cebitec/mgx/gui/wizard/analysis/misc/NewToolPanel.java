@@ -1,8 +1,10 @@
 package de.cebitec.mgx.gui.wizard.analysis.misc;
 
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.ToolI;
 import de.cebitec.mgx.gui.datamodel.Tool;
 import de.cebitec.mgx.gui.util.FileChooserUtils;
-import de.cebitec.mgx.gui.util.FileType;
+import de.cebitec.mgx.api.groups.FileType;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
@@ -21,11 +23,13 @@ import org.openide.util.Exceptions;
 public class NewToolPanel extends javax.swing.JPanel implements DocumentListener {
 
     public static final String TOOL_DEFINED = "toolDefined";
+    private final MGXMasterI master;
 
     /**
      * Creates new form NewToolPanel
      */
-    public NewToolPanel() {
+    public NewToolPanel(MGXMasterI m) {
+        this.master = m;
         initComponents();
         toolName.getDocument().addDocumentListener(this);
         author.getDocument().addDocumentListener(this);
@@ -178,18 +182,18 @@ public class NewToolPanel extends javax.swing.JPanel implements DocumentListener
     }
 
     private void updated() {
-        Tool t = getTool();
+        ToolI t = getTool();
         if (t != null) {
             firePropertyChange(TOOL_DEFINED, null, t);
         }
     }
 
-    public Tool getTool() {
+    public ToolI getTool() {
         if (Empty(toolName) || Empty(author) || Empty(description) || Empty(xml)) {
             return null;
         }
 
-        Tool tool = new Tool();
+        ToolI tool = new Tool(master);
         tool.setName(toolName.getText().trim());
         tool.setAuthor(author.getText().trim());
         tool.setDescription(description.getText().trim());

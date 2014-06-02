@@ -1,7 +1,7 @@
 
 package de.cebitec.mgx.gui.wizard.analysis.misc;
 
-import de.cebitec.mgx.gui.datamodel.JobParameter;
+import de.cebitec.mgx.api.model.JobParameterI;
 
 /**
  *
@@ -12,7 +12,7 @@ public class BooleanPanel extends ValueHolderI<String> {
     /**
      * Creates new form BooleanPanel
      */
-    public BooleanPanel(JobParameter jp) {
+    public BooleanPanel(JobParameterI jp) {
         initComponents();
         jCheckBox1.setText(jp.getUserName());
     }

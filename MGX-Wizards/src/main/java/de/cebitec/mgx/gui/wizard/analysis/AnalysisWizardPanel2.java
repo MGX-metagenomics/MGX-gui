@@ -1,9 +1,9 @@
 package de.cebitec.mgx.gui.wizard.analysis;
 
-import de.cebitec.mgx.gui.controller.MGXMaster;
-import de.cebitec.mgx.gui.datamodel.JobParameter;
-import de.cebitec.mgx.gui.datamodel.Reference;
-import de.cebitec.mgx.gui.datamodel.misc.Pair;
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.misc.Pair;
+import de.cebitec.mgx.api.model.JobParameterI;
+import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.gui.wizard.analysis.misc.BooleanPanel;
 import de.cebitec.mgx.gui.wizard.analysis.misc.ComboBoxPanel;
 import de.cebitec.mgx.gui.wizard.analysis.misc.FileChooserPanel;
@@ -37,8 +37,8 @@ public class AnalysisWizardPanel2<T> implements WizardDescriptor.Panel<WizardDes
      * component from this class, just use getComponent().
      */
     private AnalysisVisualPanel2 component;
-    private MGXMaster master = null;
-    private JobParameter parameter = null;
+    private MGXMasterI master = null;
+    private JobParameterI parameter = null;
     private WizardDescriptor model = null;
     private boolean isValid = false;
     private ValidatorI<T> validator = null;
@@ -46,9 +46,9 @@ public class AnalysisWizardPanel2<T> implements WizardDescriptor.Panel<WizardDes
     private final EventListenerList listeners = new EventListenerList();
     public static final String PROP_PARAM = "propParam";
     //
-    private final List<Reference> references;
+    private final List<MGXReferenceI> references;
 
-    public AnalysisWizardPanel2(List<Reference> references) {
+    public AnalysisWizardPanel2(List<MGXReferenceI> references) {
         this.references = references;
     }
 
@@ -60,7 +60,7 @@ public class AnalysisWizardPanel2<T> implements WizardDescriptor.Panel<WizardDes
         return component;
     }
 
-    public void setMaster(MGXMaster master) {
+    public void setMaster(MGXMasterI master) {
         this.master = master;
     }
 
@@ -137,7 +137,7 @@ public class AnalysisWizardPanel2<T> implements WizardDescriptor.Panel<WizardDes
         return newValue;
     }
 
-    public void setJobParameter(JobParameter jp) {
+    public void setJobParameter(JobParameterI jp) {
         if (jp == parameter) {
             return;
         }
@@ -170,7 +170,7 @@ public class AnalysisWizardPanel2<T> implements WizardDescriptor.Panel<WizardDes
         getComponent().setInputComponent(valueHolder);
     }
 
-    private Pair<? extends ValueHolderI, ? extends ValidatorI> getValidator(JobParameter jp) {
+    private Pair<? extends ValueHolderI, ? extends ValidatorI> getValidator(JobParameterI jp) {
         switch (jp.getType()) {
             case "ConfigByte":
                 return new Pair<>(new TextFieldPanel(), new ByteValidator());

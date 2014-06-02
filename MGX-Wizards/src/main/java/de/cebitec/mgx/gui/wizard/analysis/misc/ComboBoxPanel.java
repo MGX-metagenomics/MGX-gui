@@ -1,6 +1,6 @@
 package de.cebitec.mgx.gui.wizard.analysis.misc;
 
-import de.cebitec.mgx.gui.datamodel.JobParameter;
+import de.cebitec.mgx.api.model.JobParameterI;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collection;
@@ -24,7 +24,7 @@ public class ComboBoxPanel<T> extends ValueHolderI<T> implements ActionListener 
 //        jComboBox1.addActionListener(this);
 //    }
 
-    public ComboBoxPanel(JobParameter jp, Collection<T> allowedValues) {
+    public ComboBoxPanel(JobParameterI jp, Collection<T> allowedValues) {
         initComponents();
         jComboBox1.removeAllItems();
         for (T s : allowedValues) {

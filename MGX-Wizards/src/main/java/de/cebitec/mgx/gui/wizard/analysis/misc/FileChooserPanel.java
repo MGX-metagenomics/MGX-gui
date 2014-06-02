@@ -1,6 +1,6 @@
 package de.cebitec.mgx.gui.wizard.analysis.misc;
 
-import de.cebitec.mgx.gui.controller.MGXMaster;
+import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.gui.datamodel.MGXFile;
 import de.cebitec.mgx.gui.util.ServerFS;
 import de.cebitec.mgx.gui.util.ServerFile;
@@ -13,13 +13,13 @@ import javax.swing.JFileChooser;
  */
 public class FileChooserPanel extends ValueHolderI<String> {
 
-    private final MGXMaster master;
+    private final MGXMasterI master;
     private String fileName = null;
 
     /**
      * Creates new form FileChooserPanel
      */
-    public FileChooserPanel(MGXMaster master) {
+    public FileChooserPanel(MGXMasterI master) {
         this.master = master;
         initComponents();
     }

@@ -4,8 +4,8 @@
  */
 package de.cebitec.mgx.gui.wizard.analysis.workers;
 
-import de.cebitec.mgx.gui.controller.MGXMaster;
-import de.cebitec.mgx.gui.datamodel.SeqRun;
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.SeqRunI;
 import java.util.Iterator;
 import javax.swing.SwingWorker;
 
@@ -13,16 +13,16 @@ import javax.swing.SwingWorker;
  *
  * @author belmann
  */
-public class SeqRunRetriever extends SwingWorker<Iterator<SeqRun>, Void> {
+public class SeqRunRetriever extends SwingWorker<Iterator<SeqRunI>, Void> {
 
-    private final MGXMaster master;
+    private final MGXMasterI master;
 
-    public SeqRunRetriever(MGXMaster master) {
+    public SeqRunRetriever(MGXMasterI master) {
         this.master = master;
     }
 
     @Override
-    protected Iterator<SeqRun> doInBackground() throws Exception {
+    protected Iterator<SeqRunI> doInBackground() throws Exception {
         return master.SeqRun().fetchall();
     }
 }

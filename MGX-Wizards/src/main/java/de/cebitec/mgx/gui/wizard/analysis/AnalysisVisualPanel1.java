@@ -1,7 +1,9 @@
 package de.cebitec.mgx.gui.wizard.analysis;
 
-import de.cebitec.mgx.gui.datamodel.Tool;
-import de.cebitec.mgx.gui.datamodel.misc.ToolType;
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.misc.ToolType;
+import static de.cebitec.mgx.api.misc.ToolType.PROJECT;
+import de.cebitec.mgx.api.model.ToolI;
 import de.cebitec.mgx.gui.wizard.analysis.misc.NewToolPanel;
 import de.cebitec.mgx.gui.wizard.analysis.misc.ToolPanel;
 import java.awt.Component;
@@ -21,12 +23,15 @@ import javax.swing.event.ListSelectionListener;
 
 public final class AnalysisVisualPanel1 extends JPanel implements ListSelectionListener, ChangeListener {
 
+    private final MGXMasterI master;
+
     /**
      * Creates new form AnalysisVisualPanel1
      */
-    public AnalysisVisualPanel1() {
+    public AnalysisVisualPanel1(MGXMasterI m) {
+        this.master = m;
         initComponents();
-
+        newTool = new NewToolPanel(master);
         projectTools = setupTab("Project");
         serverTools = setupTab("Repository");
 
@@ -43,27 +48,27 @@ public final class AnalysisVisualPanel1 extends JPanel implements ListSelectionL
         tabs.addChangeListener(this);
     }
 
-    public void setProjectTools(Collection<Tool> pTools) {
-        projectTools.setListData(pTools.toArray(new Tool[]{}));
+    public void setProjectTools(Collection<ToolI> pTools) {
+        projectTools.setListData(pTools.toArray(new ToolI[]{}));
         // if no tools are available, switch to repository tab
         if (pTools.isEmpty()) {
             tabs.setSelectedIndex(1);
         }
     }
 
-    public void setServerTools(Collection<Tool> sTools) {
-        serverTools.setListData(sTools.toArray(new Tool[]{}));
+    public void setServerTools(Collection<ToolI> sTools) {
+        serverTools.setListData(sTools.toArray(new ToolI[]{}));
     }
-    
-    private JList<Tool> projectTools = null;
-    private JList<Tool> serverTools = null;
-    private NewToolPanel newTool = new NewToolPanel();
 
-    private JList<Tool> setupTab(String title) {
+    private JList<ToolI> projectTools = null;
+    private JList<ToolI> serverTools = null;
+    private final NewToolPanel newTool;
+
+    private JList<ToolI> setupTab(String title) {
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        JList<Tool> list = new JList<>();
+        JList<ToolI> list = new JList<>();
         list.setCellRenderer(new ToolListRenderer());
         list.addListSelectionListener(this);
         scrollPane.setViewportView(list);
@@ -71,7 +76,7 @@ public final class AnalysisVisualPanel1 extends JPanel implements ListSelectionL
         return list;
     }
 
-    public Tool getTool() {
+    public ToolI getTool() {
         switch (getToolType()) {
             case PROJECT:
                 return projectTools.getSelectedValue();
@@ -176,7 +181,7 @@ public final class AnalysisVisualPanel1 extends JPanel implements ListSelectionL
     }
 
     private void updated() {
-        Tool tool = getTool();
+        ToolI tool = getTool();
         selectedTool.setText("");
         if (tool != null) {
             selectedTool.setText(tool.getName());
@@ -184,14 +189,14 @@ public final class AnalysisVisualPanel1 extends JPanel implements ListSelectionL
         }
     }
 
-    private final class ToolListRenderer implements ListCellRenderer<Tool> {
+    private final class ToolListRenderer implements ListCellRenderer<ToolI> {
 
         private final ToolPanel panel = new ToolPanel();
         protected Border noFocusBorder = LineBorder.createGrayLineBorder();
         protected Border focusBorder = LineBorder.createBlackLineBorder();
 
         @Override
-        public Component getListCellRendererComponent(JList<? extends Tool> list, Tool tool, int index, boolean isSelected, boolean cellHasFocus) {
+        public Component getListCellRendererComponent(JList<? extends ToolI> list, ToolI tool, int index, boolean isSelected, boolean cellHasFocus) {
             panel.setToolName(tool.getName());
             panel.setAuthor(tool.getAuthor());
             panel.setDescription(tool.getDescription());

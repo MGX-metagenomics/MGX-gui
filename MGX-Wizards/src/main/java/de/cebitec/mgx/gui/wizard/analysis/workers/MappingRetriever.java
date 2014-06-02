@@ -4,8 +4,8 @@
  */
 package de.cebitec.mgx.gui.wizard.analysis.workers;
 
-import de.cebitec.mgx.gui.controller.MGXMaster;
-import de.cebitec.mgx.gui.datamodel.Mapping;
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.MappingI;
 import java.util.Iterator;
 import javax.swing.SwingWorker;
 
@@ -13,16 +13,16 @@ import javax.swing.SwingWorker;
  *
  * @author belmann
  */
-public class MappingRetriever extends SwingWorker<Iterator<Mapping>, Void> {
+public class MappingRetriever extends SwingWorker<Iterator<MappingI>, Void> {
 
-    private MGXMaster master;
+    private MGXMasterI master;
     
-    public MappingRetriever(MGXMaster master) {
+    public MappingRetriever(MGXMasterI master) {
         this.master = master;
     }
 
     @Override
-    protected Iterator<Mapping> doInBackground() throws Exception {
+    protected Iterator<MappingI> doInBackground() throws Exception {
         return master.Mapping().fetchall();
     }
 }

@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.wizard.analysis;
 
+import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.gui.datamodel.JobParameter;
 import de.cebitec.mgx.gui.datamodel.MGXFile;
 import de.cebitec.mgx.gui.datamodel.Reference;
@@ -15,12 +16,12 @@ import javax.swing.border.LineBorder;
 
 public final class AnalysisVisualPanel3 extends JPanel {
 
-    private final List<Reference> references;
+    private final List<MGXReferenceI> references;
 
     /**
      * Creates new form AnalysisVisualPanel3
      */
-    public AnalysisVisualPanel3(List<Reference> refs) {
+    public AnalysisVisualPanel3(List<MGXReferenceI> refs) {
         initComponents();
         references = refs;
         paramlist.setCellRenderer(new JobParameterRenderer());
@@ -111,8 +112,8 @@ public final class AnalysisVisualPanel3 extends JPanel {
 
             // different handling for reference genomes..
             if (jp.getType().equals("ConfigMGXReference")) {
-                Reference r = null;
-                for (Reference ref : references) {
+                MGXReferenceI r = null;
+                for (MGXReferenceI ref : references) {
                     if (String.valueOf(ref.getId()).equals(jp.getParameterValue())) {
                         r = ref;
                         break;

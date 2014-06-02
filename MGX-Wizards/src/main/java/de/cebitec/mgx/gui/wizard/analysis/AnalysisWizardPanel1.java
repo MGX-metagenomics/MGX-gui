@@ -1,10 +1,10 @@
 package de.cebitec.mgx.gui.wizard.analysis;
 
-import de.cebitec.mgx.gui.controller.MGXMaster;
-import de.cebitec.mgx.gui.datamodel.JobParameter;
-import de.cebitec.mgx.gui.datamodel.Tool;
-import de.cebitec.mgx.gui.datamodel.misc.Pair;
-import de.cebitec.mgx.gui.datamodel.misc.ToolType;
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.misc.Pair;
+import de.cebitec.mgx.api.misc.ToolType;
+import de.cebitec.mgx.api.model.JobParameterI;
+import de.cebitec.mgx.api.model.ToolI;
 import de.cebitec.mgx.gui.wizard.analysis.workers.ParameterRetriever;
 import de.cebitec.mgx.gui.wizard.analysis.workers.ToolRetriever;
 import java.beans.PropertyChangeEvent;
@@ -33,30 +33,30 @@ public class AnalysisWizardPanel1 implements WizardDescriptor.Panel<WizardDescri
     private boolean isValid = false;
     private final EventListenerList listeners = new EventListenerList();
     //
-    private List<Tool> projTools;
-    private List<Tool> serverTools;
-    private MGXMaster master = null;
-    private Tool currentTool = null;
-    private List<JobParameter> currentParams = null;
+    private List<ToolI> projTools;
+    private List<ToolI> serverTools;
+    private MGXMasterI master = null;
+    private ToolI currentTool = null;
+    private List<JobParameterI> currentParams = null;
 
     public void setWizardDescriptor(WizardDescriptor wdesc) {
         model = wdesc;
     }
 
-    public void setMaster(MGXMaster master) {
+    public void setMaster(MGXMasterI master) {
         this.master = master;
         ToolRetriever tr = new ToolRetriever(master) {
             @Override
             protected void done() {
                 try {
-                    Pair<Iterator<Tool>, Iterator<Tool>> ret = get();
+                    Pair<Iterator<ToolI>, Iterator<ToolI>> ret = get();
                     projTools = new ArrayList<>();
-                    Iterator<Tool> pIter = ret.getSecond();
+                    Iterator<ToolI> pIter = ret.getSecond();
                     while (pIter.hasNext()) {
                         projTools.add(pIter.next());
                     }
                     serverTools = new ArrayList<>();
-                    Iterator<Tool> sIter = ret.getFirst();
+                    Iterator<ToolI> sIter = ret.getFirst();
                     while (sIter.hasNext()) {
                         serverTools.add(sIter.next());
                     }
@@ -78,7 +78,7 @@ public class AnalysisWizardPanel1 implements WizardDescriptor.Panel<WizardDescri
     @Override
     public AnalysisVisualPanel1 getComponent() {
         if (component == null) {
-            component = new AnalysisVisualPanel1();
+            component = new AnalysisVisualPanel1(master);
             component.addPropertyChangeListener(this);
         }
         return component;
@@ -136,7 +136,7 @@ public class AnalysisWizardPanel1 implements WizardDescriptor.Panel<WizardDescri
             return;
         }
 
-        Tool newTool = checkTool();
+        ToolI newTool = checkTool();
         if (newTool == null) {
             currentTool = null;
             currentParams = null;
@@ -157,10 +157,10 @@ public class AnalysisWizardPanel1 implements WizardDescriptor.Panel<WizardDescri
         }
     }
 
-    private Tool checkTool() {
+    private ToolI checkTool() {
         NotificationLineSupport nls = model.getNotificationLineSupport();
         nls.clearMessages();
-        Tool t = getComponent().getTool();
+        ToolI t = getComponent().getTool();
         ToolType tt = getComponent().getToolType();
 
         switch (tt) {
@@ -170,7 +170,7 @@ public class AnalysisWizardPanel1 implements WizardDescriptor.Panel<WizardDescri
                 if (t == null) {
                     return null;
                 }
-                for (Tool pTool : projTools) {
+                for (ToolI pTool : projTools) {
                     if (pTool.getName().equals(t.getName())) {
                         nls.setErrorMessage("Tool with same name already exists in project.");
                         return null; // tool already present in project
@@ -196,7 +196,7 @@ public class AnalysisWizardPanel1 implements WizardDescriptor.Panel<WizardDescri
                     }
                 }
 
-                for (Tool pTool : projTools) {
+                for (ToolI pTool : projTools) {
                     if (pTool.getName().equals(t.getName())) {
                         nls.setErrorMessage("Tool with same name already exists in project.");
                         return null; // tool already present in project
@@ -213,7 +213,7 @@ public class AnalysisWizardPanel1 implements WizardDescriptor.Panel<WizardDescri
         }
     }
 
-    private List<JobParameter> fetchParameters(Tool t) {
+    private List<JobParameterI> fetchParameters(ToolI t) {
         if (t == null) {
             return null;
         }
@@ -221,7 +221,7 @@ public class AnalysisWizardPanel1 implements WizardDescriptor.Panel<WizardDescri
         ParameterRetriever pr = new ParameterRetriever(master, t, getComponent().getToolType());
         pr.execute();
         try {
-            Collection<JobParameter> params = pr.get();
+            Collection<JobParameterI> params = pr.get();
             // we need a list instead of a collection, convert..
             return new ArrayList<>(params);
         } catch (InterruptedException | ExecutionException ex) {
