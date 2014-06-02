@@ -7,7 +7,6 @@ package de.cebitec.mgx.gui.cache;
 
 import com.google.common.cache.LoadingCache;
 import de.cebitec.mgx.api.model.MGXReferenceI;
-import de.cebitec.mgx.gui.cache.internal.Interval;
 
 /**
  *

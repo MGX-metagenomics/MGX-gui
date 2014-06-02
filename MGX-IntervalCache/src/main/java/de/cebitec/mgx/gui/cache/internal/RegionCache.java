@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.cache.internal;
 
+import de.cebitec.mgx.gui.cache.Interval;
 import com.google.common.cache.LoadingCache;
 import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.api.model.RegionI;

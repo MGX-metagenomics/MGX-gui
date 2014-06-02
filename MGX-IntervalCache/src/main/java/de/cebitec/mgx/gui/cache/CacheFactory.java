@@ -7,7 +7,6 @@ import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.api.model.MappedSequenceI;
 import de.cebitec.mgx.api.model.RegionI;
-import de.cebitec.mgx.gui.cache.internal.Interval;
 import de.cebitec.mgx.gui.cache.internal.MappedSequenceCache;
 import de.cebitec.mgx.gui.cache.internal.RegionCache;
 import de.cebitec.mgx.gui.cache.internal.SequenceCache;

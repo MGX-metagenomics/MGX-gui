@@ -1,4 +1,4 @@
-package de.cebitec.mgx.gui.cache.internal;
+package de.cebitec.mgx.gui.cache;
 
 /**
  *

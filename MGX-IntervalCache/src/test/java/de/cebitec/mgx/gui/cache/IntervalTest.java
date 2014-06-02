@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.cebitec.mgx.gui.cache.internal;
+package de.cebitec.mgx.gui.cache;
 
+import de.cebitec.mgx.gui.cache.Interval;
 import de.cebitec.gpms.core.MembershipI;
 import de.cebitec.gpms.rest.GPMSClientI;
 import de.cebitec.mgx.api.MGXMasterI;

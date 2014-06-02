@@ -6,7 +6,6 @@
 package de.cebitec.mgx.gui.cache;
 
 import de.cebitec.mgx.api.model.MappedSequenceI;
-import de.cebitec.mgx.gui.cache.internal.Interval;
 import java.util.Iterator;
 import java.util.SortedSet;
 
