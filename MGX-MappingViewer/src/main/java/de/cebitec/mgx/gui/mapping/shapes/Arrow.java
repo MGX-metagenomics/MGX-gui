@@ -5,7 +5,7 @@
  */
 package de.cebitec.mgx.gui.mapping.shapes;
 
-import de.cebitec.mgx.gui.datamodel.Region;
+import de.cebitec.mgx.api.model.RegionI;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
@@ -45,14 +45,14 @@ public class Arrow implements Shape {
      *
      */
     private final Shape shape;
-    private final Region region;
+    private final RegionI region;
     private final static int TRIANGLE_WIDTH = 8;
     private final static int TRIANGLE_HEIGHT = 12;
     private final static int RECT_HEIGHT = 6;
     public final static int HEIGHT = TRIANGLE_HEIGHT;
     public final static int HALF_HEIGHT = HEIGHT / 2;
 
-    public Arrow(final Region r, double x, double y, double length) {
+    public Arrow(final RegionI r, double x, double y, double length) {
 
         region = r;
 
@@ -103,7 +103,7 @@ public class Arrow implements Shape {
 
     }
 
-    public Region getRegion() {
+    public RegionI getRegion() {
         return region;
     }
 

@@ -5,10 +5,10 @@
  */
 package de.cebitec.mgx.gui.mapping;
 
+import de.cebitec.mgx.api.model.MGXReferenceI;
+import de.cebitec.mgx.api.model.MappedSequenceI;
+import de.cebitec.mgx.api.model.RegionI;
 import de.cebitec.mgx.gui.cache.IntIterator;
-import de.cebitec.mgx.gui.datamodel.MappedSequence;
-import de.cebitec.mgx.gui.datamodel.Reference;
-import de.cebitec.mgx.gui.datamodel.Region;
 import de.cebitec.mgx.pevents.ParallelPropertyChangeSupport;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -16,6 +16,7 @@ import java.beans.PropertyChangeSupport;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.SortedSet;
+import org.apache.commons.math3.util.FastMath;
 
 /**
  *
@@ -35,12 +36,12 @@ public class ViewController {
 
     public ViewController(MappingCtx ctx) {
         this.ctx = ctx;
-        newBounds = new int[]{0, Math.min(15000, ctx.getReference().getLength() - 1)};
-        curBounds = new int[]{0, Math.min(15000, ctx.getReference().getLength() - 1)};
+        newBounds = new int[]{0, FastMath.min(15000, ctx.getReference().getLength() - 1)};
+        curBounds = new int[]{0, FastMath.min(15000, ctx.getReference().getLength() - 1)};
         pcs = new ParallelPropertyChangeSupport(this);
     }
 
-    public Reference getReference() {
+    public MGXReferenceI getReference() {
         return ctx.getReference();
     }
 
@@ -63,8 +64,8 @@ public class ViewController {
         assert j < ctx.getReference().getLength();
         assert i < j;
 
-        newBounds[0] = Math.max(0, i);
-        newBounds[1] = Math.min(ctx.getReference().getLength(), j);
+        newBounds[0] = FastMath.max(0, i);
+        newBounds[1] = FastMath.min(ctx.getReference().getLength(), j);
 
         if (curBounds[0] != newBounds[0] || curBounds[1] != newBounds[1]) {
             curBounds[0] = newBounds[0];
@@ -89,11 +90,11 @@ public class ViewController {
         return ctx.getSequence(from, to);
     }
 
-    public Set<Region> getRegions(int from, int to) {
+    public Set<RegionI> getRegions(int from, int to) {
         return ctx.getRegions(from, to);
     }
 
-    public SortedSet<MappedSequence> getMappings(int from, int to) {
+    public SortedSet<MappedSequenceI> getMappings(int from, int to) {
         return ctx.getMappings(from, to);
     }
 

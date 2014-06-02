@@ -5,10 +5,10 @@
  */
 package de.cebitec.mgx.gui.mapping.panel;
 
-import de.cebitec.mgx.gui.controller.MGXMaster;
-import de.cebitec.mgx.gui.datamodel.Job;
-import de.cebitec.mgx.gui.datamodel.Mapping;
-import de.cebitec.mgx.gui.datamodel.Reference;
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.JobI;
+import de.cebitec.mgx.api.model.MGXReferenceI;
+import de.cebitec.mgx.api.model.MappingI;
 import de.cebitec.mgx.gui.mapping.MappingCtx;
 import de.cebitec.mgx.gui.mapping.TestMaster;
 import de.cebitec.mgx.gui.mapping.ViewController;
@@ -19,7 +19,6 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -49,16 +48,16 @@ public class MappingPanelTest {
     @Test
     public void testTiming() {
         System.out.println("testTiming");
-        MGXMaster master = TestMaster.getRO();
-        Iterator<Mapping> iter = master.Mapping().fetchall();
+        MGXMasterI master = TestMaster.getRO();
+        Iterator<MappingI> iter = master.Mapping().fetchall();
         int cnt = 0;
-        Mapping mapping = null;
+        MappingI mapping = null;
         while (iter.hasNext()) {
             mapping = iter.next();
             cnt++;
         }
-        Reference ref = master.Reference().fetch(mapping.getReferenceID());
-        Job job = master.Job().fetch(mapping.getJobID());
+        MGXReferenceI ref = master.Reference().fetch(mapping.getReferenceID());
+        JobI job = master.Job().fetch(mapping.getJobID());
         UUID uuid = master.Mapping().openMapping(mapping.getId());
         MappingCtx ctx = new MappingCtx(mapping, ref, job);
         ViewController vc = new ViewController(ctx);

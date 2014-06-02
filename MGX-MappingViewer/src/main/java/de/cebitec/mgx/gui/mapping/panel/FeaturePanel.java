@@ -5,9 +5,9 @@
  */
 package de.cebitec.mgx.gui.mapping.panel;
 
-import de.cebitec.mgx.gui.mapping.shapes.Arrow;
-import de.cebitec.mgx.gui.datamodel.Region;
+import de.cebitec.mgx.api.model.RegionI;
 import de.cebitec.mgx.gui.mapping.ViewController;
+import de.cebitec.mgx.gui.mapping.shapes.Arrow;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Composite;
@@ -20,11 +20,10 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Area;
-import java.awt.geom.GeneralPath;
 import java.util.HashSet;
 import java.util.Set;
 import javax.swing.ToolTipManager;
+import org.apache.commons.math3.util.FastMath;
 
 /**
  *
@@ -159,7 +158,7 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
 
         // fetch features
         Set<Arrow> newData = new HashSet<>();
-        for (Region r : vc.getRegions(bounds[0], bounds[1])) {
+        for (RegionI r : vc.getRegions(bounds[0], bounds[1])) {
             newData.add(r2a(r));
         }
         regs = newData;
@@ -221,7 +220,7 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
 //        coverage = ret;
     }
 
-    private Arrow r2a(final Region r) {
+    private Arrow r2a(final RegionI r) {
         double pos0 = bp2px(r.getStart() - 1);
         double pos1 = bp2px(r.getStop() - 1);
         if (r.getFrame() < 0) {
@@ -282,7 +281,7 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
             int posInRef = px2bp(e.getX());
             int offset = posInRef - dragStart + 1;
             dragStart = posInRef;
-            vc.setBounds(Math.max(0, bounds[0] - offset), Math.min(vc.getReference().getLength() - 1, bounds[1] - offset));
+            vc.setBounds(FastMath.max(0, bounds[0] - offset), FastMath.min(vc.getReference().getLength() - 1, bounds[1] - offset));
         }
     }
 

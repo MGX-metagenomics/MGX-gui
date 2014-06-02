@@ -4,12 +4,11 @@
  */
 package de.cebitec.mgx.gui.mapping;
 
-import de.cebitec.mgx.gui.cache.IntIterator;
-import de.cebitec.mgx.gui.controller.MGXMaster;
-import de.cebitec.mgx.gui.datamodel.Job;
-import de.cebitec.mgx.gui.datamodel.MappedSequence;
-import de.cebitec.mgx.gui.datamodel.Mapping;
-import de.cebitec.mgx.gui.datamodel.Reference;
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.JobI;
+import de.cebitec.mgx.api.model.MGXReferenceI;
+import de.cebitec.mgx.api.model.MappedSequenceI;
+import de.cebitec.mgx.api.model.MappingI;
 import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.UUID;
@@ -68,10 +67,10 @@ public class MappingCtxTest {
     @Test
     public void testGetMappings() {
         System.out.println("getMappings");
-        MGXMaster master = TestMaster.getRO();
-        Iterator<Mapping> iter = master.Mapping().fetchall();
+        MGXMasterI master = TestMaster.getRO();
+        Iterator<MappingI> iter = master.Mapping().fetchall();
         int cnt = 0;
-        Mapping mapping = null;
+        MappingI mapping = null;
         while (iter.hasNext()) {
             mapping = iter.next();
             cnt++;
@@ -79,17 +78,17 @@ public class MappingCtxTest {
         assertEquals(1, cnt);
         assertNotNull(mapping);
 
-        Reference ref = master.Reference().fetch(mapping.getReferenceID());
-        Job job = master.Job().fetch(mapping.getJobID());
+        MGXReferenceI ref = master.Reference().fetch(mapping.getReferenceID());
+        JobI job = master.Job().fetch(mapping.getJobID());
 
         UUID uuid = master.Mapping().openMapping(mapping.getId());
 
         MappingCtx ctx = new MappingCtx(mapping, ref, job);
 
-        SortedSet<MappedSequence> mappings = ctx.getMappings(6385, 6395);
+        SortedSet<MappedSequenceI> mappings = ctx.getMappings(6385, 6395);
         master.Mapping().closeMapping(uuid);
 
-        for (MappedSequence ms : mappings) {
+        for (MappedSequenceI ms : mappings) {
             System.err.println(ms.getStart() + " - " + ms.getStop());
         }
         assertEquals(1, mappings.size());

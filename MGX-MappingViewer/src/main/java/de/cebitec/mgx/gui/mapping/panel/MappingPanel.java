@@ -5,7 +5,7 @@
  */
 package de.cebitec.mgx.gui.mapping.panel;
 
-import de.cebitec.mgx.gui.datamodel.MappedSequence;
+import de.cebitec.mgx.api.model.MappedSequenceI;
 import de.cebitec.mgx.gui.mapping.ViewController;
 import de.cebitec.mgx.gui.mapping.shapes.MappedRead2D;
 import de.cebitec.mgx.gui.mapping.tracks.Track;
@@ -86,7 +86,7 @@ public class MappingPanel extends PanelBase {
     @Override
     synchronized boolean update() {
 
-        SortedSet<MappedSequence> mappings = vc.getMappings(bounds[0], bounds[1]);
+        SortedSet<MappedSequenceI> mappings = vc.getMappings(bounds[0], bounds[1]);
         if (mappings.isEmpty()) {
             return true;
         }
@@ -98,10 +98,10 @@ public class MappingPanel extends PanelBase {
         SortedSet<MappedRead2D> ret = new TreeSet<>();
         int vOffset = TRACK_VOFFSET;
         for (Track t : tracks) {
-            Iterator<MappedSequence> iter = t.getSequences();
+            Iterator<MappedSequenceI> iter = t.getSequences();
             vOffset += TRACKHEIGHT;
             while (iter.hasNext()) {
-                MappedSequence ms = iter.next();
+                MappedSequenceI ms = iter.next();
                 double pos0 = bp2px(ms.getMin());
                 double pos1 = bp2px(ms.getMax());
                 assert pos0 >= 0 || pos1 >= 0;

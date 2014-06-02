@@ -1,17 +1,17 @@
 package de.cebitec.mgx.gui.mapping;
 
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.JobI;
+import de.cebitec.mgx.api.model.MGXReferenceI;
+import de.cebitec.mgx.api.model.MappedSequenceI;
+import de.cebitec.mgx.api.model.MappingI;
+import de.cebitec.mgx.api.model.RegionI;
+import de.cebitec.mgx.api.model.SeqRunI;
+import de.cebitec.mgx.api.model.ToolI;
 import de.cebitec.mgx.gui.cache.Cache;
 import de.cebitec.mgx.gui.cache.CacheFactory;
 import de.cebitec.mgx.gui.cache.CoverageInfoCache;
 import de.cebitec.mgx.gui.cache.IntIterator;
-import de.cebitec.mgx.gui.controller.MGXMaster;
-import de.cebitec.mgx.gui.datamodel.Job;
-import de.cebitec.mgx.gui.datamodel.MappedSequence;
-import de.cebitec.mgx.gui.datamodel.Mapping;
-import de.cebitec.mgx.gui.datamodel.Reference;
-import de.cebitec.mgx.gui.datamodel.Region;
-import de.cebitec.mgx.gui.datamodel.SeqRun;
-import de.cebitec.mgx.gui.datamodel.Tool;
 import de.cebitec.mgx.gui.swingutils.NonEDT;
 import java.awt.EventQueue;
 import java.util.Set;
@@ -24,41 +24,41 @@ import java.util.UUID;
  */
 public class MappingCtx {
 
-    private final Mapping m;
-    private final Reference ref;
-    private final Job job;
+    private final MappingI m;
+    private final MGXReferenceI ref;
+    private final JobI job;
     private Cache<String> seqCache = null;
-    private Cache<Set<Region>> regCache = null;
-    private CoverageInfoCache<SortedSet<MappedSequence>> mapCache = null;
+    private Cache<Set<RegionI>> regCache = null;
+    private CoverageInfoCache<SortedSet<MappedSequenceI>> mapCache = null;
     private UUID sessionUUID = null;
     private long maxCoverage = -1;
 
-    public MappingCtx(Mapping m, Reference ref, Job job) {
+    public MappingCtx(MappingI m, MGXReferenceI ref, JobI job) {
         assert m.getReferenceID() == ref.getId();
         this.m = m;
         this.ref = ref;
         this.job = job;
-        MGXMaster master = (MGXMaster) m.getMaster();
+        MGXMasterI master = m.getMaster();
         sessionUUID = master.Mapping().openMapping(m.getId());
     }
 
-    public Reference getReference() {
+    public MGXReferenceI getReference() {
         return ref;
     }
 
-    public MGXMaster getMaster() {
-        return (MGXMaster) m.getMaster();
+    public MGXMasterI getMaster() {
+        return m.getMaster();
     }
 
-    public Mapping getMapping() {
+    public MappingI getMapping() {
         return m;
     }
 
-    public SeqRun getRun() {
+    public SeqRunI getRun() {
         return job.getSeqrun();
     }
 
-    public Tool getTool() {
+    public ToolI getTool() {
         return job.getTool();
     }
 
@@ -66,29 +66,29 @@ public class MappingCtx {
         if (seqCache == null) {
             synchronized (this) {
                 if (seqCache == null) {
-                    seqCache = CacheFactory.createSequenceCache((MGXMaster) ref.getMaster(), ref);
+                    seqCache = CacheFactory.createSequenceCache(ref.getMaster(), ref);
                 }
             }
         }
         return seqCache.get(from, to);
     }
 
-    public Set<Region> getRegions(int from, int to) {
+    public Set<RegionI> getRegions(int from, int to) {
         if (regCache == null) {
             synchronized (this) {
                 if (regCache == null) {
-                    regCache = CacheFactory.createRegionCache((MGXMaster) ref.getMaster(), ref);
+                    regCache = CacheFactory.createRegionCache(ref.getMaster(), ref);
                 }
             }
         }
         return regCache.get(from, to);
     }
 
-    public SortedSet<MappedSequence> getMappings(int from, int to) {
+    public SortedSet<MappedSequenceI> getMappings(int from, int to) {
         if (mapCache == null) {
             synchronized (this) {
                 if (mapCache == null) {
-                    mapCache = CacheFactory.createMappedSequenceCache((MGXMaster) ref.getMaster(), ref, sessionUUID);
+                    mapCache = CacheFactory.createMappedSequenceCache(ref.getMaster(), ref, sessionUUID);
                 }
             }
         }
@@ -99,7 +99,7 @@ public class MappingCtx {
         if (mapCache == null) {
             synchronized (this) {
                 if (mapCache == null) {
-                    mapCache = CacheFactory.createMappedSequenceCache((MGXMaster) ref.getMaster(), ref, sessionUUID);
+                    mapCache = CacheFactory.createMappedSequenceCache(ref.getMaster(), ref, sessionUUID);
                 }
             }
         }
@@ -121,7 +121,7 @@ public class MappingCtx {
         if (mapCache == null) {
             synchronized (this) {
                 if (mapCache == null) {
-                    mapCache = CacheFactory.createMappedSequenceCache((MGXMaster) ref.getMaster(), ref, sessionUUID);
+                    mapCache = CacheFactory.createMappedSequenceCache(ref.getMaster(), ref, sessionUUID);
 
                 }
             }
@@ -133,7 +133,7 @@ public class MappingCtx {
         if (maxCoverage == -1) {
             synchronized (this) {
                 if (maxCoverage == -1) {
-                    final MGXMaster master = (MGXMaster) ref.getMaster();
+                    final MGXMasterI master = ref.getMaster();
                     NonEDT.invokeAndWait(new Runnable() {
 
                         @Override

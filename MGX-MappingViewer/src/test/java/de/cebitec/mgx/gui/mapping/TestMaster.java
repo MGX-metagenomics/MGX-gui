@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.mapping;
 
 import de.cebitec.gpms.core.MembershipI;
 import de.cebitec.gpms.rest.GPMSClientI;
+import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.restgpms.GPMS;
@@ -12,6 +13,7 @@ import java.util.Iterator;
 import java.util.Properties;
 import org.junit.Assert;
 import static org.junit.Assert.fail;
+import static org.junit.Assert.fail;
 
 /**
  *
@@ -19,9 +21,9 @@ import static org.junit.Assert.fail;
  */
 public class TestMaster {
 
-    private static MGXMaster masterRO = null;
+    private static MGXMasterI masterRO = null;
 
-    public static MGXMaster getRO() {
+    public static MGXMasterI getRO() {
         if (masterRO != null) {
             return masterRO;
         }
@@ -60,8 +62,8 @@ public class TestMaster {
         return masterRO;
     }
 
-    public static MGXMaster getRW() {
-        MGXMaster master = null;
+    public static MGXMasterI getRW() {
+        MGXMasterI master = null;
 
         String serverURI = "https://mgx.cebitec.uni-bielefeld.de/MGX-maven-web/webresources/";
 

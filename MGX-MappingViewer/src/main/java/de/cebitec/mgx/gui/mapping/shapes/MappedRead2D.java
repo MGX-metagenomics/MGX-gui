@@ -4,7 +4,7 @@
  */
 package de.cebitec.mgx.gui.mapping.shapes;
 
-import de.cebitec.mgx.gui.datamodel.MappedSequence;
+import de.cebitec.mgx.api.model.MappedSequenceI;
 import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.Shape;
@@ -19,7 +19,7 @@ import java.awt.geom.Rectangle2D;
  */
 public class MappedRead2D implements Shape, Comparable<MappedRead2D> {
 
-    private final MappedSequence ms;
+    private final MappedSequenceI ms;
     private final Shape shape;
     private final static Color[] gradient = new Color[101];
 
@@ -27,12 +27,12 @@ public class MappedRead2D implements Shape, Comparable<MappedRead2D> {
         generateGradient();
     }
 
-    public MappedRead2D(MappedSequence ms, double x, double y, double height, double length) {
+    public MappedRead2D(MappedSequenceI ms, double x, double y, double height, double length) {
         this.ms = ms;
         shape = new Rectangle2D.Double(x, y, length, height);
     }
 
-    public MappedSequence getSequence() {
+    public MappedSequenceI getSequence() {
         return ms;
     }
 

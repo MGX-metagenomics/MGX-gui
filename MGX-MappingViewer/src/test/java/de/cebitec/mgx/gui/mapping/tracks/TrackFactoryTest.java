@@ -5,11 +5,11 @@
  */
 package de.cebitec.mgx.gui.mapping.tracks;
 
-import de.cebitec.mgx.gui.controller.MGXMaster;
-import de.cebitec.mgx.gui.datamodel.Job;
-import de.cebitec.mgx.gui.datamodel.MappedSequence;
-import de.cebitec.mgx.gui.datamodel.Mapping;
-import de.cebitec.mgx.gui.datamodel.Reference;
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.JobI;
+import de.cebitec.mgx.api.model.MGXReferenceI;
+import de.cebitec.mgx.api.model.MappedSequenceI;
+import de.cebitec.mgx.api.model.MappingI;
 import de.cebitec.mgx.gui.mapping.MappingCtx;
 import de.cebitec.mgx.gui.mapping.TestMaster;
 import de.cebitec.mgx.gui.mapping.ViewController;
@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.SortedSet;
-import java.util.TreeSet;
 import org.junit.After;
 import org.junit.AfterClass;
 import static org.junit.Assert.*;
@@ -87,31 +86,34 @@ public class TrackFactoryTest {
     @Test
     public void testTiming() {
         System.out.println("testTiming");
-        MGXMaster master = TestMaster.getRO();
-        Iterator<Mapping> iter = master.Mapping().fetchall();
-        Mapping mapping = null;
+        MGXMasterI master = TestMaster.getRO();
+        Iterator<MappingI> iter = master.Mapping().fetchall();
+        MappingI mapping = null;
         while (iter.hasNext()) {
             mapping = iter.next();
         }
-        Reference ref = master.Reference().fetch(mapping.getReferenceID());
-        Job job = master.Job().fetch(mapping.getJobID());
+        MGXReferenceI ref = master.Reference().fetch(mapping.getReferenceID());
+        JobI job = master.Job().fetch(mapping.getJobID());
         //UUID uuid = master.Mapping().openMapping(mapping.getId());
         MappingCtx ctx = new MappingCtx(mapping, ref, job);
         ViewController vc = new ViewController(ctx);
 
         vc.setBounds(0, ref.getLength() - 1);
-        SortedSet<MappedSequence> mappings = vc.getMappings(0, ref.getLength() - 1);
+        SortedSet<MappedSequenceI> mappings = vc.getMappings(0, ref.getLength() - 1);
         int numMappings = mappings.size();
 
         List<Track> tracks = new ArrayList<>();
+        
+        int numTracks1, numTracks2;
 
         long start = System.currentTimeMillis();
-        for (int i = 0; i < 50000; i++) {
+        for (int i = 0; i < 500; i++) {
             tracks.clear();
             TrackFactory.createTracks(mappings, tracks);
         }
         start = (System.currentTimeMillis() - start);
         System.err.println("  first took " + start + " ms");
+        numTracks1 = tracks.size();
 
         int sum = 0;
         for (Track t : tracks) {
@@ -120,17 +122,20 @@ public class TrackFactoryTest {
         assertEquals(numMappings, sum);
         
         start = System.currentTimeMillis();
-        for (int i = 0; i < 50000; i++) {
+        for (int i = 0; i < 500; i++) {
             tracks.clear();
             TrackFactory.createTracks2(mappings, tracks);
         }
         start = (System.currentTimeMillis() - start);
         System.err.println("  second took " + start + " ms");
+        numTracks2 = tracks.size();
 
         sum = 0;
         for (Track t : tracks) {
             sum += t.size();
         }
         assertEquals(numMappings, sum);
+        
+        assertEquals(numTracks1, numTracks2);
     }
 }

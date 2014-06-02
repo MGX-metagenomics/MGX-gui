@@ -5,7 +5,7 @@
  */
 package de.cebitec.mgx.gui.mapping.tracks;
 
-import de.cebitec.mgx.gui.datamodel.MappedSequence;
+import de.cebitec.mgx.api.model.MappedSequenceI;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
@@ -19,9 +19,9 @@ public class TrackFactory {
 
     private static final ForkJoinPool pool = new ForkJoinPool();
 
-    public static void createTracks(Iterable<MappedSequence> mappings, Collection<Track> tracks) {
+    public static void createTracks(Iterable<MappedSequenceI> mappings, Collection<Track> tracks) {
         tracks.clear();
-        for (MappedSequence ms : mappings) {
+        for (MappedSequenceI ms : mappings) {
             boolean placed = false;
             for (Track t : tracks) {
                 if (!placed) {
@@ -32,18 +32,19 @@ public class TrackFactory {
                 }
             }
             if (!placed) {
+                //System.err.println("adding track..");
                 Track t = new Track();
                 tracks.add(t);
-                placed = t.tryAdd(ms);
+                t.add(ms);
             }
         }
     }
 
-    public static void createTracks2(Iterable<MappedSequence> mappings, final List<Track> tracks) {
+    public static void createTracks2(Iterable<MappedSequenceI> mappings, final List<Track> tracks) {
         tracks.clear();
-        tracks.add(new Track());
-        for (MappedSequence ms : mappings) {
-            FindTrack ft = new FindTrack(tracks, ms);
+//        tracks.add(new Track());
+        for (MappedSequenceI ms : mappings) {
+            FindTrack ft = new FindTrack(0, tracks.size(), tracks.toArray(new Track[]{}), ms);
             Track t = pool.invoke(ft);
             if (t != null) {
                 t.add(ms);
@@ -57,42 +58,44 @@ public class TrackFactory {
 
     public static class FindTrack extends RecursiveTask<Track> {
 
-        private final List<Track> tracks;
-        private final MappedSequence ms;
+        private final Track[] tracks;
+        private final MappedSequenceI ms;
+        private final int from, to;
 
-        private final static int THRESHOLD = 1;
+        private final static int THRESHOLD = 10;
 
-        public FindTrack(List<Track> tracks, MappedSequence ms) {
+        public FindTrack(int from, int to, Track[] tracks, MappedSequenceI ms) {
             this.tracks = tracks;
             this.ms = ms;
+            this.from = from;
+            this.to = to;
         }
 
         @Override
         protected Track compute() {
-            int len = tracks.size();
+            int len = to - from + 1; //tracks.size();
 
             if (len <= THRESHOLD) {
-                for (Track t : tracks) {
+                for (int i = from; i < to; i++) {
+                    Track t = tracks[i];
                     if (t.canAdd(ms)) {
                         return t;
                     }
                 }
-                System.err.println("analyzed "+len);
+                //System.err.println("analyzed "+len);
                 return null;
             } else {
 
                 int mid = len / 2;
-                List<Track> subList1 = tracks.subList(0, mid);
-                List<Track> subList2 = tracks.subList(mid, len);
+//                List<Track> subList1 = tracks.subList(0, mid);
+//                List<Track> subList2 = tracks.subList(mid, len);
+//                assert subList1.size() + subList2.size() == len;
 
-                assert subList1.size() + subList2.size() == len;
-                
-                System.err.println("processing lists "+ subList1.size() + " and " + subList2.size());
-
-                FindTrack left = new FindTrack(subList1, ms);
+                //System.err.println("processing lists "+ subList1.size() + " and " + subList2.size());
+                FindTrack left = new FindTrack(0, mid, tracks, ms);
                 left.fork();
 
-                FindTrack right = new FindTrack(subList2, ms);
+                FindTrack right = new FindTrack(mid, len, tracks, ms);
                 Track tr = right.compute();
 
                 Track tl = left.join();

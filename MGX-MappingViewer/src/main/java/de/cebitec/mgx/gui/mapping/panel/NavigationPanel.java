@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.swing.ToolTipManager;
+import org.apache.commons.math3.util.FastMath;
 
 /**
  *
@@ -174,7 +175,7 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
 
         int[] oldBounds = vc.getBounds();
         int len = oldBounds[1] - oldBounds[0] + 1;
-        vc.setBounds(posInRef, Math.min(posInRef + len, vc.getReference().getLength() - 1));
+        vc.setBounds(posInRef, FastMath.min(posInRef + len, vc.getReference().getLength() - 1));
     }
 
     private int dragType = 0;  // 1=left, 2=mid, 3=right
@@ -189,12 +190,12 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
         int x = e.getX();
         int posInRef = px2bp(e.getX());
 
-        int distToStart = Math.abs(bounds[0] - posInRef);  // in bp
-        int distToEnd = Math.abs(bounds[1] - posInRef);
-        int distToMid = Math.abs((bounds[0] + (bounds[1] - bounds[0] + 1) / 2) - posInRef);
+        int distToStart = FastMath.abs(bounds[0] - posInRef);  // in bp
+        int distToEnd = FastMath.abs(bounds[1] - posInRef);
+        int distToMid = FastMath.abs((bounds[0] + (bounds[1] - bounds[0] + 1) / 2) - posInRef);
 
-        int scaledDistToStart = (int) Math.abs(scaledBounds[0] - x);  // in px
-        int scaledDistToEnd = (int) Math.abs(scaledBounds[1] - x);
+        int scaledDistToStart = (int) FastMath.abs(scaledBounds[0] - x);  // in px
+        int scaledDistToEnd = (int) FastMath.abs(scaledBounds[1] - x);
 
         if (scaledDistToStart <= CAPTURE_DIST && distToStart < distToEnd && distToStart < distToMid) {
             dragType = 1;
@@ -332,7 +333,7 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
         int baseY = getHeight() - 1;
         int pos = 0;
         int max = -1;
-        double covScale = (getHeight() * 1d) / (Math.log(maxCov * 1d));
+        double covScale = (getHeight() * 1d) / (FastMath.log(maxCov * 1d));
 
         GeneralPath gp = null;
         double[] gpStart = new double[2];
@@ -358,7 +359,7 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
             } else {
                 // we have some coverage..
                 double drawPos = bp2px(pos);
-                double covPos = baseY - (Math.log(cov) * covScale);
+                double covPos = baseY - (FastMath.log(cov) * covScale);
 
                 if (gp == null) {
                     gp = new GeneralPath();
@@ -371,7 +372,7 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
                     lastPoint[1] = baseY;
                 } else {
                     // add a new point if distance >= 3px
-                    if (Math.abs(lastPoint[0] - drawPos) > 3 || Math.abs(lastPoint[1] - covPos) > 3) {
+                    if (FastMath.abs(lastPoint[0] - drawPos) > 3 || FastMath.abs(lastPoint[1] - covPos) > 3) {
                         gp.lineTo(drawPos, covPos);
                         lastPoint[0] = drawPos;
                         lastPoint[1] = covPos;
