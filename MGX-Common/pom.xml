@@ -8,9 +8,29 @@
     </parent>
     <groupId>de.cebitec.mgx.gui</groupId>
     <artifactId>MGX-Common</artifactId>
-    <packaging>nbm</packaging>
+    <packaging>bundle</packaging>
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>2.4.0</version>
+                <extensions>true</extensions>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>bundle</goal>
+                        </goals>
+                    </execution>
+                </executions>
+
+                <configuration>
+                    <instructions>
+                        <Export-Package>de.cebitec.mgx.common,de.cebitec.mgx.common.visualization</Export-Package>
+                        <Private-Package></Private-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>nbm-maven-plugin</artifactId>
@@ -60,12 +80,12 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>de.cebitec.mgx.gui</groupId>
-            <artifactId>MGX-Datamodel</artifactId>
-        </dependency>
-        <dependency>
             <artifactId>MGX-parallelPropChange</artifactId>
             <groupId>de.cebitec.mgx</groupId>
+        </dependency>
+        <dependency>
+            <groupId>de.cebitec.mgx.gui</groupId>
+            <artifactId>MGX-Datamodel</artifactId>
         </dependency>
     </dependencies>
     <properties>
