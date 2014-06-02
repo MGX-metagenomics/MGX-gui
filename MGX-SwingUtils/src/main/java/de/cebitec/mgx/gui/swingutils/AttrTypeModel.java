@@ -1,7 +1,7 @@
 
 package de.cebitec.mgx.gui.swingutils;
 
-import de.cebitec.mgx.gui.datamodel.AttributeType;
+import de.cebitec.mgx.api.model.AttributeTypeI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -13,13 +13,13 @@ import javax.swing.event.ListDataEvent;
  *
  * @author sjaenick
  */
-class AttrTypeModel extends AbstractListModel<AttributeType> implements ComboBoxModel<AttributeType> {
+class AttrTypeModel extends AbstractListModel<AttributeTypeI> implements ComboBoxModel<AttributeTypeI> {
 
-    private final List<AttributeType> data = new ArrayList<>();
+    private final List<AttributeTypeI> data = new ArrayList<>();
     private int selectionIdx = -1;
    
 
-    public void setData(final Collection<AttributeType> newData) {
+    public void setData(final Collection<AttributeTypeI> newData) {
         data.clear();
         data.addAll(newData);
         selectionIdx = -1;
@@ -44,7 +44,7 @@ class AttrTypeModel extends AbstractListModel<AttributeType> implements ComboBox
     }
 
     @Override
-    public AttributeType getSelectedItem() {
+    public AttributeTypeI getSelectedItem() {
         return selectionIdx != -1 ? data.get(selectionIdx) : null;
     }
 
@@ -54,7 +54,7 @@ class AttrTypeModel extends AbstractListModel<AttributeType> implements ComboBox
     }
 
     @Override
-    public AttributeType getElementAt(int index) {
+    public AttributeTypeI getElementAt(int index) {
         return data.get(index);
     }
 

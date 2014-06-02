@@ -1,14 +1,13 @@
 package de.cebitec.mgx.gui.swingutils;
 
-import de.cebitec.mgx.gui.datamodel.Attribute;
-import de.cebitec.mgx.gui.datamodel.AttributeType;
-import de.cebitec.mgx.gui.datamodel.misc.Pair;
-import de.cebitec.mgx.gui.datamodel.tree.Node;
-import de.cebitec.mgx.gui.datamodel.tree.Tree;
-import de.cebitec.mgx.gui.datamodel.tree.TreeFactory;
-import de.cebitec.mgx.gui.groups.VGroupManager;
-import de.cebitec.mgx.gui.groups.VisualizationGroup;
-import de.cebitec.mgx.gui.util.Reference;
+import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.misc.Pair;
+import de.cebitec.mgx.api.model.AttributeI;
+import de.cebitec.mgx.api.model.AttributeTypeI;
+import de.cebitec.mgx.api.model.tree.NodeI;
+import de.cebitec.mgx.api.model.tree.TreeI;
+import de.cebitec.mgx.common.TreeFactory;
+import de.cebitec.mgx.common.VGroupManager;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
@@ -23,6 +22,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.ExecutionException;
+import javax.swing.SwingWorker;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -41,12 +43,12 @@ public class TreeFilter extends javax.swing.JPanel implements ItemListener, Prop
     }
 
     private final AttrTypeModel atModel = new AttrTypeModel();
-    private Tree<Long> guideTree = null;
-    private final Map<AttributeType, SortedSet<Attribute>> parents = new HashMap<>();
-    private final Set<Attribute> blackList = new HashSet<>();
-    private AttributeType curAttrType = null;
+    private TreeI<Long> guideTree = null;
+    private final Map<AttributeTypeI, SortedSet<AttributeI>> parents = new HashMap<>();
+    private final Set<AttributeI> blackList = new HashSet<>();
+    private AttributeTypeI curAttrType = null;
 
-    public void setAttributeType(AttributeType at) {
+    public void setAttributeType(AttributeTypeI at) {
         if (at == null || at.equals(curAttrType)) {
             return;
         } else {
@@ -60,7 +62,7 @@ public class TreeFilter extends javax.swing.JPanel implements ItemListener, Prop
         parents.clear();
         blackList.clear();
         guideTree = null;
-        if (at.getStructure() != AttributeType.STRUCTURE_HIERARCHICAL) {
+        if (at.getStructure() != AttributeTypeI.STRUCTURE_HIERARCHICAL) {
             atModel.clear();
             attrList.clear();
             attrTypes.setEnabled(false);
@@ -72,16 +74,16 @@ public class TreeFilter extends javax.swing.JPanel implements ItemListener, Prop
         if (guideTree == null) {
             return;
         }
-        for (Node<Long> node : guideTree.getNodes()) {
+        for (NodeI<Long> node : guideTree.getNodes()) {
             // collect attributes and attributetypes for same layer and parent nodes only
             if (at.equals(node.getAttribute().getAttributeType())) {
-                Node<Long> cur = node;
+                NodeI<Long> cur = node;
                 while (!cur.isRoot()) {
-                    Attribute attr = cur.getAttribute();
-                    AttributeType type = attr.getAttributeType();
+                    AttributeI attr = cur.getAttribute();
+                    AttributeTypeI type = attr.getAttributeType();
 
                     if (!parents.containsKey(type)) {
-                        parents.put(type, new TreeSet<Attribute>());
+                        parents.put(type, new TreeSet<AttributeI>());
                     }
                     parents.get(type).add(attr);
                     cur = cur.getParent();
@@ -90,7 +92,7 @@ public class TreeFilter extends javax.swing.JPanel implements ItemListener, Prop
         }
         SortByNumberOfValues sorter = new SortByNumberOfValues();
         sorter.setMap(parents);
-        List<AttributeType> typesOrdered = new ArrayList<>(parents.size());
+        List<AttributeTypeI> typesOrdered = new ArrayList<>(parents.size());
         typesOrdered.addAll(parents.keySet());
         Collections.sort(typesOrdered, sorter);
 
@@ -105,41 +107,48 @@ public class TreeFilter extends javax.swing.JPanel implements ItemListener, Prop
     @Override
     public void itemStateChanged(ItemEvent evt) {
         if (evt.getStateChange() == ItemEvent.SELECTED) {
-            AttributeType item = atModel.getSelectedItem();
+            AttributeTypeI item = atModel.getSelectedItem();
             if (item != null) {
-                Set<Attribute> get = parents.get(item);
+                Set<AttributeI> get = parents.get(item);
                 attrList.clear();
-                for (Attribute pAttr : get) {
+                for (AttributeI pAttr : get) {
                     attrList.addElement(pAttr, !blackList.contains(pAttr));
                 }
             }
         }
     }
 
-    private Tree<Long> createGuideTree() {
-        final Reference<Tree<Long>> result = new Reference<>();
-        NonEDT.invokeAndWait(new Runnable() {
+    private TreeI<Long> createGuideTree() {
+        
+        SwingWorker<TreeI<Long>, Void> sw = new SwingWorker<TreeI<Long>, Void>() {
+
             @Override
-            public void run() {
-                List<Pair<VisualizationGroup, Tree<Long>>> trees = VGroupManager.getInstance().getHierarchies();
+            protected TreeI<Long> doInBackground() throws Exception {
+                 List<Pair<VisualizationGroupI, TreeI<Long>>> trees = VGroupManager.getInstance().getHierarchies();
                 if (trees == null) { // conflicts remain
-                    return;
+                    return null;
                 }
-                List<Tree<Long>> tmp = new ArrayList<>(trees.size());
-                for (Pair<VisualizationGroup, Tree<Long>> p : trees) {
+                List<TreeI<Long>> tmp = new ArrayList<>(trees.size());
+                for (Pair<VisualizationGroupI, TreeI<Long>> p : trees) {
                     tmp.add(p.getSecond());
                 }
-                Tree<Long> merged = TreeFactory.mergeTrees(tmp);
-                result.setValue(merged);
+                TreeI<Long> merged = TreeFactory.mergeTrees(tmp);
+                return merged;
             }
-        });
-
-        Tree<Long> merged = result.getValue();
+        };
+        sw.execute();
+      
+        TreeI<Long> merged = null;
+        try {
+            merged = sw.get();
+        } catch (InterruptedException | ExecutionException ex) {
+            Exceptions.printStackTrace(ex);
+        }
         return merged;
     }
 
-    private Node<Long> findNode(final Attribute a) {
-        for (Node<Long> n : guideTree.getNodes()) {
+    private NodeI<Long> findNode(final AttributeI a) {
+        for (NodeI<Long> n : guideTree.getNodes()) {
             if (n.getAttribute().equals(a)) {
                 return n;
             }
@@ -156,9 +165,9 @@ public class TreeFilter extends javax.swing.JPanel implements ItemListener, Prop
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        attrTypes = new javax.swing.JComboBox<AttributeType>();
+        attrTypes = new javax.swing.JComboBox<AttributeTypeI>();
         jScrollPane1 = new javax.swing.JScrollPane();
-        attrList = new de.cebitec.mgx.gui.swingutils.JCheckBoxList<Attribute>();
+        attrList = new de.cebitec.mgx.gui.swingutils.JCheckBoxList<AttributeI>();
 
         attrTypes.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
 
@@ -182,17 +191,17 @@ public class TreeFilter extends javax.swing.JPanel implements ItemListener, Prop
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private de.cebitec.mgx.gui.swingutils.JCheckBoxList<Attribute> attrList;
-    private javax.swing.JComboBox<AttributeType> attrTypes;
+    private de.cebitec.mgx.gui.swingutils.JCheckBoxList<AttributeI> attrList;
+    private javax.swing.JComboBox<AttributeTypeI> attrTypes;
     private javax.swing.JScrollPane jScrollPane1;
     // End of variables declaration//GEN-END:variables
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals(JCheckBoxList.selectionChange)) {
-            Attribute attr = (Attribute) evt.getOldValue();
+            AttributeI attr = (AttributeI) evt.getOldValue();
             boolean isSelected = (boolean) evt.getNewValue();
-            Node<Long> n = findNode(attr);
+            NodeI<Long> n = findNode(attr);
             if (isSelected) {
                 enableChildren(n);
             } else {
@@ -202,38 +211,38 @@ public class TreeFilter extends javax.swing.JPanel implements ItemListener, Prop
         }
     }
 
-    private void enableChildren(Node<Long> n) {
+    private void enableChildren(NodeI<Long> n) {
         blackList.remove(n.getAttribute());
         if (n.hasChildren()) {
-            for (Node<Long> c : n.getChildren()) {
+            for (NodeI<Long> c : n.getChildren()) {
                 enableChildren(c);
             }
         }
     }
 
-    private void disableChildren(Node<Long> n) {
+    private void disableChildren(NodeI<Long> n) {
         blackList.add(n.getAttribute());
         if (n.hasChildren()) {
-            for (Node<Long> c : n.getChildren()) {
+            for (NodeI<Long> c : n.getChildren()) {
                 disableChildren(c);
             }
         }
     }
 
-    public Set<Attribute> getBlackList() {
+    public Set<AttributeI> getBlackList() {
         return blackList;
     }
 
-    private class SortByNumberOfValues<T> implements Comparator<AttributeType> {
+    private class SortByNumberOfValues<T> implements Comparator<AttributeTypeI> {
 
-        Map<AttributeType, Set<T>> map;
+        Map<AttributeTypeI, Set<T>> map;
 
-        public void setMap(Map<AttributeType, Set<T>> data) {
+        public void setMap(Map<AttributeTypeI, Set<T>> data) {
             map = data;
         }
 
         @Override
-        public int compare(AttributeType o1, AttributeType o2) {
+        public int compare(AttributeTypeI o1, AttributeTypeI o2) {
             return map != null
                     ? Integer.compare(map.get(o1).size(), map.get(o2).size())
                     : 0;
