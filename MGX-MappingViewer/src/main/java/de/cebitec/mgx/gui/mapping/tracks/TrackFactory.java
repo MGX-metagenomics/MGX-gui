@@ -19,24 +19,34 @@ public class TrackFactory {
 
     private static final ForkJoinPool pool = new ForkJoinPool();
 
-    public static void createTracks(int minIdentity, Iterable<MappedSequenceI> mappings, Collection<Track> tracks) {
+    public static synchronized Track addTrack(Collection<Track> tracks, MappedSequenceI ms) {
+        Track t = new Track();
+        tracks.add(t);
+        t.add(ms);
+        return t;
+    }
+
+    public static void createTracks(int minIdentity, Collection<MappedSequenceI> mappings, List<Track> tracks) {
         tracks.clear();
+        boolean placed;
+        Track last = null;
         for (MappedSequenceI ms : mappings) {
             if (ms.getIdentity() >= minIdentity) {
-                boolean placed = false;
-                for (Track t : tracks) {
-                    if (!placed) {
-                        placed = t.tryAdd(ms);
-                        if (placed) {
-                            break;
+                placed = false;
+                // check last track first as a quick check;
+                // major speedup, but suboptimal layout
+                if (last != null && last.canAdd(ms)) {
+                    for (Track t : tracks) {
+                        if (!placed) {
+                            placed = t.tryAdd(ms);
+                            if (placed) {
+                                break;
+                            }
                         }
                     }
                 }
                 if (!placed) {
-                    //System.err.println("adding track..");
-                    Track t = new Track();
-                    tracks.add(t);
-                    t.add(ms);
+                    last = addTrack(tracks, ms);
                 }
             }
         }

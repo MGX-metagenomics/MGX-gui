@@ -29,7 +29,8 @@
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Component id="identityFilter" min="-2" pref="112" max="-2" attributes="0"/>
-              <EmptySpace pref="822" max="32767" attributes="0"/>
+              <EmptySpace pref="805" max="32767" attributes="0"/>
+              <Component id="scrollBar" min="-2" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -40,6 +41,7 @@
               <Component id="identityFilter" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
+          <Component id="scrollBar" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
   </Layout>
@@ -51,6 +53,11 @@
         </Property>
         <Property name="value" type="int" value="0"/>
         <Property name="opaque" type="boolean" value="false"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JScrollBar" name="scrollBar">
+      <Properties>
+        <Property name="enabled" type="boolean" value="false"/>
       </Properties>
     </Component>
   </SubComponents>

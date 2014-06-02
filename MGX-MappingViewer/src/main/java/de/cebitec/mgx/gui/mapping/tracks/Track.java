@@ -20,38 +20,31 @@ public class Track {
 
     private static final ForkJoinPool pool = new ForkJoinPool();
     private final List<MappedSequenceI> content = new LinkedList<>();
+    private MappedSequenceI last = null;
     private final int padding = 25; // bp, should be px
 
     Track() {
     }
 
-    public boolean tryAdd(MappedSequenceI ms) {
-//        System.err.println("checking "+content.size());
-//        for (MappedSequence m : content) {
-//            if (overlaps(m, ms, padding)) {
-//                return false;
-//            }
-//        }
-        boolean ovl1 = overlaps(ms);
-//        boolean ovl2 = pool.invoke(new CheckOverlap(0, content.size(), content.toArray(new MappedSequence[]{}), ms));
-//        assert ovl1 == ovl2;
+    public synchronized boolean tryAdd(MappedSequenceI ms) {
+        boolean ovl1 = overlaps(last, ms, padding);
         if (ovl1) {
             return false;
         }
         content.add(ms);
+        last = ms;
         return true;
     }
 
-    public void add(MappedSequenceI ms) {
+    public synchronized void add(MappedSequenceI ms) {
         content.add(ms);
+        last = ms;
     }
 
-    public boolean canAdd(MappedSequenceI ms) {
-        //return pool.invoke(new CheckOverlap(0, content.size(), content.toArray(new MappedSequence[]{}), ms));
-        for (MappedSequenceI m : content) {
-            if (overlaps(m, ms, padding)) {
-                return false;
-            }
+    public synchronized boolean canAdd(MappedSequenceI ms) {
+        boolean ovl1 = overlaps(last, ms, padding);
+        if (ovl1) {
+            return false;
         }
         return true;
     }
@@ -65,14 +58,31 @@ public class Track {
     }
 
     private boolean overlaps(MappedSequenceI ms) {
-        for (MappedSequenceI m : content) {
-            if (overlaps(m, ms, padding)) {
-                return true;
-            }
-        }
-        return false;
+        return overlaps(last, ms, padding);
+//        Iterator<MappedSequenceI> iter = content.iterator();
+//        int pos=0;
+//        while (iter.hasNext()) {
+//            MappedSequenceI m = iter.next();
+//            pos++;
+//            if (overlaps(m, ms, padding)) {
+//                System.err.println("overlap at idx "+pos+" out of "+content.size());
+//                return true;
+//            }
+//        }
+//        return false;
     }
 
+//    private boolean overlapsRev(MappedSequenceI ms) {
+//        // slower than forward iteration..
+//        Iterator<MappedSequenceI> iter = new ReverseIterator<>(content);
+//        while (iter.hasNext()) {
+//            MappedSequenceI m = iter.next();
+//            if (overlaps(m, ms, padding)) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
     private static boolean overlaps(MappedSequenceI ms1, MappedSequenceI ms2, final int pad) {
         int ms2min = ms2.getMin() - pad;
         int ms2max = ms2.getMax() + pad;
@@ -82,6 +92,7 @@ public class Track {
 
     private static boolean within(int pos, int from, int to) {
         return pos >= from && pos <= to;
+
     }
 
     public class CheckOverlap extends RecursiveTask<Boolean> {

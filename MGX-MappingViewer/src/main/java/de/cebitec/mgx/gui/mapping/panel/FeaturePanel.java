@@ -11,6 +11,7 @@ import de.cebitec.mgx.gui.mapping.shapes.Arrow;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Composite;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -259,12 +260,14 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
         inDrag = true;
         int x = e.getX();
         dragStart = px2bp(x);
+        setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
         //System.err.println("drag started at " + dragStart);
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
         inDrag = false;
+        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
     }
 
     @Override

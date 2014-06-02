@@ -14,7 +14,6 @@ import java.awt.Composite;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.event.MouseEvent;
@@ -29,6 +28,8 @@ import java.util.List;
 import java.util.Set;
 import javax.swing.ToolTipManager;
 import org.apache.commons.math3.util.FastMath;
+import org.netbeans.api.progress.ProgressHandle;
+import org.netbeans.api.progress.ProgressHandleFactory;
 
 /**
  *
@@ -231,8 +232,8 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
             case 2:
                 // move interval
                 if (previewBounds != null) {
-                    previewBounds[0] = previewBounds[0] < 0 ? 0 : previewBounds[0];
-                    previewBounds[1] = previewBounds[1] > vc.getReference().getLength() - 1 ? vc.getReference().getLength() - 1 : previewBounds[1];
+                    previewBounds[0] = FastMath.max(0, previewBounds[0]);
+                    previewBounds[1] = FastMath.min(vc.getReference().getLength() - 1, previewBounds[1]);
                     vc.setBounds(previewBounds[0], previewBounds[1]);
                 }
                 break;
@@ -321,12 +322,14 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
 
     private void generateCoverage() {
 
-        if (maxCov == -1) {
-            maxCov = vc.getMaxCoverage();
-        }
-        if (maxCov == -1) {
+        if (maxCov != -1) {
             return;
         }
+
+        final ProgressHandle ph = ProgressHandleFactory.createHandle("Fetching coverage data");
+        ph.start();
+
+        maxCov = vc.getMaxCoverage();
 
         IntIterator covIter = vc.getCoverageIterator();
         List<Area> ret = new ArrayList<>();
@@ -396,6 +399,9 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
             coverage.clear();
             coverage.addAll(ret);
         }
+
+        ph.finish();
+
         repaint();
     }
 
