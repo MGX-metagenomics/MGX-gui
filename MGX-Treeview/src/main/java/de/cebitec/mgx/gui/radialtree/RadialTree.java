@@ -1,16 +1,19 @@
 package de.cebitec.mgx.gui.radialtree;
 
-import de.cebitec.mgx.gui.attributevisualization.viewer.HierarchicalViewerI;
-import de.cebitec.mgx.gui.attributevisualization.viewer.ViewerI;
-import de.cebitec.mgx.gui.datamodel.AttributeType;
-import de.cebitec.mgx.gui.datamodel.misc.Pair;
-import de.cebitec.mgx.gui.datamodel.tree.Node;
-import de.cebitec.mgx.gui.datamodel.tree.Tree;
-import de.cebitec.mgx.gui.groups.ImageExporterI;
-import de.cebitec.mgx.gui.groups.VGroupManager;
-import de.cebitec.mgx.gui.groups.VisualizationGroup;
-import de.cebitec.mgx.gui.radialtree.internal.*;
-import de.cebitec.mgx.gui.util.FileType;
+import de.cebitec.mgx.api.groups.FileType;
+import de.cebitec.mgx.api.groups.ImageExporterI;
+import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.misc.Pair;
+import de.cebitec.mgx.api.model.AttributeTypeI;
+import de.cebitec.mgx.api.model.tree.NodeI;
+import de.cebitec.mgx.api.model.tree.TreeI;
+import de.cebitec.mgx.common.visualization.HierarchicalViewerI;
+import de.cebitec.mgx.common.visualization.ViewerI;
+import de.cebitec.mgx.gui.radialtree.internal.ArcLabelRenderer;
+import de.cebitec.mgx.gui.radialtree.internal.DecoratorLabelRenderer;
+import de.cebitec.mgx.gui.radialtree.internal.MouseWheelControl;
+import de.cebitec.mgx.gui.radialtree.internal.SectorRenderer;
+import de.cebitec.mgx.gui.radialtree.internal.StarburstLayout;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -27,7 +30,11 @@ import javax.swing.SwingConstants;
 import org.openide.util.lookup.ServiceProvider;
 import prefuse.Display;
 import prefuse.Visualization;
-import prefuse.action.*;
+import prefuse.action.Action;
+import prefuse.action.ActionList;
+import prefuse.action.GroupAction;
+import prefuse.action.ItemAction;
+import prefuse.action.RepaintAction;
 import prefuse.action.animate.ColorAnimator;
 import prefuse.action.animate.QualityControlAnimator;
 import prefuse.action.animate.VisibilityAnimator;
@@ -36,7 +43,11 @@ import prefuse.action.assignment.FontAction;
 import prefuse.action.filter.FisheyeTreeFilter;
 import prefuse.action.layout.CollapsedSubtreeLayout;
 import prefuse.activity.SlowInSlowOutPacer;
-import prefuse.controls.*;
+import prefuse.controls.FocusControl;
+import prefuse.controls.HoverActionControl;
+import prefuse.controls.PanControl;
+import prefuse.controls.ZoomControl;
+import prefuse.controls.ZoomToFitControl;
 import prefuse.data.Tuple;
 import prefuse.data.event.TupleSetListener;
 import prefuse.data.expression.OrPredicate;
@@ -82,13 +93,13 @@ public class RadialTree extends HierarchicalViewerI {
     private prefuse.data.Tree pTree = null;
 
     @Override
-    public void show(List<Pair<VisualizationGroup, Tree<Long>>> dists) {
-        Pair<VisualizationGroup, Tree<Long>> p = dists.get(0);
-        Tree<Long> mgxTree = p.getSecond();
+    public void show(List<Pair<VisualizationGroupI, TreeI<Long>>> dists) {
+        Pair<VisualizationGroupI, TreeI<Long>> p = dists.get(0);
+        TreeI<Long> mgxTree = p.getSecond();
 
         initDisplay();
 
-        Node<Long> root = mgxTree.getRoot();
+        NodeI<Long> root = mgxTree.getRoot();
         pTree = new prefuse.data.Tree();
         pTree.getNodeTable().addColumn(nodeLabel, String.class);
         //pTree.getNodeTable().addColumn(nodeTotalElements, long.class);
@@ -101,7 +112,7 @@ public class RadialTree extends HierarchicalViewerI {
         //rootNode.set(nodeTotalElements, calculateNodeCount(root.getContent()));
         //rootNode.set(sameRankCount, rankCounts);
 
-        for (Node<Long> child : root.getChildren()) {
+        for (NodeI<Long> child : root.getChildren()) {
             addWithChildren(pTree, rootNode, child);
         }
 
@@ -263,7 +274,7 @@ public class RadialTree extends HierarchicalViewerI {
         });
     }
 
-    private static void addWithChildren(prefuse.data.Tree pTree, prefuse.data.Node parent, Node<Long> node) {
+    private static void addWithChildren(prefuse.data.Tree pTree, prefuse.data.Node parent, NodeI<Long> node) {
         prefuse.data.Node self = pTree.addChild(parent);
         self.set(nodeLabel, node.getAttribute().getValue());
         self.set(nodeContent, node.getContent().floatValue());
@@ -271,7 +282,7 @@ public class RadialTree extends HierarchicalViewerI {
         //self.set(sameRankCount, rankCounts);
 
         if (node.hasChildren()) {
-            for (Node<Long> child : node.getChildren()) {
+            for (NodeI<Long> child : node.getChildren()) {
                 addWithChildren(pTree, self, child);
             }
         }
@@ -332,7 +343,7 @@ public class RadialTree extends HierarchicalViewerI {
 
     @Override
     public Class getInputType() {
-        return Tree.class;
+        return TreeI.class;
     }
 
     @Override
@@ -351,8 +362,8 @@ public class RadialTree extends HierarchicalViewerI {
     }
 
     @Override
-    public boolean canHandle(AttributeType valueType) {
-        return super.canHandle(valueType) && VGroupManager.getInstance().getActiveGroups().size() == 1;
+    public boolean canHandle(AttributeTypeI valueType) {
+        return super.canHandle(valueType) && getVGroupManager().getActiveGroups().size() == 1;
     }
 
     @Override

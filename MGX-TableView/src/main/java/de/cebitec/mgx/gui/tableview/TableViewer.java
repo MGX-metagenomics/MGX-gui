@@ -1,14 +1,14 @@
 package de.cebitec.mgx.gui.tableview;
 
-import de.cebitec.mgx.gui.attributevisualization.filter.SortOrder;
-import de.cebitec.mgx.gui.attributevisualization.filter.ToFractionFilter;
-import de.cebitec.mgx.gui.attributevisualization.viewer.ViewerI;
-import de.cebitec.mgx.gui.datamodel.Attribute;
-import de.cebitec.mgx.gui.datamodel.AttributeType;
-import de.cebitec.mgx.gui.datamodel.misc.Distribution;
-import de.cebitec.mgx.gui.datamodel.misc.Pair;
-import de.cebitec.mgx.gui.groups.ImageExporterI;
-import de.cebitec.mgx.gui.groups.VisualizationGroup;
+import de.cebitec.mgx.api.groups.ImageExporterI;
+import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.misc.DistributionI;
+import de.cebitec.mgx.api.misc.Pair;
+import de.cebitec.mgx.api.model.AttributeI;
+import de.cebitec.mgx.api.model.AttributeTypeI;
+import de.cebitec.mgx.common.visualization.ViewerI;
+import de.cebitec.mgx.api.visualization.filter.SortOrder;
+import de.cebitec.mgx.api.visualization.filter.ToFractionFilter;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -23,7 +23,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author sj
  */
 @ServiceProvider(service = ViewerI.class)
-public class TableViewer extends ViewerI<Distribution> {
+public class TableViewer extends ViewerI<DistributionI> {
 
     private JXTable table;
     private TableViewCustomizer cust = null;
@@ -39,17 +39,17 @@ public class TableViewer extends ViewerI<Distribution> {
     }
 
     @Override
-    public boolean canHandle(AttributeType valueType) {
+    public boolean canHandle(AttributeTypeI valueType) {
         return true;
     }
 
     @Override
     public Class getInputType() {
-        return Distribution.class;
+        return DistributionI.class;
     }
 
     @Override
-    public void show(List<Pair<VisualizationGroup, Distribution>> dists) {
+    public void show(List<Pair<VisualizationGroupI, DistributionI>> dists) {
 
         dists = getCustomizer().filter(dists);
         
@@ -58,12 +58,12 @@ public class TableViewer extends ViewerI<Distribution> {
             dists = tff.filter(dists);
         }
 
-        Set<Attribute> allAttrs = new HashSet<>();
+        Set<AttributeI> allAttrs = new HashSet<>();
         int numColumns = dists.size() + 1;
         String[] columns = new String[numColumns];
         int i = 0;
         columns[i++] = getAttributeType().getName(); // first column
-        for (Pair<VisualizationGroup, Distribution> p : dists) {
+        for (Pair<VisualizationGroupI, DistributionI> p : dists) {
             columns[i++] = p.getFirst().getName();
             allAttrs.addAll(p.getSecond().keySet());
         }
@@ -88,12 +88,12 @@ public class TableViewer extends ViewerI<Distribution> {
             }
         };
 
-        for (Attribute a : allAttrs) {
+        for (AttributeI a : allAttrs) {
             Object[] rowData = new Object[numColumns];
             rowData[0] = a.getValue();
             int col = 1;
-            for (Pair<VisualizationGroup, Distribution> p : dists) {
-                Distribution d = p.getSecond();
+            for (Pair<VisualizationGroupI, DistributionI> p : dists) {
+                DistributionI d = p.getSecond();
                 rowData[col++] = d.containsKey(a) 
                         ? getCustomizer().useFractions() ? d.get(a).doubleValue() : d.get(a).longValue() 
                         : 0;

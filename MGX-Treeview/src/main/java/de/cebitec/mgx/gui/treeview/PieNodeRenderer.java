@@ -1,7 +1,12 @@
 package de.cebitec.mgx.gui.treeview;
 
-import de.cebitec.mgx.gui.groups.VisualizationGroup;
-import java.awt.*;
+import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import java.awt.Color;
+import java.awt.FontMetrics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.awt.geom.RectangularShape;
@@ -38,11 +43,11 @@ public class PieNodeRenderer extends LabelRenderer {
         // bounding box for the pie chart
         Rectangle area = new Rectangle((int) shape.getCenterX() - radius, (int) shape.getMinY(), size, size);
 
-        Map<VisualizationGroup, Long> content = (Map<VisualizationGroup, Long>) item.get(TreeView.nodeContent);
+        Map<VisualizationGroupI, Long> content = (Map<VisualizationGroupI, Long>) item.get(TreeView.nodeContent);
         PieSlice[] slices = new PieSlice[content.size()];
         int i = 0;
         // FIXME - use fraction of total classified items for pie slice size
-        for (Map.Entry<VisualizationGroup, Long> e : content.entrySet()) {
+        for (Map.Entry<VisualizationGroupI, Long> e : content.entrySet()) {
             slices[i++] = new PieSlice(e.getValue(), e.getKey().getColor());
         }
 

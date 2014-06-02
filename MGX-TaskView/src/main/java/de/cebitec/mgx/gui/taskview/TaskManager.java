@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.taskview;
 
+import de.cebitec.mgx.pevents.ParallelPropertyChangeSupport;
 import java.awt.EventQueue;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -30,7 +31,7 @@ public class TaskManager implements TaskListener, PropertyChangeListener {
     private final PropertyChangeSupport pcs;
 
     private TaskManager() {
-        pcs = new PropertyChangeSupport(this);
+        pcs = new ParallelPropertyChangeSupport(this);
         reqProcessor = new RequestProcessor("Tasks", Runtime.getRuntime().availableProcessors() + 5, true);
     }
 

@@ -1,15 +1,15 @@
 package de.cebitec.mgx.gui.treeview;
 
-import de.cebitec.mgx.gui.attributevisualization.viewer.HierarchicalViewerI;
-import de.cebitec.mgx.gui.attributevisualization.viewer.ViewerI;
-import de.cebitec.mgx.gui.datamodel.AttributeType;
-import de.cebitec.mgx.gui.datamodel.misc.Pair;
-import de.cebitec.mgx.gui.datamodel.tree.Node;
-import de.cebitec.mgx.gui.datamodel.tree.Tree;
-import de.cebitec.mgx.gui.datamodel.tree.TreeFactory;
-import de.cebitec.mgx.gui.groups.ImageExporterI;
-import de.cebitec.mgx.gui.groups.VisualizationGroup;
-import de.cebitec.mgx.gui.util.FileType;
+import de.cebitec.mgx.api.groups.FileType;
+import de.cebitec.mgx.api.groups.ImageExporterI;
+import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.misc.Pair;
+import de.cebitec.mgx.api.model.AttributeTypeI;
+import de.cebitec.mgx.api.model.tree.NodeI;
+import de.cebitec.mgx.api.model.tree.TreeI;
+import de.cebitec.mgx.common.visualization.HierarchicalViewerI;
+import de.cebitec.mgx.common.visualization.ViewerI;
+import de.cebitec.mgx.common.TreeFactory;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -99,11 +99,11 @@ public class TreeView extends HierarchicalViewerI {
 
     @Override
     public Class getInputType() {
-        return Tree.class;
+        return TreeI.class;
     }
 
     @Override
-    public void setAttributeType(AttributeType aType) {
+    public void setAttributeType(AttributeTypeI aType) {
         super.setAttributeType(aType);
         super.setTitle("Hierarchy view based on " + aType.getName());
     }
@@ -111,19 +111,19 @@ public class TreeView extends HierarchicalViewerI {
     private boolean showUnclassifieds = true;
 
     @Override
-    public void show(List<Pair<VisualizationGroup, Tree<Long>>> trees) {
+    public void show(List<Pair<VisualizationGroupI, TreeI<Long>>> trees) {
         dispose();
 
         showUnclassifieds = getCustomizer().includeUnclassified();
 
         // merge hierarchies into consensus tree
-        Tree<Map<VisualizationGroup, Long>> combinedTree = TreeFactory.combineTrees(trees);
-        Node<Map<VisualizationGroup, Long>> root = combinedTree.getRoot();
+        TreeI<Map<VisualizationGroupI, Long>> combinedTree = TreeFactory.combineTrees(trees);
+        NodeI<Map<VisualizationGroupI, Long>> root = combinedTree.getRoot();
 
         // create an ordered list of groups
         int i = 0;
-        VisualizationGroup[] groupOrder = new VisualizationGroup[trees.size()];
-        for (Pair<VisualizationGroup, Tree<Long>> pair : trees) {
+        VisualizationGroupI[] groupOrder = new VisualizationGroupI[trees.size()];
+        for (Pair<VisualizationGroupI, TreeI<Long>> pair : trees) {
             groupOrder[i++] = pair.getFirst();
         }
 
@@ -143,18 +143,18 @@ public class TreeView extends HierarchicalViewerI {
 
         if (showUnclassifieds) {
             long numAssignedBelow = 0;
-            Map<VisualizationGroup, Long> content = new HashMap<>();
+            Map<VisualizationGroupI, Long> content = new HashMap<>();
             // copy content of parent
-            for (Entry<VisualizationGroup, Long> e : root.getContent().entrySet()) {
+            for (Entry<VisualizationGroupI, Long> e : root.getContent().entrySet()) {
                 content.put(e.getKey(), e.getValue());
             }
 
-            for (Node<Map<VisualizationGroup, Long>> n : root.getChildren()) {
-                Map<VisualizationGroup, Long> childContent = n.getContent();
+            for (NodeI<Map<VisualizationGroupI, Long>> n : root.getChildren()) {
+                Map<VisualizationGroupI, Long> childContent = n.getContent();
                 for (Long l : childContent.values()) {
                     numAssignedBelow += l.longValue();
                 }
-                for (Entry<VisualizationGroup, Long> e : childContent.entrySet()) {
+                for (Entry<VisualizationGroupI, Long> e : childContent.entrySet()) {
                     Long l = content.get(e.getKey());
                     content.put(e.getKey(), l - e.getValue());
                 }
@@ -168,7 +168,7 @@ public class TreeView extends HierarchicalViewerI {
             }
         }
 
-        for (Node<Map<VisualizationGroup, Long>> child : root.getChildren()) {
+        for (NodeI<Map<VisualizationGroupI, Long>> child : root.getChildren()) {
             addWithChildren(rootNode, child);
         }
 
@@ -191,7 +191,7 @@ public class TreeView extends HierarchicalViewerI {
         super.dispose();
     }
 
-    private void addWithChildren(prefuse.data.Node parent, Node<Map<VisualizationGroup, Long>> node) {
+    private void addWithChildren(prefuse.data.Node parent, NodeI<Map<VisualizationGroupI, Long>> node) {
 
         prefuse.data.Node self = pTree.addChild(parent);
 
@@ -201,25 +201,25 @@ public class TreeView extends HierarchicalViewerI {
         self.set(nodeTotalElements, numSeqsAssigned);
 
         if (node.hasChildren()) {
-            for (Node<Map<VisualizationGroup, Long>> child : node.getChildren()) {
+            for (NodeI<Map<VisualizationGroupI, Long>> child : node.getChildren()) {
                 addWithChildren(self, child);
             }
         }
 
         if (showUnclassifieds && node.hasChildren()) {
             long numAssignedBelow = 0;
-            Map<VisualizationGroup, Long> content = new HashMap<>();
+            Map<VisualizationGroupI, Long> content = new HashMap<>();
             // copy content of parent
-            for (Entry<VisualizationGroup, Long> e : node.getContent().entrySet()) {
+            for (Entry<VisualizationGroupI, Long> e : node.getContent().entrySet()) {
                 content.put(e.getKey(), e.getValue());
             }
 
-            for (Node<Map<VisualizationGroup, Long>> n : node.getChildren()) {
-                Map<VisualizationGroup, Long> childContent = n.getContent();
+            for (NodeI<Map<VisualizationGroupI, Long>> n : node.getChildren()) {
+                Map<VisualizationGroupI, Long> childContent = n.getContent();
                 for (Long l : childContent.values()) {
                     numAssignedBelow += l.longValue();
                 }
-                for (Entry<VisualizationGroup, Long> e : childContent.entrySet()) {
+                for (Entry<VisualizationGroupI, Long> e : childContent.entrySet()) {
                     Long l = content.get(e.getKey());
                     content.put(e.getKey(), l - e.getValue());
                 }
@@ -377,7 +377,7 @@ public class TreeView extends HierarchicalViewerI {
         });
     }
 
-    private static long calculateNodeCount(Map<VisualizationGroup, Long> content) {
+    private static long calculateNodeCount(Map<VisualizationGroupI, Long> content) {
         long total = 0;
         for (Long l : content.values()) {
             total += l.longValue();
@@ -385,10 +385,10 @@ public class TreeView extends HierarchicalViewerI {
         return total;
     }
 
-    private static Map<String, long[]> calculateRankCounts(Tree<Map<VisualizationGroup, Long>> tree, VisualizationGroup[] groupOrder) {
+    private static Map<String, long[]> calculateRankCounts(TreeI<Map<VisualizationGroupI, Long>> tree, VisualizationGroupI[] groupOrder) {
         Map<String, long[]> ret = new HashMap<>();
 
-        for (Node<Map<VisualizationGroup, Long>> node : tree.getNodes()) {
+        for (NodeI<Map<VisualizationGroupI, Long>> node : tree.getNodes()) {
             String rankName = node.getAttribute().getAttributeType().getName();
             if (!ret.containsKey(rankName)) {
                 long[] current = new long[groupOrder.length];
@@ -398,7 +398,7 @@ public class TreeView extends HierarchicalViewerI {
             long[] current = ret.get(rankName);
 
             int i = 0;
-            for (VisualizationGroup vg : groupOrder) {
+            for (VisualizationGroupI vg : groupOrder) {
                 //for (Entry<VisualizationGroup, Long> e : node.getContent().entrySet()) {
                 if (node.getContent().containsKey(vg)) {
                     current[i] += node.getContent().get(vg).longValue();

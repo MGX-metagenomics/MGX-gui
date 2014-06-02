@@ -1,6 +1,6 @@
 package de.cebitec.mgx.gui.treeview.renderer;
 
-import de.cebitec.mgx.gui.groups.VisualizationGroup;
+import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.Point2D;
@@ -37,7 +37,7 @@ public class EvolutionRendererAbsolute extends EdgeRenderer implements EdgeRende
         this.total = total;
     }
 
-    public EvolutionRendererAbsolute(int edgeType, Map<VisualizationGroup, Long> data) {
+    public EvolutionRendererAbsolute(int edgeType, Map<VisualizationGroupI, Long> data) {
         super(edgeType);
         long sum = 0;
         for (Long l : data.values()) {

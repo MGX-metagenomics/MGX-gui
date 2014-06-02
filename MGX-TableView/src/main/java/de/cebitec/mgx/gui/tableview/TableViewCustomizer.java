@@ -1,12 +1,12 @@
 package de.cebitec.mgx.gui.tableview;
 
-import de.cebitec.mgx.gui.attributevisualization.filter.ExcludeFilter;
-import de.cebitec.mgx.gui.attributevisualization.filter.VisFilterI;
-import de.cebitec.mgx.gui.datamodel.Attribute;
-import de.cebitec.mgx.gui.datamodel.AttributeType;
-import de.cebitec.mgx.gui.datamodel.misc.Distribution;
-import de.cebitec.mgx.gui.datamodel.misc.Pair;
-import de.cebitec.mgx.gui.groups.VisualizationGroup;
+import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.misc.DistributionI;
+import de.cebitec.mgx.api.misc.Pair;
+import de.cebitec.mgx.api.model.AttributeI;
+import de.cebitec.mgx.api.model.AttributeTypeI;
+import de.cebitec.mgx.api.visualization.filter.ExcludeFilter;
+import de.cebitec.mgx.api.visualization.filter.VisFilterI;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.BufferedWriter;
@@ -25,7 +25,7 @@ import org.openide.util.NbPreferences;
  *
  * @author sjaenick
  */
-public class TableViewCustomizer extends javax.swing.JPanel implements VisFilterI<Distribution> {
+public class TableViewCustomizer extends javax.swing.JPanel implements VisFilterI<DistributionI> {
 
     /**
      * Creates new form TableViewCustomizer
@@ -34,7 +34,7 @@ public class TableViewCustomizer extends javax.swing.JPanel implements VisFilter
         initComponents();
     }
 
-    private AttributeType at;
+    private AttributeTypeI at;
     private AbstractTableModel model = null;
 
     public void setModel(AbstractTableModel m) {
@@ -50,7 +50,7 @@ public class TableViewCustomizer extends javax.swing.JPanel implements VisFilter
         return fractions.isSelected();
     }
 
-    public void setAttributeType(final AttributeType aType) {
+    public void setAttributeType(final AttributeTypeI aType) {
         if (aType.equals(at)) {
             return;
         }
@@ -59,9 +59,9 @@ public class TableViewCustomizer extends javax.swing.JPanel implements VisFilter
     }
 
     @Override
-    public List<Pair<VisualizationGroup, Distribution>> filter(List<Pair<VisualizationGroup, Distribution>> dists) {
+    public List<Pair<VisualizationGroupI, DistributionI>> filter(List<Pair<VisualizationGroupI, DistributionI>> dists) {
 
-        Set<Attribute> filterEntries = treeFilter1.getBlackList();
+        Set<AttributeI> filterEntries = treeFilter1.getBlackList();
 
         if (filterEntries == null || filterEntries.isEmpty()) {
             return dists;
@@ -73,7 +73,7 @@ public class TableViewCustomizer extends javax.swing.JPanel implements VisFilter
         return dists;
     }
 
-    public Set<Attribute> getFilterEntries() {
+    public Set<AttributeI> getFilterEntries() {
         return treeFilter1.getBlackList();
     }
 

@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.taskview;
 
+import de.cebitec.mgx.pevents.ParallelPropertyChangeSupport;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -20,11 +21,11 @@ public abstract class MGXTask implements Runnable, PropertyChangeListener {
     private final String taskName;
     private String statusMessage = "";
     private String state = TASK_CHANGED;
-    private UUID uuid = UUID.randomUUID();
+    private final UUID uuid = UUID.randomUUID();
 
     public MGXTask(String name) {
         taskName = name;
-        pcs = new PropertyChangeSupport(this);
+        pcs = new ParallelPropertyChangeSupport(this);
         setStatus("Preparing..");
     }
 
@@ -91,7 +92,7 @@ public abstract class MGXTask implements Runnable, PropertyChangeListener {
     
     protected void sleep() {
         try {
-            Thread.sleep(800);
+            Thread.sleep(500);
         } catch (InterruptedException ex) {
         }
     }
@@ -115,9 +116,6 @@ public abstract class MGXTask implements Runnable, PropertyChangeListener {
             return false;
         }
         final MGXTask other = (MGXTask) obj;
-        if (!Objects.equals(this.uuid, other.uuid)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(this.uuid, other.uuid);
     }
 }

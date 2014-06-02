@@ -1,14 +1,14 @@
 package de.cebitec.mgx.gui.tableview;
 
-import de.cebitec.mgx.gui.attributevisualization.viewer.ViewerI;
-import de.cebitec.mgx.gui.datamodel.AttributeType;
-import de.cebitec.mgx.gui.datamodel.misc.Pair;
-import de.cebitec.mgx.gui.datamodel.tree.Node;
-import de.cebitec.mgx.gui.datamodel.tree.Tree;
-import de.cebitec.mgx.gui.datamodel.tree.TreeFactory;
-import de.cebitec.mgx.gui.groups.ImageExporterI;
-import de.cebitec.mgx.gui.groups.VGroupManager;
-import de.cebitec.mgx.gui.groups.VisualizationGroup;
+import de.cebitec.mgx.api.groups.ImageExporterI;
+import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.misc.Pair;
+import de.cebitec.mgx.api.model.AttributeTypeI;
+import de.cebitec.mgx.api.model.tree.NodeI;
+import de.cebitec.mgx.api.model.tree.TreeI;
+import de.cebitec.mgx.common.TreeFactory;
+import de.cebitec.mgx.common.VGroupManager;
+import de.cebitec.mgx.common.visualization.ViewerI;
 import java.util.List;
 import javax.swing.JComponent;
 import javax.swing.table.DefaultTableModel;
@@ -21,7 +21,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author sj
  */
 @ServiceProvider(service = ViewerI.class)
-public class TreeTableView extends ViewerI<Tree<Long>> {
+public class TreeTableView extends ViewerI<TreeI<Long>> {
 
     private JXTable table;
     private TableViewCustomizer cust = null;
@@ -37,23 +37,23 @@ public class TreeTableView extends ViewerI<Tree<Long>> {
     }
 
     @Override
-    public boolean canHandle(AttributeType valueType) {
-        return valueType.getStructure() == AttributeType.STRUCTURE_HIERARCHICAL
+    public boolean canHandle(AttributeTypeI valueType) {
+        return valueType.getStructure() == AttributeTypeI.STRUCTURE_HIERARCHICAL
                 && VGroupManager.getInstance().getActiveGroups().size() == 1;
     }
 
     @Override
     public Class getInputType() {
-        return Tree.class;
+        return TreeI.class;
     }
 
     @Override
-    public void show(List<Pair<VisualizationGroup, Tree<Long>>> dists) {
+    public void show(List<Pair<VisualizationGroupI, TreeI<Long>>> dists) {
 
-        Tree<Long> tree = dists.get(0).getSecond();
+        TreeI<Long> tree = dists.get(0).getSecond();
 
         // convert data to KRONA style
-        Tree<Long> kronaTree = TreeFactory.createKRONATree(tree);
+        TreeI<Long> kronaTree = TreeFactory.createKRONATree(tree);
         kronaTree = TreeFactory.filter(kronaTree, getCustomizer().getFilterEntries());
 
         /*
@@ -67,11 +67,11 @@ public class TreeTableView extends ViewerI<Tree<Long>> {
          */
 
         // setup column names, based on unfiltered tree
-        AttributeType[] longestPath = getLongestPath(tree);
+        AttributeTypeI[] longestPath = getLongestPath(tree);
         String[] columns = new String[1 + longestPath.length];
         int i = 0;
         columns[i++] = "Count"; // first column
-        for (AttributeType at : longestPath) {
+        for (AttributeTypeI at : longestPath) {
             columns[i++] = at.getName();
         }
 
@@ -120,7 +120,7 @@ public class TreeTableView extends ViewerI<Tree<Long>> {
         return null; // no image to export here
     }
 
-    private AttributeType[] getLongestPath(Tree<Long> tree) {
+    private AttributeTypeI[] getLongestPath(TreeI<Long> tree) {
         /*
          * actually, this is still wrong. we don't need the longest path, but
          * the most complete one. the current code will fail when several paths
@@ -135,34 +135,34 @@ public class TreeTableView extends ViewerI<Tree<Long>> {
          *  phylum -- subphylum -- order -- suborder -- foo.
          */
         int curDepth = -1;
-        Node<Long> deepestNode = null;
-        for (Node<Long> node : tree.getNodes()) {
+        NodeI<Long> deepestNode = null;
+        for (NodeI<Long> node : tree.getNodes()) {
                 if (node.getDepth() > curDepth) {
                     deepestNode = node;
                     curDepth = node.getDepth();
                 }
         }
 
-        AttributeType[] ret = new AttributeType[curDepth + 1];
+        AttributeTypeI[] ret = new AttributeTypeI[curDepth + 1];
         int i = 0;
-        for (Node<Long> n : deepestNode.getPath()) {
+        for (NodeI<Long> n : deepestNode.getPath()) {
             ret[i++] = n.getAttribute().getAttributeType();
         }
         return ret;
     }
 
-    private void setupRowData(DefaultTableModel model, AttributeType[] aTypes, Node<Long> node) {
+    private void setupRowData(DefaultTableModel model, AttributeTypeI[] aTypes, NodeI<Long> node) {
         Object[] rowData = new Object[1 + aTypes.length];
         int pos = 0;
 
         // add the nodes content in first column
         rowData[pos++] = node.getContent();
 
-        Node<Long>[] path = node.getPath();
+        NodeI<Long>[] path = node.getPath();
 
-        for (AttributeType at : aTypes) {
+        for (AttributeTypeI at : aTypes) {
             String value = "";
-            for (Node<Long> tmp : path) {
+            for (NodeI<Long> tmp : path) {
                 if (tmp.getAttribute().getAttributeType().getName().equals(at.getName())) {
                     value = tmp.getAttribute().getValue();
                     break;
@@ -175,7 +175,7 @@ public class TreeTableView extends ViewerI<Tree<Long>> {
 
         // recurse for child nodes
         if (!node.isLeaf()) {
-            for (Node<Long> child : node.getChildren()) {
+            for (NodeI<Long> child : node.getChildren()) {
                 setupRowData(model, aTypes, child);
             }
         }
