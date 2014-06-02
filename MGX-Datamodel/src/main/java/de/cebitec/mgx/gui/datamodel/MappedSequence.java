@@ -1,34 +1,35 @@
 package de.cebitec.mgx.gui.datamodel;
 
-import java.awt.datatransfer.DataFlavor;
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.MappedSequenceI;
 
 /**
  *
  * @author sjaenick
  */
-public class MappedSequence extends LocationBase<MappedSequence> {
+public class MappedSequence extends MappedSequenceI {
 
     private final long seq_id;
     private final int identity; // range 0-100
-    //
-    public static final DataFlavor DATA_FLAVOR = new DataFlavor(MappedSequence.class, "MappedSequence");
 
-    public MappedSequence(long seq_id, int start, int stop, int identity) {
-        super(start, stop, DATA_FLAVOR);
+    public MappedSequence(MGXMasterI m, long seq_id, int start, int stop, int identity) {
+        super(m, start, stop);
         this.seq_id = seq_id;
         this.identity = identity;
     }
 
+    @Override
     public long getSeqId() {
         return seq_id;
     }
 
+    @Override
     public int getIdentity() {
         return identity;
     }
 
     @Override
-    public int compareTo(MappedSequence o) {
+    public int compareTo(MappedSequenceI o) {
         int ret = Integer.compare(getMin(), o.getMin());
         if (ret != 0) {
             return ret;

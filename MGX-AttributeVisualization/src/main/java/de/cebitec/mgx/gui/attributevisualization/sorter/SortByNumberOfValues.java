@@ -1,6 +1,6 @@
 package de.cebitec.mgx.gui.attributevisualization.sorter;
 
-import de.cebitec.mgx.gui.datamodel.AttributeType;
+import de.cebitec.mgx.api.model.AttributeTypeI;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.Set;
@@ -9,16 +9,16 @@ import java.util.Set;
  *
  * @author sjaenick
  */
-public class SortByNumberOfValues<T> implements Comparator<AttributeType> {
+public class SortByNumberOfValues<T> implements Comparator<AttributeTypeI> {
 
-    Map<AttributeType, Set<T>> map;
+    Map<AttributeTypeI, Set<T>> map;
 
-    public void setMap(Map<AttributeType, Set<T>> data) {
+    public void setMap(Map<AttributeTypeI, Set<T>> data) {
         map = data;
     }
 
     @Override
-    public int compare(AttributeType o1, AttributeType o2) {
+    public int compare(AttributeTypeI o1, AttributeTypeI o2) {
         return map != null
                 ? Integer.compare(map.get(o1).size(), map.get(o2).size())
                 : 0;

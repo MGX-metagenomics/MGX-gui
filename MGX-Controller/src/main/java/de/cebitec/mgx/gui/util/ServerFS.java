@@ -1,7 +1,7 @@
 package de.cebitec.mgx.gui.util;
 
-import de.cebitec.mgx.gui.controller.MGXMaster;
-import de.cebitec.mgx.gui.datamodel.MGXFile;
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.MGXFileI;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,15 +16,15 @@ import javax.swing.filechooser.FileSystemView;
  */
 public class ServerFS extends FileSystemView {
 
-    private final MGXMaster master;
+    private final MGXMasterI master;
     /**
      * Stellt das StartVerzeichnis in der View dar.
      */
     private ServerFile projectDirectory = null;
 
-    public ServerFS(MGXMaster m) {
+    public ServerFS(MGXMasterI m) {
         this.master = m;
-        projectDirectory = new ServerFile(MGXFile.getRoot(master));
+        projectDirectory = new ServerFile(MGXFileI.getRoot(master));
     }
 
     @Override
@@ -128,8 +128,8 @@ public class ServerFS extends FileSystemView {
         if (dir instanceof ServerFile) {
 
             ServerFile file = (ServerFile) dir;
-            Iterator<MGXFile> filesIter = master.File().fetchall(file.getMGXFile());
-            List<MGXFile> files = new ArrayList<>();
+            Iterator<MGXFileI> filesIter = master.File().fetchall(file.getMGXFile());
+            List<MGXFileI> files = new ArrayList<>();
             while (filesIter.hasNext()) {
                 files.add(filesIter.next());
             }

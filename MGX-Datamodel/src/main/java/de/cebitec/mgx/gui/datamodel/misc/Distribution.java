@@ -1,22 +1,31 @@
 package de.cebitec.mgx.gui.datamodel.misc;
 
-import de.cebitec.mgx.gui.datamodel.Attribute;
-import de.cebitec.mgx.gui.datamodel.MGXMasterI;
-import java.util.*;
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.misc.DistributionI;
+import de.cebitec.mgx.api.model.AttributeI;
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  *
  * @author sjaenick
  */
-public class Distribution implements Map<Attribute, Number> {
+public class Distribution implements DistributionI {
 
     protected final MGXMasterI master;
-    private final Map<Attribute, ? extends Number> _data;
-    private final Set<Attribute> keys = new LinkedHashSet<>();
-    private final Map<Attribute, Number> filtered = new HashMap<>();
+    private final Map<AttributeI, ? extends Number> _data;
+    private final Set<AttributeI> keys = new LinkedHashSet<>();
+    private final Map<AttributeI, Number> filtered = new HashMap<>();
     private long totalClassifiedElements = -1;
 
-    public Distribution(Map<Attribute, ? extends Number> data, long total, MGXMasterI m) {
+    public Distribution(Map<AttributeI, ? extends Number> data, long total, MGXMasterI m) {
         this._data = data;
         keys.addAll(_data.keySet());
         filtered.putAll(_data);
@@ -24,10 +33,12 @@ public class Distribution implements Map<Attribute, Number> {
         master = m;
     }
     
+    @Override
     public MGXMasterI getMaster() {
         return master;
     }
 
+    @Override
     public long getTotalClassifiedElements() {
         assert totalClassifiedElements != -1;
         return totalClassifiedElements;
@@ -45,7 +56,7 @@ public class Distribution implements Map<Attribute, Number> {
 
     @Override
     public boolean containsKey(Object key) {
-        return filtered.containsKey((Attribute) key);
+        return filtered.containsKey((AttributeI) key);
     }
 
     @Override
@@ -59,7 +70,7 @@ public class Distribution implements Map<Attribute, Number> {
     }
 
     @Override
-    public Number put(Attribute key, Number value) {
+    public Number put(AttributeI key, Number value) {
         keys.add(key);
         return filtered.put(key, value);
     }
@@ -71,7 +82,7 @@ public class Distribution implements Map<Attribute, Number> {
     }
 
     @Override
-    public void putAll(Map<? extends Attribute, ? extends Number> m) {
+    public void putAll(Map<? extends AttributeI, ? extends Number> m) {
         keys.addAll(m.keySet());
         filtered.putAll(m);
     }
@@ -84,7 +95,7 @@ public class Distribution implements Map<Attribute, Number> {
     }
 
     @Override
-    public Set<Attribute> keySet() {
+    public Set<AttributeI> keySet() {
         return keys;
     }
 
@@ -94,17 +105,18 @@ public class Distribution implements Map<Attribute, Number> {
     }
 
     @Override
-    public Set<Entry<Attribute, Number>> entrySet() {
-        Set<Entry<Attribute, Number>> ret = new LinkedHashSet<>();
-        for (Attribute a : keys) {
+    public Set<Entry<AttributeI, Number>> entrySet() {
+        Set<Entry<AttributeI, Number>> ret = new LinkedHashSet<>();
+        for (AttributeI a : keys) {
             ret.add(new AbstractMap.SimpleEntry<>(a, filtered.get(a)));
         }
         return ret;
     }
 
-    public void setOrder(List<Attribute> o) {
-        List<Attribute> present = new ArrayList<>();
-        for (Attribute a : o) {
+    @Override
+    public void setOrder(List<AttributeI> o) {
+        List<AttributeI> present = new ArrayList<>();
+        for (AttributeI a : o) {
             if (filtered.containsKey(a)) {
                 present.add(a);
             }

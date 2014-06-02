@@ -1,8 +1,9 @@
 package de.cebitec.mgx.gui.dtoconversion;
 
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.dto.dto.AttributeCorrelation;
 import de.cebitec.mgx.dto.dto.CorrelatedAttributeCount;
-import de.cebitec.mgx.gui.datamodel.Attribute;
 import de.cebitec.mgx.gui.datamodel.misc.Matrix;
 
 /**
@@ -26,11 +27,11 @@ public class MatrixDTOFactory extends DTOConversionBase<Matrix, AttributeCorrela
     }
 
     @Override
-    public Matrix<Attribute, Attribute> toModel(AttributeCorrelation dto) {
-        Matrix<Attribute, Attribute> ret = new Matrix();
+    public Matrix<AttributeI, AttributeI> toModel(MGXMasterI m, AttributeCorrelation dto) {
+        Matrix<AttributeI, AttributeI> ret = new Matrix();
         for (CorrelatedAttributeCount cac : dto.getEntryList()) {
-            Attribute first = AttributeDTOFactory.getInstance().toModel(cac.getRestrictedAttribute());
-            Attribute second = AttributeDTOFactory.getInstance().toModel(cac.getAttribute());
+            AttributeI first = AttributeDTOFactory.getInstance().toModel(m, cac.getRestrictedAttribute());
+            AttributeI second = AttributeDTOFactory.getInstance().toModel(m, cac.getAttribute());
             ret.addData(first, second, cac.getCount());
         }
         return ret;

@@ -1,5 +1,13 @@
 package de.cebitec.mgx.gui.controller;
 
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.access.SequenceAccessI;
+import de.cebitec.mgx.api.access.datatransfer.DownloadBaseI;
+import de.cebitec.mgx.api.access.datatransfer.UploadBaseI;
+import de.cebitec.mgx.api.misc.TaskI;
+import de.cebitec.mgx.api.model.AttributeI;
+import de.cebitec.mgx.api.model.SequenceI;
+import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.client.datatransfer.SeqByAttributeDownloader;
 import de.cebitec.mgx.client.datatransfer.SeqDownloader;
 import de.cebitec.mgx.client.datatransfer.SeqUploader;
@@ -9,9 +17,6 @@ import de.cebitec.mgx.dto.dto.AttributeDTOList;
 import de.cebitec.mgx.dto.dto.AttributeDTOList.Builder;
 import de.cebitec.mgx.dto.dto.SequenceDTO;
 import de.cebitec.mgx.dto.dto.SequenceDTOList;
-import de.cebitec.mgx.gui.datamodel.Attribute;
-import de.cebitec.mgx.gui.datamodel.Sequence;
-import de.cebitec.mgx.gui.datamodel.misc.Task;
 import de.cebitec.mgx.gui.dtoconversion.AttributeDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.SequenceDTOFactory;
 import de.cebitec.mgx.sequence.DNASequenceI;
@@ -27,7 +32,11 @@ import org.openide.util.Exceptions;
  *
  * @author sjaenick
  */
-public class SequenceAccess extends AccessBase<Sequence> {
+public class SequenceAccess extends AccessBase<SequenceI> implements SequenceAccessI {
+
+    public SequenceAccess(MGXMasterI master, MGXDTOMaster dtomaster) {
+        super(master, dtomaster);
+    }
 
     public void sendSequences(long seqrun_id, SeqReaderI reader) {
         try {
@@ -37,12 +46,38 @@ public class SequenceAccess extends AccessBase<Sequence> {
         }
     }
 
-    public SeqUploader createUploader(long seqrun_id, SeqReaderI reader) {
-        return getDTOmaster().Sequence().createUploader(seqrun_id, reader);
+    @Override
+    public UploadBaseI createUploader(long seqrun_id, SeqReaderI reader) {
+        final SeqUploader su = getDTOmaster().Sequence().createUploader(seqrun_id, reader);
+        return new UploadBaseI() {
+
+            @Override
+            public boolean upload() {
+                return su.upload();
+            }
+
+            @Override
+            public long getNumElementsSent() {
+                return su.getNumElementsSent();
+            }
+        };
     }
 
-    public SeqDownloader createDownloader(long seqrun_id, SeqWriterI writer, boolean closeWriter) {
-        return getDTOmaster().Sequence().createDownloader(seqrun_id, writer, closeWriter);
+    @Override
+    public DownloadBaseI createDownloader(long seqrun_id, SeqWriterI writer, boolean closeWriter) {
+        final SeqDownloader sd = getDTOmaster().Sequence().createDownloader(seqrun_id, writer, closeWriter);
+        return new DownloadBaseI() {
+
+            @Override
+            public boolean download() {
+                return sd.download();
+            }
+
+            @Override
+            public long getProgress() {
+                return sd.getProgress();
+            }
+        };
     }
 
     public void downloadSequences(long seqrun_id, SeqWriterI writer, boolean closeWriter) {
@@ -53,18 +88,31 @@ public class SequenceAccess extends AccessBase<Sequence> {
         }
     }
 
-    public SeqByAttributeDownloader createDownloaderByAttributes(Set<Attribute> attrs, SeqWriterI<DNASequenceI> writer, boolean closeWriter) {
+    @Override
+    public DownloadBaseI createDownloaderByAttributes(Set<AttributeI> attrs, SeqWriterI<DNASequenceI> writer, boolean closeWriter) {
         Builder b = AttributeDTOList.newBuilder();
-        for (Attribute a : attrs) {
+        for (AttributeI a : attrs) {
             b.addAttribute(AttributeDTOFactory.getInstance().toDTO(a));
         }
-        return getDTOmaster().Sequence().createDownloaderByAttributes(b.build(), writer, closeWriter);
+        final SeqByAttributeDownloader dl = getDTOmaster().Sequence().createDownloaderByAttributes(b.build(), writer, closeWriter);
+        return new DownloadBaseI() {
+
+            @Override
+            public boolean download() {
+                return dl.download();
+            }
+
+            @Override
+            public long getProgress() {
+                return dl.getProgress();
+            }
+        };
     }
 
-    public void downloadSequencesForAttributes(Set<Attribute> attrs, SeqWriterI writer, boolean closeWriter) {
+    public void downloadSequencesForAttributes(Set<AttributeI> attrs, SeqWriterI writer, boolean closeWriter) {
         try {
             Builder b = AttributeDTOList.newBuilder();
-            for (Attribute a : attrs) {
+            for (AttributeI a : attrs) {
                 b.addAttribute(AttributeDTOFactory.getInstance().toDTO(a));
             }
             getDTOmaster().Sequence().fetchAnnotatedReads(b.build(), writer, closeWriter);
@@ -74,25 +122,26 @@ public class SequenceAccess extends AccessBase<Sequence> {
     }
 
     @Override
-    public long create(Sequence obj) {
+    public long create(SequenceI obj) {
         throw new UnsupportedOperationException("Not supported.");
     }
 
     @Override
-    public Sequence fetch(long id) {
+    public SequenceI fetch(long id) {
         SequenceDTO dto = null;
         try {
             dto = getDTOmaster().Sequence().fetch(id);
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
-        return SequenceDTOFactory.getInstance().toModel(dto);
+        return SequenceDTOFactory.getInstance().toModel(getMaster(), dto);
     }
 
-    public void fetchSeqData(Iterable<Sequence> seqs) {
-        Map<Long, Sequence> idx = new HashMap<>();
+    @Override
+    public void fetchSeqData(Iterable<SequenceI> seqs) {
+        Map<Long, SequenceI> idx = new HashMap<>();
         try {
-            for (Sequence s : seqs) {
+            for (SequenceI s : seqs) {
                 if (s.getSequence() == null) {
                     idx.put(s.getId(), s);
                 }
@@ -107,7 +156,7 @@ public class SequenceAccess extends AccessBase<Sequence> {
             // update fields
             for (SequenceDTO sdto : dto.getSeqList()) {
                 assert idx.containsKey(sdto.getId());
-                Sequence s = idx.get(sdto.getId());
+                SequenceI s = idx.get(sdto.getId());
 
                 s.setName(sdto.getName());
                 if (sdto.hasLength()) {
@@ -125,17 +174,17 @@ public class SequenceAccess extends AccessBase<Sequence> {
     }
 
     @Override
-    public Iterator<Sequence> fetchall() {
+    public Iterator<SequenceI> fetchall() {
         throw new UnsupportedOperationException("Not supported.");
     }
 
     @Override
-    public void update(Sequence obj) {
+    public void update(SequenceI obj) {
         throw new UnsupportedOperationException("Not supported.");
     }
 
     @Override
-    public Task delete(Sequence obj) {
+    public TaskI delete(SequenceI obj) {
         throw new UnsupportedOperationException("Not supported.");
     }
 }

@@ -1,14 +1,16 @@
 package de.cebitec.mgx.gui.dtoconversion;
 
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.Identifiable;
+import de.cebitec.mgx.api.model.SequenceI;
 import de.cebitec.mgx.dto.dto.SequenceDTO;
-import de.cebitec.mgx.gui.datamodel.Identifiable;
 import de.cebitec.mgx.gui.datamodel.Sequence;
 
 /**
  *
  * @author sjaenick
  */
-public class SequenceDTOFactory extends DTOConversionBase<Sequence, SequenceDTO> {
+public class SequenceDTOFactory extends DTOConversionBase<SequenceI, SequenceDTO> {
 
     static {
         instance = new SequenceDTOFactory();
@@ -23,7 +25,7 @@ public class SequenceDTOFactory extends DTOConversionBase<Sequence, SequenceDTO>
     }
 
     @Override
-    public SequenceDTO toDTO(Sequence a) {
+    public SequenceDTO toDTO(SequenceI a) {
         SequenceDTO.Builder b = SequenceDTO.newBuilder()
                 .setName(a.getName());
         if (a.getId() != Identifiable.INVALID_IDENTIFIER) {
@@ -39,8 +41,8 @@ public class SequenceDTOFactory extends DTOConversionBase<Sequence, SequenceDTO>
     }
 
     @Override
-    public Sequence toModel(SequenceDTO dto) {
-        Sequence s = new Sequence();
+    public SequenceI toModel(MGXMasterI m, SequenceDTO dto) {
+        SequenceI s = new Sequence(m);
         s.setName(dto.getName());
         if (dto.hasId()) {
             s.setId(dto.getId());

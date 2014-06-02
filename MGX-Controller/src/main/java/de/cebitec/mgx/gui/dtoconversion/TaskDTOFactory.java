@@ -1,16 +1,18 @@
 package de.cebitec.mgx.gui.dtoconversion;
 
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.misc.TaskI;
+import de.cebitec.mgx.api.misc.TaskI.TaskType;
+import de.cebitec.mgx.api.model.ModelBase;
 import de.cebitec.mgx.dto.dto.TaskDTO;
-import de.cebitec.mgx.gui.datamodel.ModelBase;
 import de.cebitec.mgx.gui.datamodel.misc.Task;
-import de.cebitec.mgx.gui.datamodel.misc.Task.TaskType;
 import java.util.UUID;
 
 /**
  *
  * @author sjaenick
  */
-public class TaskDTOFactory extends DTOConversionBase<Task, TaskDTO> {
+public class TaskDTOFactory extends DTOConversionBase<TaskI, TaskDTO> {
 
     static {
         instance = new TaskDTOFactory();
@@ -31,12 +33,12 @@ public class TaskDTOFactory extends DTOConversionBase<Task, TaskDTO> {
     }
 
     @Override
-    public TaskDTO toDTO(Task a) {
+    public TaskDTO toDTO(TaskI a) {
         throw new UnsupportedOperationException("Not supported.");
     }
 
     @Override
-    public Task toModel(TaskDTO dto) {
+    public TaskI toModel(MGXMasterI m, TaskDTO dto) {
         return new Task(object, taskUUid, taskType)
                 .setStatusMessage(dto.getMessage())
                 .setState(Task.State.values()[dto.getState().ordinal()]);

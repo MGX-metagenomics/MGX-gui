@@ -1,10 +1,9 @@
 package de.cebitec.mgx.gui.attributevisualization.conflictwizard;
 
-import de.cebitec.mgx.gui.controller.MGXMaster;
-import de.cebitec.mgx.gui.datamodel.Job;
-import de.cebitec.mgx.gui.datamodel.JobParameter;
-import de.cebitec.mgx.gui.datamodel.SeqRun;
-import de.cebitec.mgx.gui.groups.VisualizationGroup;
+import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.model.JobI;
+import de.cebitec.mgx.api.model.JobParameterI;
+import de.cebitec.mgx.api.model.SeqRunI;
 import java.awt.Component;
 import java.util.Collection;
 import java.util.Iterator;
@@ -16,8 +15,8 @@ import javax.swing.event.ListSelectionListener;
 
 public final class ConflictResolverVisualPanel1 extends JPanel implements ListSelectionListener {
 
-    private VisualizationGroup vg;
-    private SeqRun run;
+    private VisualizationGroupI vg;
+    private SeqRunI run;
 
     /**
      * Creates new form ConflictResolverVisualPanel1
@@ -38,7 +37,7 @@ public final class ConflictResolverVisualPanel1 extends JPanel implements ListSe
 
         @Override
         public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-            Job job = (Job) value;
+            JobI job = (JobI) value;
             assert job.getTool() != null;
             StringBuilder sb = new StringBuilder(job.getTool().getName())
                     .append(" (")
@@ -48,22 +47,22 @@ public final class ConflictResolverVisualPanel1 extends JPanel implements ListSe
         }
     }
 
-    public void setJobs(Collection<Job> jobs) { 
-        jobList.setListData(jobs.toArray(new Job[]{}));
+    public void setJobs(Collection<JobI> jobs) { 
+        jobList.setListData(jobs.toArray(new JobI[]{}));
     }
 
-    public void setSeqRun(SeqRun run) {
+    public void setSeqRun(SeqRunI run) {
         this.run = run;
-        String projName = ((MGXMaster) run.getMaster()).getProject();
+        String projName = (run.getMaster()).getProject();
         seqRunLabel.setText(projName + ": " + run.getName());
     }
 
-    public void setVisualizationGroup(VisualizationGroup vg) {
+    public void setVisualizationGroup(VisualizationGroupI vg) {
         this.vg = vg;
         groupLabel.setText(vg.getName());
     }
 
-    public Job getSelectedJob() {
+    public JobI getSelectedJob() {
         return jobList.getSelectedValue();
     }
 
@@ -72,8 +71,8 @@ public final class ConflictResolverVisualPanel1 extends JPanel implements ListSe
         return vg.getName() + " " + run.getName();
     }
 
-    protected static String joinParameters(Iterable<JobParameter> pColl, String separator) {
-        Iterator<JobParameter> oIter;
+    protected static String joinParameters(Iterable<JobParameterI> pColl, String separator) {
+        Iterator<JobParameterI> oIter;
         if (pColl == null || (!(oIter = pColl.iterator()).hasNext())) {
             return "";
         }
@@ -84,7 +83,7 @@ public final class ConflictResolverVisualPanel1 extends JPanel implements ListSe
         return oBuilder.toString();
     }
 
-    private static String toParameterString(JobParameter jp) {
+    private static String toParameterString(JobParameterI jp) {
         return new StringBuilder(Long.toString(jp.getNodeId()))
                 .append(".")
                 .append(jp.getParameterName())
@@ -102,7 +101,7 @@ public final class ConflictResolverVisualPanel1 extends JPanel implements ListSe
     private void initComponents() {
 
         jScrollPane1 = new javax.swing.JScrollPane();
-        jobList = new javax.swing.JList<Job>();
+        jobList = new javax.swing.JList<JobI>();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
         groupLabel = new javax.swing.JLabel();
@@ -163,7 +162,7 @@ public final class ConflictResolverVisualPanel1 extends JPanel implements ListSe
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JList<Job> jobList;
+    private javax.swing.JList<JobI> jobList;
     private javax.swing.JLabel seqRunLabel;
     // End of variables declaration//GEN-END:variables
 }

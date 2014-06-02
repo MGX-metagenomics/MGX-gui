@@ -1,5 +1,7 @@
 package de.cebitec.mgx.gui.controller;
 
+import de.cebitec.mgx.api.model.HabitatI;
+import de.cebitec.mgx.api.model.SampleI;
 import de.cebitec.mgx.gui.datamodel.Habitat;
 import de.cebitec.mgx.gui.datamodel.Sample;
 import de.cebitec.mgx.gui.datamodel.misc.Task;
@@ -41,7 +43,7 @@ public class SampleAccessTest {
     public void testFetch() {
         System.out.println("fetch");
         MGXMaster master = TestMaster.getRO();
-        Sample s = master.Sample().fetch(1);
+        SampleI s = master.Sample().fetch(1);
         assertNotNull(s);
         assertNotNull(s.getMaster());
     }
@@ -50,12 +52,12 @@ public class SampleAccessTest {
     public void testByHabitat() {
         System.out.println("ByHabitat");
         MGXMaster master = TestMaster.getRO();
-        Habitat h = master.Habitat().fetch(1);
+        HabitatI h = master.Habitat().fetch(1);
         assertNotNull(h);
-        Iterator<Sample> iter = master.Sample().ByHabitat(h.getId());
+        Iterator<SampleI> iter = master.Sample().ByHabitat(h.getId());
         int cnt = 0;
         while (iter.hasNext()) {
-            Sample s = iter.next();
+            SampleI s = iter.next();
             assertNotNull(s);
             assertNotNull(s.getMaster());
             cnt++;

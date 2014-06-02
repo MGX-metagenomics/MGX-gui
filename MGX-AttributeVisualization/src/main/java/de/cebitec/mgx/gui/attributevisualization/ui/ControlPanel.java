@@ -5,18 +5,23 @@
  */
 package de.cebitec.mgx.gui.attributevisualization.ui;
 
-import de.cebitec.mgx.gui.attributevisualization.BaseModel;
+import de.cebitec.mgx.api.groups.VGroupManagerI;
+import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.misc.AttributeRank;
+import de.cebitec.mgx.api.misc.DistributionI;
+import de.cebitec.mgx.api.misc.Pair;
+import de.cebitec.mgx.api.misc.Triple;
+import de.cebitec.mgx.api.model.AttributeTypeI;
+import de.cebitec.mgx.api.model.JobI;
+import de.cebitec.mgx.api.model.ModelBase;
+import de.cebitec.mgx.api.model.SeqRunI;
+import de.cebitec.mgx.api.model.tree.TreeI;
+import de.cebitec.mgx.api.visualization.ConflictResolver;
+import de.cebitec.mgx.common.VGroupManager;
+import de.cebitec.mgx.common.visualization.ViewerI;
 import de.cebitec.mgx.gui.attributevisualization.conflictwizard.ConflictResolverWizardIterator;
 import de.cebitec.mgx.gui.attributevisualization.util.ResultCollector;
-import de.cebitec.mgx.gui.attributevisualization.viewer.ViewerI;
-import de.cebitec.mgx.gui.datamodel.*;
-import de.cebitec.mgx.gui.datamodel.misc.AttributeRank;
-import de.cebitec.mgx.gui.datamodel.misc.Distribution;
-import de.cebitec.mgx.gui.datamodel.misc.Pair;
-import de.cebitec.mgx.gui.datamodel.misc.Triple;
-import de.cebitec.mgx.gui.datamodel.tree.Tree;
-import de.cebitec.mgx.gui.groups.VGroupManager;
-import de.cebitec.mgx.gui.groups.VisualizationGroup;
+import de.cebitec.mgx.gui.swingutils.BaseModel;
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -43,31 +48,32 @@ import org.openide.util.Lookup;
  */
 public class ControlPanel extends javax.swing.JPanel implements PropertyChangeListener, ActionListener {
 
-    private final VGroupManager vgmgr = VGroupManager.getInstance();
+    private final VGroupManagerI vgmgr;
     private AttributeVisualizationTopComponent topComponent;
     //
-    private List<Pair<VisualizationGroup, Distribution>> currentDistributions = new ArrayList<>();
-    private List<Pair<VisualizationGroup, Tree<Long>>> currentHierarchies = new ArrayList<>();
+    private List<Pair<VisualizationGroupI, DistributionI>> currentDistributions = new ArrayList<>();
+    private List<Pair<VisualizationGroupI, TreeI<Long>>> currentHierarchies = new ArrayList<>();
     //
     private AttributeTypeListModel attrListModel = new AttributeTypeListModel();
     private VisualizationTypeListModel vizListModel = new VisualizationTypeListModel();
     //
-    private AttributeType currentAttributeType;
+    private AttributeTypeI currentAttributeType;
     private ViewerI currentViewer;
 
     /**
      * Creates new form ControlPanel
      */
     public ControlPanel() {
+        this.vgmgr = VGroupManager.getInstance();
         initComponents();
         attributeTypeList.addItemListener(attrListModel);
         visualizationTypeList.addItemListener(vizListModel);
         updateButton.addActionListener(this);
 
         vgmgr.addPropertyChangeListener(this);
-        vgmgr.registerResolver(new VGroupManager.ConflictResolver() {
+        vgmgr.registerResolver(new ConflictResolver() {
             @Override
-            public boolean resolve(List<VisualizationGroup> groups) {
+            public boolean resolve(List<VisualizationGroupI> groups) {
                 ConflictResolverWizardIterator iter = new ConflictResolverWizardIterator(groups);
                 //iter.setGroups(groups);
                 WizardDescriptor wiz = new WizardDescriptor(iter);
@@ -76,8 +82,8 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
                 wiz.setTitleFormat(new MessageFormat("{0}"));
                 wiz.setTitle("Tool selection");
                 if (DialogDisplayer.getDefault().notify(wiz) == WizardDescriptor.FINISH_OPTION) {
-                    for (Pair<VisualizationGroup, Triple<AttributeRank, SeqRun, Job>> p : iter.getSelection()) {
-                        VisualizationGroup vg = p.getFirst();
+                    for (Pair<VisualizationGroupI, Triple<AttributeRank, SeqRunI, JobI>> p : iter.getSelection()) {
+                        VisualizationGroupI vg = p.getFirst();
                         vg.resolveConflict(p.getSecond().getFirst(), p.getSecond().getSecond(), p.getSecond().getThird());
                         groups.remove(vg);
                     }
@@ -188,28 +194,28 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
     public void propertyChange(PropertyChangeEvent evt) {
 
         switch (evt.getPropertyName()) {
-            case VisualizationGroup.VISGROUP_CHANGED:
+            case VisualizationGroupI.VISGROUP_CHANGED:
                 updateAttributeTypeList();
                 break;
-            case VGroupManager.VISGROUP_NUM_CHANGED:
+            case VGroupManagerI.VISGROUP_NUM_CHANGED:
                 updateAttributeTypeList();
                 break;
-            case VisualizationGroup.VISGROUP_ACTIVATED:
+            case VisualizationGroupI.VISGROUP_ACTIVATED:
                 updateAttributeTypeList();
                 break;
-            case VisualizationGroup.VISGROUP_DEACTIVATED:
+            case VisualizationGroupI.VISGROUP_DEACTIVATED:
                 updateAttributeTypeList();
                 break;
-            case VisualizationGroup.VISGROUP_ATTRTYPE_CHANGED:
+            case VisualizationGroupI.VISGROUP_ATTRTYPE_CHANGED:
                 break; // ignore
             case ModelBase.OBJECT_DELETED:
                 break;
             case ModelBase.OBJECT_MODIFIED:
                 break;
-            case VGroupManager.VISGROUP_SELECTION_CHANGED:
+            case VGroupManagerI.VISGROUP_SELECTION_CHANGED:
                 // ignore
                 break;
-            case VisualizationGroup.VISGROUP_HAS_DIST:
+            case VisualizationGroupI.VISGROUP_HAS_DIST:
                 // ignore
                 break;
             default:
@@ -217,7 +223,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
         }
     }
 
-    private final class AttributeTypeListModel extends BaseModel<AttributeType> implements ItemListener {
+    private final class AttributeTypeListModel extends BaseModel<AttributeTypeI> implements ItemListener {
 
         @Override
         public void update() {
@@ -227,12 +233,12 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
             visualizationTypeList.setEnabled(false);
             updateButton.setEnabled(false);
 
-            SwingWorker<SortedSet<AttributeType>, Void> worker = new SwingWorker<SortedSet<AttributeType>, Void>() {
+            SwingWorker<SortedSet<AttributeTypeI>, Void> worker = new SwingWorker<SortedSet<AttributeTypeI>, Void>() {
                 @Override
-                protected SortedSet<AttributeType> doInBackground() throws Exception {
-                    SortedSet<AttributeType> types = new TreeSet<>();
-                    for (VisualizationGroup vg : vgmgr.getActiveGroups()) {
-                        Iterator<AttributeType> atIter = vg.getAttributeTypes();
+                protected SortedSet<AttributeTypeI> doInBackground() throws Exception {
+                    SortedSet<AttributeTypeI> types = new TreeSet<>();
+                    for (VisualizationGroupI vg : vgmgr.getActiveGroups()) {
+                        Iterator<AttributeTypeI> atIter = vg.getAttributeTypes();
                         while (atIter.hasNext()) {
                             types.add(atIter.next());
                         }
@@ -242,7 +248,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
 
                 @Override
                 protected void done() {
-                    SortedSet<AttributeType> types = null;
+                    SortedSet<AttributeTypeI> types = null;
                     try {
                         types = get();
                     } catch (InterruptedException | ExecutionException ex) {
@@ -288,7 +294,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
 
             if (vgmgr.selectAttributeType(AttributeRank.PRIMARY, currentAttributeType.getName())) {
                 // fetch distribution (and hierarchy) in background
-                ResultCollector rc = new ResultCollector(currentAttributeType, currentDistributions, currentHierarchies, ControlPanel.this);
+                ResultCollector rc = new ResultCollector(vgmgr, currentAttributeType, currentDistributions, currentHierarchies, ControlPanel.this);
                 rc.execute();
             } else {
                 // unresolved conflicts remain
@@ -359,9 +365,9 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
     public void actionPerformed(ActionEvent e) {
         try {
             setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-            if (currentViewer.getInputType().equals(Distribution.class)) {
+            if (currentViewer.getInputType().equals(DistributionI.class)) {
                 // reset previous settings 
-                for (Pair<VisualizationGroup, Distribution> p : currentDistributions) {
+                for (Pair<VisualizationGroupI, DistributionI> p : currentDistributions) {
                     p.getSecond().reset();
                 }
                 currentViewer.show(currentDistributions);

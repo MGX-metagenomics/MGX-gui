@@ -1,15 +1,15 @@
 package de.cebitec.mgx.gui.dtoconversion;
 
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.MGXFileI;
 import de.cebitec.mgx.dto.dto.FileDTO;
 import de.cebitec.mgx.gui.datamodel.MGXFile;
-import java.io.File;
-import java.util.Set;
 
 /**
  *
  * @author sjaenick
  */
-public class FileDTOFactory extends DTOConversionBase<MGXFile, FileDTO> {
+public class FileDTOFactory extends DTOConversionBase<MGXFileI, FileDTO> {
 
     static {
         instance = new FileDTOFactory();
@@ -24,7 +24,7 @@ public class FileDTOFactory extends DTOConversionBase<MGXFile, FileDTO> {
     }
 
     @Override
-    public FileDTO toDTO(MGXFile a) {
+    public FileDTO toDTO(MGXFileI a) {
         return FileDTO.newBuilder()
                 .setName(a.getFullPath())
                 .setIsDirectory(a.isDirectory())
@@ -32,7 +32,7 @@ public class FileDTOFactory extends DTOConversionBase<MGXFile, FileDTO> {
     }
 
     @Override
-    public MGXFile toModel(FileDTO dto) {
-        return new MGXFile(dto.getName(), dto.getIsDirectory(), dto.getSize());
+    public MGXFileI toModel(MGXMasterI m, FileDTO dto) {
+        return new MGXFile(m, dto.getName(), dto.getIsDirectory(), dto.getSize());
     }
 }

@@ -1,5 +1,7 @@
 package de.cebitec.mgx.gui.dtoconversion;
 
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.MappingI;
 import de.cebitec.mgx.dto.dto.MappingDTO;
 import de.cebitec.mgx.gui.datamodel.Mapping;
 
@@ -7,7 +9,7 @@ import de.cebitec.mgx.gui.datamodel.Mapping;
  *
  * @author sjaenick
  */
-public class MappingDTOFactory extends DTOConversionBase<Mapping, MappingDTO> {
+public class MappingDTOFactory extends DTOConversionBase<MappingI, MappingDTO> {
 
     static {
         instance = new MappingDTOFactory();
@@ -22,13 +24,13 @@ public class MappingDTOFactory extends DTOConversionBase<Mapping, MappingDTO> {
     }
 
     @Override
-    public MappingDTO toDTO(Mapping a) {
+    public MappingDTO toDTO(MappingI a) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public Mapping toModel(MappingDTO dto) {
-        Mapping m = new Mapping();
+    public MappingI toModel(MGXMasterI master, MappingDTO dto) {
+        MappingI m = new Mapping(master);
         m.setId(dto.getId());
         m.setJobID(dto.getJobId());
         m.setReferenceID(dto.getReferenceId());

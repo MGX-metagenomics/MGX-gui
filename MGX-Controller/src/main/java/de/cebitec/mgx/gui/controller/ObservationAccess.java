@@ -1,62 +1,69 @@
 package de.cebitec.mgx.gui.controller;
 
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.access.ObservationAccessI;
+import de.cebitec.mgx.api.model.ObservationI;
+import de.cebitec.mgx.api.model.SequenceI;
+import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.ObservationDTO;
-import de.cebitec.mgx.gui.datamodel.Observation;
-import de.cebitec.mgx.gui.datamodel.Sequence;
 import de.cebitec.mgx.gui.datamodel.misc.Task;
 import de.cebitec.mgx.gui.dtoconversion.ObservationDTOFactory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.UUID;
 import org.openide.util.Exceptions;
 
 /**
  *
  * @author sj
  */
-public class ObservationAccess extends AccessBase<Observation> {
+public class ObservationAccess extends AccessBase<ObservationI> implements ObservationAccessI {
 
-    public Collection<Observation> ByRead(Sequence s) {
-        Collection<Observation> ret = new ArrayList<>();
+    public ObservationAccess(MGXMasterI master, MGXDTOMaster dtomaster) {
+        super(master, dtomaster);
+    }
+
+    
+    @Override
+    public Iterator<ObservationI> ByRead(SequenceI s) {
+        Collection<ObservationI> ret = new ArrayList<>();
         try {
             Iterator<ObservationDTO> iter = getDTOmaster().Observation().ByRead(s.getId());
             while (iter.hasNext()) {
-                Observation obs = ObservationDTOFactory.getInstance().toModel(iter.next());
-                obs.setMaster(getMaster());
+                ObservationI obs = ObservationDTOFactory.getInstance().toModel(getMaster(), iter.next());
                 ret.add(obs);
             }
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
 
-        return ret;
+        return ret.iterator();
     }
 
     @Override
-    public long create(Observation obj) {
+    public long create(ObservationI obj) {
         throw new UnsupportedOperationException("Not supported.");
     }
 
     @Override
-    public Observation fetch(long id) {
+    public ObservationI fetch(long id) {
         throw new UnsupportedOperationException("Not supported.");
     }
 
     @Override
-    public Iterator<Observation> fetchall() {
+    public Iterator<ObservationI> fetchall() {
         throw new UnsupportedOperationException("Not supported.");
     }
 
     @Override
-    public void update(Observation obj) {
+    public void update(ObservationI obj) {
         throw new UnsupportedOperationException("Not supported.");
     }
 
     @Override
-    public Task delete(Observation obj) {
+    public Task delete(ObservationI obj) {
         throw new UnsupportedOperationException("Not supported.");
     }
 }

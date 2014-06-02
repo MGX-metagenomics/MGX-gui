@@ -24,6 +24,11 @@
             </dependency>
             
             <!-- NBP -->
+            <!--            <dependency> 
+                <groupId>org.netbeans.api</groupId> 
+                <artifactId>org-netbeans-modules-netbinox</artifactId> 
+                <version>${netbeans.version}</version> 
+            </dependency>-->
             <dependency>
                 <groupId>org.netbeans.api</groupId>
                 <artifactId>org-netbeans-api-annotations-common</artifactId>
@@ -160,6 +165,16 @@
                 <version>1.9</version>
             </dependency>
             <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-math3</artifactId>
+                <version>3.3</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.commons-httpclient</artifactId>
+                <version>3.1_7</version>
+            </dependency>
+            <dependency>
                 <groupId>commons-httpclient</groupId>
                 <artifactId>commons-httpclient</artifactId>
                 <version>3.1</version>
@@ -190,6 +205,11 @@
                 <version>1.7</version>
             </dependency>
             <dependency>
+                <groupId>de.cebitec.external</groupId>
+                <artifactId>jfreesvg</artifactId>
+                <version>1.4</version>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.xmlgraphics</groupId>
                 <artifactId>batik-svggen</artifactId>
                 <version>1.7</version>
@@ -204,12 +224,27 @@
                 <artifactId>protobuf-java</artifactId>
                 <version>2.5.0</version>
             </dependency>
+            <dependency>
+                <artifactId>h2</artifactId>
+                <groupId>com.h2database</groupId>
+                <version>1.4.178</version>
+            </dependency>
             
             <!-- own components -->
+            <dependency>
+                <artifactId>MGX-API</artifactId>
+                <groupId>de.cebitec.mgx</groupId>
+                <version>1.0-SNAPSHOT</version>
+            </dependency>
             <dependency>
                 <groupId>de.cebitec.mgx.client</groupId>
                 <artifactId>MGX-client-api</artifactId>
                 <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <artifactId>MGX-parallelPropChange</artifactId>
+                <groupId>de.cebitec.mgx</groupId>
+                <version>1.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>de.cebitec.mgx</groupId>
@@ -226,11 +261,21 @@
                 <artifactId>ProtoBuf-Serializer</artifactId>
                 <version>1.0-SNAPSHOT</version>
             </dependency>
+            <dependency>
+                <groupId>de.cebitec.mgx</groupId>
+                <artifactId>KEGG-Pathways</artifactId>
+                <version>1.0-SNAPSHOT</version>
+            </dependency>
             <!-- own NBP components -->
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>MGX-Datamodel</artifactId>
                 <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>MGX-Common</artifactId>
+                <version>1.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
@@ -249,27 +294,12 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>MGX-DTO-Wrapper</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
                 <artifactId>MGX-Login</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>Jersey-Wrapper</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
                 <artifactId>SwingX-Wrapper</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>MGX-Client-Wrapper</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -347,11 +377,6 @@
                 <artifactId>MGX-IntervalCache</artifactId>
                 <version>${project.version}</version>
             </dependency>
-            <dependency>
-                <artifactId>MGX-util</artifactId>
-                <groupId>de.cebitec.mgx.gui</groupId>
-                <version>${project.version}</version>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -375,7 +400,7 @@
                     <configuration>
                         <brandingToken>${brandingToken}</brandingToken>
                         <cluster>${brandingToken}</cluster>
-                        <useOSGiDependencies>false</useOSGiDependencies>
+                        <useOSGiDependencies>true</useOSGiDependencies>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -398,24 +423,17 @@
     </build>
 
     <modules>
-        <module>MGX-BioJava-Wrapper</module>
-        <module>Jersey-Wrapper</module>
-        <module>SwingX-WS-Wrapper</module>
-        <module>SwingX-Wrapper</module>
         <module>JFreeChart-Wrapper</module>
         <module>MGX-JOGL-Wrapper</module>
         <module>MGX-Jzy3D-Wrapper</module>
-        <module>MGX-ProtoBuf-Wrapper</module>
         <module>branding</module>
         <module>application</module>
         <module>MGX-Login</module>
-        <module>MGX-Client-Wrapper</module>
         <module>MGX-Explorer</module>
         <module>MGX-Nodes</module>
         <module>MGX-Wizards</module>
         <module>MGX-Datamodel</module>
         <module>MGX-Controller</module>
-        <module>MGX-DTO-Wrapper</module>
         <module>MGX-TaskView</module>
         <module>MGX-AttributeVisualization</module>
         <module>MGX-Prefuse</module>
@@ -435,9 +453,8 @@
         <module>MGX-IntervalCache</module>
         <module>MGX-Biodiversity</module>
         <module>MGX-Rarefaction</module>
-        <module>MGX-Newick-Wrapper</module>
         <module>MGX-PCA</module>
-        <module>MGX-util</module>
+        <module>MGX-Common</module>
     </modules>
     <properties>
         <netbeans.version>RELEASE74</netbeans.version>

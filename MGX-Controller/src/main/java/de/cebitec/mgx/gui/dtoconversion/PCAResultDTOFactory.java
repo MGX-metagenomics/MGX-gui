@@ -1,5 +1,7 @@
 package de.cebitec.mgx.gui.dtoconversion;
 
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.misc.PCAResultI;
 import de.cebitec.mgx.dto.dto.PCAResultDTO;
 import de.cebitec.mgx.dto.dto.PointDTO;
 import de.cebitec.mgx.gui.datamodel.misc.PCAResult;
@@ -8,7 +10,7 @@ import de.cebitec.mgx.gui.datamodel.misc.PCAResult;
  *
  * @author sjaenick
  */
-public class PCAResultDTOFactory extends DTOConversionBase<PCAResult, PCAResultDTO> {
+public class PCAResultDTOFactory extends DTOConversionBase<PCAResultI, PCAResultDTO> {
 
     static {
         instance = new PCAResultDTOFactory();
@@ -23,12 +25,12 @@ public class PCAResultDTOFactory extends DTOConversionBase<PCAResult, PCAResultD
     }
 
     @Override
-    public PCAResultDTO toDTO(PCAResult a) {
+    public PCAResultDTO toDTO(PCAResultI a) {
         throw new UnsupportedOperationException("Not supported.");
     }
 
     @Override
-    public PCAResult toModel(PCAResultDTO dto) {
+    public PCAResultI toModel(MGXMasterI m, PCAResultDTO dto) {
         double[] variances = new double[dto.getVarianceCount()];
         int i = 0;
         for (double d : dto.getVarianceList()) {
@@ -37,11 +39,11 @@ public class PCAResultDTOFactory extends DTOConversionBase<PCAResult, PCAResultD
         PCAResult ret = new PCAResult(variances);
 
         for (PointDTO p : dto.getDatapointList()) {
-            ret.addPoint(PointDTOFactory.getInstance().toModel(p));
+            ret.addPoint(PointDTOFactory.getInstance().toModel(m, p));
         }
 
         for (PointDTO p : dto.getLoadingList()) {
-            ret.addLoading(PointDTOFactory.getInstance().toModel(p));
+            ret.addLoading(PointDTOFactory.getInstance().toModel(m, p));
         }
         return ret;
     }

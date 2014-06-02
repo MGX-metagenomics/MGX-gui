@@ -1,8 +1,9 @@
 package de.cebitec.mgx.gui.attributevisualization.ui;
 
+import de.cebitec.mgx.api.groups.VGroupManagerI;
+import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.common.VGroupManager;
 import de.cebitec.mgx.gui.attributevisualization.GroupFrame;
-import de.cebitec.mgx.gui.groups.VGroupManager;
-import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -42,7 +43,7 @@ import org.openide.windows.TopComponent;
 @ServiceProvider(service = VisualizationGroupTopComponent.class)
 public final class VisualizationGroupTopComponent extends TopComponent implements ActionListener, PropertyChangeListener { // , ExplorerManager.Provider {
 
-    private final VGroupManager groupmgr = VGroupManager.getInstance();
+    private final VGroupManagerI groupmgr = VGroupManager.getInstance();
     private final ExplorerManager exmngr = new ExplorerManager();
     private final InstanceContent content = new InstanceContent();
     private final Lookup lookup;
@@ -65,11 +66,11 @@ public final class VisualizationGroupTopComponent extends TopComponent implement
         }
     }
 
-    public Collection<VisualizationGroup> getVisualizationGroups() {
+    public Collection<VisualizationGroupI> getVisualizationGroups() {
         return groupmgr.getActiveGroups();
     }
 
-    void removeGroup(VisualizationGroup group) {
+    void removeGroup(VisualizationGroupI group) {
         groupmgr.removeGroup(group);
     }
 
@@ -126,39 +127,46 @@ public final class VisualizationGroupTopComponent extends TopComponent implement
         // better to version settings since initial version as advocated at
         // http://wiki.apidesign.org/wiki/PropertyFiles
         p.setProperty("version", "1.0");
+        Collection<VisualizationGroupI> groups = groupmgr.getAllGroups();
+        p.setProperty("numGroups", String.valueOf(groups.size()));
+        int num = 0;
+        for (VisualizationGroupI vg : groups) {
+            p.setProperty("vGroup"+num+"_active", String.valueOf(vg.isActive()));
+        }
     }
 
     void readProperties(java.util.Properties p) {
         String version = p.getProperty("version");
+        System.err.println(p.getProperty("numGroups"));
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        final VisualizationGroup newGroup = groupmgr.createGroup();
-        final GroupFrame gf = new GroupFrame(newGroup);
+        final VisualizationGroupI newGroup = groupmgr.createGroup();
+        final GroupFrame gf = new GroupFrame(newGroup, groupmgr);
         panel.add(gf);
     }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {
-            case VGroupManager.VISGROUP_SELECTION_CHANGED:
+            case VGroupManagerI.VISGROUP_SELECTION_CHANGED:
                 content.set(Collections.emptyList(), null); // clear content
                 content.add(evt.getNewValue());
                 break;
-            case VisualizationGroup.VISGROUP_ATTRTYPE_CHANGED:
+            case VisualizationGroupI.VISGROUP_ATTRTYPE_CHANGED:
                 // ignore
                 break;
-            case VisualizationGroup.VISGROUP_CHANGED:
+            case VisualizationGroupI.VISGROUP_CHANGED:
                 // ignore
                 break;
-            case VisualizationGroup.VISGROUP_HAS_DIST:
+            case VisualizationGroupI.VISGROUP_HAS_DIST:
                 // ignore
                 break;
-            case VisualizationGroup.VISGROUP_DEACTIVATED:
+            case VisualizationGroupI.VISGROUP_DEACTIVATED:
                 // ignore
                 break;
-            case VisualizationGroup.VISGROUP_ACTIVATED:
+            case VisualizationGroupI.VISGROUP_ACTIVATED:
                 // ignore
                 break;
             default:

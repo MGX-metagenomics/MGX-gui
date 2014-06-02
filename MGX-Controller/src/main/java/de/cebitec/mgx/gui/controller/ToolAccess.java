@@ -1,15 +1,18 @@
 package de.cebitec.mgx.gui.controller;
 
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.access.ToolAccessI;
+import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.misc.TaskI;
+import de.cebitec.mgx.api.misc.TaskI.TaskType;
+import de.cebitec.mgx.api.model.Identifiable;
+import de.cebitec.mgx.api.model.JobParameterI;
+import de.cebitec.mgx.api.model.ToolI;
+import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.client.exception.MGXClientException;
-import de.cebitec.mgx.client.exception.MGXException;
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.JobParameterDTO;
 import de.cebitec.mgx.dto.dto.ToolDTO;
-import de.cebitec.mgx.gui.datamodel.Identifiable;
-import de.cebitec.mgx.gui.datamodel.JobParameter;
-import de.cebitec.mgx.gui.datamodel.Tool;
-import de.cebitec.mgx.gui.datamodel.misc.Task;
-import de.cebitec.mgx.gui.datamodel.misc.Task.TaskType;
 import de.cebitec.mgx.gui.dtoconversion.JobParameterDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.ToolDTOFactory;
 import de.cebitec.mgx.gui.util.BaseIterator;
@@ -24,46 +27,61 @@ import org.openide.util.Exceptions;
  *
  * @author sjaenick
  */
-public class ToolAccess extends AccessBase<Tool> {
+public class ToolAccess extends AccessBase<ToolI> implements ToolAccessI {
 
-    public Iterator<Tool> listGlobalTools() throws MGXServerException {
-        Iterator<ToolDTO> listGlobalTools = getDTOmaster().Tool().listGlobalTools();
-        return new BaseIterator<ToolDTO, Tool>(listGlobalTools) {
+    public ToolAccess(MGXMasterI master, MGXDTOMaster dtomaster) {
+        super(master, dtomaster);
+    }
+
+    @Override
+    public Iterator<ToolI> listGlobalTools() throws MGXException {
+        Iterator<ToolDTO> listGlobalTools;
+        try {
+            listGlobalTools = getDTOmaster().Tool().listGlobalTools();
+        } catch (MGXServerException ex) {
+            throw new MGXException(ex);
+        }
+        return new BaseIterator<ToolDTO, ToolI>(listGlobalTools) {
             @Override
-            public Tool next() {
-                Tool tool = ToolDTOFactory.getInstance().toModel(iter.next());
-                // FIXME cannot set master
-                return tool;
+            public ToolI next() {
+                return ToolDTOFactory.getInstance().toModel(getMaster(), iter.next());
             }
         };
     }
 
-    public long installTool(long global_id) throws MGXServerException {
+    @Override
+    public long installTool(long global_id) throws MGXException {
         assert global_id != Identifiable.INVALID_IDENTIFIER;
-        return getDTOmaster().Tool().installGlobalTool(global_id);
+        try {
+            return getDTOmaster().Tool().installGlobalTool(global_id);
+        } catch (MGXServerException ex) {
+            throw new MGXException(ex);
+        }
     }
 
-    public Collection<JobParameter> getAvailableParameters(Tool tool) {
+    @Override
+    public Collection<JobParameterI> getAvailableParameters(ToolI tool) throws MGXException {
 
         ToolDTO dto = ToolDTOFactory.getInstance().toDTO(tool);
 
-        List<JobParameter> ret = new ArrayList<>();
+        List<JobParameterI> ret = new ArrayList<>();
         try {
             for (JobParameterDTO dtoParameter : getDTOmaster().Tool().getAvailableParameters(dto)) {
-                ret.add(JobParameterDTOFactory.getInstance().toModel(dtoParameter));
+                ret.add(JobParameterDTOFactory.getInstance().toModel(getMaster(), dtoParameter));
             }
-        } catch (MGXException ex) {
-            Exceptions.printStackTrace(ex);
+        } catch (MGXServerException | MGXClientException ex) {
+            throw new MGXException(ex);
         }
         return ret;
 
     }
 
-    public Collection<JobParameter> getAvailableParameters(long toolId, boolean isGlobal) {
-        List<JobParameter> ret = new ArrayList<>();
+    @Override
+    public Collection<JobParameterI> getAvailableParameters(long toolId, boolean isGlobal) throws MGXException {
+        List<JobParameterI> ret = new ArrayList<>();
         try {
             for (JobParameterDTO dto : getDTOmaster().Tool().getAvailableParameters(toolId, isGlobal)) {
-                ret.add(JobParameterDTOFactory.getInstance().toModel(dto));
+                ret.add(JobParameterDTOFactory.getInstance().toModel(getMaster(), dto));
             }
 
         } catch (MGXServerException ex) {
@@ -73,27 +91,25 @@ public class ToolAccess extends AccessBase<Tool> {
     }
 
     @Override
-    public long create(Tool obj) {
+    public long create(ToolI obj) {
         assert obj.getId() == Identifiable.INVALID_IDENTIFIER;
         ToolDTO dto = ToolDTOFactory.getInstance().toDTO(obj);
         long id = Identifiable.INVALID_IDENTIFIER;
         try {
             id = getDTOmaster().Tool().create(dto);
-        } catch (MGXException ex) {
+        } catch (MGXClientException | MGXServerException ex) {
             Exceptions.printStackTrace(ex);
         }
         obj.setId(id);
-        obj.setMaster(this.getMaster());
         return id;
     }
 
     @Override
-    public Tool fetch(long id) {
-        Tool t = null;
+    public ToolI fetch(long id) {
+        ToolI t = null;
         try {
             ToolDTO dto = getDTOmaster().Tool().fetch(id);
-            t = ToolDTOFactory.getInstance().toModel(dto);
-            t.setMaster(getMaster());
+            t = ToolDTOFactory.getInstance().toModel(getMaster(), dto);
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
@@ -101,14 +117,13 @@ public class ToolAccess extends AccessBase<Tool> {
     }
 
     @Override
-    public Iterator<Tool> fetchall() {
+    public Iterator<ToolI> fetchall() {
         try {
             Iterator<ToolDTO> fetchall = getDTOmaster().Tool().fetchall();
-            return new BaseIterator<ToolDTO, Tool>(fetchall) {
+            return new BaseIterator<ToolDTO, ToolI>(fetchall) {
                 @Override
-                public Tool next() {
-                    Tool tool = ToolDTOFactory.getInstance().toModel(iter.next());
-                    tool.setMaster(getMaster());
+                public ToolI next() {
+                    ToolI tool = ToolDTOFactory.getInstance().toModel(getMaster(), iter.next());
                     return tool;
                 }
             };
@@ -120,13 +135,13 @@ public class ToolAccess extends AccessBase<Tool> {
     }
 
     @Override
-    public void update(Tool obj) {
+    public void update(ToolI obj) {
         throw new UnsupportedOperationException("Not supported.");
     }
 
     @Override
-    public Task delete(Tool obj) {
-        Task ret = null;
+    public TaskI delete(ToolI obj) {
+        TaskI ret = null;
         try {
             UUID uuid = getDTOmaster().Tool().delete(obj.getId());
             ret = getMaster().Task().get(obj, uuid, TaskType.DELETE);
@@ -136,12 +151,12 @@ public class ToolAccess extends AccessBase<Tool> {
         return ret;
     }
 
-    public Tool ByJob(long id) {
-        Tool t = null;
+    @Override
+    public ToolI ByJob(long id) {
+        ToolI t = null;
         try {
             ToolDTO dto = getDTOmaster().Tool().ByJob(id);
-            t = ToolDTOFactory.getInstance().toModel(dto);
-            t.setMaster(getMaster());
+            t = ToolDTOFactory.getInstance().toModel(getMaster(), dto);
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }

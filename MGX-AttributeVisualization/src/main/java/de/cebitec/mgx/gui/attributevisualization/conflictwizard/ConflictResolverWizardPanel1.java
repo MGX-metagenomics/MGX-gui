@@ -1,11 +1,11 @@
 package de.cebitec.mgx.gui.attributevisualization.conflictwizard;
 
-import de.cebitec.mgx.gui.datamodel.Job;
-import de.cebitec.mgx.gui.datamodel.SeqRun;
-import de.cebitec.mgx.gui.datamodel.misc.AttributeRank;
-import de.cebitec.mgx.gui.datamodel.misc.Pair;
-import de.cebitec.mgx.gui.datamodel.misc.Triple;
-import de.cebitec.mgx.gui.groups.VisualizationGroup;
+import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.misc.AttributeRank;
+import de.cebitec.mgx.api.misc.Pair;
+import de.cebitec.mgx.api.misc.Triple;
+import de.cebitec.mgx.api.model.JobI;
+import de.cebitec.mgx.api.model.SeqRunI;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Collection;
@@ -21,13 +21,13 @@ import org.openide.util.HelpCtx;
 
 public class ConflictResolverWizardPanel1 implements WizardDescriptor.Panel<WizardDescriptor>, PropertyChangeListener {
 
-    private VisualizationGroup vg;
-    private SeqRun run;
+    private final VisualizationGroupI vg;
+    private final SeqRunI run;
     private final AttributeRank rank;
-    private List<Job> jobs;
+    private final List<JobI> jobs;
     private final EventListenerList listeners = new EventListenerList();
 
-    public ConflictResolverWizardPanel1(VisualizationGroup vg, AttributeRank rank, SeqRun run, Collection<Job> j) {
+    public ConflictResolverWizardPanel1(VisualizationGroupI vg, AttributeRank rank, SeqRunI run, Collection<JobI> j) {
         this.vg = vg;
         this.run = run;
         this.jobs = new LinkedList<>();
@@ -77,7 +77,7 @@ public class ConflictResolverWizardPanel1 implements WizardDescriptor.Panel<Wiza
 
     }
 
-    public Pair<VisualizationGroup, Triple<AttributeRank, SeqRun, Job>> getSelection() {
+    public Pair<VisualizationGroupI, Triple<AttributeRank, SeqRunI, JobI>> getSelection() {
         return new Pair<>(vg, new Triple<>(rank, run, getComponent().getSelectedJob()));
     }
 
@@ -115,10 +115,10 @@ public class ConflictResolverWizardPanel1 implements WizardDescriptor.Panel<Wiza
         fireChangeEvent(this, false, isValid());
     }
 
-    private static class JobsByToolName implements Comparator<Job> {
+    private static class JobsByToolName implements Comparator<JobI> {
 
         @Override
-        public int compare(Job o1, Job o2) {
+        public int compare(JobI o1, JobI o2) {
             return o1.getTool().getName().compareTo(o2.getTool().getName());
         }
     }

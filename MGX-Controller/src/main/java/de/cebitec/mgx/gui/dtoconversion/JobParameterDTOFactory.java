@@ -1,11 +1,13 @@
 package de.cebitec.mgx.gui.dtoconversion;
 
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.Identifiable;
+import de.cebitec.mgx.api.model.JobParameterI;
 import de.cebitec.mgx.dto.dto.ChoicesDTO;
 import de.cebitec.mgx.dto.dto.JobParameterDTO;
 import de.cebitec.mgx.dto.dto.JobParameterDTO.Builder;
 import de.cebitec.mgx.dto.dto.JobParameterListDTO;
 import de.cebitec.mgx.dto.dto.KVPair;
-import de.cebitec.mgx.gui.datamodel.Identifiable;
 import de.cebitec.mgx.gui.datamodel.JobParameter;
 import java.util.HashMap;
 import java.util.Map.Entry;
@@ -14,7 +16,7 @@ import java.util.Map.Entry;
  *
  * @author sjaenick
  */
-public class JobParameterDTOFactory extends DTOConversionBase<JobParameter, JobParameterDTO> {
+public class JobParameterDTOFactory extends DTOConversionBase<JobParameterI, JobParameterDTO> {
 
     protected final static JobParameterDTOFactory instance = new JobParameterDTOFactory();
 
@@ -26,7 +28,7 @@ public class JobParameterDTOFactory extends DTOConversionBase<JobParameter, JobP
     }
 
     @Override
-    public JobParameterDTO toDTO(JobParameter p) {
+    public JobParameterDTO toDTO(JobParameterI p) {
         Builder b = JobParameterDTO.newBuilder()
                 .setNodeId(p.getNodeId())
                 .setUserName(p.getUserName())
@@ -65,8 +67,8 @@ public class JobParameterDTOFactory extends DTOConversionBase<JobParameter, JobP
     }
 
     @Override
-    public JobParameter toModel(JobParameterDTO dto) {
-        JobParameter jp = new JobParameter();
+    public JobParameterI toModel(MGXMasterI m, JobParameterDTO dto) {
+        JobParameterI jp = new JobParameter(m);
         if (dto.hasId()) {
             jp.setId(dto.getId());
         }
@@ -100,9 +102,9 @@ public class JobParameterDTOFactory extends DTOConversionBase<JobParameter, JobP
         return jp;
     }
 
-    public JobParameterListDTO toList(Iterable<JobParameter> params) {
+    public JobParameterListDTO toList(Iterable<JobParameterI> params) {
         JobParameterListDTO.Builder b = JobParameterListDTO.newBuilder();
-        for (JobParameter p : params) {
+        for (JobParameterI p : params) {
             b.addParameter(toDTO(p));
         }
         return b.build();

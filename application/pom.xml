@@ -17,6 +17,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <netbeans.run.params.ide>-J-Xmx256m</netbeans.run.params.ide>
         <netbeans.run.params>${netbeans.run.params.ide}</netbeans.run.params>
+<!--        <all.clusters>${project.build.directory}/${brandingToken}</all.clusters> -->
     </properties>
 
     <dependencies>
@@ -91,10 +92,6 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>MGX-Charts3D</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>MGX-Search</artifactId>
         </dependency>
         <dependency>
@@ -137,14 +134,49 @@
             <artifactId>MGX-PCA</artifactId>
             <version>${project.version}</version>
         </dependency>
+<!--        <dependency> 
+            <groupId>org.netbeans.api</groupId> 
+            <artifactId>org-netbeans-modules-netbinox</artifactId> 
+        </dependency>-->
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-netbeans-core-netigso</artifactId>
+            <version>RELEASE74</version>
+        </dependency>
     </dependencies>
 
     <build>
         <plugins>
+<!--            <plugin>
+                <groupId>org.ops4j</groupId>
+                <artifactId>maven-pax-plugin</artifactId>
+                <version>1.4</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>2.4.0</version>
+                <extensions>true</extensions>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>bundle</goal>
+                        </goals>
+                    </execution>
+                </executions>
+
+                <configuration>
+                    <instructions>
+                        <Export-Package></Export-Package>
+                        <Private-Package></Private-Package>
+                    </instructions>
+                </configuration>
+            </plugin>-->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>nbm-maven-plugin</artifactId>
                 <configuration>
+                    <useOSGiDependencies>true</useOSGiDependencies>
                     <etcConfFile>src/main/resources/mgxgui.conf</etcConfFile>
                 </configuration>
             </plugin>
@@ -162,7 +194,19 @@
                     </systemProperties>
                 </configuration>
             </plugin>
-            -->
+            <plugin> 
+                <groupId>org.apache.maven.plugins</groupId> 
+                <artifactId>maven-surefire-plugin</artifactId> 
+                <version>2.12.2</version> 
+                <configuration> 
+                    <systemPropertyVariables> 
+                        <all.clusters>${all.clusters}</all.clusters> 
+                        <branding.token>${brandingToken}</branding.token> 
+                    </systemPropertyVariables> 
+                </configuration> 
+            </plugin> 
+                        -->
+
         </plugins>
     </build>
 
@@ -180,6 +224,7 @@
                                 <goals>
                                     <goal>autoupdate</goal>
                                     <goal>webstart-app</goal>
+                                    <goal>build-installers</goal> 
                                 </goals>
                             </execution>
                         </executions>

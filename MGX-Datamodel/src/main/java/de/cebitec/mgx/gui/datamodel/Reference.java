@@ -1,33 +1,37 @@
 package de.cebitec.mgx.gui.datamodel;
 
-import java.awt.datatransfer.DataFlavor;
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.MGXReferenceI;
 
 /**
  *
  * @author belmann
  */
-public class Reference extends Identifiable<Reference> {
+public class Reference extends MGXReferenceI {
 
     private String name;
     private int length;
-    public static final DataFlavor DATA_FLAVOR = new DataFlavor(Reference.class, "Reference");
 
-    public Reference() {
-        super(DATA_FLAVOR);
+    public Reference(MGXMasterI m) {
+        super(m, DATA_FLAVOR);
     }
 
+    @Override
     public int getLength() {
         return length;
     }
 
+    @Override
     public void setLength(int length) {
         this.length = length;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public void setName(String name) {
         this.name = name;
     }
@@ -38,7 +42,7 @@ public class Reference extends Identifiable<Reference> {
     }
 
     @Override
-    public int compareTo(Reference o) {
-        return this.name.compareTo(o.name);
+    public int compareTo(MGXReferenceI o) {
+        return this.name.compareTo(o.getName());
     }
 }

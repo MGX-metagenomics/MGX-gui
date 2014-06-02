@@ -1,5 +1,7 @@
 package de.cebitec.mgx.gui.dtoconversion;
 
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.ToolI;
 import de.cebitec.mgx.dto.dto.ToolDTO;
 import de.cebitec.mgx.gui.datamodel.Tool;
 
@@ -7,7 +9,7 @@ import de.cebitec.mgx.gui.datamodel.Tool;
  *
  * @author sjaenick
  */
-public class ToolDTOFactory extends DTOConversionBase<Tool, ToolDTO> {
+public class ToolDTOFactory extends DTOConversionBase<ToolI, ToolDTO> {
 
     static {
         instance = new ToolDTOFactory();
@@ -22,7 +24,7 @@ public class ToolDTOFactory extends DTOConversionBase<Tool, ToolDTO> {
     }
 
     @Override
-    public final ToolDTO toDTO(Tool s) {
+    public final ToolDTO toDTO(ToolI s) {
         return ToolDTO.newBuilder()
                 .setId(s.getId())
                 .setName(s.getName())
@@ -34,8 +36,8 @@ public class ToolDTOFactory extends DTOConversionBase<Tool, ToolDTO> {
                 .build();
     }
 
-    public final Tool toDB(ToolDTO dto, boolean copyID) {
-        Tool t = new Tool()
+    public final ToolI toDB(MGXMasterI m, ToolDTO dto, boolean copyID) {
+        ToolI t = new Tool(m)
                 .setName(dto.getName())
                 .setDescription(dto.getDescription())
                 .setVersion(dto.getVersion())
@@ -52,7 +54,7 @@ public class ToolDTOFactory extends DTOConversionBase<Tool, ToolDTO> {
     }
 
     @Override
-    public Tool toModel(ToolDTO dto) {
-        return toDB(dto, true);
+    public ToolI toModel(MGXMasterI m, ToolDTO dto) {
+        return toDB(m, dto, true);
     }
 }

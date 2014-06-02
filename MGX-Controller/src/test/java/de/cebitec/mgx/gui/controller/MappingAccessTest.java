@@ -5,6 +5,7 @@
  */
 package de.cebitec.mgx.gui.controller;
 
+import de.cebitec.mgx.api.model.MappedSequenceI;
 import de.cebitec.mgx.gui.datamodel.MappedSequence;
 import de.cebitec.mgx.gui.util.TestMaster;
 import java.util.Iterator;
@@ -50,11 +51,11 @@ public class MappingAccessTest {
         UUID uuid = master.Mapping().openMapping(30);
         assertNotNull(uuid);
         int numMappedReads = 0;
-        Iterator<MappedSequence> iter = master.Mapping().byReferenceInterval(uuid, 566470, 566480);
+        Iterator<MappedSequenceI> iter = master.Mapping().byReferenceInterval(uuid, 566470, 566480);
         assertNotNull(iter);
 
         while (iter.hasNext()) {
-            MappedSequence ms = iter.next();
+            MappedSequenceI ms = iter.next();
             //System.err.println(ms.getSeqId());
             numMappedReads++;
 
@@ -70,13 +71,13 @@ public class MappingAccessTest {
         UUID uuid = master.Mapping().openMapping(30);
         int numMappedReads = 0;
         assertNotNull(uuid);
-        Iterator<MappedSequence> iter = master.Mapping().byReferenceInterval(uuid, 566470, 566480);
+        Iterator<MappedSequenceI> iter = master.Mapping().byReferenceInterval(uuid, 566470, 566480);
         assertNotNull(iter);
 
-        SortedSet<MappedSequence> set = new TreeSet<>();
+        SortedSet<MappedSequenceI> set = new TreeSet<>();
 
         while (iter.hasNext()) {
-            MappedSequence ms = iter.next();
+            MappedSequenceI ms = iter.next();
             assertNotNull(ms);
             //System.err.println("got "+ms);
             assertFalse(set.contains(ms));
@@ -93,7 +94,7 @@ public class MappingAccessTest {
 
         for (long l : new long[]{53748, 3436, 26467}) {
             boolean present = false;
-            for (MappedSequence ms : set) {
+            for (MappedSequenceI ms : set) {
                 if (ms.getSeqId() == l) {
                     present = true;
                 }

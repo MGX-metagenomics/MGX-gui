@@ -1,14 +1,19 @@
 package de.cebitec.mgx.gui.controller;
 
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.access.ReferenceAccessI;
+import de.cebitec.mgx.api.access.datatransfer.UploadBaseI;
+import de.cebitec.mgx.api.misc.TaskI;
+import de.cebitec.mgx.api.model.Identifiable;
+import de.cebitec.mgx.api.model.MGXReferenceI;
+import de.cebitec.mgx.api.model.ModelBase;
+import de.cebitec.mgx.api.model.RegionI;
+import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.client.datatransfer.ReferenceUploader;
 import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.ReferenceDTO;
 import de.cebitec.mgx.dto.dto.RegionDTO;
-import de.cebitec.mgx.gui.datamodel.Identifiable;
-import de.cebitec.mgx.gui.datamodel.ModelBase;
-import de.cebitec.mgx.gui.datamodel.Reference;
-import de.cebitec.mgx.gui.datamodel.Region;
 import de.cebitec.mgx.gui.datamodel.misc.Task;
 import de.cebitec.mgx.gui.dtoconversion.ReferenceDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.RegionDTOFactory;
@@ -22,41 +27,47 @@ import org.openide.util.Exceptions;
  *
  * @author belmann
  */
-public class ReferenceAccess extends AccessBase<Reference> {
+public class ReferenceAccess implements ReferenceAccessI {
+
+    private final MGXDTOMaster dtomaster;
+    private final MGXMasterI master;
+
+    public ReferenceAccess(MGXDTOMaster dtomaster, MGXMasterI master) {
+        this.dtomaster = dtomaster;
+        this.master = master;
+    }
 
     @Override
-    public long create(Reference obj) {
+    public long create(MGXReferenceI obj) {
         ReferenceDTO dto = ReferenceDTOFactory.getInstance().toDTO(obj);
         long id = Identifiable.INVALID_IDENTIFIER;
         try {
-            id = getDTOmaster().Reference().create(dto);
+            id = dtomaster.Reference().create(dto);
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
         obj.setId(id);
-        obj.setMaster(this.getMaster());
         return id;
     }
 
     @Override
-    public Reference fetch(long id) {
+    public MGXReferenceI fetch(long id) {
         ReferenceDTO dto = null;
         try {
-            dto = getDTOmaster().Reference().fetch(id);
+            dto = dtomaster.Reference().fetch(id);
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
-        Reference ret = ReferenceDTOFactory.getInstance().toModel(dto);
-        ret.setMaster(this.getMaster());
+        MGXReferenceI ret = ReferenceDTOFactory.getInstance().toModel(master, dto);
         return ret;
     }
 
     @Override
-    public Iterator<Reference> fetchall() {
+    public Iterator<MGXReferenceI> fetchall() {
         try {
 
-            return new Iterator<Reference>() {
-                final Iterator<ReferenceDTO> iter = getDTOmaster().Reference().fetchall();
+            return new Iterator<MGXReferenceI>() {
+                final Iterator<ReferenceDTO> iter = dtomaster.Reference().fetchall();
 
                 @Override
                 public boolean hasNext() {
@@ -64,9 +75,8 @@ public class ReferenceAccess extends AccessBase<Reference> {
                 }
 
                 @Override
-                public Reference next() {
-                    Reference ret = ReferenceDTOFactory.getInstance().toModel(iter.next());
-                    ret.setMaster(getMaster());
+                public MGXReferenceI next() {
+                    MGXReferenceI ret = ReferenceDTOFactory.getInstance().toModel(master, iter.next());
                     return ret;
                 }
 
@@ -82,25 +92,25 @@ public class ReferenceAccess extends AccessBase<Reference> {
     }
 
     @Override
-    public void update(Reference obj) {
+    public void update(MGXReferenceI obj) {
         ReferenceDTO dto = ReferenceDTOFactory.getInstance().toDTO(obj);
         try {
-            getDTOmaster().Reference().update(dto);
+            dtomaster.Reference().update(dto);
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
         obj.firePropertyChange(ModelBase.OBJECT_MODIFIED, null, obj);
     }
 
-    public Iterator<Region> byReferenceInterval(Long id, int from, int to) {
+    @Override
+    public Iterator<RegionI> byReferenceInterval(Long id, int from, int to) {
         Iterator<RegionDTO> fetchall;
         try {
-            fetchall = getDTOmaster().Reference().byReferenceInterval(id, from, to);
-            return new BaseIterator<RegionDTO, Region>(fetchall) {
+            fetchall = dtomaster.Reference().byReferenceInterval(id, from, to);
+            return new BaseIterator<RegionDTO, RegionI>(fetchall) {
                 @Override
-                public Region next() {
-                    Region s = RegionDTOFactory.getInstance().toModel(iter.next());
-                    s.setMaster(getMaster());
+                public RegionI next() {
+                    RegionI s = RegionDTOFactory.getInstance().toModel(master, iter.next());
                     return s;
                 }
             };
@@ -109,25 +119,26 @@ public class ReferenceAccess extends AccessBase<Reference> {
         }
         return null;
     }
-    
-    public String getSequence(final Reference ref, int from, int to) {
+
+    @Override
+    public String getSequence(final MGXReferenceI ref, int from, int to) {
         try {
-            return getDTOmaster().Reference().getSequence(ref.getId(), from, to);
+            return dtomaster.Reference().getSequence(ref.getId(), from, to);
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
         return null;
     }
 
-    public Iterator<Reference> listGlobalReferences() {
+    @Override
+    public Iterator<MGXReferenceI> listGlobalReferences() {
         Iterator<ReferenceDTO> iter = null;
         try {
-            iter = getDTOmaster().Reference().listGlobalReferences();
-            return new BaseIterator<ReferenceDTO, Reference>(iter) {
+            iter = dtomaster.Reference().listGlobalReferences();
+            return new BaseIterator<ReferenceDTO, MGXReferenceI>(iter) {
                 @Override
-                public Reference next() {
-                    Reference reference = ReferenceDTOFactory.getInstance().toModel(iter.next());
-                    // FIXME cannot set master
+                public MGXReferenceI next() {
+                    MGXReferenceI reference = ReferenceDTOFactory.getInstance().toModel(master, iter.next());
                     return reference;
                 }
             };
@@ -137,24 +148,43 @@ public class ReferenceAccess extends AccessBase<Reference> {
         return null;
     }
 
-    public long installGlobalReference(long id) throws MGXServerException {
+    @Override
+    public long installGlobalReference(long id) {
         assert id != Identifiable.INVALID_IDENTIFIER;
-        return getDTOmaster().Reference().installGlobalReference(id);
+        try {
+            return dtomaster.Reference().installGlobalReference(id);
+        } catch (MGXServerException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+        return Identifiable.INVALID_IDENTIFIER;
     }
 
     @Override
-    public Task delete(Reference obj) {
-        Task ret = null;
+    public TaskI delete(MGXReferenceI obj) {
+        TaskI ret = null;
         try {
-            UUID uuid = getDTOmaster().Reference().delete(obj.getId());
-            ret = getMaster().Task().get(obj, uuid, Task.TaskType.DELETE);
+            UUID uuid = dtomaster.Reference().delete(obj.getId());
+            ret = master.Task().get(obj, uuid, Task.TaskType.DELETE);
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
         return ret;
     }
-    
-    public ReferenceUploader createUploader(File localFile) {
-        return getDTOmaster().Reference().createUploader(localFile);
+
+    @Override
+    public UploadBaseI createUploader(File localFile) {
+        final ReferenceUploader ru = dtomaster.Reference().createUploader(localFile);
+        return new UploadBaseI() {
+
+            @Override
+            public boolean upload() {
+                return ru.upload();
+            }
+
+            @Override
+            public long getNumElementsSent() {
+                return ru.getNumElementsSent();
+            }
+        };
     }
 }

@@ -1,15 +1,17 @@
 package de.cebitec.mgx.gui.dtoconversion;
 
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.DNAExtractI;
+import de.cebitec.mgx.api.model.Identifiable;
 import de.cebitec.mgx.dto.dto.DNAExtractDTO;
 import de.cebitec.mgx.dto.dto.DNAExtractDTO.Builder;
 import de.cebitec.mgx.gui.datamodel.DNAExtract;
-import de.cebitec.mgx.gui.datamodel.Identifiable;
 
 /**
  *
  * @author sjaenick
  */
-public class DNAExtractDTOFactory extends DTOConversionBase<DNAExtract, DNAExtractDTO> {
+public class DNAExtractDTOFactory extends DTOConversionBase<DNAExtractI, DNAExtractDTO> {
 
     static {
         instance = new DNAExtractDTOFactory();
@@ -24,7 +26,7 @@ public class DNAExtractDTOFactory extends DTOConversionBase<DNAExtract, DNAExtra
     }
 
     @Override
-    public final DNAExtractDTO toDTO(DNAExtract d) {
+    public final DNAExtractDTO toDTO(DNAExtractI d) {
         Builder b = DNAExtractDTO.newBuilder();
         if (d.getId() != Identifiable.INVALID_IDENTIFIER) {
             b.setId(d.getId());
@@ -46,8 +48,8 @@ public class DNAExtractDTOFactory extends DTOConversionBase<DNAExtract, DNAExtra
     }
 
     @Override
-    public final DNAExtract toModel(DNAExtractDTO dto) {
-        DNAExtract d = new DNAExtract();
+    public final DNAExtractI toModel(MGXMasterI m, DNAExtractDTO dto) {
+        DNAExtractI d = new DNAExtract(m);
 
         d.setName(dto.getName());
 

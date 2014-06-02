@@ -1,18 +1,20 @@
 package de.cebitec.mgx.gui.dtoconversion;
 
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.JobI;
+import de.cebitec.mgx.api.model.JobParameterI;
+import de.cebitec.mgx.api.model.JobState;
 import de.cebitec.mgx.dto.dto.JobDTO;
 import de.cebitec.mgx.dto.dto.JobDTO.Builder;
 import de.cebitec.mgx.dto.dto.JobParameterDTO;
 import de.cebitec.mgx.gui.datamodel.Job;
-import de.cebitec.mgx.gui.datamodel.JobParameter;
-import de.cebitec.mgx.gui.datamodel.JobState;
 import java.util.ArrayList;
 
 /**
  *
  * @author sjaenick
  */
-public class JobDTOFactory extends DTOConversionBase<Job, JobDTO> {
+public class JobDTOFactory extends DTOConversionBase<JobI, JobDTO> {
 
     static {
         instance = new JobDTOFactory();
@@ -27,7 +29,7 @@ public class JobDTOFactory extends DTOConversionBase<Job, JobDTO> {
     }
 
     @Override
-    public final JobDTO toDTO(Job j) {
+    public final JobDTO toDTO(JobI j) {
         Builder b = JobDTO.newBuilder()
                 .setId(j.getId())
                 .setSeqrunId(j.getSeqrun().getId())
@@ -51,17 +53,17 @@ public class JobDTOFactory extends DTOConversionBase<Job, JobDTO> {
     }
 
     @Override
-    public final Job toModel(JobDTO dto) {
-        Job j = new Job()
+    public final JobI toModel(MGXMasterI m, JobDTO dto) {
+        JobI j = new Job(m)
                 .setStatus(JobState.values()[dto.getState().ordinal()])
                 .setCreator(dto.getCreator())
                 .setStartDate(toDate(dto.getStartDate()))
                 .setFinishDate(toDate(dto.getFinishDate()));
 
         if (dto.hasParameters()) {
-            j.setParameters(new ArrayList<JobParameter>(dto.getParameters().getParameterCount()));
+            j.setParameters(new ArrayList<JobParameterI>(dto.getParameters().getParameterCount()));
             for (JobParameterDTO jpdto : dto.getParameters().getParameterList()) {
-                JobParameter jp = JobParameterDTOFactory.getInstance().toModel(jpdto);
+                JobParameterI jp = JobParameterDTOFactory.getInstance().toModel(m, jpdto);
                 j.getParameters().add(jp);
             }
         }

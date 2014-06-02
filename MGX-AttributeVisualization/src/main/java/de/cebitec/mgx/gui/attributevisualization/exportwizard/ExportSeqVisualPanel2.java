@@ -1,6 +1,6 @@
 package de.cebitec.mgx.gui.attributevisualization.exportwizard;
 
-import de.cebitec.mgx.gui.groups.VisualizationGroup;
+import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import java.io.File;
 import java.lang.reflect.Field;
 import javax.swing.JFileChooser;
@@ -49,7 +49,7 @@ public final class ExportSeqVisualPanel2 extends JPanel implements DocumentListe
     }
     private JTextField fileNameField;
 
-    public void setVisualizationGroup(VisualizationGroup vg) {
+    public void setVisualizationGroup(VisualizationGroupI vg) {
         // suggest a file name
         File suggestedName = new File(jFileChooser1.getCurrentDirectory(), cleanupName(vg.getName()) + ".fas");
         int cnt = 1;

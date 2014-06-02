@@ -1,12 +1,12 @@
 package de.cebitec.mgx.gui.attributevisualization.ui;
 
+import de.cebitec.mgx.api.groups.ImageExporterI;
+import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.misc.DistributionI;
+import de.cebitec.mgx.api.misc.Pair;
+import de.cebitec.mgx.common.visualization.ViewerI;
 import de.cebitec.mgx.gui.attributevisualization.exportwizard.SeqExporter;
-import de.cebitec.mgx.gui.attributevisualization.viewer.ViewerI;
-import de.cebitec.mgx.gui.datamodel.misc.Distribution;
-import de.cebitec.mgx.gui.datamodel.misc.Pair;
-import de.cebitec.mgx.gui.groups.ImageExporterI;
-import de.cebitec.mgx.gui.groups.SequenceExporterI;
-import de.cebitec.mgx.gui.groups.VisualizationGroup;
+import de.cebitec.mgx.api.groups.SequenceExporterI;
 import java.util.Collections;
 import java.util.List;
 import org.netbeans.api.settings.ConvertAsProperties;
@@ -41,6 +41,7 @@ public final class AttributeVisualizationTopComponent extends TopComponent {
 
     private final InstanceContent content = new InstanceContent();
     private final Lookup lookup;
+    //private final VGroupManagerI vmgr = VGroupManager.getInstance();
 
     public AttributeVisualizationTopComponent() {
         initComponents();
@@ -141,9 +142,9 @@ public final class AttributeVisualizationTopComponent extends TopComponent {
         //pe.requestActive();
     }
 
-    void updateLookup(List<Pair<VisualizationGroup, Distribution>> currentDistributions) {
+    void updateLookup(List<Pair<VisualizationGroupI, DistributionI>> currentDistributions) {
         content.set(Collections.emptyList(), null); // clear content
-        for (Pair<VisualizationGroup, Distribution> p : currentDistributions) {
+        for (Pair<VisualizationGroupI, DistributionI> p : currentDistributions) {
             SequenceExporterI exp = new SeqExporter(p.getFirst(), p.getSecond());
             content.add(exp);
         }

@@ -1,5 +1,7 @@
 package de.cebitec.mgx.gui.dtoconversion;
 
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.ObservationI;
 import de.cebitec.mgx.dto.dto.ObservationDTO;
 import de.cebitec.mgx.gui.datamodel.Observation;
 
@@ -7,7 +9,7 @@ import de.cebitec.mgx.gui.datamodel.Observation;
  *
  * @author sj
  */
-public class ObservationDTOFactory extends DTOConversionBase<Observation, ObservationDTO> {
+public class ObservationDTOFactory extends DTOConversionBase<ObservationI, ObservationDTO> {
 
     static {
         instance = new ObservationDTOFactory();
@@ -22,13 +24,13 @@ public class ObservationDTOFactory extends DTOConversionBase<Observation, Observ
     }
 
     @Override
-    public ObservationDTO toDTO(Observation a) {
+    public ObservationDTO toDTO(ObservationI a) {
         throw new UnsupportedOperationException("Not supported.");
     }
 
     @Override
-    public Observation toModel(ObservationDTO dto) {
-        Observation o = new Observation();
+    public ObservationI toModel(MGXMasterI m, ObservationDTO dto) {
+        ObservationI o = new Observation(m);
         o.setStart(dto.getStart());
         o.setStop(dto.getStop());
         o.setAttributeName(dto.getAttributeName());

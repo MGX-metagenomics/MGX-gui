@@ -1,6 +1,11 @@
 package de.cebitec.mgx.gui.datamodel;
 
-import java.awt.datatransfer.DataFlavor;
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.JobI;
+import de.cebitec.mgx.api.model.JobParameterI;
+import de.cebitec.mgx.api.model.JobState;
+import de.cebitec.mgx.api.model.SeqRunI;
+import de.cebitec.mgx.api.model.ToolI;
 import java.util.Collection;
 import java.util.Date;
 
@@ -8,86 +13,98 @@ import java.util.Date;
  *
  * @author sjaenick
  */
-public class Job extends Identifiable<Job> {
+public class Job extends JobI {
 
-    protected SeqRun seqrun;
+    protected SeqRunI seqrun;
     //
-    protected Tool tool;
+    protected ToolI tool;
     protected String created_by;
     //
     protected Date startDate = null;
     //
     protected Date finishDate = null;
     //
-    protected Collection<JobParameter> parameters = null;
+    protected Collection<JobParameterI> parameters = null;
     private int jobstate = JobState.CREATED.getValue();
-    //
-    public static final DataFlavor DATA_FLAVOR = new DataFlavor(Job.class, "Job");
 
-    public Job() {
-        super(DATA_FLAVOR);
+    public Job(MGXMasterI m) {
+        super(m);
     }
 
+    @Override
     public JobState getStatus() {
         return JobState.values()[jobstate];
     }
 
+    @Override
     public Job setStatus(JobState status) {
         jobstate = status.getValue();
         return this;
     }
 
-    public Tool getTool() {
+    @Override
+    public ToolI getTool() {
         return tool;
     }
 
-    public Job setTool(Tool t) {
+    @Override
+    public Job setTool(ToolI t) {
         assert t != null;
         this.tool = t;
         return this;
     }
 
-    public Collection<JobParameter> getParameters() {
+    @Override
+    public Collection<JobParameterI> getParameters() {
         return parameters;
     }
 
-    public Job setParameters(Collection<JobParameter> parameters) {
+    @Override
+    public Job setParameters(Collection<JobParameterI> parameters) {
         this.parameters = parameters;
         return this;
     }
 
+    @Override
     public Date getFinishDate() {
         return finishDate;
     }
 
+    @Override
     public Job setFinishDate(Date finishDate) {
         this.finishDate = finishDate;
         return this;
     }
 
+    @Override
     public Date getStartDate() {
         return startDate;
     }
 
+    @Override
     public Job setStartDate(Date startDate) {
         this.startDate = startDate;
         return this;
     }
 
-    public SeqRun getSeqrun() {
+    @Override
+    public SeqRunI getSeqrun() {
         return seqrun;
     }
 
-    public Job setSeqrun(SeqRun run) {
+    @Override
+    public JobI setSeqrun(SeqRunI run) {
         assert run != null;
         this.seqrun = run;
         return this;
     }
 
+    @Override
     public String getCreator() {
         return created_by;
     }
 
+    @Override
     public Job setCreator(String created_by) {
         this.created_by = created_by;
         return this;
@@ -102,18 +119,18 @@ public class Job extends Identifiable<Job> {
 
     @Override
     public boolean equals(Object object) {
-        if (!(object instanceof Job)) {
+        if (!(object instanceof JobI)) {
             return false;
         }
-        Job other = (Job) object;
-        if ((this.id == INVALID_IDENTIFIER && other.id != INVALID_IDENTIFIER) || (this.id != INVALID_IDENTIFIER && this.id != other.id)) {
+        JobI other = (JobI) object;
+        if ((this.id == INVALID_IDENTIFIER && other.getId() != INVALID_IDENTIFIER) || (this.id != INVALID_IDENTIFIER && this.id != other.getId())) {
             return false;
         }
         return getMaster().getProject().equals(other.getMaster().getProject());
     }
 
     @Override
-    public int compareTo(Job o) {
-        return this.startDate.compareTo(o.startDate);
+    public int compareTo(JobI o) {
+        return this.startDate.compareTo(o.getStartDate());
     }
 }

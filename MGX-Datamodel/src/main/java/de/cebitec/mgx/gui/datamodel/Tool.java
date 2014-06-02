@@ -1,12 +1,13 @@
 package de.cebitec.mgx.gui.datamodel;
 
-import java.awt.datatransfer.DataFlavor;
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.ToolI;
 
 /**
  *
  * @author sjaenick
  */
-public class Tool extends Identifiable<Tool> {
+public class Tool extends ToolI {
 
     protected String name;
     protected String description;
@@ -14,62 +15,72 @@ public class Tool extends Identifiable<Tool> {
     protected String author;
     protected String url;
     protected String xml_file;
-    //
-    public static final DataFlavor DATA_FLAVOR = new DataFlavor(Tool.class, "Tool");
 
-    public Tool() {
-        super(DATA_FLAVOR);
+    public Tool(MGXMasterI m) {
+        super(m);
     }
 
+    @Override
     public String getAuthor() {
         return author;
     }
 
+    @Override
     public Tool setAuthor(String author) {
         this.author = author;
         return this;
     }
 
+    @Override
     public String getDescription() {
         return description;
     }
 
+    @Override
     public Tool setDescription(String description) {
         this.description = description;
         return this;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public Tool setName(String name) {
         this.name = name;
         return this;
     }
 
+    @Override
     public String getUrl() {
         return url;
     }
 
+    @Override
     public Tool setUrl(String url) {
         this.url = url;
         return this;
     }
 
+    @Override
     public Float getVersion() {
         return version;
     }
 
+    @Override
     public Tool setVersion(Float version) {
         this.version = version;
         return this;
     }
 
+    @Override
     public String getXMLFile() {
         return xml_file;
     }
 
+    @Override
     public Tool setXMLFile(String xml_file) {
         this.xml_file = xml_file;
         return this;
@@ -82,18 +93,14 @@ public class Tool extends Identifiable<Tool> {
         return hash;
     }
 
-    @Override
-    public int compareTo(Tool o) {
-        return name.compareTo(o.name);
-    }
 
     @Override
     public boolean equals(Object object) {
-        if (!(object instanceof Tool)) {
+        if (!(object instanceof ToolI)) {
             return false;
         }
-        Tool other = (Tool) object;
-        if ((this.id == INVALID_IDENTIFIER && other.id != INVALID_IDENTIFIER) || (this.id != INVALID_IDENTIFIER && this.id != other.id)) {
+        ToolI other = (ToolI) object;
+        if ((this.id == INVALID_IDENTIFIER && other.getId() != INVALID_IDENTIFIER) || (this.id != INVALID_IDENTIFIER && this.id != other.getId())) {
             return false;
         }
         return true;

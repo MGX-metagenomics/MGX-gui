@@ -1,15 +1,17 @@
 package de.cebitec.mgx.gui.dtoconversion;
 
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.Identifiable;
+import de.cebitec.mgx.api.model.SampleI;
 import de.cebitec.mgx.dto.dto.SampleDTO;
 import de.cebitec.mgx.dto.dto.SampleDTO.Builder;
-import de.cebitec.mgx.gui.datamodel.Identifiable;
 import de.cebitec.mgx.gui.datamodel.Sample;
 
 /**
  *
  * @author sjaenick
  */
-public class SampleDTOFactory extends DTOConversionBase<Sample, SampleDTO> {
+public class SampleDTOFactory extends DTOConversionBase<SampleI, SampleDTO> {
 
     static {
         instance = new SampleDTOFactory();
@@ -24,7 +26,7 @@ public class SampleDTOFactory extends DTOConversionBase<Sample, SampleDTO> {
     }
 
     @Override
-    public final SampleDTO toDTO(Sample s) {
+    public final SampleDTO toDTO(SampleI s) {
         Builder b = SampleDTO.newBuilder();
         if (s.getId() != Identifiable.INVALID_IDENTIFIER) {
             b.setId(s.getId());
@@ -40,8 +42,8 @@ public class SampleDTOFactory extends DTOConversionBase<Sample, SampleDTO> {
     }
 
     @Override
-    public final Sample toModel(SampleDTO dto) {
-        Sample s = new Sample()
+    public final SampleI toModel(MGXMasterI m, SampleDTO dto) {
+        SampleI s = new Sample(m)
                 .setHabitatId(dto.getHabitatId())
                 .setCollectionDate(toDate(dto.getCollectiondate()))
                 .setMaterial(dto.getMaterial())

@@ -1,16 +1,15 @@
 package de.cebitec.mgx.gui.datamodel;
 
-import java.awt.datatransfer.DataFlavor;
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.HabitatI;
 
 /**
  *
  * @author sjaenick
  */
-public class Habitat extends Identifiable<Habitat> {
+public class Habitat extends HabitatI {
 
     protected String name;
-    //
-    public static final DataFlavor DATA_FLAVOR = new DataFlavor(Habitat.class, "Habitat");
     /*
      * GPS location of habitat
      */
@@ -20,59 +19,71 @@ public class Habitat extends Identifiable<Habitat> {
     protected int altitude;
     protected String biome;
 
-    public Habitat() {
-        super(DATA_FLAVOR);
+    public Habitat(MGXMasterI m) {
+        super(m);
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public Habitat setName(String name) {
         this.name = name;
         return this;
     }
 
+    @Override
     public double getLatitude() {
         return latitude;
     }
 
+    @Override
     public Habitat setLatitude(double latitude) {
         this.latitude = latitude;
         return this;
     }
 
+    @Override
     public double getLongitude() {
         return longitude;
     }
 
+    @Override
     public Habitat setLongitude(double longitude) {
         this.longitude = longitude;
         return this;
     }
 
+    @Override
     public int getAltitude() {
         return altitude;
     }
 
+    @Override
     public Habitat setAltitude(int altitude) {
         this.altitude = altitude;
         return this;
     }
 
+    @Override
     public String getBiome() {
         return biome;
     }
 
+    @Override
     public Habitat setBiome(String biome) {
         this.biome = biome;
         return this;
     }
 
+    @Override
     public String getDescription() {
         return description;
     }
 
+    @Override
     public Habitat setDescription(String description) {
         this.description = description;
         return this;
@@ -93,12 +104,12 @@ public class Habitat extends Identifiable<Habitat> {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = (int) ((int) 31 * hash + this.id);
+        hash = (int) (31 * hash + this.id);
         return hash;
     }
 
     @Override
-    public int compareTo(Habitat o) {
-        return name.compareTo(o.name);
+    public int compareTo(HabitatI o) {
+        return name.compareTo(o.getName());
     }
 }

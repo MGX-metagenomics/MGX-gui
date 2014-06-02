@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.util;
 
+import de.cebitec.mgx.api.groups.FileType;
 import java.io.File;
 import javax.swing.filechooser.FileFilter;
 

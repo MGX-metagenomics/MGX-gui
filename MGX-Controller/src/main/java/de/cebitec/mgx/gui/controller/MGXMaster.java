@@ -1,16 +1,15 @@
 package de.cebitec.mgx.gui.controller;
 
 import de.cebitec.gpms.core.MembershipI;
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.access.AttributeAccessI;
+import de.cebitec.mgx.api.access.DNAExtractAccessI;
+import de.cebitec.mgx.api.access.ObservationAccessI;
+import de.cebitec.mgx.api.access.SeqRunAccessI;
 import de.cebitec.mgx.client.MGXDTOMaster;
-import de.cebitec.mgx.gui.datamodel.MGXMasterI;
-import de.cebitec.mgx.gui.datamodel.ModelBase;
 import java.awt.datatransfer.DataFlavor;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -18,19 +17,18 @@ import java.util.logging.Logger;
  *
  * @author sjaenick
  */
-public class MGXMaster extends ModelBase<MGXMasterI> implements MGXMasterI, PropertyChangeListener {
+public class MGXMaster extends MGXMasterI implements PropertyChangeListener {
 
     private final MGXDTOMaster dtomaster;
     private static final Logger logger = Logger.getLogger("MGX");
-    private final Map<Class, AccessBase> accessors;
     //
-    public static final DataFlavor DATA_FLAVOR = new DataFlavor(MGXMaster.class, "MGXMaster");
+    public static final DataFlavor DATA_FLAVOR = new DataFlavor(MGXMasterI.class, "MGXMasterI");
 
     public MGXMaster(MGXDTOMaster dtomaster) {
-        super(DATA_FLAVOR);
+        super(null, DATA_FLAVOR);
         this.dtomaster = dtomaster;
         dtomaster.addPropertyChangeListener(this);
-        accessors = new HashMap<>();
+        super.master = this; // ugly
     }
 
     @Override
@@ -48,93 +46,110 @@ public class MGXMaster extends ModelBase<MGXMasterI> implements MGXMasterI, Prop
         return dtomaster.getLogin();
     }
 
+    @Override
     public HabitatAccess Habitat() {
-        return getAccessor(HabitatAccess.class);
+        return new HabitatAccess(this, dtomaster);
     }
 
-    public AttributeAccess Attribute() {
-        return getAccessor(AttributeAccess.class);
+    @Override
+    public AttributeAccessI Attribute() {
+        return new AttributeAccess(dtomaster, this);
     }
 
+    @Override
     public AttributeTypeAccess AttributeType() {
-        return getAccessor(AttributeTypeAccess.class);
+        return new AttributeTypeAccess(this, dtomaster);
     }
 
+    @Override
     public SampleAccess Sample() {
-        return getAccessor(SampleAccess.class);
+        return new SampleAccess(this, dtomaster);
     }
 
-    public DNAExtractAccess DNAExtract() {
-        return getAccessor(DNAExtractAccess.class);
+    @Override
+    public DNAExtractAccessI DNAExtract() {
+        return new DNAExtractAccess(this, dtomaster);
     }
 
-    public SeqRunAccess SeqRun() {
-        return getAccessor(SeqRunAccess.class);
+    @Override
+    public SeqRunAccessI SeqRun() {
+        return new SeqRunAccess(this, dtomaster);
     }
 
+    @Override
     public ReferenceAccess Reference() {
-        return getAccessor(ReferenceAccess.class);
+        return new ReferenceAccess(dtomaster, this);
     }
 
+    @Override
     public MappingAccess Mapping() {
-        return getAccessor(MappingAccess.class);
+        return new MappingAccess(dtomaster, this);
     }
 
-    public ObservationAccess Observation() {
-        return getAccessor(ObservationAccess.class);
+    @Override
+    public ObservationAccessI Observation() {
+        return new ObservationAccess(master, dtomaster);
     }
 
+    @Override
     public SequenceAccess Sequence() {
-        return getAccessor(SequenceAccess.class);
+        return new SequenceAccess(master, dtomaster);
     }
 
+    @Override
     public ToolAccess Tool() {
-        return getAccessor(ToolAccess.class);
+        return new ToolAccess(master, dtomaster);
     }
 
+    @Override
     public JobAccess Job() {
-        return getAccessor(JobAccess.class);
+        return new JobAccess(master, dtomaster);
     }
 
+    @Override
     public FileAccess File() {
-        return getAccessor(FileAccess.class);
+        return new FileAccess(master, dtomaster);
     }
 
+    @Override
     public TermAccess Term() {
-        return getAccessor(TermAccess.class);
+        return new TermAccess(master, dtomaster);
     }
 
+    @Override
     public TaskAccess Task() {
-        return getAccessor(TaskAccess.class);
+        return new TaskAccess(master, dtomaster);
     }
 
+    @Override
     public StatisticsAccess Statistics() {
-        return getAccessor(StatisticsAccess.class);
+        return new StatisticsAccess(master, dtomaster);
     }
 
-    void log(Level lvl, String msg) {
+    @Override
+    public void log(Level lvl, String msg) {
         logger.log(lvl, msg);
     }
 
-    private <T extends AccessBase> T getAccessor(Class<T> clazz) {
-        if (!accessors.containsKey(clazz)) {
-            accessors.put(clazz, createDAO(clazz));
-        }
-        return (T) accessors.get(clazz);
-    }
-
-    private <T extends AccessBase> T createDAO(Class<T> clazz) {
-        try {
-            Constructor<T> ctor = clazz.getConstructor();
-            T instance = ctor.newInstance();
-            instance.setDTOmaster(dtomaster);
-            instance.setMaster(this);
-            return instance;
-        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException ex) {
-            logger.log(Level.SEVERE, null, ex);
-        }
-        throw new UnsupportedOperationException("Could not create accessor for " + clazz);
-    }
+//    private <T extends AccessBase> T getAccessor(Class<T> clazz) {
+//        if (!accessors.containsKey(clazz)) {
+//            accessors.put(clazz, createDAO(clazz));
+//        }
+//        return (T) accessors.get(clazz);
+//    }
+//
+//    private <T extends AccessBase> T createDAO(Class<T> clazz) {
+//        try {
+//            Constructor<T> ctor = clazz.getConstructor();
+//            T instance = ctor.newInstance();
+////            instance.setDTOmaster(dtomaster);
+////            instance.setMaster(this);
+//            return instance;
+//        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException ex) {
+//            logger.log(Level.SEVERE, null, ex);
+//        }
+//        throw new UnsupportedOperationException("Could not create accessor for " + clazz);
+//    }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {

@@ -1,20 +1,19 @@
 package de.cebitec.mgx.gui.attributevisualization.exportwizard;
 
-import de.cebitec.mgx.client.datatransfer.DownloadBase;
-import de.cebitec.mgx.client.datatransfer.SeqByAttributeDownloader;
-import de.cebitec.mgx.gui.controller.MGXMaster;
-import de.cebitec.mgx.gui.datamodel.Attribute;
-import de.cebitec.mgx.gui.datamodel.SeqRun;
-import de.cebitec.mgx.gui.datamodel.misc.Distribution;
-import de.cebitec.mgx.gui.groups.SequenceExporterI;
-import de.cebitec.mgx.gui.groups.VisualizationGroup;
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.access.datatransfer.DownloadBaseI;
+import de.cebitec.mgx.api.groups.SequenceExporterI;
+import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.misc.DistributionI;
+import de.cebitec.mgx.api.model.AttributeI;
+import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
 import de.cebitec.mgx.seqstorage.FastaWriter;
+import de.cebitec.mgx.sequence.SeqWriterI;
 import java.awt.Component;
 import java.beans.PropertyChangeEvent;
 import java.io.File;
-import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +21,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
 import javax.swing.JComponent;
 import javax.swing.SwingWorker;
 import org.openide.DialogDisplayer;
@@ -32,10 +30,10 @@ import org.openide.util.Exceptions;
 
 public final class SeqExporter implements SequenceExporterI {
 
-    private final VisualizationGroup vgroup;
-    private final Distribution dist;
+    private final VisualizationGroupI vgroup;
+    private final DistributionI dist;
 
-    public SeqExporter(VisualizationGroup vgroup, Distribution dist) {
+    public SeqExporter(VisualizationGroupI vgroup, DistributionI dist) {
         this.vgroup = vgroup;
         this.dist = dist;
     }
@@ -87,24 +85,24 @@ public final class SeqExporter implements SequenceExporterI {
                 }
             }
 
-            SwingWorker<FastaWriter, Void> worker = new SwingWorker<FastaWriter, Void>() {
+            SwingWorker<SeqWriterI, Void> worker = new SwingWorker<SeqWriterI, Void>() {
                 @Override
-                protected FastaWriter doInBackground() throws Exception {
-                    FastaWriter writer = new FastaWriter(target.getAbsolutePath());
-                    Set<Attribute> selectedAttributes = p1.getSelectedAttributes();
+                protected SeqWriterI doInBackground() throws Exception {
+                    SeqWriterI writer = new FastaWriter(target.getAbsolutePath());
+                    Set<AttributeI> selectedAttributes = p1.getSelectedAttributes();
                     List<String> attrs = new ArrayList<>();
-                    for (Attribute a : selectedAttributes) {
+                    for (AttributeI a : selectedAttributes) {
                         attrs.add(a.getValue());
                     }
 
-                    Map<SeqRun, Set<Attribute>> saveSet = vgroup.getSaveSet(attrs);
+                    Map<SeqRunI, Set<AttributeI>> saveSet = vgroup.getSaveSet(attrs);
                     CountDownLatch latch = new CountDownLatch(1);
 
-                    List<SeqByAttributeDownloader> downloaders = new ArrayList<>();
+                    List<DownloadBaseI> downloaders = new ArrayList<>();
 
-                    for (Entry<SeqRun, Set<Attribute>> e : saveSet.entrySet()) {
-                        MGXMaster m = (MGXMaster) e.getKey().getMaster();
-                        SeqByAttributeDownloader downloader = m.Sequence().createDownloaderByAttributes(e.getValue(), writer, false);
+                    for (Entry<SeqRunI, Set<AttributeI>> e : saveSet.entrySet()) {
+                        MGXMasterI m = e.getKey().getMaster();
+                        DownloadBaseI downloader = m.Sequence().createDownloaderByAttributes(e.getValue(), writer, false);
                         downloaders.add(downloader);
                     }
 
@@ -116,11 +114,11 @@ public final class SeqExporter implements SequenceExporterI {
 
                 @Override
                 protected void done() {
-                    FastaWriter fw;
+                    SeqWriterI fw;
                     try {
                         fw = get();
                         fw.close();
-                    } catch (IOException | InterruptedException | ExecutionException ex) {
+                    } catch (Exception ex) {
                         if (target.exists()) {
                             target.delete();
                         }
@@ -135,12 +133,12 @@ public final class SeqExporter implements SequenceExporterI {
 
     private final class DownloadTask extends MGXTask {
 
-        private final List<SeqByAttributeDownloader> downloaders;
+        private final List<DownloadBaseI> downloaders;
         private final CountDownLatch latch;
         private long numSeqs = 0;
         private long numSeqsTotal = 0;
 
-        public DownloadTask(String taskName, List<SeqByAttributeDownloader> downloaders, CountDownLatch latch) {
+        public DownloadTask(String taskName, List<DownloadBaseI> downloaders, CountDownLatch latch) {
             super(taskName);
             this.downloaders = downloaders;
             this.latch = latch;
@@ -149,7 +147,7 @@ public final class SeqExporter implements SequenceExporterI {
         @Override
         public boolean process() {
             boolean ret = false;
-            for (SeqByAttributeDownloader downloader : downloaders) {
+            for (DownloadBaseI downloader : downloaders) {
                 downloader.addPropertyChangeListener(this);
                 ret = downloader.download();
                 downloader.removePropertyChangeListener(this);
@@ -177,11 +175,11 @@ public final class SeqExporter implements SequenceExporterI {
         @Override
         public void propertyChange(PropertyChangeEvent pce) {
             switch (pce.getPropertyName()) {
-                case DownloadBase.NUM_ELEMENTS_RECEIVED:
+                case DownloadBaseI.NUM_ELEMENTS_RECEIVED:
                     numSeqs = (long) pce.getNewValue();
                     setStatus(String.format("%1$d sequences received", numSeqsTotal + numSeqs));
                     break;
-                case DownloadBase.TRANSFER_FAILED:
+                case DownloadBaseI.TRANSFER_FAILED:
                     failed();
                     break;
                 default:

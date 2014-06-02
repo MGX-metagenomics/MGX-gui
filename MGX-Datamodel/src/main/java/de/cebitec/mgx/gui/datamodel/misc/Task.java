@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.datamodel.misc;
 
-import de.cebitec.mgx.gui.datamodel.ModelBase;
+import de.cebitec.mgx.api.misc.TaskI;
+import de.cebitec.mgx.api.model.ModelBase;
 import java.util.UUID;
 
 /**
@@ -8,30 +9,9 @@ import java.util.UUID;
  * @author sjaenick
  * @param <T>
  */
-public class Task<T extends ModelBase> {
+public class Task<T extends ModelBase> extends TaskI<T> {
 
-    public enum TaskType {
-
-        MODIFY,
-        DELETE;
-    }
-
-    public enum State {
-
-        INIT(0),
-        PROCESSING(1),
-        FAILED(2),
-        FINISHED(3);
-        private final int code;
-
-        private State(int c) {
-            code = c;
-        }
-
-        public int getValue() {
-            return code;
-        }
-    }
+  
     private String statusMessage = "";
     private State state;
     //
@@ -45,41 +25,50 @@ public class Task<T extends ModelBase> {
         this.taskType = tType;
     }
 
+    @Override
     public UUID getUuid() {
         return uuid;
     }
 
+    @Override
     public T getObject() {
         return obj;
     }
 
+    @Override
     public TaskType getTaskType() {
         return taskType;
     }
 
+    @Override
     public String getStatusMessage() {
         return statusMessage;
     }
 
-    public Task setStatusMessage(String statusMessage) {
+    @Override
+    public TaskI setStatusMessage(String statusMessage) {
         this.statusMessage = statusMessage;
         return this;
     }
 
+    @Override
     public State getState() {
         return state;
     }
 
-    public Task setState(State state) {
+    @Override
+    public TaskI setState(State state) {
         this.state = state;
         getObject().modified();
         return this;
     }
 
+    @Override
     public boolean done() {
         return state == State.FINISHED || state == State.FAILED;
     }
 
+    @Override
     public void finish() {
         if (getState() == State.FINISHED) {
             switch (taskType) {

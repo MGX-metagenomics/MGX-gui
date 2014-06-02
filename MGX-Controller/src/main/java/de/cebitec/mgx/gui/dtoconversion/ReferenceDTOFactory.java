@@ -1,9 +1,11 @@
 
 package de.cebitec.mgx.gui.dtoconversion;
 
+import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.dto.dto.ReferenceDTO;
 import de.cebitec.mgx.dto.dto.ReferenceDTO.Builder;
-import de.cebitec.mgx.gui.datamodel.Identifiable;
+import de.cebitec.mgx.api.model.Identifiable;
+import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.gui.datamodel.Reference;
 
 
@@ -11,7 +13,7 @@ import de.cebitec.mgx.gui.datamodel.Reference;
  *
  * @author belmann
  */
-public class ReferenceDTOFactory extends DTOConversionBase<Reference, ReferenceDTO>{
+public class ReferenceDTOFactory extends DTOConversionBase<MGXReferenceI, ReferenceDTO>{
 
     static {
         instance = new ReferenceDTOFactory();
@@ -27,7 +29,7 @@ public class ReferenceDTOFactory extends DTOConversionBase<Reference, ReferenceD
     
     
     @Override
-    public ReferenceDTO toDTO(Reference ref) {
+    public ReferenceDTO toDTO(MGXReferenceI ref) {
         Builder b = ReferenceDTO.newBuilder();
         if (ref.getId() != Identifiable.INVALID_IDENTIFIER) {
             b.setId(ref.getId());
@@ -38,8 +40,8 @@ public class ReferenceDTOFactory extends DTOConversionBase<Reference, ReferenceD
     }
 
     @Override
-    public Reference toModel(ReferenceDTO dto) {
-       Reference d = new Reference();
+    public MGXReferenceI toModel(MGXMasterI m, ReferenceDTO dto) {
+       MGXReferenceI d = new Reference(m);
         d.setName(dto.getName());
         d.setLength(dto.getLength());
         d.setId(dto.getId());

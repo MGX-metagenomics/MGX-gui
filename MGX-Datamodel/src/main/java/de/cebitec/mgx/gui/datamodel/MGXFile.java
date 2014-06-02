@@ -1,24 +1,22 @@
 package de.cebitec.mgx.gui.datamodel;
 
-import java.awt.datatransfer.DataFlavor;
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.MGXFileI;
 
 /**
  *
  * @author sjaenick
  */
-public class MGXFile extends ModelBase<MGXFile> {
+public class MGXFile extends MGXFileI {
 
-    protected  MGXFile parent;
+    protected MGXFileI parent;
     protected final String fullPath;
     protected final boolean isDirectory;
     protected final long size;
     //
-    public static final DataFlavor DATA_FLAVOR = new DataFlavor(MGXFile.class, "MGXFile");
-    public static final String ROOT_PATH = ".";
-    public static final String separator = "|";
 
-    public MGXFile(String path, boolean isDir, long size) {
-        super(DATA_FLAVOR); 
+    public MGXFile(MGXMasterI m, String path, boolean isDir, long size) {
+        super(m);
         if (!path.startsWith(".")) {
             throw new RuntimeException(path + " is invalid");
         }
@@ -27,44 +25,43 @@ public class MGXFile extends ModelBase<MGXFile> {
         this.size = size;
     }
 
-    public static MGXFile getRoot(MGXMasterI m) {
-        MGXFile root = new MGXFile(ROOT_PATH, true, 0);
-        root.setParent(null);
-        root.setMaster(m);
-        return root;
-    }
-
-    public void setParent(MGXFile parent) {
+    @Override
+    public void setParent(MGXFileI parent) {
         this.parent = parent;
     }
-    
-    public MGXFile getParent() {
+
+    @Override
+    public MGXFileI getParent() {
         return parent;
     }
 
+    @Override
     public boolean isDirectory() {
         return isDirectory;
     }
-    
+
+    @Override
     public long getSize() {
         return size;
     }
 
+    @Override
     public String getName() {
         int sepPos = getFullPath().lastIndexOf(separator);
-        return fullPath.substring(sepPos+1);
+        return fullPath.substring(sepPos + 1);
     }
 
+    @Override
     public String getFullPath() {
         return fullPath;
     }
 
     @Override
-    public int compareTo(MGXFile o) {
-        if (isDirectory == o.isDirectory()) {
-            return this.fullPath.compareTo(o.fullPath);
+    public int compareTo(MGXFileI o) {
+        if (isDirectory() == o.isDirectory()) {
+            return this.getFullPath().compareTo(o.getFullPath());
         } else {
-            if (isDirectory) {
+            if (isDirectory()) {
                 return -1;
             }
             return 1;

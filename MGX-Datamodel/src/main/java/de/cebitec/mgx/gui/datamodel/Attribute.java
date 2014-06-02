@@ -1,55 +1,65 @@
 package de.cebitec.mgx.gui.datamodel;
 
-import java.awt.datatransfer.DataFlavor;
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.AttributeI;
+import de.cebitec.mgx.api.model.AttributeTypeI;
+import de.cebitec.mgx.api.model.Identifiable;
 import java.util.Objects;
 
 /**
  *
  * @author sjaenick
  */
-public class Attribute extends Identifiable<Attribute> {
+public class Attribute extends AttributeI {
 
-    protected AttributeType atype;
+    protected AttributeTypeI atype;
     protected String value;
     protected long job_id;
     private long parent_id = Identifiable.INVALID_IDENTIFIER;
-    //
-    public static final DataFlavor DATA_FLAVOR = new DataFlavor(Attribute.class, "Attribute");
 
-    public Attribute() {
-        super(DATA_FLAVOR);
+    public Attribute(MGXMasterI m) {
+        super(m);
     }
 
+
+    @Override
     public long getParentID() {
         return parent_id;
     }
 
+    @Override
     public void setParentID(long parent_id) {
         this.parent_id = parent_id;
     }
 
-    public AttributeType getAttributeType() {
+    @Override
+    public AttributeTypeI getAttributeType() {
         return atype;
     }
 
-    public Attribute setAttributeType(AttributeType atype) {
+    @Override
+    public Attribute setAttributeType(AttributeTypeI atype) {
         this.atype = atype;
         return this;
     }
 
+    @Override
     public String getValue() {
         return value;
     }
 
+    @Override
     public Attribute setValue(String value) {
         this.value = value;
         return this;
     }
 
+    @Override
     public long getJobId() {
         return job_id;
     }
 
+    @Override
     public Attribute setJobId(long job_id) {
         this.job_id = job_id;
         return this;
@@ -75,17 +85,17 @@ public class Attribute extends Identifiable<Attribute> {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final Attribute other = (Attribute) obj;
-        if (!Objects.equals(this.atype, other.atype)) {
+        final AttributeI other = (AttributeI) obj;
+        if (!Objects.equals(this.atype, other.getAttributeType())) {
             return false;
         }
-        if (!Objects.equals(this.value, other.value)) {
+        if (!Objects.equals(this.value, other.getValue())) {
             return false;
         }
         
         // parent ids can only be compared if they are from the same project
         if (this.getMaster() == other.getMaster()) {
-            if (this.job_id == other.job_id && this.parent_id != other.parent_id) {
+            if (this.job_id == other.getJobId() && this.parent_id != other.getParentID()) {
                 return false;
             }
         }
@@ -98,7 +108,7 @@ public class Attribute extends Identifiable<Attribute> {
     }
 
     @Override
-    public int compareTo(Attribute o) {
-        return this.value.compareTo(o.value);
+    public int compareTo(AttributeI o) {
+        return this.value.compareTo(o.getValue());
     }
 }

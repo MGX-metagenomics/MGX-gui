@@ -1,55 +1,60 @@
 package de.cebitec.mgx.gui.datamodel;
 
-import java.awt.datatransfer.DataFlavor;
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.SequenceI;
 
 /**
  *
  * @author sjaenick
  */
-public class Sequence extends Identifiable<Sequence> {
+public class Sequence extends SequenceI {
 
     protected String name;
     protected int length = -1;
     protected String sequence = null;
-    //
-    public static final DataFlavor DATA_FLAVOR = new DataFlavor(Sequence.class, "Sequence");
 
-    public Sequence() {
-        super(DATA_FLAVOR);
+    public Sequence(MGXMasterI m) {
+        super(m);
     }
-
-    public String getName() {
+    
+    @Override
+     public String getName() {
         return name;
     }
 
+    @Override
     public void setName(String name) {
         this.name = name;
     }
 
+    @Override
     public String getSequence() {
         return sequence;
     }
 
+    @Override
     public void setSequence(String sequence) {
         this.sequence = sequence;
     }
 
+    @Override
     public int getLength() {
         return length;
     }
 
+    @Override
     public void setLength(int length) {
         this.length = length;
     }
-
+    
     @Override
     public String toString() {
         return name;
     }
 
     @Override
-    public int compareTo(Sequence o) {
-        return name.compareTo(o.name);
+    public int compareTo(SequenceI o) {
+        return name.compareTo(o.getName());
     }
 
     @Override

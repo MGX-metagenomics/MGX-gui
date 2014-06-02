@@ -1,15 +1,17 @@
 package de.cebitec.mgx.gui.dtoconversion;
 
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.misc.SearchRequestI;
+import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.dto.dto.SearchRequestDTO;
 import de.cebitec.mgx.dto.dto.SearchRequestDTO.Builder;
-import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.datamodel.misc.SearchRequest;
 
 /**
  *
  * @author sjaenick
  */
-public class SearchRequestDTOFactory extends DTOConversionBase<SearchRequest, SearchRequestDTO> {
+public class SearchRequestDTOFactory extends DTOConversionBase<SearchRequestI, SearchRequestDTO> {
 
     static {
         instance = new SearchRequestDTOFactory();
@@ -24,18 +26,18 @@ public class SearchRequestDTOFactory extends DTOConversionBase<SearchRequest, Se
     }
 
     @Override
-    public SearchRequestDTO toDTO(SearchRequest req) {
+    public SearchRequestDTO toDTO(SearchRequestI req) {
         Builder b = SearchRequestDTO.newBuilder()
                 .setExact(req.isExact())
                 .setTerm(req.getTerm());
-        for (SeqRun sr : req.getRuns()) {
+        for (SeqRunI sr : req.getRuns()) {
             b.addSeqrunId(sr.getId());
         }
         return b.build();
     }
 
     @Override
-    public SearchRequest toModel(SearchRequestDTO dto) {
+    public SearchRequest toModel(MGXMasterI m, SearchRequestDTO dto) {
         throw new UnsupportedOperationException("Not supported.");
     }
 }

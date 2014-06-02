@@ -1,8 +1,8 @@
 package de.cebitec.mgx.gui.attributevisualization.exportwizard;
 
+import de.cebitec.mgx.api.misc.DistributionI;
+import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.gui.swingutils.JCheckBoxList;
-import de.cebitec.mgx.gui.datamodel.Attribute;
-import de.cebitec.mgx.gui.datamodel.misc.Distribution;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -13,7 +13,7 @@ import javax.swing.JPanel;
 
 public final class ExportSeqVisualPanel1 extends JPanel implements PropertyChangeListener {
 
-    private JCheckBoxList<Attribute> list = new JCheckBoxList<>();
+    private final JCheckBoxList<AttributeI> list = new JCheckBoxList<>();
     private boolean all_selected = true;
 
     /**
@@ -25,18 +25,18 @@ public final class ExportSeqVisualPanel1 extends JPanel implements PropertyChang
         list.addPropertyChangeListener(this);
     }
 
-    public void setDistribution(Distribution d) {
-        List<Attribute> elements = new ArrayList<>();
+    public void setDistribution(DistributionI d) {
+        List<AttributeI> elements = new ArrayList<>();
         elements.addAll(d.keySet());
         Collections.sort(elements);
         list.clear();
-        for (Attribute attr : elements) {
+        for (AttributeI attr : elements) {
             list.addElement(attr);
         }
         jButton1ActionPerformed(null);
     }
 
-    public Set<Attribute> getSelectedAttributes() {
+    public Set<AttributeI> getSelectedAttributes() {
         return list.getSelectedEntries();
     }
 

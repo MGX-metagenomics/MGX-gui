@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.dtoconversion;
 
+import de.cebitec.mgx.api.MGXMasterI;
 import java.util.Date;
 
 /**
@@ -10,7 +11,7 @@ public abstract class DTOConversionBase<T, U> {
 
     public abstract U toDTO(T a);
 
-    public abstract T toModel(U dto);
+    public abstract T toModel(MGXMasterI m, U dto);
 
     protected static Long toUnixTimeStamp(Date date) {
         if (date == null) {

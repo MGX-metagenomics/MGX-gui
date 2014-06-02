@@ -1,6 +1,6 @@
 package de.cebitec.mgx.gui.attributevisualization.exportwizard;
 
-import de.cebitec.mgx.gui.groups.VisualizationGroup;
+import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -30,7 +30,7 @@ public class ExportSeqWizardPanel2 implements WizardDescriptor.Panel<WizardDescr
         return component;
     }
 
-    public void setVisualizationGroup(VisualizationGroup vg) {
+    public void setVisualizationGroup(VisualizationGroupI vg) {
         getComponent().setVisualizationGroup(vg);
     }
 

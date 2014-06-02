@@ -1,15 +1,18 @@
 package de.cebitec.mgx.gui.attributevisualization.conflictwizard;
 
-import de.cebitec.mgx.gui.controller.MGXMaster;
-import de.cebitec.mgx.gui.datamodel.Job;
-import de.cebitec.mgx.gui.datamodel.SeqRun;
-import de.cebitec.mgx.gui.datamodel.Tool;
-import de.cebitec.mgx.gui.datamodel.misc.AttributeRank;
-import de.cebitec.mgx.gui.datamodel.misc.Pair;
-import de.cebitec.mgx.gui.datamodel.misc.Triple;
-import de.cebitec.mgx.gui.groups.VisualizationGroup;
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.misc.AttributeRank;
+import de.cebitec.mgx.api.misc.Pair;
+import de.cebitec.mgx.api.misc.Triple;
+import de.cebitec.mgx.api.model.JobI;
+import de.cebitec.mgx.api.model.SeqRunI;
+import de.cebitec.mgx.api.model.ToolI;
 import java.awt.Component;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import javax.swing.JComponent;
 import javax.swing.SwingWorker;
@@ -40,14 +43,14 @@ public final class ConflictResolverWizardIterator implements WizardDescriptor.It
     // }
     private int index;
     private List<WizardDescriptor.Panel<WizardDescriptor>> panels;
-    private final List<VisualizationGroup> groups;
+    private final List<VisualizationGroupI> groups;
 
-    public ConflictResolverWizardIterator(List<VisualizationGroup> groups) {
+    public ConflictResolverWizardIterator(List<VisualizationGroupI> groups) {
         this.groups = groups;
     }
 
-    public List<Pair<VisualizationGroup, Triple<AttributeRank, SeqRun, Job>>> getSelection() {
-        List<Pair<VisualizationGroup, Triple<AttributeRank, SeqRun, Job>>> l = new ArrayList<>();
+    public List<Pair<VisualizationGroupI, Triple<AttributeRank, SeqRunI, JobI>>> getSelection() {
+        List<Pair<VisualizationGroupI, Triple<AttributeRank, SeqRunI, JobI>>> l = new ArrayList<>();
         for (Panel<WizardDescriptor> p : panels) {
             ConflictResolverWizardPanel1 tmp = (ConflictResolverWizardPanel1) p;
             l.add(tmp.getSelection());
@@ -59,22 +62,22 @@ public final class ConflictResolverWizardIterator implements WizardDescriptor.It
         if (panels == null) {
             panels = new ArrayList<>();
 
-            for (final VisualizationGroup vg : groups) {
+            for (final VisualizationGroupI vg : groups) {
 
                 //
                 // the job objects don't have the corresponding tool instance set
                 // here, so we need to fetch them separately
                 //
 
-                for (final Triple<AttributeRank, SeqRun, Set<Job>> e : vg.getConflicts()) {
+                for (final Triple<AttributeRank, SeqRunI, Set<JobI>> e : vg.getConflicts()) {
 
                     SwingWorker<Void, Void> fetchTool = new SwingWorker<Void, Void>() {
                         @Override
                         protected Void doInBackground() throws Exception {
-                            for (final Job job : e.getThird()) {
+                            for (final JobI job : e.getThird()) {
                                 if (job.getTool() == null) {
-                                    MGXMaster master = (MGXMaster) job.getMaster();
-                                    Tool tool = master.Tool().ByJob(job.getId());
+                                    MGXMasterI master = job.getMaster();
+                                    ToolI tool = master.Tool().ByJob(job.getId());
                                     job.setTool(tool);
                                 }
                             }

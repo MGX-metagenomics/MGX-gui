@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.util;
 
+import de.cebitec.mgx.api.model.MGXFileI;
 import de.cebitec.mgx.gui.datamodel.MGXFile;
 import java.io.File;
 import java.io.IOException;
@@ -10,9 +11,9 @@ import java.io.IOException;
  */
 public class ServerFile extends File {
 
-    private final MGXFile file;
+    private final MGXFileI file;
 
-    public ServerFile(MGXFile file) {
+    public ServerFile(MGXFileI file) {
         super(file.getFullPath());
         this.file = file;
     }
@@ -23,7 +24,7 @@ public class ServerFile extends File {
         if (fname.contains(MGXFile.separator)) {
             fname = fname.substring(fname.lastIndexOf(MGXFile.separator)+1);
         }
-        if (MGXFile.ROOT_PATH.equals(fname)) {
+        if (MGXFileI.ROOT_PATH.equals(fname)) {
             return "Project storage";
         }
         return fname;
@@ -95,7 +96,7 @@ public class ServerFile extends File {
         }
     }
 
-    public MGXFile getMGXFile() {
+    public MGXFileI getMGXFile() {
         return file;
     }
 }

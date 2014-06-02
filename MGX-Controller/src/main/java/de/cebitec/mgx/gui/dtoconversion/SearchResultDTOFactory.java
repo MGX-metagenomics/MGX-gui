@@ -1,8 +1,8 @@
 package de.cebitec.mgx.gui.dtoconversion;
 
+import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.dto.dto.ObservationDTO;
 import de.cebitec.mgx.dto.dto.SearchResultDTO;
-import de.cebitec.mgx.gui.datamodel.Observation;
 import de.cebitec.mgx.gui.datamodel.misc.SearchResult;
 
 /**
@@ -29,11 +29,11 @@ public class SearchResultDTOFactory extends DTOConversionBase<SearchResult, Sear
     }
 
     @Override
-    public SearchResult toModel(SearchResultDTO dto) {
+    public SearchResult toModel(MGXMasterI m, SearchResultDTO dto) {
         SearchResult sr = new SearchResult();
         sr.setSequenceName(dto.getSequenceName());
         for (ObservationDTO o : dto.getObservationList()) {
-            sr.addObservation(ObservationDTOFactory.getInstance().toModel(o));
+            sr.addObservation(ObservationDTOFactory.getInstance().toModel(m, o));
         }
         return sr;
     }

@@ -5,10 +5,15 @@
  */
 package de.cebitec.mgx.gui.groups;
 
+import de.cebitec.mgx.common.VGroupManager;
+import de.cebitec.mgx.api.groups.ConflictingJobsException;
+import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.misc.AttributeRank;
+import de.cebitec.mgx.api.model.AttributeTypeI;
+import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.AttributeType;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
-import de.cebitec.mgx.gui.datamodel.misc.AttributeRank;
 import de.cebitec.mgx.gui.util.TestMaster;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -16,10 +21,10 @@ import java.util.Set;
 import java.util.UUID;
 import org.junit.After;
 import org.junit.AfterClass;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -49,7 +54,7 @@ public class VisualizationGroupTest {
     @Test
     public void testSetName() {
         System.out.println("setName");
-        VisualizationGroup vg = VGroupManager.getInstance().createGroup();
+        VisualizationGroupI vg = VGroupManager.getInstance().createGroup();
         String name = UUID.randomUUID().toString();
         vg.setName(name);
         assertEquals(name, vg.getName());
@@ -58,12 +63,12 @@ public class VisualizationGroupTest {
     @Test
     public void testGetNumSequences() {
         System.out.println("getNumSequences");
-        VisualizationGroup vg = VGroupManager.getInstance().createGroup();
+        VisualizationGroupI vg = VGroupManager.getInstance().createGroup();
         MGXMaster master = TestMaster.getRO();
-        Iterator<SeqRun> iter = master.SeqRun().fetchall();
+        Iterator<SeqRunI> iter = master.SeqRun().fetchall();
         long cnt = 0;
         while (iter.hasNext()) {
-            SeqRun sr = iter.next();
+            SeqRunI sr = iter.next();
             vg.addSeqRun(sr);
             cnt += sr.getNumSequences();
         }
@@ -73,12 +78,12 @@ public class VisualizationGroupTest {
     @Test
     public void testGetSeqRuns() {
         System.out.println("getSeqRuns");
-        VisualizationGroup vg = VGroupManager.getInstance().createGroup();
+        VisualizationGroupI vg = VGroupManager.getInstance().createGroup();
         MGXMaster master = TestMaster.getRO();
-        Set<SeqRun> runs = new HashSet<>();
-        Iterator<SeqRun> iter = master.SeqRun().fetchall();
+        Set<SeqRunI> runs = new HashSet<>();
+        Iterator<SeqRunI> iter = master.SeqRun().fetchall();
         while (iter.hasNext()) {
-            SeqRun sr = iter.next();
+            SeqRunI sr = iter.next();
             vg.addSeqRun(sr);
             runs.add(sr);
         }
@@ -88,17 +93,17 @@ public class VisualizationGroupTest {
     @Test
     public void testGetAttributeTypes() {
         System.out.println("getAttributeTypes");
-        VisualizationGroup vg = VGroupManager.getInstance().createGroup();
+        VisualizationGroupI vg = VGroupManager.getInstance().createGroup();
         MGXMaster master = TestMaster.getRO();
-        Iterator<SeqRun> iter = master.SeqRun().fetchall();
+        Iterator<SeqRunI> iter = master.SeqRun().fetchall();
         while (iter.hasNext()) {
             vg.addSeqRun(iter.next());
         }
-        Iterator<AttributeType> atIter = vg.getAttributeTypes();
+        Iterator<AttributeTypeI> atIter = vg.getAttributeTypes();
         assertNotNull(atIter);
         int cnt = 0;
         while (atIter.hasNext()) {
-            AttributeType next = atIter.next();
+            AttributeTypeI next = atIter.next();
             System.err.println("  " + next.getName());
             cnt++;
         }
@@ -108,11 +113,11 @@ public class VisualizationGroupTest {
     @Test
     public void testaddAndRemoveRuns() {
         System.out.println("addAndRemoveRuns");
-        VisualizationGroup vg = VGroupManager.getInstance().createGroup();
+        VisualizationGroupI vg = VGroupManager.getInstance().createGroup();
         MGXMaster master = TestMaster.getRO();
 
-        Iterator<SeqRun> iter = master.SeqRun().fetchall();
-        SeqRun run = null;
+        Iterator<SeqRunI> iter = master.SeqRun().fetchall();
+        SeqRunI run = null;
         while (iter.hasNext()) {
             run = iter.next();
             if (run.getName().equals("dataset2")) {
@@ -120,22 +125,22 @@ public class VisualizationGroupTest {
             }
         }
         vg.addSeqRun(run);
-        Iterator<AttributeType> atIter = vg.getAttributeTypes();
+        Iterator<AttributeTypeI> atIter = vg.getAttributeTypes();
         assertNotNull(atIter);
         int cnt = 0;
         while (atIter.hasNext()) {
-            AttributeType next = atIter.next();
+            AttributeTypeI next = atIter.next();
             cnt++;
         }
         assertEquals(15, cnt);
 
         // remove run again
         vg.removeSeqRun(run);
-        Iterator<AttributeType> atIter2 = vg.getAttributeTypes();
+        Iterator<AttributeTypeI> atIter2 = vg.getAttributeTypes();
         assertNotNull(atIter);
         int cnt2 = 0;
         while (atIter2.hasNext()) {
-            AttributeType next = atIter2.next();
+            AttributeTypeI next = atIter2.next();
             cnt2++;
         }
         assertEquals(0, cnt2);
@@ -144,16 +149,16 @@ public class VisualizationGroupTest {
     @Test
     public void testGetSelectedAttributeType() {
         System.out.println("getSelectedAttributeType");
-        VisualizationGroup vg = VGroupManager.getInstance().createGroup();
+        VisualizationGroupI vg = VGroupManager.getInstance().createGroup();
         MGXMaster master = TestMaster.getRO();
-        Iterator<SeqRun> iter = master.SeqRun().fetchall();
+        Iterator<SeqRunI> iter = master.SeqRun().fetchall();
         while (iter.hasNext()) {
             vg.addSeqRun(iter.next());
         }
-        Iterator<AttributeType> atIter = vg.getAttributeTypes();
+        Iterator<AttributeTypeI> atIter = vg.getAttributeTypes();
         assertNotNull(atIter);
 
-        AttributeType next = null;
+        AttributeTypeI next = null;
         while (atIter.hasNext()) {
             next = atIter.next();
         }

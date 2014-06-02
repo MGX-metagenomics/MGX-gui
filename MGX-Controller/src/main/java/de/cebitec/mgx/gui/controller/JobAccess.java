@@ -1,14 +1,18 @@
 package de.cebitec.mgx.gui.controller;
 
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.access.JobAccessI;
+import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.misc.TaskI;
+import de.cebitec.mgx.api.misc.TaskI.TaskType;
+import de.cebitec.mgx.api.model.Identifiable;
+import de.cebitec.mgx.api.model.JobI;
+import de.cebitec.mgx.api.model.SeqRunI;
+import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.JobDTO;
 import de.cebitec.mgx.dto.dto.MGXString;
-import de.cebitec.mgx.gui.datamodel.Identifiable;
-import de.cebitec.mgx.gui.datamodel.Job;
-import de.cebitec.mgx.gui.datamodel.SeqRun;
-import de.cebitec.mgx.gui.datamodel.misc.Task;
-import de.cebitec.mgx.gui.datamodel.misc.Task.TaskType;
 import de.cebitec.mgx.gui.dtoconversion.JobDTOFactory;
 import de.cebitec.mgx.gui.util.BaseIterator;
 import java.util.ArrayList;
@@ -21,43 +25,66 @@ import org.openide.util.Exceptions;
  *
  * @author sjaenick
  */
-public class JobAccess extends AccessBase<Job> {
+public class JobAccess extends AccessBase<JobI> implements JobAccessI {
 
-    public boolean verify(Job obj) throws MGXServerException {
-        assert obj.getId() != Identifiable.INVALID_IDENTIFIER;
-        boolean ret = getDTOmaster().Job().verify(obj.getId());
-        obj.modified();
-        return ret;
+    public JobAccess(MGXMasterI master, MGXDTOMaster dtomaster) {
+        super(master, dtomaster);
     }
-
-    public boolean execute(Job obj) throws MGXServerException {
+    
+    @Override
+    public boolean verify(JobI obj) throws MGXException {
         assert obj.getId() != Identifiable.INVALID_IDENTIFIER;
-        boolean ret = getDTOmaster().Job().execute(obj.getId());
-        obj.modified();
-        return ret;
-    }
-
-    public Task restart(Job job) {
-        Task ret = null;
+        boolean ret;
         try {
-            UUID uuid = getDTOmaster().Job().restart(job.getId());
-            ret = getMaster().Task().get(job, uuid, TaskType.MODIFY);
-            job.modified();
-        } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            ret = getDTOmaster().Job().verify(obj.getId());
+        } catch (MGXServerException ex) {
+            throw new MGXException(ex);
         }
-        return ret;
-    }
-
-    public boolean cancel(Job obj) throws MGXServerException {
-        assert obj.getId() != Identifiable.INVALID_IDENTIFIER;
-        boolean ret = getDTOmaster().Job().cancel(obj.getId());
         obj.modified();
         return ret;
     }
 
     @Override
-    public long create(Job obj) {
+    public boolean execute(JobI obj) throws MGXException {
+        assert obj.getId() != Identifiable.INVALID_IDENTIFIER;
+        boolean ret;
+        try {
+            ret = getDTOmaster().Job().execute(obj.getId());
+        } catch (MGXServerException ex) {
+            throw new MGXException(ex);
+        }
+        obj.modified();
+        return ret;
+    }
+
+    @Override
+    public TaskI restart(JobI job) throws MGXException {
+        TaskI ret = null;
+        try {
+            UUID uuid = getDTOmaster().Job().restart(job.getId());
+            ret = getMaster().Task().get(job, uuid, TaskType.MODIFY);
+            job.modified();
+        } catch (MGXServerException | MGXClientException ex) {
+            throw new MGXException(ex);
+        }
+        return ret;
+    }
+
+    @Override
+    public boolean cancel(JobI obj) throws MGXException {
+        assert obj.getId() != Identifiable.INVALID_IDENTIFIER;
+        boolean ret;
+        try {
+            ret = getDTOmaster().Job().cancel(obj.getId());
+        } catch (MGXServerException ex) {
+            throw new MGXException(ex);
+        }
+        obj.modified();
+        return ret;
+    }
+
+    @Override
+    public long create(JobI obj) {
         assert obj.getTool().getId() != Identifiable.INVALID_IDENTIFIER;
         assert obj.getSeqrun().getId() != Identifiable.INVALID_IDENTIFIER;
 
@@ -71,32 +98,29 @@ public class JobAccess extends AccessBase<Job> {
             Exceptions.printStackTrace(ex);
         }
 
-        obj.setMaster(getMaster());
         return id;
     }
 
     @Override
-    public Job fetch(long id) {
+    public JobI fetch(long id) {
         JobDTO h = null;
         try {
             h = getDTOmaster().Job().fetch(id);
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
-        Job j = JobDTOFactory.getInstance().toModel(h);
-        j.setMaster(this.getMaster());
+        JobI j = JobDTOFactory.getInstance().toModel(getMaster(), h);
         return j;
     }
 
     @Override
-    public Iterator<Job> fetchall() {
+    public Iterator<JobI> fetchall() {
         try {
             Iterator<JobDTO> fetchall = getDTOmaster().Job().fetchall();
-            return new BaseIterator<JobDTO, Job>(fetchall) {
+            return new BaseIterator<JobDTO, JobI>(fetchall) {
                 @Override
-                public Job next() {
-                    Job j = JobDTOFactory.getInstance().toModel(iter.next());
-                    j.setMaster(getMaster());
+                public JobI next() {
+                    JobI j = JobDTOFactory.getInstance().toModel(getMaster(), iter.next());
                     return j;
                 }
             };
@@ -108,7 +132,7 @@ public class JobAccess extends AccessBase<Job> {
     }
 
     @Override
-    public void update(Job obj) {
+    public void update(JobI obj) {
         JobDTO dto = JobDTOFactory.getInstance().toDTO(obj);
         try {
             getDTOmaster().Job().update(dto);
@@ -119,8 +143,8 @@ public class JobAccess extends AccessBase<Job> {
     }
 
     @Override
-    public Task delete(Job obj) {
-        Task ret = null;
+    public TaskI delete(JobI obj) {
+        TaskI ret = null;
         try {
             UUID uuid = getDTOmaster().Job().delete(obj.getId());
             ret = getMaster().Task().get(obj, uuid, TaskType.DELETE);
@@ -130,13 +154,13 @@ public class JobAccess extends AccessBase<Job> {
         return ret;
     }
 
-    public List<Job> ByAttributeTypeAndSeqRun(long atype_id, SeqRun run) {
-        List<Job> all = new ArrayList<>();
+    @Override
+    public List<JobI> ByAttributeTypeAndSeqRun(long atype_id, SeqRunI run) {
+        List<JobI> all = new ArrayList<>();
         try {
             for (JobDTO dto : getDTOmaster().Job().ByAttributeTypeAndSeqRun(atype_id, run.getId())) {
-                Job j = JobDTOFactory.getInstance().toModel(dto);
+                JobI j = JobDTOFactory.getInstance().toModel(getMaster(), dto);
                 j.setSeqrun(run);
-                j.setMaster(this.getMaster());
                 all.add(j);
             }
         } catch (MGXServerException ex) {
@@ -145,13 +169,13 @@ public class JobAccess extends AccessBase<Job> {
         return all;
     }
 
-    public List<Job> BySeqRun(SeqRun run) {
-        List<Job> all = new ArrayList<>();
+    @Override
+    public List<JobI> BySeqRun(SeqRunI run) {
+        List<JobI> all = new ArrayList<>();
         try {
             for (JobDTO dto : getDTOmaster().Job().BySeqRun(run.getId())) {
-                Job j = JobDTOFactory.getInstance().toModel(dto);
+                JobI j = JobDTOFactory.getInstance().toModel(getMaster(), dto);
                 j.setSeqrun(run);
-                j.setMaster(this.getMaster());
                 all.add(j);
             }
         } catch (MGXServerException ex) {
@@ -160,7 +184,8 @@ public class JobAccess extends AccessBase<Job> {
         return all;
     }
 
-    public String getErrorMessage(Job job) {
+    @Override
+    public String getErrorMessage(JobI job) {
         try {
             MGXString err = getDTOmaster().Job().getError(job.getId());
             return err.getValue();

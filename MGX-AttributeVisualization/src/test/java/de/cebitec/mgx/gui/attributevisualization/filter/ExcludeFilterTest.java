@@ -1,14 +1,16 @@
 package de.cebitec.mgx.gui.attributevisualization.filter;
 
-import de.cebitec.mgx.gui.datamodel.Attribute;
-import de.cebitec.mgx.gui.datamodel.misc.Distribution;
-import de.cebitec.mgx.gui.datamodel.tree.Node;
-import de.cebitec.mgx.gui.datamodel.tree.Tree;
+import de.cebitec.mgx.api.misc.DistributionI;
+import de.cebitec.mgx.api.model.AttributeI;
+import de.cebitec.mgx.api.model.tree.NodeI;
+import de.cebitec.mgx.api.model.tree.TreeI;
 import org.junit.After;
 import org.junit.AfterClass;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -138,11 +140,11 @@ public class ExcludeFilterTest {
 //
 //    }
 
-    private void checkNode(Tree<Long> tree, String name, Long content) {
+    private void checkNode(TreeI<Long> tree, String name, Long content) {
         assertNotNull(name);
         assertNotNull(content);
         boolean nodeFound = false;
-        for (Node<Long> node : tree.getNodes()) {
+        for (NodeI<Long> node : tree.getNodes()) {
             if (node.getAttribute().getValue().equals(name)) {
                 assertFalse(nodeFound);
                 nodeFound = true;
@@ -154,11 +156,11 @@ public class ExcludeFilterTest {
         }
     }
 
-    private void checkDist(Distribution dist, String name, Long content) {
+    private void checkDist(DistributionI dist, String name, Long content) {
         assertNotNull(name);
         assertNotNull(content);
         boolean found = false;
-        for (Attribute attr : dist.keySet()) {
+        for (AttributeI attr : dist.keySet()) {
             if (attr.getValue().equals(name)) {
                 found = true;
                 assertEquals(content, dist.get(attr));

@@ -1,5 +1,14 @@
 package de.cebitec.mgx.gui.controller;
 
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.access.StatisticsAccessI;
+import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.misc.DistributionI;
+import de.cebitec.mgx.api.misc.PCAResultI;
+import de.cebitec.mgx.api.misc.Pair;
+import de.cebitec.mgx.api.misc.Point;
+import de.cebitec.mgx.api.model.AttributeI;
+import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.MGXDoubleList;
@@ -10,15 +19,8 @@ import de.cebitec.mgx.dto.dto.PCAResultDTO;
 import de.cebitec.mgx.dto.dto.PointDTO;
 import de.cebitec.mgx.dto.dto.PointDTOList;
 import de.cebitec.mgx.dto.dto.ProfileDTO;
-import de.cebitec.mgx.gui.datamodel.Attribute;
-import de.cebitec.mgx.gui.datamodel.misc.Distribution;
-import de.cebitec.mgx.gui.datamodel.misc.PCAResult;
-import de.cebitec.mgx.gui.datamodel.misc.Pair;
-import de.cebitec.mgx.gui.datamodel.misc.Point;
-import de.cebitec.mgx.gui.datamodel.misc.Task;
 import de.cebitec.mgx.gui.dtoconversion.PCAResultDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.PointDTOFactory;
-import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import de.cebitec.mgx.gui.util.BaseIterator;
 import de.cebitec.mgx.newick.NewickParser;
 import de.cebitec.mgx.newick.NodeI;
@@ -39,15 +41,24 @@ import org.openide.util.Exceptions;
  *
  * @author sj
  */
-public class StatisticsAccess extends AccessBase<Point> {
+public class StatisticsAccess implements StatisticsAccessI {
 
-    public Iterator<Point> Rarefaction(Distribution dist) {
+    private final MGXMasterI master;
+    private final MGXDTOMaster dtomaster;
+
+    public StatisticsAccess(MGXMasterI master, MGXDTOMaster dtomaster) {
+        this.master = master;
+        this.dtomaster = dtomaster;
+    }
+
+    @Override
+    public Iterator<Point> Rarefaction(DistributionI dist) {
         try {
-            Iterator<PointDTO> fetchall = getDTOmaster().Statistics().Rarefaction(dist.values());
+            Iterator<PointDTO> fetchall = dtomaster.Statistics().Rarefaction(dist.values());
             return new BaseIterator<PointDTO, Point>(fetchall) {
                 @Override
                 public Point next() {
-                    return PointDTOFactory.getInstance().toModel(iter.next());
+                    return PointDTOFactory.getInstance().toModel(master, iter.next());
                 }
             };
         } catch (MGXServerException | MGXClientException ex) {
@@ -56,16 +67,15 @@ public class StatisticsAccess extends AccessBase<Point> {
 
         return null;
     }
-
-    public NodeI Clustering(Collection<Pair<VisualizationGroup, Distribution>> groups, String distMethod, String aggloMethod) {
-
+    @Override
+    public NodeI Clustering(List<Pair<VisualizationGroupI, DistributionI>> dists, String distanceMethod, String agglomeration) {
         // map to hold obfuscated group name mapping
         Map<String, String> tmpNames = new HashMap<>();
-        MGXMatrixDTO matrix = buildMatrix(groups, tmpNames, false);
+        MGXMatrixDTO matrix = buildMatrix(dists, tmpNames, false);
 
         String nwk = null;
         try {
-            nwk = getDTOmaster().Statistics().Clustering(matrix, distMethod, aggloMethod);
+            nwk = dtomaster.Statistics().Clustering(matrix, distanceMethod, agglomeration);
 
             // de-obfuscate group names
             for (Entry<String, String> e : tmpNames.entrySet()) {
@@ -80,15 +90,16 @@ public class StatisticsAccess extends AccessBase<Point> {
         return null;
     }
 
-    public PCAResult PCA(Collection<Pair<VisualizationGroup, Distribution>> groups, int pc1, int pc2) {
+    @Override
+    public PCAResultI PCA(Collection<Pair<VisualizationGroupI, DistributionI>> groups, int pc1, int pc2) {
 
         // map to hold obfuscated group name mapping
         Map<String, String> tmpNames = new HashMap<>();
         MGXMatrixDTO matrix = buildMatrix(groups, tmpNames, true);
 
         try {
-            PCAResultDTO ret = getDTOmaster().Statistics().PCA(matrix, pc1, pc2);
-            PCAResult pca = PCAResultDTOFactory.getInstance().toModel(ret);
+            PCAResultDTO ret = dtomaster.Statistics().PCA(matrix, pc1, pc2);
+            PCAResultI pca = PCAResultDTOFactory.getInstance().toModel(master, ret);
             // de-obfuscate group names
             for (Point p : pca.getDatapoints()) {
                 p.setName(tmpNames.get(p.getName()));
@@ -100,7 +111,8 @@ public class StatisticsAccess extends AccessBase<Point> {
         return null;
     }
 
-    public List<Point> PCoA(Collection<Pair<VisualizationGroup, Distribution>> groups) {
+    @Override
+    public List<Point> PCoA(Collection<Pair<VisualizationGroupI, DistributionI>> groups) {
 
         // map to hold obfuscated group name mapping
         Map<String, String> tmpNames = new HashMap<>();
@@ -108,9 +120,9 @@ public class StatisticsAccess extends AccessBase<Point> {
 
         List<Point> pcoa = new LinkedList<>();
         try {
-            PointDTOList ret = getDTOmaster().Statistics().PCoA(matrix);
+            PointDTOList ret = dtomaster.Statistics().PCoA(matrix);
             for (PointDTO pdto : ret.getPointList()) {
-                Point p = PointDTOFactory.getInstance().toModel(pdto);
+                Point p = PointDTOFactory.getInstance().toModel(master, pdto);
                 p.setName(tmpNames.get(p.getName())); // de-obfuscate group name
                 pcoa.add(p);
             }
@@ -121,26 +133,26 @@ public class StatisticsAccess extends AccessBase<Point> {
         return null;
     }
 
-    private static MGXMatrixDTO buildMatrix(Collection<Pair<VisualizationGroup, Distribution>> groups, Map<String, String> tmpNames, boolean includeColNames) {
+    private static MGXMatrixDTO buildMatrix(Collection<Pair<VisualizationGroupI, DistributionI>> groups, Map<String, String> tmpNames, boolean includeColNames) {
         MGXMatrixDTO.Builder b = MGXMatrixDTO.newBuilder();
 
         // collect all attributes first
-        Set<Attribute> attrs = new HashSet<>();
-        for (Pair<VisualizationGroup, Distribution> dataset : groups) {
+        Set<AttributeI> attrs = new HashSet<>();
+        for (Pair<VisualizationGroupI, DistributionI> dataset : groups) {
             attrs.addAll(dataset.getSecond().keySet());
         }
-        Attribute[] ordered = attrs.toArray(new Attribute[]{});
+        AttributeI[] ordered = attrs.toArray(new AttributeI[]{});
         attrs.clear();
 
         if (includeColNames) {
             MGXStringList.Builder sb = MGXStringList.newBuilder();
-            for (Attribute attr : ordered) {
+            for (AttributeI attr : ordered) {
                 sb.addString(MGXString.newBuilder().setValue(attr.getValue()).build());
             }
             b.setColNames(sb.build());
         }
 
-        for (Pair<VisualizationGroup, Distribution> dataset : groups) {
+        for (Pair<VisualizationGroupI, DistributionI> dataset : groups) {
             String obfusName = generateName();
             tmpNames.put(obfusName, dataset.getFirst().getName());
 
@@ -154,9 +166,9 @@ public class StatisticsAccess extends AccessBase<Point> {
         return b.build();
     }
 
-    private static MGXDoubleList buildVector(Attribute[] attrs, Distribution dist) {
+    private static MGXDoubleList buildVector(AttributeI[] attrs, DistributionI dist) {
         MGXDoubleList.Builder b = MGXDoubleList.newBuilder();
-        for (Attribute a : attrs) {
+        for (AttributeI a : attrs) {
             Number n = dist.get(a);
             b.addValue(n != null ? n.doubleValue() : 0);
         }
@@ -169,7 +181,7 @@ public class StatisticsAccess extends AccessBase<Point> {
 
     private static String generateName(int len) {
         char[] chars = "abcdefghijklmnopqrstuvwxyz".toCharArray();
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder(len);
         Random random = new Random();
         for (int i = 0; i < len; i++) {
             char c = chars[random.nextInt(chars.length)];
@@ -178,28 +190,4 @@ public class StatisticsAccess extends AccessBase<Point> {
         return sb.toString();
     }
 
-    @Override
-    public long create(Point obj) {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    @Override
-    public Point fetch(long id) {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    @Override
-    public Iterator<Point> fetchall() {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    @Override
-    public void update(Point obj) {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    @Override
-    public Task delete(Point obj) {
-        throw new UnsupportedOperationException("Not supported.");
-    }
 }

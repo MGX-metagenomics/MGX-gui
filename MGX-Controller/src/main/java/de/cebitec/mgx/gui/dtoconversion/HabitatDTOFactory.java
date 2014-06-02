@@ -1,15 +1,17 @@
 package de.cebitec.mgx.gui.dtoconversion;
 
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.HabitatI;
 import de.cebitec.mgx.dto.dto.HabitatDTO;
 import de.cebitec.mgx.dto.dto.HabitatDTO.Builder;
 import de.cebitec.mgx.gui.datamodel.Habitat;
-import de.cebitec.mgx.gui.datamodel.Identifiable;
+import de.cebitec.mgx.api.model.Identifiable;
 
 /**
  *
  * @author sjaenick
  */
-public class HabitatDTOFactory extends DTOConversionBase<Habitat, HabitatDTO> {
+public class HabitatDTOFactory extends DTOConversionBase<HabitatI, HabitatDTO> {
 
     protected final static HabitatDTOFactory instance = new HabitatDTOFactory();
 
@@ -21,7 +23,7 @@ public class HabitatDTOFactory extends DTOConversionBase<Habitat, HabitatDTO> {
     }
 
     @Override
-    public final HabitatDTO toDTO(Habitat h) {
+    public final HabitatDTO toDTO(HabitatI h) {
         Builder b = HabitatDTO.newBuilder();
         if (h.getId() != Identifiable.INVALID_IDENTIFIER) {
             b.setId(h.getId());
@@ -37,8 +39,8 @@ public class HabitatDTOFactory extends DTOConversionBase<Habitat, HabitatDTO> {
     }
 
     @Override
-    public final Habitat toModel(HabitatDTO dto) {
-        Habitat h = new Habitat()
+    public final Habitat toModel(MGXMasterI m, HabitatDTO dto) {
+        Habitat h = new Habitat(m)
                 .setName(dto.getName())
                 .setLatitude(dto.getGpsLatitude())
                 .setLongitude(dto.getGpsLongitude())

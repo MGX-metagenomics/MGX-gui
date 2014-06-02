@@ -1,52 +1,52 @@
 package de.cebitec.mgx.gui.datamodel;
 
-import java.awt.datatransfer.DataFlavor;
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.AttributeTypeI;
 
 /**
  *
  * @author sjaenick
  */
-public class AttributeType extends Identifiable<AttributeType> {
+public class AttributeType extends AttributeTypeI {
 
-    public static final char VALUE_NUMERIC = 'N';
-    public static final char VALUE_DISCRETE = 'D';
-    //
-    public static final char STRUCTURE_BASIC = 'B';
-    public static final char STRUCTURE_HIERARCHICAL = 'H';
     protected String name;
     protected char value_type;
     protected char structure;
-    //
-    public static final DataFlavor DATA_FLAVOR = new DataFlavor(AttributeType.class, "AttributeType");
 
-    public AttributeType(long id, String name, char value_type, char structure) {
-        super(DATA_FLAVOR);
+    public AttributeType(MGXMasterI m, long id, String name, char value_type, char structure) {
+        super(m);
         this.id = id;
         this.name = name;
         this.value_type = value_type;
         this.structure = structure;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public void setName(String name) {
         this.name = name;
     }
 
+    @Override
     public char getValueType() {
         return value_type;
     }
 
+    @Override
     public void setValueType(char value_type) {
         this.value_type = value_type;
     }
 
+    @Override
     public char getStructure() {
         return structure;
     }
 
+    @Override
     public AttributeType setStructure(char structure) {
         this.structure = structure;
         return this;
@@ -88,17 +88,17 @@ public class AttributeType extends Identifiable<AttributeType> {
     }
 
     @Override
-    public int compareTo(AttributeType o) {
+    public int compareTo(AttributeTypeI o) {
         // compareTo returns an int which is 0 if the two strings are identical, 
         // positive if s1 > s2, and negative if s1 < s2.
 
-        int ret = this.value_type == o.value_type ? 0
-                : this.value_type - o.value_type < 0 ? -1 : 1;
+        int ret = this.value_type == o.getValueType() ? 0
+                : this.value_type - o.getValueType() < 0 ? -1 : 1;
         if (ret == 0) {
-            ret = this.structure == o.structure ? 0
-                    : this.structure - o.structure < 0 ? -1 : 1;
+            ret = this.structure == o.getStructure() ? 0
+                    : this.structure - o.getStructure() < 0 ? -1 : 1;
             if (ret == 0) {
-                return this.name.compareTo(o.name);
+                return this.name.compareTo(o.getName());
             }
         }
         return ret;

@@ -1,5 +1,7 @@
 package de.cebitec.mgx.gui.dtoconversion;
 
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.MappedSequenceI;
 import de.cebitec.mgx.dto.dto.MappedSequenceDTO;
 import de.cebitec.mgx.gui.datamodel.MappedSequence;
 
@@ -7,7 +9,7 @@ import de.cebitec.mgx.gui.datamodel.MappedSequence;
  *
  * @author sjaenick
  */
-public class MappedSequenceDTOFactory extends DTOConversionBase<MappedSequence, MappedSequenceDTO> {
+public class MappedSequenceDTOFactory extends DTOConversionBase<MappedSequenceI, MappedSequenceDTO> {
 
     static {
         instance = new MappedSequenceDTOFactory();
@@ -22,13 +24,13 @@ public class MappedSequenceDTOFactory extends DTOConversionBase<MappedSequence, 
     }
 
     @Override
-    public MappedSequenceDTO toDTO(MappedSequence a) {
+    public MappedSequenceDTO toDTO(MappedSequenceI a) {
         throw new UnsupportedOperationException("Not supported.");
     }
 
     @Override
-    public MappedSequence toModel(MappedSequenceDTO dto) {
-        return new MappedSequence(dto.getSeqId(), dto.getStart(), dto.getStop(), dto.getIdentity());
+    public MappedSequenceI toModel(MGXMasterI m, MappedSequenceDTO dto) {
+        return new MappedSequence(m, dto.getSeqId(), dto.getStart(), dto.getStop(), dto.getIdentity());
     }
 
 }

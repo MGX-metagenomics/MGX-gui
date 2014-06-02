@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.datamodel.tree;
 
-import de.cebitec.mgx.gui.datamodel.Attribute;
+import de.cebitec.mgx.api.model.AttributeI;
+import de.cebitec.mgx.api.model.tree.NodeI;
 import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -10,15 +11,15 @@ import java.util.Set;
  *
  * @author sjaenick
  */
-public class Node<T> {
+public class Node<T> implements NodeI<T> {
 
     private final long id;
-    private final Attribute attr;
+    private final AttributeI attr;
     private T value;
     private final Tree<T> tree;
-    private Set<Node<T>> children = null;
+    private Set<NodeI<T>> children = null;
 
-    public Node(Tree<T> tree, long id, Attribute attr, T content) {
+    public Node(Tree<T> tree, long id, AttributeI attr, T content) {
         this.tree = tree;
         this.id = id;
         this.attr = attr;
@@ -26,45 +27,53 @@ public class Node<T> {
         //children = new HashSet<>();
     }
 
+    @Override
     public long getId() {
         return id;
     }
 
-    public Attribute getAttribute() {
+    @Override
+    public AttributeI getAttribute() {
         return attr;
     }
 
+    @Override
     public T getContent() {
         return value;
     }
 
+    @Override
     public void setContent(T value) {
         this.value = value;
     }
 
+    @Override
     public boolean isRoot() {
         return this == tree.getRoot();
     }
 
+    @Override
     public boolean isLeaf() {
         return children == null || children.isEmpty();
     }
 
-    public Node<T> getParent() {
+    @Override
+    public NodeI<T> getParent() {
         return tree.getParent(id);
     }
 
-    public Node<T>[] getPath() {
+    @Override
+    public NodeI<T>[] getPath() {
         //System.err.println("get path for " + getAttribute().getValue());
-        Node<T>[] ret = new Node[getDepth() + 1];
+        NodeI<T>[] ret = new NodeI[getDepth() + 1];
         if (isRoot()) {
             ret[getDepth()] = this;
         } else {
-            Node<T> parent = getParent();
+            NodeI<T> parent = getParent();
             assert parent != null;
-            Node<T>[] parentPath = parent.getPath();
+            NodeI<T>[] parentPath = parent.getPath();
             int i = 0;
-            for (Node<T> curNode : parentPath) {
+            for (NodeI<T> curNode : parentPath) {
                 ret[i++] = curNode;
             }
             ret[getDepth()] = this;
@@ -72,6 +81,7 @@ public class Node<T> {
         return ret;
     }
 
+    @Override
     public int getDepth() {
         if (isRoot()) {
             return 0;
@@ -79,15 +89,18 @@ public class Node<T> {
         return 1 + getParent().getDepth();
     }
 
-    public Set<Node<T>> getChildren() {
+    @Override
+    public Set<NodeI<T>> getChildren() {
         return children;
     }
     
+    @Override
     public boolean hasChildren() {
         return !isLeaf();
     }
     
-    public Node<T> addChild(Attribute attr, T content) {
+    @Override
+    public Node<T> addChild(AttributeI attr, T content) {
         Node<T> child = tree.addNode(this, attr, content);
         if (children == null) {
             children = new HashSet<>();

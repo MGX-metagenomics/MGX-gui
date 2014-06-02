@@ -1,5 +1,7 @@
 package de.cebitec.mgx.gui.util;
 
+import de.cebitec.mgx.api.model.AttributeI;
+import de.cebitec.mgx.api.model.SequenceI;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.datamodel.Attribute;
 import de.cebitec.mgx.gui.datamodel.Sequence;
@@ -43,9 +45,9 @@ public class DownloadTest {
     @Test
     public void testDownloadSequencesForAttribute() {
         System.out.println("testDownloadSequencesForAttribute");
-        Attribute attr = master.Attribute().fetch(1);
+        AttributeI attr = master.Attribute().fetch(1);
         assertNotNull(attr);
-        Set<Attribute> set = new HashSet<>();
+        Set<AttributeI> set = new HashSet<>();
         set.add(attr);
 
         final Holder<Integer> cnt = new Holder<>();
@@ -95,7 +97,7 @@ public class DownloadTest {
     @Test
     public void testFetchSequence() {
         System.out.println("testFetchSequence");
-        Sequence seq = master.Sequence().fetch(1);
+        SequenceI seq = master.Sequence().fetch(1);
         assertEquals("FI5LW4G01DZDXZ", seq.getName());
         assertEquals("tttgccatcggcgcagtcctacttatgaagtttgcagaatagcgtcaaggcactaccaagggg", seq.getSequence());
         assertEquals(63, seq.getLength());

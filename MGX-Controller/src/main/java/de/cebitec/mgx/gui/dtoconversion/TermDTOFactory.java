@@ -1,15 +1,17 @@
 package de.cebitec.mgx.gui.dtoconversion;
 
+import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.dto.dto.TermDTO;
 import de.cebitec.mgx.dto.dto.TermDTO.Builder;
-import de.cebitec.mgx.gui.datamodel.Identifiable;
+import de.cebitec.mgx.api.model.Identifiable;
+import de.cebitec.mgx.api.model.TermI;
 import de.cebitec.mgx.gui.datamodel.Term;
 
 /**
  *
  * @author sjaenick
  */
-public class TermDTOFactory extends DTOConversionBase<Term, TermDTO> {
+public class TermDTOFactory extends DTOConversionBase<TermI, TermDTO> {
 
     static {
         instance = new TermDTOFactory();
@@ -24,7 +26,7 @@ public class TermDTOFactory extends DTOConversionBase<Term, TermDTO> {
     }
 
     @Override
-    public TermDTO toDTO(Term a) {
+    public TermDTO toDTO(TermI a) {
         Builder b = TermDTO.newBuilder()
                 .setId(a.getId())
                 .setName(a.getName());
@@ -38,8 +40,8 @@ public class TermDTOFactory extends DTOConversionBase<Term, TermDTO> {
     }
 
     @Override
-    public Term toModel(TermDTO dto) {
-        Term t = new Term();
+    public TermI toModel(MGXMasterI m, TermDTO dto) {
+        TermI t = new Term();
         t.setId(dto.getId());
         t.setName(dto.getName());
         if (dto.hasParentId()) {

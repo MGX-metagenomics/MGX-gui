@@ -1,8 +1,9 @@
 package de.cebitec.mgx.gui.dtoconversion;
 
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.misc.Pair;
+import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.dto.dto.CorrelatedAttributeCount;
-import de.cebitec.mgx.gui.datamodel.Attribute;
-import de.cebitec.mgx.gui.datamodel.misc.Pair;
 import java.util.AbstractMap;
 import java.util.Map;
 
@@ -10,7 +11,7 @@ import java.util.Map;
  *
  * @author sj
  */
-public class CorrelatedAttributeCountDTOFactory extends DTOConversionBase<Map.Entry<Pair<Attribute, Attribute>, Number>, CorrelatedAttributeCount> {
+public class CorrelatedAttributeCountDTOFactory extends DTOConversionBase<Map.Entry<Pair<AttributeI, AttributeI>, Number>, CorrelatedAttributeCount> {
 
     protected final static CorrelatedAttributeCountDTOFactory instance = new CorrelatedAttributeCountDTOFactory();
 
@@ -22,15 +23,15 @@ public class CorrelatedAttributeCountDTOFactory extends DTOConversionBase<Map.En
     }
 
     @Override
-    public CorrelatedAttributeCount toDTO(Map.Entry<Pair<Attribute, Attribute>, Number> e) {
+    public CorrelatedAttributeCount toDTO(Map.Entry<Pair<AttributeI, AttributeI>, Number> e) {
         throw new UnsupportedOperationException("Not supported.");
     }
 
     @Override
-    public Map.Entry<Pair<Attribute, Attribute>, Number> toModel(CorrelatedAttributeCount dto) {
-        Attribute first = AttributeDTOFactory.getInstance().toModel(dto.getRestrictedAttribute());
-        Attribute second = AttributeDTOFactory.getInstance().toModel(dto.getAttribute());
-        Pair<Attribute, Attribute> pair = new Pair<>(first, second);
-        return new AbstractMap.SimpleEntry<Pair<Attribute, Attribute>, Number>(pair, Long.valueOf(dto.getCount()));
+    public Map.Entry<Pair<AttributeI, AttributeI>, Number> toModel(MGXMasterI m, CorrelatedAttributeCount dto) {
+        AttributeI first = AttributeDTOFactory.getInstance().toModel(m, dto.getRestrictedAttribute());
+        AttributeI second = AttributeDTOFactory.getInstance().toModel(m, dto.getAttribute());
+        Pair<AttributeI, AttributeI> pair = new Pair<>(first, second);
+        return new AbstractMap.SimpleEntry<Pair<AttributeI, AttributeI>, Number>(pair, Long.valueOf(dto.getCount()));
     }
 }

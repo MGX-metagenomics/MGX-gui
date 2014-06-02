@@ -47,8 +47,8 @@ public class MappedSequenceTest {
     @Test
     public void testSortOrder() {
         System.err.println("sort order");
-        MappedSequence ms1 = new MappedSequence(1, 10, 20, 5);
-        MappedSequence ms2 = new MappedSequence(1, 15, 25, 5);
+        MappedSequence ms1 = new MappedSequence(null, 1, 10, 20, 5);
+        MappedSequence ms2 = new MappedSequence(null, 1, 15, 25, 5);
         List<MappedSequence> tmp = new ArrayList<>();
         tmp.add(ms1);
         tmp.add(ms2);
@@ -59,7 +59,7 @@ public class MappedSequenceTest {
     @Test
     public void testMinMax() {
         System.err.println("MinMax");
-        MappedSequence ms1 = new MappedSequence(1, 10, 20, 5);
+        MappedSequence ms1 = new MappedSequence(null, 1, 10, 20, 5);
         assertEquals(10, ms1.getMin());
         assertEquals(20, ms1.getMax());
     }
@@ -69,9 +69,9 @@ public class MappedSequenceTest {
         System.err.println("testHashSet");
         Set<MappedSequence> set = new HashSet<>();
 
-        MappedSequence ms1 = new MappedSequence(3436, 566474, 566528, 12);
+        MappedSequence ms1 = new MappedSequence(null, 3436, 566474, 566528, 12);
         set.add(ms1);
-        MappedSequence ms2 = new MappedSequence(26467, 566474, 566528, 11);
+        MappedSequence ms2 = new MappedSequence(null, 26467, 566474, 566528, 11);
         set.add(ms2);
 
         assertEquals(2, set.size());
@@ -82,9 +82,9 @@ public class MappedSequenceTest {
         System.err.println("testSortedSet");
         SortedSet<MappedSequence> set = new TreeSet<>();
 
-        MappedSequence ms1 = new MappedSequence(3436, 566474, 566528, 12);
+        MappedSequence ms1 = new MappedSequence(null, 3436, 566474, 566528, 12);
         set.add(ms1);
-        MappedSequence ms2 = new MappedSequence(26467, 566474, 566528, 11);
+        MappedSequence ms2 = new MappedSequence(null, 26467, 566474, 566528, 11);
         set.add(ms2);
 
         assertEquals(2, set.size());
@@ -95,9 +95,9 @@ public class MappedSequenceTest {
         System.err.println("testSortedSet2");
         SortedSet<MappedSequence> set = new TreeSet<>();
 
-        MappedSequence ms1 = new MappedSequence(3436, 566474, 566528, 12);
+        MappedSequence ms1 = new MappedSequence(null, 3436, 566474, 566528, 12);
         set.add(ms1);
-        MappedSequence ms2 = new MappedSequence(3436, 566474, 566528, 12);
+        MappedSequence ms2 = new MappedSequence(null, 3436, 566474, 566528, 12);
         set.add(ms2);
 
         assertEquals(1, set.size());

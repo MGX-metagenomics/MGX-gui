@@ -1,13 +1,17 @@
 package de.cebitec.mgx.gui.controller;
 
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.access.FileAccessI;
+import de.cebitec.mgx.api.access.datatransfer.DownloadBaseI;
+import de.cebitec.mgx.api.misc.TaskI;
+import de.cebitec.mgx.api.model.MGXFileI;
+import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.client.datatransfer.FileDownloader;
 import de.cebitec.mgx.client.datatransfer.FileUploader;
 import de.cebitec.mgx.client.datatransfer.PluginDumpDownloader;
 import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.FileDTO;
-import de.cebitec.mgx.gui.datamodel.MGXFile;
-import de.cebitec.mgx.gui.datamodel.misc.Task;
 import de.cebitec.mgx.gui.dtoconversion.FileDTOFactory;
 import de.cebitec.mgx.gui.util.BaseIterator;
 import java.io.File;
@@ -20,17 +24,25 @@ import org.openide.util.Exceptions;
  *
  * @author sjaenick
  */
-public class FileAccess extends AccessBase<MGXFile> {
+public class FileAccess implements FileAccessI {
 
-    @Override
-    public long create(MGXFile newObj) {
-        throw new UnsupportedOperationException("Not supported.");
+    private final MGXMasterI master;
+    private final MGXDTOMaster dtomaster;
+
+    public FileAccess(MGXMasterI master, MGXDTOMaster dtomaster) {
+        this.master = master;
+        this.dtomaster = dtomaster;
     }
 
-    public boolean createDirectory(MGXFile newObj) throws MGXServerException, MGXClientException {
+    @Override
+    public MGXMasterI getMaster() {
+        return master;
+    }
+
+    public boolean createDirectory(MGXFileI newObj) throws MGXServerException, MGXClientException {
         FileDTO dto = FileDTOFactory.getInstance().toDTO(newObj);
         try {
-            return 1 == getDTOmaster().File().create(dto);
+            return 1 == dtomaster.File().create(dto);
         } catch (MGXServerException | MGXClientException ex) {
             if (ex.getMessage().trim().endsWith("already exists.")) {
                 throw ex; // rethrow
@@ -41,18 +53,13 @@ public class FileAccess extends AccessBase<MGXFile> {
     }
 
     @Override
-    public MGXFile fetch(long id) {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    public Iterator<MGXFile> fetchall(final MGXFile curDir) {
+    public Iterator<MGXFileI> fetchall(final MGXFileI curDir) {
         try {
-            Iterator<FileDTO> fetchall = getDTOmaster().File().fetchall(curDir.getFullPath());
-            return new BaseIterator<FileDTO, MGXFile>(fetchall) {
+            Iterator<FileDTO> fetchall = dtomaster.File().fetchall(curDir.getFullPath());
+            return new BaseIterator<FileDTO, MGXFileI>(fetchall) {
                 @Override
-                public MGXFile next() {
-                    MGXFile f = FileDTOFactory.getInstance().toModel(iter.next());
-                    f.setMaster(getMaster());
+                public MGXFileI next() {
+                    MGXFileI f = FileDTOFactory.getInstance().toModel(curDir.getMaster(), iter.next());
                     return f;
                 }
             };
@@ -63,17 +70,12 @@ public class FileAccess extends AccessBase<MGXFile> {
     }
 
     @Override
-    public void update(MGXFile obj) {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    @Override
-    public Task delete(MGXFile obj) {
-        Task t = null;
+    public TaskI delete(MGXFileI obj) {
+        TaskI t = null;
         try {
             FileDTO dto = FileDTOFactory.getInstance().toDTO(obj);
-            UUID uuid = getDTOmaster().File().delete(dto);
-            t = getMaster().Task().get(obj, uuid, Task.TaskType.DELETE);
+            UUID uuid = dtomaster.File().delete(dto);
+            t = getMaster().Task().get(obj, uuid, TaskI.TaskType.DELETE);
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
@@ -81,34 +83,61 @@ public class FileAccess extends AccessBase<MGXFile> {
     }
 
     @Override
-    public Iterator<MGXFile> fetchall() {
-        return fetchall(MGXFile.getRoot(getMaster()));
+    public Iterator<MGXFileI> fetchall() {
+        return fetchall(MGXFileI.getRoot(getMaster()));
     }
 
-    public FileUploader createUploader(File localFile, MGXFile targetDir, String targetName) throws MGXClientException {
+    public FileUploader createUploader(File localFile, MGXFileI targetDir, String targetName) throws MGXClientException {
         assert targetDir.isDirectory();
         if (targetName.contains("/")) {
             assert false;
         }
-        String fullPath = targetDir.getFullPath() + MGXFile.separator + targetName;
+        String fullPath = targetDir.getFullPath() + MGXFileI.separator + targetName;
         try {
-            return getDTOmaster().File().createUploader(localFile, fullPath);
+            return dtomaster.File().createUploader(localFile, fullPath);
         } catch (MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
         return null;
     }
 
-    public FileDownloader createDownloader(String serverFname, OutputStream out) throws MGXClientException {
+    @Override
+    public DownloadBaseI createDownloader(String serverFname, OutputStream out) {
         try {
-            return getDTOmaster().File().createDownloader(serverFname, out);
+            final FileDownloader fd = dtomaster.File().createDownloader(serverFname, out);
+            return new DownloadBaseI() {
+
+                @Override
+                public boolean download() {
+                    return fd.download();
+                }
+
+                @Override
+                public long getProgress() {
+                    return fd.getProgress();
+                }
+            };
         } catch (MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
         return null;
     }
 
-    public PluginDumpDownloader createPluginDumpDownloader(OutputStream out) throws MGXClientException {
-        return getDTOmaster().File().createPluginDumpDownloader(out);
+    @Override
+    public DownloadBaseI createPluginDumpDownloader(OutputStream out) {
+        final PluginDumpDownloader pd = dtomaster.File().createPluginDumpDownloader(out);
+        return new DownloadBaseI() {
+
+            @Override
+            public boolean download() {
+                return pd.download();
+            }
+
+            @Override
+            public long getProgress() {
+                return pd.getProgress();
+            }
+        };
     }
+
 }

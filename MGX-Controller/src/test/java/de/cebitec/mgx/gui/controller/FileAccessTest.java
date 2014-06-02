@@ -5,6 +5,7 @@
  */
 package de.cebitec.mgx.gui.controller;
 
+import de.cebitec.mgx.api.model.MGXFileI;
 import de.cebitec.mgx.client.datatransfer.FileUploader;
 import de.cebitec.mgx.gui.datamodel.MGXFile;
 import de.cebitec.mgx.gui.datamodel.misc.Task;
@@ -49,12 +50,12 @@ public class FileAccessTest {
     @Test
     public void testFetchall() {
         System.out.println("fetchall");
-        Iterator<MGXFile> iter = master.File().fetchall();
+        Iterator<MGXFileI> iter = master.File().fetchall();
         assertNotNull(iter);
         int numFiles = 0;
         int numDirs = 0;
         while (iter.hasNext()) {
-            MGXFile f = iter.next();
+            MGXFileI f = iter.next();
             //System.err.println(f.getFullPath() + " --> " + f.getName());
             if (f.isDirectory()) {
                 numDirs++;

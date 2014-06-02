@@ -1,12 +1,13 @@
 package de.cebitec.mgx.gui.controller;
 
+import de.cebitec.mgx.api.misc.DistributionI;
+import de.cebitec.mgx.api.model.AttributeI;
+import de.cebitec.mgx.api.model.AttributeTypeI;
+import de.cebitec.mgx.api.model.tree.NodeI;
+import de.cebitec.mgx.api.model.tree.TreeI;
+import de.cebitec.mgx.common.DistributionFactory;
+import de.cebitec.mgx.common.TreeFactory;
 import de.cebitec.mgx.gui.datamodel.Attribute;
-import de.cebitec.mgx.gui.datamodel.AttributeType;
-import de.cebitec.mgx.gui.datamodel.misc.Distribution;
-import de.cebitec.mgx.gui.datamodel.misc.DistributionFactory;
-import de.cebitec.mgx.gui.datamodel.tree.Node;
-import de.cebitec.mgx.gui.datamodel.tree.Tree;
-import de.cebitec.mgx.gui.datamodel.tree.TreeFactory;
 import de.cebitec.mgx.gui.util.TestMaster;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -14,10 +15,13 @@ import java.util.List;
 import java.util.Set;
 import org.junit.After;
 import org.junit.AfterClass;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -47,7 +51,7 @@ public class AttributeAccessTest {
     @Test
     public void testGetDistribution() {
         System.out.println("getDistribution");
-        Distribution dist = TestMaster.getRO().Attribute().getDistribution(6, 3);
+        DistributionI dist = TestMaster.getRO().Attribute().getDistribution(6, 3);
         assertNotNull(dist);
         assertEquals(5, dist.size());
         assertEquals(24, dist.getTotalClassifiedElements());
@@ -56,7 +60,7 @@ public class AttributeAccessTest {
     @Test
     public void testFetch() {
         System.out.println("fetch");
-        Attribute attr = TestMaster.getRO().Attribute().fetch(1);
+        AttributeI attr = TestMaster.getRO().Attribute().fetch(1);
         assertNotNull(attr);
         assertNotNull(attr.getAttributeType());
         assertEquals("50.8", attr.getValue());
@@ -66,13 +70,13 @@ public class AttributeAccessTest {
     @Test
     public void testGetHierarchy() {
         System.out.println("getHierarchy");
-        Tree<Long> tree = TestMaster.getRO().Attribute().getHierarchy(6, 3);
+        TreeI<Long> tree = TestMaster.getRO().Attribute().getHierarchy(6, 3);
         assertNotNull(tree);
         assertEquals(30, tree.getNodes().size());
         assertNotNull(tree.getRoot());
 
-        Node<Long> n = null;
-        for (Node x : tree.getNodes()) {
+        NodeI<Long> n = null;
+        for (NodeI<Long> x : tree.getNodes()) {
             if (x.getAttribute().getValue().equals("Bacteroidetes")) {
                 n = x;
                 break;
@@ -82,7 +86,7 @@ public class AttributeAccessTest {
         assertEquals(2, n.getDepth());
 
         // check the path
-        Node<Long>[] path = n.getPath();
+        NodeI<Long>[] path = n.getPath();
         assertEquals(3, path.length);
         assertEquals(path[0], tree.getRoot());
         assertNotNull(path[1]);
@@ -92,13 +96,13 @@ public class AttributeAccessTest {
     @Test
     public void testFilterTree() {
         System.out.println("filterTree");
-        Tree<Long> tree = TestMaster.getRO().Attribute().getHierarchy(6, 3);
+        TreeI<Long> tree = TestMaster.getRO().Attribute().getHierarchy(6, 3);
         assertNotNull(tree);
         assertEquals(30, tree.getNodes().size());
         assertNotNull(tree.getRoot());
 
-        Node<Long> n = null;
-        for (Node x : tree.getNodes()) {
+        NodeI<Long> n = null;
+        for (NodeI x : tree.getNodes()) {
             if (x.getAttribute().getValue().equals("Bacteroidetes")) {
                 n = x;
                 break;
@@ -107,7 +111,7 @@ public class AttributeAccessTest {
         assertNotNull(n);
         assertEquals(2, n.getDepth());
 
-        Set<Attribute> exclude = new HashSet<>();
+        Set<AttributeI> exclude = new HashSet<>();
         exclude.add(n.getAttribute());
 
         tree = TreeFactory.filter(tree, exclude);
@@ -119,12 +123,12 @@ public class AttributeAccessTest {
     @Test
     public void testCloneTree() {
         System.out.println("cloneTree");
-        Tree<Long> tree = TestMaster.getRO().Attribute().getHierarchy(6, 3);
+        TreeI<Long> tree = TestMaster.getRO().Attribute().getHierarchy(6, 3);
         assertNotNull(tree);
         assertEquals(30, tree.getNodes().size());
         assertNotNull(tree.getRoot());
         
-        Tree<Long> tree2 = TreeFactory.clone(tree);
+        TreeI<Long> tree2 = TreeFactory.clone(tree);
         assertNotNull(tree2);
         assertNotSame(tree2, tree);
         assertEquals(tree.getNodes().size(), tree2.getNodes().size());
@@ -248,10 +252,10 @@ public class AttributeAccessTest {
     @Test
     public void verifyTreeStructure() {
         System.out.println("verifyTreeStructure");
-        Tree<Long> tree = TestMaster.getRO().Attribute().getHierarchy(6, 3);
+        TreeI<Long> tree = TestMaster.getRO().Attribute().getHierarchy(6, 3);
         assertNotNull(tree);
 
-        for (Node<Long> node : tree.getNodes()) {
+        for (NodeI<Long> node : tree.getNodes()) {
             if (!node.isRoot()) {
                 assertNotNull(node.getParent());
             }
@@ -262,14 +266,14 @@ public class AttributeAccessTest {
         }
 
         // nodes and node parents attributes types have to differ
-        for (Node<Long> node : tree.getNodes()) {
+        for (NodeI<Long> node : tree.getNodes()) {
             if (!node.isRoot()) {
                 assertNotSame(node.getAttribute().getAttributeType(), node.getParent().getAttribute().getAttributeType());
                 assertFalse(node.getAttribute().getAttributeType().getName().equals(node.getParent().getAttribute().getAttributeType().getName()));
             }
         }
 
-        for (Node<Long> node : tree.getNodes()) {
+        for (NodeI<Long> node : tree.getNodes()) {
             assertEquals(node.getDepth() + 1, node.getPath().length);
         }
     }
@@ -277,28 +281,28 @@ public class AttributeAccessTest {
     @Test
     public void testDistFromTree() {
         System.out.println("distFromTree");
-        Distribution dist = TestMaster.getRO().Attribute().getDistribution(6, 3);
+        DistributionI dist = TestMaster.getRO().Attribute().getDistribution(6, 3);
         assertNotNull(dist);
         assertEquals(5, dist.size());
         assertEquals(24, dist.getTotalClassifiedElements());
 
-        AttributeType aType = dist.keySet().toArray(new Attribute[]{})[0].getAttributeType();
+        AttributeTypeI aType = dist.keySet().toArray(new Attribute[]{})[0].getAttributeType();
         assertNotNull(aType);
         assertEquals("Bergey_class", aType.getName());
 
-        Tree<Long> tree = TestMaster.getRO().Attribute().getHierarchy(6, 3);
+        TreeI<Long> tree = TestMaster.getRO().Attribute().getHierarchy(6, 3);
         assertNotNull(tree);
 
         // count manually
         int i = 0;
-        for (Node<Long> node : tree.getNodes()) {
+        for (NodeI<Long> node : tree.getNodes()) {
             if (node.getAttribute().getAttributeType().equals(aType)) {
                 i++;
             }
         }
         assertEquals(5, i);
 
-        Distribution fromTree = DistributionFactory.fromTree(tree, aType);
+        DistributionI fromTree = DistributionFactory.fromTree(tree, aType);
         assertNotNull(fromTree);
         assertEquals(5, fromTree.size());
         assertEquals(24, fromTree.getTotalClassifiedElements());
@@ -307,38 +311,38 @@ public class AttributeAccessTest {
     @Test
     public void testMergeDist() {
         System.out.println("mergeDistributions");
-        Distribution dist = TestMaster.getRO().Attribute().getDistribution(6, 3);
+        DistributionI dist = TestMaster.getRO().Attribute().getDistribution(6, 3);
         assertNotNull(dist);
         assertEquals(5, dist.size());
         assertEquals(24, dist.getTotalClassifiedElements());
-        List<Distribution> twoTimes = new ArrayList<>();
+        List<DistributionI> twoTimes = new ArrayList<>();
         twoTimes.add(dist);
         twoTimes.add(dist);
 
-        Distribution merged = DistributionFactory.merge(twoTimes);
+        DistributionI merged = DistributionFactory.merge(twoTimes);
         assertNotNull(merged);
         assertEquals(5, merged.size());
         assertEquals(48, merged.getTotalClassifiedElements());
 
         // bergey_order
-        Distribution dist2 = TestMaster.getRO().Attribute().getDistribution(7, 3);
+        DistributionI dist2 = TestMaster.getRO().Attribute().getDistribution(7, 3);
         assertNotNull(dist2);
         assertEquals(4, dist2.size());
         assertEquals(21, dist2.getTotalClassifiedElements());
-        List<Distribution> twoDists = new ArrayList<>();
+        List<DistributionI> twoDists = new ArrayList<>();
         twoDists.add(dist);
         twoDists.add(dist2);
-        Distribution twoDifferent = DistributionFactory.merge(twoDists);
+        DistributionI twoDifferent = DistributionFactory.merge(twoDists);
         assertNotNull(twoDifferent);
         assertEquals(9, twoDifferent.size());
         assertEquals(45, twoDifferent.getTotalClassifiedElements());
     }
 
-    private void checkNode(Tree<Long> tree, String name, Long content) {
+    private void checkNode(TreeI<Long> tree, String name, Long content) {
         assertNotNull(name);
         assertNotNull(content);
         boolean nodeFound = false;
-        for (Node<Long> node : tree.getNodes()) {
+        for (NodeI<Long> node : tree.getNodes()) {
             if (node.getAttribute().getValue().equals(name)) {
                 assertFalse(nodeFound);
                 nodeFound = true;
@@ -350,9 +354,9 @@ public class AttributeAccessTest {
         }
     }
 
-    private static <T> Node<T> findNode(Tree<T> tree, String name) {
+    private static <T> NodeI<T> findNode(TreeI<T> tree, String name) {
         assertNotNull(name);
-        for (Node<T> node : tree.getNodes()) {
+        for (NodeI<T> node : tree.getNodes()) {
             if (node.getAttribute().getValue().equals(name)) {
                 return node;
             }
@@ -361,9 +365,9 @@ public class AttributeAccessTest {
         return null;
     }
 
-    private static Attribute findDist(Distribution d, String name) {
+    private static AttributeI findDist(DistributionI d, String name) {
         assertNotNull(name);
-        for (Attribute a : d.keySet()) {
+        for (AttributeI a : d.keySet()) {
             if (a.getValue().equals(name)) {
                 return a;
             }
@@ -372,11 +376,11 @@ public class AttributeAccessTest {
         return null;
     }
 
-    private void checkDist(Distribution dist, String name, Long content) {
+    private void checkDist(DistributionI dist, String name, Long content) {
         assertNotNull(name);
         assertNotNull(content);
         boolean found = false;
-        for (Attribute attr : dist.keySet()) {
+        for (AttributeI attr : dist.keySet()) {
             if (attr.getValue().equals(name)) {
                 found = true;
                 assertEquals(content, dist.get(attr));

@@ -1,63 +1,52 @@
 package de.cebitec.mgx.gui.controller;
 
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.access.AccessBaseI;
+import de.cebitec.mgx.api.model.ModelBase;
 import de.cebitec.mgx.client.MGXDTOMaster;
-import de.cebitec.mgx.gui.datamodel.misc.Task;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 /**
  *
  * @author sjaenick
+ * @param <T>
  */
-public abstract class AccessBase<T> {
+public abstract class AccessBase<T extends ModelBase<T>> implements AccessBaseI<T> {
 
-    private MGXMaster master;
-    private MGXDTOMaster dtomaster;
+    private final MGXMasterI master;
+    private final MGXDTOMaster dtomaster;
 
-    public MGXDTOMaster getDTOmaster() {
-        return dtomaster;
-    }
-
-    public void setDTOmaster(MGXDTOMaster dtomaster) {
+    public AccessBase(MGXMasterI master, MGXDTOMaster dtomaster) {
+        assert master != null;
+        assert dtomaster != null;
+        this.master = master;
         this.dtomaster = dtomaster;
     }
 
-    public MGXMaster getMaster() {
+    protected MGXDTOMaster getDTOmaster() {
+        return dtomaster;
+    }
+
+    protected MGXMasterI getMaster() {
         return master;
     }
 
-    public void setMaster(MGXMaster master) {
-        this.master = master;
-    }
-
-    public abstract long create(T obj);
-
-    public abstract T fetch(long id);
-
-    public abstract Iterator<T> fetchall();
-
-    public abstract void update(T obj);
-
-    public abstract Task delete(T obj);
-
-//    /*
-//     * from http://snippets.dzone.com/posts/show/91
-//     */
-//    protected static String join(Iterable< ? extends Object> pColl, String separator) {
-//        Iterator< ? extends Object> oIter;
-//        if (pColl == null || (!(oIter = pColl.iterator()).hasNext())) {
-//            return "";
-//        }
-//        StringBuilder oBuilder = new StringBuilder(String.valueOf(oIter.next()));
-//        while (oIter.hasNext()) {
-//            oBuilder.append(separator).append(oIter.next());
-//        }
-//        return oBuilder.toString();
-//    }
-
+//    @Override
+//    public abstract long create(T obj);
+//
+//    @Override
+//    public abstract T fetch(long id);
+//
+//    @Override
+//    public abstract Iterator<T> fetchall();
+//
+//    @Override
+//    public abstract void update(T obj);
+//
+//    @Override
+//    public abstract TaskI delete(T obj);
     protected static List<String> split(String message, String separator) {
         return Arrays.asList(message.split(separator));
-        //return new ArrayList<>(Arrays.asList(message.split(separator)));
     }
 }

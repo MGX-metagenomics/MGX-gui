@@ -1,8 +1,8 @@
 package de.cebitec.mgx.gui.controller;
 
-import de.cebitec.mgx.gui.datamodel.AttributeType;
-import de.cebitec.mgx.gui.datamodel.Job;
-import de.cebitec.mgx.gui.datamodel.SeqRun;
+import de.cebitec.mgx.api.model.AttributeTypeI;
+import de.cebitec.mgx.api.model.JobI;
+import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.util.TestMaster;
 import java.util.Map;
 import java.util.Set;
@@ -39,14 +39,23 @@ public class SeqRunAccessTest {
     }
 
     @Test
+    public void testFetch() {
+        System.out.println("fetch");
+        MGXMaster m = TestMaster.getRO();
+        SeqRunI sr1 = m.SeqRun().fetch(1);
+        assertNotNull(sr1);
+        assertNotNull(sr1.getMaster());
+    }
+
+    @Test
     public void testgetJobsAndAttributeTypes() {
         System.out.println("getJobsAndAttributeTypes");
         MGXMaster m = TestMaster.getRO();
-        SeqRun sr1 = m.SeqRun().fetch(1);
-        Map<Job, Set<AttributeType>> data = m.SeqRun().getJobsAndAttributeTypes(sr1);
+        SeqRunI sr1 = m.SeqRun().fetch(1);
+        Map<JobI, Set<AttributeTypeI>> data = m.SeqRun().getJobsAndAttributeTypes(sr1);
         assertNotNull(data);
         assertEquals(10, data.size());
-        for (Job j : data.keySet()) {
+        for (JobI j : data.keySet()) {
             assertNotNull(j.getSeqrun());
         }
     }
@@ -55,8 +64,8 @@ public class SeqRunAccessTest {
     public void testEquality() {
         System.out.println("equals");
         MGXMaster m = TestMaster.getRO();
-        SeqRun sr1 = m.SeqRun().fetch(1);
-        SeqRun sr2 = m.SeqRun().fetch(1);
+        SeqRunI sr1 = m.SeqRun().fetch(1);
+        SeqRunI sr2 = m.SeqRun().fetch(1);
         assertNotNull(sr1);
         assertNotNull(sr2);
         assertEquals(sr1, sr2);

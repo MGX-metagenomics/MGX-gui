@@ -1,15 +1,17 @@
 package de.cebitec.mgx.gui.dtoconversion;
 
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.Identifiable;
+import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.dto.dto.SeqRunDTO;
 import de.cebitec.mgx.dto.dto.SeqRunDTO.Builder;
-import de.cebitec.mgx.gui.datamodel.Identifiable;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
 
 /**
  *
  * @author sjaenick
  */
-public class SeqRunDTOFactory extends DTOConversionBase<SeqRun, SeqRunDTO> {
+public class SeqRunDTOFactory extends DTOConversionBase<SeqRunI, SeqRunDTO> {
 
     static {
         instance = new SeqRunDTOFactory();
@@ -24,7 +26,7 @@ public class SeqRunDTOFactory extends DTOConversionBase<SeqRun, SeqRunDTO> {
     }
 
     @Override
-    public final SeqRunDTO toDTO(SeqRun s) {
+    public final SeqRunDTO toDTO(SeqRunI s) {
         Builder b = SeqRunDTO.newBuilder()
                 .setExtractId(s.getExtractId())
                 .setName(s.getName())
@@ -45,12 +47,12 @@ public class SeqRunDTOFactory extends DTOConversionBase<SeqRun, SeqRunDTO> {
     }
 
     @Override
-    public final SeqRun toModel(SeqRunDTO dto) {
-        SeqRun s = new SeqRun()
+    public final SeqRunI toModel(MGXMasterI m, SeqRunDTO dto) {
+        SeqRun s = new SeqRun(m)
                 .setDNAExtractId(dto.getExtractId())
                 .setName(dto.getName())
-                .setSequencingTechnology(TermDTOFactory.getInstance().toModel(dto.getSequencingTechnology()))
-                .setSequencingMethod(TermDTOFactory.getInstance().toModel(dto.getSequencingMethod()))
+                .setSequencingTechnology(TermDTOFactory.getInstance().toModel(m, dto.getSequencingTechnology()))
+                .setSequencingMethod(TermDTOFactory.getInstance().toModel(m, dto.getSequencingMethod()))
                 .setSubmittedToINSDC(dto.getSubmittedToInsdc());
 
         if (dto.getSubmittedToInsdc()) {

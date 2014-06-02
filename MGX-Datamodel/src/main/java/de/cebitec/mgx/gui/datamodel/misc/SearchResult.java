@@ -1,6 +1,6 @@
 package de.cebitec.mgx.gui.datamodel.misc;
 
-import de.cebitec.mgx.gui.datamodel.Observation;
+import de.cebitec.mgx.api.model.ObservationI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,13 +11,13 @@ import java.util.List;
 public class SearchResult {
 
     private String seqName;
-    private List<Observation> observations = null;
+    private List<ObservationI> observations = null;
 
-    public List<Observation> getObservations() {
+    public List<ObservationI> getObservations() {
         return observations;
     }
 
-    public void addObservation(Observation obs) {
+    public void addObservation(ObservationI obs) {
         if (observations == null) {
             observations = new ArrayList<>();
         }

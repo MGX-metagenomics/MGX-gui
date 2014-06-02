@@ -1,37 +1,44 @@
 package de.cebitec.mgx.gui.datamodel.misc;
 
-import de.cebitec.mgx.gui.datamodel.SeqRun;
+import de.cebitec.mgx.api.misc.SearchRequestI;
+import de.cebitec.mgx.api.model.SeqRunI;
 
 /**
  *
  * @author sjaenick
  */
-public class SearchRequest {
+public class SearchRequest implements SearchRequestI {
 
     private String term;
     private boolean exact;
-    private SeqRun[] runs;
+    private SeqRunI[] runs;
 
+    @Override
     public boolean isExact() {
         return exact;
     }
 
+    @Override
     public void setExact(boolean exact) {
         this.exact = exact;
     }
 
-    public SeqRun[] getRuns() {
+    @Override
+    public SeqRunI[] getRuns() {
         return runs;
     }
 
-    public void setRuns(SeqRun[] runs) {
+    @Override
+    public void setRuns(SeqRunI[] runs) {
         this.runs = runs;
     }
 
+    @Override
     public String getTerm() {
         return term;
     }
 
+    @Override
     public void setTerm(String term) {
         this.term = term;
     }

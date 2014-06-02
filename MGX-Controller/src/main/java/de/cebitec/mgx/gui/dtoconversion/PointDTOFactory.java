@@ -5,8 +5,9 @@
  */
 package de.cebitec.mgx.gui.dtoconversion;
 
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.misc.Point;
 import de.cebitec.mgx.dto.dto.PointDTO;
-import de.cebitec.mgx.gui.datamodel.misc.Point;
 
 /**
  *
@@ -32,7 +33,7 @@ public class PointDTOFactory extends DTOConversionBase<Point, PointDTO> {
     }
 
     @Override
-    public Point toModel(PointDTO dto) {
+    public Point toModel(MGXMasterI m, PointDTO dto) {
         if (dto.hasName()) {
             return new Point(dto.getX(), dto.getY(), dto.getName());
         } else {

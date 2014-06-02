@@ -5,6 +5,7 @@
  */
 package de.cebitec.mgx.gui.datamodel.misc;
 
+import de.cebitec.mgx.api.misc.Point;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

@@ -1,12 +1,12 @@
 package de.cebitec.mgx.gui.attributevisualization.util;
 
-import de.cebitec.mgx.gui.groups.VGroupManager;
+import de.cebitec.mgx.api.groups.VGroupManagerI;
+import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.misc.DistributionI;
+import de.cebitec.mgx.api.misc.Pair;
+import de.cebitec.mgx.api.model.AttributeTypeI;
+import de.cebitec.mgx.api.model.tree.TreeI;
 import de.cebitec.mgx.gui.attributevisualization.ui.ControlPanel;
-import de.cebitec.mgx.gui.datamodel.AttributeType;
-import de.cebitec.mgx.gui.datamodel.misc.Distribution;
-import de.cebitec.mgx.gui.datamodel.misc.Pair;
-import de.cebitec.mgx.gui.datamodel.tree.Tree;
-import de.cebitec.mgx.gui.groups.VisualizationGroup;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import javax.swing.SwingWorker;
@@ -16,14 +16,16 @@ import org.openide.util.Exceptions;
  *
  * @author sjaenick
  */
-public class ResultCollector extends SwingWorker<Pair<List<Pair<VisualizationGroup, Distribution>>, List<Pair<VisualizationGroup, Tree<Long>>>>, Void> {
+public class ResultCollector extends SwingWorker<Pair<List<Pair<VisualizationGroupI, DistributionI>>, List<Pair<VisualizationGroupI, TreeI<Long>>>>, Void> {
 
-    private final AttributeType aType;
-    private final List<Pair<VisualizationGroup, Distribution>> distHolder;
-    private final List<Pair<VisualizationGroup, Tree<Long>>> hierarchyHolder;
+    private final AttributeTypeI aType;
+    private final List<Pair<VisualizationGroupI, DistributionI>> distHolder;
+    private final List<Pair<VisualizationGroupI, TreeI<Long>>> hierarchyHolder;
     private final ControlPanel ctl;
+    private final VGroupManagerI mgr;
 
-    public ResultCollector(AttributeType aType, List<Pair<VisualizationGroup, Distribution>> distHolder, List<Pair<VisualizationGroup, Tree<Long>>> hierarchyHolder, ControlPanel ctl) {
+    public ResultCollector(VGroupManagerI mgr, AttributeTypeI aType, List<Pair<VisualizationGroupI, DistributionI>> distHolder, List<Pair<VisualizationGroupI, TreeI<Long>>> hierarchyHolder, ControlPanel ctl) {
+        this.mgr = mgr;
         this.aType = aType;
         this.distHolder = distHolder;
         this.hierarchyHolder = hierarchyHolder;
@@ -31,14 +33,14 @@ public class ResultCollector extends SwingWorker<Pair<List<Pair<VisualizationGro
     }
 
     @Override
-    protected Pair<List<Pair<VisualizationGroup, Distribution>>, List<Pair<VisualizationGroup, Tree<Long>>>> doInBackground() throws Exception {
+    protected Pair<List<Pair<VisualizationGroupI, DistributionI>>, List<Pair<VisualizationGroupI, TreeI<Long>>>> doInBackground() throws Exception {
         
-        List<Pair<VisualizationGroup, Distribution>> distributions = VGroupManager.getInstance().getDistributions();
+        List<Pair<VisualizationGroupI, DistributionI>> distributions = mgr.getDistributions();
         assert distributions != null;
-        List<Pair<VisualizationGroup, Tree<Long>>> hierarchies = null;
+        List<Pair<VisualizationGroupI, TreeI<Long>>> hierarchies = null;
         
-        if (aType.getStructure() == AttributeType.STRUCTURE_HIERARCHICAL) {
-            hierarchies = VGroupManager.getInstance().getHierarchies();
+        if (aType.getStructure() == AttributeTypeI.STRUCTURE_HIERARCHICAL) {
+            hierarchies = mgr.getHierarchies();
             assert hierarchies != null;
         }
         
@@ -47,7 +49,7 @@ public class ResultCollector extends SwingWorker<Pair<List<Pair<VisualizationGro
 
     @Override
     protected void done() {
-        Pair<List<Pair<VisualizationGroup, Distribution>>, List<Pair<VisualizationGroup, Tree<Long>>>> p = null;
+        Pair<List<Pair<VisualizationGroupI, DistributionI>>, List<Pair<VisualizationGroupI, TreeI<Long>>>> p = null;
         try {
              p = get();
         } catch (InterruptedException | ExecutionException ex) {
@@ -62,7 +64,7 @@ public class ResultCollector extends SwingWorker<Pair<List<Pair<VisualizationGro
             hierarchyHolder.addAll(p.getSecond());
         }
 
-        if (aType.getStructure() == AttributeType.STRUCTURE_HIERARCHICAL) {
+        if (aType.getStructure() == AttributeTypeI.STRUCTURE_HIERARCHICAL) {
             assert hierarchyHolder != null;
         }
         // we have the distribution, trigger update of viewer list

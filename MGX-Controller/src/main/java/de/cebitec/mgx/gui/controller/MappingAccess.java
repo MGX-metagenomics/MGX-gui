@@ -1,11 +1,15 @@
 package de.cebitec.mgx.gui.controller;
 
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.access.MappingAccessI;
+import de.cebitec.mgx.api.misc.TaskI;
+import de.cebitec.mgx.api.model.MappedSequenceI;
+import de.cebitec.mgx.api.model.MappingI;
+import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.MappedSequenceDTO;
 import de.cebitec.mgx.dto.dto.MappingDTO;
-import de.cebitec.mgx.gui.datamodel.MappedSequence;
-import de.cebitec.mgx.gui.datamodel.Mapping;
 import de.cebitec.mgx.gui.datamodel.misc.Task;
 import de.cebitec.mgx.gui.dtoconversion.MappedSequenceDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.MappingDTOFactory;
@@ -18,35 +22,41 @@ import org.openide.util.Exceptions;
  *
  * @author sjaenick
  */
-public class MappingAccess extends AccessBase<Mapping> {
+public class MappingAccess extends MappingAccessI {
+    
+    private final MGXDTOMaster dtomaster;
+    private final MGXMasterI master;
+
+    public MappingAccess(MGXDTOMaster dtomaster, MGXMasterI master) {
+        this.dtomaster = dtomaster;
+        this.master = master;
+    }
 
     @Override
-    public long create(Mapping obj) {
+    public long create(MappingI obj) {
         throw new UnsupportedOperationException("Not supported.");
     }
 
     @Override
-    public Mapping fetch(long id) {
+    public MappingI fetch(long id) {
         MappingDTO dto = null;
         try {
-            dto = getDTOmaster().Mapping().fetch(id);
+            dto = dtomaster.Mapping().fetch(id);
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
-        Mapping ret = MappingDTOFactory.getInstance().toModel(dto);
-        ret.setMaster(this.getMaster());
+        MappingI ret = MappingDTOFactory.getInstance().toModel(master, dto);
         return ret;
     }
 
     @Override
-    public Iterator<Mapping> fetchall() {
+    public Iterator<MappingI> fetchall() {
         try {
-            Iterator<MappingDTO> fetchall = getDTOmaster().Mapping().fetchall();
-            return new BaseIterator<MappingDTO, Mapping>(fetchall) {
+            Iterator<MappingDTO> fetchall = dtomaster.Mapping().fetchall();
+            return new BaseIterator<MappingDTO, MappingI>(fetchall) {
                 @Override
-                public Mapping next() {
-                    Mapping sr = MappingDTOFactory.getInstance().toModel(iter.next());
-                    sr.setMaster(getMaster());
+                public MappingI next() {
+                    MappingI sr = MappingDTOFactory.getInstance().toModel(master, iter.next());
                     return sr;
                 }
             };
@@ -56,14 +66,13 @@ public class MappingAccess extends AccessBase<Mapping> {
         return null;
     }
 
-    public Iterator<Mapping> BySeqRun(long runid) {
+    public Iterator<MappingI> BySeqRun(long runid) {
         try {
-            Iterator<MappingDTO> fetchall = getDTOmaster().Mapping().BySeqRun(runid);
-            return new BaseIterator<MappingDTO, Mapping>(fetchall) {
+            Iterator<MappingDTO> fetchall = dtomaster.Mapping().BySeqRun(runid);
+            return new BaseIterator<MappingDTO, MappingI>(fetchall) {
                 @Override
-                public Mapping next() {
-                    Mapping sr = MappingDTOFactory.getInstance().toModel(iter.next());
-                    sr.setMaster(getMaster());
+                public MappingI next() {
+                    MappingI sr = MappingDTOFactory.getInstance().toModel(master, iter.next());
                     return sr;
                 }
             };
@@ -73,14 +82,13 @@ public class MappingAccess extends AccessBase<Mapping> {
         return null;
     }
 
-    public Iterator<Mapping> ByReference(long refId) {
+    public Iterator<MappingI> ByReference(long refId) {
         try {
-            Iterator<MappingDTO> fetchall = getDTOmaster().Mapping().ByReference(refId);
-            return new BaseIterator<MappingDTO, Mapping>(fetchall) {
+            Iterator<MappingDTO> fetchall = dtomaster.Mapping().ByReference(refId);
+            return new BaseIterator<MappingDTO, MappingI>(fetchall) {
                 @Override
-                public Mapping next() {
-                    Mapping sr = MappingDTOFactory.getInstance().toModel(iter.next());
-                    sr.setMaster(getMaster());
+                public MappingI next() {
+                    MappingI sr = MappingDTOFactory.getInstance().toModel(master, iter.next());
                     return sr;
                 }
             };
@@ -91,34 +99,36 @@ public class MappingAccess extends AccessBase<Mapping> {
     }
 
     @Override
-    public void update(Mapping obj) {
+    public void update(MappingI obj) {
         throw new UnsupportedOperationException("Not supported.");
     }
 
     @Override
-    public Task delete(Mapping obj) {
-        Task ret = null;
+    public TaskI delete(MappingI obj) {
+        TaskI ret = null;
         try {
-            UUID uuid = getDTOmaster().Mapping().delete(obj.getId());
-            ret = getMaster().Task().get(obj, uuid, Task.TaskType.DELETE);
+            UUID uuid = dtomaster.Mapping().delete(obj.getId());
+            ret = master.Task().get(obj, uuid, Task.TaskType.DELETE);
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
         return ret;
     }
 
+    @Override
     public UUID openMapping(long id) {
         try {
-            return getDTOmaster().Mapping().openMapping(id);
+            return dtomaster.Mapping().openMapping(id);
         } catch (MGXServerException ex) {
             Exceptions.printStackTrace(ex);
         }
         return null;
     }
 
+    @Override
     public void closeMapping(UUID uuid) {
         try {
-            getDTOmaster().Mapping().closeMapping(uuid);
+            dtomaster.Mapping().closeMapping(uuid);
         } catch (MGXServerException ex) {
             Exceptions.printStackTrace(ex);
         }
@@ -126,20 +136,21 @@ public class MappingAccess extends AccessBase<Mapping> {
     
     public long getMaxCoverage(UUID uuid) {
         try {
-            return getDTOmaster().Mapping().getMaxCoverage(uuid);
+            return dtomaster.Mapping().getMaxCoverage(uuid);
         } catch (MGXServerException ex) {
             Exceptions.printStackTrace(ex);
         }
         return -1;
     }
 
-    public Iterator<MappedSequence> byReferenceInterval(UUID uuid, int from, int to) {
+    @Override
+    public Iterator<MappedSequenceI> byReferenceInterval(UUID uuid, int from, int to) {
         try {
-            Iterator<MappedSequenceDTO> mapped = getDTOmaster().Mapping().byReferenceInterval(uuid, from, to);
-            return new BaseIterator<MappedSequenceDTO, MappedSequence>(mapped) {
+            Iterator<MappedSequenceDTO> mapped = dtomaster.Mapping().byReferenceInterval(uuid, from, to);
+            return new BaseIterator<MappedSequenceDTO, MappedSequenceI>(mapped) {
                 @Override
-                public MappedSequence next() {
-                    MappedSequence ms = MappedSequenceDTOFactory.getInstance().toModel(iter.next());
+                public MappedSequenceI next() {
+                    MappedSequenceI ms = MappedSequenceDTOFactory.getInstance().toModel(master, iter.next());
                     return ms;
                 }
             };

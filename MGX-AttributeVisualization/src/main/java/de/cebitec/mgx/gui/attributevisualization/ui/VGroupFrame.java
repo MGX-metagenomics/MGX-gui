@@ -4,10 +4,8 @@
  */
 package de.cebitec.mgx.gui.attributevisualization.ui;
 
-import de.cebitec.mgx.gui.controller.MGXMaster;
-import de.cebitec.mgx.gui.datamodel.SeqRun;
-import de.cebitec.mgx.gui.groups.VGroupManager;
-import de.cebitec.mgx.gui.groups.VisualizationGroup;
+import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.nodefactory.VisualizationGroupNodeFactory;
 import de.cebitec.mgx.gui.nodes.SeqRunNode;
 import java.awt.BorderLayout;
@@ -48,7 +46,7 @@ import org.openide.util.datatransfer.MultiTransferObject;
  */
 public class VGroupFrame extends javax.swing.JPanel implements ExplorerManager.Provider, ItemListener, ActionListener, DocumentListener, PropertyChangeListener {
 
-    private final VisualizationGroup vGroup;
+    private final VisualizationGroupI vGroup;
     private ExplorerManager exmngr = new ExplorerManager();
     private VisualizationGroupNodeFactory vgnf;
     private MyListView listView;
@@ -56,7 +54,7 @@ public class VGroupFrame extends javax.swing.JPanel implements ExplorerManager.P
     /**
      * Creates new form VGroupFrame
      */
-    public VGroupFrame(VisualizationGroup group) {
+    public VGroupFrame(VisualizationGroupI group) {
         initComponents();
         vGroup = group;
         vGroup.addPropertyChangeListener(this);
@@ -84,7 +82,7 @@ public class VGroupFrame extends javax.swing.JPanel implements ExplorerManager.P
         setVisible(true);
     }
 
-    public VisualizationGroup getGroup() {
+    public VisualizationGroupI getGroup() {
         return vGroup;
     }
 
@@ -194,7 +192,7 @@ public class VGroupFrame extends javax.swing.JPanel implements ExplorerManager.P
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        if (VisualizationGroup.VISGROUP_CHANGED.equals(evt.getPropertyName())) {
+        if (VisualizationGroupI.VISGROUP_CHANGED.equals(evt.getPropertyName())) {
             setTitle(vGroup.getName() + " (" + vGroup.getNumSequences() + " sequences)");
         }
     }
@@ -236,10 +234,10 @@ public class VGroupFrame extends javax.swing.JPanel implements ExplorerManager.P
                     if (t.isDataFlavorSupported(ExTransferable.multiFlavor)) {
                         try {
                             final MultiTransferObject mto = (MultiTransferObject) t.getTransferData(ExTransferable.multiFlavor);
-                            if (mto.areDataFlavorsSupported(new DataFlavor[]{SeqRun.DATA_FLAVOR})) {
+                            if (mto.areDataFlavorsSupported(new DataFlavor[]{SeqRunI.DATA_FLAVOR})) {
                                 int elems = mto.getCount();
                                 for (int i = 0; i < elems; i++) {
-                                    SeqRun run = (SeqRun) mto.getTransferData(i, SeqRun.DATA_FLAVOR);
+                                    SeqRunI run = (SeqRunI) mto.getTransferData(i, SeqRunI.DATA_FLAVOR);
                                     if (vGroup.getSeqRuns().contains(run)) {
                                         dtde.rejectDrag();
                                         return;
@@ -252,9 +250,9 @@ public class VGroupFrame extends javax.swing.JPanel implements ExplorerManager.P
                         }
                     }
 
-                    if (dtde.isDataFlavorSupported(SeqRun.DATA_FLAVOR)) {
+                    if (dtde.isDataFlavorSupported(SeqRunI.DATA_FLAVOR)) {
                         try {
-                            SeqRun run = (SeqRun) dtde.getTransferable().getTransferData(SeqRun.DATA_FLAVOR);
+                            SeqRunI run = (SeqRunI) dtde.getTransferable().getTransferData(SeqRunI.DATA_FLAVOR);
                             if (run != null && !vGroup.getSeqRuns().contains(run)) {
                                 dtde.acceptDrag(DnDConstants.ACTION_COPY);
                                 return;
@@ -272,18 +270,18 @@ public class VGroupFrame extends javax.swing.JPanel implements ExplorerManager.P
                     if (t.isDataFlavorSupported(ExTransferable.multiFlavor)) {
                         try {
                             final MultiTransferObject mto = (MultiTransferObject) t.getTransferData(ExTransferable.multiFlavor);
-                            if (mto.areDataFlavorsSupported(new DataFlavor[]{SeqRun.DATA_FLAVOR})) {
+                            if (mto.areDataFlavorsSupported(new DataFlavor[]{SeqRunI.DATA_FLAVOR})) {
                                 int elems = mto.getCount();
                                 for (int i = 0; i < elems; i++) {
-                                    SeqRun run = (SeqRun) mto.getTransferData(i, SeqRun.DATA_FLAVOR);
+                                    SeqRunI run = (SeqRunI) mto.getTransferData(i, SeqRunI.DATA_FLAVOR);
                                     if (vGroup.getSeqRuns().contains(run)) {
                                         dtde.rejectDrop();
                                         return;
                                     }
                                 }
                                 for (int i = 0; i < elems; i++) {
-                                    SeqRun run = (SeqRun) mto.getTransferData(i, SeqRun.DATA_FLAVOR);
-                                    SeqRunNode srn = new SeqRunNode((MGXMaster) run.getMaster(), run, Children.LEAF);
+                                    SeqRunI run = (SeqRunI) mto.getTransferData(i, SeqRunI.DATA_FLAVOR);
+                                    SeqRunNode srn = new SeqRunNode(run.getMaster(), run, Children.LEAF);
                                     vgnf.addNode(srn);
                                 }
                                 dtde.dropComplete(true);
@@ -293,11 +291,11 @@ public class VGroupFrame extends javax.swing.JPanel implements ExplorerManager.P
                         }
                     }
 
-                    if (dtde.isDataFlavorSupported(SeqRun.DATA_FLAVOR)) {
+                    if (dtde.isDataFlavorSupported(SeqRunI.DATA_FLAVOR)) {
                         try {
-                            SeqRun run = (SeqRun) dtde.getTransferable().getTransferData(SeqRun.DATA_FLAVOR);
+                            SeqRunI run = (SeqRunI) dtde.getTransferable().getTransferData(SeqRunI.DATA_FLAVOR);
                             if (run != null && !vGroup.getSeqRuns().contains(run)) {
-                                SeqRunNode srn = new SeqRunNode((MGXMaster) run.getMaster(), run, Children.LEAF);
+                                SeqRunNode srn = new SeqRunNode(run.getMaster(), run, Children.LEAF);
                                 vgnf.addNode(srn);
                                 dtde.dropComplete(true);
                                 return;

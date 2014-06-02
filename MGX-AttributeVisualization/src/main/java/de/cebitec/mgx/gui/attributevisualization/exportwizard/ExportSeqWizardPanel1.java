@@ -1,7 +1,7 @@
 package de.cebitec.mgx.gui.attributevisualization.exportwizard;
 
-import de.cebitec.mgx.gui.datamodel.Attribute;
-import de.cebitec.mgx.gui.datamodel.misc.Distribution;
+import de.cebitec.mgx.api.misc.DistributionI;
+import de.cebitec.mgx.api.model.AttributeI;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Set;
@@ -42,11 +42,11 @@ public class ExportSeqWizardPanel1 implements WizardDescriptor.Panel<WizardDescr
         return getSelectedAttributes().size() > 0;
     }
 
-    public void setDistribution(Distribution d) {
+    public void setDistribution(DistributionI d) {
         getComponent().setDistribution(d);
     }
 
-    public Set<Attribute> getSelectedAttributes() {
+    public Set<AttributeI> getSelectedAttributes() {
         return getComponent().getSelectedAttributes();
     }
 

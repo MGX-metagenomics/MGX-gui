@@ -1,7 +1,20 @@
 package de.cebitec.mgx.gui.controller;
 
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.access.AttributeAccessI;
+import de.cebitec.mgx.api.misc.DistributionI;
+import de.cebitec.mgx.api.misc.SearchRequestI;
+import de.cebitec.mgx.api.misc.TaskI;
+import de.cebitec.mgx.api.model.AttributeI;
+import de.cebitec.mgx.api.model.AttributeTypeI;
+import de.cebitec.mgx.api.model.JobI;
+import de.cebitec.mgx.api.model.SeqRunI;
+import de.cebitec.mgx.api.model.SequenceI;
+import de.cebitec.mgx.api.model.tree.TreeI;
+import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
+import de.cebitec.mgx.common.TreeFactory;
 import de.cebitec.mgx.dto.dto.AttributeCorrelation;
 import de.cebitec.mgx.dto.dto.AttributeCount;
 import de.cebitec.mgx.dto.dto.AttributeDTO;
@@ -9,14 +22,9 @@ import de.cebitec.mgx.dto.dto.AttributeDistribution;
 import de.cebitec.mgx.dto.dto.AttributeTypeDTO;
 import de.cebitec.mgx.dto.dto.SearchRequestDTO;
 import de.cebitec.mgx.dto.dto.SequenceDTO;
-import de.cebitec.mgx.gui.datamodel.*;
 import de.cebitec.mgx.gui.datamodel.misc.Distribution;
 import de.cebitec.mgx.gui.datamodel.misc.Matrix;
 import de.cebitec.mgx.gui.datamodel.misc.SearchRequest;
-import de.cebitec.mgx.gui.datamodel.misc.Task;
-import de.cebitec.mgx.gui.datamodel.tree.Checker;
-import de.cebitec.mgx.gui.datamodel.tree.Tree;
-import de.cebitec.mgx.gui.datamodel.tree.TreeFactory;
 import de.cebitec.mgx.gui.dtoconversion.AttributeDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.AttributeTypeDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.MatrixDTOFactory;
@@ -27,7 +35,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.openide.util.Exceptions;
@@ -36,17 +43,25 @@ import org.openide.util.Exceptions;
  *
  * @author sjaenick
  */
-public class AttributeAccess extends AccessBase<Attribute> {
+public class AttributeAccess implements AttributeAccessI {
 
-    public Iterator<Attribute> BySeqRun(final long seqrun_id) {
+    private final MGXDTOMaster dtomaster;
+    private final MGXMasterI master;
+
+    public AttributeAccess(MGXDTOMaster dtomaster, MGXMasterI master) {
+        this.dtomaster = dtomaster;
+        this.master = master;
+    }
+
+    @Override
+    public Iterator<AttributeI> BySeqRun(final long seqrun_id) {
         try {
-            Iterator<AttributeDTO> BySeqRun = getDTOmaster().Attribute().BySeqRun(seqrun_id);
+            Iterator<AttributeDTO> BySeqRun = dtomaster.Attribute().BySeqRun(seqrun_id);
 
-            return new BaseIterator<AttributeDTO, Attribute>(BySeqRun) {
+            return new BaseIterator<AttributeDTO, AttributeI>(BySeqRun) {
                 @Override
-                public Attribute next() {
-                    Attribute attr = AttributeDTOFactory.getInstance().toModel(iter.next());
-                    attr.setMaster(getMaster());
+                public AttributeI next() {
+                    AttributeI attr = AttributeDTOFactory.getInstance().toModel(master, iter.next());
                     return attr;
                 }
             };
@@ -97,24 +112,24 @@ public class AttributeAccess extends AccessBase<Attribute> {
 //        }
 //        return res;
 //    }
-    public Distribution getDistribution(long attrType_id, long job_id) {
-        Map<Attribute, Long> res;
+    @Override
+    public DistributionI getDistribution(long attrType_id, long job_id) {
+        Map<AttributeI, Long> res;
         long total = 0;
         try {
-            AttributeDistribution distribution = getDTOmaster().Attribute().getDistribution(attrType_id, job_id);
+            AttributeDistribution distribution = dtomaster.Attribute().getDistribution(attrType_id, job_id);
             res = new HashMap<>(distribution.getAttributeCountsCount());
-            
+
             // convert and save types first
-            Map<Long, AttributeType> types = new HashMap<>(distribution.getAttributeTypeCount());
+            Map<Long, AttributeTypeI> types = new HashMap<>(distribution.getAttributeTypeCount());
             for (AttributeTypeDTO at : distribution.getAttributeTypeList()) {
-                types.put(at.getId(), AttributeTypeDTOFactory.getInstance().toModel(at));
+                types.put(at.getId(), AttributeTypeDTOFactory.getInstance().toModel(master, at));
             }
 
             // convert attribute and fill in the attributetypes
             for (AttributeCount ac : distribution.getAttributeCountsList()) {
-                Attribute attr = AttributeDTOFactory.getInstance().toModel(ac.getAttribute());
+                AttributeI attr = AttributeDTOFactory.getInstance().toModel(master, ac.getAttribute());
                 attr.setAttributeType(types.get(ac.getAttribute().getAttributeTypeId()));
-                attr.setMaster(this.getMaster());
                 total += ac.getCount();
                 res.put(attr, ac.getCount());
             }
@@ -122,22 +137,22 @@ public class AttributeAccess extends AccessBase<Attribute> {
             Logger.getLogger(AttributeAccess.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
-        return new Distribution(res, total, getMaster());
+        return new Distribution(res, total, master);
     }
 
     @Override
-    public long create(Attribute obj) {
+    public long create(AttributeI obj) {
         throw new UnsupportedOperationException("Not supported.");
     }
 
     @Override
-    public Attribute fetch(long id) {
-        Attribute ret = null;
+    public AttributeI fetch(long id) {
+        AttributeI ret = null;
         try {
-            AttributeDTO dto = getDTOmaster().Attribute().fetch(id);
-            ret = AttributeDTOFactory.getInstance().toModel(dto);
-            AttributeTypeDTO aType = getDTOmaster().AttributeType().fetch(dto.getAttributeTypeId());
-            ret.setAttributeType(AttributeTypeDTOFactory.getInstance().toModel(aType));
+            AttributeDTO dto = dtomaster.Attribute().fetch(id);
+            ret = AttributeDTOFactory.getInstance().toModel(master, dto);
+            AttributeTypeDTO aType = dtomaster.AttributeType().fetch(dto.getAttributeTypeId());
+            ret.setAttributeType(AttributeTypeDTOFactory.getInstance().toModel(master, aType));
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
@@ -145,81 +160,79 @@ public class AttributeAccess extends AccessBase<Attribute> {
     }
 
     @Override
-    public Iterator<Attribute> fetchall() {
+    public Iterator<AttributeI> fetchall() {
         throw new UnsupportedOperationException("Not supported.");
     }
 
     @Override
-    public void update(Attribute obj) {
+    public void update(AttributeI obj) {
         throw new UnsupportedOperationException("Not supported.");
     }
 
     @Override
-    public Task delete(Attribute obj) {
+    public TaskI delete(AttributeI obj) {
         throw new UnsupportedOperationException("Not supported.");
     }
 
-    public Matrix getCorrelation(AttributeType attributeType1, Job job1, AttributeType attributeType2, Job job2) {
+    public Matrix getCorrelation(AttributeTypeI attributeType1, JobI job1, AttributeTypeI attributeType2, JobI job2) {
         try {
-            AttributeCorrelation corr = getDTOmaster().Attribute().getCorrelation(attributeType1.getId(), job1.getId(), attributeType2.getId(), job2.getId());
-            return MatrixDTOFactory.getInstance().toModel(corr);
+            AttributeCorrelation corr = dtomaster.Attribute().getCorrelation(attributeType1.getId(), job1.getId(), attributeType2.getId(), job2.getId());
+            return MatrixDTOFactory.getInstance().toModel(master, corr);
         } catch (MGXServerException ex) {
             Exceptions.printStackTrace(ex);
         }
         return null;
     }
 
-    public Tree<Long> getHierarchy(long attrType_id, long job_id) {
-        Map<Attribute, Long> res;
+    @Override
+    public TreeI<Long> getHierarchy(long attrType_id, long job_id) {
+        Map<AttributeI, Long> res;
         try {
-            AttributeDistribution distribution = getDTOmaster().Attribute().getHierarchy(attrType_id, job_id);
+            AttributeDistribution distribution = dtomaster.Attribute().getHierarchy(attrType_id, job_id);
             res = new HashMap<>(distribution.getAttributeTypeCount());
-            
-            // convert and save types first
-            Map<Long, AttributeType> types = new HashMap<>();
-            for (AttributeTypeDTO at : distribution.getAttributeTypeList()) {
-                types.put(at.getId(), AttributeTypeDTOFactory.getInstance().toModel(at));
-            }
 
+            // convert and save types first
+            Map<Long, AttributeTypeI> types = new HashMap<>();
+            for (AttributeTypeDTO at : distribution.getAttributeTypeList()) {
+                types.put(at.getId(), AttributeTypeDTOFactory.getInstance().toModel(master, at));
+            }
 
             // convert attribute and fill in the attributetypes
             for (AttributeCount ac : distribution.getAttributeCountsList()) {
-                Attribute attr = AttributeDTOFactory.getInstance().toModel(ac.getAttribute());
+                AttributeI attr = AttributeDTOFactory.getInstance().toModel(master, ac.getAttribute());
                 attr.setAttributeType(types.get(ac.getAttribute().getAttributeTypeId()));
-                attr.setMaster(getMaster());
                 assert !res.containsKey(attr); // no duplicates allowed
                 res.put(attr, ac.getCount());
             }
-
 
         } catch (MGXServerException ex) {
             Logger.getLogger(AttributeAccess.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
 
-        Tree<Long> ret = TreeFactory.createTree(res);
+        TreeI<Long> ret = TreeFactory.createTree(res);
         return ret;
     }
 
-    public Sequence[] search(SeqRun[] selectedSeqRuns, String text, boolean exact) {
-        SearchRequest sr = new SearchRequest();
-        sr.setTerm(text);
+    @Override
+    public SequenceI[] search(String term, boolean exact, SeqRunI[] targets) {
+        SearchRequestI sr = new SearchRequest();
+        sr.setTerm(term);
         sr.setExact(exact);
-        sr.setRuns(selectedSeqRuns);
+        sr.setRuns(targets);
         SearchRequestDTO reqdto = SearchRequestDTOFactory.getInstance().toDTO(sr);
 
         List<SequenceDTO> searchResult = null;
         try {
-            searchResult = getDTOmaster().Attribute().search(reqdto);
+            searchResult = dtomaster.Attribute().search(reqdto);
         } catch (MGXServerException ex) {
             Exceptions.printStackTrace(ex);
         }
 
-        Sequence[] ret = new Sequence[searchResult.size()];
+        SequenceI[] ret = new SequenceI[searchResult.size()];
         int i = 0;
         for (SequenceDTO dto : searchResult) {
-            Sequence seq = SequenceDTOFactory.getInstance().toModel(dto);
-            seq.setMaster(getMaster());
+            SequenceI seq = SequenceDTOFactory.getInstance().toModel(master, dto);
             ret[i++] = seq;
         }
 
