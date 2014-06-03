@@ -4,7 +4,6 @@ import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.model.MGXFileI;
 import de.cebitec.mgx.gui.controller.RBAC;
-import de.cebitec.mgx.gui.datamodel.MGXFile;
 import de.cebitec.mgx.gui.swingutils.NonEDT;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
@@ -26,7 +25,7 @@ public class DeleteFileOrDirectory extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        final MGXFile file = Utilities.actionsGlobalContext().lookup(MGXFile.class);
+        final MGXFileI file = Utilities.actionsGlobalContext().lookup(MGXFileI.class);
         final MGXMasterI master = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
         NotifyDescriptor d = new NotifyDescriptor("Really delete " + file.getName() + "?",
                 "Delete file/directory",

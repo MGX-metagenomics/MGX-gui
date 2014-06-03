@@ -52,7 +52,7 @@ public class UploadFile extends AbstractAction {
 
         final File localFile = fchooser.getSelectedFile();
 
-        MGXMasterI master = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
+        final MGXMasterI master = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
         final MGXFileI targetDir = Utilities.actionsGlobalContext().lookup(MGXFileI.class);
         final UploadBaseI uploader;
         try {

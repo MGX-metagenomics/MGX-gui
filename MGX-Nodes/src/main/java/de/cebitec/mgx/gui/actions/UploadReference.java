@@ -36,7 +36,7 @@ public class UploadReference extends AbstractAction {
             return;
         }
         File localFile = new File(fName);
-        MGXMasterI master = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
+        final MGXMasterI master = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
         final UploadBaseI uploader = master.Reference().createUploader(localFile);
 
         final MGXTask run = new MGXTask("Upload " + fName) {

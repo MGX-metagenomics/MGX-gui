@@ -92,7 +92,7 @@ public class CreateDirectory extends AbstractAction {
 
     @Override
     public boolean isEnabled() {
-        MGXFile currentDir = Utilities.actionsGlobalContext().lookup(MGXFile.class);
+        MGXFileI currentDir = Utilities.actionsGlobalContext().lookup(MGXFileI.class);
         return (super.isEnabled() && currentDir.isDirectory() && RBAC.isUser());
     }
 }
