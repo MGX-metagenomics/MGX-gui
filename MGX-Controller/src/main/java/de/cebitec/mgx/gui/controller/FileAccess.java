@@ -3,6 +3,8 @@ package de.cebitec.mgx.gui.controller;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.FileAccessI;
 import de.cebitec.mgx.api.access.datatransfer.DownloadBaseI;
+import de.cebitec.mgx.api.access.datatransfer.UploadBaseI;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.model.MGXFileI;
 import de.cebitec.mgx.client.MGXDTOMaster;
@@ -39,13 +41,14 @@ public class FileAccess implements FileAccessI {
         return master;
     }
 
-    public boolean createDirectory(MGXFileI newObj) throws MGXServerException, MGXClientException {
+    @Override
+    public boolean createDirectory(MGXFileI newObj) throws MGXException {
         FileDTO dto = FileDTOFactory.getInstance().toDTO(newObj);
         try {
             return 1 == dtomaster.File().create(dto);
         } catch (MGXServerException | MGXClientException ex) {
             if (ex.getMessage().trim().endsWith("already exists.")) {
-                throw ex; // rethrow
+                throw new MGXException(ex);
             }
             Exceptions.printStackTrace(ex);
             return false;
@@ -87,18 +90,30 @@ public class FileAccess implements FileAccessI {
         return fetchall(MGXFileI.getRoot(getMaster()));
     }
 
-    public FileUploader createUploader(File localFile, MGXFileI targetDir, String targetName) throws MGXClientException {
+    @Override
+    public UploadBaseI createUploader(File localFile, MGXFileI targetDir, String targetName) throws MGXException {
         assert targetDir.isDirectory();
         if (targetName.contains("/")) {
             assert false;
         }
         String fullPath = targetDir.getFullPath() + MGXFileI.separator + targetName;
         try {
-            return dtomaster.File().createUploader(localFile, fullPath);
+            final FileUploader up = dtomaster.File().createUploader(localFile, fullPath);
+            return new UploadBaseI() {
+
+                @Override
+                public boolean upload() {
+                    return up.upload();
+                }
+
+                @Override
+                public long getNumElementsSent() {
+                    return up.getProgress();
+                }
+            };
         } catch (MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
-        return null;
     }
 
     @Override
