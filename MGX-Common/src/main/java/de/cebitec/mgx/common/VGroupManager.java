@@ -207,7 +207,7 @@ public class VGroupManager implements VGroupManagerI {
     @Override
     public void setSelectedGroup(VisualizationGroupI group) {
         selectedGroup = group;
-        firePropertyChange(VISGROUP_SELECTION_CHANGED, null, selectedGroup);
+        firePropertyChange(VISGROUP_SELECTION_CHANGED, 0, selectedGroup);
     }
     
     @Override
