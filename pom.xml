@@ -266,6 +266,11 @@
                 <artifactId>KEGG-Pathways</artifactId>
                 <version>1.0-SNAPSHOT</version>
             </dependency>
+            <dependency>
+                <artifactId>BioJava-OSGi</artifactId>
+                <groupId>de.cebitec.mgx</groupId>
+                <version>1.0-SNAPSHOT</version>
+            </dependency>
             <!-- own NBP components -->
             <dependency>
                 <groupId>${project.groupId}</groupId>
