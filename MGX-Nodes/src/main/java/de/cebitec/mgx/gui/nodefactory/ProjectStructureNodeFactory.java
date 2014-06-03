@@ -1,7 +1,7 @@
 package de.cebitec.mgx.gui.nodefactory;
 
 import de.cebitec.mgx.api.MGXMasterI;
-import de.cebitec.mgx.gui.datamodel.MGXFile;
+import de.cebitec.mgx.api.model.MGXFileI;
 import de.cebitec.mgx.gui.nodes.ProjectDataNode;
 import de.cebitec.mgx.gui.nodes.ProjectFilesNode;
 import de.cebitec.mgx.gui.nodes.ProjectReferencesNode;
@@ -27,7 +27,7 @@ public class ProjectStructureNodeFactory extends ChildFactory<String> {
         //
         //ProjectDataNode data = new ProjectDataNode(Children.create(new HabitatNodeFactory(master), true), Lookups.singleton(master));
         ProjectDataNode data = new ProjectDataNode(master);
-        ProjectFilesNode files = new ProjectFilesNode(master, MGXFile.getRoot(master));
+        ProjectFilesNode files = new ProjectFilesNode(master, MGXFileI.getRoot(master));
         ProjectReferencesNode refs = new ProjectReferencesNode(master);
         //ProjectAnalysisTasksNode tasks = new ProjectAnalysisTasksNode(master); // FIXME implement this
 

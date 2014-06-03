@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.nodefactory;
 
 import de.cebitec.gpms.core.MembershipI;
 import de.cebitec.gpms.rest.GPMSClientI;
+import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.nodes.ProjectNode;
@@ -42,7 +43,7 @@ public class ProjectNodeFactory extends ChildFactory<MembershipI> implements Nod
     @Override
     protected Node createNodeForKey(MembershipI m) {
         MGXDTOMaster dtomaster = new MGXDTOMaster(gpms, m);
-        MGXMaster master = new MGXMaster(dtomaster);
+        MGXMasterI master = new MGXMaster(dtomaster);
         ProjectNode node = new ProjectNode(master, m); 
         node.addNodeListener(this);
         return node;

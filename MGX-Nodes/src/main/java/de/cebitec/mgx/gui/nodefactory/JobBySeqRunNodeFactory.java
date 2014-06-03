@@ -4,7 +4,6 @@ import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.ToolI;
-import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.nodes.JobNode;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -49,7 +48,7 @@ public class JobBySeqRunNodeFactory extends JobNodeFactory {
 
     @Override
     protected Node createNodeForKey(JobI key) {
-        JobNode node = new JobNode((MGXMaster) key.getMaster(), key, Children.LEAF);
+        JobNode node = new JobNode(key.getMaster(), key, Children.LEAF);
         node.addNodeListener(this);
         return node;
     }

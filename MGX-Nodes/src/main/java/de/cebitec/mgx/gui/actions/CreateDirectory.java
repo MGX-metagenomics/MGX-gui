@@ -1,7 +1,8 @@
 package de.cebitec.mgx.gui.actions;
 
-import de.cebitec.mgx.client.exception.MGXServerException;
-import de.cebitec.mgx.gui.controller.MGXMaster;
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.model.MGXFileI;
 import de.cebitec.mgx.gui.controller.RBAC;
 import de.cebitec.mgx.gui.datamodel.MGXFile;
 import de.cebitec.mgx.gui.nodefactory.FileNodeFactory;
@@ -31,15 +32,15 @@ public class CreateDirectory extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        final MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
-        MGXFile currentDir = Utilities.actionsGlobalContext().lookup(MGXFile.class);
+        final MGXMasterI m = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
+        MGXFileI currentDir = Utilities.actionsGlobalContext().lookup(MGXFile.class);
         assert currentDir.isDirectory();
         NotifyDescriptor.InputLine nd = new NotifyDescriptor.InputLine("Directory name:", "Choose directory name");
         if (NotifyDescriptor.OK_OPTION.equals(DialogDisplayer.getDefault().notify(nd))) {
             String dirName = nd.getInputText().trim();
             if (!dirName.isEmpty()) {
-                String targetPath = currentDir.getFullPath() + MGXFile.separator + dirName;
-                final MGXFile newDir = new MGXFile(m, targetPath, true, 0);
+                String targetPath = currentDir.getFullPath() + MGXFileI.separator + dirName;
+                final MGXFileI newDir = new MGXFile(m, targetPath, true, 0);
                 newDir.setParent(currentDir);
 
                 SwingWorker<Boolean, String> sw = new SwingWorker<Boolean, String>() {
@@ -47,7 +48,7 @@ public class CreateDirectory extends AbstractAction {
                     protected Boolean doInBackground() throws Exception {
                         try {
                             return m.File().createDirectory(newDir);
-                        } catch (MGXServerException ex) {
+                        } catch (MGXException ex) {
                             if (ex.getMessage().endsWith("already exists.")) {
                                 publish(ex.getMessage());
                             }

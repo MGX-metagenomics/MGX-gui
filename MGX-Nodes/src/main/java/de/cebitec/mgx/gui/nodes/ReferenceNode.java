@@ -4,10 +4,7 @@ import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.gui.actions.OpenMappingByReference;
-import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.controller.RBAC;
-import de.cebitec.mgx.gui.datamodel.Reference;
-import de.cebitec.mgx.gui.datamodel.misc.Task;
 import de.cebitec.mgx.gui.swingutils.NonEDT;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
@@ -72,7 +69,7 @@ public class ReferenceNode extends MGXNodeBase<MGXReferenceI, ReferenceNode> {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            final Reference ref = getLookup().lookup(Reference.class);
+            final MGXReferenceI ref = getLookup().lookup(MGXReferenceI.class);
             NotifyDescriptor d = new NotifyDescriptor("Really delete reference " + ref.getName() + "?",
                     "Delete reference",
                     NotifyDescriptor.YES_NO_OPTION,
@@ -85,7 +82,7 @@ public class ReferenceNode extends MGXNodeBase<MGXReferenceI, ReferenceNode> {
                     @Override
                     public boolean process() {
                         setStatus("Deleting..");
-                        MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
+                        MGXMasterI m = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
                         TaskI task = m.Reference().delete(ref);
                         while (!task.done()) {
                             setStatus(task.getStatusMessage());
@@ -93,7 +90,7 @@ public class ReferenceNode extends MGXNodeBase<MGXReferenceI, ReferenceNode> {
                             sleep();
                         }
                         task.finish();
-                        return task.getState() == Task.State.FINISHED;
+                        return task.getState() == TaskI.State.FINISHED;
                     }
                 };
 

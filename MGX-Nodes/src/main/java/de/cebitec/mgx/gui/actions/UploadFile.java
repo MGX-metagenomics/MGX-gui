@@ -1,11 +1,10 @@
 package de.cebitec.mgx.gui.actions;
 
-import de.cebitec.mgx.client.datatransfer.FileUploader;
-import de.cebitec.mgx.client.datatransfer.UploadBase;
-import de.cebitec.mgx.client.exception.MGXClientException;
-import de.cebitec.mgx.gui.controller.MGXMaster;
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.access.datatransfer.UploadBaseI;
+import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.model.MGXFileI;
 import de.cebitec.mgx.gui.controller.RBAC;
-import de.cebitec.mgx.gui.datamodel.MGXFile;
 import de.cebitec.mgx.gui.nodefactory.FileNodeFactory;
 import de.cebitec.mgx.gui.swingutils.NonEDT;
 import de.cebitec.mgx.gui.taskview.MGXTask;
@@ -51,11 +50,11 @@ public class UploadFile extends AbstractAction {
 
         NbPreferences.forModule(JFileChooser.class).put("lastDirectory", fchooser.getCurrentDirectory().getAbsolutePath());
 
-        File localFile = fchooser.getSelectedFile();
+        final File localFile = fchooser.getSelectedFile();
 
-        MGXMaster master = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
-        final MGXFile targetDir = Utilities.actionsGlobalContext().lookup(MGXFile.class);
-        final FileUploader uploader;
+        MGXMasterI master = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
+        final MGXFileI targetDir = Utilities.actionsGlobalContext().lookup(MGXFileI.class);
+        final UploadBaseI uploader;
         try {
             uploader = master.File().createUploader(localFile, targetDir, localFile.getName());
             final MGXTask upTask = new MGXTask("Upload " + fchooser.getSelectedFile().getName()) {
@@ -78,7 +77,7 @@ public class UploadFile extends AbstractAction {
 
                 @Override
                 public void propertyChange(PropertyChangeEvent pce) {
-                    if (pce.getPropertyName().equals(UploadBase.NUM_ELEMENTS_SENT)) {
+                    if (pce.getPropertyName().equals(UploadBaseI.NUM_ELEMENTS_SENT)) {
                         setStatus(String.format("%1$d bytes sent", pce.getNewValue()));
                     } else {
                         super.propertyChange(pce);
@@ -92,7 +91,8 @@ public class UploadFile extends AbstractAction {
 
                 @Override
                 public int getProgress() {
-                    return uploader.getProgress();
+                    float complete = 1.0f * uploader.getNumElementsSent() / localFile.length();
+                    return Math.round(100 * complete);
                 }
             };
             uploader.addPropertyChangeListener(upTask);
@@ -103,7 +103,7 @@ public class UploadFile extends AbstractAction {
                     TaskManager.getInstance().addTask(upTask);
                 }
             });
-        } catch (MGXClientException ex) {
+        } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);
         }
 
