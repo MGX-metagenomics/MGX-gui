@@ -66,6 +66,7 @@ public class MappingAccess extends MappingAccessI {
         return null;
     }
 
+    @Override
     public Iterator<MappingI> BySeqRun(long runid) {
         try {
             Iterator<MappingDTO> fetchall = dtomaster.Mapping().BySeqRun(runid);
@@ -82,6 +83,7 @@ public class MappingAccess extends MappingAccessI {
         return null;
     }
 
+    @Override
     public Iterator<MappingI> ByReference(long refId) {
         try {
             Iterator<MappingDTO> fetchall = dtomaster.Mapping().ByReference(refId);
@@ -134,6 +136,7 @@ public class MappingAccess extends MappingAccessI {
         }
     }
     
+    @Override
     public long getMaxCoverage(UUID uuid) {
         try {
             return dtomaster.Mapping().getMaxCoverage(uuid);

@@ -79,7 +79,7 @@ public class HabitatAccess extends AccessBase<HabitatI> {
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
-        obj.firePropertyChange(ModelBase.OBJECT_MODIFIED, null, obj);
+        obj.modified();
     }
 
     @Override

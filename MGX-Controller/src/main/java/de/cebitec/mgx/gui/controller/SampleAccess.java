@@ -80,7 +80,7 @@ public class SampleAccess extends AccessBase<SampleI> implements SampleAccessI {
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
-        obj.firePropertyChange(ModelBase.OBJECT_MODIFIED, null, obj);
+        obj.modified();
     }
 
     @Override
