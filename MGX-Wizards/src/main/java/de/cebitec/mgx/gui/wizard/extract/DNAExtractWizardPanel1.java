@@ -121,11 +121,11 @@ public class DNAExtractWizardPanel1 implements WizardDescriptor.Panel<WizardDesc
             model.getNotificationLineSupport().setErrorMessage("Please enter extract name.");
             isValid = false;
         }
-        boolean alreadyExists = checkDuplicate(c.getExtractName());
-        if (alreadyExists) {
-            model.getNotificationLineSupport().setErrorMessage("DNA Extract with same name already exists.");
-            isValid = false;
-        } 
+//        boolean alreadyExists = checkDuplicate(c.getExtractName());
+//        if (alreadyExists) {
+//            model.getNotificationLineSupport().setErrorMessage("DNA Extract with same name already exists.");
+//            isValid = false;
+//        } 
         
         if (isValid) {
             model.getNotificationLineSupport().clearMessages();

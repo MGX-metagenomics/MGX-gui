@@ -3,7 +3,6 @@ package de.cebitec.mgx.gui.wizard.extract;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.DNAExtractI;
 import de.cebitec.mgx.gui.datamodel.DNAExtract;
-import de.cebitec.mgx.gui.wizard.seqrun.SeqRunWizardDescriptor;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
