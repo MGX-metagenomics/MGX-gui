@@ -64,8 +64,8 @@
             <artifactId>org-netbeans-api-progress</artifactId>
         </dependency>
         <dependency>
-            <artifactId>MGX-parallelPropChange</artifactId>
             <groupId>de.cebitec.mgx</groupId>
+            <artifactId>MGX-parallelPropChange</artifactId>
         </dependency>
     </dependencies>
 

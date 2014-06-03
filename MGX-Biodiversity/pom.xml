@@ -60,8 +60,8 @@
             <artifactId>org-netbeans-modules-settings</artifactId>
         </dependency>
         <dependency>
-            <artifactId>MGX-API</artifactId>
             <groupId>de.cebitec.mgx</groupId>
+            <artifactId>MGX-API</artifactId>
         </dependency>
     </dependencies>
 

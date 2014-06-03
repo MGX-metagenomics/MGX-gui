@@ -68,8 +68,8 @@
             <groupId>de.cebitec.mgx</groupId>
         </dependency>
         <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>MGX-Controller</artifactId>
-            <groupId>de.cebitec.mgx.gui</groupId>
         </dependency>
     </dependencies>
 

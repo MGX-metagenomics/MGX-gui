@@ -42,23 +42,22 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>MGX-Jzy3D-Wrapper</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>de.cebitec.mgx.gui</groupId>
             <artifactId>MGX-AttributeVisualization</artifactId>
         </dependency>
         <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>MGX-Datamodel</artifactId>
-            <groupId>de.cebitec.mgx.gui</groupId>
         </dependency>
         <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>MGX-Controller</artifactId>
-            <groupId>de.cebitec.mgx.gui</groupId>
         </dependency>
         <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>MGX-JOGL-Wrapper</artifactId>
-            <groupId>de.cebitec.mgx.gui</groupId>
         </dependency>
     </dependencies>
 

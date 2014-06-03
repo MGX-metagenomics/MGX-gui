@@ -59,31 +59,17 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>MGX-Datamodel</artifactId>
         </dependency>
-        <!-- <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>SwingX-Wrapper</artifactId>
-        </dependency> -->
-<!--        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>SwingX-WS-Wrapper</artifactId>
-        </dependency>-->
         <dependency>
-            <groupId>de.cebitec.mgx.gui</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>MGX-SwingUtils</artifactId>
         </dependency>
         <dependency>
-            <groupId>de.cebitec.mgx.gui</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>MGX-MappingViewer</artifactId>
-            <version>1.0-SNAPSHOT</version>
         </dependency>
-<!--        <dependency>
-            <artifactId>swingx</artifactId>
-            <groupId>org.swinglabs</groupId>
-        </dependency>-->
         <dependency>
             <groupId>org.jdesktop.swingx</groupId>
             <artifactId>jxmapviewer2</artifactId>
-            <version>1.3.1</version>
         </dependency>
         <!-- <dependency>
             <groupId>org.jxmapviewer</groupId>
@@ -93,19 +79,14 @@
         <dependency>
             <groupId>de.cebitec.mgx</groupId>
             <artifactId>SwingX-OSGi</artifactId>
-            <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <artifactId>MGX-API</artifactId>
             <groupId>de.cebitec.mgx</groupId>
-            <type>jar</type>
-            <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>MGX-Controller</artifactId>
-            <groupId>de.cebitec.mgx.gui</groupId>
-            <type>jar</type>
-            <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

@@ -127,7 +127,6 @@
                     <useOSGiDependencies>true</useOSGiDependencies>
                     <publicPackages>
                         <publicPackage>de.cebitec.mgx.gui.controller</publicPackage>
-                        <publicPackage>de.cebitec.mgx.gui.groups</publicPackage>
                         <publicPackage>de.cebitec.mgx.gui.util</publicPackage>
                     </publicPackages>
                 </configuration>

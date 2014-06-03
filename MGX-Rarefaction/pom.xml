@@ -46,7 +46,6 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>JFreeChart-Wrapper</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <artifactId>MGX-SwingUtils</artifactId>

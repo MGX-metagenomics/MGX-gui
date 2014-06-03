@@ -63,7 +63,6 @@
         <dependency>
             <artifactId>GPMS-core-api</artifactId>
             <groupId>de.cebitec.gpms</groupId>
-            <version>1.0-RELEASE</version>
         </dependency>
         <dependency>
             <groupId>de.cebitec.mgx</groupId>

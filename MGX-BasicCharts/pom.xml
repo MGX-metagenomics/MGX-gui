@@ -56,11 +56,6 @@
             <artifactId>MGX-SwingUtils</artifactId>
             <version>${project.version}</version>
         </dependency>
-  <!--      <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-math3</artifactId>
-            <version>3.2</version>
-        </dependency> -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
