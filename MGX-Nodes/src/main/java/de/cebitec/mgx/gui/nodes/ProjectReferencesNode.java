@@ -2,13 +2,9 @@ package de.cebitec.mgx.gui.nodes;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
-import de.cebitec.mgx.api.model.Identifiable;
 import de.cebitec.mgx.api.model.MGXReferenceI;
-import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.gui.actions.UploadReference;
-import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.controller.RBAC;
-import de.cebitec.mgx.gui.datamodel.Reference;
 import de.cebitec.mgx.gui.nodefactory.ReferenceNodeFactory;
 import de.cebitec.mgx.gui.swingutils.NonEDT;
 import de.cebitec.mgx.gui.taskview.MGXTask;

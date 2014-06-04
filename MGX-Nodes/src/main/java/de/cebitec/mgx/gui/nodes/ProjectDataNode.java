@@ -2,9 +2,7 @@ package de.cebitec.mgx.gui.nodes;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.HabitatI;
-import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.controller.RBAC;
-import de.cebitec.mgx.gui.datamodel.Habitat;
 import de.cebitec.mgx.gui.nodefactory.HabitatNodeFactory;
 import de.cebitec.mgx.gui.wizard.habitat.HabitatWizardDescriptor;
 import java.awt.Dialog;
@@ -73,7 +71,7 @@ public class ProjectDataNode extends MGXNodeBase<MGXMasterI, ProjectDataNode> {
                 SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
                     @Override
                     protected Void doInBackground() throws Exception {
-                        MGXMaster m = Utilities.actionsGlobalContext().lookup(MGXMaster.class);
+                        MGXMasterI m = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
                         m.Habitat().create(h);
                         return null;
                     }
