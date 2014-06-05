@@ -170,6 +170,6 @@ public class TrackFactoryTest {
 //         took 162 ms for 2000000 mappings
 //         took 156 ms for 2000000 mappings
         
-        assertTrue("Slow layout!", start < 250);
+        assertTrue("Slow layout!", start < 1250);
     }
 }
