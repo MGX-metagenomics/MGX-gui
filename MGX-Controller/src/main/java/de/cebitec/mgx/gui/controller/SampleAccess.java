@@ -29,7 +29,7 @@ public class SampleAccess extends AccessBase<SampleI> implements SampleAccessI {
 
     
     @Override
-    public long create(SampleI obj) {
+    public SampleI create(SampleI obj) {
         SampleDTO dto = SampleDTOFactory.getInstance().toDTO(obj);
         long id = Identifiable.INVALID_IDENTIFIER;
         try {
@@ -38,7 +38,7 @@ public class SampleAccess extends AccessBase<SampleI> implements SampleAccessI {
             Exceptions.printStackTrace(ex);
         }
         obj.setId(id);
-        return id;
+        return obj;
     }
 
     @Override

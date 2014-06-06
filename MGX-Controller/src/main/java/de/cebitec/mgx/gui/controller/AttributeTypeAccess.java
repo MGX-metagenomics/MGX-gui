@@ -24,7 +24,7 @@ public class AttributeTypeAccess extends AccessBase<AttributeTypeI> {
     }
 
     @Override
-    public long create(AttributeTypeI obj) {
+    public AttributeTypeI create(AttributeTypeI obj) {
         throw new UnsupportedOperationException("Not supported.");
     }
 

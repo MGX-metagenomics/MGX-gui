@@ -28,7 +28,7 @@ public class HabitatAccess extends AccessBase<HabitatI> {
     }
 
     @Override
-    public long create(HabitatI obj) {
+    public HabitatI create(HabitatI obj) {
         HabitatDTO dto = HabitatDTOFactory.getInstance().toDTO(obj);
         long id = Identifiable.INVALID_IDENTIFIER;
         try {
@@ -37,7 +37,7 @@ public class HabitatAccess extends AccessBase<HabitatI> {
             Exceptions.printStackTrace(ex);
         }
         obj.setId(id);
-        return id;
+        return obj;
     }
 
     @Override

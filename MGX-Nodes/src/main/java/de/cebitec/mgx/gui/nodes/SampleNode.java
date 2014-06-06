@@ -189,9 +189,9 @@ public class SampleNode extends MGXNodeBase<SampleI, SampleNode> {
                 SampleI s = getLookup().lookup(SampleI.class);
                 final DNAExtractI extract = wd.getDNAExtract();
                 extract.setSampleId(s.getId());
-                SwingWorker<Long, Void> worker = new SwingWorker<Long, Void>() {
+                SwingWorker<DNAExtractI, Void> worker = new SwingWorker<DNAExtractI, Void>() {
                     @Override
-                    protected Long doInBackground() throws Exception {
+                    protected DNAExtractI doInBackground() throws Exception {
                         return m.DNAExtract().create(extract);
                     }
 

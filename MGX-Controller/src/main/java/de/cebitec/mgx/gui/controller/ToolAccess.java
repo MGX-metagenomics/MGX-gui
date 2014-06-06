@@ -91,7 +91,7 @@ public class ToolAccess extends AccessBase<ToolI> implements ToolAccessI {
     }
 
     @Override
-    public long create(ToolI obj) {
+    public ToolI create(ToolI obj) {
         assert obj.getId() == Identifiable.INVALID_IDENTIFIER;
         ToolDTO dto = ToolDTOFactory.getInstance().toDTO(obj);
         long id = Identifiable.INVALID_IDENTIFIER;
@@ -101,7 +101,7 @@ public class ToolAccess extends AccessBase<ToolI> implements ToolAccessI {
             Exceptions.printStackTrace(ex);
         }
         obj.setId(id);
-        return id;
+        return obj;
     }
 
     @Override

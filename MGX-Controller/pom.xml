@@ -71,17 +71,14 @@
         <dependency>
             <artifactId>NewickParser</artifactId>
             <groupId>de.cebitec.mgx</groupId>
-            <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <artifactId>GPMS-core-api</artifactId>
             <groupId>de.cebitec.gpms</groupId>
-            <version>1.0-RELEASE</version>
         </dependency>
         <dependency>
             <artifactId>MGX-isequences</artifactId>
             <groupId>de.cebitec.mgx</groupId>
-            <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>de.cebitec.mgx</groupId>
@@ -99,7 +96,7 @@
 
     <build>
         <plugins>
-             <plugin>
+            <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <version>2.4.0</version>
@@ -114,12 +111,13 @@
 
                 <configuration>
                     <instructions>
+                        <Import-Package>org.osgi.framework,de.cebitec.gpms.core,de.cebitec.mgx.dto,de.cebitec.mgx.client,de.cebitec.mgx.client.*,de.cebitec.mgx.api,de.cebitec.mgx.api.*,de.cebitec.mgx.gui.datamodel,org.openide.util</Import-Package>
                         <Export-Package>de.cebitec.mgx.gui.controller,de.cebitec.mgx.gui.groups,de.cebitec.mgx.gui.util,de.cebitec.mgx.gui.dtoconversion</Export-Package>
                         <Private-Package></Private-Package>
                     </instructions>
                 </configuration>
             </plugin>
-            <plugin>
+<!--            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>nbm-maven-plugin</artifactId>
                 <extensions>true</extensions>
@@ -130,7 +128,7 @@
                         <publicPackage>de.cebitec.mgx.gui.util</publicPackage>
                     </publicPackages>
                 </configuration>
-            </plugin>
+            </plugin>-->
 
             <plugin>
                 <!-- NetBeans 6.9+ requires JDK 6 -->

@@ -1,7 +1,7 @@
 package de.cebitec.mgx.gui.actions;
 
 import de.cebitec.mgx.api.groups.ImageExporterI;
-import de.cebitec.mgx.gui.util.FileChooserUtils;
+import de.cebitec.mgx.gui.swingutils.util.FileChooserUtils;
 import de.cebitec.mgx.api.groups.FileType;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

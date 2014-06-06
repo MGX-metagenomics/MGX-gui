@@ -10,7 +10,7 @@
     <groupId>de.cebitec.mgx.gui</groupId>
     <artifactId>MGX-SwingUtils</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <packaging>nbm</packaging>
+    <packaging>bundle</packaging>
 
     <name>MGX-SwingUtils</name>
 
@@ -51,22 +51,24 @@
         <dependency>
             <groupId>de.cebitec.mgx</groupId>
             <artifactId>MGX-API</artifactId>
-            <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>de.cebitec.mgx.gui</groupId>
             <artifactId>MGX-Common</artifactId>
-            <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-awt</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-dialogs</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
         <plugins>
-<!--               <plugin>
+               <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <version>2.4.0</version>
@@ -81,12 +83,13 @@
 
                 <configuration>
                     <instructions>
-                        <Export-Package>de.cebitec.mgx.gui.swingutils</Export-Package>
+                        <Import-Package>javax.swing.filechooser</Import-Package>
+                        <Export-Package>de.cebitec.mgx.gui.swingutils,de.cebitec.mgx.gui.swingutils.util</Export-Package>
                         <Private-Package></Private-Package>
                     </instructions>
                 </configuration>
-            </plugin>-->
-            <plugin>
+            </plugin>
+<!--            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>nbm-maven-plugin</artifactId>
                 <extensions>true</extensions>
@@ -95,7 +98,7 @@
                         <publicPackage>de.cebitec.mgx.gui.swingutils</publicPackage>
                     </publicPackages>
                 </configuration>
-            </plugin>
+            </plugin>-->
 
             <plugin>
                 <!-- NetBeans 6.9+ requires JDK 6 -->

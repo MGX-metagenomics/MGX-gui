@@ -1,7 +1,7 @@
 package de.cebitec.mgx.gui.wizard.seqrun;
 
 import de.cebitec.mgx.api.groups.FileType;
-import de.cebitec.mgx.gui.util.SuffixFilter;
+import de.cebitec.mgx.gui.swingutils.util.SuffixFilter;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;

@@ -33,7 +33,7 @@ public class MappingAccess extends MappingAccessI {
     }
 
     @Override
-    public long create(MappingI obj) {
+    public MappingI create(MappingI obj) {
         throw new UnsupportedOperationException("Not supported.");
     }
 

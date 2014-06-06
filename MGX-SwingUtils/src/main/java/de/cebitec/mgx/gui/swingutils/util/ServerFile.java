@@ -1,7 +1,6 @@
-package de.cebitec.mgx.gui.util;
+package de.cebitec.mgx.gui.swingutils.util;
 
 import de.cebitec.mgx.api.model.MGXFileI;
-import de.cebitec.mgx.gui.datamodel.MGXFile;
 import java.io.File;
 import java.io.IOException;
 
@@ -21,8 +20,8 @@ public class ServerFile extends File {
     @Override
     public String getName() {
         String fname = file.getName();
-        if (fname.contains(MGXFile.separator)) {
-            fname = fname.substring(fname.lastIndexOf(MGXFile.separator)+1);
+        if (fname.contains(MGXFileI.separator)) {
+            fname = fname.substring(fname.lastIndexOf(MGXFileI.separator)+1);
         }
         if (MGXFileI.ROOT_PATH.equals(fname)) {
             return "Project storage";

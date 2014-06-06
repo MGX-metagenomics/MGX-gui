@@ -187,9 +187,9 @@ public class HabitatNode extends MGXNodeBase<HabitatI, HabitatNode> {
                 HabitatI hab = getLookup().lookup(HabitatI.class);
                 final SampleI s = wd.getSample();
                 s.setHabitatId(hab.getId());
-                SwingWorker<Long, Void> worker = new SwingWorker<Long, Void>() {
+                SwingWorker<SampleI, Void> worker = new SwingWorker<SampleI, Void>() {
                     @Override
-                    protected Long doInBackground() throws Exception {
+                    protected SampleI doInBackground() throws Exception {
                         return m.Sample().create(s);
                     }
 

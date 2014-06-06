@@ -141,7 +141,7 @@ public class AttributeAccess implements AttributeAccessI {
     }
 
     @Override
-    public long create(AttributeI obj) {
+    public AttributeI create(AttributeI obj) {
         throw new UnsupportedOperationException("Not supported.");
     }
 

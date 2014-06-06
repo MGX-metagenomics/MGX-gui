@@ -122,7 +122,7 @@ public class SequenceAccess extends AccessBase<SequenceI> implements SequenceAcc
     }
 
     @Override
-    public long create(SequenceI obj) {
+    public SequenceI create(SequenceI obj) {
         throw new UnsupportedOperationException("Not supported.");
     }
 

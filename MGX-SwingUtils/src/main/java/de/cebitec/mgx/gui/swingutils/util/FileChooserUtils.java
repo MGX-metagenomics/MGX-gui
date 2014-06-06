@@ -1,4 +1,4 @@
-package de.cebitec.mgx.gui.util;
+package de.cebitec.mgx.gui.swingutils.util;
 
 import de.cebitec.mgx.api.groups.FileType;
 import java.beans.PropertyChangeEvent;

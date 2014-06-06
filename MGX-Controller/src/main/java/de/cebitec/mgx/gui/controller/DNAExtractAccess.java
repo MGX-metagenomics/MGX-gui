@@ -27,7 +27,7 @@ public class DNAExtractAccess extends AccessBase<DNAExtractI> implements DNAExtr
     }
     
     @Override
-    public long create(DNAExtractI obj) {
+    public DNAExtractI create(DNAExtractI obj) {
         DNAExtractDTO dto = DNAExtractDTOFactory.getInstance().toDTO(obj);
         long id = Identifiable.INVALID_IDENTIFIER;
         try {
@@ -36,7 +36,7 @@ public class DNAExtractAccess extends AccessBase<DNAExtractI> implements DNAExtr
             Exceptions.printStackTrace(ex);
         }
         obj.setId(id);
-        return id;
+        return obj;
     }
 
     @Override

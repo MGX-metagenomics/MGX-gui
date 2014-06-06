@@ -43,7 +43,7 @@ public class ObservationAccess extends AccessBase<ObservationI> implements Obser
     }
 
     @Override
-    public long create(ObservationI obj) {
+    public ObservationI create(ObservationI obj) {
         throw new UnsupportedOperationException("Not supported.");
     }
 

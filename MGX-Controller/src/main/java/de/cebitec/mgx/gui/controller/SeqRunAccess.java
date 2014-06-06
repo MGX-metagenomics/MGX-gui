@@ -39,7 +39,7 @@ public class SeqRunAccess extends AccessBase<SeqRunI> implements SeqRunAccessI {
 
     
     @Override
-    public long create(SeqRunI obj) {
+    public SeqRunI create(SeqRunI obj) {
         SeqRunDTO dto = SeqRunDTOFactory.getInstance().toDTO(obj);
         long id = Identifiable.INVALID_IDENTIFIER;
         try {
@@ -48,7 +48,7 @@ public class SeqRunAccess extends AccessBase<SeqRunI> implements SeqRunAccessI {
             Exceptions.printStackTrace(ex);
         }
         obj.setId(id);
-        return id;
+        return obj;
     }
 
     @Override

@@ -38,7 +38,7 @@ public class ReferenceAccess implements ReferenceAccessI {
     }
 
     @Override
-    public long create(MGXReferenceI obj) {
+    public MGXReferenceI create(MGXReferenceI obj) {
         ReferenceDTO dto = ReferenceDTOFactory.getInstance().toDTO(obj);
         long id = Identifiable.INVALID_IDENTIFIER;
         try {
@@ -47,7 +47,7 @@ public class ReferenceAccess implements ReferenceAccessI {
             Exceptions.printStackTrace(ex);
         }
         obj.setId(id);
-        return id;
+        return obj;
     }
 
     @Override

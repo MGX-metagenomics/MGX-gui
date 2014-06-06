@@ -35,16 +35,16 @@ public class TrackFactory {
                 placed = false;
                 // check last track first as a quick check;
                 // major speedup, but suboptimal layout
-                if (last != null && last.canAdd(ms)) {
-                    for (Track t : tracks) {
-                        if (!placed) {
-                            placed = t.tryAdd(ms);
-                            if (placed) {
-                                break;
-                            }
+                //if (last != null && last.canAdd(ms)) {
+                for (Track t : tracks) {
+                    if (!placed) {
+                        placed = t.tryAdd(ms);
+                        if (placed) {
+                            break;
                         }
                     }
                 }
+                //}
                 if (!placed) {
                     last = addTrack(tracks, ms);
                 }

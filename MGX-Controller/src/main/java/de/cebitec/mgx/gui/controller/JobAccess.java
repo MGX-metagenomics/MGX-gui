@@ -84,7 +84,7 @@ public class JobAccess extends AccessBase<JobI> implements JobAccessI {
     }
 
     @Override
-    public long create(JobI obj) {
+    public JobI create(JobI obj) {
         assert obj.getTool().getId() != Identifiable.INVALID_IDENTIFIER;
         assert obj.getSeqrun().getId() != Identifiable.INVALID_IDENTIFIER;
 
@@ -98,7 +98,7 @@ public class JobAccess extends AccessBase<JobI> implements JobAccessI {
             Exceptions.printStackTrace(ex);
         }
 
-        return id;
+        return obj;
     }
 
     @Override

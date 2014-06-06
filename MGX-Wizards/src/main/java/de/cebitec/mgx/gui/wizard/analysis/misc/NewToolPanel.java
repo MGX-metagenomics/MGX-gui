@@ -3,7 +3,7 @@ package de.cebitec.mgx.gui.wizard.analysis.misc;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.ToolI;
 import de.cebitec.mgx.gui.datamodel.Tool;
-import de.cebitec.mgx.gui.util.FileChooserUtils;
+import de.cebitec.mgx.gui.swingutils.util.FileChooserUtils;
 import de.cebitec.mgx.api.groups.FileType;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
