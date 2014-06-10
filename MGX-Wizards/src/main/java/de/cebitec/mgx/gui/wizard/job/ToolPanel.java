@@ -5,7 +5,8 @@
  */
 package de.cebitec.mgx.gui.wizard.job;
 
-import de.cebitec.mgx.gui.datamodel.Tool;
+import de.cebitec.mgx.api.model.ToolI;
+
 
 /**
  *
@@ -13,14 +14,14 @@ import de.cebitec.mgx.gui.datamodel.Tool;
  */
 public class ToolPanel extends javax.swing.JPanel {
     
-    private Tool tool = null;
+    private ToolI tool = null;
 
     /** Creates new form ToolPanel */
     public ToolPanel() {
         initComponents();
     }
 
-    public ToolPanel setTool(Tool t) {
+    public ToolPanel setTool(ToolI t) {
         tool = t;
         StringBuilder name = new StringBuilder();
         if (tool.getUrl() != null && !"".equals(tool.getUrl())) {
@@ -37,7 +38,7 @@ public class ToolPanel extends javax.swing.JPanel {
         return this;
     }
     
-    public Tool getTool() {
+    public ToolI getTool() {
         return tool;
     }
 
