@@ -1,10 +1,10 @@
 package de.cebitec.mgx.gui.controller;
 
 import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.access.HabitatAccessI;
 import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.model.HabitatI;
 import de.cebitec.mgx.api.model.Identifiable;
-import de.cebitec.mgx.api.model.ModelBase;
 import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
@@ -21,10 +21,29 @@ import org.openide.util.Exceptions;
  *
  * @author sjaenick
  */
-public class HabitatAccess extends AccessBase<HabitatI> {
+public class HabitatAccess extends AccessBase<HabitatI> implements HabitatAccessI {
 
     public HabitatAccess(MGXMasterI master, MGXDTOMaster dtomaster) {
         super(master, dtomaster);
+    }
+
+    @Override
+    public HabitatI create(String name, double latitude, double longitude, int altitude, String biome, String description) {
+        Habitat obj = new Habitat(getMaster())
+                .setName(name)
+                .setLatitude(latitude)
+                .setLongitude(longitude)
+                .setBiome(biome)
+                .setDescription(description);
+        HabitatDTO dto = HabitatDTOFactory.getInstance().toDTO(obj);
+        long id = Identifiable.INVALID_IDENTIFIER;
+        try {
+            id = getDTOmaster().Habitat().create(dto);
+        } catch (MGXServerException | MGXClientException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+        obj.setId(id);
+        return obj;
     }
 
     @Override
@@ -59,7 +78,7 @@ public class HabitatAccess extends AccessBase<HabitatI> {
             return new BaseIterator<HabitatDTO, HabitatI>(fetchall) {
                 @Override
                 public HabitatI next() {
-                    HabitatI h = HabitatDTOFactory.getInstance().toModel(getMaster(),iter.next());
+                    HabitatI h = HabitatDTOFactory.getInstance().toModel(getMaster(), iter.next());
                     return h;
                 }
             };

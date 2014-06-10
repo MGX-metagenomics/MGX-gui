@@ -19,8 +19,6 @@ import org.openide.util.Exceptions;
  */
 public class TermAccess implements TermAccessI {
 
-    public static final String SEQ_METHODS = de.cebitec.mgx.client.access.rest.TermAccess.SEQ_METHODS;
-    public static final String SEQ_PLATFORMS = de.cebitec.mgx.client.access.rest.TermAccess.SEQ_PLATFORMS;
     private final MGXMasterI master;
     private final MGXDTOMaster dtomaster;
 

@@ -4,15 +4,17 @@ import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.SampleAccessI;
 import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.misc.TaskI.TaskType;
+import de.cebitec.mgx.api.model.HabitatI;
 import de.cebitec.mgx.api.model.Identifiable;
-import de.cebitec.mgx.api.model.ModelBase;
 import de.cebitec.mgx.api.model.SampleI;
 import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.SampleDTO;
+import de.cebitec.mgx.gui.datamodel.Sample;
 import de.cebitec.mgx.gui.dtoconversion.SampleDTOFactory;
 import de.cebitec.mgx.gui.util.BaseIterator;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.UUID;
 import org.openide.util.Exceptions;
@@ -27,7 +29,26 @@ public class SampleAccess extends AccessBase<SampleI> implements SampleAccessI {
         super(master, dtomaster);
     }
 
-    
+    @Override
+    public SampleI create(HabitatI habitat, Date collectionDate, String material, double temperature, int volume, String volUnit) {
+        Sample obj = new Sample(getMaster())
+                .setHabitatId(habitat.getId())
+                .setCollectionDate(collectionDate)
+                .setMaterial(material)
+                .setTemperature(temperature)
+                .setVolume(volume)
+                .setVolumeUnit(volUnit);
+        SampleDTO dto = SampleDTOFactory.getInstance().toDTO(obj);
+        long id = Identifiable.INVALID_IDENTIFIER;
+        try {
+            id = getDTOmaster().Sample().create(dto);
+        } catch (MGXServerException | MGXClientException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+        obj.setId(id);
+        return obj;
+    }
+
     @Override
     public SampleI create(SampleI obj) {
         SampleDTO dto = SampleDTOFactory.getInstance().toDTO(obj);
@@ -112,4 +133,5 @@ public class SampleAccess extends AccessBase<SampleI> implements SampleAccessI {
 
         return null;
     }
+
 }

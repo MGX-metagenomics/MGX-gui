@@ -5,16 +5,18 @@ import de.cebitec.mgx.api.access.SeqRunAccessI;
 import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.misc.TaskI.TaskType;
 import de.cebitec.mgx.api.model.AttributeTypeI;
+import de.cebitec.mgx.api.model.DNAExtractI;
 import de.cebitec.mgx.api.model.Identifiable;
 import de.cebitec.mgx.api.model.JobI;
-import de.cebitec.mgx.api.model.ModelBase;
 import de.cebitec.mgx.api.model.SeqRunI;
+import de.cebitec.mgx.api.model.TermI;
 import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.AttributeTypeDTO;
 import de.cebitec.mgx.dto.dto.JobAndAttributeTypes;
 import de.cebitec.mgx.dto.dto.SeqRunDTO;
+import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.dtoconversion.AttributeTypeDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.JobDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.SeqRunDTOFactory;
@@ -37,7 +39,26 @@ public class SeqRunAccess extends AccessBase<SeqRunI> implements SeqRunAccessI {
         super(master, dtomaster);
     }
 
-    
+    @Override
+    public SeqRunI create(DNAExtractI extract, String name, TermI seqMethod, TermI seqTechnology, boolean submittedINSDC, String accession) {
+        SeqRun obj = new SeqRun(getMaster())
+                .setDNAExtractId(extract.getId())
+                .setName(name)
+                .setSequencingMethod(seqMethod)
+                .setSequencingTechnology(seqTechnology)
+                .setSubmittedToINSDC(submittedINSDC)
+                .setAccession(submittedINSDC ? accession : null);
+        SeqRunDTO dto = SeqRunDTOFactory.getInstance().toDTO(obj);
+        long id = Identifiable.INVALID_IDENTIFIER;
+        try {
+            id = getDTOmaster().SeqRun().create(dto);
+        } catch (MGXServerException | MGXClientException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+        obj.setId(id);
+        return obj;
+    }
+
     @Override
     public SeqRunI create(SeqRunI obj) {
         SeqRunDTO dto = SeqRunDTOFactory.getInstance().toDTO(obj);
@@ -141,4 +162,5 @@ public class SeqRunAccess extends AccessBase<SeqRunI> implements SeqRunAccessI {
 
         return ret;
     }
+
 }
