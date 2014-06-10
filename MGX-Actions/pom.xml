@@ -96,7 +96,6 @@
                     <instructions>
                         <Import-Package>org.openide,org.openide.util,org.openide.awt,org.openide.windows,de.cebitec.mgx.api,de.cebitec.mgx.api.*</Import-Package>
                         <Export-Package>de.cebitec.mgx.gui.actions</Export-Package>
-                        <Private-Package></Private-Package>
                     </instructions>
                 </configuration>
             </plugin>

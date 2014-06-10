@@ -138,7 +138,7 @@
 
                 <configuration>
                     <instructions>
-                        <Import-Package>org.openide,org.openide.util,org.openide.nodes,de.cebitec.gpms.rest,de.cebitec.mgx.api,de.cebitec.mgx.gui.actions,de.cebitec.mgx.gui.controller</Import-Package>
+                        <Import-Package>org.openide,org.openide.util,org.openide.util.lookup,org.openide.nodes,javax.swing,de.cebitec.gpms.core,de.cebitec.gpms.rest,de.cebitec.mgx.api,de.cebitec.mgx.api.*,de.cebitec.mgx.gui.actions,de.cebitec.mgx.client,de.cebitec.mgx.gui.controller</Import-Package>
                         <Export-Package>de.cebitec.mgx.gui.nodefactory,de.cebitec.mgx.gui.nodes</Export-Package>
                         <Private-Package></Private-Package>
                     </instructions>
