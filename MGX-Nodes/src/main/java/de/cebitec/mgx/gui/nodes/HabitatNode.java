@@ -178,19 +178,17 @@ public class HabitatNode extends MGXNodeBase<HabitatI, HabitatNode> {
         @Override
         public void actionPerformed(ActionEvent e) {
             final MGXMasterI m = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
-            SampleWizardDescriptor wd = new SampleWizardDescriptor(m);
+            final SampleWizardDescriptor wd = new SampleWizardDescriptor(m);
             Dialog dialog = DialogDisplayer.getDefault().createDialog(wd);
             dialog.setVisible(true);
             dialog.toFront();
             boolean cancelled = wd.getValue() != WizardDescriptor.FINISH_OPTION;
             if (!cancelled) {
-                HabitatI hab = getLookup().lookup(HabitatI.class);
-                final SampleI s = wd.getSample();
-                s.setHabitatId(hab.getId());
+                final HabitatI hab = getLookup().lookup(HabitatI.class);
                 SwingWorker<SampleI, Void> worker = new SwingWorker<SampleI, Void>() {
                     @Override
                     protected SampleI doInBackground() throws Exception {
-                        return m.Sample().create(s);
+                        return m.Sample().create(hab, wd.getCollectionDate(), wd.getSampleMaterial(), wd.getTemperature(), wd.getVolume(), wd.getVolumeUnit());
                     }
 
                     @Override

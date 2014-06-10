@@ -61,29 +61,30 @@ public class ProjectDataNode extends MGXNodeBase<MGXMasterI, ProjectDataNode> {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            HabitatWizardDescriptor hwd = new HabitatWizardDescriptor();
+            final HabitatWizardDescriptor hwd = new HabitatWizardDescriptor();
             Dialog dialog = DialogDisplayer.getDefault().createDialog(hwd);
             dialog.setVisible(true);
             dialog.toFront();
             boolean cancelled = hwd.getValue() != WizardDescriptor.FINISH_OPTION;
             if (!cancelled) {
-                final HabitatI h = hwd.getHabitat(master);
-                SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+                SwingWorker<HabitatI, Void> worker = new SwingWorker<HabitatI, Void>() {
                     @Override
-                    protected Void doInBackground() throws Exception {
+                    protected HabitatI doInBackground() throws Exception {
                         MGXMasterI m = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
-                        m.Habitat().create(h);
-                        return null;
+                        return m.Habitat().create(hwd.getHabitatName(), hwd.getHabitatLatitude(), hwd.getHabitatLongitude(), hwd.getHabitatAltitude(), hwd.getHabitatBiome(), hwd.getHabitatDescription());
                     }
 
                     @Override
                     protected void done() {
+                        HabitatI h = null;
                         try {
-                            get();
+                            h = get();
                         } catch (InterruptedException | ExecutionException ex) {
                             Exceptions.printStackTrace(ex);
                         }
-                        hnf.refreshChildren();
+                        if (h != null) {
+                            hnf.refreshChildren();
+                        }
                         super.done();
                     }
                 };

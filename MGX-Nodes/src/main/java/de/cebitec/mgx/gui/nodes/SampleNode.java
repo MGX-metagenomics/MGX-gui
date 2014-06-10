@@ -180,19 +180,18 @@ public class SampleNode extends MGXNodeBase<SampleI, SampleNode> {
         @Override
         public void actionPerformed(ActionEvent e) {
             final MGXMasterI m = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
-            DNAExtractWizardDescriptor wd = new DNAExtractWizardDescriptor(m);
+            final DNAExtractWizardDescriptor wd = new DNAExtractWizardDescriptor(m);
             Dialog dialog = DialogDisplayer.getDefault().createDialog(wd);
             dialog.setVisible(true);
             dialog.toFront();
             boolean cancelled = wd.getValue() != WizardDescriptor.FINISH_OPTION;
             if (!cancelled) {
-                SampleI s = getLookup().lookup(SampleI.class);
-                final DNAExtractI extract = wd.getDNAExtract();
-                extract.setSampleId(s.getId());
+                final SampleI s = getLookup().lookup(SampleI.class);
                 SwingWorker<DNAExtractI, Void> worker = new SwingWorker<DNAExtractI, Void>() {
                     @Override
                     protected DNAExtractI doInBackground() throws Exception {
-                        return m.DNAExtract().create(extract);
+                        return m.DNAExtract().create(s, wd.getExtractName(), wd.getMethod(), 
+                                wd.getProtocol(), wd.getFivePrimer(), wd.getThreePrimer(), wd.getTargetGene(), wd.getTargetFragment(), wd.getDescription());
                     }
 
                     @Override

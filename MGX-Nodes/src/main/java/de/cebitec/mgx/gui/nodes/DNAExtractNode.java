@@ -199,14 +199,14 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtractI, DNAExtractNode> {
             dialog.toFront();
             boolean cancelled = wd.getValue() != WizardDescriptor.FINISH_OPTION;
             if (!cancelled) {
-                DNAExtractI extract = getLookup().lookup(DNAExtractI.class);
-                final SeqRunI seqrun = wd.getSeqRun(extract.getMaster());
-                seqrun.setDNAExtractId(extract.getId());
+                final DNAExtractI extract = getLookup().lookup(DNAExtractI.class);
+                //final SeqRunI seqrun = wd.getSeqRun(extract.getMaster());
+                //seqrun.setDNAExtractId(extract.getId());
 
-                SwingWorker<Void, Exception> sw = new SwingWorker<Void, Exception>() {
+                SwingWorker<SeqRunI, Exception> sw = new SwingWorker<SeqRunI, Exception>() {
                     @Override
-                    protected Void doInBackground() {
-                        m.SeqRun().create(seqrun);
+                    protected SeqRunI doInBackground() {
+                        final SeqRunI seqrun = m.SeqRun().create(extract, wd.getSeqRunName(), wd.getSequencingMethod(), wd.getSequencingTechnology(), wd.getSubmittedToINSDC(), wd.getAccession());
 
                         // create a sequence reader
                         String canonicalPath;
