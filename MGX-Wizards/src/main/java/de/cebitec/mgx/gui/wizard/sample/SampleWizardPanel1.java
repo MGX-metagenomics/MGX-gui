@@ -1,6 +1,6 @@
 package de.cebitec.mgx.gui.wizard.sample;
 
-import de.cebitec.mgx.gui.datamodel.Sample;
+import de.cebitec.mgx.api.model.SampleI;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Collection;
@@ -21,7 +21,7 @@ public class SampleWizardPanel1 implements WizardDescriptor.Panel<WizardDescript
     private WizardDescriptor model = null;
     private boolean isValid = false;
     private final EventListenerList listeners = new EventListenerList();
-    private Collection<Sample> allSamples;
+    private Collection<SampleI> allSamples;
     
     @Override
     public SampleVisualPanel1 getComponent() {

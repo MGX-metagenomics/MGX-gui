@@ -1,10 +1,9 @@
 package de.cebitec.mgx.gui.wizard.seqrun;
 
 import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.access.TermAccessI;
 import de.cebitec.mgx.api.model.SeqRunI;
-import de.cebitec.mgx.gui.controller.TermAccess;
-import de.cebitec.mgx.gui.datamodel.SeqRun;
-import de.cebitec.mgx.gui.datamodel.Term;
+import de.cebitec.mgx.api.model.TermI;
 import java.io.File;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -24,7 +23,7 @@ public class SeqRunWizardDescriptor extends WizardDescriptor {
     private SeqRunWizardPanel1 p1 = new SeqRunWizardPanel1();
     private SeqRunWizardPanel2 p2 = new SeqRunWizardPanel2();
     private SeqRunI seqrun = null;
-    
+
     public static final String INVOCATION_MODE = "invocationMode";
     public static final String CREATE_MODE = "CREATE";
     public static final String EDIT_MODE = "EDIT";
@@ -39,8 +38,8 @@ public class SeqRunWizardDescriptor extends WizardDescriptor {
         putProperty(WizardDescriptor.PROP_CONTENT_DATA, new String[]{p1.getName(), p2.getName()});
         putProperty(WizardDescriptor.PROP_AUTO_WIZARD_STYLE, Boolean.TRUE);
         putProperty(WizardDescriptor.PROP_CONTENT_DISPLAYED, Boolean.TRUE);
-        putProperty(WizardDescriptor.PROP_CONTENT_NUMBERED, Boolean.TRUE);   
-        putProperty(SeqRunWizardDescriptor.INVOCATION_MODE, CREATE_MODE);     
+        putProperty(WizardDescriptor.PROP_CONTENT_NUMBERED, Boolean.TRUE);
+        putProperty(SeqRunWizardDescriptor.INVOCATION_MODE, CREATE_MODE);
         setData();
     }
 
@@ -63,7 +62,7 @@ public class SeqRunWizardDescriptor extends WizardDescriptor {
         putProperty(SeqRunVisualPanel1.PROP_PLATFORM, d.getSequencingTechnology());
         putProperty(SeqRunVisualPanel1.PROP_SUBMITTED, d.getSubmittedToINSDC());
         putProperty(SeqRunVisualPanel1.PROP_ACCESSION, d.getAccession());
-        putProperty(SeqRunWizardDescriptor.INVOCATION_MODE, EDIT_MODE);  
+        putProperty(SeqRunWizardDescriptor.INVOCATION_MODE, EDIT_MODE);
         p1.setProperties(this);
     }
 
@@ -73,8 +72,8 @@ public class SeqRunWizardDescriptor extends WizardDescriptor {
 
             @Override
             protected Void doInBackground() {
-                p1.setMethods(m.Term().byCategory(TermAccess.SEQ_METHODS).toArray(new Term[]{}));
-                p1.setPlatforms(m.Term().byCategory(TermAccess.SEQ_PLATFORMS).toArray(new Term[]{}));
+                p1.setMethods(m.Term().byCategory(TermAccessI.SEQ_METHODS).toArray(new TermI[]{}));
+                p1.setPlatforms(m.Term().byCategory(TermAccessI.SEQ_PLATFORMS).toArray(new TermI[]{}));
                 p1.setSeqRuns(m.SeqRun().fetchall());
                 return null;
             }
@@ -87,13 +86,31 @@ public class SeqRunWizardDescriptor extends WizardDescriptor {
         }
     }
 
-    public SeqRunI getSeqRun(MGXMasterI m) {
-        if (seqrun == null) {
-            seqrun = new SeqRun(m);
-        }
+    public String getSeqRunName() {
+        return (String) getProperty(SeqRunVisualPanel1.PROP_NAME);
+    }
 
-        seqrun.setSequencingMethod((Term) getProperty(SeqRunVisualPanel1.PROP_METHOD))
-                .setSequencingTechnology((Term) getProperty(SeqRunVisualPanel1.PROP_PLATFORM))
+    public TermI getSequencingMethod() {
+        return (TermI) getProperty(SeqRunVisualPanel1.PROP_METHOD);
+    }
+
+    public TermI getSequencingTechnology() {
+        return (TermI) getProperty(SeqRunVisualPanel1.PROP_PLATFORM);
+    }
+
+    public Boolean getSubmittedToINSDC() {
+        return (Boolean) getProperty(SeqRunVisualPanel1.PROP_SUBMITTED);
+    }
+
+    public String getAccession() {
+        return (String) getProperty(SeqRunVisualPanel1.PROP_ACCESSION);
+    }
+
+    public SeqRunI getSeqRun(MGXMasterI m) {
+        // only to be used when editing an existing instance
+
+        seqrun.setSequencingMethod((TermI) getProperty(SeqRunVisualPanel1.PROP_METHOD))
+                .setSequencingTechnology((TermI) getProperty(SeqRunVisualPanel1.PROP_PLATFORM))
                 .setSubmittedToINSDC((Boolean) getProperty(SeqRunVisualPanel1.PROP_SUBMITTED))
                 .setName((String) getProperty(SeqRunVisualPanel1.PROP_NAME));
 

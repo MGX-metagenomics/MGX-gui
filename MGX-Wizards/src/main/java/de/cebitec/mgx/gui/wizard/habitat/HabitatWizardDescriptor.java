@@ -2,11 +2,8 @@ package de.cebitec.mgx.gui.wizard.habitat;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.HabitatI;
-import de.cebitec.mgx.gui.datamodel.Habitat;
-import de.cebitec.mgx.gui.wizard.extract.DNAExtractWizardDescriptor;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import javax.swing.SwingWorker;
@@ -52,10 +49,10 @@ public class HabitatWizardDescriptor extends WizardDescriptor {
         putProperty(HabitatVisualPanel1.PROP_ALTITUDE, habitat.getAltitude());
         putProperty(HabitatVisualPanel2.PROP_DESCRIPTION, habitat.getDescription());
         putProperty(HabitatWizardDescriptor.INVOCATION_MODE, EDIT_MODE);
-        
+
         p1.setProperties(this);
         p2.setProperties(this);
-       
+
     }
 
     private void setData() {
@@ -75,10 +72,32 @@ public class HabitatWizardDescriptor extends WizardDescriptor {
         }
     }
 
+    public String getHabitatName() {
+        return (String) getProperty(HabitatVisualPanel1.PROP_NAME);
+    }
+
+    public String getHabitatBiome() {
+        return (String) getProperty(HabitatVisualPanel1.PROP_BIOME);
+    }
+
+    public double getHabitatLatitude() {
+        return (Double) getProperty(HabitatVisualPanel1.PROP_LATITUDE);
+    }
+
+    public double getHabitatLongitude() {
+        return (Double) getProperty(HabitatVisualPanel1.PROP_LONGITUDE);
+    }
+    
+    public int getHabitatAltitude() {
+        return (Integer) getProperty(HabitatVisualPanel1.PROP_ALTITUDE);
+    }
+
+    public String getHabitatDescription() {
+        return (String) getProperty(HabitatVisualPanel2.PROP_DESCRIPTION);
+    }
+
     public HabitatI getHabitat(MGXMasterI m) {
-        if (habitat == null) {
-            habitat = new Habitat(m);
-        }
+        // only used when editing a habitat
 
         habitat.setName((String) getProperty(HabitatVisualPanel1.PROP_NAME))
                 .setBiome((String) getProperty(HabitatVisualPanel1.PROP_BIOME))

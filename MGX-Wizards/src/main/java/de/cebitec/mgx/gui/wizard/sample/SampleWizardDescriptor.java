@@ -2,7 +2,6 @@ package de.cebitec.mgx.gui.wizard.sample;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.SampleI;
-import de.cebitec.mgx.gui.datamodel.Sample;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -17,7 +16,7 @@ public class SampleWizardDescriptor extends WizardDescriptor {
 
     private SampleWizardPanel1 p1 = new SampleWizardPanel1();
     private SampleWizardPanel2 p2 = new SampleWizardPanel2();
-    
+
     private SampleI sample = null;
     private final MGXMasterI master;
 
@@ -33,12 +32,12 @@ public class SampleWizardDescriptor extends WizardDescriptor {
         putProperty(WizardDescriptor.PROP_AUTO_WIZARD_STYLE, Boolean.TRUE);
         putProperty(WizardDescriptor.PROP_CONTENT_DISPLAYED, Boolean.TRUE);
         putProperty(WizardDescriptor.PROP_CONTENT_NUMBERED, Boolean.TRUE);
-        
+
     }
-    
+
     public SampleWizardDescriptor(MGXMasterI master, SampleI s) {
         this(master);
-        this.sample = s; 
+        this.sample = s;
         putProperty(SampleVisualPanel1.PROP_COLLECTIONDATE, s.getCollectionDate());
         putProperty(SampleVisualPanel2.PROP_MATERIAL, s.getMaterial());
         putProperty(SampleVisualPanel2.PROP_TEMPERATURE, s.getTemperature());
@@ -47,17 +46,35 @@ public class SampleWizardDescriptor extends WizardDescriptor {
         p1.setProperties(this);
         p2.setProperties(this);
     }
-    
+
+    public Date getCollectionDate() {
+        return (Date) getProperty(SampleVisualPanel1.PROP_COLLECTIONDATE);
+    }
+
+    public String getSampleMaterial() {
+        return (String) getProperty(SampleVisualPanel2.PROP_MATERIAL);
+    }
+
+    public Double getTemperature() {
+        return (Double) getProperty(SampleVisualPanel2.PROP_TEMPERATURE);
+    }
+
+    public Integer getVolume() {
+        return (Integer) getProperty(SampleVisualPanel2.PROP_VOLUME);
+    }
+
+    public String getVolumeUnit() {
+        return (String) getProperty(SampleVisualPanel2.PROP_VOLUME_UNIT);
+    }
+
     public SampleI getSample() {
-        if (sample == null) {
-            sample = new Sample(master);
-        }
-        
-        sample.setCollectionDate((Date)getProperty(SampleVisualPanel1.PROP_COLLECTIONDATE))
-                .setMaterial((String)getProperty(SampleVisualPanel2.PROP_MATERIAL))
-                .setTemperature((Double)getProperty(SampleVisualPanel2.PROP_TEMPERATURE))
-                .setVolume((Integer)getProperty(SampleVisualPanel2.PROP_VOLUME))
-                .setVolumeUnit((String)getProperty(SampleVisualPanel2.PROP_VOLUME_UNIT));
+        // only usable when editing
+
+        sample.setCollectionDate((Date) getProperty(SampleVisualPanel1.PROP_COLLECTIONDATE))
+                .setMaterial((String) getProperty(SampleVisualPanel2.PROP_MATERIAL))
+                .setTemperature((Double) getProperty(SampleVisualPanel2.PROP_TEMPERATURE))
+                .setVolume((Integer) getProperty(SampleVisualPanel2.PROP_VOLUME))
+                .setVolumeUnit((String) getProperty(SampleVisualPanel2.PROP_VOLUME_UNIT));
         return sample;
     }
 }

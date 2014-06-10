@@ -1,8 +1,7 @@
 package de.cebitec.mgx.gui.wizard.seqrun;
 
 import de.cebitec.mgx.api.model.SeqRunI;
-import de.cebitec.mgx.gui.datamodel.SeqRun;
-import de.cebitec.mgx.gui.datamodel.Term;
+import de.cebitec.mgx.api.model.TermI;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -94,8 +93,8 @@ public class SeqRunWizardPanel1 implements WizardDescriptor.Panel<WizardDescript
         model = settings;
         SeqRunVisualPanel1 c = getComponent();
         c.setRunName((String) model.getProperty(SeqRunVisualPanel1.PROP_NAME));
-        c.setPlatform((Term) model.getProperty(SeqRunVisualPanel1.PROP_PLATFORM));
-        c.setMethod((Term) model.getProperty(SeqRunVisualPanel1.PROP_METHOD));
+        c.setPlatform((TermI) model.getProperty(SeqRunVisualPanel1.PROP_PLATFORM));
+        c.setMethod((TermI) model.getProperty(SeqRunVisualPanel1.PROP_METHOD));
         c.setSubmittedState((Boolean) model.getProperty(SeqRunVisualPanel1.PROP_SUBMITTED));
         c.setAccession((String) model.getProperty(SeqRunVisualPanel1.PROP_ACCESSION));
     }
@@ -138,11 +137,11 @@ public class SeqRunWizardPanel1 implements WizardDescriptor.Panel<WizardDescript
         return isValid;
     }
 
-    public void setMethods(Term[] terms) {
+    public void setMethods(TermI[] terms) {
         getComponent().setMethods(terms);
     }
 
-    public void setPlatforms(Term[] terms) {
+    public void setPlatforms(TermI[] terms) {
         getComponent().setPlatforms(terms);
     }
 

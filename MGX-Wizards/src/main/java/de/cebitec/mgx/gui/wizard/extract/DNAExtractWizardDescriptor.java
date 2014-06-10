@@ -2,7 +2,6 @@ package de.cebitec.mgx.gui.wizard.extract;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.DNAExtractI;
-import de.cebitec.mgx.gui.datamodel.DNAExtract;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,8 +25,7 @@ public class DNAExtractWizardDescriptor extends WizardDescriptor {
     public static final String INVOCATION_MODE = "invocationMode";
     public static final String CREATE_MODE = "CREATE";
     public static final String EDIT_MODE = "EDIT";
-    
-    
+
     public DNAExtractWizardDescriptor(MGXMasterI master) {
         this.master = master;
         List<Panel<WizardDescriptor>> panels = new ArrayList<>();
@@ -54,16 +52,14 @@ public class DNAExtractWizardDescriptor extends WizardDescriptor {
         putProperty(DNAExtractVisualPanel1.PROP_THREEPRIMER, d.getThreePrimer());
         putProperty(DNAExtractVisualPanel1.PROP_GENE, d.getTargetGene());
         putProperty(DNAExtractVisualPanel1.PROP_FRAGMENT, d.getTargetFragment());
-        putProperty(DNAExtractVisualPanel2.PROP_DESCRIPTION, d.getDescription());  
+        putProperty(DNAExtractVisualPanel2.PROP_DESCRIPTION, d.getDescription());
         putProperty(DNAExtractWizardDescriptor.INVOCATION_MODE, EDIT_MODE);
-        
+
         p1.setProperties(this);
         p2.setProperties(this);
-        
-       
+
     }
-    
-    
+
     private void setData() {
         final MGXMasterI m = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
         SwingWorker<Void, Void> sw = new SwingWorker<Void, Void>() {
@@ -81,13 +77,41 @@ public class DNAExtractWizardDescriptor extends WizardDescriptor {
             Exceptions.printStackTrace(ex);
         }
     }
-    
+
+    public String getExtractName() {
+        return (String) getProperty(DNAExtractVisualPanel1.PROP_NAME);
+    }
+
+    public String getMethod() {
+        return (String) getProperty(DNAExtractVisualPanel1.PROP_METHOD);
+    }
+
+    public String getProtocol() {
+        return (String) getProperty(DNAExtractVisualPanel1.PROP_PROTOCOL);
+    }
+
+    public String getFivePrimer() {
+        return (String) getProperty(DNAExtractVisualPanel1.PROP_FIVEPRIMER);
+    }
+
+    public String getThreePrimer() {
+        return (String) getProperty(DNAExtractVisualPanel1.PROP_THREEPRIMER);
+    }
+
+    public String getTargetGene() {
+        return (String) getProperty(DNAExtractVisualPanel1.PROP_GENE);
+    }
+
+    public String getTargetFragment() {
+        return (String) getProperty(DNAExtractVisualPanel1.PROP_FRAGMENT);
+    }
+
+    public String getDescription() {
+        return (String) getProperty(DNAExtractVisualPanel2.PROP_DESCRIPTION);
+    }
 
     public DNAExtractI getDNAExtract() {
-        if (extract == null) {
-            extract = new DNAExtract(master);
-        }
-
+        // only use this for editing an instance 
         extract.setName((String) getProperty(DNAExtractVisualPanel1.PROP_NAME))
                 .setMethod((String) getProperty(DNAExtractVisualPanel1.PROP_METHOD))
                 .setProtocol((String) getProperty(DNAExtractVisualPanel1.PROP_PROTOCOL))

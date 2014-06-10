@@ -1,6 +1,6 @@
 package de.cebitec.mgx.gui.wizard.seqrun;
 
-import de.cebitec.mgx.gui.datamodel.Term;
+import de.cebitec.mgx.api.model.TermI;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -33,12 +33,12 @@ public final class SeqRunVisualPanel1 extends JPanel implements DocumentListener
         platform.addActionListener(new PlatformListener());
     }
 
-    public void setMethods(Term[] terms) {
+    public void setMethods(TermI[] terms) {
         method.setModel(new javax.swing.DefaultComboBoxModel(terms));
         method.setEditable(false);
     }
 
-    public void setPlatforms(Term[] terms) {
+    public void setPlatforms(TermI[] terms) {
         platform.setModel(new javax.swing.DefaultComboBoxModel(terms));
         platform.setEditable(false);
     }
@@ -72,19 +72,19 @@ public final class SeqRunVisualPanel1 extends JPanel implements DocumentListener
         accession.setText(acc);
     }
 
-    public Term getPlatform() {
-        return (Term) platform.getSelectedItem();
+    public TermI getPlatform() {
+        return (TermI) platform.getSelectedItem();
     }
 
-    public void setPlatform(Term p) {
+    public void setPlatform(TermI p) {
         platform.setSelectedItem(p);
     }
 
-    public Term getMethod() {
-        return (Term) method.getSelectedItem();
+    public TermI getMethod() {
+        return (TermI) method.getSelectedItem();
     }
 
-    public void setMethod(Term m) {
+    public void setMethod(TermI m) {
         method.setSelectedItem(m);
     }
 
