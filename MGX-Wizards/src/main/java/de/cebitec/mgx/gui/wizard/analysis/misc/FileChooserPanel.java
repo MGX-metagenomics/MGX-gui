@@ -1,9 +1,8 @@
 package de.cebitec.mgx.gui.wizard.analysis.misc;
 
 import de.cebitec.mgx.api.MGXMasterI;
-import de.cebitec.mgx.gui.datamodel.MGXFile;
+import de.cebitec.mgx.api.model.MGXFileI;
 import de.cebitec.mgx.gui.swingutils.util.ServerFS;
-import de.cebitec.mgx.gui.swingutils.util.ServerFile;
 import java.io.File;
 import javax.swing.JFileChooser;
 
@@ -73,13 +72,13 @@ public class FileChooserPanel extends ValueHolderI<String> {
             final File target = chooser.getSelectedFile();
             fileName = target.getPath();
             String displayName = fileName;
-            if (displayName.startsWith(MGXFile.ROOT_PATH + MGXFile.separator)) {
+            if (displayName.startsWith(MGXFileI.ROOT_PATH + MGXFileI.separator)) {
                 displayName = displayName.substring(2);
             }
-            displayName = displayName.replace(MGXFile.separator, File.separator);
+            displayName = displayName.replace(MGXFileI.separator, File.separator);
             jTextField1.setText(displayName);
             
-            fileName = fileName.replace(File.separator, MGXFile.separator);
+            fileName = fileName.replace(File.separator, MGXFileI.separator);
             firePropertyChange("input", "", fileName);
         }
     }//GEN-LAST:event_jButton1ActionPerformed
