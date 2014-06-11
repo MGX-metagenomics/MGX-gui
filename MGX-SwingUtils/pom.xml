@@ -83,7 +83,7 @@
 
                 <configuration>
                     <instructions>
-                        <Import-Package>javax.swing.filechooser</Import-Package>
+                        <Import-Package>javax.swing.filechooser,de.cebitec.mgx.api.groups</Import-Package>
                         <Export-Package>de.cebitec.mgx.gui.swingutils,de.cebitec.mgx.gui.swingutils.util</Export-Package>
                         <Private-Package></Private-Package>
                     </instructions>
