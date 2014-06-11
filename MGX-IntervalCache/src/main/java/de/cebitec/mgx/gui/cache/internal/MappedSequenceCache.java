@@ -70,7 +70,7 @@ public class MappedSequenceCache extends CoverageInfoCache<SortedSet<MappedSeque
             Interval interval = iter.next();
             Set<MappedSequenceI> get = lcache.getUnchecked(interval);
             for (MappedSequenceI ms : get) {
-                for (int i = ms.getMin(); i < ms.getMax(); i++) {
+                for (int i = ms.getMin(); i <= ms.getMax(); i++) {
                     // we need to check extra since we also receive mappings
                     // which only partially overlap with the interval
                     if (i >= from && i <= to) {
