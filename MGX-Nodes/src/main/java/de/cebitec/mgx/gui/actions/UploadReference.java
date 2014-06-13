@@ -24,14 +24,14 @@ public class UploadReference extends AbstractAction {
     private final ReferenceNodeFactory fnf;
 
     public UploadReference(ReferenceNodeFactory nf) {
-        putValue(NAME, "Upload EMBL/GenBank");
+        putValue(NAME, "Upload EMBL/GenBank/FASTA reference");
         fnf = nf;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
 
-        String fName = FileChooserUtils.selectExistingFilename(new FileType[]{FileType.EMBLGENBANK});
+        String fName = FileChooserUtils.selectExistingFilename(new FileType[]{FileType.EMBLGENBANK, FileType.FAS});
         if (fName == null) {
             return;
         }

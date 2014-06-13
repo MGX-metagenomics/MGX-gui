@@ -83,7 +83,7 @@
 
                 <configuration>
                     <instructions>
-                        <Import-Package>javax.swing.filechooser,de.cebitec.mgx.api.groups</Import-Package>
+                        <Import-Package>org.openide.util,org.openide.awt,javax.swing,javax.swing.filechooser,javax.swing.event,de.cebitec.mgx.api.model,de.cebitec.mgx.api.misc,de.cebitec.mgx.api.groups,de.cebitec.mgx.api.model.tree,de.cebitec.mgx.common</Import-Package>
                         <Export-Package>de.cebitec.mgx.gui.swingutils,de.cebitec.mgx.gui.swingutils.util</Export-Package>
                         <Private-Package></Private-Package>
                     </instructions>
