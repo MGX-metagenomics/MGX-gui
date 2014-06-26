@@ -67,6 +67,7 @@ public class StatisticsAccess implements StatisticsAccessI {
 
         return null;
     }
+    
     @Override
     public NodeI Clustering(List<Pair<VisualizationGroupI, DistributionI>> dists, String distanceMethod, String agglomeration) {
         // map to hold obfuscated group name mapping
