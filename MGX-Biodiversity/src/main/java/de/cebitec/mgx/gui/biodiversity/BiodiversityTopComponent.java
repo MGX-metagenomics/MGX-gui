@@ -54,7 +54,6 @@ public final class BiodiversityTopComponent extends TopComponent implements Look
 
     private final Lookup.Result<VisualizationGroupI> result;
     private VisualizationGroupI curGroup = null;
-    private final List<Statistic<DistributionI>> stats = new ArrayList<>();
 
     public BiodiversityTopComponent() {
         initComponents();
@@ -62,11 +61,6 @@ public final class BiodiversityTopComponent extends TopComponent implements Look
         setToolTipText(Bundle.HINT_BiodiversityTopComponent());
         putClientProperty(TopComponent.PROP_MAXIMIZATION_DISABLED, Boolean.TRUE);
         result = Utilities.actionsGlobalContext().lookupResult(VisualizationGroupI.class);
-
-        stats.add(new Shannon());
-        stats.add(new ACE());
-        stats.add(new Chao1());
-        stats.add(new Simpson());
     }
 
     /**
@@ -83,6 +77,14 @@ public final class BiodiversityTopComponent extends TopComponent implements Look
         groupName = new javax.swing.JLabel();
         attrType = new javax.swing.JLabel();
         panel = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        ace = new javax.swing.JTextField();
+        chao1 = new javax.swing.JTextField();
+        shannon = new javax.swing.JTextField();
+        simpson = new javax.swing.JTextField();
 
         org.openide.awt.Mnemonics.setLocalizedText(jLabel6, org.openide.util.NbBundle.getMessage(BiodiversityTopComponent.class, "BiodiversityTopComponent.jLabel6.text")); // NOI18N
 
@@ -96,12 +98,33 @@ public final class BiodiversityTopComponent extends TopComponent implements Look
         attrType.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         org.openide.awt.Mnemonics.setLocalizedText(attrType, org.openide.util.NbBundle.getMessage(BiodiversityTopComponent.class, "BiodiversityTopComponent.attrType.text")); // NOI18N
 
-        panel.setLayout(new java.awt.GridLayout());
+        panel.setLayout(new java.awt.GridLayout(1, 0));
+
+        org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(BiodiversityTopComponent.class, "BiodiversityTopComponent.jLabel1.text")); // NOI18N
+
+        org.openide.awt.Mnemonics.setLocalizedText(jLabel2, org.openide.util.NbBundle.getMessage(BiodiversityTopComponent.class, "BiodiversityTopComponent.jLabel2.text")); // NOI18N
+
+        org.openide.awt.Mnemonics.setLocalizedText(jLabel3, org.openide.util.NbBundle.getMessage(BiodiversityTopComponent.class, "BiodiversityTopComponent.jLabel3.text")); // NOI18N
+
+        org.openide.awt.Mnemonics.setLocalizedText(jLabel4, org.openide.util.NbBundle.getMessage(BiodiversityTopComponent.class, "BiodiversityTopComponent.jLabel4.text")); // NOI18N
+
+        ace.setEditable(false);
+        ace.setText(org.openide.util.NbBundle.getMessage(BiodiversityTopComponent.class, "BiodiversityTopComponent.ace.text")); // NOI18N
+
+        chao1.setEditable(false);
+        chao1.setText(org.openide.util.NbBundle.getMessage(BiodiversityTopComponent.class, "BiodiversityTopComponent.chao1.text")); // NOI18N
+
+        shannon.setEditable(false);
+        shannon.setText(org.openide.util.NbBundle.getMessage(BiodiversityTopComponent.class, "BiodiversityTopComponent.shannon.text")); // NOI18N
+
+        simpson.setEditable(false);
+        simpson.setText(org.openide.util.NbBundle.getMessage(BiodiversityTopComponent.class, "BiodiversityTopComponent.simpson.text")); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -113,9 +136,24 @@ public final class BiodiversityTopComponent extends TopComponent implements Look
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel7)
                         .addGap(18, 18, 18)
-                        .addComponent(attrType, javax.swing.GroupLayout.DEFAULT_SIZE, 235, Short.MAX_VALUE)))
+                        .addComponent(attrType, javax.swing.GroupLayout.DEFAULT_SIZE, 235, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel4)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(simpson, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(ace, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(chao1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(shannon, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
-            .addComponent(panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -130,18 +168,42 @@ public final class BiodiversityTopComponent extends TopComponent implements Look
                     .addComponent(attrType, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 13, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 292, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(ace, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(chao1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(shannon, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(simpson, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 11, Short.MAX_VALUE)
                 .addComponent(panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField ace;
     private javax.swing.JLabel attrType;
+    private javax.swing.JTextField chao1;
     private javax.swing.JLabel groupName;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JPanel panel;
+    private javax.swing.JTextField shannon;
+    private javax.swing.JTextField simpson;
     // End of variables declaration//GEN-END:variables
     @Override
     public void componentOpened() {
@@ -165,14 +227,16 @@ public final class BiodiversityTopComponent extends TopComponent implements Look
 
         DistributionI dist = getDistribution();
         if (dist == null) {
+            ace.setText("n/a");
+            chao1.setText("n/a");
+            shannon.setText("n/a");
+            simpson.setText("n/a");
             return;
         }
-
-        panel.removeAll();
-        panel.setLayout(new GridLayout(stats.size(), 1));
-        for (Statistic<DistributionI> s : stats) {
-            panel.add(new StatisticsPanel(s, dist));
-        }
+        ace.setText(new ACE().measure(dist));
+        chao1.setText(new Chao1().measure(dist));
+        shannon.setText(new Shannon().measure(dist));
+        simpson.setText(new Simpson().measure(dist));
     }
 
     private DistributionI getDistribution() {
