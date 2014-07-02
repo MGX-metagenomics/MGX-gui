@@ -218,14 +218,14 @@ public final class BiodiversityTopComponent extends TopComponent implements Look
     private void update() {
         groupName.setText(curGroup.getName());
 
+        DistributionI dist = null;
         if (curGroup.getSelectedAttributeType() == null) {
             attrType.setText("n/a");
-            return;
         } else {
             attrType.setText(curGroup.getSelectedAttributeType());
+            dist = getDistribution();
         }
 
-        DistributionI dist = getDistribution();
         if (dist == null) {
             ace.setText("n/a");
             chao1.setText("n/a");
