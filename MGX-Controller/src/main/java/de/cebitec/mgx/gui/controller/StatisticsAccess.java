@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.controller;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.StatisticsAccessI;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.PCAResultI;
@@ -67,9 +68,9 @@ public class StatisticsAccess implements StatisticsAccessI {
 
         return null;
     }
-    
+
     @Override
-    public NodeI Clustering(List<Pair<VisualizationGroupI, DistributionI>> dists, String distanceMethod, String agglomeration) {
+    public NodeI Clustering(List<Pair<VisualizationGroupI, DistributionI>> dists, String distanceMethod, String agglomeration) throws MGXException {
         // map to hold obfuscated group name mapping
         Map<String, String> tmpNames = new HashMap<>();
         MGXMatrixDTO matrix = buildMatrix(dists, tmpNames, false);
@@ -87,12 +88,12 @@ public class StatisticsAccess implements StatisticsAccessI {
             if (ex instanceof ParserException) {
                 System.err.println("Parser error for Newick string " + nwk);
             }
+            throw new MGXException(ex);
         }
-        return null;
     }
 
     @Override
-    public PCAResultI PCA(Collection<Pair<VisualizationGroupI, DistributionI>> groups, int pc1, int pc2) {
+    public PCAResultI PCA(Collection<Pair<VisualizationGroupI, DistributionI>> groups, int pc1, int pc2) throws MGXException {
 
         // map to hold obfuscated group name mapping
         Map<String, String> tmpNames = new HashMap<>();
@@ -107,13 +108,12 @@ public class StatisticsAccess implements StatisticsAccessI {
             }
             return pca;
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
-        return null;
     }
 
     @Override
-    public List<Point> PCoA(Collection<Pair<VisualizationGroupI, DistributionI>> groups) {
+    public List<Point> PCoA(Collection<Pair<VisualizationGroupI, DistributionI>> groups) throws MGXException {
 
         // map to hold obfuscated group name mapping
         Map<String, String> tmpNames = new HashMap<>();
@@ -129,9 +129,8 @@ public class StatisticsAccess implements StatisticsAccessI {
             }
             return pcoa;
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
-        return null;
     }
 
     private static MGXMatrixDTO buildMatrix(Collection<Pair<VisualizationGroupI, DistributionI>> groups, Map<String, String> tmpNames, boolean includeColNames) {
