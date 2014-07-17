@@ -49,7 +49,7 @@ public class StatisticsAccessTest {
     }
 
     @Test
-    public void testPCA() {
+    public void testPCA() throws Exception {
         System.out.println("PCA");
         MGXMaster master = TestMaster.getRO();
 
@@ -83,7 +83,7 @@ public class StatisticsAccessTest {
     }
 
     @Test
-    public void testClustering() {
+    public void testClustering() throws Exception {
         System.out.println("Clustering");
         MGXMaster master = TestMaster.getRO();
 
