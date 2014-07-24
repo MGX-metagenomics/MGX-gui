@@ -6,14 +6,12 @@ import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.misc.ToolType;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.JobParameterI;
-import de.cebitec.mgx.api.model.JobState;
 import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.ToolI;
 import de.cebitec.mgx.gui.actions.DownloadSeqRun;
 import de.cebitec.mgx.gui.actions.OpenMappingBySeqRun;
 import de.cebitec.mgx.gui.controller.RBAC;
-import de.cebitec.mgx.gui.datamodel.Job;
 import de.cebitec.mgx.gui.swingutils.NonEDT;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
@@ -133,15 +131,9 @@ public class SeqRunNode extends MGXNodeBase<SeqRunI, SeqRunNode> {
                                     assert false;
                             }
 
-                            final JobI job = new Job(m);
-                            job.setCreator(master.getLogin());
-                            job.setTool(selectedTool);
-                            job.setStatus(JobState.CREATED);
-                            job.setSeqrun(getContent());
-                            job.setParameters(params);
-
                             setStatus("Creating job..");
-                            master.Job().create(job);
+                            JobI job = master.Job().create(tool, getContent(), params);
+                            
                             setStatus("Validating configuration..");
                             master.Job().verify(job);
                             setStatus("Submitting..");

@@ -4,7 +4,6 @@ import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.MGXFileI;
 import de.cebitec.mgx.gui.controller.RBAC;
-import de.cebitec.mgx.gui.datamodel.MGXFile;
 import de.cebitec.mgx.gui.nodefactory.FileNodeFactory;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
@@ -33,22 +32,19 @@ public class CreateDirectory extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         final MGXMasterI m = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
-        MGXFileI currentDir = Utilities.actionsGlobalContext().lookup(MGXFileI.class);
+        final MGXFileI currentDir = Utilities.actionsGlobalContext().lookup(MGXFileI.class);
 //        assert currentDir != null;
 //        assert currentDir.isDirectory();
         NotifyDescriptor.InputLine nd = new NotifyDescriptor.InputLine("Directory name:", "Choose directory name");
         if (NotifyDescriptor.OK_OPTION.equals(DialogDisplayer.getDefault().notify(nd))) {
-            String dirName = nd.getInputText().trim();
+            final String dirName = nd.getInputText().trim();
             if (!dirName.isEmpty()) {
-                String targetPath = currentDir.getFullPath() + MGXFileI.separator + dirName;
-                final MGXFileI newDir = new MGXFile(m, targetPath, true, 0);
-                newDir.setParent(currentDir);
 
                 SwingWorker<Boolean, String> sw = new SwingWorker<Boolean, String>() {
                     @Override
                     protected Boolean doInBackground() throws Exception {
                         try {
-                            return m.File().createDirectory(newDir);
+                            return m.File().createDirectory(currentDir, dirName);
                         } catch (MGXException ex) {
                             if (ex.getMessage().endsWith("already exists.")) {
                                 publish(ex.getMessage());
