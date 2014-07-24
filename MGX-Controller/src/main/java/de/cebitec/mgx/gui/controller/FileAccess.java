@@ -14,8 +14,11 @@ import de.cebitec.mgx.client.datatransfer.PluginDumpDownloader;
 import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.FileDTO;
+import de.cebitec.mgx.gui.datamodel.MGXFile;
 import de.cebitec.mgx.gui.dtoconversion.FileDTOFactory;
 import de.cebitec.mgx.gui.util.BaseIterator;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.OutputStream;
 import java.util.Iterator;
@@ -42,8 +45,12 @@ public class FileAccess implements FileAccessI {
     }
 
     @Override
-    public boolean createDirectory(MGXFileI newObj) throws MGXException {
-        FileDTO dto = FileDTOFactory.getInstance().toDTO(newObj);
+    public boolean createDirectory(MGXFileI parent, String name) throws MGXException {
+        String targetPath = parent.getFullPath() + MGXFileI.separator + name;
+        final MGXFileI newDir = new MGXFile(parent.getMaster(), targetPath, true, 0);
+        newDir.setParent(parent);
+
+        FileDTO dto = FileDTOFactory.getInstance().toDTO(newDir);
         try {
             return 1 == dtomaster.File().create(dto);
         } catch (MGXServerException | MGXClientException ex) {
@@ -120,18 +127,19 @@ public class FileAccess implements FileAccessI {
     public DownloadBaseI createDownloader(String serverFname, OutputStream out) {
         try {
             final FileDownloader fd = dtomaster.File().createDownloader(serverFname, out);
-            return new DownloadBaseI() {
-
-                @Override
-                public boolean download() {
-                    return fd.download();
-                }
-
-                @Override
-                public long getProgress() {
-                    return fd.getProgress();
-                }
-            };
+            return new ServerFileDownloader(fd);
+//            return new DownloadBaseI() {
+//
+//                @Override
+//                public boolean download() {
+//                    return fd.download();
+//                }
+//
+//                @Override
+//                public long getProgress() {
+//                    return fd.getProgress();
+//                }
+//            };
         } catch (MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
@@ -153,6 +161,36 @@ public class FileAccess implements FileAccessI {
                 return pd.getProgress();
             }
         };
+    }
+
+    private class ServerFileDownloader extends DownloadBaseI implements PropertyChangeListener {
+
+        private final FileDownloader fd;
+
+        public ServerFileDownloader(FileDownloader fd) {
+            this.fd = fd;
+            fd.addPropertyChangeListener(this);
+        }
+
+        @Override
+        public boolean download() {
+            boolean ret = fd.download();
+            if (!ret) {
+                setErrorMessage(fd.getErrorMessage());
+            }
+            return ret;
+        }
+
+        @Override
+        public long getProgress() {
+            return fd.getProgress();
+        }
+
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+            fireTaskChange(evt.getPropertyName(), fd.getProgress());
+        }
+
     }
 
 }
