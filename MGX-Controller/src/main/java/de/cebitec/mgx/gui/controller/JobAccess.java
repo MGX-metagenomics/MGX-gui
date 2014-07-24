@@ -7,15 +7,20 @@ import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.misc.TaskI.TaskType;
 import de.cebitec.mgx.api.model.Identifiable;
 import de.cebitec.mgx.api.model.JobI;
+import de.cebitec.mgx.api.model.JobParameterI;
+import de.cebitec.mgx.api.model.JobState;
 import de.cebitec.mgx.api.model.SeqRunI;
+import de.cebitec.mgx.api.model.ToolI;
 import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.JobDTO;
 import de.cebitec.mgx.dto.dto.MGXString;
+import de.cebitec.mgx.gui.datamodel.Job;
 import de.cebitec.mgx.gui.dtoconversion.JobDTOFactory;
 import de.cebitec.mgx.gui.util.BaseIterator;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
@@ -25,12 +30,24 @@ import org.openide.util.Exceptions;
  *
  * @author sjaenick
  */
-public class JobAccess extends AccessBase<JobI> implements JobAccessI {
+public class JobAccess implements JobAccessI {
+
+    private final MGXDTOMaster dtomaster;
+    private final MGXMasterI master;
 
     public JobAccess(MGXMasterI master, MGXDTOMaster dtomaster) {
-        super(master, dtomaster);
+        this.dtomaster = dtomaster;
+        this.master = master;
     }
-    
+
+    protected MGXDTOMaster getDTOmaster() {
+        return dtomaster;
+    }
+
+    protected MGXMasterI getMaster() {
+        return master;
+    }
+
     @Override
     public boolean verify(JobI obj) throws MGXException {
         assert obj.getId() != Identifiable.INVALID_IDENTIFIER;
@@ -84,21 +101,29 @@ public class JobAccess extends AccessBase<JobI> implements JobAccessI {
     }
 
     @Override
-    public JobI create(JobI obj) {
-        assert obj.getTool().getId() != Identifiable.INVALID_IDENTIFIER;
-        assert obj.getSeqrun().getId() != Identifiable.INVALID_IDENTIFIER;
+    public JobI create(ToolI tool, SeqRunI seqrun, Collection<JobParameterI> params) {
 
-        JobDTO dto = JobDTOFactory.getInstance().toDTO(obj);
+        assert tool.getId() != Identifiable.INVALID_IDENTIFIER;
+        assert seqrun.getId() != Identifiable.INVALID_IDENTIFIER;
+
+        JobI job = new Job(tool.getMaster());
+        job.setCreator(tool.getMaster().getLogin());
+        job.setTool(tool);
+        job.setStatus(JobState.CREATED);
+        job.setSeqrun(seqrun);
+        job.setParameters(params);
+
+        JobDTO dto = JobDTOFactory.getInstance().toDTO(job);
         long id = Identifiable.INVALID_IDENTIFIER;
         try {
             id = getDTOmaster().Job().create(dto);
-            obj.setId(id);
-            obj.modified();
+            job.setId(id);
+            job.modified();
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
 
-        return obj;
+        return job;
     }
 
     @Override
@@ -194,4 +219,5 @@ public class JobAccess extends AccessBase<JobI> implements JobAccessI {
         }
         return null;
     }
+
 }
