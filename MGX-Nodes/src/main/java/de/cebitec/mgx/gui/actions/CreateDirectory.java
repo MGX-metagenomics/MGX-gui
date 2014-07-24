@@ -33,8 +33,9 @@ public class CreateDirectory extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         final MGXMasterI m = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
-        MGXFileI currentDir = Utilities.actionsGlobalContext().lookup(MGXFile.class);
-        assert currentDir.isDirectory();
+        MGXFileI currentDir = Utilities.actionsGlobalContext().lookup(MGXFileI.class);
+//        assert currentDir != null;
+//        assert currentDir.isDirectory();
         NotifyDescriptor.InputLine nd = new NotifyDescriptor.InputLine("Directory name:", "Choose directory name");
         if (NotifyDescriptor.OK_OPTION.equals(DialogDisplayer.getDefault().notify(nd))) {
             String dirName = nd.getInputText().trim();
