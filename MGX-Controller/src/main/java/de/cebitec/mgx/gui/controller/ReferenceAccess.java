@@ -6,7 +6,6 @@ import de.cebitec.mgx.api.access.datatransfer.UploadBaseI;
 import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.model.Identifiable;
 import de.cebitec.mgx.api.model.MGXReferenceI;
-import de.cebitec.mgx.api.model.ModelBase;
 import de.cebitec.mgx.api.model.RegionI;
 import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.client.datatransfer.ReferenceUploader;
@@ -132,7 +131,7 @@ public class ReferenceAccess implements ReferenceAccessI {
 
     @Override
     public Iterator<MGXReferenceI> listGlobalReferences() {
-        Iterator<ReferenceDTO> iter = null;
+        Iterator<ReferenceDTO> iter;
         try {
             iter = dtomaster.Reference().listGlobalReferences();
             return new BaseIterator<ReferenceDTO, MGXReferenceI>(iter) {
