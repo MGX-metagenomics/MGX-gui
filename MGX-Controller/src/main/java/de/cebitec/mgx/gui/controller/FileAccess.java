@@ -46,19 +46,24 @@ public class FileAccess implements FileAccessI {
 
     @Override
     public boolean createDirectory(MGXFileI parent, String name) throws MGXException {
+        // check name
+        String[] invalid = new String[]{"|", "/", "\\", ".."};
+
+        for (String s : invalid) {
+            if (name.contains(s)) {
+                throw new MGXException("Invalid character: " + s);
+            }
+        }
+
         String targetPath = parent.getFullPath() + MGXFileI.separator + name;
-        final MGXFileI newDir = new MGXFile(parent.getMaster(), targetPath, true, 0);
+        final MGXFileI newDir = new MGXFile(getMaster(), targetPath, true, 0);
         newDir.setParent(parent);
 
         FileDTO dto = FileDTOFactory.getInstance().toDTO(newDir);
         try {
             return 1 == dtomaster.File().create(dto);
         } catch (MGXServerException | MGXClientException ex) {
-            if (ex.getMessage().trim().endsWith("already exists.")) {
-                throw new MGXException(ex);
-            }
-            Exceptions.printStackTrace(ex);
-            return false;
+            throw new MGXException(ex);
         }
     }
 
