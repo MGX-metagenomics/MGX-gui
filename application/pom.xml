@@ -143,11 +143,11 @@
             <groupId>org.netbeans.api</groupId> 
             <artifactId>org-netbeans-modules-netbinox</artifactId> 
         </dependency>-->
-        <dependency>
+    <!--    <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-netbeans-core-netigso</artifactId>
             <version>RELEASE74</version>
-        </dependency>
+        </dependency> -->
     </dependencies>
 
     <build>
