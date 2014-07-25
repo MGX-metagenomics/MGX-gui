@@ -73,7 +73,7 @@ public abstract class MGXTask implements Runnable, PropertyChangeListener {
     }
 
     public void failed() {
-        setStatus("Failed");
+        setStatus("Failed: " + getStatus());
         state = TASK_FAILED;
         fireTaskChanged();
     }
