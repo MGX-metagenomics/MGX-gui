@@ -88,6 +88,9 @@ public class DownloadFile extends AbstractAction {
                     downloader.addPropertyChangeListener(this);
                     boolean ret = downloader.download();
                     downloader.removePropertyChangeListener(this);
+                    if (!ret) {
+                        setStatus(downloader.getErrorMessage());
+                    }
                     return ret;
                 }
 
@@ -97,6 +100,7 @@ public class DownloadFile extends AbstractAction {
                         writer.close();
                         super.finished();
                     } catch (IOException ex) {
+                        setStatus(ex.getMessage());
                         failed();
                     }
                 }
