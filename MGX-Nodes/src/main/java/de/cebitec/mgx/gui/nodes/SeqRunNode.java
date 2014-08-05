@@ -132,7 +132,7 @@ public class SeqRunNode extends MGXNodeBase<SeqRunI, SeqRunNode> {
                             }
 
                             setStatus("Creating job..");
-                            JobI job = master.Job().create(tool, getContent(), params);
+                            JobI job = master.Job().create(selectedTool, getContent(), params);
                             
                             setStatus("Validating configuration..");
                             master.Job().verify(job);
@@ -140,6 +140,7 @@ public class SeqRunNode extends MGXNodeBase<SeqRunI, SeqRunNode> {
                             return master.Job().execute(job);
                         } catch (MGXException ex) {
                             setStatus(ex.getMessage());
+                            failed();
                             Exceptions.printStackTrace(ex);
                         }
                         return false;
