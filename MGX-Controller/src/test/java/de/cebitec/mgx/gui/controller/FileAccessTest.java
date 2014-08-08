@@ -169,25 +169,4 @@ public class FileAccessTest {
         fis.close();
         return complete.digest();
     }
-
-    private static class PropCounter implements PropertyChangeListener {
-
-        private int cnt = 0;
-        private PropertyChangeEvent last = null;
-
-        @Override
-        public void propertyChange(PropertyChangeEvent evt) {
-            //System.err.println(evt.getPropertyName());
-            last = evt;
-            cnt++;
-        }
-
-        public int getCount() {
-            return cnt;
-        }
-
-        public PropertyChangeEvent getLastEvent() {
-            return last;
-        }
-    }
 }
