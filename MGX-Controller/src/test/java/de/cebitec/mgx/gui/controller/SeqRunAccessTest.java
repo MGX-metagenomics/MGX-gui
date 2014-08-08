@@ -1,9 +1,17 @@
 package de.cebitec.mgx.gui.controller;
 
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.access.datatransfer.DownloadBaseI;
+import de.cebitec.mgx.api.access.datatransfer.TransferBaseI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.util.TestMaster;
+import de.cebitec.mgx.seqstorage.FastaWriter;
+import de.cebitec.mgx.sequence.SeqStoreException;
+import de.cebitec.mgx.sequence.SeqWriterI;
+import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 import org.junit.After;
@@ -71,4 +79,23 @@ public class SeqRunAccessTest {
         assertEquals(sr1, sr2);
     }
 
+    @Test
+    public void testDownload() throws Exception {
+        System.out.println("testDownload");
+        File tmpFile = File.createTempFile("down", "xx");
+        final SeqWriterI writer = new FastaWriter(tmpFile.getAbsolutePath());
+
+        MGXMasterI m = TestMaster.getRO();
+        SeqRunI sr1 = m.SeqRun().fetch(1);
+        PropCounter pc = new PropCounter();
+        final DownloadBaseI downloader = m.Sequence().createDownloader(sr1.getId(), writer, true);
+        downloader.addPropertyChangeListener(pc);
+        boolean success = downloader.download();
+
+        tmpFile.delete();
+
+        assertTrue(success);
+        assertNotNull(pc.getLastEvent());
+        assertEquals(TransferBaseI.TRANSFER_COMPLETED, pc.getLastEvent().getPropertyName());
+    }
 }

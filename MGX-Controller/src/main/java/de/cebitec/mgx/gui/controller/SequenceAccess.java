@@ -22,6 +22,8 @@ import de.cebitec.mgx.gui.dtoconversion.SequenceDTOFactory;
 import de.cebitec.mgx.sequence.DNASequenceI;
 import de.cebitec.mgx.sequence.SeqReaderI;
 import de.cebitec.mgx.sequence.SeqWriterI;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -49,35 +51,13 @@ public class SequenceAccess extends AccessBase<SequenceI> implements SequenceAcc
     @Override
     public UploadBaseI createUploader(long seqrun_id, SeqReaderI reader) {
         final SeqUploader su = getDTOmaster().Sequence().createUploader(seqrun_id, reader);
-        return new UploadBaseI() {
-
-            @Override
-            public boolean upload() {
-                return su.upload();
-            }
-
-            @Override
-            public long getNumElementsSent() {
-                return su.getNumElementsSent();
-            }
-        };
+        return new ServerSeqRunUploader(su);
     }
 
     @Override
     public DownloadBaseI createDownloader(long seqrun_id, SeqWriterI writer, boolean closeWriter) {
         final SeqDownloader sd = getDTOmaster().Sequence().createDownloader(seqrun_id, writer, closeWriter);
-        return new DownloadBaseI() {
-
-            @Override
-            public boolean download() {
-                return sd.download();
-            }
-
-            @Override
-            public long getProgress() {
-                return sd.getProgress();
-            }
-        };
+        return new ServerSeqRunDownloader(sd);
     }
 
     public void downloadSequences(long seqrun_id, SeqWriterI writer, boolean closeWriter) {
@@ -95,18 +75,7 @@ public class SequenceAccess extends AccessBase<SequenceI> implements SequenceAcc
             b.addAttribute(AttributeDTOFactory.getInstance().toDTO(a));
         }
         final SeqByAttributeDownloader dl = getDTOmaster().Sequence().createDownloaderByAttributes(b.build(), writer, closeWriter);
-        return new DownloadBaseI() {
-
-            @Override
-            public boolean download() {
-                return dl.download();
-            }
-
-            @Override
-            public long getProgress() {
-                return dl.getProgress();
-            }
-        };
+        return new ServerSeqRunDownloader(dl);
     }
 
     public void downloadSequencesForAttributes(Set<AttributeI> attrs, SeqWriterI writer, boolean closeWriter) {
@@ -186,5 +155,65 @@ public class SequenceAccess extends AccessBase<SequenceI> implements SequenceAcc
     @Override
     public TaskI delete(SequenceI obj) {
         throw new UnsupportedOperationException("Not supported.");
+    }
+
+    private class ServerSeqRunUploader extends UploadBaseI implements PropertyChangeListener {
+
+        private final SeqUploader su;
+
+        public ServerSeqRunUploader(SeqUploader su) {
+            this.su = su;
+            su.addPropertyChangeListener(this);
+        }
+
+        @Override
+        public boolean upload() {
+            boolean ret = su.upload();
+            if (!ret) {
+                setErrorMessage(su.getErrorMessage());
+            }
+            return ret;
+        }
+
+        @Override
+        public long getNumElementsSent() {
+            return su.getNumElementsSent();
+        }
+
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+            fireTaskChange(evt.getPropertyName(), su.getNumElementsSent());
+        }
+
+    }
+
+    private class ServerSeqRunDownloader extends DownloadBaseI implements PropertyChangeListener {
+
+        private final SeqDownloader sd;
+
+        public ServerSeqRunDownloader(SeqDownloader sd) {
+            this.sd = sd;
+            sd.addPropertyChangeListener(this);
+        }
+
+        @Override
+        public boolean download() {
+            boolean ret = sd.download();
+            if (!ret) {
+                setErrorMessage(sd.getErrorMessage());
+            }
+            return ret;
+        }
+
+        @Override
+        public long getProgress() {
+            return sd.getProgress();
+        }
+
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+            fireTaskChange(evt.getPropertyName(), sd.getProgress());
+        }
+
     }
 }
