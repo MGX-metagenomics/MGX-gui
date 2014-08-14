@@ -178,8 +178,8 @@ public class TaskListEntry extends javax.swing.JPanel implements PropertyChangeL
                 });
                 break;
             default:
-                System.err.println("unhandled event in TaskListEntry: " + pce.getPropertyName());
-                assert false;
+                //System.err.println("unhandled event in TaskListEntry: " + pce.getPropertyName());
+//                assert false;
                 break;
         }
     }
