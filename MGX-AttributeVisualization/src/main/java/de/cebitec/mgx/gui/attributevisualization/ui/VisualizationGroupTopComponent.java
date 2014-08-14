@@ -32,7 +32,7 @@ import org.openide.windows.TopComponent;
         persistenceType = TopComponent.PERSISTENCE_NEVER)
 @TopComponent.Registration(mode = "output", openAtStartup = false, position = 1)
 @ActionID(category = "Window", id = "de.cebitec.mgx.gui.attributevisualization.ui.VisualizationGroupTopComponent")
-@ActionReference(path = "Menu/Window", position = 334)
+@ActionReference(path = "Menu/Window", position = 335)
 @TopComponent.OpenActionRegistration(displayName = "#CTL_VisualizationGroupAction",
         preferredID = "VisualizationGroupTopComponent")
 @Messages({
