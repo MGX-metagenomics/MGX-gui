@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.attributevisualization.exportwizard;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.datatransfer.DownloadBaseI;
+import de.cebitec.mgx.api.access.datatransfer.TransferBaseI;
 import de.cebitec.mgx.api.groups.SequenceExporterI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
@@ -151,7 +152,8 @@ public final class SeqExporter implements SequenceExporterI {
                 downloader.addPropertyChangeListener(this);
                 ret = downloader.download();
                 downloader.removePropertyChangeListener(this);
-                if (!ret) {
+                if (!ret) { 
+                    setStatus(downloader.getErrorMessage());
                     failed();
                 }
                 numSeqsTotal += numSeqs;
@@ -175,11 +177,11 @@ public final class SeqExporter implements SequenceExporterI {
         @Override
         public void propertyChange(PropertyChangeEvent pce) {
             switch (pce.getPropertyName()) {
-                case DownloadBaseI.NUM_ELEMENTS_RECEIVED:
+                case TransferBaseI.NUM_ELEMENTS_TRANSFERRED:
                     numSeqs = (long) pce.getNewValue();
                     setStatus(String.format("%1$d sequences received", numSeqsTotal + numSeqs));
                     break;
-                case DownloadBaseI.TRANSFER_FAILED:
+                case TransferBaseI.TRANSFER_FAILED:
                     failed();
                     break;
                 default:
