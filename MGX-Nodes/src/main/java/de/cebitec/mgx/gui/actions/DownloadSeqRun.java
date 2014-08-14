@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.actions;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.datatransfer.DownloadBaseI;
+import de.cebitec.mgx.api.access.datatransfer.TransferBaseI;
 import de.cebitec.mgx.api.groups.FileType;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.swingutils.NonEDT;
@@ -126,7 +127,7 @@ public class DownloadSeqRun extends AbstractAction {
                 @Override
                 public void propertyChange(PropertyChangeEvent pce) {
                     switch (pce.getPropertyName()) {
-                        case DownloadBaseI.NUM_ELEMENTS_RECEIVED:
+                        case TransferBaseI.NUM_ELEMENTS_TRANSFERRED:
                             setStatus(String.format("%1$d sequences received", pce.getNewValue()));
                             break;
                         case DownloadBaseI.TRANSFER_FAILED:

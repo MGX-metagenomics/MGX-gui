@@ -8,15 +8,17 @@ package de.cebitec.mgx.gui.controller;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.datatransfer.DownloadBaseI;
 import de.cebitec.mgx.api.access.datatransfer.TransferBaseI;
+import de.cebitec.mgx.api.access.datatransfer.UploadBaseI;
 import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.model.MGXFileI;
+import de.cebitec.mgx.gui.datamodel.MGXFile;
 import de.cebitec.mgx.gui.util.TestMaster;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -56,7 +58,7 @@ public class FileAccessTest {
     @After
     public void tearDown() {
     }
-    
+
     @Test
     public void testCreateInvalidDir() {
         System.out.println("testCreateInvalidDir");
@@ -70,9 +72,9 @@ public class FileAccessTest {
         }
         fail();
     }
-    
+
     @Test
-    public void testDownloadFile() {
+    public void testDownloadFile() throws MGXException {
         System.out.println("DownloadFile");
         MGXMasterI m = TestMaster.getRO();
 
@@ -119,6 +121,56 @@ public class FileAccessTest {
         }
 
         assertEquals(69, pc.getCount());
+        assertEquals(TransferBaseI.TRANSFER_COMPLETED, pc.getLastEvent().getPropertyName());
+    }
+
+    @Test
+    public void testUploadFile() throws Exception {
+        System.out.println("testUploadFile");
+        MGXMasterI m = TestMaster.getRW();
+
+        File f = new File("/tmp/testDownload");
+        FileWriter fw = new FileWriter(f);
+        for (int i = 0; i < 90000; i++) {
+            fw.write("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+        }
+        fw.close();
+
+        UploadBaseI up = null;
+        up = m.File().createUploader(f, MGXFileI.getRoot(m), "testUpload");
+        assertNotNull(up);
+
+        PropCounter pc = new PropCounter();
+        up.addPropertyChangeListener(pc);
+
+        boolean success = up.upload();
+        assertTrue(success);
+        up.removePropertyChangeListener(pc);
+
+        if (!success) {
+            fail(up.getErrorMessage());
+        }
+        
+        long fileSize = f.length();
+
+        // cleanup
+        if (f.exists()) {
+            f.delete();
+        }
+
+        TaskI task = m.File().delete(new MGXFile(m, ".|testUpload", false, 42));
+        while ((task.getState() != TaskI.State.FINISHED) || (task.getState() != TaskI.State.FAILED)) {
+            System.err.println(" --> " + task.getState());
+            Thread.sleep(1000);
+            if ((task.getState() == TaskI.State.FINISHED) || (task.getState() == TaskI.State.FAILED)) {
+                break;
+            } else {
+                task = m.Task().refresh(task);
+            }
+        }
+
+        assertTrue(500 < pc.getCount());
+        assertEquals(fileSize, pc.getLastEvent().getNewValue());
         assertEquals(TransferBaseI.TRANSFER_COMPLETED, pc.getLastEvent().getPropertyName());
     }
 

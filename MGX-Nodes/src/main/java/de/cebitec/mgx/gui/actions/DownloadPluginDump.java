@@ -2,6 +2,8 @@ package de.cebitec.mgx.gui.actions;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.datatransfer.DownloadBaseI;
+import de.cebitec.mgx.api.access.datatransfer.TransferBaseI;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.gui.swingutils.NonEDT;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
@@ -109,7 +111,7 @@ public class DownloadPluginDump extends AbstractAction {
                 @Override
                 public void propertyChange(PropertyChangeEvent pce) {
                     switch (pce.getPropertyName()) {
-                        case DownloadBaseI.NUM_ELEMENTS_RECEIVED:
+                        case TransferBaseI.NUM_ELEMENTS_TRANSFERRED:
                             setStatus(String.format("%1$d bytes received", pce.getNewValue()));
                             break;
                         case DownloadBaseI.TRANSFER_FAILED:
@@ -128,7 +130,7 @@ public class DownloadPluginDump extends AbstractAction {
                     TaskManager.getInstance().addTask(run);
                 }
             });
-        } catch (FileNotFoundException ex) {
+        } catch (MGXException | FileNotFoundException ex) {
             Exceptions.printStackTrace(ex);
         }
     }
