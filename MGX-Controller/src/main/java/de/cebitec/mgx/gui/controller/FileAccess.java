@@ -111,48 +111,24 @@ public class FileAccess implements FileAccessI {
         String fullPath = targetDir.getFullPath() + MGXFileI.separator + targetName;
         try {
             final FileUploader up = dtomaster.File().createUploader(localFile, fullPath);
-            return new UploadBaseI() {
-
-                @Override
-                public boolean upload() {
-                    return up.upload();
-                }
-
-                @Override
-                public long getNumElementsSent() {
-                    return up.getProgress();
-                }
-            };
+            return new ServerFileUploader(up);
         } catch (MGXClientException ex) {
             throw new MGXException(ex);
         }
     }
 
     @Override
-    public DownloadBaseI createDownloader(String serverFname, OutputStream out) {
+    public DownloadBaseI createDownloader(String serverFname, OutputStream out) throws MGXException {
         try {
             final FileDownloader fd = dtomaster.File().createDownloader(serverFname, out);
             return new ServerFileDownloader(fd);
-//            return new DownloadBaseI() {
-//
-//                @Override
-//                public boolean download() {
-//                    return fd.download();
-//                }
-//
-//                @Override
-//                public long getProgress() {
-//                    return fd.getProgress();
-//                }
-//            };
         } catch (MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
-        return null;
     }
 
     @Override
-    public DownloadBaseI createPluginDumpDownloader(OutputStream out) {
+    public DownloadBaseI createPluginDumpDownloader(OutputStream out) throws MGXException {
         final PluginDumpDownloader pd = dtomaster.File().createPluginDumpDownloader(out);
         return new DownloadBaseI() {
 
@@ -194,6 +170,36 @@ public class FileAccess implements FileAccessI {
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
             fireTaskChange(evt.getPropertyName(), fd.getProgress());
+        }
+
+    }
+
+    private class ServerFileUploader extends UploadBaseI implements PropertyChangeListener {
+
+        private final FileUploader fu;
+
+        public ServerFileUploader(FileUploader fu) {
+            this.fu = fu;
+            fu.addPropertyChangeListener(this);
+        }
+
+        @Override
+        public boolean upload() {
+            boolean ret = fu.upload();
+            if (!ret) {
+                setErrorMessage(fu.getErrorMessage());
+            }
+            return ret;
+        }
+
+        @Override
+        public long getNumElementsSent() {
+            return fu.getProgress();
+        }
+
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+            fireTaskChange(evt.getPropertyName(), fu.getProgress());
         }
 
     }

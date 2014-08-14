@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.actions;
 
 import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.access.datatransfer.TransferBaseI;
 import de.cebitec.mgx.api.access.datatransfer.UploadBaseI;
 import de.cebitec.mgx.api.groups.FileType;
 import de.cebitec.mgx.gui.controller.RBAC;
@@ -59,7 +60,7 @@ public class UploadReference extends AbstractAction {
 
             @Override
             public void propertyChange(PropertyChangeEvent pce) {
-                if (pce.getPropertyName().equals(UploadBaseI.NUM_ELEMENTS_SENT)) {
+                if (pce.getPropertyName().equals(TransferBaseI.NUM_ELEMENTS_TRANSFERRED)) {
                     setStatus(String.format("%1$d subregions sent", pce.getNewValue()));
                 } else {
                     super.propertyChange(pce);

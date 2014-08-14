@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.actions;
 
 import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.access.datatransfer.TransferBaseI;
 import de.cebitec.mgx.api.access.datatransfer.UploadBaseI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.MGXFileI;
@@ -60,27 +61,41 @@ public class UploadFile extends AbstractAction {
             final MGXTask upTask = new MGXTask("Upload " + fchooser.getSelectedFile().getName()) {
                 @Override
                 public boolean process() {
-                    return uploader.upload();
+                    uploader.addPropertyChangeListener(this);
+                    boolean ret = uploader.upload();
+                    
+                    if (!ret) {
+                        setStatus(uploader.getErrorMessage());
+                    }
+                    return ret;
                 }
 
                 @Override
                 public void finished() {
                     super.finished();
+                    uploader.removePropertyChangeListener(this);
                     fnf.refreshChildren();
                 }
 
                 @Override
                 public void failed() {
                     super.failed();
+                    uploader.removePropertyChangeListener(this);
                     fnf.refreshChildren();
                 }
 
                 @Override
                 public void propertyChange(PropertyChangeEvent pce) {
-                    if (pce.getPropertyName().equals(UploadBaseI.NUM_ELEMENTS_SENT)) {
-                        setStatus(String.format("%1$d bytes sent", pce.getNewValue()));
-                    } else {
-                        super.propertyChange(pce);
+                    switch (pce.getPropertyName()) {
+                        case TransferBaseI.NUM_ELEMENTS_TRANSFERRED:
+                            setStatus(String.format("%1$d bytes sent", pce.getNewValue()));
+                            break;
+                        case TransferBaseI.TRANSFER_FAILED:
+                            failed();
+                            break;
+                        default:
+                            super.propertyChange(pce);
+                            break;
                     }
                 }
 
@@ -95,7 +110,7 @@ public class UploadFile extends AbstractAction {
                     return Math.round(100 * complete);
                 }
             };
-            uploader.addPropertyChangeListener(upTask);
+            //uploader.addPropertyChangeListener(upTask);
 
             NonEDT.invoke(new Runnable() {
                 @Override

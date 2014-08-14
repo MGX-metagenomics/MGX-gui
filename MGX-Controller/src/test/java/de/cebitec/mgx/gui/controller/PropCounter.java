@@ -19,7 +19,7 @@ class PropCounter implements PropertyChangeListener {
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        System.err.println("  " + evt.getPropertyName());
+        System.err.println("  " + evt.getPropertyName() + ": " + evt.getNewValue());
         last = evt;
         cnt++;
     }

@@ -182,7 +182,7 @@ public class ReferenceAccess implements ReferenceAccessI {
 
             @Override
             public long getNumElementsSent() {
-                return ru.getNumElementsSent();
+                return ru.getProgress();
             }
         };
     }

@@ -177,12 +177,12 @@ public class SequenceAccess extends AccessBase<SequenceI> implements SequenceAcc
 
         @Override
         public long getNumElementsSent() {
-            return su.getNumElementsSent();
+            return su.getProgress();
         }
 
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
-            fireTaskChange(evt.getPropertyName(), su.getNumElementsSent());
+            fireTaskChange(evt.getPropertyName(), su.getProgress());
         }
 
     }
