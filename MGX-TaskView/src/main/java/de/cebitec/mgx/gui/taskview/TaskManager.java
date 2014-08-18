@@ -14,6 +14,7 @@ import org.openide.util.Lookup;
 import org.openide.util.RequestProcessor;
 import org.openide.util.RequestProcessor.Task;
 import org.openide.util.TaskListener;
+import org.openide.windows.Mode;
 import org.openide.windows.WindowManager;
 
 /**
@@ -48,7 +49,7 @@ public class TaskManager implements TaskListener, PropertyChangeListener {
 
     public void addTask(final MGXTask mgxtask) {
         assert !EventQueue.isDispatchThread();
-        
+
         try {
             EventQueue.invokeAndWait(new Runnable() {
                 @Override
@@ -58,6 +59,10 @@ public class TaskManager implements TaskListener, PropertyChangeListener {
                         taskViewer = getTaskViewer();
                     }
                     if (!taskViewer.isOpened()) {
+                        Mode mode = WindowManager.getDefault().findMode("right");
+                        if (mode != null) {
+                            mode.dockInto(taskViewer);
+                        }
                         taskViewer.open();
                     }
                 }
