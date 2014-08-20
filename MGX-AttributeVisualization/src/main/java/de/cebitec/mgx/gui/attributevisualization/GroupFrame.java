@@ -7,6 +7,7 @@ package de.cebitec.mgx.gui.attributevisualization;
 
 import de.cebitec.mgx.api.groups.VGroupManagerI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.model.ModelBase;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.nodefactory.VisualizationGroupNodeFactory;
 import de.cebitec.mgx.gui.nodes.SeqRunNode;
@@ -256,6 +257,9 @@ public class GroupFrame extends javax.swing.JInternalFrame implements ExplorerMa
                 } catch (PropertyVetoException ex) {
                     Exceptions.printStackTrace(ex);
                 }
+                break;
+            case ModelBase.OBJECT_MODIFIED:
+                repaint();
                 break;
             default:
                 System.err.println("GroupFrame for " + vGroup.getName() + " got event " + evt.getPropertyName());
