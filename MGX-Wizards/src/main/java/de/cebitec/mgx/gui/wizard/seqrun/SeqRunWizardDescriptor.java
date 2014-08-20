@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.wizard.seqrun;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.TermAccessI;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.TermI;
 import java.io.File;
@@ -71,7 +72,7 @@ public class SeqRunWizardDescriptor extends WizardDescriptor {
         SwingWorker<Void, Void> sw = new SwingWorker<Void, Void>() {
 
             @Override
-            protected Void doInBackground() {
+            protected Void doInBackground() throws MGXException {
                 p1.setMethods(m.Term().byCategory(TermAccessI.SEQ_METHODS).toArray(new TermI[]{}));
                 p1.setPlatforms(m.Term().byCategory(TermAccessI.SEQ_PLATFORMS).toArray(new TermI[]{}));
                 p1.setSeqRuns(m.SeqRun().fetchall());
