@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.wizard.extract;
 
 import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.DNAExtractI;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -65,7 +66,7 @@ public class DNAExtractWizardDescriptor extends WizardDescriptor {
         SwingWorker<Void, Void> sw = new SwingWorker<Void, Void>() {
 
             @Override
-            protected Void doInBackground() {
+            protected Void doInBackground() throws MGXException {
                 p1.setDNAExtracts(m.DNAExtract().fetchall());
                 return null;
             }
