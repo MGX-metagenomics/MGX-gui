@@ -307,7 +307,9 @@ public class VisualizationGroup implements VisualizationGroupI {
     public void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {
             case ModelBase.OBJECT_DELETED:
-                removeSeqRun((SeqRunI) evt.getOldValue());
+                if (evt.getSource() instanceof SeqRunI) {
+                    removeSeqRun((SeqRunI) evt.getSource());
+                }
                 pcs.firePropertyChange(evt);
                 break;
             case ModelBase.OBJECT_MODIFIED:
