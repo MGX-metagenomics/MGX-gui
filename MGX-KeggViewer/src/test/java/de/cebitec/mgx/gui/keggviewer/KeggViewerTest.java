@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.keggviewer;
 
 import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.groups.ConflictingJobsException;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.AttributeRank;
@@ -42,7 +43,7 @@ public class KeggViewerTest {
     }
 
     @Test
-    public void testRegressionInterrupted() {
+    public void testRegressionInterrupted() throws MGXException {
         System.out.println("regressionInterrupted");
 
         VisualizationGroupI vg = VGroupManager.getInstance().createGroup();
