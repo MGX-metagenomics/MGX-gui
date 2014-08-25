@@ -5,10 +5,12 @@
 package de.cebitec.mgx.gui.mapping;
 
 import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.api.model.MappedSequenceI;
 import de.cebitec.mgx.api.model.MappingI;
+import de.cebitec.mgx.gui.cache.IntIterator;
 import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.UUID;
@@ -62,7 +64,7 @@ public class MappingCtxTest {
     }
 
     @Test
-    public void testGetMappedReadCount() {
+    public void testGetMappedReadCount() throws MGXException {
         System.out.println("testGetMappedReadCount");
         MGXMasterI master = TestMaster.getRO();
         Iterator<MappingI> iter = master.Mapping().fetchall();
@@ -79,8 +81,8 @@ public class MappingCtxTest {
         MGXReferenceI ref = master.Reference().fetch(mapping.getReferenceID());
         JobI job = master.Job().fetch(mapping.getJobID());
         MappingCtx ctx = new MappingCtx(mapping, ref, job);
-        
-        SortedSet<MappedSequenceI> mappings = ctx.getMappings(0, ref.getLength()-1);
+
+        SortedSet<MappedSequenceI> mappings = ctx.getMappings(0, ref.getLength() - 1);
         // $ samtools view 124.bam | wc -l
         // 405
         assertEquals(405, mappings.size());
@@ -90,7 +92,7 @@ public class MappingCtxTest {
      * Test of getMappings method, of class MappingCtx.
      */
     @Test
-    public void testGetMappings() {
+    public void testGetMappings() throws MGXException {
         System.out.println("getMappings");
         MGXMasterI master = TestMaster.getRO();
         Iterator<MappingI> iter = master.Mapping().fetchall();
@@ -117,6 +119,95 @@ public class MappingCtxTest {
             System.err.println(ms.getStart() + " - " + ms.getStop());
         }
         assertEquals(1, mappings.size());
+    }
+
+    @Test
+    public void testMappingsPrivMax() throws MGXException {
+        System.err.println("testMappingsPrivMax");
+        MGXMasterI master = TestMaster.getPrivate();
+        if (master == null) {
+            System.err.println("    private test, skipped");
+            return;
+        }
+        Iterator<MappingI> iter = master.Mapping().fetchall();
+        int cnt = 0;
+        MappingI mapping = null;
+        while (iter.hasNext()) {
+            mapping = iter.next();
+            cnt++;
+        }
+        assertEquals(1, cnt);
+        assertNotNull(mapping);
+        assertEquals(1, mapping.getId());
+        MGXReferenceI ref = master.Reference().fetch(mapping.getReferenceID());
+        JobI job = master.Job().fetch(mapping.getJobID());
+        MappingCtx ctx = new MappingCtx(mapping, ref, job);
+        //
+        //
+        SortedSet<MappedSequenceI> mappings = ctx.getMappings(567083, 567083);
+        assertNotNull(mappings);
+        assertEquals(8901, mappings.size());
+    }
+
+    @Test
+    public void testMaxCovPriv() throws MGXException {
+        System.err.println("testMaxCovPriv");
+        MGXMasterI master = TestMaster.getPrivate();
+        if (master == null) {
+            System.err.println("    private test, skipped");
+            return;
+        }
+        Iterator<MappingI> iter = master.Mapping().fetchall();
+        MappingI mapping = null;
+        while (iter.hasNext()) {
+            mapping = iter.next();
+        }
+        assertNotNull(mapping);
+        assertEquals(1, mapping.getId());
+        MGXReferenceI ref = master.Reference().fetch(mapping.getReferenceID());
+        JobI job = master.Job().fetch(mapping.getJobID());
+        MappingCtx ctx = new MappingCtx(mapping, ref, job);
+        //
+        //
+        long maxCoverage = ctx.getMaxCoverage();
+        assertEquals(8901, maxCoverage);
+    }
+
+    @Test
+    public void testCoveragePriv() throws MGXException {
+        System.err.println("testCoveragePriv");
+        MGXMasterI master = TestMaster.getPrivate();
+        if (master == null) {
+            System.err.println("    private test, skipped");
+            return;
+        }
+        Iterator<MappingI> iter = master.Mapping().fetchall();
+        int cnt = 0;
+        MappingI mapping = null;
+        while (iter.hasNext()) {
+            mapping = iter.next();
+            cnt++;
+        }
+        assertEquals(1, cnt);
+        assertNotNull(mapping);
+        assertEquals(1, mapping.getId());
+        MGXReferenceI ref = master.Reference().fetch(mapping.getReferenceID());
+        JobI job = master.Job().fetch(mapping.getJobID());
+        MappingCtx ctx = new MappingCtx(mapping, ref, job);
+        //
+        //
+        int max = -1;
+        int numPos = 0;
+        IntIterator covIter = ctx.getCoverageIterator(0, ref.getLength() - 1);
+        while (covIter.hasNext()) {
+            int c = covIter.next();
+            numPos++;
+            if (c > max) {
+                max = c;
+            }
+        }
+        assertEquals(numPos, ref.getLength());
+        assertEquals(8901, max);
     }
 
     /**

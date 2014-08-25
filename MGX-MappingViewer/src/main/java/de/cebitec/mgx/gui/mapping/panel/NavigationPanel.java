@@ -336,7 +336,6 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
 
         int baseY = getHeight() - 1;
         int pos = 0;
-        int max = -1;
         double covScale = (getHeight() * 1d) / (FastMath.log(maxCov * 1d));
 
         GeneralPath gp = null;
@@ -344,12 +343,6 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
         double[] lastPoint = new double[2];
         while (covIter.hasNext()) {
             int cov = covIter.next();
-            if (cov == maxCov) {
-                System.err.println("found max at " + pos);
-            }
-            if (cov > max) {
-                max = cov;
-            }
             if (cov == 0) {
                 if (gp != null) {
                     gp.lineTo(lastPoint[0], baseY); // down to bottom line
@@ -392,8 +385,6 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
             ret.add(new Area(gp));
             gp = null;
         }
-
-        System.err.println("saw max " + max + " expected" + maxCov);
 
         synchronized (coverage) {
             coverage.clear();

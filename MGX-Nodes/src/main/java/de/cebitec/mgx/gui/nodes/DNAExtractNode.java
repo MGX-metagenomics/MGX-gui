@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.nodes;
 
 import de.cebitec.mgx.gui.actions.AddSeqRun;
 import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.model.DNAExtractI;
 import de.cebitec.mgx.gui.controller.RBAC;
@@ -141,15 +142,23 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtractI, DNAExtractNode> {
                 final MGXTask deleteTask = new MGXTask("Delete " + dna.getName()) {
                     @Override
                     public boolean process() {
-                        setStatus("Deleting..");
-                        TaskI task = m.DNAExtract().delete(dna);
-                        while (!task.done()) {
-                            setStatus(task.getStatusMessage());
-                            task = m.Task().refresh(task);
-                            sleep();
+                        try {
+                            setStatus("Deleting..");
+                            TaskI task = m.DNAExtract().delete(dna);
+                            while (task != null && !task.done()) {
+                                setStatus(task.getStatusMessage());
+                                task = m.Task().refresh(task);
+                                sleep();
+                            }
+                            if (task != null) {
+                                task.finish();
+                            }
+                            return task != null && task.getState() == TaskI.State.FINISHED;
+                        } catch (MGXException ex) {
+                            setStatus(ex.getMessage());
+                            failed();
+                            return false;
                         }
-                        task.finish();
-                        return task.getState() == TaskI.State.FINISHED;
                     }
 
                     @Override

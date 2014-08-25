@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.nodefactory;
 
 import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.HabitatI;
 import de.cebitec.mgx.gui.nodes.HabitatNode;
 import java.beans.PropertyChangeEvent;
@@ -11,6 +12,7 @@ import org.openide.nodes.Node;
 import org.openide.nodes.NodeEvent;
 import org.openide.nodes.NodeMemberEvent;
 import org.openide.nodes.NodeReorderEvent;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -26,12 +28,17 @@ public class HabitatNodeFactory extends MGXNodeFactoryBase<HabitatI> {
 
     @Override
     protected boolean createKeys(List<HabitatI> toPopulate) {
-        Iterator<HabitatI> iter = master.Habitat().fetchall();
-        while (iter.hasNext()) {
-            toPopulate.add(iter.next());
+        try {
+            Iterator<HabitatI> iter = master.Habitat().fetchall();
+            while (iter.hasNext()) {
+                toPopulate.add(iter.next());
+            }
+            Collections.sort(toPopulate);
+            return true;
+        } catch (MGXException ex) {
+            Exceptions.printStackTrace(ex);
         }
-        Collections.sort(toPopulate);
-        return true;
+        return false;
     }
 
     @Override

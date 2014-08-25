@@ -21,6 +21,7 @@ import org.openide.util.lookup.AbstractLookup;
 import org.openide.util.lookup.InstanceContent;
 import org.openide.util.lookup.ServiceProvider;
 import org.openide.windows.TopComponent;
+import org.openide.windows.WindowManager;
 
 /**
  * Top component which displays something.

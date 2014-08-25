@@ -9,6 +9,7 @@ import de.cebitec.mgx.api.model.MappedSequenceI;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveTask;
 
@@ -18,12 +19,13 @@ import java.util.concurrent.RecursiveTask;
  */
 public class Track {
 
-    private static final ForkJoinPool pool = new ForkJoinPool();
+    private final ExecutorService pool;
     private final List<MappedSequenceI> content = new LinkedList<>();
     private MappedSequenceI last = null;
     private final int padding = 25; // bp, should be px
 
-    Track() {
+    Track(ExecutorService pool) {
+        this.pool = pool;
     }
 
     public synchronized boolean tryAdd(MappedSequenceI ms) {

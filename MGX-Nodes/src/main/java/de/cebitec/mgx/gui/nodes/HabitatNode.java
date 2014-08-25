@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.nodes;
 
 import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.model.HabitatI;
 import de.cebitec.mgx.api.model.SampleI;
@@ -141,15 +142,23 @@ public class HabitatNode extends MGXNodeBase<HabitatI, HabitatNode> {
                 final MGXTask deleteTask = new MGXTask("Delete " + habitat.getName()) {
                     @Override
                     public boolean process() {
-                        setStatus("Deleting..");
-                        TaskI task = m.Habitat().delete(habitat);
-                        while (!task.done()) {
-                            setStatus(task.getStatusMessage());
-                            task = m.Task().refresh(task);
-                            sleep();
+                        try {
+                            setStatus("Deleting..");
+                            TaskI task = m.Habitat().delete(habitat);
+                            while (task != null && !task.done()) {
+                                setStatus(task.getStatusMessage());
+                                task = m.Task().refresh(task);
+                                sleep();
+                            }
+                            if (task != null) {
+                                task.finish();
+                            }
+                            return task != null && task.getState() == TaskI.State.FINISHED;
+                        } catch (MGXException ex) {
+                            setStatus(ex.getMessage());
+                            failed();
+                            return false;
                         }
-                        task.finish();
-                        return task.getState() == TaskI.State.FINISHED;
                     }
                 };
 

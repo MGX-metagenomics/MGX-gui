@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.nodes;
 
 import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.model.DNAExtractI;
 import de.cebitec.mgx.api.model.SampleI;
@@ -142,16 +143,23 @@ public class SampleNode extends MGXNodeBase<SampleI, SampleNode> {
                 final MGXTask deleteTask = new MGXTask("Delete " + sample.getMaterial()) {
                     @Override
                     public boolean process() {
-                        setStatus("Deleting..");
-                        TaskI task = m.Sample().delete(sample);
-                        while (!task.done()) {
-                            setStatus(task.getStatusMessage());
-                            task = m.Task().refresh(task);
-                            sleep();
+                        try {
+                            setStatus("Deleting..");
+                            TaskI task = m.Sample().delete(sample);
+                            while (task != null && !task.done()) {
+                                setStatus(task.getStatusMessage());
+                                task = m.Task().refresh(task);
+                                sleep();
+                            }
+                            if (task != null) {
+                                task.finish();
+                            }
+                            return task != null && task.getState() == TaskI.State.FINISHED;
+                        } catch (MGXException ex) {
+                            setStatus(ex.getMessage());
+                            failed();
+                            return false;
                         }
-                        task.finish();
-                        return task.getState() == TaskI.State.FINISHED;
-
                     }
                 };
 
@@ -190,7 +198,7 @@ public class SampleNode extends MGXNodeBase<SampleI, SampleNode> {
                 SwingWorker<DNAExtractI, Void> worker = new SwingWorker<DNAExtractI, Void>() {
                     @Override
                     protected DNAExtractI doInBackground() throws Exception {
-                        return m.DNAExtract().create(s, wd.getExtractName(), wd.getMethod(), 
+                        return m.DNAExtract().create(s, wd.getExtractName(), wd.getMethod(),
                                 wd.getProtocol(), wd.getFivePrimer(), wd.getThreePrimer(), wd.getTargetGene(), wd.getTargetFragment(), wd.getDescription());
                     }
 

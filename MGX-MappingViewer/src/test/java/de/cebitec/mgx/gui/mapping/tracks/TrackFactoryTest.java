@@ -2,6 +2,7 @@
 package de.cebitec.mgx.gui.mapping.tracks;
 
 import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.api.model.MappedSequenceI;
@@ -81,7 +82,7 @@ public class TrackFactoryTest {
 //        assertEquals(2, result.size());
 //    }
     @Test
-    public void testTiming() {
+    public void testTiming() throws MGXException {
         System.out.println("testTiming");
         MGXMasterI master = TestMaster.getRO();
         Iterator<MappingI> iter = master.Mapping().fetchall();

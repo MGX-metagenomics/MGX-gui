@@ -6,6 +6,7 @@
 package de.cebitec.mgx.gui.cache;
 
 import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.api.model.MappedSequenceI;
 import de.cebitec.mgx.api.model.MappingI;
@@ -71,7 +72,7 @@ public class IntIteratorTest {
     
     
     @Test
-    public void testIteratorLength() {
+    public void testIteratorLength() throws MGXException {
         System.err.println("testIteratorLength");
         MGXMasterI master = TestMaster.getRO();
         Iterator<MappingI> iter = master.Mapping().fetchall();

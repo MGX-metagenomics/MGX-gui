@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.nodefactory;
 
 import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.HabitatI;
 import de.cebitec.mgx.api.model.SampleI;
 import de.cebitec.mgx.gui.nodes.SampleNode;
@@ -14,6 +15,7 @@ import org.openide.nodes.NodeEvent;
 import org.openide.nodes.NodeListener;
 import org.openide.nodes.NodeMemberEvent;
 import org.openide.nodes.NodeReorderEvent;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -31,12 +33,17 @@ public class SampleNodeFactory extends ChildFactory<SampleI> implements NodeList
 
     @Override
     protected boolean createKeys(List<SampleI> toPopulate) {
-        Iterator<SampleI> iter = master.Sample().ByHabitat(habitat_id);
-        while (iter.hasNext()) {
-            toPopulate.add(iter.next());
+        try {
+            Iterator<SampleI> iter = master.Sample().ByHabitat(habitat_id);
+            while (iter.hasNext()) {
+                toPopulate.add(iter.next());
+            }
+            Collections.sort(toPopulate);
+            return true;
+        } catch (MGXException ex) {
+            Exceptions.printStackTrace(ex);
         }
-        Collections.sort(toPopulate);
-        return true;
+        return false;
     }
 
     @Override

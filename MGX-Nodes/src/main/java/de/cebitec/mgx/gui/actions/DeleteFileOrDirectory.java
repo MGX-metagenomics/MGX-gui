@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.actions;
 
 import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.model.MGXFileI;
 import de.cebitec.mgx.gui.controller.RBAC;
@@ -11,6 +12,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
+import org.openide.util.Exceptions;
 import org.openide.util.Utilities;
 
 /**
@@ -66,12 +68,27 @@ public class DeleteFileOrDirectory extends AbstractAction {
         @Override
         public boolean process() {
             setStatus("Deleting..");
-            TaskI delTask = master.File().delete(file);
-            while (!delTask.done()) {
-                delTask = master.Task().refresh(delTask);
+            TaskI delTask = null;
+            try {
+                delTask = master.File().delete(file);
+            } catch (MGXException ex) {
+                setStatus(ex.getMessage());
+                failed();
+                return false;
+            }
+            while (delTask != null && !delTask.done()) {
+                try {
+                    delTask = master.Task().refresh(delTask);
+                } catch (MGXException ex) {
+                    setStatus(ex.getMessage());
+                    failed();
+                    return false;
+                }
                 sleep();
             }
-            delTask.finish();
+            if (delTask != null) {
+                delTask.finish();
+            }
             return true;
         }
     }

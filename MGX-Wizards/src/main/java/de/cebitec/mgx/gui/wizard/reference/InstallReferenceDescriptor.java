@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.wizard.reference;
 
 import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.MGXReferenceI;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -47,7 +48,7 @@ public class InstallReferenceDescriptor extends WizardDescriptor {
         final MGXMasterI m = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
         SwingWorker<Void, Void> sw = new SwingWorker<Void, Void>() {
             @Override
-            protected Void doInBackground() {
+            protected Void doInBackground() throws MGXException {
                 Set<MGXReferenceI> refs = new TreeSet<>();
                 Set<String> projRefNames = new HashSet<>();
                 java.util.Iterator<MGXReferenceI> projrefiter = m.Reference().fetchall();

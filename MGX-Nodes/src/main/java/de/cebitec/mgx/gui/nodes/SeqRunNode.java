@@ -88,11 +88,15 @@ public class SeqRunNode extends MGXNodeBase<SeqRunI, SeqRunNode> {
             NonEDT.invokeAndWait(new Runnable() {
                 @Override
                 public void run() {
-                    Iterator<MGXReferenceI> refiter = m.Reference().fetchall();
-                    while (refiter.hasNext()) {
-                        references.add(refiter.next());
+                    try {
+                        Iterator<MGXReferenceI> refiter = m.Reference().fetchall();
+                        while (refiter.hasNext()) {
+                            references.add(refiter.next());
+                        }
+                        Collections.sort(references);
+                    } catch (MGXException ex) {
+                        Exceptions.printStackTrace(ex);
                     }
-                    Collections.sort(references);
                 }
             });
 
@@ -133,7 +137,7 @@ public class SeqRunNode extends MGXNodeBase<SeqRunI, SeqRunNode> {
 
                             setStatus("Creating job..");
                             JobI job = master.Job().create(selectedTool, getContent(), params);
-                            
+
                             setStatus("Validating configuration..");
                             master.Job().verify(job);
                             setStatus("Submitting..");
@@ -153,8 +157,6 @@ public class SeqRunNode extends MGXNodeBase<SeqRunI, SeqRunNode> {
                         TaskManager.getInstance().addTask(submit);
                     }
                 });
-
-
 
             }
         }
@@ -235,16 +237,24 @@ public class SeqRunNode extends MGXNodeBase<SeqRunI, SeqRunNode> {
                 final MGXTask deleteTask = new MGXTask("Delete " + sr.getName()) {
                     @Override
                     public boolean process() {
-                        setStatus("Deleting..");
-                        MGXMasterI m = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
-                        TaskI task = m.SeqRun().delete(sr);
-                        while (!task.done()) {
-                            setStatus(task.getStatusMessage());
-                            task = m.Task().refresh(task);
-                            sleep();
+                        try {
+                            setStatus("Deleting..");
+                            MGXMasterI m = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
+                            TaskI task = m.SeqRun().delete(sr);
+                            while (task != null && !task.done()) {
+                                setStatus(task.getStatusMessage());
+                                task = m.Task().refresh(task);
+                                sleep();
+                            }
+                            if (task != null) {
+                                task.finish();
+                            }
+                            return task != null && task.getState() == TaskI.State.FINISHED;
+                        } catch (MGXException ex) {
+                            setStatus(ex.getMessage());
+                            failed();
+                            return false;
                         }
-                        task.finish();
-                        return task.getState() == TaskI.State.FINISHED;
                     }
 
                     @Override

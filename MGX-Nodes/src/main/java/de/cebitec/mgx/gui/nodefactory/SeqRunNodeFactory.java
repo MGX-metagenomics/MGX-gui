@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.nodefactory;
 
 import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.DNAExtractI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.nodes.SeqRunNode;
@@ -15,6 +16,7 @@ import org.openide.nodes.NodeEvent;
 import org.openide.nodes.NodeListener;
 import org.openide.nodes.NodeMemberEvent;
 import org.openide.nodes.NodeReorderEvent;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -32,13 +34,18 @@ public class SeqRunNodeFactory extends ChildFactory<SeqRunI> implements NodeList
 
     @Override
     protected boolean createKeys(List<SeqRunI> toPopulate) {
-        Iterator<SeqRunI> ByExtract = master.SeqRun().ByExtract(extract_id);
-        while (ByExtract.hasNext()) {
-            toPopulate.add(ByExtract.next());
+        try {
+            Iterator<SeqRunI> ByExtract = master.SeqRun().ByExtract(extract_id);
+            while (ByExtract.hasNext()) {
+                toPopulate.add(ByExtract.next());
+            }
+            
+            Collections.sort(toPopulate);
+            return true;
+        } catch (MGXException ex) {
+            Exceptions.printStackTrace(ex);
         }
-
-        Collections.sort(toPopulate);
-        return true;
+        return false;
     }
 
     @Override

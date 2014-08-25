@@ -1,4 +1,4 @@
-package de.cebitec.mgx.gui.mapping;
+package de.cebitec.mgx.gui.cache;
 
 import de.cebitec.gpms.core.MembershipI;
 import de.cebitec.gpms.rest.GPMSClientI;
@@ -88,6 +88,41 @@ public class TestMaster {
         while (mbr.hasNext()) {
             MembershipI m = mbr.next();
             if ("MGX".equals(m.getProject().getProjectClass().getName()) && ("MGX_Unittest".equals(m.getProject().getName()))) {
+                MGXDTOMaster dtomaster = new MGXDTOMaster(gpms, m);
+                master = new MGXMaster(dtomaster);
+                break;
+            }
+        }
+
+        return master;
+    }
+
+    public static MGXMasterI getPrivate() {
+        MGXMasterI master = null;
+
+        String serverURI = "https://mgx.cebitec.uni-bielefeld.de/MGX-maven-web/webresources/";
+
+        Properties p = new Properties();
+        String config = System.getProperty("user.home") + "/.m2/mgx.private";
+        File f = new File(config);
+        if (f.exists() && f.canRead()) {
+            try {
+                p.load(new FileInputStream(f));
+                serverURI = p.getProperty("testserver");
+            } catch (IOException ex) {
+                System.out.println(ex.getMessage());
+            }
+        }
+        GPMSClientI gpms = new GPMS("MyServer", serverURI);
+        if (!gpms.login(p.getProperty("username"), p.getProperty("password"))) {
+            return null;
+        }
+        Iterator<MembershipI> mbr = gpms.getMemberships();
+        Assert.assertNotNull(mbr);
+
+        while (mbr.hasNext()) {
+            MembershipI m = mbr.next();
+            if ("MGX".equals(m.getProject().getProjectClass().getName()) && ("MGX_Biogas_MT".equals(m.getProject().getName()))) {
                 MGXDTOMaster dtomaster = new MGXDTOMaster(gpms, m);
                 master = new MGXMaster(dtomaster);
                 break;

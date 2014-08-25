@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.nodefactory;
 
 import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.DNAExtractI;
 import de.cebitec.mgx.api.model.SampleI;
 import de.cebitec.mgx.gui.nodes.DNAExtractNode;
@@ -14,6 +15,7 @@ import org.openide.nodes.NodeEvent;
 import org.openide.nodes.NodeListener;
 import org.openide.nodes.NodeMemberEvent;
 import org.openide.nodes.NodeReorderEvent;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -31,8 +33,13 @@ public class DNAExtractNodeFactory extends ChildFactory<DNAExtractI> implements 
 
     @Override
     protected boolean createKeys(List<DNAExtractI> toPopulate) {
-        Iterator<DNAExtractI> iter = master.DNAExtract().BySample(sample_id);
-        while (iter.hasNext()) {
+        Iterator<DNAExtractI> iter = null;
+        try {
+            iter = master.DNAExtract().BySample(sample_id);
+        } catch (MGXException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+        while (iter != null && iter.hasNext()) {
             toPopulate.add(iter.next());
         }
         Collections.sort(toPopulate);

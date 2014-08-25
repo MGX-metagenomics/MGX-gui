@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.nodes;
 
 import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.gui.actions.OpenMappingByReference;
@@ -14,6 +15,7 @@ import javax.swing.Action;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.nodes.Children;
+import org.openide.util.Exceptions;
 import org.openide.util.Utilities;
 import org.openide.util.lookup.Lookups;
 
@@ -60,7 +62,6 @@ public class ReferenceNode extends MGXNodeBase<MGXReferenceI, ReferenceNode> {
         setShortDescription(getToolTipText(getContent()));
     }
 
-
     private class DeleteReference extends AbstractAction {
 
         public DeleteReference() {
@@ -81,16 +82,24 @@ public class ReferenceNode extends MGXNodeBase<MGXReferenceI, ReferenceNode> {
                 final MGXTask deleteTask = new MGXTask("Delete " + ref.getName()) {
                     @Override
                     public boolean process() {
-                        setStatus("Deleting..");
-                        MGXMasterI m = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
-                        TaskI task = m.Reference().delete(ref);
-                        while (!task.done()) {
-                            setStatus(task.getStatusMessage());
-                            task = m.Task().refresh(task);
-                            sleep();
+                        try {
+                            setStatus("Deleting..");
+                            MGXMasterI m = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
+                            TaskI task = m.Reference().delete(ref);
+                            while (task != null && !task.done()) {
+                                setStatus(task.getStatusMessage());
+                                task = m.Task().refresh(task);
+                                sleep();
+                            }
+                            if (task != null) {
+                                task.finish();
+                            }
+                            return task != null && task.getState() == TaskI.State.FINISHED;
+                        } catch (MGXException ex) {
+                            setStatus(ex.getMessage());
+                            failed();
+                            return false;
                         }
-                        task.finish();
-                        return task.getState() == TaskI.State.FINISHED;
                     }
                 };
 
