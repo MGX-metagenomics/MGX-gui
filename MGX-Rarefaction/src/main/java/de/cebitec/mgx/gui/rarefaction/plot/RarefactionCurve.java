@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.rarefaction.plot;
 
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.groups.FileType;
 import de.cebitec.mgx.api.groups.ImageExporterI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
@@ -133,15 +134,16 @@ public class RarefactionCurve extends ViewerI<DistributionI> {
                 public void run() {
                     XYSeries series = new XYSeries(groupDistribution.getFirst().getName());
                     DistributionI dist = groupDistribution.getSecond();
-                    Iterator<Point> iter = Rarefaction.rarefy(dist);
-                    if (iter == null) {
-                        return;
+                    try {
+                        Iterator<Point> iter = Rarefaction.rarefy(dist);
+                        while (iter.hasNext()) {
+                            Point p = iter.next();
+                            series.add(p.getX(), p.getY());
+                        }
+                        dataset.addSeries(series);
+                    } catch (MGXException ex) {
+                        Exceptions.printStackTrace(ex);
                     }
-                    while (iter.hasNext()) {
-                        Point p = iter.next();
-                        series.add(p.getX(), p.getY());
-                    }
-                    dataset.addSeries(series);
                 }
             });
 
@@ -170,7 +172,7 @@ public class RarefactionCurve extends ViewerI<DistributionI> {
 
             @Override
             public boolean export(FileType type, String fName) throws Exception {
-                 try {
+                try {
                     ChartUtilities.saveChartAsPNG(new File(fName), chart, 1280, 1024);
                     return true;
                 } catch (IOException ex) {
