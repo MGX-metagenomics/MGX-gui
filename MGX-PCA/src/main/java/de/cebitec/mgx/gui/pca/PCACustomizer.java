@@ -38,27 +38,18 @@ public class PCACustomizer extends javax.swing.JPanel {
         this.toolTips = toolTips;
         series = new XYSeries("");
         numLoadings.setMinimum(0);
-        numLoadings.setMaximum(pca.getLoadings().size());
-        numLoadings.setValue(pca.getLoadings().size());
-        int num = pca.getLoadings().size();
-        //while (num > 10) { num = num / 10; }
-        numLoadings.setMajorTickSpacing(num);
-        numLoadings.setEnabled(true);
+        List<Point> loadings = pca.getLoadings();
+        if (loadings != null) {
+            numLoadings.setMaximum(loadings.size());
+            //numLoadings.setValue(loadings.size());
+            int num = loadings.size();
+            while (num > 10) { num = num / 10; }
+            numLoadings.setMajorTickSpacing(num);
+            numLoadings.setEnabled(true);
+        }
     }
 
     public XYSeries getLoadings() {
-//        if (series == null) {
-//            series = new XYSeries("");
-//        }
-//        series.clear();
-//        int numToShow = numLoadings.getValue();
-//        List<Point> pts = pca.getDatapoints().subList(pca.getDatapoints().size() - numToShow, pca.getDatapoints().size());
-//
-//        for (Point p : pts) {
-//            XYDataItem item = new XYDataItem(p.getX(), p.getY());
-//            toolTips.put(item, p.getName());
-//            series.add(item);
-//        }
         return series;
     }
 
@@ -142,7 +133,7 @@ public class PCACustomizer extends javax.swing.JPanel {
         if (series == null || pca == null) {
             return;
         }
-        numLoadings.setToolTipText("Show "+numLoadings.getValue()+ " of "+ numLoadings.getMaximum()+" loadings");
+        numLoadings.setToolTipText("Show " + numLoadings.getValue() + " of " + numLoadings.getMaximum() + " loadings");
         series.clear();
         int numToShow = numLoadings.getValue();
         if (numToShow == 0) {

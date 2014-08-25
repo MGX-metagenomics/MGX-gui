@@ -111,6 +111,7 @@ public class PCAPlot extends ViewerI<DistributionI> {
         try {
             pca = sw.get();
         } catch (InterruptedException | ExecutionException ex) {
+            System.err.println(ex.getMessage());
             Exceptions.printStackTrace(ex);
             return;
         }
