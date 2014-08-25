@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.controller;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.SeqRunAccessI;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.misc.TaskI.TaskType;
 import de.cebitec.mgx.api.model.AttributeTypeI;
@@ -40,7 +41,7 @@ public class SeqRunAccess extends AccessBase<SeqRunI> implements SeqRunAccessI {
     }
 
     @Override
-    public SeqRunI create(DNAExtractI extract, String name, TermI seqMethod, TermI seqTechnology, boolean submittedINSDC, String accession) {
+    public SeqRunI create(DNAExtractI extract, String name, TermI seqMethod, TermI seqTechnology, boolean submittedINSDC, String accession) throws MGXException {
         SeqRun obj = new SeqRun(getMaster())
                 .setDNAExtractId(extract.getId())
                 .setName(name)
@@ -53,39 +54,39 @@ public class SeqRunAccess extends AccessBase<SeqRunI> implements SeqRunAccessI {
         try {
             id = getDTOmaster().SeqRun().create(dto);
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
         obj.setId(id);
         return obj;
     }
 
     @Override
-    public SeqRunI create(SeqRunI obj) {
+    public SeqRunI create(SeqRunI obj) throws MGXException {
         SeqRunDTO dto = SeqRunDTOFactory.getInstance().toDTO(obj);
         long id = Identifiable.INVALID_IDENTIFIER;
         try {
             id = getDTOmaster().SeqRun().create(dto);
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
         obj.setId(id);
         return obj;
     }
 
     @Override
-    public SeqRunI fetch(long id) {
+    public SeqRunI fetch(long id) throws MGXException {
         SeqRunDTO dto = null;
         try {
             dto = getDTOmaster().SeqRun().fetch(id);
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
         SeqRunI ret = SeqRunDTOFactory.getInstance().toModel(getMaster(), dto);
         return ret;
     }
 
     @Override
-    public Iterator<SeqRunI> fetchall() {
+    public Iterator<SeqRunI> fetchall() throws MGXException {
         try {
             Iterator<SeqRunDTO> fetchall = getDTOmaster().SeqRun().fetchall();
             return new BaseIterator<SeqRunDTO, SeqRunI>(fetchall) {
@@ -96,35 +97,33 @@ public class SeqRunAccess extends AccessBase<SeqRunI> implements SeqRunAccessI {
                 }
             };
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
-        return null;
     }
 
     @Override
-    public void update(SeqRunI obj) {
+    public void update(SeqRunI obj) throws MGXException {
         SeqRunDTO dto = SeqRunDTOFactory.getInstance().toDTO(obj);
         try {
             getDTOmaster().SeqRun().update(dto);
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
         obj.modified();
     }
 
     @Override
-    public TaskI delete(SeqRunI obj) {
-        TaskI ret = null;
+    public TaskI delete(SeqRunI obj) throws MGXException {
         try {
             UUID uuid = getDTOmaster().SeqRun().delete(obj.getId());
-            ret = getMaster().Task().get(obj, uuid, TaskType.DELETE);
+            return getMaster().Task().get(obj, uuid, TaskType.DELETE);
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
-        return ret;
     }
 
-    public Iterator<SeqRunI> ByExtract(final long extract_id) {
+    @Override
+    public Iterator<SeqRunI> ByExtract(final long extract_id) throws MGXException {
         try {
             Iterator<SeqRunDTO> fetchall = getDTOmaster().SeqRun().ByExtract(extract_id);
             return new BaseIterator<SeqRunDTO, SeqRunI>(fetchall) {
@@ -135,13 +134,12 @@ public class SeqRunAccess extends AccessBase<SeqRunI> implements SeqRunAccessI {
                 }
             };
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
-        return null;
     }
 
     @Override
-    public Map<JobI, Set<AttributeTypeI>> getJobsAndAttributeTypes(SeqRunI run) {
+    public Map<JobI, Set<AttributeTypeI>> getJobsAndAttributeTypes(SeqRunI run) throws MGXException {
         Map<JobI, Set<AttributeTypeI>> ret = new HashMap<>();
         try {
             for (JobAndAttributeTypes jat : getDTOmaster().SeqRun().getJobsAndAttributeTypes(run.getId())) {
@@ -157,7 +155,7 @@ public class SeqRunAccess extends AccessBase<SeqRunI> implements SeqRunAccessI {
                 ret.put(job, all);
             }
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
 
         return ret;

@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.controller;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.HabitatAccessI;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.model.HabitatI;
 import de.cebitec.mgx.api.model.Identifiable;
@@ -72,7 +73,7 @@ public class HabitatAccess extends AccessBase<HabitatI> implements HabitatAccess
     }
 
     @Override
-    public Iterator<HabitatI> fetchall() {
+    public Iterator<HabitatI> fetchall() throws MGXException {
         try {
             Iterator<HabitatDTO> fetchall = getDTOmaster().Habitat().fetchall();
             return new BaseIterator<HabitatDTO, HabitatI>(fetchall) {
@@ -84,32 +85,28 @@ public class HabitatAccess extends AccessBase<HabitatI> implements HabitatAccess
             };
 
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
-
-        return null;
     }
 
     @Override
-    public void update(HabitatI obj) {
+    public void update(HabitatI obj) throws MGXException {
         HabitatDTO dto = HabitatDTOFactory.getInstance().toDTO(obj);
         try {
             getDTOmaster().Habitat().update(dto);
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
         obj.modified();
     }
 
     @Override
-    public TaskI delete(HabitatI obj) {
-        TaskI t = null;
+    public TaskI delete(HabitatI obj) throws MGXException {
         try {
             UUID uuid = getDTOmaster().Habitat().delete(obj.getId());
-            t = getMaster().Task().get(obj, uuid, Task.TaskType.DELETE);
+            return getMaster().Task().get(obj, uuid, Task.TaskType.DELETE);
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
-        return t;
     }
 }

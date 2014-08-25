@@ -51,7 +51,7 @@ public class HabitatAccessTest {
     }
     
     @Test
-    public void testFetchall() {
+    public void testFetchall() throws Exception {
         System.out.println("fetchall");
         MGXMaster master = TestMaster.getRO();
         Iterator<HabitatI> iter = master.Habitat().fetchall();

@@ -175,7 +175,7 @@ public class FileAccessTest {
     }
 
     @Test
-    public void testFetchall() {
+    public void testFetchall() throws MGXException {
         System.out.println("fetchall");
         Iterator<MGXFileI> iter = master.File().fetchall();
         assertNotNull(iter);

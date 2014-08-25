@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.controller;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.SampleAccessI;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.misc.TaskI.TaskType;
 import de.cebitec.mgx.api.model.HabitatI;
@@ -75,7 +76,7 @@ public class SampleAccess extends AccessBase<SampleI> implements SampleAccessI {
     }
 
     @Override
-    public Iterator<SampleI> fetchall() {
+    public Iterator<SampleI> fetchall() throws MGXException {
         try {
             Iterator<SampleDTO> fetchall = getDTOmaster().Sample().fetchall();
             return new BaseIterator<SampleDTO, SampleI>(fetchall) {
@@ -87,10 +88,8 @@ public class SampleAccess extends AccessBase<SampleI> implements SampleAccessI {
             };
 
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
-
-        return null;
     }
 
     @Override
@@ -105,17 +104,18 @@ public class SampleAccess extends AccessBase<SampleI> implements SampleAccessI {
     }
 
     @Override
-    public TaskI delete(SampleI obj) {
+    public TaskI delete(SampleI obj) throws MGXException {
         TaskI ret = null;
         try {
             UUID uuid = getDTOmaster().Sample().delete(obj.getId());
             ret = getMaster().Task().get(obj, uuid, TaskType.DELETE);
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
         return ret;
     }
 
+    @Override
     public Iterator<SampleI> ByHabitat(final long hab_id) {
         try {
             Iterator<SampleDTO> fetchall = getDTOmaster().Sample().ByHabitat(hab_id);

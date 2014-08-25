@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.controller;
 
 import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.client.exception.MGXClientException;
@@ -48,7 +49,7 @@ public class AttributeTypeAccess extends AccessBase<AttributeTypeI> {
         throw new UnsupportedOperationException("Not supported.");
     }
 
-    public Iterator<AttributeTypeI> BySeqRun(long id) {
+    public Iterator<AttributeTypeI> BySeqRun(long id) throws MGXException {
         try {
             Iterator<AttributeTypeDTO> it = getDTOmaster().AttributeType().BySeqRun(id);
             return new BaseIterator<AttributeTypeDTO, AttributeTypeI>(it) {
@@ -59,12 +60,11 @@ public class AttributeTypeAccess extends AccessBase<AttributeTypeI> {
                 }
             };
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
-        return null;
     }
 
-    public Iterator<AttributeTypeI> ByJob(Job job) {
+    public Iterator<AttributeTypeI> ByJob(Job job) throws MGXException {
         try {
             Iterator<AttributeTypeDTO> it = getDTOmaster().AttributeType().ByJob(job.getId());
             return new BaseIterator<AttributeTypeDTO, AttributeTypeI>(it) {
@@ -75,8 +75,7 @@ public class AttributeTypeAccess extends AccessBase<AttributeTypeI> {
                 }
             };
         } catch (MGXServerException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
-        return null;
     }
 }

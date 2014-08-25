@@ -53,7 +53,7 @@ public class StatisticsAccess implements StatisticsAccessI {
     }
 
     @Override
-    public Iterator<Point> Rarefaction(DistributionI dist) {
+    public Iterator<Point> Rarefaction(DistributionI dist) throws MGXException {
         try {
             Iterator<PointDTO> fetchall = dtomaster.Statistics().Rarefaction(dist.values());
             return new BaseIterator<PointDTO, Point>(fetchall) {
@@ -63,10 +63,8 @@ public class StatisticsAccess implements StatisticsAccessI {
                 }
             };
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
-
-        return null;
     }
 
     @Override

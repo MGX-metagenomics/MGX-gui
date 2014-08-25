@@ -3,6 +3,7 @@ package de.cebitec.mgx.gui.controller;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.ReferenceAccessI;
 import de.cebitec.mgx.api.access.datatransfer.UploadBaseI;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.model.Identifiable;
 import de.cebitec.mgx.api.model.MGXReferenceI;
@@ -62,7 +63,7 @@ public class ReferenceAccess implements ReferenceAccessI {
     }
 
     @Override
-    public Iterator<MGXReferenceI> fetchall() {
+    public Iterator<MGXReferenceI> fetchall() throws MGXException {
         try {
 
             return new Iterator<MGXReferenceI>() {
@@ -85,9 +86,8 @@ public class ReferenceAccess implements ReferenceAccessI {
                 }
             };
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
-        return null;
     }
 
     @Override
@@ -159,15 +159,13 @@ public class ReferenceAccess implements ReferenceAccessI {
     }
 
     @Override
-    public TaskI delete(MGXReferenceI obj) {
-        TaskI ret = null;
+    public TaskI delete(MGXReferenceI obj) throws MGXException {
         try {
             UUID uuid = dtomaster.Reference().delete(obj.getId());
-            ret = master.Task().get(obj, uuid, Task.TaskType.DELETE);
+            return master.Task().get(obj, uuid, Task.TaskType.DELETE);
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
-        return ret;
     }
 
     @Override

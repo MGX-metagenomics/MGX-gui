@@ -68,7 +68,7 @@ public class FileAccess implements FileAccessI {
     }
 
     @Override
-    public Iterator<MGXFileI> fetchall(final MGXFileI curDir) {
+    public Iterator<MGXFileI> fetchall(final MGXFileI curDir) throws MGXException {
         try {
             Iterator<FileDTO> fetchall = dtomaster.File().fetchall(curDir.getFullPath());
             return new BaseIterator<FileDTO, MGXFileI>(fetchall) {
@@ -79,26 +79,25 @@ public class FileAccess implements FileAccessI {
                 }
             };
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
-        return null;
     }
 
     @Override
-    public TaskI delete(MGXFileI obj) {
+    public TaskI delete(MGXFileI obj) throws MGXException {
         TaskI t = null;
         try {
             FileDTO dto = FileDTOFactory.getInstance().toDTO(obj);
             UUID uuid = dtomaster.File().delete(dto);
             t = getMaster().Task().get(obj, uuid, TaskI.TaskType.DELETE);
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
         return t;
     }
 
     @Override
-    public Iterator<MGXFileI> fetchall() {
+    public Iterator<MGXFileI> fetchall() throws MGXException {
         return fetchall(MGXFileI.getRoot(getMaster()));
     }
 

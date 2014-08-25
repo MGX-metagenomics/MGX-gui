@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.controller;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.ObservationAccessI;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.ObservationI;
 import de.cebitec.mgx.api.model.SequenceI;
 import de.cebitec.mgx.client.MGXDTOMaster;
@@ -13,7 +14,6 @@ import de.cebitec.mgx.gui.dtoconversion.ObservationDTOFactory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import org.openide.util.Exceptions;
 
 /**
  *
@@ -27,7 +27,7 @@ public class ObservationAccess extends AccessBase<ObservationI> implements Obser
 
     
     @Override
-    public Iterator<ObservationI> ByRead(SequenceI s) {
+    public Iterator<ObservationI> ByRead(SequenceI s) throws MGXException {
         Collection<ObservationI> ret = new ArrayList<>();
         try {
             Iterator<ObservationDTO> iter = getDTOmaster().Observation().ByRead(s.getId());
@@ -36,7 +36,7 @@ public class ObservationAccess extends AccessBase<ObservationI> implements Obser
                 ret.add(obs);
             }
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
 
         return ret.iterator();

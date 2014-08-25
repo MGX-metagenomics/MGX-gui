@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.util;
 
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.SequenceI;
 import de.cebitec.mgx.gui.controller.MGXMaster;
@@ -43,7 +44,7 @@ public class DownloadTest {
     }
 
     @Test
-    public void testDownloadSequencesForAttribute() {
+    public void testDownloadSequencesForAttribute() throws MGXException {
         System.out.println("testDownloadSequencesForAttribute");
         AttributeI attr = master.Attribute().fetch(1);
         assertNotNull(attr);

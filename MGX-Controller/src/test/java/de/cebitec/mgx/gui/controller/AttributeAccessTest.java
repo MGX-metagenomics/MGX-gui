@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.controller;
 
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
@@ -49,7 +50,7 @@ public class AttributeAccessTest {
     }
 
     @Test
-    public void testGetDistribution() {
+    public void testGetDistribution() throws MGXException {
         System.out.println("getDistribution");
         DistributionI dist = TestMaster.getRO().Attribute().getDistribution(6, 3);
         assertNotNull(dist);
@@ -58,7 +59,7 @@ public class AttributeAccessTest {
     }
 
     @Test
-    public void testFetch() {
+    public void testFetch() throws MGXException {
         System.out.println("fetch");
         AttributeI attr = TestMaster.getRO().Attribute().fetch(1);
         assertNotNull(attr);
@@ -68,7 +69,7 @@ public class AttributeAccessTest {
     }
 
     @Test
-    public void testGetHierarchy() {
+    public void testGetHierarchy() throws MGXException {
         System.out.println("getHierarchy");
         TreeI<Long> tree = TestMaster.getRO().Attribute().getHierarchy(6, 3);
         assertNotNull(tree);
@@ -94,7 +95,7 @@ public class AttributeAccessTest {
     }
 
     @Test
-    public void testFilterTree() {
+    public void testFilterTree() throws MGXException {
         System.out.println("filterTree");
         TreeI<Long> tree = TestMaster.getRO().Attribute().getHierarchy(6, 3);
         assertNotNull(tree);
@@ -121,7 +122,7 @@ public class AttributeAccessTest {
     }
 
     @Test
-    public void testCloneTree() {
+    public void testCloneTree() throws MGXException {
         System.out.println("cloneTree");
         TreeI<Long> tree = TestMaster.getRO().Attribute().getHierarchy(6, 3);
         assertNotNull(tree);
@@ -250,7 +251,7 @@ public class AttributeAccessTest {
 //    }
 
     @Test
-    public void verifyTreeStructure() {
+    public void verifyTreeStructure() throws MGXException {
         System.out.println("verifyTreeStructure");
         TreeI<Long> tree = TestMaster.getRO().Attribute().getHierarchy(6, 3);
         assertNotNull(tree);
@@ -279,7 +280,7 @@ public class AttributeAccessTest {
     }
 
     @Test
-    public void testDistFromTree() {
+    public void testDistFromTree() throws MGXException {
         System.out.println("distFromTree");
         DistributionI dist = TestMaster.getRO().Attribute().getDistribution(6, 3);
         assertNotNull(dist);
@@ -309,7 +310,7 @@ public class AttributeAccessTest {
     }
 
     @Test
-    public void testMergeDist() {
+    public void testMergeDist() throws MGXException {
         System.out.println("mergeDistributions");
         DistributionI dist = TestMaster.getRO().Attribute().getDistribution(6, 3);
         assertNotNull(dist);

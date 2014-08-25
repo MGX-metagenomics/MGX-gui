@@ -3,6 +3,7 @@ package de.cebitec.mgx.gui.controller;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.datatransfer.DownloadBaseI;
 import de.cebitec.mgx.api.access.datatransfer.TransferBaseI;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.SeqRunI;
@@ -47,7 +48,7 @@ public class SeqRunAccessTest {
     }
 
     @Test
-    public void testFetch() {
+    public void testFetch() throws MGXException {
         System.out.println("fetch");
         MGXMaster m = TestMaster.getRO();
         SeqRunI sr1 = m.SeqRun().fetch(1);
@@ -56,7 +57,7 @@ public class SeqRunAccessTest {
     }
 
     @Test
-    public void testgetJobsAndAttributeTypes() {
+    public void testgetJobsAndAttributeTypes() throws MGXException {
         System.out.println("getJobsAndAttributeTypes");
         MGXMaster m = TestMaster.getRO();
         SeqRunI sr1 = m.SeqRun().fetch(1);
@@ -69,7 +70,7 @@ public class SeqRunAccessTest {
     }
 
     @Test
-    public void testEquality() {
+    public void testEquality() throws MGXException {
         System.out.println("equals");
         MGXMaster m = TestMaster.getRO();
         SeqRunI sr1 = m.SeqRun().fetch(1);
