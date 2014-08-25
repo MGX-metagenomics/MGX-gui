@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.charts.basic;
 
+import de.cebitec.mgx.api.groups.ConflictingJobsException;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
@@ -63,6 +64,12 @@ public class MAPlot extends NumericalViewerI {
 
     @Override
     public void show(List<Pair<VisualizationGroupI, DistributionI>> dists) {
+        
+        if (dists.size() != 2) {
+            // should not happen, see canHandle() implementation
+            assert false;
+        }
+        
         List<Pair<VisualizationGroupI, DistributionI>> relevant = dists.subList(0, 2);
 
         ToFractionFilter tof = new ToFractionFilter();
@@ -183,8 +190,13 @@ public class MAPlot extends NumericalViewerI {
 
     @Override
     public boolean canHandle(AttributeTypeI valueType) {
-        return valueType.getValueType() == AttributeTypeI.VALUE_DISCRETE
-                && VGroupManager.getInstance().getActiveGroups().size() == 2;
+        try {
+            return valueType.getValueType() == AttributeTypeI.VALUE_DISCRETE
+                    && VGroupManager.getInstance().getActiveGroups().size() == 2
+                    && VGroupManager.getInstance().getDistributions().size() == 2;
+        } catch (ConflictingJobsException ex) {
+            return false;
+        }
     }
 
     @Override
