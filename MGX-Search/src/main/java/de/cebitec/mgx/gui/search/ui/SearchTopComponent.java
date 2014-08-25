@@ -1,7 +1,6 @@
 package de.cebitec.mgx.gui.search.ui;
 
 import de.cebitec.mgx.api.MGXMasterI;
-import de.cebitec.mgx.api.misc.SearchRequestI;
 import de.cebitec.mgx.api.model.ObservationI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.SequenceI;
@@ -172,7 +171,7 @@ public final class SearchTopComponent extends TopComponent implements LookupList
         runList = new javax.swing.JList();
         jSplitPane1 = new javax.swing.JSplitPane();
         jScrollPane2 = new javax.swing.JScrollPane();
-        readList = new de.cebitec.mgx.gui.search.JCheckBoxList<SequenceI>();
+        readList = new de.cebitec.mgx.gui.swingutils.JCheckBoxList<SequenceI>();
         jScrollPane4 = new javax.swing.JScrollPane();
         obsTable = new javax.swing.JTable();
         searchTerm = new javax.swing.JTextField();
@@ -182,11 +181,6 @@ public final class SearchTopComponent extends TopComponent implements LookupList
         searchProgress = new javax.swing.JProgressBar();
         statusLine = new javax.swing.JLabel();
 
-        runList.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public Object getElementAt(int i) { return strings[i]; }
-        });
         jScrollPane1.setViewportView(runList);
 
         jSplitPane1.setResizeWeight(1.0);
@@ -268,7 +262,7 @@ public final class SearchTopComponent extends TopComponent implements LookupList
                         .addGap(9, 9, 9)
                         .addComponent(statusLine, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(18, 18, 18)
-                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 468, Short.MAX_VALUE)
+                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 476, Short.MAX_VALUE)
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -281,7 +275,7 @@ public final class SearchTopComponent extends TopComponent implements LookupList
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JTable obsTable;
-    private de.cebitec.mgx.gui.search.JCheckBoxList<SequenceI> readList;
+    private de.cebitec.mgx.gui.swingutils.JCheckBoxList<SequenceI> readList;
     private javax.swing.JList runList;
     private javax.swing.JProgressBar searchProgress;
     private javax.swing.JTextField searchTerm;
@@ -328,32 +322,35 @@ public final class SearchTopComponent extends TopComponent implements LookupList
         statusLine.setText("Searching..");
         searchProgress.setIndeterminate(true);
 
-        SwingWorker<SequenceI[], Void> worker = new SwingWorker<SequenceI[], Void>() {
+        SwingWorker<Iterator<SequenceI>, Void> worker = new SwingWorker<Iterator<SequenceI>, Void>() {
             @Override
-            protected SequenceI[] doInBackground() throws Exception {
-                long start = System.currentTimeMillis();
-                SequenceI[] ret = currentMaster.Attribute().search(searchTerm.getText(), exact.isSelected(), getSelectedSeqRuns());
-                start = System.currentTimeMillis() - start;
-                Logger.getGlobal().log(Level.INFO, "search for {0} took {1}ms, got {2} hits", new Object[]{searchTerm.getText(), start, ret.length});
+            protected Iterator<SequenceI> doInBackground() throws Exception {
+                //long start = System.currentTimeMillis();
+                Iterator<SequenceI> ret = currentMaster.Attribute().search(searchTerm.getText(), exact.isSelected(), getSelectedSeqRuns());
+                //start = System.currentTimeMillis() - start;
+                //Logger.getGlobal().log(Level.INFO, "search for {0} took {1}ms, got {2} hits", new Object[]{searchTerm.getText(), start, ret.length});
                 return ret;
             }
 
             @Override
             protected void done() {
-                SequenceI[] hits;
+                Iterator<SequenceI> hits;
                 try {
                     hits = get();
-                    statusLine.setText("Results found: " + hits.length);
+                    int numHits = 0;
                     searchProgress.setIndeterminate(false);
                     searchProgress.setValue(100);
                     readList.clear();
-                    for (SequenceI s : hits) {
+                    while (hits.hasNext()) {
+                        SequenceI s = hits.next();
                         readList.addElement(s);
+                        numHits ++;
 
                         // pre-start observation fetchers
                         Runnable r = new ObservationFetcher(activeTasks, currentMaster, s, cache);
                         proc.post(r);
                     }
+                    statusLine.setText("Results found: " + numHits);
                     // notify table of updated data
                     AbstractTableModel model = (AbstractTableModel) obsTable.getModel();
                     model.fireTableDataChanged();

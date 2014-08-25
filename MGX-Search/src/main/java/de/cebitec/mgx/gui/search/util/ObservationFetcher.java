@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.search.util;
 
 import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.ObservationI;
 import de.cebitec.mgx.api.model.SequenceI;
 import java.lang.ref.WeakReference;
@@ -11,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -51,13 +53,18 @@ public class ObservationFetcher implements Runnable {
         if (cache.containsKey(seq) && cache.get(seq).get() != null) {
             return;
         }
-        Iterator<ObservationI> iter = master.Observation().ByRead(seq);
-        List<ObservationI> obs = new ArrayList<>();
-        while (iter.hasNext()) {
-            obs.add(iter.next());
+        try {
+            Iterator<ObservationI>  iter = master.Observation().ByRead(seq);
+            List<ObservationI> obs = new ArrayList<>();
+            while (iter.hasNext()) {
+                obs.add(iter.next());
+            }
+            Collections.sort(obs, comp);
+            cache.put(seq, new WeakReference(obs));
+        } catch (MGXException ex) {
+            Exceptions.printStackTrace(ex);
         }
-        Collections.sort(obs, comp);
-        cache.put(seq, new WeakReference(obs));
+
         //list.repaint();
         activeTasks.remove(seq);
     }
