@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.controller;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.TermAccessI;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.TermI;
 import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.client.exception.MGXClientException;
@@ -28,14 +29,14 @@ public class TermAccess implements TermAccessI {
     }
     
     @Override
-    public Collection<TermI> byCategory(String cat) {
+    public Collection<TermI> byCategory(String cat) throws MGXException {
         List<TermI> ret = new ArrayList<>();
         try {
             for (TermDTO dto : dtomaster.Term().byCategory(cat)) {
                 ret.add(TermDTOFactory.getInstance().toModel(master, dto));
             }
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
         return ret;
     }

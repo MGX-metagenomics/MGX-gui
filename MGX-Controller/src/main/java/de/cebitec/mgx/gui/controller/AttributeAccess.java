@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.controller;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.AttributeAccessI;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.SearchRequestI;
 import de.cebitec.mgx.api.misc.TaskI;
@@ -54,7 +55,7 @@ public class AttributeAccess implements AttributeAccessI {
     }
 
     @Override
-    public Iterator<AttributeI> BySeqRun(final long seqrun_id) {
+    public Iterator<AttributeI> BySeqRun(final long seqrun_id) throws MGXException {
         try {
             Iterator<AttributeDTO> BySeqRun = dtomaster.Attribute().BySeqRun(seqrun_id);
 
@@ -68,8 +69,8 @@ public class AttributeAccess implements AttributeAccessI {
 
         } catch (MGXServerException ex) {
             Logger.getLogger(AttributeAccess.class.getName()).log(Level.SEVERE, null, ex);
+            throw new MGXException(ex);
         }
-        return null;
     }
 
 //    public Collection<String> listTypes() throws MGXServerException {
@@ -113,7 +114,7 @@ public class AttributeAccess implements AttributeAccessI {
 //        return res;
 //    }
     @Override
-    public DistributionI getDistribution(long attrType_id, long job_id) {
+    public DistributionI getDistribution(long attrType_id, long job_id) throws MGXException {
         Map<AttributeI, Long> res;
         long total = 0;
         try {
@@ -135,7 +136,7 @@ public class AttributeAccess implements AttributeAccessI {
             }
         } catch (MGXServerException ex) {
             Logger.getLogger(AttributeAccess.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
+            throw new MGXException(ex);
         }
         return new Distribution(res, total, master);
     }
@@ -146,7 +147,7 @@ public class AttributeAccess implements AttributeAccessI {
     }
 
     @Override
-    public AttributeI fetch(long id) {
+    public AttributeI fetch(long id) throws MGXException {
         AttributeI ret = null;
         try {
             AttributeDTO dto = dtomaster.Attribute().fetch(id);
@@ -154,7 +155,7 @@ public class AttributeAccess implements AttributeAccessI {
             AttributeTypeDTO aType = dtomaster.AttributeType().fetch(dto.getAttributeTypeId());
             ret.setAttributeType(AttributeTypeDTOFactory.getInstance().toModel(master, aType));
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
         return ret;
     }
@@ -174,18 +175,17 @@ public class AttributeAccess implements AttributeAccessI {
         throw new UnsupportedOperationException("Not supported.");
     }
 
-    public Matrix getCorrelation(AttributeTypeI attributeType1, JobI job1, AttributeTypeI attributeType2, JobI job2) {
+    public Matrix getCorrelation(AttributeTypeI attributeType1, JobI job1, AttributeTypeI attributeType2, JobI job2) throws MGXException {
         try {
             AttributeCorrelation corr = dtomaster.Attribute().getCorrelation(attributeType1.getId(), job1.getId(), attributeType2.getId(), job2.getId());
             return MatrixDTOFactory.getInstance().toModel(master, corr);
         } catch (MGXServerException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
-        return null;
     }
 
     @Override
-    public TreeI<Long> getHierarchy(long attrType_id, long job_id) {
+    public TreeI<Long> getHierarchy(long attrType_id, long job_id) throws MGXException {
         Map<AttributeI, Long> res;
         try {
             AttributeDistribution distribution = dtomaster.Attribute().getHierarchy(attrType_id, job_id);
@@ -207,7 +207,7 @@ public class AttributeAccess implements AttributeAccessI {
 
         } catch (MGXServerException ex) {
             Logger.getLogger(AttributeAccess.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
+            throw new MGXException(ex);
         }
 
         TreeI<Long> ret = TreeFactory.createTree(res);
@@ -215,28 +215,36 @@ public class AttributeAccess implements AttributeAccessI {
     }
 
     @Override
-    public SequenceI[] search(String term, boolean exact, SeqRunI[] targets) {
+    public Iterator<SequenceI> search(String term, boolean exact, SeqRunI[] targets) throws MGXException {
         SearchRequestI sr = new SearchRequest();
         sr.setTerm(term);
         sr.setExact(exact);
         sr.setRuns(targets);
         SearchRequestDTO reqdto = SearchRequestDTOFactory.getInstance().toDTO(sr);
 
-        List<SequenceDTO> searchResult = null;
+        Iterator<SequenceDTO> searchResult = null;
         try {
             searchResult = dtomaster.Attribute().search(reqdto);
         } catch (MGXServerException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
+        
+        return new BaseIterator<SequenceDTO, SequenceI>(searchResult) {
+                @Override
+                public SequenceI next() {
+                    SequenceI h = SequenceDTOFactory.getInstance().toModel(master, iter.next());
+                    return h;
+                }
+        };
 
-        SequenceI[] ret = new SequenceI[searchResult.size()];
-        int i = 0;
-        for (SequenceDTO dto : searchResult) {
-            SequenceI seq = SequenceDTOFactory.getInstance().toModel(master, dto);
-            ret[i++] = seq;
-        }
-
-        return ret;
+//        SequenceI[] ret = new SequenceI[searchResult.size()];
+//        int i = 0;
+//        for (SequenceDTO dto : searchResult) {
+//            SequenceI seq = SequenceDTOFactory.getInstance().toModel(master, dto);
+//            ret[i++] = seq;
+//        }
+//
+//        return ret;
     }
 
 //    private boolean checkHasValue(Set<Attribute> set, String value) {

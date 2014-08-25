@@ -61,7 +61,7 @@ public class VisualizationGroupTest {
     }
 
     @Test
-    public void testGetNumSequences() {
+    public void testGetNumSequences() throws Exception {
         System.out.println("getNumSequences");
         VisualizationGroupI vg = VGroupManager.getInstance().createGroup();
         MGXMaster master = TestMaster.getRO();
@@ -76,7 +76,7 @@ public class VisualizationGroupTest {
     }
 
     @Test
-    public void testGetSeqRuns() {
+    public void testGetSeqRuns() throws Exception {
         System.out.println("getSeqRuns");
         VisualizationGroupI vg = VGroupManager.getInstance().createGroup();
         MGXMaster master = TestMaster.getRO();
@@ -91,7 +91,7 @@ public class VisualizationGroupTest {
     }
 
     @Test
-    public void testGetAttributeTypes() {
+    public void testGetAttributeTypes() throws Exception {
         System.out.println("getAttributeTypes");
         VisualizationGroupI vg = VGroupManager.getInstance().createGroup();
         MGXMaster master = TestMaster.getRO();
@@ -111,7 +111,7 @@ public class VisualizationGroupTest {
     }
 
     @Test
-    public void testaddAndRemoveRuns() {
+    public void testaddAndRemoveRuns() throws Exception {
         System.out.println("addAndRemoveRuns");
         VisualizationGroupI vg = VGroupManager.getInstance().createGroup();
         MGXMaster master = TestMaster.getRO();
@@ -147,7 +147,7 @@ public class VisualizationGroupTest {
     }
 
     @Test
-    public void testGetSelectedAttributeType() {
+    public void testGetSelectedAttributeType() throws Exception {
         System.out.println("getSelectedAttributeType");
         VisualizationGroupI vg = VGroupManager.getInstance().createGroup();
         MGXMaster master = TestMaster.getRO();

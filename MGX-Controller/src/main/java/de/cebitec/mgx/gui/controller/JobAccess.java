@@ -168,19 +168,17 @@ public class JobAccess implements JobAccessI {
     }
 
     @Override
-    public TaskI delete(JobI obj) {
-        TaskI ret = null;
+    public TaskI delete(JobI obj) throws MGXException {
         try {
             UUID uuid = getDTOmaster().Job().delete(obj.getId());
-            ret = getMaster().Task().get(obj, uuid, TaskType.DELETE);
+            return getMaster().Task().get(obj, uuid, TaskType.DELETE);
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
-        return ret;
     }
 
     @Override
-    public List<JobI> ByAttributeTypeAndSeqRun(long atype_id, SeqRunI run) {
+    public List<JobI> ByAttributeTypeAndSeqRun(long atype_id, SeqRunI run) throws MGXException {
         List<JobI> all = new ArrayList<>();
         try {
             for (JobDTO dto : getDTOmaster().Job().ByAttributeTypeAndSeqRun(atype_id, run.getId())) {
@@ -189,13 +187,13 @@ public class JobAccess implements JobAccessI {
                 all.add(j);
             }
         } catch (MGXServerException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
         return all;
     }
 
     @Override
-    public List<JobI> BySeqRun(SeqRunI run) {
+    public List<JobI> BySeqRun(SeqRunI run) throws MGXException {
         List<JobI> all = new ArrayList<>();
         try {
             for (JobDTO dto : getDTOmaster().Job().BySeqRun(run.getId())) {
@@ -204,20 +202,19 @@ public class JobAccess implements JobAccessI {
                 all.add(j);
             }
         } catch (MGXServerException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
         return all;
     }
 
     @Override
-    public String getErrorMessage(JobI job) {
+    public String getErrorMessage(JobI job) throws MGXException {
         try {
             MGXString err = getDTOmaster().Job().getError(job.getId());
             return err.getValue();
         } catch (MGXServerException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
-        return null;
     }
 
 }

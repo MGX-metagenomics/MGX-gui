@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.controller;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.DNAExtractAccessI;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.misc.TaskI.TaskType;
 import de.cebitec.mgx.api.model.DNAExtractI;
@@ -28,7 +29,7 @@ public class DNAExtractAccess extends AccessBase<DNAExtractI> implements DNAExtr
     }
 
     @Override
-    public DNAExtractI create(SampleI sample, String name, String method, String protocol, String primer5, String primer3, String targetGene, String targetFragment, String description) {
+    public DNAExtractI create(SampleI sample, String name, String method, String protocol, String primer5, String primer3, String targetGene, String targetFragment, String description) throws MGXException {
         DNAExtract obj = new DNAExtract(getMaster())
                 .setSampleId(sample.getId())
                 .setName(name)
@@ -44,7 +45,7 @@ public class DNAExtractAccess extends AccessBase<DNAExtractI> implements DNAExtr
         try {
             id = getDTOmaster().DNAExtract().create(dto);
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
         obj.setId(id);
         return obj;
@@ -64,19 +65,20 @@ public class DNAExtractAccess extends AccessBase<DNAExtractI> implements DNAExtr
     }
 
     @Override
-    public DNAExtractI fetch(long id) {
+    public DNAExtractI fetch(long id) throws MGXException {
         DNAExtractDTO dto = null;
         try {
             dto = getDTOmaster().DNAExtract().fetch(id);
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
         DNAExtractI ret = DNAExtractDTOFactory.getInstance().toModel(getMaster(), dto);
         return ret;
     }
 
     @Override
-    public Iterator<DNAExtractI> fetchall() {
+    public Iterator<DNAExtractI> fetchall() throws MGXException {
         try {
 
             return new Iterator<DNAExtractI>() {
@@ -99,30 +101,29 @@ public class DNAExtractAccess extends AccessBase<DNAExtractI> implements DNAExtr
                 }
             };
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
-        return null;
     }
 
     @Override
-    public void update(DNAExtractI obj) {
+    public void update(DNAExtractI obj) throws MGXException {
         DNAExtractDTO dto = DNAExtractDTOFactory.getInstance().toDTO(obj);
         try {
             getDTOmaster().DNAExtract().update(dto);
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
         obj.modified();
     }
 
     @Override
-    public TaskI delete(DNAExtractI obj) {
+    public TaskI delete(DNAExtractI obj) throws MGXException {
         TaskI ret = null;
         try {
             UUID uuid = getDTOmaster().DNAExtract().delete(obj.getId());
             ret = getMaster().Task().get(obj, uuid, TaskType.DELETE);
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
         return ret;
     }

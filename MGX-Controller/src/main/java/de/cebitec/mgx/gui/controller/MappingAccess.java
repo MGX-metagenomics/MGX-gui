@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.controller;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.MappingAccessI;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.model.MappedSequenceI;
 import de.cebitec.mgx.api.model.MappingI;
@@ -50,7 +51,7 @@ public class MappingAccess extends MappingAccessI {
     }
 
     @Override
-    public Iterator<MappingI> fetchall() {
+    public Iterator<MappingI> fetchall() throws MGXException {
         try {
             Iterator<MappingDTO> fetchall = dtomaster.Mapping().fetchall();
             return new BaseIterator<MappingDTO, MappingI>(fetchall) {
@@ -61,9 +62,8 @@ public class MappingAccess extends MappingAccessI {
                 }
             };
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
-        return null;
     }
 
     @Override
@@ -106,15 +106,13 @@ public class MappingAccess extends MappingAccessI {
     }
 
     @Override
-    public TaskI delete(MappingI obj) {
-        TaskI ret = null;
+    public TaskI delete(MappingI obj) throws MGXException {
         try {
             UUID uuid = dtomaster.Mapping().delete(obj.getId());
-            ret = master.Task().get(obj, uuid, Task.TaskType.DELETE);
+            return master.Task().get(obj, uuid, Task.TaskType.DELETE);
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
-        return ret;
     }
 
     @Override

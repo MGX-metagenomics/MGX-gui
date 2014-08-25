@@ -117,7 +117,7 @@ public class ToolAccess extends AccessBase<ToolI> implements ToolAccessI {
     }
 
     @Override
-    public Iterator<ToolI> fetchall() {
+    public Iterator<ToolI> fetchall() throws MGXException {
         try {
             Iterator<ToolDTO> fetchall = getDTOmaster().Tool().fetchall();
             return new BaseIterator<ToolDTO, ToolI>(fetchall) {
@@ -128,10 +128,8 @@ public class ToolAccess extends AccessBase<ToolI> implements ToolAccessI {
                 }
             };
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
-
-        return null;
     }
 
     @Override
@@ -140,15 +138,13 @@ public class ToolAccess extends AccessBase<ToolI> implements ToolAccessI {
     }
 
     @Override
-    public TaskI delete(ToolI obj) {
-        TaskI ret = null;
+    public TaskI delete(ToolI obj) throws MGXException {
         try {
             UUID uuid = getDTOmaster().Tool().delete(obj.getId());
-            ret = getMaster().Task().get(obj, uuid, TaskType.DELETE);
+            return getMaster().Task().get(obj, uuid, TaskType.DELETE);
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
-        return ret;
     }
 
     @Override
