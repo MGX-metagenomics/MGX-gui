@@ -3,6 +3,7 @@ package de.cebitec.mgx.gui.cache;
 import de.cebitec.gpms.core.MembershipI;
 import de.cebitec.gpms.rest.GPMSClientI;
 import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.api.model.MappedSequenceI;
 import de.cebitec.mgx.api.model.MappingI;
@@ -122,7 +123,7 @@ public class CacheTest {
     }
 
     @Test
-    public void testGetOneInterval() {
+    public void testGetOneInterval() throws MGXException {
         System.out.println("getOneInterval");
         MGXMasterI master = get();
         MGXReferenceI ref = master.Reference().fetch(4);
@@ -139,7 +140,7 @@ public class CacheTest {
     }
 
     @Test
-    public void testGetIntervals() {
+    public void testGetIntervals() throws MGXException {
         System.out.println("getIntervals");
         MGXMasterI master = get();
         MGXReferenceI ref = master.Reference().fetch(4);
@@ -165,7 +166,7 @@ public class CacheTest {
     }
 
     @Test
-    public void testShortInterval() {
+    public void testShortInterval() throws MGXException {
         System.out.println("getShortintervals");
         MGXMasterI master = get();
         MGXReferenceI ref = master.Reference().fetch(4);
@@ -187,7 +188,7 @@ public class CacheTest {
     }
 
     @Test
-    public void testIntervalAlignment() {
+    public void testIntervalAlignment() throws MGXException {
         System.out.println("IntervalAlignment");
         MGXMasterI master = get();
         MGXReferenceI ref = master.Reference().fetch(4);
@@ -205,7 +206,7 @@ public class CacheTest {
     }
 
     @Test
-    public void testIntervalAlignment2() {
+    public void testIntervalAlignment2() throws MGXException {
         System.out.println("IntervalAlignment2");
         MGXMasterI master = get();
         MGXReferenceI ref = master.Reference().fetch(4);
@@ -244,7 +245,7 @@ public class CacheTest {
     }
 
     @Test
-    public void testCacheing() {
+    public void testCacheing() throws MGXException {
         System.out.println("Cacheing");
         MGXMasterI master = get();
         MGXReferenceI ref = master.Reference().fetch(4);

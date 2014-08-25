@@ -9,6 +9,7 @@ import de.cebitec.mgx.gui.cache.Interval;
 import de.cebitec.gpms.core.MembershipI;
 import de.cebitec.gpms.rest.GPMSClientI;
 import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.gui.cache.Cache;
@@ -53,7 +54,7 @@ public class IntervalTest {
     }
 
     @Test
-    public void testEquals() {
+    public void testEquals() throws MGXException {
         System.out.println("equals");
         MGXMasterI master = get();
         MGXReferenceI ref = master.Reference().fetch(4);
@@ -68,7 +69,7 @@ public class IntervalTest {
     }
 
     @Test
-    public void testHashCode() {
+    public void testHashCode() throws MGXException {
         System.out.println("hashCode");
         MGXMasterI master = get();
         MGXReferenceI ref = master.Reference().fetch(4);

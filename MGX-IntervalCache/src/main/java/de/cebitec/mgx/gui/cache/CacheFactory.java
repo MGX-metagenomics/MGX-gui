@@ -4,6 +4,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.api.model.MappedSequenceI;
 import de.cebitec.mgx.api.model.RegionI;
@@ -28,7 +29,7 @@ public class CacheFactory {
         final int refLength = ref.getLength() - 1;
         CacheLoader<Interval, String> loader = new CacheLoader<Interval, String>() {
             @Override
-            public String load(Interval k) {
+            public String load(Interval k) throws MGXException {
                 return master.Reference().getSequence(ref, k.getFrom(), Math.min(k.getTo(), refLength));
             }
         };
@@ -45,7 +46,7 @@ public class CacheFactory {
 
         CacheLoader<Interval, Set<RegionI>> loader = new CacheLoader<Interval, Set<RegionI>>() {
             @Override
-            public Set<RegionI> load(Interval k) {
+            public Set<RegionI> load(Interval k) throws MGXException {
                 //Logger.getLogger(getClass().getName()).log(Level.INFO, "server fetch " + k.getFrom() + " - " + k.getTo());
                 Iterator<RegionI> iter = master.Reference().byReferenceInterval(ref.getId(), k.getFrom(), Math.min(k.getTo(), refLength));
                 Set<RegionI> ret = new HashSet<>();

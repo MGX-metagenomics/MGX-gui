@@ -3,6 +3,7 @@ package de.cebitec.mgx.gui.actions;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.datatransfer.TransferBaseI;
 import de.cebitec.mgx.api.access.datatransfer.UploadBaseI;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.groups.FileType;
 import de.cebitec.mgx.gui.controller.RBAC;
 import de.cebitec.mgx.gui.nodefactory.ReferenceNodeFactory;
@@ -14,6 +15,7 @@ import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.io.File;
 import javax.swing.AbstractAction;
+import org.openide.util.Exceptions;
 import org.openide.util.Utilities;
 
 /**
@@ -38,43 +40,48 @@ public class UploadReference extends AbstractAction {
         }
         File localFile = new File(fName);
         final MGXMasterI master = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
-        final UploadBaseI uploader = master.Reference().createUploader(localFile);
+        
+        try {
+            final UploadBaseI uploader = master.Reference().createUploader(localFile);
 
-        final MGXTask run = new MGXTask("Upload " + fName) {
-            @Override
-            public boolean process() {
-                return uploader.upload();
-            }
-
-            @Override
-            public void finished() {
-                super.finished();
-                fnf.refreshChildren();
-            }
-
-            @Override
-            public void failed() {
-                super.failed();
-                fnf.refreshChildren();
-            }
-
-            @Override
-            public void propertyChange(PropertyChangeEvent pce) {
-                if (pce.getPropertyName().equals(TransferBaseI.NUM_ELEMENTS_TRANSFERRED)) {
-                    setStatus(String.format("%1$d subregions sent", pce.getNewValue()));
-                } else {
-                    super.propertyChange(pce);
+            final MGXTask run = new MGXTask("Upload " + fName) {
+                @Override
+                public boolean process() {
+                    return uploader.upload();
                 }
-            }
-        };
-        uploader.addPropertyChangeListener(run);
 
-        NonEDT.invoke(new Runnable() {
-            @Override
-            public void run() {
-                TaskManager.getInstance().addTask(run);
-            }
-        });
+                @Override
+                public void finished() {
+                    super.finished();
+                    fnf.refreshChildren();
+                }
+
+                @Override
+                public void failed() {
+                    super.failed();
+                    fnf.refreshChildren();
+                }
+
+                @Override
+                public void propertyChange(PropertyChangeEvent pce) {
+                    if (pce.getPropertyName().equals(TransferBaseI.NUM_ELEMENTS_TRANSFERRED)) {
+                        setStatus(String.format("%1$d subregions sent", pce.getNewValue()));
+                    } else {
+                        super.propertyChange(pce);
+                    }
+                }
+            };
+            uploader.addPropertyChangeListener(run);
+
+            NonEDT.invoke(new Runnable() {
+                @Override
+                public void run() {
+                    TaskManager.getInstance().addTask(run);
+                }
+            });
+        } catch (MGXException ex) {
+            Exceptions.printStackTrace(ex);
+        }
     }
 
     @Override

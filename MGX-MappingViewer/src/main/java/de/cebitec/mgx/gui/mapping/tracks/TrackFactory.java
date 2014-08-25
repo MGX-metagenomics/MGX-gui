@@ -8,8 +8,14 @@ package de.cebitec.mgx.gui.mapping.tracks;
 import de.cebitec.mgx.api.model.MappedSequenceI;
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.RecursiveTask;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -17,10 +23,10 @@ import java.util.concurrent.RecursiveTask;
  */
 public class TrackFactory {
 
-    private static final ForkJoinPool pool = new ForkJoinPool();
+    private final static ExecutorService pool = Executors.newCachedThreadPool();
 
     public static synchronized Track addTrack(Collection<Track> tracks, MappedSequenceI ms) {
-        Track t = new Track();
+        Track t = new Track(pool);
         tracks.add(t);
         t.add(ms);
         return t;
@@ -54,27 +60,88 @@ public class TrackFactory {
 
     public static void createTracks2(Iterable<MappedSequenceI> mappings, final List<Track> tracks) {
         tracks.clear();
-//        tracks.add(new Track());
         for (MappedSequenceI ms : mappings) {
+            //System.err.println("numTracks "+ tracks.size());
             FindTrack ft = new FindTrack(0, tracks.size(), tracks.toArray(new Track[]{}), ms);
-            Track t = pool.invoke(ft);
+            pool.submit(ft);
+
+            Track t = null;
+            try {
+                t = ft.get();
+            } catch (InterruptedException | ExecutionException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+            //Track t = pool.invoke(ft);
             if (t != null) {
                 t.add(ms);
             } else {
-                t = new Track();
+                t = new Track(pool);
                 tracks.add(t);
                 t.add(ms);
             }
         }
     }
 
-    public static class FindTrack extends RecursiveTask<Track> {
+    private static abstract class Find<T> implements Runnable, Future<T> {
+
+        private T result = null;
+        private boolean cancelled = false;
+        private boolean done = false;
+        private final CountDownLatch latch = new CountDownLatch(1);
+
+        public abstract T compute();
+
+        @Override
+        public void run() {
+            result = compute();
+            done = true;
+            latch.countDown();
+        }
+
+        @Override
+        public boolean cancel(boolean mayInterruptIfRunning) {
+            if (!done) {
+                latch.countDown();
+            }
+            cancelled = true;
+            if (done) {
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        public boolean isCancelled() {
+            return cancelled;
+        }
+
+        @Override
+        public boolean isDone() {
+            return done || cancelled;
+        }
+
+        @Override
+        public T get() throws InterruptedException, ExecutionException {
+            latch.await();
+            assert done;
+            return result;
+        }
+
+        @Override
+        public T get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+            assert done;
+            return result;
+        }
+
+    }
+
+    private static class FindTrack extends Find<Track> {
 
         private final Track[] tracks;
         private final MappedSequenceI ms;
         private final int from, to;
 
-        private final static int THRESHOLD = 10;
+        private final static int THRESHOLD = 5;
 
         public FindTrack(int from, int to, Track[] tracks, MappedSequenceI ms) {
             this.tracks = tracks;
@@ -84,7 +151,7 @@ public class TrackFactory {
         }
 
         @Override
-        protected Track compute() {
+        public Track compute() {
             int len = to - from + 1; //tracks.size();
 
             if (len <= THRESHOLD) {
@@ -97,27 +164,32 @@ public class TrackFactory {
                 //System.err.println("analyzed "+len);
                 return null;
             } else {
-
+                //System.err.println("fork");
                 int mid = len / 2;
-//                List<Track> subList1 = tracks.subList(0, mid);
-//                List<Track> subList2 = tracks.subList(mid, len);
-//                assert subList1.size() + subList2.size() == len;
-
-                //System.err.println("processing lists "+ subList1.size() + " and " + subList2.size());
                 FindTrack left = new FindTrack(0, mid, tracks, ms);
-                left.fork();
+                //left.fork();
+                pool.submit(left);
 
                 FindTrack right = new FindTrack(mid, len, tracks, ms);
-                Track tr = right.compute();
+                //Track tr = right.compute();
+                pool.submit(right);
 
-                Track tl = left.join();
+                Track tl = null;
+                try {
+                    tl = left.get();
+                } catch (InterruptedException | ExecutionException ex) {
+                    Exceptions.printStackTrace(ex);
+                }
 
                 if (tl != null) {
                     return tl;
                 }
-
-                return tr;
-
+                try {
+                    return right.get();
+                } catch (InterruptedException | ExecutionException ex) {
+                    Exceptions.printStackTrace(ex);
+                }
+                return null;
             }
 
         }

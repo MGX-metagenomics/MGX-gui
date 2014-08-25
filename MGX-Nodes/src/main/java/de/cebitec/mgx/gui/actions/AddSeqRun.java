@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package de.cebitec.mgx.gui.actions;
 
 import de.cebitec.mgx.api.MGXMasterI;
@@ -39,7 +38,7 @@ import org.openide.util.Utilities;
  * @author sjaenick
  */
 public class AddSeqRun extends AbstractAction {
-    
+
     private final SeqRunNodeFactory snf;
 
     public AddSeqRun(final SeqRunNodeFactory snf) {
@@ -61,7 +60,7 @@ public class AddSeqRun extends AbstractAction {
             //seqrun.setDNAExtractId(extract.getId());
             SwingWorker<SeqRunI, Exception> sw = new SwingWorker<SeqRunI, Exception>() {
                 @Override
-                protected SeqRunI doInBackground() {
+                protected SeqRunI doInBackground() throws MGXException {
                     final SeqRunI seqrun = m.SeqRun().create(extract, wd.getSeqRunName(), wd.getSequencingMethod(), wd.getSequencingTechnology(), wd.getSubmittedToINSDC(), wd.getAccession());
                     // create a sequence reader
                     String canonicalPath;
@@ -96,7 +95,11 @@ public class AddSeqRun extends AbstractAction {
                         @Override
                         public void failed() {
                             MGXMasterI m = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
-                            m.SeqRun().delete(seqrun);
+                            try {
+                                m.SeqRun().delete(seqrun);
+                            } catch (MGXException ex) {
+                                Exceptions.printStackTrace(ex);
+                            }
                             snf.refreshChildren();
                             super.failed();
                         }
@@ -144,5 +147,5 @@ public class AddSeqRun extends AbstractAction {
     public boolean isEnabled() {
         return super.isEnabled() && RBAC.isUser();
     }
-    
+
 }

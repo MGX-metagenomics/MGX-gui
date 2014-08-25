@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.wizard.habitat;
 
 import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.HabitatI;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -59,7 +60,7 @@ public class HabitatWizardDescriptor extends WizardDescriptor {
         final MGXMasterI m = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
         SwingWorker<Void, Void> sw = new SwingWorker<Void, Void>() {
             @Override
-            protected Void doInBackground() {
+            protected Void doInBackground() throws MGXException {
                 p1.setHabitat(m.Habitat().fetchall());
                 return null;
             }

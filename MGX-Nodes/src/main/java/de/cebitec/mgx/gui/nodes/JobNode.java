@@ -181,10 +181,23 @@ public class JobNode extends MGXNodeBase<JobI, JobNode> {
                     public boolean process() {
                         setStatus("Deleting..");
                         MGXMasterI m = getLookup().lookup(MGXMasterI.class);
-                        TaskI task = m.Job().delete(job);
+                        TaskI task;
+                        try {
+                            task = m.Job().delete(job);
+                        } catch (MGXException ex) {
+                            setStatus(ex.getMessage());
+                            failed();
+                            return false;
+                        }
                         while (!task.done()) {
                             setStatus(task.getStatusMessage());
-                            task = m.Task().refresh(task);
+                            try {
+                                task = m.Task().refresh(task);
+                            } catch (MGXException ex) {
+                                setStatus(ex.getMessage());
+                                failed();
+                                return false;
+                            }
                             sleep();
                         }
                         task.finish();
@@ -265,11 +278,19 @@ public class JobNode extends MGXNodeBase<JobI, JobNode> {
                     try {
                         task = m.Job().restart(job);
                     } catch (MGXException ex) {
-                        Exceptions.printStackTrace(ex);
+                        setStatus(ex.getMessage());
+                        failed();
+                        return false;
                     }
                     while (task != null && !task.done()) {
                         setStatus(task.getStatusMessage());
-                        task = m.Task().refresh(task);
+                        try {
+                            task = m.Task().refresh(task);
+                        } catch (MGXException ex) {
+                            setStatus(ex.getMessage());
+                            failed();
+                            return false;
+                        }
                         sleep();
                     }
                     if (task != null) {

@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.nodefactory;
 
 import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.ToolI;
@@ -47,17 +48,20 @@ public class JobNodeFactory extends ChildFactory<JobI> implements NodeListener {
 
     @Override
     protected boolean createKeys(List<JobI> toPopulate) {
-        Iterator<SeqRunI> iter = master.SeqRun().fetchall();
-        while (iter.hasNext()) {
-            SeqRunI sr = iter.next();
-            for (JobI j : master.Job().BySeqRun(sr)) {
-                j.setSeqrun(sr);
-                ToolI t = master.Tool().ByJob(j.getId());
-                j.setTool(t);
-                toPopulate.add(j);
+        try {
+            Iterator<SeqRunI> iter = master.SeqRun().fetchall();
+            while (iter != null && iter.hasNext()) {
+                SeqRunI sr = iter.next();
+                for (JobI j : master.Job().BySeqRun(sr)) {
+                    j.setSeqrun(sr);
+                    ToolI t = master.Tool().ByJob(j.getId());
+                    j.setTool(t);
+                    toPopulate.add(j);
+                }
             }
+            Collections.sort(toPopulate);
+        } catch (MGXException ex) {
         }
-        Collections.sort(toPopulate);
         return true;
     }
 
