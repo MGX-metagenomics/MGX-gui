@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.swingutils.util;
 
 import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.MGXFileI;
 import java.io.File;
 import java.io.IOException;
@@ -9,6 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 import javax.swing.Icon;
 import javax.swing.filechooser.FileSystemView;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -128,9 +130,14 @@ public class ServerFS extends FileSystemView {
         if (dir instanceof ServerFile) {
 
             ServerFile file = (ServerFile) dir;
-            Iterator<MGXFileI> filesIter = master.File().fetchall(file.getMGXFile());
+            Iterator<MGXFileI> filesIter = null;
+            try {
+                filesIter = master.File().fetchall(file.getMGXFile());
+            } catch (MGXException ex) {
+                Exceptions.printStackTrace(ex);
+            }
             List<MGXFileI> files = new ArrayList<>();
-            while (filesIter.hasNext()) {
+            while (filesIter != null && filesIter.hasNext()) {
                 files.add(filesIter.next());
             }
             
