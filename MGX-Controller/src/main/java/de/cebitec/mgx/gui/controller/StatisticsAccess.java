@@ -5,6 +5,7 @@ import de.cebitec.mgx.api.access.StatisticsAccessI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
+import de.cebitec.mgx.api.misc.PrincipalComponent;
 import de.cebitec.mgx.api.misc.PCAResultI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.misc.Point;
@@ -36,7 +37,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
-import org.openide.util.Exceptions;
 
 /**
  *
@@ -91,14 +91,14 @@ public class StatisticsAccess implements StatisticsAccessI {
     }
 
     @Override
-    public PCAResultI PCA(Collection<Pair<VisualizationGroupI, DistributionI>> groups, int pc1, int pc2) throws MGXException {
+    public PCAResultI PCA(Collection<Pair<VisualizationGroupI, DistributionI>> groups, PrincipalComponent pc1, PrincipalComponent pc2) throws MGXException {
 
         // map to hold obfuscated group name mapping
         Map<String, String> tmpNames = new HashMap<>();
         MGXMatrixDTO matrix = buildMatrix(groups, tmpNames, true);
 
         try {
-            PCAResultDTO ret = dtomaster.Statistics().PCA(matrix, pc1, pc2);
+            PCAResultDTO ret = dtomaster.Statistics().PCA(matrix, pc1.getValue(), pc2.getValue());
             PCAResultI pca = PCAResultDTOFactory.getInstance().toModel(master, ret);
             // de-obfuscate group names
             for (Point p : pca.getDatapoints()) {
