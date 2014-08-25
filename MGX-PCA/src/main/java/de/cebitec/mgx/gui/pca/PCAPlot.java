@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.pca;
 
+import de.cebitec.mgx.api.misc.PrincipalComponent;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.groups.ConflictingJobsException;
 import de.cebitec.mgx.api.groups.ImageExporterI;
@@ -39,6 +40,8 @@ import org.jfree.data.xy.XYDataItem;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
+import org.openide.DialogDisplayer;
+import org.openide.NotifyDescriptor;
 import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -95,14 +98,14 @@ public class PCAPlot extends ViewerI<DistributionI> {
             VisFilterI fracFilter = new ToFractionFilter();
             dists = fracFilter.filter(dists);
         }
-        final Pair<PC, PC> comps = getCustomizer().getPCs();
+        final Pair<PrincipalComponent, PrincipalComponent> comps = getCustomizer().getPCs();
         final List<Pair<VisualizationGroupI, DistributionI>> data = dists;
 
         SwingWorker<PCAResultI, Void> sw = new SwingWorker<PCAResultI, Void>() {
 
             @Override
             protected PCAResultI doInBackground() throws Exception {
-                return master.Statistics().PCA(data, comps.getFirst().getValue(), comps.getSecond().getValue());
+                return master.Statistics().PCA(data, comps.getFirst(), comps.getSecond());
             }
         };
         sw.execute();
@@ -111,7 +114,10 @@ public class PCAPlot extends ViewerI<DistributionI> {
         try {
             pca = sw.get();
         } catch (InterruptedException | ExecutionException ex) {
-            System.err.println(ex.getMessage());
+            if (ex.getMessage().contains("Could not access requested principal components.")) {
+                DialogDisplayer.getDefault().notify(new NotifyDescriptor.Message("Selected principal components do not exist."));
+                return;
+            }
             Exceptions.printStackTrace(ex);
             return;
         }

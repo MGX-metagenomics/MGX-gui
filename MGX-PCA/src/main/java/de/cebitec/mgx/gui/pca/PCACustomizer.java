@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.pca;
 
+import de.cebitec.mgx.api.misc.PrincipalComponent;
 import de.cebitec.mgx.api.misc.PCAResultI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.misc.Point;
@@ -15,9 +16,9 @@ import org.jfree.data.xy.XYSeries;
  */
 public class PCACustomizer extends javax.swing.JPanel {
 
-    private static final Pair<PC, PC> pc12 = new Pair<>(PC.PC1, PC.PC2);
-    private static final Pair<PC, PC> pc23 = new Pair<>(PC.PC2, PC.PC3);
-    private static final Pair<PC, PC> pc13 = new Pair<>(PC.PC1, PC.PC3);
+    private static final Pair<PrincipalComponent, PrincipalComponent> pc12 = new Pair<>(PrincipalComponent.PC1, PrincipalComponent.PC2);
+    private static final Pair<PrincipalComponent, PrincipalComponent> pc23 = new Pair<>(PrincipalComponent.PC2, PrincipalComponent.PC3);
+    private static final Pair<PrincipalComponent, PrincipalComponent> pc13 = new Pair<>(PrincipalComponent.PC1, PrincipalComponent.PC3);
     private XYSeries series = null;
     private PCAResultI pca = null;
     private Map<XYDataItem, String> toolTips = null;
@@ -53,7 +54,7 @@ public class PCACustomizer extends javax.swing.JPanel {
         return series;
     }
 
-    public Pair<PC, PC> getPCs() {
+    public Pair<PrincipalComponent, PrincipalComponent> getPCs() {
         String s = (String) pcSel.getSelectedItem();
         switch (s) {
             case "PC1 / PC2":

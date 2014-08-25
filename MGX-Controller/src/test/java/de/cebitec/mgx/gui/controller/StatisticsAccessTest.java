@@ -1,10 +1,12 @@
 package de.cebitec.mgx.gui.controller;
 
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.groups.ConflictingJobsException;
 import de.cebitec.mgx.api.groups.VGroupManagerI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.AttributeRank;
 import de.cebitec.mgx.api.misc.DistributionI;
+import de.cebitec.mgx.api.misc.PrincipalComponent;
 import de.cebitec.mgx.api.misc.PCAResultI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.misc.Triple;
@@ -78,8 +80,49 @@ public class StatisticsAccessTest {
         }
         assertNotNull(dists);
         assertEquals(2, dists.size());
-        PCAResultI pca = master.Statistics().PCA(dists, 1, 2);
+        PCAResultI pca = master.Statistics().PCA(dists, PrincipalComponent.PC1, PrincipalComponent.PC2);
         assertNotNull(pca);
+    }
+
+    @Test
+    public void testPCANoPC23() throws Exception {
+        System.out.println("PCA no PC2/PC3");
+        MGXMaster master = TestMaster.getRO();
+
+        VGroupManagerI vgmgr = VGroupManager.getInstance();
+        for (VisualizationGroupI vg : vgmgr.getAllGroups().toArray(new VisualizationGroupI[]{})) {
+            vgmgr.removeGroup(vg);
+        }
+        vgmgr.registerResolver(new Resolver());
+        VisualizationGroupI g1 = vgmgr.createGroup();
+        g1.setName("grp1");
+        g1.addSeqRun(master.SeqRun().fetch(1));
+
+        VisualizationGroupI g2 = vgmgr.createGroup();
+        g2.setName("grp2");
+        SeqRunI run = master.SeqRun().fetch(2);
+        assertNotNull(run);
+        g2.addSeqRun(run);
+
+        boolean ret = vgmgr.selectAttributeType(AttributeRank.PRIMARY, "EC_number");
+        assertTrue(ret);
+        List<Pair<VisualizationGroupI, DistributionI>> dists = null;
+        try {
+            dists = vgmgr.getDistributions();
+        } catch (ConflictingJobsException ex) {
+            fail(ex.getMessage());
+        }
+        assertNotNull(dists);
+        assertEquals(2, dists.size());
+        try {
+            PCAResultI pca = master.Statistics().PCA(dists, PrincipalComponent.PC2, PrincipalComponent.PC3);
+        } catch (MGXException ex) {
+            if (ex.getMessage().contains("Could not access requested principal components.")) {
+                return;
+            }
+            fail(ex.getMessage());
+        }
+        fail("Server returned PCA results for invalid PCs.");
     }
 
     @Test
