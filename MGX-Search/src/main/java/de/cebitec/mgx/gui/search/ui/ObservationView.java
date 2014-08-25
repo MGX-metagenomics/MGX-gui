@@ -22,8 +22,8 @@ import javax.swing.border.EtchedBorder;
  */
 public class ObservationView extends javax.swing.JPanel {
 
-    private Border unselectedBorder = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);
-    private Border selectedBorder = BorderFactory.createRaisedBevelBorder();
+    private final Border unselectedBorder = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);
+    private final Border selectedBorder = BorderFactory.createRaisedBevelBorder();
 
     /**
      * Creates new form ObservationView

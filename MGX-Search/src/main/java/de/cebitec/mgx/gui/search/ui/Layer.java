@@ -2,7 +2,7 @@
 package de.cebitec.mgx.gui.search.ui;
 
 import de.cebitec.mgx.api.model.ObservationI;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.math3.util.FastMath;
 
@@ -12,7 +12,7 @@ import org.apache.commons.math3.util.FastMath;
  */
 public class Layer {
     
-    private final List<ObservationI> observations = new LinkedList<>();
+    private final List<ObservationI> observations = new ArrayList<>();
     private int lastX = 0;
     
     public boolean add(ObservationI o) {
