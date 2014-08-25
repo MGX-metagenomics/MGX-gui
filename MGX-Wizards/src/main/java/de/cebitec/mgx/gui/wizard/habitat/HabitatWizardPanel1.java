@@ -117,13 +117,13 @@ public class HabitatWizardPanel1 implements WizardDescriptor.Panel<WizardDescrip
         HabitatVisualPanel1 c = getComponent();
         String test = c.getHabitatName();
         if (test == null || "".equals(test)) {
-            model.getNotificationLineSupport().setErrorMessage("Please enter a name for Habitat.");
+            model.getNotificationLineSupport().setErrorMessage("Please enter a habitat name.");
             isValid = false;
         }
 
         test = c.getBiome();
         if (test == null || "".equals(test)) {
-            model.getNotificationLineSupport().setErrorMessage("Please enter a name for Biome.");
+            model.getNotificationLineSupport().setErrorMessage("Please enter biome type.");
             isValid = false;
         }
 

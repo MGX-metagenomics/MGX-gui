@@ -299,7 +299,7 @@ public final class HabitatVisualPanel1 extends JPanel implements DocumentListene
         ((DefaultTileFactory) kit.getMainMap().getTileFactory()).setThreadPoolSize(8);
         waypoints = new HashSet<>();
         waypoints.add(new WaypointImpl(kit.getMainMap().getCenterPosition()));
-        WaypointPainter painter = new WaypointPainter();
+        final WaypointPainter painter = new WaypointPainter();
         painter.setWaypoints(waypoints);
         kit.getMainMap().setOverlayPainter(painter);
         waypoints.clear();
@@ -320,6 +320,7 @@ public final class HabitatVisualPanel1 extends JPanel implements DocumentListene
                 Point2D pt = kit.getMiniMap().getTileFactory().geoToPixel(kit.getMainMap().getCenterPosition(), kit.getMiniMap().getZoom());
                 waypoints.clear();
                 waypoints.add(new WaypointImpl(kit.getMainMap().getCenterPosition()));
+                painter.setWaypoints(waypoints);
                 kit.getMiniMap().setCenter(pt);
                 kit.getMiniMap().repaint();
             }
