@@ -5,8 +5,10 @@ import de.cebitec.mgx.api.misc.PCAResultI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.misc.Point;
 import de.cebitec.mgx.gui.datamodel.misc.PCAResult;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import javax.swing.JLabel;
 import org.jfree.data.xy.XYDataItem;
 import org.jfree.data.xy.XYSeries;
 
@@ -43,9 +45,16 @@ public class PCACustomizer extends javax.swing.JPanel {
         if (loadings != null) {
             numLoadings.setMaximum(loadings.size());
             //numLoadings.setValue(loadings.size());
-            int num = loadings.size();
-            while (num > 10) { num = num / 10; }
-            numLoadings.setMajorTickSpacing(num);
+            numLoadings.setMajorTickSpacing(loadings.size() / 2);
+            numLoadings.setMinorTickSpacing(loadings.size() / 10);
+
+            Hashtable labelTable = new Hashtable();
+            labelTable.put(new Integer(0), new JLabel("0"));
+            labelTable.put(new Integer(loadings.size() / 2), new JLabel(String.valueOf(loadings.size() / 2)));
+            labelTable.put(new Integer(loadings.size()), new JLabel(String.valueOf(loadings.size())));
+            numLoadings.setLabelTable(labelTable);
+
+            numLoadings.setPaintLabels(true);
             numLoadings.setEnabled(true);
         }
     }
