@@ -17,6 +17,7 @@ import de.cebitec.mgx.kegg.pathways.api.ECNumberI;
 import de.cebitec.mgx.kegg.pathways.api.PathwayI;
 import de.cebitec.mgx.kegg.pathways.model.ECNumberFactory;
 import de.cebitec.mgx.kegg.pathways.paint.KEGGPanel;
+import java.awt.Cursor;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
@@ -92,7 +93,8 @@ public class KeggViewer extends CategoricalViewerI {
     public Class getInputType() {
         return DistributionI.class;
     }
-    private final Pattern ecNumber = Pattern.compile("\\d+[.](-|\\d+)[.](-|\\d+)[.](-|\\d+)");
+    
+    private final static Pattern ecNumber = Pattern.compile("\\d+[.](-|\\d+)[.](-|\\d+)[.](-|\\d+)");
 
     @Override
     public void show(List<Pair<VisualizationGroupI, DistributionI>> dists) {
@@ -125,42 +127,44 @@ public class KeggViewer extends CategoricalViewerI {
     private final static RequestProcessor RP = new RequestProcessor("KEGG-Viewer", 35, true);
 
     public Set<PathwayI> selectPathways() throws ConflictingJobsException, KEGGException {
-        final Set<ECNumberI> ecNumbers = new HashSet<>();
-        for (Pair<VisualizationGroupI, DistributionI> p : VGroupManager.getInstance().getDistributions()) {
-            DistributionI dist = p.getSecond();
-            for (Entry<AttributeI, Number> e : dist.entrySet()) {
-                Matcher matcher = ecNumber.matcher(e.getKey().getValue());
-                if (matcher.find()) {
-                    try {
-                        ECNumberI ec = ECNumberFactory.fromString(e.getKey().getValue().substring(matcher.start(), matcher.end()));
-                        ecNumbers.add(ec);
-                    } catch (KEGGException ex) {
-                        Exceptions.printStackTrace(ex);
-                    }
-                }
-            }
-        }
-        final Set<PathwayI> ret = Collections.synchronizedSet(new HashSet<PathwayI>());
-        RequestProcessor.Task task = RP.post(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    ret.addAll(master.Pathways().getMatchingPathways(ecNumbers));
-                } catch (KEGGException ex) {
-                    Exceptions.printStackTrace(ex);
-                }
-            }
-        });
-        task.waitFinished();
-        return ret;
+        return customizer.selectPathways(master, RP);
     }
+//        final Set<ECNumberI> ecNumbers = new HashSet<>();
+//        for (Pair<VisualizationGroupI, DistributionI> p : VGroupManager.getInstance().getDistributions()) {
+//            DistributionI dist = p.getSecond();
+//            for (Entry<AttributeI, Number> e : dist.entrySet()) {
+//                Matcher matcher = ecNumber.matcher(e.getKey().getValue());
+//                if (matcher.find()) {
+//                    try {
+//                        ECNumberI ec = ECNumberFactory.fromString(e.getKey().getValue().substring(matcher.start(), matcher.end()));
+//                        ecNumbers.add(ec);
+//                    } catch (KEGGException ex) {
+//                        Exceptions.printStackTrace(ex);
+//                    }
+//                }
+//            }
+//        }
+//        final Set<PathwayI> ret = Collections.synchronizedSet(new HashSet<PathwayI>());
+//        RequestProcessor.Task task = RP.post(new Runnable() {
+//            @Override
+//            public void run() {
+//                try {
+//                    ret.addAll(master.Pathways().getMatchingPathways(ecNumbers));
+//                } catch (KEGGException ex) {
+//                    Exceptions.printStackTrace(ex);
+//                }
+//            }
+//        });
+//        task.waitFinished();
+//        return ret;
+//    }
 
     @Override
     public KeggCustomizer getCustomizer() {
         SwingWorker<Set<PathwayI>, Void> sw = new SwingWorker<Set<PathwayI>, Void>() {
             @Override
             protected Set<PathwayI> doInBackground() throws Exception {
-                return selectPathways();
+                return customizer.selectPathways(master, RP);
             }
 
             @Override
