@@ -1,7 +1,25 @@
 package de.cebitec.mgx.gui.keggviewer;
 
+import de.cebitec.mgx.api.groups.ConflictingJobsException;
+import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.misc.DistributionI;
+import de.cebitec.mgx.api.misc.Pair;
+import de.cebitec.mgx.api.model.AttributeI;
+import de.cebitec.mgx.common.VGroupManager;
+import de.cebitec.mgx.kegg.pathways.KEGGException;
+import de.cebitec.mgx.kegg.pathways.KEGGMaster;
+import de.cebitec.mgx.kegg.pathways.api.ECNumberI;
 import de.cebitec.mgx.kegg.pathways.api.PathwayI;
+import de.cebitec.mgx.kegg.pathways.model.ECNumberFactory;
+import java.awt.Cursor;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import org.openide.util.Exceptions;
+import org.openide.util.RequestProcessor;
 
 /**
  *
@@ -47,6 +65,42 @@ public class KeggCustomizer extends javax.swing.JPanel {
 
     PathwayI getSelectedPathway() {
         return (PathwayI) pathwayList.getSelectedItem();
+    }
+
+    private final static Pattern ecNumber = Pattern.compile("\\d+[.](-|\\d+)[.](-|\\d+)[.](-|\\d+)");
+
+    public Set<PathwayI> selectPathways(final KEGGMaster master, RequestProcessor RP) throws ConflictingJobsException, KEGGException {
+        final Set<ECNumberI> ecNumbers = new HashSet<>();
+        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        for (Pair<VisualizationGroupI, DistributionI> p : VGroupManager.getInstance().getDistributions()) {
+            DistributionI dist = p.getSecond();
+            for (Map.Entry<AttributeI, Number> e : dist.entrySet()) {
+                Matcher matcher = ecNumber.matcher(e.getKey().getValue());
+                if (matcher.find()) {
+                    try {
+                        ECNumberI ec = ECNumberFactory.fromString(e.getKey().getValue().substring(matcher.start(), matcher.end()));
+                        ecNumbers.add(ec);
+                    } catch (KEGGException ex) {
+                        Exceptions.printStackTrace(ex);
+                    }
+                }
+            }
+        }
+        final Set<PathwayI> ret = Collections.synchronizedSet(new HashSet<PathwayI>());
+        RequestProcessor.Task task = RP.post(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    ret.addAll(master.Pathways().getMatchingPathways(ecNumbers));
+                } catch (KEGGException ex) {
+                    Exceptions.printStackTrace(ex);
+                }
+            }
+        });
+        task.waitFinished();
+        
+        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        return ret;
     }
 
     /**
