@@ -128,6 +128,7 @@ public class FileAccessTest {
     public void testUploadFile() throws Exception {
         System.out.println("testUploadFile");
         MGXMasterI m = TestMaster.getRW();
+        assertNotNull(m);
 
         File f = new File("/tmp/testDownload");
         FileWriter fw = new FileWriter(f);
