@@ -22,6 +22,7 @@ import java.util.UUID;
 import org.junit.After;
 import org.junit.AfterClass;
 import static org.junit.Assert.*;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -55,10 +56,7 @@ public class MappedSequenceCacheTest {
     public void testCoveragePriv() throws MGXException {
         System.err.println("testCoveragePriv");
         MGXMasterI master = TestMaster.getPrivate();
-        if (master == null) {
-            System.err.println("    private test, skipped");
-            return;
-        }
+        Assume.assumeNotNull(master);
         Iterator<MappingI> iter = master.Mapping().fetchall();
         MappingI mapping = null;
         while (iter.hasNext()) {
@@ -80,6 +78,7 @@ public class MappedSequenceCacheTest {
     public void testMappingsPriv() throws MGXException {
         System.err.println("testMappingsPriv");
         MGXMasterI master = TestMaster.getPrivate();
+        Assume.assumeNotNull(master);
         Iterator<MappingI> iter = master.Mapping().fetchall();
         MappingI mapping = null;
         while (iter.hasNext()) {
@@ -99,6 +98,7 @@ public class MappedSequenceCacheTest {
     public void testCoverageMaxPriv() throws MGXException {
         System.err.println("testCoverageMaxPriv");
         MGXMasterI master = TestMaster.getPrivate();
+        Assume.assumeNotNull(master);
         Iterator<MappingI> iter = master.Mapping().fetchall();
         MappingI mapping = null;
         while (iter.hasNext()) {
