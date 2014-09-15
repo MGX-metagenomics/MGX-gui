@@ -17,6 +17,7 @@ import java.util.SortedSet;
 import org.junit.After;
 import org.junit.AfterClass;
 import static org.junit.Assert.*;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -85,6 +86,7 @@ public class ViewControllerTest {
     public void testCoveragePriv() throws MGXException {
         System.err.println("testCoveragePriv");
         MGXMasterI master = TestMaster.getPrivate();
+        Assume.assumeNotNull(master);
         Iterator<MappingI> iter = master.Mapping().fetchall();
         int cnt = 0;
         MappingI mapping = null;
@@ -119,6 +121,7 @@ public class ViewControllerTest {
     public void testMappingsPrivMax() throws MGXException {
         System.err.println("testMappingsPrivMax");
         MGXMasterI master = TestMaster.getPrivate();
+        Assume.assumeNotNull(master);
         Iterator<MappingI> iter = master.Mapping().fetchall();
         int cnt = 0;
         MappingI mapping = null;
@@ -144,6 +147,7 @@ public class ViewControllerTest {
     public void testMappingsPriv() throws MGXException {
         System.err.println("testMappingsPriv");
         MGXMasterI master = TestMaster.getPrivate();
+        Assume.assumeNotNull(master);
         Iterator<MappingI> iter = master.Mapping().fetchall();
         int cnt = 0;
         MappingI mapping = null;
