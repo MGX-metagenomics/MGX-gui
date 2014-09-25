@@ -6,6 +6,7 @@ import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.misc.TaskI.TaskType;
 import de.cebitec.mgx.api.model.Identifiable;
+import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.JobParameterI;
 import de.cebitec.mgx.api.model.ToolI;
 import de.cebitec.mgx.client.MGXDTOMaster;
@@ -148,11 +149,12 @@ public class ToolAccess extends AccessBase<ToolI> implements ToolAccessI {
     }
 
     @Override
-    public ToolI ByJob(long id) {
+    public ToolI ByJob(JobI job) {
         ToolI t = null;
         try {
-            ToolDTO dto = getDTOmaster().Tool().ByJob(id);
+            ToolDTO dto = getDTOmaster().Tool().ByJob(job.getId());
             t = ToolDTOFactory.getInstance().toModel(getMaster(), dto);
+            job.setTool(t);
         } catch (MGXServerException | MGXClientException ex) {
             Exceptions.printStackTrace(ex);
         }
