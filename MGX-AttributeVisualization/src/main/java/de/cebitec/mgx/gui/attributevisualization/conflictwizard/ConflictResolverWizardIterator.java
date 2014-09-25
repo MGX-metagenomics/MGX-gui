@@ -77,7 +77,7 @@ public final class ConflictResolverWizardIterator implements WizardDescriptor.It
                             for (final JobI job : e.getThird()) {
                                 if (job.getTool() == null) {
                                     MGXMasterI master = job.getMaster();
-                                    ToolI tool = master.Tool().ByJob(job.getId());
+                                    ToolI tool = master.Tool().ByJob(job);
                                     job.setTool(tool);
                                 }
                             }
