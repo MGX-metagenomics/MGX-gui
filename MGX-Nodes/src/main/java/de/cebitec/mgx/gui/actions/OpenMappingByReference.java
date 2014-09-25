@@ -68,7 +68,7 @@ public class OpenMappingByReference extends OpenMappingBase {
                         job.setSeqrun(master.SeqRun().fetch(m.getSeqrunID()));
                     }
                     if (job.getTool() == null) {
-                        job.setTool(master.Tool().ByJob(job.getId()));
+                        job.setTool(master.Tool().ByJob(job));
                     }
                     ctxs.add(new MappingCtx(m, ref, job));
                 }
