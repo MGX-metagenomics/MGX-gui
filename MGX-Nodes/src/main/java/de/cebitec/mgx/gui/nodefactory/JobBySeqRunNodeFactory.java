@@ -13,6 +13,7 @@ import java.util.List;
 import javax.swing.Timer;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -35,25 +36,26 @@ public class JobBySeqRunNodeFactory extends JobNodeFactory {
     }
 
     @Override
-    protected boolean createKeys(List<JobI> toPopulate) {
-        MGXMasterI master = run.getMaster();
-        try {
-            for (JobI j : master.Job().BySeqRun(run)) {
-                j.setSeqrun(run);
-                ToolI t = master.Tool().ByJob(j.getId());
-                j.setTool(t);
-                toPopulate.add(j);
-            }
-            Collections.sort(toPopulate);
-        } catch (MGXException ex) {
-        }
-        return true;
-    }
+    protected synchronized boolean createKeys(List<JobI> toPopulate) {
 
-    @Override
-    protected Node createNodeForKey(JobI key) {
-        JobNode node = new JobNode(key.getMaster(), key, Children.LEAF);
-        node.addNodeListener(this);
-        return node;
+        if (!busy) {
+            busy = true;
+            MGXMasterI master = run.getMaster();
+            try {
+                for (JobI j : master.Job().BySeqRun(run)) {
+                    //j.setSeqrun(run);
+                    ToolI t = master.Tool().ByJob(j);
+                    j.setTool(t);
+                    toPopulate.add(j);
+                }
+                Collections.sort(toPopulate);
+            } catch (MGXException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+            busy = false;
+            return true;
+        } else {
+            return false;
+        }
     }
 }
