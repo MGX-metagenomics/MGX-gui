@@ -22,6 +22,7 @@ import org.openide.nodes.NodeEvent;
 import org.openide.nodes.NodeListener;
 import org.openide.nodes.NodeMemberEvent;
 import org.openide.nodes.NodeReorderEvent;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -47,49 +48,55 @@ public class JobNodeFactory extends ChildFactory<JobI> implements NodeListener {
     }
 
     @Override
-    protected boolean createKeys(List<JobI> toPopulate) {
-        try {
-            Iterator<SeqRunI> iter = master.SeqRun().fetchall();
-            while (iter != null && iter.hasNext()) {
-                SeqRunI sr = iter.next();
-                for (JobI j : master.Job().BySeqRun(sr)) {
-                    j.setSeqrun(sr);
-                    ToolI t = master.Tool().ByJob(j.getId());
-                    j.setTool(t);
-                    toPopulate.add(j);
+    protected synchronized boolean createKeys(List<JobI> toPopulate) {
+
+        if (!busy) {
+            busy = true;
+            try {
+                Iterator<SeqRunI> iter = master.SeqRun().fetchall();
+                while (iter != null && iter.hasNext()) {
+                    SeqRunI sr = iter.next();
+                    for (JobI j : master.Job().BySeqRun(sr)) {
+                        ToolI t = master.Tool().ByJob(j);
+                        j.setTool(t);
+                        toPopulate.add(j);
+                    }
                 }
+                Collections.sort(toPopulate);
+            } catch (MGXException ex) {
+                Exceptions.printStackTrace(ex);
             }
-            Collections.sort(toPopulate);
-        } catch (MGXException ex) {
+            busy = false;
+            return true;
+        } else {
+            return false;
         }
-        return true;
     }
 
     @Override
     protected Node createNodeForKey(JobI key) {
-        JobNode node = new JobNode(master, key, Children.LEAF);
+        JobNode node = new JobNode(key.getMaster(), key, Children.LEAF);
         node.addNodeListener(this);
         return node;
     }
 
+    protected boolean busy = false;
     protected boolean refreshing = false;
 
     public final void refreshChildren() {
-
-        if (EventQueue.isDispatchThread()) {
-            NonEDT.invoke(new Runnable() {
-
-                @Override
-                public void run() {
-                    refreshChildren();
-                }
-            });
-            return;
-        }
+//        if (EventQueue.isDispatchThread()) {
+//            NonEDT.invoke(new Runnable() {
+//
+//                @Override
+//                public void run() {
+//                    refreshChildren();
+//                }
+//            });
+//            return;
+//        }
         if (!refreshing) {
             refreshing = true;
-            //System.err.println("refreshing on EDT? " + EventQueue.isDispatchThread());
-            refresh(true);
+            refresh(false);
             refreshing = false;
         }
     }

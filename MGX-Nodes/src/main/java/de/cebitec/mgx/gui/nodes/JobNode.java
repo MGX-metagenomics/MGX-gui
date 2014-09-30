@@ -295,6 +295,7 @@ public class JobNode extends MGXNodeBase<JobI, JobNode> {
                     }
                     if (task != null) {
                         task.finish();
+                        job.modified();
                         return task.getState() == TaskI.State.FINISHED;
                     }
                     return false;
