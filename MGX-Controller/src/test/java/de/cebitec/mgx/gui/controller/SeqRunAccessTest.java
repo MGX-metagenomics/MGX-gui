@@ -89,7 +89,7 @@ public class SeqRunAccessTest {
         MGXMasterI m = TestMaster.getRO();
         SeqRunI sr1 = m.SeqRun().fetch(1);
         PropCounter pc = new PropCounter();
-        final DownloadBaseI downloader = m.Sequence().createDownloader(sr1.getId(), writer, true);
+        final DownloadBaseI downloader = m.Sequence().createDownloader(sr1, writer, true);
         downloader.addPropertyChangeListener(pc);
         boolean success = downloader.download();
 

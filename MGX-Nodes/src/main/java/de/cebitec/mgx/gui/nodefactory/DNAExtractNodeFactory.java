@@ -24,18 +24,18 @@ import org.openide.util.Exceptions;
 public class DNAExtractNodeFactory extends ChildFactory<DNAExtractI> implements NodeListener {
 
     private final MGXMasterI master;
-    private final long sample_id;
+    private final SampleI sample;
 
     public DNAExtractNodeFactory(MGXMasterI master, SampleI s) {
         this.master = master;
-        this.sample_id = s.getId();
+        this.sample = s;
     }
 
     @Override
     protected boolean createKeys(List<DNAExtractI> toPopulate) {
         Iterator<DNAExtractI> iter = null;
         try {
-            iter = master.DNAExtract().BySample(sample_id);
+            iter = master.DNAExtract().BySample(sample);
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);
         }

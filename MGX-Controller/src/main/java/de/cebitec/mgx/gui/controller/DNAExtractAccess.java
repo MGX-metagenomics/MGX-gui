@@ -128,11 +128,12 @@ public class DNAExtractAccess extends AccessBase<DNAExtractI> implements DNAExtr
         return ret;
     }
 
-    public Iterator<DNAExtractI> BySample(final long sample_id) {
+    @Override
+    public Iterator<DNAExtractI> BySample(final SampleI sample) {
 
         try {
             return new Iterator<DNAExtractI>() {
-                final Iterator<DNAExtractDTO> iter = getDTOmaster().DNAExtract().BySample(sample_id);
+                final Iterator<DNAExtractDTO> iter = getDTOmaster().DNAExtract().BySample(sample.getId());
 
                 @Override
                 public boolean hasNext() {

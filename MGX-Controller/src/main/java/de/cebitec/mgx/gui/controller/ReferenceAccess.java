@@ -102,10 +102,10 @@ public class ReferenceAccess implements ReferenceAccessI {
     }
 
     @Override
-    public Iterator<RegionI> byReferenceInterval(Long id, int from, int to) {
+    public Iterator<RegionI> byReferenceInterval(MGXReferenceI ref, int from, int to) {
         Iterator<RegionDTO> fetchall;
         try {
-            fetchall = dtomaster.Reference().byReferenceInterval(id, from, to);
+            fetchall = dtomaster.Reference().byReferenceInterval(ref.getId(), from, to);
             return new BaseIterator<RegionDTO, RegionI>(fetchall) {
                 @Override
                 public RegionI next() {

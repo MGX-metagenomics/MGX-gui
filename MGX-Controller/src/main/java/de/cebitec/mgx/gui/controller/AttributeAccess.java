@@ -34,11 +34,9 @@ import de.cebitec.mgx.gui.dtoconversion.SequenceDTOFactory;
 import de.cebitec.mgx.gui.util.BaseIterator;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.openide.util.Exceptions;
 
 /**
  *
@@ -55,9 +53,9 @@ public class AttributeAccess implements AttributeAccessI {
     }
 
     @Override
-    public Iterator<AttributeI> BySeqRun(final long seqrun_id) throws MGXException {
+    public Iterator<AttributeI> BySeqRun(final SeqRunI seqrun) throws MGXException {
         try {
-            Iterator<AttributeDTO> BySeqRun = dtomaster.Attribute().BySeqRun(seqrun_id);
+            Iterator<AttributeDTO> BySeqRun = dtomaster.Attribute().BySeqRun(seqrun.getId());
 
             return new BaseIterator<AttributeDTO, AttributeI>(BySeqRun) {
                 @Override
@@ -114,11 +112,11 @@ public class AttributeAccess implements AttributeAccessI {
 //        return res;
 //    }
     @Override
-    public DistributionI getDistribution(long attrType_id, long job_id) throws MGXException {
+    public DistributionI getDistribution(AttributeTypeI attrType, JobI job) throws MGXException {
         Map<AttributeI, Long> res;
         long total = 0;
         try {
-            AttributeDistribution distribution = dtomaster.Attribute().getDistribution(attrType_id, job_id);
+            AttributeDistribution distribution = dtomaster.Attribute().getDistribution(attrType.getId(), job.getId());
             res = new HashMap<>(distribution.getAttributeCountsCount());
 
             // convert and save types first
@@ -185,10 +183,10 @@ public class AttributeAccess implements AttributeAccessI {
     }
 
     @Override
-    public TreeI<Long> getHierarchy(long attrType_id, long job_id) throws MGXException {
+    public TreeI<Long> getHierarchy(AttributeTypeI attrType, JobI job) throws MGXException {
         Map<AttributeI, Long> res;
         try {
-            AttributeDistribution distribution = dtomaster.Attribute().getHierarchy(attrType_id, job_id);
+            AttributeDistribution distribution = dtomaster.Attribute().getHierarchy(attrType.getId(), job.getId());
             res = new HashMap<>(distribution.getAttributeTypeCount());
 
             // convert and save types first

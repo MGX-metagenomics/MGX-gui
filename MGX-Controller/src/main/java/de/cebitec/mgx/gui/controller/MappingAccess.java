@@ -4,8 +4,10 @@ import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.MappingAccessI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.misc.TaskI;
+import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.api.model.MappedSequenceI;
 import de.cebitec.mgx.api.model.MappingI;
+import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
@@ -67,9 +69,9 @@ public class MappingAccess extends MappingAccessI {
     }
 
     @Override
-    public Iterator<MappingI> BySeqRun(long runid) {
+    public Iterator<MappingI> BySeqRun(SeqRunI run) {
         try {
-            Iterator<MappingDTO> fetchall = dtomaster.Mapping().BySeqRun(runid);
+            Iterator<MappingDTO> fetchall = dtomaster.Mapping().BySeqRun(run.getId());
             return new BaseIterator<MappingDTO, MappingI>(fetchall) {
                 @Override
                 public MappingI next() {
@@ -84,9 +86,9 @@ public class MappingAccess extends MappingAccessI {
     }
 
     @Override
-    public Iterator<MappingI> ByReference(long refId) {
+    public Iterator<MappingI> ByReference(MGXReferenceI ref) {
         try {
-            Iterator<MappingDTO> fetchall = dtomaster.Mapping().ByReference(refId);
+            Iterator<MappingDTO> fetchall = dtomaster.Mapping().ByReference(ref.getId());
             return new BaseIterator<MappingDTO, MappingI>(fetchall) {
                 @Override
                 public MappingI next() {

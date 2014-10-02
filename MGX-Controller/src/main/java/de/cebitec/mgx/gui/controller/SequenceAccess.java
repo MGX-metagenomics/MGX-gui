@@ -6,6 +6,7 @@ import de.cebitec.mgx.api.access.datatransfer.DownloadBaseI;
 import de.cebitec.mgx.api.access.datatransfer.UploadBaseI;
 import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.model.AttributeI;
+import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.SequenceI;
 import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.client.datatransfer.SeqByAttributeDownloader;
@@ -40,23 +41,24 @@ public class SequenceAccess extends AccessBase<SequenceI> implements SequenceAcc
         super(master, dtomaster);
     }
 
-    public void sendSequences(long seqrun_id, SeqReaderI reader) {
+    @Override
+    public void sendSequences(SeqRunI seqrun, SeqReaderI reader) {
         try {
-            getDTOmaster().Sequence().sendSequences(seqrun_id, reader);
+            getDTOmaster().Sequence().sendSequences(seqrun.getId(), reader);
         } catch (MGXServerException ex) {
             Exceptions.printStackTrace(ex);
         }
     }
 
     @Override
-    public UploadBaseI createUploader(long seqrun_id, SeqReaderI reader) {
-        final SeqUploader su = getDTOmaster().Sequence().createUploader(seqrun_id, reader);
+    public UploadBaseI createUploader(SeqRunI seqrun, SeqReaderI reader) {
+        final SeqUploader su = getDTOmaster().Sequence().createUploader(seqrun.getId(), reader);
         return new ServerSeqRunUploader(su);
     }
 
     @Override
-    public DownloadBaseI createDownloader(long seqrun_id, SeqWriterI writer, boolean closeWriter) {
-        final SeqDownloader sd = getDTOmaster().Sequence().createDownloader(seqrun_id, writer, closeWriter);
+    public DownloadBaseI createDownloader(SeqRunI seqrun, SeqWriterI writer, boolean closeWriter) {
+        final SeqDownloader sd = getDTOmaster().Sequence().createDownloader(seqrun.getId(), writer, closeWriter);
         return new ServerSeqRunDownloader(sd);
     }
 
@@ -78,6 +80,7 @@ public class SequenceAccess extends AccessBase<SequenceI> implements SequenceAcc
         return new ServerSeqRunDownloader(dl);
     }
 
+    @Override
     public void downloadSequencesForAttributes(Set<AttributeI> attrs, SeqWriterI writer, boolean closeWriter) {
         try {
             Builder b = AttributeDTOList.newBuilder();
