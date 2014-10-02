@@ -48,7 +48,7 @@ public class CacheFactory {
             @Override
             public Set<RegionI> load(Interval k) throws MGXException {
                 //Logger.getLogger(getClass().getName()).log(Level.INFO, "server fetch " + k.getFrom() + " - " + k.getTo());
-                Iterator<RegionI> iter = master.Reference().byReferenceInterval(ref.getId(), k.getFrom(), Math.min(k.getTo(), refLength));
+                Iterator<RegionI> iter = master.Reference().byReferenceInterval(ref, k.getFrom(), Math.min(k.getTo(), refLength));
                 Set<RegionI> ret = new HashSet<>();
                 while (iter.hasNext()) {
                     ret.add(iter.next());
