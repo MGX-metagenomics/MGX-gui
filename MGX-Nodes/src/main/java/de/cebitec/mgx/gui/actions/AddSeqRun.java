@@ -74,7 +74,7 @@ public class AddSeqRun extends AbstractAction {
                         publish(ex);
                         return null;
                     }
-                    final UploadBaseI uploader = m.Sequence().createUploader(seqrun.getId(), reader);
+                    final UploadBaseI uploader = m.Sequence().createUploader(seqrun, reader);
                     MGXTask run = new MGXTask("Upload " + canonicalPath) {
                         @Override
                         public boolean process() {

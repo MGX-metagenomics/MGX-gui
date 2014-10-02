@@ -5,6 +5,7 @@ import de.cebitec.mgx.api.access.JobAccessI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.misc.TaskI.TaskType;
+import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.Identifiable;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.JobParameterI;
@@ -178,10 +179,10 @@ public class JobAccess implements JobAccessI {
     }
 
     @Override
-    public List<JobI> ByAttributeTypeAndSeqRun(long atype_id, SeqRunI run) throws MGXException {
+    public List<JobI> ByAttributeTypeAndSeqRun(AttributeTypeI atype, SeqRunI run) throws MGXException {
         List<JobI> all = new ArrayList<>();
         try {
-            for (JobDTO dto : getDTOmaster().Job().ByAttributeTypeAndSeqRun(atype_id, run.getId())) {
+            for (JobDTO dto : getDTOmaster().Job().ByAttributeTypeAndSeqRun(atype.getId(), run.getId())) {
                 JobI j = JobDTOFactory.getInstance().toModel(getMaster(), dto);
                 j.setSeqrun(run);
                 all.add(j);

@@ -34,7 +34,7 @@ public class OpenMappingBySeqRun extends OpenMappingBase {
 
             @Override
             public void run() {
-                mappings = m.Mapping().BySeqRun(run.getId());
+                mappings = m.Mapping().BySeqRun(run);
                 hasData = mappings.hasNext();
             }
         });

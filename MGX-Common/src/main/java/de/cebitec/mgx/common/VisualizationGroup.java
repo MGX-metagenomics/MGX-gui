@@ -577,10 +577,10 @@ public class VisualizationGroup implements VisualizationGroupI {
         protected DistributionI doInBackground() throws Exception {
             MGXMasterI master = attrType.getMaster();
             if (attrType.getStructure() == AttributeTypeI.STRUCTURE_HIERARCHICAL) {
-                TreeI<Long> tree = master.Attribute().getHierarchy(attrType.getId(), job.getId());
+                TreeI<Long> tree = master.Attribute().getHierarchy(attrType, job);
                 return DistributionFactory.fromTree(tree, attrType);
             } else {
-                return master.Attribute().getDistribution(attrType.getId(), job.getId());
+                return master.Attribute().getDistribution(attrType, job);
             }
         }
 
@@ -614,18 +614,16 @@ public class VisualizationGroup implements VisualizationGroupI {
         @Override
         protected TreeI<Long> doInBackground() throws Exception {
             MGXMasterI master = attrType.getMaster();
-            return master.Attribute().getHierarchy(attrType.getId(), job.getId());
+            return master.Attribute().getHierarchy(attrType, job);
         }
 
         @Override
         protected void done() {
-            TreeI<Long> tree = null;
             try {
-                tree = get();
+                result.add(get());
             } catch (InterruptedException | ExecutionException ex) {
                 Exceptions.printStackTrace(ex);
             }
-            result.add(tree);
             latch.countDown();
         }
     }

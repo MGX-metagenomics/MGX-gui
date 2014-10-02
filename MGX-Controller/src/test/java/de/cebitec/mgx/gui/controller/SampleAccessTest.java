@@ -54,7 +54,7 @@ public class SampleAccessTest {
         MGXMaster master = TestMaster.getRO();
         HabitatI h = master.Habitat().fetch(1);
         assertNotNull(h);
-        Iterator<SampleI> iter = master.Sample().ByHabitat(h.getId());
+        Iterator<SampleI> iter = master.Sample().ByHabitat(h);
         int cnt = 0;
         while (iter.hasNext()) {
             SampleI s = iter.next();

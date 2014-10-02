@@ -24,17 +24,17 @@ import org.openide.util.Exceptions;
 public class SampleNodeFactory extends ChildFactory<SampleI> implements NodeListener {
 
     private final MGXMasterI master;
-    private final long habitat_id;
+    private final HabitatI habitat;
 
     public SampleNodeFactory(MGXMasterI master, HabitatI h) {
         this.master = master;
-        this.habitat_id = h.getId();
+        this.habitat = h;
     }
 
     @Override
     protected boolean createKeys(List<SampleI> toPopulate) {
         try {
-            Iterator<SampleI> iter = master.Sample().ByHabitat(habitat_id);
+            Iterator<SampleI> iter = master.Sample().ByHabitat(habitat);
             while (iter.hasNext()) {
                 toPopulate.add(iter.next());
             }

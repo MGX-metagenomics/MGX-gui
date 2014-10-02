@@ -25,17 +25,17 @@ import org.openide.util.Exceptions;
 public class SeqRunNodeFactory extends ChildFactory<SeqRunI> implements NodeListener {
 
     private final MGXMasterI master;
-    private final long extract_id;
+    private final DNAExtractI extract;
 
     public SeqRunNodeFactory(MGXMasterI master, DNAExtractI key) {
         this.master = master;
-        extract_id = key.getId();
+        extract = key;
     }
 
     @Override
     protected boolean createKeys(List<SeqRunI> toPopulate) {
         try {
-            Iterator<SeqRunI> ByExtract = master.SeqRun().ByExtract(extract_id);
+            Iterator<SeqRunI> ByExtract = master.SeqRun().ByExtract(extract);
             while (ByExtract.hasNext()) {
                 toPopulate.add(ByExtract.next());
             }

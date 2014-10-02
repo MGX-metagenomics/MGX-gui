@@ -116,9 +116,9 @@ public class SampleAccess extends AccessBase<SampleI> implements SampleAccessI {
     }
 
     @Override
-    public Iterator<SampleI> ByHabitat(final long hab_id) {
+    public Iterator<SampleI> ByHabitat(final HabitatI habitat) {
         try {
-            Iterator<SampleDTO> fetchall = getDTOmaster().Sample().ByHabitat(hab_id);
+            Iterator<SampleDTO> fetchall = getDTOmaster().Sample().ByHabitat(habitat.getId());
             return new BaseIterator<SampleDTO, SampleI>(fetchall) {
                 @Override
                 public SampleI next() {

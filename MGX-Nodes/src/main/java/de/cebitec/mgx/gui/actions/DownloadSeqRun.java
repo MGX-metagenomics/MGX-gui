@@ -95,7 +95,7 @@ public class DownloadSeqRun extends AbstractAction {
             final SeqWriterI writer = new FastaWriter(target.getAbsolutePath());
 
             MGXMasterI master = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
-            final DownloadBaseI downloader = master.Sequence().createDownloader(seqrun.getId(), writer, false);
+            final DownloadBaseI downloader = master.Sequence().createDownloader(seqrun, writer, false);
 
             final MGXTask run = new MGXTask("Export to " + fchooser.getSelectedFile().getName()) {
                 @Override

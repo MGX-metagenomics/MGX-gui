@@ -31,7 +31,13 @@ public class AttributeTypeAccess extends AccessBase<AttributeTypeI> {
 
     @Override
     public AttributeTypeI fetch(long id) {
-        throw new UnsupportedOperationException("Not supported.");
+        AttributeTypeDTO h = null;
+        try {
+            h = getDTOmaster().AttributeType().fetch(id);
+        } catch (MGXServerException | MGXClientException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+        return AttributeTypeDTOFactory.getInstance().toModel(getMaster(), h);
     }
 
     @Override

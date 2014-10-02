@@ -42,7 +42,7 @@ public class OpenMappingByReference extends OpenMappingBase {
 
             @Override
             public void run() {
-                Iterator<MappingI> mappings = m.Mapping().ByReference(ref.getId());
+                Iterator<MappingI> mappings = m.Mapping().ByReference(ref);
                 hasData = mappings.hasNext();
             }
         });
@@ -59,7 +59,7 @@ public class OpenMappingByReference extends OpenMappingBase {
             @Override
             protected List<MappingCtx> doInBackground() throws Exception {
                 List<MappingCtx> ctxs = new LinkedList<>();
-                Iterator<MappingI> mappings = master.Mapping().ByReference(ref.getId());
+                Iterator<MappingI> mappings = master.Mapping().ByReference(ref);
                 while (mappings.hasNext()) {
                     MappingI m = mappings.next();
 
