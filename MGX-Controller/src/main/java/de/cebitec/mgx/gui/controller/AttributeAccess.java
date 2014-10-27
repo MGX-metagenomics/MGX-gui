@@ -215,6 +215,24 @@ public class AttributeAccess implements AttributeAccessI {
 
     @Override
     public Iterator<String> find(String term, SeqRunI[] targets) throws MGXException {
+        if (term.isEmpty() || targets.length == 0) {
+            return new Iterator<String>() {
+
+                @Override
+                public boolean hasNext() {
+                    return false;
+                }
+
+                @Override
+                public String next() {
+                    return null;
+                }
+
+                @Override
+                public void remove() {
+                }
+            };
+        }
         SearchRequestI sr = new SearchRequest();
         sr.setTerm(term);
         sr.setRuns(targets);
