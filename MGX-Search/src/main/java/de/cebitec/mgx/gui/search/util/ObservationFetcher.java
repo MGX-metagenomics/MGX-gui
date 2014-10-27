@@ -60,7 +60,7 @@ public class ObservationFetcher implements Runnable {
                 obs.add(iter.next());
             }
             Collections.sort(obs, comp);
-            cache.put(seq, new WeakReference(obs));
+            cache.put(seq, new WeakReference<ObservationI[]>(obs.toArray(new ObservationI[]{})));
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);
         }
