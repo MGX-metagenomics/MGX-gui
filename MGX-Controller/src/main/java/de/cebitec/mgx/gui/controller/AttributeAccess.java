@@ -37,6 +37,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -213,6 +214,18 @@ public class AttributeAccess implements AttributeAccessI {
     }
 
     @Override
+    public Iterator<String> find(String term, SeqRunI[] targets) throws MGXException {
+        SearchRequestI sr = new SearchRequest();
+        sr.setTerm(term);
+        sr.setRuns(targets);
+        try {
+            return dtomaster.Attribute().find(SearchRequestDTOFactory.getInstance().toDTO(sr));
+        } catch (MGXServerException ex) {
+            throw new MGXException(ex);
+        }
+    }
+
+    @Override
     public Iterator<SequenceI> search(String term, boolean exact, SeqRunI[] targets) throws MGXException {
         SearchRequestI sr = new SearchRequest();
         sr.setTerm(term);
@@ -226,13 +239,13 @@ public class AttributeAccess implements AttributeAccessI {
         } catch (MGXServerException ex) {
             throw new MGXException(ex);
         }
-        
+
         return new BaseIterator<SequenceDTO, SequenceI>(searchResult) {
-                @Override
-                public SequenceI next() {
-                    SequenceI h = SequenceDTOFactory.getInstance().toModel(master, iter.next());
-                    return h;
-                }
+            @Override
+            public SequenceI next() {
+                SequenceI h = SequenceDTOFactory.getInstance().toModel(master, iter.next());
+                return h;
+            }
         };
 
 //        SequenceI[] ret = new SequenceI[searchResult.size()];
