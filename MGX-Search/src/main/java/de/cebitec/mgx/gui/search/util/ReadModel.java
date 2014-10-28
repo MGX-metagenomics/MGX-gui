@@ -12,6 +12,8 @@ import de.cebitec.mgx.api.model.SequenceI;
 import de.cebitec.mgx.gui.swingutils.BaseModel;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.concurrent.ExecutionException;
+import javax.swing.SwingWorker;
 import org.openide.util.Exceptions;
 
 /**
@@ -41,15 +43,24 @@ public class ReadModel extends BaseModel<SequenceI> {
         if (currentMaster == null || term == null || runs == null || runs.length == 0) {
             return;
         }
-        Iterator<SequenceI> iter = null;
+        
+        SwingWorker<Iterator<SequenceI>, Void> sw = new SwingWorker<Iterator<SequenceI>, Void>() {
+
+            @Override
+            protected Iterator<SequenceI> doInBackground() throws Exception {
+                return currentMaster.Attribute().search(term, true, runs);
+            }
+        };
+        sw.execute();
+        
+        Iterator<SequenceI> iter;
         try {
-            iter = currentMaster.Attribute().search(term, true, runs);
-        } catch (MGXException ex) {
+            iter = sw.get();
+        } catch (InterruptedException | ExecutionException ex) {
             Exceptions.printStackTrace(ex);
-        }
-        if (iter == null) {
             return;
         }
+       
         content.clear();
         while (iter.hasNext()) {
             SequenceI seq = iter.next();

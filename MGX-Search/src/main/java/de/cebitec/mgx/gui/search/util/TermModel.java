@@ -6,11 +6,12 @@
 package de.cebitec.mgx.gui.search.util;
 
 import de.cebitec.mgx.api.MGXMasterI;
-import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.swingutils.BaseModel;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.concurrent.ExecutionException;
+import javax.swing.SwingWorker;
 import org.openide.util.Exceptions;
 
 /**
@@ -21,6 +22,7 @@ public class TermModel extends BaseModel<String> {
 
     private MGXMasterI currentMaster;
     private SeqRunI[] runs;
+    private String term;
 
     public void setMaster(MGXMasterI m) {
         currentMaster = m;
@@ -30,29 +32,47 @@ public class TermModel extends BaseModel<String> {
         this.runs = runs;
     }
 
+    public void setTerm(String t) {
+        term = t;
+    }
+
     @Override
     public void update() {
         if (currentMaster == null || runs == null || runs.length == 0) {
             return;
         }
-        String term = getSelectedItem();
         if (term == null || term.isEmpty()) {
             return;
         }
-        
-        Iterator<String> iter = null;
-        try {
-            iter = currentMaster.Attribute().find(term, runs);
-        } catch (MGXException ex) {
-            Exceptions.printStackTrace(ex);
-            return;
-        }
-        content.clear();
-        while (iter != null && iter.hasNext()) {
-            content.add(iter.next());
-        }
-        Collections.sort(content);
-        fireContentsChanged();
+
+        SwingWorker<Iterator<String>, Void> sw = new SwingWorker<Iterator<String>, Void>() {
+
+            @Override
+            protected Iterator<String> doInBackground() throws Exception {
+                return currentMaster.Attribute().find(term, runs);
+            }
+
+            @Override
+            protected void done() {
+                Iterator<String> iter;
+                try {
+                    iter = get();
+                } catch (InterruptedException | ExecutionException ex) {
+                    Exceptions.printStackTrace(ex);
+                    return;
+                }
+                content.clear();
+                while (iter != null && iter.hasNext()) {
+                    content.add(iter.next());
+                }
+                Collections.sort(content);
+                fireContentsChanged();
+                super.done();
+            }
+
+        };
+        sw.execute();
+
     }
 
 }
