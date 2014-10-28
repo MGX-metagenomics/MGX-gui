@@ -215,7 +215,7 @@ public class AttributeAccess implements AttributeAccessI {
 
     @Override
     public Iterator<String> find(String term, SeqRunI[] targets) throws MGXException {
-        if (term.isEmpty() || targets.length == 0) {
+        if (term == null || term.isEmpty() || targets == null || targets.length == 0) {
             return new Iterator<String>() {
 
                 @Override
@@ -238,7 +238,7 @@ public class AttributeAccess implements AttributeAccessI {
         sr.setRuns(targets);
         try {
             return dtomaster.Attribute().find(SearchRequestDTOFactory.getInstance().toDTO(sr));
-        } catch (MGXServerException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             throw new MGXException(ex);
         }
     }
