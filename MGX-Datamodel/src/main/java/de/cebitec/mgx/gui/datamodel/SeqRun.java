@@ -60,6 +60,7 @@ public class SeqRun extends SeqRunI {
         return sequencing_method;
     }
 
+    @Override
     public SeqRun setSequencingMethod(TermI sequencing_method) {
         this.sequencing_method = sequencing_method;
         return this;
@@ -70,6 +71,7 @@ public class SeqRun extends SeqRunI {
         return sequencing_technology;
     }
 
+    @Override
     public SeqRun setSequencingTechnology(TermI sequencing_technology) {
         this.sequencing_technology = sequencing_technology;
         return this;
