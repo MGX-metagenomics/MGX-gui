@@ -1,25 +1,28 @@
 package de.cebitec.mgx.gui.search.ui;
 
 import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.ObservationI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.SequenceI;
 import de.cebitec.mgx.gui.search.util.ReadModel;
 import de.cebitec.mgx.gui.search.util.TermModel;
+import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import javax.swing.DefaultListModel;
 import javax.swing.SwingWorker;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.text.BadLocationException;
 import javax.swing.text.JTextComponent;
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
-import org.jdesktop.swingx.autocomplete.ObjectToStringConverter;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -54,7 +57,7 @@ import org.openide.windows.TopComponent;
 @Messages({
     "CTL_SearchAction=Search",
     "CTL_SearchTopComponent=Search Window",
-    "HINT_SearchTopComponent=This is a Search window"
+    "HINT_SearchTopComponent=Metagenome search"
 })
 public final class SearchTopComponent extends TopComponent implements LookupListener, ActionListener {
 
@@ -63,14 +66,16 @@ public final class SearchTopComponent extends TopComponent implements LookupList
     private final DefaultListModel<SeqRunI> runListModel = new DefaultListModel<>();
     private final TermModel termModel = new TermModel();
     private final ReadModel readModel = new ReadModel();
+    private final ObservationView ov = new ObservationView();
 
     public SearchTopComponent() {
         initComponents();
+        obsPanel.add(ov, BorderLayout.CENTER);
         result = Utilities.actionsGlobalContext().lookupResult(MGXMasterI.class);
 
         // search field
         searchTerm.setModel(termModel);
-        AutoCompleteDecorator.decorate(searchTerm) ; //, ObjectToStringConverter.DEFAULT_IMPLEMENTATION);
+        AutoCompleteDecorator.decorate(searchTerm); //, ObjectToStringConverter.DEFAULT_IMPLEMENTATION);
         searchTerm.addActionListener(new ActionListener() {
 
             @Override
@@ -83,29 +88,96 @@ public final class SearchTopComponent extends TopComponent implements LookupList
                 termModel.update();
             }
         });
+
         final JTextComponent tc = (JTextComponent) searchTerm.getEditor().getEditorComponent();
-        tc.addKeyListener(new KeyAdapter() {
+        tc.getDocument().addDocumentListener(new DocumentListener() {
 
             @Override
-            public void keyReleased(KeyEvent e) {
-                super.keyReleased(e);
-                termModel.setTerm(tc.getText());
+            public void insertUpdate(DocumentEvent e) {
+                String text = null;
+                try {
+                    text = e.getDocument().getText(0, e.getDocument().getLength());
+                } catch (BadLocationException ex) {
+                    Exceptions.printStackTrace(ex);
+                }
+                termModel.setTerm(text);
                 updateTerm();
             }
 
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                String text = null;
+                try {
+                    text = e.getDocument().getText(0, e.getDocument().getLength());
+                } catch (BadLocationException ex) {
+                    Exceptions.printStackTrace(ex);
+                }
+                termModel.setTerm(text);
+                updateTerm();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                String text = null;
+                try {
+                    text = e.getDocument().getText(0, e.getDocument().getLength());
+                } catch (BadLocationException ex) {
+                    Exceptions.printStackTrace(ex);
+                }
+                termModel.setTerm(text);
+                updateTerm();
+            }
         });
+//        tc.addKeyListener(new KeyAdapter() {
+//
+//            @Override
+//            public void keyReleased(KeyEvent e) {
+//                super.keyReleased(e);
+//                termModel.setTerm(tc.getText());
+//                updateTerm();
+//            }
+//
+//        });
 
         // read list
         readList.setModel(readModel);
         readList.addActionListener(new ActionListener() {
 
+            private SequenceI curSeq = null;
+
             @Override
             public void actionPerformed(ActionEvent e) {
-                SequenceI seq = readModel.getSelectedItem();
+                final SequenceI seq = readModel.getSelectedItem();
                 if (seq == null) {
                     return;
                 }
-                System.err.println(seq.getName());
+                if (seq != curSeq) {
+                    curSeq = seq;
+                    SwingWorker<Iterator<ObservationI>, Void> sw = new SwingWorker<Iterator<ObservationI>, Void>() {
+
+                        @Override
+                        protected Iterator<ObservationI> doInBackground() throws Exception {
+                            return currentMaster.Observation().ByRead(seq);
+                        }
+                    };
+                    sw.execute();
+                    Iterator<ObservationI> iter = null;
+                    try {
+                        iter = sw.get();
+                    } catch (InterruptedException | ExecutionException ex) {
+                        Exceptions.printStackTrace(ex);
+                    }
+                    List<ObservationI> obs = new ArrayList<>();
+                    while (iter != null && iter.hasNext()) {
+                        obs.add(iter.next());
+                    }
+                    //Collections.sort(obs, comp);
+                    ov.show(seq, obs.toArray(new ObservationI[]{}), false, "");
+                }
+            }
+
+            private Iterator<ObservationI> get() {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
             }
         });
 
@@ -157,16 +229,7 @@ public final class SearchTopComponent extends TopComponent implements LookupList
 
         readList.setEnabled(false);
 
-        javax.swing.GroupLayout obsPanelLayout = new javax.swing.GroupLayout(obsPanel);
-        obsPanel.setLayout(obsPanelLayout);
-        obsPanelLayout.setHorizontalGroup(
-            obsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 860, Short.MAX_VALUE)
-        );
-        obsPanelLayout.setVerticalGroup(
-            obsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 442, Short.MAX_VALUE)
-        );
+        obsPanel.setLayout(new java.awt.BorderLayout());
 
         jLabel2.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(jLabel2, org.openide.util.NbBundle.getMessage(SearchTopComponent.class, "SearchTopComponent.jLabel2.text")); // NOI18N
@@ -178,18 +241,21 @@ public final class SearchTopComponent extends TopComponent implements LookupList
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(obsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addComponent(readList, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                            .addComponent(jLabel1)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(searchTerm, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(18, 18, 18)
-                            .addComponent(executeSearch))
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING))
-                    .addComponent(jLabel2))
-                .addContainerGap(20, Short.MAX_VALUE))
+                    .addComponent(obsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(readList, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                    .addComponent(jLabel1)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(searchTerm, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(18, 18, 18)
+                                    .addComponent(executeSearch))
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING))
+                            .addComponent(jLabel2))
+                        .addGap(0, 549, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -263,6 +329,7 @@ public final class SearchTopComponent extends TopComponent implements LookupList
         readModel.update();
         if (readModel.getSize() > 0) {
             readList.setEnabled(true);
+            readList.setSelectedIndex(0);
         }
         setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
     }
