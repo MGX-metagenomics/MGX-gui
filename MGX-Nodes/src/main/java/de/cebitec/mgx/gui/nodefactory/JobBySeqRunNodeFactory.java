@@ -5,14 +5,9 @@ import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.ToolI;
-import de.cebitec.mgx.gui.nodes.JobNode;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.EventQueue;
 import java.util.Collections;
 import java.util.List;
-import javax.swing.Timer;
-import org.openide.nodes.Children;
-import org.openide.nodes.Node;
 import org.openide.util.Exceptions;
 
 /**
@@ -23,39 +18,25 @@ public class JobBySeqRunNodeFactory extends JobNodeFactory {
 
     private final SeqRunI run;
 
-    public JobBySeqRunNodeFactory(SeqRunI run) {
-        super();
+    public JobBySeqRunNodeFactory(MGXMasterI master, SeqRunI run) {
+        super(master);
         this.run = run;
-        Timer timer = new Timer(1000 * 10, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                refreshChildren();
-            }
-        });
-        timer.start();
     }
 
     @Override
-    protected synchronized boolean createKeys(List<JobI> toPopulate) {
-
-        if (!busy) {
-            busy = true;
-            MGXMasterI master = run.getMaster();
-            try {
-                for (JobI j : master.Job().BySeqRun(run)) {
-                    //j.setSeqrun(run);
-                    ToolI t = master.Tool().ByJob(j);
-                    j.setTool(t);
-                    toPopulate.add(j);
-                }
-                Collections.sort(toPopulate);
-            } catch (MGXException ex) {
-                Exceptions.printStackTrace(ex);
+    protected boolean createKeys(List<JobI> toPopulate) {
+        System.err.println(Thread.currentThread().getId() + " createKeys() on EDT? " + EventQueue.isDispatchThread());
+        try {
+            for (JobI j : master.Job().BySeqRun(run)) {
+                //j.setSeqrun(run);
+                ToolI t = master.Tool().ByJob(j);
+                j.setTool(t);
+                toPopulate.add(j);
             }
-            busy = false;
-            return true;
-        } else {
-            return false;
+            Collections.sort(toPopulate);
+        } catch (MGXException ex) {
+            Exceptions.printStackTrace(ex);
         }
+        return true;
     }
 }
