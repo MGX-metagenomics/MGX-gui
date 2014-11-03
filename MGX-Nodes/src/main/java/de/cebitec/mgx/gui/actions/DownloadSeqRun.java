@@ -103,8 +103,13 @@ public class DownloadSeqRun extends AbstractAction {
                     downloader.addPropertyChangeListener(this);
                     boolean ret = downloader.download();
                     downloader.removePropertyChangeListener(this);
+                    if (!ret) {
+                        setStatus(downloader.getErrorMessage());
+                    }
                     return ret;
                 }
+
+                private volatile boolean complete = false;
 
                 @Override
                 public void finished() {
@@ -114,24 +119,34 @@ public class DownloadSeqRun extends AbstractAction {
                     } catch (Exception ex) {
                         failed();
                     }
+                    complete = true;
                 }
 
                 @Override
                 public void failed() {
+                    try {
+                        writer.close();
+                    } catch (Exception ex) {
+                    }
                     if (target.exists()) {
                         target.delete();
                     }
                     super.failed();
+                    complete = true;
                 }
 
                 @Override
                 public void propertyChange(PropertyChangeEvent pce) {
                     switch (pce.getPropertyName()) {
                         case TransferBaseI.NUM_ELEMENTS_TRANSFERRED:
-                            setStatus(String.format("%1$d sequences received", pce.getNewValue()));
+                            if (!complete) {
+                                setStatus(String.format("%1$d sequences received", pce.getNewValue()));
+                            }
                             break;
                         case DownloadBaseI.TRANSFER_FAILED:
+                            setStatus(downloader.getErrorMessage());
                             failed();
+                            downloader.removePropertyChangeListener(this);
                             break;
                         default:
                             super.propertyChange(pce);

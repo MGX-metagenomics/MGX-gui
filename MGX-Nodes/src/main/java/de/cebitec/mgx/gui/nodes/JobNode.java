@@ -327,12 +327,11 @@ public class JobNode extends MGXNodeBase<JobI, JobNode> {
             final JobI job = getLookup().lookup(JobI.class);
             final MGXMasterI m = getLookup().lookup(MGXMasterI.class);
 
-            SwingWorker<Void, Void> sw = new SwingWorker<Void, Void>() {
+            SwingWorker<Boolean, Void> sw = new SwingWorker<Boolean, Void>() {
 
                 @Override
-                protected Void doInBackground() throws Exception {
-                    m.Job().cancel(job);
-                    return null;
+                protected Boolean doInBackground() throws Exception {
+                    return m.Job().cancel(job);
                 }
             };
             sw.execute();

@@ -6,7 +6,6 @@ import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.ToolI;
 import de.cebitec.mgx.gui.nodes.JobNode;
-import de.cebitec.mgx.gui.swingutils.NonEDT;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -30,47 +29,42 @@ import org.openide.util.Exceptions;
  */
 public class JobNodeFactory extends ChildFactory<JobI> implements NodeListener {
 
-    private MGXMasterI master;
+    protected final MGXMasterI master;
+    private final Timer timer;
 
     public JobNodeFactory(MGXMasterI master) {
-        this();
-        this.master = master;
-    }
-
-    protected JobNodeFactory() {
-        Timer timer = new Timer(1000 * 10, new ActionListener() {
+        timer = new Timer(1000 * 10, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                refreshChildren();
+                //refreshChildren();
+                System.err.println("Timer on EDT? " + EventQueue.isDispatchThread());
+                refresh(false);
             }
         });
         timer.start();
+        this.master = master;
     }
 
     @Override
-    protected synchronized boolean createKeys(List<JobI> toPopulate) {
-
-        if (!busy) {
-            busy = true;
-            try {
-                Iterator<SeqRunI> iter = master.SeqRun().fetchall();
-                while (iter != null && iter.hasNext()) {
-                    SeqRunI sr = iter.next();
-                    for (JobI j : master.Job().BySeqRun(sr)) {
-                        ToolI t = master.Tool().ByJob(j);
-                        j.setTool(t);
-                        toPopulate.add(j);
-                    }
+    protected boolean createKeys(List<JobI> toPopulate) {
+        System.err.println("createKeys() on EDT? " + EventQueue.isDispatchThread());
+        try {
+            Iterator<SeqRunI> iter = master.SeqRun().fetchall();
+            while (iter != null && iter.hasNext()) {
+                SeqRunI sr = iter.next();
+                for (JobI j : master.Job().BySeqRun(sr)) {
+                    ToolI t = master.Tool().ByJob(j);
+                    j.setTool(t);
+                    toPopulate.add(j);
                 }
-                Collections.sort(toPopulate);
-            } catch (MGXException ex) {
-                Exceptions.printStackTrace(ex);
             }
-            busy = false;
-            return true;
-        } else {
-            return false;
+            Collections.sort(toPopulate);
+        } catch (MGXException ex) {
+            Exceptions.printStackTrace(ex);
         }
+
+        return true;
+
     }
 
     @Override
@@ -79,9 +73,6 @@ public class JobNodeFactory extends ChildFactory<JobI> implements NodeListener {
         node.addNodeListener(this);
         return node;
     }
-
-    protected boolean busy = false;
-    protected boolean refreshing = false;
 
     public final void refreshChildren() {
 //        if (EventQueue.isDispatchThread()) {
@@ -94,11 +85,8 @@ public class JobNodeFactory extends ChildFactory<JobI> implements NodeListener {
 //            });
 //            return;
 //        }
-        if (!refreshing) {
-            refreshing = true;
-            refresh(false);
-            refreshing = false;
-        }
+
+        refresh(true);
     }
 
 //    public void refreshChildren() {
@@ -126,5 +114,10 @@ public class JobNodeFactory extends ChildFactory<JobI> implements NodeListener {
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         //refresh(true);
+    }
+    
+    public void destroy() {
+        System.err.println("stopping timer");
+        timer.stop();
     }
 }
