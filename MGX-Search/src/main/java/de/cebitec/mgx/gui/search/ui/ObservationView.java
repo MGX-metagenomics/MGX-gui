@@ -38,6 +38,7 @@ public class ObservationView extends javax.swing.JPanel {
         readName.setText(seq.getName() + " (" + seq.getLength() + "bp)");
         setBorder(selected ? selectedBorder : unselectedBorder);
         view.setData(seq, obs, null, searchTerm);
+        repaint();
     }
 
     public void show(SequenceI seq, String msg, boolean selected) {
@@ -143,6 +144,7 @@ public class ObservationView extends javax.swing.JPanel {
                 setPreferredSize(new Dimension(getWidth(), 2 * borderWidth + 30 + layers.size() * 15));
                 setMaximumSize(new Dimension(getWidth(), 2 * borderWidth + 30 + layers.size() * 15));
             }
+            repaint();
         }
         private List<Layer> layers = new LinkedList<>();
 

@@ -112,7 +112,10 @@ public final class SearchTopComponent extends TopComponent implements LookupList
                 readModel.setRuns(getSelectedSeqRuns());
                 readModel.setMaster(currentMaster);
                 readModel.update();
-                readList.setEnabled(readModel.getSize() > 0);
+                if (readModel.getSize() > 0) {
+                    readList.setEnabled(true);
+                    readList.setSelectedIndex(0);
+                }
                 setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             }
         });
@@ -306,7 +309,6 @@ public final class SearchTopComponent extends TopComponent implements LookupList
 //        }
 //        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 //    }
-
     private SeqRunI[] getSelectedSeqRuns() {
         List<SeqRunI> selected = runList.getSelectedValuesList();
         return selected.toArray(new SeqRunI[selected.size()]);
@@ -389,7 +391,7 @@ public final class SearchTopComponent extends TopComponent implements LookupList
 //        }
 //    }
     private void updateTerm() {
-        System.err.println("term is : "+termField.getText());
+        System.err.println("term is : " + termField.getText());
         termModel.setMaster(currentMaster);
         termModel.setRuns(getSelectedSeqRuns());
         termModel.setTerm(termField.getText());
