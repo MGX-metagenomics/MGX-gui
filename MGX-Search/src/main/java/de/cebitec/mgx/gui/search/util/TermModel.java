@@ -37,7 +37,7 @@ public class TermModel extends BaseModel<String> {
     }
 
     @Override
-    public void update() {
+    public synchronized void update() {
         if (currentMaster == null || runs == null || runs.length == 0) {
             return;
         }
@@ -51,31 +51,24 @@ public class TermModel extends BaseModel<String> {
             protected Iterator<String> doInBackground() throws Exception {
                 return currentMaster.Attribute().find(term, runs);
             }
-
-            @Override
-            protected void done() {
-                Iterator<String> iter;
-                try {
-                    iter = get();
-                } catch (InterruptedException | ExecutionException ex) {
-                    Exceptions.printStackTrace(ex);
-                    return;
-                }
-                content.clear();
-                while (iter != null && iter.hasNext()) {
-                    String term = iter.next();
-                    if (!content.contains(term)) {
-                        content.add(term);
-                    }
-                }
-                Collections.sort(content);
-                fireContentsChanged();
-                super.done();
-            }
-
         };
         sw.execute();
-
+        Iterator<String> iter;
+        try {
+            iter = sw.get();
+        } catch (InterruptedException | ExecutionException ex) {
+            Exceptions.printStackTrace(ex);
+            return;
+        }
+        content.clear();
+        while (iter != null && iter.hasNext()) {
+            String term = iter.next();
+            if (!content.contains(term)) {
+                content.add(term);
+            }
+        }
+        Collections.sort(content);
+        fireContentsChanged();
     }
 
 }
