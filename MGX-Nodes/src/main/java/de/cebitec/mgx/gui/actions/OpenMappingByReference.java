@@ -14,8 +14,8 @@ import de.cebitec.mgx.gui.mapping.viewer.TopComponentViewer;
 import de.cebitec.mgx.gui.swingutils.NonEDT;
 import de.cebitec.mgx.gui.wizard.mapping.MappingWizardWizardAction;
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import javax.swing.SwingWorker;
@@ -32,17 +32,16 @@ public class OpenMappingByReference extends OpenMappingBase {
 
     public OpenMappingByReference() {
         super();
-        final MGXMasterI m = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
         final MGXReferenceI ref = Utilities.actionsGlobalContext().lookup(MGXReferenceI.class);
 
-        if (m == null || ref == null) {
+        if (ref == null) {
             return;
         }
         NonEDT.invokeAndWait(new Runnable() {
 
             @Override
             public void run() {
-                Iterator<MappingI> mappings = m.Mapping().ByReference(ref);
+                Iterator<MappingI> mappings = ref.getMaster().Mapping().ByReference(ref);
                 hasData = mappings.hasNext();
             }
         });
@@ -51,14 +50,14 @@ public class OpenMappingByReference extends OpenMappingBase {
     @Override
     public void actionPerformed(ActionEvent e) {
 
-        final MGXMasterI master = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
         final MGXReferenceI ref = Utilities.actionsGlobalContext().lookup(MGXReferenceI.class);
 
         SwingWorker<List<MappingCtx>, Void> worker = new SwingWorker<List<MappingCtx>, Void>() {
 
             @Override
             protected List<MappingCtx> doInBackground() throws Exception {
-                List<MappingCtx> ctxs = new LinkedList<>();
+                List<MappingCtx> ctxs = new ArrayList<>();
+                MGXMasterI master = ref.getMaster();
                 Iterator<MappingI> mappings = master.Mapping().ByReference(ref);
                 while (mappings.hasNext()) {
                     MappingI m = mappings.next();
