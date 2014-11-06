@@ -63,7 +63,7 @@ public class ViewControllerTest {
         assertEquals(30, mapping.getId());
         MGXReferenceI ref = master.Reference().fetch(mapping.getReferenceID());
         JobI job = master.Job().fetch(mapping.getJobID());
-        MappingCtx ctx = new MappingCtx(mapping, ref, job);
+        MappingCtx ctx = new MappingCtx(mapping, ref, job, master.SeqRun().fetch(mapping.getSeqrunID()));
         ViewController vc = new ViewController(ctx);
         //
         //
@@ -99,7 +99,7 @@ public class ViewControllerTest {
         assertEquals(1, mapping.getId());
         MGXReferenceI ref = master.Reference().fetch(mapping.getReferenceID());
         JobI job = master.Job().fetch(mapping.getJobID());
-        ViewController vc = new ViewController(new MappingCtx(mapping, ref, job));
+        ViewController vc = new ViewController(new MappingCtx(mapping, ref, job, master.SeqRun().fetch(mapping.getSeqrunID())));
         //
         //
         int max = -1;
@@ -134,7 +134,7 @@ public class ViewControllerTest {
         assertEquals(1, mapping.getId());
         MGXReferenceI ref = master.Reference().fetch(mapping.getReferenceID());
         JobI job = master.Job().fetch(mapping.getJobID());
-        MappingCtx ctx = new MappingCtx(mapping, ref, job);
+        MappingCtx ctx = new MappingCtx(mapping, ref, job, master.SeqRun().fetch(mapping.getSeqrunID()));
         ViewController vc = new ViewController(ctx);
         //
         //
@@ -160,7 +160,7 @@ public class ViewControllerTest {
         assertEquals(1, mapping.getId());
         MGXReferenceI ref = master.Reference().fetch(mapping.getReferenceID());
         JobI job = master.Job().fetch(mapping.getJobID());
-        MappingCtx ctx = new MappingCtx(mapping, ref, job);
+        MappingCtx ctx = new MappingCtx(mapping, ref, job, master.SeqRun().fetch(mapping.getSeqrunID()));
         ViewController vc = new ViewController(ctx);
         //
         //

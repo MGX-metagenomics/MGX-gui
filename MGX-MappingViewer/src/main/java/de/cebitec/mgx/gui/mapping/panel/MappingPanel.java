@@ -38,6 +38,7 @@ public class MappingPanel extends PanelBase implements ChangeListener, Adjustmen
     private final List<Track> tracks = new ArrayList<>();
     private int minIdentity = 0;
     private int scrollOffset = 0;
+    private final String mappingName;
 
     /**
      * Creates new form MappingPanel
@@ -57,6 +58,8 @@ public class MappingPanel extends PanelBase implements ChangeListener, Adjustmen
         };
         identityFilter.setUI(sliderUI);
         scrollBar.addAdjustmentListener(this);
+
+        mappingName = vc.getSeqRun().getName() + " vs. " + vc.getReference().getName();
     }
 
     @Override
@@ -97,7 +100,7 @@ public class MappingPanel extends PanelBase implements ChangeListener, Adjustmen
         int bpPos = px2bp(m.getX());
         int[] buf = new int[]{0};
         vc.getCoverage(bpPos, bpPos, buf);
-        return "<html>Position: " + bpPos + "<br>Coverage: "
+        return "<html>" + mappingName + "<br>Position: " + bpPos + "<br>Coverage: "
                 + buf[0] + "</html>";
     }
 

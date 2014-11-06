@@ -80,7 +80,8 @@ public class MappingCtxTest {
 
         MGXReferenceI ref = master.Reference().fetch(mapping.getReferenceID());
         JobI job = master.Job().fetch(mapping.getJobID());
-        MappingCtx ctx = new MappingCtx(mapping, ref, job);
+        job.setSeqrun(master.SeqRun().fetch(mapping.getSeqrunID()));
+        MappingCtx ctx = new MappingCtx(mapping, ref, job, job.getSeqrun());
 
         SortedSet<MappedSequenceI> mappings = ctx.getMappings(0, ref.getLength() - 1);
         // $ samtools view 124.bam | wc -l
@@ -107,10 +108,11 @@ public class MappingCtxTest {
 
         MGXReferenceI ref = master.Reference().fetch(mapping.getReferenceID());
         JobI job = master.Job().fetch(mapping.getJobID());
+        job.setSeqrun(master.SeqRun().fetch(mapping.getSeqrunID()));
 
         UUID uuid = master.Mapping().openMapping(mapping.getId());
 
-        MappingCtx ctx = new MappingCtx(mapping, ref, job);
+        MappingCtx ctx = new MappingCtx(mapping, ref, job, job.getSeqrun());
 
         SortedSet<MappedSequenceI> mappings = ctx.getMappings(6385, 6395);
         master.Mapping().closeMapping(uuid);
@@ -141,7 +143,7 @@ public class MappingCtxTest {
         assertEquals(1, mapping.getId());
         MGXReferenceI ref = master.Reference().fetch(mapping.getReferenceID());
         JobI job = master.Job().fetch(mapping.getJobID());
-        MappingCtx ctx = new MappingCtx(mapping, ref, job);
+        MappingCtx ctx = new MappingCtx(mapping, ref, job, job.getSeqrun());
         //
         //
         SortedSet<MappedSequenceI> mappings = ctx.getMappings(567083, 567083);
@@ -166,7 +168,7 @@ public class MappingCtxTest {
         assertEquals(1, mapping.getId());
         MGXReferenceI ref = master.Reference().fetch(mapping.getReferenceID());
         JobI job = master.Job().fetch(mapping.getJobID());
-        MappingCtx ctx = new MappingCtx(mapping, ref, job);
+        MappingCtx ctx = new MappingCtx(mapping, ref, job, job.getSeqrun());
         //
         //
         long maxCoverage = ctx.getMaxCoverage();
@@ -193,7 +195,7 @@ public class MappingCtxTest {
         assertEquals(1, mapping.getId());
         MGXReferenceI ref = master.Reference().fetch(mapping.getReferenceID());
         JobI job = master.Job().fetch(mapping.getJobID());
-        MappingCtx ctx = new MappingCtx(mapping, ref, job);
+        MappingCtx ctx = new MappingCtx(mapping, ref, job, job.getSeqrun());
         //
         //
         int max = -1;
