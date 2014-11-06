@@ -73,7 +73,7 @@ public class OpenMappingBySeqRun extends OpenMappingBase {
                         job.setTool(master.Tool().ByJob(job));
                     }
                     MGXReferenceI ref = master.Reference().fetch(m.getReferenceID());
-                    ctxs.add(new MappingCtx(m, ref, job));
+                    ctxs.add(new MappingCtx(m, ref, job, run));
                 }
                 return ctxs;
             }
