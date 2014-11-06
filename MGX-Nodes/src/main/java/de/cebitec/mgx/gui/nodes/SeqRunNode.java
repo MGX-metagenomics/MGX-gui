@@ -42,7 +42,6 @@ import org.openide.util.lookup.Lookups;
  */
 public class SeqRunNode extends MGXNodeBase<SeqRunI, SeqRunNode> {
 
-    private final Action[] actions = new Action[]{new ExecuteAnalysis(), new OpenMappingBySeqRun(), new EditSeqRun(), new DeleteSeqRun(), new DownloadSeqRun()};
     //
     //public static final DataFlavor DATA_FLAVOR = new DataFlavor(SeqRunNode.class, "SeqRunNode");
 
@@ -66,7 +65,7 @@ public class SeqRunNode extends MGXNodeBase<SeqRunI, SeqRunNode> {
 
     @Override
     public Action[] getActions(boolean context) {
-        return actions;
+        return new Action[]{new ExecuteAnalysis(), new OpenMappingBySeqRun(), new EditSeqRun(), new DeleteSeqRun(), new DownloadSeqRun()};
     }
 
     @Override
