@@ -8,6 +8,7 @@ package de.cebitec.mgx.gui.mapping;
 import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.api.model.MappedSequenceI;
 import de.cebitec.mgx.api.model.RegionI;
+import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.cache.IntIterator;
 import de.cebitec.mgx.pevents.ParallelPropertyChangeSupport;
 import java.beans.PropertyChangeEvent;
@@ -43,6 +44,10 @@ public class ViewController {
 
     public MGXReferenceI getReference() {
         return ctx.getReference();
+    }
+    
+    public SeqRunI getSeqRun() {
+        return ctx.getRun();
     }
 
     public long getMaxCoverage() {

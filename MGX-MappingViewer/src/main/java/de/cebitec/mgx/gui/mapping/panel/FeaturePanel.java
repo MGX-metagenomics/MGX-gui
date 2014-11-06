@@ -244,7 +244,7 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
                 }
             }
         }
-        return null;
+        return vc.getReference().getName();
     }
     private boolean inDrag = false;
     private int dragStart = -1;

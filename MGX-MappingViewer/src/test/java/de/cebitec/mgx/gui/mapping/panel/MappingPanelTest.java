@@ -58,7 +58,7 @@ public class MappingPanelTest {
         MGXReferenceI ref = master.Reference().fetch(mapping.getReferenceID());
         JobI job = master.Job().fetch(mapping.getJobID());
         UUID uuid = master.Mapping().openMapping(mapping.getId());
-        MappingCtx ctx = new MappingCtx(mapping, ref, job);
+        MappingCtx ctx = new MappingCtx(mapping, ref, job, master.SeqRun().fetch(mapping.getSeqrunID()));
         ViewController vc = new ViewController(ctx);
         
         vc.setBounds(0, ref.getLength()-1);

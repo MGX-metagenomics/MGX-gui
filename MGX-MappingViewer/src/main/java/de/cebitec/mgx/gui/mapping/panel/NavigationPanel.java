@@ -401,7 +401,7 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
         int bpPos = px2bp(m.getX());
         int[] buf = new int[]{0};
         vc.getCoverage(bpPos, bpPos, buf);
-        return "<html>Position: " + bpPos + "<br>Coverage: "
+        return "<html>" + vc.getReference().getName() + "<br>Position: " + bpPos + "<br>Coverage: "
                 + buf[0] + "</html>";
     }
 }

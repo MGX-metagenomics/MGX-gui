@@ -28,17 +28,19 @@ public class MappingCtx {
     private final MappingI m;
     private final MGXReferenceI ref;
     private final JobI job;
+    private final SeqRunI run;
     private Cache<String> seqCache = null;
     private Cache<Set<RegionI>> regCache = null;
     private CoverageInfoCache<SortedSet<MappedSequenceI>> mapCache = null;
     private UUID sessionUUID = null;
     private long maxCoverage = -1;
 
-    public MappingCtx(MappingI m, MGXReferenceI ref, JobI job) {
+    public MappingCtx(MappingI m, MGXReferenceI ref, JobI job, SeqRunI run) {
         assert m.getReferenceID() == ref.getId();
         this.m = m;
         this.ref = ref;
         this.job = job;
+        this.run = run;
         MGXMasterI master = m.getMaster();
         sessionUUID = master.Mapping().openMapping(m.getId());
     }
@@ -56,7 +58,7 @@ public class MappingCtx {
     }
 
     public SeqRunI getRun() {
-        return job.getSeqrun();
+        return run;
     }
 
     public ToolI getTool() {
