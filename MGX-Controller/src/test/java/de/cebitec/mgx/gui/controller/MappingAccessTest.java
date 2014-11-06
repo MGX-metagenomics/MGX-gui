@@ -6,9 +6,12 @@
 package de.cebitec.mgx.gui.controller;
 
 import de.cebitec.mgx.api.model.MappedSequenceI;
-import de.cebitec.mgx.gui.datamodel.MappedSequence;
+import de.cebitec.mgx.api.model.MappingI;
+import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.util.TestMaster;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.UUID;
@@ -42,6 +45,21 @@ public class MappingAccessTest {
 
     @After
     public void tearDown() {
+    }
+
+    @Test
+    public void testBySeqRun() throws Exception {
+        System.out.println("BySeqRun");
+        MGXMaster master = TestMaster.getRO();
+        SeqRunI run = master.SeqRun().fetch(1);
+        assertNotNull(run);
+        Iterator<MappingI> it = master.Mapping().BySeqRun(run);
+        assertNotNull(it);
+        Set<MappingI> data = new HashSet<>();
+        while (it.hasNext()) {
+            data.add(it.next());
+        }
+        assertEquals(1, data.size());
     }
 
     @Test
