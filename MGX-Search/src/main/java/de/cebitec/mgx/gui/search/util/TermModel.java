@@ -8,8 +8,10 @@ package de.cebitec.mgx.gui.search.util;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.swingutils.BaseModel;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import javax.swing.SwingWorker;
 import org.openide.util.Exceptions;
@@ -22,6 +24,7 @@ public class TermModel extends BaseModel<String> {
 
     private MGXMasterI currentMaster;
     private SeqRunI[] runs;
+    private String prevTerm = null;
     private String term;
 
     public void setMaster(MGXMasterI m) {
@@ -29,10 +32,12 @@ public class TermModel extends BaseModel<String> {
     }
 
     public void setRuns(SeqRunI[] runs) {
+        prevTerm = null; // make sure update() fetches fresh data
         this.runs = runs;
     }
 
     public void setTerm(String t) {
+        prevTerm = term;
         term = t;
     }
 
@@ -42,6 +47,23 @@ public class TermModel extends BaseModel<String> {
             return;
         }
         if (term == null || term.isEmpty()) {
+            return;
+        }
+        
+        String prevSelection = getSelectedItem();
+        
+        // if previous term is a prefix of current term, we can 
+        // narrow down the current data instead of contacting the
+        // server
+        if (prevTerm != null && term.startsWith(prevTerm)) {
+            List<String> oldTerms = new ArrayList<>(content.size());
+            oldTerms.addAll(content); 
+            content.clear();
+            for (String s : oldTerms) {
+                if (s.contains(term)) {
+                    content.add(s);
+                }
+            }
             return;
         }
 
@@ -68,6 +90,10 @@ public class TermModel extends BaseModel<String> {
             }
         }
         Collections.sort(content);
+        
+        if (prevSelection != null && content.contains(prevSelection)) {
+            setSelectedItem(prevSelection);
+        }
         fireContentsChanged();
     }
 

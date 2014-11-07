@@ -19,50 +19,40 @@ import org.openide.util.Exceptions;
  *
  * @author sjaenick
  */
-public class ReadModel extends BaseModel<SequenceI> {
+public class SeqRunModel extends BaseModel<SeqRunI> {
 
     private MGXMasterI currentMaster;
-    private SeqRunI[] runs;
-    private String term;
 
     public void setMaster(MGXMasterI m) {
         currentMaster = m;
     }
 
-    public void setRuns(SeqRunI[] runs) {
-        this.runs = runs;
-    }
-
-    public void setTerm(String t) {
-        this.term = t;
-    }
-
     @Override
     public void update() {
-        if (currentMaster == null || term == null || runs == null || runs.length == 0) {
+        if (currentMaster == null) {
             return;
         }
-        
-        SwingWorker<Iterator<SequenceI>, Void> sw = new SwingWorker<Iterator<SequenceI>, Void>() {
+
+        SwingWorker<Iterator<SeqRunI>, Void> sw = new SwingWorker<Iterator<SeqRunI>, Void>() {
 
             @Override
-            protected Iterator<SequenceI> doInBackground() throws Exception {
-                return currentMaster.Attribute().search(term, true, runs);
+            protected Iterator<SeqRunI> doInBackground() throws Exception {
+                return currentMaster.SeqRun().fetchall();
             }
         };
         sw.execute();
-        
-        Iterator<SequenceI> iter;
+
+        Iterator<SeqRunI> iter;
         try {
             iter = sw.get();
         } catch (InterruptedException | ExecutionException ex) {
             Exceptions.printStackTrace(ex);
             return;
         }
-       
+
         content.clear();
         while (iter.hasNext()) {
-            SequenceI seq = iter.next();
+            SeqRunI seq = iter.next();
             content.add(seq);
         }
         Collections.sort(content);

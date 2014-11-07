@@ -5,6 +5,7 @@ import de.cebitec.mgx.api.model.ObservationI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.SequenceI;
 import de.cebitec.mgx.gui.search.util.ReadModel;
+import de.cebitec.mgx.gui.search.util.SeqRunModel;
 import de.cebitec.mgx.gui.search.util.TermModel;
 import java.awt.BorderLayout;
 import java.awt.Cursor;
@@ -14,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import javax.swing.DefaultListModel;
 import javax.swing.SwingWorker;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -60,7 +60,7 @@ public final class SearchTopComponent extends TopComponent implements LookupList
 
     private final Lookup.Result<MGXMasterI> result;
     private MGXMasterI currentMaster = null;
-    private final DefaultListModel<SeqRunI> runListModel = new DefaultListModel<>();
+    private final SeqRunModel runListModel = new SeqRunModel();
     private final TermModel termModel = new TermModel();
     private final ReadModel readModel = new ReadModel();
     private final ObservationView ov = new ObservationView();
@@ -77,11 +77,16 @@ public final class SearchTopComponent extends TopComponent implements LookupList
         runList.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
+                setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                 termModel.setRuns(getSelectedSeqRuns());
                 termModel.update();
                 if (getSelectedSeqRuns().length > 0) {
                     termField.setEnabled(true);
                 }
+                readModel.setRuns(getSelectedSeqRuns());
+                readModel.update();
+                hitNum.setText(readModel.getSize() + " hits");
+                setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             }
         });
 
@@ -115,6 +120,7 @@ public final class SearchTopComponent extends TopComponent implements LookupList
                 if (readModel.getSize() > 0) {
                     readList.setEnabled(true);
                     readList.setSelectedIndex(0);
+                    hitNum.setText(readModel.getSize() + " hits");
                 }
                 setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             }
@@ -179,6 +185,7 @@ public final class SearchTopComponent extends TopComponent implements LookupList
         termList = new javax.swing.JList();
         termField = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
+        hitNum = new javax.swing.JLabel();
 
         jScrollPane1.setViewportView(runList);
 
@@ -203,6 +210,9 @@ public final class SearchTopComponent extends TopComponent implements LookupList
         jLabel3.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(jLabel3, org.openide.util.NbBundle.getMessage(SearchTopComponent.class, "SearchTopComponent.jLabel3.text")); // NOI18N
 
+        hitNum.setFont(new java.awt.Font("Dialog", 1, 10)); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(hitNum, org.openide.util.NbBundle.getMessage(SearchTopComponent.class, "SearchTopComponent.hitNum.text")); // NOI18N
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -225,7 +235,10 @@ public final class SearchTopComponent extends TopComponent implements LookupList
                                 .addComponent(jLabel1)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(termField))))
-                    .addComponent(readList, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(readList, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(hitNum, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -245,12 +258,15 @@ public final class SearchTopComponent extends TopComponent implements LookupList
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE))
                 .addGap(18, 18, 18)
                 .addComponent(readList, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(obsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 288, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(hitNum, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(obsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 285, Short.MAX_VALUE)
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel hitNum;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -287,28 +303,6 @@ public final class SearchTopComponent extends TopComponent implements LookupList
         updateSeqRunList();
     }
 
-//    @Override
-//    public void actionPerformed(ActionEvent e) {
-//        String term = termModel.getSelectedItem();
-//        if (currentMaster == null || term == null || "".equals(term)) {
-//            return;
-//        }
-//
-//        /*
-//         * search button has been pressed
-//         */
-//        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-//
-//        readModel.setMaster(currentMaster);
-//        readModel.setRuns(getSelectedSeqRuns());
-//        readModel.setTerm(termModel.getSelectedItem());
-//        readModel.update();
-//        if (readModel.getSize() > 0) {
-//            readList.setEnabled(true);
-//            readList.setSelectedIndex(0);
-//        }
-//        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-//    }
     private SeqRunI[] getSelectedSeqRuns() {
         List<SeqRunI> selected = runList.getSelectedValuesList();
         return selected.toArray(new SeqRunI[selected.size()]);
@@ -323,35 +317,12 @@ public final class SearchTopComponent extends TopComponent implements LookupList
                  * worker to fetch the list of associated sequencing runs
                  */
                 currentMaster = newMaster;
+
+                runListModel.setMaster(currentMaster);
+                runListModel.update();
+
                 termModel.setMaster(currentMaster);
-
-                SwingWorker worker = new SwingWorker<Iterator<SeqRunI>, Void>() {
-                    @Override
-                    protected Iterator<SeqRunI> doInBackground() throws Exception {
-                        return currentMaster.SeqRun().fetchall();
-                    }
-
-                    @Override
-                    protected void done() {
-                        runListModel.removeAllElements();
-                        try {
-                            Iterator<SeqRunI> iter = get();
-                            while (iter.hasNext()) {
-                                runListModel.addElement(iter.next());
-                            }
-                            runList.setSelectedIndex(0);
-                        } catch (InterruptedException | ExecutionException ex) {
-                            Exceptions.printStackTrace(ex);
-                        }
-                        Object o = runList.getSelectedValue();
-                        if (o != null) {
-                            termModel.setRuns(new SeqRunI[]{(SeqRunI) o});
-                        }
-                        super.done();
-                    }
-                };
-                worker.execute();
-
+                readModel.setMaster(currentMaster);
                 /*
                  * we have a new MGXMaster set, return..
                  */
@@ -360,42 +331,14 @@ public final class SearchTopComponent extends TopComponent implements LookupList
         }
     }
 
-//    class VariableRowHeightRenderer implements TableCellRenderer {
-//
-//        private final ObservationView oview = new ObservationView();
-//
-//        public VariableRowHeightRenderer() {
-//            super();
-//            setOpaque(true);
-//        }
-//
-//        @Override
-//        public Component getTableCellRendererComponent(JTable table, Object obj, boolean isSelected, boolean hasFocus, int row, int column) {
-//
-//            SequenceI value = (SequenceI) obj;
-//            if (cache.containsKey(value) && cache.get(value).get() != null) {
-//                oview.show(value, cache.get(value).get(), hasFocus, termModel.getSelectedItem());
-//            } else {
-//                // check if worker for this sequence is already running
-//                if (!activeTasks.contains(value)) {
-//                    Runnable r = new ObservationFetcher(activeTasks, currentMaster, value, cache);
-//                    //proc.post(r);
-//                    oview.show(value, "Data not yet loaded", hasFocus);
-//                } else {
-//                    oview.show(value, "Waiting for data..", hasFocus);
-//                }
-//            }
-//            table.setRowHeight(row, oview.getPreferredSize().height);
-//
-//            return oview;
-//        }
-//    }
     private void updateTerm() {
-        System.err.println("term is : " + termField.getText());
+        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        //System.err.println("term is : " + termField.getText());
         termModel.setMaster(currentMaster);
         termModel.setRuns(getSelectedSeqRuns());
         termModel.setTerm(termField.getText());
         termModel.update();
         termList.setEnabled(termModel.getSize() > 0);
+        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
     }
 }
