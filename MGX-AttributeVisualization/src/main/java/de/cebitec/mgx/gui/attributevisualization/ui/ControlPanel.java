@@ -284,6 +284,10 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
             }
 
             currentAttributeType = getSelectedItem();
+            if (currentAttributeType == null) {
+                return;
+            }
+            
             if (currentViewer != null) {
                 currentViewer.setAttributeType(currentAttributeType);
             }
