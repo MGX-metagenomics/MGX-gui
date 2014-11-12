@@ -5,15 +5,13 @@
  */
 package de.cebitec.mgx.gui.groups;
 
-import de.cebitec.mgx.common.VGroupManager;
+import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.groups.ConflictingJobsException;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.AttributeRank;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.SeqRunI;
-import de.cebitec.mgx.gui.controller.MGXMaster;
-import de.cebitec.mgx.gui.datamodel.AttributeType;
-import de.cebitec.mgx.gui.datamodel.SeqRun;
+import de.cebitec.mgx.common.VGroupManager;
 import de.cebitec.mgx.gui.util.TestMaster;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -21,7 +19,9 @@ import java.util.Set;
 import java.util.UUID;
 import org.junit.After;
 import org.junit.AfterClass;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -64,7 +64,7 @@ public class VisualizationGroupTest {
     public void testGetNumSequences() throws Exception {
         System.out.println("getNumSequences");
         VisualizationGroupI vg = VGroupManager.getInstance().createGroup();
-        MGXMaster master = TestMaster.getRO();
+        MGXMasterI master = TestMaster.getRO();
         Iterator<SeqRunI> iter = master.SeqRun().fetchall();
         long cnt = 0;
         while (iter.hasNext()) {
@@ -79,7 +79,7 @@ public class VisualizationGroupTest {
     public void testGetSeqRuns() throws Exception {
         System.out.println("getSeqRuns");
         VisualizationGroupI vg = VGroupManager.getInstance().createGroup();
-        MGXMaster master = TestMaster.getRO();
+        MGXMasterI master = TestMaster.getRO();
         Set<SeqRunI> runs = new HashSet<>();
         Iterator<SeqRunI> iter = master.SeqRun().fetchall();
         while (iter.hasNext()) {
@@ -94,7 +94,7 @@ public class VisualizationGroupTest {
     public void testGetAttributeTypes() throws Exception {
         System.out.println("getAttributeTypes");
         VisualizationGroupI vg = VGroupManager.getInstance().createGroup();
-        MGXMaster master = TestMaster.getRO();
+        MGXMasterI master = TestMaster.getRO();
         Iterator<SeqRunI> iter = master.SeqRun().fetchall();
         while (iter.hasNext()) {
             vg.addSeqRun(iter.next());
@@ -114,7 +114,7 @@ public class VisualizationGroupTest {
     public void testaddAndRemoveRuns() throws Exception {
         System.out.println("addAndRemoveRuns");
         VisualizationGroupI vg = VGroupManager.getInstance().createGroup();
-        MGXMaster master = TestMaster.getRO();
+        MGXMasterI master = TestMaster.getRO();
 
         Iterator<SeqRunI> iter = master.SeqRun().fetchall();
         SeqRunI run = null;
@@ -150,7 +150,7 @@ public class VisualizationGroupTest {
     public void testGetSelectedAttributeType() throws Exception {
         System.out.println("getSelectedAttributeType");
         VisualizationGroupI vg = VGroupManager.getInstance().createGroup();
-        MGXMaster master = TestMaster.getRO();
+        MGXMasterI master = TestMaster.getRO();
         Iterator<SeqRunI> iter = master.SeqRun().fetchall();
         while (iter.hasNext()) {
             vg.addSeqRun(iter.next());
@@ -163,6 +163,7 @@ public class VisualizationGroupTest {
             next = atIter.next();
         }
         assertNotNull(next);
+        assertNotNull(next.getName());
         try {
             vg.selectAttributeType(AttributeRank.PRIMARY, next.getName());
         } catch (ConflictingJobsException ex) {
