@@ -10,11 +10,14 @@ import de.cebitec.mgx.api.groups.ConflictingJobsException;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.AttributeRank;
 import de.cebitec.mgx.api.model.AttributeTypeI;
+import de.cebitec.mgx.api.model.JobI;
+import de.cebitec.mgx.api.model.JobState;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.common.VGroupManager;
 import de.cebitec.mgx.gui.util.TestMaster;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import org.junit.After;
@@ -104,7 +107,7 @@ public class VisualizationGroupTest {
         int cnt = 0;
         while (atIter.hasNext()) {
             AttributeTypeI next = atIter.next();
-            System.err.println("  " + next.getName());
+            //System.err.println("  " + next.getName());
             cnt++;
         }
         assertEquals(21, cnt);
@@ -147,6 +150,33 @@ public class VisualizationGroupTest {
     }
 
     @Test
+    public void testGetSelectedAttributeTypeRegression() throws Exception {
+        System.out.println("getSelectedAttributeTypeRegression");
+        VisualizationGroupI vg = VGroupManager.getInstance().createGroup();
+        MGXMasterI master = TestMaster.getRO();
+        SeqRunI run = master.SeqRun().fetch(1);
+        assertEquals("dataset1", run.getName());
+        vg.addSeqRun(run);
+        assertEquals(1, vg.getSeqRuns().size());
+        Iterator<AttributeTypeI> atIter = vg.getAttributeTypes();
+        assertNotNull(atIter);
+      
+        try {
+            vg.selectAttributeType(AttributeRank.PRIMARY, "NCBI_SUPERKINGDOM");
+        } catch (ConflictingJobsException ex) {
+            Map<SeqRunI, Set<JobI>> conflicts = vg.getConflicts(AttributeRank.PRIMARY);
+            assertEquals(1, conflicts.size());
+            Set<JobI> jobs = conflicts.get(run);
+            assertEquals(2, jobs.size());
+            for (JobI j : jobs) {
+                assertEquals(JobState.FINISHED, j.getStatus());
+            }
+            return;
+        }
+        fail();
+    }
+
+    @Test
     public void testGetSelectedAttributeType() throws Exception {
         System.out.println("getSelectedAttributeType");
         VisualizationGroupI vg = VGroupManager.getInstance().createGroup();
@@ -155,21 +185,26 @@ public class VisualizationGroupTest {
         while (iter.hasNext()) {
             vg.addSeqRun(iter.next());
         }
+        assertEquals(3, vg.getSeqRuns().size());
+        
+        int atCount =0;
         Iterator<AttributeTypeI> atIter = vg.getAttributeTypes();
         assertNotNull(atIter);
-
-        AttributeTypeI next = null;
         while (atIter.hasNext()) {
-            next = atIter.next();
+            atIter.next();
+            atCount++;
         }
-        assertNotNull(next);
-        assertNotNull(next.getName());
+        assertEquals(21, atCount);
+        
+        
         try {
-            vg.selectAttributeType(AttributeRank.PRIMARY, next.getName());
+            vg.selectAttributeType(AttributeRank.PRIMARY, "NCBI_SUPERKINGDOM");
         } catch (ConflictingJobsException ex) {
-            fail(ex.getMessage());
+            Map<SeqRunI, Set<JobI>> conflicts = vg.getConflicts(AttributeRank.PRIMARY);
+            assertEquals(2, conflicts.size());
+            return;
         }
-        assertEquals(next.getName(), vg.getSelectedAttributeType());
+        fail();
     }
 //    @Test
 //    public void testSelectAttributeType() throws Exception {
