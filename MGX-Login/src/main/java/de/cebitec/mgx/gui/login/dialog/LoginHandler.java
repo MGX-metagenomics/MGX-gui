@@ -16,7 +16,6 @@ import org.openide.DialogDisplayer;
 import org.openide.NotificationLineSupport;
 import org.openide.NotifyDescriptor;
 import org.openide.awt.StatusDisplayer;
-import org.openide.util.Lookup;
 import org.openide.util.NbPreferences;
 import org.openide.windows.Mode;
 import org.openide.windows.WindowManager;
@@ -122,7 +121,7 @@ public class LoginHandler implements ActionListener {
     }
 
     private static void openProjectExplorer(final GPMS gpms) {
-        ProjectExplorerTopComponent pe = Lookup.getDefault().lookup(ProjectExplorerTopComponent.class);
+        ProjectExplorerTopComponent pe = new ProjectExplorerTopComponent();
         pe.setVisible(true);
         pe.setGPMS(gpms);
 
