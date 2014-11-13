@@ -79,7 +79,7 @@ public class FileAccessTest {
         MGXMasterI m = TestMaster.getRO();
 
         OutputStream os = null;
-        File f = new File("/tmp/testDownload");
+        File f = new File("/tmp/testDownload42");
         try {
             os = new FileOutputStream(f);
         } catch (FileNotFoundException ex) {
@@ -126,7 +126,7 @@ public class FileAccessTest {
 
     @Test
     public void testUploadFile() throws Exception {
-        System.out.println("testUploadFile");
+        System.out.println("testUploadFile22");
         MGXMasterI m = TestMaster.getRW();
         assertNotNull(m);
 
