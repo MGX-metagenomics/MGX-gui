@@ -1,7 +1,6 @@
 
 package de.cebitec.mgx.gui.actions;
 
-import de.cebitec.mgx.gui.controller.RBAC;
 import javax.swing.AbstractAction;
 
 /**
@@ -16,7 +15,7 @@ public abstract class OpenMappingBase extends AbstractAction {
 
     @Override
     public boolean isEnabled() {
-        return super.isEnabled() && RBAC.isUser();
+        return super.isEnabled();
     }
 
 }
