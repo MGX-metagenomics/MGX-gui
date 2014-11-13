@@ -15,7 +15,6 @@ import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
 import org.openide.util.NbBundle;
-import org.openide.util.lookup.ServiceProvider;
 import org.openide.windows.TopComponent;
 
 /**
@@ -30,7 +29,6 @@ import org.openide.windows.TopComponent;
 @ActionID(category = "Window", id = "de.cebitec.mgx.gui.explorer.ProjectExplorerTopComponent")
 @TopComponent.OpenActionRegistration(displayName = "#CTL_ProjectExplorerAction",
         preferredID = "ProjectExplorerTopComponent")
-@ServiceProvider(service = ProjectExplorerTopComponent.class)
 public final class ProjectExplorerTopComponent extends TopComponent implements ExplorerManager.Provider {
 
     private final ExplorerManager exmngr = new ExplorerManager();
