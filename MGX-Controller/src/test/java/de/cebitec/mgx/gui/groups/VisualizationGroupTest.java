@@ -7,6 +7,7 @@ package de.cebitec.mgx.gui.groups;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.groups.ConflictingJobsException;
+import de.cebitec.mgx.api.groups.VGroupManagerI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.AttributeRank;
 import de.cebitec.mgx.api.model.AttributeTypeI;
@@ -66,145 +67,164 @@ public class VisualizationGroupTest {
     @Test
     public void testGetNumSequences() throws Exception {
         System.out.println("getNumSequences");
-        VisualizationGroupI vg = VGroupManager.getInstance().createGroup();
-        MGXMasterI master = TestMaster.getRO();
-        Iterator<SeqRunI> iter = master.SeqRun().fetchall();
-        long cnt = 0;
-        while (iter.hasNext()) {
-            SeqRunI sr = iter.next();
-            vg.addSeqRun(sr);
-            cnt += sr.getNumSequences();
+
+        VGroupManagerI vgmgr = VGroupManager.getInstance();
+        synchronized (vgmgr) {
+            VisualizationGroupI vg = vgmgr.createGroup();
+            MGXMasterI master = TestMaster.getRO();
+            Iterator<SeqRunI> iter = master.SeqRun().fetchall();
+            long cnt = 0;
+            while (iter.hasNext()) {
+                SeqRunI sr = iter.next();
+                vg.addSeqRun(sr);
+                cnt += sr.getNumSequences();
+            }
+            assertEquals(cnt, vg.getNumSequences());
         }
-        assertEquals(cnt, vg.getNumSequences());
     }
 
     @Test
     public void testGetSeqRuns() throws Exception {
         System.out.println("getSeqRuns");
-        VisualizationGroupI vg = VGroupManager.getInstance().createGroup();
-        MGXMasterI master = TestMaster.getRO();
-        Set<SeqRunI> runs = new HashSet<>();
-        Iterator<SeqRunI> iter = master.SeqRun().fetchall();
-        while (iter.hasNext()) {
-            SeqRunI sr = iter.next();
-            vg.addSeqRun(sr);
-            runs.add(sr);
+        VGroupManagerI vgmgr = VGroupManager.getInstance();
+        synchronized (vgmgr) {
+            VisualizationGroupI vg = vgmgr.createGroup();
+            MGXMasterI master = TestMaster.getRO();
+            Set<SeqRunI> runs = new HashSet<>();
+            Iterator<SeqRunI> iter = master.SeqRun().fetchall();
+            while (iter.hasNext()) {
+                SeqRunI sr = iter.next();
+                vg.addSeqRun(sr);
+                runs.add(sr);
+            }
+            assertEquals(runs, vg.getSeqRuns());
         }
-        assertEquals(runs, vg.getSeqRuns());
     }
 
     @Test
     public void testGetAttributeTypes() throws Exception {
         System.out.println("getAttributeTypes");
-        VisualizationGroupI vg = VGroupManager.getInstance().createGroup();
-        MGXMasterI master = TestMaster.getRO();
-        Iterator<SeqRunI> iter = master.SeqRun().fetchall();
-        while (iter.hasNext()) {
-            vg.addSeqRun(iter.next());
+        VGroupManagerI vgmgr = VGroupManager.getInstance();
+        synchronized (vgmgr) {
+            VisualizationGroupI vg = vgmgr.createGroup();
+            MGXMasterI master = TestMaster.getRO();
+            Iterator<SeqRunI> iter = master.SeqRun().fetchall();
+            while (iter.hasNext()) {
+                vg.addSeqRun(iter.next());
+            }
+            Iterator<AttributeTypeI> atIter = vg.getAttributeTypes();
+            assertNotNull(atIter);
+            int cnt = 0;
+            while (atIter.hasNext()) {
+                AttributeTypeI next = atIter.next();
+                //System.err.println("  " + next.getName());
+                cnt++;
+            }
+            assertEquals(21, cnt);
         }
-        Iterator<AttributeTypeI> atIter = vg.getAttributeTypes();
-        assertNotNull(atIter);
-        int cnt = 0;
-        while (atIter.hasNext()) {
-            AttributeTypeI next = atIter.next();
-            //System.err.println("  " + next.getName());
-            cnt++;
-        }
-        assertEquals(21, cnt);
     }
 
     @Test
     public void testaddAndRemoveRuns() throws Exception {
         System.out.println("addAndRemoveRuns");
-        VisualizationGroupI vg = VGroupManager.getInstance().createGroup();
-        MGXMasterI master = TestMaster.getRO();
+        VGroupManagerI vgmgr = VGroupManager.getInstance();
+        synchronized (vgmgr) {
+            VisualizationGroupI vg = vgmgr.createGroup();
+            MGXMasterI master = TestMaster.getRO();
 
-        Iterator<SeqRunI> iter = master.SeqRun().fetchall();
-        SeqRunI run = null;
-        while (iter.hasNext()) {
-            run = iter.next();
-            if (run.getName().equals("dataset2")) {
-                break;
+            Iterator<SeqRunI> iter = master.SeqRun().fetchall();
+            SeqRunI run = null;
+            while (iter.hasNext()) {
+                run = iter.next();
+                if (run.getName().equals("dataset2")) {
+                    break;
+                }
             }
-        }
-        vg.addSeqRun(run);
-        Iterator<AttributeTypeI> atIter = vg.getAttributeTypes();
-        assertNotNull(atIter);
-        int cnt = 0;
-        while (atIter.hasNext()) {
-            AttributeTypeI next = atIter.next();
-            cnt++;
-        }
-        assertEquals(15, cnt);
+            vg.addSeqRun(run);
+            Iterator<AttributeTypeI> atIter = vg.getAttributeTypes();
+            assertNotNull(atIter);
+            int cnt = 0;
+            while (atIter.hasNext()) {
+                AttributeTypeI next = atIter.next();
+                cnt++;
+            }
+            assertEquals(15, cnt);
 
-        // remove run again
-        vg.removeSeqRun(run);
-        Iterator<AttributeTypeI> atIter2 = vg.getAttributeTypes();
-        assertNotNull(atIter);
-        int cnt2 = 0;
-        while (atIter2.hasNext()) {
-            AttributeTypeI next = atIter2.next();
-            cnt2++;
+            // remove run again
+            vg.removeSeqRun(run);
+            Iterator<AttributeTypeI> atIter2 = vg.getAttributeTypes();
+            assertNotNull(atIter);
+            int cnt2 = 0;
+            while (atIter2.hasNext()) {
+                AttributeTypeI next = atIter2.next();
+                cnt2++;
+            }
+            assertEquals(0, cnt2);
         }
-        assertEquals(0, cnt2);
     }
 
     @Test
     public void testGetSelectedAttributeTypeRegression() throws Exception {
         System.out.println("getSelectedAttributeTypeRegression");
-        VisualizationGroupI vg = VGroupManager.getInstance().createGroup();
-        MGXMasterI master = TestMaster.getRO();
-        SeqRunI run = master.SeqRun().fetch(1);
-        assertEquals("dataset1", run.getName());
-        vg.addSeqRun(run);
-        assertEquals(1, vg.getSeqRuns().size());
-        Iterator<AttributeTypeI> atIter = vg.getAttributeTypes();
-        assertNotNull(atIter);
-      
-        try {
-            vg.selectAttributeType(AttributeRank.PRIMARY, "NCBI_SUPERKINGDOM");
-        } catch (ConflictingJobsException ex) {
-            Map<SeqRunI, Set<JobI>> conflicts = vg.getConflicts(AttributeRank.PRIMARY);
-            assertEquals(1, conflicts.size());
-            Set<JobI> jobs = conflicts.get(run);
-            assertEquals(2, jobs.size());
-            for (JobI j : jobs) {
-                assertEquals(JobState.FINISHED, j.getStatus());
+
+        VGroupManagerI vgmgr = VGroupManager.getInstance();
+        synchronized (vgmgr) {
+            VisualizationGroupI vg = vgmgr.createGroup();
+            MGXMasterI master = TestMaster.getRO();
+            SeqRunI run = master.SeqRun().fetch(1);
+            assertEquals("dataset1", run.getName());
+            vg.addSeqRun(run);
+            assertEquals(1, vg.getSeqRuns().size());
+            Iterator<AttributeTypeI> atIter = vg.getAttributeTypes();
+            assertNotNull(atIter);
+
+            try {
+                vg.selectAttributeType(AttributeRank.PRIMARY, "NCBI_SUPERKINGDOM");
+            } catch (ConflictingJobsException ex) {
+                Map<SeqRunI, Set<JobI>> conflicts = vg.getConflicts(AttributeRank.PRIMARY);
+                assertEquals(1, conflicts.size());
+                Set<JobI> jobs = conflicts.get(run);
+                assertEquals(2, jobs.size());
+                for (JobI j : jobs) {
+                    assertEquals(JobState.FINISHED, j.getStatus());
+                }
+                return;
             }
-            return;
+            fail();
         }
-        fail();
     }
 
     @Test
     public void testGetSelectedAttributeType() throws Exception {
         System.out.println("getSelectedAttributeType");
-        VisualizationGroupI vg = VGroupManager.getInstance().createGroup();
-        MGXMasterI master = TestMaster.getRO();
-        Iterator<SeqRunI> iter = master.SeqRun().fetchall();
-        while (iter.hasNext()) {
-            vg.addSeqRun(iter.next());
+        VGroupManagerI vgmgr = VGroupManager.getInstance();
+        synchronized (vgmgr) {
+            VisualizationGroupI vg = vgmgr.createGroup();
+            MGXMasterI master = TestMaster.getRO();
+            Iterator<SeqRunI> iter = master.SeqRun().fetchall();
+            while (iter.hasNext()) {
+                vg.addSeqRun(iter.next());
+            }
+            assertEquals(3, vg.getSeqRuns().size());
+
+            int atCount = 0;
+            Iterator<AttributeTypeI> atIter = vg.getAttributeTypes();
+            assertNotNull(atIter);
+            while (atIter.hasNext()) {
+                atIter.next();
+                atCount++;
+            }
+            assertEquals(21, atCount);
+
+            try {
+                vg.selectAttributeType(AttributeRank.PRIMARY, "NCBI_SUPERKINGDOM");
+            } catch (ConflictingJobsException ex) {
+                Map<SeqRunI, Set<JobI>> conflicts = vg.getConflicts(AttributeRank.PRIMARY);
+                assertEquals(2, conflicts.size());
+                return;
+            }
+            fail();
         }
-        assertEquals(3, vg.getSeqRuns().size());
-        
-        int atCount =0;
-        Iterator<AttributeTypeI> atIter = vg.getAttributeTypes();
-        assertNotNull(atIter);
-        while (atIter.hasNext()) {
-            atIter.next();
-            atCount++;
-        }
-        assertEquals(21, atCount);
-        
-        
-        try {
-            vg.selectAttributeType(AttributeRank.PRIMARY, "NCBI_SUPERKINGDOM");
-        } catch (ConflictingJobsException ex) {
-            Map<SeqRunI, Set<JobI>> conflicts = vg.getConflicts(AttributeRank.PRIMARY);
-            assertEquals(2, conflicts.size());
-            return;
-        }
-        fail();
     }
 //    @Test
 //    public void testSelectAttributeType() throws Exception {
