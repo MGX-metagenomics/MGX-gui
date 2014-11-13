@@ -40,10 +40,10 @@ public class ProjectStructureNodeFactory extends ChildFactory<String> {
 
     @Override
     protected boolean createKeys(List<String> toPopulate) {
-        for (String key : project_structure.keySet()) {
-            toPopulate.add(key);
-        }
-        //Collections.sort(toPopulate);
+        toPopulate.add("files");
+        toPopulate.add("refs");
+        toPopulate.add("data");
+//Collections.sort(toPopulate);
         return true;
     }
 
