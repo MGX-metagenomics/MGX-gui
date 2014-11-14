@@ -12,8 +12,6 @@ import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.JobState;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.util.TestMaster;
-import java.time.DayOfWeek;
-import java.time.temporal.TemporalAdjusters;
 import java.util.Map;
 import java.util.Set;
 import org.junit.After;
