@@ -21,7 +21,6 @@ import org.openide.util.lookup.AbstractLookup;
 import org.openide.util.lookup.InstanceContent;
 import org.openide.util.lookup.ServiceProvider;
 import org.openide.windows.TopComponent;
-import org.openide.windows.WindowManager;
 
 /**
  * Top component which displays something.
@@ -39,7 +38,7 @@ import org.openide.windows.WindowManager;
 @Messages({
     "CTL_VisualizationGroupAction=VisualizationGroup",
     "CTL_VisualizationGroupTopComponent=Visualization groups",
-    "HINT_VisualizationGroupTopComponent=This is a VisualizationGroup window"
+    "HINT_VisualizationGroupTopComponent=Group window"
 })
 @ServiceProvider(service = VisualizationGroupTopComponent.class)
 public final class VisualizationGroupTopComponent extends TopComponent implements ActionListener, PropertyChangeListener { // , ExplorerManager.Provider {
