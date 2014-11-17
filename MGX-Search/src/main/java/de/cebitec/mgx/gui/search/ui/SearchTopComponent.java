@@ -21,6 +21,8 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import org.netbeans.api.settings.ConvertAsProperties;
+import org.openide.DialogDisplayer;
+import org.openide.NotifyDescriptor;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -160,9 +162,53 @@ public final class SearchTopComponent extends TopComponent implements LookupList
                     }
                     //Collections.sort(obs, comp);
                     ov.show(seq, obs.toArray(new ObservationI[]{}), false, "");
+                    showSeq.setEnabled(true);
                 }
             }
 
+        });
+
+        showSeq.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                final long seqId = readModel.getSelectedItem().getId();
+                SwingWorker<SequenceI, Void> sw = new SwingWorker<SequenceI, Void>() {
+
+                    @Override
+                    protected SequenceI doInBackground() throws Exception {
+                        return currentMaster.Sequence().fetch(seqId);
+                    }
+
+                    @Override
+                    protected void done() {
+                        try {
+                            SequenceI seq = get();
+                            String[] opts = new String[]{"Close"};
+                            NotifyDescriptor d = new NotifyDescriptor(
+                                    "Text",
+                                    "DNA sequence for " + seq.getName(),
+                                    NotifyDescriptor.DEFAULT_OPTION,
+                                    NotifyDescriptor.PLAIN_MESSAGE,
+                                    opts,
+                                    opts[0]
+                            );
+                            String s = new StringBuilder(">")
+                                    .append(seq.getName())
+                                    .append(System.lineSeparator())
+                                    .append(seq.getSequence())
+                                    .toString();
+                            d.setMessage(s);
+                            DialogDisplayer.getDefault().notify(d);
+                        } catch (InterruptedException | ExecutionException ex) {
+                            Exceptions.printStackTrace(ex);
+                        }
+                        super.done();
+                    }
+
+                };
+                sw.execute();
+            }
         });
 
     }
@@ -186,6 +232,7 @@ public final class SearchTopComponent extends TopComponent implements LookupList
         termField = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         hitNum = new javax.swing.JLabel();
+        showSeq = new javax.swing.JButton();
 
         jScrollPane1.setViewportView(runList);
 
@@ -213,6 +260,10 @@ public final class SearchTopComponent extends TopComponent implements LookupList
         hitNum.setFont(new java.awt.Font("Dialog", 1, 10)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(hitNum, org.openide.util.NbBundle.getMessage(SearchTopComponent.class, "SearchTopComponent.hitNum.text")); // NOI18N
 
+        showSeq.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(showSeq, org.openide.util.NbBundle.getMessage(SearchTopComponent.class, "SearchTopComponent.showSeq.text")); // NOI18N
+        showSeq.setEnabled(false);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -238,7 +289,10 @@ public final class SearchTopComponent extends TopComponent implements LookupList
                     .addComponent(readList, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(hitNum, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(showSeq)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -261,7 +315,9 @@ public final class SearchTopComponent extends TopComponent implements LookupList
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(hitNum, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(obsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 285, Short.MAX_VALUE)
+                .addComponent(obsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 297, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(showSeq)
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -275,6 +331,7 @@ public final class SearchTopComponent extends TopComponent implements LookupList
     private javax.swing.JPanel obsPanel;
     private javax.swing.JComboBox<SequenceI> readList;
     private javax.swing.JList runList;
+    private javax.swing.JButton showSeq;
     private javax.swing.JTextField termField;
     private javax.swing.JList termList;
     // End of variables declaration//GEN-END:variables
