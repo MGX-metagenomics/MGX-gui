@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import javax.swing.JTextArea;
 import javax.swing.SwingWorker;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -193,12 +194,9 @@ public final class SearchTopComponent extends TopComponent implements LookupList
                                     opts,
                                     opts[0]
                             );
-                            String s = new StringBuilder(">")
-                                    .append(seq.getName())
-                                    .append(System.lineSeparator())
-                                    .append(seq.getSequence())
-                                    .toString();
-                            d.setMessage(s);
+                            SeqPanel sp = new SeqPanel();
+                            sp.show(seq);
+                            d.setMessage(sp);
                             DialogDisplayer.getDefault().notify(d);
                         } catch (InterruptedException | ExecutionException ex) {
                             Exceptions.printStackTrace(ex);
