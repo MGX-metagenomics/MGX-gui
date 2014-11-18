@@ -24,8 +24,6 @@ import static org.junit.Assert.*;
  */
 public class DownloadTest {
 
-    private MGXMaster master;
-
     @BeforeClass
     public static void setUpClass() {
     }
@@ -36,7 +34,6 @@ public class DownloadTest {
 
     @Before
     public void setUp() {
-        master = TestMaster.getRO();
     }
 
     @After
@@ -46,6 +43,7 @@ public class DownloadTest {
     @Test
     public void testDownloadSequencesForAttribute() throws MGXException {
         System.out.println("testDownloadSequencesForAttribute");
+        MGXMaster master = TestMaster.getRO();
         AttributeI attr = master.Attribute().fetch(1);
         assertNotNull(attr);
         Set<AttributeI> set = new HashSet<>();
@@ -98,9 +96,10 @@ public class DownloadTest {
     @Test
     public void testFetchSequence() {
         System.out.println("testFetchSequence");
+        MGXMaster master = TestMaster.getRO();
         SequenceI seq = master.Sequence().fetch(1);
         assertEquals("FI5LW4G01DZDXZ", seq.getName());
-        assertEquals("tttgccatcggcgcagtcctacttatgaagtttgcagaatagcgtcaaggcactaccaagggg", seq.getSequence());
+        assertEquals("TTTGCCATCGGCGCAGTCCTACTTATGAAGTTTGCAGAATAGCGTCAAGGCACTACCAAGGGG", seq.getSequence());
         assertEquals(63, seq.getLength());
     }
 
