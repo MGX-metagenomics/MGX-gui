@@ -23,7 +23,7 @@ public class TestMaster {
 
     private static MGXMasterI masterRO = null;
 
-    public static MGXMasterI getRO() {
+    public static synchronized MGXMasterI getRO() {
         if (masterRO != null) {
             return masterRO;
         }
@@ -62,7 +62,7 @@ public class TestMaster {
         return masterRO;
     }
 
-    public static MGXMasterI getRW() {
+    public static synchronized MGXMasterI getRW() {
         MGXMasterI master = null;
 
         String serverURI = "https://mgx.cebitec.uni-bielefeld.de/MGX-maven-web/webresources/";
