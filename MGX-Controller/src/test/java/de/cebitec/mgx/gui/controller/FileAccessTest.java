@@ -74,12 +74,12 @@ public class FileAccessTest {
     }
 
     @Test
-    public void testDownloadFile() throws MGXException {
+    public void testDownloadFile() throws MGXException, IOException {
         System.out.println("DownloadFile");
         MGXMasterI m = TestMaster.getRO();
 
         OutputStream os = null;
-        File f = new File("/tmp/testDownload42");
+        File f = File.createTempFile("down", "xx");
         try {
             os = new FileOutputStream(f);
         } catch (FileNotFoundException ex) {
@@ -130,7 +130,7 @@ public class FileAccessTest {
         MGXMasterI m = TestMaster.getRW();
         assertNotNull(m);
 
-        File f = new File("/tmp/testDownload");
+        File f = File.createTempFile("down", "xx");
         FileWriter fw = new FileWriter(f);
         for (int i = 0; i < 90000; i++) {
             fw.write("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");

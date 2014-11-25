@@ -6,13 +6,12 @@ import de.cebitec.mgx.api.access.datatransfer.TransferBaseI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.JobI;
+import de.cebitec.mgx.api.model.JobParameterI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.util.TestMaster;
 import de.cebitec.mgx.seqstorage.FastaWriter;
-import de.cebitec.mgx.sequence.SeqStoreException;
 import de.cebitec.mgx.sequence.SeqWriterI;
 import java.io.File;
-import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 import org.junit.After;
@@ -64,9 +63,17 @@ public class SeqRunAccessTest {
         Map<JobI, Set<AttributeTypeI>> data = m.SeqRun().getJobsAndAttributeTypes(sr1);
         assertNotNull(data);
         assertEquals(10, data.size());
+
+        int paramCnt = 0;
+
         for (JobI j : data.keySet()) {
             assertNotNull(j.getSeqrun());
+            paramCnt += j.getParameters().size();
+            for (JobParameterI jp : j.getParameters()) {
+                assertNotNull(jp.getType());
+            }
         }
+        assertEquals(7, paramCnt);
     }
 
     @Test
