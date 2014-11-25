@@ -45,9 +45,7 @@ public class JobDTOFactory extends DTOConversionBase<JobI, JobDTO> {
             b.setFinishDate(toUnixTimeStamp(j.getFinishDate()));
         }
 
-        if (j.getParameters() != null && j.getParameters().size() > 0) {
-            b.setParameters(JobParameterDTOFactory.getInstance().toList(j.getParameters()));
-        }
+        b.setParameters(JobParameterDTOFactory.getInstance().toList(j.getParameters()));
 
         return b.build();
     }
