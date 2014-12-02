@@ -11,24 +11,28 @@ import de.cebitec.mgx.api.model.Identifiable;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.TermI;
+import de.cebitec.mgx.api.model.qc.QCResultI;
 import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.AttributeTypeDTO;
 import de.cebitec.mgx.dto.dto.JobAndAttributeTypes;
+import de.cebitec.mgx.dto.dto.QCResultDTO;
 import de.cebitec.mgx.dto.dto.SeqRunDTO;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
 import de.cebitec.mgx.gui.dtoconversion.AttributeTypeDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.JobDTOFactory;
+import de.cebitec.mgx.gui.dtoconversion.QCResultDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.SeqRunDTOFactory;
 import de.cebitec.mgx.gui.util.BaseIterator;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import org.openide.util.Exceptions;
 
 /**
  *
@@ -158,6 +162,20 @@ public class SeqRunAccess extends AccessBase<SeqRunI> implements SeqRunAccessI {
             throw new MGXException(ex);
         }
 
+        return ret;
+    }
+
+    @Override
+    public List<QCResultI> getQC(SeqRunI run) throws MGXException {
+        List<QCResultI> ret = new ArrayList<>();
+        try {
+            List<QCResultDTO> qc = getDTOmaster().SeqRun().getQC(run.getId());
+            for (QCResultDTO dto : qc) {
+                ret.add(QCResultDTOFactory.getInstance().toModel(getMaster(), dto));
+            }
+        } catch (MGXServerException | MGXClientException ex) {
+            throw new MGXException(ex);
+        }
         return ret;
     }
 
