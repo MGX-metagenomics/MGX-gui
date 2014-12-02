@@ -87,7 +87,7 @@
 
                 <configuration>
                     <instructions>
-                        <Export-Package>de.cebitec.mgx.gui.datamodel,de.cebitec.mgx.gui.datamodel.misc,de.cebitec.mgx.gui.datamodel.tree</Export-Package>
+                        <Export-Package>de.cebitec.mgx.gui.datamodel,de.cebitec.mgx.gui.datamodel.misc,de.cebitec.mgx.gui.datamodel.qc,de.cebitec.mgx.gui.datamodel.tree</Export-Package>
                         <Private-Package></Private-Package>
                     </instructions>
                 </configuration>
