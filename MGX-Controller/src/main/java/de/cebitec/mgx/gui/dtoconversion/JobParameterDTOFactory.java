@@ -69,7 +69,7 @@ public class JobParameterDTOFactory extends DTOConversionBase<JobParameterI, Job
     @Override
     public JobParameterI toModel(MGXMasterI m, JobParameterDTO dto) {
         JobParameterI jp = new JobParameter(m);
-        if (dto.hasId()) {
+        if (dto.hasId() && dto.getId() != Identifiable.INVALID_IDENTIFIER) {
             jp.setId(dto.getId());
         }
         jp.setNodeId(dto.getNodeId());
