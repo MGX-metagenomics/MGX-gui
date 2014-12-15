@@ -148,6 +148,11 @@
             <artifactId>org-netbeans-core-netigso</artifactId>
             <version>RELEASE74</version>
         </dependency> -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>MGX-QCMonitor</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
