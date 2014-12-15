@@ -5,7 +5,6 @@
  */
 package de.cebitec.mgx.qcmon;
 
-import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.qc.DataRowI;
 import de.cebitec.mgx.api.model.qc.QCResultI;
@@ -13,6 +12,8 @@ import java.awt.Color;
 import java.awt.Component;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import javax.swing.SwingWorker;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -41,19 +42,19 @@ import org.openide.util.Utilities;
 @TopComponent.Description(
         preferredID = "QCTopComponent",
         //iconBase="SET/PATH/TO/ICON/HERE", 
-        persistenceType = TopComponent.PERSISTENCE_ALWAYS
+        persistenceType = TopComponent.PERSISTENCE_NEVER
 )
 @TopComponent.Registration(mode = "satellite", openAtStartup = false)
 @ActionID(category = "Window", id = "de.cebitec.mgx.qcmon.QCTopComponent")
-@ActionReference(path = "Menu/Window" /*, position = 333 */)
+@ActionReference(path = "Menu/Window", position = 533)
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_QCAction",
         preferredID = "QCTopComponent"
 )
 @Messages({
-    "CTL_QCAction=QC",
-    "CTL_QCTopComponent=QC Window",
-    "HINT_QCTopComponent=This is a QC window"
+    "CTL_QCAction=Quality Control",
+    "CTL_QCTopComponent=Quality Control",
+    "HINT_QCTopComponent=Quality control"
 })
 public final class QCTopComponent extends TopComponent implements LookupListener {
 
@@ -103,24 +104,21 @@ public final class QCTopComponent extends TopComponent implements LookupListener
     }
 
     void writeProperties(java.util.Properties p) {
-        // better to version settings since initial version as advocated at
-        // http://wiki.apidesign.org/wiki/PropertyFiles
         p.setProperty("version", "1.0");
-        // TODO store your settings
     }
 
     void readProperties(java.util.Properties p) {
         String version = p.getProperty("version");
-        // TODO read your settings according to their version
     }
 
     @Override
     public void resultChanged(LookupEvent le) {
         update();
-
     }
 
     private void update() {
+        SeqRunI prevRun = currentSeqRun;
+
         Collection<? extends SeqRunI> runs = resultSeqRun.allInstances();
         for (SeqRunI run : runs) {
             if (currentSeqRun == null || !run.equals(currentSeqRun)) {
@@ -130,22 +128,45 @@ public final class QCTopComponent extends TopComponent implements LookupListener
         if (currentSeqRun == null) {
             return;
         }
-        try {
-            List<QCResultI> qc = currentSeqRun.getMaster().SeqRun().getQC(currentSeqRun);
-            if (qc.isEmpty()) {
-                tabbedPane.removeAll();
-            } else {
-                for (QCResultI qcr : qc) {
-                    Component chart = createChart(qcr);
-                    tabbedPane.add(qcr.getName(), chart);
-                }
-            }
-        } catch (MGXException ex) {
-            Exceptions.printStackTrace(ex);
+        if (currentSeqRun.equals(prevRun)) {
+            return; // no update needed
         }
+
+        SwingWorker<List<QCResultI>, Void> sw = new SwingWorker<List<QCResultI>, Void>() {
+
+            @Override
+            protected List<QCResultI> doInBackground() throws Exception {
+                return currentSeqRun.getMaster().SeqRun().getQC(currentSeqRun);
+            }
+
+            @Override
+            protected void done() {
+                List<QCResultI> qc = null;
+                try {
+                    qc = get();
+                } catch (InterruptedException | ExecutionException ex) {
+                    Exceptions.printStackTrace(ex);
+                }
+                if (qc == null || qc.isEmpty()) {
+                    tabbedPane.removeAll();
+                } else {
+                    int idx = tabbedPane.getSelectedIndex();
+                    tabbedPane.removeAll();
+                    for (QCResultI qcr : qc) {
+                        Component chart = createChart(qcr);
+                        tabbedPane.add(qcr.getName(), chart);
+                    }
+                    if (idx != -1 && tabbedPane.getTabCount() > idx) {
+                        tabbedPane.setSelectedIndex(idx);
+                    }
+                }
+                super.done();
+            }
+        };
+        sw.execute();
     }
 
-    private Component createChart(QCResultI qcr) {
+    private static Component createChart(QCResultI qcr) {
         DefaultTableXYDataset dataset = new DefaultTableXYDataset();
         for (DataRowI dr : qcr.getData()) {
             XYSeries series = new XYSeries(dr.getName(), true, false);
@@ -155,7 +176,9 @@ public final class QCTopComponent extends TopComponent implements LookupListener
             }
             dataset.addSeries(series);
         }
-        JFreeChart chart = ChartFactory.createStackedXYAreaChart(null, null, null, dataset, PlotOrientation.VERTICAL, true, true, false);
+        
+        boolean showLegend = qcr.getData().length > 1;
+        JFreeChart chart = ChartFactory.createStackedXYAreaChart(null, null, null, dataset, PlotOrientation.VERTICAL, showLegend, true, false);
 
         chart.setBorderPaint(Color.WHITE);
         chart.setBackgroundPaint(Color.WHITE);
