@@ -10,6 +10,7 @@ import de.cebitec.mgx.gui.nodes.JobNode;
 import java.awt.Component;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
 import java.util.Collection;
 import javax.swing.JPopupMenu;
 import org.netbeans.api.settings.ConvertAsProperties;
@@ -20,6 +21,7 @@ import org.openide.explorer.ExplorerUtils;
 import org.openide.explorer.view.NodePopupFactory;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
+import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
@@ -61,6 +63,7 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
     private final static int MASTER_MODE = 1;
     private final static int SEQRUN_MODE = 2;
     private int currentMode = MASTER_MODE;
+    private ProjectRootNode currentRoot = null;
 
     public JobMonitorTopComponent() {
         initComponents();
@@ -121,6 +124,14 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
         resultMaster.removeLookupListener(this);
         resultSeqRun.removeLookupListener(this);
         resultJobs.removeLookupListener(this);
+        if (currentRoot != null) {
+            try {
+                currentRoot.destroy();
+            } catch (IOException ex) {
+            }
+            currentRoot = null;
+        }
+            
     }
 
     void writeProperties(java.util.Properties p) {
@@ -146,7 +157,7 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
         if (!jobs.isEmpty()) {
             return; // selection within own topcomponent, no update
         }
-        
+
         if (runs.size() > 0) {
             currentMode = SEQRUN_MODE;
 
@@ -178,15 +189,20 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
         }
     }
 
-//    @Override
-//    public void actionPerformed(ActionEvent e) {
-//        updateJobs();
-//    }
     private void updateJobs() {
+        if (currentRoot != null) {
+            try {
+                currentRoot.destroy();
+            } catch (IOException ex) {
+            }
+        }
         if (currentMode == MASTER_MODE && currentMaster != null) {
-            explorerManager.setRootContext(new ProjectRootNode(currentMaster));
-        } else if (currentMode == SEQRUN_MODE && currentSeqRun != null){
-            explorerManager.setRootContext(new ProjectRootNode(currentSeqRun));
+            currentRoot = new ProjectRootNode(currentMaster);
+        } else if (currentMode == SEQRUN_MODE && currentSeqRun != null) {
+            currentRoot = new ProjectRootNode(currentSeqRun);
+        }
+        if (currentRoot != null) {
+            explorerManager.setRootContext(currentRoot);
         }
     }
 
