@@ -9,21 +9,16 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.Line2D;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
-import javax.swing.BorderFactory;
 import javax.swing.JComponent;
-import javax.swing.border.Border;
-import javax.swing.border.EtchedBorder;
+import org.apache.commons.math3.util.FastMath;
 
 /**
  *
  * @author sj
  */
 public class ObservationView extends javax.swing.JPanel {
-
-    private final Border unselectedBorder = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);
-    private final Border selectedBorder = BorderFactory.createRaisedBevelBorder();
 
     /**
      * Creates new form ObservationView
@@ -34,26 +29,19 @@ public class ObservationView extends javax.swing.JPanel {
     }
     private final View view = new View();
 
-    public void show(SequenceI seq, ObservationI[] obs, boolean selected, final String searchTerm) {
+    public void show(SequenceI seq, ObservationI[] obs, final String searchTerm) {
         readName.setText(seq.getName() + " (" + seq.getLength() + "bp)");
-        setBorder(selected ? selectedBorder : unselectedBorder);
-        view.setData(seq, obs, null, searchTerm);
+        view.setData(seq, obs, searchTerm);
         repaint();
     }
 
-    public void show(SequenceI seq, String msg, boolean selected) {
-        readName.setText(seq.getName() + " (" + seq.getLength() + "bp)");
-        setBorder(selected ? selectedBorder : unselectedBorder);
-        view.setData(seq, null, msg, null);
-    }
+
 
     private class View extends JComponent {
 
         private SequenceI seq;
         private ObservationI[] obs;
         private String searchTerm;
-        private String message;
-        //
         private final static int borderWidth = 15;
 
         @Override
@@ -75,9 +63,6 @@ public class ObservationView extends javax.swing.JPanel {
             int height = getHeight();
             int width = getWidth();
 
-            int midX = width / 2;
-            int midY = height / 2;
-
             int seqLen = seq.getLength();
 
             g2.setColor(Color.BLACK);
@@ -98,7 +83,6 @@ public class ObservationView extends javax.swing.JPanel {
             }
 
             if (obs == null) {
-                g2.drawString(message, midX - 60, midY - 40);
                 g2.dispose();
                 return;
             }
@@ -108,8 +92,8 @@ public class ObservationView extends javax.swing.JPanel {
 
             int layerY = height - borderWidth - 5;
             for (ObservationI o : obs) {
-                int scaledStart = Math.round(o.getStart() * scaleX);
-                int scaledStop = Math.round(o.getStop() * scaleX);
+                int scaledStart = FastMath.round(o.getStart() * scaleX);
+                int scaledStop = FastMath.round(o.getStop() * scaleX);
 
                 if (o.getAttributeName().contains(searchTerm)) {
                     g2.setColor(Color.RED);
@@ -117,23 +101,17 @@ public class ObservationView extends javax.swing.JPanel {
                     g2.setColor(Color.BLACK);
                 }
 
-                g2.drawString(o.getAttributeTypeName() + ": " + o.getAttributeName(), borderWidth + Math.min(scaledStart, scaledStop), layerY - 4);
+                g2.drawString(o.getAttributeTypeName() + ": " + o.getAttributeName(), borderWidth + FastMath.min(scaledStart, scaledStop), layerY - 4);
                 g2.draw(new Line2D.Double(borderWidth + scaledStart, layerY, borderWidth + scaledStop, layerY));
                 layerY -= 15;
             }
 
-//            g2.setColor(Color.red);
-//            int scaledStart = Math.round(0 * scaleX);
-//            int scaledStop = Math.round(seqLen * scaleX);
-//            g2.draw(new Line2D.Double(borderWidth + scaledStart, 5, borderWidth + scaledStop, 5));
             g2.dispose();
-
         }
 
-        public void setData(SequenceI s, ObservationI[] o, String msg, String term) {
+        public void setData(SequenceI s, ObservationI[] o, String term) {
             seq = s;
             obs = o;
-            message = msg;
             searchTerm = term;
 
             if (obs != null) {
@@ -146,7 +124,7 @@ public class ObservationView extends javax.swing.JPanel {
             }
             repaint();
         }
-        private List<Layer> layers = new LinkedList<>();
+        private final List<Layer> layers = new ArrayList<>();
 
         private void createLayers(ObservationI[] obs) {
             layers.clear();

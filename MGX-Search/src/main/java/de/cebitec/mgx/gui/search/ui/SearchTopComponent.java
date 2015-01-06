@@ -161,7 +161,7 @@ public final class SearchTopComponent extends TopComponent implements LookupList
                         obs.add(iter.next());
                     }
                     //Collections.sort(obs, comp);
-                    ov.show(seq, obs.toArray(new ObservationI[]{}), false, "");
+                    ov.show(seq, obs.toArray(new ObservationI[]{}), (String) termList.getSelectedValue());
                     showSeq.setEnabled(true);
                 }
             }
