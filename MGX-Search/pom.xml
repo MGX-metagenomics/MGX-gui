@@ -59,10 +59,6 @@
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-netbeans-modules-settings</artifactId>
         </dependency>
-<!--        <dependency>
-            <groupId>de.cebitec.mgx.gui</groupId>
-            <artifactId>MGX-AttributeVisualization</artifactId>
-        </dependency> -->
         <dependency>
             <artifactId>MGX-API</artifactId>
             <groupId>de.cebitec.mgx</groupId>
