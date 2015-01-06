@@ -93,12 +93,17 @@ public class KeggCustomizer extends javax.swing.JPanel {
                 try {
                     ret.addAll(master.Pathways().getMatchingPathways(ecNumbers));
                 } catch (KEGGException ex) {
-                    Exceptions.printStackTrace(ex);
+                    if (ex.getCause() != null && ex.getCause() instanceof InterruptedException) {
+                        // interruption may occur when changing e.g. viewer type while 
+                        // the task is stil processing
+                    } else {
+                        Exceptions.printStackTrace(ex);
+                    }
                 }
             }
         });
         task.waitFinished();
-        
+
         setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         return ret;
     }
