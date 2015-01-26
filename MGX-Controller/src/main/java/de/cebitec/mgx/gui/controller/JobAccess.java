@@ -25,7 +25,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
-import org.openide.util.Exceptions;
 
 /**
  *
@@ -102,7 +101,7 @@ public class JobAccess implements JobAccessI {
     }
 
     @Override
-    public JobI create(ToolI tool, SeqRunI seqrun, Collection<JobParameterI> params) {
+    public JobI create(ToolI tool, SeqRunI seqrun, Collection<JobParameterI> params) throws MGXException {
 
         assert tool.getId() != Identifiable.INVALID_IDENTIFIER;
         assert seqrun.getId() != Identifiable.INVALID_IDENTIFIER;
@@ -115,32 +114,32 @@ public class JobAccess implements JobAccessI {
         job.setParameters(params);
 
         JobDTO dto = JobDTOFactory.getInstance().toDTO(job);
-        long id = Identifiable.INVALID_IDENTIFIER;
+        long id;
         try {
             id = getDTOmaster().Job().create(dto);
             job.setId(id);
             job.modified();
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
 
         return job;
     }
 
     @Override
-    public JobI fetch(long id) {
+    public JobI fetch(long id) throws MGXException {
         JobDTO h = null;
         try {
             h = getDTOmaster().Job().fetch(id);
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
         JobI j = JobDTOFactory.getInstance().toModel(getMaster(), h);
         return j;
     }
 
     @Override
-    public Iterator<JobI> fetchall() {
+    public Iterator<JobI> fetchall() throws MGXException {
         try {
             Iterator<JobDTO> fetchall = getDTOmaster().Job().fetchall();
             return new BaseIterator<JobDTO, JobI>(fetchall) {
@@ -152,18 +151,17 @@ public class JobAccess implements JobAccessI {
             };
 
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
-        return null;
     }
 
     @Override
-    public void update(JobI obj) {
+    public void update(JobI obj) throws MGXException {
         JobDTO dto = JobDTOFactory.getInstance().toDTO(obj);
         try {
             getDTOmaster().Job().update(dto);
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
         obj.modified();
     }
