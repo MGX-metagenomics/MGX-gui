@@ -18,7 +18,6 @@ import de.cebitec.mgx.gui.util.BaseIterator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.UUID;
-import org.openide.util.Exceptions;
 
 /**
  *
@@ -31,7 +30,7 @@ public class SampleAccess extends AccessBase<SampleI> implements SampleAccessI {
     }
 
     @Override
-    public SampleI create(HabitatI habitat, Date collectionDate, String material, double temperature, int volume, String volUnit) {
+    public SampleI create(HabitatI habitat, Date collectionDate, String material, double temperature, int volume, String volUnit) throws MGXException {
         Sample obj = new Sample(getMaster())
                 .setHabitatId(habitat.getId())
                 .setCollectionDate(collectionDate)
@@ -44,32 +43,32 @@ public class SampleAccess extends AccessBase<SampleI> implements SampleAccessI {
         try {
             id = getDTOmaster().Sample().create(dto);
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
         obj.setId(id);
         return obj;
     }
 
     @Override
-    public SampleI create(SampleI obj) {
+    public SampleI create(SampleI obj) throws MGXException {
         SampleDTO dto = SampleDTOFactory.getInstance().toDTO(obj);
         long id = Identifiable.INVALID_IDENTIFIER;
         try {
             id = getDTOmaster().Sample().create(dto);
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
         obj.setId(id);
         return obj;
     }
 
     @Override
-    public SampleI fetch(long id) {
+    public SampleI fetch(long id) throws MGXException {
         SampleDTO dto = null;
         try {
             dto = getDTOmaster().Sample().fetch(id);
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
         SampleI s = SampleDTOFactory.getInstance().toModel(getMaster(), dto);
         return s;
@@ -93,12 +92,12 @@ public class SampleAccess extends AccessBase<SampleI> implements SampleAccessI {
     }
 
     @Override
-    public void update(SampleI obj) {
+    public void update(SampleI obj) throws MGXException {
         SampleDTO dto = SampleDTOFactory.getInstance().toDTO(obj);
         try {
             getDTOmaster().Sample().update(dto);
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
         obj.modified();
     }
@@ -116,7 +115,7 @@ public class SampleAccess extends AccessBase<SampleI> implements SampleAccessI {
     }
 
     @Override
-    public Iterator<SampleI> ByHabitat(final HabitatI habitat) {
+    public Iterator<SampleI> ByHabitat(final HabitatI habitat) throws MGXException {
         try {
             Iterator<SampleDTO> fetchall = getDTOmaster().Sample().ByHabitat(habitat.getId());
             return new BaseIterator<SampleDTO, SampleI>(fetchall) {
@@ -128,10 +127,8 @@ public class SampleAccess extends AccessBase<SampleI> implements SampleAccessI {
             };
 
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
-
-        return null;
     }
 
 }

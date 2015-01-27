@@ -4,6 +4,7 @@ import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.SequenceAccessI;
 import de.cebitec.mgx.api.access.datatransfer.DownloadBaseI;
 import de.cebitec.mgx.api.access.datatransfer.UploadBaseI;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.SeqRunI;
@@ -29,7 +30,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import org.openide.util.Exceptions;
 
 /**
  *
@@ -42,11 +42,11 @@ public class SequenceAccess extends AccessBase<SequenceI> implements SequenceAcc
     }
 
     @Override
-    public void sendSequences(SeqRunI seqrun, SeqReaderI reader) {
+    public void sendSequences(SeqRunI seqrun, SeqReaderI reader) throws MGXException {
         try {
             getDTOmaster().Sequence().sendSequences(seqrun.getId(), reader);
         } catch (MGXServerException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
     }
 
@@ -62,11 +62,11 @@ public class SequenceAccess extends AccessBase<SequenceI> implements SequenceAcc
         return new ServerSeqRunDownloader(sd);
     }
 
-    public void downloadSequences(long seqrun_id, SeqWriterI writer, boolean closeWriter) {
+    public void downloadSequences(long seqrun_id, SeqWriterI writer, boolean closeWriter) throws MGXException {
         try {
             getDTOmaster().Sequence().downloadSequences(seqrun_id, writer, closeWriter);
         } catch (MGXServerException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
     }
 
@@ -81,7 +81,7 @@ public class SequenceAccess extends AccessBase<SequenceI> implements SequenceAcc
     }
 
     @Override
-    public void downloadSequencesForAttributes(Set<AttributeI> attrs, SeqWriterI writer, boolean closeWriter) {
+    public void downloadSequencesForAttributes(Set<AttributeI> attrs, SeqWriterI writer, boolean closeWriter) throws MGXException {
         try {
             Builder b = AttributeDTOList.newBuilder();
             for (AttributeI a : attrs) {
@@ -89,7 +89,7 @@ public class SequenceAccess extends AccessBase<SequenceI> implements SequenceAcc
             }
             getDTOmaster().Sequence().fetchAnnotatedReads(b.build(), writer, closeWriter);
         } catch (MGXServerException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
     }
 
@@ -99,18 +99,18 @@ public class SequenceAccess extends AccessBase<SequenceI> implements SequenceAcc
     }
 
     @Override
-    public SequenceI fetch(long id) {
+    public SequenceI fetch(long id) throws MGXException {
         SequenceDTO dto = null;
         try {
             dto = getDTOmaster().Sequence().fetch(id);
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
         return SequenceDTOFactory.getInstance().toModel(getMaster(), dto);
     }
 
     @Override
-    public void fetchSeqData(Iterable<SequenceI> seqs) {
+    public void fetchSeqData(Iterable<SequenceI> seqs) throws MGXException {
         Map<Long, SequenceI> idx = new HashMap<>();
         try {
             for (SequenceI s : seqs) {
@@ -139,7 +139,7 @@ public class SequenceAccess extends AccessBase<SequenceI> implements SequenceAcc
                 }
             }
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         } finally {
             idx.clear();
         }

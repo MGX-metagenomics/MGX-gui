@@ -21,7 +21,6 @@ import de.cebitec.mgx.gui.util.BaseIterator;
 import java.io.File;
 import java.util.Iterator;
 import java.util.UUID;
-import org.openide.util.Exceptions;
 
 /**
  *
@@ -38,25 +37,25 @@ public class ReferenceAccess implements ReferenceAccessI {
     }
 
     @Override
-    public MGXReferenceI create(MGXReferenceI obj) {
+    public MGXReferenceI create(MGXReferenceI obj) throws MGXException {
         ReferenceDTO dto = ReferenceDTOFactory.getInstance().toDTO(obj);
         long id = Identifiable.INVALID_IDENTIFIER;
         try {
             id = dtomaster.Reference().create(dto);
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
         obj.setId(id);
         return obj;
     }
 
     @Override
-    public MGXReferenceI fetch(long id) {
+    public MGXReferenceI fetch(long id) throws MGXException {
         ReferenceDTO dto = null;
         try {
             dto = dtomaster.Reference().fetch(id);
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
         MGXReferenceI ret = ReferenceDTOFactory.getInstance().toModel(master, dto);
         return ret;
@@ -91,18 +90,18 @@ public class ReferenceAccess implements ReferenceAccessI {
     }
 
     @Override
-    public void update(MGXReferenceI obj) {
+    public void update(MGXReferenceI obj) throws MGXException {
         ReferenceDTO dto = ReferenceDTOFactory.getInstance().toDTO(obj);
         try {
             dtomaster.Reference().update(dto);
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
         obj.modified();
     }
 
     @Override
-    public Iterator<RegionI> byReferenceInterval(MGXReferenceI ref, int from, int to) {
+    public Iterator<RegionI> byReferenceInterval(MGXReferenceI ref, int from, int to) throws MGXException {
         Iterator<RegionDTO> fetchall;
         try {
             fetchall = dtomaster.Reference().byReferenceInterval(ref.getId(), from, to);
@@ -114,23 +113,21 @@ public class ReferenceAccess implements ReferenceAccessI {
                 }
             };
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
-        return null;
     }
 
     @Override
-    public String getSequence(final MGXReferenceI ref, int from, int to) {
+    public String getSequence(final MGXReferenceI ref, int from, int to) throws MGXException {
         try {
             return dtomaster.Reference().getSequence(ref.getId(), from, to);
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
-        return null;
     }
 
     @Override
-    public Iterator<MGXReferenceI> listGlobalReferences() {
+    public Iterator<MGXReferenceI> listGlobalReferences() throws MGXException {
         Iterator<ReferenceDTO> iter;
         try {
             iter = dtomaster.Reference().listGlobalReferences();
@@ -142,20 +139,18 @@ public class ReferenceAccess implements ReferenceAccessI {
                 }
             };
         } catch (MGXServerException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
-        return null;
     }
 
     @Override
-    public long installGlobalReference(long id) {
+    public long installGlobalReference(long id) throws MGXException {
         assert id != Identifiable.INVALID_IDENTIFIER;
         try {
             return dtomaster.Reference().installGlobalReference(id);
         } catch (MGXServerException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
-        return Identifiable.INVALID_IDENTIFIER;
     }
 
     @Override
