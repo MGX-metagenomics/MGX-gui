@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.OutputStream;
 import java.util.Iterator;
 import java.util.UUID;
-import org.openide.util.Exceptions;
 
 /**
  *

@@ -16,7 +16,6 @@ import de.cebitec.mgx.gui.dtoconversion.HabitatDTOFactory;
 import de.cebitec.mgx.gui.util.BaseIterator;
 import java.util.Iterator;
 import java.util.UUID;
-import org.openide.util.Exceptions;
 
 /**
  *
@@ -29,7 +28,7 @@ public class HabitatAccess extends AccessBase<HabitatI> implements HabitatAccess
     }
 
     @Override
-    public HabitatI create(String name, double latitude, double longitude, int altitude, String biome, String description) {
+    public HabitatI create(String name, double latitude, double longitude, int altitude, String biome, String description) throws MGXException {
         Habitat obj = new Habitat(getMaster())
                 .setName(name)
                 .setLatitude(latitude)
@@ -41,32 +40,32 @@ public class HabitatAccess extends AccessBase<HabitatI> implements HabitatAccess
         try {
             id = getDTOmaster().Habitat().create(dto);
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
         obj.setId(id);
         return obj;
     }
 
     @Override
-    public HabitatI create(HabitatI obj) {
+    public HabitatI create(HabitatI obj) throws MGXException {
         HabitatDTO dto = HabitatDTOFactory.getInstance().toDTO(obj);
         long id = Identifiable.INVALID_IDENTIFIER;
         try {
             id = getDTOmaster().Habitat().create(dto);
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
         obj.setId(id);
         return obj;
     }
 
     @Override
-    public HabitatI fetch(long id) {
+    public HabitatI fetch(long id) throws MGXException {
         HabitatDTO h = null;
         try {
             h = getDTOmaster().Habitat().fetch(id);
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
         Habitat ret = HabitatDTOFactory.getInstance().toModel(getMaster(), h);
         return ret;

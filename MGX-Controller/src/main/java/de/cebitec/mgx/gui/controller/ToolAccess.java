@@ -22,7 +22,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
-import org.openide.util.Exceptions;
 
 /**
  *
@@ -86,33 +85,33 @@ public class ToolAccess extends AccessBase<ToolI> implements ToolAccessI {
             }
 
         } catch (MGXServerException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
         return ret;
     }
 
     @Override
-    public ToolI create(ToolI obj) {
+    public ToolI create(ToolI obj) throws MGXException {
         assert obj.getId() == Identifiable.INVALID_IDENTIFIER;
         ToolDTO dto = ToolDTOFactory.getInstance().toDTO(obj);
         long id = Identifiable.INVALID_IDENTIFIER;
         try {
             id = getDTOmaster().Tool().create(dto);
         } catch (MGXClientException | MGXServerException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
         obj.setId(id);
         return obj;
     }
 
     @Override
-    public ToolI fetch(long id) {
+    public ToolI fetch(long id) throws MGXException {
         ToolI t = null;
         try {
             ToolDTO dto = getDTOmaster().Tool().fetch(id);
             t = ToolDTOFactory.getInstance().toModel(getMaster(), dto);
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
         return t;
     }
@@ -149,14 +148,14 @@ public class ToolAccess extends AccessBase<ToolI> implements ToolAccessI {
     }
 
     @Override
-    public ToolI ByJob(JobI job) {
+    public ToolI ByJob(JobI job) throws MGXException {
         ToolI t = null;
         try {
             ToolDTO dto = getDTOmaster().Tool().ByJob(job.getId());
             t = ToolDTOFactory.getInstance().toModel(getMaster(), dto);
             job.setTool(t);
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
         return t;
     }

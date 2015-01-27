@@ -19,7 +19,6 @@ import de.cebitec.mgx.gui.dtoconversion.MappingDTOFactory;
 import de.cebitec.mgx.gui.util.BaseIterator;
 import java.util.Iterator;
 import java.util.UUID;
-import org.openide.util.Exceptions;
 
 /**
  *
@@ -41,12 +40,12 @@ public class MappingAccess extends MappingAccessI {
     }
 
     @Override
-    public MappingI fetch(long id) {
+    public MappingI fetch(long id) throws MGXException {
         MappingDTO dto = null;
         try {
             dto = dtomaster.Mapping().fetch(id);
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
         MappingI ret = MappingDTOFactory.getInstance().toModel(master, dto);
         return ret;
@@ -69,7 +68,7 @@ public class MappingAccess extends MappingAccessI {
     }
 
     @Override
-    public Iterator<MappingI> BySeqRun(SeqRunI run) {
+    public Iterator<MappingI> BySeqRun(SeqRunI run) throws MGXException {
         try {
             Iterator<MappingDTO> fetchall = dtomaster.Mapping().BySeqRun(run.getId());
             return new BaseIterator<MappingDTO, MappingI>(fetchall) {
@@ -80,13 +79,12 @@ public class MappingAccess extends MappingAccessI {
                 }
             };
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
-        return null;
     }
 
     @Override
-    public Iterator<MappingI> ByReference(MGXReferenceI ref) {
+    public Iterator<MappingI> ByReference(MGXReferenceI ref) throws MGXException {
         try {
             Iterator<MappingDTO> fetchall = dtomaster.Mapping().ByReference(ref.getId());
             return new BaseIterator<MappingDTO, MappingI>(fetchall) {
@@ -97,9 +95,8 @@ public class MappingAccess extends MappingAccessI {
                 }
             };
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+           throw new MGXException(ex);
         }
-        return null;
     }
 
     @Override
@@ -118,36 +115,34 @@ public class MappingAccess extends MappingAccessI {
     }
 
     @Override
-    public UUID openMapping(long id) {
+    public UUID openMapping(long id) throws MGXException {
         try {
             return dtomaster.Mapping().openMapping(id);
         } catch (MGXServerException ex) {
-            Exceptions.printStackTrace(ex);
+           throw new MGXException(ex);
         }
-        return null;
     }
 
     @Override
-    public void closeMapping(UUID uuid) {
+    public void closeMapping(UUID uuid) throws MGXException {
         try {
             dtomaster.Mapping().closeMapping(uuid);
         } catch (MGXServerException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
     }
     
     @Override
-    public long getMaxCoverage(UUID uuid) {
+    public long getMaxCoverage(UUID uuid) throws MGXException {
         try {
             return dtomaster.Mapping().getMaxCoverage(uuid);
         } catch (MGXServerException ex) {
-            Exceptions.printStackTrace(ex);
+          throw new MGXException(ex);
         }
-        return -1;
     }
 
     @Override
-    public Iterator<MappedSequenceI> byReferenceInterval(UUID uuid, int from, int to) {
+    public Iterator<MappedSequenceI> byReferenceInterval(UUID uuid, int from, int to) throws MGXException {
         try {
             Iterator<MappedSequenceDTO> mapped = dtomaster.Mapping().byReferenceInterval(uuid, from, to);
             return new BaseIterator<MappedSequenceDTO, MappedSequenceI>(mapped) {
@@ -158,9 +153,7 @@ public class MappingAccess extends MappingAccessI {
                 }
             };
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+           throw new MGXException(ex);
         }
-        return null;
-
     }
 }

@@ -16,7 +16,6 @@ import de.cebitec.mgx.gui.datamodel.DNAExtract;
 import de.cebitec.mgx.gui.dtoconversion.DNAExtractDTOFactory;
 import java.util.Iterator;
 import java.util.UUID;
-import org.openide.util.Exceptions;
 
 /**
  *
@@ -52,13 +51,13 @@ public class DNAExtractAccess extends AccessBase<DNAExtractI> implements DNAExtr
     }
 
     @Override
-    public DNAExtractI create(DNAExtractI obj) {
+    public DNAExtractI create(DNAExtractI obj) throws MGXException {
         DNAExtractDTO dto = DNAExtractDTOFactory.getInstance().toDTO(obj);
         long id = Identifiable.INVALID_IDENTIFIER;
         try {
             id = getDTOmaster().DNAExtract().create(dto);
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
         obj.setId(id);
         return obj;
@@ -70,7 +69,6 @@ public class DNAExtractAccess extends AccessBase<DNAExtractI> implements DNAExtr
         try {
             dto = getDTOmaster().DNAExtract().fetch(id);
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
             throw new MGXException(ex);
         }
         DNAExtractI ret = DNAExtractDTOFactory.getInstance().toModel(getMaster(), dto);
@@ -129,7 +127,7 @@ public class DNAExtractAccess extends AccessBase<DNAExtractI> implements DNAExtr
     }
 
     @Override
-    public Iterator<DNAExtractI> BySample(final SampleI sample) {
+    public Iterator<DNAExtractI> BySample(final SampleI sample) throws MGXException {
 
         try {
             return new Iterator<DNAExtractI>() {
@@ -152,9 +150,8 @@ public class DNAExtractAccess extends AccessBase<DNAExtractI> implements DNAExtr
                 }
             };
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
-        return null;
     }
 
 }

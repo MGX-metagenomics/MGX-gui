@@ -13,7 +13,6 @@ import de.cebitec.mgx.dto.dto.TaskDTO;
 import de.cebitec.mgx.gui.datamodel.misc.Task;
 import de.cebitec.mgx.gui.dtoconversion.TaskDTOFactory;
 import java.util.UUID;
-import org.openide.util.Exceptions;
 
 /**
  *

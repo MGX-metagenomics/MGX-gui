@@ -12,7 +12,6 @@ import de.cebitec.mgx.gui.datamodel.misc.Task;
 import de.cebitec.mgx.gui.dtoconversion.AttributeTypeDTOFactory;
 import de.cebitec.mgx.gui.util.BaseIterator;
 import java.util.Iterator;
-import org.openide.util.Exceptions;
 
 /**
  *
@@ -30,12 +29,12 @@ public class AttributeTypeAccess extends AccessBase<AttributeTypeI> {
     }
 
     @Override
-    public AttributeTypeI fetch(long id) {
+    public AttributeTypeI fetch(long id) throws MGXException {
         AttributeTypeDTO h = null;
         try {
             h = getDTOmaster().AttributeType().fetch(id);
         } catch (MGXServerException | MGXClientException ex) {
-            Exceptions.printStackTrace(ex);
+            throw new MGXException(ex);
         }
         return AttributeTypeDTOFactory.getInstance().toModel(getMaster(), h);
     }
