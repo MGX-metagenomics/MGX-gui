@@ -4,8 +4,6 @@ import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.SequenceI;
 import de.cebitec.mgx.gui.controller.MGXMaster;
-import de.cebitec.mgx.gui.datamodel.Attribute;
-import de.cebitec.mgx.gui.datamodel.Sequence;
 import de.cebitec.mgx.sequence.DNASequenceI;
 import de.cebitec.mgx.sequence.SeqWriterI;
 import java.io.IOException;
@@ -94,7 +92,7 @@ public class DownloadTest {
 //        assertTrue(closed.get());
 //    }
     @Test
-    public void testFetchSequence() {
+    public void testFetchSequence() throws MGXException {
         System.out.println("testFetchSequence");
         MGXMaster master = TestMaster.getRO();
         SequenceI seq = master.Sequence().fetch(1);

@@ -67,7 +67,7 @@ public class CacheFactory {
         final int refLength = ref.getLength() - 1;
         CacheLoader<Interval, SortedSet<MappedSequenceI>> loader = new CacheLoader<Interval, SortedSet<MappedSequenceI>>() {
             @Override
-            public SortedSet<MappedSequenceI> load(Interval k) {
+            public SortedSet<MappedSequenceI> load(Interval k) throws MGXException {
                 Iterator<MappedSequenceI> iter = master.Mapping().byReferenceInterval(uuid, k.getFrom(), Math.min(k.getTo(), refLength));
                 SortedSet<MappedSequenceI> ret = new TreeSet<>();
                 while (iter.hasNext()) {

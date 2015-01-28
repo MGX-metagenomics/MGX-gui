@@ -1,10 +1,8 @@
 package de.cebitec.mgx.gui.controller;
 
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.HabitatI;
 import de.cebitec.mgx.api.model.SampleI;
-import de.cebitec.mgx.gui.datamodel.Habitat;
-import de.cebitec.mgx.gui.datamodel.Sample;
-import de.cebitec.mgx.gui.datamodel.misc.Task;
 import de.cebitec.mgx.gui.util.TestMaster;
 import java.util.Iterator;
 import org.junit.After;
@@ -40,7 +38,7 @@ public class SampleAccessTest {
     }
 
     @Test
-    public void testFetch() {
+    public void testFetch() throws MGXException {
         System.out.println("fetch");
         MGXMaster master = TestMaster.getRO();
         SampleI s = master.Sample().fetch(1);
@@ -49,7 +47,7 @@ public class SampleAccessTest {
     }
 
     @Test
-    public void testByHabitat() {
+    public void testByHabitat() throws MGXException {
         System.out.println("ByHabitat");
         MGXMaster master = TestMaster.getRO();
         HabitatI h = master.Habitat().fetch(1);
