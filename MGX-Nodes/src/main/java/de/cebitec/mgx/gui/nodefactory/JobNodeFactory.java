@@ -6,10 +6,10 @@ import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.ToolI;
 import de.cebitec.mgx.gui.nodes.JobNode;
-import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -37,7 +37,6 @@ public class JobNodeFactory extends ChildFactory<JobI> implements NodeListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 //refreshChildren();
-                System.err.println("Timer on EDT? " + EventQueue.isDispatchThread());
                 refresh(false);
             }
         });
@@ -47,7 +46,7 @@ public class JobNodeFactory extends ChildFactory<JobI> implements NodeListener {
 
     @Override
     protected boolean createKeys(List<JobI> toPopulate) {
-        System.err.println("createKeys() on EDT? " + EventQueue.isDispatchThread());
+        List<JobI> tmp = new ArrayList<>();
         try {
             Iterator<SeqRunI> iter = master.SeqRun().fetchall();
             while (iter != null && iter.hasNext()) {
@@ -55,14 +54,14 @@ public class JobNodeFactory extends ChildFactory<JobI> implements NodeListener {
                 for (JobI j : master.Job().BySeqRun(sr)) {
                     ToolI t = master.Tool().ByJob(j);
                     j.setTool(t);
-                    toPopulate.add(j);
+                    tmp.add(j);
                 }
             }
+            toPopulate.addAll(tmp);
             Collections.sort(toPopulate);
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);
         }
-
         return true;
 
     }
@@ -89,9 +88,6 @@ public class JobNodeFactory extends ChildFactory<JobI> implements NodeListener {
         refresh(true);
     }
 
-//    public void refreshChildren() {
-//        refresh(true);
-//    }
     @Override
     public void childrenAdded(NodeMemberEvent ev) {
         refresh(true);
@@ -107,7 +103,8 @@ public class JobNodeFactory extends ChildFactory<JobI> implements NodeListener {
     }
 
     @Override
-    public void nodeDestroyed(NodeEvent ev) {
+    public void nodeDestroyed(NodeEvent ev) { 
+        ev.getNode().removeNodeListener(this);
         refresh(true);
     }
 
@@ -117,7 +114,6 @@ public class JobNodeFactory extends ChildFactory<JobI> implements NodeListener {
     }
     
     public void destroy() {
-        System.err.println("stopping timer");
         timer.stop();
     }
 }
