@@ -10,10 +10,9 @@ import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.text.JTextComponent;
 import org.openide.util.Exceptions;
 
 /**
@@ -35,6 +34,7 @@ public class NewToolPanel extends javax.swing.JPanel implements DocumentListener
         author.getDocument().addDocumentListener(this);
         description.getDocument().addDocumentListener(this);
         version.getDocument().addDocumentListener(this);
+        uriField.getDocument().addDocumentListener(this);
     }
 
     /**
@@ -58,6 +58,8 @@ public class NewToolPanel extends javax.swing.JPanel implements DocumentListener
         jLabel5 = new javax.swing.JLabel();
         xml = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
+        jLabel6 = new javax.swing.JLabel();
+        uriField = new javax.swing.JTextField();
 
         org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(NewToolPanel.class, "NewToolPanel.jLabel1.text")); // NOI18N
 
@@ -89,6 +91,10 @@ public class NewToolPanel extends javax.swing.JPanel implements DocumentListener
             }
         });
 
+        org.openide.awt.Mnemonics.setLocalizedText(jLabel6, org.openide.util.NbBundle.getMessage(NewToolPanel.class, "NewToolPanel.jLabel6.text")); // NOI18N
+
+        uriField.setText(org.openide.util.NbBundle.getMessage(NewToolPanel.class, "NewToolPanel.uriField.text")); // NOI18N
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -109,13 +115,20 @@ public class NewToolPanel extends javax.swing.JPanel implements DocumentListener
                         .addComponent(jLabel4)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(version, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jLabel3)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel5)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel3)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel5)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(xml, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jButton1)))
+                        .addGap(0, 6, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel6)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(xml, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jButton1)))
+                        .addComponent(uriField)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -137,7 +150,11 @@ public class NewToolPanel extends javax.swing.JPanel implements DocumentListener
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
                     .addComponent(version, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel6)
+                    .addComponent(uriField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(17, 17, 17)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
                     .addComponent(xml, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -160,8 +177,10 @@ public class NewToolPanel extends javax.swing.JPanel implements DocumentListener
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField toolName;
+    private javax.swing.JTextField uriField;
     private javax.swing.JTextField version;
     private javax.swing.JTextField xml;
     // End of variables declaration//GEN-END:variables
@@ -182,6 +201,10 @@ public class NewToolPanel extends javax.swing.JPanel implements DocumentListener
     }
 
     private void updated() {
+        if (Empty(toolName) || Empty(author) || Empty(description) || Empty(xml)) {
+            return;
+        }
+
         ToolI t = getTool();
         if (t != null) {
             firePropertyChange(TOOL_DEFINED, null, t);
@@ -197,6 +220,7 @@ public class NewToolPanel extends javax.swing.JPanel implements DocumentListener
         tool.setName(toolName.getText().trim());
         tool.setAuthor(author.getText().trim());
         tool.setDescription(description.getText().trim());
+        tool.setUrl(uriField.getText().trim());
         try {
             String xmlData = readFile(xml.getText());
             tool.setXMLFile(xmlData);
@@ -212,29 +236,22 @@ public class NewToolPanel extends javax.swing.JPanel implements DocumentListener
         return version.getText().trim();
     }
 
-    private boolean Empty(JTextField f) {
-        return "".equals(f.getText().trim());
-    }
-
-    private boolean Empty(JTextArea f) {
+    private boolean Empty(JTextComponent f) {
         return "".equals(f.getText().trim());
     }
 
     private static String readFile(String path) throws IOException {
         StringBuilder content = new StringBuilder();
 
-        try {
-            FileInputStream fis = new FileInputStream(path);
-            try (DataInputStream in = new DataInputStream(fis)) {
-                BufferedReader br = new BufferedReader(new InputStreamReader(in));
-                String strLine;
-                while ((strLine = br.readLine()) != null) {
-                    content.append(strLine);
-                }
+        FileInputStream fis = new FileInputStream(path);
+        try (DataInputStream in = new DataInputStream(fis)) {
+            BufferedReader br = new BufferedReader(new InputStreamReader(in));
+            String strLine;
+            while ((strLine = br.readLine()) != null) {
+                content.append(strLine);
             }
-        } catch (IOException e) {
-            throw e;
         }
+
         return content.toString();
     }
 }
