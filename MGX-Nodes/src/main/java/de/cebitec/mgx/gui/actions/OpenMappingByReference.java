@@ -6,6 +6,7 @@
 package de.cebitec.mgx.gui.actions;
 
 import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.api.model.MappingI;
@@ -41,8 +42,13 @@ public class OpenMappingByReference extends OpenMappingBase {
 
             @Override
             public void run() {
-                Iterator<MappingI> mappings = ref.getMaster().Mapping().ByReference(ref);
-                hasData = mappings.hasNext();
+                Iterator<MappingI> mappings = null;
+                try {
+                    mappings = ref.getMaster().Mapping().ByReference(ref);
+                } catch (MGXException ex) {
+                    Exceptions.printStackTrace(ex);
+                }
+                hasData = mappings != null && mappings.hasNext();
             }
         });
     }

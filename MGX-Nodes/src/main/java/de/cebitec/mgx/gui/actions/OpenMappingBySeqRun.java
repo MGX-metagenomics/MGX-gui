@@ -6,6 +6,7 @@
 package de.cebitec.mgx.gui.actions;
 
 import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.api.model.MappingI;
@@ -43,7 +44,11 @@ public class OpenMappingBySeqRun extends OpenMappingBase {
 
             @Override
             public void run() {
-                mappings = run.getMaster().Mapping().BySeqRun(run);
+                try {
+                    mappings = run.getMaster().Mapping().BySeqRun(run);
+                } catch (MGXException ex) {
+                    Exceptions.printStackTrace(ex);
+                }
                 hasData = mappings.hasNext();
             }
         });

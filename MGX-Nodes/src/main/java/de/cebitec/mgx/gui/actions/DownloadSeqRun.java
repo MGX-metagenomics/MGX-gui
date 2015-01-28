@@ -3,6 +3,7 @@ package de.cebitec.mgx.gui.actions;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.datatransfer.DownloadBaseI;
 import de.cebitec.mgx.api.access.datatransfer.TransferBaseI;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.groups.FileType;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.swingutils.NonEDT;
@@ -173,7 +174,7 @@ public class DownloadSeqRun extends AbstractAction {
                     TaskManager.getInstance().addTask(run);
                 }
             });
-        } catch (SeqStoreException ex) {
+        } catch (SeqStoreException | MGXException ex) {
             Exceptions.printStackTrace(ex);
         }
     }

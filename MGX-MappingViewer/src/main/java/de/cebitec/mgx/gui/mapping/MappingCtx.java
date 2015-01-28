@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.mapping;
 
 import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.api.model.MappedSequenceI;
@@ -18,6 +19,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.UUID;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -35,7 +37,7 @@ public class MappingCtx {
     private UUID sessionUUID = null;
     private long maxCoverage = -1;
 
-    public MappingCtx(MappingI m, MGXReferenceI ref, JobI job, SeqRunI run) {
+    public MappingCtx(MappingI m, MGXReferenceI ref, JobI job, SeqRunI run) throws MGXException {
         assert m.getReferenceID() == ref.getId();
         this.m = m;
         this.ref = ref;
@@ -154,7 +156,11 @@ public class MappingCtx {
 
                         @Override
                         public void run() {
-                            maxCoverage = master.Mapping().getMaxCoverage(sessionUUID);
+                            try {
+                                maxCoverage = master.Mapping().getMaxCoverage(sessionUUID);
+                            } catch (MGXException ex) {
+                                Exceptions.printStackTrace(ex);
+                            }
                         }
                     });
                     //maxCoverage = master.Mapping().getMaxCoverage(sessionUUID);

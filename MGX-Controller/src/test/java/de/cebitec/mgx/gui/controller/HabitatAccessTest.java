@@ -6,8 +6,6 @@
 package de.cebitec.mgx.gui.controller;
 
 import de.cebitec.mgx.api.model.HabitatI;
-import de.cebitec.mgx.gui.datamodel.Habitat;
-import de.cebitec.mgx.gui.datamodel.misc.Task;
 import de.cebitec.mgx.gui.util.TestMaster;
 import java.util.Iterator;
 import org.junit.After;
@@ -43,7 +41,7 @@ public class HabitatAccessTest {
     }
     
     @Test
-    public void testFetch() {
+    public void testFetch() throws Exception {
         System.out.println("fetch");
         MGXMaster master = TestMaster.getRO();
         HabitatI h = master.Habitat().fetch(1);
