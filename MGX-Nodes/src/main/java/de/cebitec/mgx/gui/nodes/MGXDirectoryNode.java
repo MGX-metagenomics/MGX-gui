@@ -23,8 +23,7 @@ public class MGXDirectoryNode extends MGXNodeBase<MGXFileI, MGXDirectoryNode> {
     }
 
     private MGXDirectoryNode(MGXFileI f, MGXMasterI m, FileNodeFactory fnf) {
-        super(Children.create(fnf, true), Lookups.fixed(m, f), f);
-        master = m;
+        super(m, Children.create(fnf, true), Lookups.fixed(m, f), f);
         setDisplayName(f.getName());
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/Directory.png");
         setShortDescription(f.getName());

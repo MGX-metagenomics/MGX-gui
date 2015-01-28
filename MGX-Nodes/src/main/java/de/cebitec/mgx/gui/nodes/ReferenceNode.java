@@ -30,8 +30,7 @@ public class ReferenceNode extends MGXNodeBase<MGXReferenceI, ReferenceNode> {
     }
 
     private ReferenceNode(MGXReferenceI ref, MGXMasterI m) {
-        super(Children.LEAF, Lookups.fixed(m, ref), ref);
-        master = m;
+        super(m, Children.LEAF, Lookups.fixed(m, ref), ref);
         setDisplayName(ref.getName());
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/Habitat.png");
         setShortDescription(getToolTipText(ref));

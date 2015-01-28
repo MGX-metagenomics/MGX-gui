@@ -31,8 +31,7 @@ public class ProjectDataNode extends MGXNodeBase<MGXMasterI, ProjectDataNode> {
     }
 
     private ProjectDataNode(MGXMasterI m, HabitatNodeFactory hnf) {
-        super(Children.create(hnf, true), Lookups.fixed(m), m);
-        master = m;
+        super(m, Children.create(hnf, true), Lookups.fixed(m), m);
         this.hnf = hnf;
         setDisplayName("Project Data");
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/ProjectData.png");

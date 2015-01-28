@@ -30,13 +30,12 @@ public class ProjectReferencesNode extends MGXNodeBase<MGXMasterI, ProjectRefere
 
     public ProjectReferencesNode(final MGXMasterI m) {
         this(new ReferenceNodeFactory(m), m);
-        master = m;
         setDisplayName("Reference sequences");
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/ProjectFiles.png");
     }
 
     private ProjectReferencesNode(ReferenceNodeFactory rnf, MGXMasterI m) {
-        super(Children.create(rnf, true), Lookups.fixed(m), m);
+        super(m, Children.create(rnf, true), Lookups.fixed(m), m);
         nf = rnf;
     }
 

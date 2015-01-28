@@ -18,13 +18,18 @@ import org.openide.util.Lookup;
  */
 public abstract class MGXNodeBase<T extends ModelBase, U extends MGXNodeBase> extends AbstractNode implements PropertyChangeListener, Comparable<U> {
 
-    protected MGXMasterI master;
-    protected T content;
+    private final MGXMasterI master;
+    private final T content;
 
-    protected MGXNodeBase(Children children, Lookup lookup, T data) {
+    protected MGXNodeBase(MGXMasterI master, Children children, Lookup lookup, T data) {
         super(children, lookup);
+        this.master = master;
         content = data;
         content.addPropertyChangeListener(this);
+    }
+    
+    protected MGXMasterI getMaster() {
+        return master;
     }
 
     public T getContent() {
@@ -47,7 +52,7 @@ public abstract class MGXNodeBase<T extends ModelBase, U extends MGXNodeBase> ex
                 updateModified();
                 break;
             default:
-                System.err.println("unhandled event: " + evt.getPropertyName());
+                System.err.println("MGXNodeBase got unhandled event: " + evt.getPropertyName());
                 assert false;
         }
     }
@@ -66,6 +71,6 @@ public abstract class MGXNodeBase<T extends ModelBase, U extends MGXNodeBase> ex
 
     @Override
     public int compareTo(U o) {
-        return content.compareTo(o.content);
+        return content.compareTo(o.getContent());
     }
 }
