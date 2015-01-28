@@ -10,6 +10,7 @@ import de.cebitec.mgx.api.model.JobState;
 import static de.cebitec.mgx.api.model.JobState.FAILED;
 import static de.cebitec.mgx.api.model.JobState.FINISHED;
 import static de.cebitec.mgx.api.model.JobState.RUNNING;
+import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.api.model.ToolI;
 import de.cebitec.mgx.gui.controller.RBAC;
 import de.cebitec.mgx.gui.swingutils.NonEDT;
@@ -70,11 +71,23 @@ public class JobNode extends MGXNodeBase<JobI, JobNode> {
         if (job.getParameters() == null || job.getParameters().isEmpty()) {
             return "";
         }
+        
+        // FIXME: handle MGXFile
         StringBuilder sb = new StringBuilder();
         for (JobParameterI jp : job.getParameters()) {
+            //jp.getMaster().log(Level.INFO, jp.getType());
+            String paramValue = jp.getParameterValue();
+            if (jp.getType().equals("ConfigMGXReference")) {
+                try {
+                    MGXReferenceI reference = job.getMaster().Reference().fetch(Long.parseLong(jp.getParameterValue()));
+                    paramValue = reference.getName();
+                } catch (MGXException ex) {
+                    Exceptions.printStackTrace(ex);
+                }
+            }
             sb.append(jp.getParameterName())
                     .append(": ")
-                    .append(jp.getParameterValue())
+                    .append(paramValue)
                     .append("<br>");
         }
         return sb.toString();
@@ -82,7 +95,7 @@ public class JobNode extends MGXNodeBase<JobI, JobNode> {
 
     @Override
     public Action[] getActions(boolean context) {
-        List<Action> actions = new ArrayList<>();
+        List<Action> actions = new ArrayList<>(4);
         actions.add(new DeleteJob());
         actions.add(new GetError());
         actions.add(new ResubmitAction());
