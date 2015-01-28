@@ -18,13 +18,12 @@ public class ProjectNode extends MGXNodeBase<MGXMasterI, ProjectNode> {
 
     public ProjectNode(MGXMasterI m, MembershipI mbr) {
         this(m, new ProjectStructureNodeFactory(m));
-        master = m;
         String name = new StringBuilder(mbr.getProject().getName()).append(" (").append(mbr.getRole().getName()).append(")").toString();
         setDisplayName(name);
     }
 
     private ProjectNode(MGXMasterI m, ProjectStructureNodeFactory nf) {
-        super(Children.create(nf, false), Lookups.fixed(m), m);
+        super(m, Children.create(nf, false), Lookups.fixed(m), m);
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/mgx.png");
         //this.nf = nf;
     }

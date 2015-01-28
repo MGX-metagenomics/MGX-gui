@@ -12,8 +12,7 @@ import org.openide.util.lookup.Lookups;
 public class ProjectToolsNode extends MGXNodeBase<MGXMasterI, ProjectToolsNode> {
 
     public ProjectToolsNode(MGXMasterI m) {
-        super(Children.LEAF, Lookups.singleton(m), m);
-        master = m;
+        super(m, Children.LEAF, Lookups.singleton(m), m);
         setDisplayName("Tools");
     }
 

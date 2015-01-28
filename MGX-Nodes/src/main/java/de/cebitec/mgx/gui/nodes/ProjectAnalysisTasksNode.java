@@ -16,11 +16,10 @@ public class ProjectAnalysisTasksNode extends MGXNodeBase<MGXMasterI, ProjectAna
 
     public ProjectAnalysisTasksNode(MGXMasterI m) {
         this(m, new TaskStructureNodeFactory(m));
-        master = m;
     }
 
     private ProjectAnalysisTasksNode(MGXMasterI m, TaskStructureNodeFactory nf) {
-        super(Children.create(nf, false), Lookups.fixed(m), m);
+        super(m, Children.create(nf, false), Lookups.fixed(m), m);
         this.nf = nf;
         setDisplayName("Data Analysis");
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/AnalysisTasks.png");

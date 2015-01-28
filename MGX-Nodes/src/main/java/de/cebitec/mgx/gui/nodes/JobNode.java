@@ -46,7 +46,7 @@ public class JobNode extends MGXNodeBase<JobI, JobNode> {
     //private final Job job;
 
     public JobNode(MGXMasterI m, JobI job, Children c) {
-        super(Children.LEAF, Lookups.fixed(m, job), job);
+        super(m, Children.LEAF, Lookups.fixed(m, job), job);
         ToolI tool = job.getTool();
         setDisplayName(tool.getName());
         String shortDesc = new StringBuilder("<html><b>")

@@ -46,10 +46,9 @@ public class SeqRunNode extends MGXNodeBase<SeqRunI, SeqRunNode> {
     //public static final DataFlavor DATA_FLAVOR = new DataFlavor(SeqRunNode.class, "SeqRunNode");
 
     public SeqRunNode(MGXMasterI m, SeqRunI s, Children children) {
-        super(children, Lookups.fixed(m, s), s);
+        super(m, children, Lookups.fixed(m, s), s);
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/SeqRun.png");
         setShortDescription(getToolTipText(s));
-        master = m;
         setDisplayName(s.getName());
     }
 
@@ -99,7 +98,7 @@ public class SeqRunNode extends MGXNodeBase<SeqRunI, SeqRunNode> {
                 }
             });
 
-            AnalysisWizardIterator iter = new AnalysisWizardIterator(master, references);
+            AnalysisWizardIterator iter = new AnalysisWizardIterator(getMaster(), references);
             WizardDescriptor wiz = new WizardDescriptor(iter);
             iter.setWizardDescriptor(wiz);
             //             // {0} will be replaced by WizardDescriptor.Panel.getComponent().getName()
@@ -120,14 +119,14 @@ public class SeqRunNode extends MGXNodeBase<SeqRunI, SeqRunNode> {
 
                             switch (tooltype) {
                                 case GLOBAL:
-                                    long projToolId = master.Tool().installTool(tool.getId());
-                                    selectedTool = master.Tool().fetch(projToolId);
+                                    long projToolId = getMaster().Tool().installTool(tool.getId());
+                                    selectedTool = getMaster().Tool().fetch(projToolId);
                                     break;
                                 case PROJECT:
                                     selectedTool = tool;
                                     break;
                                 case USER_PROVIDED:
-                                    master.Tool().create(tool);
+                                    getMaster().Tool().create(tool);
                                     selectedTool = tool;
                                     break;
                                 default:
@@ -135,12 +134,12 @@ public class SeqRunNode extends MGXNodeBase<SeqRunI, SeqRunNode> {
                             }
 
                             setStatus("Creating job..");
-                            JobI job = master.Job().create(selectedTool, getContent(), params);
+                            JobI job = getMaster().Job().create(selectedTool, getContent(), params);
 
                             setStatus("Validating configuration..");
-                            master.Job().verify(job);
+                            getMaster().Job().verify(job);
                             setStatus("Submitting..");
-                            return master.Job().execute(job);
+                            return getMaster().Job().execute(job);
                         } catch (MGXException ex) {
                             setStatus(ex.getMessage());
                             failed();
