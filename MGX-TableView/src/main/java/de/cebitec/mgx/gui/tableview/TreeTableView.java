@@ -91,9 +91,9 @@ public class TreeTableView extends ViewerI<TreeI<Long>> {
                 return false;
             }
         };
+        setupRowData(model, longestPath, kronaTree.getRoot());
         cust.setModel(model); // for tsv export
 
-        setupRowData(model, longestPath, kronaTree.getRoot());
 
         table = new JXTable(model);
         table.setFillsViewportHeight(true);
