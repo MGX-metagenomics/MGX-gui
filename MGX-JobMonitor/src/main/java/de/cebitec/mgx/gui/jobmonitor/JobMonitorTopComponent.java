@@ -47,9 +47,9 @@ import org.openide.windows.TopComponent;
         displayName = "#CTL_JobMonitorAction",
         preferredID = "JobMonitorTopComponent")
 @Messages({
-    "CTL_JobMonitorAction=JobMonitor",
-    "CTL_JobMonitorTopComponent=JobMonitor Window",
-    "HINT_JobMonitorTopComponent=This is a JobMonitor window"
+    "CTL_JobMonitorAction=Job Monitor",
+    "CTL_JobMonitorTopComponent=Job Monitor",
+    "HINT_JobMonitorTopComponent=Job Monitor"
 })
 @ServiceProvider(service = JobMonitorTopComponent.class)
 public final class JobMonitorTopComponent extends TopComponent implements LookupListener, ExplorerManager.Provider, PropertyChangeListener {
