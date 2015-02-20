@@ -151,7 +151,7 @@ public class FileAccessTest {
         if (!success) {
             fail(up.getErrorMessage());
         }
-        
+
         long fileSize = f.length();
 
         // cleanup
@@ -193,6 +193,51 @@ public class FileAccessTest {
         }
         assertEquals(1, numDirs);
         assertEquals(3, numFiles);
+    }
+
+    @Test
+    public void testDownloadDump() throws MGXException, IOException {
+        System.out.println("DownloadDump");
+        MGXMasterI m = TestMaster.getRO();
+
+        OutputStream os = null;
+        File f = File.createTempFile("down", "xx");
+        try {
+            os = new FileOutputStream(f);
+        } catch (FileNotFoundException ex) {
+            fail(ex.getMessage());
+        }
+
+        DownloadBaseI down = null;
+        down = m.File().createPluginDumpDownloader(os);
+        assertNotNull(down);
+
+        PropCounter pc = new PropCounter();
+        down.addPropertyChangeListener(pc);
+
+        boolean success = down.download();
+        assertTrue(success);
+
+        try {
+            os.close();
+        } catch (IOException ex) {
+            fail(ex.getMessage());
+        }
+
+        if (!success) {
+            fail(down.getErrorMessage());
+        }
+
+        // check minimum file size
+        assertTrue(500000 < f.length());
+
+        // cleanup
+        if (f.exists()) {
+            f.delete();
+        }
+
+        assertEquals(69, pc.getCount());
+        assertEquals(TransferBaseI.TRANSFER_COMPLETED, pc.getLastEvent().getPropertyName());
     }
 
     private static String getMD5Checksum(String filename) throws Exception {
