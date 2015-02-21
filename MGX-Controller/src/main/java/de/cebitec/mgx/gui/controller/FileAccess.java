@@ -127,19 +127,42 @@ public class FileAccess implements FileAccessI {
 
     @Override
     public DownloadBaseI createPluginDumpDownloader(OutputStream out) throws MGXException {
-        final PluginDumpDownloader pd = dtomaster.File().createPluginDumpDownloader(out);
-        return new DownloadBaseI() {
+        try {
+            final PluginDumpDownloader pd = dtomaster.File().createPluginDumpDownloader(out);
+            return new ServerPluginDumpDownloader(pd);
+        } catch (MGXClientException ex) {
+            throw new MGXException(ex);
+        }
+    }
 
-            @Override
-            public boolean download() {
-                return pd.download();
-            }
+    private class ServerPluginDumpDownloader extends DownloadBaseI implements PropertyChangeListener {
 
-            @Override
-            public long getProgress() {
-                return pd.getProgress();
+        private final PluginDumpDownloader fd;
+
+        public ServerPluginDumpDownloader(PluginDumpDownloader fd) {
+            this.fd = fd;
+            fd.addPropertyChangeListener(this);
+        }
+
+        @Override
+        public boolean download() {
+            boolean ret = fd.download();
+            if (!ret) {
+                setErrorMessage(fd.getErrorMessage());
             }
-        };
+            return ret;
+        }
+
+        @Override
+        public long getProgress() {
+            return fd.getProgress();
+        }
+
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+            fireTaskChange(evt.getPropertyName(), fd.getProgress());
+        }
+
     }
 
     private class ServerFileDownloader extends DownloadBaseI implements PropertyChangeListener {

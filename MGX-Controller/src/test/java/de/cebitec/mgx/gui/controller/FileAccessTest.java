@@ -236,7 +236,7 @@ public class FileAccessTest {
             f.delete();
         }
 
-        assertEquals(69, pc.getCount());
+        assertTrue(50 < pc.getCount());
         assertEquals(TransferBaseI.TRANSFER_COMPLETED, pc.getLastEvent().getPropertyName());
     }
 
