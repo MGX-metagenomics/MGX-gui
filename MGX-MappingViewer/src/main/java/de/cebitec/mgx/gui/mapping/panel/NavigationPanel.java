@@ -121,12 +121,14 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
         g2.setComposite(ac);
         g2.setColor(Color.LIGHT_GRAY);
 
-        for (Area l : coverage) {
-            g2.fill(l);
-        }
-        g2.setColor(Color.DARK_GRAY);
-        for (Area l : coverage) {
-            g2.draw(l);
+        synchronized (coverage) {
+            for (Area l : coverage) {
+                g2.fill(l);
+            }
+            g2.setColor(Color.DARK_GRAY);
+            for (Area l : coverage) {
+                g2.draw(l);
+            }
         }
         g2.setComposite(oldcomp);
     }
