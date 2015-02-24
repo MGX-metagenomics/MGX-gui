@@ -154,10 +154,10 @@ public class ReferenceAccess implements ReferenceAccessI {
     }
 
     @Override
-    public TaskI delete(MGXReferenceI obj) throws MGXException {
+    public TaskI<MGXReferenceI> delete(MGXReferenceI obj) throws MGXException {
         try {
             UUID uuid = dtomaster.Reference().delete(obj.getId());
-            return master.Task().get(obj, uuid, Task.TaskType.DELETE);
+            return master.<MGXReferenceI>Task().get(obj, uuid, Task.TaskType.DELETE);
         } catch (MGXServerException | MGXClientException ex) {
             throw new MGXException(ex);
         }

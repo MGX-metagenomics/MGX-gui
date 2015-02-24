@@ -37,7 +37,7 @@ import static org.junit.Assert.*;
  */
 public class FileAccessTest {
 
-    private MGXMaster master;
+    private MGXMasterI master;
 
     public FileAccessTest() {
     }
@@ -159,14 +159,14 @@ public class FileAccessTest {
             f.delete();
         }
 
-        TaskI task = m.File().delete(new MGXFile(m, ".|testUpload", false, 42));
+        TaskI<MGXFileI> task = m.File().delete(new MGXFile(m, ".|testUpload", false, 42));
         while ((task.getState() != TaskI.State.FINISHED) || (task.getState() != TaskI.State.FAILED)) {
             System.err.println(" --> " + task.getState());
             Thread.sleep(1000);
             if ((task.getState() == TaskI.State.FINISHED) || (task.getState() == TaskI.State.FAILED)) {
                 break;
             } else {
-                task = m.Task().refresh(task);
+                m.<MGXFileI>Task().refresh(task);
             }
         }
 

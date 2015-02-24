@@ -58,6 +58,7 @@ public final class ConflictResolverWizardIterator implements WizardDescriptor.It
         return l;
     }
 
+    @SuppressWarnings("unchecked")
     private List<WizardDescriptor.Panel<WizardDescriptor>> getPanels() {
         if (panels == null) {
             panels = new ArrayList<>();

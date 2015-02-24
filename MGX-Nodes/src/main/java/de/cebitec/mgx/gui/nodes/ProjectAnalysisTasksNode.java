@@ -10,7 +10,7 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sj
  */
-public class ProjectAnalysisTasksNode extends MGXNodeBase<MGXMasterI, ProjectAnalysisTasksNode> {
+public class ProjectAnalysisTasksNode extends MGXNodeBase<MGXMasterI> {
 
     private TaskStructureNodeFactory nf = null;
 

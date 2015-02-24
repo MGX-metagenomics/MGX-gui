@@ -12,7 +12,6 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
-import org.openide.util.Exceptions;
 import org.openide.util.Utilities;
 
 /**
@@ -68,7 +67,7 @@ public class DeleteFileOrDirectory extends AbstractAction {
         @Override
         public boolean process() {
             setStatus("Deleting..");
-            TaskI delTask = null;
+            TaskI<MGXFileI> delTask = null;
             try {
                 delTask = master.File().delete(file);
             } catch (MGXException ex) {
@@ -78,7 +77,7 @@ public class DeleteFileOrDirectory extends AbstractAction {
             }
             while (delTask != null && !delTask.done()) {
                 try {
-                    delTask = master.Task().refresh(delTask);
+                    master.<MGXFileI>Task().refresh(delTask);
                 } catch (MGXException ex) {
                     setStatus(ex.getMessage());
                     failed();

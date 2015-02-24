@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 import javax.swing.Timer;
 import org.openide.nodes.ChildFactory;
 import org.openide.nodes.Children;
@@ -50,6 +51,10 @@ public class JobNodeFactory extends ChildFactory<JobI> implements NodeListener {
         try {
             Iterator<SeqRunI> iter = master.SeqRun().fetchall();
             while (iter != null && iter.hasNext()) {
+                if (Thread.interrupted()) { 
+                    master.log(Level.INFO, "interrupted in NF");
+                    return true;
+                }
                 SeqRunI sr = iter.next();
                 for (JobI j : master.Job().BySeqRun(sr)) {
                     ToolI t = master.Tool().ByJob(j);

@@ -42,7 +42,7 @@ public class SequenceAccess extends AccessBase<SequenceI> implements SequenceAcc
     }
 
     @Override
-    public void sendSequences(SeqRunI seqrun, SeqReaderI reader) throws MGXException {
+    public void sendSequences(SeqRunI seqrun, SeqReaderI<DNASequenceI> reader) throws MGXException {
         try {
             getDTOmaster().Sequence().sendSequences(seqrun.getId(), reader);
         } catch (MGXServerException ex) {
@@ -51,18 +51,18 @@ public class SequenceAccess extends AccessBase<SequenceI> implements SequenceAcc
     }
 
     @Override
-    public UploadBaseI createUploader(SeqRunI seqrun, SeqReaderI reader) {
+    public UploadBaseI createUploader(SeqRunI seqrun, SeqReaderI<DNASequenceI> reader) {
         final SeqUploader su = getDTOmaster().Sequence().createUploader(seqrun.getId(), reader);
         return new ServerSeqRunUploader(su);
     }
 
     @Override
-    public DownloadBaseI createDownloader(SeqRunI seqrun, SeqWriterI writer, boolean closeWriter) {
+    public DownloadBaseI createDownloader(SeqRunI seqrun, SeqWriterI<DNASequenceI> writer, boolean closeWriter) {
         final SeqDownloader sd = getDTOmaster().Sequence().createDownloader(seqrun.getId(), writer, closeWriter);
         return new ServerSeqRunDownloader(sd);
     }
 
-    public void downloadSequences(long seqrun_id, SeqWriterI writer, boolean closeWriter) throws MGXException {
+    public void downloadSequences(long seqrun_id, SeqWriterI<DNASequenceI> writer, boolean closeWriter) throws MGXException {
         try {
             getDTOmaster().Sequence().downloadSequences(seqrun_id, writer, closeWriter);
         } catch (MGXServerException ex) {
@@ -81,7 +81,7 @@ public class SequenceAccess extends AccessBase<SequenceI> implements SequenceAcc
     }
 
     @Override
-    public void downloadSequencesForAttributes(Set<AttributeI> attrs, SeqWriterI writer, boolean closeWriter) throws MGXException {
+    public void downloadSequencesForAttributes(Set<AttributeI> attrs, SeqWriterI<DNASequenceI> writer, boolean closeWriter) throws MGXException {
         try {
             Builder b = AttributeDTOList.newBuilder();
             for (AttributeI a : attrs) {
@@ -156,7 +156,7 @@ public class SequenceAccess extends AccessBase<SequenceI> implements SequenceAcc
     }
 
     @Override
-    public TaskI delete(SequenceI obj) {
+    public TaskI<SequenceI> delete(SequenceI obj) {
         throw new UnsupportedOperationException("Not supported.");
     }
 

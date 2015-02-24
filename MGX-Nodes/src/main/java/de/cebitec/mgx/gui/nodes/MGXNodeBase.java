@@ -14,9 +14,8 @@ import org.openide.util.Lookup;
  *
  * @author sj
  * @param <T> datamodel object
- * @param <U> corresponding node type for datamodel object
  */
-public abstract class MGXNodeBase<T extends ModelBase, U extends MGXNodeBase> extends AbstractNode implements PropertyChangeListener, Comparable<U> {
+public abstract class MGXNodeBase<T extends ModelBase<T>> extends AbstractNode implements Comparable<MGXNodeBase<? extends T>>, PropertyChangeListener {
 
     private final MGXMasterI master;
     private final T content;
@@ -69,8 +68,9 @@ public abstract class MGXNodeBase<T extends ModelBase, U extends MGXNodeBase> ex
 
     public abstract void updateModified();
 
+    
     @Override
-    public int compareTo(U o) {
+    public int compareTo(MGXNodeBase<? extends T> o) {
         return content.compareTo(o.getContent());
     }
 }

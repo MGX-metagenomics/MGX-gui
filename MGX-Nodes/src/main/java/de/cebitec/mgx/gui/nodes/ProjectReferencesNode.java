@@ -24,7 +24,7 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sj
  */
-public class ProjectReferencesNode extends MGXNodeBase<MGXMasterI, ProjectReferencesNode> {
+public class ProjectReferencesNode extends MGXNodeBase<MGXMasterI> {
 
     private ReferenceNodeFactory nf;
 

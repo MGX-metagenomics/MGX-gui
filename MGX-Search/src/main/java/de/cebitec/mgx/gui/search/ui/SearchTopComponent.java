@@ -219,13 +219,13 @@ public final class SearchTopComponent extends TopComponent implements LookupList
     private void initComponents() {
 
         jScrollPane1 = new javax.swing.JScrollPane();
-        runList = new javax.swing.JList();
+        runList = new javax.swing.JList<SeqRunI>();
         jLabel1 = new javax.swing.JLabel();
         readList = new javax.swing.JComboBox<SequenceI>();
         obsPanel = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        termList = new javax.swing.JList();
+        termList = new javax.swing.JList<String>();
         termField = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         hitNum = new javax.swing.JLabel();
@@ -327,10 +327,10 @@ public final class SearchTopComponent extends TopComponent implements LookupList
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JPanel obsPanel;
     private javax.swing.JComboBox<SequenceI> readList;
-    private javax.swing.JList runList;
+    private javax.swing.JList<SeqRunI> runList;
     private javax.swing.JButton showSeq;
     private javax.swing.JTextField termField;
-    private javax.swing.JList termList;
+    private javax.swing.JList<String> termList;
     // End of variables declaration//GEN-END:variables
 
     @Override

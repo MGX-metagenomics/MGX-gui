@@ -6,6 +6,8 @@ import de.cebitec.mgx.api.access.AttributeAccessI;
 import de.cebitec.mgx.api.access.DNAExtractAccessI;
 import de.cebitec.mgx.api.access.ObservationAccessI;
 import de.cebitec.mgx.api.access.SeqRunAccessI;
+import de.cebitec.mgx.api.access.TaskAccessI;
+import de.cebitec.mgx.api.model.ModelBase;
 import de.cebitec.mgx.client.MGXDTOMaster;
 import java.awt.datatransfer.DataFlavor;
 import java.beans.PropertyChangeEvent;
@@ -117,8 +119,8 @@ public class MGXMaster extends MGXMasterI implements PropertyChangeListener {
     }
 
     @Override
-    public TaskAccess Task() {
-        return new TaskAccess(master, dtomaster);
+    public <T extends ModelBase> TaskAccessI<T> Task() {
+        return new TaskAccess<>(master, dtomaster);
     }
 
     @Override

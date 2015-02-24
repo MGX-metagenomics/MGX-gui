@@ -28,7 +28,7 @@ public class MatrixDTOFactory extends DTOConversionBase<Matrix, AttributeCorrela
 
     @Override
     public Matrix<AttributeI, AttributeI> toModel(MGXMasterI m, AttributeCorrelation dto) {
-        Matrix<AttributeI, AttributeI> ret = new Matrix();
+        Matrix<AttributeI, AttributeI> ret = new Matrix<>();
         for (CorrelatedAttributeCount cac : dto.getEntryList()) {
             AttributeI first = AttributeDTOFactory.getInstance().toModel(m, cac.getRestrictedAttribute());
             AttributeI second = AttributeDTOFactory.getInstance().toModel(m, cac.getAttribute());

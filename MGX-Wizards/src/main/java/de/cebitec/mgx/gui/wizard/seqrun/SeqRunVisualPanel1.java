@@ -34,12 +34,12 @@ public final class SeqRunVisualPanel1 extends JPanel implements DocumentListener
     }
 
     public void setMethods(TermI[] terms) {
-        method.setModel(new javax.swing.DefaultComboBoxModel(terms));
+        method.setModel(new javax.swing.DefaultComboBoxModel<>(terms));
         method.setEditable(false);
     }
 
     public void setPlatforms(TermI[] terms) {
-        platform.setModel(new javax.swing.DefaultComboBoxModel(terms));
+        platform.setModel(new javax.swing.DefaultComboBoxModel<>(terms));
         platform.setEditable(false);
     }
 
@@ -98,8 +98,8 @@ public final class SeqRunVisualPanel1 extends JPanel implements DocumentListener
 
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        platform = new javax.swing.JComboBox();
-        method = new javax.swing.JComboBox();
+        platform = new javax.swing.JComboBox<TermI>();
+        method = new javax.swing.JComboBox<TermI>();
         submitted = new javax.swing.JCheckBox();
         accession = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
@@ -109,10 +109,6 @@ public final class SeqRunVisualPanel1 extends JPanel implements DocumentListener
         org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(SeqRunVisualPanel1.class, "SeqRunVisualPanel1.jLabel1.text")); // NOI18N
 
         org.openide.awt.Mnemonics.setLocalizedText(jLabel2, org.openide.util.NbBundle.getMessage(SeqRunVisualPanel1.class, "SeqRunVisualPanel1.jLabel2.text")); // NOI18N
-
-        platform.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-
-        method.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         org.openide.awt.Mnemonics.setLocalizedText(submitted, org.openide.util.NbBundle.getMessage(SeqRunVisualPanel1.class, "SeqRunVisualPanel1.submitted.text")); // NOI18N
 
@@ -184,9 +180,9 @@ public final class SeqRunVisualPanel1 extends JPanel implements DocumentListener
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JComboBox method;
+    private javax.swing.JComboBox<TermI> method;
     private javax.swing.JTextField name;
-    private javax.swing.JComboBox platform;
+    private javax.swing.JComboBox<TermI> platform;
     private javax.swing.JCheckBox submitted;
     // End of variables declaration//GEN-END:variables
 

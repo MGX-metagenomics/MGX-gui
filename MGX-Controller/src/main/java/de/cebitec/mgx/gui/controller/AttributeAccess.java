@@ -169,7 +169,7 @@ public class AttributeAccess implements AttributeAccessI {
     }
 
     @Override
-    public TaskI delete(AttributeI obj) {
+    public TaskI<AttributeI> delete(AttributeI obj) {
         throw new UnsupportedOperationException("Not supported.");
     }
 

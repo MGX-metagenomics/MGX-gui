@@ -100,10 +100,10 @@ public class HabitatAccess extends AccessBase<HabitatI> implements HabitatAccess
     }
 
     @Override
-    public TaskI delete(HabitatI obj) throws MGXException {
+    public TaskI<HabitatI> delete(HabitatI obj) throws MGXException {
         try {
             UUID uuid = getDTOmaster().Habitat().delete(obj.getId());
-            return getMaster().Task().get(obj, uuid, Task.TaskType.DELETE);
+            return getMaster().<HabitatI>Task().get(obj, uuid, Task.TaskType.DELETE);
         } catch (MGXServerException | MGXClientException ex) {
             throw new MGXException(ex);
         }

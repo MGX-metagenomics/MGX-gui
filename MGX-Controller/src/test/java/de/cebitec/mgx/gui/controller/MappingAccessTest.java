@@ -5,6 +5,7 @@
  */
 package de.cebitec.mgx.gui.controller;
 
+import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.MappedSequenceI;
 import de.cebitec.mgx.api.model.MappingI;
 import de.cebitec.mgx.api.model.SeqRunI;
@@ -50,7 +51,7 @@ public class MappingAccessTest {
     @Test
     public void testBySeqRun() throws Exception {
         System.out.println("BySeqRun");
-        MGXMaster master = TestMaster.getRO();
+        MGXMasterI master = TestMaster.getRO();
         SeqRunI run = master.SeqRun().fetch(1);
         assertNotNull(run);
         Iterator<MappingI> it = master.Mapping().BySeqRun(run);
@@ -65,7 +66,7 @@ public class MappingAccessTest {
     @Test
     public void testMappedSeqs() throws Exception {
         System.out.println("testMappedSeqs");
-        MGXMaster master = TestMaster.getRO();
+        MGXMasterI master = TestMaster.getRO();
         UUID uuid = master.Mapping().openMapping(30);
         assertNotNull(uuid);
         int numMappedReads = 0;
@@ -85,7 +86,7 @@ public class MappingAccessTest {
     @Test
     public void testMappedSeqs2() throws Exception {
         System.out.println("testMappedSeqs2");
-        MGXMaster master = TestMaster.getRO();
+        MGXMasterI master = TestMaster.getRO();
         UUID uuid = master.Mapping().openMapping(30);
         int numMappedReads = 0;
         assertNotNull(uuid);

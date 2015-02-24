@@ -19,11 +19,11 @@ public class MetatranscriptomeDetailPanel extends javax.swing.JPanel {
     /** Creates new form MetatranscriptomeDetailPanel */
     public MetatranscriptomeDetailPanel() {
         initComponents();
-        depletion.setModel(new javax.swing.DefaultComboBoxModel(treatments));
+        depletion.setModel(new javax.swing.DefaultComboBoxModel<>(treatments));
     }
     
     public void setDepletionOptions(List<String> depletionOptions) {
-        depletion.setModel(new javax.swing.DefaultComboBoxModel(depletionOptions.toArray(new String[0])));
+        depletion.setModel(new javax.swing.DefaultComboBoxModel<>(depletionOptions.toArray(new String[0])));
     }
 
     public JComboBox getDepletion() {
@@ -41,13 +41,11 @@ public class MetatranscriptomeDetailPanel extends javax.swing.JPanel {
 
         jPanel1 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
-        depletion = new javax.swing.JComboBox();
+        depletion = new javax.swing.JComboBox<String>();
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(MetatranscriptomeDetailPanel.class, "MetatranscriptomeDetailPanel.jPanel1.border.title"))); // NOI18N
 
         jLabel3.setText(org.openide.util.NbBundle.getMessage(MetatranscriptomeDetailPanel.class, "MetatranscriptomeDetailPanel.jLabel3.text")); // NOI18N
-
-        depletion.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -84,7 +82,7 @@ public class MetatranscriptomeDetailPanel extends javax.swing.JPanel {
         jPanel1.getAccessibleContext().setAccessibleName(org.openide.util.NbBundle.getMessage(MetatranscriptomeDetailPanel.class, "MetatranscriptomeDetailPanel.jPanel1.AccessibleContext.accessibleName")); // NOI18N
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JComboBox depletion;
+    private javax.swing.JComboBox<String> depletion;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     // End of variables declaration//GEN-END:variables

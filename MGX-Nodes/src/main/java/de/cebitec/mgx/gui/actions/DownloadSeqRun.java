@@ -11,6 +11,7 @@ import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
 import de.cebitec.mgx.gui.swingutils.util.SuffixFilter;
 import de.cebitec.mgx.seqstorage.FastaWriter;
+import de.cebitec.mgx.sequence.DNASequenceI;
 import de.cebitec.mgx.sequence.SeqStoreException;
 import de.cebitec.mgx.sequence.SeqWriterI;
 import java.awt.event.ActionEvent;
@@ -93,7 +94,7 @@ public class DownloadSeqRun extends AbstractAction {
         }
 
         try {
-            final SeqWriterI writer = new FastaWriter(target.getAbsolutePath());
+            final SeqWriterI<DNASequenceI> writer = new FastaWriter(target.getAbsolutePath());
 
             MGXMasterI master = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
             final DownloadBaseI downloader = master.Sequence().createDownloader(seqrun, writer, false);

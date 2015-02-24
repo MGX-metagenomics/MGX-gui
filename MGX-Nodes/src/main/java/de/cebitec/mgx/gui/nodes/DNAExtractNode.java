@@ -29,7 +29,7 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sj
  */
-public class DNAExtractNode extends MGXNodeBase<DNAExtractI, DNAExtractNode> {
+public class DNAExtractNode extends MGXNodeBase<DNAExtractI> {
 
     private final SeqRunNodeFactory snf;
 
@@ -143,10 +143,10 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtractI, DNAExtractNode> {
                     public boolean process() {
                         try {
                             setStatus("Deleting..");
-                            TaskI task = m.DNAExtract().delete(dna);
+                            TaskI<DNAExtractI> task = m.DNAExtract().delete(dna);
                             while (task != null && !task.done()) {
                                 setStatus(task.getStatusMessage());
-                                task = m.Task().refresh(task);
+                                m.<DNAExtractI>Task().refresh(task);
                                 sleep();
                             }
                             if (task != null) {

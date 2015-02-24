@@ -138,10 +138,10 @@ public class ToolAccess extends AccessBase<ToolI> implements ToolAccessI {
     }
 
     @Override
-    public TaskI delete(ToolI obj) throws MGXException {
+    public TaskI<ToolI> delete(ToolI obj) throws MGXException {
         try {
             UUID uuid = getDTOmaster().Tool().delete(obj.getId());
-            return getMaster().Task().get(obj, uuid, TaskType.DELETE);
+            return getMaster().<ToolI>Task().get(obj, uuid, TaskType.DELETE);
         } catch (MGXServerException | MGXClientException ex) {
             throw new MGXException(ex);
         }

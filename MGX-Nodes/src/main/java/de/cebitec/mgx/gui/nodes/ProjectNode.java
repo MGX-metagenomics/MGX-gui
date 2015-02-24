@@ -12,7 +12,7 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sj
  */
-public class ProjectNode extends MGXNodeBase<MGXMasterI, ProjectNode> {
+public class ProjectNode extends MGXNodeBase<MGXMasterI> {
 
     //private ProjectStructureNodeFactory nf = null;
 

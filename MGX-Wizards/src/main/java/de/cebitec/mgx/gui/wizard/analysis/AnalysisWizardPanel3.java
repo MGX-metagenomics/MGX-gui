@@ -1,9 +1,9 @@
 package de.cebitec.mgx.gui.wizard.analysis;
 
 import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.JobParameterI;
 import de.cebitec.mgx.api.model.MGXReferenceI;
-import de.cebitec.mgx.gui.datamodel.JobParameter;
-import de.cebitec.mgx.gui.datamodel.Tool;
+import de.cebitec.mgx.api.model.ToolI;
 import java.util.List;
 import javax.swing.event.ChangeListener;
 import org.openide.WizardDescriptor;
@@ -15,11 +15,9 @@ public class AnalysisWizardPanel3 implements WizardDescriptor.Panel<WizardDescri
      * The visual component that displays this panel. If you need to access the component from this class, just use getComponent().
      */
     private AnalysisVisualPanel3 component;
-    private final MGXMasterI master;
     private final List<MGXReferenceI> references;
 
-    public AnalysisWizardPanel3(MGXMasterI master, List<MGXReferenceI> refs) {
-        this.master = master;
+    public AnalysisWizardPanel3(List<MGXReferenceI> refs) {
         references = refs;
     }
 
@@ -51,10 +49,11 @@ public class AnalysisWizardPanel3 implements WizardDescriptor.Panel<WizardDescri
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void readSettings(WizardDescriptor wiz) {
         model = wiz;
-        Tool tool = (Tool) model.getProperty(AnalysisWizardIterator.PROP_TOOL);
-        List<JobParameter> params = (List<JobParameter>) model.getProperty(AnalysisWizardIterator.PROP_PARAMETERS);
+        ToolI tool = (ToolI) model.getProperty(AnalysisWizardIterator.PROP_TOOL);
+        List<JobParameterI> params = (List<JobParameterI>) model.getProperty(AnalysisWizardIterator.PROP_PARAMETERS);
         getComponent().setToolName(tool.getName());
         getComponent().setParameters(params);
     }

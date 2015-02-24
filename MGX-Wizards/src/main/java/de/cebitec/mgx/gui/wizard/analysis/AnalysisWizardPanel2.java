@@ -22,6 +22,8 @@ import de.cebitec.mgx.gui.wizard.analysis.validator.ULongValidator;
 import de.cebitec.mgx.gui.wizard.analysis.validator.ValidatorI;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -30,7 +32,7 @@ import org.openide.NotificationLineSupport;
 import org.openide.WizardDescriptor;
 import org.openide.util.HelpCtx;
 
-public class AnalysisWizardPanel2<T> implements WizardDescriptor.Panel<WizardDescriptor>, PropertyChangeListener {
+public class AnalysisWizardPanel2 implements WizardDescriptor.Panel<WizardDescriptor>, PropertyChangeListener {
 
     /**
      * The visual component that displays this panel. If you need to access the
@@ -41,8 +43,8 @@ public class AnalysisWizardPanel2<T> implements WizardDescriptor.Panel<WizardDes
     private JobParameterI parameter = null;
     private WizardDescriptor model = null;
     private boolean isValid = false;
-    private ValidatorI<T> validator = null;
-    private ValueHolderI<T> valueHolder = null;
+    private ValidatorI validator = null;
+    private ValueHolderI<String> valueHolder = null;
     private final EventListenerList listeners = new EventListenerList();
     public static final String PROP_PARAM = "propParam";
     //
@@ -151,33 +153,32 @@ public class AnalysisWizardPanel2<T> implements WizardDescriptor.Panel<WizardDes
         avp.setDescription(parameter.getUserDescription());
         avp.setOptional(parameter.isOptional());
 
-
-        Pair<? extends ValueHolderI, ? extends ValidatorI> p = getValidator(parameter);
+        Pair<? extends ValueHolderI<String>, ? extends ValidatorI> p = getValidator(parameter);
         valueHolder = p.getFirst();
         validator = p.getSecond();
         if (jp.getDefaultValue() != null) {
             // we need one round of validation here to perform String --> T conversion
             validator.validate(jp.getDefaultValue());
-            T val = validator.getValue();
+            String val = validator.getValue();
             valueHolder.setValue(val);
         }
         if (jp.getParameterValue() != null) {
             // same as above
             validator.validate(jp.getDefaultValue());
-            T val = validator.getValue();
+            String val = validator.getValue();
             valueHolder.setValue(val);
         }
         getComponent().setInputComponent(valueHolder);
     }
 
-    private Pair<? extends ValueHolderI, ? extends ValidatorI> getValidator(JobParameterI jp) {
+    private Pair<? extends ValueHolderI<String>, ? extends ValidatorI> getValidator(JobParameterI jp) {
         switch (jp.getType()) {
             case "ConfigByte":
                 return new Pair<>(new TextFieldPanel(), new ByteValidator());
             case "ConfigDouble":
                 return new Pair<>(new TextFieldPanel(), new DoubleValidator());
             case "ConfigEnumeration`1":
-                return new Pair<>(new ComboBoxPanel<>(jp, jp.getChoices().keySet()), new MultipleChoiceValidator(jp));
+                return new Pair<>(new ComboBoxPanel(jp, jp.getChoices().keySet()), new MultipleChoiceValidator(jp));
             case "ConfigFile":
                 return new Pair<>(new FileChooserPanel(master), new FilenameValidator());
             case "ConfigInteger":
@@ -196,7 +197,11 @@ public class AnalysisWizardPanel2<T> implements WizardDescriptor.Panel<WizardDes
                 return new Pair<>(new BooleanPanel(jp), new BooleanValidator());
             case "ConfigMGXReference":
                 isValid = !references.isEmpty();
-                return new Pair<>(new ComboBoxPanel<>(jp, references), new MultipleChoiceValidator(jp, references));
+                Collection<String> tmp = new ArrayList<>();
+                for (MGXReferenceI r : references) {
+                    tmp.add(r.getName());
+                }
+                return new Pair<>(new ComboBoxPanel(jp, tmp), new MultipleChoiceValidator<>(jp, references));
             default:
                 // uncheckable configuration type
                 return new Pair<>(new TextFieldPanel(), new StringValidator());

@@ -31,7 +31,7 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sj
  */
-public class SampleNode extends MGXNodeBase<SampleI, SampleNode> {
+public class SampleNode extends MGXNodeBase<SampleI> {
 
     private DNAExtractNodeFactory nf = null;
 
@@ -144,10 +144,10 @@ public class SampleNode extends MGXNodeBase<SampleI, SampleNode> {
                     public boolean process() {
                         try {
                             setStatus("Deleting..");
-                            TaskI task = m.Sample().delete(sample);
+                            TaskI<SampleI> task = m.Sample().delete(sample);
                             while (task != null && !task.done()) {
                                 setStatus(task.getStatusMessage());
-                                task = m.Task().refresh(task);
+                                m.<SampleI>Task().refresh(task);
                                 sleep();
                             }
                             if (task != null) {

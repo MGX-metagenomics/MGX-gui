@@ -4,6 +4,7 @@ import de.cebitec.mgx.api.groups.ImageExporterI;
 import de.cebitec.mgx.api.groups.VGroupManagerI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.Pair;
+import de.cebitec.mgx.api.misc.Visualizable;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.common.VGroupManager;
 import java.util.List;
@@ -14,7 +15,7 @@ import javax.swing.JComponent;
  * @param <T>
  * @author sjaenick
  */
-public abstract class ViewerI<T> implements Comparable<ViewerI<T>> { //, VisFilterI<T>  {
+public abstract class ViewerI<T extends Visualizable> implements Comparable<ViewerI<T>> { //, VisFilterI<T>  {
 
     private AttributeTypeI attrType;
     private String chartTitle;

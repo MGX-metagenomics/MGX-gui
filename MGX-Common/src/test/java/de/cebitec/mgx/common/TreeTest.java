@@ -10,10 +10,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import org.junit.After;
 import org.junit.AfterClass;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -70,7 +73,7 @@ public class TreeTest {
         assertEquals(2, tree.size());
         assertEquals(a1, tree.getRoot().getAttribute());
         assertEquals(1, tree.getRoot().getChildren().size());
-        assertEquals(1, tree.getRoot().getContent().longValue());
+        assertEquals(Long.valueOf(1), tree.getRoot().getContent());
 
         AttributeI a3 = new Attribute(null);
         a3.setAttributeType(at);
@@ -89,19 +92,26 @@ public class TreeTest {
         data2.put(a4, Long.valueOf(4));
 
         TreeI<Long> tree2 = TreeFactory.createTree(data2);
-        assertEquals(3, tree2.getRoot().getContent().longValue());
+        assertEquals(Long.valueOf(3), tree2.getRoot().getContent());
 
 
-        Collection<TreeI<Long>> c = new ArrayList<>();
-        c.add(tree);
-        c.add(tree2);
+        Collection<Future<TreeI<Long>>> c = new ArrayList<>();
+        c.add(new NoFuture<>(tree));
+        c.add(new NoFuture<>(tree2));
         assertEquals(2, c.size());
         
-        TreeI<Long> merged = TreeFactory.mergeTrees(c);
+        TreeI<Long> merged = null;
+        try {
+            merged = TreeFactory.mergeTrees(c);
+        } catch (InterruptedException | ExecutionException ex) {
+            fail(ex.getMessage());
+        }
+        
+        assertNotNull(merged);
         assertEquals("a1", merged.getRoot().getAttribute().getValue());
         assertEquals(3, merged.getNodes().size());
         
-        assertEquals(4, merged.getRoot().getContent().longValue());
+        assertEquals(Long.valueOf(4), merged.getRoot().getContent());
         assertEquals(0, merged.getRoot().getDepth());
         
         NodeI<Long> n = null;
@@ -121,4 +131,5 @@ public class TreeTest {
         }
 
     }
+    
 }

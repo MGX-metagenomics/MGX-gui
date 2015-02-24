@@ -10,7 +10,9 @@ import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
+import de.cebitec.mgx.seqstorage.DNASequence;
 import de.cebitec.mgx.seqstorage.FastaWriter;
+import de.cebitec.mgx.sequence.DNASequenceI;
 import de.cebitec.mgx.sequence.SeqWriterI;
 import java.awt.Component;
 import java.beans.PropertyChangeEvent;
@@ -89,7 +91,7 @@ public final class SeqExporter implements SequenceExporterI {
             SwingWorker<SeqWriterI, Void> worker = new SwingWorker<SeqWriterI, Void>() {
                 @Override
                 protected SeqWriterI doInBackground() throws Exception {
-                    SeqWriterI writer = new FastaWriter(target.getAbsolutePath());
+                    SeqWriterI<DNASequenceI> writer = new FastaWriter(target.getAbsolutePath());
                     Set<AttributeI> selectedAttributes = p1.getSelectedAttributes();
                     List<String> attrs = new ArrayList<>();
                     for (AttributeI a : selectedAttributes) {

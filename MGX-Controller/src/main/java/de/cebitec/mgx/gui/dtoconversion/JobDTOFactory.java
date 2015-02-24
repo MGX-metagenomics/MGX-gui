@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.dtoconversion;
 
 import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.JobParameterI;
 import de.cebitec.mgx.api.model.JobState;
@@ -9,6 +10,7 @@ import de.cebitec.mgx.dto.dto.JobDTO.Builder;
 import de.cebitec.mgx.dto.dto.JobParameterDTO;
 import de.cebitec.mgx.gui.datamodel.Job;
 import java.util.ArrayList;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -57,6 +59,12 @@ public class JobDTOFactory extends DTOConversionBase<JobI, JobDTO> {
                 .setCreator(dto.getCreator())
                 .setStartDate(toDate(dto.getStartDate()))
                 .setFinishDate(toDate(dto.getFinishDate()));
+        
+        try {
+            j.setSeqrun(m.SeqRun().fetch(dto.getSeqrunId()));
+        } catch (MGXException ex) {
+            Exceptions.printStackTrace(ex);
+        }
 
         if (dto.hasParameters()) {
             j.setParameters(new ArrayList<JobParameterI>(dto.getParameters().getParameterCount()));

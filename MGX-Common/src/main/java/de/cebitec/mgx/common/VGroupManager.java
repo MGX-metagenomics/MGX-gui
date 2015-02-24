@@ -5,6 +5,7 @@ import de.cebitec.mgx.api.groups.VGroupManagerI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.AttributeRank;
 import de.cebitec.mgx.api.misc.DistributionI;
+import de.cebitec.mgx.api.misc.Fetcher;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.SeqRunI;
@@ -21,6 +22,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Future;
+import org.openide.util.RequestProcessor;
 
 /**
  *
@@ -28,12 +31,14 @@ import java.util.Set;
  */
 public class VGroupManager implements VGroupManagerI {
 
-  
     private static VGroupManagerI instance = null;
+
     // LinkedHashSet keeps the order elements are added
     private final Map<Integer, VisualizationGroupI> groups = new LinkedHashMap<>();
     private int groupCount = 1;
     private final ParallelPropertyChangeSupport pcs;
+    final RequestProcessor pool;
+
     private final Map<AttributeRank, String> currentAttributeType = new HashMap<>();
     private ConflictResolver resolver = null;
     //
@@ -41,6 +46,7 @@ public class VGroupManager implements VGroupManagerI {
 
     private VGroupManager() {
         pcs = new ParallelPropertyChangeSupport(this);
+        pool = new RequestProcessor("VGroupTasks", Runtime.getRuntime().availableProcessors() + 3);
     }
 
     public synchronized static VGroupManagerI getInstance() {
@@ -130,7 +136,7 @@ public class VGroupManager implements VGroupManagerI {
                 return null;
             }
         }
-        
+
         List<Pair<VisualizationGroupI, TreeI<Long>>> ret = new ArrayList<>();
         for (VisualizationGroupI vg : getActiveGroups()) {
             TreeI<Long> tree = vg.getHierarchy();
@@ -148,7 +154,7 @@ public class VGroupManager implements VGroupManagerI {
             newName = "Group " + ++groupCount;
         }
         Color groupColor = colors[(groupCount - 1) % colors.length];
-        VisualizationGroupI group = new VisualizationGroup(groupCount, newName, groupColor);
+        VisualizationGroupI group = new VisualizationGroup(this, groupCount, newName, groupColor);
         group.addPropertyChangeListener(this);
         groups.put(groupCount, group);
         groupCount++;
@@ -201,17 +207,22 @@ public class VGroupManager implements VGroupManagerI {
     public void removePropertyChangeListener(PropertyChangeListener p) {
         pcs.removePropertyChangeListener(p);
     }
-    
+
     private VisualizationGroupI selectedGroup = null;
-    
+
     @Override
     public void setSelectedGroup(VisualizationGroupI group) {
         selectedGroup = group;
         firePropertyChange(VISGROUP_SELECTION_CHANGED, 0, selectedGroup);
     }
-    
+
     @Override
     public VisualizationGroupI getSelectedGroup() {
         return selectedGroup;
+    }
+    
+    @Override
+    public <T> Future<T> submit(Fetcher<T> f) {
+        return pool.submit(f);
     }
 }

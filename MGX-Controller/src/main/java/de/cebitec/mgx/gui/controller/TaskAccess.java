@@ -29,13 +29,14 @@ public class TaskAccess<T extends ModelBase> implements TaskAccessI<T> {
         this.dtomaster = dtomaster;
     }
 
-
     @Override
-    public TaskI get(T obj, UUID taskId, TaskType tt) throws MGXException {
-        TaskI t = null;
+    @SuppressWarnings("unchecked")
+    public TaskI<T> get(T obj, UUID taskId, TaskType tt) throws MGXException {
+        TaskI<T> t = null;
         try {
             TaskDTO dto = dtomaster.Task().get(taskId);
-            t = TaskDTOFactory.getInstance(obj, taskId, tt).toModel(master, dto);
+            TaskDTOFactory fact = TaskDTOFactory.<T>getInstance(obj, taskId, tt);
+            t = fact.toModel(master, dto);
         } catch (MGXServerException | MGXClientException ex) {
             throw new MGXException(ex);
         }
@@ -43,7 +44,7 @@ public class TaskAccess<T extends ModelBase> implements TaskAccessI<T> {
     }
 
     @Override
-    public TaskI refresh(TaskI origTask) throws MGXException {
+    public void refresh(TaskI<T> origTask) throws MGXException {
         try {
             TaskDTO dto = dtomaster.Task().get(origTask.getUuid());
             origTask.setState(Task.State.values()[dto.getState().ordinal()]);
@@ -52,7 +53,6 @@ public class TaskAccess<T extends ModelBase> implements TaskAccessI<T> {
         } catch (MGXServerException | MGXClientException ex) {
             throw new MGXException(ex);
         }
-        return origTask;
     }
 
 }

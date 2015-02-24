@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.controller;
 
+import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.groups.ConflictingJobsException;
 import de.cebitec.mgx.api.groups.VGroupManagerI;
@@ -53,7 +54,7 @@ public class StatisticsAccessTest {
     @Test
     public void testPCA() throws Exception {
         System.out.println("PCA");
-        MGXMaster master = TestMaster.getRO();
+        MGXMasterI master = TestMaster.getRO();
 
         VGroupManagerI vgmgr = VGroupManager.getInstance();
 
@@ -90,7 +91,7 @@ public class StatisticsAccessTest {
     @Test
     public void testPCANoPC23() throws Exception {
         System.out.println("PCA no PC2/PC3");
-        MGXMaster master = TestMaster.getRO();
+        MGXMasterI master = TestMaster.getRO();
 
         VGroupManagerI vgmgr = VGroupManager.getInstance();
 
@@ -136,7 +137,7 @@ public class StatisticsAccessTest {
     @Test
     public void testClustering() throws Exception {
         System.out.println("Clustering");
-        MGXMaster master = TestMaster.getRO();
+        MGXMasterI master = TestMaster.getRO();
 
         VGroupManagerI vgmgr = VGroupManager.getInstance();
 

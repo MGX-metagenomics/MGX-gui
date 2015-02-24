@@ -9,7 +9,7 @@ import java.util.Collection;
  *
  * @author sjaenick
  */
-public class ComboBoxPanel<T> extends ValueHolderI<T> implements ActionListener {
+public class ComboBoxPanel extends ValueHolderI<String> implements ActionListener {
 
     /**
      * Creates new form ComboBoxPanel
@@ -24,10 +24,10 @@ public class ComboBoxPanel<T> extends ValueHolderI<T> implements ActionListener 
 //        jComboBox1.addActionListener(this);
 //    }
 
-    public ComboBoxPanel(JobParameterI jp, Collection<T> allowedValues) {
+    public ComboBoxPanel(JobParameterI jp, Collection<String> allowedValues) {
         initComponents();
         jComboBox1.removeAllItems();
-        for (T s : allowedValues) {
+        for (String s : allowedValues) {
             if (item == null) {
                 // preselect first item
                 item = s;
@@ -46,7 +46,7 @@ public class ComboBoxPanel<T> extends ValueHolderI<T> implements ActionListener 
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jComboBox1 = new javax.swing.JComboBox<T>();
+        jComboBox1 = new javax.swing.JComboBox<String>();
 
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
@@ -62,23 +62,24 @@ public class ComboBoxPanel<T> extends ValueHolderI<T> implements ActionListener 
         );
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JComboBox<T> jComboBox1;
+    private javax.swing.JComboBox<String> jComboBox1;
     // End of variables declaration//GEN-END:variables
 
     @Override
+    @SuppressWarnings("unchecked")
     public void actionPerformed(ActionEvent e) {
-        item = (T) jComboBox1.getSelectedItem();
+        item = (String) jComboBox1.getSelectedItem();
         firePropertyChange("input", null, item);
     }
-    private T item = null;
+    private String item = null;
 
     @Override
-    public T getValue() {
+    public String getValue() {
         return item;
     }
 
     @Override
-    public void setValue(T value) {
+    public void setValue(String value) {
         jComboBox1.setSelectedItem(value);
     }
 }

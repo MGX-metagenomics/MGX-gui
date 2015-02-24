@@ -63,7 +63,7 @@ public class ObservationAccess extends AccessBase<ObservationI> implements Obser
     }
 
     @Override
-    public Task delete(ObservationI obj) {
+    public Task<ObservationI> delete(ObservationI obj) {
         throw new UnsupportedOperationException("Not supported.");
     }
 }

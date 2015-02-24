@@ -9,7 +9,7 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sj
  */
-public class ProjectToolsNode extends MGXNodeBase<MGXMasterI, ProjectToolsNode> {
+public class ProjectToolsNode extends MGXNodeBase<MGXMasterI> {
 
     public ProjectToolsNode(MGXMasterI m) {
         super(m, Children.LEAF, Lookups.singleton(m), m);

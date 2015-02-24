@@ -65,6 +65,7 @@ public class Node<T> implements NodeI<T> {
     @Override
     public NodeI<T>[] getPath() {
         //System.err.println("get path for " + getAttribute().getValue());
+        @SuppressWarnings("unchecked")
         NodeI<T>[] ret = new NodeI[getDepth() + 1];
         if (isRoot()) {
             ret[getDepth()] = this;
@@ -93,12 +94,12 @@ public class Node<T> implements NodeI<T> {
     public Set<NodeI<T>> getChildren() {
         return children;
     }
-    
+
     @Override
     public boolean hasChildren() {
         return !isLeaf();
     }
-    
+
     @Override
     public Node<T> addChild(AttributeI attr, T content) {
         Node<T> child = tree.addNode(this, attr, content);
@@ -130,7 +131,7 @@ public class Node<T> implements NodeI<T> {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final Node<T> other = (Node<T>) obj;
+        final Node other = (Node) obj;
         if ((this.id == other.id) && (this.tree == other.tree)) {
             return true;
         }

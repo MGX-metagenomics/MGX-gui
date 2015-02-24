@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.controller;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.client.exception.MGXClientException;
@@ -50,7 +51,7 @@ public class AttributeTypeAccess extends AccessBase<AttributeTypeI> {
     }
 
     @Override
-    public Task delete(AttributeTypeI obj) {
+    public TaskI<AttributeTypeI> delete(AttributeTypeI obj) {
         throw new UnsupportedOperationException("Not supported.");
     }
 

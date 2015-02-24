@@ -10,6 +10,7 @@ import de.cebitec.mgx.api.model.JobParameterI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.util.TestMaster;
 import de.cebitec.mgx.seqstorage.FastaWriter;
+import de.cebitec.mgx.sequence.DNASequenceI;
 import de.cebitec.mgx.sequence.SeqWriterI;
 import java.io.File;
 import java.util.Map;
@@ -49,7 +50,7 @@ public class SeqRunAccessTest {
     @Test
     public void testFetch() throws MGXException {
         System.out.println("fetch");
-        MGXMaster m = TestMaster.getRO();
+        MGXMasterI m = TestMaster.getRO();
         SeqRunI sr1 = m.SeqRun().fetch(1);
         assertNotNull(sr1);
         assertNotNull(sr1.getMaster());
@@ -58,7 +59,7 @@ public class SeqRunAccessTest {
     @Test
     public void testgetJobsAndAttributeTypes() throws MGXException {
         System.out.println("getJobsAndAttributeTypes");
-        MGXMaster m = TestMaster.getRO();
+        MGXMasterI m = TestMaster.getRO();
         SeqRunI sr1 = m.SeqRun().fetch(1);
         Map<JobI, Set<AttributeTypeI>> data = m.SeqRun().getJobsAndAttributeTypes(sr1);
         assertNotNull(data);
@@ -79,7 +80,7 @@ public class SeqRunAccessTest {
     @Test
     public void testEquality() throws MGXException {
         System.out.println("equals");
-        MGXMaster m = TestMaster.getRO();
+        MGXMasterI m = TestMaster.getRO();
         SeqRunI sr1 = m.SeqRun().fetch(1);
         SeqRunI sr2 = m.SeqRun().fetch(1);
         assertNotNull(sr1);
@@ -91,7 +92,7 @@ public class SeqRunAccessTest {
     public void testDownload() throws Exception {
         System.out.println("testDownload");
         File tmpFile = File.createTempFile("down", "xx");
-        final SeqWriterI writer = new FastaWriter(tmpFile.getAbsolutePath());
+        final SeqWriterI<DNASequenceI> writer = new FastaWriter(tmpFile.getAbsolutePath());
 
         MGXMasterI m = TestMaster.getRO();
         SeqRunI sr1 = m.SeqRun().fetch(1);

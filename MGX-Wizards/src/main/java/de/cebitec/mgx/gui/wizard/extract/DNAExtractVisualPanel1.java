@@ -33,7 +33,7 @@ public final class DNAExtractVisualPanel1 extends JPanel implements DocumentList
         initComponents();
         initDetailPanels();
         nameField.getDocument().addDocumentListener(this);
-        method.setModel(new javax.swing.DefaultComboBoxModel(methods));
+        method.setModel(new javax.swing.DefaultComboBoxModel<>(methods));
         method.setEditable(false);
         method.addActionListener(new MethodListener());
         protocol.getDocument().addDocumentListener(this);
@@ -161,7 +161,7 @@ public final class DNAExtractVisualPanel1 extends JPanel implements DocumentList
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         protocol = new javax.swing.JTextField();
-        method = new javax.swing.JComboBox();
+        method = new javax.swing.JComboBox<String>();
         placeholder = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         nameField = new javax.swing.JTextField();
@@ -171,8 +171,6 @@ public final class DNAExtractVisualPanel1 extends JPanel implements DocumentList
         org.openide.awt.Mnemonics.setLocalizedText(jLabel2, org.openide.util.NbBundle.getMessage(DNAExtractVisualPanel1.class, "DNAExtractVisualPanel1.jLabel2.text")); // NOI18N
 
         protocol.setText(org.openide.util.NbBundle.getMessage(DNAExtractVisualPanel1.class, "DNAExtractVisualPanel1.protocol.text")); // NOI18N
-
-        method.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         placeholder.setLayout(new java.awt.CardLayout());
 
@@ -225,7 +223,7 @@ public final class DNAExtractVisualPanel1 extends JPanel implements DocumentList
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JComboBox method;
+    private javax.swing.JComboBox<String> method;
     private javax.swing.JTextField nameField;
     private javax.swing.JPanel placeholder;
     private javax.swing.JTextField protocol;

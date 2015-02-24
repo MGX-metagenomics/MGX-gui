@@ -30,7 +30,7 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sj
  */
-public class HabitatNode extends MGXNodeBase<HabitatI, HabitatNode> {
+public class HabitatNode extends MGXNodeBase<HabitatI> {
 
     private SampleNodeFactory snf = null;
 
@@ -143,10 +143,10 @@ public class HabitatNode extends MGXNodeBase<HabitatI, HabitatNode> {
                     public boolean process() {
                         try {
                             setStatus("Deleting..");
-                            TaskI task = m.Habitat().delete(habitat);
+                            TaskI<HabitatI> task = m.Habitat().delete(habitat);
                             while (task != null && !task.done()) {
                                 setStatus(task.getStatusMessage());
-                                task = m.Task().refresh(task);
+                                m.<HabitatI>Task().refresh(task);
                                 sleep();
                             }
                             if (task != null) {

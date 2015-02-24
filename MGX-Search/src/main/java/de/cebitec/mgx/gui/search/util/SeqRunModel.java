@@ -7,7 +7,6 @@ package de.cebitec.mgx.gui.search.util;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.SeqRunI;
-import de.cebitec.mgx.api.model.SequenceI;
 import de.cebitec.mgx.gui.swingutils.BaseModel;
 import java.util.Collections;
 import java.util.Iterator;

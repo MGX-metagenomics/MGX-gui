@@ -1,9 +1,8 @@
 package de.cebitec.mgx.gui.wizard.analysis;
 
+import de.cebitec.mgx.api.model.JobParameterI;
+import de.cebitec.mgx.api.model.MGXFileI;
 import de.cebitec.mgx.api.model.MGXReferenceI;
-import de.cebitec.mgx.gui.datamodel.JobParameter;
-import de.cebitec.mgx.gui.datamodel.MGXFile;
-import de.cebitec.mgx.gui.datamodel.Reference;
 import de.cebitec.mgx.gui.wizard.analysis.misc.ParameterPanel;
 import java.awt.Component;
 import java.io.File;
@@ -36,8 +35,8 @@ public final class AnalysisVisualPanel3 extends JPanel {
         toolname.setText(name);
     }
 
-    public void setParameters(List<JobParameter> jps) {
-        paramlist.setListData(jps.toArray(new JobParameter[]{}));
+    public void setParameters(List<JobParameterI> jps) {
+        paramlist.setListData(jps.toArray(new JobParameterI[]{}));
     }
 
     /**
@@ -51,7 +50,7 @@ public final class AnalysisVisualPanel3 extends JPanel {
         jLabel1 = new javax.swing.JLabel();
         toolname = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
-        paramlist = new javax.swing.JList<JobParameter>();
+        paramlist = new javax.swing.JList<JobParameterI>();
 
         jLabel1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(AnalysisVisualPanel3.class, "AnalysisVisualPanel3.jLabel1.text")); // NOI18N
@@ -59,11 +58,6 @@ public final class AnalysisVisualPanel3 extends JPanel {
         toolname.setEditable(false);
         toolname.setText(org.openide.util.NbBundle.getMessage(AnalysisVisualPanel3.class, "AnalysisVisualPanel3.toolname.text")); // NOI18N
 
-        paramlist.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public Object getElementAt(int i) { return strings[i]; }
-        });
         jScrollPane1.setViewportView(paramlist);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -95,18 +89,18 @@ public final class AnalysisVisualPanel3 extends JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JList<JobParameter> paramlist;
+    private javax.swing.JList<JobParameterI> paramlist;
     private javax.swing.JTextField toolname;
     // End of variables declaration//GEN-END:variables
 
-    private final class JobParameterRenderer implements ListCellRenderer<JobParameter> {
+    private final class JobParameterRenderer implements ListCellRenderer<JobParameterI> {
 
         private final ParameterPanel panel = new ParameterPanel();
         protected Border noFocusBorder = LineBorder.createGrayLineBorder();
         protected Border focusBorder = LineBorder.createBlackLineBorder();
 
         @Override
-        public Component getListCellRendererComponent(JList<? extends JobParameter> list, JobParameter jp, int index, boolean isSelected, boolean cellHasFocus) {
+        public Component getListCellRendererComponent(JList<? extends JobParameterI> list, JobParameterI jp, int index, boolean isSelected, boolean cellHasFocus) {
             panel.setParameterName(jp.getDisplayName());
             panel.setValue(jp.getParameterValue());
 
@@ -125,10 +119,10 @@ public final class AnalysisVisualPanel3 extends JPanel {
             
             if (jp.getType().equals("ConfigFile")) {
                 String displayName = jp.getParameterValue();
-                if (displayName.startsWith(MGXFile.ROOT_PATH + MGXFile.separator)) {
+                if (displayName.startsWith(MGXFileI.ROOT_PATH + MGXFileI.separator)) {
                     displayName  = displayName.substring(2);
                 }
-                displayName = displayName.replace(MGXFile.separator, File.separator);
+                displayName = displayName.replace(MGXFileI.separator, File.separator);
                 panel.setValue(displayName);
             }
 

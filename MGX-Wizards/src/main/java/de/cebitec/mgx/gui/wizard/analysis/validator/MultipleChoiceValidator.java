@@ -11,7 +11,7 @@ import java.util.Map.Entry;
  *
  * @author sjaenick
  */
-public class MultipleChoiceValidator extends ValidatorI<String> {
+public class MultipleChoiceValidator<T extends Identifiable> extends ValidatorI {
 
     private final Map<String, String> choices;
     private String MODE = "CHOICES";
@@ -20,9 +20,9 @@ public class MultipleChoiceValidator extends ValidatorI<String> {
         choices = param.getChoices();
     }
 
-    public MultipleChoiceValidator(JobParameterI param, Collection<? extends Identifiable> allowedObjs) {
+    public MultipleChoiceValidator(JobParameterI param, Collection<T> allowedObjs) {
         choices = new HashMap<>();
-        for (Identifiable i : allowedObjs) {
+        for (T i : allowedObjs) {
             choices.put(i.toString(), String.valueOf(i.getId()));
         }
         MODE = "OPTIONS";
@@ -39,7 +39,7 @@ public class MultipleChoiceValidator extends ValidatorI<String> {
         }
         if (MODE.equals("OPTIONS")) {
             for (Entry<String, String> e : choices.entrySet()) {
-                if (e.getKey().toString().equals(input)) {
+                if (e.getKey().equals(input)) {
                     value = e.getValue();
                     return true;
                 }
