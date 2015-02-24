@@ -1,10 +1,9 @@
 package de.cebitec.mgx.gui.treeview.retry;
 
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.gui.treeview.TreeView;
 import java.awt.Rectangle;
 import java.awt.Shape;
-import java.util.Map;
+import org.apache.commons.math3.util.FastMath;
 import prefuse.render.AbstractShapeRenderer;
 import prefuse.visual.VisualItem;
 
@@ -18,13 +17,13 @@ public class NodeRenderer extends AbstractShapeRenderer {
     private final static int MIN_CIRCLE_SIZE = 30;
 
     @Override
+    @SuppressWarnings("unchecked")
     protected Shape getRawShape(VisualItem item) {
         long totalCount = item.getLong(TreeView.nodeTotalElements);
-        int size = MIN_CIRCLE_SIZE + (int) (10d * Math.log(Math.round(2 * totalCount)));
+        int size = MIN_CIRCLE_SIZE + (int) (10d * FastMath.log(Math.round(2 * totalCount)));
         area.setFrame(item.getX(), item.getY(), size, size);
 
-        Map<VisualizationGroupI, Long> content = (Map<VisualizationGroupI, Long>) item.get(TreeView.nodeContent);
-
+        //Map<VisualizationGroupI, Long> content = (Map<VisualizationGroupI, Long>) item.get(TreeView.nodeContent);
 
         return area;
     }

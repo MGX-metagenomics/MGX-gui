@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import org.apache.commons.math3.util.FastMath;
 import org.junit.After;
 import org.junit.AfterClass;
 import static org.junit.Assert.*;
@@ -142,9 +143,9 @@ public class TrackFactoryTest {
         System.out.println("testTiming2 - worst case, all reads in same area");
         SortedSet<MappedSequenceI> mappings = new TreeSet<>();
         for (long i = 0; i < 2000; i++) {
-            int start = (int) (500 + Math.random() * 25);
-            int stop = (int) (800 + Math.random() * 250);
-            int ident = (int) (Math.random() * 100);
+            int start = (int) (500 + FastMath.random() * 25);
+            int stop = (int) (800 + FastMath.random() * 250);
+            int ident = (int) (FastMath.random() * 100);
             mappings.add(new MappedSequence(null, i, start, stop, ident));
         }
         List<Track> tracks = new ArrayList<>();
