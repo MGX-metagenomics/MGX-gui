@@ -63,6 +63,10 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>MGX-Common</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-math3</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

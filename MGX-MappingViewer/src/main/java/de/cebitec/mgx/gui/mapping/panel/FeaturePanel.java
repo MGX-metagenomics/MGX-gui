@@ -203,7 +203,7 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
 //                    lastPoint[1] = baseY;
 //                } else {
 //                    // add a new point if distance >= 3px
-//                    if (Math.abs(lastPoint[0] - drawPos) > 4 || Math.abs(lastPoint[1] - covPos) > 4) {
+//                    if (FastMath.abs(lastPoint[0] - drawPos) > 4 || FastMath.abs(lastPoint[1] - covPos) > 4) {
 //                        gp.lineTo(drawPos, covPos);
 //                        lastPoint[0] = drawPos;
 //                        lastPoint[1] = covPos;

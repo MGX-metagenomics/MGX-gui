@@ -59,6 +59,10 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>MGX-JOGL-Wrapper</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-math3</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -66,7 +70,6 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>2.4.0</version>
                 <extensions>true</extensions>
                 <executions>
                     <execution>
@@ -79,6 +82,7 @@
                 <configuration>
                     <instructions>
                         <Export-Package>de.cebitec.mgx.gui.charts3d</Export-Package>
+                        <Import-Package>org.apache.commons.math3.util</Import-Package>
                         <Private-Package></Private-Package>
                     </instructions>
                 </configuration>
