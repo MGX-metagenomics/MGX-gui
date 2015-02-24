@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.radialtree.internal;
 
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
+import org.apache.commons.math3.util.FastMath;
 import prefuse.visual.DecoratorItem;
 import prefuse.visual.VisualItem;
 
@@ -55,7 +56,7 @@ public class DecoratorLabelRenderer extends RotationLabelRenderer {
         Rectangle2D itemBounds = dItem.getDecoratedItem().getBounds();
         if (((itemBounds.getWidth() > getRawShape(item).getBounds2D().getWidth()) ||
            (itemBounds.getHeight() > getRawShape(item).getBounds2D().getHeight()) ||
-           (!restrictToBounds)) && (g.getFontMetrics(item.getFont()).getHeight() * Math.sqrt(g.getTransform().getDeterminant()) > minimumRenderSize))
+           (!restrictToBounds)) && (g.getFontMetrics(item.getFont()).getHeight() * FastMath.sqrt(g.getTransform().getDeterminant()) > minimumRenderSize))
             super.render(g, item);
     }
 }

@@ -3,6 +3,7 @@ package de.cebitec.mgx.gui.radialtree.internal;
 
 import java.awt.*;
 import java.awt.geom.*;
+import org.apache.commons.math3.util.FastMath;
 import prefuse.Constants;
 import prefuse.data.Schema;
 import prefuse.render.AbstractShapeRenderer;
@@ -275,7 +276,7 @@ public class ArcLabelRenderer extends AbstractShapeRenderer {
                 str.append(line).append(m_delim);
             }
             // update maximum width and substring indices
-            m_textDim.width = Math.max(m_textDim.width, w);
+            m_textDim.width = FastMath.max(m_textDim.width, w);
             start = end+1;
             end = text.indexOf(m_delim, start);
         }
@@ -290,7 +291,7 @@ public class ArcLabelRenderer extends AbstractShapeRenderer {
             str.append(line);
         }
         // update maximum width
-        m_textDim.width = Math.max(m_textDim.width, w);
+        m_textDim.width = FastMath.max(m_textDim.width, w);
         
         // compute the text height
         m_textDim.height = fm.getHeight() * nlines;
@@ -329,11 +330,11 @@ public class ArcLabelRenderer extends AbstractShapeRenderer {
         case Constants.RIGHT:
             w = tw + size*(iw +2*m_horizBorder
                    + (tw>0 && iw>0 ? m_imageMargin : 0));
-            h = Math.max(th, size*ih) + size*2*m_vertBorder;
+            h = FastMath.max(th, size*ih) + size*2*m_vertBorder;
             break;
         case Constants.TOP:
         case Constants.BOTTOM:
-            w = Math.max(tw, size*iw) + size*2*m_horizBorder;
+            w = FastMath.max(tw, size*iw) + size*2*m_horizBorder;
             h = th + size*(ih + 2*m_vertBorder
                    + (th>0 && ih>0 ? m_imageMargin : 0));
             break;
@@ -392,7 +393,7 @@ public class ArcLabelRenderer extends AbstractShapeRenderer {
         // now render the image and text
         String text = m_text;
         
-        double scaleFactor = Math.sqrt(g.getTransform().getDeterminant());
+        double scaleFactor = FastMath.sqrt(g.getTransform().getDeterminant());
         
         if (text == null)
             return;
@@ -454,9 +455,9 @@ public class ArcLabelRenderer extends AbstractShapeRenderer {
         double startAngle = rotation;
         double endAngle = startAngle + item.getDouble("angleExtent");
     	
-        double displayScale = Math.sqrt(g.getTransform().getDeterminant());
+        double displayScale = FastMath.sqrt(g.getTransform().getDeterminant());
         
-        if ((endAngle/2+startAngle/2) < Math.PI) {
+        if ((endAngle/2+startAngle/2) < FastMath.PI) {
 	    	// TOP HALF OF CIRCLE
     		
     		// TODO make this a better calculation to position the text in the node
@@ -482,9 +483,9 @@ public class ArcLabelRenderer extends AbstractShapeRenderer {
 	        if (fm.getHeight() * scaleFactor * displayScale > minimumRenderSize){ 
 	        	int characterCount = text.length();
 	            double angleAdvance = endAngle;
-	            double x1 = Math.cos(angleAdvance) * radius;
-	            double y1 = Math.sin(angleAdvance) * radius;
-	            double angle = Math.atan(x1/y1);
+	            double x1 = FastMath.cos(angleAdvance) * radius;
+	            double y1 = FastMath.sin(angleAdvance) * radius;
+	            double angle = FastMath.atan(x1/y1);
 	            
 	            aT1 = g.getTransform();
 	            
@@ -499,10 +500,10 @@ public class ArcLabelRenderer extends AbstractShapeRenderer {
 	            for (int i = 0; i < characterCount; i++) {
 	            	aT2 = g.getTransform();
 	            	char character = text.charAt(i);
-	                angle = Math.atan(x1/y1);
+	                angle = FastMath.atan(x1/y1);
 	                g.rotate(angle);
-	                if (angleAdvance > Math.PI) {
-	                	g.rotate(Math.PI);
+	                if (angleAdvance > FastMath.PI) {
+	                	g.rotate(FastMath.PI);
 	                }
 	                g.translate(0, -1*radius/scaleFactor);
 	                g.drawString(text.substring(i, i+1), 0, 0);
@@ -510,8 +511,8 @@ public class ArcLabelRenderer extends AbstractShapeRenderer {
 	                
 	                advance = fm.charWidth(character) * scaleFactor;
 	                angleAdvance -= advance/radius;
-	                x1 = Math.cos(angleAdvance) * radius;
-	                y1 = Math.sin(angleAdvance) * radius;
+	                x1 = FastMath.cos(angleAdvance) * radius;
+	                y1 = FastMath.sin(angleAdvance) * radius;
 	            } //end for each character
 	            g.setTransform(aT1);
 	        }//end check if we should draw at all
@@ -544,9 +545,9 @@ public class ArcLabelRenderer extends AbstractShapeRenderer {
 	        if (fm.getHeight() * scaleFactor * displayScale > minimumRenderSize){ 
 	        	int characterCount = text.length();
 	            double angleAdvance = startAngle;
-	            double x1 = Math.cos(angleAdvance) * radius;
-	            double y1 = Math.sin(angleAdvance) * radius;
-	            double angle = Math.atan(x1/y1);
+	            double x1 = FastMath.cos(angleAdvance) * radius;
+	            double y1 = FastMath.sin(angleAdvance) * radius;
+	            double angle = FastMath.atan(x1/y1);
 	            
 	            aT1 = g.getTransform();
 	            
@@ -561,10 +562,10 @@ public class ArcLabelRenderer extends AbstractShapeRenderer {
 	            for (int i = 0; i < characterCount; i++) {
 	            	aT2 = g.getTransform();
 	            	char character = text.charAt(i);
-	                angle = Math.atan(x1/y1);
+	                angle = FastMath.atan(x1/y1);
 	                g.rotate(angle);
-	                if (angleAdvance < Math.PI) {
-	                	g.rotate(Math.PI);
+	                if (angleAdvance < FastMath.PI) {
+	                	g.rotate(FastMath.PI);
 	                }
 	                g.translate(0, radius/scaleFactor);
 	                g.drawString(text.substring(i, i+1), 0, 0);
@@ -572,8 +573,8 @@ public class ArcLabelRenderer extends AbstractShapeRenderer {
 	                
 	                advance = fm.charWidth(character) * scaleFactor;
 	                angleAdvance += advance/radius;
-	                x1 = Math.cos(angleAdvance) * radius;
-	                y1 = Math.sin(angleAdvance) * radius;
+	                x1 = FastMath.cos(angleAdvance) * radius;
+	                y1 = FastMath.sin(angleAdvance) * radius;
 	            } //end for each character
 	            g.setTransform(aT1);
 	        }//end check if we should draw at all

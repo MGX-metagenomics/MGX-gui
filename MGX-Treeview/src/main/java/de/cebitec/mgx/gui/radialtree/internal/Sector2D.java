@@ -5,6 +5,7 @@ import java.awt.geom.Arc2D;
 import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
+import org.apache.commons.math3.util.FastMath;
 
 /**
  * Sector2D is the class for all objects that store a 2D sector defined by a
@@ -226,9 +227,9 @@ public class Sector2D extends Area implements Shape, Cloneable {
             throw new IllegalArgumentException(
                     "Outer radius must be greater than or equal to inner radius.");
 
-        outerArc.setArcByCenter(centerX, centerY, outerRadius, Math.toDegrees(startAngle), Math.toDegrees(angleExtent),
+        outerArc.setArcByCenter(centerX, centerY, outerRadius, FastMath.toDegrees(startAngle), FastMath.toDegrees(angleExtent),
                 Arc2D.PIE);
-        innerArc.setArcByCenter(centerX, centerY, innerRadius, Math.toDegrees(startAngle), Math.toDegrees(angleExtent),
+        innerArc.setArcByCenter(centerX, centerY, innerRadius, FastMath.toDegrees(startAngle), FastMath.toDegrees(angleExtent),
                 Arc2D.PIE);
         update();
     }
@@ -533,9 +534,9 @@ public class Sector2D extends Area implements Shape, Cloneable {
                     "Inner arc must be subset of outer arc.");
         }
         
-        innerArc.setArcByCenter(centerX, centerY, innerRadius, Math.toDegrees(startAngle), Math.toDegrees(angleExtent),
+        innerArc.setArcByCenter(centerX, centerY, innerRadius, FastMath.toDegrees(startAngle), FastMath.toDegrees(angleExtent),
                 Arc2D.PIE);
-        outerArc.setArcByCenter(centerX, centerY, outerRadius, Math.toDegrees(startAngle), Math.toDegrees(angleExtent),
+        outerArc.setArcByCenter(centerX, centerY, outerRadius, FastMath.toDegrees(startAngle), FastMath.toDegrees(angleExtent),
                 Arc2D.PIE);
         update();
     }
@@ -548,7 +549,7 @@ public class Sector2D extends Area implements Shape, Cloneable {
      * @see java.awt.geom.Arc2D#setAngleStart(double)
      */
     public void setAngleStart(double startAngle) {
-        outerArc.setAngleStart(Math.toDegrees(startAngle));
+        outerArc.setAngleStart(FastMath.toDegrees(startAngle));
         update();
     }
 
@@ -560,7 +561,7 @@ public class Sector2D extends Area implements Shape, Cloneable {
      * @see java.awt.geom.Arc2D#setAngleExtent(double)
      */
     public void setAngleExtent(double angleExtent) {
-        outerArc.setAngleExtent(Math.toDegrees(angleExtent));
+        outerArc.setAngleExtent(FastMath.toDegrees(angleExtent));
         update();
     }
 

@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.radialtree.internal;
 
 import java.awt.*;
 import java.awt.geom.*;
+import org.apache.commons.math3.util.FastMath;
 import prefuse.Constants;
 import prefuse.render.AbstractShapeRenderer;
 import prefuse.render.ImageFactory;
@@ -292,7 +293,7 @@ public class RotationLabelRenderer extends AbstractShapeRenderer {
                 str.append(line).append(m_delim);
             }
             // update maximum width and substring indices
-            m_textDim.width = Math.max(m_textDim.width, w);
+            m_textDim.width = FastMath.max(m_textDim.width, w);
             start = end+1;
             end = text.indexOf(m_delim, start);
         }
@@ -307,7 +308,7 @@ public class RotationLabelRenderer extends AbstractShapeRenderer {
             str.append(line);
         }
         // update maximum width
-        m_textDim.width = Math.max(m_textDim.width, w);
+        m_textDim.width = FastMath.max(m_textDim.width, w);
         
         // compute the text height
         m_textDim.height = fm.getHeight() * nlines;
@@ -351,11 +352,11 @@ public class RotationLabelRenderer extends AbstractShapeRenderer {
         case Constants.RIGHT:
             w = tw + size*(iw +2*m_horizBorder
                    + (tw>0 && iw>0 ? m_imageMargin : 0));
-            h = Math.max(th, size*ih) + size*2*m_vertBorder;
+            h = FastMath.max(th, size*ih) + size*2*m_vertBorder;
             break;
         case Constants.TOP:
         case Constants.BOTTOM:
-            w = Math.max(tw, size*iw) + size*2*m_horizBorder;
+            w = FastMath.max(tw, size*iw) + size*2*m_horizBorder;
             h = th + size*(ih + 2*m_vertBorder
                    + (th>0 && ih>0 ? m_imageMargin : 0));
             break;
@@ -422,7 +423,7 @@ public class RotationLabelRenderer extends AbstractShapeRenderer {
                         
         // use the determinant to retrieve scale because there may be rotation
         // which makes getScaleX() and getScaleY() invalid
-        double displayScale = Math.sqrt(g.getTransform().getDeterminant());
+        double displayScale = FastMath.sqrt(g.getTransform().getDeterminant());
         
         double size = item.getSize();
         boolean useInt = 1.5 > displayScale;
@@ -586,7 +587,7 @@ public class RotationLabelRenderer extends AbstractShapeRenderer {
     	itemTransform.setToIdentity();
     	if ((itemRotation > 90) && (itemRotation < 270)) 
     		itemRotation += 180;
-    	itemTransform.rotate(itemRotation* 2*Math.PI/360, itemRawShape.getCenterX(), itemRawShape.getCenterY());
+    	itemTransform.rotate(itemRotation* 2*FastMath.PI/360, itemRawShape.getCenterX(), itemRawShape.getCenterY());
     	return itemTransform;
     }
     
@@ -614,7 +615,7 @@ public class RotationLabelRenderer extends AbstractShapeRenderer {
         	AffineTransform oldTrans = g.getTransform();
         	if ((rotation > 90) && (rotation < 270)) 
         		rotation += 180;
-        	g.rotate(rotation* 2*Math.PI/360, cx, cy);
+        	g.rotate(rotation* 2*FastMath.PI/360, cx, cy);
         	
         	if ( useInt ) {
         		g.drawString(text, (int)tx, (int)y);
