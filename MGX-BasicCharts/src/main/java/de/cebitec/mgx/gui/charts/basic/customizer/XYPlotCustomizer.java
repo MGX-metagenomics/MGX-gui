@@ -144,7 +144,7 @@ public class XYPlotCustomizer extends javax.swing.JPanel implements VisFilterI<D
     @Override
     public List<Pair<VisualizationGroupI, DistributionI>> filter(List<Pair<VisualizationGroupI, DistributionI>> dists) {
         if (useFractions()) {
-            VisFilterI fracFilter = new ToFractionFilter();
+            VisFilterI<DistributionI> fracFilter = new ToFractionFilter();
             dists = fracFilter.filter(dists);
         }
 
