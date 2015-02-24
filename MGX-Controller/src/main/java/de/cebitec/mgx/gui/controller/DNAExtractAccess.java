@@ -115,11 +115,11 @@ public class DNAExtractAccess extends AccessBase<DNAExtractI> implements DNAExtr
     }
 
     @Override
-    public TaskI delete(DNAExtractI obj) throws MGXException {
-        TaskI ret = null;
+    public TaskI<DNAExtractI> delete(DNAExtractI obj) throws MGXException {
+        TaskI<DNAExtractI> ret = null;
         try {
             UUID uuid = getDTOmaster().DNAExtract().delete(obj.getId());
-            ret = getMaster().Task().get(obj, uuid, TaskType.DELETE);
+            ret = getMaster().<DNAExtractI>Task().get(obj, uuid, TaskType.DELETE);
         } catch (MGXServerException | MGXClientException ex) {
             throw new MGXException(ex);
         }

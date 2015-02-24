@@ -16,10 +16,10 @@ import org.openide.WizardDescriptor;
 // @ActionReference(path="Menu/Tools", position=...)
 public final class SeqRunWizardAction implements ActionListener {
 
-    private WizardDescriptor.Panel[] panels;
+    private WizardDescriptor.Panel<WizardDescriptor>[] panels;
 
-    public @Override
-    void actionPerformed(ActionEvent e) {
+    @Override
+    public void actionPerformed(ActionEvent e) {
         WizardDescriptor wizardDescriptor = new WizardDescriptor(getPanels());
         // {0} will be replaced by WizardDesriptor.Panel.getComponent().getName()
         wizardDescriptor.setTitleFormat(new MessageFormat("{0}"));
@@ -34,10 +34,11 @@ public final class SeqRunWizardAction implements ActionListener {
     }
 
     /**
-     * Initialize panels representing individual wizard's steps and sets
-     * various properties for them influencing wizard appearance.
+     * Initialize panels representing individual wizard's steps and sets various
+     * properties for them influencing wizard appearance.
      */
-    private WizardDescriptor.Panel[] getPanels() {
+    @SuppressWarnings("unchecked")
+    private WizardDescriptor.Panel<WizardDescriptor>[] getPanels() {
         if (panels == null) {
             panels = new WizardDescriptor.Panel[]{
                 new SeqRunWizardPanel1(),

@@ -103,11 +103,11 @@ public class SampleAccess extends AccessBase<SampleI> implements SampleAccessI {
     }
 
     @Override
-    public TaskI delete(SampleI obj) throws MGXException {
-        TaskI ret = null;
+    public TaskI<SampleI> delete(SampleI obj) throws MGXException {
+        TaskI<SampleI> ret = null;
         try {
             UUID uuid = getDTOmaster().Sample().delete(obj.getId());
-            ret = getMaster().Task().get(obj, uuid, TaskType.DELETE);
+            ret = getMaster().<SampleI>Task().get(obj, uuid, TaskType.DELETE);
         } catch (MGXServerException | MGXClientException ex) {
             throw new MGXException(ex);
         }

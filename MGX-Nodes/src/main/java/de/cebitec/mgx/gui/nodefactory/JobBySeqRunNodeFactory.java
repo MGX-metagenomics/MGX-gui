@@ -8,6 +8,7 @@ import de.cebitec.mgx.api.model.ToolI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
 import org.openide.util.Exceptions;
 
 /**
@@ -28,7 +29,10 @@ public class JobBySeqRunNodeFactory extends JobNodeFactory {
         List<JobI> tmp = new ArrayList<>();
         try {
             for (JobI j : master.Job().BySeqRun(run)) {
-                //j.setSeqrun(run);
+                if (Thread.interrupted()) {
+                    master.log(Level.INFO, "interrupted in NF");
+                    return true;
+                }
                 ToolI t = master.Tool().ByJob(j);
                 j.setTool(t);
                 tmp.add(j);

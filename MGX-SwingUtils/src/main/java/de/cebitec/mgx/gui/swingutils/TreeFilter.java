@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import javax.swing.SwingWorker;
 import org.openide.util.Exceptions;
 
@@ -58,7 +59,7 @@ public class TreeFilter extends javax.swing.JPanel implements ItemListener, Prop
             attrTypes.setEnabled(false);
             attrList.setEnabled(false);
         }
-        
+
         parents.clear();
         blackList.clear();
         guideTree = null;
@@ -119,25 +120,25 @@ public class TreeFilter extends javax.swing.JPanel implements ItemListener, Prop
     }
 
     private TreeI<Long> createGuideTree() {
-        
+
         SwingWorker<TreeI<Long>, Void> sw = new SwingWorker<TreeI<Long>, Void>() {
 
             @Override
             protected TreeI<Long> doInBackground() throws Exception {
-                 List<Pair<VisualizationGroupI, TreeI<Long>>> trees = VGroupManager.getInstance().getHierarchies();
+                List<Pair<VisualizationGroupI, TreeI<Long>>> trees = VGroupManager.getInstance().getHierarchies();
                 if (trees == null) { // conflicts remain
                     return null;
                 }
-                List<TreeI<Long>> tmp = new ArrayList<>(trees.size());
+                List<Future<TreeI<Long>>> tmp = new ArrayList<>(trees.size());
                 for (Pair<VisualizationGroupI, TreeI<Long>> p : trees) {
-                    tmp.add(p.getSecond());
+                    tmp.add(new NoFuture<>(p.getSecond()));
                 }
                 TreeI<Long> merged = TreeFactory.mergeTrees(tmp);
                 return merged;
             }
         };
         sw.execute();
-      
+
         TreeI<Long> merged = null;
         try {
             merged = sw.get();
@@ -233,11 +234,11 @@ public class TreeFilter extends javax.swing.JPanel implements ItemListener, Prop
         return blackList;
     }
 
-    private class SortByNumberOfValues<T> implements Comparator<AttributeTypeI> {
+    private class SortByNumberOfValues implements Comparator<AttributeTypeI> {
 
-        Map<AttributeTypeI, Set<T>> map;
+        Map<AttributeTypeI, SortedSet<AttributeI>> map;
 
-        public void setMap(Map<AttributeTypeI, Set<T>> data) {
+        public void setMap(Map<AttributeTypeI, SortedSet<AttributeI>> data) {
             map = data;
         }
 

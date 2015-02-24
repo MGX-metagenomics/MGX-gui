@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 /**
  *
@@ -36,11 +38,10 @@ public class TreeFactory {
     public static <T> TreeI<T> createTree(final Map<AttributeI, T> map) {
 
         //Checker.sanityCheck(map.keySet());
-
         Map<Long, NodeI<T>> idmap = new HashMap<>(map.size()); // attr id to node
         Map<AttributeI, T> disconnected = new HashMap<>();
 
-        TreeI<T> tree = new Tree<T>();
+        TreeI<T> tree = new Tree<>();
         for (Entry<AttributeI, T> entry : map.entrySet()) {
             AttributeI attr = entry.getKey();
             if (attr.getParentID() == Identifiable.INVALID_IDENTIFIER) {
@@ -69,7 +70,6 @@ public class TreeFactory {
             }
         }
 
-
         assert map.keySet().size() == idmap.size();
         assert tree.size() == map.size();
 
@@ -77,36 +77,24 @@ public class TreeFactory {
         return tree;
     }
 
-    public static <T> TreeI<T> mergeTrees(Collection<TreeI<T>> trees) {
-        TreeI<T> consensus = new Tree<>();
-        DataMerger<T, T> adder = new Adder();
+    public static TreeI<Long> mergeTrees(Collection<Future<TreeI<Long>>> trees) throws InterruptedException, ExecutionException {
+        TreeI<Long> consensus = new Tree<>();
+        DataMerger<Long, Long> adder = new Adder();
 
-        for (TreeI<T> t : trees) {
-            NodeI<T> root = consensus.getRoot();
+        for (Future<TreeI<Long>> f : trees) {
+            TreeI<Long> t = f.get();
+            NodeI<Long> root = consensus.getRoot();
             if (root == null) {
                 root = consensus.createRootNode(t.getRoot().getAttribute(), t.getRoot().getContent());
             } else {
-                //root.setContent(root.getContent().longValue() + t.getRoot().getContent().longValue());
                 root.setContent(adder.merge(root.getContent(), t.getRoot().getContent()));
             }
-            ContentAccessor<T, T> cac = new NodeAccess<>();
+            ContentAccessor<Long, Long> cac = new NodeAccess<>();
             addChildren(root, t.getRoot().getChildren(), cac, adder);
         }
         return consensus;
     }
 
-//    public static <T> Tree<T> filterTree(Tree<T> tree, Set<Attribute> exclude) {
-//        Tree<T> clone = new Tree<>();
-//
-//        // clone root node
-//        long rootContent = tree.getRoot().getContent().longValue();
-//        Node<Long> cloneRoot = clone.createRootNode(tree.getRoot().getAttribute(), Long.valueOf(rootContent));
-//
-//        // clone children recursively
-//        cloneChildren(cloneRoot, tree.getRoot().getChildren(), new LongCloner());
-//
-//        return clone;
-//    }
     public static TreeI<Long> createKRONATree(TreeI<Long> tree) {
 
         tree = TreeFactory.clone(tree);
@@ -137,13 +125,13 @@ public class TreeFactory {
 
         // clone root node
         if (!exclude.contains(tree.getRoot().getAttribute())) {
-            long rootContent = tree.getRoot().getContent().longValue();
-            NodeI<Long> cloneRoot = clone.createRootNode(tree.getRoot().getAttribute(), Long.valueOf(rootContent));
+            long rootContent = tree.getRoot().getContent();
+            NodeI<Long> cloneRoot = clone.createRootNode(tree.getRoot().getAttribute(), rootContent);
 
             // filter children recursively
             filterChildren(cloneRoot, tree.getRoot().getChildren(), new LongCloner(), exclude);
         }
-        
+
         return clone;
     }
 
@@ -162,8 +150,8 @@ public class TreeFactory {
         TreeI<Long> clone = new Tree<>();
 
         // clone root node
-        long rootContent = tree.getRoot().getContent().longValue();
-        NodeI<Long> cloneRoot = clone.createRootNode(tree.getRoot().getAttribute(), Long.valueOf(rootContent));
+        long rootContent = tree.getRoot().getContent();
+        NodeI<Long> cloneRoot = clone.createRootNode(tree.getRoot().getAttribute(), rootContent);
 
         // clone children recursively
         cloneChildren(cloneRoot, tree.getRoot().getChildren(), new LongCloner());
@@ -314,7 +302,7 @@ public class TreeFactory {
         }
     }
 
-    private static class Adder<T> implements DataMerger<Long, Long> {
+    private static class Adder implements DataMerger<Long, Long> {
 
         @Override
         public Long merge(Long first, Long second) {

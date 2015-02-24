@@ -14,7 +14,7 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sj
  */
-public class MGXDirectoryNode extends MGXNodeBase<MGXFileI, MGXDirectoryNode> {
+public class MGXDirectoryNode extends MGXNodeBase<MGXFileI> {
 
     private FileNodeFactory nf = null;
 

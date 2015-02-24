@@ -4,16 +4,18 @@ package de.cebitec.mgx.gui.wizard.analysis.validator;
  *
  * @author sjaenick
  */
-public class SByteValidator extends ValidatorI<Byte> {
+public class SByteValidator extends ValidatorI {
 
     @Override
     public boolean validate(String input) {
+        Byte b;
         try {
-            value = Byte.parseByte(input);
-            return true;
+            b = Byte.parseByte(input);
         } catch (NumberFormatException nfe) {
             error = DEFAULT_ERROR_MSG;
             return false;
         }
+        value = input;
+        return true;
     }
 }

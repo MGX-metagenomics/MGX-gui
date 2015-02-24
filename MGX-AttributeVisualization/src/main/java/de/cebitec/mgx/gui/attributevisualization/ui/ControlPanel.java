@@ -11,6 +11,7 @@ import de.cebitec.mgx.api.misc.AttributeRank;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.misc.Triple;
+import de.cebitec.mgx.api.misc.Visualizable;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.ModelBase;
@@ -307,17 +308,18 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
         }
     }
 
-    private final class VisualizationTypeListModel extends BaseModel<ViewerI> implements ItemListener {
+    private final class VisualizationTypeListModel extends BaseModel<ViewerI<Visualizable>> implements ItemListener {
 
         @Override
+        @SuppressWarnings("unchecked")
         public void update() {
             // disable all downstream elements
             content.clear();
             visualizationTypeList.setEnabled(false);
             updateButton.setEnabled(false);
 
-            SortedSet<ViewerI> viewers = new TreeSet<>();
-            for (ViewerI viewer : Lookup.getDefault().lookupAll(ViewerI.class)) {
+            SortedSet<ViewerI<Visualizable>> viewers = new TreeSet<>();
+            for (ViewerI viewer : Lookup.getDefault().<ViewerI>lookupAll(ViewerI.class)) {
                 if (viewer.canHandle(currentAttributeType)) {
                     viewers.add(viewer);
                 }
@@ -366,6 +368,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void actionPerformed(ActionEvent e) {
         try {
             setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));

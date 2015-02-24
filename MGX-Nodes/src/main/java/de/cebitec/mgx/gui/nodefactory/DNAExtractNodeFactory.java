@@ -9,6 +9,7 @@ import java.beans.PropertyChangeEvent;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 import org.openide.nodes.ChildFactory;
 import org.openide.nodes.Node;
 import org.openide.nodes.NodeEvent;
@@ -40,6 +41,10 @@ public class DNAExtractNodeFactory extends ChildFactory<DNAExtractI> implements 
             Exceptions.printStackTrace(ex);
         }
         while (iter != null && iter.hasNext()) {
+            if (Thread.interrupted()) {
+                master.log(Level.INFO, "interrupted in NF");
+                return true;
+            }
             toPopulate.add(iter.next());
         }
         Collections.sort(toPopulate);
@@ -52,12 +57,12 @@ public class DNAExtractNodeFactory extends ChildFactory<DNAExtractI> implements 
         node.addNodeListener(this);
         return node;
     }
-    
+
     public void refreshChildren() {
         refresh(true);
     }
-    
-        @Override
+
+    @Override
     public void childrenAdded(NodeMemberEvent ev) {
         refresh(true);
     }

@@ -46,7 +46,7 @@ public class Task<T extends ModelBase> extends TaskI<T> {
     }
 
     @Override
-    public TaskI setStatusMessage(String statusMessage) {
+    public TaskI<T> setStatusMessage(String statusMessage) {
         this.statusMessage = statusMessage;
         return this;
     }
@@ -57,7 +57,7 @@ public class Task<T extends ModelBase> extends TaskI<T> {
     }
 
     @Override
-    public TaskI setState(State state) {
+    public TaskI<T> setState(State state) {
         this.state = state;
         getObject().modified();
         return this;

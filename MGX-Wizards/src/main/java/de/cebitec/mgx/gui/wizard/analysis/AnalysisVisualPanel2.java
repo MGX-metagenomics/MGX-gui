@@ -45,7 +45,7 @@ public final class AnalysisVisualPanel2 extends JPanel implements PropertyChange
         }
     }
     
-    public void setInputComponent(ValueHolderI vh) {
+    public void setInputComponent(ValueHolderI<String> vh) {
         if (valueholder != null) {
             valuePanel.remove(valueholder);
             valueholder.removePropertyChangeListener(this);

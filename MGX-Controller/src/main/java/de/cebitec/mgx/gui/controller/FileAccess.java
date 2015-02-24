@@ -83,12 +83,12 @@ public class FileAccess implements FileAccessI {
     }
 
     @Override
-    public TaskI delete(MGXFileI obj) throws MGXException {
-        TaskI t = null;
+    public TaskI<MGXFileI> delete(MGXFileI obj) throws MGXException {
+        TaskI<MGXFileI> t = null;
         try {
             FileDTO dto = FileDTOFactory.getInstance().toDTO(obj);
             UUID uuid = dtomaster.File().delete(dto);
-            t = getMaster().Task().get(obj, uuid, TaskI.TaskType.DELETE);
+            t = getMaster().<MGXFileI>Task().get(obj, uuid, TaskI.TaskType.DELETE);
         } catch (MGXServerException | MGXClientException ex) {
             throw new MGXException(ex);
         }

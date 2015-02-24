@@ -23,7 +23,6 @@ public final class ConflictResolverVisualPanel1 extends JPanel implements ListSe
      */
     public ConflictResolverVisualPanel1() {
         initComponents();
-
         jobList.setCellRenderer(new CellRenderer());
         jobList.addListSelectionListener(this);
     }
@@ -107,11 +106,6 @@ public final class ConflictResolverVisualPanel1 extends JPanel implements ListSe
         groupLabel = new javax.swing.JLabel();
         seqRunLabel = new javax.swing.JLabel();
 
-        jobList.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public Object getElementAt(int i) { return strings[i]; }
-        });
         jobList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jScrollPane1.setViewportView(jobList);
 

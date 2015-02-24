@@ -6,16 +6,9 @@
 package de.cebitec.mgx.gui.controller;
 
 import de.cebitec.mgx.api.MGXMasterI;
-import de.cebitec.mgx.api.misc.TaskI;
-import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.JobI;
-import de.cebitec.mgx.api.model.JobParameterI;
 import de.cebitec.mgx.api.model.SeqRunI;
-import de.cebitec.mgx.api.model.ToolI;
-import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.gui.util.TestMaster;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -52,7 +45,7 @@ public class JobAccessTest {
     @Test
     public void testBySeqRun() throws Exception {
         System.out.println("BySeqRun");
-        MGXMaster master = TestMaster.getRO();
+        MGXMasterI master = TestMaster.getRO();
 
         SeqRunI run = master.SeqRun().fetch(1);
         List<JobI> jobs = master.Job().BySeqRun(run);

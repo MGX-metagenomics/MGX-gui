@@ -1,11 +1,11 @@
 package de.cebitec.mgx.common;
 
-import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.groups.ConflictingJobsException;
+import de.cebitec.mgx.api.groups.VGroupManagerI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.AttributeRank;
 import de.cebitec.mgx.api.misc.DistributionI;
-import de.cebitec.mgx.api.misc.Fetcher;
+import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.misc.Triple;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
@@ -15,23 +15,20 @@ import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.tree.TreeI;
 import de.cebitec.mgx.pevents.ParallelPropertyChangeSupport;
 import java.awt.Color;
-import java.awt.EventQueue;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.openide.util.Exceptions;
@@ -46,6 +43,7 @@ public class VisualizationGroup implements VisualizationGroupI {
     //
     //
     private final int id;
+    private final VGroupManagerI vgmgr;
     private String name;
     private Color color;
     private boolean is_active = true;
@@ -61,8 +59,9 @@ public class VisualizationGroup implements VisualizationGroupI {
     private final Map<String, DistributionI> distCache = new HashMap<>();
     private final Map<String, TreeI<Long>> hierarchyCache = new HashMap<>();
 
-    VisualizationGroup(int id, String groupName, Color color) {
+    public VisualizationGroup(VGroupManagerI vgmgr, int id, String groupName, Color color) {
         this.id = id;
+        this.vgmgr = vgmgr;
         this.name = groupName;
         this.color = color;
         uniqueJobs.put(AttributeRank.PRIMARY, new HashMap<SeqRunI, JobI>());
@@ -199,7 +198,7 @@ public class VisualizationGroup implements VisualizationGroupI {
 
     @Override
     public List<Triple<AttributeRank, SeqRunI, Set<JobI>>> getConflicts() {
-        List<Triple<AttributeRank, SeqRunI, Set<JobI>>> ret = new LinkedList<>();
+        List<Triple<AttributeRank, SeqRunI, Set<JobI>>> ret = new ArrayList<>();
         for (Map.Entry<SeqRunI, Set<JobI>> e : getConflicts(AttributeRank.PRIMARY).entrySet()) {
             ret.add(new Triple<>(AttributeRank.PRIMARY, e.getKey(), e.getValue()));
         }
@@ -232,9 +231,10 @@ public class VisualizationGroup implements VisualizationGroupI {
     @Override
     public final void addSeqRuns(final Set<SeqRunI> runs) {
         MultiAttributeTypeFetcher fetcher = new MultiAttributeTypeFetcher(runs);
-        fetcher.execute();
+        Future<Map<SeqRunI, Map<JobI, Set<AttributeTypeI>>>> f = vgmgr.submit(fetcher);
+
         try {
-            Map<SeqRunI, Map<JobI, Set<AttributeTypeI>>> get = fetcher.get();
+            Map<SeqRunI, Map<JobI, Set<AttributeTypeI>>> get = f.get();
             for (Map.Entry<SeqRunI, Map<JobI, Set<AttributeTypeI>>> e : get.entrySet()) {
                 e.getKey().addPropertyChangeListener(this);
                 attributeTypes.put(e.getKey(), e.getValue());
@@ -257,15 +257,15 @@ public class VisualizationGroup implements VisualizationGroupI {
 
     @Override
     public final void addSeqRun(final SeqRunI sr) {
-        assert sr != null;
-        if (attributeTypes.containsKey(sr)) {
+        if (sr == null || attributeTypes.containsKey(sr)) {
             return;
         }
 
         AttributeTypeFetcher fetcher = new AttributeTypeFetcher(sr);
-        fetcher.execute();
+        Future<Map<JobI, Set<AttributeTypeI>>> f = vgmgr.submit(fetcher);
+
         try {
-            Map<JobI, Set<AttributeTypeI>> get = fetcher.get();
+            Map<JobI, Set<AttributeTypeI>> get = f.get();
             sr.addPropertyChangeListener(this);
             attributeTypes.put(sr, get);
 
@@ -323,7 +323,6 @@ public class VisualizationGroup implements VisualizationGroupI {
 
     @Override
     public final TreeI<Long> getHierarchy() {
-        assert !EventQueue.isDispatchThread();
         assert selectedAttributeType != null;
         assert needsResolval.get(AttributeRank.PRIMARY).isEmpty();
 
@@ -331,11 +330,9 @@ public class VisualizationGroup implements VisualizationGroupI {
             return hierarchyCache.get(selectedAttributeType);
         }
 
-        List<TreeI<Long>> results = Collections.synchronizedList(new ArrayList<TreeI<Long>>());
-
-        // start distribution retrieval workers in background
+        // start distribution retrieval workers
         //
-        CountDownLatch allDone = new CountDownLatch(attributeTypes.size());
+        List<Future<TreeI<Long>>> results = new ArrayList<>();
 
         for (SeqRunI run : getSeqRuns()) {
             //
@@ -350,28 +347,25 @@ public class VisualizationGroup implements VisualizationGroupI {
             AttributeTypeI currentAttributeType = selectAttributeType(run, selectedJob, selectedAttributeType);
 
             // 
-            // start background worker to fetch distribution
+            // start worker to fetch distribution
             //
-            if (selectedJob == null || currentAttributeType == null) {
-                allDone.countDown();
-            } else {
-                HierarchyFetcher fetcher = new HierarchyFetcher(currentAttributeType, selectedJob, allDone, results);
-                fetcher.execute();
+            if (selectedJob != null && currentAttributeType != null) {
+                HierarchyFetcher fetcher = new HierarchyFetcher(currentAttributeType, selectedJob);
+                Future<TreeI<Long>> f = vgmgr.submit(fetcher);
+                results.add(f);
             }
         }
 
-        // wait for completion of workers
-        //
-        try {
-            allDone.await();
-        } catch (InterruptedException ex) {
-            Exceptions.printStackTrace(ex);
-        }
         //
         // merge results
         //
-
-        TreeI<Long> ret = TreeFactory.mergeTrees(results);
+        TreeI<Long> ret;
+        try {
+            ret = TreeFactory.mergeTrees(results);
+        } catch (InterruptedException | ExecutionException ex) {
+            Exceptions.printStackTrace(ex);
+            return null;
+        }
 
         hierarchyCache.put(selectedAttributeType, ret);
         return ret;
@@ -380,7 +374,6 @@ public class VisualizationGroup implements VisualizationGroupI {
     @Override
     public final DistributionI getDistribution() throws ConflictingJobsException {
 
-        //assert !EventQueue.isDispatchThread();
         assert selectedAttributeType != null;
         //assert needsResolval.get(AttributeRank.PRIMARY).isEmpty();
         if (!needsResolval.get(AttributeRank.PRIMARY).isEmpty()) {
@@ -391,12 +384,10 @@ public class VisualizationGroup implements VisualizationGroupI {
             return distCache.get(selectedAttributeType);
         }
 
-        currentDistributions.clear();
+        List<Future<Pair<SeqRunI, DistributionI>>> results = new ArrayList<>();
 
         // start distribution retrieval workers in background
         //
-        CountDownLatch allDone = new CountDownLatch(attributeTypes.size());
-
         for (SeqRunI run : getSeqRuns()) {
 
             JobI selectedJob = uniqueJobs.get(AttributeRank.PRIMARY).get(run);
@@ -409,25 +400,25 @@ public class VisualizationGroup implements VisualizationGroupI {
             // 
             // start background worker to fetch distribution
             //
-            if (selectedJob == null || currentAttributeType == null) {
-                allDone.countDown();
-            } else {
-                DistributionFetcher distFetcher = new DistributionFetcher(run, currentAttributeType, selectedJob, allDone, currentDistributions);
-                distFetcher.execute();
+            if (selectedJob != null && currentAttributeType != null) {
+                DistributionFetcher distFetcher = new DistributionFetcher(run, currentAttributeType, selectedJob); // currentDistributions);
+                Future<Pair<SeqRunI, DistributionI>> f = vgmgr.submit(distFetcher);
+                results.add(f);
+//              distFetcher.execute();
             }
         }
 
-        // wait for completion of workers
-        //
-        try {
-            allDone.await();
-        } catch (InterruptedException ex) {
-            Exceptions.printStackTrace(ex);
-        }
         //
         // merge results
         //
-        DistributionI ret = DistributionFactory.merge(currentDistributions.values());
+        currentDistributions.clear();
+        DistributionI ret;
+        try {
+            ret = DistributionFactory.merge(results, currentDistributions);
+        } catch (InterruptedException | ExecutionException ex) {
+            Exceptions.printStackTrace(ex);
+            return null;
+        }
         distCache.put(selectedAttributeType, ret);
         fireVGroupChanged(VISGROUP_HAS_DIST);
 
@@ -520,153 +511,14 @@ public class VisualizationGroup implements VisualizationGroupI {
         pcs.removePropertyChangeListener(p);
     }
 
-    private final class AttributeTypeFetcher extends Fetcher<Map<JobI, Set<AttributeTypeI>>> {
-
-        private final SeqRunI run;
-
-        public AttributeTypeFetcher(final SeqRunI run) {
-            this.run = run;
-        }
-
-        @Override
-        protected Map<JobI, Set<AttributeTypeI>> doInBackground() throws Exception {
-            MGXMasterI master = run.getMaster();
-            assert master != null;
-            return master.SeqRun().getJobsAndAttributeTypes(run);
-        }
-    }
-
-    private final class MultiAttributeTypeFetcher extends Fetcher< Map<SeqRunI, Map<JobI, Set<AttributeTypeI>>>> {
-
-        private final Set<SeqRunI> runs;
-
-        public MultiAttributeTypeFetcher(final Set<SeqRunI> runs) {
-            this.runs = runs;
-        }
-
-        @Override
-        protected Map<SeqRunI, Map<JobI, Set<AttributeTypeI>>> doInBackground() throws Exception {
-            Map<SeqRunI, Map<JobI, Set<AttributeTypeI>>> ret = new HashMap<>();
-            for (SeqRunI run : runs) {
-                MGXMasterI master = run.getMaster();
-                Map<JobI, Set<AttributeTypeI>> data = master.SeqRun().getJobsAndAttributeTypes(run);
-                ret.put(run, data);
-            }
-            return ret;
-        }
-    }
-
-    private class DistributionFetcher extends Fetcher<DistributionI> {
-
-        protected final SeqRunI run;
-        protected final AttributeTypeI attrType;
-        protected final JobI job;
-        protected final CountDownLatch latch;
-        protected final Map<SeqRunI, DistributionI> result;
-
-        public DistributionFetcher(final SeqRunI run, final AttributeTypeI attrType, final JobI job, final CountDownLatch latch, Map<SeqRunI, DistributionI> ret) {
-            this.run = run;
-            this.attrType = attrType;
-            this.job = job;
-            this.latch = latch;
-            this.result = ret;
-            assert result != null;
-        }
-
-        @Override
-        protected DistributionI doInBackground() throws Exception {
-            MGXMasterI master = attrType.getMaster();
-            if (attrType.getStructure() == AttributeTypeI.STRUCTURE_HIERARCHICAL) {
-                TreeI<Long> tree = master.Attribute().getHierarchy(attrType, job);
-                return DistributionFactory.fromTree(tree, attrType);
-            } else {
-                return master.Attribute().getDistribution(attrType, job);
-            }
-        }
-
-        @Override
-        protected void done() {
-            DistributionI dist;
-            try {
-                dist = get();
-                result.put(run, dist);
-            } catch (InterruptedException | ExecutionException ex) {
-                Exceptions.printStackTrace(ex);
-            }
-            latch.countDown();
-        }
-    }
-
-    private final class HierarchyFetcher extends Fetcher<TreeI<Long>> {
-
-        protected final AttributeTypeI attrType;
-        protected final JobI job;
-        protected final CountDownLatch latch;
-        protected final List<TreeI<Long>> result;
-
-        public HierarchyFetcher(final AttributeTypeI attrType, final JobI job, final CountDownLatch latch, final List<TreeI<Long>> ret) {
-            this.attrType = attrType;
-            this.job = job;
-            this.latch = latch;
-            this.result = ret;
-        }
-
-        @Override
-        protected TreeI<Long> doInBackground() throws Exception {
-            MGXMasterI master = attrType.getMaster();
-            return master.Attribute().getHierarchy(attrType, job);
-        }
-
-        @Override
-        protected void done() {
-            try {
-                result.add(get());
-            } catch (InterruptedException | ExecutionException ex) {
-                Exceptions.printStackTrace(ex);
-            }
-            latch.countDown();
-        }
-    }
-
-//    private final class QHandler implements Runnable {
-//
-//        private final BlockingQueue<AttributeTypeFetcher> queue;
-//
-//        public QHandler(BlockingQueue<AttributeTypeFetcher> queue) {
-//            this.queue = queue;
+//    private int getNumberOfAttributeTypes() {
+//        // get current number of attribute types
+//        int curAttrTypeCnt = 0;
+//        Iterator<AttributeTypeI> it = getAttributeTypes();
+//        while (it.hasNext()) {
+//            it.next();
+//            curAttrTypeCnt++;
 //        }
-//
-//        @Override
-//        public void run() {
-//            try {
-//                while (true) {
-//                    AttributeTypeFetcher fetcher = queue.take();
-//                    System.err.println("fetching attrtypes for " + fetcher.getRun().getName());
-//                    try {
-//                        fetcher.getRun().addPropertyChangeListener(VisualizationGroup.this);
-//                        attributeTypes.put(fetcher.getRun(), fetcher.get());
-//                    } catch (InterruptedException | ExecutionException ex) {
-//                        Exceptions.printStackTrace(ex);
-//                    } finally {
-//                        fetcher.processed();
-//                    }
-//
-//                    if (queue.isEmpty()) {
-//                        fireVGroupChanged(VISGROUP_CHANGED);
-//                    }
-//                }
-//            } catch (InterruptedException ex) {
-//            }
-//        }
+//        return curAttrTypeCnt;
 //    }
-    private int getNumberOfAttributeTypes() {
-        // get current number of attribute types
-        int curAttrTypeCnt = 0;
-        Iterator<AttributeTypeI> it = getAttributeTypes();
-        while (it.hasNext()) {
-            it.next();
-            curAttrTypeCnt++;
-        }
-        return curAttrTypeCnt;
-    }
 }

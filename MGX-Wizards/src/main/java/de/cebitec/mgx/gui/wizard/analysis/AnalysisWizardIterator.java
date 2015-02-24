@@ -3,7 +3,6 @@ package de.cebitec.mgx.gui.wizard.analysis;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.JobParameterI;
 import de.cebitec.mgx.api.model.MGXReferenceI;
-import de.cebitec.mgx.gui.datamodel.JobParameter;
 import java.awt.Component;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -49,7 +48,7 @@ public final class AnalysisWizardIterator implements WizardDescriptor.Iterator<W
         this.master = master;
         p1 = new AnalysisWizardPanel1();
         p2 = new AnalysisWizardPanel2(references);
-        p3 = new AnalysisWizardPanel3(master, references);
+        p3 = new AnalysisWizardPanel3(references);
     }
 
     public void setWizardDescriptor(WizardDescriptor wd) {
@@ -58,6 +57,7 @@ public final class AnalysisWizardIterator implements WizardDescriptor.Iterator<W
         createPanels();
     }
 
+    @SuppressWarnings("unchecked")
     private void createPanels() {
 
         p1.setMaster(master);
@@ -82,6 +82,7 @@ public final class AnalysisWizardIterator implements WizardDescriptor.Iterator<W
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public WizardDescriptor.Panel<WizardDescriptor> current() {
         if (idx == 0) {
             return p1;
@@ -129,9 +130,10 @@ public final class AnalysisWizardIterator implements WizardDescriptor.Iterator<W
     }
     //private int currentParameterIdx = -1;
 
+    @SuppressWarnings("unchecked")
     private void updateState() {
         if (wd.getProperty(PROP_PARAMETERS) != null) {
-            List<JobParameter> params = (List<JobParameter>) wd.getProperty(PROP_PARAMETERS);
+            List<JobParameterI> params = (List<JobParameterI>) wd.getProperty(PROP_PARAMETERS);
             numPanels = 2 + params.size();
         }
     }

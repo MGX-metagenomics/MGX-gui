@@ -5,6 +5,7 @@
  */
 package de.cebitec.mgx.gui.controller;
 
+import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.HabitatI;
 import de.cebitec.mgx.gui.util.TestMaster;
 import java.util.Iterator;
@@ -43,7 +44,7 @@ public class HabitatAccessTest {
     @Test
     public void testFetch() throws Exception {
         System.out.println("fetch");
-        MGXMaster master = TestMaster.getRO();
+        MGXMasterI master = TestMaster.getRO();
         HabitatI h = master.Habitat().fetch(1);
         assertNotNull(h);
     }
@@ -51,7 +52,7 @@ public class HabitatAccessTest {
     @Test
     public void testFetchall() throws Exception {
         System.out.println("fetchall");
-        MGXMaster master = TestMaster.getRO();
+        MGXMasterI master = TestMaster.getRO();
         Iterator<HabitatI> iter = master.Habitat().fetchall();
         int cnt = 0;
         while (iter.hasNext()) {

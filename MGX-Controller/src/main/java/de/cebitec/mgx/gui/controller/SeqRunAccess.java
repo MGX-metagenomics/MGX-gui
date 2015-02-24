@@ -117,10 +117,10 @@ public class SeqRunAccess extends AccessBase<SeqRunI> implements SeqRunAccessI {
     }
 
     @Override
-    public TaskI delete(SeqRunI obj) throws MGXException {
+    public TaskI<SeqRunI> delete(SeqRunI obj) throws MGXException {
         try {
             UUID uuid = getDTOmaster().SeqRun().delete(obj.getId());
-            return getMaster().Task().get(obj, uuid, TaskType.DELETE);
+            return getMaster().<SeqRunI>Task().get(obj, uuid, TaskType.DELETE);
         } catch (MGXServerException | MGXClientException ex) {
             throw new MGXException(ex);
         }

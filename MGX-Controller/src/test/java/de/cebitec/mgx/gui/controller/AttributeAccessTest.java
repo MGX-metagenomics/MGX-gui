@@ -1,20 +1,26 @@
 package de.cebitec.mgx.gui.controller;
 
+import de.cebitec.mgx.gui.util.NoFuture;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.misc.DistributionI;
+import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
+import de.cebitec.mgx.api.model.JobI;
+import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.tree.NodeI;
 import de.cebitec.mgx.api.model.tree.TreeI;
 import de.cebitec.mgx.common.DistributionFactory;
 import de.cebitec.mgx.common.TreeFactory;
-import de.cebitec.mgx.gui.datamodel.Attribute;
 import de.cebitec.mgx.gui.util.TestMaster;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Future;
 import org.junit.After;
 import org.junit.AfterClass;
 import static org.junit.Assert.assertEquals;
@@ -107,7 +113,7 @@ public class AttributeAccessTest {
         assertNotNull(tree.getRoot());
 
         NodeI<Long> n = null;
-        for (NodeI x : tree.getNodes()) {
+        for (NodeI<Long> x : tree.getNodes()) {
             if (x.getAttribute().getValue().equals("Bacteroidetes")) {
                 n = x;
                 break;
@@ -292,7 +298,7 @@ public class AttributeAccessTest {
         assertEquals(5, dist.size());
         assertEquals(24, dist.getTotalClassifiedElements());
 
-        AttributeTypeI aType = dist.keySet().toArray(new Attribute[]{})[0].getAttributeType();
+        AttributeTypeI aType = dist.keySet().toArray(new AttributeI[]{})[0].getAttributeType();
         assertNotNull(aType);
         assertEquals("Bergey_class", aType.getName());
 
@@ -315,18 +321,25 @@ public class AttributeAccessTest {
     }
 
     @Test
-    public void testMergeDist() throws MGXException {
+    public void testMergeDist() throws Exception {
         System.out.println("mergeDistributions");
         MGXMasterI master = TestMaster.getRO();
-        DistributionI dist = master.Attribute().getDistribution(master.AttributeType().fetch(6), master.Job().fetch(3));
+
+        JobI job = master.Job().fetch(3);
+        assertNotNull(job);
+        SeqRunI run = job.getSeqrun();
+        assertNotNull(run);
+        DistributionI dist = master.Attribute().getDistribution(master.AttributeType().fetch(6), job);
         assertNotNull(dist);
         assertEquals(5, dist.size());
         assertEquals(24, dist.getTotalClassifiedElements());
-        List<DistributionI> twoTimes = new ArrayList<>();
-        twoTimes.add(dist);
-        twoTimes.add(dist);
+        List<Future<Pair<SeqRunI, DistributionI>>> twoTimes = new ArrayList<>();
+        twoTimes.add(new NoFuture<>(new Pair<>(run, dist)));
+        twoTimes.add(new NoFuture<>(new Pair<>(run, dist)));
 
-        DistributionI merged = DistributionFactory.merge(twoTimes);
+        Map<SeqRunI, DistributionI> m = new HashMap<>();
+
+        DistributionI merged = DistributionFactory.merge(twoTimes, m);
         assertNotNull(merged);
         assertEquals(5, merged.size());
         assertEquals(48, merged.getTotalClassifiedElements());
@@ -336,10 +349,10 @@ public class AttributeAccessTest {
         assertNotNull(dist2);
         assertEquals(4, dist2.size());
         assertEquals(21, dist2.getTotalClassifiedElements());
-        List<DistributionI> twoDists = new ArrayList<>();
-        twoDists.add(dist);
-        twoDists.add(dist2);
-        DistributionI twoDifferent = DistributionFactory.merge(twoDists);
+        List<Future<Pair<SeqRunI, DistributionI>>> twoDists = new ArrayList<>();
+        twoDists.add(new NoFuture<>(new Pair<>(run, dist)));
+        twoDists.add(new NoFuture<>(new Pair<>(run, dist2)));
+        DistributionI twoDifferent = DistributionFactory.merge(twoDists, m);
         assertNotNull(twoDifferent);
         assertEquals(9, twoDifferent.size());
         assertEquals(45, twoDifferent.getTotalClassifiedElements());

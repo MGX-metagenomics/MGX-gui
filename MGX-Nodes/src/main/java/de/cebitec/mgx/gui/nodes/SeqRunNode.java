@@ -40,7 +40,7 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sj
  */
-public class SeqRunNode extends MGXNodeBase<SeqRunI, SeqRunNode> {
+public class SeqRunNode extends MGXNodeBase<SeqRunI> {
 
     //
     //public static final DataFlavor DATA_FLAVOR = new DataFlavor(SeqRunNode.class, "SeqRunNode");
@@ -108,6 +108,7 @@ public class SeqRunNode extends MGXNodeBase<SeqRunI, SeqRunNode> {
             if (DialogDisplayer.getDefault().notify(wiz) == WizardDescriptor.FINISH_OPTION) {
                 final ToolI tool = (ToolI) wiz.getProperty(AnalysisWizardIterator.PROP_TOOL);
                 final ToolType tooltype = (ToolType) wiz.getProperty(AnalysisWizardIterator.PROP_TOOLTYPE);
+                @SuppressWarnings("unchecked")
                 final List<JobParameterI> params = (List<JobParameterI>) wiz.getProperty(AnalysisWizardIterator.PROP_PARAMETERS);
 
                 final MGXTask submit = new MGXTask("Submit " + getContent().getName() + " / " + tool.getName()) {
@@ -238,10 +239,10 @@ public class SeqRunNode extends MGXNodeBase<SeqRunI, SeqRunNode> {
                         try {
                             setStatus("Deleting..");
                             MGXMasterI m = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
-                            TaskI task = m.SeqRun().delete(sr);
+                            TaskI<SeqRunI> task = m.SeqRun().delete(sr);
                             while (task != null && !task.done()) {
                                 setStatus(task.getStatusMessage());
-                                task = m.Task().refresh(task);
+                                m.<SeqRunI>Task().refresh(task);
                                 sleep();
                             }
                             if (task != null) {

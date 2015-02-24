@@ -38,7 +38,7 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sjaenick
  */
-public class JobNode extends MGXNodeBase<JobI, JobNode> {
+public class JobNode extends MGXNodeBase<JobI> {
 
     public static String TOOL_PROPERTY = "tool";
     public static String SEQRUN_PROPERTY = "seqrun";
@@ -194,7 +194,7 @@ public class JobNode extends MGXNodeBase<JobI, JobNode> {
                     public boolean process() {
                         setStatus("Deleting..");
                         MGXMasterI m = getLookup().lookup(MGXMasterI.class);
-                        TaskI task;
+                        TaskI<JobI> task;
                         try {
                             task = m.Job().delete(job);
                         } catch (MGXException ex) {
@@ -205,7 +205,7 @@ public class JobNode extends MGXNodeBase<JobI, JobNode> {
                         while (!task.done()) {
                             setStatus(task.getStatusMessage());
                             try {
-                                task = m.Task().refresh(task);
+                                m.<JobI>Task().refresh(task);
                             } catch (MGXException ex) {
                                 setStatus(ex.getMessage());
                                 failed();
@@ -287,7 +287,7 @@ public class JobNode extends MGXNodeBase<JobI, JobNode> {
                 @Override
                 public boolean process() {
                     setStatus("Restarting job..");
-                    TaskI task = null;
+                    TaskI<JobI> task = null;
                     try {
                         task = m.Job().restart(job);
                     } catch (MGXException ex) {
@@ -298,7 +298,7 @@ public class JobNode extends MGXNodeBase<JobI, JobNode> {
                     while (task != null && !task.done()) {
                         setStatus(task.getStatusMessage());
                         try {
-                            task = m.Task().refresh(task);
+                            m.<JobI>Task().refresh(task);
                         } catch (MGXException ex) {
                             setStatus(ex.getMessage());
                             failed();

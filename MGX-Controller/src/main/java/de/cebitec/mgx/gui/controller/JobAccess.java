@@ -75,11 +75,11 @@ public class JobAccess implements JobAccessI {
     }
 
     @Override
-    public TaskI restart(JobI job) throws MGXException {
-        TaskI ret = null;
+    public TaskI<JobI> restart(JobI job) throws MGXException {
+        TaskI<JobI> ret = null;
         try {
             UUID uuid = getDTOmaster().Job().restart(job.getId());
-            ret = getMaster().Task().get(job, uuid, TaskType.MODIFY);
+            ret = getMaster().<JobI>Task().get(job, uuid, TaskType.MODIFY);
             job.modified();
         } catch (MGXServerException | MGXClientException ex) {
             throw new MGXException(ex);
@@ -167,10 +167,10 @@ public class JobAccess implements JobAccessI {
     }
 
     @Override
-    public TaskI delete(JobI obj) throws MGXException {
+    public TaskI<JobI> delete(JobI obj) throws MGXException {
         try {
             UUID uuid = getDTOmaster().Job().delete(obj.getId());
-            return getMaster().Task().get(obj, uuid, TaskType.DELETE);
+            return getMaster().<JobI>Task().get(obj, uuid, TaskType.DELETE);
         } catch (MGXServerException | MGXClientException ex) {
             throw new MGXException(ex);
         }

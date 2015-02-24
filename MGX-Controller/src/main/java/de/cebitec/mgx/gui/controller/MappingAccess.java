@@ -105,10 +105,10 @@ public class MappingAccess extends MappingAccessI {
     }
 
     @Override
-    public TaskI delete(MappingI obj) throws MGXException {
+    public TaskI<MappingI> delete(MappingI obj) throws MGXException {
         try {
             UUID uuid = dtomaster.Mapping().delete(obj.getId());
-            return master.Task().get(obj, uuid, Task.TaskType.DELETE);
+            return master.<MappingI>Task().get(obj, uuid, Task.TaskType.DELETE);
         } catch (MGXServerException | MGXClientException ex) {
             throw new MGXException(ex);
         }

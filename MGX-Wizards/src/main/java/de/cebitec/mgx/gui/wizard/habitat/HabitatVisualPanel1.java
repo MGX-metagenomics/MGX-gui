@@ -76,7 +76,7 @@ public final class HabitatVisualPanel1 extends JPanel implements DocumentListene
         searchLocation = new javax.swing.JTextField();
         jXMapKit1 = new org.jdesktop.swingx.JXMapKit();
         jScrollPane2 = new javax.swing.JScrollPane();
-        foundLocationList = new javax.swing.JList();
+        foundLocationList = new javax.swing.JList<String>();
         jButton_searchLoc = new javax.swing.JButton();
         jLabel_foundLocations = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
@@ -187,7 +187,7 @@ public final class HabitatVisualPanel1 extends JPanel implements DocumentListene
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField biomename;
-    private javax.swing.JList foundLocationList;
+    private javax.swing.JList<String> foundLocationList;
     private javax.swing.JTextField gpslocation;
     private javax.swing.JTextField habitatname;
     private javax.swing.JButton jButton_searchLoc;
@@ -299,7 +299,7 @@ public final class HabitatVisualPanel1 extends JPanel implements DocumentListene
         ((DefaultTileFactory) kit.getMainMap().getTileFactory()).setThreadPoolSize(8);
         waypoints = new HashSet<>();
         waypoints.add(new WaypointImpl(kit.getMainMap().getCenterPosition()));
-        final WaypointPainter painter = new WaypointPainter();
+        final WaypointPainter<Waypoint> painter = new WaypointPainter<>();
         painter.setWaypoints(waypoints);
         kit.getMainMap().setOverlayPainter(painter);
         waypoints.clear();
@@ -360,7 +360,7 @@ public final class HabitatVisualPanel1 extends JPanel implements DocumentListene
             }
 
             // update result list
-            foundLocationList.setModel(new javax.swing.AbstractListModel() {
+            foundLocationList.setModel(new javax.swing.AbstractListModel<String>() {
 
                 @Override
                 public int getSize() {
@@ -368,7 +368,7 @@ public final class HabitatVisualPanel1 extends JPanel implements DocumentListene
                 }
 
                 @Override
-                public Object getElementAt(int i) {
+                public String getElementAt(int i) {
                     return strings[i];
                 }
             });
@@ -439,7 +439,8 @@ public final class HabitatVisualPanel1 extends JPanel implements DocumentListene
             jXMapKit1.setCenterPosition(geoPosition);
             if (waypoints != null) {
                 waypoints.clear();
-                waypoints.add(new WaypointImpl(geoPosition));
+                Waypoint ww = new WaypointImpl(geoPosition);
+                waypoints.add(ww);
             }
         }
     }

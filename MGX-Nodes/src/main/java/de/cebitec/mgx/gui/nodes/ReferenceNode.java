@@ -15,7 +15,6 @@ import javax.swing.Action;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.nodes.Children;
-import org.openide.util.Exceptions;
 import org.openide.util.Utilities;
 import org.openide.util.lookup.Lookups;
 
@@ -23,7 +22,7 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sj
  */
-public class ReferenceNode extends MGXNodeBase<MGXReferenceI, ReferenceNode> {
+public class ReferenceNode extends MGXNodeBase<MGXReferenceI> {
 
     public ReferenceNode(MGXMasterI m, MGXReferenceI ref) {
         this(ref, m);
@@ -84,10 +83,10 @@ public class ReferenceNode extends MGXNodeBase<MGXReferenceI, ReferenceNode> {
                         try {
                             setStatus("Deleting..");
                             MGXMasterI m = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
-                            TaskI task = m.Reference().delete(ref);
+                            TaskI<MGXReferenceI> task = m.Reference().delete(ref);
                             while (task != null && !task.done()) {
                                 setStatus(task.getStatusMessage());
-                                task = m.Task().refresh(task);
+                                m.<MGXReferenceI>Task().refresh(task);
                                 sleep();
                             }
                             if (task != null) {

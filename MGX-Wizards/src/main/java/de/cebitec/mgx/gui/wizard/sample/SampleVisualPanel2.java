@@ -21,10 +21,10 @@ public final class SampleVisualPanel2 extends JPanel implements DocumentListener
         material.getDocument().addDocumentListener(this);
         temperature.getDocument().addDocumentListener(this);
         volume.getDocument().addDocumentListener(this);
-        tempUnit.setModel(new javax.swing.DefaultComboBoxModel(temps));
+        tempUnit.setModel(new javax.swing.DefaultComboBoxModel<>(temps));
         tempUnit.setEditable(false);
         tempUnit.setSelectedItem("K");
-        volUnit.setModel(new javax.swing.DefaultComboBoxModel(vols));
+        volUnit.setModel(new javax.swing.DefaultComboBoxModel<>(vols));
         volUnit.setEditable(false);
         volUnit.setSelectedItem("ml");
     }
@@ -86,8 +86,8 @@ public final class SampleVisualPanel2 extends JPanel implements DocumentListener
         material = new javax.swing.JTextField();
         temperature = new javax.swing.JTextField();
         volume = new javax.swing.JTextField();
-        tempUnit = new javax.swing.JComboBox();
-        volUnit = new javax.swing.JComboBox();
+        tempUnit = new javax.swing.JComboBox<String>();
+        volUnit = new javax.swing.JComboBox<String>();
 
         org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(SampleVisualPanel2.class, "SampleVisualPanel2.jLabel1.text")); // NOI18N
 
@@ -100,10 +100,6 @@ public final class SampleVisualPanel2 extends JPanel implements DocumentListener
         temperature.setText(org.openide.util.NbBundle.getMessage(SampleVisualPanel2.class, "SampleVisualPanel2.temperature.text")); // NOI18N
 
         volume.setText(org.openide.util.NbBundle.getMessage(SampleVisualPanel2.class, "SampleVisualPanel2.volume.text")); // NOI18N
-
-        tempUnit.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-
-        volUnit.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -153,9 +149,9 @@ public final class SampleVisualPanel2 extends JPanel implements DocumentListener
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JTextField material;
-    private javax.swing.JComboBox tempUnit;
+    private javax.swing.JComboBox<String> tempUnit;
     private javax.swing.JTextField temperature;
-    private javax.swing.JComboBox volUnit;
+    private javax.swing.JComboBox<String> volUnit;
     private javax.swing.JTextField volume;
     // End of variables declaration//GEN-END:variables
 

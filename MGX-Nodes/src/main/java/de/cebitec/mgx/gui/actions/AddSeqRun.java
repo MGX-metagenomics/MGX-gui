@@ -16,6 +16,7 @@ import de.cebitec.mgx.gui.nodefactory.SeqRunNodeFactory;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
 import de.cebitec.mgx.gui.wizard.seqrun.SeqRunWizardDescriptor;
+import de.cebitec.mgx.sequence.DNASequenceI;
 import de.cebitec.mgx.sequence.SeqReaderFactory;
 import de.cebitec.mgx.sequence.SeqReaderI;
 import de.cebitec.mgx.sequence.SeqStoreException;
@@ -64,7 +65,7 @@ public class AddSeqRun extends AbstractAction {
                     final SeqRunI seqrun = m.SeqRun().create(extract, wd.getSeqRunName(), wd.getSequencingMethod(), wd.getSequencingTechnology(), wd.getSubmittedToINSDC(), wd.getAccession());
                     // create a sequence reader
                     String canonicalPath;
-                    SeqReaderI reader;
+                    SeqReaderI<DNASequenceI> reader;
                     try {
                         canonicalPath = wd.getSequenceFile().getCanonicalPath();
                         reader = SeqReaderFactory.getReader(canonicalPath);

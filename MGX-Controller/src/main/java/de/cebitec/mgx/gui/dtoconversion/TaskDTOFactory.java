@@ -12,7 +12,7 @@ import java.util.UUID;
  *
  * @author sjaenick
  */
-public class TaskDTOFactory extends DTOConversionBase<TaskI, TaskDTO> {
+public class TaskDTOFactory<T extends ModelBase> extends DTOConversionBase<TaskI<T>, TaskDTO> {
 
     static {
         instance = new TaskDTOFactory();
@@ -25,21 +25,22 @@ public class TaskDTOFactory extends DTOConversionBase<TaskI, TaskDTO> {
     private static UUID taskUUid;
     private static TaskType taskType;
 
-    public static synchronized TaskDTOFactory getInstance(ModelBase obj, UUID uuid, TaskType tType) {
-        object = obj;
+    public static synchronized <T extends ModelBase> TaskDTOFactory getInstance(T obj, UUID uuid, TaskType tType) {
+        object = (ModelBase) obj;
         taskUUid = uuid;
         taskType = tType;
         return instance;
     }
 
     @Override
-    public TaskDTO toDTO(TaskI a) {
+    public TaskDTO toDTO(TaskI<T> a) {
         throw new UnsupportedOperationException("Not supported.");
     }
 
     @Override
-    public TaskI toModel(MGXMasterI m, TaskDTO dto) {
-        return new Task(object, taskUUid, taskType)
+    @SuppressWarnings("unchecked")
+    public TaskI<T> toModel(MGXMasterI m, TaskDTO dto) {
+        return new Task<>((T)object, taskUUid, taskType)
                 .setStatusMessage(dto.getMessage())
                 .setState(Task.State.values()[dto.getState().ordinal()]);
     }

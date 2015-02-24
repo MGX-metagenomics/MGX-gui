@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.util;
 
+import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.SequenceI;
@@ -41,7 +42,7 @@ public class DownloadTest {
     @Test
     public void testDownloadSequencesForAttribute() throws MGXException {
         System.out.println("testDownloadSequencesForAttribute");
-        MGXMaster master = TestMaster.getRO();
+        MGXMasterI master = TestMaster.getRO();
         AttributeI attr = master.Attribute().fetch(1);
         assertNotNull(attr);
         Set<AttributeI> set = new HashSet<>();
@@ -52,7 +53,7 @@ public class DownloadTest {
         final Holder<Boolean> closed = new Holder<>();
         closed.set(Boolean.FALSE);
         
-        SeqWriterI dummy = new SeqWriterI() {
+        SeqWriterI<DNASequenceI> dummy = new SeqWriterI<DNASequenceI>() {
             @Override
             public void addSequence(DNASequenceI seq) throws IOException {
                 cnt.set(cnt.get() + 1);
@@ -94,7 +95,7 @@ public class DownloadTest {
     @Test
     public void testFetchSequence() throws MGXException {
         System.out.println("testFetchSequence");
-        MGXMaster master = TestMaster.getRO();
+        MGXMasterI master = TestMaster.getRO();
         SequenceI seq = master.Sequence().fetch(1);
         assertEquals("FI5LW4G01DZDXZ", seq.getName());
         assertEquals("TTTGCCATCGGCGCAGTCCTACTTATGAAGTTTGCAGAATAGCGTCAAGGCACTACCAAGGGG", seq.getSequence());

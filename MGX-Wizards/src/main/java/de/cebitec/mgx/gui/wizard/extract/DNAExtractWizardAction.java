@@ -20,7 +20,7 @@ import org.openide.WizardDescriptor;
 // @ActionReference(path="Menu/Tools", position=...)
 public final class DNAExtractWizardAction implements ActionListener {
 
-    private WizardDescriptor.Panel[] panels;
+    private WizardDescriptor.Panel<WizardDescriptor>[] panels;
 
     public @Override
     void actionPerformed(ActionEvent e) {
@@ -41,7 +41,8 @@ public final class DNAExtractWizardAction implements ActionListener {
      * Initialize panels representing individual wizard's steps and sets
      * various properties for them influencing wizard appearance.
      */
-    private WizardDescriptor.Panel[] getPanels() {
+    @SuppressWarnings("unchecked")
+    private WizardDescriptor.Panel<WizardDescriptor>[] getPanels() {
         if (panels == null) {
             panels = new WizardDescriptor.Panel[]{
                 new DNAExtractWizardPanel1(),

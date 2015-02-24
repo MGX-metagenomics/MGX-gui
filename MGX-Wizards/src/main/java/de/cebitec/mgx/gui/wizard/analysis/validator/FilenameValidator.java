@@ -6,7 +6,7 @@ import de.cebitec.mgx.api.model.MGXFileI;
  *
  * @author sjaenick
  */
-public class FilenameValidator extends ValidatorI<String> {
+public class FilenameValidator extends ValidatorI {
 
     @Override
     public boolean validate(String input) {
