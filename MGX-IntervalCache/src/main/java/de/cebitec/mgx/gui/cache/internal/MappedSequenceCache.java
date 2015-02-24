@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import org.apache.commons.math3.util.FastMath;
 
 /**
  *
@@ -60,7 +61,7 @@ public class MappedSequenceCache extends CoverageInfoCache<SortedSet<MappedSeque
         if (from < 0 || from > to) {
             throw new IllegalArgumentException();
         }
-        to = Math.min(ref.getLength() - 1, to);
+        to = FastMath.min(ref.getLength() - 1, to);
         if (dest.length < to - from + 1) {
             throw new IllegalArgumentException("Destination array too small.");
         }
@@ -88,7 +89,7 @@ public class MappedSequenceCache extends CoverageInfoCache<SortedSet<MappedSeque
             throw new IllegalArgumentException();
         }
         assert !EventQueue.isDispatchThread();
-        return new IntIterator(from, Math.min(to, ref.getLength() - 1), this);
+        return new IntIterator(from, FastMath.min(to, ref.getLength() - 1), this);
     }
 
     @Override

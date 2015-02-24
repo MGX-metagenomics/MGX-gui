@@ -95,7 +95,7 @@ public class PCAPlot extends ViewerI<DistributionI> {
         final MGXMasterI master = dists.get(0).getSecond().getMaster();
 
         if (getCustomizer().useFractions()) {
-            VisFilterI fracFilter = new ToFractionFilter();
+            VisFilterI<DistributionI> fracFilter = new ToFractionFilter();
             dists = fracFilter.filter(dists);
         }
         final Pair<PrincipalComponent, PrincipalComponent> comps = getCustomizer().getPCs();

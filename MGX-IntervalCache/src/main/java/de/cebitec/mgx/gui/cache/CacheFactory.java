@@ -18,6 +18,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import org.apache.commons.math3.util.FastMath;
 
 /**
  *
@@ -30,7 +31,7 @@ public class CacheFactory {
         CacheLoader<Interval, String> loader = new CacheLoader<Interval, String>() {
             @Override
             public String load(Interval k) throws MGXException {
-                return master.Reference().getSequence(ref, k.getFrom(), Math.min(k.getTo(), refLength));
+                return master.Reference().getSequence(ref, k.getFrom(), FastMath.min(k.getTo(), refLength));
             }
         };
 
@@ -48,7 +49,7 @@ public class CacheFactory {
             @Override
             public Set<RegionI> load(Interval k) throws MGXException {
                 //Logger.getLogger(getClass().getName()).log(Level.INFO, "server fetch " + k.getFrom() + " - " + k.getTo());
-                Iterator<RegionI> iter = master.Reference().byReferenceInterval(ref, k.getFrom(), Math.min(k.getTo(), refLength));
+                Iterator<RegionI> iter = master.Reference().byReferenceInterval(ref, k.getFrom(), FastMath.min(k.getTo(), refLength));
                 Set<RegionI> ret = new HashSet<>();
                 while (iter.hasNext()) {
                     ret.add(iter.next());
@@ -68,7 +69,7 @@ public class CacheFactory {
         CacheLoader<Interval, SortedSet<MappedSequenceI>> loader = new CacheLoader<Interval, SortedSet<MappedSequenceI>>() {
             @Override
             public SortedSet<MappedSequenceI> load(Interval k) throws MGXException {
-                Iterator<MappedSequenceI> iter = master.Mapping().byReferenceInterval(uuid, k.getFrom(), Math.min(k.getTo(), refLength));
+                Iterator<MappedSequenceI> iter = master.Mapping().byReferenceInterval(uuid, k.getFrom(), FastMath.min(k.getTo(), refLength));
                 SortedSet<MappedSequenceI> ret = new TreeSet<>();
                 while (iter.hasNext()) {
                     ret.add(iter.next());

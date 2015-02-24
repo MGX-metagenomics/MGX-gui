@@ -3,6 +3,7 @@ package de.cebitec.mgx.gui.statistics.clustering.view;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Arrays;
+import org.apache.commons.math3.util.FastMath;
 import prefuse.Constants;
 import prefuse.Display;
 import prefuse.action.layout.graph.TreeLayout;
@@ -238,8 +239,8 @@ public class DendrogramLayout extends TreeLayout {
         if (m_depths.length <= depth) {
             m_depths = ArrayLib.resize(m_depths, 3 * depth / 2);
         }
-        m_depths[depth] = Math.max(m_depths[depth], d);
-        m_maxDepth = Math.max(m_maxDepth, depth);
+        m_depths[depth] = FastMath.max(m_depths[depth], d);
+        m_maxDepth = FastMath.max(m_maxDepth, depth);
     }
 
     private void determineDepths() {

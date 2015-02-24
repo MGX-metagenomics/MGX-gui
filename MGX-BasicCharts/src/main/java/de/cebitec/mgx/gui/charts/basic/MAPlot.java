@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.swing.JComponent;
+import org.apache.commons.math3.util.FastMath;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -116,8 +117,8 @@ public class MAPlot extends NumericalViewerI {
             if (item != null) {
                 series.add(item);
 
-                long numAssigned1 = Math.round(firstVal * first.getTotalClassifiedElements());
-                long numAssigned2 = Math.round(secondVal * second.getTotalClassifiedElements());
+                long numAssigned1 = FastMath.round(firstVal * first.getTotalClassifiedElements());
+                long numAssigned2 = FastMath.round(secondVal * second.getTotalClassifiedElements());
 
                 String toolTipText = new StringBuilder("<html>")
                         .append(a.getValue())
@@ -210,9 +211,9 @@ public class MAPlot extends NumericalViewerI {
         return JFreeChartUtil.getImageExporter(chart);
     }
 
-    private final static double log2 = Math.log(2);
+    private final static double log2 = FastMath.log(2);
 
     private double log2(double d) {
-        return Math.log(d) / log2;
+        return FastMath.log(d) / log2;
     }
 }

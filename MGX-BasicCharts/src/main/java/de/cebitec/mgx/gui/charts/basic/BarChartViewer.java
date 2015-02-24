@@ -14,6 +14,7 @@ import java.awt.Color;
 import java.util.List;
 import java.util.Locale;
 import javax.swing.JComponent;
+import org.apache.commons.math3.util.FastMath;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -92,7 +93,7 @@ public class BarChartViewer extends CategoricalViewerI {
         // x axis
         CategoryAxis domainAxis = plot.getDomainAxis();
         domainAxis.setCategoryMargin(customizer.getCategoryMargin());
-        domainAxis.setCategoryLabelPositions(CategoryLabelPositions.createUpRotationLabelPositions(Math.PI / 6));
+        domainAxis.setCategoryLabelPositions(CategoryLabelPositions.createUpRotationLabelPositions(FastMath.PI / 6));
 
         // y axis
         final NumberAxis rangeAxis;
