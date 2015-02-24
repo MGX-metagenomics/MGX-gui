@@ -5,6 +5,7 @@ import java.awt.FontMetrics;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Iterator;
+import org.apache.commons.math3.util.FastMath;
 import prefuse.action.assignment.FontAction;
 import prefuse.action.layout.Layout;
 import prefuse.action.layout.graph.TreeLayout;
@@ -225,7 +226,7 @@ public class StarburstLayout extends TreeLayout {
     }
 
     protected void setScale(Rectangle2D bounds) {
-        double r = Math.min(bounds.getWidth(), bounds.getHeight()) / 2.0;
+        double r = FastMath.min(bounds.getWidth(), bounds.getHeight()) / 2.0;
         if (m_maxDepth > 0) {
             radiusInc = (r - MARGIN) / m_maxDepth;
         }
@@ -309,12 +310,13 @@ public class StarburstLayout extends TreeLayout {
         this.innerRadiusRoot = innerRadiusRoot;
     }
 
+    @SuppressWarnings("unchecked")
     private Iterator<prefuse.data.Node> sortedChildren(final NodeItem n) {
         double base = 0;
         // update base angle for node ordering
         NodeItem p = (NodeItem) n.getParent();
         if (p != null) {
-            base = normalize(Math.atan2(p.getY() - n.getY(), p.getX() - n.getX()));
+            base = normalize(FastMath.atan2(p.getY() - n.getY(), p.getX() - n.getX()));
         }
         int cc = n.getChildCount();
         if (cc == 0) {
@@ -335,8 +337,8 @@ public class StarburstLayout extends TreeLayout {
         final int idx[] = new int[cc];
         for (int i = 0; i < cc; ++i, c = (NodeItem) c.getNextSibling()) {
             idx[i] = i;
-            angle[i] = normalize(-base
-                    + Math.atan2(c.getY() - n.getY(), c.getX() - n.getX()));
+            angle[i] = normalize(-base + 
+                    + FastMath.atan2(c.getY() - n.getY(), c.getX() - n.getX()));
         }
         ArrayLib.sort(angle, idx);
 
@@ -413,8 +415,8 @@ public class StarburstLayout extends TreeLayout {
      * @param t the angle theta
      */
     protected void setPolarLocation(NodeItem n, NodeItem p, double r, double t) {
-        setX(n, p, r * Math.cos(t));
-        setY(n, p, r * Math.sin(t));
+        setX(n, p, r * FastMath.cos(t));
+        setY(n, p, r * FastMath.sin(t));
     }
 
     /**
@@ -466,17 +468,17 @@ public class StarburstLayout extends TreeLayout {
                 DecoratorItem item = (DecoratorItem) iter.next();
                 VisualItem node = item.getDecoratedItem();
                 Rectangle2D bounds = node.getBounds();
-                double angle = 2 * Math.PI - item.getDouble("startAngle") - 0.5 * item.getDouble("angleExtent");
+                double angle = 2 * FastMath.PI - item.getDouble("startAngle") - 0.5 * item.getDouble("angleExtent");
                 if (angle < 0) {
                     System.err.println("< 0 angle specified for " + item.getString("label"));
                 }
-                if ((item.getDouble("angleExtent") > Math.PI / 6)
+                if ((item.getDouble("angleExtent") > FastMath.PI / 6)
                         && (item.getDouble("innerRadius") != 0)) {
                     // render arched
                     item.setDouble("rotation", 0);
                 } else {
                     // 	render straight
-                    item.setDouble("rotation", Math.toDegrees(angle));
+                    item.setDouble("rotation", FastMath.toDegrees(angle));
                 }
                 setX(item, null, bounds.getCenterX());
                 setY(item, null, bounds.getCenterY());
@@ -497,7 +499,7 @@ public class StarburstLayout extends TreeLayout {
 
         public double getArcHeight(VisualItem item) {
             // the outer-inner distance between rings minus 2 for borders
-            if (item.getDouble("angleExtent") >= 2 * Math.PI) {
+            if (item.getDouble("angleExtent") >= 2 * FastMath.PI) {
                 return 2 * (item.getDouble("outerRadius")
                         - item.getDouble("innerRadius") - 4);
             } else {
@@ -530,7 +532,7 @@ public class StarburstLayout extends TreeLayout {
                     scaleFactor = getArcWidth(dItem) / fm.getHeight();
                 }
                 currentFont = FontLib.getFont(currentFont.getFontName(),
-                        currentFont.getStyle(), Math.min(currentFont.getSize() * scaleFactor, MAXFONTHEIGHT));
+                        currentFont.getStyle(), FastMath.min(currentFont.getSize() * scaleFactor, MAXFONTHEIGHT));
             } else {
                 // scale based on string height and difference between arc inner and outer radii
                 double scaleFactor = getArcHeight(dItem.getDecoratedItem()) / fm.getHeight();
@@ -540,7 +542,7 @@ public class StarburstLayout extends TreeLayout {
                 }
                 // scale is later refined by the renderer
                 currentFont = FontLib.getFont(currentFont.getFontName(),
-                        currentFont.getStyle(), Math.min(currentFont.getSize() * scaleFactor, MAXFONTHEIGHT));
+                        currentFont.getStyle(), FastMath.min(currentFont.getSize() * scaleFactor, MAXFONTHEIGHT));
             }
             return currentFont;
         }

@@ -12,6 +12,7 @@ import java.awt.font.TextLayout;
 import java.awt.geom.RectangularShape;
 import java.awt.image.BufferedImage;
 import java.util.Map;
+import org.apache.commons.math3.util.FastMath;
 import prefuse.Constants;
 import prefuse.render.LabelRenderer;
 import prefuse.visual.VisualItem;
@@ -30,10 +31,11 @@ public class PieNodeRenderer extends LabelRenderer {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void render(Graphics2D g2, VisualItem item) {
 
         long totalCount = item.getLong(TreeView.nodeTotalElements);
-        int size = MIN_CIRCLE_SIZE + 10 * (int) Math.log(Math.round(2 * totalCount));
+        int size = MIN_CIRCLE_SIZE + 10 * (int) FastMath.log(FastMath.round(2 * totalCount));
         int radius = size / 2;
 
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -99,7 +101,7 @@ public class PieNodeRenderer extends LabelRenderer {
         long totalCount = item.getLong(TreeView.nodeTotalElements);
 
         // create image and g2d object
-        int size = MIN_CIRCLE_SIZE + 10 * (int) Math.log(Math.round(2 * totalCount));
+        int size = MIN_CIRCLE_SIZE + 10 * (int) FastMath.log(FastMath.round(2 * totalCount));
         BufferedImage img = new BufferedImage(size + 1, size + 1, BufferedImage.TYPE_INT_ARGB);
         return img;
     }
