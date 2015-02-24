@@ -5,6 +5,7 @@ import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.gui.biodiversity.statistic.Statistic;
 import java.util.Map.Entry;
+import org.apache.commons.math3.util.FastMath;
 
 /**
  *
@@ -18,7 +19,7 @@ public class Shannon implements Statistic<DistributionI> {
         long numElem = data.getTotalClassifiedElements();
         for (Entry<AttributeI, Number> e : data.entrySet()) {
             double relAbun = e.getValue().doubleValue() / (double)numElem;
-            ret += relAbun * Math.log(relAbun);
+            ret += relAbun * FastMath.log(relAbun);
         }
         return String.format("%.2f", -1 * ret);
     }

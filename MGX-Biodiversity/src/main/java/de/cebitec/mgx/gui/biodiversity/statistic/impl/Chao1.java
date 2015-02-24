@@ -4,6 +4,7 @@ import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.gui.biodiversity.statistic.Statistic;
 import java.util.Map.Entry;
+import org.apache.commons.math3.util.FastMath;
 
 /**
  *
@@ -31,7 +32,7 @@ public class Chao1 implements Statistic<DistributionI> {
             }
         }
         // classic formula
-        double ret = numCategories + (Math.pow(numSingletons, 2f) / 2 * numDoubletons);
+        double ret = numCategories + (FastMath.pow(numSingletons, 2f) / 2 * numDoubletons);
 
         return String.format("%.2f", ret);
     }

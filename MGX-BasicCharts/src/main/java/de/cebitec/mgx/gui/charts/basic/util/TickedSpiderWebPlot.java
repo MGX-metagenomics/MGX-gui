@@ -11,6 +11,7 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.text.NumberFormat;
+import org.apache.commons.math3.util.FastMath;
 import org.jfree.chart.plot.SpiderWebPlot;
 import org.jfree.data.category.CategoryDataset;
 
@@ -67,14 +68,14 @@ public class TickedSpiderWebPlot extends SpiderWebPlot {
             labelY = transformed[1] + deltaY;
             double rotated = (PERPENDICULAR);
             AffineTransform rotateTrans = AffineTransform.getRotateInstance(
-                    Math.toRadians(rotated), labelX, labelY);
+                    FastMath.toRadians(rotated), labelX, labelY);
             transformer[0] = pointX;
             transformer[1] = pointY;
             rotateTrans.transform(transformer, 0, transformed, 0, 1);
             final double x1 = transformed[0];
             final double y1 = transformed[1];
             rotated = (-PERPENDICULAR);
-            rotateTrans = AffineTransform.getRotateInstance(Math
+            rotateTrans = AffineTransform.getRotateInstance(FastMath
                     .toRadians(rotated), labelX, labelY);
             rotateTrans.transform(transformer, 0, transformed, 0, 1);
             final Composite saveComposite = g2.getComposite();
@@ -88,10 +89,10 @@ public class TickedSpiderWebPlot extends SpiderWebPlot {
                 final LineMetrics lm = getLabelFont()
                         .getLineMetrics(label, frc);
                 final double ascent = lm.getAscent();
-                if (Math.abs(labelX - plotArea.getCenterX()) < THRESHOLD) {
+                if (FastMath.abs(labelX - plotArea.getCenterX()) < THRESHOLD) {
                     labelX += valueLabelGap;
                     labelY += ascent / (float) 2;
-                } else if (Math.abs(labelY - plotArea.getCenterY()) < THRESHOLD) {
+                } else if (FastMath.abs(labelY - plotArea.getCenterY()) < THRESHOLD) {
                     labelY += valueLabelGap;
                 } else if (labelX >= plotArea.getCenterX()) {
                     if (labelY < plotArea.getCenterY()) {

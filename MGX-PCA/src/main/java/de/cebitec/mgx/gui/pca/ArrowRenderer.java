@@ -5,6 +5,7 @@ import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Rectangle2D;
+import org.apache.commons.math3.util.FastMath;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.entity.EntityCollection;
 import org.jfree.chart.plot.CrosshairState;
@@ -105,7 +106,7 @@ public class ArrowRenderer extends XYLineAndShapeRenderer {
         if (getItemShapeVisible(series, item)) {
             Shape shape = getItemShape(series, item);
             // align shape direction
-            double angle = Math.PI - Math.acos(vecY / Math.sqrt(vecX * vecX + vecY * vecY));
+            double angle = FastMath.PI - FastMath.acos(vecY / FastMath.sqrt(vecX * vecX + vecY * vecY));
             shape = AffineTransform.getRotateInstance(angle).createTransformedShape(shape);
             if (vecX < 0) {
                 // arrow leftwards, flip shape

@@ -4,7 +4,6 @@ import de.cebitec.mgx.api.misc.PrincipalComponent;
 import de.cebitec.mgx.api.misc.PCAResultI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.misc.Point;
-import de.cebitec.mgx.gui.datamodel.misc.PCAResult;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +47,7 @@ public class PCACustomizer extends javax.swing.JPanel {
             numLoadings.setMajorTickSpacing(loadings.size() / 2);
             numLoadings.setMinorTickSpacing(loadings.size() / 10);
 
-            Hashtable labelTable = new Hashtable();
+            Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
             labelTable.put(new Integer(0), new JLabel("0"));
             labelTable.put(new Integer(loadings.size() / 2), new JLabel(String.valueOf(loadings.size() / 2)));
             labelTable.put(new Integer(loadings.size()), new JLabel(String.valueOf(loadings.size())));
@@ -89,7 +88,7 @@ public class PCACustomizer extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        pcSel = new javax.swing.JComboBox();
+        pcSel = new javax.swing.JComboBox<String>();
         fractions = new javax.swing.JCheckBox();
         numLoadings = new javax.swing.JSlider();
         jLabel1 = new javax.swing.JLabel();
@@ -163,6 +162,6 @@ public class PCACustomizer extends javax.swing.JPanel {
     private javax.swing.JCheckBox fractions;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JSlider numLoadings;
-    private javax.swing.JComboBox pcSel;
+    private javax.swing.JComboBox<String> pcSel;
     // End of variables declaration//GEN-END:variables
 }

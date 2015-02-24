@@ -67,6 +67,10 @@
             <artifactId>MGX-API</artifactId>
             <groupId>de.cebitec.mgx</groupId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-math3</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

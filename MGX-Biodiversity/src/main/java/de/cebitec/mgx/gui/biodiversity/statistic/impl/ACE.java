@@ -4,6 +4,7 @@ import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.gui.biodiversity.statistic.Statistic;
 import java.util.Map;
+import org.apache.commons.math3.util.FastMath;
 
 /**
  *
@@ -31,7 +32,7 @@ public class ACE implements Statistic<DistributionI> {
         double Cace = 1 - (F1 / Nrare);
         double gamma = getGamma(data);
 
-        ret = Sabundant + (Srare / Cace) + (F1 / Cace) * Math.pow(gamma, 2);
+        ret = Sabundant + (Srare / Cace) + (F1 / Cace) * FastMath.pow(gamma, 2);
         return String.format("%.2f", ret);
     }
 
@@ -56,7 +57,7 @@ public class ACE implements Statistic<DistributionI> {
         
         ret = (ret / (Cace * Nrare * (Nrare -1))) -1;
         
-        return Math.max(ret, 0);
+        return FastMath.max(ret, 0);
     }
 
     private double getSrare(DistributionI data) {

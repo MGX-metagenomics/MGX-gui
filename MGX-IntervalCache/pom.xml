@@ -57,6 +57,10 @@
             <artifactId>MGX-Controller</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-math3</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -77,6 +81,7 @@
                     <instructions>
                         <Export-Package>de.cebitec.mgx.gui.cache</Export-Package>
                         <Private-Package>de.cebitec.mgx.gui.cache.internal</Private-Package>
+                        <Import-Package>org.apache.commons.math3.util</Import-Package>
                     </instructions>
                 </configuration>
             </plugin>
