@@ -1,6 +1,6 @@
 package de.cebitec.mgx.gui.controller;
 
-import de.cebitec.gpms.core.MembershipI;
+import de.cebitec.gpms.rest.RESTMembershipI;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.AttributeAccessI;
 import de.cebitec.mgx.api.access.DNAExtractAccessI;
@@ -34,7 +34,7 @@ public class MGXMaster extends MGXMasterI implements PropertyChangeListener {
     }
 
     @Override
-    public MembershipI getMembership() {
+    public RESTMembershipI getMembership() {
         return dtomaster.getMembership();
     }
 
