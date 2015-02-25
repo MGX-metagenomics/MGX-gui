@@ -1,7 +1,7 @@
 package de.cebitec.mgx.gui.mapping;
 
-import de.cebitec.gpms.core.MembershipI;
 import de.cebitec.gpms.rest.GPMSClientI;
+import de.cebitec.gpms.rest.RESTMembershipI;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.gui.controller.MGXMaster;
@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Properties;
 import org.junit.Assert;
-import static org.junit.Assert.fail;
 import static org.junit.Assert.fail;
 
 /**
@@ -46,11 +45,11 @@ public class TestMaster {
             fail();
         }
 
-        Iterator<MembershipI> mbr = gpms.getMemberships();
+        Iterator<RESTMembershipI> mbr = gpms.getMemberships();
         Assert.assertNotNull(mbr);
 
         while (mbr.hasNext()) {
-            MembershipI m = mbr.next();
+            RESTMembershipI m = mbr.next();
             if ("MGX".equals(m.getProject().getProjectClass().getName()) && ("MGX_Unittest".equals(m.getProject().getName()))) {
                 MGXDTOMaster dtomaster = new MGXDTOMaster(gpms, m);
                 masterRO = new MGXMaster(dtomaster);
@@ -82,11 +81,11 @@ public class TestMaster {
         if (!gpms.login("mgx_unittestRW", "hL0amo3oLae")) {
             return null;
         }
-        Iterator<MembershipI> mbr = gpms.getMemberships();
+        Iterator<RESTMembershipI> mbr = gpms.getMemberships();
         Assert.assertNotNull(mbr);
 
         while (mbr.hasNext()) {
-            MembershipI m = mbr.next();
+            RESTMembershipI m = mbr.next();
             if ("MGX".equals(m.getProject().getProjectClass().getName()) && ("MGX_Unittest".equals(m.getProject().getName()))) {
                 MGXDTOMaster dtomaster = new MGXDTOMaster(gpms, m);
                 master = new MGXMaster(dtomaster);
@@ -117,11 +116,11 @@ public class TestMaster {
         if (!gpms.login(p.getProperty("username"), p.getProperty("password"))) {
             return null;
         }
-        Iterator<MembershipI> mbr = gpms.getMemberships();
+        Iterator<RESTMembershipI> mbr = gpms.getMemberships();
         Assert.assertNotNull(mbr);
 
         while (mbr.hasNext()) {
-            MembershipI m = mbr.next();
+            RESTMembershipI m = mbr.next();
             if ("MGX".equals(m.getProject().getProjectClass().getName()) && ("MGX_Biogas_MT".equals(m.getProject().getName()))) {
                 MGXDTOMaster dtomaster = new MGXDTOMaster(gpms, m);
                 master = new MGXMaster(dtomaster);

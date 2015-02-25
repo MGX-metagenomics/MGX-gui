@@ -1,7 +1,7 @@
 package de.cebitec.mgx.gui.nodefactory;
 
-import de.cebitec.gpms.core.MembershipI;
 import de.cebitec.gpms.rest.GPMSClientI;
+import de.cebitec.gpms.rest.RESTMembershipI;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.gui.controller.MGXMaster;
@@ -20,7 +20,7 @@ import org.openide.nodes.NodeReorderEvent;
  *
  * @author sj
  */
-public class ProjectNodeFactory extends ChildFactory<MembershipI> implements NodeListener {
+public class ProjectNodeFactory extends ChildFactory<RESTMembershipI> implements NodeListener {
 
     private final GPMSClientI gpms;
 
@@ -29,10 +29,10 @@ public class ProjectNodeFactory extends ChildFactory<MembershipI> implements Nod
     }
 
     @Override
-    protected boolean createKeys(List<MembershipI> list) {
-        Iterator<MembershipI> iter = gpms.getMemberships();
+    protected boolean createKeys(List<RESTMembershipI> list) {
+        Iterator<RESTMembershipI> iter = gpms.getMemberships();
         while(iter.hasNext()) {
-            MembershipI m = iter.next();
+            RESTMembershipI m = iter.next();
             if ("MGX".equals(m.getProject().getProjectClass().getName())) {
                 list.add(m);
             }
@@ -41,7 +41,7 @@ public class ProjectNodeFactory extends ChildFactory<MembershipI> implements Nod
     }
 
     @Override
-    protected Node createNodeForKey(MembershipI m) {
+    protected Node createNodeForKey(RESTMembershipI m) {
         MGXDTOMaster dtomaster = new MGXDTOMaster(gpms, m);
         MGXMasterI master = new MGXMaster(dtomaster);
         ProjectNode node = new ProjectNode(master, m); 
