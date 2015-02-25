@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.util;
 
 import de.cebitec.gpms.core.MembershipI;
 import de.cebitec.gpms.rest.GPMSClientI;
+import de.cebitec.gpms.rest.RESTMembershipI;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.gui.controller.MGXMaster;
@@ -45,11 +46,11 @@ public class TestMaster {
             fail(gpms.getError());
         }
 
-        Iterator<MembershipI> mbr = gpms.getMemberships();
+        Iterator<RESTMembershipI> mbr = gpms.getMemberships();
         Assert.assertNotNull(mbr);
 
         while (mbr.hasNext()) {
-            MembershipI m = mbr.next();
+            RESTMembershipI m = mbr.next();
             if ("MGX".equals(m.getProject().getProjectClass().getName()) && ("MGX_Unittest".equals(m.getProject().getName()))) {
                 MGXDTOMaster dtomaster = new MGXDTOMaster(gpms, m);
                 masterRO = new MGXMaster(dtomaster);
@@ -81,11 +82,11 @@ public class TestMaster {
         if (!gpms.login("mgx_unittestRW", "hL0amo3oLae")) {
             return null;
         }
-        Iterator<MembershipI> mbr = gpms.getMemberships();
+        Iterator<RESTMembershipI> mbr = gpms.getMemberships();
         Assert.assertNotNull(mbr);
 
         while (mbr.hasNext()) {
-            MembershipI m = mbr.next();
+            RESTMembershipI m = mbr.next();
             if ("MGX".equals(m.getProject().getProjectClass().getName()) && ("MGX_Unittest".equals(m.getProject().getName()))) {
                 MGXDTOMaster dtomaster = new MGXDTOMaster(gpms, m);
                 master = new MGXMaster(dtomaster);
