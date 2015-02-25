@@ -92,6 +92,10 @@
             <groupId>de.cebitec.mgx.gui</groupId>
             <artifactId>MGX-Common</artifactId>
         </dependency>
+        <dependency>
+            <groupId>de.cebitec.gpms</groupId>
+            <artifactId>GPMS-rest-api</artifactId>
+        </dependency>
     </dependencies> 
 
     <build>
