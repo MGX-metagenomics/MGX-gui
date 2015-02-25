@@ -1,7 +1,7 @@
 package de.cebitec.mgx.gui.cache;
 
-import de.cebitec.gpms.core.MembershipI;
 import de.cebitec.gpms.rest.GPMSClientI;
+import de.cebitec.gpms.rest.RESTMembershipI;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.MGXReferenceI;
@@ -365,9 +365,9 @@ public class CacheTest {
         if (!gpms.login("mgx_unittestRO", "gut-isM5iNt")) {
             fail();
         }
-        Iterator<MembershipI> mIter = gpms.getMemberships();
+        Iterator<RESTMembershipI> mIter = gpms.getMemberships();
         while (mIter.hasNext()) {
-            MembershipI m = mIter.next();
+            RESTMembershipI m = mIter.next();
             if ("MGX".equals(m.getProject().getProjectClass().getName()) && ("MGX_Unittest".equals(m.getProject().getName()))) {
                 MGXDTOMaster dtomaster = new MGXDTOMaster(gpms, m);
                 master = new MGXMaster(dtomaster);
