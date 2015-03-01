@@ -2,17 +2,13 @@ package de.cebitec.mgx.gui.biodiversity;
 
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
-import de.cebitec.mgx.gui.biodiversity.statistic.Statistic;
 import de.cebitec.mgx.gui.biodiversity.statistic.impl.ACE;
 import de.cebitec.mgx.gui.biodiversity.statistic.impl.Chao1;
 import de.cebitec.mgx.gui.biodiversity.statistic.impl.Shannon;
 import de.cebitec.mgx.gui.biodiversity.statistic.impl.Simpson;
-import java.awt.GridLayout;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 import javax.swing.SwingWorker;
 import org.netbeans.api.settings.ConvertAsProperties;
@@ -35,7 +31,7 @@ import org.openide.windows.TopComponent;
 )
 @TopComponent.Description(
         preferredID = "BiodiversityTopComponent",
-        //iconBase="SET/PATH/TO/ICON/HERE", 
+        iconBase = "de/cebitec/mgx/gui/biodiversity/AlphaDiversity.png",
         persistenceType = TopComponent.PERSISTENCE_NEVER
 )
 @TopComponent.Registration(mode = "satellite", openAtStartup = false)

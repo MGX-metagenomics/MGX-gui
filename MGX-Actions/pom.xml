@@ -75,6 +75,10 @@
             <artifactId>MGX-SwingUtils</artifactId>
             <groupId>de.cebitec.mgx.gui</groupId>
         </dependency>
+        <dependency>
+            <groupId>de.cebitec.mgx.gui</groupId>
+            <artifactId>MGX-Biodiversity</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

@@ -97,6 +97,9 @@
                 <extensions>true</extensions>
                 <configuration>
                     <useOSGiDependencies>true</useOSGiDependencies>
+                    <publicPackages>
+                        <publicPackage>de.cebitec.mgx.gui.biodiversity</publicPackage>
+                    </publicPackages>
                 </configuration>
             </plugin>
 
