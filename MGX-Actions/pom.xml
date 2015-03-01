@@ -42,10 +42,12 @@
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-util</artifactId>
+            <version>${netbeans.version}</version>
         </dependency>
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-awt</artifactId>
+            <version>${netbeans.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -76,8 +78,12 @@
             <groupId>de.cebitec.mgx.gui</groupId>
         </dependency>
         <dependency>
-            <groupId>de.cebitec.mgx.gui</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>MGX-Biodiversity</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>MGX-QCMonitor</artifactId>
         </dependency>
     </dependencies>
 
