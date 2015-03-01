@@ -17,6 +17,9 @@
                 <extensions>true</extensions>
                 <configuration>
                     <useOSGiDependencies>true</useOSGiDependencies>
+                    <publicPackages>
+                        <publicPackage>de.cebitec.mgx.gui.qcmon</publicPackage>
+                    </publicPackages>
                 </configuration>
             </plugin>
             <plugin>

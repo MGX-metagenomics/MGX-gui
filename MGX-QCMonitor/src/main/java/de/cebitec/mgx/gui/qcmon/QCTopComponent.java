@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.cebitec.mgx.qcmon;
+package de.cebitec.mgx.gui.qcmon;
 
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.qc.DataRowI;
@@ -41,7 +41,7 @@ import org.openide.util.Utilities;
 )
 @TopComponent.Description(
         preferredID = "QCTopComponent",
-        //iconBase="SET/PATH/TO/ICON/HERE", 
+        iconBase="de/cebitec/mgx/gui/qcmon/QC.png", 
         persistenceType = TopComponent.PERSISTENCE_NEVER
 )
 @TopComponent.Registration(mode = "satellite", openAtStartup = false)
@@ -66,6 +66,7 @@ public final class QCTopComponent extends TopComponent implements LookupListener
         setName(Bundle.CTL_QCTopComponent());
         setToolTipText(Bundle.HINT_QCTopComponent());
         resultSeqRun = Utilities.actionsGlobalContext().lookupResult(SeqRunI.class);
+        update();
     }
 
     /**
@@ -96,6 +97,7 @@ public final class QCTopComponent extends TopComponent implements LookupListener
     @Override
     public void componentOpened() {
         resultSeqRun.addLookupListener(this);
+        update();
     }
 
     @Override
@@ -156,6 +158,7 @@ public final class QCTopComponent extends TopComponent implements LookupListener
                         Component chart = createChart(qcr);
                         tabbedPane.add(qcr.getName(), chart);
                     }
+                    // restore tab selection
                     if (idx != -1 && tabbedPane.getTabCount() > idx) {
                         tabbedPane.setSelectedIndex(idx);
                     }
