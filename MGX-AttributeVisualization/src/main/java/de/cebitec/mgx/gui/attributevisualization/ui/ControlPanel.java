@@ -219,6 +219,9 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
             case VisualizationGroupI.VISGROUP_HAS_DIST:
                 // ignore
                 break;
+            case VisualizationGroupI.VISGROUP_RENAMED:
+                // ignore
+                break;
             default:
                 System.err.println("ControlPanel received unknown event " + evt.getPropertyName());
         }
