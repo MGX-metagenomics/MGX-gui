@@ -11,6 +11,7 @@ import de.cebitec.mgx.dto.dto.TermDTO;
 import de.cebitec.mgx.gui.dtoconversion.TermDTOFactory;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -28,7 +29,7 @@ public class TermAccess implements TermAccessI {
     }
     
     @Override
-    public Collection<TermI> byCategory(String cat) throws MGXException {
+    public List<TermI> byCategory(String cat) throws MGXException {
         List<TermI> ret = new ArrayList<>();
         try {
             for (TermDTO dto : dtomaster.Term().byCategory(cat)) {
@@ -37,6 +38,7 @@ public class TermAccess implements TermAccessI {
         } catch (MGXServerException | MGXClientException ex) {
             throw new MGXException(ex);
         }
+        Collections.sort(ret);
         return ret;
     }
   

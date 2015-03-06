@@ -8,6 +8,9 @@ import de.cebitec.mgx.api.model.TermI;
 import java.io.File;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import javax.swing.SwingWorker;
@@ -21,8 +24,8 @@ import org.openide.util.Utilities;
  */
 public class SeqRunWizardDescriptor extends WizardDescriptor {
 
-    private SeqRunWizardPanel1 p1 = new SeqRunWizardPanel1();
-    private SeqRunWizardPanel2 p2 = new SeqRunWizardPanel2();
+    private final SeqRunWizardPanel1 p1 = new SeqRunWizardPanel1();
+    private final SeqRunWizardPanel2 p2 = new SeqRunWizardPanel2();
     private SeqRunI seqrun = null;
 
     public static final String INVOCATION_MODE = "invocationMode";
@@ -73,8 +76,12 @@ public class SeqRunWizardDescriptor extends WizardDescriptor {
 
             @Override
             protected Void doInBackground() throws MGXException {
-                p1.setMethods(m.Term().byCategory(TermAccessI.SEQ_METHODS).toArray(new TermI[]{}));
-                p1.setPlatforms(m.Term().byCategory(TermAccessI.SEQ_PLATFORMS).toArray(new TermI[]{}));
+                List<TermI> methods = m.Term().byCategory(TermAccessI.SEQ_METHODS);
+                List<TermI> platforms = m.Term().byCategory(TermAccessI.SEQ_PLATFORMS);
+                Collections.<TermI>sort(methods);
+                Collections.<TermI>sort(platforms);
+                p1.setMethods(methods.toArray(new TermI[]{}));
+                p1.setPlatforms(platforms.toArray(new TermI[]{}));
                 p1.setSeqRuns(m.SeqRun().fetchall());
                 return null;
             }
