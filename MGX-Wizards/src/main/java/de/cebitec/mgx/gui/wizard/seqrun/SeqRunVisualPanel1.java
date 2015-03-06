@@ -17,8 +17,6 @@ public final class SeqRunVisualPanel1 extends JPanel implements DocumentListener
     public static final String PROP_ACCESSION = "accession";
     public static final String PROP_PLATFORM = "seqPlatform";
     public static final String PROP_METHOD = "seqMethod";
-    //private final static String[] platforms = {"Roche GS FLX/GS FLX Titanium", "Illumina GAIIx", "IonTorrent PGM"};
-    //private final static String[] methods = {"WGS", "Paired-End", "Mate-Pair"};
 
     /**
      * Creates new form SeqRunVisualPanel1
