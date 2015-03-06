@@ -33,7 +33,10 @@ public final class ExportSequencesAction implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent ev) {
         for (SequenceExporterI ex : context) {
-            ex.export();
+            boolean ok = ex.export();
+            if (!ok) {
+                return;
+            }
         }
     }
 }

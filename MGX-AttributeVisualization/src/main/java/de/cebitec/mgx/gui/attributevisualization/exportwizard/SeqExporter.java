@@ -41,7 +41,7 @@ public final class SeqExporter implements SequenceExporterI {
     }
 
     @Override
-    public void export() {
+    public boolean export() {
         List<WizardDescriptor.Panel<WizardDescriptor>> panels = new ArrayList<>();
         final ExportSeqWizardPanel1 p1 = new ExportSeqWizardPanel1();
         p1.setDistribution(dist);
@@ -67,7 +67,10 @@ public final class SeqExporter implements SequenceExporterI {
         // {0} will be replaced by WizardDesriptor.Panel.getComponent().getName()
         wiz.setTitleFormat(new MessageFormat("{0}"));
         wiz.setTitle("Export sequences for " + vgroup.getName());
-        if (DialogDisplayer.getDefault().notify(wiz) == WizardDescriptor.FINISH_OPTION) {
+        Object notify = DialogDisplayer.getDefault().notify(wiz);
+        if (notify == WizardDescriptor.CANCEL_OPTION) {
+            return false;
+        } else if (notify == WizardDescriptor.FINISH_OPTION) {
 
             final File target = p2.getSelectedFile();
             if (target.exists()) {
@@ -83,7 +86,7 @@ public final class SeqExporter implements SequenceExporterI {
                         NotifyDescriptor.WARNING_MESSAGE,
                         null, null);
                 if (!NotifyDescriptor.OK_OPTION.equals(DialogDisplayer.getDefault().notify(nd))) {
-                    return;
+                    return true;
                 }
             }
 
@@ -131,6 +134,7 @@ public final class SeqExporter implements SequenceExporterI {
             };
             worker.execute();
         }
+        return true;
     }
 
     private final class DownloadTask extends MGXTask {
@@ -153,7 +157,7 @@ public final class SeqExporter implements SequenceExporterI {
                 downloader.addPropertyChangeListener(this);
                 ret = downloader.download();
                 downloader.removePropertyChangeListener(this);
-                if (!ret) { 
+                if (!ret) {
                     setStatus(downloader.getErrorMessage());
                     failed();
                 }
