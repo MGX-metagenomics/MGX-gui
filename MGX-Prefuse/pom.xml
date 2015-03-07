@@ -40,7 +40,7 @@
             <artifactId>org-netbeans-api-annotations-common</artifactId>
         </dependency>
         <dependency>
-            <groupId>de.cebitec.external</groupId>
+            <groupId>org.prefuse</groupId>
             <artifactId>prefuse</artifactId>
         </dependency>
     </dependencies>
