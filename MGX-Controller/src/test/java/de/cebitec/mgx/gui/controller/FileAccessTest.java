@@ -30,6 +30,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -74,50 +75,48 @@ public class FileAccessTest {
     }
 
     @Test
-    public void testDownloadFile() throws MGXException, IOException {
+    public void testDownloadFile() throws IOException {
         System.out.println("DownloadFile");
         MGXMasterI m = TestMaster.getRO();
 
-        OutputStream os = null;
         File f = File.createTempFile("down", "xx");
-        try {
-            os = new FileOutputStream(f);
-        } catch (FileNotFoundException ex) {
-            fail(ex.getMessage());
-        }
-
-        String serverFile = ".|test1";
-
-        DownloadBaseI down = null;
-        down = m.File().createDownloader(serverFile, os);
-        assertNotNull(down);
-
         PropCounter pc = new PropCounter();
-        down.addPropertyChangeListener(pc);
-
-        boolean success = down.download();
-        assertTrue(success);
 
         try {
+            OutputStream os = null;
+            try {
+                os = new FileOutputStream(f);
+            } catch (FileNotFoundException ex) {
+                fail(ex.getMessage());
+            }
+
+            String serverFile = ".|test1";
+
+            DownloadBaseI down = null;
+            down = m.File().createDownloader(serverFile, os);
+            assertNotNull(down);
+
+            down.addPropertyChangeListener(pc);
+
+            boolean success = down.download();
+            assertTrue(success);
+
             os.close();
-        } catch (IOException ex) {
-            fail(ex.getMessage());
-        }
 
-        if (!success) {
-            fail(down.getErrorMessage());
-        }
+            if (!success) {
+                fail(down.getErrorMessage());
+            }
 
-        try {
             String md5 = getMD5Checksum(f.getAbsolutePath());
             assertEquals("037db883cd8236c30242da3468cf8a19", md5);
+
         } catch (Exception ex) {
             fail(ex.getMessage());
-        }
-
-        // cleanup
-        if (f.exists()) {
-            f.delete();
+        } finally {
+            // cleanup
+            if (f.exists()) {
+                f.delete();
+            }
         }
 
         assertEquals(69, pc.getCount());
@@ -125,48 +124,53 @@ public class FileAccessTest {
     }
 
     @Test
-    public void testUploadFile() throws Exception {
+    public void testUploadFile() throws IOException {
         System.out.println("testUploadFile22");
         MGXMasterI m = TestMaster.getRW();
         assertNotNull(m);
 
         File f = File.createTempFile("down", "xx");
-        FileWriter fw = new FileWriter(f);
-        for (int i = 0; i < 90000; i++) {
-            fw.write("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-        }
-        fw.close();
-
-        UploadBaseI up = null;
-        up = m.File().createUploader(f, MGXFileI.getRoot(m), "testUpload");
-        assertNotNull(up);
-
+        long fileSize = -1;
         PropCounter pc = new PropCounter();
-        up.addPropertyChangeListener(pc);
 
-        boolean success = up.upload();
-        assertTrue(success);
-        up.removePropertyChangeListener(pc);
+        try {
+            FileWriter fw = new FileWriter(f);
+            for (int i = 0; i < 90000; i++) {
+                fw.write("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+            }
+            fw.close();
 
-        if (!success) {
-            fail(up.getErrorMessage());
-        }
+            UploadBaseI up = null;
+            up = m.File().createUploader(f, MGXFileI.getRoot(m), "testUpload");
+            assertNotNull(up);
 
-        long fileSize = f.length();
+            up.addPropertyChangeListener(pc);
 
-        // cleanup
-        if (f.exists()) {
-            f.delete();
-        }
+            boolean success = up.upload();
+            assertTrue(success);
+            up.removePropertyChangeListener(pc);
 
-        TaskI<MGXFileI> task = m.File().delete(new MGXFile(m, ".|testUpload", false, 42));
-        while ((task.getState() != TaskI.State.FINISHED) || (task.getState() != TaskI.State.FAILED)) {
-            System.err.println(" --> " + task.getState());
-            Thread.sleep(1000);
-            if ((task.getState() == TaskI.State.FINISHED) || (task.getState() == TaskI.State.FAILED)) {
-                break;
-            } else {
-                m.<MGXFileI>Task().refresh(task);
+            if (!success) {
+                fail(up.getErrorMessage());
+            }
+
+            fileSize = f.length();
+            TaskI<MGXFileI> task = m.File().delete(new MGXFile(m, ".|testUpload", false, 42));
+            while ((task.getState() != TaskI.State.FINISHED) || (task.getState() != TaskI.State.FAILED)) {
+                System.err.println(" --> " + task.getState());
+                Thread.sleep(1000);
+                if ((task.getState() == TaskI.State.FINISHED) || (task.getState() == TaskI.State.FAILED)) {
+                    break;
+                } else {
+                    m.<MGXFileI>Task().refresh(task);
+                }
+            }
+        } catch (IOException | MGXException | InterruptedException ex) {
+            fail(ex.getMessage());
+        } finally {
+            // cleanup
+            if (f.exists()) {
+                f.delete();
             }
         }
 
