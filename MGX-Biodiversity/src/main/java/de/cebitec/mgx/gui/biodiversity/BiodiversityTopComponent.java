@@ -214,7 +214,7 @@ public final class BiodiversityTopComponent extends TopComponent implements Look
     private void update() {
         groupName.setText(curGroup.getName());
 
-        DistributionI dist = null;
+        DistributionI<Long> dist = null;
         if (curGroup.getSelectedAttributeType() == null) {
             attrType.setText("n/a");
         } else {
@@ -235,12 +235,12 @@ public final class BiodiversityTopComponent extends TopComponent implements Look
         simpson.setText(new Simpson().measure(dist));
     }
 
-    private DistributionI getDistribution() {
+    private DistributionI<Long> getDistribution() {
 
-        SwingWorker<DistributionI, Void> worker = new SwingWorker<DistributionI, Void>() {
+        SwingWorker<DistributionI<Long>, Void> worker = new SwingWorker<DistributionI<Long>, Void>() {
 
             @Override
-            protected DistributionI doInBackground() throws Exception {
+            protected DistributionI<Long> doInBackground() throws Exception {
                 return curGroup.getDistribution();
             }
 

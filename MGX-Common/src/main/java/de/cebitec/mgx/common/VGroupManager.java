@@ -116,10 +116,10 @@ public class VGroupManager implements VGroupManagerI {
     }
 
     @Override
-    public List<Pair<VisualizationGroupI, DistributionI>> getDistributions() throws ConflictingJobsException {
-        List<Pair<VisualizationGroupI, DistributionI>> ret = new ArrayList<>(getActiveGroups().size());
+    public List<Pair<VisualizationGroupI, DistributionI<Long>>> getDistributions() throws ConflictingJobsException {
+        List<Pair<VisualizationGroupI, DistributionI<Long>>> ret = new ArrayList<>(getActiveGroups().size());
         for (VisualizationGroupI vg : getActiveGroups()) {
-            DistributionI dist = vg.getDistribution();
+            DistributionI<Long> dist = vg.getDistribution();
             if (!dist.isEmpty()) {
                 ret.add(new Pair<>(vg, dist));
             }

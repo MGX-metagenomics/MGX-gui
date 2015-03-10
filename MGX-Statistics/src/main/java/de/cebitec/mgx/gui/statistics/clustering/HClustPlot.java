@@ -14,6 +14,7 @@ import de.cebitec.mgx.gui.statistics.clustering.model.DendrogramBuilder;
 import de.cebitec.mgx.gui.statistics.clustering.model.ITreeBuilder;
 import de.cebitec.mgx.gui.statistics.clustering.view.DendrogramDisplay;
 import de.cebitec.mgx.gui.swingutils.DelayedPlot;
+import de.cebitec.mgx.gui.vizfilter.LongToDouble;
 import de.cebitec.mgx.newick.NodeI;
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
@@ -31,7 +32,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author sjaenick
  */
 @ServiceProvider(service = ViewerI.class)
-public class HClustPlot extends ViewerI<DistributionI> {
+public class HClustPlot extends ViewerI<DistributionI<Long>> {
 
     private final static String NODE_NAME_KEY = "nodeName";
     private final static String X_COORD = "x";
@@ -50,7 +51,7 @@ public class HClustPlot extends ViewerI<DistributionI> {
     }
 
     @Override
-    public void show(final List<Pair<VisualizationGroupI, DistributionI>> dists) {
+    public void show(final List<Pair<VisualizationGroupI, DistributionI<Long>>> dists) {
 
         cPanel = new DelayedPlot();
 
@@ -58,7 +59,8 @@ public class HClustPlot extends ViewerI<DistributionI> {
             @Override
             protected NodeI doInBackground() throws Exception {
                 MGXMasterI m =  dists.get(0).getSecond().getMaster();
-                return m.Statistics().Clustering(dists, customizer.getDistanceMethod(), customizer.getAgglomeration());
+                List<Pair<VisualizationGroupI, DistributionI<Double>>> filter = new LongToDouble().filter(dists);
+                return m.Statistics().Clustering(filter, customizer.getDistanceMethod(), customizer.getAgglomeration());
             }
 
             @Override

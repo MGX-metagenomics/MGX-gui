@@ -72,9 +72,9 @@ public class KeggCustomizer extends javax.swing.JPanel {
     public Set<PathwayI> selectPathways(final KEGGMaster master, RequestProcessor RP) throws ConflictingJobsException, KEGGException {
         final Set<ECNumberI> ecNumbers = new HashSet<>();
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-        for (Pair<VisualizationGroupI, DistributionI> p : VGroupManager.getInstance().getDistributions()) {
-            DistributionI dist = p.getSecond();
-            for (Map.Entry<AttributeI, Number> e : dist.entrySet()) {
+        for (Pair<VisualizationGroupI, DistributionI<Long>> p : VGroupManager.getInstance().getDistributions()) {
+            DistributionI<Long> dist = p.getSecond();
+            for (Map.Entry<AttributeI, Long> e : dist.entrySet()) {
                 Matcher matcher = ecNumber.matcher(e.getKey().getValue());
                 if (matcher.find()) {
                     try {

@@ -31,7 +31,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author sj
  */
 @ServiceProvider(service = ViewerI.class)
-public class XYPlotViewer extends NumericalViewerI {
+public class XYPlotViewer extends NumericalViewerI<Long> {
 
     private ChartPanel cPanel = null;
     private XYPlotCustomizer customizer = null;
@@ -48,10 +48,10 @@ public class XYPlotViewer extends NumericalViewerI {
     }
 
     @Override
-    public void show(List<Pair<VisualizationGroupI, DistributionI>> dists) {
+    public void show(List<Pair<VisualizationGroupI, DistributionI<Long>>> in) {
 
-        dists = getCustomizer().filter(dists);
-        XYSeriesCollection dataset = JFreeChartUtil.createXYSeries(dists);
+        List<Pair<VisualizationGroupI, DistributionI<Double>>> data = getCustomizer().filter(in);
+        XYSeriesCollection dataset = JFreeChartUtil.createXYSeries(data);
 
         String xAxisLabel = "";
         String yAxisLabel = getCustomizer().useFractions() ? "Fraction" : "Count";
@@ -103,7 +103,7 @@ public class XYPlotViewer extends NumericalViewerI {
         // set the colors
         int i = 0;
         XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) plot.getRenderer();
-        for (Pair<VisualizationGroupI, DistributionI> groupDistribution : dists) {
+        for (Pair<VisualizationGroupI, DistributionI<Double>> groupDistribution : data) {
             renderer.setSeriesPaint(i++, groupDistribution.getFirst().getColor());
         }
 

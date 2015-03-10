@@ -1,16 +1,10 @@
 package de.cebitec.mgx.gui.attributevisualization.filter;
 
-import de.cebitec.mgx.api.misc.DistributionI;
-import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.tree.NodeI;
 import de.cebitec.mgx.api.model.tree.TreeI;
-import org.junit.After;
-import org.junit.AfterClass;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import org.junit.Before;
-import org.junit.BeforeClass;
 
 /**
  *
@@ -19,22 +13,6 @@ import org.junit.BeforeClass;
 public class ExcludeFilterTest {
 
     public ExcludeFilterTest() {
-    }
-
-    @BeforeClass
-    public static void setUpClass() {
-    }
-
-    @AfterClass
-    public static void tearDownClass() {
-    }
-
-    @Before
-    public void setUp() {
-    }
-
-    @After
-    public void tearDown() {
     }
 
 //    @Test
@@ -156,18 +134,18 @@ public class ExcludeFilterTest {
         }
     }
 
-    private void checkDist(DistributionI dist, String name, Long content) {
-        assertNotNull(name);
-        assertNotNull(content);
-        boolean found = false;
-        for (AttributeI attr : dist.keySet()) {
-            if (attr.getValue().equals(name)) {
-                found = true;
-                assertEquals(content, dist.get(attr));
-            }
-        }
-        if (!found) {
-            assertEquals(0L, content.longValue());
-        }
-    }
+//    private void checkDist(DistributionI<Long> dist, String name, Long content) {
+//        assertNotNull(name);
+//        assertNotNull(content);
+//        boolean found = false;
+//        for (AttributeI attr : dist.keySet()) {
+//            if (attr.getValue().equals(name)) {
+//                found = true;
+//                assertEquals(content, dist.get(attr));
+//            }
+//        }
+//        if (!found) {
+//            assertEquals(0L, content.longValue());
+//        }
+//    }
 }

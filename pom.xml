@@ -565,6 +565,7 @@
         <module>MGX-PCA</module>
         <module>MGX-Common</module>
         <module>MGX-QCMonitor</module>
+        <module>MGX-VizFilter</module>
     </modules>
     
     <properties>

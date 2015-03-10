@@ -4,16 +4,17 @@ import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.AttributeTypeI;
-import de.cebitec.mgx.api.visualization.filter.SortOrder;
-import de.cebitec.mgx.api.visualization.filter.ToFractionFilter;
+import de.cebitec.mgx.gui.vizfilter.SortOrder;
+import de.cebitec.mgx.gui.vizfilter.ToFractionFilter;
 import de.cebitec.mgx.api.visualization.filter.VisFilterI;
+import de.cebitec.mgx.gui.vizfilter.LongToDouble;
 import java.util.List;
 
 /**
  *
  * @author sjaenick
  */
-public class XYPlotCustomizer extends javax.swing.JPanel implements VisFilterI<DistributionI> {
+public class XYPlotCustomizer extends javax.swing.JPanel implements VisFilterI<DistributionI<Long>, DistributionI<Double>> {
 
     private AttributeTypeI at;
 
@@ -142,15 +143,18 @@ public class XYPlotCustomizer extends javax.swing.JPanel implements VisFilterI<D
     // End of variables declaration//GEN-END:variables
 
     @Override
-    public List<Pair<VisualizationGroupI, DistributionI>> filter(List<Pair<VisualizationGroupI, DistributionI>> dists) {
+    public List<Pair<VisualizationGroupI, DistributionI<Double>>> filter(List<Pair<VisualizationGroupI, DistributionI<Long>>> dists) {
+
+        List<Pair<VisualizationGroupI, DistributionI<Double>>> ret = null;
         if (useFractions()) {
-            VisFilterI<DistributionI> fracFilter = new ToFractionFilter();
-            dists = fracFilter.filter(dists);
+            VisFilterI<DistributionI<Long>, DistributionI<Double>> fracFilter = new ToFractionFilter();
+            ret = fracFilter.filter(dists);
+        } else {
+            ret = new LongToDouble().filter(dists);
         }
 
-        SortOrder sorter = new SortOrder(at, sortAscending.isSelected() ? SortOrder.ASCENDING : SortOrder.DESCENDING);
-        dists = sorter.filter(dists);
-
-        return dists;
+        SortOrder<Double> sorter = new SortOrder<>(at, sortAscending.isSelected() ? SortOrder.ASCENDING : SortOrder.DESCENDING);
+        List<Pair<VisualizationGroupI, DistributionI<Double>>> filter = sorter.filter(ret);
+        return filter;
     }
 }

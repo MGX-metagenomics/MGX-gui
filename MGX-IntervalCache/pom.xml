@@ -35,10 +35,10 @@
     </repositories>
 
     <dependencies>
-        <dependency>
+        <!-- <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-netbeans-api-annotations-common</artifactId>
-        </dependency>
+        </dependency> -->
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>

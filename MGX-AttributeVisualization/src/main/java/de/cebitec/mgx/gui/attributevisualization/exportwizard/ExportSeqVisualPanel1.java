@@ -25,7 +25,7 @@ public final class ExportSeqVisualPanel1 extends JPanel implements PropertyChang
         list.addPropertyChangeListener(this);
     }
 
-    public void setDistribution(DistributionI d) {
+    public void setDistribution(DistributionI<Long> d) {
         List<AttributeI> elements = new ArrayList<>();
         elements.addAll(d.keySet());
         Collections.sort(elements);

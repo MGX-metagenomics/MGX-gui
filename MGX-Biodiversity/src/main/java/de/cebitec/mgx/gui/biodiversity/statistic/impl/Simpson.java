@@ -9,10 +9,10 @@ import java.util.Map;
  *
  * @author sjaenick
  */
-public class Simpson implements Statistic<DistributionI> {
+public class Simpson implements Statistic<DistributionI<Long>> {
 
     @Override
-    public String measure(DistributionI data) {
+    public String measure(DistributionI<Long> data) {
         
         if (data.size() == 1) {
             return "0.00";
@@ -21,7 +21,7 @@ public class Simpson implements Statistic<DistributionI> {
         double value = 0;
         long n = data.getTotalClassifiedElements();
         n = n * (n - 1);
-        for (Map.Entry<AttributeI, Number> e : data.entrySet()) {
+        for (Map.Entry<AttributeI, Long> e : data.entrySet()) {
             double tmp = e.getValue().doubleValue();
             value += (tmp * (tmp - 1)) / n;
         }

@@ -16,15 +16,15 @@ import org.openide.util.Exceptions;
  *
  * @author sjaenick
  */
-public class ResultCollector extends SwingWorker<Pair<List<Pair<VisualizationGroupI, DistributionI>>, List<Pair<VisualizationGroupI, TreeI<Long>>>>, Void> {
+public class ResultCollector extends SwingWorker<Pair<List<Pair<VisualizationGroupI, DistributionI<Long>>>, List<Pair<VisualizationGroupI, TreeI<Long>>>>, Void> {
 
     private final AttributeTypeI aType;
-    private final List<Pair<VisualizationGroupI, DistributionI>> distHolder;
+    private final List<Pair<VisualizationGroupI, DistributionI<Long>>> distHolder;
     private final List<Pair<VisualizationGroupI, TreeI<Long>>> hierarchyHolder;
     private final ControlPanel ctl;
     private final VGroupManagerI mgr;
 
-    public ResultCollector(VGroupManagerI mgr, AttributeTypeI aType, List<Pair<VisualizationGroupI, DistributionI>> distHolder, List<Pair<VisualizationGroupI, TreeI<Long>>> hierarchyHolder, ControlPanel ctl) {
+    public ResultCollector(VGroupManagerI mgr, AttributeTypeI aType, List<Pair<VisualizationGroupI, DistributionI<Long>>> distHolder, List<Pair<VisualizationGroupI, TreeI<Long>>> hierarchyHolder, ControlPanel ctl) {
         this.mgr = mgr;
         this.aType = aType;
         this.distHolder = distHolder;
@@ -33,9 +33,9 @@ public class ResultCollector extends SwingWorker<Pair<List<Pair<VisualizationGro
     }
 
     @Override
-    protected Pair<List<Pair<VisualizationGroupI, DistributionI>>, List<Pair<VisualizationGroupI, TreeI<Long>>>> doInBackground() throws Exception {
+    protected Pair<List<Pair<VisualizationGroupI, DistributionI<Long>>>, List<Pair<VisualizationGroupI, TreeI<Long>>>> doInBackground() throws Exception {
         
-        List<Pair<VisualizationGroupI, DistributionI>> distributions = mgr.getDistributions();
+        List<Pair<VisualizationGroupI, DistributionI<Long>>> distributions = mgr.getDistributions();
         assert distributions != null;
         List<Pair<VisualizationGroupI, TreeI<Long>>> hierarchies = null;
         
@@ -49,7 +49,7 @@ public class ResultCollector extends SwingWorker<Pair<List<Pair<VisualizationGro
 
     @Override
     protected void done() {
-        Pair<List<Pair<VisualizationGroupI, DistributionI>>, List<Pair<VisualizationGroupI, TreeI<Long>>>> p = null;
+        Pair<List<Pair<VisualizationGroupI, DistributionI<Long>>>, List<Pair<VisualizationGroupI, TreeI<Long>>>> p = null;
         try {
              p = get();
         } catch (InterruptedException | ExecutionException ex) {

@@ -52,7 +52,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
     private final VGroupManagerI vgmgr;
     private AttributeVisualizationTopComponent topComponent;
     //
-    private List<Pair<VisualizationGroupI, DistributionI>> currentDistributions = new ArrayList<>();
+    private List<Pair<VisualizationGroupI, DistributionI<Long>>> currentDistributions = new ArrayList<>();
     private List<Pair<VisualizationGroupI, TreeI<Long>>> currentHierarchies = new ArrayList<>();
     //
     private AttributeTypeListModel attrListModel = new AttributeTypeListModel();
@@ -376,10 +376,10 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
         try {
             setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             if (currentViewer.getInputType().equals(DistributionI.class)) {
-                // reset previous settings 
-                for (Pair<VisualizationGroupI, DistributionI> p : currentDistributions) {
-                    p.getSecond().reset();
-                }
+//                // reset previous settings 
+//                for (Pair<VisualizationGroupI, DistributionI<Long>> p : currentDistributions) {
+//                    p.getSecond().reset();
+//                }
                 currentViewer.show(currentDistributions);
             } else {
                 currentViewer.show(currentHierarchies);

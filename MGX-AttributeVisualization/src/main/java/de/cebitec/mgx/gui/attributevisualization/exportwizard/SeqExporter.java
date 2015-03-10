@@ -33,9 +33,9 @@ import org.openide.util.Exceptions;
 public final class SeqExporter implements SequenceExporterI {
 
     private final VisualizationGroupI vgroup;
-    private final DistributionI dist;
+    private final DistributionI<Long> dist;
 
-    public SeqExporter(VisualizationGroupI vgroup, DistributionI dist) {
+    public SeqExporter(VisualizationGroupI vgroup, DistributionI<Long> dist) {
         this.vgroup = vgroup;
         this.dist = dist;
     }

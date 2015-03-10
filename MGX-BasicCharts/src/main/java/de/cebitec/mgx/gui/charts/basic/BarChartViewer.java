@@ -38,7 +38,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author sjaenick
  */
 @ServiceProvider(service = ViewerI.class)
-public class BarChartViewer extends CategoricalViewerI {
+public class BarChartViewer extends CategoricalViewerI<Long> {
 
     private ChartPanel cPanel = null;
     private BarChartCustomizer customizer = null;
@@ -67,11 +67,11 @@ public class BarChartViewer extends CategoricalViewerI {
     }
 
     @Override
-    public void show(List<Pair<VisualizationGroupI, DistributionI>> dists) {
+    public void show(List<Pair<VisualizationGroupI, DistributionI<Long>>> in) {
 
-        dists = getCustomizer().filter(dists);
+        List<Pair<VisualizationGroupI, DistributionI<Double>>> data = getCustomizer().filter(in);
 
-        dataset = JFreeChartUtil.createCategoryDataset(dists);
+        dataset = JFreeChartUtil.createCategoryDataset(data);
 
         String xAxisLabel = "";
         String yAxisLabel = getCustomizer().useFractions() ? "Fraction" : "Count";
@@ -84,7 +84,7 @@ public class BarChartViewer extends CategoricalViewerI {
         cPanel = new ChartPanel(chart);
         CategoryPlot plot = chart.getCategoryPlot();
 
-        plot.setFixedLegendItems(JFreeChartUtil.createLegend(dists));
+        plot.setFixedLegendItems(JFreeChartUtil.createLegend(data));
         plot.setBackgroundPaint(Color.WHITE);
 
         BarRenderer br = (BarRenderer) plot.getRenderer();
@@ -122,7 +122,7 @@ public class BarChartViewer extends CategoricalViewerI {
         // colors
         int i = 0;
         CategoryItemRenderer renderer = plot.getRenderer();
-        for (Pair<VisualizationGroupI, DistributionI> groupDistribution : dists) {
+        for (Pair<VisualizationGroupI, DistributionI<Double>> groupDistribution : data) {
             renderer.setSeriesPaint(i++, groupDistribution.getFirst().getColor());
         }
     }

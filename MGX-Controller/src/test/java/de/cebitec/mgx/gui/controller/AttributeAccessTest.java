@@ -293,7 +293,7 @@ public class AttributeAccessTest {
     public void testDistFromTree() throws MGXException {
         System.out.println("distFromTree");
         MGXMasterI master = TestMaster.getRO();
-        DistributionI dist = master.Attribute().getDistribution(master.AttributeType().fetch(6), master.Job().fetch(3));
+        DistributionI<Long> dist = master.Attribute().getDistribution(master.AttributeType().fetch(6), master.Job().fetch(3));
         assertNotNull(dist);
         assertEquals(5, dist.size());
         assertEquals(24, dist.getTotalClassifiedElements());
@@ -329,27 +329,27 @@ public class AttributeAccessTest {
         assertNotNull(job);
         SeqRunI run = job.getSeqrun();
         assertNotNull(run);
-        DistributionI dist = master.Attribute().getDistribution(master.AttributeType().fetch(6), job);
+        DistributionI<Long> dist = master.Attribute().getDistribution(master.AttributeType().fetch(6), job);
         assertNotNull(dist);
         assertEquals(5, dist.size());
         assertEquals(24, dist.getTotalClassifiedElements());
-        List<Future<Pair<SeqRunI, DistributionI>>> twoTimes = new ArrayList<>();
+        List<Future<Pair<SeqRunI, DistributionI<Long>>>> twoTimes = new ArrayList<>();
         twoTimes.add(new NoFuture<>(new Pair<>(run, dist)));
         twoTimes.add(new NoFuture<>(new Pair<>(run, dist)));
 
-        Map<SeqRunI, DistributionI> m = new HashMap<>();
+        Map<SeqRunI, DistributionI<Long>> m = new HashMap<>();
 
-        DistributionI merged = DistributionFactory.merge(twoTimes, m);
+        DistributionI<Long> merged = DistributionFactory.merge(twoTimes, m);
         assertNotNull(merged);
         assertEquals(5, merged.size());
         assertEquals(48, merged.getTotalClassifiedElements());
 
         // bergey_order
-        DistributionI dist2 = TestMaster.getRO().Attribute().getDistribution(master.AttributeType().fetch(7), master.Job().fetch(3));
+        DistributionI<Long> dist2 = TestMaster.getRO().Attribute().getDistribution(master.AttributeType().fetch(7), master.Job().fetch(3));
         assertNotNull(dist2);
         assertEquals(4, dist2.size());
         assertEquals(21, dist2.getTotalClassifiedElements());
-        List<Future<Pair<SeqRunI, DistributionI>>> twoDists = new ArrayList<>();
+        List<Future<Pair<SeqRunI, DistributionI<Long>>>> twoDists = new ArrayList<>();
         twoDists.add(new NoFuture<>(new Pair<>(run, dist)));
         twoDists.add(new NoFuture<>(new Pair<>(run, dist2)));
         DistributionI twoDifferent = DistributionFactory.merge(twoDists, m);
@@ -385,7 +385,7 @@ public class AttributeAccessTest {
         return null;
     }
 
-    private static AttributeI findDist(DistributionI d, String name) {
+    private static <T extends Number> AttributeI findDist(DistributionI<T> d, String name) {
         assertNotNull(name);
         for (AttributeI a : d.keySet()) {
             if (a.getValue().equals(name)) {
@@ -396,7 +396,7 @@ public class AttributeAccessTest {
         return null;
     }
 
-    private void checkDist(DistributionI dist, String name, Long content) {
+    private void checkDist(DistributionI<Long> dist, String name, Long content) {
         assertNotNull(name);
         assertNotNull(content);
         boolean found = false;

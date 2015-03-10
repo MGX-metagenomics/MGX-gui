@@ -52,11 +52,11 @@ public class VisualizationGroup implements VisualizationGroupI {
     private final Map<AttributeRank, Map<SeqRunI, JobI>> uniqueJobs = new HashMap<>();
     private final Map<AttributeRank, Map<SeqRunI, Set<JobI>>> needsResolval = new HashMap<>();
     private final Map<SeqRunI, Map<JobI, Set<AttributeTypeI>>> attributeTypes;
-    private final Map<SeqRunI, DistributionI> currentDistributions;
+    private final Map<SeqRunI, DistributionI<Long>> currentDistributions;
     //
     private final PropertyChangeSupport pcs;
     //
-    private final Map<String, DistributionI> distCache = new HashMap<>();
+    private final Map<String, DistributionI<Long>> distCache = new HashMap<>();
     private final Map<String, TreeI<Long>> hierarchyCache = new HashMap<>();
 
     public VisualizationGroup(VGroupManagerI vgmgr, int id, String groupName, Color color) {
@@ -372,7 +372,7 @@ public class VisualizationGroup implements VisualizationGroupI {
     }
 
     @Override
-    public final DistributionI getDistribution() throws ConflictingJobsException {
+    public final DistributionI<Long> getDistribution() throws ConflictingJobsException {
 
         assert selectedAttributeType != null;
         //assert needsResolval.get(AttributeRank.PRIMARY).isEmpty();
@@ -384,7 +384,7 @@ public class VisualizationGroup implements VisualizationGroupI {
             return distCache.get(selectedAttributeType);
         }
 
-        List<Future<Pair<SeqRunI, DistributionI>>> results = new ArrayList<>();
+        List<Future<Pair<SeqRunI, DistributionI<Long>>>> results = new ArrayList<>();
 
         // start distribution retrieval workers in background
         //
@@ -402,7 +402,7 @@ public class VisualizationGroup implements VisualizationGroupI {
             //
             if (selectedJob != null && currentAttributeType != null) {
                 DistributionFetcher distFetcher = new DistributionFetcher(run, currentAttributeType, selectedJob); // currentDistributions);
-                Future<Pair<SeqRunI, DistributionI>> f = vgmgr.submit(distFetcher);
+                Future<Pair<SeqRunI, DistributionI<Long>>> f = vgmgr.submit(distFetcher);
                 results.add(f);
 //              distFetcher.execute();
             }
@@ -412,7 +412,7 @@ public class VisualizationGroup implements VisualizationGroupI {
         // merge results
         //
         currentDistributions.clear();
-        DistributionI ret;
+        DistributionI<Long> ret;
         try {
             ret = DistributionFactory.merge(results, currentDistributions);
         } catch (InterruptedException | ExecutionException ex) {
@@ -481,7 +481,7 @@ public class VisualizationGroup implements VisualizationGroupI {
     public Map<SeqRunI, Set<AttributeI>> getSaveSet(List<String> requestedAttrs) {
         assert needsResolval.get(AttributeRank.PRIMARY).isEmpty();
         Map<SeqRunI, Set<AttributeI>> filtered = new HashMap<>();
-        for (Entry<SeqRunI, DistributionI> e : currentDistributions.entrySet()) {
+        for (Entry<SeqRunI, DistributionI<Long>> e : currentDistributions.entrySet()) {
 
             Set<AttributeI> relevant = new HashSet<>();
             for (AttributeI a : e.getValue().keySet()) {

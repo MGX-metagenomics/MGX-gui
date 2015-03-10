@@ -8,7 +8,6 @@ import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
-import de.cebitec.mgx.common.VGroupManager;
 import de.cebitec.mgx.common.visualization.CategoricalViewerI;
 import de.cebitec.mgx.common.visualization.ViewerI;
 import de.cebitec.mgx.kegg.pathways.KEGGException;
@@ -17,11 +16,8 @@ import de.cebitec.mgx.kegg.pathways.api.ECNumberI;
 import de.cebitec.mgx.kegg.pathways.api.PathwayI;
 import de.cebitec.mgx.kegg.pathways.model.ECNumberFactory;
 import de.cebitec.mgx.kegg.pathways.paint.KEGGPanel;
-import java.awt.Cursor;
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -40,7 +36,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author sj
  */
 @ServiceProvider(service = ViewerI.class)
-public class KeggViewer extends CategoricalViewerI {
+public class KeggViewer extends CategoricalViewerI<Long> {
 
     private KEGGPanel panel;
     private KEGGMaster master;
@@ -97,7 +93,7 @@ public class KeggViewer extends CategoricalViewerI {
     private final static Pattern ecNumber = Pattern.compile("\\d+[.](-|\\d+)[.](-|\\d+)[.](-|\\d+)");
 
     @Override
-    public void show(List<Pair<VisualizationGroupI, DistributionI>> dists) {
+    public void show(List<Pair<VisualizationGroupI, DistributionI<Long>>> dists) {
         if (customizer.getSelectedPathway() == null) {
             return;
         }
@@ -105,10 +101,10 @@ public class KeggViewer extends CategoricalViewerI {
             panel.setPathway(customizer.getSelectedPathway(), dists.size());
 
             int idx = 0;
-            for (Pair<VisualizationGroupI, DistributionI> p : dists) {
+            for (Pair<VisualizationGroupI, DistributionI<Long>> p : dists) {
                 VisualizationGroupI group = p.getFirst();
-                DistributionI dist = p.getSecond();
-                for (Entry<AttributeI, Number> e : dist.entrySet()) {
+                DistributionI<Long> dist = p.getSecond();
+                for (Entry<AttributeI, Long> e : dist.entrySet()) {
                     Matcher matcher = ecNumber.matcher(e.getKey().getValue());
                     if (matcher.find()) {
                         ECNumberI ec = ECNumberFactory.fromString(e.getKey().getValue().substring(matcher.start(), matcher.end()));
