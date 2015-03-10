@@ -54,10 +54,12 @@ public class LimitFilter<T extends Number> implements VisFilterI<DistributionI<T
     @Override
     @SuppressWarnings("unchecked")
     public List<Pair<VisualizationGroupI, DistributionI<T>>> filter(List<Pair<VisualizationGroupI, DistributionI<T>>> dists) {
-        if (limit == LIMITS.ALL) {
-            return dists;
-        }
 
+        List<Pair<VisualizationGroupI, DistributionI<T>>> ret = new ArrayList<>();
+
+//        if (limit == LIMITS.ALL) {
+//            return dists;
+//        }
         // merge distributions
         Map<AttributeI, Double> summary = new HashMap<>();
         for (Pair<VisualizationGroupI, DistributionI<T>> pair : dists) {
@@ -76,16 +78,18 @@ public class LimitFilter<T extends Number> implements VisFilterI<DistributionI<T
         sortList.addAll(summary.keySet());
         Collections.sort(sortList, new SortOrder.SortByValue(summary));
 
-        List<AttributeI> toKeep = sortList.size() > limit.getValue()
-                ? sortList.subList(0, limit.getValue())
-                : sortList;
-
-        
-        List<Pair<VisualizationGroupI, DistributionI<T>>> ret = new ArrayList<>();
+        List<AttributeI> toKeep = null;
+        if (limit.equals(LIMITS.ALL)) {
+            toKeep = sortList;
+        } else {
+            toKeep = sortList.size() > limit.getValue()
+                    ? sortList.subList(0, limit.getValue())
+                    : sortList;
+        }
 
         for (Pair<VisualizationGroupI, DistributionI<T>> p : dists) {
             DistributionI<T> dist = p.getSecond();
-            
+
             DistributionI<T> filteredDist = null;
             if (dist.getEntryType().equals(Long.class)) {
                 Map<AttributeI, Long> tmp = (Map<AttributeI, Long>) dist;

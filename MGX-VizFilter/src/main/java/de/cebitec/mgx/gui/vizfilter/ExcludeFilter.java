@@ -7,6 +7,7 @@ import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.visualization.filter.VisFilterI;
 import de.cebitec.mgx.gui.datamodel.misc.Distribution;
 import de.cebitec.mgx.gui.datamodel.misc.NormalizedDistribution;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -23,15 +24,20 @@ public class ExcludeFilter<T extends Number> implements VisFilterI<DistributionI
     private final Set<AttributeI> blacklist;
 
     public ExcludeFilter(Set<AttributeI> blacklist) {
+        if (blacklist == null) {
+           throw new IllegalArgumentException();
+        }
         this.blacklist = Collections.unmodifiableSet(blacklist);
     }
 
     @Override
     public List<Pair<VisualizationGroupI, DistributionI<T>>> filter(List<Pair<VisualizationGroupI, DistributionI<T>>> in) {
+        List<Pair<VisualizationGroupI, DistributionI<T>>> ret = new ArrayList<>(in.size());
         for (Pair<VisualizationGroupI, DistributionI<T>> p : in) {
-            filterDist(p.getSecond());
+            DistributionI<T> filteredDist = filterDist(p.getSecond());
+            ret.add(new Pair<>(p.getFirst(), filteredDist));
         }
-        return in;
+        return ret;
     }
 
     @SuppressWarnings("unchecked")
