@@ -11,6 +11,7 @@ import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.gui.datamodel.Attribute;
 import de.cebitec.mgx.gui.datamodel.misc.Distribution;
+import de.cebitec.mgx.gui.vizfilter.LimitFilter.LIMITS;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,8 +41,7 @@ public class LimitFilterTest {
         VisualizationGroupI vg = null;
         list.add(new Pair<>(vg, dist));
 
-        LimitFilter<Long> filter = new LimitFilter<>();
-        filter.setLimit(LimitFilter.LIMITS.ALL);
+        LimitFilter<Long> filter = new LimitFilter<>(LIMITS.ALL);
         assertNotNull(filter);
 
         List<Pair<VisualizationGroupI, DistributionI<Long>>> filtered = filter.filter(list);
