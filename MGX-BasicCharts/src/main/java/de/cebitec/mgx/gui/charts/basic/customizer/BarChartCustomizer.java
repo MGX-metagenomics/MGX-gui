@@ -10,13 +10,9 @@ import de.cebitec.mgx.gui.vizfilter.LimitFilter;
 import de.cebitec.mgx.gui.vizfilter.SortOrder;
 import de.cebitec.mgx.gui.vizfilter.ToFractionFilter;
 import de.cebitec.mgx.api.visualization.filter.VisFilterI;
-import de.cebitec.mgx.gui.datamodel.misc.NormalizedDistribution;
 import de.cebitec.mgx.gui.vizfilter.LongToDouble;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  *
@@ -205,14 +201,14 @@ public class BarChartCustomizer extends javax.swing.JPanel implements VisFilterI
         }
 
         if (at.getStructure() == AttributeTypeI.STRUCTURE_HIERARCHICAL) {
-            if (treeFilter.getBlackList().size() > 0) {
-                ExcludeFilter<Double> ef = new ExcludeFilter<>(treeFilter.getBlackList());
+            Set<AttributeI> blackList = treeFilter.getBlackList();
+            if (blackList.size() > 0) {
+                ExcludeFilter<Double> ef = new ExcludeFilter<>(blackList);
                 ret = ef.filter(ret);
             }
         }
 
-        LimitFilter<Double> lf = new LimitFilter<>();
-        lf.setLimit(LimitFilter.LIMITS.values()[limit.getSelectedIndex()]);
+        LimitFilter<Double> lf = new LimitFilter<>(LimitFilter.LIMITS.values()[limit.getSelectedIndex()]);
         ret = lf.filter(ret);
 
         SortOrder<Double> sorter = new SortOrder<>(at, sortAscending.isSelected() ? SortOrder.ASCENDING : SortOrder.DESCENDING);
