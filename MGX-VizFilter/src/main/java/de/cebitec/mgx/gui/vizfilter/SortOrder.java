@@ -31,7 +31,7 @@ public class SortOrder<T extends Number> implements VisFilterI<DistributionI<T>,
     private final int currentCriteria;
     private final int order;
 
-    private List<AttributeI> sortList = new ArrayList<>();
+    private final List<AttributeI> sortList = new ArrayList<>();
 
     public SortOrder(AttributeTypeI aType, int order) {
         assert aType != null;
