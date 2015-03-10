@@ -6,7 +6,7 @@ import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
 import de.cebitec.mgx.api.groups.ImageExporterI;
-import de.cebitec.mgx.api.visualization.filter.SortOrder;
+import de.cebitec.mgx.gui.vizfilter.SortOrder;
 import de.cebitec.mgx.common.visualization.NumericalViewerI;
 import de.cebitec.mgx.common.visualization.ViewerI;
 import java.awt.Color;
@@ -25,7 +25,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author sj
  */
 @ServiceProvider(service = ViewerI.class)
-public class PolarChart extends NumericalViewerI {
+public class PolarChart extends NumericalViewerI<Long> {
 
     private ChartPanel cPanel = null;
     private JFreeChart chart = null;
@@ -47,9 +47,9 @@ public class PolarChart extends NumericalViewerI {
     }
 
     @Override
-    public void show(List<Pair<VisualizationGroupI, DistributionI>> dists) {
+    public void show(List<Pair<VisualizationGroupI, DistributionI<Long>>> dists) {
 
-        SortOrder sorter = new SortOrder(getAttributeType(), SortOrder.DESCENDING);
+        SortOrder<Long> sorter = new SortOrder<>(getAttributeType(), SortOrder.DESCENDING);
         dists = sorter.filter(dists);
         XYSeriesCollection dataset = JFreeChartUtil.createXYSeries(dists);
 
@@ -64,7 +64,7 @@ public class PolarChart extends NumericalViewerI {
         // set the colors
         int i = 0;
         DefaultPolarItemRenderer renderer = (DefaultPolarItemRenderer) plot.getRenderer();
-        for (Pair<VisualizationGroupI, DistributionI> groupDistribution : dists) {
+        for (Pair<VisualizationGroupI, DistributionI<Long>> groupDistribution : dists) {
             renderer.setSeriesPaint(i++, groupDistribution.getFirst().getColor());
         }
 

@@ -5,8 +5,8 @@ import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
-import de.cebitec.mgx.api.visualization.filter.ExcludeFilter;
 import de.cebitec.mgx.api.visualization.filter.VisFilterI;
+import de.cebitec.mgx.gui.vizfilter.ExcludeFilter;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.BufferedWriter;
@@ -25,7 +25,7 @@ import org.openide.util.NbPreferences;
  *
  * @author sjaenick
  */
-public class TableViewCustomizer extends javax.swing.JPanel implements VisFilterI<DistributionI> {
+public class TableViewCustomizer extends javax.swing.JPanel implements VisFilterI<DistributionI<Long>, DistributionI<Long>> {
 
     /**
      * Creates new form TableViewCustomizer
@@ -59,7 +59,7 @@ public class TableViewCustomizer extends javax.swing.JPanel implements VisFilter
     }
 
     @Override
-    public List<Pair<VisualizationGroupI, DistributionI>> filter(List<Pair<VisualizationGroupI, DistributionI>> dists) {
+    public List<Pair<VisualizationGroupI, DistributionI<Long>>> filter(List<Pair<VisualizationGroupI, DistributionI<Long>>> dists) {
 
         Set<AttributeI> filterEntries = treeFilter1.getBlackList();
 
@@ -67,7 +67,7 @@ public class TableViewCustomizer extends javax.swing.JPanel implements VisFilter
             return dists;
         }
 
-        ExcludeFilter ef = new ExcludeFilter(filterEntries);
+        ExcludeFilter<Long> ef = new ExcludeFilter<>(filterEntries);
         dists = ef.filter(dists);
 
         return dists;
@@ -162,7 +162,7 @@ public class TableViewCustomizer extends javax.swing.JPanel implements VisFilter
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
                 if ("SelectedFileChangedProperty".equals(evt.getPropertyName())) {
-                    NbPreferences.forModule(JFileChooser.class).put("lastDirectory", fc.getCurrentDirectory().getAbsolutePath().toString());
+                    NbPreferences.forModule(JFileChooser.class).put("lastDirectory", fc.getCurrentDirectory().getAbsolutePath());
                 }
             }
         });

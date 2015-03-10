@@ -12,7 +12,7 @@ import java.util.Iterator;
  */
 public class Rarefaction {
 
-    public static Iterator<Point> rarefy(DistributionI dist) throws MGXException {
+    public static Iterator<Point> rarefy(DistributionI<Long> dist) throws MGXException {
         MGXMasterI m = dist.getMaster();
         return m.Statistics().Rarefaction(dist);
     }

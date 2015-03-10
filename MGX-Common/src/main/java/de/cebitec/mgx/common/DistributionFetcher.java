@@ -18,7 +18,7 @@ import de.cebitec.mgx.api.model.tree.TreeI;
  *
  * @author sjaenick
  */
-public class DistributionFetcher extends Fetcher<Pair<SeqRunI, DistributionI>> {
+public class DistributionFetcher extends Fetcher<Pair<SeqRunI, DistributionI<Long>>> {
 
     protected final SeqRunI run;
     protected final AttributeTypeI attrType;
@@ -33,7 +33,7 @@ public class DistributionFetcher extends Fetcher<Pair<SeqRunI, DistributionI>> {
     }
 
     @Override
-    protected Pair<SeqRunI, DistributionI> doInBackground() throws Exception {
+    protected Pair<SeqRunI, DistributionI<Long>> doInBackground() throws Exception {
         MGXMasterI master = attrType.getMaster();
         if (attrType.getStructure() == AttributeTypeI.STRUCTURE_HIERARCHICAL) {
             TreeI<Long> tree = master.Attribute().getHierarchy(attrType, job);

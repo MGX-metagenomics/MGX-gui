@@ -53,7 +53,7 @@ public class StatisticsAccess implements StatisticsAccessI {
     }
 
     @Override
-    public Iterator<Point> Rarefaction(DistributionI dist) throws MGXException {
+    public Iterator<Point> Rarefaction(DistributionI<Long> dist) throws MGXException {
         try {
             Iterator<PointDTO> fetchall = dtomaster.Statistics().Rarefaction(dist.values());
             return new BaseIterator<PointDTO, Point>(fetchall) {
@@ -66,9 +66,10 @@ public class StatisticsAccess implements StatisticsAccessI {
             throw new MGXException(ex);
         }
     }
+    
 
     @Override
-    public NodeI Clustering(List<Pair<VisualizationGroupI, DistributionI>> dists, String distanceMethod, String agglomeration) throws MGXException {
+    public NodeI Clustering(Collection<Pair<VisualizationGroupI, DistributionI<Double>>> dists, String distanceMethod, String agglomeration) throws MGXException {
         // map to hold obfuscated group name mapping
         Map<String, String> tmpNames = new HashMap<>();
         MGXMatrixDTO matrix = buildMatrix(dists, tmpNames, false);
@@ -91,7 +92,7 @@ public class StatisticsAccess implements StatisticsAccessI {
     }
 
     @Override
-    public PCAResultI PCA(Collection<Pair<VisualizationGroupI, DistributionI>> groups, PrincipalComponent pc1, PrincipalComponent pc2) throws MGXException {
+    public PCAResultI PCA(Collection<Pair<VisualizationGroupI, DistributionI<Double>>> groups, PrincipalComponent pc1, PrincipalComponent pc2) throws MGXException {
 
         // map to hold obfuscated group name mapping
         Map<String, String> tmpNames = new HashMap<>();
@@ -111,7 +112,7 @@ public class StatisticsAccess implements StatisticsAccessI {
     }
 
     @Override
-    public List<Point> PCoA(Collection<Pair<VisualizationGroupI, DistributionI>> groups) throws MGXException {
+    public List<Point> PCoA(Collection<Pair<VisualizationGroupI, DistributionI<Double>>> groups) throws MGXException {
 
         // map to hold obfuscated group name mapping
         Map<String, String> tmpNames = new HashMap<>();
@@ -131,12 +132,12 @@ public class StatisticsAccess implements StatisticsAccessI {
         }
     }
 
-    private static MGXMatrixDTO buildMatrix(Collection<Pair<VisualizationGroupI, DistributionI>> groups, Map<String, String> tmpNames, boolean includeColNames) {
+    private static <T extends Number> MGXMatrixDTO buildMatrix(Collection<Pair<VisualizationGroupI, DistributionI<T>>> groups, Map<String, String> tmpNames, boolean includeColNames) {
         MGXMatrixDTO.Builder b = MGXMatrixDTO.newBuilder();
 
         // collect all attributes first
         Set<AttributeI> attrs = new HashSet<>();
-        for (Pair<VisualizationGroupI, DistributionI> dataset : groups) {
+        for (Pair<VisualizationGroupI, DistributionI<T>> dataset : groups) {
             attrs.addAll(dataset.getSecond().keySet());
         }
         AttributeI[] ordered = attrs.toArray(new AttributeI[]{});
@@ -150,7 +151,7 @@ public class StatisticsAccess implements StatisticsAccessI {
             b.setColNames(sb.build());
         }
 
-        for (Pair<VisualizationGroupI, DistributionI> dataset : groups) {
+        for (Pair<VisualizationGroupI, DistributionI<T>> dataset : groups) {
             String obfusName = generateName();
             tmpNames.put(obfusName, dataset.getFirst().getName());
 
@@ -164,7 +165,7 @@ public class StatisticsAccess implements StatisticsAccessI {
         return b.build();
     }
 
-    private static MGXDoubleList buildVector(AttributeI[] attrs, DistributionI dist) {
+    private static <T extends Number> MGXDoubleList buildVector(AttributeI[] attrs, DistributionI<T> dist) {
         MGXDoubleList.Builder b = MGXDoubleList.newBuilder();
         for (AttributeI a : attrs) {
             Number n = dist.get(a);
@@ -187,5 +188,6 @@ public class StatisticsAccess implements StatisticsAccessI {
         }
         return sb.toString();
     }
+
 
 }

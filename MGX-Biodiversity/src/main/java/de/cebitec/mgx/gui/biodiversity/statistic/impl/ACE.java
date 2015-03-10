@@ -10,16 +10,16 @@ import org.apache.commons.math3.util.FastMath;
  *
  * @author sjaenick
  */
-public class ACE implements Statistic<DistributionI> {
+public class ACE implements Statistic<DistributionI<Long>> {
 
     @Override
-    public String measure(DistributionI data) {
+    public String measure(DistributionI<Long> data) {
         double ret = 0;
         double Sabundant = 0;
         double Srare = 0;
-        for (Map.Entry<AttributeI, Number> e : data.entrySet()) {
+        for (Map.Entry<AttributeI, Long> e : data.entrySet()) {
 
-            long val = e.getValue().longValue();
+            long val = e.getValue();
 
             if (val > 10) {
                 Sabundant++;
@@ -41,7 +41,7 @@ public class ACE implements Statistic<DistributionI> {
         return "ACE";
     }
 
-    private double getGamma(DistributionI data) {
+    private double getGamma(DistributionI<Long> data) {
         double ret = 0;
         
         // zaehler
@@ -60,10 +60,10 @@ public class ACE implements Statistic<DistributionI> {
         return FastMath.max(ret, 0);
     }
 
-    private double getSrare(DistributionI data) {
+    private double getSrare(DistributionI<Long> data) {
         double ret = 0;
-        for (Map.Entry<AttributeI, Number> e : data.entrySet()) {
-            long val = e.getValue().longValue();
+        for (Map.Entry<AttributeI, Long> e : data.entrySet()) {
+            long val = e.getValue();
             if (val <= 10) {
                 ret++;
             }
@@ -71,7 +71,7 @@ public class ACE implements Statistic<DistributionI> {
         return ret;
     }
 
-    private double getNrare(DistributionI data) {
+    private double getNrare(DistributionI<Long> data) {
         double ret = 0;
         for (int i = 1; i <= 10; i++) {
             ret += getF(data, i);
@@ -79,9 +79,9 @@ public class ACE implements Statistic<DistributionI> {
         return ret;
     }
 
-    private double getF(DistributionI data, int num) {
+    private double getF(DistributionI<Long> data, int num) {
         double ret = 0;
-        for (Map.Entry<AttributeI, Number> e : data.entrySet()) {
+        for (Map.Entry<AttributeI, Long> e : data.entrySet()) {
             if (e.getValue().intValue() == num) {
                 ret++;
             }

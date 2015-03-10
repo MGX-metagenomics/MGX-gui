@@ -142,9 +142,9 @@ public final class AttributeVisualizationTopComponent extends TopComponent {
         //pe.requestActive();
     }
 
-    void updateLookup(List<Pair<VisualizationGroupI, DistributionI>> currentDistributions) {
+    void updateLookup(List<Pair<VisualizationGroupI, DistributionI<Long>>> currentDistributions) {
         content.set(Collections.emptyList(), null); // clear content
-        for (Pair<VisualizationGroupI, DistributionI> p : currentDistributions) {
+        for (Pair<VisualizationGroupI, DistributionI<Long>> p : currentDistributions) {
             SequenceExporterI exp = new SeqExporter(p.getFirst(), p.getSecond());
             content.add(exp);
         }

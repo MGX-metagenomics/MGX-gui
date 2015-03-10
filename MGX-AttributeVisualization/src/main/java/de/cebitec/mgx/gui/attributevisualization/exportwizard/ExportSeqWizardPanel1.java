@@ -42,7 +42,7 @@ public class ExportSeqWizardPanel1 implements WizardDescriptor.Panel<WizardDescr
         return getSelectedAttributes().size() > 0;
     }
 
-    public void setDistribution(DistributionI d) {
+    public void setDistribution(DistributionI<Long> d) {
         getComponent().setDistribution(d);
     }
 

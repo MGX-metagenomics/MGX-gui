@@ -10,14 +10,14 @@ import org.apache.commons.math3.util.FastMath;
  *
  * @author sjaenick
  */
-public class Chao1 implements Statistic<DistributionI> {
+public class Chao1 implements Statistic<DistributionI<Long>> {
 
     @Override
-    public String measure(DistributionI data) {
+    public String measure(DistributionI<Long> data) {
         long numCategories = 0;
         long numSingletons = 0;
         long numDoubletons = 0;
-        for (Entry<AttributeI, Number> e : data.entrySet()) {
+        for (Entry<AttributeI, Long> e : data.entrySet()) {
             numCategories++;
             switch (e.getValue().intValue()) {
                 case 1:

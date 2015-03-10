@@ -22,31 +22,31 @@ import java.util.Set;
  *
  * @author sjaenick
  */
-public class Distribution implements DistributionI<Long> {
+public class NormalizedDistribution implements DistributionI<Double> {
 
     private final MGXMasterI master;
-    private final Map<AttributeI, Long> _data = new HashMap<>();
+    private final Map<AttributeI, Double> _data = new HashMap<>();
     private final Set<AttributeI> keys = new LinkedHashSet<>();
     private final long numElements;
 
-    public Distribution(MGXMasterI master, Map<AttributeI, Long> data) {
+    public NormalizedDistribution(MGXMasterI master, Map<AttributeI, Double> data) {
         this(master, data, data.keySet());
     }
 
     /*
-     * only attributes present in order will appear in the distribution
-    */
-    public Distribution(MGXMasterI master, Map<AttributeI, Long> data, Collection<AttributeI> order) {
+     * only attributes present in data and order will appear in the distribution
+     */
+    public NormalizedDistribution(MGXMasterI master, Map<AttributeI, Double> data, Collection<AttributeI> order) {
         this.master = master;
         long total = 0;
         for (AttributeI attr : order) {
-            Long n = data.get(attr);
-            if (n == null) {
-                throw new IllegalArgumentException("Supplied order contains AttributeI "+attr.getValue() + " which is not present in the Map.");
+            Double n = data.get(attr);
+            if (n != null) {
+                total += n;
+                keys.add(attr);
+                _data.put(attr, n);
             }
-            total += n;
-            keys.add(attr);
-            _data.put(attr, n);
+
         }
         numElements = total;
     }
@@ -75,26 +75,26 @@ public class Distribution implements DistributionI<Long> {
     public boolean containsKey(Object key) {
         if (key instanceof AttributeI) {
             AttributeI a = (AttributeI) key;
-            return keySet().contains(a);
+            return keys.contains(a);
         }
         return false;
     }
 
     @Override
     public boolean containsValue(Object value) {
-        for (Entry<AttributeI, Long> e : _data.entrySet()) {
+        for (Entry<AttributeI, Double> e : _data.entrySet()) {
             if (e.getValue().equals(value)) {
-                return keySet().contains(e.getKey());
+                return keys.contains(e.getKey());
             }
         }
         return false;
     }
 
     @Override
-    public Long get(Object key) {
+    public Double get(Object key) {
         if (key instanceof AttributeI) {
             AttributeI a = (AttributeI) key;
-            if (keySet().contains(a)) {
+            if (keys.contains(a)) {
                 return _data.get(a);
             }
         }
@@ -102,17 +102,17 @@ public class Distribution implements DistributionI<Long> {
     }
 
     @Override
-    public Long put(AttributeI key, Long value) {
+    public Double put(AttributeI key, Double value) {
         throw new UnsupportedOperationException("Not supported.");
     }
 
     @Override
-    public Long remove(Object key) {
+    public Double remove(Object key) {
         throw new UnsupportedOperationException("Not supported.");
     }
 
     @Override
-    public void putAll(Map<? extends AttributeI, ? extends Long> m) {
+    public void putAll(Map<? extends AttributeI, ? extends Double> m) {
         throw new UnsupportedOperationException("Not supported.");
     }
 
@@ -127,8 +127,9 @@ public class Distribution implements DistributionI<Long> {
     }
 
     @Override
-    public Collection<Long> values() {
-        Collection<Long> ret = new ArrayList<>();
+    public Collection<Double> values() {
+        Collection<Double> ret = new ArrayList<>();
+        // maintain order as defined in keys
         for (AttributeI attr : keySet()) {
             ret.add(_data.get(attr));
         }
@@ -136,10 +137,12 @@ public class Distribution implements DistributionI<Long> {
     }
 
     @Override
-    public Set<Entry<AttributeI, Long>> entrySet() {
-        Set<Entry<AttributeI, Long>> ret = new LinkedHashSet<>();
+    public Set<Entry<AttributeI, Double>> entrySet() {
+        Set<Entry<AttributeI, Double>> ret = new LinkedHashSet<>();
+        
+        // maintain order as defined in keys
         for (AttributeI attr : keySet()) {
-            Map.Entry<AttributeI, Long> e = new AbstractMap.SimpleImmutableEntry<>(attr, _data.get(attr));
+            Map.Entry<AttributeI, Double> e = new AbstractMap.SimpleImmutableEntry<>(attr, _data.get(attr));
             ret.add(e);
         }
         return ret;
@@ -163,7 +166,7 @@ public class Distribution implements DistributionI<Long> {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final Distribution other = (Distribution) obj;
+        final NormalizedDistribution other = (NormalizedDistribution) obj;
         if (!Objects.equals(this.master, other.master)) {
             return false;
         }
@@ -173,15 +176,12 @@ public class Distribution implements DistributionI<Long> {
         if (!Objects.equals(this.keys, other.keys)) {
             return false;
         }
-        if (this.numElements != other.numElements) {
-            return false;
-        }
-        return true;
+        return this.numElements == other.numElements;
     }
 
     @Override
-    public Class<Long> getEntryType() {
-        return Long.class;
+    public Class<Double> getEntryType() {
+        return Double.class;
     }
 
 }

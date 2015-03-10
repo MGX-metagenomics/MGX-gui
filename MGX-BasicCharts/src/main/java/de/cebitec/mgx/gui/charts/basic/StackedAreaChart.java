@@ -42,11 +42,11 @@ public class StackedAreaChart extends AreaChart {
     }
 
     @Override
-    public void show(List<Pair<VisualizationGroupI, DistributionI>> dists) {
+    public void show(List<Pair<VisualizationGroupI, DistributionI<Long>>> in) {
 
-        LegendItemCollection legend = JFreeChartUtil.createLegend(dists);
-        dists = getCustomizer().filter(dists);
-        TableXYDataset dataset = JFreeChartUtil.createTableXYDataset(dists);
+        LegendItemCollection legend = JFreeChartUtil.createLegend(in);
+        List<Pair<VisualizationGroupI, DistributionI<Double>>> data = getCustomizer().filter(in);
+        TableXYDataset dataset = JFreeChartUtil.createTableXYDataset(data);
 
         String xAxisLabel = "";
         String yAxisLabel = useFractions() ? "Fraction" : "Count";
@@ -99,7 +99,7 @@ public class StackedAreaChart extends AreaChart {
         // set the colors
         int i = 0;
         StackedXYAreaRenderer2 renderer = (StackedXYAreaRenderer2) plot.getRenderer();
-        for (Pair<VisualizationGroupI, DistributionI> groupDistribution : dists) {
+        for (Pair<VisualizationGroupI, DistributionI<Double>> groupDistribution : data) {
             renderer.setSeriesPaint(i++, groupDistribution.getFirst().getColor());
         }
     }

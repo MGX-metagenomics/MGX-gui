@@ -11,13 +11,13 @@ import org.apache.commons.math3.util.FastMath;
  *
  * @author sjaenick
  */
-public class Shannon implements Statistic<DistributionI> {
+public class Shannon implements Statistic<DistributionI<Long>> {
 
     @Override
-    public String measure(DistributionI data) {
+    public String measure(DistributionI<Long> data) {
         double ret = 0;
         long numElem = data.getTotalClassifiedElements();
-        for (Entry<AttributeI, Number> e : data.entrySet()) {
+        for (Entry<AttributeI, Long> e : data.entrySet()) {
             double relAbun = e.getValue().doubleValue() / (double)numElem;
             ret += relAbun * FastMath.log(relAbun);
         }

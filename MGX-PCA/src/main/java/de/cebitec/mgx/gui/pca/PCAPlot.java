@@ -11,11 +11,12 @@ import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.misc.Point;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
-import de.cebitec.mgx.api.visualization.filter.ToFractionFilter;
 import de.cebitec.mgx.api.visualization.filter.VisFilterI;
 import de.cebitec.mgx.common.VGroupManager;
 import de.cebitec.mgx.common.visualization.ViewerI;
 import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
+import de.cebitec.mgx.gui.vizfilter.LongToDouble;
+import de.cebitec.mgx.gui.vizfilter.ToFractionFilter;
 import java.awt.Color;
 import java.awt.geom.Ellipse2D;
 import java.util.HashMap;
@@ -50,7 +51,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author sj
  */
 @ServiceProvider(service = ViewerI.class)
-public class PCAPlot extends ViewerI<DistributionI> {
+public class PCAPlot extends ViewerI<DistributionI<Long>> {
 
     private ChartPanel cPanel = null;
     private JFreeChart chart = null;
@@ -76,7 +77,7 @@ public class PCAPlot extends ViewerI<DistributionI> {
         Set<AttributeI> attrs = new HashSet<>();
         int distCnt = 0;
         try {
-            for (Pair<VisualizationGroupI, DistributionI> p : VGroupManager.getInstance().getDistributions()) {
+            for (Pair<VisualizationGroupI, DistributionI<Long>> p : VGroupManager.getInstance().getDistributions()) {
                 attrs.addAll(p.getSecond().keySet());
                 distCnt++;
             }
@@ -91,20 +92,24 @@ public class PCAPlot extends ViewerI<DistributionI> {
     }
 
     @Override
-    public void show(List<Pair<VisualizationGroupI, DistributionI>> dists) {
-        final MGXMasterI master = dists.get(0).getSecond().getMaster();
+    public void show(final List<Pair<VisualizationGroupI, DistributionI<Long>>> in) {
 
-        if (getCustomizer().useFractions()) {
-            VisFilterI<DistributionI> fracFilter = new ToFractionFilter();
-            dists = fracFilter.filter(dists);
-        }
         final Pair<PrincipalComponent, PrincipalComponent> comps = getCustomizer().getPCs();
-        final List<Pair<VisualizationGroupI, DistributionI>> data = dists;
 
         SwingWorker<PCAResultI, Void> sw = new SwingWorker<PCAResultI, Void>() {
 
             @Override
             protected PCAResultI doInBackground() throws Exception {
+                final MGXMasterI master = in.get(0).getSecond().getMaster();
+
+                List<Pair<VisualizationGroupI, DistributionI<Double>>> data;
+
+                if (getCustomizer().useFractions()) {
+                    ToFractionFilter fracFilter = new ToFractionFilter();
+                    data = fracFilter.filter(in);
+                } else {
+                    data = new LongToDouble().filter(in);
+                }
                 return master.Statistics().PCA(data, comps.getFirst(), comps.getSecond());
             }
         };

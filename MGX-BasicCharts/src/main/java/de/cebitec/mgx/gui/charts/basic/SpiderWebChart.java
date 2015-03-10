@@ -6,7 +6,7 @@ import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
 import de.cebitec.mgx.gui.charts.basic.util.TickedSpiderWebPlot;
 import de.cebitec.mgx.api.groups.ImageExporterI;
-import de.cebitec.mgx.api.visualization.filter.SortOrder;
+import de.cebitec.mgx.gui.vizfilter.SortOrder;
 import de.cebitec.mgx.common.visualization.CategoricalViewerI;
 import de.cebitec.mgx.common.visualization.ViewerI;
 import java.awt.Color;
@@ -27,7 +27,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author sj
  */
 @ServiceProvider(service = ViewerI.class)
-public class SpiderWebChart extends CategoricalViewerI {
+public class SpiderWebChart extends CategoricalViewerI<Long> {
 
     private ChartPanel cPanel = null;
     private JFreeChart chart = null;
@@ -53,9 +53,9 @@ public class SpiderWebChart extends CategoricalViewerI {
     }
 
     @Override
-    public void show(List<Pair<VisualizationGroupI, DistributionI>> dists) {
+    public void show(List<Pair<VisualizationGroupI, DistributionI<Long>>> dists) {
 
-        SortOrder sorter = new SortOrder(getAttributeType(), SortOrder.DESCENDING);
+        SortOrder<Long> sorter = new SortOrder<>(getAttributeType(), SortOrder.DESCENDING);
         dists = sorter.filter(dists);
 
         CategoryDataset dataset = JFreeChartUtil.createCategoryDataset(dists);
@@ -75,7 +75,7 @@ public class SpiderWebChart extends CategoricalViewerI {
         
         // colors
         int i = 0;
-        for (Pair<VisualizationGroupI, DistributionI> groupDistribution : dists) {
+        for (Pair<VisualizationGroupI, DistributionI<Long>> groupDistribution : dists) {
             plot.setSeriesPaint(i++, groupDistribution.getFirst().getColor());
         }
 

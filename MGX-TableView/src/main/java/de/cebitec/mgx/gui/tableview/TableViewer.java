@@ -6,9 +6,11 @@ import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
+import de.cebitec.mgx.api.visualization.filter.VisFilterI;
 import de.cebitec.mgx.common.visualization.ViewerI;
-import de.cebitec.mgx.api.visualization.filter.SortOrder;
-import de.cebitec.mgx.api.visualization.filter.ToFractionFilter;
+import de.cebitec.mgx.gui.vizfilter.LongToDouble;
+import de.cebitec.mgx.gui.vizfilter.SortOrder;
+import de.cebitec.mgx.gui.vizfilter.ToFractionFilter;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -23,7 +25,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author sj
  */
 @ServiceProvider(service = ViewerI.class)
-public class TableViewer extends ViewerI<DistributionI> {
+public class TableViewer extends ViewerI<DistributionI<Long>> {
 
     private JXTable table;
     private TableViewCustomizer cust = null;
@@ -49,27 +51,30 @@ public class TableViewer extends ViewerI<DistributionI> {
     }
 
     @Override
-    public void show(List<Pair<VisualizationGroupI, DistributionI>> dists) {
+    public void show(List<Pair<VisualizationGroupI, DistributionI<Long>>> in) {
 
-        dists = getCustomizer().filter(dists);
-        
+        in = getCustomizer().filter(in);
+
+        List<Pair<VisualizationGroupI, DistributionI<Double>>> ret = null;
         if (getCustomizer().useFractions()) {
-            ToFractionFilter tff = new ToFractionFilter();
-            dists = tff.filter(dists);
+            VisFilterI<DistributionI<Long>, DistributionI<Double>> fracFilter = new ToFractionFilter();
+            ret = fracFilter.filter(in);
+        } else {
+            ret = new LongToDouble().filter(in);
         }
 
         Set<AttributeI> allAttrs = new HashSet<>();
-        int numColumns = dists.size() + 1;
+        int numColumns = ret.size() + 1;
         String[] columns = new String[numColumns];
         int i = 0;
         columns[i++] = getAttributeType().getName(); // first column
-        for (Pair<VisualizationGroupI, DistributionI> p : dists) {
+        for (Pair<VisualizationGroupI, DistributionI<Double>> p : ret) {
             columns[i++] = p.getFirst().getName();
             allAttrs.addAll(p.getSecond().keySet());
         }
 
-        SortOrder order = new SortOrder(getAttributeType(), SortOrder.DESCENDING);
-        dists = order.filter(dists);
+        SortOrder<Double> order = new SortOrder<>(getAttributeType(), SortOrder.DESCENDING);
+        ret = order.filter(ret);
 
         DefaultTableModel model = new DefaultTableModel(columns, 0) {
             @Override
@@ -92,15 +97,15 @@ public class TableViewer extends ViewerI<DistributionI> {
             Object[] rowData = new Object[numColumns];
             rowData[0] = a.getValue();
             int col = 1;
-            for (Pair<VisualizationGroupI, DistributionI> p : dists) {
-                DistributionI d = p.getSecond();
-                rowData[col++] = d.containsKey(a) 
-                        ? getCustomizer().useFractions() ? d.get(a).doubleValue() : d.get(a).longValue() 
+            for (Pair<VisualizationGroupI, DistributionI<Double>> p : ret) {
+                DistributionI<Double> d = p.getSecond();
+                rowData[col++] = d.containsKey(a)
+                        ? getCustomizer().useFractions() ? d.get(a) : d.get(a).longValue()
                         : 0;
             }
             model.addRow(rowData);
         }
-        
+
         cust.setModel(model); // for tsv export
 
         table = new JXTable(model);

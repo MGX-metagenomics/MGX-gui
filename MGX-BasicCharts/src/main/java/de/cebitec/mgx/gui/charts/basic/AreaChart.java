@@ -32,7 +32,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author sj
  */
 @ServiceProvider(service = ViewerI.class)
-public class AreaChart extends NumericalViewerI {
+public class AreaChart extends NumericalViewerI<Long> {
 
     protected ChartPanel cPanel = null;
     protected XYPlotCustomizer customizer = null;
@@ -49,12 +49,12 @@ public class AreaChart extends NumericalViewerI {
     }
 
     @Override
-    public void show(List<Pair<VisualizationGroupI, DistributionI>> dists) {
+    public void show(List<Pair<VisualizationGroupI, DistributionI<Long>>> in) {
         
-        LegendItemCollection legend = JFreeChartUtil.createLegend(dists);
+        LegendItemCollection legend = JFreeChartUtil.createLegend(in);
 
-        dists = getCustomizer().filter(dists);
-        XYSeriesCollection dataset = JFreeChartUtil.createXYSeries(dists, getCustomizer().logY());
+        List<Pair<VisualizationGroupI, DistributionI<Double>>> data = getCustomizer().filter(in);
+        XYSeriesCollection dataset = JFreeChartUtil.createXYSeries(data, getCustomizer().logY());
 
         String xAxisLabel = "";
         String yAxisLabel = useFractions() ? "Fraction" : "Count";
@@ -109,7 +109,7 @@ public class AreaChart extends NumericalViewerI {
         // set the colors
         int i = 0;
         XYAreaRenderer renderer = (XYAreaRenderer) plot.getRenderer();
-        for (Pair<VisualizationGroupI, DistributionI> groupDistribution : dists) {
+        for (Pair<VisualizationGroupI, DistributionI<Double>> groupDistribution : data) {
             renderer.setSeriesPaint(i++, groupDistribution.getFirst().getColor());
         }
     }

@@ -3,19 +3,26 @@ package de.cebitec.mgx.gui.charts.basic.customizer;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
+import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
-import de.cebitec.mgx.api.visualization.filter.ExcludeFilter;
-import de.cebitec.mgx.api.visualization.filter.LimitFilter;
-import de.cebitec.mgx.api.visualization.filter.SortOrder;
-import de.cebitec.mgx.api.visualization.filter.ToFractionFilter;
+import de.cebitec.mgx.gui.vizfilter.ExcludeFilter;
+import de.cebitec.mgx.gui.vizfilter.LimitFilter;
+import de.cebitec.mgx.gui.vizfilter.SortOrder;
+import de.cebitec.mgx.gui.vizfilter.ToFractionFilter;
 import de.cebitec.mgx.api.visualization.filter.VisFilterI;
+import de.cebitec.mgx.gui.datamodel.misc.NormalizedDistribution;
+import de.cebitec.mgx.gui.vizfilter.LongToDouble;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  *
  * @author sjaenick
  */
-public class BarChartCustomizer extends javax.swing.JPanel implements VisFilterI<DistributionI> {
+public class BarChartCustomizer extends javax.swing.JPanel implements VisFilterI<DistributionI<Long>, DistributionI<Double>> {
 
     private AttributeTypeI at;
 
@@ -187,26 +194,30 @@ public class BarChartCustomizer extends javax.swing.JPanel implements VisFilterI
     // End of variables declaration//GEN-END:variables
 
     @Override
-    public List<Pair<VisualizationGroupI, DistributionI>> filter(List<Pair<VisualizationGroupI, DistributionI>> dists) {
+    public List<Pair<VisualizationGroupI, DistributionI<Double>>> filter(List<Pair<VisualizationGroupI, DistributionI<Long>>> dists) {
+
+        List<Pair<VisualizationGroupI, DistributionI<Double>>> ret = null;
         if (useFractions()) {
-            VisFilterI<DistributionI> fracFilter = new ToFractionFilter();
-            dists = fracFilter.filter(dists);
+            VisFilterI<DistributionI<Long>, DistributionI<Double>> fracFilter = new ToFractionFilter();
+            ret = fracFilter.filter(dists);
+        } else {
+            ret = new LongToDouble().filter(dists);
         }
 
         if (at.getStructure() == AttributeTypeI.STRUCTURE_HIERARCHICAL) {
             if (treeFilter.getBlackList().size() > 0) {
-                ExcludeFilter ef = new ExcludeFilter(treeFilter.getBlackList());
-                dists = ef.filter(dists);
+                ExcludeFilter<Double> ef = new ExcludeFilter<>(treeFilter.getBlackList());
+                ret = ef.filter(ret);
             }
         }
 
-        LimitFilter lf = new LimitFilter();
+        LimitFilter<Double> lf = new LimitFilter<>();
         lf.setLimit(LimitFilter.LIMITS.values()[limit.getSelectedIndex()]);
-        dists = lf.filter(dists);
+        ret = lf.filter(ret);
 
-        SortOrder sorter = new SortOrder(at, sortAscending.isSelected() ? SortOrder.ASCENDING : SortOrder.DESCENDING);
-        dists = sorter.filter(dists);
+        SortOrder<Double> sorter = new SortOrder<>(at, sortAscending.isSelected() ? SortOrder.ASCENDING : SortOrder.DESCENDING);
+        ret = sorter.filter(ret);
 
-        return dists;
+        return ret;
     }
 }

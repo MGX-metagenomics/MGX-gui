@@ -112,7 +112,7 @@ public class AttributeAccess implements AttributeAccessI {
 //        return res;
 //    }
     @Override
-    public DistributionI getDistribution(AttributeTypeI attrType, JobI job) throws MGXException {
+    public DistributionI<Long> getDistribution(AttributeTypeI attrType, JobI job) throws MGXException {
         Map<AttributeI, Long> res;
         long total = 0;
         try {
@@ -136,7 +136,7 @@ public class AttributeAccess implements AttributeAccessI {
             Logger.getLogger(AttributeAccess.class.getName()).log(Level.SEVERE, null, ex);
             throw new MGXException(ex);
         }
-        return new Distribution(res, total, master);
+        return new Distribution(master, res);
     }
 
     @Override

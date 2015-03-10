@@ -16,6 +16,7 @@ import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.visualization.ConflictResolver;
 import de.cebitec.mgx.common.VGroupManager;
 import de.cebitec.mgx.gui.util.TestMaster;
+import de.cebitec.mgx.gui.vizfilter.LongToDouble;
 import de.cebitec.mgx.newick.NodeI;
 import java.util.List;
 import java.util.Set;
@@ -75,7 +76,7 @@ public class StatisticsAccessTest {
 
             boolean ret = vgmgr.selectAttributeType(AttributeRank.PRIMARY, "NCBI_CLASS");
             assertTrue(ret);
-            List<Pair<VisualizationGroupI, DistributionI>> dists = null;
+            List<Pair<VisualizationGroupI, DistributionI<Long>>> dists = null;
             try {
                 dists = vgmgr.getDistributions();
             } catch (ConflictingJobsException ex) {
@@ -83,7 +84,8 @@ public class StatisticsAccessTest {
             }
             assertNotNull(dists);
             assertEquals(2, dists.size());
-            PCAResultI pca = master.Statistics().PCA(dists, PrincipalComponent.PC1, PrincipalComponent.PC2);
+            List<Pair<VisualizationGroupI, DistributionI<Double>>> filter = new LongToDouble().filter(dists);
+            PCAResultI pca = master.Statistics().PCA(filter, PrincipalComponent.PC1, PrincipalComponent.PC2);
             assertNotNull(pca);
         }
     }
@@ -114,7 +116,7 @@ public class StatisticsAccessTest {
 
             boolean ret = vgmgr.selectAttributeType(AttributeRank.PRIMARY, "EC_number");
             assertTrue(ret);
-            List<Pair<VisualizationGroupI, DistributionI>> dists = null;
+            List<Pair<VisualizationGroupI, DistributionI<Long>>> dists = null;
             try {
                 dists = vgmgr.getDistributions();
             } catch (ConflictingJobsException ex) {
@@ -123,7 +125,8 @@ public class StatisticsAccessTest {
             assertNotNull(dists);
             assertEquals(2, dists.size());
             try {
-                PCAResultI pca = master.Statistics().PCA(dists, PrincipalComponent.PC2, PrincipalComponent.PC3);
+                List<Pair<VisualizationGroupI, DistributionI<Double>>> filter = new LongToDouble().filter(dists);
+                PCAResultI pca = master.Statistics().PCA(filter, PrincipalComponent.PC2, PrincipalComponent.PC3);
             } catch (MGXException ex) {
                 if (ex.getMessage().contains("Could not access requested principal components.")) {
                     return;
@@ -156,7 +159,7 @@ public class StatisticsAccessTest {
 
             boolean ret = vgmgr.selectAttributeType(AttributeRank.PRIMARY, "NCBI_CLASS");
             assertTrue(ret);
-            List<Pair<VisualizationGroupI, DistributionI>> dists = null;
+            List<Pair<VisualizationGroupI, DistributionI<Long>>> dists = null;
             try {
                 dists = vgmgr.getDistributions();
             } catch (ConflictingJobsException ex) {
@@ -164,8 +167,10 @@ public class StatisticsAccessTest {
             }
             assertNotNull(dists);
             assertEquals(2, dists.size());
+            
+            List<Pair<VisualizationGroupI, DistributionI<Double>>> filter = new LongToDouble().filter(dists);
 
-            NodeI root = master.Statistics().Clustering(dists, "euclidean", "ward");
+            NodeI root = master.Statistics().Clustering(filter, "euclidean", "ward");
             assertNotNull(root);
             assertEquals(2, root.getChildren().size());
         }

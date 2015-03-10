@@ -41,7 +41,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author sj
  */
 @ServiceProvider(service = ViewerI.class)
-public class RarefactionCurve extends ViewerI<DistributionI> {
+public class RarefactionCurve extends ViewerI<DistributionI<Long>> {
 
     private DelayedPlot cPanel = null;
     private JFreeChart chart = null;
@@ -57,7 +57,7 @@ public class RarefactionCurve extends ViewerI<DistributionI> {
     }
 
     @Override
-    public void show(final List<Pair<VisualizationGroupI, DistributionI>> dists) {
+    public void show(final List<Pair<VisualizationGroupI, DistributionI<Long>>> dists) {
 
         cPanel = new DelayedPlot();
 
@@ -101,7 +101,7 @@ public class RarefactionCurve extends ViewerI<DistributionI> {
                 // set the colors
                 int i = 0;
                 XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) plot.getRenderer();
-                for (Pair<VisualizationGroupI, DistributionI> groupDistribution : dists) {
+                for (Pair<VisualizationGroupI, DistributionI<Long>> groupDistribution : dists) {
                     renderer.setSeriesPaint(i++, groupDistribution.getFirst().getColor());
                 }
                 return ret;
@@ -123,17 +123,17 @@ public class RarefactionCurve extends ViewerI<DistributionI> {
 
     }
 
-    private static XYSeriesCollection createXYSeries(List<Pair<VisualizationGroupI, DistributionI>> in) {
+    private static XYSeriesCollection createXYSeries(List<Pair<VisualizationGroupI, DistributionI<Long>>> in) {
         final XYSeriesCollection dataset = new XYSeriesCollection();
 
-        for (final Pair<VisualizationGroupI, DistributionI> groupDistribution : in) {
+        for (final Pair<VisualizationGroupI, DistributionI<Long>> groupDistribution : in) {
 
             NonEDT.invokeAndWait(new Runnable() {
 
                 @Override
                 public void run() {
                     XYSeries series = new XYSeries(groupDistribution.getFirst().getName());
-                    DistributionI dist = groupDistribution.getSecond();
+                    DistributionI<Long> dist = groupDistribution.getSecond();
                     try {
                         Iterator<Point> iter = Rarefaction.rarefy(dist);
                         while (iter.hasNext()) {

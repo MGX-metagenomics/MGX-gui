@@ -8,7 +8,7 @@ import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
 import de.cebitec.mgx.api.groups.ImageExporterI;
-import de.cebitec.mgx.api.visualization.filter.ToFractionFilter;
+import de.cebitec.mgx.gui.vizfilter.ToFractionFilter;
 import de.cebitec.mgx.common.VGroupManager;
 import de.cebitec.mgx.common.visualization.NumericalViewerI;
 import de.cebitec.mgx.common.visualization.ViewerI;
@@ -42,7 +42,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author sjaenick
  */
 @ServiceProvider(service = ViewerI.class)
-public class MAPlot extends NumericalViewerI {
+public class MAPlot extends NumericalViewerI<Long> {
 
     private ChartPanel cPanel = null;
     private JFreeChart chart = null;
@@ -64,23 +64,23 @@ public class MAPlot extends NumericalViewerI {
     }
 
     @Override
-    public void show(List<Pair<VisualizationGroupI, DistributionI>> dists) {
+    public void show(List<Pair<VisualizationGroupI, DistributionI<Long>>> dists) {
         
         if (dists.size() != 2) {
             // should not happen, see canHandle() implementation
             assert false;
         }
         
-        List<Pair<VisualizationGroupI, DistributionI>> relevant = dists.subList(0, 2);
+        List<Pair<VisualizationGroupI, DistributionI<Long>>> firstTwo = dists.subList(0, 2);
 
         ToFractionFilter tof = new ToFractionFilter();
-        relevant = tof.filter(relevant);
+        List<Pair<VisualizationGroupI, DistributionI<Double>>> cur = tof.filter(firstTwo);
 
         XYSeriesCollection dataset = new XYSeriesCollection();
         XYSeries series = new XYSeries("");
 
-        DistributionI first = relevant.get(0).getSecond();
-        DistributionI second = relevant.get(1).getSecond();
+        DistributionI<Double> first = cur.get(0).getSecond();
+        DistributionI<Double> second = cur.get(1).getSecond();
 
         Set<AttributeI> attrs = new HashSet<>();
         attrs.addAll(first.keySet());
@@ -93,8 +93,8 @@ public class MAPlot extends NumericalViewerI {
 
             if (first.keySet().contains(a) && second.keySet().contains(a)) {
                 // attribute occurs in both distributions
-                firstVal = first.get(a).doubleValue();
-                secondVal = second.get(a).doubleValue();
+                firstVal = first.get(a);
+                secondVal = second.get(a);
                 x = (log2(firstVal) + log2(secondVal)) / 2;
                 y = log2(firstVal / secondVal);
                 item = new XYDataItem(x, y);
@@ -123,9 +123,9 @@ public class MAPlot extends NumericalViewerI {
                 String toolTipText = new StringBuilder("<html>")
                         .append(a.getValue())
                         .append("<br><br>")
-                        .append(relevant.get(0).getFirst().getName())
+                        .append(cur.get(0).getFirst().getName())
                         .append(": ").append(numAssigned1).append(" sequences").append("<br>")
-                        .append(relevant.get(1).getFirst().getName())
+                        .append(cur.get(1).getFirst().getName())
                         .append(": ").append(numAssigned2).append(" sequences")
                         .append("</html>")
                         .toString();
@@ -136,10 +136,10 @@ public class MAPlot extends NumericalViewerI {
 
         dataset.addSeries(series);
 
-        String xAxisLabel = "log2(" + relevant.get(0).getFirst().getName() + ") + "
-                + "log2(" + relevant.get(1).getFirst().getName() + ") / 2";
-        String yAxisLabel = "log2(" + relevant.get(0).getFirst().getName() + "/"
-                + relevant.get(1).getFirst().getName() + ")";
+        String xAxisLabel = "log2(" + cur.get(0).getFirst().getName() + ") + "
+                + "log2(" + cur.get(1).getFirst().getName() + ") / 2";
+        String yAxisLabel = "log2(" + cur.get(0).getFirst().getName() + "/"
+                + cur.get(1).getFirst().getName() + ")";
 
         chart = ChartFactory.createXYLineChart(getTitle(), xAxisLabel, yAxisLabel, dataset, PlotOrientation.VERTICAL, false, true, false);
         chart.setBorderPaint(Color.WHITE);
