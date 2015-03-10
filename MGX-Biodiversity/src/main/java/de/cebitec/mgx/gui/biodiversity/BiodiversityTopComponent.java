@@ -204,6 +204,7 @@ public final class BiodiversityTopComponent extends TopComponent implements Look
     @Override
     public void componentOpened() {
         result.addLookupListener(this);
+        resultChanged(null);
     }
 
     @Override
