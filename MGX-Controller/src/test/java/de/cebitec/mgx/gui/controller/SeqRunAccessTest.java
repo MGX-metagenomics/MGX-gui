@@ -11,8 +11,10 @@ import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.util.TestMaster;
 import de.cebitec.mgx.seqstorage.FastaWriter;
 import de.cebitec.mgx.sequence.DNASequenceI;
+import de.cebitec.mgx.sequence.SeqStoreException;
 import de.cebitec.mgx.sequence.SeqWriterI;
 import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 import org.junit.After;
@@ -89,22 +91,27 @@ public class SeqRunAccessTest {
     }
 
     @Test
-    public void testDownload() throws Exception {
+    public void testDownload() throws IOException {
         System.out.println("testDownload");
         File tmpFile = File.createTempFile("down", "xx");
-        final SeqWriterI<DNASequenceI> writer = new FastaWriter(tmpFile.getAbsolutePath());
 
-        MGXMasterI m = TestMaster.getRO();
-        SeqRunI sr1 = m.SeqRun().fetch(1);
-        PropCounter pc = new PropCounter();
-        final DownloadBaseI downloader = m.Sequence().createDownloader(sr1, writer, true);
-        downloader.addPropertyChangeListener(pc);
-        boolean success = downloader.download();
+        try {
+            final SeqWriterI<DNASequenceI> writer = new FastaWriter(tmpFile.getAbsolutePath());
 
-        tmpFile.delete();
+            MGXMasterI m = TestMaster.getRO();
+            SeqRunI sr1 = m.SeqRun().fetch(1);
+            PropCounter pc = new PropCounter();
+            final DownloadBaseI downloader = m.Sequence().createDownloader(sr1, writer, true);
+            downloader.addPropertyChangeListener(pc);
+            boolean success = downloader.download();
 
-        assertTrue(success);
-        assertNotNull(pc.getLastEvent());
-        assertEquals(TransferBaseI.TRANSFER_COMPLETED, pc.getLastEvent().getPropertyName());
+            assertTrue(success);
+            assertNotNull(pc.getLastEvent());
+            assertEquals(TransferBaseI.TRANSFER_COMPLETED, pc.getLastEvent().getPropertyName());
+        } catch (SeqStoreException | MGXException ex) {
+            fail(ex.getMessage());
+        } finally {
+            tmpFile.delete();
+        }
     }
 }
