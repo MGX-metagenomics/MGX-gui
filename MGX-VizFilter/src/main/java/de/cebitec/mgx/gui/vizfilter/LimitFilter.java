@@ -19,7 +19,7 @@ import java.util.Map;
  */
 public class LimitFilter<T extends Number> implements VisFilterI<DistributionI<T>, DistributionI<T>> {
 
-    private LIMITS limit = LIMITS.ALL;
+    private final LIMITS limit;
 
     public enum LIMITS {
 
@@ -47,8 +47,8 @@ public class LimitFilter<T extends Number> implements VisFilterI<DistributionI<T
 
     };
 
-    public void setLimit(LIMITS max) {
-        limit = max;
+    public LimitFilter(LIMITS limit) {
+        this.limit = limit;
     }
 
     @Override
