@@ -44,7 +44,7 @@ import org.openide.windows.TopComponent;
 @Messages({
     "CTL_BiodiversityAction=Biodiversity",
     "CTL_BiodiversityTopComponent=Biodiversity Window",
-    "HINT_BiodiversityTopComponent=This is a Biodiversity window"
+    "HINT_BiodiversityTopComponent=Biodiversity Window"
 })
 public final class BiodiversityTopComponent extends TopComponent implements LookupListener, PropertyChangeListener {
 
