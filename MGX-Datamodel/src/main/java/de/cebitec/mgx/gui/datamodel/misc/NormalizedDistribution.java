@@ -51,6 +51,19 @@ public class NormalizedDistribution implements DistributionI<Double> {
         numElements = total;
     }
 
+    public NormalizedDistribution(MGXMasterI master, Map<AttributeI, Double> data, Collection<AttributeI> order, long totalElem) {
+        this.master = master;
+        for (AttributeI attr : order) {
+            Double n = data.get(attr);
+            if (n != null) {
+                keys.add(attr);
+                _data.put(attr, n);
+            }
+
+        }
+        numElements = totalElem;
+    }
+
     @Override
     public MGXMasterI getMaster() {
         return master;
@@ -139,7 +152,7 @@ public class NormalizedDistribution implements DistributionI<Double> {
     @Override
     public Set<Entry<AttributeI, Double>> entrySet() {
         Set<Entry<AttributeI, Double>> ret = new LinkedHashSet<>();
-        
+
         // maintain order as defined in keys
         for (AttributeI attr : keySet()) {
             Map.Entry<AttributeI, Double> e = new AbstractMap.SimpleImmutableEntry<>(attr, _data.get(attr));

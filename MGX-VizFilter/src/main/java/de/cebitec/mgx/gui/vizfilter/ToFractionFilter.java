@@ -22,13 +22,12 @@ public class ToFractionFilter implements VisFilterI<DistributionI<Long>, Distrib
     public List<Pair<VisualizationGroupI, DistributionI<Double>>> filter(List<Pair<VisualizationGroupI, DistributionI<Long>>> dists) {
         List<Pair<VisualizationGroupI, DistributionI<Double>>> ret = new ArrayList<>(dists.size());
         for (Pair<VisualizationGroupI, DistributionI<Long>> pair : dists) {
-            ret.add(new Pair<>(pair.getFirst(), convertSingleDistribution(pair.getSecond())));
+            ret.add(new Pair<>(pair.getFirst(), filterDist(pair.getSecond())));
         }
         return ret;
     }
-
-    private DistributionI<Double> convertSingleDistribution(DistributionI<Long> dist) {
-
+    
+    public DistributionI<Double> filterDist(DistributionI<Long> dist) {
         // sum up
         long total = 0;
         for (Long n : dist.values()) {
@@ -42,6 +41,6 @@ public class ToFractionFilter implements VisFilterI<DistributionI<Long>, Distrib
             map.put(e.getKey(), (double)e.getValue() / total);
         }
         
-        return new NormalizedDistribution(dist.getMaster(), map);
+        return new NormalizedDistribution(dist.getMaster(), map, dist.keySet(), dist.getTotalClassifiedElements());
     }
 }
