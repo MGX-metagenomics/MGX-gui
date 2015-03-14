@@ -34,19 +34,18 @@ public class Distribution implements DistributionI<Long> {
     }
 
     /*
-     * only attributes present in order will appear in the distribution
-    */
+     * only attributes present in order and data will appear in the distribution
+     */
     public Distribution(MGXMasterI master, Map<AttributeI, Long> data, Collection<AttributeI> order) {
         this.master = master;
         long total = 0;
         for (AttributeI attr : order) {
-            Long n = data.get(attr);
-            if (n == null) {
-                throw new IllegalArgumentException("Supplied order contains AttributeI "+attr.getValue() + " which is not present in the Map.");
+            if (data.containsKey(attr)) {
+                Long n = data.get(attr);
+                total += n;
+                keys.add(attr);
+                _data.put(attr, n);
             }
-            total += n;
-            keys.add(attr);
-            _data.put(attr, n);
         }
         numElements = total;
     }
