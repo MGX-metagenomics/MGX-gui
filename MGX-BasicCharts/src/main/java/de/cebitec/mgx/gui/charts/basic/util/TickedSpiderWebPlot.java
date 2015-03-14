@@ -12,6 +12,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.text.NumberFormat;
 import org.apache.commons.math3.util.FastMath;
+import org.jfree.chart.LegendItemCollection;
 import org.jfree.chart.plot.SpiderWebPlot;
 import org.jfree.data.category.CategoryDataset;
 
@@ -118,6 +119,20 @@ public class TickedSpiderWebPlot extends SpiderWebPlot {
             g2.setComposite(saveComposite);
         }
     }
+
+    private LegendItemCollection lic = null;
+    public void setFixedLegendItems(LegendItemCollection createLegend) {
+        lic = createLegend;
+    }
+
+    @Override
+    public LegendItemCollection getLegendItems() {
+        if (lic != null) {
+            return lic;
+        }
+        return super.getLegendItems();
+    }
+    
 }
 
 ///**

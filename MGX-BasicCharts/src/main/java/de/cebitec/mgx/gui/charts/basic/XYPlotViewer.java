@@ -62,7 +62,8 @@ public class XYPlotViewer extends NumericalViewerI<Long> {
         cPanel = new ChartPanel(chart);
         XYPlot plot = (XYPlot) chart.getPlot();
         plot.setBackgroundPaint(Color.WHITE);
-
+        plot.setFixedLegendItems(JFreeChartUtil.createLegend(data));
+        
         // x axis
         ValueAxis valueAxis;
         final TickUnitSource tusX;
@@ -78,7 +79,6 @@ public class XYPlotViewer extends NumericalViewerI<Long> {
         valueAxis.setStandardTickUnits(tusX);
         valueAxis.setInverted(!getCustomizer().getSortAscending());
         plot.setDomainAxis(valueAxis);
-
 
         // y axis
         final NumberAxis rangeAxis;
@@ -98,7 +98,6 @@ public class XYPlotViewer extends NumericalViewerI<Long> {
         }
         rangeAxis.setStandardTickUnits(tus);
         plot.setRangeAxis(rangeAxis);
-
 
         // set the colors
         int i = 0;

@@ -11,11 +11,15 @@ import de.cebitec.mgx.common.visualization.CategoricalViewerI;
 import de.cebitec.mgx.common.visualization.ViewerI;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.geom.Rectangle2D;
+import java.util.Iterator;
 import java.util.List;
 import javax.swing.JComponent;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.LegendItem;
+import org.jfree.chart.LegendItemCollection;
 import org.jfree.chart.StandardChartTheme;
 import org.jfree.chart.labels.CategoryToolTipGenerator;
 import org.jfree.chart.labels.StandardCategoryToolTipGenerator;
@@ -71,8 +75,8 @@ public class SpiderWebChart extends CategoricalViewerI<Long> {
         plot.setOutlineVisible(false);
         plot.setLabelFont(labelFont);
         plot.setWebFilled(true);
-        //plot.setFixedLegendItems(JFreeChartUtil.createLegend(dists));
-        
+        plot.setFixedLegendItems(JFreeChartUtil.createLegend(dists));
+
         // colors
         int i = 0;
         for (Pair<VisualizationGroupI, DistributionI<Long>> groupDistribution : dists) {
