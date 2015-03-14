@@ -24,17 +24,22 @@ public class SortOrder<T extends Number> implements VisFilterI<DistributionI<T>,
 
     public final static int BY_VALUE = 0;
     public final static int BY_TYPE = 1;
-
-    public final static int ASCENDING = 0;
-    public final static int DESCENDING = 1;
+    
+    public static enum Order {
+        ASCENDING, DESCENDING;
+    }
+    public final static Order ASCENDING = Order.ASCENDING;
+    public final static Order DESCENDING = Order.DESCENDING;
 
     private final int currentCriteria;
-    private final int order;
+    private final Order order;
 
     private final List<AttributeI> sortList = new ArrayList<>();
 
-    public SortOrder(AttributeTypeI aType, int order) {
-        assert aType != null;
+    public SortOrder(AttributeTypeI aType, Order order) {
+        if (aType == null) {
+            throw new IllegalArgumentException("null AttributeTypeI supplied, but value is required");
+        }
         currentCriteria = aType.getValueType() == AttributeTypeI.VALUE_NUMERIC
                 ? SortOrder.BY_TYPE : SortOrder.BY_VALUE;
         this.order = order;
@@ -49,7 +54,8 @@ public class SortOrder<T extends Number> implements VisFilterI<DistributionI<T>,
         // summary distribution over all groups
         Map<AttributeI, Double> summary = new HashMap<>();
         for (Pair<VisualizationGroupI, DistributionI<T>> pair : dists) {
-            for (Entry<AttributeI, T> p : pair.getSecond().entrySet()) {
+            DistributionI<T> dist = pair.getSecond();
+            for (Entry<AttributeI, T> p : dist.entrySet()) {
                 if (summary.containsKey(p.getKey())) {
                     Double old = summary.get(p.getKey());
                     summary.put(p.getKey(), old + p.getValue().doubleValue());
@@ -77,7 +83,7 @@ public class SortOrder<T extends Number> implements VisFilterI<DistributionI<T>,
 
         assert summary.size() == sortList.size();
 
-        if (order == ASCENDING) {
+        if (order == Order.ASCENDING) {
             Collections.reverse(sortList);
         }
 
@@ -90,7 +96,7 @@ public class SortOrder<T extends Number> implements VisFilterI<DistributionI<T>,
                 sortedDist = (DistributionI<T>) new Distribution(d.getMaster(), tmp, sortList);
             } else if (d.getEntryType().equals(Double.class)) {
                 Map<AttributeI, Double> tmp = (Map<AttributeI, Double>) d;
-                sortedDist = (DistributionI<T>) new NormalizedDistribution(d.getMaster(), tmp, sortList);
+                sortedDist = (DistributionI<T>) new NormalizedDistribution(d.getMaster(), tmp, sortList, d.getTotalClassifiedElements());
             }
             
             ret.add(new Pair<>(p.getFirst(), sortedDist));
