@@ -93,7 +93,7 @@ public class SortOrder<T extends Number> implements VisFilterI<DistributionI<T>,
             DistributionI<T> sortedDist = null;
             if (d.getEntryType().equals(Long.class)) {
                 Map<AttributeI, Long> tmp = (Map<AttributeI, Long>) d;
-                sortedDist = (DistributionI<T>) new Distribution(d.getMaster(), tmp, sortList);
+                sortedDist = (DistributionI<T>) new Distribution(d.getMaster(), tmp, sortList, d.getTotalClassifiedElements());
             } else if (d.getEntryType().equals(Double.class)) {
                 Map<AttributeI, Double> tmp = (Map<AttributeI, Double>) d;
                 sortedDist = (DistributionI<T>) new NormalizedDistribution(d.getMaster(), tmp, sortList, d.getTotalClassifiedElements());

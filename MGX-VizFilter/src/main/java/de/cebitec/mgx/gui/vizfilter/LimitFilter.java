@@ -93,10 +93,10 @@ public class LimitFilter<T extends Number> implements VisFilterI<DistributionI<T
             DistributionI<T> filteredDist = null;
             if (dist.getEntryType().equals(Long.class)) {
                 Map<AttributeI, Long> tmp = (Map<AttributeI, Long>) dist;
-                filteredDist = (DistributionI<T>) new Distribution(dist.getMaster(), tmp, toKeep);
+                filteredDist = (DistributionI<T>) new Distribution(dist.getMaster(), tmp, toKeep, dist.getTotalClassifiedElements());
             } else if (dist.getEntryType().equals(Double.class)) {
                 Map<AttributeI, Double> tmp = (Map<AttributeI, Double>) dist;
-                filteredDist = (DistributionI<T>) new NormalizedDistribution(dist.getMaster(), tmp, toKeep);
+                filteredDist = (DistributionI<T>) new NormalizedDistribution(dist.getMaster(), tmp, toKeep, dist.getTotalClassifiedElements());
             }
 
             ret.add(new Pair<>(p.getFirst(), filteredDist));

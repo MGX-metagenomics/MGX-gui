@@ -136,7 +136,7 @@ public class AttributeAccess implements AttributeAccessI {
             Logger.getLogger(AttributeAccess.class.getName()).log(Level.SEVERE, null, ex);
             throw new MGXException(ex);
         }
-        return new Distribution(master, res);
+        return new Distribution(master, res, total);
     }
 
     @Override

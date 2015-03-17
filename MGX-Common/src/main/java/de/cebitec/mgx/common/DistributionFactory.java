@@ -43,18 +43,20 @@ public class DistributionFactory {
             }
         }
 
-        return new Distribution(anyMaster, summary);
+        return new Distribution(anyMaster, summary, total);
     }
 
     public static <T extends Long> DistributionI<Long> fromTree(TreeI<T> tree, AttributeTypeI aType) {
         Map<AttributeI, Long> summary = new HashMap<>();
         MGXMasterI master = aType.getMaster();
+        long total = 0;
 
         for (NodeI<T> node : tree.getNodes()) {
             if (node.getAttribute().getAttributeType().getName().equals(aType.getName())) {
                 summary.put(node.getAttribute(), node.getContent());
+                total += node.getContent();
             }
         }
-        return new Distribution(master, summary);
+        return new Distribution(master, summary, total);
     }
 }
