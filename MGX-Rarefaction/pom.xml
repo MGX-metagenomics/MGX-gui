@@ -44,8 +44,8 @@
             <groupId>org.netbeans.api</groupId>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>JFreeChart-Wrapper</artifactId>
+            <groupId>de.cebitec.mgx</groupId>
+            <artifactId>JFreeChart-OSGi</artifactId>
         </dependency>
         <dependency>
             <artifactId>MGX-SwingUtils</artifactId>
