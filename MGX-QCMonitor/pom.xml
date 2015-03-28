@@ -76,9 +76,8 @@
             <artifactId>MGX-API</artifactId>
         </dependency>
         <dependency>
-            <groupId>de.cebitec.mgx.gui</groupId>
-            <artifactId>JFreeChart-Wrapper</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <groupId>de.cebitec.mgx</groupId>
+            <artifactId>JFreeChart-OSGi</artifactId>
         </dependency>
     </dependencies>
     <properties>
