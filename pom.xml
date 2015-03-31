@@ -243,17 +243,17 @@
             <dependency>
                 <groupId>de.cebitec.gpms</groupId>
                 <artifactId>GPMS-core-api</artifactId>
-                <version>1.0-RELEASE</version>
+                <version>1.1</version>
             </dependency>
             <dependency>
                 <groupId>de.cebitec.gpms</groupId>
                 <artifactId>GPMS-rest-api</artifactId>
-                <version>1.0-RELEASE</version>
+                <version>1.1</version>
             </dependency>
             <dependency>
                 <groupId>de.cebitec.gpms</groupId>
                 <artifactId>GPMS-DTO</artifactId>
-                <version>1.0-RELEASE</version>
+                <version>1.1</version>
             </dependency>
             
             
@@ -266,7 +266,7 @@
             <dependency>
                 <groupId>de.cebitec.mgx</groupId>
                 <artifactId>MGX-isequences</artifactId>
-                <version>1.0-SNAPSHOT</version>
+                <version>1.0</version>
             </dependency>
             <dependency>
                 <groupId>de.cebitec.mgx</groupId>
@@ -276,7 +276,7 @@
             <dependency>
                 <groupId>de.cebitec.mgx</groupId>
                 <artifactId>NewickParser</artifactId>
-                <version>1.0-SNAPSHOT</version>
+                <version>1.0</version>
             </dependency>
             <dependency>
                 <groupId>de.cebitec.mgx</groupId>
@@ -291,13 +291,13 @@
             <dependency>
                 <groupId>de.cebitec.mgx</groupId>
                 <artifactId>MGX-parallelPropChange</artifactId>
-                <version>1.0-SNAPSHOT</version>
+                <version>1.0</version>
             </dependency>
 
             <dependency>
                 <groupId>de.cebitec.mgx</groupId>
                 <artifactId>ProtoBuf-Serializer</artifactId>
-                <version>1.0-SNAPSHOT</version>
+                <version>1.0</version>
             </dependency>
             <dependency>
                 <groupId>de.cebitec.mgx</groupId>
@@ -312,12 +312,12 @@
             <dependency>
                 <groupId>de.cebitec.mgx</groupId>
                 <artifactId>BioJava-OSGi</artifactId>
-                <version>1.0-SNAPSHOT</version>
+                <version>1.0</version>
             </dependency>
             <dependency>
                 <groupId>de.cebitec.mgx</groupId>
                 <artifactId>SwingX-OSGi</artifactId>
-                <version>1.0-SNAPSHOT</version>
+                <version>1.0</version>
             </dependency>
             
             <!-- own NBP components -->
