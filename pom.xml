@@ -522,8 +522,6 @@
     </build>
 
     <modules>
-        <module>MGX-JOGL-Wrapper</module>
-        <module>MGX-Jzy3D-Wrapper</module>
         <module>branding</module>
         <module>application</module>
         <module>MGX-Login</module>
@@ -538,7 +536,11 @@
         <module>MGX-Treeview</module>
         <module>MGX-BasicCharts</module>
         <module>MGX-jCharts</module>
-        <module>MGX-Charts3D</module>
+        <!-- 
+                <module>MGX-Charts3D</module> 
+                <module>MGX-Jzy3D-Wrapper</module>
+                <module>MGX-JOGL-Wrapper</module>
+        -->
         <module>MGX-Search</module>
         <module>MGX-TableView</module>
         <module>MGX-JobMonitor</module>
