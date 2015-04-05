@@ -15,6 +15,7 @@ import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.Mode;
+import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
 
 @ActionID(
@@ -40,15 +41,18 @@ public final class AlphadiversityAction implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent ev) {
-        BiodiversityTopComponent biodiv = new BiodiversityTopComponent();
-        biodiv.setVisible(true);
+        TopComponent tc = BiodiversityTopComponent.getDefault();
 
-        Mode m = WindowManager.getDefault().findMode("satellite");
-        if (m != null) {
-            m.dockInto(biodiv);
-        } else {
-            System.err.println("satellite mode not found");
+        if (!tc.isOpened()) {
+            Mode m = WindowManager.getDefault().findMode("satellite");
+            if (m != null) {
+                m.dockInto(tc);
+            }
+            tc.open();
         }
-        biodiv.open();
+        if (!tc.isVisible()) {
+            tc.setVisible(true);
+        }
+        tc.toFront();
     }
 }

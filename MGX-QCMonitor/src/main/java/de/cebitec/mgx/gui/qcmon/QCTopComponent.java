@@ -41,12 +41,12 @@ import org.openide.util.Utilities;
 )
 @TopComponent.Description(
         preferredID = "QCTopComponent",
-        iconBase="de/cebitec/mgx/gui/qcmon/QC.png", 
+        iconBase = "de/cebitec/mgx/gui/qcmon/QC.png",
         persistenceType = TopComponent.PERSISTENCE_NEVER
 )
 @TopComponent.Registration(mode = "satellite", openAtStartup = false)
 @ActionID(category = "Window", id = "de.cebitec.mgx.qcmon.QCTopComponent")
-@ActionReference(path = "Menu/Window", position = 533)
+//@ActionReference(path = "Menu/Window", position = 533)
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_QCAction",
         preferredID = "QCTopComponent"
@@ -54,19 +54,28 @@ import org.openide.util.Utilities;
 @Messages({
     "CTL_QCAction=Quality Control",
     "CTL_QCTopComponent=Quality Control",
-    "HINT_QCTopComponent=Quality control"
+    "HINT_QCTopComponent=Quality Control"
 })
 public final class QCTopComponent extends TopComponent implements LookupListener {
 
     private final Lookup.Result<SeqRunI> resultSeqRun;
     private SeqRunI currentSeqRun = null;
 
-    public QCTopComponent() {
+    private QCTopComponent() {
         initComponents();
         setName(Bundle.CTL_QCTopComponent());
         setToolTipText(Bundle.HINT_QCTopComponent());
         resultSeqRun = Utilities.actionsGlobalContext().lookupResult(SeqRunI.class);
         update();
+    }
+
+    private static QCTopComponent instance = null;
+
+    public static QCTopComponent getDefault() {
+        if (instance == null) {
+            instance = new QCTopComponent();
+        }
+        return instance;
     }
 
     /**
@@ -179,7 +188,7 @@ public final class QCTopComponent extends TopComponent implements LookupListener
             }
             dataset.addSeries(series);
         }
-        
+
         boolean showLegend = qcr.getData().length > 1;
         JFreeChart chart = ChartFactory.createStackedXYAreaChart(null, null, null, dataset, PlotOrientation.VERTICAL, showLegend, true, false);
 
