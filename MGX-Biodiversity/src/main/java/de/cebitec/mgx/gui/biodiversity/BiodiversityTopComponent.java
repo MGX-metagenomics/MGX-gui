@@ -13,7 +13,6 @@ import java.util.concurrent.ExecutionException;
 import javax.swing.SwingWorker;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
-import org.openide.awt.ActionReference;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
@@ -36,7 +35,7 @@ import org.openide.windows.TopComponent;
 )
 @TopComponent.Registration(mode = "satellite", openAtStartup = false)
 @ActionID(category = "Window", id = "de.cebitec.mgx.gui.biodiversity.BiodiversityTopComponent")
-@ActionReference(path = "Menu/Window", position = 338)
+//@ActionReference(path = "Menu/Window", position = 338)
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_BiodiversityAction",
         preferredID = "BiodiversityTopComponent"
@@ -51,12 +50,21 @@ public final class BiodiversityTopComponent extends TopComponent implements Look
     private final Lookup.Result<VisualizationGroupI> result;
     private VisualizationGroupI curGroup = null;
 
-    public BiodiversityTopComponent() {
+    private BiodiversityTopComponent() {
         initComponents();
         setName(Bundle.CTL_BiodiversityTopComponent());
         setToolTipText(Bundle.HINT_BiodiversityTopComponent());
         putClientProperty(TopComponent.PROP_MAXIMIZATION_DISABLED, Boolean.TRUE);
         result = Utilities.actionsGlobalContext().lookupResult(VisualizationGroupI.class);
+    }
+
+    private static BiodiversityTopComponent instance = null;
+
+    public static BiodiversityTopComponent getDefault() {
+        if (instance == null) {
+            instance = new BiodiversityTopComponent();
+        }
+        return instance;
     }
 
     /**

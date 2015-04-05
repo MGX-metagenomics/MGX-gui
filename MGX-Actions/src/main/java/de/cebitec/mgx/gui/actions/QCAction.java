@@ -15,6 +15,7 @@ import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.Mode;
+import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
 
 @ActionID(
@@ -40,15 +41,18 @@ public final class QCAction implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent ev) {
-        QCTopComponent qc = new QCTopComponent();
-        qc.setVisible(true);
+        TopComponent tc = QCTopComponent.getDefault();
 
-        Mode m = WindowManager.getDefault().findMode("satellite");
-        if (m != null) {
-            m.dockInto(qc);
-        } else {
-            System.err.println("satellite mode not found");
+        if (!tc.isOpened()) {
+            Mode m = WindowManager.getDefault().findMode("satellite");
+            if (m != null) {
+                m.dockInto(tc);
+            }
+            tc.open();
         }
-        qc.open();
+        if (!tc.isVisible()) {
+            tc.setVisible(true);
+        }
+        tc.toFront();
     }
 }

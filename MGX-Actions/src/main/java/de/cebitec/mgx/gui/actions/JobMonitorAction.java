@@ -8,9 +8,9 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
-import org.openide.util.Lookup;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.Mode;
+import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
 
 @ActionID(
@@ -34,16 +34,19 @@ public final class JobMonitorAction implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent ev) {
-        
-        JobMonitorTopComponent mon = Lookup.getDefault().lookup(JobMonitorTopComponent.class);
-        mon.setVisible(true);
 
-        Mode m = WindowManager.getDefault().findMode("satellite");
-        if (m != null) {
-            m.dockInto(mon);
-        } else {
-            System.err.println("satellite mode not found");
+        TopComponent tc = JobMonitorTopComponent.getDefault();
+
+        if (!tc.isOpened()) {
+            Mode m = WindowManager.getDefault().findMode("satellite");
+            if (m != null) {
+                m.dockInto(tc);
+            }
+            tc.open();
         }
-        mon.open();
+        if (!tc.isVisible()) {
+            tc.setVisible(true);
+        }
+        tc.toFront();
     }
 }

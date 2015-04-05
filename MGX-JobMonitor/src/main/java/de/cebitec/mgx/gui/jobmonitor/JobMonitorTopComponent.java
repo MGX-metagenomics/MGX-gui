@@ -13,7 +13,6 @@ import java.util.Collection;
 import javax.swing.JPopupMenu;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
-import org.openide.awt.ActionReference;
 import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.ExplorerUtils;
 import org.openide.explorer.view.NodePopupFactory;
@@ -23,7 +22,6 @@ import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.Utilities;
-import org.openide.util.lookup.ServiceProvider;
 import org.openide.windows.TopComponent;
 
 /**
@@ -38,7 +36,7 @@ import org.openide.windows.TopComponent;
         persistenceType = TopComponent.PERSISTENCE_NEVER)
 @TopComponent.Registration(mode = "satellite", openAtStartup = false)
 @ActionID(category = "Window", id = "de.cebitec.mgx.gui.jobmonitor.JobMonitorTopComponent")
-@ActionReference(path = "Menu/Window", position = 555)
+//@ActionReference(path = "Menu/Window", position = 555)
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_JobMonitorAction",
         preferredID = "JobMonitorTopComponent")
@@ -47,7 +45,6 @@ import org.openide.windows.TopComponent;
     "CTL_JobMonitorTopComponent=Job Monitor",
     "HINT_JobMonitorTopComponent=Job Monitor"
 })
-@ServiceProvider(service = JobMonitorTopComponent.class)
 public final class JobMonitorTopComponent extends TopComponent implements LookupListener, ExplorerManager.Provider, PropertyChangeListener {
 
     private final Lookup.Result<MGXMasterI> resultMaster;
@@ -61,7 +58,7 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
     private int currentMode = MASTER_MODE;
     private ProjectRootNode currentRoot = null;
 
-    public JobMonitorTopComponent() {
+    private JobMonitorTopComponent() {
         initComponents();
         setName(Bundle.CTL_JobMonitorTopComponent());
         setToolTipText(Bundle.HINT_JobMonitorTopComponent());
@@ -88,6 +85,15 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
         resultJobs = Utilities.actionsGlobalContext().lookupResult(JobI.class);
 
         update();
+    }
+    
+    private static JobMonitorTopComponent instance = null;
+    
+    public static JobMonitorTopComponent getDefault() {
+        if (instance == null) {
+            instance = new JobMonitorTopComponent();
+        }
+        return instance;
     }
 
     /**
@@ -200,6 +206,7 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
         if (currentRoot != null) {
             explorerManager.setRootContext(currentRoot);
         }
+        
     }
 
     @Override
