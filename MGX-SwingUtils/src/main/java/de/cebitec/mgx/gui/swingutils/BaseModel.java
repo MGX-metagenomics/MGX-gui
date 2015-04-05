@@ -10,7 +10,7 @@ import javax.swing.event.ListDataEvent;
  *
  * @author sjaenick
  */
-public abstract class BaseModel<T> extends AbstractListModel implements ComboBoxModel {
+public abstract class BaseModel<T> extends AbstractListModel<T> implements ComboBoxModel<T> {
 
     protected List<T> content = new ArrayList<>();
     // index of selected entry
