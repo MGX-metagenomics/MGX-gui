@@ -20,7 +20,7 @@ import org.openide.util.NbBundle.Messages;
         iconBase = "de/cebitec/mgx/gui/actions/SavePicture.png",
         displayName = "#CTL_SaveImageAction")
 @ActionReferences({
-    @ActionReference(path = "Menu/File", position = 1760),
+    //@ActionReference(path = "Menu/File", position = 1760),
     @ActionReference(path = "Toolbars/UndoRedo", position = 520)
 })
 @Messages("CTL_SaveImageAction=Save image")

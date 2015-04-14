@@ -20,7 +20,7 @@ import org.openide.windows.WindowManager;
         iconBase = "de/cebitec/mgx/gui/actions/JobMonitor.png",
         displayName = "#CTL_JobMonitorAction")
 @ActionReferences({
-    @ActionReference(path = "Menu/File", position = 1725),
+    //@ActionReference(path = "Menu/File", position = 1725),
     @ActionReference(path = "Toolbars/UndoRedo", position = 300)
 })
 @Messages("CTL_JobMonitorAction=Job Monitor")

@@ -18,7 +18,7 @@ id = "de.cebitec.mgx.gui.actions.ExportSequencesAction")
     iconBase = "de/cebitec/mgx/gui/actions/SaveFasta.png",
 displayName = "#CTL_ExportSequencesAction")
 @ActionReferences({
-    @ActionReference(path = "Menu/File", position = 1750),
+    //@ActionReference(path = "Menu/File", position = 1750),
     @ActionReference(path = "Toolbars/UndoRedo", position = 530)
 })
 @Messages("CTL_ExportSequencesAction=Export sequences")

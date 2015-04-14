@@ -27,7 +27,7 @@ import org.openide.windows.WindowManager;
         displayName = "#CTL_AlphadiversityAction"
 )
 @ActionReferences({
-    @ActionReference(path = "Menu/File", position = 1780),
+    //@ActionReference(path = "Menu/File", position = 1780),
     @ActionReference(path = "Toolbars/UndoRedo", position = 630)
 })
 @Messages("CTL_AlphadiversityAction=Alpha diversity")
