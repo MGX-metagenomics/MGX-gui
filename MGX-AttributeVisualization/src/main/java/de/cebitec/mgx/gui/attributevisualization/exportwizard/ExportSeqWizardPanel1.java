@@ -39,7 +39,14 @@ public class ExportSeqWizardPanel1 implements WizardDescriptor.Panel<WizardDescr
 
     @Override
     public boolean isValid() {
-        return getSelectedAttributes().size() > 0;
+        //return getSelectedAttributes().size() > 0;
+        
+        /*
+         * panel might be used repeatedly when exporting data for several groups;
+         * thus, no selected attributes are valid and indicate this group to
+         * be skipped from the export
+        */
+        return true;
     }
 
     public void setDistribution(DistributionI<Long> d) {
