@@ -27,7 +27,7 @@ import org.openide.windows.WindowManager;
         displayName = "#CTL_QCAction"
 )
 @ActionReferences({
-    @ActionReference(path = "Menu/File", position = 1712),
+    //@ActionReference(path = "Menu/File", position = 1712),
     @ActionReference(path = "Toolbars/UndoRedo", position = 299)
 })
 @Messages("CTL_QCAction=Quality control")
