@@ -144,10 +144,10 @@ public class ReferenceAccess implements ReferenceAccessI {
     }
 
     @Override
-    public long installGlobalReference(long id) throws MGXException {
-        assert id != Identifiable.INVALID_IDENTIFIER;
+    public TaskI<MGXReferenceI> installGlobalReference(MGXReferenceI obj) throws MGXException {
         try {
-            return dtomaster.Reference().installGlobalReference(id);
+            UUID uuid = dtomaster.Reference().installGlobalReference(obj.getId());
+            return master.<MGXReferenceI>Task().get(obj, uuid, Task.TaskType.MODIFY);
         } catch (MGXServerException ex) {
             throw new MGXException(ex);
         }
