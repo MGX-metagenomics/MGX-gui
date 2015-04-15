@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.nodes;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.gui.actions.UploadReference;
 import de.cebitec.mgx.gui.controller.RBAC;
@@ -82,14 +83,25 @@ public class ProjectReferencesNode extends MGXNodeBase<MGXMasterI> {
 
                     @Override
                     public boolean process() {
+                        TaskI<MGXReferenceI> serverTask = null;
                         try {
                             setStatus("Installing reference");
-                            long refId = master.Reference().installGlobalReference(ref.getId());
+                            serverTask = master.Reference().installGlobalReference(ref);
+                            while (!serverTask.done()) {
+                                sleep();
+                                master.<MGXReferenceI>Task().refresh(serverTask);
+                            }
+                            // we do not call serverTask.finished() since this would
+                            // trigger a propertyChangeEvent for ref, i.e. the global
+                            // reference
                         } catch (MGXException ex) {
                             err = ex.getMessage();
                             return false;
                         }
-                        return true;
+                        if (serverTask != null && !serverTask.getState().equals(TaskI.State.FINISHED)) {
+                            err = serverTask.getStatusMessage();
+                        }
+                        return serverTask.getState().equals(TaskI.State.FINISHED);
                     }
 
                     @Override
@@ -100,8 +112,8 @@ public class ProjectReferencesNode extends MGXNodeBase<MGXMasterI> {
 
                     @Override
                     public void failed() {
+                        setStatus(err);
                         super.failed();
-                        setStatus("Failed: " + err);
                         nf.refreshChildren();
                     }
                 };
