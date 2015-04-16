@@ -48,8 +48,10 @@ public abstract class MGXTask implements Runnable, PropertyChangeListener {
     }
 
     protected final void setStatus(String s) {
-        statusMessage = s;
-        fireTaskChanged();
+        if (statusMessage == null || !statusMessage.equals(s)) {
+            statusMessage = s;
+            fireTaskChanged();
+        }
     }
 
     public abstract boolean process();
@@ -60,7 +62,8 @@ public abstract class MGXTask implements Runnable, PropertyChangeListener {
 
     /**
      *
-     * @return a number between 0 and 100 indicating the progress of this task, or MGXTask.PROGRESS_UNKNOWN
+     * @return a number between 0 and 100 indicating the progress of this task,
+     * or MGXTask.PROGRESS_UNKNOWN
      */
     public int getProgress() {
         return MGXTask.PROGRESS_UNKNOWN;
@@ -89,7 +92,7 @@ public abstract class MGXTask implements Runnable, PropertyChangeListener {
     public final void removePropertyChangeListener(PropertyChangeListener p) {
         pcs.removePropertyChangeListener(p);
     }
-    
+
     protected void sleep() {
         try {
             Thread.sleep(500);
