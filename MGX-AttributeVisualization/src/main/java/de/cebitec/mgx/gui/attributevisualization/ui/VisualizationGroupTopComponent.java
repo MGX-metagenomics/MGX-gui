@@ -87,8 +87,7 @@ public final class VisualizationGroupTopComponent extends TopComponent implement
         jScrollPane1 = new javax.swing.JScrollPane();
         panel = new javax.swing.JPanel();
 
-        setMinimumSize(new java.awt.Dimension(280, 151));
-        setPreferredSize(new java.awt.Dimension(280, 151));
+        setMinimumSize(new java.awt.Dimension(150, 50));
         setLayout(new java.awt.BorderLayout());
 
         jToolBar1.setRollover(true);
