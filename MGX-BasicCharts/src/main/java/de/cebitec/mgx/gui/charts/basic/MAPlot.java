@@ -13,7 +13,10 @@ import de.cebitec.mgx.common.VGroupManager;
 import de.cebitec.mgx.common.visualization.NumericalViewerI;
 import de.cebitec.mgx.common.visualization.ViewerI;
 import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -21,13 +24,14 @@ import java.util.Map;
 import java.util.Set;
 import javax.swing.JComponent;
 import org.apache.commons.math3.util.FastMath;
-import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.AxisLocation;
+import org.jfree.chart.axis.AxisState;
 import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.axis.TickUnitSource;
-import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.axis.NumberTick;
 import org.jfree.chart.labels.XYToolTipGenerator;
+import org.jfree.chart.plot.CombinedDomainXYPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
@@ -35,6 +39,8 @@ import org.jfree.data.xy.XYDataItem;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
+import org.jfree.ui.RectangleEdge;
+import org.jfree.ui.TextAnchor;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -65,26 +71,36 @@ public class MAPlot extends NumericalViewerI<Long> {
 
     @Override
     public void show(List<Pair<VisualizationGroupI, DistributionI<Long>>> dists) {
-        
+
         if (dists.size() != 2) {
             // should not happen, see canHandle() implementation
             assert false;
         }
-        
-        List<Pair<VisualizationGroupI, DistributionI<Long>>> firstTwo = dists.subList(0, 2);
 
+        List<Pair<VisualizationGroupI, DistributionI<Long>>> firstTwo = dists.subList(0, 2);
+        DistributionI<Long> firstNonNormalized = firstTwo.get(0).getSecond();
+        DistributionI<Long> secondNonNormalized = firstTwo.get(1).getSecond();
+
+        // normalize to fractions
         ToFractionFilter tof = new ToFractionFilter();
         List<Pair<VisualizationGroupI, DistributionI<Double>>> cur = tof.filter(firstTwo);
-
-        XYSeriesCollection dataset = new XYSeriesCollection();
-        XYSeries series = new XYSeries("");
-
         DistributionI<Double> first = cur.get(0).getSecond();
         DistributionI<Double> second = cur.get(1).getSecond();
 
-        Set<AttributeI> attrs = new HashSet<>();
+        XYSeriesCollection normal = new XYSeriesCollection();
+        XYSeriesCollection posInf = new XYSeriesCollection();
+        XYSeriesCollection negInf = new XYSeriesCollection();
+        XYSeries nor = new XYSeries("Normal");
+        XYSeries pos = new XYSeries("Positiv Infinit");
+        XYSeries neg = new XYSeries("Negativ Infinit");
+
+        Set<AttributeI> attrs = new HashSet<>(first.size());
         attrs.addAll(first.keySet());
         attrs.addAll(second.keySet());
+        
+        // a small offset is added to all values to avoid log(0)
+        double offset = 0.0001;
+        double logOffset = log2(offset);
 
         for (AttributeI a : attrs) {
             XYDataItem item = null;
@@ -93,85 +109,53 @@ public class MAPlot extends NumericalViewerI<Long> {
 
             if (first.keySet().contains(a) && second.keySet().contains(a)) {
                 // attribute occurs in both distributions
-                firstVal = first.get(a);
-                secondVal = second.get(a);
+                firstVal = offset + first.get(a);
+                secondVal = offset + second.get(a);
                 x = (log2(firstVal) + log2(secondVal)) / 2;
                 y = log2(firstVal / secondVal);
                 item = new XYDataItem(x, y);
-//            } else if (first.keySet().contains(a) && !second.keySet().contains(a)) {
-//                // attribute occurs in first distribution only
-//                firstVal = first.get(a).doubleValue();
-//                secondVal = 0;
-//                x = (log2(firstVal) + log2(secondVal)) / 2;
-//                y = log2(firstVal / secondVal);
-//                item = new XYDataItem(x, y);
-//            } else if (second.keySet().contains(a) && !first.keySet().contains(a)) {
-//                // attribute occurs in second distribution only
-//                firstVal = 0;
-//                secondVal = second.get(a).doubleValue();
-//                x = (log2(firstVal) + log2(secondVal)) / 2;
-//                y = log2(firstVal / secondVal);
-//                item = new XYDataItem(x, y);
+                nor.add(item);
+            } else if (first.keySet().contains(a) && !second.keySet().contains(a)) {
+                // attribute occurs in first distribution only
+                firstVal = offset + first.get(a);
+                x = (log2(firstVal) + logOffset) / 2;
+                y = 0;
+                item = new XYDataItem(x, y);
+                pos.add(item);
+            } else if (second.keySet().contains(a) && !first.keySet().contains(a)) {
+                // attribute occurs in second distribution only
+                secondVal = offset + second.get(a);
+                x = (logOffset + log2(secondVal)) / 2;
+                y = 0;
+                item = new XYDataItem(x, y);
+                neg.add(item);
             }
 
-            if (item != null) {
-                series.add(item);
-
-                long numAssigned1 = FastMath.round(firstVal * first.getTotalClassifiedElements());
-                long numAssigned2 = FastMath.round(secondVal * second.getTotalClassifiedElements());
-
-                String toolTipText = new StringBuilder("<html>")
-                        .append(a.getValue())
-                        .append("<br><br>")
-                        .append(cur.get(0).getFirst().getName())
-                        .append(": ").append(numAssigned1).append(" sequences").append("<br>")
-                        .append(cur.get(1).getFirst().getName())
-                        .append(": ").append(numAssigned2).append(" sequences")
-                        .append("</html>")
-                        .toString();
-
-                toolTips.put(item, toolTipText);
-            }
+            // create tooltip text
+            long numAssigned1 = firstNonNormalized.containsKey(a) ? firstNonNormalized.get(a) : 0;
+            long numAssigned2 = secondNonNormalized.containsKey(a) ? secondNonNormalized.get(a) : 0;
+            String toolTipText = new StringBuilder("<html>")
+                    .append(a.getValue())
+                    .append("<br><br>")
+                    .append(cur.get(0).getFirst().getName())
+                    .append(": ").append(numAssigned1).append(" sequences").append("<br>")
+                    .append(cur.get(1).getFirst().getName())
+                    .append(": ").append(numAssigned2).append(" sequences")
+                    .append("</html>")
+                    .toString();
+            toolTips.put(item, toolTipText);
         }
 
-        dataset.addSeries(series);
+        normal.addSeries(nor);
+        posInf.addSeries(pos);
+        negInf.addSeries(neg);
 
         String xAxisLabel = "log2(" + cur.get(0).getFirst().getName() + ") + "
                 + "log2(" + cur.get(1).getFirst().getName() + ") / 2";
         String yAxisLabel = "log2(" + cur.get(0).getFirst().getName() + "/"
                 + cur.get(1).getFirst().getName() + ")";
 
-        chart = ChartFactory.createXYLineChart(getTitle(), xAxisLabel, yAxisLabel, dataset, PlotOrientation.VERTICAL, false, true, false);
-        chart.setBorderPaint(Color.WHITE);
-        chart.setBackgroundPaint(Color.WHITE);
-        cPanel = new ChartPanel(chart);
-        cPanel.setDisplayToolTips(true);
-        XYPlot plot = (XYPlot) chart.getPlot();
-
-        plot.setBackgroundPaint(Color.WHITE);
-
-        // x axis
-        final ValueAxis valueAxis;
-        final TickUnitSource tusX;
-        valueAxis = (NumberAxis) plot.getDomainAxis();
-        tusX = NumberAxis.createStandardTickUnits();
-        valueAxis.setStandardTickUnits(tusX);
-        valueAxis.setInverted(false);
-        plot.setDomainAxis(valueAxis);
-
-        // y axis
-        final NumberAxis rangeAxis;
-        final TickUnitSource tus;
-        rangeAxis = (NumberAxis) plot.getRangeAxis();
-        tus = NumberAxis.createStandardTickUnits();
-        rangeAxis.setStandardTickUnits(tus);
-        plot.setRangeAxis(rangeAxis);
-
-        final XYLineAndShapeRenderer r = new XYLineAndShapeRenderer();
-        r.setBaseLinesVisible(false);
-        r.setSeriesShape(0, new Ellipse2D.Double(0, 0, 5, 5));
-
-        r.setBaseToolTipGenerator(new XYToolTipGenerator() {
+        XYToolTipGenerator tooltipGenerator = new XYToolTipGenerator() {
 
             @Override
             public String generateToolTip(XYDataset xyd, int series, int item) {
@@ -179,9 +163,83 @@ public class MAPlot extends NumericalViewerI<Long> {
                 XYDataItem dataItem = dataset.getSeries(series).getDataItem(item);
                 return toolTips.get(dataItem);
             }
-        });
+        };
 
-        plot.setRenderer(r);
+        chart = createCombinedChart(normal, posInf, negInf, xAxisLabel, yAxisLabel, tooltipGenerator);
+        chart.removeLegend();
+        cPanel = new ChartPanel(chart, true, false, true, true, true);
+        cPanel.setInitialDelay(0);
+        cPanel.setMaximumDrawHeight(1080);
+        cPanel.setMaximumDrawWidth(1920);
+        cPanel.setMouseWheelEnabled(true);
+        cPanel.setMouseZoomable(true);
+
+        chart.setBorderPaint(Color.WHITE);
+        chart.setBackgroundPaint(Color.WHITE);
+        cPanel.setDisplayToolTips(true);
+        XYPlot plot = (XYPlot) chart.getPlot();
+
+        plot.setBackgroundPaint(Color.WHITE);
+
+    }
+
+    private static JFreeChart createCombinedChart(XYSeriesCollection normal,
+            XYSeriesCollection posInf, XYSeriesCollection negInf, String xAxisLabel, String yAxisLabel, XYToolTipGenerator toolTip) {
+
+        final XYLineAndShapeRenderer r = new XYLineAndShapeRenderer();
+        r.setBaseLinesVisible(false);
+        r.setSeriesShape(0, new Ellipse2D.Double(0, 0, 5, 5));
+        r.setBaseToolTipGenerator(toolTip);
+
+        NumberAxis xAxis = new NumberAxis(xAxisLabel);
+        xAxis.setInverted(false);
+        xAxis.setAutoRange(true);
+        xAxis.setTickLabelsVisible(false);
+
+        NumberAxis yAxis = new NumberAxis(yAxisLabel);
+
+        XYPlot midplot = new XYPlot(normal, xAxis, yAxis, r);
+        midplot.setBackgroundPaint(Color.WHITE);
+        midplot.setRangeAxisLocation(AxisLocation.TOP_OR_LEFT);
+
+        // create subplot 2...
+        NumberAxis rangeAxis2 = new NumberAxis() {
+            @Override
+            public List refreshTicks(Graphics2D g2, AxisState state, Rectangle2D dataArea, RectangleEdge edge) {
+                List<NumberTick> myTicks = new ArrayList<>();
+                myTicks.add(new NumberTick(0, "-Inf", TextAnchor.CENTER_RIGHT, TextAnchor.CENTER_RIGHT, 0.0));
+                return myTicks;
+            }
+        };
+        rangeAxis2.setAutoRangeIncludesZero(false);
+        final XYPlot subplot2 = new XYPlot(negInf, xAxis, rangeAxis2, r);
+        subplot2.setRangeAxisLocation(AxisLocation.BOTTOM_OR_LEFT);
+        
+        
+        // create subplot 3...
+        final NumberAxis rangeAxis3 = new NumberAxis() {
+            @Override
+            public List refreshTicks(Graphics2D g2, AxisState state, Rectangle2D dataArea, RectangleEdge edge) {
+                List<NumberTick> myTicks = new ArrayList<>();
+                myTicks.add(new NumberTick(0, "Inf", TextAnchor.CENTER_RIGHT, TextAnchor.CENTER_RIGHT, 0.0));
+                return myTicks;
+            }
+        };
+        rangeAxis3.setAutoRangeIncludesZero(false);
+        final XYPlot subplot3 = new XYPlot(posInf, xAxis, rangeAxis3, r);
+        subplot2.setRangeAxisLocation(AxisLocation.BOTTOM_OR_LEFT);
+        
+        // parent plot...
+        CombinedDomainXYPlot plot = new CombinedDomainXYPlot(xAxis);
+        plot.setGap(0);
+        plot.add(subplot3, 1);
+        plot.add(midplot, 15);
+        plot.add(subplot2, 1);
+        plot.setOrientation(PlotOrientation.VERTICAL);
+        plot.setBackgroundPaint(Color.WHITE);
+
+        return new JFreeChart(plot);
+
     }
 
     @Override
