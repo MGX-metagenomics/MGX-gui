@@ -156,8 +156,6 @@
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-compat</artifactId>
-            <version>RELEASE802</version>
-            <type>nbm-file</type>
         </dependency>
     </dependencies>
 

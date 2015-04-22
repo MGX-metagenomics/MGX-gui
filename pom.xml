@@ -31,6 +31,11 @@
             </dependency>-->
             <dependency>
                 <groupId>org.netbeans.api</groupId>
+                <artifactId>org-openide-compat</artifactId>
+                <version>${netbeans.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.netbeans.api</groupId>
                 <artifactId>org-netbeans-api-annotations-common</artifactId>
                 <version>${netbeans.version}</version>
             </dependency>
@@ -222,7 +227,7 @@
             <dependency>
                 <groupId>com.h2database</groupId>
                 <artifactId>h2</artifactId>
-                <version>1.4.186</version>
+                <version>1.4.185</version>
             </dependency>
             <dependency>
                 <groupId>org.jdesktop.swingx</groupId>
