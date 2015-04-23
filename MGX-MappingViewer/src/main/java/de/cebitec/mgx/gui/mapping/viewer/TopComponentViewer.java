@@ -4,6 +4,7 @@
  */
 package de.cebitec.mgx.gui.mapping.viewer;
 
+import de.cebitec.mgx.api.model.ModelBase;
 import de.cebitec.mgx.gui.mapping.MappingCtx;
 import de.cebitec.mgx.gui.mapping.ViewController;
 import de.cebitec.mgx.gui.mapping.panel.FeaturePanel;
@@ -11,6 +12,8 @@ import de.cebitec.mgx.gui.mapping.panel.MappingPanel;
 import de.cebitec.mgx.gui.mapping.panel.NavigationPanel;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.SwingWorker;
@@ -28,21 +31,23 @@ import org.openide.windows.TopComponent;
 @Messages({
     "CTL_MappingAction=ReferenceView",
     "CTL_TopComponentViewer=Mapping Window",})
-public final class TopComponentViewer extends TopComponent {
+public final class TopComponentViewer extends TopComponent implements PropertyChangeListener {
 
-    private final MappingCtx ctx;
+    private MappingCtx ctx;
 
-    public TopComponentViewer(MappingCtx ctx) {
-        this.ctx = ctx;
+    public TopComponentViewer() {
+        //this.ctx = ctx;
         setName(Bundle.CTL_TopComponentViewer());
     }
 
-    private void createView() {
+    public void createView(MappingCtx ctx) {
+        this.ctx = ctx;
+        ctx.addPropertyChangeListener(this);
         removeAll();
         setLayout(new BorderLayout());
 
         final ViewController vc = new ViewController(ctx);
-        
+
         JPanel top = new JPanel(new BorderLayout(), true);
 
         NavigationPanel np = new NavigationPanel(vc);
@@ -71,9 +76,9 @@ public final class TopComponentViewer extends TopComponent {
         FeaturePanel fp = new FeaturePanel(vc);
         top.add(fp, BorderLayout.CENTER);
         top.setPreferredSize(new Dimension(500, 205));
-        
+
         add(top, BorderLayout.PAGE_START);
-        
+
         MappingPanel mp = new MappingPanel(vc);
         add(mp, BorderLayout.CENTER);
 
@@ -109,11 +114,12 @@ public final class TopComponentViewer extends TopComponent {
     // End of variables declaration//GEN-END:variables
     @Override
     public void componentOpened() {
-        createView();
+        createView(ctx);
     }
 
     @Override
     public void componentClosed() {
+        ctx.removePropertyChangeListener(this);
     }
 
     void writeProperties(java.util.Properties p) {
@@ -124,5 +130,14 @@ public final class TopComponentViewer extends TopComponent {
 
     void readProperties(java.util.Properties p) {
         String version = p.getProperty("version");
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (evt.getPropertyName().equals(ModelBase.OBJECT_DELETED)) {
+            ctx.removePropertyChangeListener(this);
+            ctx = null;
+            removeAll();
+        }
     }
 }

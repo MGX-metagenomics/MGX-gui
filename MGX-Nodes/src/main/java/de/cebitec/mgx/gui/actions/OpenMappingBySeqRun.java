@@ -105,7 +105,8 @@ public class OpenMappingBySeqRun extends OpenMappingBase {
                 }
 
                 if (selectedMapping != null) {
-                    TopComponentViewer component = new TopComponentViewer(selectedMapping);
+                    TopComponentViewer component = new TopComponentViewer();
+                    component.createView(selectedMapping);
                     component.open();
                 }
                 super.done();
