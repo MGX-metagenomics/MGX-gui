@@ -7,7 +7,6 @@ import de.cebitec.mgx.gui.nodes.SeqRunNode;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -15,6 +14,7 @@ import java.util.Set;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import org.openide.nodes.ChildFactory;
+import org.openide.nodes.Children;
 import org.openide.nodes.FilterNode;
 import org.openide.nodes.Node;
 import org.openide.nodes.NodeEvent;
@@ -27,10 +27,10 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sjaenick
  */
-public class VisualizationGroupNodeFactory extends ChildFactory<SeqRunNode> implements NodeListener {
+public class VisualizationGroupNodeFactory extends ChildFactory<SeqRunI> implements NodeListener {
 
     private final VisualizationGroupI group;
-    private final List<SeqRunNode> nodes = new ArrayList<>();
+    //private final List<SeqRunNode> nodes = new ArrayList<>();
 
     public VisualizationGroupNodeFactory(VisualizationGroupI group) {
         this.group = group;
@@ -38,45 +38,58 @@ public class VisualizationGroupNodeFactory extends ChildFactory<SeqRunNode> impl
 
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
-                refreshChildren();
+                switch (evt.getPropertyName()) {
+                    case VisualizationGroupI.VISGROUP_HAS_DIST:
+                    case VisualizationGroupI.VISGROUP_RENAMED:
+                    case VisualizationGroupI.VISGROUP_DEACTIVATED:
+                    case VisualizationGroupI.VISGROUP_ACTIVATED:
+                        return;
+                    case VisualizationGroupI.VISGROUP_CHANGED:
+                        refreshChildren();
+                        return;
+                    default:
+                        System.err.println("VGNF got PCE " + evt.toString());
+                        refreshChildren();
+                }
             }
         });
     }
 
     @Override
-    protected boolean createKeys(List<SeqRunNode> toPopulate) {
-        toPopulate.addAll(nodes);
+    protected boolean createKeys(List<SeqRunI> toPopulate) {
+        toPopulate.addAll(group.getSeqRuns());
         Collections.sort(toPopulate);
         return true;
     }
 
-    public void addNode(SeqRunNode node) {
-        node.addNodeListener(this);
-        nodes.add(node);
-        group.addSeqRun(node.getContent());
+    public void addSeqRun(SeqRunI sr) {
+        //node.addNodeListener(this);
+        //nodes.add(node);
+        group.addSeqRun(sr);
         refreshChildren();
     }
 
-    public void addNodes(Set<SeqRunNode> newNodes) {
-        Set<SeqRunI> newRuns = new HashSet<>();
-        for (SeqRunNode node : newNodes) {
-            node.addNodeListener(this);
-            nodes.add(node);
-            newRuns.add(node.getContent());
-        }
+    public void addSeqRuns(Set<SeqRunI> newRuns) {
+//        Set<SeqRunI> newRuns = new HashSet<>();
+//        for (SeqRunI node : newNodes) {
+//            //node.addNodeListener(this);
+//            //nodes.add(node);
+//            //newRuns.add(node.getContent());
+//        }
         group.addSeqRuns(newRuns);
         refreshChildren();
     }
 
     public void removeNode(SeqRunNode node) {
         node.removeNodeListener(this);
-        nodes.remove(node);
+        //nodes.remove(node);
         group.removeSeqRun(node.getContent());
         refreshChildren();
     }
 
     @Override
-    protected Node createNodeForKey(SeqRunNode n) {
+    protected Node createNodeForKey(SeqRunI sr) {
+        SeqRunNode n = new SeqRunNode(sr, Children.LEAF);
         FilterNode node = new DisplayNode(n, this);
         node.addNodeListener(this);
         return node;

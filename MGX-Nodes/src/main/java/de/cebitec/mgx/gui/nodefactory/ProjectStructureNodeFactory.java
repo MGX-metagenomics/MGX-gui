@@ -15,9 +15,11 @@ import org.openide.nodes.Node;
  *
  * @author sj
  */
-public class ProjectStructureNodeFactory extends ChildFactory<String> {
+public class ProjectStructureNodeFactory extends ChildFactory<Node> {
 
-    private final Map<String, Node> project_structure;
+    private final ProjectDataNode data;
+    private final ProjectFilesNode files;
+    private final ProjectReferencesNode refs;
 
     public ProjectStructureNodeFactory(MGXMasterI master) {
 
@@ -25,30 +27,22 @@ public class ProjectStructureNodeFactory extends ChildFactory<String> {
         // since creation of the "top-level" data objects require a master
         // to access the server
         //
-        //ProjectDataNode data = new ProjectDataNode(Children.create(new HabitatNodeFactory(master), true), Lookups.singleton(master));
-        ProjectDataNode data = new ProjectDataNode(master);
-        ProjectFilesNode files = new ProjectFilesNode(master, MGXFileI.getRoot(master));
-        ProjectReferencesNode refs = new ProjectReferencesNode(master);
-        //ProjectAnalysisTasksNode tasks = new ProjectAnalysisTasksNode(master); // FIXME implement this
-
-        project_structure = new HashMap<>();
-        project_structure.put("data", data);
-        project_structure.put("files", files);
-        project_structure.put("refs", refs);
-        //project_structure.put("tasks", tasks);
+        files = new ProjectFilesNode(MGXFileI.getRoot(master));
+        refs = new ProjectReferencesNode(master);
+        data = new ProjectDataNode(master);
     }
 
     @Override
-    protected boolean createKeys(List<String> toPopulate) {
-        toPopulate.add("files");
-        toPopulate.add("refs");
-        toPopulate.add("data");
-//Collections.sort(toPopulate);
+    protected boolean createKeys(List<Node> toPopulate) {
+        toPopulate.add(files);
+        toPopulate.add(refs);
+        toPopulate.add(data);
+        // don't sort here
         return true;
     }
 
     @Override
-    protected Node createNodeForKey(String key) {
-        return project_structure.get(key);
+    protected Node createNodeForKey(Node key) {
+        return key;
     }
 }

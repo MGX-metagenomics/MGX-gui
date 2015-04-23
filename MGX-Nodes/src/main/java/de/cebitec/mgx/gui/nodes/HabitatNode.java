@@ -34,12 +34,12 @@ public class HabitatNode extends MGXNodeBase<HabitatI> {
 
     private SampleNodeFactory snf = null;
 
-    public HabitatNode(MGXMasterI m, HabitatI h) {
-        this(h, m, new SampleNodeFactory(m, h));
+    public HabitatNode(HabitatI h) {
+        this(h, new SampleNodeFactory(h));
     }
 
-    private HabitatNode(HabitatI h, MGXMasterI m, SampleNodeFactory snf) {
-        super(m, Children.create(snf, true), Lookups.fixed(m, h), h);
+    private HabitatNode(HabitatI h, SampleNodeFactory snf) {
+        super(h.getMaster(), Children.create(snf, true), Lookups.fixed(h.getMaster(), h), h);
         setDisplayName(h.getName());
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/Habitat.png");
         setShortDescription(getToolTipText(h));

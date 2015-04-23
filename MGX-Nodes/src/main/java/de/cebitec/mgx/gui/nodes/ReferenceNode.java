@@ -24,12 +24,8 @@ import org.openide.util.lookup.Lookups;
  */
 public class ReferenceNode extends MGXNodeBase<MGXReferenceI> {
 
-    public ReferenceNode(MGXMasterI m, MGXReferenceI ref) {
-        this(ref, m);
-    }
-
-    private ReferenceNode(MGXReferenceI ref, MGXMasterI m) {
-        super(m, Children.LEAF, Lookups.fixed(m, ref), ref);
+    public ReferenceNode(MGXReferenceI ref) {
+        super(ref.getMaster(), Children.LEAF, Lookups.fixed(ref.getMaster(), ref), ref);
         setDisplayName(ref.getName());
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/Habitat.png");
         setShortDescription(getToolTipText(ref));

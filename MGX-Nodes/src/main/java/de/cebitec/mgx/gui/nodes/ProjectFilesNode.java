@@ -1,6 +1,5 @@
 package de.cebitec.mgx.gui.nodes;
 
-import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.MGXFileI;
 import de.cebitec.mgx.gui.actions.CreateDirectory;
 import de.cebitec.mgx.gui.actions.UploadFile;
@@ -17,14 +16,14 @@ public class ProjectFilesNode extends MGXNodeBase<MGXFileI> {
 
     private final FileNodeFactory nf;
 
-    public ProjectFilesNode(final MGXMasterI m, final MGXFileI root) {
-        this(new FileNodeFactory(m, root), m, root);
+    public ProjectFilesNode(MGXFileI root) {
+        this(new FileNodeFactory(root), root);
         setDisplayName("Project Files");
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/ProjectFiles.png");
     }
 
-    private ProjectFilesNode(FileNodeFactory fnf, MGXMasterI m, MGXFileI root) {
-        super(m, Children.create(fnf, true), Lookups.fixed(m, root), root);
+    private ProjectFilesNode(FileNodeFactory fnf, MGXFileI root) {
+        super(root.getMaster(), Children.create(fnf, true), Lookups.fixed(root.getMaster(), root), root);
         nf = fnf;
     }
 

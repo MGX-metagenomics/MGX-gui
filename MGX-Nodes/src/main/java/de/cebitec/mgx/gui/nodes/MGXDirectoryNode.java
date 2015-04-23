@@ -1,6 +1,5 @@
 package de.cebitec.mgx.gui.nodes;
 
-import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.MGXFileI;
 import de.cebitec.mgx.gui.actions.CreateDirectory;
 import de.cebitec.mgx.gui.actions.DeleteFileOrDirectory;
@@ -18,12 +17,12 @@ public class MGXDirectoryNode extends MGXNodeBase<MGXFileI> {
 
     private FileNodeFactory nf = null;
 
-    public MGXDirectoryNode(MGXFileI f, MGXMasterI m) {
-        this(f, m, new FileNodeFactory(m, f));
+    public MGXDirectoryNode(MGXFileI f) {
+        this(f, new FileNodeFactory(f));
     }
 
-    private MGXDirectoryNode(MGXFileI f, MGXMasterI m, FileNodeFactory fnf) {
-        super(m, Children.create(fnf, true), Lookups.fixed(m, f), f);
+    private MGXDirectoryNode(MGXFileI f, FileNodeFactory fnf) {
+        super(f.getMaster(), Children.create(fnf, true), Lookups.fixed(f.getMaster(), f), f);
         setDisplayName(f.getName());
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/Directory.png");
         setShortDescription(f.getName());

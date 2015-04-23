@@ -21,19 +21,18 @@ import org.openide.util.Exceptions;
  */
 public class FileNodeFactory extends MGXNodeFactoryBase<MGXFileI> {
 
-    private final MGXMasterI master;
     private final MGXFileI curDirectory;
     //
 
-    public FileNodeFactory(MGXMasterI master, MGXFileI curDir) {
-        this.master = master;
+    public FileNodeFactory(MGXFileI curDir) {
+        super(curDir.getMaster());
         curDirectory = curDir;
     }
 
     @Override
     protected boolean createKeys(List<MGXFileI> toPopulate) {
         try {
-            Iterator<MGXFileI> iter = master.File().fetchall(curDirectory);
+            Iterator<MGXFileI> iter = getMaster().File().fetchall(curDirectory);
             while (iter.hasNext()) {
                 toPopulate.add(iter.next());
             }
@@ -49,45 +48,45 @@ public class FileNodeFactory extends MGXNodeFactoryBase<MGXFileI> {
     protected Node createNodeForKey(MGXFileI file) {
         Node node;
         if (!file.isDirectory()) {
-            node = new MGXFileNode(file, master);
+            node = new MGXFileNode(file);
         } else {
-            node = new MGXDirectoryNode(file, master);
+            node = new MGXDirectoryNode(file);
         }
         node.addNodeListener(this);
         return node;
     }
 
-    @Override
-    public void childrenAdded(NodeMemberEvent ev) {
-        //refresh(true);
-    }
-
-    @Override
-    public void childrenRemoved(NodeMemberEvent ev) {
-        //refresh(true);
-    }
-
-    @Override
-    public void childrenReordered(NodeReorderEvent ev) {
-    }
-
-    @Override
-    public void nodeDestroyed(NodeEvent ev) {
-        // this is ugly, and unnecessary everywhere else. however, here
-        // it triggers a stack overflow otherwise: refresh() makes the
-        // childfactory remove (and re-add) all nodes, which triggers a 
-        // nodeDestroyed() call for each removed node.
-        //
-        // I have no idea....
-        if (!refreshing) {
-            refreshing = true;
-            refresh(true);
-            refreshing = false;
-        }
-    }
-
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-        //refresh(true);
-    }
+//    @Override
+//    public void childrenAdded(NodeMemberEvent ev) {
+//        //refresh(true);
+//    }
+//
+//    @Override
+//    public void childrenRemoved(NodeMemberEvent ev) {
+//        //refresh(true);
+//    }
+//
+//    @Override
+//    public void childrenReordered(NodeReorderEvent ev) {
+//    }
+//
+//    @Override
+//    public void nodeDestroyed(NodeEvent ev) {
+//        // this is ugly, and unnecessary everywhere else. however, here
+//        // it triggers a stack overflow otherwise: refresh() makes the
+//        // childfactory remove (and re-add) all nodes, which triggers a 
+//        // nodeDestroyed() call for each removed node.
+//        //
+//        // I have no idea....
+//        if (!refreshing) {
+//            refreshing = true;
+//            refresh(true);
+//            refreshing = false;
+//        }
+//    }
+//
+//    @Override
+//    public void propertyChange(PropertyChangeEvent evt) {
+//        //refresh(true);
+//    }
 }

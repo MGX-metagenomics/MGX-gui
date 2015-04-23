@@ -45,8 +45,8 @@ public class SeqRunNode extends MGXNodeBase<SeqRunI> {
     //
     //public static final DataFlavor DATA_FLAVOR = new DataFlavor(SeqRunNode.class, "SeqRunNode");
 
-    public SeqRunNode(MGXMasterI m, SeqRunI s, Children children) {
-        super(m, children, Lookups.fixed(m, s), s);
+    public SeqRunNode(SeqRunI s, Children children) {
+        super(s.getMaster(), children, Lookups.fixed(s.getMaster(), s), s);
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/SeqRun.png");
         setShortDescription(getToolTipText(s));
         setDisplayName(s.getName());
@@ -162,7 +162,8 @@ public class SeqRunNode extends MGXNodeBase<SeqRunI> {
 
         @Override
         public boolean isEnabled() {
-            return (super.isEnabled() && RBAC.isUser());
+            // make sure we don't accidentally start analysis on datasets without sequences
+            return (super.isEnabled() && RBAC.isUser() && getContent().getNumSequences() > 0);
         }
     }
 

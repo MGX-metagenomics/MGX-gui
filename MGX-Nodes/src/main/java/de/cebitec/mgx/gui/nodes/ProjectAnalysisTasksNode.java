@@ -2,7 +2,6 @@ package de.cebitec.mgx.gui.nodes;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.gui.nodefactory.TaskStructureNodeFactory;
-import javax.swing.Action;
 import org.openide.nodes.Children;
 import org.openide.util.lookup.Lookups;
 
@@ -12,7 +11,7 @@ import org.openide.util.lookup.Lookups;
  */
 public class ProjectAnalysisTasksNode extends MGXNodeBase<MGXMasterI> {
 
-    private TaskStructureNodeFactory nf = null;
+    //private TaskStructureNodeFactory nf = null;
 
     public ProjectAnalysisTasksNode(MGXMasterI m) {
         this(m, new TaskStructureNodeFactory(m));
@@ -20,7 +19,7 @@ public class ProjectAnalysisTasksNode extends MGXNodeBase<MGXMasterI> {
 
     private ProjectAnalysisTasksNode(MGXMasterI m, TaskStructureNodeFactory nf) {
         super(m, Children.create(nf, false), Lookups.fixed(m), m);
-        this.nf = nf;
+        //this.nf = nf;
         setDisplayName("Data Analysis");
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/AnalysisTasks.png");
     }
@@ -28,11 +27,6 @@ public class ProjectAnalysisTasksNode extends MGXNodeBase<MGXMasterI> {
     @Override
     public boolean canDestroy() {
         return false;
-    }
-
-    @Override
-    public Action[] getActions(boolean popup) {
-        return new Action[0]; // disables context menu
     }
 
     @Override
