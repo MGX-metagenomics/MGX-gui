@@ -368,14 +368,15 @@ public class GroupFrame extends javax.swing.JInternalFrame implements ExplorerMa
 
                                 try {
                                     setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-                                    Set<SeqRunNode> newRuns = new HashSet<>();
+                                    //Set<SeqRunNode> newRuns = new HashSet<>();
+                                    Set<SeqRunI> newRuns = new HashSet<>();
                                     for (int i = 0; i < elems; i++) {
                                         SeqRunI run = (SeqRunI) mto.getTransferData(i, SeqRunI.DATA_FLAVOR);
-                                        SeqRunNode srn = new SeqRunNode(run.getMaster(), run, Children.LEAF);
-                                        newRuns.add(srn);
-                                        
+                                        //SeqRunNode srn = new SeqRunNode(run.getMaster(), run, Children.LEAF);
+                                        newRuns.add(run);
+
                                     }
-                                    vgnf.addNodes(newRuns);
+                                    vgnf.addSeqRuns(newRuns);
                                 } finally {
                                     setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
                                 }
@@ -390,8 +391,9 @@ public class GroupFrame extends javax.swing.JInternalFrame implements ExplorerMa
                         try {
                             SeqRunI run = (SeqRunI) dtde.getTransferable().getTransferData(SeqRunI.DATA_FLAVOR);
                             if (run != null && !vGroup.getSeqRuns().contains(run)) {
-                                SeqRunNode srn = new SeqRunNode(run.getMaster(), run, Children.LEAF);
-                                vgnf.addNode(srn);
+                                //SeqRunNode srn = new SeqRunNode(run.getMaster(), run, Children.LEAF);
+                                //vgnf.addNode(srn);
+                                vgnf.addSeqRun(run);
                                 dtde.dropComplete(true);
                                 return;
                             }
