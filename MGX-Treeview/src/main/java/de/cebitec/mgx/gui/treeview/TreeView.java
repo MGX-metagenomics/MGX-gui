@@ -241,17 +241,19 @@ public class TreeView extends HierarchicalViewerI {
         display.setForeground(Color.BLACK);
         display.setHighQuality(true);
 
-        title = new JFastLabel(getTitle());
-        title.setPreferredSize(new Dimension(200, 30));
-        title.setHighQuality(true);
-        title.setOpaque(false);
-        title.setHorizontalAlignment(SwingConstants.CENTER);
-        title.setFont(FontLib.getFont("Arial", Font.BOLD, 20));
-        title.setBackground(new Color(0, 0, 0, 0));
-        title.setForeground(Color.BLACK);
+        if (!getCustomizer().hideTitle()) {
+            title = new JFastLabel(getTitle());
+            title.setPreferredSize(new Dimension(200, 30));
+            title.setHighQuality(true);
+            title.setOpaque(false);
+            title.setHorizontalAlignment(SwingConstants.CENTER);
+            title.setFont(FontLib.getFont("Arial", Font.BOLD, 20));
+            title.setBackground(new Color(0, 0, 0, 0));
+            title.setForeground(Color.BLACK);
 
-        display.setLayout(new BorderLayout());
-        display.add(title, BorderLayout.NORTH);
+            display.setLayout(new BorderLayout());
+            display.add(title, BorderLayout.NORTH);
+        }
     }
 
     private void initRenderers() {
