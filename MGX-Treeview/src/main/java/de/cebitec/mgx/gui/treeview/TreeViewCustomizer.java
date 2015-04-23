@@ -22,6 +22,10 @@ public class TreeViewCustomizer extends javax.swing.JPanel {
     boolean includeUnclassified() {
         return showUnclassified.isSelected();
     }
+    
+    boolean hideTitle() {
+        return hideTitle.isSelected();
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -33,9 +37,13 @@ public class TreeViewCustomizer extends javax.swing.JPanel {
     private void initComponents() {
 
         showUnclassified = new javax.swing.JCheckBox();
+        hideTitle = new javax.swing.JCheckBox();
 
         showUnclassified.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(showUnclassified, org.openide.util.NbBundle.getMessage(TreeViewCustomizer.class, "TreeViewCustomizer.showUnclassified.text")); // NOI18N
+
+        hideTitle.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(hideTitle, org.openide.util.NbBundle.getMessage(TreeViewCustomizer.class, "TreeViewCustomizer.hideTitle.text")); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -43,7 +51,9 @@ public class TreeViewCustomizer extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(showUnclassified)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(showUnclassified)
+                    .addComponent(hideTitle))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -51,12 +61,15 @@ public class TreeViewCustomizer extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(showUnclassified)
-                .addContainerGap(346, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(hideTitle)
+                .addContainerGap(321, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JCheckBox hideTitle;
     private javax.swing.JCheckBox showUnclassified;
     // End of variables declaration//GEN-END:variables
 }
