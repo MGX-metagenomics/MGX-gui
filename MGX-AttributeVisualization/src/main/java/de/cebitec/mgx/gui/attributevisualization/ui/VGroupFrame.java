@@ -7,7 +7,6 @@ package de.cebitec.mgx.gui.attributevisualization.ui;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.nodefactory.VisualizationGroupNodeFactory;
-import de.cebitec.mgx.gui.nodes.SeqRunNode;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.datatransfer.DataFlavor;
@@ -281,8 +280,9 @@ public class VGroupFrame extends javax.swing.JPanel implements ExplorerManager.P
                                 }
                                 for (int i = 0; i < elems; i++) {
                                     SeqRunI run = (SeqRunI) mto.getTransferData(i, SeqRunI.DATA_FLAVOR);
-                                    SeqRunNode srn = new SeqRunNode(run.getMaster(), run, Children.LEAF);
-                                    vgnf.addNode(srn);
+                                    //SeqRunNode srn = new SeqRunNode(run.getMaster(), run, Children.LEAF);
+                                    //vgnf.addNode(srn);
+                                    vgnf.addSeqRun(run);
                                 }
                                 dtde.dropComplete(true);
                                 return;
@@ -295,8 +295,9 @@ public class VGroupFrame extends javax.swing.JPanel implements ExplorerManager.P
                         try {
                             SeqRunI run = (SeqRunI) dtde.getTransferable().getTransferData(SeqRunI.DATA_FLAVOR);
                             if (run != null && !vGroup.getSeqRuns().contains(run)) {
-                                SeqRunNode srn = new SeqRunNode(run.getMaster(), run, Children.LEAF);
-                                vgnf.addNode(srn);
+                                //SeqRunNode srn = new SeqRunNode(run.getMaster(), run, Children.LEAF);
+                                //vgnf.addNode(srn);
+                                vgnf.addSeqRun(run);
                                 dtde.dropComplete(true);
                                 return;
                             }
