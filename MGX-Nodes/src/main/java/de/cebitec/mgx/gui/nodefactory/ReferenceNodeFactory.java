@@ -20,20 +20,19 @@ import org.openide.util.Exceptions;
  *
  * @author sj
  */
-public class ReferenceNodeFactory extends ChildFactory<MGXReferenceI> implements NodeListener {
+public class ReferenceNodeFactory extends MGXNodeFactoryBase<MGXReferenceI> implements NodeListener {
 
-    private final MGXMasterI master;
     //
-    private boolean refreshing = false;
+   // private boolean refreshing = false;
 
     public ReferenceNodeFactory(MGXMasterI master) {
-        this.master = master;
+       super(master);
     }
 
     @Override
     protected boolean createKeys(List<MGXReferenceI> toPopulate) {
         try {
-            Iterator<MGXReferenceI> iter = master.Reference().fetchall();
+            Iterator<MGXReferenceI> iter = getMaster().Reference().fetchall();
             while (iter.hasNext()) {
                 toPopulate.add(iter.next());
             }
@@ -47,50 +46,50 @@ public class ReferenceNodeFactory extends ChildFactory<MGXReferenceI> implements
 
     @Override
     protected Node createNodeForKey(MGXReferenceI ref) {
-        Node node = new ReferenceNode(master, ref);
+        Node node = new ReferenceNode(ref);
         node.addNodeListener(this);
         return node;
     }
 
-    public void refreshChildren() {
-        if (!refreshing) {
-            refreshing = true;
-            refresh(true);
-            refreshing = false;
-        }
-    }
+//    public void refreshChildren() {
+//        if (!refreshing) {
+//            refreshing = true;
+//            refresh(true);
+//            refreshing = false;
+//        }
+//    }
 
-    @Override
-    public void childrenAdded(NodeMemberEvent ev) {
-        //refresh(true);
-    }
-
-    @Override
-    public void childrenRemoved(NodeMemberEvent ev) {
-        //refresh(true);
-    }
-
-    @Override
-    public void childrenReordered(NodeReorderEvent ev) {
-    }
-
-    @Override
-    public void nodeDestroyed(NodeEvent ev) {
-        // this is ugly, and unnecessary everywhere else. however, here
-        // it triggers a stack overflow otherwise: refresh() makes the
-        // childfactory remove (and re-add) all nodes, which triggers a 
-        // nodeDestroyed() call for each removed node.
-        //
-        // I have no idea....
-        if (!refreshing) {
-            refreshing = true;
-            refresh(true);
-            refreshing = false;
-        }
-    }
-
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-        //refresh(true);
-    }
+//    @Override
+//    public void childrenAdded(NodeMemberEvent ev) {
+//        //refresh(true);
+//    }
+//
+//    @Override
+//    public void childrenRemoved(NodeMemberEvent ev) {
+//        //refresh(true);
+//    }
+//
+//    @Override
+//    public void childrenReordered(NodeReorderEvent ev) {
+//    }
+//
+//    @Override
+//    public void nodeDestroyed(NodeEvent ev) {
+//        // this is ugly, and unnecessary everywhere else. however, here
+//        // it triggers a stack overflow otherwise: refresh() makes the
+//        // childfactory remove (and re-add) all nodes, which triggers a 
+//        // nodeDestroyed() call for each removed node.
+//        //
+//        // I have no idea....
+//        if (!refreshing) {
+//            refreshing = true;
+//            refresh(true);
+//            refreshing = false;
+//        }
+//    }
+//
+//    @Override
+//    public void propertyChange(PropertyChangeEvent evt) {
+//        //refresh(true);
+//    }
 }

@@ -28,12 +28,12 @@ public class JobBySeqRunNodeFactory extends JobNodeFactory {
     protected synchronized boolean createKeys(List<JobI> toPopulate) {
         List<JobI> tmp = new ArrayList<>();
         try {
-            for (JobI j : master.Job().BySeqRun(run)) {
+            for (JobI j : getMaster().Job().BySeqRun(run)) {
                 if (Thread.interrupted()) {
-                    master.log(Level.INFO, "interrupted in NF");
+                    getMaster().log(Level.INFO, "interrupted in NF");
                     return true;
                 }
-                ToolI t = master.Tool().ByJob(j);
+                ToolI t = getMaster().Tool().ByJob(j);
                 j.setTool(t);
                 tmp.add(j);
             }

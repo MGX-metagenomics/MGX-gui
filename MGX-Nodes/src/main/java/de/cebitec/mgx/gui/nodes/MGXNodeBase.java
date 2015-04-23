@@ -6,6 +6,7 @@ import java.awt.datatransfer.Transferable;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
+import javax.swing.Action;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.util.Lookup;
@@ -22,21 +23,24 @@ public abstract class MGXNodeBase<T extends ModelBase<T>> extends AbstractNode i
 
     protected MGXNodeBase(MGXMasterI master, Children children, Lookup lookup, T data) {
         super(children, lookup);
+        if (master == null) {
+            throw new IllegalArgumentException("null master supplied");
+        }
         this.master = master;
         content = data;
         content.addPropertyChangeListener(this);
     }
-    
-    protected MGXMasterI getMaster() {
+
+    protected final MGXMasterI getMaster() {
         return master;
     }
 
-    public T getContent() {
+    public final T getContent() {
         return content;
     }
 
     @Override
-    public Transferable drag() throws IOException {
+    public final Transferable drag() throws IOException {
         return content;
     }
 
@@ -56,6 +60,11 @@ public abstract class MGXNodeBase<T extends ModelBase<T>> extends AbstractNode i
         }
     }
 
+    @Override
+    public Action[] getActions(boolean popup) {
+        return new Action[0]; // disables context menu
+    }
+
     public void addPropertyChangelistener(PropertyChangeListener pcl) {
         super.addPropertyChangeListener(pcl);
         content.addPropertyChangeListener(pcl);
@@ -68,7 +77,6 @@ public abstract class MGXNodeBase<T extends ModelBase<T>> extends AbstractNode i
 
     public abstract void updateModified();
 
-    
     @Override
     public int compareTo(MGXNodeBase<? extends T> o) {
         return content.compareTo(o.getContent());

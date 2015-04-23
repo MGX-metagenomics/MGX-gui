@@ -9,6 +9,7 @@ import java.beans.PropertyChangeEvent;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 import org.openide.nodes.ChildFactory;
 import org.openide.nodes.Node;
 import org.openide.nodes.NodeEvent;
@@ -26,8 +27,8 @@ public class SampleNodeFactory extends ChildFactory<SampleI> implements NodeList
     private final MGXMasterI master;
     private final HabitatI habitat;
 
-    public SampleNodeFactory(MGXMasterI master, HabitatI h) {
-        this.master = master;
+    public SampleNodeFactory(HabitatI h) {
+        this.master = h.getMaster();
         this.habitat = h;
     }
 
@@ -35,7 +36,11 @@ public class SampleNodeFactory extends ChildFactory<SampleI> implements NodeList
     protected boolean createKeys(List<SampleI> toPopulate) {
         try {
             Iterator<SampleI> iter = master.Sample().ByHabitat(habitat);
-            while (iter.hasNext()) {
+            while (iter != null && iter.hasNext()) {
+                if (Thread.interrupted()) {
+                    master.log(Level.INFO, "interrupted in NF");
+                    return true;
+                }
                 toPopulate.add(iter.next());
             }
             Collections.sort(toPopulate);
@@ -48,7 +53,7 @@ public class SampleNodeFactory extends ChildFactory<SampleI> implements NodeList
 
     @Override
     protected Node createNodeForKey(SampleI key) {
-        SampleNode node = new SampleNode(master, key);
+        SampleNode node = new SampleNode(key);
         node.addNodeListener(this);
         return node;
     }

@@ -20,16 +20,14 @@ import org.openide.util.Exceptions;
  */
 public class HabitatNodeFactory extends MGXNodeFactoryBase<HabitatI> {
 
-    private final MGXMasterI master;
-
     public HabitatNodeFactory(MGXMasterI m) {
-        this.master = m;
+        super(m);
     }
 
     @Override
     protected boolean createKeys(List<HabitatI> toPopulate) {
         try {
-            Iterator<HabitatI> iter = master.Habitat().fetchall();
+            Iterator<HabitatI> iter = getMaster().Habitat().fetchall();
             while (iter.hasNext()) {
                 toPopulate.add(iter.next());
             }
@@ -43,34 +41,34 @@ public class HabitatNodeFactory extends MGXNodeFactoryBase<HabitatI> {
 
     @Override
     protected Node createNodeForKey(HabitatI key) {
-        HabitatNode node = new HabitatNode(master, key);
+        HabitatNode node = new HabitatNode(key);
         node.addNodeListener(this);
         return node;
     }
 
-    @Override
-    public void childrenAdded(NodeMemberEvent ev) {
-        refresh(true);
-    }
-
-    @Override
-    public void childrenRemoved(NodeMemberEvent ev) {
-        refresh(true);
-    }
-
-    @Override
-    public void childrenReordered(NodeReorderEvent ev) {
-    }
-
-    @Override
-    public void nodeDestroyed(NodeEvent ev) {
-        refresh(true);
-    }
-
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-        //System.err.println("HNF got PCE "+evt.getPropertyName());
-//        if (!Node.PROP_PARENT_NODE.equals(evt.getPropertyName())) {
-//        refresh(true); }
-    }
+//    @Override
+//    public void childrenAdded(NodeMemberEvent ev) {
+//        refresh(true);
+//    }
+//
+//    @Override
+//    public void childrenRemoved(NodeMemberEvent ev) {
+//        refresh(true);
+//    }
+//
+//    @Override
+//    public void childrenReordered(NodeReorderEvent ev) {
+//    }
+//
+//    @Override
+//    public void nodeDestroyed(NodeEvent ev) {
+//        refresh(true);
+//    }
+//
+//    @Override
+//    public void propertyChange(PropertyChangeEvent evt) {
+//        //System.err.println("HNF got PCE "+evt.getPropertyName());
+////        if (!Node.PROP_PARENT_NODE.equals(evt.getPropertyName())) {
+////        refresh(true); }
+//    }
 }
