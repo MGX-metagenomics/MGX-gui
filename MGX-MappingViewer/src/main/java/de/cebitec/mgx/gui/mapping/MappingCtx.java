@@ -6,6 +6,7 @@ import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.api.model.MappedSequenceI;
 import de.cebitec.mgx.api.model.MappingI;
+import de.cebitec.mgx.api.model.ModelBase;
 import de.cebitec.mgx.api.model.RegionI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.ToolI;
@@ -14,7 +15,11 @@ import de.cebitec.mgx.gui.cache.CacheFactory;
 import de.cebitec.mgx.gui.cache.CoverageInfoCache;
 import de.cebitec.mgx.gui.cache.IntIterator;
 import de.cebitec.mgx.gui.swingutils.NonEDT;
+import de.cebitec.mgx.pevents.ParallelPropertyChangeSupport;
 import java.awt.EventQueue;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -25,7 +30,7 @@ import org.openide.util.Exceptions;
  *
  * @author sjaenick
  */
-public class MappingCtx {
+public class MappingCtx implements PropertyChangeListener, AutoCloseable {
 
     private final MappingI m;
     private final MGXReferenceI ref;
@@ -36,6 +41,7 @@ public class MappingCtx {
     private CoverageInfoCache<SortedSet<MappedSequenceI>> mapCache = null;
     private UUID sessionUUID = null;
     private long maxCoverage = -1;
+    private final PropertyChangeSupport pcs = new ParallelPropertyChangeSupport(this);
 
     public MappingCtx(MappingI m, MGXReferenceI ref, JobI job, SeqRunI run) throws MGXException {
         assert m.getReferenceID() == ref.getId();
@@ -44,6 +50,17 @@ public class MappingCtx {
         this.job = job;
         this.run = run;
         MGXMasterI master = m.getMaster();
+        
+        if (m.getJobID() != job.getId() || m.getReferenceID() != ref.getId() || m.getSeqrunID() != run.getId()) {
+            throw new IllegalArgumentException("Inconsistent data, cannot create mapping context.");
+        }
+
+        // listen for data object changes
+        m.addPropertyChangeListener(this);
+        ref.addPropertyChangeListener(this);
+        job.addPropertyChangeListener(this);
+        run.addPropertyChangeListener(this);
+
         sessionUUID = master.Mapping().openMapping(m.getId());
     }
 
@@ -168,6 +185,35 @@ public class MappingCtx {
             }
         }
         return maxCoverage;
+    }
+
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        pcs.addPropertyChangeListener(listener);
+    }
+
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        pcs.removePropertyChangeListener(listener);
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (evt.getPropertyName().equals(ModelBase.OBJECT_DELETED)) {
+            close();
+        }
+    }
+
+    @Override
+    public void close() {
+        try {
+            ref.getMaster().Mapping().closeMapping(sessionUUID);
+        } catch (MGXException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+        m.removePropertyChangeListener(this);
+        ref.removePropertyChangeListener(this);
+        run.removePropertyChangeListener(this);
+        job.removePropertyChangeListener(this);
+        pcs.firePropertyChange(ModelBase.OBJECT_DELETED, 0, 1);
     }
 
 }

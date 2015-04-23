@@ -7,6 +7,7 @@ package de.cebitec.mgx.gui.mapping;
 
 import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.api.model.MappedSequenceI;
+import de.cebitec.mgx.api.model.ModelBase;
 import de.cebitec.mgx.api.model.RegionI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.cache.IntIterator;
@@ -23,7 +24,7 @@ import org.apache.commons.math3.util.FastMath;
  *
  * @author sjaenick
  */
-public class ViewController {
+public class ViewController implements PropertyChangeListener {
 
     private final MappingCtx ctx;
     private final int[] curBounds;
@@ -37,6 +38,7 @@ public class ViewController {
 
     public ViewController(MappingCtx ctx) {
         this.ctx = ctx;
+        ctx.addPropertyChangeListener(this);
         newBounds = new int[]{0, FastMath.min(15000, ctx.getReference().getLength() - 1)};
         curBounds = new int[]{0, FastMath.min(15000, ctx.getReference().getLength() - 1)};
         pcs = new ParallelPropertyChangeSupport(this);
@@ -45,7 +47,7 @@ public class ViewController {
     public MGXReferenceI getReference() {
         return ctx.getReference();
     }
-    
+
     public SeqRunI getSeqRun() {
         return ctx.getRun();
     }
@@ -63,11 +65,11 @@ public class ViewController {
     }
 
     public void setBounds(int i, int j) {
-        assert i >= 0;
-        assert i < ctx.getReference().getLength();
-        assert j >= 0;
-        assert j < ctx.getReference().getLength();
-        assert i < j;
+//        assert i >= 0;
+//        assert i < ctx.getReference().getLength();
+//        assert j >= 0;
+//        assert j < ctx.getReference().getLength();
+//        assert i < j;
 
         newBounds[0] = FastMath.max(0, i);
         newBounds[1] = FastMath.min(ctx.getReference().getLength(), j);
@@ -80,11 +82,11 @@ public class ViewController {
     }
 
     public void setPreviewBounds(int i, int j) {
-        assert i >= 0;
-        assert i < ctx.getReference().getLength();
-        assert j >= 0;
-        assert j < ctx.getReference().getLength();
-        assert i < j;
+//        assert i >= 0;
+//        assert i < ctx.getReference().getLength();
+//        assert j >= 0;
+//        assert j < ctx.getReference().getLength();
+//        assert i < j;
 
         previewBounds[0] = i;
         previewBounds[1] = j;
@@ -112,11 +114,20 @@ public class ViewController {
     }
 
     public void addPropertyChangeListener(PropertyChangeListener listener) {
-        listener.propertyChange(new PropertyChangeEvent(this, BOUNDS_CHANGE, Integer.valueOf(0), Integer.valueOf(1)));
+        listener.propertyChange(new PropertyChangeEvent(this, BOUNDS_CHANGE, 0, 1));
         pcs.addPropertyChangeListener(listener);
     }
 
     public void removePropertyChangeListener(PropertyChangeListener listener) {
         pcs.removePropertyChangeListener(listener);
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (evt.getPropertyName().equals(ModelBase.OBJECT_DELETED)) {
+            curBounds[0] = 0;
+            curBounds[1] = 0;
+            pcs.firePropertyChange(BOUNDS_CHANGE, 0, 1);
+        }
     }
 }
