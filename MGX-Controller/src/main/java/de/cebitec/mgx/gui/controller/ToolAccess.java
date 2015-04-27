@@ -159,4 +159,19 @@ public class ToolAccess extends AccessBase<ToolI> implements ToolAccessI {
         }
         return t;
     }
+
+    @Override
+    public String getXMLDefinition(ToolI tool) throws MGXException {
+        if (tool.getXML() != null && !"".equals(tool.getXML())) {
+            return tool.getXML();
+        }
+        String xmlData;
+        try {
+            xmlData = getDTOmaster().Tool().getXMLDefinition(tool.getId());
+        } catch (MGXServerException | MGXClientException ex) {
+            throw new MGXException(ex);
+        }
+        tool.setXML(xmlData);
+        return xmlData;
+    }
 }

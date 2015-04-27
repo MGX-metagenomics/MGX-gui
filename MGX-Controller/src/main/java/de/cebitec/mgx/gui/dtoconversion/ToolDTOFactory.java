@@ -32,7 +32,7 @@ public class ToolDTOFactory extends DTOConversionBase<ToolI, ToolDTO> {
                 .setVersion(s.getVersion())
                 .setAuthor(s.getAuthor())
                 .setUrl(s.getUrl())
-                .setXml(s.getXMLFile())
+                .setXml(s.getXML())
                 .build();
     }
 
@@ -44,8 +44,11 @@ public class ToolDTOFactory extends DTOConversionBase<ToolI, ToolDTO> {
                 .setAuthor(dto.getAuthor())
                 .setUrl(dto.getUrl());
 
-        // XML data is not present in the tools received from the
+        // XML data might not be present in the tools received from the
         // server
+        if (dto.hasXml() && !"".equals(dto.getXml())) {
+            t.setXML(dto.getXml());
+        }
 
         if (copyID && dto.hasId()) {
             t.setId(dto.getId());
