@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.nodes;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.groups.FileType;
 import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.misc.TaskI.State;
 import de.cebitec.mgx.api.model.JobI;
@@ -14,9 +15,13 @@ import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.api.model.ToolI;
 import de.cebitec.mgx.gui.controller.RBAC;
 import de.cebitec.mgx.gui.swingutils.NonEDT;
+import de.cebitec.mgx.gui.swingutils.util.FileChooserUtils;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
 import java.awt.event.ActionEvent;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -71,7 +76,7 @@ public class JobNode extends MGXNodeBase<JobI> {
         if (job.getParameters() == null || job.getParameters().isEmpty()) {
             return "";
         }
-        
+
         // FIXME: handle MGXFile
         StringBuilder sb = new StringBuilder();
         for (JobParameterI jp : job.getParameters()) {
@@ -95,11 +100,12 @@ public class JobNode extends MGXNodeBase<JobI> {
 
     @Override
     public Action[] getActions(boolean context) {
-        List<Action> actions = new ArrayList<>(4);
+        List<Action> actions = new ArrayList<>(5);
         actions.add(new DeleteJob());
         actions.add(new GetError());
         actions.add(new ResubmitAction());
         actions.add(new CancelJob());
+        actions.add(new SaveToolXML());
 
         return actions.toArray(new Action[]{});
         //return new Action[]{new DeleteJob(), new GetError(), new ResubmitAction()};
@@ -362,6 +368,48 @@ public class JobNode extends MGXNodeBase<JobI> {
         public boolean isEnabled() {
             return super.isEnabled() && RBAC.isUser()
                     && !(getContent().getStatus().equals(JobState.FINISHED) || getContent().getStatus().equals(JobState.FAILED));
+        }
+    }
+
+    private class SaveToolXML extends AbstractAction {
+
+        public SaveToolXML() {
+            putValue(NAME, "Download workflow");
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            final JobI job = getLookup().lookup(JobI.class);
+            final MGXMasterI m = getLookup().lookup(MGXMasterI.class);
+
+            final String fname = FileChooserUtils.selectNewFilename(new FileType[]{FileType.XML}, job.getTool().getName() + "-" + job.getTool().getVersion());
+            if (fname == null || fname.trim().isEmpty()) {
+                return;
+            }
+
+            SwingWorker<String, Void> sw = new SwingWorker<String, Void>() {
+
+                @Override
+                protected String doInBackground() throws Exception {
+                    return m.Tool().getXMLDefinition(job.getTool());
+                }
+
+                @Override
+                protected void done() {
+                    super.done();
+                    try (BufferedWriter bw = new BufferedWriter(new FileWriter(fname))) {
+                        bw.write(get());
+                    } catch (Exception ex) {
+                        NotifyDescriptor nd = new NotifyDescriptor.Message("Error: " + ex.getMessage(), NotifyDescriptor.ERROR_MESSAGE);
+                        DialogDisplayer.getDefault().notify(nd);
+                        return;
+                    }
+                    NotifyDescriptor nd = new NotifyDescriptor.Message("Workflow saved to " + fname, NotifyDescriptor.INFORMATION_MESSAGE);
+                    DialogDisplayer.getDefault().notify(nd);
+                }
+
+            };
+            sw.execute();
         }
     }
 }
