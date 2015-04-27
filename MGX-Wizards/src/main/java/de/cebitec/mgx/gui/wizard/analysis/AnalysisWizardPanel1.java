@@ -203,7 +203,7 @@ public class AnalysisWizardPanel1 implements WizardDescriptor.Panel<WizardDescri
                     }
                 }
                 
-                String xmlData = t.getXMLFile();
+                String xmlData = t.getXML();
                 // TODO: validate content
 
                 return t;

@@ -223,7 +223,7 @@ public class NewToolPanel extends javax.swing.JPanel implements DocumentListener
         tool.setUrl(uriField.getText().trim());
         try {
             String xmlData = readFile(xml.getText());
-            tool.setXMLFile(xmlData);
+            tool.setXML(xmlData);
 
         } catch (IOException ex) {
             Exceptions.printStackTrace(ex);
