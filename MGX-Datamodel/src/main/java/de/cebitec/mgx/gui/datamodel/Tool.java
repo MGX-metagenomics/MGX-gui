@@ -14,7 +14,7 @@ public class Tool extends ToolI {
     protected Float version;
     protected String author;
     protected String url;
-    protected String xml_file;
+    protected String xml;
 
     public Tool(MGXMasterI m) {
         super(m);
@@ -76,13 +76,13 @@ public class Tool extends ToolI {
     }
 
     @Override
-    public String getXMLFile() {
-        return xml_file;
+    public String getXML() { 
+        return xml;
     }
 
     @Override
-    public Tool setXMLFile(String xml_file) {
-        this.xml_file = xml_file;
+    public Tool setXML(String xmlData) {
+        this.xml = xmlData;
         return this;
     }
 
