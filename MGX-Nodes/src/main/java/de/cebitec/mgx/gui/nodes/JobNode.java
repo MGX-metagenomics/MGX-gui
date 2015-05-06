@@ -366,8 +366,9 @@ public class JobNode extends MGXNodeBase<JobI> {
 
         @Override
         public boolean isEnabled() {
+            JobState state = getContent().getStatus();
             return super.isEnabled() && RBAC.isUser()
-                    && !(getContent().getStatus().equals(JobState.FINISHED) || getContent().getStatus().equals(JobState.FAILED));
+                    && !(state.equals(JobState.FINISHED) || state.equals(JobState.FAILED) || state.equals(JobState.IN_DELETION));
         }
     }
 
