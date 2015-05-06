@@ -45,15 +45,21 @@ public class JobNodeFactory extends MGXNodeFactoryBase<JobI> implements NodeList
         try {
             Iterator<SeqRunI> iter = getMaster().SeqRun().fetchall();
             while (iter != null && iter.hasNext()) {
-                if (Thread.interrupted()) { 
+                if (Thread.interrupted()) {
                     getMaster().log(Level.INFO, "interrupted in NF");
                     return true;
                 }
                 SeqRunI sr = iter.next();
-                for (JobI j : getMaster().Job().BySeqRun(sr)) {
-                    ToolI t = getMaster().Tool().ByJob(j);
-                    j.setTool(t);
-                    tmp.add(j);
+
+                try {
+                    for (JobI j : getMaster().Job().BySeqRun(sr)) {
+                        ToolI t = getMaster().Tool().ByJob(j);
+                        tmp.add(j);
+                    }
+                } catch (MGXException ex) {
+                    // silently ignore exception here, since it might
+                    // be cause by an intermediate refresh while a 
+                    // deletion of one of the objects is in progress
                 }
             }
             toPopulate.addAll(tmp);
@@ -111,7 +117,6 @@ public class JobNodeFactory extends MGXNodeFactoryBase<JobI> implements NodeList
 //    public void propertyChange(PropertyChangeEvent evt) {
 //        //refresh(true);
 //    }
-    
     public void destroy() {
         timer.stop();
     }
