@@ -33,9 +33,20 @@ public class JobBySeqRunNodeFactory extends JobNodeFactory {
                     getMaster().log(Level.INFO, "interrupted in NF");
                     return true;
                 }
-                ToolI t = getMaster().Tool().ByJob(j);
-                j.setTool(t);
-                tmp.add(j);
+                
+                ToolI t = null;
+                try {
+                    t = getMaster().Tool().ByJob(j);
+                } catch (MGXException ex) {
+                    // if a refresh is triggered while a job is being deleted,
+                    // this might fail when the job is already gone. silently
+                    // ignore this case..
+                }
+
+                if (t != null) {
+                    j.setTool(t);
+                    tmp.add(j);
+                }
             }
             toPopulate.addAll(tmp);
             Collections.sort(toPopulate);
