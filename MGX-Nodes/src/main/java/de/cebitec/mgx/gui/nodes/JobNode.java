@@ -21,7 +21,6 @@ import de.cebitec.mgx.gui.taskview.TaskManager;
 import java.awt.event.ActionEvent;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -235,7 +234,8 @@ public class JobNode extends MGXNodeBase<JobI> {
 
         @Override
         public boolean isEnabled() {
-            return super.isEnabled() && RBAC.isUser() && !getContent().getStatus().equals(JobState.RUNNING);
+            JobState state = getContent().getStatus();
+            return super.isEnabled() && RBAC.isUser() && !(state.equals(JobState.RUNNING) || state.equals(JobState.IN_DELETION));
         }
     }
 
