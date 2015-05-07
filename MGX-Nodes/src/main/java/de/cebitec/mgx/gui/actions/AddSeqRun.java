@@ -83,7 +83,6 @@ public class AddSeqRun extends AbstractAction {
                             if (!success) {
                                 publish(new MGXException(uploader.getErrorMessage()));
                             }
-                            seqrun.setNumSequences(uploader.getNumElementsSent());
                             return success;
                         }
 
