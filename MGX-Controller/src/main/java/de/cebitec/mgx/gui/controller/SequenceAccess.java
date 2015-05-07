@@ -53,7 +53,7 @@ public class SequenceAccess extends AccessBase<SequenceI> implements SequenceAcc
     @Override
     public UploadBaseI createUploader(SeqRunI seqrun, SeqReaderI<DNASequenceI> reader) {
         final SeqUploader su = getDTOmaster().Sequence().createUploader(seqrun.getId(), reader);
-        return new ServerSeqRunUploader(su);
+        return new ServerSeqRunUploader(seqrun, su);
     }
 
     @Override
@@ -62,13 +62,13 @@ public class SequenceAccess extends AccessBase<SequenceI> implements SequenceAcc
         return new ServerSeqRunDownloader(sd);
     }
 
-    public void downloadSequences(long seqrun_id, SeqWriterI<DNASequenceI> writer, boolean closeWriter) throws MGXException {
-        try {
-            getDTOmaster().Sequence().downloadSequences(seqrun_id, writer, closeWriter);
-        } catch (MGXServerException ex) {
-            throw new MGXException(ex);
-        }
-    }
+//    public void downloadSXXXequences(long seqrun_id, SeqWriterI<DNASequenceI> writer, boolean closeWriter) throws MGXException {
+//        try {
+//            getDTOmaster().Sequence().downloadSequences(seqrun_id, writer, closeWriter);
+//        } catch (MGXServerException ex) {
+//            throw new MGXException(ex);
+//        }
+//    }
 
     @Override
     public DownloadBaseI createDownloaderByAttributes(Set<AttributeI> attrs, SeqWriterI<DNASequenceI> writer, boolean closeWriter) {
@@ -163,8 +163,10 @@ public class SequenceAccess extends AccessBase<SequenceI> implements SequenceAcc
     private class ServerSeqRunUploader extends UploadBaseI implements PropertyChangeListener {
 
         private final SeqUploader su;
+        private final SeqRunI run;
 
-        public ServerSeqRunUploader(SeqUploader su) {
+        public ServerSeqRunUploader(SeqRunI run, SeqUploader su) {
+            this.run = run;
             this.su = su;
             su.addPropertyChangeListener(this);
         }
@@ -174,6 +176,9 @@ public class SequenceAccess extends AccessBase<SequenceI> implements SequenceAcc
             boolean ret = su.upload();
             if (!ret) {
                 setErrorMessage(su.getErrorMessage());
+            } else {
+                run.setNumSequences(su.getProgress());
+                run.modified();
             }
             return ret;
         }
@@ -205,6 +210,7 @@ public class SequenceAccess extends AccessBase<SequenceI> implements SequenceAcc
             if (!ret) {
                 setErrorMessage(sd.getErrorMessage());
             }
+            sd.removePropertyChangeListener(this);
             return ret;
         }
 
