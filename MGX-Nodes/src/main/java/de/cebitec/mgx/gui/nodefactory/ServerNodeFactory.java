@@ -28,8 +28,6 @@ public class ServerNodeFactory extends ChildFactory<GPMSClientI> {
 
     @Override
     protected Node createNodeForKey(GPMSClientI key) {
-        Node n = new ServerNode(key, Children.create(new ProjectNodeFactory(key), true), Lookups.singleton(key));
-        n.setDisplayName(gpms.getServerName());
-        return n;
+        return new ServerNode(key);
     }
 }
