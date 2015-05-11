@@ -6,7 +6,6 @@ import de.cebitec.mgx.gui.nodefactory.ProjectNodeFactory;
 import javax.swing.Action;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
-import org.openide.util.Lookup;
 import org.openide.util.lookup.Lookups;
 
 /**

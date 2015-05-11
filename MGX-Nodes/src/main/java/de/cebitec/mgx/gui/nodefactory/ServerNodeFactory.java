@@ -4,9 +4,7 @@ import de.cebitec.gpms.rest.GPMSClientI;
 import de.cebitec.mgx.gui.nodes.ServerNode;
 import java.util.List;
 import org.openide.nodes.ChildFactory;
-import org.openide.nodes.Children;
 import org.openide.nodes.Node;
-import org.openide.util.lookup.Lookups;
 
 /**
  *
