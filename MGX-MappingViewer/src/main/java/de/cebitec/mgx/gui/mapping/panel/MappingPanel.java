@@ -5,6 +5,7 @@
  */
 package de.cebitec.mgx.gui.mapping.panel;
 
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.MappedSequenceI;
 import de.cebitec.mgx.gui.mapping.ViewController;
 import de.cebitec.mgx.gui.mapping.shapes.MappedRead2D;
@@ -27,6 +28,7 @@ import javax.swing.ToolTipManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.plaf.basic.BasicSliderUI;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -99,16 +101,27 @@ public class MappingPanel extends PanelBase implements ChangeListener, Adjustmen
         }
         int bpPos = px2bp(m.getX());
         int[] buf = new int[]{0};
-        vc.getCoverage(bpPos, bpPos, buf);
-        return "<html>" + mappingName + "<br>Position: " + bpPos + "<br>Coverage: "
-                + buf[0] + "</html>";
+        try {
+            vc.getCoverage(bpPos, bpPos, buf);
+        } catch (MGXException ex) {
+            buf = null;
+        }
+
+        String tmp = buf != null ? String.valueOf(buf[0]) : "unknown";
+        return "<html>" + mappingName + "<br>Mapped with: " + vc.getTool().getName() + "<br>Position: " + bpPos + "<br>Coverage: "
+                + tmp + "</html>";
     }
 
     @Override
     synchronized boolean update() {
 
-        SortedSet<MappedSequenceI> mappings = vc.getMappings(bounds[0], bounds[1]);
-        if (mappings.isEmpty()) {
+        SortedSet<MappedSequenceI> mappings = null;
+        try {
+            mappings = vc.getMappings(bounds[0], bounds[1]);
+        } catch (MGXException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+        if (mappings == null || mappings.isEmpty()) {
             return true;
         }
 

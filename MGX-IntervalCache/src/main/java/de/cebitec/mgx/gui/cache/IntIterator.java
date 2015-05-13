@@ -5,6 +5,7 @@
  */
 package de.cebitec.mgx.gui.cache;
 
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.MappedSequenceI;
 import java.util.Iterator;
 import java.util.SortedSet;
@@ -22,7 +23,7 @@ public class IntIterator {
     private final Iterator<Interval> iter;
     private Interval curInterval;
 
-    public IntIterator(int from, int to, CoverageInfoCache<SortedSet<MappedSequenceI>> lcache) {
+    public IntIterator(int from, int to, CoverageInfoCache<SortedSet<MappedSequenceI>> lcache) throws MGXException {
         this.to = to;
         this.curPos = from - 1;
         this.lcache = lcache;
@@ -40,12 +41,11 @@ public class IntIterator {
         return curPos < to && curInterval != null;
     }
 
-    public int next() {
+    public int next() throws MGXException {
         curPos++;
         if (curPos > curInterval.getTo()) {
             assert iter.hasNext();
             curInterval = iter.next();
-            //Arrays.fill(coverage, 0);
             lcache.getCoverage(curInterval.getFrom(), curInterval.getTo(), coverage);
         }
         int ret = coverage[curPos - curInterval.getFrom()];

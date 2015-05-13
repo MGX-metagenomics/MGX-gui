@@ -5,6 +5,7 @@
  */
 package de.cebitec.mgx.gui.mapping.panel;
 
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.RegionI;
 import de.cebitec.mgx.gui.mapping.ViewController;
 import de.cebitec.mgx.gui.mapping.shapes.Arrow;
@@ -25,6 +26,7 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.swing.ToolTipManager;
 import org.apache.commons.math3.util.FastMath;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -160,8 +162,12 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
 
         // fetch features
         Set<Arrow> newData = new HashSet<>();
-        for (RegionI r : vc.getRegions(bounds[0], bounds[1])) {
-            newData.add(r2a(r));
+        try {
+            for (RegionI r : vc.getRegions(bounds[0], bounds[1])) {
+                newData.add(r2a(r));
+            }
+        } catch (MGXException ex) {
+            Exceptions.printStackTrace(ex);
         }
         regs = newData;
 

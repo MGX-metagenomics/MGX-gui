@@ -5,6 +5,7 @@
  */
 package de.cebitec.mgx.gui.mapping.panel;
 
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.gui.cache.IntIterator;
 import de.cebitec.mgx.gui.mapping.ViewController;
 import java.awt.AlphaComposite;
@@ -12,10 +13,13 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Composite;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.Stroke;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -26,10 +30,13 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import javax.swing.SwingWorker;
 import javax.swing.ToolTipManager;
 import org.apache.commons.math3.util.FastMath;
 import org.netbeans.api.progress.ProgressHandle;
 import org.netbeans.api.progress.ProgressHandleFactory;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -58,8 +65,21 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
         this.addMouseMotionListener(this);
         ToolTipManager.sharedInstance().registerComponent(this);
         ToolTipManager.sharedInstance().setDismissDelay(5000);
-        //update();
-        repaint();
+        //generateCoverage();
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                super.componentResized(e);
+                if (getHeight() > 0) {
+                    try {
+                        generateCoverage();
+                    } catch (MGXException ex) {
+                        Exceptions.printStackTrace(ex);
+                    }
+                }
+            }
+
+        });
     }
 
     @Override
@@ -272,24 +292,24 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
 
         int posInRef = px2bp(e.getX());
 
-        int[] bounds = vc.getBounds();
+        int[] bounds1 = vc.getBounds();
 
         switch (dragType) {
             case 1:
                 // preview left bound
-                if (posInRef < bounds[1]) {
-                    previewBounds = new int[]{posInRef, bounds[1]};
+                if (posInRef < bounds1[1]) {
+                    previewBounds = new int[]{posInRef, bounds1[1]};
                 }
                 break;
             case 2:
                 // preview mid
-                int len = bounds[1] - bounds[0] + 1;
+                int len = bounds1[1] - bounds1[0] + 1;
                 previewBounds = new int[]{posInRef - offSet[0], posInRef - offSet[0] + len};
                 break;
             case 3:
                 // preview right
-                if (posInRef > bounds[0]) {
-                    previewBounds = new int[]{bounds[0], posInRef};
+                if (posInRef > bounds1[0]) {
+                    previewBounds = new int[]{bounds1[0], posInRef};
                 }
                 break;
         }
@@ -313,97 +333,138 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
 
     @Override
     boolean update() {
+
         scaleFactor = 1d * refLength / getWidth();
         midY = getHeight() / 2;
 
-        if (coverage.isEmpty()) {
-            generateCoverage();
-        }
+//        if (coverage.isEmpty() && ph == null) {
+//            generateCoverage();
+//        }
         return true;
     }
 
-    private void generateCoverage() {
+    private volatile ProgressHandle ph = null;
+
+    private void generateCoverage() throws MGXException {
 
         if (maxCov != -1) {
             return;
         }
 
-        final ProgressHandle ph = ProgressHandleFactory.createHandle("Fetching coverage data");
-        ph.start();
+        if (ph == null) {
+            ph = ProgressHandleFactory.createHandle("Fetching coverage data");
+            ph.start(refLength);
 
-        maxCov = vc.getMaxCoverage();
+            SwingWorker<List<Area>, Void> sw = new SwingWorker<List<Area>, Void>() {
 
-        IntIterator covIter = vc.getCoverageIterator();
-        List<Area> ret = new ArrayList<>();
+                @Override
+                protected List<Area> doInBackground() throws Exception {
+                    maxCov = vc.getMaxCoverage();
+                    List<Area> ret = new ArrayList<>();
 
-        int baseY = getHeight() - 1;
-        int pos = 0;
-        double covScale = (getHeight() * 1d) / (FastMath.log(maxCov * 1d));
+                    int height = getHeight();
+                    int baseY = height - 1;
+                    int pos = 0;
+                    double covScale = (height * 1d) / (FastMath.log(maxCov * 1d));
 
-        GeneralPath gp = null;
-        double[] gpStart = new double[2];
-        double[] lastPoint = new double[2];
-        while (covIter.hasNext()) {
-            int cov = covIter.next();
-            if (cov == 0) {
-                if (gp != null) {
-                    gp.lineTo(lastPoint[0], baseY); // down to bottom line
-                    gp.lineTo(gpStart[0], gpStart[1]); // close shape
-                    gp.closePath();
-                    lastPoint[0] = gpStart[0];
-                    lastPoint[1] = gpStart[1];
-                    ret.add(new Area(gp));
-                    gp = null;
-                }
-            } else {
-                // we have some coverage..
-                double drawPos = bp2px(pos);
-                double covPos = baseY - (FastMath.log(cov) * covScale);
+                    GeneralPath gp = null;
+                    double[] gpStart = new double[2];
+                    double[] lastPoint = new double[2];
 
-                if (gp == null) {
-                    gp = new GeneralPath();
-                    gpStart[0] = drawPos; // remember positions so we can close the shape later
-                    gpStart[1] = baseY;
-                    gp.moveTo(drawPos, baseY);
+                    IntIterator covIter = vc.getCoverageIterator();
+                    while (covIter.hasNext()) {
+                        int cov = covIter.next();
+                        if (cov == 0) {
+                            if (gp != null) {
+                                gp.lineTo(lastPoint[0], baseY); // down to bottom line
+                                gp.lineTo(gpStart[0], gpStart[1]); // close shape
+                                gp.closePath();
+                                lastPoint[0] = gpStart[0];
+                                lastPoint[1] = gpStart[1];
+                                ret.add(new Area(gp));
+                                gp = null;
+                            }
+                        } else {
+                            // we have some coverage..
+                            double drawPos = bp2px(pos);
+                            ph.progress(pos);
+                            double covPos = baseY - (FastMath.log(cov) * covScale);
 
-                    gp.lineTo(drawPos, covPos);
-                    lastPoint[0] = drawPos;
-                    lastPoint[1] = baseY;
-                } else {
-                    // add a new point if distance >= 3px
-                    if (FastMath.abs(lastPoint[0] - drawPos) > 3 || FastMath.abs(lastPoint[1] - covPos) > 3) {
-                        gp.lineTo(drawPos, covPos);
-                        lastPoint[0] = drawPos;
-                        lastPoint[1] = covPos;
+                            if (gp == null) {
+                                gp = new GeneralPath();
+                                gpStart[0] = drawPos; // remember positions so we can close the shape later
+                                gpStart[1] = baseY;
+                                gp.moveTo(drawPos, baseY);
+
+                                gp.lineTo(drawPos, covPos);
+                                lastPoint[0] = drawPos;
+                                lastPoint[1] = baseY;
+                            } else {
+                                // add a new point if distance >= 3px
+                                if (FastMath.abs(lastPoint[0] - drawPos) > 3 || FastMath.abs(lastPoint[1] - covPos) > 3) {
+                                    gp.lineTo(drawPos, covPos);
+                                    lastPoint[0] = drawPos;
+                                    lastPoint[1] = covPos;
+                                }
+                            }
+                        }
+                        pos++;
                     }
+
+                    if (gp != null) {
+                        gp.lineTo(lastPoint[0], baseY); // down to bottom line
+                        gp.lineTo(gpStart[0], gpStart[1]); // close shape
+                        gp.closePath();
+                        ret.add(new Area(gp));
+                        gp = null;
+                    }
+                    return ret;
                 }
-            }
-            pos++;
-        }
-        if (gp != null) {
-            gp.lineTo(lastPoint[0], baseY); // down to bottom line
-            gp.lineTo(gpStart[0], gpStart[1]); // close shape
-            gp.closePath();
-            ret.add(new Area(gp));
-            gp = null;
+
+                @Override
+                protected void done() {
+                    super.done();
+                    try {
+                        List<Area> get = get();
+                        coverage.clear();
+                        coverage.addAll(get);
+                    } catch (InterruptedException | ExecutionException ex) {
+                        Exceptions.printStackTrace(ex);
+                    } finally {
+                        ph.finish();
+                    }
+                    if (coverage.size() > 0) {
+                        repaint();
+                    }
+
+                }
+
+            };
+            sw.execute();
         }
 
-        synchronized (coverage) {
-            coverage.clear();
-            coverage.addAll(ret);
-        }
-
-        ph.finish();
-
-        repaint();
+//        if (coverage.size() > 0) {
+//            EventQueue.invokeLater(new Runnable() {
+//
+//                @Override
+//                public void run() {
+//                    repaint();
+//                }
+//            });
+//        }
     }
 
     @Override
     public String getToolTipText(MouseEvent m) {
         int bpPos = px2bp(m.getX());
         int[] buf = new int[]{0};
-        vc.getCoverage(bpPos, bpPos, buf);
+        try {
+            vc.getCoverage(bpPos, bpPos, buf);
+        } catch (MGXException ex) {
+            buf = null;
+        }
+        String tmp = buf != null ? String.valueOf(buf[0]) : "unknown";
         return "<html>" + vc.getReference().getName() + "<br>Position: " + bpPos + "<br>Coverage: "
-                + buf[0] + "</html>";
+                + tmp + "</html>";
     }
 }

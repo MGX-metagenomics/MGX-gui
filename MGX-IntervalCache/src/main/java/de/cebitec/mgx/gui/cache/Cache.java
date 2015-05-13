@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.cache;
 
 import com.google.common.cache.LoadingCache;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.MGXReferenceI;
 import java.util.Iterator;
 
@@ -69,6 +70,6 @@ public abstract class Cache<T> {
         };
     }
 
-    public abstract T get(int from, int to);
+    public abstract T get(int from, int to) throws MGXException;
 
 }

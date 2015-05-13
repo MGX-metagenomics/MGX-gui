@@ -82,99 +82,99 @@ public class ViewControllerTest {
         assertEquals(maxCov, max);
     }
 
-    @Test
-    public void testCoveragePriv() throws MGXException {
-        System.err.println("testCoveragePriv");
-        MGXMasterI master = TestMaster.getPrivate();
-        Assume.assumeNotNull(master);
-        Iterator<MappingI> iter = master.Mapping().fetchall();
-        int cnt = 0;
-        MappingI mapping = null;
-        while (iter.hasNext()) {
-            mapping = iter.next();
-            cnt++;
-        }
-        assertEquals(1, cnt);
-        assertNotNull(mapping);
-        assertEquals(1, mapping.getId());
-        MGXReferenceI ref = master.Reference().fetch(mapping.getReferenceID());
-        JobI job = master.Job().fetch(mapping.getJobID());
-        ViewController vc = new ViewController(new MappingCtx(mapping, ref, job, master.SeqRun().fetch(mapping.getSeqrunID())));
-        //
-        //
-        int max = -1;
-        int numPos = 0;
-        IntIterator covIter = vc.getCoverageIterator();
-        while (covIter.hasNext()) {
-            int c = covIter.next();
-            numPos++;
-            if (c > max) {
-                max = c;
-            }
-        }
-        assertEquals(numPos, ref.getLength());
-        long maxCov = vc.getMaxCoverage();
-        assertEquals(maxCov, max);
-    }
+//    @Test
+//    public void testCoveragePriv() throws MGXException {
+//        System.err.println("testCoveragePriv");
+//        MGXMasterI master = TestMaster.getPrivate();
+//        Assume.assumeNotNull(master);
+//        Iterator<MappingI> iter = master.Mapping().fetchall();
+//        int cnt = 0;
+//        MappingI mapping = null;
+//        while (iter.hasNext()) {
+//            mapping = iter.next();
+//            cnt++;
+//        }
+//        assertEquals(1, cnt);
+//        assertNotNull(mapping);
+//        assertEquals(1, mapping.getId());
+//        MGXReferenceI ref = master.Reference().fetch(mapping.getReferenceID());
+//        JobI job = master.Job().fetch(mapping.getJobID());
+//        ViewController vc = new ViewController(new MappingCtx(mapping, ref, job, master.SeqRun().fetch(mapping.getSeqrunID())));
+//        //
+//        //
+//        int max = -1;
+//        int numPos = 0;
+//        IntIterator covIter = vc.getCoverageIterator();
+//        while (covIter.hasNext()) {
+//            int c = covIter.next();
+//            numPos++;
+//            if (c > max) {
+//                max = c;
+//            }
+//        }
+//        assertEquals(numPos, ref.getLength());
+//        long maxCov = vc.getMaxCoverage();
+//        assertEquals(maxCov, max);
+//    }
 
-    @Test
-    public void testMappingsPrivMax() throws MGXException {
-        System.err.println("testMappingsPrivMax");
-        MGXMasterI master = TestMaster.getPrivate();
-        Assume.assumeNotNull(master);
-        Iterator<MappingI> iter = master.Mapping().fetchall();
-        int cnt = 0;
-        MappingI mapping = null;
-        while (iter.hasNext()) {
-            mapping = iter.next();
-            cnt++;
-        }
-        assertEquals(1, cnt);
-        assertNotNull(mapping);
-        assertEquals(1, mapping.getId());
-        MGXReferenceI ref = master.Reference().fetch(mapping.getReferenceID());
-        JobI job = master.Job().fetch(mapping.getJobID());
-        MappingCtx ctx = new MappingCtx(mapping, ref, job, master.SeqRun().fetch(mapping.getSeqrunID()));
-        ViewController vc = new ViewController(ctx);
-        //
-        //
-        SortedSet<MappedSequenceI> mappings = vc.getMappings(567083, 567083);
-        assertNotNull(mappings);
-        assertEquals(8901, mappings.size());
-    }
+//    @Test
+//    public void testMappingsPrivMax() throws MGXException {
+//        System.err.println("testMappingsPrivMax");
+//        MGXMasterI master = TestMaster.getPrivate();
+//        Assume.assumeNotNull(master);
+//        Iterator<MappingI> iter = master.Mapping().fetchall();
+//        int cnt = 0;
+//        MappingI mapping = null;
+//        while (iter.hasNext()) {
+//            mapping = iter.next();
+//            cnt++;
+//        }
+//        assertEquals(1, cnt);
+//        assertNotNull(mapping);
+//        assertEquals(1, mapping.getId());
+//        MGXReferenceI ref = master.Reference().fetch(mapping.getReferenceID());
+//        JobI job = master.Job().fetch(mapping.getJobID());
+//        MappingCtx ctx = new MappingCtx(mapping, ref, job, master.SeqRun().fetch(mapping.getSeqrunID()));
+//        ViewController vc = new ViewController(ctx);
+//        //
+//        //
+//        SortedSet<MappedSequenceI> mappings = vc.getMappings(567083, 567083);
+//        assertNotNull(mappings);
+//        assertEquals(8901, mappings.size());
+//    }
 
-    @Test
-    public void testMappingsPriv() throws MGXException {
-        System.err.println("testMappingsPriv");
-        MGXMasterI master = TestMaster.getPrivate();
-        Assume.assumeNotNull(master);
-        Iterator<MappingI> iter = master.Mapping().fetchall();
-        int cnt = 0;
-        MappingI mapping = null;
-        while (iter.hasNext()) {
-            mapping = iter.next();
-            cnt++;
-        }
-        assertEquals(1, cnt);
-        assertNotNull(mapping);
-        assertEquals(1, mapping.getId());
-        MGXReferenceI ref = master.Reference().fetch(mapping.getReferenceID());
-        JobI job = master.Job().fetch(mapping.getJobID());
-        MappingCtx ctx = new MappingCtx(mapping, ref, job, master.SeqRun().fetch(mapping.getSeqrunID()));
-        ViewController vc = new ViewController(ctx);
-        //
-        //
-        SortedSet<MappedSequenceI> mappings = vc.getMappings(0, ref.getLength() - 1);
-        assertNotNull(mappings);
-        assertEquals(21883, mappings.size());
-
-        for (MappedSequenceI ms : mappings) {
-            if (ms.getSeqId() == 6520119) {
-                assertEquals(384, ms.getStop());
-                assertEquals(524, ms.getStart());
-            }
-        }
-    }
+//    @Test
+//    public void testMappingsPriv() throws MGXException {
+//        System.err.println("testMappingsPriv");
+//        MGXMasterI master = TestMaster.getPrivate();
+//        Assume.assumeNotNull(master);
+//        Iterator<MappingI> iter = master.Mapping().fetchall();
+//        int cnt = 0;
+//        MappingI mapping = null;
+//        while (iter.hasNext()) {
+//            mapping = iter.next();
+//            cnt++;
+//        }
+//        assertEquals(1, cnt);
+//        assertNotNull(mapping);
+//        assertEquals(1, mapping.getId());
+//        MGXReferenceI ref = master.Reference().fetch(mapping.getReferenceID());
+//        JobI job = master.Job().fetch(mapping.getJobID());
+//        MappingCtx ctx = new MappingCtx(mapping, ref, job, master.SeqRun().fetch(mapping.getSeqrunID()));
+//        ViewController vc = new ViewController(ctx);
+//        //
+//        //
+//        SortedSet<MappedSequenceI> mappings = vc.getMappings(0, ref.getLength() - 1);
+//        assertNotNull(mappings);
+//        assertEquals(21883, mappings.size());
+//
+//        for (MappedSequenceI ms : mappings) {
+//            if (ms.getSeqId() == 6520119) {
+//                assertEquals(384, ms.getStop());
+//                assertEquals(524, ms.getStart());
+//            }
+//        }
+//    }
 
 //    @Test
 //    public void testMappingOrder() {

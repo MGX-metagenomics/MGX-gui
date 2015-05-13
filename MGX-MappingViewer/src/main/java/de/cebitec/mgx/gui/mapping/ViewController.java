@@ -5,11 +5,13 @@
  */
 package de.cebitec.mgx.gui.mapping;
 
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.api.model.MappedSequenceI;
 import de.cebitec.mgx.api.model.ModelBase;
 import de.cebitec.mgx.api.model.RegionI;
 import de.cebitec.mgx.api.model.SeqRunI;
+import de.cebitec.mgx.api.model.ToolI;
 import de.cebitec.mgx.gui.cache.IntIterator;
 import de.cebitec.mgx.pevents.ParallelPropertyChangeSupport;
 import java.beans.PropertyChangeEvent;
@@ -51,8 +53,12 @@ public class ViewController implements PropertyChangeListener {
     public SeqRunI getSeqRun() {
         return ctx.getRun();
     }
+    
+    public ToolI getTool() {
+        return ctx.getTool();
+    }
 
-    public long getMaxCoverage() {
+    public long getMaxCoverage() throws MGXException {
         return ctx.getMaxCoverage();
     }
 
@@ -93,23 +99,23 @@ public class ViewController implements PropertyChangeListener {
         pcs.firePropertyChange(PREVIEWBOUNDS_CHANGE, 0, 1);
     }
 
-    public String getSequence(int from, int to) {
+    public String getSequence(int from, int to) throws MGXException {
         return ctx.getSequence(from, to);
     }
 
-    public Set<RegionI> getRegions(int from, int to) {
+    public Set<RegionI> getRegions(int from, int to) throws MGXException {
         return ctx.getRegions(from, to);
     }
 
-    public SortedSet<MappedSequenceI> getMappings(int from, int to) {
+    public SortedSet<MappedSequenceI> getMappings(int from, int to) throws MGXException {
         return ctx.getMappings(from, to);
     }
 
-    public void getCoverage(int from, int to, int[] dest) {
+    public void getCoverage(int from, int to, int[] dest) throws MGXException {
         ctx.getCoverage(from, to, dest);
     }
 
-    public IntIterator getCoverageIterator() {
+    public IntIterator getCoverageIterator() throws MGXException {
         return ctx.getCoverageIterator(0, ctx.getReference().getLength() - 1);
     }
 

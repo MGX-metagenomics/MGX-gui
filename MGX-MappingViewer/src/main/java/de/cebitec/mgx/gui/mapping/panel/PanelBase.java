@@ -94,9 +94,15 @@ public abstract class PanelBase extends JPanel implements PropertyChangeListener
     abstract void draw(Graphics2D g2);
 
     abstract boolean update();
+    
+    private PropertyChangeEvent lastEvent = null;
 
     @Override
     public final void propertyChange(PropertyChangeEvent evt) {
+        if (lastEvent != null && evt.equals(lastEvent)) {
+            System.err.println("duplicate event: "+evt);
+        }
+        lastEvent = evt;
         switch (evt.getPropertyName()) {
             case ViewController.BOUNDS_CHANGE:
                 bounds = vc.getBounds();
