@@ -96,7 +96,7 @@ public class TestMaster {
         return master;
     }
 
-    public static MGXMasterI getPrivate() {
+    public static MGXMasterI getPrivate(String targetProject) {
         MGXMasterI master = null;
 
         String serverURI = "https://mgx.cebitec.uni-bielefeld.de/MGX-maven-web/webresources/";
@@ -118,10 +118,10 @@ public class TestMaster {
         }
         Iterator<RESTMembershipI> mbr = gpms.getMemberships();
         Assert.assertNotNull(mbr);
-
+        
         while (mbr.hasNext()) {
             RESTMembershipI m = mbr.next();
-            if ("MGX".equals(m.getProject().getProjectClass().getName()) && ("MGX_Biogas_MT".equals(m.getProject().getName()))) {
+            if ("MGX".equals(m.getProject().getProjectClass().getName()) && (targetProject.equals(m.getProject().getName()))) {
                 MGXDTOMaster dtomaster = new MGXDTOMaster(gpms, m);
                 master = new MGXMaster(dtomaster);
                 break;

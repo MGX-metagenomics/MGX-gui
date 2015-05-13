@@ -14,11 +14,13 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.concurrent.ExecutionException;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.SwingWorker;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.util.Exceptions;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
 
@@ -33,15 +35,15 @@ import org.openide.windows.TopComponent;
     "CTL_TopComponentViewer=Mapping Window",})
 public final class TopComponentViewer extends TopComponent implements PropertyChangeListener {
 
-    private MappingCtx ctx;
+    private final MappingCtx ctx;
 
-    public TopComponentViewer() {
-        //this.ctx = ctx;
+    public TopComponentViewer(MappingCtx ctx) {
+        this.ctx = ctx;
         setName(Bundle.CTL_TopComponentViewer());
+        createView();
     }
 
-    public void createView(MappingCtx ctx) {
-        this.ctx = ctx;
+    private void createView() {
         ctx.addPropertyChangeListener(this);
         removeAll();
         setLayout(new BorderLayout());
@@ -61,18 +63,21 @@ public final class TopComponentViewer extends TopComponent implements PropertyCh
                 vc.getRegions(0, vc.getReference().getLength() - 1);
                 return null;
             }
+
+            @Override
+            protected void done() {
+                super.done();
+                try {
+                    get();
+                } catch (InterruptedException | ExecutionException ex) {
+                    Exceptions.printStackTrace(ex);
+                }
+            }
+            
+            
         };
         sw.execute();
-//        // precache mappings/coverage
-//        SwingWorker<Void, Void> sw2 = new SwingWorker<Void, Void>() {
-//
-//            @Override
-//            protected Void doInBackground() throws Exception {
-//                vc.getCoverage(0, vc.getReference().getLength() - 1);
-//                return null;
-//            }
-//        };
-//        sw2.execute();
+
         FeaturePanel fp = new FeaturePanel(vc);
         top.add(fp, BorderLayout.CENTER);
         top.setPreferredSize(new Dimension(500, 205));
@@ -82,12 +87,6 @@ public final class TopComponentViewer extends TopComponent implements PropertyCh
         MappingPanel mp = new MappingPanel(vc);
         add(mp, BorderLayout.CENTER);
 
-//        BasePanelFactory factory = new BasePanelFactory(ctx);
-//        ReferenceBasePanel refBasePanel = factory.getGenomeViewerBasePanel();
-//        ReadsBasePanel readsBasePanel = factory.getReadViewerBasePanel();
-//        panel.add(refBasePanel, BorderLayout.NORTH);
-//        panel.add(readsBasePanel, BorderLayout.CENTER);
-//        add(panel);
     }
 
     /**
@@ -114,12 +113,12 @@ public final class TopComponentViewer extends TopComponent implements PropertyCh
     // End of variables declaration//GEN-END:variables
     @Override
     public void componentOpened() {
-        createView(ctx);
+        //createView(ctx);
     }
 
     @Override
     public void componentClosed() {
-        ctx.removePropertyChangeListener(this);
+        //ctx.removePropertyChangeListener(this);
     }
 
     void writeProperties(java.util.Properties p) {
@@ -136,7 +135,7 @@ public final class TopComponentViewer extends TopComponent implements PropertyCh
     public void propertyChange(PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals(ModelBase.OBJECT_DELETED)) {
             ctx.removePropertyChangeListener(this);
-            ctx = null;
+            //ctx = null;
             removeAll();
         }
     }

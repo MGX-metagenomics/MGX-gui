@@ -36,7 +36,7 @@ public class CacheFactory {
         };
 
         LoadingCache<Interval, String> lcache = CacheBuilder.newBuilder()
-                .expireAfterAccess(10, TimeUnit.SECONDS)
+                .expireAfterAccess(30, TimeUnit.SECONDS)
                 .build(loader);
         return new SequenceCache(ref, lcache);
     }
@@ -59,7 +59,7 @@ public class CacheFactory {
         };
 
         LoadingCache<Interval, Set<RegionI>> lcache = CacheBuilder.newBuilder()
-                .expireAfterAccess(10, TimeUnit.SECONDS)
+                .expireAfterAccess(30, TimeUnit.SECONDS)
                 .build(loader);
         return new RegionCache(ref, lcache);
     }
@@ -79,7 +79,7 @@ public class CacheFactory {
         };
 
         LoadingCache<Interval, SortedSet<MappedSequenceI>> lcache = CacheBuilder.newBuilder()
-                .expireAfterAccess(10, TimeUnit.SECONDS)
+                .expireAfterAccess(30, TimeUnit.SECONDS)
                 .build(loader);
         return new MappedSequenceCache(ref, lcache);
     }

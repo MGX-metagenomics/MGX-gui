@@ -26,7 +26,7 @@ public class TrackFactory {
     private final static ExecutorService pool = Executors.newCachedThreadPool();
 
     public static synchronized Track addTrack(Collection<Track> tracks, MappedSequenceI ms) {
-        Track t = new Track(pool);
+        Track t = new Track();
         tracks.add(t);
         t.add(ms);
         return t;
@@ -75,7 +75,7 @@ public class TrackFactory {
             if (t != null) {
                 t.add(ms);
             } else {
-                t = new Track(pool);
+                t = new Track();
                 tracks.add(t);
                 t.add(ms);
             }

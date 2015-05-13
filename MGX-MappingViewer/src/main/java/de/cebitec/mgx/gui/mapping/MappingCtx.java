@@ -14,15 +14,12 @@ import de.cebitec.mgx.gui.cache.Cache;
 import de.cebitec.mgx.gui.cache.CacheFactory;
 import de.cebitec.mgx.gui.cache.CoverageInfoCache;
 import de.cebitec.mgx.gui.cache.IntIterator;
-import de.cebitec.mgx.gui.swingutils.NonEDT;
 import de.cebitec.mgx.pevents.ParallelPropertyChangeSupport;
-import java.awt.EventQueue;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.Set;
 import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.UUID;
 import org.openide.util.Exceptions;
 
@@ -50,7 +47,7 @@ public class MappingCtx implements PropertyChangeListener, AutoCloseable {
         this.job = job;
         this.run = run;
         MGXMasterI master = m.getMaster();
-        
+
         if (m.getJobID() != job.getId() || m.getReferenceID() != ref.getId() || m.getSeqrunID() != run.getId()) {
             throw new IllegalArgumentException("Inconsistent data, cannot create mapping context.");
         }
@@ -84,7 +81,7 @@ public class MappingCtx implements PropertyChangeListener, AutoCloseable {
         return job.getTool();
     }
 
-    public String getSequence(int from, int to) {
+    public String getSequence(int from, int to) throws MGXException {
         if (seqCache == null) {
             synchronized (this) {
                 if (seqCache == null) {
@@ -95,7 +92,7 @@ public class MappingCtx implements PropertyChangeListener, AutoCloseable {
         return seqCache.get(from, to);
     }
 
-    public Set<RegionI> getRegions(int from, int to) {
+    public Set<RegionI> getRegions(int from, int to) throws MGXException {
         if (regCache == null) {
             synchronized (this) {
                 if (regCache == null) {
@@ -106,7 +103,7 @@ public class MappingCtx implements PropertyChangeListener, AutoCloseable {
         return regCache.get(from, to);
     }
 
-    public SortedSet<MappedSequenceI> getMappings(final int from, final int to) {
+    public SortedSet<MappedSequenceI> getMappings(final int from, final int to) throws MGXException {
         if (mapCache == null) {
             synchronized (this) {
                 if (mapCache == null) {
@@ -114,23 +111,10 @@ public class MappingCtx implements PropertyChangeListener, AutoCloseable {
                 }
             }
         }
-        if (EventQueue.isDispatchThread()) {
-            final SortedSet<MappedSequenceI> ret = new TreeSet<>();
-            NonEDT.invokeAndWait(new Runnable() {
-
-                @Override
-                public void run() {
-                    SortedSet<MappedSequenceI> get = mapCache.get(from, to);
-                    ret.addAll(get);
-                }
-            });
-            return ret;
-        } else {
-            return mapCache.get(from, to);
-        }
+        return mapCache.get(from, to);
     }
 
-    public void getCoverage(final int from, final int to, final int[] dest) {
+    public void getCoverage(final int from, final int to, final int[] dest) throws MGXException {
         if (mapCache == null) {
             synchronized (this) {
                 if (mapCache == null) {
@@ -138,21 +122,10 @@ public class MappingCtx implements PropertyChangeListener, AutoCloseable {
                 }
             }
         }
-        if (EventQueue.isDispatchThread()) {
-            NonEDT.invokeAndWait(new Runnable() {
-
-                @Override
-                public void run() {
-                    mapCache.getCoverage(from, to, dest);
-                }
-            });
-
-        } else {
-            mapCache.getCoverage(from, to, dest);
-        }
+        mapCache.getCoverage(from, to, dest);
     }
 
-    public IntIterator getCoverageIterator(int from, int to) {
+    public IntIterator getCoverageIterator(final int from, final int to) throws MGXException {
         if (mapCache == null) {
             synchronized (this) {
                 if (mapCache == null) {
@@ -164,23 +137,12 @@ public class MappingCtx implements PropertyChangeListener, AutoCloseable {
         return mapCache.getCoverageIterator(from, to);
     }
 
-    public long getMaxCoverage() {
+    public long getMaxCoverage() throws MGXException {
         if (maxCoverage == -1) {
             synchronized (this) {
                 if (maxCoverage == -1) {
                     final MGXMasterI master = ref.getMaster();
-                    NonEDT.invokeAndWait(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            try {
-                                maxCoverage = master.Mapping().getMaxCoverage(sessionUUID);
-                            } catch (MGXException ex) {
-                                Exceptions.printStackTrace(ex);
-                            }
-                        }
-                    });
-                    //maxCoverage = master.Mapping().getMaxCoverage(sessionUUID);
+                    maxCoverage = master.Mapping().getMaxCoverage(sessionUUID);
                 }
             }
         }
