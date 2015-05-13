@@ -44,7 +44,6 @@ public class SeqRunNode extends MGXNodeBase<SeqRunI> {
 
     //
     //public static final DataFlavor DATA_FLAVOR = new DataFlavor(SeqRunNode.class, "SeqRunNode");
-
     public SeqRunNode(SeqRunI s, Children children) {
         super(s.getMaster(), children, Lookups.fixed(s.getMaster(), s), s);
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/SeqRun.png");
@@ -83,20 +82,16 @@ public class SeqRunNode extends MGXNodeBase<SeqRunI> {
         public void actionPerformed(final ActionEvent e) {
             final MGXMasterI m = getLookup().lookup(MGXMasterI.class);
             final List<MGXReferenceI> references = new ArrayList<>();
-            NonEDT.invokeAndWait(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        Iterator<MGXReferenceI> refiter = m.Reference().fetchall();
-                        while (refiter.hasNext()) {
-                            references.add(refiter.next());
-                        }
-                        Collections.sort(references);
-                    } catch (MGXException ex) {
-                        Exceptions.printStackTrace(ex);
-                    }
+
+            try {
+                Iterator<MGXReferenceI> refiter = m.Reference().fetchall();
+                while (refiter.hasNext()) {
+                    references.add(refiter.next());
                 }
-            });
+                Collections.sort(references);
+            } catch (MGXException ex) {
+                Exceptions.printStackTrace(ex);
+            }
 
             AnalysisWizardIterator iter = new AnalysisWizardIterator(getMaster(), references);
             WizardDescriptor wiz = new WizardDescriptor(iter);
