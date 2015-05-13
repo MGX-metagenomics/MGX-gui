@@ -13,7 +13,6 @@ import de.cebitec.mgx.api.model.MappingI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.mapping.MappingCtx;
 import de.cebitec.mgx.gui.mapping.viewer.TopComponentViewer;
-import de.cebitec.mgx.gui.swingutils.NonEDT;
 import de.cebitec.mgx.gui.wizard.mapping.MappingWizardWizardAction;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
@@ -40,19 +39,13 @@ public class OpenMappingBySeqRun extends OpenMappingBase {
         if (run == null) {
             return;
         }
-        NonEDT.invokeAndWait(new Runnable() {
 
-            @Override
-            public void run() {
-                try {
-                    mappings = run.getMaster().Mapping().BySeqRun(run);
-                } catch (MGXException ex) {
-                    Exceptions.printStackTrace(ex);
-                }
-                hasData = mappings.hasNext();
-            }
-        });
-
+        try {
+            mappings = run.getMaster().Mapping().BySeqRun(run);
+        } catch (MGXException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+        hasData = mappings.hasNext();
     }
 
     @Override
@@ -105,8 +98,8 @@ public class OpenMappingBySeqRun extends OpenMappingBase {
                 }
 
                 if (selectedMapping != null) {
-                    TopComponentViewer component = new TopComponentViewer();
-                    component.createView(selectedMapping);
+                    TopComponentViewer component = new TopComponentViewer(selectedMapping);
+                    //component.createView(selectedMapping);
                     component.open();
                 }
                 super.done();

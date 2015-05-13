@@ -12,7 +12,6 @@ import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.api.model.MappingI;
 import de.cebitec.mgx.gui.mapping.MappingCtx;
 import de.cebitec.mgx.gui.mapping.viewer.TopComponentViewer;
-import de.cebitec.mgx.gui.swingutils.NonEDT;
 import de.cebitec.mgx.gui.wizard.mapping.MappingWizardWizardAction;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
@@ -38,19 +37,14 @@ public class OpenMappingByReference extends OpenMappingBase {
         if (ref == null) {
             return;
         }
-        NonEDT.invokeAndWait(new Runnable() {
 
-            @Override
-            public void run() {
-                Iterator<MappingI> mappings = null;
-                try {
-                    mappings = ref.getMaster().Mapping().ByReference(ref);
-                } catch (MGXException ex) {
-                    Exceptions.printStackTrace(ex);
-                }
-                hasData = mappings != null && mappings.hasNext();
-            }
-        });
+        Iterator<MappingI> mappings = null;
+        try {
+            mappings = ref.getMaster().Mapping().ByReference(ref);
+        } catch (MGXException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+        hasData = mappings != null && mappings.hasNext();
     }
 
     @Override
@@ -87,6 +81,7 @@ public class OpenMappingByReference extends OpenMappingBase {
                     ctxs = get();
                 } catch (InterruptedException | ExecutionException ex) {
                     Exceptions.printStackTrace(ex);
+                    return;
                 }
                 MappingCtx selectedMapping = null;
 
@@ -102,8 +97,7 @@ public class OpenMappingByReference extends OpenMappingBase {
                 }
 
                 if (selectedMapping != null) {
-                    TopComponentViewer component = new TopComponentViewer();
-                    component.createView(selectedMapping);
+                    TopComponentViewer component = new TopComponentViewer(selectedMapping);
                     component.open();
                 }
                 super.done();
