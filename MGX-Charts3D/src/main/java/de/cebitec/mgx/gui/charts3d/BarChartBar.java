@@ -1,11 +1,12 @@
 package de.cebitec.mgx.gui.charts3d;
 
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.glu.GLU;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import javax.media.opengl.GL;
-import javax.media.opengl.glu.GLU;
-import org.jzy3d.chart.AWTChart;
+//import javax.media.opengl.GL;
+//import javax.media.opengl.glu.GLU;
 import org.jzy3d.chart.Chart;
 import org.jzy3d.colors.Color;
 import org.jzy3d.maths.BoundingBox3d;
@@ -29,8 +30,8 @@ public class BarChartBar extends HistogramBar {
     private ToggleTextTooltipRenderer tr;
     private final Chart chart;
     private Shape shape;
-    // HACK! -> the view class in API does not expose GLU object!
-    public GLU gluObj;
+//    // HACK! -> the view class in API does not expose GLU object!
+//    public GLU gluObj;
     private final String compUnit;
     private final String feature;
 
