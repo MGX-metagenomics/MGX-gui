@@ -18,6 +18,8 @@ import de.cebitec.mgx.gui.datamodel.misc.Task;
 import de.cebitec.mgx.gui.dtoconversion.ReferenceDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.RegionDTOFactory;
 import de.cebitec.mgx.gui.util.BaseIterator;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.Iterator;
 import java.util.UUID;
@@ -165,18 +167,37 @@ public class ReferenceAccess implements ReferenceAccessI {
 
     @Override
     public UploadBaseI createUploader(File localFile) {
-        final ReferenceUploader ru = dtomaster.Reference().createUploader(localFile);
-        return new UploadBaseI() {
+        ReferenceUploader ru = dtomaster.Reference().createUploader(localFile);
+        return new ServerReferenceUploader(ru);
+    }
 
-            @Override
-            public boolean upload() {
-                return ru.upload();
-            }
+    private class ServerReferenceUploader extends UploadBaseI implements PropertyChangeListener {
 
-            @Override
-            public long getNumElementsSent() {
-                return ru.getProgress();
+        private final ReferenceUploader ru;
+
+        public ServerReferenceUploader(ReferenceUploader ru) {
+            this.ru = ru;
+            ru.addPropertyChangeListener(this);
+        }
+
+        @Override
+        public boolean upload() {
+            boolean ret = ru.upload();
+            if (!ret) {
+                setErrorMessage(ru.getErrorMessage());
             }
-        };
+            return ret;
+        }
+
+        @Override
+        public long getNumElementsSent() {
+            return ru.getProgress();
+        }
+
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+            fireTaskChange(evt.getPropertyName(), ru.getProgress());
+        }
+
     }
 }
