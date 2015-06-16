@@ -26,10 +26,11 @@ public class ProjectRootNode extends AbstractNode implements PropertyChangeListe
     }
 
     public ProjectRootNode(SeqRunI run) {
-        this(run.getMaster(), run, new JobBySeqRunNodeFactory(run.getMaster(), run));
+        this(run.getMaster(), run, new JobBySeqRunNodeFactory(run.getMaster()));
+        //this(run.getMaster(), run, new JobBySeqRunNodeFactory(run.getMaster(), run));
         run.addPropertyChangeListener(this);
     }
-    
+
     private ProjectRootNode(MGXMasterI master, SeqRunI run, JobNodeFactory jnf) {
         super(Children.create(jnf, true), Lookups.fixed(master));
         setDisplayName(master.getProject());
@@ -52,7 +53,7 @@ public class ProjectRootNode extends AbstractNode implements PropertyChangeListe
             }
             fireNodeDestroyed();
         } else {
-            System.err.println("ProjectRootNode got event " + evt.getPropertyName());
+            //System.err.println("ProjectRootNode got event " + evt);
         }
     }
 
