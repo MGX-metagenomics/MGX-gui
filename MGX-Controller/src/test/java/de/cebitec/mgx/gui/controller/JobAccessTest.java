@@ -51,4 +51,15 @@ public class JobAccessTest {
         List<JobI> jobs = master.Job().BySeqRun(run);
         assertEquals(10, jobs.size());
     }
+
+    @Test
+    public void testEquals() throws Exception {
+        System.out.println("testEquals");
+        MGXMasterI master = TestMaster.getRO();
+        JobI j1 = master.Job().fetch(1);
+        JobI j2 = master.Job().fetch(1);
+        JobI j3 = master.Job().fetch(2);
+        assertEquals(j1, j2);
+        assertNotEquals(j1, j3);
+    }
 }
