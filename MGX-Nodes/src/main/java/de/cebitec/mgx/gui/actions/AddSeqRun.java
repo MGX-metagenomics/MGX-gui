@@ -65,10 +65,10 @@ public class AddSeqRun extends AbstractAction {
                     final SeqRunI seqrun = m.SeqRun().create(extract, wd.getSeqRunName(), wd.getSequencingMethod(), wd.getSequencingTechnology(), wd.getSubmittedToINSDC(), wd.getAccession());
                     // create a sequence reader
                     String canonicalPath;
-                    SeqReaderI<DNASequenceI> reader;
+                    SeqReaderI<? extends DNASequenceI> reader;
                     try {
                         canonicalPath = wd.getSequenceFile().getCanonicalPath();
-                        reader = SeqReaderFactory.getReader(canonicalPath);
+                        reader = SeqReaderFactory.<DNASequenceI>getReader(canonicalPath);
                     } catch (IOException | SeqStoreException ex) {
                         m.SeqRun().delete(seqrun);
                         snf.refreshChildren();
