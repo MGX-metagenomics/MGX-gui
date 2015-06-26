@@ -42,7 +42,7 @@ public class SequenceAccess extends AccessBase<SequenceI> implements SequenceAcc
     }
 
     @Override
-    public void sendSequences(SeqRunI seqrun, SeqReaderI<DNASequenceI> reader) throws MGXException {
+    public void sendSequences(SeqRunI seqrun, SeqReaderI<? extends DNASequenceI> reader) throws MGXException {
         try {
             getDTOmaster().Sequence().sendSequences(seqrun.getId(), reader);
         } catch (MGXServerException ex) {
@@ -51,7 +51,7 @@ public class SequenceAccess extends AccessBase<SequenceI> implements SequenceAcc
     }
 
     @Override
-    public UploadBaseI createUploader(SeqRunI seqrun, SeqReaderI<DNASequenceI> reader) {
+    public UploadBaseI createUploader(SeqRunI seqrun, SeqReaderI<? extends DNASequenceI> reader) {
         final SeqUploader su = getDTOmaster().Sequence().createUploader(seqrun.getId(), reader);
         return new ServerSeqRunUploader(seqrun, su);
     }
