@@ -96,15 +96,14 @@ public class JobAccess implements JobAccessI {
         } catch (MGXServerException ex) {
             throw new MGXException(ex);
         }
-        obj.modified();
+        if (ret) {
+            obj.modified();
+        }
         return ret;
     }
 
     @Override
     public JobI create(ToolI tool, SeqRunI seqrun, Collection<JobParameterI> params) throws MGXException {
-
-        assert tool.getId() != Identifiable.INVALID_IDENTIFIER;
-        assert seqrun.getId() != Identifiable.INVALID_IDENTIFIER;
 
         JobI job = new Job(tool.getMaster());
         job.setCreator(tool.getMaster().getLogin());
