@@ -22,7 +22,6 @@ import org.openide.NotifyDescriptor;
 import org.openide.WizardDescriptor;
 import org.openide.nodes.Children;
 import org.openide.util.Exceptions;
-import org.openide.util.Utilities;
 import org.openide.util.lookup.Lookups;
 
 /**
@@ -80,7 +79,7 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtractI> {
         @Override
         public void actionPerformed(ActionEvent e) {
             DNAExtractI extract = getLookup().lookup(DNAExtractI.class);
-            final MGXMasterI m = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
+            final MGXMasterI m = extract.getMaster();
             DNAExtractWizardDescriptor wd = new DNAExtractWizardDescriptor(m, extract);
             Dialog dialog = DialogDisplayer.getDefault().createDialog(wd);
             dialog.setVisible(true);
@@ -128,7 +127,7 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtractI> {
         @Override
         public void actionPerformed(ActionEvent e) {
             final DNAExtractI dna = getLookup().lookup(DNAExtractI.class);
-            final MGXMasterI m = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
+            final MGXMasterI m = dna.getMaster();
 
             NotifyDescriptor d = new NotifyDescriptor("Really delete DNA extract " + dna.getMethod() + "?",
                     "Delete DNA extract",
