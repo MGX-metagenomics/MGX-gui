@@ -4,7 +4,6 @@ import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.gui.swingutils.NonEDT;
 import java.awt.EventQueue;
 import java.beans.PropertyChangeEvent;
-import java.util.logging.Level;
 import org.openide.nodes.ChildFactory;
 import org.openide.nodes.NodeEvent;
 import org.openide.nodes.NodeListener;
