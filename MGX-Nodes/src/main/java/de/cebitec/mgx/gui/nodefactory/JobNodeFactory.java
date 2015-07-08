@@ -52,8 +52,8 @@ public class JobNodeFactory extends MGXNodeFactoryBase<JobI> implements NodeList
                 SeqRunI sr = iter.next();
 
                 try {
-                    for (JobI j : getMaster().Job().BySeqRun(sr)) {
-                        ToolI t = getMaster().Tool().ByJob(j);
+                    for (JobI j : sr.getMaster().Job().BySeqRun(sr)) {
+                        ToolI t = sr.getMaster().Tool().ByJob(j);
                         tmp.add(j);
                     }
                 } catch (MGXException ex) {
