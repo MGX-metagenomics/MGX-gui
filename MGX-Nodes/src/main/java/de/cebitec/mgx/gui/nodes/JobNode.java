@@ -1,10 +1,9 @@
 package de.cebitec.mgx.gui.nodes;
 
+import de.cebitec.mgx.gui.actions.ResubmitAction;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.groups.FileType;
-import de.cebitec.mgx.api.misc.TaskI;
-import de.cebitec.mgx.api.misc.TaskI.State;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.JobParameterI;
 import de.cebitec.mgx.api.model.JobState;
@@ -14,16 +13,11 @@ import static de.cebitec.mgx.api.model.JobState.RUNNING;
 import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.api.model.ToolI;
 import de.cebitec.mgx.gui.controller.RBAC;
-import de.cebitec.mgx.gui.swingutils.NonEDT;
 import de.cebitec.mgx.gui.swingutils.util.FileChooserUtils;
-import de.cebitec.mgx.gui.taskview.MGXTask;
-import de.cebitec.mgx.gui.taskview.TaskManager;
 import java.awt.event.ActionEvent;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -31,6 +25,7 @@ import javax.swing.JTextArea;
 import javax.swing.SwingWorker;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
+import org.openide.filesystems.FileUtil;
 import org.openide.nodes.Children;
 import org.openide.nodes.PropertySupport;
 import org.openide.nodes.Sheet;
@@ -99,15 +94,8 @@ public class JobNode extends MGXNodeBase<JobI> {
 
     @Override
     public Action[] getActions(boolean context) {
-        List<Action> actions = new ArrayList<>(5);
-        actions.add(new DeleteJob());
-        actions.add(new GetError());
-        actions.add(new ResubmitAction());
-        actions.add(new CancelJob());
-        actions.add(new SaveToolXML());
-
-        return actions.toArray(new Action[]{});
-        //return new Action[]{new DeleteJob(), new GetError(), new ResubmitAction()};
+        Action delJob2 = FileUtil.getConfigObject("Actions/Edit/de-cebitec-mgx-gui-actions-DeleteJobNodeAction.instance", Action.class);
+        return new Action[]{delJob2, new GetError(), new ResubmitAction(), new CancelJob(), new SaveToolXML()};
     }
 
     @Override
@@ -177,68 +165,6 @@ public class JobNode extends MGXNodeBase<JobI> {
         setDisplayName(getContent().getTool().getName());
     }
 
-    private class DeleteJob extends AbstractAction {
-
-        public DeleteJob() {
-            putValue(NAME, "Delete");
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            final JobI job = getLookup().lookup(JobI.class);
-            NotifyDescriptor d = new NotifyDescriptor("Really delete job?",
-                    "Delete job",
-                    NotifyDescriptor.YES_NO_OPTION,
-                    NotifyDescriptor.QUESTION_MESSAGE,
-                    null,
-                    null);
-            Object ret = DialogDisplayer.getDefault().notify(d);
-            if (NotifyDescriptor.YES_OPTION.equals(ret)) {
-                final MGXTask deleteTask = new MGXTask("Delete " + job.getTool().getName() + " " + job.getSeqrun().getName()) {
-                    @Override
-                    public boolean process() {
-                        setStatus("Deleting..");
-                        MGXMasterI m = getLookup().lookup(MGXMasterI.class);
-                        TaskI<JobI> task;
-                        try {
-                            task = m.Job().delete(job);
-                        } catch (MGXException ex) {
-                            setStatus(ex.getMessage());
-                            failed();
-                            return false;
-                        }
-                        while (!task.done()) {
-                            setStatus(task.getStatusMessage());
-                            try {
-                                m.<JobI>Task().refresh(task);
-                            } catch (MGXException ex) {
-                                setStatus(ex.getMessage());
-                                failed();
-                                return false;
-                            }
-                            sleep();
-                        }
-                        task.finish();
-                        return task.getState() == State.FINISHED;
-                    }
-                };
-
-                NonEDT.invoke(new Runnable() {
-                    @Override
-                    public void run() {
-                        TaskManager.getInstance().addTask(deleteTask);
-                    }
-                });
-            }
-        }
-
-        @Override
-        public boolean isEnabled() {
-            JobState state = getContent().getStatus();
-            return super.isEnabled() && RBAC.isUser() && !(state.equals(JobState.RUNNING) || state.equals(JobState.IN_DELETION));
-        }
-    }
-
     private class GetError extends AbstractAction {
 
         public GetError() {
@@ -278,63 +204,6 @@ public class JobNode extends MGXNodeBase<JobI> {
         }
     }
 
-    private class ResubmitAction extends AbstractAction {
-
-        public ResubmitAction() {
-            putValue(NAME, "Restart");
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            final JobI job = getLookup().lookup(JobI.class);
-            final MGXMasterI m = getLookup().lookup(MGXMasterI.class);
-
-            final MGXTask restartTask = new MGXTask("Restart " + job.getTool().getName()) {
-                @Override
-                public boolean process() {
-                    setStatus("Restarting job..");
-                    TaskI<JobI> task = null;
-                    try {
-                        task = m.Job().restart(job);
-                    } catch (MGXException ex) {
-                        setStatus(ex.getMessage());
-                        failed();
-                        return false;
-                    }
-                    while (task != null && !task.done()) {
-                        setStatus(task.getStatusMessage());
-                        try {
-                            m.<JobI>Task().refresh(task);
-                        } catch (MGXException ex) {
-                            setStatus(ex.getMessage());
-                            failed();
-                            return false;
-                        }
-                        sleep();
-                    }
-                    if (task != null) {
-                        task.finish();
-                        job.modified();
-                        return task.getState() == TaskI.State.FINISHED;
-                    }
-                    return false;
-                }
-            };
-
-            NonEDT.invoke(new Runnable() {
-                @Override
-                public void run() {
-                    TaskManager.getInstance().addTask(restartTask);
-                }
-            });
-        }
-
-        @Override
-        public boolean isEnabled() {
-            return super.isEnabled() && RBAC.isUser() && getContent().getStatus().equals(JobState.FAILED);
-        }
-    }
-
     private class CancelJob extends AbstractAction {
 
         public CancelJob() {
@@ -344,7 +213,7 @@ public class JobNode extends MGXNodeBase<JobI> {
         @Override
         public void actionPerformed(ActionEvent e) {
             final JobI job = getLookup().lookup(JobI.class);
-            final MGXMasterI m = getLookup().lookup(MGXMasterI.class);
+            final MGXMasterI m = job.getMaster();
 
             SwingWorker<Boolean, Void> sw = new SwingWorker<Boolean, Void>() {
 
@@ -357,7 +226,7 @@ public class JobNode extends MGXNodeBase<JobI> {
             try {
                 sw.get();
             } catch (InterruptedException | ExecutionException ex) {
-                NotifyDescriptor nd = new NotifyDescriptor("Could not cancel job.",
+                NotifyDescriptor nd = new NotifyDescriptor("Could not cancel job: " + ex.getMessage(),
                         "Job cancellation failed", NotifyDescriptor.OK_CANCEL_OPTION,
                         NotifyDescriptor.ERROR_MESSAGE, null, null);
                 DialogDisplayer.getDefault().notifyLater(nd);
@@ -368,7 +237,7 @@ public class JobNode extends MGXNodeBase<JobI> {
         public boolean isEnabled() {
             JobState state = getContent().getStatus();
             return super.isEnabled() && RBAC.isUser()
-                    && !(state.equals(JobState.FINISHED) || state.equals(JobState.FAILED) || state.equals(JobState.IN_DELETION));
+                    && !(state.equals(JobState.FINISHED) || state.equals(JobState.FAILED) || state.equals(JobState.IN_DELETION) || state.equals(JobState.ABORTED));
         }
     }
 
@@ -381,7 +250,7 @@ public class JobNode extends MGXNodeBase<JobI> {
         @Override
         public void actionPerformed(ActionEvent e) {
             final JobI job = getLookup().lookup(JobI.class);
-            final MGXMasterI m = getLookup().lookup(MGXMasterI.class);
+            final MGXMasterI m = job.getMaster();
 
             final String fname = FileChooserUtils.selectNewFilename(new FileType[]{FileType.XML}, job.getTool().getName() + "-" + job.getTool().getVersion());
             if (fname == null || fname.trim().isEmpty()) {
