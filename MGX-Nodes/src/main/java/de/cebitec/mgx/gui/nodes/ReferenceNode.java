@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.nodes;
 
+import de.cebitec.mgx.gui.actions.DeleteReference;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.misc.TaskI;
@@ -56,60 +57,4 @@ public class ReferenceNode extends MGXNodeBase<MGXReferenceI> {
         setShortDescription(getToolTipText(getContent()));
     }
 
-    private class DeleteReference extends AbstractAction {
-
-        public DeleteReference() {
-            putValue(NAME, "Delete");
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            final MGXReferenceI ref = getLookup().lookup(MGXReferenceI.class);
-            NotifyDescriptor d = new NotifyDescriptor("Really delete reference " + ref.getName() + "?",
-                    "Delete reference",
-                    NotifyDescriptor.YES_NO_OPTION,
-                    NotifyDescriptor.QUESTION_MESSAGE,
-                    null,
-                    null);
-            Object ret = DialogDisplayer.getDefault().notify(d);
-            if (NotifyDescriptor.YES_OPTION.equals(ret)) {
-                final MGXTask deleteTask = new MGXTask("Delete " + ref.getName()) {
-                    @Override
-                    public boolean process() {
-                        try {
-                            setStatus("Deleting..");
-                            MGXMasterI m = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
-                            TaskI<MGXReferenceI> task = m.Reference().delete(ref);
-                            while (task != null && !task.done()) {
-                                setStatus(task.getStatusMessage());
-                                m.<MGXReferenceI>Task().refresh(task);
-                                sleep();
-                            }
-                            if (task != null) {
-                                task.finish();
-                            }
-                            return task != null && task.getState() == TaskI.State.FINISHED;
-                        } catch (MGXException ex) {
-                            setStatus(ex.getMessage());
-                            failed();
-                            return false;
-                        }
-                    }
-                };
-
-                NonEDT.invoke(new Runnable() {
-                    @Override
-                    public void run() {
-                        TaskManager.getInstance().addTask(deleteTask);
-                    }
-                });
-
-            }
-        }
-
-        @Override
-        public boolean isEnabled() {
-            return (super.isEnabled() && RBAC.isUser());
-        }
-    }
 }

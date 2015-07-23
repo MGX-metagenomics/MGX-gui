@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.cebitec.mgx.gui.actions;
+package de.cebitec.mgx.gui.nodeactions;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.datatransfer.TransferBaseI;
@@ -12,6 +12,7 @@ import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.DNAExtractI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.controller.RBAC;
+import de.cebitec.mgx.gui.nodefactory.MGXNodeFactoryBase;
 import de.cebitec.mgx.gui.nodefactory.SeqRunNodeFactory;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
@@ -40,16 +41,15 @@ import org.openide.util.Utilities;
  */
 public class AddSeqRun extends AbstractAction {
 
-    private final SeqRunNodeFactory snf;
+    private final MGXNodeFactoryBase parent;
 
-    public AddSeqRun(final SeqRunNodeFactory snf) {
-        this.snf = snf;
+    public AddSeqRun(final MGXNodeFactoryBase snf) {
+        this.parent = snf;
         putValue(NAME, "Add sequencing run");
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        final MGXMasterI m = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
         final SeqRunWizardDescriptor wd = new SeqRunWizardDescriptor();
         Dialog dialog = DialogDisplayer.getDefault().createDialog(wd);
         dialog.setVisible(true);
@@ -57,8 +57,8 @@ public class AddSeqRun extends AbstractAction {
         boolean cancelled = wd.getValue() != WizardDescriptor.FINISH_OPTION;
         if (!cancelled) {
             final DNAExtractI extract = Utilities.actionsGlobalContext().lookup(DNAExtractI.class);
-            //final SeqRunI seqrun = wd.getSeqRun(extract.getMaster());
-            //seqrun.setDNAExtractId(extract.getId());
+            final MGXMasterI m = extract.getMaster();
+            
             SwingWorker<SeqRunI, Exception> sw = new SwingWorker<SeqRunI, Exception>() {
                 @Override
                 protected SeqRunI doInBackground() throws MGXException {
@@ -71,7 +71,7 @@ public class AddSeqRun extends AbstractAction {
                         reader = SeqReaderFactory.<DNASequenceI>getReader(canonicalPath);
                     } catch (IOException | SeqStoreException ex) {
                         m.SeqRun().delete(seqrun);
-                        snf.refreshChildren();
+                        parent.refreshChildren();
                         publish(ex);
                         return null;
                     }
@@ -89,7 +89,7 @@ public class AddSeqRun extends AbstractAction {
                         @Override
                         public void finished() {
                             super.finished();
-                            snf.refreshChildren();
+                            parent.refreshChildren();
                         }
 
                         @Override
@@ -100,7 +100,7 @@ public class AddSeqRun extends AbstractAction {
                             } catch (MGXException ex) {
                                 Exceptions.printStackTrace(ex);
                             }
-                            snf.refreshChildren();
+                            parent.refreshChildren();
                             super.failed();
                         }
 

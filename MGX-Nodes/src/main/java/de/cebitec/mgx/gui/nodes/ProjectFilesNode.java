@@ -1,8 +1,8 @@
 package de.cebitec.mgx.gui.nodes;
 
 import de.cebitec.mgx.api.model.MGXFileI;
-import de.cebitec.mgx.gui.actions.CreateDirectory;
-import de.cebitec.mgx.gui.actions.UploadFile;
+import de.cebitec.mgx.gui.nodeactions.CreateDirectory;
+import de.cebitec.mgx.gui.nodeactions.UploadFile;
 import de.cebitec.mgx.gui.nodefactory.FileNodeFactory;
 import javax.swing.Action;
 import org.openide.nodes.Children;

@@ -17,7 +17,6 @@ import java.util.Collection;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.awt.ActionID;
-import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
 import org.openide.nodes.Node;
 import org.openide.util.HelpCtx;
@@ -33,7 +32,7 @@ import org.openide.util.actions.NodeAction;
         displayName = "#CTL_DeleteJobNodeAction", 
         lazy = false
 )
-@ActionReference(path = "Menu/File", position = 1300)
+//@ActionReference(path = "Menu/File", position = 1300)
 @Messages("CTL_DeleteJobNodeAction=DeleteJobNodeAction")
 public final class DeleteJobNodeAction extends NodeAction {
 
