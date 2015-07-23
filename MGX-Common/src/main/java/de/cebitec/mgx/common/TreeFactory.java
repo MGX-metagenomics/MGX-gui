@@ -2,6 +2,7 @@ package de.cebitec.mgx.common;
 
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.AttributeI;
+import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.Identifiable;
 import de.cebitec.mgx.api.model.tree.NodeI;
 import de.cebitec.mgx.api.model.tree.TreeI;
@@ -253,6 +254,37 @@ public class TreeFactory {
             sum += n.getContent();
         }
         return sum;
+    }
+
+    public static AttributeTypeI[] getLongestPath(TreeI<Long> tree) {
+        /*
+         * actually, this is still wrong. we don't need the longest path, but
+         * the most complete one. the current code will fail when several paths
+         * have equal length, but different content, e.g.
+         * 
+         *  phylum -- subphylum -- order -- foo
+         *  phylum -- order -- suborder -- foo,
+         * 
+         *  yielding equal path lengths but different order. a correct solution
+         *  would need to merge the paths, giving
+         * 
+         *  phylum -- subphylum -- order -- suborder -- foo.
+         */
+        int curDepth = -1;
+        NodeI<Long> deepestNode = null;
+        for (NodeI<Long> node : tree.getNodes()) {
+            if (node.getDepth() > curDepth) {
+                deepestNode = node;
+                curDepth = node.getDepth();
+            }
+        }
+
+        AttributeTypeI[] ret = new AttributeTypeI[curDepth + 1];
+        int i = 0;
+        for (NodeI<Long> n : deepestNode.getPath()) {
+            ret[i++] = n.getAttribute().getAttributeType();
+        }
+        return ret;
     }
 
     private interface ContentCloner<T> {
