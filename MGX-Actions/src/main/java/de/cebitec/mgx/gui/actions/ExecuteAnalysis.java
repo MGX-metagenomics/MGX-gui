@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import static javax.swing.Action.NAME;
 import org.openide.DialogDisplayer;
+import org.openide.NotifyDescriptor;
 import org.openide.WizardDescriptor;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionRegistration;
@@ -101,10 +102,8 @@ public class ExecuteAnalysis extends NodeAction implements LookupListener {
         if (seqruns.isEmpty()) {
             return;
         }
-        
-        // TODO: check if invoked on EDT
 
-        
+        // TODO: check if invoked on EDT
         // fetch required data
         final List<MGXReferenceI> references = new ArrayList<>();
         final List<ToolI> projectTools = new ArrayList<>();
@@ -121,17 +120,17 @@ public class ExecuteAnalysis extends NodeAction implements LookupListener {
                 projectTools.add(pTools.next());
             }
             Collections.sort(projectTools);
-            
+
             Iterator<ToolI> repoTools = master.Tool().listGlobalTools();
             while (repoTools.hasNext()) {
-                projectTools.add(repoTools.next());
+                repositoryTools.add(repoTools.next());
             }
             Collections.sort(repositoryTools);
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);
+            return;
         }
-        
-        
+
         AnalysisWizardIterator iter = new AnalysisWizardIterator(master, references, projectTools, repositoryTools);
         WizardDescriptor wiz = new WizardDescriptor(iter);
         iter.setWizardDescriptor(wiz);
@@ -148,6 +147,8 @@ public class ExecuteAnalysis extends NodeAction implements LookupListener {
 
                 // skip empty seqruns
                 if (seqrun.getNumSequences() == 0) {
+                    NotifyDescriptor d = new NotifyDescriptor.Message("Sequencing run has no sequences, skipping..");
+                    DialogDisplayer.getDefault().notify(d);
                     continue;
                 }
 
