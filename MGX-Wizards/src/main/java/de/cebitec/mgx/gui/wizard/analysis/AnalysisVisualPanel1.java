@@ -23,13 +23,13 @@ import javax.swing.event.ListSelectionListener;
 
 public final class AnalysisVisualPanel1 extends JPanel implements ListSelectionListener, ChangeListener {
 
-    private final MGXMasterI master;
+    //private final MGXMasterI master;
 
     /**
      * Creates new form AnalysisVisualPanel1
      */
-    public AnalysisVisualPanel1(MGXMasterI m) {
-        this.master = m;
+    public AnalysisVisualPanel1(MGXMasterI master) {
+        //this.master = m;
         initComponents();
         newTool = new NewToolPanel(master);
         projectTools = setupTab("Project");
