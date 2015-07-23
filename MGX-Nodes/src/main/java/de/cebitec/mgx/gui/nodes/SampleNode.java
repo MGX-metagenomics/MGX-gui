@@ -80,8 +80,8 @@ public class SampleNode extends MGXNodeBase<SampleI> {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            final MGXMasterI m = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
-            SampleI sample = getLookup().lookup(SampleI.class);
+            SampleI sample = Utilities.actionsGlobalContext().lookup(SampleI.class);
+            final MGXMasterI m = sample.getMaster();
 
             SampleWizardDescriptor swd = new SampleWizardDescriptor(m, sample);
             Dialog dialog = DialogDisplayer.getDefault().createDialog(swd);
@@ -129,8 +129,9 @@ public class SampleNode extends MGXNodeBase<SampleI> {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            final SampleI sample = getLookup().lookup(SampleI.class);
-            final MGXMasterI m = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
+            final SampleI sample = Utilities.actionsGlobalContext().lookup(SampleI.class);
+            final MGXMasterI m = sample.getMaster();
+            
             NotifyDescriptor d = new NotifyDescriptor("Really delete sample " + sample.getMaterial() + "?",
                     "Delete sample",
                     NotifyDescriptor.YES_NO_OPTION,

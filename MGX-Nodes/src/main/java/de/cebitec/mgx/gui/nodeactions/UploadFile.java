@@ -1,4 +1,4 @@
-package de.cebitec.mgx.gui.actions;
+package de.cebitec.mgx.gui.nodeactions;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.datatransfer.TransferBaseI;
@@ -6,7 +6,7 @@ import de.cebitec.mgx.api.access.datatransfer.UploadBaseI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.MGXFileI;
 import de.cebitec.mgx.gui.controller.RBAC;
-import de.cebitec.mgx.gui.nodefactory.FileNodeFactory;
+import de.cebitec.mgx.gui.nodefactory.MGXNodeFactoryBase;
 import de.cebitec.mgx.gui.swingutils.NonEDT;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
@@ -25,11 +25,11 @@ import org.openide.util.Utilities;
  */
 public class UploadFile extends AbstractAction {
 
-    private final FileNodeFactory fnf;
+    private final MGXNodeFactoryBase parent;
 
-    public UploadFile(FileNodeFactory nf) {
+    public UploadFile(MGXNodeFactoryBase nf) {
         putValue(NAME, "Upload file");
-        fnf = nf;
+        parent = nf;
     }
 
     @Override
@@ -74,14 +74,14 @@ public class UploadFile extends AbstractAction {
                 public void finished() {
                     super.finished();
                     uploader.removePropertyChangeListener(this);
-                    fnf.refreshChildren();
+                    parent.refreshChildren();
                 }
 
                 @Override
                 public void failed() {
                     super.failed();
                     uploader.removePropertyChangeListener(this);
-                    fnf.refreshChildren();
+                    parent.refreshChildren();
                 }
 
                 @Override

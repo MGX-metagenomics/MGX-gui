@@ -82,10 +82,6 @@
             <artifactId>MGX-SwingUtils</artifactId>
         </dependency>
         <dependency>
-            <artifactId>MGX-MappingViewer</artifactId>
-            <groupId>de.cebitec.mgx.gui</groupId>
-        </dependency>
-        <dependency>
             <artifactId>MGX-DTO</artifactId>
             <groupId>de.cebitec.mgx</groupId>
         </dependency>
@@ -102,14 +98,6 @@
             <groupId>de.cebitec.mgx</groupId>
         </dependency>
         <dependency>
-            <artifactId>MGX-isequences</artifactId>
-            <groupId>de.cebitec.mgx</groupId>
-        </dependency>
-        <dependency>
-            <artifactId>MGX-seqstorage</artifactId>
-            <groupId>de.cebitec.mgx</groupId>
-        </dependency>
-        <dependency>
             <groupId>de.cebitec.mgx</groupId>
             <artifactId>MGX-API</artifactId>
         </dependency>
@@ -121,6 +109,16 @@
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-filesystems</artifactId>
             <version>RELEASE802</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>MGX-Actions</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.cebitec.mgx</groupId>
+            <artifactId>MGX-isequences</artifactId>
+            <version>1.0</version>
         </dependency>
     </dependencies>
 

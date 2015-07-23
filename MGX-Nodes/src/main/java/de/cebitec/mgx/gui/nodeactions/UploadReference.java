@@ -1,4 +1,4 @@
-package de.cebitec.mgx.gui.actions;
+package de.cebitec.mgx.gui.nodeactions;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.datatransfer.TransferBaseI;
@@ -6,7 +6,7 @@ import de.cebitec.mgx.api.access.datatransfer.UploadBaseI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.groups.FileType;
 import de.cebitec.mgx.gui.controller.RBAC;
-import de.cebitec.mgx.gui.nodefactory.ReferenceNodeFactory;
+import de.cebitec.mgx.gui.nodefactory.MGXNodeFactoryBase;
 import de.cebitec.mgx.gui.swingutils.NonEDT;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
@@ -24,11 +24,11 @@ import org.openide.util.Utilities;
  */
 public class UploadReference extends AbstractAction {
 
-    private final ReferenceNodeFactory fnf;
+    private final MGXNodeFactoryBase parent;
 
-    public UploadReference(ReferenceNodeFactory nf) {
+    public UploadReference(MGXNodeFactoryBase nf) {
         putValue(NAME, "Upload EMBL/GenBank/FASTA reference");
-        fnf = nf;
+        parent = nf;
     }
 
     @Override
@@ -53,13 +53,13 @@ public class UploadReference extends AbstractAction {
                 @Override
                 public void finished() {
                     super.finished();
-                    fnf.refreshChildren();
+                    parent.refreshChildren();
                 }
 
                 @Override
                 public void failed() {
                     super.failed();
-                    fnf.refreshChildren();
+                    parent.refreshChildren();
                 }
 
                 @Override

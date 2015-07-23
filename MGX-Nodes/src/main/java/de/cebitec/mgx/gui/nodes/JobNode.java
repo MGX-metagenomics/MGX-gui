@@ -1,9 +1,9 @@
 package de.cebitec.mgx.gui.nodes;
 
-import de.cebitec.mgx.gui.actions.ResubmitAction;
-import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.gui.actions.GetError;
+import de.cebitec.mgx.gui.actions.CancelJob;
+import de.cebitec.mgx.gui.actions.SaveToolXML;
 import de.cebitec.mgx.api.exception.MGXException;
-import de.cebitec.mgx.api.groups.FileType;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.JobParameterI;
 import de.cebitec.mgx.api.model.JobState;
@@ -12,19 +12,8 @@ import static de.cebitec.mgx.api.model.JobState.FINISHED;
 import static de.cebitec.mgx.api.model.JobState.RUNNING;
 import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.api.model.ToolI;
-import de.cebitec.mgx.gui.controller.RBAC;
-import de.cebitec.mgx.gui.swingutils.util.FileChooserUtils;
-import java.awt.event.ActionEvent;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.lang.reflect.InvocationTargetException;
-import java.util.concurrent.ExecutionException;
-import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.JTextArea;
-import javax.swing.SwingWorker;
-import org.openide.DialogDisplayer;
-import org.openide.NotifyDescriptor;
 import org.openide.filesystems.FileUtil;
 import org.openide.nodes.Children;
 import org.openide.nodes.PropertySupport;
@@ -95,7 +84,8 @@ public class JobNode extends MGXNodeBase<JobI> {
     @Override
     public Action[] getActions(boolean context) {
         Action delJob2 = FileUtil.getConfigObject("Actions/Edit/de-cebitec-mgx-gui-actions-DeleteJobNodeAction.instance", Action.class);
-        return new Action[]{delJob2, new GetError(), new ResubmitAction(), new CancelJob(), new SaveToolXML()};
+        Action restartJob = FileUtil.getConfigObject("Actions/Edit/de-cebitec-mgx-gui-actions-RestartJobAction.instance", Action.class);
+        return new Action[]{delJob2, new GetError(), restartJob, new CancelJob(), new SaveToolXML()};
     }
 
     @Override
@@ -165,121 +155,4 @@ public class JobNode extends MGXNodeBase<JobI> {
         setDisplayName(getContent().getTool().getName());
     }
 
-    private class GetError extends AbstractAction {
-
-        public GetError() {
-            putValue(NAME, "Show error");
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            final JobI job = getLookup().lookup(JobI.class);
-            final MGXMasterI m = getLookup().lookup(MGXMasterI.class);
-
-            SwingWorker<String, Void> sw = new SwingWorker<String, Void>() {
-                @Override
-                protected String doInBackground() throws Exception {
-                    return m.Job().getErrorMessage(job);
-                }
-
-                @Override
-                protected void done() {
-                    NotifyDescriptor nd;
-                    try {
-                        JTextArea area = new JTextArea(get());
-                        nd = new NotifyDescriptor.Message(area);
-                        DialogDisplayer.getDefault().notify(nd);
-                    } catch (InterruptedException | ExecutionException ex) {
-                        Exceptions.printStackTrace(ex);
-                    }
-                    super.done();
-                }
-            };
-            sw.execute();
-        }
-
-        @Override
-        public boolean isEnabled() {
-            return super.isEnabled() && RBAC.isUser() && getContent().getStatus().equals(JobState.FAILED);
-        }
-    }
-
-    private class CancelJob extends AbstractAction {
-
-        public CancelJob() {
-            putValue(NAME, "Cancel");
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            final JobI job = getLookup().lookup(JobI.class);
-            final MGXMasterI m = job.getMaster();
-
-            SwingWorker<Boolean, Void> sw = new SwingWorker<Boolean, Void>() {
-
-                @Override
-                protected Boolean doInBackground() throws Exception {
-                    return m.Job().cancel(job);
-                }
-            };
-            sw.execute();
-            try {
-                sw.get();
-            } catch (InterruptedException | ExecutionException ex) {
-                NotifyDescriptor nd = new NotifyDescriptor("Could not cancel job: " + ex.getMessage(),
-                        "Job cancellation failed", NotifyDescriptor.OK_CANCEL_OPTION,
-                        NotifyDescriptor.ERROR_MESSAGE, null, null);
-                DialogDisplayer.getDefault().notifyLater(nd);
-            }
-        }
-
-        @Override
-        public boolean isEnabled() {
-            JobState state = getContent().getStatus();
-            return super.isEnabled() && RBAC.isUser()
-                    && !(state.equals(JobState.FINISHED) || state.equals(JobState.FAILED) || state.equals(JobState.IN_DELETION) || state.equals(JobState.ABORTED));
-        }
-    }
-
-    private class SaveToolXML extends AbstractAction {
-
-        public SaveToolXML() {
-            putValue(NAME, "Download workflow");
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            final JobI job = getLookup().lookup(JobI.class);
-            final MGXMasterI m = job.getMaster();
-
-            final String fname = FileChooserUtils.selectNewFilename(new FileType[]{FileType.XML}, job.getTool().getName() + "-" + job.getTool().getVersion());
-            if (fname == null || fname.trim().isEmpty()) {
-                return;
-            }
-
-            SwingWorker<String, Void> sw = new SwingWorker<String, Void>() {
-
-                @Override
-                protected String doInBackground() throws Exception {
-                    return m.Tool().getXMLDefinition(job.getTool());
-                }
-
-                @Override
-                protected void done() {
-                    super.done();
-                    try (BufferedWriter bw = new BufferedWriter(new FileWriter(fname))) {
-                        bw.write(get());
-                    } catch (Exception ex) {
-                        NotifyDescriptor nd = new NotifyDescriptor.Message("Error: " + ex.getMessage(), NotifyDescriptor.ERROR_MESSAGE);
-                        DialogDisplayer.getDefault().notify(nd);
-                        return;
-                    }
-                    NotifyDescriptor nd = new NotifyDescriptor.Message("Workflow saved to " + fname, NotifyDescriptor.INFORMATION_MESSAGE);
-                    DialogDisplayer.getDefault().notify(nd);
-                }
-
-            };
-            sw.execute();
-        }
-    }
 }

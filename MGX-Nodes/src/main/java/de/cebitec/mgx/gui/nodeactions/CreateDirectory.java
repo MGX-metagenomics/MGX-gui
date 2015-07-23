@@ -1,10 +1,10 @@
-package de.cebitec.mgx.gui.actions;
+package de.cebitec.mgx.gui.nodeactions;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.MGXFileI;
 import de.cebitec.mgx.gui.controller.RBAC;
-import de.cebitec.mgx.gui.nodefactory.FileNodeFactory;
+import de.cebitec.mgx.gui.nodefactory.MGXNodeFactoryBase;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.util.List;
@@ -22,11 +22,11 @@ import org.openide.util.Utilities;
  */
 public class CreateDirectory extends AbstractAction {
 
-    private final FileNodeFactory fnf;
+    private final MGXNodeFactoryBase parent;
 
-    public CreateDirectory(FileNodeFactory nf) {
+    public CreateDirectory(MGXNodeFactoryBase nf) {
         putValue(NAME, "Create directory");
-        fnf = nf;
+        parent = nf;
     }
 
     @Override
@@ -74,7 +74,7 @@ public class CreateDirectory extends AbstractAction {
                     protected void done() {
                         try {
                             if (get()) {
-                                fnf.refreshChildren();
+                                parent.refreshChildren();
                             }
                         } catch (InterruptedException | ExecutionException ex) {
                             Exceptions.printStackTrace(ex);

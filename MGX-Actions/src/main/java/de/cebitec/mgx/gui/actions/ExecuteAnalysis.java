@@ -101,18 +101,38 @@ public class ExecuteAnalysis extends NodeAction implements LookupListener {
         if (seqruns.isEmpty()) {
             return;
         }
+        
+        // TODO: check if invoked on EDT
 
+        
+        // fetch required data
         final List<MGXReferenceI> references = new ArrayList<>();
+        final List<ToolI> projectTools = new ArrayList<>();
+        final List<ToolI> repositoryTools = new ArrayList<>();
         try {
             Iterator<MGXReferenceI> refiter = master.Reference().fetchall();
             while (refiter.hasNext()) {
                 references.add(refiter.next());
             }
             Collections.sort(references);
+
+            Iterator<ToolI> pTools = master.Tool().fetchall();
+            while (pTools.hasNext()) {
+                projectTools.add(pTools.next());
+            }
+            Collections.sort(projectTools);
+            
+            Iterator<ToolI> repoTools = master.Tool().listGlobalTools();
+            while (repoTools.hasNext()) {
+                projectTools.add(repoTools.next());
+            }
+            Collections.sort(repositoryTools);
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);
         }
-        AnalysisWizardIterator iter = new AnalysisWizardIterator(master, references);
+        
+        
+        AnalysisWizardIterator iter = new AnalysisWizardIterator(master, references, projectTools, repositoryTools);
         WizardDescriptor wiz = new WizardDescriptor(iter);
         iter.setWizardDescriptor(wiz);
         wiz.setTitleFormat(new MessageFormat("{0}"));
@@ -122,7 +142,6 @@ public class ExecuteAnalysis extends NodeAction implements LookupListener {
             ToolType tooltype = (ToolType) wiz.getProperty(AnalysisWizardIterator.PROP_TOOLTYPE);
             @SuppressWarnings(value = "unchecked")
             List<JobParameterI> params = (List<JobParameterI>) wiz.getProperty(AnalysisWizardIterator.PROP_PARAMETERS);
-
 
             for (final SeqRunI seqrun : seqruns) {
                 CountDownLatch toolIsCreated = new CountDownLatch(1);
