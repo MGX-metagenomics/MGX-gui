@@ -3,6 +3,7 @@ package de.cebitec.mgx.gui.wizard.analysis;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.JobParameterI;
 import de.cebitec.mgx.api.model.MGXReferenceI;
+import de.cebitec.mgx.api.model.ToolI;
 import java.awt.Component;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -35,7 +36,6 @@ public final class AnalysisWizardIterator implements WizardDescriptor.Iterator<W
     //     };
     // }
     //private int index;
-    private final MGXMasterI master;
     private WizardDescriptor wd = null;
     private int numPanels = 2;
     private int idx = 0;
@@ -44,10 +44,9 @@ public final class AnalysisWizardIterator implements WizardDescriptor.Iterator<W
     private final AnalysisWizardPanel2 p2;
     private final AnalysisWizardPanel3 p3;
 
-    public AnalysisWizardIterator(MGXMasterI master, List<MGXReferenceI> references) {
-        this.master = master;
-        p1 = new AnalysisWizardPanel1();
-        p2 = new AnalysisWizardPanel2(references);
+    public AnalysisWizardIterator(MGXMasterI master, List<MGXReferenceI> references, List<ToolI> projectTools, List<ToolI> repoTools) {
+        p1 = new AnalysisWizardPanel1(master, projectTools, repoTools);
+        p2 = new AnalysisWizardPanel2(master, references);
         p3 = new AnalysisWizardPanel3(references);
     }
 
@@ -60,10 +59,10 @@ public final class AnalysisWizardIterator implements WizardDescriptor.Iterator<W
     @SuppressWarnings("unchecked")
     private void createPanels() {
 
-        p1.setMaster(master);
+        //p1.setMaster(master);
         p1.setWizardDescriptor(wd);
         //
-        p2.setMaster(master);
+        //p2.setMaster(master);
         //
         WizardDescriptor.Panel<WizardDescriptor>[] panels;
         panels = new WizardDescriptor.Panel[]{p1, p2, p3};

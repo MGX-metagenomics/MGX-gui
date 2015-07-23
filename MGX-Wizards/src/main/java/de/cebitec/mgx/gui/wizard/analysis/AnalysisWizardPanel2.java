@@ -38,8 +38,8 @@ public class AnalysisWizardPanel2 implements WizardDescriptor.Panel<WizardDescri
      * The visual component that displays this panel. If you need to access the
      * component from this class, just use getComponent().
      */
-    private AnalysisVisualPanel2 component;
-    private MGXMasterI master = null;
+    private final AnalysisVisualPanel2 component;
+    private final MGXMasterI master;
     private JobParameterI parameter = null;
     private WizardDescriptor model = null;
     private boolean isValid = false;
@@ -50,20 +50,15 @@ public class AnalysisWizardPanel2 implements WizardDescriptor.Panel<WizardDescri
     //
     private final List<MGXReferenceI> references;
 
-    public AnalysisWizardPanel2(List<MGXReferenceI> references) {
+    public AnalysisWizardPanel2(MGXMasterI master, List<MGXReferenceI> references) {
+        this.master = master;
         this.references = references;
+        component = new AnalysisVisualPanel2(references);
     }
 
     @Override
     public AnalysisVisualPanel2 getComponent() {
-        if (component == null) {
-            component = new AnalysisVisualPanel2(references);
-        }
         return component;
-    }
-
-    public void setMaster(MGXMasterI master) {
-        this.master = master;
     }
 
     @Override
@@ -126,11 +121,11 @@ public class AnalysisWizardPanel2 implements WizardDescriptor.Panel<WizardDescri
             nls = model.getNotificationLineSupport();
             nls.clearMessages();
         }
-        if (parameter.isOptional() && (valueHolder.getValue() == null || valueHolder.getValue().toString().isEmpty())) {
+        if (parameter.isOptional() && (valueHolder.getValue() == null || valueHolder.getValue().isEmpty())) {
             return true;
         }
 
-        String input = valueHolder.getValue() == null ? null : valueHolder.getValue().toString();
+        String input = valueHolder.getValue() == null ? null : valueHolder.getValue();
         boolean newValue = validator.validate(input);
 
         if (!newValue && nls != null) {

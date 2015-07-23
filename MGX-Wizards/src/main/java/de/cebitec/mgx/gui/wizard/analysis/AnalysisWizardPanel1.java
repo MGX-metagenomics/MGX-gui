@@ -1,17 +1,14 @@
 package de.cebitec.mgx.gui.wizard.analysis;
 
 import de.cebitec.mgx.api.MGXMasterI;
-import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.misc.ToolType;
 import de.cebitec.mgx.api.model.JobParameterI;
 import de.cebitec.mgx.api.model.ToolI;
 import de.cebitec.mgx.gui.wizard.analysis.workers.ParameterRetriever;
-import de.cebitec.mgx.gui.wizard.analysis.workers.ToolRetriever;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import javax.swing.event.ChangeEvent;
@@ -28,47 +25,27 @@ public class AnalysisWizardPanel1 implements WizardDescriptor.Panel<WizardDescri
      * The visual component that displays this panel. If you need to access the
      * component from this class, just use getComponent().
      */
-    private AnalysisVisualPanel1 component;
+    private final AnalysisVisualPanel1 component;
     private WizardDescriptor model = null;
     private boolean isValid = false;
     private final EventListenerList listeners = new EventListenerList();
     //
-    private List<ToolI> projTools;
-    private List<ToolI> serverTools;
-    private MGXMasterI master = null;
+    private final List<ToolI> projTools;
+    private final List<ToolI> serverTools;
     private ToolI currentTool = null;
     private List<JobParameterI> currentParams = null;
 
-    public void setWizardDescriptor(WizardDescriptor wdesc) {
-        model = wdesc;
+    public AnalysisWizardPanel1(MGXMasterI master, List<ToolI> projectTools, List<ToolI> serverTools) {
+        this.projTools = projectTools;
+        this.serverTools = serverTools;
+        component = new AnalysisVisualPanel1(master);
+        component.addPropertyChangeListener(this);
+        component.setProjectTools(projTools);
+        component.setServerTools(serverTools);
     }
 
-    public void setMaster(MGXMasterI master) {
-        this.master = master;
-        ToolRetriever tr = new ToolRetriever(master) {
-            @Override
-            protected void done() {
-                try {
-                    Pair<Iterator<ToolI>, Iterator<ToolI>> ret = get();
-                    projTools = new ArrayList<>();
-                    Iterator<ToolI> pIter = ret.getSecond();
-                    while (pIter.hasNext()) {
-                        projTools.add(pIter.next());
-                    }
-                    serverTools = new ArrayList<>();
-                    Iterator<ToolI> sIter = ret.getFirst();
-                    while (sIter.hasNext()) {
-                        serverTools.add(sIter.next());
-                    }
-                    getComponent().setProjectTools(projTools);
-                    getComponent().setServerTools(serverTools);
-                } catch (InterruptedException | ExecutionException ex) {
-                    Exceptions.printStackTrace(ex);
-                }
-                super.done();
-            }
-        };
-        tr.execute();
+    public void setWizardDescriptor(WizardDescriptor wdesc) {
+        model = wdesc;
     }
 
     public String getName() {
@@ -77,10 +54,6 @@ public class AnalysisWizardPanel1 implements WizardDescriptor.Panel<WizardDescri
 
     @Override
     public AnalysisVisualPanel1 getComponent() {
-        if (component == null) {
-            component = new AnalysisVisualPanel1(master);
-            component.addPropertyChangeListener(this);
-        }
         return component;
     }
 
@@ -141,7 +114,7 @@ public class AnalysisWizardPanel1 implements WizardDescriptor.Panel<WizardDescri
             currentTool = null;
             currentParams = null;
         }
-        
+
         if (newTool != null && !newTool.equals(currentTool)) {
             currentTool = newTool;
             // fetch parameters
@@ -202,7 +175,7 @@ public class AnalysisWizardPanel1 implements WizardDescriptor.Panel<WizardDescri
                         return null; // tool already present in project
                     }
                 }
-                
+
                 String xmlData = t.getXML();
                 // TODO: validate content
 
@@ -218,7 +191,7 @@ public class AnalysisWizardPanel1 implements WizardDescriptor.Panel<WizardDescri
             return null;
         }
 
-        ParameterRetriever pr = new ParameterRetriever(master, t, getComponent().getToolType());
+        ParameterRetriever pr = new ParameterRetriever(t.getMaster(), t, getComponent().getToolType());
         pr.execute();
         try {
             Collection<JobParameterI> params = pr.get();
