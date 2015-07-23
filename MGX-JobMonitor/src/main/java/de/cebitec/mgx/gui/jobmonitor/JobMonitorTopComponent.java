@@ -9,7 +9,10 @@ import java.awt.Component;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import javax.swing.JPopupMenu;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
@@ -51,7 +54,7 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
     private final Lookup.Result<SeqRunI> resultSeqRun;
     private final Lookup.Result<JobI> resultJobs;
     private MGXMasterI currentMaster = null;
-    private SeqRunI currentSeqRun = null;
+    private Set<SeqRunI> currentSeqRuns = new HashSet<>();
     private transient ExplorerManager explorerManager = new ExplorerManager();
     private final static int MASTER_MODE = 1;
     private final static int SEQRUN_MODE = 2;
@@ -86,9 +89,9 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
 
         update();
     }
-    
+
     private static JobMonitorTopComponent instance = null;
-    
+
     public static JobMonitorTopComponent getDefault() {
         if (instance == null) {
             instance = new JobMonitorTopComponent();
@@ -133,7 +136,7 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
             }
             currentRoot = null;
         }
-            
+
     }
 
     void writeProperties(java.util.Properties p) {
@@ -162,24 +165,43 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
 
         if (runs.size() > 0) {
             currentMode = SEQRUN_MODE;
+            currentMaster = null;
 
-            for (SeqRunI run : runs) {
-                if (currentSeqRun == null || !run.equals(currentSeqRun)) {
-                    currentSeqRun = run;
-                    currentMaster = null;
+            // remove all runs that are no longer on lookup
+            Collection<SeqRunI> toRemove = new ArrayList<>();
+            for (SeqRunI run : currentSeqRuns) {
+                if (!runs.contains(run)) {
+                    run.removePropertyChangeListener(this);
+                    toRemove.add(run);
                     needUpdate = true;
-                    currentSeqRun.addPropertyChangeListener(this);
                 }
             }
+            for (SeqRunI run : toRemove) {
+                currentSeqRuns.remove(run);
+            }
+            
+            // and add all those that are new
+            for (SeqRunI run : runs) {
+                if (!currentSeqRuns.contains(run)) {
+                    needUpdate = true;
+                    run.addPropertyChangeListener(this);
+                    currentSeqRuns.add(run);
+                }
+            }
+
         } else if (m.size() > 0) {
             currentMode = MASTER_MODE;
 
             for (MGXMasterI newMaster : m) {
                 if (currentMaster == null || !newMaster.equals(currentMaster)) {
                     currentMaster = newMaster;
-                    if (currentSeqRun != null) {
-                        currentSeqRun.removePropertyChangeListener(this);
-                        currentSeqRun = null;
+
+                    // clear runs
+                    if (!currentSeqRuns.isEmpty()) {
+                        for (SeqRunI run : currentSeqRuns) {
+                            run.removePropertyChangeListener(this);
+                        }
+                        currentSeqRuns.clear();
                     }
                     needUpdate = true;
                 }
@@ -200,13 +222,13 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
         }
         if (currentMode == MASTER_MODE && currentMaster != null) {
             currentRoot = new ProjectRootNode(currentMaster);
-        } else if (currentMode == SEQRUN_MODE && currentSeqRun != null) {
-            currentRoot = new ProjectRootNode(currentSeqRun);
+        } else if (currentMode == SEQRUN_MODE && !currentSeqRuns.isEmpty()) {
+            currentRoot = new ProjectRootNode(currentSeqRuns);
         }
         if (currentRoot != null) {
             explorerManager.setRootContext(currentRoot);
         }
-        
+
     }
 
     @Override
@@ -217,9 +239,9 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals(ModelBase.OBJECT_DELETED)) {
-            if (currentSeqRun != null) {
-                currentSeqRun.removePropertyChangeListener(this);
-                currentSeqRun = null;
+            if (evt.getSource() instanceof SeqRunI) {
+                SeqRunI run = (SeqRunI) evt.getSource();
+                run.removePropertyChangeListener(this);
             }
         }
         updateJobs();

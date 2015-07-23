@@ -8,6 +8,9 @@ import de.cebitec.mgx.gui.nodefactory.JobNodeFactory;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.util.lookup.Lookups;
@@ -18,37 +21,42 @@ import org.openide.util.lookup.Lookups;
  */
 public class ProjectRootNode extends AbstractNode implements PropertyChangeListener {
 
-    private final SeqRunI run;
+    private final Set<SeqRunI> runs;
     private final JobNodeFactory jnf;
 
     public ProjectRootNode(MGXMasterI master) {
         this(master, null, new JobNodeFactory(master));
     }
 
-    public ProjectRootNode(SeqRunI run) {
-        this(run.getMaster(), run, new JobBySeqRunNodeFactory(run.getMaster()));
-        //this(run.getMaster(), run, new JobBySeqRunNodeFactory(run.getMaster(), run));
-        run.addPropertyChangeListener(this);
+    public ProjectRootNode(Set<SeqRunI> runs) {
+        this(null, runs, new JobBySeqRunNodeFactory(runs));
     }
 
-    private ProjectRootNode(MGXMasterI master, SeqRunI run, JobNodeFactory jnf) {
-        super(Children.create(jnf, true), Lookups.fixed(master));
-        setDisplayName(master.getProject());
+    private ProjectRootNode(MGXMasterI master, Set<SeqRunI> runs, JobNodeFactory jnf) {
+        super(Children.create(jnf, true), Lookups.fixed(master != null ? master : runs));
+        String displayName = master != null ? master.getProject() : null;
+        setDisplayName(displayName);
+        if (runs != null) {
+            for (SeqRunI run : runs) {
+                run.addPropertyChangeListener(this);
+            }
+        }
         this.jnf = jnf;
-        this.run = run;
+        this.runs = runs;
     }
 
     ProjectRootNode(String no_project_selected) {
         super(Children.LEAF);
         setDisplayName(no_project_selected);
-        run = null;
+        runs = null;
         jnf = null;
     }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals(ModelBase.OBJECT_DELETED)) {
-            if (run != null) {
+            if (evt.getSource() instanceof SeqRunI) {
+                SeqRunI run = (SeqRunI) evt.getSource();
                 run.removePropertyChangeListener(this);
             }
             fireNodeDestroyed();
@@ -62,6 +70,11 @@ public class ProjectRootNode extends AbstractNode implements PropertyChangeListe
         super.destroy();
         if (jnf != null) {
             jnf.destroy();
+        }
+        if (runs != null) {
+            for (SeqRunI run : runs) {
+                run.removePropertyChangeListener(this);
+            }
         }
     }
 
