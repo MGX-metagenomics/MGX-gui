@@ -12,6 +12,7 @@ import de.cebitec.mgx.common.visualization.CategoricalViewerI;
 import de.cebitec.mgx.common.visualization.ViewerI;
 import de.cebitec.mgx.gui.charts.basic.util.LogAxis;
 import java.awt.Color;
+import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
 import javax.swing.JComponent;
@@ -25,6 +26,7 @@ import org.jfree.chart.axis.CategoryLabelPositions;
 import org.jfree.chart.axis.LogarithmicAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.TickUnitSource;
+import org.jfree.chart.labels.StandardCategoryToolTipGenerator;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.BarRenderer;
@@ -89,6 +91,7 @@ public class BarChartViewer extends CategoricalViewerI<Long> {
 
         BarRenderer br = (BarRenderer) plot.getRenderer();
         br.setItemMargin(customizer.getItemMargin());
+        br.setBaseToolTipGenerator(new StandardCategoryToolTipGenerator("<html>Group: {0} <br> Attribute: {1} <br> " + yAxisLabel + ": {2}</html>", NumberFormat.getInstance()));
 
         // x axis
         CategoryAxis domainAxis = plot.getDomainAxis();
