@@ -256,7 +256,7 @@ public class TreeFactory {
         return sum;
     }
 
-    public static AttributeTypeI[] getLongestPath(TreeI<Long> tree) {
+    public static <T> AttributeTypeI[] getLongestPath(TreeI<T> tree) {
         /*
          * actually, this is still wrong. we don't need the longest path, but
          * the most complete one. the current code will fail when several paths
@@ -271,8 +271,8 @@ public class TreeFactory {
          *  phylum -- subphylum -- order -- suborder -- foo.
          */
         int curDepth = -1;
-        NodeI<Long> deepestNode = null;
-        for (NodeI<Long> node : tree.getNodes()) {
+        NodeI<T> deepestNode = null;
+        for (NodeI<T> node : tree.getNodes()) {
             if (node.getDepth() > curDepth) {
                 deepestNode = node;
                 curDepth = node.getDepth();
@@ -281,7 +281,7 @@ public class TreeFactory {
 
         AttributeTypeI[] ret = new AttributeTypeI[curDepth + 1];
         int i = 0;
-        for (NodeI<Long> n : deepestNode.getPath()) {
+        for (NodeI<T> n : deepestNode.getPath()) {
             ret[i++] = n.getAttribute().getAttributeType();
         }
         return ret;
