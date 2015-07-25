@@ -24,8 +24,9 @@ public class SortOrder<T extends Number> implements VisFilterI<DistributionI<T>,
 
     public final static int BY_VALUE = 0;
     public final static int BY_TYPE = 1;
-    
+
     public static enum Order {
+
         ASCENDING, DESCENDING;
     }
     public final static Order ASCENDING = Order.ASCENDING;
@@ -98,11 +99,56 @@ public class SortOrder<T extends Number> implements VisFilterI<DistributionI<T>,
                 Map<AttributeI, Double> tmp = (Map<AttributeI, Double>) d;
                 sortedDist = (DistributionI<T>) new NormalizedDistribution(d.getMaster(), tmp, sortList, d.getTotalClassifiedElements());
             }
-            
+
             ret.add(new Pair<>(p.getFirst(), sortedDist));
         }
 
         return ret;
+    }
+
+    @SuppressWarnings("unchecked")
+    public DistributionI<T> filterDist(DistributionI<T> d) {
+        Map<AttributeI, Double> summary = new HashMap<>();
+        for (Entry<AttributeI, T> p : d.entrySet()) {
+            if (summary.containsKey(p.getKey())) {
+                Double old = summary.get(p.getKey());
+                summary.put(p.getKey(), old + p.getValue().doubleValue());
+            } else {
+                summary.put(p.getKey(), p.getValue().doubleValue());
+            }
+        }
+
+        sortList.clear();
+        // sort by selected criteria
+        switch (currentCriteria) {
+            case BY_VALUE:
+                sortList.addAll(summary.keySet());
+                Collections.sort(sortList, new SortByValue(summary));
+                break;
+            case BY_TYPE:
+                sortList.addAll(summary.keySet());
+                Collections.sort(sortList, new SortNumerically());
+                break;
+            default:
+                assert (false);
+                break;
+        }
+
+        assert summary.size() == sortList.size();
+
+        if (order == Order.ASCENDING) {
+            Collections.reverse(sortList);
+        }
+
+        DistributionI<T> sortedDist = null;
+        if (d.getEntryType().equals(Long.class)) {
+            Map<AttributeI, Long> tmp = (Map<AttributeI, Long>) d;
+            sortedDist = (DistributionI<T>) new Distribution(d.getMaster(), tmp, sortList, d.getTotalClassifiedElements());
+        } else if (d.getEntryType().equals(Double.class)) {
+            Map<AttributeI, Double> tmp = (Map<AttributeI, Double>) d;
+            sortedDist = (DistributionI<T>) new NormalizedDistribution(d.getMaster(), tmp, sortList, d.getTotalClassifiedElements());
+        }
+        return sortedDist;
     }
 
     public List<AttributeI> getOrder() {
