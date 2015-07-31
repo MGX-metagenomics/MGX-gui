@@ -10,9 +10,9 @@ import de.cebitec.mgx.api.model.MappedSequenceI;
 public class MappedSequence extends MappedSequenceI {
 
     private final long seq_id;
-    private final int identity; // range 0-100
+    private final float identity; // range 0-100
 
-    public MappedSequence(MGXMasterI m, long seq_id, int start, int stop, int identity) {
+    public MappedSequence(MGXMasterI m, long seq_id, int start, int stop, float identity) {
         super(m, start, stop);
         this.seq_id = seq_id;
         this.identity = identity;
@@ -24,7 +24,7 @@ public class MappedSequence extends MappedSequenceI {
     }
 
     @Override
-    public int getIdentity() {
+    public float getIdentity() {
         return identity;
     }
 
@@ -38,7 +38,7 @@ public class MappedSequence extends MappedSequenceI {
         if (ret != 0) {
             return ret;
         }
-        ret = Integer.compare(getIdentity(), o.getIdentity());
+        ret = Float.compare(getIdentity(), o.getIdentity());
         if (ret != 0) {
             return ret;
         }
@@ -82,7 +82,7 @@ public class MappedSequence extends MappedSequenceI {
         hash = 11 * hash + (int) (this.seq_id ^ (this.seq_id >>> 32));
         hash = 11 * hash + this.getStart();
         hash = 11 * hash + this.getStop();
-        hash = 11 * hash + this.identity;
+        hash = 11 * hash + (int )this.identity;
         return hash;
     }
 

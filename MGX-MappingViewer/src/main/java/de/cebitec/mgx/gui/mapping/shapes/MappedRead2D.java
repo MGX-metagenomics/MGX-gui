@@ -37,7 +37,7 @@ public class MappedRead2D implements Shape, Comparable<MappedRead2D> {
     }
 
     public Color getColor() {
-        return gradient[ms.getIdentity()];
+        return gradient[(int)ms.getIdentity()];
     }
 
     @Override
@@ -104,7 +104,7 @@ public class MappedRead2D implements Shape, Comparable<MappedRead2D> {
 
     @Override
     public int compareTo(MappedRead2D o) {
-        int ret = Integer.compare(ms.getIdentity(), o.ms.getIdentity());
+        int ret = Float.compare(ms.getIdentity(), o.ms.getIdentity());
         if (ret != 0) {
             return ret;
         }
