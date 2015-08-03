@@ -22,6 +22,7 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYErrorRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.data.Range;
 import org.jfree.data.xy.DefaultTableXYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.YIntervalSeries;
@@ -212,7 +213,7 @@ public final class QCTopComponent extends TopComponent implements LookupListener
             errorRenderer.setSeriesShapesVisible(0, false);
             errorRenderer.setSeriesShapesVisible(1, false);            
             plot.setRenderer(1, errorRenderer);
-            plot.getRangeAxis().setRange(errorRenderer.findRangeBounds(qualityDataset));
+            plot.getRangeAxis().setRange(new Range(0, errorRenderer.findRangeBounds(qualityDataset).getUpperBound()));
 
             chart.setBorderPaint(Color.WHITE);
             chart.setBackgroundPaint(Color.WHITE);
