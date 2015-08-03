@@ -18,6 +18,7 @@ import javax.swing.SwingWorker;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.IntervalMarker;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYErrorRenderer;
@@ -201,19 +202,27 @@ public final class QCTopComponent extends TopComponent implements LookupListener
             boolean showLegend = false;
             JFreeChart chart = ChartFactory.createXYLineChart(null, null, null, qualityDataset, PlotOrientation.VERTICAL, showLegend, true, false);
             XYPlot plot = (XYPlot) chart.getPlot();            
+            
+            plot.addRangeMarker(new IntervalMarker(0, 20, Color.RED, new BasicStroke(0.5f), null, null, 0.3f));
+            plot.addRangeMarker(new IntervalMarker(20, 28, Color.YELLOW, new BasicStroke(0.5f), null, null, 0.3f));
+            plot.addRangeMarker(new IntervalMarker(28, 500, Color.GREEN, new BasicStroke(0.5f), null, null, 0.3f));
+            
             XYLineAndShapeRenderer dataRenderer = new XYLineAndShapeRenderer();
-            dataRenderer.setSeriesPaint(0, Color.RED);
+            dataRenderer.setSeriesPaint(0, Color.BLUE);
             dataRenderer.setSeriesShapesVisible(0, false);
+            dataRenderer.setSeriesStroke(0, new BasicStroke(1.0f));
             plot.setRenderer(0, dataRenderer);
             plot.setDataset(1, qualityDataset);
+            
             XYErrorRenderer errorRenderer = new XYErrorRenderer();
             errorRenderer.setDrawXError(false);
             errorRenderer.setErrorPaint(Color.BLACK);
-            errorRenderer.setErrorStroke(new BasicStroke(0.5f));
+            errorRenderer.setErrorStroke(new BasicStroke(1.0f));
             errorRenderer.setSeriesShapesVisible(0, false);
             errorRenderer.setSeriesShapesVisible(1, false);            
             plot.setRenderer(1, errorRenderer);
-            plot.getRangeAxis().setRange(new Range(0, errorRenderer.findRangeBounds(qualityDataset).getUpperBound()));
+            
+            plot.getRangeAxis().setRange(new Range(0, errorRenderer.findRangeBounds(qualityDataset).getUpperBound() + 5));
 
             chart.setBorderPaint(Color.WHITE);
             chart.setBackgroundPaint(Color.WHITE);
