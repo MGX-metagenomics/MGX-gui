@@ -47,40 +47,40 @@ public class ViewControllerTest {
     public void tearDown() {
     }
 
-    @Test
-    public void testCoverage() throws MGXException {
-        System.err.println("testCoverage");
-        MGXMasterI master = TestMaster.getRO();
-        Iterator<MappingI> iter = master.Mapping().fetchall();
-        int cnt = 0;
-        MappingI mapping = null;
-        while (iter.hasNext()) {
-            mapping = iter.next();
-            cnt++;
-        }
-        assertEquals(1, cnt);
-        assertNotNull(mapping);
-        assertEquals(30, mapping.getId());
-        MGXReferenceI ref = master.Reference().fetch(mapping.getReferenceID());
-        JobI job = master.Job().fetch(mapping.getJobID());
-        MappingCtx ctx = new MappingCtx(mapping, ref, job, master.SeqRun().fetch(mapping.getSeqrunID()));
-        ViewController vc = new ViewController(ctx);
-        //
-        //
-        int max = -1;
-        int numPos = 0;
-        IntIterator covIter = vc.getCoverageIterator();
-        while (covIter.hasNext()) {
-            int c = covIter.next();
-            numPos++;
-            if (c > max) {
-                max = c;
-            }
-        }
-        assertEquals(numPos, ref.getLength());
-        long maxCov = vc.getMaxCoverage();
-        assertEquals(maxCov, max);
-    }
+//    @Test
+//    public void testCoverage() throws MGXException {
+//        System.err.println("testCoverage");
+//        MGXMasterI master = TestMaster.getRO();
+//        Iterator<MappingI> iter = master.Mapping().fetchall();
+//        int cnt = 0;
+//        MappingI mapping = null;
+//        while (iter.hasNext()) {
+//            mapping = iter.next();
+//            cnt++;
+//        }
+//        assertEquals(1, cnt);
+//        assertNotNull(mapping);
+//        assertEquals(30, mapping.getId());
+//        MGXReferenceI ref = master.Reference().fetch(mapping.getReferenceID());
+//        JobI job = master.Job().fetch(mapping.getJobID());
+//        MappingCtx ctx = new MappingCtx(mapping, ref, job, master.SeqRun().fetch(mapping.getSeqrunID()));
+//        ViewController vc = new ViewController(ctx);
+//        //
+//        //
+//        int max = -1;
+//        int numPos = 0;
+//        IntIterator covIter = vc.getCoverageIterator();
+//        while (covIter.hasNext()) {
+//            int c = covIter.next();
+//            numPos++;
+//            if (c > max) {
+//                max = c;
+//            }
+//        }
+//        assertEquals(numPos, ref.getLength());
+//        long maxCov = vc.getMaxCoverage();
+//        assertEquals(maxCov, max);
+//    }
 
 //    @Test
 //    public void testCoveragePriv() throws MGXException {

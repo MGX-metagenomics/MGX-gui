@@ -98,7 +98,7 @@ public class TrackFactoryTest {
         ViewController vc = new ViewController(ctx);
 
         vc.setBounds(0, ref.getLength() - 1);
-        SortedSet<MappedSequenceI> mappings = vc.getMappings(0, ref.getLength() - 1);
+        SortedSet<MappedSequenceI> mappings = ctx.getMappings(0, ref.getLength() - 1);
         int numMappings = mappings.size();
 
         List<Track> tracks = new ArrayList<>();
@@ -157,17 +157,5 @@ public class TrackFactoryTest {
         System.err.println(" took " + start + " ms for " + (100 * mappings.size() + " mappings"));
         
         assertEquals(2000, tracks.size());
-//         took 18058 ms for 500000 mappings
-//         took 18209 ms for 500000 mappings
-//         took 17899 ms for 500000 mappings
-        // added check-last
-//         took 197 ms for 2000000 mappings
-//         took 189 ms for 2000000 mappings
-        // remember last track instead retrieving last from list
-//         took 143 ms for 2000000 mappings
-//         took 162 ms for 2000000 mappings
-//         took 156 ms for 2000000 mappings
-        
-        //assertTrue("Slow layout!", start < 1250);
     }
 }

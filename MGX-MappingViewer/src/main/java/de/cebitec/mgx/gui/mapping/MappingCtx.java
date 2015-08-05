@@ -41,7 +41,6 @@ public class MappingCtx implements PropertyChangeListener, AutoCloseable {
     private final PropertyChangeSupport pcs = new ParallelPropertyChangeSupport(this);
 
     public MappingCtx(MappingI m, MGXReferenceI ref, JobI job, SeqRunI run) throws MGXException {
-        assert m.getReferenceID() == ref.getId();
         this.m = m;
         this.ref = ref;
         this.job = job;
