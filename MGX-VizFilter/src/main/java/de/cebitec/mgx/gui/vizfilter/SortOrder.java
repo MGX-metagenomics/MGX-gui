@@ -167,7 +167,7 @@ public class SortOrder<T extends Number> implements VisFilterI<DistributionI<T>,
 
     public final static class SortByValue implements Comparator<AttributeI> {
 
-        Map<AttributeI, Double> base;
+        private final Map<AttributeI, Double> base;
 
         public SortByValue(Map<AttributeI, Double> base) {
             this.base = base;
