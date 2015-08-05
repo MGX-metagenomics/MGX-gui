@@ -413,11 +413,6 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>MGX-JOGL-Wrapper</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
                 <artifactId>MGX-Jzy3D-Wrapper</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -544,7 +539,6 @@
         <!-- 
                 <module>MGX-Charts3D</module> 
                 <module>MGX-Jzy3D-Wrapper</module>
-                <module>MGX-JOGL-Wrapper</module>
         -->
         <module>MGX-Search</module>
         <module>MGX-TableView</module>
