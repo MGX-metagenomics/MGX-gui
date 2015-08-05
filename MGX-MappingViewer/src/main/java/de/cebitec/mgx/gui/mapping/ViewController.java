@@ -30,6 +30,7 @@ public class ViewController implements PropertyChangeListener {
 
     private final MappingCtx ctx;
     private final int[] curBounds;
+    private int intervalLen;
     private int[] previewBounds;
     private final int[] newBounds;
     private final PropertyChangeSupport pcs;
@@ -43,6 +44,7 @@ public class ViewController implements PropertyChangeListener {
         ctx.addPropertyChangeListener(this);
         newBounds = new int[]{0, FastMath.min(15000, ctx.getReference().getLength() - 1)};
         curBounds = new int[]{0, FastMath.min(15000, ctx.getReference().getLength() - 1)};
+        intervalLen = curBounds[1] - curBounds[0] + 1;
         pcs = new ParallelPropertyChangeSupport(this);
     }
 
@@ -53,7 +55,7 @@ public class ViewController implements PropertyChangeListener {
     public SeqRunI getSeqRun() {
         return ctx.getRun();
     }
-    
+
     public ToolI getTool() {
         return ctx.getTool();
     }
@@ -65,35 +67,28 @@ public class ViewController implements PropertyChangeListener {
     public int[] getBounds() {
         return Arrays.copyOf(curBounds, 2);
     }
+    
+    public final int getIntervalLength() {
+        return intervalLen;
+    }
 
     public int[] getPreviewBounds() {
         return Arrays.copyOf(previewBounds, 2);
     }
 
     public void setBounds(int i, int j) {
-//        assert i >= 0;
-//        assert i < ctx.getReference().getLength();
-//        assert j >= 0;
-//        assert j < ctx.getReference().getLength();
-//        assert i < j;
-
         newBounds[0] = FastMath.max(0, i);
         newBounds[1] = FastMath.min(ctx.getReference().getLength(), j);
 
         if (curBounds[0] != newBounds[0] || curBounds[1] != newBounds[1]) {
             curBounds[0] = newBounds[0];
             curBounds[1] = newBounds[1];
+            intervalLen = curBounds[1] - curBounds[0] + 1;
             pcs.firePropertyChange(BOUNDS_CHANGE, 0, 1);
         }
     }
 
     public void setPreviewBounds(int i, int j) {
-//        assert i >= 0;
-//        assert i < ctx.getReference().getLength();
-//        assert j >= 0;
-//        assert j < ctx.getReference().getLength();
-//        assert i < j;
-
         previewBounds[0] = i;
         previewBounds[1] = j;
         pcs.firePropertyChange(PREVIEWBOUNDS_CHANGE, 0, 1);
@@ -108,7 +103,11 @@ public class ViewController implements PropertyChangeListener {
     }
 
     public SortedSet<MappedSequenceI> getMappings(int from, int to) throws MGXException {
-        return ctx.getMappings(from, to);
+        //long now = System.currentTimeMillis();
+        SortedSet<MappedSequenceI> ret = ctx.getMappings(from, to);
+        //now = System.currentTimeMillis() - now;
+        //System.err.println("mappings from " + from + " to " + to + " retrieved in " + now + "ms");
+        return ret;
     }
 
     public void getCoverage(int from, int to, int[] dest) throws MGXException {
@@ -133,6 +132,7 @@ public class ViewController implements PropertyChangeListener {
         if (evt.getPropertyName().equals(ModelBase.OBJECT_DELETED)) {
             curBounds[0] = 0;
             curBounds[1] = 0;
+            intervalLen = -1;
             pcs.firePropertyChange(BOUNDS_CHANGE, 0, 1);
         }
     }

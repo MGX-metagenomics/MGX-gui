@@ -6,6 +6,7 @@
 package de.cebitec.mgx.gui.mapping.panel;
 
 import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.model.MappedSequenceI;
 import de.cebitec.mgx.api.model.RegionI;
 import de.cebitec.mgx.gui.mapping.ViewController;
 import de.cebitec.mgx.gui.mapping.shapes.Arrow;
@@ -14,7 +15,6 @@ import java.awt.Color;
 import java.awt.Composite;
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Shape;
@@ -22,8 +22,12 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.AffineTransform;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
+import java.util.SortedSet;
 import javax.swing.ToolTipManager;
 import org.apache.commons.math3.util.FastMath;
 import org.openide.util.Exceptions;
@@ -42,10 +46,8 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
         -1 * FRAME_VOFFSET * 1,
         -1 * FRAME_VOFFSET * 2,
         -1 * FRAME_VOFFSET * 3};
-    private Set<Arrow> regs = null;
-    //private Set<Area> coverage = null;
+    private final Set<Arrow> regs = new HashSet<>();
     private final static Color lighterGray = new Color(210, 210, 210);
-    private int[] previewBounds = null;
 
     /**
      * Creates new form FeaturePanel
@@ -62,20 +64,14 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
         ToolTipManager.sharedInstance().setDismissDelay(5000);
 
         repaint();
-
-//        doLayout();
-//        updateUI();
-//        invalidate();
-//        this.revalidate();
     }
 
     @Override
     void draw(Graphics2D g2) {
-        //drawCoverage(g2);
+        int midY = getHeight() / 2;
 
         g2.setColor(Color.DARK_GRAY);
         g2.drawLine(0, midY, getWidth(), midY); // midline
-        g2.setFont(new Font(g2.getFont().getFontName(), Font.PLAIN, 10));
         int textHeight = -1 + g2.getFontMetrics(g2.getFont()).getHeight() / 2;
         int textWidth = g2.getFontMetrics(g2.getFont()).stringWidth("+3");
         g2.drawString("-3", 0, midY + frameOffsets[0] + textHeight);
@@ -94,49 +90,57 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
          * add tick marks with genome positions
          */
         int separate = 500;
-        while (intervalLen / separate > 10) {
+        while (vc.getIntervalLength() / separate > 10) {
             separate += 500;
         }
-        for (int i = bounds[0]; i < bounds[1]; i++) {
-            if (i % separate == 0) {
-                double pos = bp2px(i);
-                g2.drawLine((int) pos, midY - 3, (int) pos, midY + 3);
-                String text1 = String.valueOf(i);
-                g2.drawString(text1, (int) pos - textWidth(g2, text1) / 2, midY + 13);
-            }
+        int[] bounds = vc.getBounds();
+        int firstpos = bounds[0];
+        while (firstpos % separate != 0) {
+            firstpos++;
+        }
+        for (int i = firstpos; i < bounds[1]; i += separate) {
+            //if (i % separate == 0) {
+            double pos = bp2px(i);
+            g2.drawLine((int) pos, midY - 3, (int) pos, midY + 3);
+            String text1 = String.valueOf(i);
+            g2.drawString(text1, (int) pos - textWidth(g2, text1) / 2, midY + 13);
+            //}
         }
 
-        if (regs == null) {
+        if (regs.isEmpty()) {
             return;
         }
 
-        /*
-         * create shadow effects
-         */
-        Composite oldComp = g2.getComposite();
-        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.7f));
+        synchronized (regs) {
 
-        g2.setColor(Color.LIGHT_GRAY);
-        for (Arrow r : regs) {
-            Shape shadow = AffineTransform.getTranslateInstance(4, 3).createTransformedShape(r);
-            g2.fill(shadow);
-        }
-        g2.setColor(lighterGray);
-        for (Arrow r : regs) {
-            Shape shadow = AffineTransform.getTranslateInstance(4, 3).createTransformedShape(r);
-            g2.draw(shadow);
-        }
+            /*
+             * create shadow effects
+             */
+            Composite oldComp = g2.getComposite();
+            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.7f));
 
-        g2.setComposite(oldComp);
+            g2.setColor(Color.LIGHT_GRAY);
+            for (Arrow r : regs) {
+                Shape shadow = AffineTransform.getTranslateInstance(4, 3).createTransformedShape(r);
+                g2.fill(shadow);
+            }
+            g2.setColor(lighterGray);
+            for (Arrow r : regs) {
+                Shape shadow = AffineTransform.getTranslateInstance(4, 3).createTransformedShape(r);
+                g2.draw(shadow);
+            }
 
-        // draw arrows (and borders)
-        g2.setColor(Color.GREEN);
-        for (Arrow r : regs) {
-            g2.fill(r);
-        }
-        g2.setColor(Color.DARK_GRAY);
-        for (Arrow r : regs) {
-            g2.draw(r);
+            g2.setComposite(oldComp);
+
+            // draw arrows (and borders)
+            g2.setColor(Color.GREEN);
+            for (Arrow r : regs) {
+                g2.fill(r);
+            }
+            g2.setColor(Color.DARK_GRAY);
+            for (Arrow r : regs) {
+                g2.draw(r);
+            }
         }
     }
 
@@ -154,81 +158,28 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
 //        g2.setComposite(oldcomp);
 //    }
     @Override
-    boolean update() {
-
-        if (midY == 0) {
-            return false;
-        }
-
+    public boolean update() {
         // fetch features
         Set<Arrow> newData = new HashSet<>();
         try {
+            int[] bounds = vc.getBounds();
             for (RegionI r : vc.getRegions(bounds[0], bounds[1])) {
                 newData.add(r2a(r));
             }
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);
         }
-        regs = newData;
+
+        synchronized (regs) {
+            regs.clear();
+            regs.addAll(newData);
+        }
 
         return true;
-
-        // 
-//        Set<Area> ret = new HashSet<>();
-//        int[] cove = new int[bounds[1]-bounds[0]+1];
-//        vc.getCoverage(bounds[0], bounds[1], cove);
-//        assert cove.length == bounds[1] - bounds[0] + 1;
-//        int baseY = midY - 1;
-//        int pos = bounds[0];
-//
-//        GeneralPath gp = null;
-//        double[] gpStart = new double[2];
-//        double[] lastPoint = new double[2];
-//        for (int cov : cove) {
-//            if (cov == 0) {
-//                if (gp != null) {
-//                    gp.lineTo(lastPoint[0], baseY); // down to center line
-//                    gp.lineTo(gpStart[0], gpStart[1]); // close shape
-//                    lastPoint[0] = gpStart[0];
-//                    lastPoint[1] = gpStart[1];
-//                    ret.add(new Area(gp));
-//                    gp = null;
-//                }
-//            } else {
-//                // we have some coverage..
-//                double drawPos = bp2px(pos);
-//                double covScale = (midY * 1d) / (vc.getMaxCoverage() * 1d);
-//                double covPos = midY - (cov * covScale);
-//
-//                if (gp == null) {
-//                    gp = new GeneralPath();
-//                    gpStart[0] = drawPos; // remember positions so we can close the shape later
-//                    gpStart[1] = baseY;
-//                    gp.moveTo(drawPos, baseY);
-//                    lastPoint[0] = drawPos;
-//                    lastPoint[1] = baseY;
-//                } else {
-//                    // add a new point if distance >= 3px
-//                    if (FastMath.abs(lastPoint[0] - drawPos) > 4 || FastMath.abs(lastPoint[1] - covPos) > 4) {
-//                        gp.lineTo(drawPos, covPos);
-//                        lastPoint[0] = drawPos;
-//                        lastPoint[1] = covPos;
-//                    }
-//                }
-//                //ret.add(cov2p(pos, i));
-//            }
-//            pos++;
-//        }
-//        if (gp != null) {
-//            gp.lineTo(lastPoint[0], baseY); // down to center line
-//            gp.lineTo(gpStart[0], gpStart[1]); // close shape
-//            ret.add(new Area(gp));
-//            gp = null;
-//        }
-//        coverage = ret;
     }
 
     private Arrow r2a(final RegionI r) {
+        int midY = getHeight() / 2;
         double pos0 = bp2px(r.getStart() - 1);
         double pos1 = bp2px(r.getStop() - 1);
         if (r.getFrame() < 0) {
@@ -250,7 +201,11 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
                 }
             }
         }
-        return vc.getReference().getName();
+        DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.US);
+        String seqLen = formatter.format(vc.getReference().getLength());
+
+        return "<html><b>" + vc.getReference().getName() + "</b><hr>"
+                + seqLen + " bp</html>";
     }
     private boolean inDrag = false;
     private int dragStart = -1;
@@ -291,6 +246,7 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
             int posInRef = px2bp(e.getX());
             int offset = posInRef - dragStart + 1;
             dragStart = posInRef;
+            int[] bounds = vc.getBounds();
             vc.setBounds(FastMath.max(0, bounds[0] - offset), FastMath.min(vc.getReference().getLength() - 1, bounds[1] - offset));
         }
     }
@@ -334,4 +290,22 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
+    public void process(SortedSet<MappedSequenceI> mapped) {
+        // fetch features
+        Set<Arrow> newData = new HashSet<>();
+        try {
+            int[] bounds = vc.getBounds();
+            for (RegionI r : vc.getRegions(bounds[0], bounds[1])) {
+                newData.add(r2a(r));
+            }
+        } catch (MGXException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+
+        synchronized (regs) {
+            regs.clear();
+            regs.addAll(newData);
+        }
+        repaint();
+    }
 }

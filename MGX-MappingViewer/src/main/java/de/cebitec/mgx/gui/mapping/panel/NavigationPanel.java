@@ -13,8 +13,6 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Composite;
 import java.awt.Dimension;
-import java.awt.EventQueue;
-import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.Stroke;
@@ -50,12 +48,22 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
     private int[] offSet = null;
     private double scaleFactor;
     private final Set<Area> coverage = new HashSet<>();
+    private Shape currentScope = null;
+    private Shape currentPreviewScope = null;
     private long maxCov = -1;
+    private double[] scaledBounds;
+    private double[] scaledPreviewBounds;
+    //
+    private final static float dash1[] = {5.0f};
+    private final BasicStroke dashed = new BasicStroke(1.0f,
+            BasicStroke.CAP_BUTT,
+            BasicStroke.JOIN_MITER,
+            10.0f, dash1, 0.0f);
 
     /**
      * Creates new form NavigationPanel
      */
-    public NavigationPanel(ViewController vc) {
+    public NavigationPanel(final ViewController vc) {
         super(vc, true);
         refLength = vc.getReference().getLength();
         initComponents();
@@ -70,6 +78,7 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
             @Override
             public void componentResized(ComponentEvent e) {
                 super.componentResized(e);
+                update();
                 if (getHeight() > 0) {
                     try {
                         generateCoverage();
@@ -80,18 +89,21 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
             }
 
         });
+        setBorder(javax.swing.BorderFactory.createLineBorder(Color.BLACK));
+
+        //update();
     }
 
     @Override
     void draw(Graphics2D g2) {
+
+        int midY = getHeight() / 2;
 
         drawCoverage(g2);
 
         g2.setColor(Color.DARK_GRAY);
 
         g2.drawLine(0, midY, getWidth(), midY); // midline
-
-        g2.setFont(new Font(g2.getFont().getFontName(), Font.PLAIN, 10));
 
         g2.drawLine(getWidth() / 4, midY - 3, getWidth() / 4, midY + 3);
         String text1 = String.valueOf(refLength / 4);
@@ -105,19 +117,11 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
         String text3 = String.valueOf(3 * refLength / 4);
         g2.drawString(text3, 3 * getWidth() / 4 - textWidth(g2, text3) / 2, midY + 13);
 
-        if (previewBounds != null) {
-            double[] scaledPreview = getScaledValues(previewBounds);
-            float dash1[] = {5.0f};
-            BasicStroke dashed = new BasicStroke(1.0f,
-                    BasicStroke.CAP_BUTT,
-                    BasicStroke.JOIN_MITER,
-                    10.0f, dash1, 0.0f);
-
+        if (currentPreviewScope != null) {
             Stroke oldStroke = g2.getStroke();
             g2.setStroke(dashed);
             g2.setColor(Color.BLACK);
-            Shape curScope = new Rectangle2D.Double(scaledPreview[0], 0, scaledPreview[1] - scaledPreview[0] + 1, getHeight() - 1);
-            g2.draw(curScope);
+            g2.draw(currentPreviewScope);
             g2.setStroke(oldStroke);
         }
 
@@ -125,12 +129,9 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
         AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.4f);
 
         // draw box indicating current scope
-        double[] scaledBounds = getScaledValues(vc.getBounds());
         g2.setComposite(ac);
         g2.setColor(Color.red);
-        Shape curScope = new Rectangle2D.Double(scaledBounds[0], 0, scaledBounds[1] - scaledBounds[0] + 1, getHeight() - 1);
-        g2.fill(curScope);
-        //g2.fillRect(scaledBounds[0], 0, scaledBounds[1] - scaledBounds[0] + 1, getHeight() - 1);
+        g2.fill(currentScope);
         g2.setComposite(oldcomp);
 
     }
@@ -154,6 +155,9 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
     }
 
     private double[] getScaledValues(int[] in) {
+        if (in == null) {
+            return null;
+        }
         double[] ret = new double[in.length];
         int pos = 0;
         for (int i : in) {
@@ -199,7 +203,7 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
 
         int[] oldBounds = vc.getBounds();
         int len = oldBounds[1] - oldBounds[0] + 1;
-        vc.setBounds(posInRef, FastMath.min(posInRef + len, vc.getReference().getLength() - 1));
+        vc.setBounds(posInRef, FastMath.min(posInRef + len, refLength - 1));
     }
 
     private int dragType = 0;  // 1=left, 2=mid, 3=right
@@ -209,7 +213,9 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
         if (e.isConsumed()) {
             return;
         }
-        double[] scaledBounds = getScaledValues(bounds);
+
+        int[] bounds = vc.getBounds();
+        scaledBounds = getScaledValues(bounds);
 
         int x = e.getX();
         int posInRef = px2bp(e.getX());
@@ -244,6 +250,9 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
 
         int posInRef = px2bp(e.getX());
 
+        int[] bounds = vc.getBounds();
+        scaledBounds = getScaledValues(bounds);
+
         switch (dragType) {
             case 1:
                 // update left bound
@@ -255,7 +264,7 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
                 // move interval
                 if (previewBounds != null) {
                     previewBounds[0] = FastMath.max(0, previewBounds[0]);
-                    previewBounds[1] = FastMath.min(vc.getReference().getLength() - 1, previewBounds[1]);
+                    previewBounds[1] = FastMath.min(refLength - 1, previewBounds[1]);
                     vc.setBounds(previewBounds[0], previewBounds[1]);
                 }
                 break;
@@ -280,6 +289,8 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
     public void mouseExited(MouseEvent e) {
         dragType = 0;
         previewBounds = null;
+        scaledPreviewBounds = null;
+        currentPreviewScope = null;
         offSet = null;
         repaint();
     }
@@ -313,6 +324,8 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
                 }
                 break;
         }
+        scaledPreviewBounds = getScaledValues(previewBounds);
+        currentPreviewScope = new Rectangle2D.Double(scaledPreviewBounds[0], 0, scaledPreviewBounds[1] - scaledPreviewBounds[0] + 1, getHeight() - 1);
         repaint();
     }
 
@@ -332,14 +345,14 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
     }
 
     @Override
-    boolean update() {
-
+    public boolean update() {
         scaleFactor = 1d * refLength / getWidth();
-        midY = getHeight() / 2;
-
-//        if (coverage.isEmpty() && ph == null) {
-//            generateCoverage();
-//        }
+        scaledBounds = getScaledValues(vc.getBounds());
+        currentScope = new Rectangle2D.Double(scaledBounds[0], 0, scaledBounds[1] - scaledBounds[0] + 1, getHeight() - 1);
+        if (previewBounds != null) {
+            scaledPreviewBounds = getScaledValues(previewBounds);
+            currentPreviewScope = new Rectangle2D.Double(scaledPreviewBounds[0], 0, scaledPreviewBounds[1] - scaledPreviewBounds[0] + 1, getHeight() - 1);
+        }
         return true;
     }
 
@@ -442,16 +455,6 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
             };
             sw.execute();
         }
-
-//        if (coverage.size() > 0) {
-//            EventQueue.invokeLater(new Runnable() {
-//
-//                @Override
-//                public void run() {
-//                    repaint();
-//                }
-//            });
-//        }
     }
 
     @Override

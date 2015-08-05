@@ -62,14 +62,14 @@ public class MappingPanelTest {
         ViewController vc = new ViewController(ctx);
         
         vc.setBounds(0, ref.getLength()-1);
-        vc.getMappings(0, ref.getLength()-1);
+        //vc.getMappings(0, ref.getLength()-1);
         
-        MappingPanel mp = new MappingPanel(vc);
+        MappingPanel mp = new MappingPanel(vc, null);
         mp.setSize(768, 77);
         
-        for (int i = 0; i < 10; i++) {
-            mp.update();
-        }
+//        for (int i = 0; i < 10; i++) {
+//            mp.update();
+//        }
     }
 
 }

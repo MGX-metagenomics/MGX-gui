@@ -10,17 +10,15 @@ import de.cebitec.mgx.gui.mapping.ViewController;
 import de.cebitec.mgx.gui.mapping.panel.FeaturePanel;
 import de.cebitec.mgx.gui.mapping.panel.MappingPanel;
 import de.cebitec.mgx.gui.mapping.panel.NavigationPanel;
+import de.cebitec.mgx.gui.mapping.panel.RecruitmentIdentityPanel;
+import de.cebitec.mgx.gui.mapping.panel.RecruitmentPanel;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.concurrent.ExecutionException;
-import javax.swing.BoxLayout;
 import javax.swing.JPanel;
-import javax.swing.SwingWorker;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
-import org.openide.util.Exceptions;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
 
@@ -37,8 +35,20 @@ public final class TopComponentViewer extends TopComponent implements PropertyCh
 
     private final MappingCtx ctx;
 
+    enum DisplayMode {
+
+        ALIGNMENT,
+        RECRUITMENT;
+    };
+
+    private DisplayMode currentMode = DisplayMode.ALIGNMENT;
+    private MappingPanel mp;
+    private JPanel bottom;
+    private final ViewController vc;
+
     public TopComponentViewer(MappingCtx ctx) {
         this.ctx = ctx;
+        vc = new ViewController(ctx);
         setName(Bundle.CTL_TopComponentViewer());
         createView();
     }
@@ -48,45 +58,80 @@ public final class TopComponentViewer extends TopComponent implements PropertyCh
         removeAll();
         setLayout(new BorderLayout());
 
-        final ViewController vc = new ViewController(ctx);
-
+        // top panel: navigation and features
         JPanel top = new JPanel(new BorderLayout(), true);
-
         NavigationPanel np = new NavigationPanel(vc);
         top.add(np, BorderLayout.PAGE_START);
-
-        // precache regions
-        SwingWorker<Void, Void> sw = new SwingWorker<Void, Void>() {
-
-            @Override
-            protected Void doInBackground() throws Exception {
-                vc.getRegions(0, vc.getReference().getLength() - 1);
-                return null;
-            }
-
-            @Override
-            protected void done() {
-                super.done();
-                try {
-                    get();
-                } catch (InterruptedException | ExecutionException ex) {
-                    Exceptions.printStackTrace(ex);
-                }
-            }
-            
-            
-        };
-        sw.execute();
-
         FeaturePanel fp = new FeaturePanel(vc);
         top.add(fp, BorderLayout.CENTER);
         top.setPreferredSize(new Dimension(500, 205));
-
         add(top, BorderLayout.PAGE_START);
 
-        MappingPanel mp = new MappingPanel(vc);
+//        // precache regions
+//        SwingWorker<Void, Void> sw = new SwingWorker<Void, Void>() {
+//
+//            @Override
+//            protected Void doInBackground() throws Exception {
+//                vc.getRegions(0, vc.getReference().getLength() - 1);
+//                return null;
+//            }
+//
+//            @Override
+//            protected void done() {
+//                super.done();
+//                try {
+//                    get();
+//                } catch (InterruptedException | ExecutionException ex) {
+//                    Exceptions.printStackTrace(ex);
+//                }
+//            }
+//
+//        };
+//        sw.execute();
+        SwitchMode sm = new SwitchMode(this);
+
+        mp = new MappingPanel(vc, sm);
+        mp.setEnabled(true);
         add(mp, BorderLayout.CENTER);
 
+        // bottom panel for fragment recruitments
+        final RecruitmentIdentityPanel rip = new RecruitmentIdentityPanel(vc, sm);
+        final RecruitmentPanel rp = new RecruitmentPanel(vc, sm);
+
+        bottom = new JPanel(new BorderLayout(), true) {
+
+            @Override
+            public void setEnabled(boolean enable) {
+                super.setEnabled(enable);
+                rip.setEnabled(enable);
+                rp.setEnabled(enable);
+            }
+
+        };
+        bottom.add(rip, BorderLayout.NORTH);
+        bottom.add(rp, BorderLayout.CENTER);
+        bottom.setEnabled(false);
+
+    }
+
+    void switchMode() {
+        switch (currentMode) {
+            case ALIGNMENT:
+                remove(mp);
+                mp.setEnabled(false);
+                bottom.setEnabled(true);
+                add(bottom, BorderLayout.CENTER);
+                currentMode = DisplayMode.RECRUITMENT;
+                break;
+            case RECRUITMENT:
+                remove(bottom);
+                mp.setEnabled(true);
+                bottom.setEnabled(false);
+                add(mp, BorderLayout.CENTER);
+                currentMode = DisplayMode.ALIGNMENT;
+                break;
+        }
+        repaint();
     }
 
     /**

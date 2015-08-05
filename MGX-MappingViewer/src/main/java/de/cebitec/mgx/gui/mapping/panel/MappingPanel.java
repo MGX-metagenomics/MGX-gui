@@ -11,6 +11,7 @@ import de.cebitec.mgx.gui.mapping.ViewController;
 import de.cebitec.mgx.gui.mapping.shapes.MappedRead2D;
 import de.cebitec.mgx.gui.mapping.tracks.Track;
 import de.cebitec.mgx.gui.mapping.tracks.TrackFactory;
+import de.cebitec.mgx.gui.mapping.viewer.SwitchMode;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -45,7 +46,7 @@ public class MappingPanel extends PanelBase implements ChangeListener, Adjustmen
     /**
      * Creates new form MappingPanel
      */
-    public MappingPanel(ViewController vc) {
+    public MappingPanel(ViewController vc, SwitchMode sm) {
         super(vc, false);
         initComponents();
         ToolTipManager.sharedInstance().registerComponent(this);
@@ -62,6 +63,8 @@ public class MappingPanel extends PanelBase implements ChangeListener, Adjustmen
         scrollBar.addAdjustmentListener(this);
 
         mappingName = vc.getSeqRun().getName() + " vs. " + vc.getReference().getName();
+
+        setComponentPopupMenu(sm);
     }
 
     @Override
@@ -75,7 +78,7 @@ public class MappingPanel extends PanelBase implements ChangeListener, Adjustmen
                 }
                 g2.fill(mr2d);
             }
-            if (intervalLen < 8000) {
+            if (vc.getIntervalLength() < 8000) {
                 g2.setColor(Color.BLACK);
                 g2.setStroke(new BasicStroke(0.7f));
                 for (MappedRead2D mr2d : coverage) {
@@ -113,31 +116,27 @@ public class MappingPanel extends PanelBase implements ChangeListener, Adjustmen
     }
 
     @Override
-    synchronized boolean update() {
+    public boolean update() {
+        long now = System.currentTimeMillis();
 
         SortedSet<MappedSequenceI> mappings = null;
         try {
+            int[] bounds = vc.getBounds();
             mappings = vc.getMappings(bounds[0], bounds[1]);
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);
         }
-        if (mappings == null || mappings.isEmpty()) {
-            return true;
-        }
-
-//        long duration = System.currentTimeMillis();
         TrackFactory.createTracks(minIdentity, mappings, tracks);
-//        duration = System.currentTimeMillis() - duration;
 
         final double spaceing = TRACKHEIGHT * 0.1;
         final double mappingHeight = 1d * TRACKHEIGHT * 0.75;
 
         int height = getHeight();
-        int maxVisibleTracks = getHeight() / TRACKHEIGHT;
+        int maxVisibleTracks = height / TRACKHEIGHT;
         if (maxVisibleTracks < tracks.size()) {
             scrollBar.setEnabled(true);
             scrollBar.setMinimum(0);
-            scrollBar.setMaximum(tracks.size() - maxVisibleTracks);
+            scrollBar.setMaximum(tracks.size() - maxVisibleTracks + 5);
             scrollBar.setVisibleAmount(maxVisibleTracks);
         } else {
             scrollBar.setEnabled(false);
@@ -170,6 +169,11 @@ public class MappingPanel extends PanelBase implements ChangeListener, Adjustmen
         synchronized (coverage) {
             coverage.clear();
             coverage.addAll(ret);
+        }
+
+        now = System.currentTimeMillis() - now;
+        if (now > 30) {
+            System.err.println("update() for " + getClass().getSimpleName() + " took " + now + " ms");
         }
         return true;
     }
