@@ -48,8 +48,8 @@
             <groupId>org.netbeans.api</groupId>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>MGX-Prefuse</artifactId>
+            <groupId>de.cebitec.mgx</groupId>
+            <artifactId>Prefuse-OSGi</artifactId>
         </dependency>
         <dependency>
             <artifactId>NewickParser</artifactId>
