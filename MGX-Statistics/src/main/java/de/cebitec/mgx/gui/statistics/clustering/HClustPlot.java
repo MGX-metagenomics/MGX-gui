@@ -22,9 +22,9 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import javax.swing.JComponent;
-import javax.swing.JTextArea;
 import javax.swing.SwingWorker;
-import org.openide.util.Exceptions;
+import org.openide.DialogDisplayer;
+import org.openide.NotifyDescriptor;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -58,7 +58,7 @@ public class HClustPlot extends ViewerI<DistributionI<Long>> {
         SwingWorker<NodeI, Void> worker = new SwingWorker<NodeI, Void>() {
             @Override
             protected NodeI doInBackground() throws Exception {
-                MGXMasterI m =  dists.get(0).getSecond().getMaster();
+                MGXMasterI m = dists.get(0).getSecond().getMaster();
                 List<Pair<VisualizationGroupI, DistributionI<Double>>> filter = new LongToDouble().filter(dists);
                 return m.Statistics().Clustering(filter, customizer.getDistanceMethod(), customizer.getAgglomeration());
             }
@@ -71,11 +71,15 @@ public class HClustPlot extends ViewerI<DistributionI<Long>> {
 
                     ITreeBuilder builder = new DendrogramBuilder(NODE_NAME_KEY, X_COORD, root);
                     display = new DendrogramDisplay(builder);
-
-                    JTextArea area = new JTextArea("Not yet implemented.");
                     wp.setTarget(display);
                 } catch (InterruptedException | ExecutionException ex) {
-                    Exceptions.printStackTrace(ex);
+                    HClustPlot.this.cPanel.setTarget(null);
+                    String message = ex.getMessage();
+                    if (message.contains(":")) {
+                        message = message.substring(message.lastIndexOf(":") + 1);
+                    }
+                    NotifyDescriptor nd = new NotifyDescriptor.Message("Clustering failed: " + message, NotifyDescriptor.ERROR_MESSAGE);
+                    DialogDisplayer.getDefault().notify(nd);
                 }
                 super.done();
             }
