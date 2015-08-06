@@ -24,7 +24,9 @@ public class DelayedPlot extends javax.swing.JPanel {
     public void setTarget(JComponent target) {
         removeAll();
         setLayout(new BorderLayout());
-        add(target, BorderLayout.CENTER);
+        if (target != null) {
+            add(target, BorderLayout.CENTER);
+        }
         revalidate();
     }
 
