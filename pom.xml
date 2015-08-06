@@ -234,12 +234,6 @@
                 <artifactId>jxmapviewer2</artifactId>
                 <version>1.3.1</version>
             </dependency>
-            <dependency>
-                <groupId>org.prefuse</groupId>
-                <artifactId>prefuse</artifactId>
-                <version>beta-20071021</version>
-            </dependency>   
-                  
                   
             <!-- own components -->
             
@@ -407,9 +401,9 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>MGX-Prefuse</artifactId>
-                <version>${project.version}</version>
+                <groupId>de.cebitec.mgx</groupId>
+                <artifactId>Prefuse-OSGi</artifactId>
+                <version>1.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
@@ -532,7 +526,6 @@
         <module>MGX-Controller</module>
         <module>MGX-TaskView</module>
         <module>MGX-AttributeVisualization</module>
-        <module>MGX-Prefuse</module>
         <module>MGX-Treeview</module>
         <module>MGX-BasicCharts</module>
         <module>MGX-jCharts</module>
