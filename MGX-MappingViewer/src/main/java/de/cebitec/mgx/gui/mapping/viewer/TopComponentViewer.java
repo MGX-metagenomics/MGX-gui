@@ -131,7 +131,7 @@ public final class TopComponentViewer extends TopComponent implements PropertyCh
                 currentMode = DisplayMode.ALIGNMENT;
                 break;
         }
-        repaint();
+        revalidate();
     }
 
     /**
