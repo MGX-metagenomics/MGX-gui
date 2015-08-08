@@ -125,15 +125,15 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
             g2.setStroke(oldStroke);
         }
 
-        Composite oldcomp = g2.getComposite();
-        AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.4f);
-
         // draw box indicating current scope
-        g2.setComposite(ac);
-        g2.setColor(Color.red);
-        g2.fill(currentScope);
-        g2.setComposite(oldcomp);
-
+        if (currentScope != null) {
+            Composite oldcomp = g2.getComposite();
+            AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.4f);
+            g2.setComposite(ac);
+            g2.setColor(Color.red);
+            g2.fill(currentScope);
+            g2.setComposite(oldcomp);
+        }
     }
 
     private void drawCoverage(Graphics2D g2) {
