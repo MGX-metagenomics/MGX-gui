@@ -26,20 +26,21 @@ import org.openide.util.Exceptions;
  */
 public class RecruitmentIdentityPanel extends PanelBase {
 
-    private final static int BIN_SIZE = 10_000;
+    private int BIN_SIZE = 10_000;
     //
-    //private final static float LO_BIN_THRESHOLD = 50f;
     private final static float MID_BIN_THRESHOLD = 75f;
-    private final static float HI_BIN_THRESHOLD = 95f;
+    private final static float HI_BIN_THRESHOLD = 97f;
     private final List<ColoredRectangle> rects = new ArrayList<>();
     private final int refLength;
-    private double maxBinCov = -1;
+    private long maxBinCov = -1;
+    private final int topBorderPx = 3;
+    private final int bottomBorderPx = 5;
 
     public RecruitmentIdentityPanel(ViewController vc, SwitchMode sm) {
         super(vc, true);
         setComponentPopupMenu(sm);
-        setPreferredSize(new Dimension(5000, 35));
-        setMaximumSize(new Dimension(5000, 35));
+        setPreferredSize(new Dimension(5000, 50));
+        setMaximumSize(new Dimension(5000, 50));
         setBorder(javax.swing.BorderFactory.createLineBorder(Color.BLACK));
         refLength = vc.getReference().getLength();
     }
@@ -67,7 +68,26 @@ public class RecruitmentIdentityPanel extends PanelBase {
 
     @Override
     public boolean update() {
+        double availHeight = getHeight() - topBorderPx - bottomBorderPx; // 5px border top/bottom
+        if (availHeight <= 0) {
+            synchronized (rects) {
+                rects.clear();
+            }
+            return true;
+        }
+
         int[] bounds = vc.getBounds();
+
+        // adaptive bin size
+        BIN_SIZE = 10_000;
+        int intervalLength = vc.getIntervalLength();
+        while ((intervalLength / BIN_SIZE) < 75) {
+            BIN_SIZE = (int) (0.9f * BIN_SIZE);
+            if (BIN_SIZE == 0) {
+                BIN_SIZE = 1;
+                break;
+            }
+        }
 
         if (maxBinCov == -1) {
             try {
@@ -77,6 +97,7 @@ public class RecruitmentIdentityPanel extends PanelBase {
             }
         }
 
+        // align lower bound to bin boundary
         int lowStart = bounds[0];
         while (lowStart > 0 && lowStart % BIN_SIZE != 0) {
             lowStart--;
@@ -85,21 +106,25 @@ public class RecruitmentIdentityPanel extends PanelBase {
         List<ColoredRectangle> newRects = new ArrayList<>();
 
         SortedSet<MappedSequenceI> mappings = null;
-        double prevEndPx = -1d;
         try {
 
-            double availHeight = getHeight() - 10; // 5px border top/bottom
-            double scale = availHeight / maxBinCov;
+            double scale = availHeight / FastMath.log(maxBinCov);
+            int[] binnedIdentity = new int[]{0, 0, 0};
+
+            double prevEndPosPx = bp2px(lowStart);
 
             for (int bpPos = lowStart; bpPos < bounds[1]; bpPos += BIN_SIZE) {
                 int from = bpPos;
                 int to = bpPos + BIN_SIZE - 1;
-                double fromPx = prevEndPx != -1d ? prevEndPx : bp2px(from);
+                double fromPx = prevEndPosPx;
                 double toPx = bp2px(to);
+                prevEndPosPx = toPx;
 
                 // bin mappings by identity
+                binnedIdentity[0] = 0;
+                binnedIdentity[1] = 0;
+                binnedIdentity[2] = 0;
                 mappings = vc.getMappings(from, FastMath.min(to, refLength - 1));
-                int[] binnedIdentity = new int[]{0, 0, 0};
                 for (MappedSequenceI mSeq : mappings) {
                     if (mSeq.getIdentity() >= HI_BIN_THRESHOLD) {
                         binnedIdentity[2]++;
@@ -112,32 +137,41 @@ public class RecruitmentIdentityPanel extends PanelBase {
 
                 // number of sequences within an interval might exceed maxCoverage; if so,
                 // update maxCov and refetch data
-                if (binnedIdentity[0] + binnedIdentity[1] + binnedIdentity[2] > maxBinCov) {
-                    maxBinCov = binnedIdentity[0] + binnedIdentity[1] + binnedIdentity[2];
+                final long curBinCov = binnedIdentity[0] + binnedIdentity[1] + binnedIdentity[2];
+                if (curBinCov > maxBinCov) {
+                    maxBinCov = curBinCov;
                     return update();
                 }
+                
+                final double width = toPx - fromPx; // + 1;
 
-                final double width = toPx - fromPx + 1;
+                if (curBinCov > 0) {
+                    final double curBinHeight = scale * FastMath.log(curBinCov);
+                    final double curScale = curBinHeight / curBinCov;
 
-                double yPos = getHeight() - 5; // bottom - border
-                double scaledHeight = binnedIdentity[0] * scale;
+                    double yPos = availHeight + topBorderPx;
 
-                yPos -= scaledHeight;
-                ColoredRectangle lo = new ColoredRectangle(Color.RED, fromPx, yPos, width, scaledHeight);
+                    if (binnedIdentity[0] != 0) {
+                        double scaledHeight = curScale * binnedIdentity[0];
+                        yPos -= scaledHeight;
+                        ColoredRectangle lo = new ColoredRectangle(Color.RED, fromPx, yPos, width, scaledHeight);
+                        newRects.add(lo);
+                    }
 
-                scaledHeight = binnedIdentity[1] * scale;
-                yPos -= scaledHeight;
-                ColoredRectangle mid = new ColoredRectangle(Color.YELLOW, fromPx, yPos, width, scaledHeight);
+                    if (binnedIdentity[1] != 0) {
+                        double scaledHeight = curScale * binnedIdentity[1];
+                        yPos -= scaledHeight;
+                        ColoredRectangle mid = new ColoredRectangle(Color.YELLOW, fromPx, yPos, width, scaledHeight);
+                        newRects.add(mid);
+                    }
 
-                scaledHeight = binnedIdentity[2] * scale;
-                yPos -= scaledHeight;
-                ColoredRectangle hi = new ColoredRectangle(Color.GREEN, fromPx, yPos, width, scaledHeight);
-
-                newRects.add(lo);
-                newRects.add(mid);
-                newRects.add(hi);
-
-                prevEndPx = toPx;
+                    if (binnedIdentity[2] != 0) {
+                        double scaledHeight = curScale * binnedIdentity[2];
+                        yPos -= scaledHeight;
+                        ColoredRectangle hi = new ColoredRectangle(Color.GREEN, fromPx, yPos, width, scaledHeight);
+                        newRects.add(hi);
+                    }
+                }
             }
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);
