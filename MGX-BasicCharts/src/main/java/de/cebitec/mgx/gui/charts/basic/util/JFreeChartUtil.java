@@ -168,14 +168,14 @@ public class JFreeChartUtil {
             }
 
             @Override
-            public boolean export(FileType type, String fName) throws Exception {
+            public Result export(FileType type, String fName) throws Exception {
                 switch (type) {
                     case PNG:
                         ChartUtilities.saveChartAsPNG(new File(fName), chart, 1280, 1024);
-                        return true;
+                        return Result.SUCCESS;
                     case JPEG:
                         ChartUtilities.saveChartAsJPEG(new File(fName), chart, 1280, 1024);
-                        return true;
+                        return Result.SUCCESS;
                     case SVG:
                         SVGGraphics2D g2 = new SVGGraphics2D(1280, 1024);
                         chart.draw(g2, new Rectangle(0, 0, 1280, 1024));
@@ -183,9 +183,9 @@ public class JFreeChartUtil {
                         try (BufferedWriter bw = new BufferedWriter(new FileWriter(fName))) {
                             bw.write(svgElement);
                         }
-                        return true;
+                        return Result.SUCCESS;
                     default:
-                        return false;
+                        return Result.ERROR;
                 }
             }
         };

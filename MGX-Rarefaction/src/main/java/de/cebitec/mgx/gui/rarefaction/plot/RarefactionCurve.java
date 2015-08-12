@@ -171,13 +171,9 @@ public class RarefactionCurve extends ViewerI<DistributionI<Long>> {
             }
 
             @Override
-            public boolean export(FileType type, String fName) throws Exception {
-                try {
-                    ChartUtilities.saveChartAsPNG(new File(fName), chart, 1280, 1024);
-                    return true;
-                } catch (IOException ex) {
-                    return false;
-                }
+            public Result export(FileType type, String fName) throws Exception {
+                ChartUtilities.saveChartAsPNG(new File(fName), chart, 1280, 1024);
+                return Result.SUCCESS;
             }
         };
     }
