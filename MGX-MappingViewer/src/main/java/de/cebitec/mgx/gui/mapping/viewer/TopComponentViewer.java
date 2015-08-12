@@ -4,6 +4,8 @@
  */
 package de.cebitec.mgx.gui.mapping.viewer;
 
+import de.cebitec.mgx.api.groups.FileType;
+import de.cebitec.mgx.api.groups.ImageExporterI;
 import de.cebitec.mgx.api.model.ModelBase;
 import de.cebitec.mgx.gui.mapping.MappingCtx;
 import de.cebitec.mgx.gui.mapping.ViewController;
@@ -14,12 +16,27 @@ import de.cebitec.mgx.gui.mapping.panel.RecruitmentIdentityPanel;
 import de.cebitec.mgx.gui.mapping.panel.RecruitmentPanel;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import javax.imageio.ImageIO;
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
+import org.apache.commons.math3.util.FastMath;
+import org.openide.DialogDescriptor;
+import org.openide.DialogDisplayer;
+import org.openide.NotifyDescriptor;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.util.Lookup;
 import org.openide.util.NbBundle.Messages;
+import org.openide.util.lookup.AbstractLookup;
+import org.openide.util.lookup.InstanceContent;
 import org.openide.windows.TopComponent;
 
 @TopComponent.Description(
@@ -34,6 +51,8 @@ import org.openide.windows.TopComponent;
 public final class TopComponentViewer extends TopComponent implements PropertyChangeListener {
 
     private final MappingCtx ctx;
+    private final InstanceContent content = new InstanceContent();
+    private final Lookup lookup;
 
     enum DisplayMode {
 
@@ -43,11 +62,17 @@ public final class TopComponentViewer extends TopComponent implements PropertyCh
 
     private DisplayMode currentMode = DisplayMode.ALIGNMENT;
     private MappingPanel mp;
+    private FeaturePanel fp;
+    private RecruitmentIdentityPanel rip;
+    private RecruitmentPanel rp;
     private JPanel bottom;
     private final ViewController vc;
 
     public TopComponentViewer(MappingCtx ctx) {
         this.ctx = ctx;
+        lookup = new AbstractLookup(content);
+        associateLookup(lookup);
+        content.add(new SaveView());
         vc = new ViewController(ctx);
         setName(Bundle.CTL_TopComponentViewer());
         createView();
@@ -62,7 +87,7 @@ public final class TopComponentViewer extends TopComponent implements PropertyCh
         JPanel top = new JPanel(new BorderLayout(), true);
         NavigationPanel np = new NavigationPanel(vc);
         top.add(np, BorderLayout.PAGE_START);
-        FeaturePanel fp = new FeaturePanel(vc);
+        fp = new FeaturePanel(vc);
         top.add(fp, BorderLayout.CENTER);
         top.setPreferredSize(new Dimension(500, 205));
         add(top, BorderLayout.PAGE_START);
@@ -88,15 +113,14 @@ public final class TopComponentViewer extends TopComponent implements PropertyCh
 //
 //        };
 //        sw.execute();
-
         mp = new MappingPanel(vc, new SwitchToRecruitment(this));
         mp.setEnabled(true);
         add(mp, BorderLayout.CENTER);
 
         // bottom panel for fragment recruitments
         SwitchModeBase sm = new SwitchToAlignment(this);
-        final RecruitmentIdentityPanel rip = new RecruitmentIdentityPanel(vc, sm);
-        final RecruitmentPanel rp = new RecruitmentPanel(vc, sm);
+        rip = new RecruitmentIdentityPanel(vc, sm);
+        rp = new RecruitmentPanel(vc, sm);
 
         bottom = new JPanel(new BorderLayout(), true) {
 
@@ -162,7 +186,8 @@ public final class TopComponentViewer extends TopComponent implements PropertyCh
     }
 
     @Override
-    public void componentClosed() { ctx.close();
+    public void componentClosed() {
+        ctx.close();
         //ctx.removePropertyChangeListener(this);
     }
 
@@ -183,5 +208,94 @@ public final class TopComponentViewer extends TopComponent implements PropertyCh
             //ctx = null;
             removeAll();
         }
+    }
+
+    private class SaveView implements ImageExporterI {
+
+        @Override
+        public FileType[] getSupportedTypes() {
+            return new FileType[]{FileType.PNG, FileType.JPEG};
+        }
+
+        @Override
+        public Result export(FileType type, String fName) throws Exception {
+            JPanel form = new JPanel();
+            form.setLayout(new BorderLayout());
+
+            JCheckBox useFeatures = new JCheckBox("Reference features");
+            useFeatures.setSelected(true);
+            form.add(useFeatures, BorderLayout.PAGE_START);
+
+            JCheckBox useAlignment = new JCheckBox("Alignment");
+            useAlignment.setSelected(true);
+
+            JCheckBox useIdentity = new JCheckBox("Identity bars");
+            useIdentity.setSelected(true);
+
+            JCheckBox useRecruitment = new JCheckBox("Recruitment");
+            useRecruitment.setSelected(true);
+
+            switch (currentMode) {
+                case ALIGNMENT:
+                    form.add(useAlignment, BorderLayout.CENTER);
+                    break;
+                case RECRUITMENT:
+                    form.add(useIdentity, BorderLayout.CENTER);
+                    form.add(useRecruitment, BorderLayout.SOUTH);
+                    break;
+            }
+
+            DialogDescriptor dd = new DialogDescriptor(form, "Select components to include");
+            Object result = DialogDisplayer.getDefault().notify(dd);
+            if (result != NotifyDescriptor.OK_OPTION) {
+                return Result.ABORT;
+            }
+
+            List<JComponent> useComponents = new ArrayList<>();
+            if (useFeatures.isSelected()) {
+                useComponents.add(fp);
+            }
+
+            switch (currentMode) {
+                case ALIGNMENT:
+                    if (useAlignment.isSelected()) {
+                        useComponents.add(mp);
+                    }
+                    break;
+                case RECRUITMENT:
+                    if (useIdentity.isSelected()) {
+                        useComponents.add(rip);
+                    }
+                    if (useRecruitment.isSelected()) {
+                        useComponents.add(rp);
+                    }
+                    break;
+            }
+
+            if (useComponents.isEmpty()) {
+                return Result.ABORT;
+            }
+
+            int width = 0;
+            int height = 0;
+            for (JComponent jc : useComponents) {
+                height += jc.getHeight();
+                width = FastMath.max(width, jc.getWidth());
+            }
+
+            BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+            int curY = 0;
+            for (JComponent jc : useComponents) {
+                BufferedImage subimage = bi.getSubimage(0, curY, jc.getWidth(), jc.getHeight());
+                Graphics2D g2 = subimage.createGraphics();
+                jc.paint(g2);
+                g2.dispose();
+                curY += jc.getHeight();
+            }
+            ImageIO.write(bi, type.getSuffices()[0], new File(fName));
+
+            return Result.SUCCESS;
+        }
+
     }
 }
