@@ -69,13 +69,9 @@ public class KeggViewer extends CategoricalViewerI<Long> {
             }
 
             @Override
-            public boolean export(FileType type, String fName) throws Exception {
-                try {
-                    panel.save(new File(fName));
-                    return true;
-                } catch (IOException ex) {
-                    return false;
-                }
+            public Result export(FileType type, String fName) throws Exception {
+                panel.save(new File(fName));
+                return Result.SUCCESS;
             }
         };
     }
@@ -89,7 +85,7 @@ public class KeggViewer extends CategoricalViewerI<Long> {
     public Class getInputType() {
         return DistributionI.class;
     }
-    
+
     private final static Pattern ecNumber = Pattern.compile("\\d+[.](-|\\d+)[.](-|\\d+)[.](-|\\d+)");
 
     @Override

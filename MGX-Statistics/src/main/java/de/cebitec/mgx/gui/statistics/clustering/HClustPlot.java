@@ -107,14 +107,17 @@ public class HClustPlot extends ViewerI<DistributionI<Long>> {
             }
 
             @Override
-            public boolean export(FileType type, String fName) throws Exception {
+            public Result export(FileType type, String fName) throws Exception {
                 switch (type) {
                     case PNG:
                         try (OutputStream os = new BufferedOutputStream(new FileOutputStream(fName))) {
-                            return display.saveImage(os, type.getSuffices()[0].toUpperCase(), 2);
+                            if (display.saveImage(os, type.getSuffices()[0].toUpperCase(), 2)) {
+                                return Result.SUCCESS;
+                            }
+                            return Result.ERROR;
                         }
                     default:
-                        return false;
+                        return Result.ABORT;
                 }
 
             }
