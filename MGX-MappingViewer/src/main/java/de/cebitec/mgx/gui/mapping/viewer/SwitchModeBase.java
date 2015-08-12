@@ -15,20 +15,20 @@ import javax.swing.JPopupMenu;
  *
  * @author sjaenick
  */
-public class SwitchMode extends JPopupMenu implements ActionListener {
+public abstract class SwitchModeBase extends JPopupMenu implements ActionListener {
 
     private final TopComponentViewer tc;
 
-    public SwitchMode(TopComponentViewer tc) {
+    protected SwitchModeBase(TopComponentViewer tc, String target) {
         super();
         this.tc = tc;
-        JMenuItem item = new JMenuItem("Switch view");
+        JMenuItem item = new JMenuItem("Switch to "+ target);
         item.addActionListener(this);
         add(item);
     }
 
     @Override
-    public void actionPerformed(ActionEvent e) {
+    public final void actionPerformed(ActionEvent e) {
         EventQueue.invokeLater(new Runnable() {
 
             @Override

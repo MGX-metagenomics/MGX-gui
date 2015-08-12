@@ -88,13 +88,13 @@ public final class TopComponentViewer extends TopComponent implements PropertyCh
 //
 //        };
 //        sw.execute();
-        SwitchMode sm = new SwitchMode(this);
 
-        mp = new MappingPanel(vc, sm);
+        mp = new MappingPanel(vc, new SwitchToRecruitment(this));
         mp.setEnabled(true);
         add(mp, BorderLayout.CENTER);
 
         // bottom panel for fragment recruitments
+        SwitchModeBase sm = new SwitchToAlignment(this);
         final RecruitmentIdentityPanel rip = new RecruitmentIdentityPanel(vc, sm);
         final RecruitmentPanel rp = new RecruitmentPanel(vc, sm);
 
@@ -162,7 +162,7 @@ public final class TopComponentViewer extends TopComponent implements PropertyCh
     }
 
     @Override
-    public void componentClosed() {
+    public void componentClosed() { ctx.close();
         //ctx.removePropertyChangeListener(this);
     }
 
