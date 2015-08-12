@@ -172,7 +172,7 @@
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-math3</artifactId>
-                <version>3.4.1</version>
+                <version>3.5</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.servicemix.bundles</groupId>
@@ -200,24 +200,19 @@
                 <version>1.18.2</version>
             </dependency>
             <dependency>
-                <groupId>jcharts</groupId>
-                <artifactId>jcharts</artifactId>
-                <version>0.7.5</version>
-            </dependency>
-            <dependency>
                 <groupId>org.apache.xmlgraphics</groupId>
                 <artifactId>batik-rasterizer</artifactId>
-                <version>1.7</version>
+                <version>1.8</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.xmlgraphics</groupId>
                 <artifactId>batik-svggen</artifactId>
-                <version>1.7</version>
+                <version>1.8</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.xmlgraphics</groupId>
                 <artifactId>batik-swing</artifactId>
-                <version>1.7</version>
+                <version>1.8</version>
             </dependency>
             <dependency>
                 <groupId>com.google.protobuf</groupId>
