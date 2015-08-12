@@ -21,7 +21,7 @@ import java.awt.event.MouseWheelListener;
 import java.awt.image.VolatileImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import javax.swing.JPanel;
+import javax.swing.JComponent;
 import javax.swing.SwingWorker;
 import org.apache.commons.math3.util.FastMath;
 
@@ -29,21 +29,22 @@ import org.apache.commons.math3.util.FastMath;
  *
  * @author sj
  */
-public abstract class PanelBase extends JPanel implements PropertyChangeListener, MouseWheelListener {
+public abstract class PanelBase extends JComponent implements PropertyChangeListener, MouseWheelListener {
 
     protected final ViewController vc;
     private int[] bounds;
     private int maxCoverage = 0;
     private double scale;
     //
-    private static final RenderingHints antiAlias = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-    private final boolean useAntialiasing;
+    protected static final RenderingHints antiAlias = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+    protected final boolean useAntialiasing;
     //
     private final GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
     private final GraphicsConfiguration gc = ge.getDefaultScreenDevice().getDefaultConfiguration();
 
     public PanelBase(final ViewController vc, boolean antiAlias) {
-        super(true);
+        super();
+        //super.setDoubleBuffered(true);
         this.useAntialiasing = antiAlias;
         this.vc = vc;
         bounds = vc.getBounds();
@@ -92,7 +93,7 @@ public abstract class PanelBase extends JPanel implements PropertyChangeListener
         }
     }
 
-    private Font defaultFont = null;
+    protected Font defaultFont = null;
 
     @Override
     public void paint(Graphics g) {
@@ -109,7 +110,12 @@ public abstract class PanelBase extends JPanel implements PropertyChangeListener
                 createVolatileImage(Transparency.OPAQUE);
             }
             Graphics2D g2 = vimage.createGraphics();
-            super.paint(g2);
+            
+            // clear image
+            g2.setColor(getBackground());
+            g2.fillRect(0, 0, vimage.getWidth(),vimage.getHeight());
+            
+            
             if (getHeight() > 0) {
                 if (useAntialiasing) {
                     g2.setRenderingHints(antiAlias);
@@ -120,13 +126,17 @@ public abstract class PanelBase extends JPanel implements PropertyChangeListener
                 g2.setFont(defaultFont);
 
                 draw(g2);
+                
             }
             g2.dispose();
-            
+
         } while (vimage.contentsLost());
 
         // copy image 
         g.drawImage(vimage, 0, 0, this);
+        super.paintBorder(g);
+        super.paintComponent(g);
+        super.paintChildren(g);
         g.dispose();
         now = System.currentTimeMillis() - now;
         if (now > 35) {

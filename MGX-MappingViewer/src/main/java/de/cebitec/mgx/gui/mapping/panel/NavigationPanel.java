@@ -24,6 +24,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.geom.Area;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -48,6 +49,7 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
     private int[] offSet = null;
     private double scaleFactor;
     private final Set<Area> coverage = new HashSet<>();
+    private BufferedImage coverageImage = null;
     private Shape currentScope = null;
     private Shape currentPreviewScope = null;
     private long maxCov = -1;
@@ -85,6 +87,7 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
                     } catch (MGXException ex) {
                         Exceptions.printStackTrace(ex);
                     }
+                    //generateCovImage();
                 }
             }
 
@@ -97,25 +100,11 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
     @Override
     void draw(Graphics2D g2) {
 
-        int midY = getHeight() / 2;
-
-        drawCoverage(g2);
-
-        g2.setColor(Color.DARK_GRAY);
-
-        g2.drawLine(0, midY, getWidth(), midY); // midline
-
-        g2.drawLine(getWidth() / 4, midY - 3, getWidth() / 4, midY + 3);
-        String text1 = String.valueOf(refLength / 4);
-        g2.drawString(text1, getWidth() / 4 - textWidth(g2, text1) / 2, midY + 13);
-
-        g2.drawLine(getWidth() / 2, midY - 3, getWidth() / 2, midY + 3);
-        String text2 = String.valueOf(refLength / 2);
-        g2.drawString(text2, getWidth() / 2 - textWidth(g2, text2) / 2, midY + 13);
-
-        g2.drawLine(3 * getWidth() / 4, midY - 3, 3 * getWidth() / 4, midY + 3);
-        String text3 = String.valueOf(3 * refLength / 4);
-        g2.drawString(text3, 3 * getWidth() / 4 - textWidth(g2, text3) / 2, midY + 13);
+        if (coverageImage != null) {
+            g2.drawImage(coverageImage, 0, 0, this);
+        } else {
+            drawAxis(g2);
+        }
 
         if (currentPreviewScope != null) {
             Stroke oldStroke = g2.getStroke();
@@ -134,24 +123,6 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
             g2.fill(currentScope);
             g2.setComposite(oldcomp);
         }
-    }
-
-    private void drawCoverage(Graphics2D g2) {
-        Composite oldcomp = g2.getComposite();
-        AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f);
-        g2.setComposite(ac);
-        g2.setColor(Color.LIGHT_GRAY);
-
-        synchronized (coverage) {
-            for (Area l : coverage) {
-                g2.fill(l);
-            }
-            g2.setColor(Color.DARK_GRAY);
-            for (Area l : coverage) {
-                g2.draw(l);
-            }
-        }
-        g2.setComposite(oldcomp);
     }
 
     private double[] getScaledValues(int[] in) {
@@ -358,6 +329,56 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
 
     private volatile ProgressHandle ph = null;
 
+    private void generateCovImage() {
+        coverageImage = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2 = coverageImage.createGraphics();
+
+        if (useAntialiasing) {
+            g2.setRenderingHints(antiAlias);
+        }
+
+        Composite oldcomp = g2.getComposite();
+        AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f);
+        g2.setComposite(ac);
+        g2.setColor(Color.LIGHT_GRAY);
+
+        synchronized (coverage) {
+            for (Area l : coverage) {
+                g2.fill(l);
+            }
+            g2.setColor(Color.DARK_GRAY);
+            for (Area l : coverage) {
+                g2.draw(l);
+            }
+        }
+        g2.setComposite(oldcomp);
+        drawAxis(g2);
+    }
+
+    private void drawAxis(Graphics2D g2) {
+        g2.setColor(Color.DARK_GRAY);
+
+        if (defaultFont != null) {
+            g2.setFont(defaultFont);
+        }
+
+        int midY = getHeight() / 2;
+
+        g2.drawLine(0, midY, getWidth(), midY); // midline
+
+        g2.drawLine(getWidth() / 4, midY - 3, getWidth() / 4, midY + 3);
+        String text1 = String.valueOf(refLength / 4);
+        g2.drawString(text1, getWidth() / 4 - textWidth(g2, text1) / 2, midY + 13);
+
+        g2.drawLine(getWidth() / 2, midY - 3, getWidth() / 2, midY + 3);
+        String text2 = String.valueOf(refLength / 2);
+        g2.drawString(text2, getWidth() / 2 - textWidth(g2, text2) / 2, midY + 13);
+
+        g2.drawLine(3 * getWidth() / 4, midY - 3, 3 * getWidth() / 4, midY + 3);
+        String text3 = String.valueOf(3 * refLength / 4);
+        g2.drawString(text3, 3 * getWidth() / 4 - textWidth(g2, text3) / 2, midY + 13);
+    }
+
     private void generateCoverage() throws MGXException {
 
         if (maxCov != -1) {
@@ -447,6 +468,7 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
                         ph.finish();
                     }
                     if (coverage.size() > 0) {
+                        generateCovImage();
                         repaint();
                     }
 

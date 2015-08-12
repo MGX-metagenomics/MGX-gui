@@ -9,7 +9,7 @@ import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.MappedSequenceI;
 import de.cebitec.mgx.gui.mapping.ViewController;
 import de.cebitec.mgx.gui.mapping.shapes.ColoredRectangle;
-import de.cebitec.mgx.gui.mapping.viewer.SwitchMode;
+import de.cebitec.mgx.gui.mapping.viewer.SwitchModeBase;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -36,7 +36,7 @@ public class RecruitmentIdentityPanel extends PanelBase {
     private final int topBorderPx = 3;
     private final int bottomBorderPx = 5;
 
-    public RecruitmentIdentityPanel(ViewController vc, SwitchMode sm) {
+    public RecruitmentIdentityPanel(ViewController vc, SwitchModeBase sm) {
         super(vc, true);
         setComponentPopupMenu(sm);
         setPreferredSize(new Dimension(5000, 50));
@@ -81,7 +81,7 @@ public class RecruitmentIdentityPanel extends PanelBase {
         // adaptive bin size
         BIN_SIZE = 10_000;
         int intervalLength = vc.getIntervalLength();
-        while ((intervalLength / BIN_SIZE) < 75) {
+        while ((intervalLength / BIN_SIZE) < 85) {
             BIN_SIZE = (int) (0.9f * BIN_SIZE);
             if (BIN_SIZE == 0) {
                 BIN_SIZE = 1;
