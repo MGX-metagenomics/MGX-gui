@@ -8,7 +8,7 @@ package de.cebitec.mgx.gui.mapping.panel;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.MappedSequenceI;
 import de.cebitec.mgx.gui.mapping.ViewController;
-import de.cebitec.mgx.gui.mapping.viewer.SwitchMode;
+import de.cebitec.mgx.gui.mapping.viewer.SwitchModeBase;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -38,7 +38,7 @@ public class RecruitmentPanel extends PanelBase {
     /**
      * Creates new form MappingPanel
      */
-    public RecruitmentPanel(ViewController vc, SwitchMode sm) {
+    public RecruitmentPanel(ViewController vc, SwitchModeBase sm) {
         super(vc, false);
         initComponents();
         ToolTipManager.sharedInstance().registerComponent(this);

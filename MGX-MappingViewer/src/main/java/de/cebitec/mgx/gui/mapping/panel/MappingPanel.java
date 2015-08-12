@@ -11,7 +11,7 @@ import de.cebitec.mgx.gui.mapping.ViewController;
 import de.cebitec.mgx.gui.mapping.shapes.MappedRead2D;
 import de.cebitec.mgx.gui.mapping.tracks.Track;
 import de.cebitec.mgx.gui.mapping.tracks.TrackFactory;
-import de.cebitec.mgx.gui.mapping.viewer.SwitchMode;
+import de.cebitec.mgx.gui.mapping.viewer.SwitchModeBase;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -46,7 +46,7 @@ public class MappingPanel extends PanelBase implements ChangeListener, Adjustmen
     /**
      * Creates new form MappingPanel
      */
-    public MappingPanel(ViewController vc, SwitchMode sm) {
+    public MappingPanel(ViewController vc, SwitchModeBase sm) {
         super(vc, false);
         initComponents();
         ToolTipManager.sharedInstance().registerComponent(this);
@@ -125,6 +125,7 @@ public class MappingPanel extends PanelBase implements ChangeListener, Adjustmen
             mappings = vc.getMappings(bounds[0], bounds[1]);
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);
+            return true;
         }
         TrackFactory.createTracks(minIdentity, mappings, tracks);
 
