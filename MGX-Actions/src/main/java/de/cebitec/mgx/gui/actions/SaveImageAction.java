@@ -3,6 +3,7 @@ package de.cebitec.mgx.gui.actions;
 import de.cebitec.mgx.api.groups.ImageExporterI;
 import de.cebitec.mgx.gui.swingutils.util.FileChooserUtils;
 import de.cebitec.mgx.api.groups.FileType;
+import de.cebitec.mgx.api.groups.ImageExporterI.Result;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import org.openide.DialogDisplayer;
@@ -42,7 +43,7 @@ public final class SaveImageAction implements ActionListener {
 
         FileType ft = findType(fname, types);
         if (ft != null) {
-            boolean success = false;
+            Result success;
             try {
                 success = context.export(ft, fname);
             } catch (Exception ex) {
@@ -50,8 +51,11 @@ public final class SaveImageAction implements ActionListener {
                 DialogDisplayer.getDefault().notify(nd);
                 return;
             }
-            if (success) {
+            if (success == Result.SUCCESS) {
                 NotifyDescriptor nd = new NotifyDescriptor.Message("Chart saved to " + fname, NotifyDescriptor.INFORMATION_MESSAGE);
+                DialogDisplayer.getDefault().notify(nd);
+            } else if (success == Result.ERROR) {
+                NotifyDescriptor nd = new NotifyDescriptor.Message("Could not save chart", NotifyDescriptor.ERROR_MESSAGE);
                 DialogDisplayer.getDefault().notify(nd);
             }
         } else {
