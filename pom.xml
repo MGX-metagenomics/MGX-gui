@@ -523,7 +523,6 @@
         <module>MGX-AttributeVisualization</module>
         <module>MGX-Treeview</module>
         <module>MGX-BasicCharts</module>
-        <module>MGX-jCharts</module>
         <!-- 
                 <module>MGX-Charts3D</module> 
                 <module>MGX-Jzy3D-Wrapper</module>
