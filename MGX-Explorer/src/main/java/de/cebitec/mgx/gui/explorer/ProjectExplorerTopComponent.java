@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.explorer;
 
 import de.cebitec.mgx.gui.nodefactory.ServerNodeFactory;
+import de.cebitec.mgx.gui.nodes.ServerNode;
 import de.cebitec.mgx.restgpms.GPMS;
 import java.awt.BorderLayout;
 import java.util.ArrayList;
@@ -58,7 +59,6 @@ public final class ProjectExplorerTopComponent extends TopComponent implements E
 //        setLayout(new BorderLayout());
 //        add(btv, BorderLayout.CENTER);
 //    }
-
     @Override
     public void componentOpened() {
     }
@@ -91,27 +91,23 @@ public final class ProjectExplorerTopComponent extends TopComponent implements E
     }
 
     public void setGPMS(final GPMS gpms) {
-        final AbstractNode root = new AbstractNode(Children.create(new ServerNodeFactory(gpms), true));
+        final AbstractNode root = new AbstractNode(Children.create(new ServerNodeFactory(gpms), false));
         exmngr.setRootContext(root);
-        SwingWorker<List<Node>, Node> sw = new SwingWorker<List<Node>, Node>() {
+        SwingWorker<Void, Node> sw = new SwingWorker<Void, Node>() {
             @Override
-            protected List<Node> doInBackground() throws Exception {
-                List<Node> ret = new ArrayList<>();
+            protected Void doInBackground() throws Exception {
                 for (Node server : root.getChildren().getNodes()) {
-                    ret.add(server);
                     publish(server);
-                    for (Node project : server.getChildren().getNodes()) {
-                        ret.add(project);
-                        publish(project);
-                    }
                 }
-                return ret;
+                return null;
             }
 
             @Override
             protected void process(List<Node> chunks) {
                 for (Node n : chunks) {
-                    btv.expandNode(n);
+                    if (n instanceof ServerNode) {
+                        btv.expandNode(n);
+                    }
                 }
             }
         };
