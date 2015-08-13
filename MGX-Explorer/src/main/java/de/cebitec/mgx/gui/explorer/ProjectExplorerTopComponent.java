@@ -4,7 +4,6 @@ import de.cebitec.mgx.gui.nodefactory.ServerNodeFactory;
 import de.cebitec.mgx.gui.nodes.ServerNode;
 import de.cebitec.mgx.restgpms.GPMS;
 import java.awt.BorderLayout;
-import java.util.ArrayList;
 import java.util.List;
 import javax.swing.SwingWorker;
 import org.netbeans.api.settings.ConvertAsProperties;
