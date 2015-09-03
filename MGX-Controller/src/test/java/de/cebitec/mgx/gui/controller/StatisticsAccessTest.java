@@ -17,7 +17,6 @@ import de.cebitec.mgx.api.visualization.ConflictResolver;
 import de.cebitec.mgx.common.VGroupManager;
 import de.cebitec.mgx.gui.util.TestMaster;
 import de.cebitec.mgx.gui.vizfilter.LongToDouble;
-import de.cebitec.mgx.newick.NodeI;
 import java.util.List;
 import java.util.Set;
 import org.junit.After;
@@ -170,9 +169,9 @@ public class StatisticsAccessTest {
             
             List<Pair<VisualizationGroupI, DistributionI<Double>>> filter = new LongToDouble().filter(dists);
 
-            NodeI root = master.Statistics().Clustering(filter, "euclidean", "ward");
-            assertNotNull(root);
-            assertEquals(2, root.getChildren().size());
+            String newick = master.Statistics().Clustering(filter, "euclidean", "ward");
+            assertNotNull(newick);
+            //assertEquals("(grp1:5.74456264653803,grp2:5.74456264653803);", newick);
         }
 
     }

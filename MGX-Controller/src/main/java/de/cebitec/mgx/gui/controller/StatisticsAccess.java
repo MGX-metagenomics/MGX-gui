@@ -24,9 +24,6 @@ import de.cebitec.mgx.dto.dto.ProfileDTO;
 import de.cebitec.mgx.gui.dtoconversion.PCAResultDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.PointDTOFactory;
 import de.cebitec.mgx.gui.util.BaseIterator;
-import de.cebitec.mgx.newick.NewickParser;
-import de.cebitec.mgx.newick.NodeI;
-import de.cebitec.mgx.newick.ParserException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -69,7 +66,7 @@ public class StatisticsAccess implements StatisticsAccessI {
     
 
     @Override
-    public NodeI Clustering(Collection<Pair<VisualizationGroupI, DistributionI<Double>>> dists, String distanceMethod, String agglomeration) throws MGXException {
+    public String Clustering(Collection<Pair<VisualizationGroupI, DistributionI<Double>>> dists, String distanceMethod, String agglomeration) throws MGXException {
         // map to hold obfuscated group name mapping
         Map<String, String> tmpNames = new HashMap<>();
         MGXMatrixDTO matrix = buildMatrix(dists, tmpNames, false);
@@ -82,11 +79,8 @@ public class StatisticsAccess implements StatisticsAccessI {
             for (Entry<String, String> e : tmpNames.entrySet()) {
                 nwk = nwk.replace(e.getKey(), e.getValue());
             }
-            return NewickParser.parse(nwk);
-        } catch (MGXServerException | MGXClientException | ParserException ex) {
-            if (ex instanceof ParserException) {
-                System.err.println("Parser error for Newick string " + nwk);
-            }
+            return nwk; // NewickParser.parse(nwk);
+        } catch (MGXServerException | MGXClientException ex) {
             throw new MGXException(ex);
         }
     }
