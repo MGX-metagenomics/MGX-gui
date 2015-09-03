@@ -57,6 +57,7 @@ import prefuse.data.tuple.CompositeTupleSet;
 import prefuse.data.tuple.TupleSet;
 import prefuse.render.AbstractShapeRenderer;
 import prefuse.render.DefaultRendererFactory;
+import prefuse.svg.SVGDisplaySaver;
 import prefuse.util.ColorLib;
 import prefuse.util.FontLib;
 import prefuse.util.GraphicsLib;
@@ -379,8 +380,16 @@ public class RadialTree extends HierarchicalViewerI {
             public Result export(FileType type, String fName) throws Exception {
                 switch (type) {
                     case PNG:
+                    case JPEG:
                         try (OutputStream os = new BufferedOutputStream(new FileOutputStream(fName))) {
                             if (display.saveImage(os, type.getSuffices()[0].toUpperCase(), 2)) {
+                                return Result.SUCCESS;
+                            }
+                            return Result.ERROR;
+                        }
+                    case SVG:
+                        try (OutputStream os = new BufferedOutputStream(new FileOutputStream(fName))) {
+                            if (SVGDisplaySaver.saveSVG(display, os, 2)) {
                                 return Result.SUCCESS;
                             }
                             return Result.ERROR;

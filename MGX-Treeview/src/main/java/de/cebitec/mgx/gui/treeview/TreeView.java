@@ -58,6 +58,7 @@ import prefuse.render.DefaultRendererFactory;
 import prefuse.render.EdgeRenderer;
 import prefuse.render.LabelRenderer;
 import prefuse.render.ShapeRenderer;
+import prefuse.svg.SVGDisplaySaver;
 import prefuse.util.ColorLib;
 import prefuse.util.FontLib;
 import prefuse.util.ui.JFastLabel;
@@ -473,15 +474,23 @@ public class TreeView extends HierarchicalViewerI {
 
             @Override
             public FileType[] getSupportedTypes() {
-                return new FileType[]{FileType.PNG, FileType.JPEG};
+                return new FileType[]{FileType.PNG, FileType.JPEG, FileType.SVG};
             }
 
             @Override
             public Result export(FileType type, String fName) throws Exception {
                 switch (type) {
                     case PNG:
+                    case JPEG:
                         try (OutputStream os = new BufferedOutputStream(new FileOutputStream(fName))) {
                             if (display.saveImage(os, type.getSuffices()[0].toUpperCase(), 2)) {
+                                return Result.SUCCESS;
+                            }
+                            return Result.ERROR;
+                        }
+                    case SVG:
+                        try (OutputStream os = new BufferedOutputStream(new FileOutputStream(fName))) {
+                            if (SVGDisplaySaver.saveSVG(display, os, 2)) {
                                 return Result.SUCCESS;
                             }
                             return Result.ERROR;

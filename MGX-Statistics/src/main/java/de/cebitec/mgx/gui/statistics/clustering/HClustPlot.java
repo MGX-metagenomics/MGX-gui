@@ -28,6 +28,7 @@ import javax.swing.SwingWorker;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.util.lookup.ServiceProvider;
+import prefuse.svg.SVGDisplaySaver;
 
 /**
  *
@@ -108,15 +109,23 @@ public class HClustPlot extends ViewerI<DistributionI<Long>> {
 
             @Override
             public FileType[] getSupportedTypes() {
-                return new FileType[]{FileType.PNG, FileType.JPEG};
+                return new FileType[]{FileType.PNG, FileType.JPEG, FileType.SVG};
             }
 
             @Override
             public Result export(FileType type, String fName) throws Exception {
                 switch (type) {
                     case PNG:
+                    case JPEG:
                         try (OutputStream os = new BufferedOutputStream(new FileOutputStream(fName))) {
                             if (display.saveImage(os, type.getSuffices()[0].toUpperCase(), 2)) {
+                                return Result.SUCCESS;
+                            }
+                            return Result.ERROR;
+                        }
+                    case SVG:
+                        try (OutputStream os = new BufferedOutputStream(new FileOutputStream(fName))) {
+                            if (SVGDisplaySaver.saveSVG(display, os, 2)) {
                                 return Result.SUCCESS;
                             }
                             return Result.ERROR;
