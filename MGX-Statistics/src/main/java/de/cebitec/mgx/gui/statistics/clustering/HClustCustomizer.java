@@ -5,6 +5,17 @@
  */
 package de.cebitec.mgx.gui.statistics.clustering;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import javax.swing.JFileChooser;
+import org.openide.DialogDisplayer;
+import org.openide.NotifyDescriptor;
+import org.openide.util.NbPreferences;
+
 /**
  *
  * @author sjaenick
@@ -13,7 +24,7 @@ public class HClustCustomizer extends javax.swing.JPanel {
 
     private static final String[] AGGLO = new String[]{"ward", "single", "complete", "average", "mcquitty", "median", "centroid"};
     private static final String[] DIST = new String[]{"euclidean", "maximum", "manhattan", "canberra", "binary", "minkowski"};
-
+    private String newickString = null;
     /**
      * Creates new form HClustCustomizer
      */
@@ -27,6 +38,11 @@ public class HClustCustomizer extends javax.swing.JPanel {
             distance.addItem(s);
         }
         distance.setSelectedIndex(0);
+    }
+    
+    public void setNewickString(String newickString) {
+        this.newickString = newickString;
+        saveNwk.setEnabled(newickString != null);
     }
 
     public String getDistanceMethod() {
@@ -50,12 +66,21 @@ public class HClustCustomizer extends javax.swing.JPanel {
         agglomeration = new javax.swing.JComboBox<String>();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
+        saveNwk = new javax.swing.JButton();
 
         jLabel1.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(HClustCustomizer.class, "HClustCustomizer.jLabel1.text")); // NOI18N
 
         jLabel2.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(jLabel2, org.openide.util.NbBundle.getMessage(HClustCustomizer.class, "HClustCustomizer.jLabel2.text")); // NOI18N
+
+        org.openide.awt.Mnemonics.setLocalizedText(saveNwk, org.openide.util.NbBundle.getMessage(HClustCustomizer.class, "HClustCustomizer.saveNwk.text")); // NOI18N
+        saveNwk.setEnabled(false);
+        saveNwk.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveNwkActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -67,7 +92,11 @@ public class HClustCustomizer extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel1)
                     .addComponent(jLabel2))
-                .addGap(0, 53, Short.MAX_VALUE))
+                .addGap(0, 0, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(saveNwk)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -80,9 +109,60 @@ public class HClustCustomizer extends javax.swing.JPanel {
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(agglomeration, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(537, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 279, Short.MAX_VALUE)
+                .addComponent(saveNwk)
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void saveNwkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveNwkActionPerformed
+        final JFileChooser fc = new JFileChooser();
+
+        String last = NbPreferences.forModule(JFileChooser.class).get("lastDirectory", null);
+        if (last != null) {
+            File f = new File(last);
+            if (f.exists() && f.isDirectory()) {
+                fc.setCurrentDirectory(f);
+            }
+        }
+
+        File f = new File("MGX_clustering.nwk");
+        fc.setSelectedFile(f);
+        fc.setVisible(true);
+
+        fc.addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                if ("SelectedFileChangedProperty".equals(evt.getPropertyName())) {
+                    NbPreferences.forModule(JFileChooser.class).put("lastDirectory", fc.getCurrentDirectory().getAbsolutePath());
+                }
+            }
+        });
+
+        if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+
+            f = fc.getSelectedFile();
+            try {
+                if (f.exists()) {
+                    throw new IOException(f.getName() + " already exists.");
+                }
+                BufferedWriter w = new BufferedWriter(new FileWriter(f));
+                w.write(newickString);
+                w.newLine();
+                w.flush();
+                w.close();
+
+                // report success
+                NotifyDescriptor nd = new NotifyDescriptor.Message("Data exported to " + f.getName());
+                DialogDisplayer.getDefault().notify(nd);
+            } catch (IOException ex) {
+                // some error occured, notify user
+                NotifyDescriptor nd = new NotifyDescriptor("Export failed: " + ex.getMessage(), "Error",
+                        NotifyDescriptor.DEFAULT_OPTION, NotifyDescriptor.ERROR_MESSAGE, null, null);
+                DialogDisplayer.getDefault().notify(nd);
+            }
+        }
+    }//GEN-LAST:event_saveNwkActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -90,5 +170,6 @@ public class HClustCustomizer extends javax.swing.JPanel {
     private javax.swing.JComboBox<String> distance;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JButton saveNwk;
     // End of variables declaration//GEN-END:variables
 }
