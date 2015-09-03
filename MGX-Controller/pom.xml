@@ -69,10 +69,6 @@
             <groupId>de.cebitec.mgx</groupId>
         </dependency>
         <dependency>
-            <artifactId>NewickParser</artifactId>
-            <groupId>de.cebitec.mgx</groupId>
-        </dependency>
-        <dependency>
             <artifactId>GPMS-core-api</artifactId>
             <groupId>de.cebitec.gpms</groupId>
         </dependency>
