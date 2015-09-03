@@ -46,7 +46,7 @@ import prefuse.visual.expression.InGroupPredicate;
  */
 public class DendrogramDisplay extends Display {
 
-    private static int m_orientation = Constants.ORIENT_LEFT_RIGHT;
+    private static final int m_orientation = Constants.ORIENT_LEFT_RIGHT;
     private static final String GRAPH_NAME = "tree";
     private static final String EDGE_ID = "tree.edges";
     private static final String NODE_ID = "tree.nodes";
