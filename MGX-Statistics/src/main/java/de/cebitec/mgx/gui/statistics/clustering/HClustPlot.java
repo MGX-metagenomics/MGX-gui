@@ -15,7 +15,9 @@ import de.cebitec.mgx.gui.statistics.clustering.model.ITreeBuilder;
 import de.cebitec.mgx.gui.statistics.clustering.view.DendrogramDisplay;
 import de.cebitec.mgx.gui.swingutils.DelayedPlot;
 import de.cebitec.mgx.gui.vizfilter.LongToDouble;
+import de.cebitec.mgx.newick.NewickParser;
 import de.cebitec.mgx.newick.NodeI;
+import de.cebitec.mgx.newick.ParserException;
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
@@ -39,6 +41,7 @@ public class HClustPlot extends ViewerI<DistributionI<Long>> {
     private DelayedPlot cPanel = null;
     private final HClustCustomizer customizer = new HClustCustomizer();
     private DendrogramDisplay display;
+    private String newickString = null;
 
     @Override
     public JComponent getComponent() {
@@ -55,9 +58,9 @@ public class HClustPlot extends ViewerI<DistributionI<Long>> {
 
         cPanel = new DelayedPlot();
 
-        SwingWorker<NodeI, Void> worker = new SwingWorker<NodeI, Void>() {
+        SwingWorker<String, Void> worker = new SwingWorker<String, Void>() {
             @Override
-            protected NodeI doInBackground() throws Exception {
+            protected String doInBackground() throws Exception {
                 MGXMasterI m = dists.get(0).getSecond().getMaster();
                 List<Pair<VisualizationGroupI, DistributionI<Double>>> filter = new LongToDouble().filter(dists);
                 return m.Statistics().Clustering(filter, customizer.getDistanceMethod(), customizer.getAgglomeration());
@@ -67,12 +70,14 @@ public class HClustPlot extends ViewerI<DistributionI<Long>> {
             protected void done() {
                 try {
                     DelayedPlot wp = HClustPlot.this.cPanel;
-                    NodeI root = get();
+                    newickString = get();
+                    NodeI root = NewickParser.parse(newickString);
 
                     ITreeBuilder builder = new DendrogramBuilder(NODE_NAME_KEY, X_COORD, root);
                     display = new DendrogramDisplay(builder);
                     wp.setTarget(display);
-                } catch (InterruptedException | ExecutionException ex) {
+                    customizer.setNewickString(newickString);
+                } catch (InterruptedException | ExecutionException | ParserException ex) {
                     HClustPlot.this.cPanel.setTarget(null);
                     String message = ex.getMessage();
                     if (message.contains(":")) {
