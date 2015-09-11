@@ -35,7 +35,6 @@ import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
 import org.openide.windows.TopComponent;
-import org.openide.util.NbBundle.Messages;
 import org.openide.util.Utilities;
 
 /**
@@ -54,14 +53,9 @@ import org.openide.util.Utilities;
 @ActionID(category = "Window", id = "de.cebitec.mgx.qcmon.QCTopComponent")
 //@ActionReference(path = "Menu/Window", position = 533)
 @TopComponent.OpenActionRegistration(
-        displayName = "#CTL_QCAction",
+        displayName = "Quality Control",
         preferredID = "QCTopComponent"
 )
-@Messages({
-    "CTL_QCAction=Quality Control",
-    "CTL_QCTopComponent=Quality Control",
-    "HINT_QCTopComponent=Quality Control"
-})
 public final class QCTopComponent extends TopComponent implements LookupListener {
 
     private final Lookup.Result<SeqRunI> resultSeqRun;
@@ -69,8 +63,8 @@ public final class QCTopComponent extends TopComponent implements LookupListener
 
     private QCTopComponent() {
         initComponents();
-        setName(Bundle.CTL_QCTopComponent());
-        setToolTipText(Bundle.HINT_QCTopComponent());
+        setName("Quality Control");
+        setToolTipText("Quality Control");
         resultSeqRun = Utilities.actionsGlobalContext().lookupResult(SeqRunI.class);
         update();
     }
