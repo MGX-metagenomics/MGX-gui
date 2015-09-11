@@ -49,31 +49,38 @@ public class FileChooserUtils {
             public void propertyChange(PropertyChangeEvent evt) {
                 FileType ftold = ((SuffixFilter) evt.getOldValue()).getType();
                 String newSuffix = ((SuffixFilter) evt.getNewValue()).getType().getSuffices()[0];
-                
-                /*
-                * getSelectedFile() doesn't work here (returns null); UGLY HACK:
-                * directly access the corresponding text field using reflection
-                */
 
+                /*
+                 * getSelectedFile() doesn't work here (returns null); UGLY HACK:
+                 * directly access the corresponding text field using reflection
+                 */
                 try {
                     FileChooserUI ui2 = chooser.getUI();
                     Class c = ui2.getClass();
-                    Field f = c.getDeclaredField("filenameTextField");
-                    if (f == null) {
-                        f = c.getDeclaredField("fileNameTextField");
+                    Field f = null;
+                    try {
+                        f = c.getDeclaredField("filenameTextField");
+                    } catch (NoSuchFieldException | SecurityException ex) {
                     }
-                    f.setAccessible(true);
-                    JTextField fileNameField = (JTextField) f.get(ui2);
-                    String filename = fileNameField.getText();
-                    for (String sfx : ftold.getSuffices()) {
-                        if (filename.endsWith(sfx)) {
-                            filename = filename.replace(sfx, newSuffix);
-                            chooser.setSelectedFile(new File(chooser.getCurrentDirectory(), filename));
+                    if (f == null) {
+                        try {
+                            f = c.getDeclaredField("fileNameTextField");
+                        } catch (NoSuchFieldException | SecurityException ex) {
                         }
                     }
-                } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException x) {
+                    if (f != null) {
+                        f.setAccessible(true);
+                        JTextField fileNameField = (JTextField) f.get(ui2);
+                        String filename = fileNameField.getText();
+                        for (String sfx : ftold.getSuffices()) {
+                            if (filename.endsWith(sfx)) {
+                                filename = filename.replace(sfx, newSuffix);
+                                chooser.setSelectedFile(new File(chooser.getCurrentDirectory(), filename));
+                            }
+                        }
+                    }
+                } catch (SecurityException | IllegalArgumentException | IllegalAccessException x) {
                 }
-
             }
         });
 
