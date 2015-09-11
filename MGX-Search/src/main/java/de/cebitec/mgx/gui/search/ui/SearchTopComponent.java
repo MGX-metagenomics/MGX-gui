@@ -30,7 +30,6 @@ import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
-import org.openide.util.NbBundle.Messages;
 import org.openide.util.Utilities;
 import org.openide.windows.TopComponent;
 
@@ -51,13 +50,9 @@ import org.openide.windows.TopComponent;
     @ActionReference(path = "Toolbars/UndoRedo", position = 525)
 })
 @TopComponent.OpenActionRegistration(
-        displayName = "#CTL_SearchAction",
-        preferredID = "SearchTopComponent")
-@Messages({
-    "CTL_SearchAction=Search",
-    "CTL_SearchTopComponent=Search Window",
-    "HINT_SearchTopComponent=Metagenome search"
-})
+        displayName = "Search",
+        preferredID = "SearchTopComponent"
+)
 public final class SearchTopComponent extends TopComponent implements LookupListener {
 
     private final Lookup.Result<MGXMasterI> result;
@@ -72,8 +67,8 @@ public final class SearchTopComponent extends TopComponent implements LookupList
         obsPanel.add(ov, BorderLayout.CENTER);
         result = Utilities.actionsGlobalContext().lookupResult(MGXMasterI.class);
 
-        setName(Bundle.CTL_SearchTopComponent());
-        setToolTipText(Bundle.HINT_SearchTopComponent());
+        setName("Search");
+        setToolTipText("Metagenome search");
         runList.setModel(runListModel);
         runList.setSelectedIndex(-1);
         runList.addListSelectionListener(new ListSelectionListener() {
