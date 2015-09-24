@@ -10,7 +10,10 @@ import java.awt.Rectangle;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
@@ -34,10 +37,11 @@ public class JFreeChartUtil {
 
     public static <T extends Number> LegendItemCollection createLegend(List<Pair<VisualizationGroupI, DistributionI<T>>> in) {
         LegendItemCollection ret = new LegendItemCollection();
+        DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.US);
         for (Pair<VisualizationGroupI, DistributionI<T>> gd : in) {
             LegendItem li = new LegendItem(gd.getFirst().getName());
             li.setFillPaint(gd.getFirst().getColor());
-            li.setToolTipText("Classified sequences in " + gd.getFirst().getName() + ": " + gd.getSecond().getTotalClassifiedElements());
+            li.setToolTipText("Classified sequences in " + gd.getFirst().getName() + ": " + formatter.format(gd.getSecond().getTotalClassifiedElements()));
             ret.add(li);
         }
         return ret;
@@ -102,8 +106,7 @@ public class JFreeChartUtil {
                 series.add(minAttrVal - Double.MIN_VALUE, 0);
             }
 
-            for (int i = 0; i < values.length; i++) {
-                double[] pair = values[i];
+            for (double[] pair : values) {
                 series.add(pair[0], pair[1]);
             }
 
