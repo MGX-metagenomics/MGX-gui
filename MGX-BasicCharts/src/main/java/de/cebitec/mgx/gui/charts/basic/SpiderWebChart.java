@@ -9,6 +9,7 @@ import de.cebitec.mgx.api.groups.ImageExporterI;
 import de.cebitec.mgx.gui.vizfilter.SortOrder;
 import de.cebitec.mgx.common.visualization.CategoricalViewerI;
 import de.cebitec.mgx.common.visualization.ViewerI;
+import de.cebitec.mgx.gui.charts.basic.customizer.SpiderWebChartCustomizer;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.geom.Rectangle2D;
@@ -35,12 +36,8 @@ public class SpiderWebChart extends CategoricalViewerI<Long> {
 
     private ChartPanel cPanel = null;
     private JFreeChart chart = null;
+    private final SpiderWebChartCustomizer cust = new SpiderWebChartCustomizer();
 
-//    @Override
-//    public boolean canHandle(AttributeType valueType) {
-//        // currently broken, disable viewer
-//        return false;
-//    }
     @Override
     public JComponent getComponent() {
         return cPanel;
@@ -59,10 +56,12 @@ public class SpiderWebChart extends CategoricalViewerI<Long> {
     @Override
     public void show(List<Pair<VisualizationGroupI, DistributionI<Long>>> dists) {
 
-        SortOrder<Long> sorter = new SortOrder<>(getAttributeType(), SortOrder.DESCENDING);
-        dists = sorter.filter(dists);
+//        SortOrder<Long> sorter = new SortOrder<>(getAttributeType(), SortOrder.DESCENDING);
+//        dists = sorter.filter(dists);
+        
+        List<Pair<VisualizationGroupI, DistributionI<Double>>> d = cust.filter(dists);
 
-        CategoryDataset dataset = JFreeChartUtil.createCategoryDataset(dists);
+        CategoryDataset dataset = JFreeChartUtil.createCategoryDataset(d);
 
         ChartFactory.setChartTheme(StandardChartTheme.createLegacyTheme());
         TickedSpiderWebPlot plot = new TickedSpiderWebPlot(dataset);
@@ -75,11 +74,11 @@ public class SpiderWebChart extends CategoricalViewerI<Long> {
         plot.setOutlineVisible(false);
         plot.setLabelFont(labelFont);
         plot.setWebFilled(true);
-        plot.setFixedLegendItems(JFreeChartUtil.createLegend(dists));
+        plot.setFixedLegendItems(JFreeChartUtil.createLegend(d));
 
         // colors
         int i = 0;
-        for (Pair<VisualizationGroupI, DistributionI<Long>> groupDistribution : dists) {
+        for (Pair<VisualizationGroupI, DistributionI<Double>> groupDistribution : d) {
             plot.setSeriesPaint(i++, groupDistribution.getFirst().getColor());
         }
 
@@ -97,7 +96,8 @@ public class SpiderWebChart extends CategoricalViewerI<Long> {
 
     @Override
     public JComponent getCustomizer() {
-        return null;
+        cust.setAttributeType(getAttributeType());
+        return cust;
     }
 
     @Override
