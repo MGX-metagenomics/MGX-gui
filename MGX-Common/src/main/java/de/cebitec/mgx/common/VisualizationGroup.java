@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -43,6 +44,7 @@ public class VisualizationGroup implements VisualizationGroupI {
     //
     //
     private final int id;
+    private final UUID uuid = UUID.randomUUID();
     private final VGroupManagerI vgmgr;
     private String name;
     private Color color;
@@ -521,4 +523,8 @@ public class VisualizationGroup implements VisualizationGroupI {
 //        }
 //        return curAttrTypeCnt;
 //    }
+    @Override
+    public UUID getUUID() {
+        return uuid;
+    }
 }

@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  *
@@ -68,7 +69,7 @@ public class StatisticsAccess implements StatisticsAccessI {
     @Override
     public String Clustering(Collection<Pair<VisualizationGroupI, DistributionI<Double>>> dists, String distanceMethod, String agglomeration) throws MGXException {
         // map to hold obfuscated group name mapping
-        Map<String, String> tmpNames = new HashMap<>();
+        Map<String, UUID> tmpNames = new HashMap<>();
         MGXMatrixDTO matrix = buildMatrix(dists, tmpNames, false);
 
         String nwk = null;
@@ -76,8 +77,8 @@ public class StatisticsAccess implements StatisticsAccessI {
             nwk = dtomaster.Statistics().Clustering(matrix, distanceMethod, agglomeration);
 
             // de-obfuscate group names
-            for (Entry<String, String> e : tmpNames.entrySet()) {
-                nwk = nwk.replace(e.getKey(), e.getValue());
+            for (Entry<String, UUID> e : tmpNames.entrySet()) {
+                nwk = nwk.replace(e.getKey(), e.getValue().toString());
             }
             return nwk; // NewickParser.parse(nwk);
         } catch (MGXServerException | MGXClientException ex) {
@@ -89,7 +90,7 @@ public class StatisticsAccess implements StatisticsAccessI {
     public PCAResultI PCA(Collection<Pair<VisualizationGroupI, DistributionI<Double>>> groups, PrincipalComponent pc1, PrincipalComponent pc2) throws MGXException {
 
         // map to hold obfuscated group name mapping
-        Map<String, String> tmpNames = new HashMap<>();
+        Map<String, UUID> tmpNames = new HashMap<>();
         MGXMatrixDTO matrix = buildMatrix(groups, tmpNames, true);
 
         try {
@@ -97,7 +98,7 @@ public class StatisticsAccess implements StatisticsAccessI {
             PCAResultI pca = PCAResultDTOFactory.getInstance().toModel(master, ret);
             // de-obfuscate group names
             for (Point p : pca.getDatapoints()) {
-                p.setName(tmpNames.get(p.getName()));
+                p.setName(tmpNames.get(p.getName()).toString());
             }
             return pca;
         } catch (MGXServerException | MGXClientException ex) {
@@ -109,7 +110,7 @@ public class StatisticsAccess implements StatisticsAccessI {
     public List<Point> PCoA(Collection<Pair<VisualizationGroupI, DistributionI<Double>>> groups) throws MGXException {
 
         // map to hold obfuscated group name mapping
-        Map<String, String> tmpNames = new HashMap<>();
+        Map<String, UUID> tmpNames = new HashMap<>();
         MGXMatrixDTO matrix = buildMatrix(groups, tmpNames, true);
 
         List<Point> pcoa = new LinkedList<>();
@@ -117,7 +118,7 @@ public class StatisticsAccess implements StatisticsAccessI {
             PointDTOList ret = dtomaster.Statistics().PCoA(matrix);
             for (PointDTO pdto : ret.getPointList()) {
                 Point p = PointDTOFactory.getInstance().toModel(master, pdto);
-                p.setName(tmpNames.get(p.getName())); // de-obfuscate group name
+                p.setName(tmpNames.get(p.getName()).toString()); // de-obfuscate group name
                 pcoa.add(p);
             }
             return pcoa;
@@ -126,7 +127,7 @@ public class StatisticsAccess implements StatisticsAccessI {
         }
     }
 
-    private static <T extends Number> MGXMatrixDTO buildMatrix(Collection<Pair<VisualizationGroupI, DistributionI<T>>> groups, Map<String, String> tmpNames, boolean includeColNames) {
+    private static <T extends Number> MGXMatrixDTO buildMatrix(Collection<Pair<VisualizationGroupI, DistributionI<T>>> groups, Map<String, UUID> tmpNames, boolean includeColNames) {
         MGXMatrixDTO.Builder b = MGXMatrixDTO.newBuilder();
 
         // collect all attributes first
@@ -147,7 +148,7 @@ public class StatisticsAccess implements StatisticsAccessI {
 
         for (Pair<VisualizationGroupI, DistributionI<T>> dataset : groups) {
             String obfusName = generateName();
-            tmpNames.put(obfusName, dataset.getFirst().getName());
+            tmpNames.put(obfusName, dataset.getFirst().getUUID());
 
             ProfileDTO prof = ProfileDTO.newBuilder()
                     .setName(obfusName)
