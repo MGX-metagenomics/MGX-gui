@@ -129,11 +129,11 @@
                 <groupId>org.netbeans.api</groupId>
                 <version>${netbeans.version}</version>
             </dependency>
-            <dependency>
+            <!-- <dependency>
                 <groupId>org.netbeans.external</groupId>
                 <artifactId>xerces-2.8.0</artifactId>
                 <version>RELEASE721</version>
-            </dependency>
+            </dependency> -->
             <dependency>
                 <groupId>org.netbeans.external</groupId>
                 <artifactId>swing-worker-1.1</artifactId>
