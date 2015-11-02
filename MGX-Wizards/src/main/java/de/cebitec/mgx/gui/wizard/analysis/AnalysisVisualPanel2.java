@@ -1,7 +1,6 @@
 package de.cebitec.mgx.gui.wizard.analysis;
 
 import de.cebitec.mgx.api.model.MGXReferenceI;
-import de.cebitec.mgx.gui.datamodel.Reference;
 import de.cebitec.mgx.gui.wizard.analysis.misc.ValueHolderI;
 import java.awt.BorderLayout;
 import java.beans.PropertyChangeEvent;
@@ -45,7 +44,7 @@ public final class AnalysisVisualPanel2 extends JPanel implements PropertyChange
         }
     }
     
-    public void setInputComponent(ValueHolderI<String> vh) {
+    public void setInputComponent(ValueHolderI vh) {
         if (valueholder != null) {
             valuePanel.remove(valueholder);
             valueholder.removePropertyChangeListener(this);
@@ -53,13 +52,16 @@ public final class AnalysisVisualPanel2 extends JPanel implements PropertyChange
         valueholder = vh;
         vh.addPropertyChangeListener(this);
         valuePanel.add(vh, BorderLayout.CENTER);
+        if (valueholder.getValue() != null) {
+            propertyChange(new PropertyChangeEvent(valueholder, "updated", null, valueholder.getValue()));
+        }
     }
     
     public String getValue() {
         return valueholder.getValue();
     }
     
-    private ValueHolderI<String> valueholder = null;
+    private ValueHolderI valueholder = null;
 
     /**
      * This method is called from within the constructor to initialize the form. WARNING: Do NOT modify this code. The content of this method is always
