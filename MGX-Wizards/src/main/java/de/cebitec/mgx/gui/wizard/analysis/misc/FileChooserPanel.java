@@ -10,7 +10,7 @@ import javax.swing.JFileChooser;
  *
  * @author sjaenick
  */
-public class FileChooserPanel extends ValueHolderI<String> {
+public class FileChooserPanel extends ValueHolderI {
 
     private final MGXMasterI master;
     private String fileName = null;

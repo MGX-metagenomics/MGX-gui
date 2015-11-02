@@ -9,7 +9,7 @@ import java.util.Collection;
  *
  * @author sjaenick
  */
-public class ComboBoxPanel extends ValueHolderI<String> implements ActionListener {
+public class ComboBoxPanel extends ValueHolderI implements ActionListener {
 
     /**
      * Creates new form ComboBoxPanel
@@ -23,7 +23,6 @@ public class ComboBoxPanel extends ValueHolderI<String> implements ActionListene
 //        }
 //        jComboBox1.addActionListener(this);
 //    }
-
     public ComboBoxPanel(JobParameterI jp, Collection<String> allowedValues) {
         initComponents();
         jComboBox1.removeAllItems();
@@ -31,6 +30,7 @@ public class ComboBoxPanel extends ValueHolderI<String> implements ActionListene
             if (item == null) {
                 // preselect first item
                 item = s;
+                jComboBox1.setSelectedItem(item);
             }
             jComboBox1.addItem(s);
         }
@@ -47,8 +47,6 @@ public class ComboBoxPanel extends ValueHolderI<String> implements ActionListene
     private void initComponents() {
 
         jComboBox1 = new javax.swing.JComboBox<String>();
-
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -80,6 +78,22 @@ public class ComboBoxPanel extends ValueHolderI<String> implements ActionListene
 
     @Override
     public void setValue(String value) {
+        
+        // check whether desired value is present in current model
+        int cnt = jComboBox1.getItemCount();
+        int idx = -1;
+        for (int i = 0; i < cnt; i++) {
+            if (jComboBox1.getItemAt(i).equals(value)) {
+                idx = i;
+                break;
+            }
+        }
+        
+        if (idx == -1) {
+            throw new IllegalArgumentException("Item " + value + " was not found and cannot be selected.");
+        }
+        
         jComboBox1.setSelectedItem(value);
+        firePropertyChange("input", null, value);
     }
 }
