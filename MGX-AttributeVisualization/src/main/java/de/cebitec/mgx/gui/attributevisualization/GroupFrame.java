@@ -9,12 +9,11 @@ import de.cebitec.mgx.api.groups.VGroupManagerI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.model.ModelBase;
 import de.cebitec.mgx.api.model.SeqRunI;
+import de.cebitec.mgx.common.VGroupManager;
 import de.cebitec.mgx.gui.nodefactory.VisualizationGroupNodeFactory;
-import de.cebitec.mgx.gui.nodes.SeqRunNode;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
-import java.awt.Graphics;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -35,9 +34,9 @@ import java.text.DecimalFormat;
 import java.util.HashSet;
 import java.util.Set;
 import javax.swing.JColorChooser;
-import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.ToolTipManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.InternalFrameEvent;
@@ -48,7 +47,6 @@ import org.openide.explorer.view.TreeTableView;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.util.Exceptions;
-import org.openide.util.Lookup;
 import org.openide.util.datatransfer.ExTransferable;
 import org.openide.util.datatransfer.MultiTransferObject;
 
@@ -59,19 +57,16 @@ import org.openide.util.datatransfer.MultiTransferObject;
 public class GroupFrame extends javax.swing.JInternalFrame implements ExplorerManager.Provider, ItemListener, ActionListener, DocumentListener, PropertyChangeListener {
 
     private final VisualizationGroupI vGroup;
-    private final VGroupManagerI vgrpMgr;
     private final ExplorerManager exmngr = new ExplorerManager();
     private final VisualizationGroupNodeFactory vgnf;
-    private final MyListView listView;
 
-    public GroupFrame(VisualizationGroupI group, VGroupManagerI mgr) {
+    public GroupFrame(VisualizationGroupI group) {
         initComponents();
         vGroup = group;
         vGroup.addPropertyChangeListener(this);
         //
         // needed to receive selectionChange events
-        vgrpMgr = mgr;
-        vgrpMgr.addPropertyChangeListener(this);
+        VGroupManager.getInstance().addPropertyChangeListener(this);
         //
         // set initial properties
         //
@@ -89,41 +84,32 @@ public class GroupFrame extends javax.swing.JInternalFrame implements ExplorerMa
         //
         vgnf = new VisualizationGroupNodeFactory(vGroup);
 
-        final InvisibleRoot root = new InvisibleRoot(Children.create(vgnf, true));
-        exmngr.setRootContext(root);
+        // invisible root node
+        exmngr.setRootContext(new AbstractNode(Children.create(vgnf, true)));
 
-        listView = new MyListView();
-        panel.add(listView, BorderLayout.CENTER);
+        MyListView myListView = new MyListView();
+        panel.add(myListView, BorderLayout.CENTER);
 
         setVisible(true);
+        ToolTipManager.sharedInstance().registerComponent(this);
+        ToolTipManager.sharedInstance().registerComponent(panel);
+        ToolTipManager.sharedInstance().registerComponent(myListView);
     }
 
-    @Override
-    public void doDefaultCloseAction() {
-        super.doDefaultCloseAction();
-    }
-
-    public VisualizationGroupI getGroup() {
+    public final VisualizationGroupI getGroup() {
         return vGroup;
     }
 
-//    /**
-//     * Creates new form GroupFrame
-//     */
-//    private GroupFrame() {
-//        initComponents();
-//    }
     @Override
-    public final void setTitle(String title) {
-        setToolTipText(title);
-        super.setTitle(title);
+    public String getToolTipText() {
+        return "FOO " + vGroup.getName();
     }
 
     @Override
     public void dispose() {
         vGroup.removePropertyChangeListener(this);
-        vgrpMgr.removePropertyChangeListener(this);
-        vgrpMgr.removeGroup(vGroup);
+        VGroupManager.getInstance().removePropertyChangeListener(this);
+        VGroupManager.getInstance().removeGroup(vGroup);
         super.dispose();
     }
 
@@ -217,7 +203,6 @@ public class GroupFrame extends javax.swing.JInternalFrame implements ExplorerMa
     @Override
     public void actionPerformed(ActionEvent ae) {
         final JColorChooser jcc = new JColorChooser(vGroup.getColor());
-        //jcc.setChooserPanels(new AbstractColorChooserPanel[]{});
         JDialog dialog = JColorChooser.createDialog(new JFrame(), "Choose color", false, jcc, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
@@ -292,7 +277,7 @@ public class GroupFrame extends javax.swing.JInternalFrame implements ExplorerMa
 
         @Override
         public void internalFrameActivated(InternalFrameEvent e) {
-            vgrpMgr.setSelectedGroup(vGroup);
+            VGroupManager.getInstance().setSelectedGroup(vGroup);
         }
 
         @Override
@@ -368,11 +353,9 @@ public class GroupFrame extends javax.swing.JInternalFrame implements ExplorerMa
 
                                 try {
                                     setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-                                    //Set<SeqRunNode> newRuns = new HashSet<>();
                                     Set<SeqRunI> newRuns = new HashSet<>();
                                     for (int i = 0; i < elems; i++) {
                                         SeqRunI run = (SeqRunI) mto.getTransferData(i, SeqRunI.DATA_FLAVOR);
-                                        //SeqRunNode srn = new SeqRunNode(run.getMaster(), run, Children.LEAF);
                                         newRuns.add(run);
 
                                     }
@@ -391,8 +374,6 @@ public class GroupFrame extends javax.swing.JInternalFrame implements ExplorerMa
                         try {
                             SeqRunI run = (SeqRunI) dtde.getTransferable().getTransferData(SeqRunI.DATA_FLAVOR);
                             if (run != null && !vGroup.getSeqRuns().contains(run)) {
-                                //SeqRunNode srn = new SeqRunNode(run.getMaster(), run, Children.LEAF);
-                                //vgnf.addNode(srn);
                                 vgnf.addSeqRun(run);
                                 dtde.dropComplete(true);
                                 return;
@@ -411,17 +392,6 @@ public class GroupFrame extends javax.swing.JInternalFrame implements ExplorerMa
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
             //System.err.println("ListView got "+evt.getPropertyName());
-        }
-    }
-
-    private final class InvisibleRoot extends AbstractNode {
-
-        public InvisibleRoot(Children children, Lookup lookup) {
-            super(children, lookup);
-        }
-
-        public InvisibleRoot(Children children) {
-            super(children);
         }
     }
 }

@@ -74,6 +74,18 @@ public final class VisualizationGroupTopComponent extends TopComponent implement
         groupmgr.removeGroup(group);
     }
 
+//    @Override
+//    public String getToolTipText() {
+//        Point mousePos = getMousePosition();
+//        if (mousePos != null) {
+//            Component c = getComponentAt(mousePos);
+//            if (c != null) {
+//                System.err.println("mouse is over component of type "+ c.getClass().getName());
+//            }
+//        }
+//        return super.getToolTipText();
+//    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -94,6 +106,7 @@ public final class VisualizationGroupTopComponent extends TopComponent implement
 
         addGroupButton.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(addGroupButton, org.openide.util.NbBundle.getMessage(VisualizationGroupTopComponent.class, "VisualizationGroupTopComponent.addGroupButton.text")); // NOI18N
+        addGroupButton.setToolTipText(org.openide.util.NbBundle.getMessage(VisualizationGroupTopComponent.class, "VisualizationGroupTopComponent.addGroupButton.toolTipText")); // NOI18N
         addGroupButton.setFocusable(false);
         addGroupButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         addGroupButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -138,14 +151,13 @@ public final class VisualizationGroupTopComponent extends TopComponent implement
     }
 
     void readProperties(java.util.Properties p) {
-        String version = p.getProperty("version");
-        System.err.println(p.getProperty("numGroups"));
+        //String version = p.getProperty("version");
+        //System.err.println(p.getProperty("numGroups"));
     }
 
     @Override
-    public void actionPerformed(ActionEvent e) {
-        final VisualizationGroupI newGroup = groupmgr.createGroup();
-        final GroupFrame gf = new GroupFrame(newGroup, groupmgr);
+    public final void actionPerformed(ActionEvent e) {
+        GroupFrame gf = new GroupFrame(VGroupManager.getInstance().createGroup());
         panel.add(gf);
     }
 
