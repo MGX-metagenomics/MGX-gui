@@ -44,7 +44,7 @@ public class AnalysisWizardPanel2 implements WizardDescriptor.Panel<WizardDescri
     private WizardDescriptor model = null;
     private boolean isValid = false;
     private ValidatorI validator = null;
-    private ValueHolderI<String> valueHolder = null;
+    private ValueHolderI valueHolder = null;
     private final EventListenerList listeners = new EventListenerList();
     public static final String PROP_PARAM = "propParam";
     //
@@ -148,11 +148,10 @@ public class AnalysisWizardPanel2 implements WizardDescriptor.Panel<WizardDescri
         avp.setDescription(parameter.getUserDescription());
         avp.setOptional(parameter.isOptional());
 
-        Pair<? extends ValueHolderI<String>, ? extends ValidatorI> p = getValidator(parameter);
+        Pair<? extends ValueHolderI, ? extends ValidatorI> p = getValidator(parameter);
         valueHolder = p.getFirst();
         validator = p.getSecond();
         if (jp.getDefaultValue() != null) {
-            // we need one round of validation here to perform String --> T conversion
             validator.validate(jp.getDefaultValue());
             String val = validator.getValue();
             valueHolder.setValue(val);
@@ -166,7 +165,7 @@ public class AnalysisWizardPanel2 implements WizardDescriptor.Panel<WizardDescri
         getComponent().setInputComponent(valueHolder);
     }
 
-    private Pair<? extends ValueHolderI<String>, ? extends ValidatorI> getValidator(JobParameterI jp) {
+    private Pair<? extends ValueHolderI, ? extends ValidatorI> getValidator(JobParameterI jp) {
         switch (jp.getType()) {
             case "ConfigByte":
                 return new Pair<>(new TextFieldPanel(), new ByteValidator());

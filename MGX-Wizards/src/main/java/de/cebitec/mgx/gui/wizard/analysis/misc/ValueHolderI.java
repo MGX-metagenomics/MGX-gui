@@ -7,10 +7,10 @@ import javax.swing.JPanel;
  *
  * @author sjaenick
  */
-public abstract class ValueHolderI<T> extends JPanel {
+public abstract class ValueHolderI extends JPanel {
     
-    public abstract T getValue();
+    public abstract String getValue();
     
-    public abstract void setValue(T value);
+    public abstract void setValue(String value);
     
 }
