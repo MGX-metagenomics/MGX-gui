@@ -70,7 +70,6 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>MGX-SwingUtils</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>de.cebitec.mgx</groupId>
@@ -79,6 +78,10 @@
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-dialogs</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-util-ui</artifactId>
         </dependency>
     </dependencies>
 

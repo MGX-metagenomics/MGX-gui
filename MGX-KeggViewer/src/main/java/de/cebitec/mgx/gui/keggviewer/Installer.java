@@ -7,7 +7,6 @@ import java.io.InputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.netbeans.api.progress.ProgressHandle;
-import org.netbeans.api.progress.ProgressHandleFactory;
 import org.openide.modules.ModuleInstall;
 import org.openide.modules.Places;
 import org.openide.util.RequestProcessor;
@@ -101,7 +100,7 @@ public class Installer extends ModuleInstall {
         };
 
         final RequestProcessor.Task theTask = RP.create(runnable);
-        final ProgressHandle ph = ProgressHandleFactory.createHandle("Fetching/Validating KEGG data", theTask);
+        final ProgressHandle ph = ProgressHandle.createHandle("Fetching/Validating KEGG data", theTask);
 
         theTask.addTaskListener(new TaskListener() {
             @Override

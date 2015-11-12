@@ -79,6 +79,10 @@
             <groupId>de.cebitec.mgx</groupId>
             <artifactId>JFreeChart-OSGi</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-util-ui</artifactId>
+        </dependency>
     </dependencies>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

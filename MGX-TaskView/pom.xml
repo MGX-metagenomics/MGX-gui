@@ -67,6 +67,10 @@
             <groupId>de.cebitec.mgx</groupId>
             <artifactId>MGX-parallelPropChange</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-util-ui</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
