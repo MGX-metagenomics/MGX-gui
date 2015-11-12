@@ -163,9 +163,11 @@ public final class QCTopComponent extends TopComponent implements LookupListener
                 } else {
                     int idx = tabbedPane.getSelectedIndex();
                     tabbedPane.removeAll();
+                    int cnt=0;
                     for (QCResultI qcr : qc) {
                         Component chart = createChart(qcr);
                         tabbedPane.add(qcr.getName(), chart);
+                        tabbedPane.setToolTipTextAt(cnt++, qcr.getDescription());
                     }
                     // restore tab selection
                     if (idx != -1 && tabbedPane.getTabCount() > idx) {
