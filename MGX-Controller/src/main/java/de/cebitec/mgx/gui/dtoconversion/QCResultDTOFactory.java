@@ -50,7 +50,7 @@ public class QCResultDTOFactory extends DTOConversionBase<QCResultI, QCResultDTO
             DataRowI dr = new DataRow(drDTO.getName(), f);
             drs[pos++] = dr;
         }
-        return new QCResult(dto.getName(), drs);
+        return new QCResult(dto.getName(), dto.hasDescription() ? dto.getDescription() : dto.getName(), drs);
     }
 
 }
