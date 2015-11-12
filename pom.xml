@@ -85,6 +85,16 @@
                 <version>${netbeans.version}</version>
             </dependency>
             <dependency>
+                <artifactId>org-openide-util-ui</artifactId>
+                <groupId>org.netbeans.api</groupId>
+                <version>${netbeans.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.netbeans.api</groupId>
+                <artifactId>org-netbeans-api-progress-nb</artifactId>
+                <version>${netbeans.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.netbeans.api</groupId>
                 <artifactId>org-openide-util-lookup</artifactId>
                 <version>${netbeans.version}</version>
@@ -546,7 +556,7 @@
     </modules>
     
     <properties>
-        <netbeans.version>RELEASE802</netbeans.version>
+        <netbeans.version>RELEASE81</netbeans.version>
         <brandingToken>mgx_gui</brandingToken>
     </properties>
     

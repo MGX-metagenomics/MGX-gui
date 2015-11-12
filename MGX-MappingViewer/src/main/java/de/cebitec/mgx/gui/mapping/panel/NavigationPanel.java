@@ -34,7 +34,6 @@ import javax.swing.SwingWorker;
 import javax.swing.ToolTipManager;
 import org.apache.commons.math3.util.FastMath;
 import org.netbeans.api.progress.ProgressHandle;
-import org.netbeans.api.progress.ProgressHandleFactory;
 import org.openide.util.Exceptions;
 
 /**
@@ -386,7 +385,7 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
         }
 
         if (ph == null) {
-            ph = ProgressHandleFactory.createHandle("Fetching coverage data");
+            ph = ProgressHandle.createHandle("Fetching coverage data");
             ph.start(refLength);
 
             SwingWorker<List<Area>, Void> sw = new SwingWorker<List<Area>, Void>() {

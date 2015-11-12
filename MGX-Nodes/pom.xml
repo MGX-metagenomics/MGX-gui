@@ -50,12 +50,10 @@
         <dependency>
             <artifactId>org-openide-util</artifactId>
             <groupId>org.netbeans.api</groupId>
-            <version>${netbeans.version}</version>
         </dependency>
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-awt</artifactId>
-            <version>${netbeans.version}</version>
         </dependency>
         <dependency>
             <groupId>org.netbeans.api</groupId>
@@ -108,7 +106,6 @@
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-filesystems</artifactId>
-            <version>RELEASE802</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -118,7 +115,10 @@
         <dependency>
             <groupId>de.cebitec.mgx</groupId>
             <artifactId>MGX-isequences</artifactId>
-            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-util-ui</artifactId>
         </dependency>
     </dependencies>
 

@@ -44,6 +44,10 @@
             <groupId>org.netbeans.api</groupId>
         </dependency>
         <dependency>
+            <artifactId>org-openide-util-ui</artifactId>
+            <groupId>org.netbeans.api</groupId>
+        </dependency>
+        <dependency>
             <artifactId>org-openide-util-lookup</artifactId>
             <groupId>org.netbeans.api</groupId>
         </dependency>
