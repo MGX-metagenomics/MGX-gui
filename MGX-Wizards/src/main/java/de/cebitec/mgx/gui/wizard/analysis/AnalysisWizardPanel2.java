@@ -154,13 +154,17 @@ public class AnalysisWizardPanel2 implements WizardDescriptor.Panel<WizardDescri
         if (jp.getDefaultValue() != null) {
             validator.validate(jp.getDefaultValue());
             String val = validator.getValue();
-            valueHolder.setValue(val);
+            if (val != null) {
+                valueHolder.setValue(val);
+            }
         }
         if (jp.getParameterValue() != null) {
             // same as above
             validator.validate(jp.getDefaultValue());
             String val = validator.getValue();
-            valueHolder.setValue(val);
+            if (val != null) {
+                valueHolder.setValue(val);
+            }
         }
         getComponent().setInputComponent(valueHolder);
     }

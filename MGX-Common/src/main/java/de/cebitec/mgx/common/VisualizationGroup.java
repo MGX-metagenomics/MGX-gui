@@ -10,14 +10,16 @@ import de.cebitec.mgx.api.misc.Triple;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.JobI;
-import de.cebitec.mgx.api.model.ModelBase;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.tree.TreeI;
 import de.cebitec.mgx.pevents.ParallelPropertyChangeSupport;
 import java.awt.Color;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -43,8 +45,6 @@ public class VisualizationGroup implements VisualizationGroupI {
     //public static final String VISGROUP_DESELECTED = "vgDeselected";
     //
     //
-    private final int id;
-    private final UUID uuid = UUID.randomUUID();
     private final VGroupManagerI vgmgr;
     private String name;
     private Color color;
@@ -56,12 +56,22 @@ public class VisualizationGroup implements VisualizationGroupI {
     private final Map<SeqRunI, Map<JobI, Set<AttributeTypeI>>> attributeTypes;
     private final Map<SeqRunI, DistributionI<Long>> currentDistributions;
     //
-    private final PropertyChangeSupport pcs;
+    private final PropertyChangeSupport pcs = new ParallelPropertyChangeSupport(this);
     //
     private final Map<String, DistributionI<Long>> distCache = new HashMap<>();
     private final Map<String, TreeI<Long>> hierarchyCache = new HashMap<>();
+    //
+    private final int id;
+    private final UUID uuid = UUID.randomUUID();
+    private final DataFlavor dataflavor;
+    private String managedState;
 
-    public VisualizationGroup(VGroupManagerI vgmgr, int id, String groupName, Color color) {
+    VisualizationGroup(VGroupManagerI vgmgr, int id, String groupName, Color color) {
+        this(VisualizationGroupI.VISGROUP_DATA_FLAVOR, vgmgr, id, groupName, color);
+    }
+
+    VisualizationGroup(DataFlavor dataFlavor, VGroupManagerI vgmgr, int id, String groupName, Color color) {
+        this.dataflavor = dataFlavor;
         this.id = id;
         this.vgmgr = vgmgr;
         this.name = groupName;
@@ -70,7 +80,6 @@ public class VisualizationGroup implements VisualizationGroupI {
         uniqueJobs.put(AttributeRank.SECONDARY, new HashMap<SeqRunI, JobI>());
         needsResolval.put(AttributeRank.PRIMARY, new HashMap<SeqRunI, Set<JobI>>());
         needsResolval.put(AttributeRank.SECONDARY, new HashMap<SeqRunI, Set<JobI>>());
-        pcs = new ParallelPropertyChangeSupport(this);
         attributeTypes = new ConcurrentHashMap<>();
         currentDistributions = new ConcurrentHashMap<>();
     }
@@ -81,11 +90,17 @@ public class VisualizationGroup implements VisualizationGroupI {
             sr.removePropertyChangeListener(this);
         }
         attributeTypes.clear();
+        currentDistributions.clear();
     }
 
     @Override
-    public int getId() {
+    public final int getId() {
         return id;
+    }
+
+    @Override
+    public final UUID getUUID() {
+        return uuid;
     }
 
     @Override
@@ -94,19 +109,19 @@ public class VisualizationGroup implements VisualizationGroupI {
     }
 
     @Override
-    public final void setName(String name) {
+    public void setName(String name) {
         String oldVal = this.name;
         this.name = name;
-        pcs.firePropertyChange(VISGROUP_RENAMED, oldVal, name);
+        firePropertyChange(VISGROUP_RENAMED, oldVal, name);
     }
 
     @Override
-    public final boolean isActive() {
+    public boolean isActive() {
         return is_active && attributeTypes.size() > 0;
     }
 
     @Override
-    public final void setActive(boolean is_active) {
+    public void setActive(boolean is_active) {
         this.is_active = is_active;
         pcs.firePropertyChange(is_active ? VISGROUP_ACTIVATED : VISGROUP_DEACTIVATED, !is_active, is_active);
     }
@@ -308,13 +323,13 @@ public class VisualizationGroup implements VisualizationGroupI {
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {
-            case ModelBase.OBJECT_DELETED:
+            case OBJECT_DELETED:
                 if (evt.getSource() instanceof SeqRunI) {
                     removeSeqRun((SeqRunI) evt.getSource());
                 }
                 pcs.firePropertyChange(evt);
                 break;
-            case ModelBase.OBJECT_MODIFIED:
+            case OBJECT_MODIFIED:
                 pcs.firePropertyChange(evt);
                 break;
             default:
@@ -503,16 +518,6 @@ public class VisualizationGroup implements VisualizationGroupI {
         pcs.firePropertyChange(name, 0, getName());
     }
 
-    @Override
-    public void addPropertyChangeListener(PropertyChangeListener p) {
-        pcs.addPropertyChangeListener(p);
-    }
-
-    @Override
-    public void removePropertyChangeListener(PropertyChangeListener p) {
-        pcs.removePropertyChangeListener(p);
-    }
-
 //    private int getNumberOfAttributeTypes() {
 //        // get current number of attribute types
 //        int curAttrTypeCnt = 0;
@@ -524,7 +529,82 @@ public class VisualizationGroup implements VisualizationGroupI {
 //        return curAttrTypeCnt;
 //    }
     @Override
-    public UUID getUUID() {
-        return uuid;
+    public void modified() {
+        if (managedState.equals(OBJECT_DELETED)) {
+            throw new RuntimeException("Invalid object state, cannot modify deleted object.");
+        }
+        firePropertyChange(OBJECT_MODIFIED, 1, 2);
+    }
+
+    @Override
+    public void deleted() {
+        if (managedState.equals(OBJECT_DELETED)) {
+            throw new RuntimeException("Invalid object state, cannot delete deleted object.");
+        }
+        firePropertyChange(OBJECT_DELETED, 0, 1);
+        managedState = OBJECT_DELETED;
+    }
+
+//    @Override
+//    public int compareTo(VisualizationGroupI o) {
+//        return Integer.compare(getId(), o.getId());
+//    }
+
+    @Override
+    public final DataFlavor[] getTransferDataFlavors() {
+        return new DataFlavor[]{dataflavor};
+    }
+
+    @Override
+    public final boolean isDataFlavorSupported(DataFlavor flavor) {
+        return flavor != null && flavor.equals(dataflavor);
+    }
+
+    @Override
+    public final Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
+        if (isDataFlavorSupported(flavor)) {
+            return this;
+        } else {
+            throw new UnsupportedFlavorException(flavor);
+        }
+    }
+
+    @Override
+    public final void addPropertyChangeListener(PropertyChangeListener listener) {
+        pcs.addPropertyChangeListener(listener);
+    }
+
+    @Override
+    public final void removePropertyChangeListener(PropertyChangeListener listener) {
+        pcs.removePropertyChangeListener(listener);
+    }
+
+    @Override
+    public final void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
+        PropertyChangeEvent evt = new PropertyChangeEvent(this, propertyName, oldValue, newValue);
+        firePropertyChange(evt);
+    }
+
+    @Override
+    public final void firePropertyChange(String propertyName, int oldValue, int newValue) {
+        PropertyChangeEvent evt = new PropertyChangeEvent(this, propertyName, oldValue, newValue);
+        firePropertyChange(evt);
+        //pcs.firePropertyChange(propertyName, oldValue, newValue);
+    }
+
+    @Override
+    public final void firePropertyChange(String propertyName, boolean oldValue, boolean newValue) {
+        PropertyChangeEvent evt = new PropertyChangeEvent(this, propertyName, oldValue, newValue);
+        firePropertyChange(evt);
+    }
+
+    @Override
+    public final void firePropertyChange(PropertyChangeEvent event) {
+        pcs.firePropertyChange(event);
+    }
+
+    @Override
+    public int compareTo(VisualizationGroupI o) {
+        return Integer.compare(getId(), o.getId());
     }
 }

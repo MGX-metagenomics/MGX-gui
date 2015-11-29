@@ -14,7 +14,7 @@ import de.cebitec.mgx.api.misc.Triple;
 import de.cebitec.mgx.api.misc.Visualizable;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.JobI;
-import de.cebitec.mgx.api.model.ModelBase;
+import de.cebitec.mgx.api.model.ModelBaseI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.tree.TreeI;
 import de.cebitec.mgx.api.visualization.ConflictResolver;
@@ -209,9 +209,9 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
                 break;
             case VisualizationGroupI.VISGROUP_ATTRTYPE_CHANGED:
                 break; // ignore
-            case ModelBase.OBJECT_DELETED:
+            case ModelBaseI.OBJECT_DELETED:
                 break;
-            case ModelBase.OBJECT_MODIFIED:
+            case ModelBaseI.OBJECT_MODIFIED:
                 break;
             case VGroupManagerI.VISGROUP_SELECTION_CHANGED:
                 // ignore
@@ -220,6 +220,9 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
                 // ignore
                 break;
             case VisualizationGroupI.VISGROUP_RENAMED:
+                // ignore
+                break;
+            case VGroupManagerI.REPLICATEGROUP_SELECTION_CHANGED:
                 // ignore
                 break;
             default:
@@ -241,7 +244,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
                 @Override
                 protected SortedSet<AttributeTypeI> doInBackground() throws Exception {
                     SortedSet<AttributeTypeI> types = new TreeSet<>();
-                    for (VisualizationGroupI vg : vgmgr.getActiveGroups()) {
+                    for (VisualizationGroupI vg : vgmgr.getActiveVizGroups()) {
                         Iterator<AttributeTypeI> atIter = vg.getAttributeTypes();
                         while (atIter.hasNext()) {
                             types.add(atIter.next());

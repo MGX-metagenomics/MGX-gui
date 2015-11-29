@@ -2,7 +2,7 @@ package de.cebitec.mgx.gui.controller;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.AccessBaseI;
-import de.cebitec.mgx.api.model.ModelBase;
+import de.cebitec.mgx.api.model.MGXDataModelBaseI;
 import de.cebitec.mgx.client.MGXDTOMaster;
 import java.util.Arrays;
 import java.util.List;
@@ -12,7 +12,7 @@ import java.util.List;
  * @author sjaenick
  * @param <T>
  */
-public abstract class AccessBase<T extends ModelBase<T>> implements AccessBaseI<T> {
+public abstract class AccessBase<T extends MGXDataModelBaseI<T>> implements AccessBaseI<T> {
 
     private final MGXMasterI master;
     private final MGXDTOMaster dtomaster;

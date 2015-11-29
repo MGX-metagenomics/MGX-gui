@@ -2,7 +2,7 @@ package de.cebitec.mgx.gui.jobmonitor;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.JobI;
-import de.cebitec.mgx.api.model.ModelBase;
+import de.cebitec.mgx.api.model.ModelBaseI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.nodes.JobNode;
 import java.awt.Component;
@@ -238,7 +238,7 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getPropertyName().equals(ModelBase.OBJECT_DELETED)) {
+        if (evt.getPropertyName().equals(ModelBaseI.OBJECT_DELETED)) {
             if (evt.getSource() instanceof SeqRunI) {
                 SeqRunI run = (SeqRunI) evt.getSource();
                 run.removePropertyChangeListener(this);

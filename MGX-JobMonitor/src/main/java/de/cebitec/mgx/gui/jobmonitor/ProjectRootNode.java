@@ -1,15 +1,13 @@
 package de.cebitec.mgx.gui.jobmonitor;
 
 import de.cebitec.mgx.api.MGXMasterI;
-import de.cebitec.mgx.api.model.ModelBase;
+import de.cebitec.mgx.api.model.ModelBaseI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.nodefactory.JobBySeqRunNodeFactory;
 import de.cebitec.mgx.gui.nodefactory.JobNodeFactory;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
@@ -54,7 +52,7 @@ public class ProjectRootNode extends AbstractNode implements PropertyChangeListe
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getPropertyName().equals(ModelBase.OBJECT_DELETED)) {
+        if (evt.getPropertyName().equals(ModelBaseI.OBJECT_DELETED)) {
             if (evt.getSource() instanceof SeqRunI) {
                 SeqRunI run = (SeqRunI) evt.getSource();
                 run.removePropertyChangeListener(this);

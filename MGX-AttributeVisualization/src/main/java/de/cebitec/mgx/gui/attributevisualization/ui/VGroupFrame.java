@@ -6,7 +6,7 @@ package de.cebitec.mgx.gui.attributevisualization.ui;
 
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.model.SeqRunI;
-import de.cebitec.mgx.gui.nodefactory.VisualizationGroupNodeFactory;
+import de.cebitec.mgx.gui.nodefactory.GroupedSeqRunNodeFactory;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.datatransfer.DataFlavor;
@@ -47,7 +47,7 @@ public class VGroupFrame extends javax.swing.JPanel implements ExplorerManager.P
 
     private final VisualizationGroupI vGroup;
     private ExplorerManager exmngr = new ExplorerManager();
-    private VisualizationGroupNodeFactory vgnf;
+    private GroupedSeqRunNodeFactory vgnf;
     private MyListView listView;
 
     /**
@@ -70,7 +70,7 @@ public class VGroupFrame extends javax.swing.JPanel implements ExplorerManager.P
         color.addActionListener(this);
         active.addItemListener(this);
         //
-        vgnf = new VisualizationGroupNodeFactory(vGroup);
+        vgnf = new GroupedSeqRunNodeFactory(vGroup);
 
         final InvisibleRoot root = new InvisibleRoot(Children.create(vgnf, true));
         exmngr.setRootContext(root);
