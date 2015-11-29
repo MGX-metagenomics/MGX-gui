@@ -8,7 +8,6 @@ import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.swing.AbstractAction;
@@ -27,12 +26,12 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sjaenick
  */
-public class VisualizationGroupNodeFactory extends ChildFactory<SeqRunI> implements NodeListener {
+public class GroupedSeqRunNodeFactory extends ChildFactory<SeqRunI> implements NodeListener {
 
     private final VisualizationGroupI group;
     //private final List<SeqRunNode> nodes = new ArrayList<>();
 
-    public VisualizationGroupNodeFactory(VisualizationGroupI group) {
+    public GroupedSeqRunNodeFactory(VisualizationGroupI group) {
         this.group = group;
         group.addPropertyChangeListener(new PropertyChangeListener() {
 
@@ -90,7 +89,7 @@ public class VisualizationGroupNodeFactory extends ChildFactory<SeqRunI> impleme
     @Override
     protected Node createNodeForKey(SeqRunI sr) {
         SeqRunNode n = new SeqRunNode(sr, Children.LEAF);
-        FilterNode node = new DisplayNode(n, this);
+        FilterNode node = new SeqRunFilterNode(n, this);
         node.addNodeListener(this);
         return node;
     }
@@ -123,12 +122,12 @@ public class VisualizationGroupNodeFactory extends ChildFactory<SeqRunI> impleme
         //refresh(true);
     }
 
-    private class DisplayNode extends FilterNode implements NodeListener {
+    private class SeqRunFilterNode extends FilterNode implements NodeListener {
 
         private final SeqRunNode n;
-        private final VisualizationGroupNodeFactory nf;
+        private final GroupedSeqRunNodeFactory nf;
 
-        public DisplayNode(SeqRunNode node, VisualizationGroupNodeFactory nodef) {
+        public SeqRunFilterNode(SeqRunNode node, GroupedSeqRunNodeFactory nodef) {
             super(node, Children.LEAF, Lookups.singleton(node.getContent()));
             disableDelegation(DELEGATE_SET_DISPLAY_NAME + DELEGATE_GET_ACTIONS);
             n = node;

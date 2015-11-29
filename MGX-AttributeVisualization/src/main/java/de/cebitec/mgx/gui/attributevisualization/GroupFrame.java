@@ -5,23 +5,13 @@
  */
 package de.cebitec.mgx.gui.attributevisualization;
 
+import de.cebitec.mgx.api.groups.ReplicateGroupI;
 import de.cebitec.mgx.api.groups.VGroupManagerI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
-import de.cebitec.mgx.api.model.ModelBase;
-import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.common.VGroupManager;
-import de.cebitec.mgx.gui.nodefactory.VisualizationGroupNodeFactory;
+import de.cebitec.mgx.gui.nodefactory.GroupedSeqRunNodeFactory;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.dnd.DnDConstants;
-import java.awt.dnd.DropTarget;
-import java.awt.dnd.DropTargetAdapter;
-import java.awt.dnd.DropTargetDragEvent;
-import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -29,26 +19,18 @@ import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
-import java.io.IOException;
 import java.text.DecimalFormat;
-import java.util.HashSet;
-import java.util.Set;
 import javax.swing.JColorChooser;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.ToolTipManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.event.InternalFrameEvent;
-import javax.swing.event.InternalFrameListener;
 import javax.swing.text.Document;
 import org.openide.explorer.ExplorerManager;
-import org.openide.explorer.view.TreeTableView;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.util.Exceptions;
-import org.openide.util.datatransfer.ExTransferable;
-import org.openide.util.datatransfer.MultiTransferObject;
 
 /**
  *
@@ -58,7 +40,8 @@ public class GroupFrame extends javax.swing.JInternalFrame implements ExplorerMa
 
     private final VisualizationGroupI vGroup;
     private final ExplorerManager exmngr = new ExplorerManager();
-    private final VisualizationGroupNodeFactory vgnf;
+    private final GroupedSeqRunNodeFactory nodeFact;
+    private final static DecimalFormat df = new DecimalFormat(",###");
 
     public GroupFrame(VisualizationGroupI group) {
         initComponents();
@@ -82,12 +65,12 @@ public class GroupFrame extends javax.swing.JInternalFrame implements ExplorerMa
         //
         addInternalFrameListener(new SelectionHandler());
         //
-        vgnf = new VisualizationGroupNodeFactory(vGroup);
+        nodeFact = new GroupedSeqRunNodeFactory(vGroup);
 
         // invisible root node
-        exmngr.setRootContext(new AbstractNode(Children.create(vgnf, true)));
+        exmngr.setRootContext(new AbstractNode(Children.create(nodeFact, true)));
 
-        MyListView myListView = new MyListView();
+        VizGroupListView myListView = new VizGroupListView(vGroup);
         panel.add(myListView, BorderLayout.CENTER);
 
         setVisible(true);
@@ -109,7 +92,7 @@ public class GroupFrame extends javax.swing.JInternalFrame implements ExplorerMa
     public void dispose() {
         vGroup.removePropertyChangeListener(this);
         VGroupManager.getInstance().removePropertyChangeListener(this);
-        VGroupManager.getInstance().removeGroup(vGroup);
+        VGroupManager.getInstance().removeVizGroup(vGroup);
         super.dispose();
     }
 
@@ -141,7 +124,6 @@ public class GroupFrame extends javax.swing.JInternalFrame implements ExplorerMa
         active.setToolTipText("Show group?");
         jPanel2.add(active, java.awt.BorderLayout.WEST);
 
-        displayName.setText("jTextField1");
         displayName.setToolTipText("Group name");
         jPanel2.add(displayName, java.awt.BorderLayout.CENTER);
 
@@ -220,7 +202,6 @@ public class GroupFrame extends javax.swing.JInternalFrame implements ExplorerMa
     public void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {
             case VisualizationGroupI.VISGROUP_RENAMED:
-                DecimalFormat df = new DecimalFormat(",###");
                 setTitle(vGroup.getName() + " (" + df.format(vGroup.getNumSequences()) + " sequences)");
                 displayName.setBackground(Color.WHITE);
                 break;
@@ -236,7 +217,7 @@ public class GroupFrame extends javax.swing.JInternalFrame implements ExplorerMa
                 // ignore
                 break;
             case VisualizationGroupI.VISGROUP_CHANGED:
-                setTitle(vGroup.getName() + " (" + vGroup.getNumSequences() + " sequences)");
+                setTitle(vGroup.getName() + " (" + df.format(vGroup.getNumSequences()) + " sequences)");
                 break;
             case VGroupManagerI.VISGROUP_SELECTION_CHANGED:
                 try {
@@ -245,153 +226,15 @@ public class GroupFrame extends javax.swing.JInternalFrame implements ExplorerMa
                     Exceptions.printStackTrace(ex);
                 }
                 break;
-            case ModelBase.OBJECT_MODIFIED:
+            case VisualizationGroupI.OBJECT_MODIFIED:
                 repaint();
+                break;
+            case ReplicateGroupI.REPLICATEGROUP_REPLICATE_ADDED:
+                // ignore
                 break;
             default:
                 System.err.println("GroupFrame for " + vGroup.getName() + " got event " + evt.getPropertyName());
         }
     }
 
-    private final class SelectionHandler implements InternalFrameListener {
-
-        @Override
-        public void internalFrameOpened(InternalFrameEvent e) {
-        }
-
-        @Override
-        public void internalFrameClosing(InternalFrameEvent e) {
-        }
-
-        @Override
-        public void internalFrameClosed(InternalFrameEvent e) {
-        }
-
-        @Override
-        public void internalFrameIconified(InternalFrameEvent e) {
-        }
-
-        @Override
-        public void internalFrameDeiconified(InternalFrameEvent e) {
-        }
-
-        @Override
-        public void internalFrameActivated(InternalFrameEvent e) {
-            VGroupManager.getInstance().setSelectedGroup(vGroup);
-        }
-
-        @Override
-        public void internalFrameDeactivated(InternalFrameEvent e) {
-        }
-    }
-
-    private final class MyListView extends TreeTableView implements PropertyChangeListener {
-
-        public MyListView() {
-            super();
-            setRootVisible(false);
-            setDropTarget(true);
-            //setShowParentNode(true);
-            setAllowedDropActions(DnDConstants.ACTION_COPY + DnDConstants.ACTION_REFERENCE);
-            setDropTarget();
-            vGroup.addPropertyChangeListener(this);
-        }
-
-        private void setDropTarget() {
-            DropTarget dt = new DropTarget(this, new DropTargetAdapter() {
-                @Override
-                public void dragEnter(DropTargetDragEvent dtde) {
-                    Transferable t = dtde.getTransferable();
-                    if (t.isDataFlavorSupported(ExTransferable.multiFlavor)) {
-                        try {
-                            final MultiTransferObject mto = (MultiTransferObject) t.getTransferData(ExTransferable.multiFlavor);
-                            if (mto.areDataFlavorsSupported(new DataFlavor[]{SeqRunI.DATA_FLAVOR})) {
-                                int elems = mto.getCount();
-                                for (int i = 0; i < elems; i++) {
-                                    SeqRunI run = (SeqRunI) mto.getTransferData(i, SeqRunI.DATA_FLAVOR);
-                                    if (vGroup.getSeqRuns().contains(run)) {
-                                        dtde.rejectDrag();
-                                        return;
-                                    }
-                                }
-                                dtde.acceptDrag(DnDConstants.ACTION_COPY);
-                                return;
-                            }
-                        } catch (UnsupportedFlavorException | IOException e) {
-                        }
-                    }
-
-                    if (dtde.isDataFlavorSupported(SeqRunI.DATA_FLAVOR)) {
-                        try {
-                            SeqRunI run = (SeqRunI) dtde.getTransferable().getTransferData(SeqRunI.DATA_FLAVOR);
-                            if (run != null && !vGroup.getSeqRuns().contains(run)) {
-                                dtde.acceptDrag(DnDConstants.ACTION_COPY);
-                                return;
-                            }
-                        } catch (UnsupportedFlavorException | IOException ex) {
-                        }
-                    }
-
-                    dtde.rejectDrag();
-                }
-
-                @Override
-                public void drop(DropTargetDropEvent dtde) {
-                    Transferable t = dtde.getTransferable();
-                    if (t.isDataFlavorSupported(ExTransferable.multiFlavor)) {
-                        try {
-                            final MultiTransferObject mto = (MultiTransferObject) t.getTransferData(ExTransferable.multiFlavor);
-                            if (mto.areDataFlavorsSupported(new DataFlavor[]{SeqRunI.DATA_FLAVOR})) {
-                                int elems = mto.getCount();
-                                for (int i = 0; i < elems; i++) {
-                                    SeqRunI run = (SeqRunI) mto.getTransferData(i, SeqRunI.DATA_FLAVOR);
-                                    if (vGroup.getSeqRuns().contains(run)) {
-                                        dtde.rejectDrop();
-                                        return;
-                                    }
-                                }
-
-                                try {
-                                    setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-                                    Set<SeqRunI> newRuns = new HashSet<>();
-                                    for (int i = 0; i < elems; i++) {
-                                        SeqRunI run = (SeqRunI) mto.getTransferData(i, SeqRunI.DATA_FLAVOR);
-                                        newRuns.add(run);
-
-                                    }
-                                    vgnf.addSeqRuns(newRuns);
-                                } finally {
-                                    setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-                                }
-                                dtde.dropComplete(true);
-                                return;
-                            }
-                        } catch (UnsupportedFlavorException | IOException e) {
-                        }
-                    }
-
-                    if (dtde.isDataFlavorSupported(SeqRunI.DATA_FLAVOR)) {
-                        try {
-                            SeqRunI run = (SeqRunI) dtde.getTransferable().getTransferData(SeqRunI.DATA_FLAVOR);
-                            if (run != null && !vGroup.getSeqRuns().contains(run)) {
-                                vgnf.addSeqRun(run);
-                                dtde.dropComplete(true);
-                                return;
-                            }
-                        } catch (UnsupportedFlavorException | IOException ex) {
-                        }
-                    }
-
-                    dtde.rejectDrop();
-                }
-            });
-            setDropTarget(dt);
-
-        }
-
-        @Override
-        public void propertyChange(PropertyChangeEvent evt) {
-            //System.err.println("ListView got "+evt.getPropertyName());
-        }
-    }
 }

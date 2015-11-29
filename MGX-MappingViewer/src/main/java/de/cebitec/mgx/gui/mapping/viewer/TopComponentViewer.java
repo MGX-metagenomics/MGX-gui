@@ -6,7 +6,7 @@ package de.cebitec.mgx.gui.mapping.viewer;
 
 import de.cebitec.mgx.api.groups.FileType;
 import de.cebitec.mgx.api.groups.ImageExporterI;
-import de.cebitec.mgx.api.model.ModelBase;
+import de.cebitec.mgx.api.model.ModelBaseI;
 import de.cebitec.mgx.gui.mapping.MappingCtx;
 import de.cebitec.mgx.gui.mapping.ViewController;
 import de.cebitec.mgx.gui.mapping.panel.FeaturePanel;
@@ -203,7 +203,7 @@ public final class TopComponentViewer extends TopComponent implements PropertyCh
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getPropertyName().equals(ModelBase.OBJECT_DELETED)) {
+        if (evt.getPropertyName().equals(ModelBaseI.OBJECT_DELETED)) {
             ctx.removePropertyChangeListener(this);
             //ctx = null;
             removeAll();

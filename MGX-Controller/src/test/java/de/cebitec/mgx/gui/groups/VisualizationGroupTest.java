@@ -58,7 +58,7 @@ public class VisualizationGroupTest {
     @Test
     public void testSetName() {
         System.out.println("setName");
-        VisualizationGroupI vg = VGroupManager.getInstance().createGroup();
+        VisualizationGroupI vg = VGroupManager.getInstance().createVizGroup();
         String name = UUID.randomUUID().toString();
         vg.setName(name);
         assertEquals(name, vg.getName());
@@ -70,7 +70,7 @@ public class VisualizationGroupTest {
 
         VGroupManagerI vgmgr = VGroupManager.getInstance();
         synchronized (vgmgr) {
-            VisualizationGroupI vg = vgmgr.createGroup();
+            VisualizationGroupI vg = vgmgr.createVizGroup();
             MGXMasterI master = TestMaster.getRO();
             Iterator<SeqRunI> iter = master.SeqRun().fetchall();
             long cnt = 0;
@@ -88,7 +88,7 @@ public class VisualizationGroupTest {
         System.out.println("getSeqRuns");
         VGroupManagerI vgmgr = VGroupManager.getInstance();
         synchronized (vgmgr) {
-            VisualizationGroupI vg = vgmgr.createGroup();
+            VisualizationGroupI vg = vgmgr.createVizGroup();
             MGXMasterI master = TestMaster.getRO();
             Set<SeqRunI> runs = new HashSet<>();
             Iterator<SeqRunI> iter = master.SeqRun().fetchall();
@@ -106,7 +106,7 @@ public class VisualizationGroupTest {
         System.out.println("getAttributeTypes");
         VGroupManagerI vgmgr = VGroupManager.getInstance();
         synchronized (vgmgr) {
-            VisualizationGroupI vg = vgmgr.createGroup();
+            VisualizationGroupI vg = vgmgr.createVizGroup();
             MGXMasterI master = TestMaster.getRO();
             Iterator<SeqRunI> iter = master.SeqRun().fetchall();
             while (iter.hasNext()) {
@@ -129,7 +129,7 @@ public class VisualizationGroupTest {
         System.out.println("addAndRemoveRuns");
         VGroupManagerI vgmgr = VGroupManager.getInstance();
         synchronized (vgmgr) {
-            VisualizationGroupI vg = vgmgr.createGroup();
+            VisualizationGroupI vg = vgmgr.createVizGroup();
             MGXMasterI master = TestMaster.getRO();
 
             Iterator<SeqRunI> iter = master.SeqRun().fetchall();
@@ -169,7 +169,7 @@ public class VisualizationGroupTest {
 
         VGroupManagerI vgmgr = VGroupManager.getInstance();
         synchronized (vgmgr) {
-            VisualizationGroupI vg = vgmgr.createGroup();
+            VisualizationGroupI vg = vgmgr.createVizGroup();
             MGXMasterI master = TestMaster.getRO();
             SeqRunI run = master.SeqRun().fetch(1);
             assertEquals("dataset1", run.getName());
@@ -199,7 +199,7 @@ public class VisualizationGroupTest {
         System.out.println("getSelectedAttributeType");
         VGroupManagerI vgmgr = VGroupManager.getInstance();
         synchronized (vgmgr) {
-            VisualizationGroupI vg = vgmgr.createGroup();
+            VisualizationGroupI vg = vgmgr.createVizGroup();
             MGXMasterI master = TestMaster.getRO();
             Iterator<SeqRunI> iter = master.SeqRun().fetchall();
             while (iter.hasNext()) {

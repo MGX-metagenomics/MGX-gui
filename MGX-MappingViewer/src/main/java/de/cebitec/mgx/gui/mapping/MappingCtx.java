@@ -6,7 +6,7 @@ import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.api.model.MappedSequenceI;
 import de.cebitec.mgx.api.model.MappingI;
-import de.cebitec.mgx.api.model.ModelBase;
+import de.cebitec.mgx.api.model.ModelBaseI;
 import de.cebitec.mgx.api.model.RegionI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.ToolI;
@@ -158,7 +158,7 @@ public class MappingCtx implements PropertyChangeListener, AutoCloseable {
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getPropertyName().equals(ModelBase.OBJECT_DELETED)) {
+        if (evt.getPropertyName().equals(ModelBaseI.OBJECT_DELETED)) {
             close();
         }
     }
@@ -174,7 +174,7 @@ public class MappingCtx implements PropertyChangeListener, AutoCloseable {
         ref.removePropertyChangeListener(this);
         run.removePropertyChangeListener(this);
         job.removePropertyChangeListener(this);
-        pcs.firePropertyChange(ModelBase.OBJECT_DELETED, 0, 1);
+        pcs.firePropertyChange(ModelBaseI.OBJECT_DELETED, 0, 1);
     }
 
 }

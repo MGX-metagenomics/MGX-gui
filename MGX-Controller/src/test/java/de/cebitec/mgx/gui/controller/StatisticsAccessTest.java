@@ -59,15 +59,15 @@ public class StatisticsAccessTest {
         VGroupManagerI vgmgr = VGroupManager.getInstance();
 
         synchronized (vgmgr) {
-            for (VisualizationGroupI vg : vgmgr.getAllGroups().toArray(new VisualizationGroupI[]{})) {
-                vgmgr.removeGroup(vg);
+            for (VisualizationGroupI vg : vgmgr.getAllVizGroups().toArray(new VisualizationGroupI[]{})) {
+                vgmgr.removeVizGroup(vg);
             }
             vgmgr.registerResolver(new Resolver());
-            VisualizationGroupI g1 = vgmgr.createGroup();
+            VisualizationGroupI g1 = vgmgr.createVizGroup();
             g1.setName("grp1");
             g1.addSeqRun(master.SeqRun().fetch(1));
 
-            VisualizationGroupI g2 = vgmgr.createGroup();
+            VisualizationGroupI g2 = vgmgr.createVizGroup();
             g2.setName("grp2");
             SeqRunI run = master.SeqRun().fetch(2);
             assertNotNull(run);
@@ -97,21 +97,21 @@ public class StatisticsAccessTest {
         VGroupManagerI vgmgr = VGroupManager.getInstance();
 
         synchronized (vgmgr) {
-            for (VisualizationGroupI vg : vgmgr.getAllGroups().toArray(new VisualizationGroupI[]{})) {
-                vgmgr.removeGroup(vg);
+            for (VisualizationGroupI vg : vgmgr.getAllVizGroups().toArray(new VisualizationGroupI[]{})) {
+                vgmgr.removeVizGroup(vg);
             }
             vgmgr.registerResolver(new Resolver());
-            VisualizationGroupI g1 = vgmgr.createGroup();
+            VisualizationGroupI g1 = vgmgr.createVizGroup();
             g1.setName("grp1");
             g1.addSeqRun(master.SeqRun().fetch(1));
 
-            VisualizationGroupI g2 = vgmgr.createGroup();
+            VisualizationGroupI g2 = vgmgr.createVizGroup();
             g2.setName("grp2");
             SeqRunI run = master.SeqRun().fetch(2);
             assertNotNull(run);
             g2.addSeqRun(run);
 
-            assertEquals(2, vgmgr.getActiveGroups().size());
+            assertEquals(2, vgmgr.getActiveVizGroups().size());
 
             boolean ret = vgmgr.selectAttributeType(AttributeRank.PRIMARY, "EC_number");
             assertTrue(ret);
@@ -144,15 +144,15 @@ public class StatisticsAccessTest {
         VGroupManagerI vgmgr = VGroupManager.getInstance();
 
         synchronized (vgmgr) {
-            for (VisualizationGroupI vg : vgmgr.getAllGroups().toArray(new VisualizationGroupI[]{})) {
-                vgmgr.removeGroup(vg);
+            for (VisualizationGroupI vg : vgmgr.getAllVizGroups().toArray(new VisualizationGroupI[]{})) {
+                vgmgr.removeVizGroup(vg);
             }
             vgmgr.registerResolver(new Resolver());
-            VisualizationGroupI g1 = vgmgr.createGroup();
+            VisualizationGroupI g1 = vgmgr.createVizGroup();
             g1.setName("grp1");
             g1.addSeqRun(master.SeqRun().fetch(1));
 
-            VisualizationGroupI g2 = vgmgr.createGroup();
+            VisualizationGroupI g2 = vgmgr.createVizGroup();
             g2.setName("grp2");
             g2.addSeqRun(master.SeqRun().fetch(2));
 
@@ -166,11 +166,13 @@ public class StatisticsAccessTest {
             }
             assertNotNull(dists);
             assertEquals(2, dists.size());
-            
+
             List<Pair<VisualizationGroupI, DistributionI<Double>>> filter = new LongToDouble().filter(dists);
 
             String newick = master.Statistics().Clustering(filter, "euclidean", "ward");
             assertNotNull(newick);
+//            assertTrue(newick.contains(g1.getName()));
+//            assertTrue(newick.contains(g2.getName()));
             //assertEquals("(grp1:5.74456264653803,grp2:5.74456264653803);", newick);
         }
 
@@ -181,6 +183,7 @@ public class StatisticsAccessTest {
         @Override
         public boolean resolve(List<VisualizationGroupI> vg) {
             for (VisualizationGroupI g : vg.toArray(new VisualizationGroupI[]{})) {
+
                 if (g.getName().equals("grp1")) {
                     for (Triple<AttributeRank, SeqRunI, Set<JobI>> t : g.getConflicts()) {
                         if (t.getSecond().getId() == 1) {

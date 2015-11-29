@@ -5,7 +5,7 @@ import de.cebitec.mgx.api.access.TaskAccessI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.misc.TaskI.TaskType;
-import de.cebitec.mgx.api.model.ModelBase;
+import de.cebitec.mgx.api.model.MGXDataModelBaseI;
 import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
@@ -19,7 +19,7 @@ import java.util.UUID;
  * @author sjaenick
  * @param <T>
  */
-public class TaskAccess<T extends ModelBase> implements TaskAccessI<T> {
+public class TaskAccess<T extends MGXDataModelBaseI<T>> implements TaskAccessI<T> {
 
     private final MGXMasterI master;
     private final MGXDTOMaster dtomaster;
