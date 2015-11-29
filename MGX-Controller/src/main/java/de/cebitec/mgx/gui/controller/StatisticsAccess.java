@@ -24,6 +24,8 @@ import de.cebitec.mgx.dto.dto.ProfileDTO;
 import de.cebitec.mgx.gui.dtoconversion.PCAResultDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.PointDTOFactory;
 import de.cebitec.mgx.gui.util.BaseIterator;
+import de.cebitec.mgx.newick.NewickParser;
+import de.cebitec.mgx.newick.NodeI;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -78,12 +80,14 @@ public class StatisticsAccess implements StatisticsAccessI {
 
             // de-obfuscate group names
             for (Entry<String, UUID> e : tmpNames.entrySet()) {
-                nwk = nwk.replace(e.getKey(), e.getValue().toString());
+                nwk = nwk.replace(e.getValue().toString(), e.getKey());
             }
             return nwk; // NewickParser.parse(nwk);
         } catch (MGXServerException | MGXClientException ex) {
             throw new MGXException(ex);
         }
+        //NodeI root = NewickParser.parse(nwk);
+        
     }
 
     @Override

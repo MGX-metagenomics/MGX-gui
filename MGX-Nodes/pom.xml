@@ -110,7 +110,6 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>MGX-Actions</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>de.cebitec.mgx</groupId>

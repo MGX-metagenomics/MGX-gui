@@ -12,6 +12,10 @@ import java.util.logging.Logger;
  * @author sj
  */
 public class Checker {
+    
+    //
+    // Consistency checks to be applied to validate TreeI operations
+    //
 
     public static void sanityCheck(final Set<AttributeI> map) {
         for (AttributeI a : map) {

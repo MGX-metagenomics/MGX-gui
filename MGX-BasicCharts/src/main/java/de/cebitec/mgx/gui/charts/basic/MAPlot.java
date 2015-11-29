@@ -251,7 +251,7 @@ public class MAPlot extends NumericalViewerI<Long> {
     public boolean canHandle(AttributeTypeI valueType) {
         try {
             return valueType.getValueType() == AttributeTypeI.VALUE_DISCRETE
-                    && VGroupManager.getInstance().getActiveGroups().size() == 2
+                    && VGroupManager.getInstance().getActiveVizGroups().size() == 2
                     && VGroupManager.getInstance().getDistributions().size() == 2;
         } catch (ConflictingJobsException ex) {
             return false;

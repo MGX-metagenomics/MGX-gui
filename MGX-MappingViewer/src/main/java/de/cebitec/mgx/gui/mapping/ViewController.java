@@ -8,7 +8,7 @@ package de.cebitec.mgx.gui.mapping;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.api.model.MappedSequenceI;
-import de.cebitec.mgx.api.model.ModelBase;
+import de.cebitec.mgx.api.model.ModelBaseI;
 import de.cebitec.mgx.api.model.RegionI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.ToolI;
@@ -129,7 +129,7 @@ public class ViewController implements PropertyChangeListener {
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getPropertyName().equals(ModelBase.OBJECT_DELETED)) {
+        if (evt.getPropertyName().equals(ModelBaseI.OBJECT_DELETED)) {
             curBounds[0] = 0;
             curBounds[1] = 0;
             intervalLen = -1;

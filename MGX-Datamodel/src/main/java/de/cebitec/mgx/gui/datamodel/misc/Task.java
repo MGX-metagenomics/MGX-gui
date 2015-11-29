@@ -1,7 +1,7 @@
 package de.cebitec.mgx.gui.datamodel.misc;
 
 import de.cebitec.mgx.api.misc.TaskI;
-import de.cebitec.mgx.api.model.ModelBase;
+import de.cebitec.mgx.api.model.MGXDataModelBaseI;
 import java.util.UUID;
 
 /**
@@ -9,7 +9,7 @@ import java.util.UUID;
  * @author sjaenick
  * @param <T>
  */
-public class Task<T extends ModelBase> extends TaskI<T> {
+public class Task<T extends MGXDataModelBaseI<T>> extends TaskI<T> {
 
   
     private String statusMessage = "";

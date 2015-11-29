@@ -4,6 +4,7 @@ import de.cebitec.mgx.api.groups.VGroupManagerI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.common.VGroupManager;
 import de.cebitec.mgx.gui.attributevisualization.GroupFrame;
+import de.cebitec.mgx.gui.attributevisualization.ReplicateGroupFrame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -19,6 +20,7 @@ import org.openide.util.Lookup;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.lookup.AbstractLookup;
 import org.openide.util.lookup.InstanceContent;
+import org.openide.util.lookup.ProxyLookup;
 import org.openide.util.lookup.ServiceProvider;
 import org.openide.windows.TopComponent;
 
@@ -41,37 +43,50 @@ import org.openide.windows.TopComponent;
     "HINT_VisualizationGroupTopComponent=Group window"
 })
 @ServiceProvider(service = VisualizationGroupTopComponent.class)
-public final class VisualizationGroupTopComponent extends TopComponent implements ActionListener, PropertyChangeListener { // , ExplorerManager.Provider {
+public final class VisualizationGroupTopComponent extends TopComponent implements ExplorerManager.Provider, ActionListener, PropertyChangeListener { // , ExplorerManager.Provider {
 
     private final VGroupManagerI groupmgr = VGroupManager.getInstance();
     private final ExplorerManager exmngr = new ExplorerManager();
     private final InstanceContent content = new InstanceContent();
     private final Lookup lookup;
+    //
+    //
+    //
+    private final static String ADD_VGROUP = "CMD_ADD_VGROUP";
+    private final static String ADD_REPL_GROUP = "CMD_ADD_REPLGROUP";
 
     public VisualizationGroupTopComponent() {
         initComponents();
         addGroupButton.addActionListener(this);
+        addGroupButton.setActionCommand(ADD_VGROUP);
+
+        addReplGroupButton.addActionListener(this);
+        addReplGroupButton.setActionCommand(ADD_REPL_GROUP);
 
         groupmgr.addPropertyChangeListener(this);
 
         setName(Bundle.CTL_VisualizationGroupTopComponent());
         setToolTipText(Bundle.HINT_VisualizationGroupTopComponent());
-        //associateLookup(ExplorerUtils.createLookup(exmngr, getActionMap()));
         lookup = new AbstractLookup(content);
-        associateLookup(lookup);
+        
+        // combined lookup
+        associateLookup(new ProxyLookup(new Lookup[]{
+            ExplorerUtils.createLookup(exmngr, getActionMap()),
+            lookup
+        }));
 
         // create initial group, if necessary
-        if (groupmgr.getAllGroups().isEmpty()) {
-            actionPerformed(null);
+        if (groupmgr.getAllVizGroups().isEmpty()) {
+            actionPerformed(new ActionEvent(this, 1, ADD_VGROUP));
         }
     }
 
     public Collection<VisualizationGroupI> getVisualizationGroups() {
-        return groupmgr.getActiveGroups();
+        return groupmgr.getActiveVizGroups();
     }
 
     void removeGroup(VisualizationGroupI group) {
-        groupmgr.removeGroup(group);
+        groupmgr.removeVizGroup(group);
     }
 
 //    @Override
@@ -85,7 +100,6 @@ public final class VisualizationGroupTopComponent extends TopComponent implement
 //        }
 //        return super.getToolTipText();
 //    }
-
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -96,6 +110,7 @@ public final class VisualizationGroupTopComponent extends TopComponent implement
 
         jToolBar1 = new javax.swing.JToolBar();
         addGroupButton = new javax.swing.JButton();
+        addReplGroupButton = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         panel = new javax.swing.JPanel();
 
@@ -112,6 +127,14 @@ public final class VisualizationGroupTopComponent extends TopComponent implement
         addGroupButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jToolBar1.add(addGroupButton);
 
+        addReplGroupButton.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(addReplGroupButton, org.openide.util.NbBundle.getMessage(VisualizationGroupTopComponent.class, "VisualizationGroupTopComponent.addReplGroupButton.text")); // NOI18N
+        addReplGroupButton.setEnabled(false);
+        addReplGroupButton.setFocusable(false);
+        addReplGroupButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        addReplGroupButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(addReplGroupButton);
+
         add(jToolBar1, java.awt.BorderLayout.NORTH);
 
         jScrollPane1.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
@@ -123,6 +146,7 @@ public final class VisualizationGroupTopComponent extends TopComponent implement
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addGroupButton;
+    private javax.swing.JButton addReplGroupButton;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JPanel panel;
@@ -142,7 +166,7 @@ public final class VisualizationGroupTopComponent extends TopComponent implement
         // better to version settings since initial version as advocated at
         // http://wiki.apidesign.org/wiki/PropertyFiles
         p.setProperty("version", "1.0");
-        Collection<VisualizationGroupI> groups = groupmgr.getAllGroups();
+        Collection<VisualizationGroupI> groups = groupmgr.getAllVizGroups();
         p.setProperty("numGroups", String.valueOf(groups.size()));
         int num = 0;
         for (VisualizationGroupI vg : groups) {
@@ -157,8 +181,19 @@ public final class VisualizationGroupTopComponent extends TopComponent implement
 
     @Override
     public final void actionPerformed(ActionEvent e) {
-        GroupFrame gf = new GroupFrame(VGroupManager.getInstance().createGroup());
-        panel.add(gf);
+        switch (e.getActionCommand()) {
+            case ADD_VGROUP:
+                GroupFrame gf = new GroupFrame(VGroupManager.getInstance().createVizGroup());
+                panel.add(gf);
+                break;
+            case ADD_REPL_GROUP:
+                ReplicateGroupFrame rgf = new ReplicateGroupFrame(VGroupManager.getInstance().createReplicateGroup());
+                panel.add(rgf);
+                break;
+            default:
+                assert false;
+        }
+
     }
 
     @Override
@@ -167,6 +202,7 @@ public final class VisualizationGroupTopComponent extends TopComponent implement
             case VGroupManagerI.VISGROUP_SELECTION_CHANGED:
                 content.set(Collections.emptyList(), null); // clear content
                 content.add(evt.getNewValue());
+
                 break;
             case VisualizationGroupI.VISGROUP_ATTRTYPE_CHANGED:
                 // ignore
@@ -189,5 +225,10 @@ public final class VisualizationGroupTopComponent extends TopComponent implement
             default:
                 System.err.println("VGTopComponent got unhandled event " + evt.getPropertyName());
         }
+    }
+
+    @Override
+    public ExplorerManager getExplorerManager() {
+        return exmngr;
     }
 }
