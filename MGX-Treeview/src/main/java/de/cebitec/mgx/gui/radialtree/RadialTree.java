@@ -364,7 +364,7 @@ public class RadialTree extends HierarchicalViewerI {
 
     @Override
     public boolean canHandle(AttributeTypeI valueType) {
-        return super.canHandle(valueType) && getVGroupManager().getActiveGroups().size() == 1;
+        return super.canHandle(valueType) && getVGroupManager().getActiveVizGroups().size() == 1;
     }
 
     @Override
