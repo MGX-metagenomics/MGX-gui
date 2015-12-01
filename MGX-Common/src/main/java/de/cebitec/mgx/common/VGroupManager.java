@@ -65,9 +65,10 @@ public class VGroupManager implements VGroupManagerI {
 
     private final Map<AttributeRank, String> currentAttributeType = new HashMap<>();
     private ConflictResolver resolver = null;
-    //
-    private static final Color colors[] = {Color.RED, Color.BLUE, Color.YELLOW, Color.PINK, Color.GREEN};
 
+    private static final Color colors[] = {Color.decode("#1d72aa"), Color.decode("#c44440"), Color.decode("#8cbb4e"), 
+        Color.decode("#795892"), Color.decode("#0099b2"), Color.decode("#f38533"), Color.decode("#8baad1")};
+    
     private VGroupManager() {
         pcs = new ParallelPropertyChangeSupport(this);
         //
