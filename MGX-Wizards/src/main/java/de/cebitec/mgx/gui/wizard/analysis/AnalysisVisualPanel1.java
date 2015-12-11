@@ -14,6 +14,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListCellRenderer;
+import javax.swing.ListSelectionModel;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
@@ -71,6 +72,7 @@ public final class AnalysisVisualPanel1 extends JPanel implements ListSelectionL
         JList<ToolI> list = new JList<>();
         list.setCellRenderer(new ToolListRenderer());
         list.addListSelectionListener(this);
+        list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         scrollPane.setViewportView(list);
         tabs.addTab(title, scrollPane);
         return list;
