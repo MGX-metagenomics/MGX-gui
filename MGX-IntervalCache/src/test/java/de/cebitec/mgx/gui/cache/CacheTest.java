@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.cache;
 
+import de.cebitec.gpms.core.GPMSException;
 import de.cebitec.gpms.rest.GPMSClientI;
 import de.cebitec.gpms.rest.RESTMembershipI;
 import de.cebitec.mgx.api.MGXMasterI;
@@ -17,7 +18,6 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Properties;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.UUID;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -56,6 +56,16 @@ public class CacheTest {
     }
 
     @Test
+    public void testGetSequenceRegression() throws Exception {
+        System.out.println("testGetSequenceRegression");
+        MGXMasterI master = get();
+        MGXReferenceI ref = master.Reference().fetch(4);
+        Cache<String> cache = CacheFactory.createSequenceCache(master, ref);
+        String seq = cache.get(1049908, 1050000);
+        assertNotNull(seq);
+    }
+
+    @Test
     public void testGetSequence() throws Exception {
         System.out.println("getSequence");
         MGXMasterI master = get();
@@ -63,10 +73,10 @@ public class CacheTest {
         Cache<String> cache = CacheFactory.createSequenceCache(master, ref);
         assertNotNull(cache);
         String seq = cache.get(0, 9);
-        assertEquals("ttgtgcacac", seq);
+        assertEquals("TTGTGCACAC", seq);
 
         seq = cache.get(97, 101);
-        assertEquals("attcg", seq);
+        assertEquals("ATTCG", seq);
     }
 
     @Test
@@ -79,10 +89,10 @@ public class CacheTest {
         assertNotNull(m);
         assertEquals(8, m.getReferenceID());
         UUID sessionUUID = master.Mapping().openMapping(m.getId());
-        CoverageInfoCache<SortedSet<MappedSequenceI>> cache = CacheFactory.createMappedSequenceCache(master, ref, sessionUUID);
+        CoverageInfoCache<Set<MappedSequenceI>> cache = CacheFactory.createMappedSequenceCache(master, ref, sessionUUID);
         assertNotNull(cache);
 
-        SortedSet<MappedSequenceI> ret = cache.get(0, 1000);
+        Set<MappedSequenceI> ret = cache.get(0, 1000);
         assertNotNull(ret);
         assertEquals(0, ret.size());
 
@@ -99,7 +109,7 @@ public class CacheTest {
         String seq = cache.get(0, ref.getLength() - 1);
         assertEquals(seq.length(), ref.getLength());
     }
-    
+
     @Test
     public void testGetRegions() throws Exception {
         System.out.println("getRegions");
@@ -278,7 +288,7 @@ public class CacheTest {
         assertNotNull(ref);
         UUID uuid = master.Mapping().openMapping(30);
 
-        CoverageInfoCache<SortedSet<MappedSequenceI>> cache = CacheFactory.createMappedSequenceCache(master, ref, uuid);
+        CoverageInfoCache<Set<MappedSequenceI>> cache = CacheFactory.createMappedSequenceCache(master, ref, uuid);
         assertNotNull(cache);
 
         IntIterator iter = cache.getCoverageIterator(0, ref.getLength() - 1);
@@ -298,7 +308,7 @@ public class CacheTest {
         assertNotNull(ref);
         UUID uuid = master.Mapping().openMapping(30);
 
-        CoverageInfoCache<SortedSet<MappedSequenceI>> cache = CacheFactory.createMappedSequenceCache(master, ref, uuid);
+        CoverageInfoCache<Set<MappedSequenceI>> cache = CacheFactory.createMappedSequenceCache(master, ref, uuid);
         assertNotNull(cache);
 
 //        int maxCoverage = cache.getMaxCoverage(0, 5);
@@ -313,7 +323,7 @@ public class CacheTest {
 //        cache.getCoverage(566470, 566480, foo);
 //        for (int i : foo) { System.err.println(foo[i]); }
         // expect seqs 53748, 3436, 26467
-        SortedSet<MappedSequenceI> seqs = cache.get(566470, 566480);
+        Set<MappedSequenceI> seqs = cache.get(566470, 566480);
         assertTrue(containsSeqId(seqs, 53748));
         assertTrue(containsSeqId(seqs, 3436));
         assertTrue(containsSeqId(seqs, 26467));
@@ -365,11 +375,21 @@ public class CacheTest {
         if (!gpms.login("mgx_unittestRO", "gut-isM5iNt")) {
             fail();
         }
-        Iterator<RESTMembershipI> mIter = gpms.getMemberships();
+        Iterator<RESTMembershipI> mIter = null;
+        try {
+            mIter = gpms.getMemberships();
+        } catch (GPMSException ex) {
+            fail(ex.getMessage());
+        }
         while (mIter.hasNext()) {
             RESTMembershipI m = mIter.next();
             if ("MGX".equals(m.getProject().getProjectClass().getName()) && ("MGX_Unittest".equals(m.getProject().getName()))) {
-                MGXDTOMaster dtomaster = new MGXDTOMaster(gpms, m);
+                MGXDTOMaster dtomaster = null;
+                try {
+                    dtomaster = new MGXDTOMaster(gpms.createMaster(m));
+                } catch (GPMSException ex) {
+                    fail(ex.getMessage());
+                }
                 master = new MGXMaster(dtomaster);
                 break;
             }

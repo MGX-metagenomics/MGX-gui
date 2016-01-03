@@ -5,6 +5,7 @@
  */
 package de.cebitec.mgx.gui.cache;
 
+import de.cebitec.gpms.core.GPMSException;
 import de.cebitec.gpms.rest.GPMSClientI;
 import de.cebitec.gpms.rest.RESTMembershipI;
 import de.cebitec.mgx.api.MGXMasterI;
@@ -24,6 +25,7 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -100,11 +102,21 @@ public class IntervalTest {
         if (!gpms.login("mgx_unittestRO", "gut-isM5iNt")) {
             fail();
         }
-        Iterator<RESTMembershipI> mIter = gpms.getMemberships();
+        Iterator<RESTMembershipI> mIter = null;
+        try {
+            mIter = gpms.getMemberships();
+        } catch (GPMSException ex) {
+            fail(ex.getMessage());
+        }
         while (mIter.hasNext()) {
             RESTMembershipI m = mIter.next();
             if ("MGX".equals(m.getProject().getProjectClass().getName()) && ("MGX_Unittest".equals(m.getProject().getName()))) {
-                MGXDTOMaster dtomaster = new MGXDTOMaster(gpms, m);
+                MGXDTOMaster dtomaster = null;
+                try {
+                    dtomaster = new MGXDTOMaster(gpms.createMaster(m));
+                } catch (GPMSException ex) {
+                    fail(ex.getMessage());
+                }
                 master = new MGXMaster(dtomaster);
                 break;
             }

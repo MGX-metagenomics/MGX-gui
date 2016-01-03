@@ -7,6 +7,7 @@ package de.cebitec.mgx.gui.cache.internal;
 import de.cebitec.mgx.gui.cache.Interval;
 import com.google.common.cache.LoadingCache;
 import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.exception.MGXTimeoutException;
 import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.api.model.MappedSequenceI;
 import de.cebitec.mgx.gui.cache.CoverageInfoCache;
@@ -14,7 +15,6 @@ import de.cebitec.mgx.gui.cache.IntIterator;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.ExecutionException;
 import org.apache.commons.math3.util.FastMath;
@@ -23,23 +23,23 @@ import org.apache.commons.math3.util.FastMath;
  *
  * @author belmann
  */
-public class MappedSequenceCache extends CoverageInfoCache<SortedSet<MappedSequenceI>> {
+public class MappedSequenceCache extends CoverageInfoCache<Set<MappedSequenceI>> {
 
-    public MappedSequenceCache(MGXReferenceI ref, LoadingCache<Interval, SortedSet<MappedSequenceI>> lcache) {
+    public MappedSequenceCache(MGXReferenceI ref, LoadingCache<Interval, Set<MappedSequenceI>> lcache) {
         super(ref, lcache);
     }
 
-    public MappedSequenceCache(MGXReferenceI ref, LoadingCache<Interval, SortedSet<MappedSequenceI>> lcache, int segSize) {
+    public MappedSequenceCache(MGXReferenceI ref, LoadingCache<Interval, Set<MappedSequenceI>> lcache, int segSize) {
         super(ref, lcache, segSize);
     }
 
     @Override
-    public SortedSet<MappedSequenceI> get(final int from, final int to) throws MGXException {
+    public Set<MappedSequenceI> getInternal(final int from, final int to) throws MGXException {
         if (from < 0 || from > to || to > ref.getLength() - 1) {
             throw new IllegalArgumentException();
         }
         final Iterator<Interval> iter = getIntervals(from, to);
-        final SortedSet<MappedSequenceI> mappedSequences = new TreeSet<>();
+        final Set<MappedSequenceI> mappedSequences = new TreeSet<>();
         try {
             while (iter.hasNext()) {
                 Interval i = iter.next();
@@ -51,6 +51,9 @@ public class MappedSequenceCache extends CoverageInfoCache<SortedSet<MappedSeque
                 }
             }
         } catch (ExecutionException ex) {
+            if (ex.getCause() instanceof MGXException) {
+                throw (MGXException)ex.getCause();
+            }
             throw new MGXException(ex);
         }
         return mappedSequences;
@@ -84,6 +87,16 @@ public class MappedSequenceCache extends CoverageInfoCache<SortedSet<MappedSeque
 
             }
         } catch (ExecutionException ex) {
+            Throwable cause = ex.getCause();
+            if (cause instanceof MGXTimeoutException) {
+                if (isClosed()) {
+                    return;
+                } else {
+                    throw (MGXTimeoutException) cause;
+                }
+            } else if (cause instanceof MGXException) {
+                throw (MGXException) cause;
+            }
             throw new MGXException(ex);
         }
     }
