@@ -98,10 +98,10 @@ public class SeqRun extends SeqRunI {
         this.numSequences = numSequences;
     }
 
-    @Override
-    public String toString() {
-        return name;
-    }
+//    @Override
+//    public String toString() {
+//        return name;
+//    }
 
     @Override
     public int hashCode() {
