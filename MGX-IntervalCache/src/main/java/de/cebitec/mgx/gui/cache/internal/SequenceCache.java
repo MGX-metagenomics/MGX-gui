@@ -5,6 +5,9 @@ import com.google.common.cache.LoadingCache;
 import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.gui.cache.Cache;
 import java.util.Iterator;
+import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -21,18 +24,31 @@ public class SequenceCache extends Cache<String> {
     }
 
     @Override
-    public String get(int from, int to) {
+    public String getInternal(int from, int to) {
         assert from > -1;
         assert from < to;
         assert to < ref.getLength();
         int fromInterval = from / getSegmentSize();
 
-        StringBuilder sb = new StringBuilder(to-from+1);
+        StringBuilder sb = new StringBuilder(to - from + 1);
         Iterator<Interval> iter = getIntervals(from, to);
-        while (iter.hasNext()) {
-            sb.append(lcache.getUnchecked(iter.next()));
+        Interval i = null;
+        try {
+            while (iter.hasNext()) {
+                i = iter.next();
+                sb.append(lcache.get(i));
+
+            }
+        } catch (ExecutionException ex) {
+            Logger.getLogger(SequenceCache.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
-        String seq = sb.substring(from - (fromInterval * getSegmentSize()), to - (fromInterval * getSegmentSize()) + 1);
-        return seq;
+        try {
+            return sb.substring(from - (fromInterval * getSegmentSize()), to - (fromInterval * getSegmentSize()) + 1);
+        } catch (StringIndexOutOfBoundsException ex) {
+            System.err.println("Illegal coords: " + from + "-" + to + " outside of string length " + sb.length());
+            assert false;
+        }
+        return "";
     }
 }

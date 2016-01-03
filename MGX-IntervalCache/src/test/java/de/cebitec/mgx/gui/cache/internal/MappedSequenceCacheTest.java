@@ -13,11 +13,10 @@ import de.cebitec.mgx.api.model.MappingI;
 import de.cebitec.mgx.gui.cache.CacheFactory;
 import static de.cebitec.mgx.gui.cache.CacheTest.get;
 import de.cebitec.mgx.gui.cache.CoverageInfoCache;
-import de.cebitec.mgx.gui.cache.IntIterator;
 import de.cebitec.mgx.gui.cache.TestMaster;
 import de.cebitec.mgx.gui.datamodel.MappedSequence;
 import java.util.Iterator;
-import java.util.SortedSet;
+import java.util.Set;
 import java.util.UUID;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -64,7 +63,7 @@ public class MappedSequenceCacheTest {
         }
         MGXReferenceI ref = master.Reference().fetch(mapping.getReferenceID());
         UUID uuid = master.Mapping().openMapping(1);
-        CoverageInfoCache<SortedSet<MappedSequenceI>> cache = CacheFactory.createMappedSequenceCache(master, ref, uuid);
+        CoverageInfoCache<Set<MappedSequenceI>> cache = CacheFactory.createMappedSequenceCache(master, ref, uuid);
         //
         //
         int[] foo = new int[]{0};
@@ -86,10 +85,10 @@ public class MappedSequenceCacheTest {
         }
         MGXReferenceI ref = master.Reference().fetch(mapping.getReferenceID());
         UUID uuid = master.Mapping().openMapping(1);
-        CoverageInfoCache<SortedSet<MappedSequenceI>> cache = CacheFactory.createMappedSequenceCache(master, ref, uuid);
+        CoverageInfoCache<Set<MappedSequenceI>> cache = CacheFactory.createMappedSequenceCache(master, ref, uuid);
         //
         //
-        SortedSet<MappedSequenceI> get = cache.get(567083, 567083);
+        Set<MappedSequenceI> get = cache.get(567083, 567083);
         assertEquals(8901, get.size());
         master.Mapping().closeMapping(uuid);
     }
@@ -106,7 +105,7 @@ public class MappedSequenceCacheTest {
         }
         MGXReferenceI ref = master.Reference().fetch(mapping.getReferenceID());
         UUID uuid = master.Mapping().openMapping(1);
-        CoverageInfoCache<SortedSet<MappedSequenceI>> cache = CacheFactory.createMappedSequenceCache(master, ref, uuid);
+        CoverageInfoCache<Set<MappedSequenceI>> cache = CacheFactory.createMappedSequenceCache(master, ref, uuid);
         //
         //
         int cov = cache.getMaxCoverage(567083, 567083);
@@ -120,7 +119,7 @@ public class MappedSequenceCacheTest {
         System.err.println("testOverlaps");
         MGXMasterI master = get();
         // 6391-6796 outside of 0-49999
-        MappedSequenceI ms = new MappedSequence(master, 1, 6391, 6796, 1);
+        MappedSequenceI ms = new MappedSequence(1, 6391, 6796, 1);
         boolean overlaps = MappedSequenceCache.overlaps(ms, 0, 49999);
         assertTrue(overlaps);
     }
@@ -133,10 +132,10 @@ public class MappedSequenceCacheTest {
         UUID uuid = master.Mapping().openMapping(30);
         assertNotNull(uuid);
 
-        CoverageInfoCache<SortedSet<MappedSequenceI>> cache = CacheFactory.createMappedSequenceCache(master, ref, uuid);
+        CoverageInfoCache<Set<MappedSequenceI>> cache = CacheFactory.createMappedSequenceCache(master, ref, uuid);
         assertNotNull(cache);
 
-        SortedSet<MappedSequenceI> set = cache.get(566470, 566480);
+        Set<MappedSequenceI> set = cache.get(566470, 566480);
 
         master.Mapping().closeMapping(uuid);
         //assertEquals(3, set.size());

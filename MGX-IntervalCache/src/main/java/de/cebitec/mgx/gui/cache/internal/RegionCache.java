@@ -24,7 +24,7 @@ public class RegionCache extends Cache<Set<RegionI>> {
     }
 
     @Override
-    public Set<RegionI> get(int from, int to) {
+    public Set<RegionI> getInternal(int from, int to) {
         Iterator<Interval> iter = getIntervals(from, to);
         Set<RegionI> ret = new HashSet<>();
         while (iter.hasNext()) {
