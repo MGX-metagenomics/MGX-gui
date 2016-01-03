@@ -8,7 +8,6 @@ package de.cebitec.mgx.gui.mapping;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.api.model.MappedSequenceI;
-import de.cebitec.mgx.api.model.ModelBaseI;
 import de.cebitec.mgx.api.model.RegionI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.ToolI;
@@ -18,8 +17,8 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.Set;
-import java.util.SortedSet;
 import org.apache.commons.math3.util.FastMath;
 
 /**
@@ -34,10 +33,12 @@ public class ViewController implements PropertyChangeListener {
     private int[] previewBounds;
     private final int[] newBounds;
     private final PropertyChangeSupport pcs;
+    private int minIdentity = 0;
     //
     public static final String BOUNDS_CHANGE = "boundsChange";
     public static final String MAX_COV_CHANGE = "maxCoverageChange";
     public static final String PREVIEWBOUNDS_CHANGE = "previewBoundsChange";
+    public static final String MIN_IDENTITY_CHANGE = "minIdentityChange";
 
     public ViewController(MappingCtx ctx) {
         this.ctx = ctx;
@@ -45,7 +46,7 @@ public class ViewController implements PropertyChangeListener {
         newBounds = new int[]{0, FastMath.min(15000, ctx.getReference().getLength() - 1)};
         curBounds = new int[]{0, FastMath.min(15000, ctx.getReference().getLength() - 1)};
         intervalLen = curBounds[1] - curBounds[0] + 1;
-        pcs = new ParallelPropertyChangeSupport(this);
+        pcs = new ParallelPropertyChangeSupport(this, true);
     }
 
     public MGXReferenceI getReference() {
@@ -84,30 +85,47 @@ public class ViewController implements PropertyChangeListener {
             curBounds[0] = newBounds[0];
             curBounds[1] = newBounds[1];
             intervalLen = curBounds[1] - curBounds[0] + 1;
-            pcs.firePropertyChange(BOUNDS_CHANGE, 0, 1);
+            pcs.firePropertyChange(BOUNDS_CHANGE, 0, curBounds);
         }
+    }
+
+    public void setMinIdentity(int ident) {
+        minIdentity = ident;
+        pcs.firePropertyChange(MIN_IDENTITY_CHANGE, -1, minIdentity);
+    }
+
+    public int getMinIdentity() {
+        return minIdentity;
     }
 
     public void setPreviewBounds(int i, int j) {
         previewBounds[0] = i;
         previewBounds[1] = j;
-        pcs.firePropertyChange(PREVIEWBOUNDS_CHANGE, 0, 1);
+        pcs.firePropertyChange(PREVIEWBOUNDS_CHANGE, 0, previewBounds);
     }
 
     public String getSequence(int from, int to) throws MGXException {
         return ctx.getSequence(from, to);
     }
 
+    public Set<RegionI> getRegions() throws MGXException {
+        return ctx.getRegions(curBounds[0], curBounds[1]);
+    }
+
     public Set<RegionI> getRegions(int from, int to) throws MGXException {
         return ctx.getRegions(from, to);
     }
 
-    public SortedSet<MappedSequenceI> getMappings(int from, int to) throws MGXException {
-        //long now = System.currentTimeMillis();
-        SortedSet<MappedSequenceI> ret = ctx.getMappings(from, to);
-        //now = System.currentTimeMillis() - now;
-        //System.err.println("mappings from " + from + " to " + to + " retrieved in " + now + "ms");
-        return ret;
+    public Iterator<MappedSequenceI> getMappings() throws MGXException {
+        return ctx.getMappings(curBounds[0], curBounds[1], minIdentity);
+    }
+
+    public Iterator<MappedSequenceI> getMappings(int from, int to) throws MGXException {
+        return ctx.getMappings(from, to, minIdentity);
+    }
+
+    public Iterator<MappedSequenceI> getMappings(int from, int to, int minIdent) throws MGXException {
+        return ctx.getMappings(from, to, minIdent);
     }
 
     public void getCoverage(int from, int to, int[] dest) throws MGXException {
@@ -119,7 +137,7 @@ public class ViewController implements PropertyChangeListener {
     }
 
     public void addPropertyChangeListener(PropertyChangeListener listener) {
-        listener.propertyChange(new PropertyChangeEvent(this, BOUNDS_CHANGE, 0, 1));
+        listener.propertyChange(new PropertyChangeEvent(this, BOUNDS_CHANGE, 0, curBounds));
         pcs.addPropertyChangeListener(listener);
     }
 
@@ -129,11 +147,17 @@ public class ViewController implements PropertyChangeListener {
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getPropertyName().equals(ModelBaseI.OBJECT_DELETED)) {
+        if (evt.getPropertyName().equals(MappingCtx.MAPPING_CLOSED)) {
+            ctx.removePropertyChangeListener(this);
             curBounds[0] = 0;
             curBounds[1] = 0;
             intervalLen = -1;
-            pcs.firePropertyChange(BOUNDS_CHANGE, 0, 1);
+            minIdentity = -1;
+            pcs.firePropertyChange(BOUNDS_CHANGE, 0, curBounds);
         }
+    }
+
+    public boolean isClosed() {
+        return ctx.isClosed();
     }
 }

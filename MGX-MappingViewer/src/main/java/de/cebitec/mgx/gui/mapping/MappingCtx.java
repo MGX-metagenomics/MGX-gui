@@ -18,9 +18,10 @@ import de.cebitec.mgx.pevents.ParallelPropertyChangeSupport;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.Iterator;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.UUID;
+import java.util.function.Predicate;
 import org.openide.util.Exceptions;
 
 /**
@@ -35,10 +36,12 @@ public class MappingCtx implements PropertyChangeListener, AutoCloseable {
     private final SeqRunI run;
     private Cache<String> seqCache = null;
     private Cache<Set<RegionI>> regCache = null;
-    private CoverageInfoCache<SortedSet<MappedSequenceI>> mapCache = null;
+    private CoverageInfoCache<Set<MappedSequenceI>> mapCache = null;
     private UUID sessionUUID = null;
     private long maxCoverage = -1;
     private final PropertyChangeSupport pcs = new ParallelPropertyChangeSupport(this);
+    private volatile boolean isClosed = false;
+    public static final String MAPPING_CLOSED = "MappingClosed";
 
     public MappingCtx(MappingI m, MGXReferenceI ref, JobI job, SeqRunI run) throws MGXException {
         this.m = m;
@@ -58,6 +61,9 @@ public class MappingCtx implements PropertyChangeListener, AutoCloseable {
         run.addPropertyChangeListener(this);
 
         sessionUUID = master.Mapping().openMapping(m.getId());
+
+        regCache = CacheFactory.createRegionCache(ref.getMaster(), ref);
+        mapCache = CacheFactory.createMappedSequenceCache(ref.getMaster(), ref, sessionUUID);
     }
 
     public MGXReferenceI getReference() {
@@ -92,47 +98,66 @@ public class MappingCtx implements PropertyChangeListener, AutoCloseable {
     }
 
     public Set<RegionI> getRegions(int from, int to) throws MGXException {
-        if (regCache == null) {
-            synchronized (this) {
-                if (regCache == null) {
-                    regCache = CacheFactory.createRegionCache(ref.getMaster(), ref);
-                }
-            }
-        }
+//        if (regCache == null) {
+//            synchronized (this) {
+//                if (regCache == null) {
+//                    regCache = CacheFactory.createRegionCache(ref.getMaster(), ref);
+//                }
+//            }
+//        }
         return regCache.get(from, to);
     }
 
-    public SortedSet<MappedSequenceI> getMappings(final int from, final int to) throws MGXException {
-        if (mapCache == null) {
-            synchronized (this) {
-                if (mapCache == null) {
-                    mapCache = CacheFactory.createMappedSequenceCache(ref.getMaster(), ref, sessionUUID);
+    public final Iterator<MappedSequenceI> getMappings(final int from, final int to, final int minIdentity) throws MGXException {
+        final Iterator<MappedSequenceI> iterator = mapCache.get(from, to).iterator();
+        return new Iterator<MappedSequenceI>() {
+            
+            private MappedSequenceI cur = null;
+
+            @Override
+            public boolean hasNext() {
+                if (cur != null) {
+                    return true;
                 }
+                while (iterator.hasNext()) {
+                    MappedSequenceI candidate = iterator.next();
+                    if (candidate.getIdentity() >= minIdentity) {
+                        cur = candidate;
+                        return true;
+                    }
+                }
+                return false;
             }
-        }
-        return mapCache.get(from, to);
+
+            @Override
+            public MappedSequenceI next() {
+                MappedSequenceI ms = cur;
+                cur = null;
+                return ms;
+            }
+        };
     }
 
     public void getCoverage(final int from, final int to, final int[] dest) throws MGXException {
-        if (mapCache == null) {
-            synchronized (this) {
-                if (mapCache == null) {
-                    mapCache = CacheFactory.createMappedSequenceCache(ref.getMaster(), ref, sessionUUID);
-                }
-            }
-        }
+//        if (mapCache == null) {
+//            synchronized (this) {
+//                if (mapCache == null) {
+//                    mapCache = CacheFactory.createMappedSequenceCache(ref.getMaster(), ref, sessionUUID);
+//                }
+//            }
+//        }
         mapCache.getCoverage(from, to, dest);
     }
 
     public IntIterator getCoverageIterator(final int from, final int to) throws MGXException {
-        if (mapCache == null) {
-            synchronized (this) {
-                if (mapCache == null) {
-                    mapCache = CacheFactory.createMappedSequenceCache(ref.getMaster(), ref, sessionUUID);
-
-                }
-            }
-        }
+//        if (mapCache == null) {
+//            synchronized (this) {
+//                if (mapCache == null) {
+//                    mapCache = CacheFactory.createMappedSequenceCache(ref.getMaster(), ref, sessionUUID);
+//
+//                }
+//            }
+//        }
         return mapCache.getCoverageIterator(from, to);
     }
 
@@ -163,8 +188,27 @@ public class MappingCtx implements PropertyChangeListener, AutoCloseable {
         }
     }
 
+    public boolean isClosed() {
+        return isClosed;
+    }
+
     @Override
-    public void close() {
+    public synchronized void close() {
+        isClosed = true;
+        // close caches first
+        if (seqCache != null) {
+            seqCache.close();
+            seqCache = null;
+        }
+        if (regCache != null) {
+            regCache.close();
+            regCache = null;
+        }
+        if (mapCache != null) {
+            mapCache.close();
+            mapCache = null;
+        }
+
         try {
             ref.getMaster().Mapping().closeMapping(sessionUUID);
         } catch (MGXException ex) {
@@ -174,7 +218,8 @@ public class MappingCtx implements PropertyChangeListener, AutoCloseable {
         ref.removePropertyChangeListener(this);
         run.removePropertyChangeListener(this);
         job.removePropertyChangeListener(this);
-        pcs.firePropertyChange(ModelBaseI.OBJECT_DELETED, 0, 1);
+
+        pcs.firePropertyChange(MAPPING_CLOSED, false, true);
     }
 
 }

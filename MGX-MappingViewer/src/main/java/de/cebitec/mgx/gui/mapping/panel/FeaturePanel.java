@@ -22,6 +22,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.AffineTransform;
+import java.beans.PropertyChangeEvent;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.HashSet;
@@ -62,7 +63,6 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
         this.addMouseMotionListener(this);
         ToolTipManager.sharedInstance().registerComponent(this);
         ToolTipManager.sharedInstance().setDismissDelay(5000);
-
         repaint();
     }
 
@@ -93,7 +93,7 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
         while (vc.getIntervalLength() / separate > 10) {
             separate += 500;
         }
-        int[] bounds = vc.getBounds();
+        //int[] bounds = vc.getBounds();
         int firstpos = bounds[0];
         while (firstpos % separate != 0) {
             firstpos++;
@@ -162,8 +162,7 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
         // fetch features
         Set<Arrow> newData = new HashSet<>();
         try {
-            int[] bounds = vc.getBounds();
-            for (RegionI r : vc.getRegions(bounds[0], bounds[1])) {
+            for (RegionI r : vc.getRegions()) {
                 newData.add(r2a(r));
             }
         } catch (MGXException ex) {
@@ -246,7 +245,6 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
             int posInRef = px2bp(e.getX());
             int offset = posInRef - dragStart + 1;
             dragStart = posInRef;
-            int[] bounds = vc.getBounds();
             vc.setBounds(FastMath.max(0, bounds[0] - offset), FastMath.min(vc.getReference().getLength() - 1, bounds[1] - offset));
         }
     }
@@ -294,8 +292,7 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
         // fetch features
         Set<Arrow> newData = new HashSet<>();
         try {
-            int[] bounds = vc.getBounds();
-            for (RegionI r : vc.getRegions(bounds[0], bounds[1])) {
+            for (RegionI r : vc.getRegions()) {
                 newData.add(r2a(r));
             }
         } catch (MGXException ex) {
@@ -308,4 +305,15 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
         }
         repaint();
     }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        switch (evt.getPropertyName()) {
+            case ViewController.MIN_IDENTITY_CHANGE:
+            case ViewController.MAX_COV_CHANGE:
+                return;
+        }
+        super.propertyChange(evt);
+    }
+
 }
