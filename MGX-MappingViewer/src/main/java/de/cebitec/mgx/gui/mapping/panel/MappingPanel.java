@@ -6,6 +6,7 @@
 package de.cebitec.mgx.gui.mapping.panel;
 
 import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.exception.MGXTimeoutException;
 import de.cebitec.mgx.api.model.MappedSequenceI;
 import de.cebitec.mgx.gui.mapping.ViewController;
 import de.cebitec.mgx.gui.mapping.shapes.MappedRead2D;
@@ -20,6 +21,7 @@ import java.awt.Point;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -35,24 +37,31 @@ import org.openide.util.Exceptions;
  *
  * @author sjaenick
  */
-public class MappingPanel extends PanelBase implements ChangeListener, AdjustmentListener {
+public class MappingPanel extends PanelBase {
 
     private final SortedSet<MappedRead2D> coverage = new TreeSet<>();
     private final List<Track> tracks = new ArrayList<>();
-    private int minIdentity = 0;
     private int scrollOffset = 0;
     private final String mappingName;
 
     /**
      * Creates new form MappingPanel
      */
-    public MappingPanel(ViewController vc, SwitchModeBase sm) {
+    public MappingPanel(final ViewController vc, SwitchModeBase sm) {
         super(vc, false);
         initComponents();
         ToolTipManager.sharedInstance().registerComponent(this);
         ToolTipManager.sharedInstance().setDismissDelay(5000);
-        identityFilter.addChangeListener(this);
-        identityFilter.setToolTipText("Showing >= " + minIdentity + "% identity");
+        identityFilter.addChangeListener(new ChangeListener() {
+
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                int minIdentity = identityFilter.getValue();
+                identityFilter.setToolTipText("Showing >= " + minIdentity + "% identity");
+                vc.setMinIdentity(minIdentity);
+            }
+        });
+        identityFilter.setToolTipText("Showing >= " + vc.getMinIdentity() + "% identity");
         BasicSliderUI sliderUI = new javax.swing.plaf.basic.BasicSliderUI(identityFilter) {
             @Override
             protected Dimension getThumbSize() {
@@ -60,7 +69,17 @@ public class MappingPanel extends PanelBase implements ChangeListener, Adjustmen
             }
         };
         identityFilter.setUI(sliderUI);
-        scrollBar.addAdjustmentListener(this);
+        scrollBar.addAdjustmentListener(new AdjustmentListener() {
+
+            @Override
+            public void adjustmentValueChanged(AdjustmentEvent e) {
+                if (scrollBar.isEnabled()) {
+                    scrollOffset = scrollBar.getValue();
+                    update();
+                    repaint();
+                }
+            }
+        });
 
         mappingName = vc.getSeqRun().getName() + " vs. " + vc.getReference().getName();
 
@@ -119,18 +138,28 @@ public class MappingPanel extends PanelBase implements ChangeListener, Adjustmen
     public boolean update() {
         long now = System.currentTimeMillis();
 
-        SortedSet<MappedSequenceI> mappings = null;
+        Iterator<MappedSequenceI> mappings = null;
         try {
-            int[] bounds = vc.getBounds();
-            mappings = vc.getMappings(bounds[0], bounds[1]);
+            mappings = vc.getMappings();
+        } catch (MGXTimeoutException mte) {
+            if (vc.isClosed()) {
+                return false;
+            } else {
+                // FIXME - reopen?
+            }
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);
             return true;
         }
-        TrackFactory.createTracks(minIdentity, mappings, tracks);
+
+        long timeGetMappings = System.currentTimeMillis() - now;
+
+        TrackFactory.createTracks(mappings, tracks);
+
+        long timeCreateLayout = System.currentTimeMillis() - timeGetMappings - now;
 
         final double spaceing = TRACKHEIGHT * 0.1;
-        final double mappingHeight = 1d * TRACKHEIGHT * 0.75;
+        final double mappingHeight = 0.75d * TRACKHEIGHT;
 
         int height = getHeight();
         int maxVisibleTracks = height / TRACKHEIGHT;
@@ -167,6 +196,8 @@ public class MappingPanel extends PanelBase implements ChangeListener, Adjustmen
             }
         }
 
+        long timeCreateShapes = System.currentTimeMillis() - timeCreateLayout - timeGetMappings - now;
+
         synchronized (coverage) {
             coverage.clear();
             coverage.addAll(ret);
@@ -175,8 +206,18 @@ public class MappingPanel extends PanelBase implements ChangeListener, Adjustmen
         now = System.currentTimeMillis() - now;
         if (now > 30) {
             System.err.println("update() for " + getClass().getSimpleName() + " took " + now + " ms");
+            System.err.println(String.format("  getMappings: %d createLayout: %d createShapes: %d", timeGetMappings, timeCreateLayout, timeCreateShapes));
         }
         return true;
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        switch (evt.getPropertyName()) {
+            case ViewController.MAX_COV_CHANGE:
+                return;
+        }
+        super.propertyChange(evt);
     }
 
     /**
@@ -226,20 +267,4 @@ public class MappingPanel extends PanelBase implements ChangeListener, Adjustmen
     private javax.swing.JScrollBar scrollBar;
     // End of variables declaration//GEN-END:variables
 
-    @Override
-    public void stateChanged(ChangeEvent e) {
-        minIdentity = identityFilter.getValue();
-        identityFilter.setToolTipText("Showing >= " + minIdentity + "% identity");
-        update();
-        repaint();
-    }
-
-    @Override
-    public void adjustmentValueChanged(AdjustmentEvent e) {
-        if (scrollBar.isEnabled()) {
-            scrollOffset = scrollBar.getValue();
-            update();
-            repaint();
-        }
-    }
 }

@@ -7,6 +7,7 @@ package de.cebitec.mgx.gui.mapping.tracks;
 
 import de.cebitec.mgx.api.model.MappedSequenceI;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
@@ -32,28 +33,27 @@ public class TrackFactory {
         return t;
     }
 
-    public static void createTracks(int minIdentity, Collection<MappedSequenceI> mappings, Collection<Track> tracks) {
+    public static void createTracks(Iterator<MappedSequenceI> mappings, Collection<Track> tracks) {
         tracks.clear();
         boolean placed;
         Track last = null;
-        for (MappedSequenceI ms : mappings) {
-            if (ms.getIdentity() >= minIdentity) {
-                placed = false;
+        while (mappings.hasNext()) {
+            MappedSequenceI ms = mappings.next();
+            placed = false;
                 // check last track first as a quick check;
-                // major speedup, but suboptimal layout
-                //if (last != null && last.canAdd(ms)) {
-                for (Track t : tracks) {
-                    if (!placed) {
-                        placed = t.tryAdd(ms);
-                        if (placed) {
-                            break;
-                        }
+            // major speedup, but suboptimal layout
+            //if (last != null && last.canAdd(ms)) {
+            for (Track t : tracks) {
+                if (!placed) {
+                    placed = t.tryAdd(ms);
+                    if (placed) {
+                        break;
                     }
                 }
-                //}
-                if (!placed) {
-                    last = addTrack(tracks, ms);
-                }
+            }
+            //}
+            if (!placed) {
+                last = addTrack(tracks, ms);
             }
         }
     }

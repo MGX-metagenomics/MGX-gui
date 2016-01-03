@@ -14,10 +14,14 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
+import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
-import java.util.SortedSet;
 import javax.swing.ToolTipManager;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.plaf.basic.BasicSliderUI;
 import org.apache.commons.math3.util.FastMath;
 import org.openide.util.Exceptions;
 
@@ -28,7 +32,6 @@ import org.openide.util.Exceptions;
 public class RecruitmentPanel extends PanelBase {
 
     private final static int MIN_MAPPING_WIDTH = 1;
-    private final int minIdentity = 25;
     private final int[] offsets = new int[101];
     private final int topBorder = 0;
     private final int topVSpace = 6;
@@ -36,9 +39,9 @@ public class RecruitmentPanel extends PanelBase {
     private final List<Rectangle2D.Double> shapes = new ArrayList<>();
 
     /**
-     * Creates new form MappingPanel
+     * Creates new form
      */
-    public RecruitmentPanel(ViewController vc, SwitchModeBase sm) {
+    public RecruitmentPanel(final ViewController vc, SwitchModeBase sm) {
         super(vc, false);
         initComponents();
         ToolTipManager.sharedInstance().registerComponent(this);
@@ -46,6 +49,24 @@ public class RecruitmentPanel extends PanelBase {
         setBackground(Color.WHITE);
         setPreferredSize(new Dimension(5000, 800));
         setComponentPopupMenu(sm);
+
+        identityFilter.addChangeListener(new ChangeListener() {
+
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                int minIdentity = identityFilter.getValue();
+                identityFilter.setToolTipText("Showing >= " + minIdentity + "% identity");
+                vc.setMinIdentity(minIdentity);
+            }
+        });
+        identityFilter.setToolTipText("Showing >= " + identityFilter.getValue() + "% identity");
+        BasicSliderUI sliderUI = new javax.swing.plaf.basic.BasicSliderUI(identityFilter) {
+            @Override
+            protected Dimension getThumbSize() {
+                return new Dimension(5, 10);
+            }
+        };
+        identityFilter.setUI(sliderUI);
     }
 
     @Override
@@ -57,7 +78,7 @@ public class RecruitmentPanel extends PanelBase {
         g2.drawString("100", 1, topBorder + textHeight + 5);
         g2.drawLine(20, topBorder + topVSpace, getWidth() - 5, topBorder + topVSpace); // top line for 100% identity
 
-        g2.drawString(" " + String.valueOf(minIdentity), 1, getHeight() - bottomBorder + textHeight);
+        g2.drawString(" " + String.valueOf(vc.getMinIdentity()), 1, getHeight() - bottomBorder + textHeight);
         g2.drawLine(20, getHeight() - bottomBorder, getWidth() - 5, getHeight() - bottomBorder); // bottom line
 
         // Get and install an AlphaComposite to do transparent drawing
@@ -76,16 +97,15 @@ public class RecruitmentPanel extends PanelBase {
 
     @Override
     public boolean update() {
-        SortedSet<MappedSequenceI> mappings = null;
-        int[] bounds = vc.getBounds();
+        Iterator<MappedSequenceI> mappings = null;
         try {
-            mappings = vc.getMappings(bounds[0], bounds[1]);
+            mappings = vc.getMappings();
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);
             return true;
         }
         double height = getHeight() - topBorder - bottomBorder - topVSpace;
-        double heightScale = height / (100 - minIdentity);
+        double heightScale = height / (100 - vc.getMinIdentity());
 
         // precomputed vert. offsets
         for (int i = 0; i <= 100; i++) {
@@ -94,26 +114,34 @@ public class RecruitmentPanel extends PanelBase {
 
         List<Rectangle2D.Double> newShapes = new ArrayList<>();
 
-        for (MappedSequenceI ms : mappings) {
-            if (ms.getIdentity() > minIdentity) {
-                double pos0 = bp2px(ms.getMin());
-                double pos1 = bp2px(ms.getMax());
-                if (pos1 - pos0 < MIN_MAPPING_WIDTH) {
-                    pos1 = pos0 + MIN_MAPPING_WIDTH;
-                }
-
-                pos0 = FastMath.max(pos0, 0);
-                pos1 = FastMath.min(pos1, getWidth());
-                int yPos = offsets[100 - (int) ms.getIdentity()]; //(int) ((100 - ms.getIdentity()) * heightScale);
-                Rectangle2D.Double rect = new Rectangle2D.Double(pos0, yPos, pos1 - pos0 + 1, rectHeight);
-                newShapes.add(rect);
+        while (mappings.hasNext()) {
+            MappedSequenceI ms = mappings.next();
+            double pos0 = bp2px(ms.getMin());
+            double pos1 = bp2px(ms.getMax());
+            if (pos1 - pos0 < MIN_MAPPING_WIDTH) {
+                pos1 = pos0 + MIN_MAPPING_WIDTH;
             }
+
+            pos0 = FastMath.max(pos0, 0);
+            pos1 = FastMath.min(pos1, getWidth());
+            int yPos = offsets[100 - (int) ms.getIdentity()]; //(int) ((100 - ms.getIdentity()) * heightScale);
+            Rectangle2D.Double rect = new Rectangle2D.Double(pos0, yPos, pos1 - pos0 + 1, rectHeight);
+            newShapes.add(rect);
         }
         synchronized (shapes) {
             shapes.clear();
             shapes.addAll(newShapes);
         }
         return true;
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        switch (evt.getPropertyName()) {
+            case ViewController.MAX_COV_CHANGE:
+                return;
+        }
+        super.propertyChange(evt);
     }
 
     /**
@@ -125,22 +153,35 @@ public class RecruitmentPanel extends PanelBase {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        identityFilter = new javax.swing.JSlider();
+
         setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         setMinimumSize(new java.awt.Dimension(200, 200));
+
+        identityFilter.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
+        identityFilter.setValue(0);
+        identityFilter.setOpaque(false);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 946, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(identityFilter, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(822, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 373, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(345, Short.MAX_VALUE)
+                .addComponent(identityFilter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JSlider identityFilter;
     // End of variables declaration//GEN-END:variables
 }
