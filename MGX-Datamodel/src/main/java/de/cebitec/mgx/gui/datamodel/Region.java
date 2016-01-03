@@ -1,8 +1,6 @@
 package de.cebitec.mgx.gui.datamodel;
 
-import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.RegionI;
-import java.awt.datatransfer.DataFlavor;
 
 /**
  *
@@ -11,15 +9,11 @@ import java.awt.datatransfer.DataFlavor;
 public class Region extends RegionI {
 
     protected long reference_id;
-
     private String name;
-
     private String description;
 
-    public static final DataFlavor DATA_FLAVOR = new DataFlavor(RegionI.class, "RegionI");
-
-    public Region(MGXMasterI m, int start, int stop) {
-        super(m, start, stop, DATA_FLAVOR);
+    public Region(int start, int stop) {
+        super(start, stop);
     }
 
     @Override
@@ -28,7 +22,7 @@ public class Region extends RegionI {
     }
 
     @Override
-    public void setReference(Long reference_id) {
+    public void setReference(long reference_id) {
         this.reference_id = reference_id;
     }
 
@@ -77,8 +71,8 @@ public class Region extends RegionI {
         return frame;
     }
 
-    @Override
-    public int compareTo(RegionI o) {
-        return name.compareTo(o.getName());
-    }
+//    @Override
+//    public int compareTo(RegionI o) {
+//        return name.compareTo(o.getName());
+//    }
 }
