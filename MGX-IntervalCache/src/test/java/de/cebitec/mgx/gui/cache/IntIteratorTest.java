@@ -11,7 +11,7 @@ import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.api.model.MappedSequenceI;
 import de.cebitec.mgx.api.model.MappingI;
 import java.util.Iterator;
-import java.util.SortedSet;
+import java.util.Set;
 import java.util.UUID;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -87,7 +87,7 @@ public class IntIteratorTest {
         assertEquals(30, mapping.getId());
         MGXReferenceI ref = master.Reference().fetch(mapping.getReferenceID());
         UUID uuid = master.Mapping().openMapping(mapping.getId());
-        CoverageInfoCache<SortedSet<MappedSequenceI>> cache = CacheFactory.createMappedSequenceCache(master, ref, uuid);
+        CoverageInfoCache<Set<MappedSequenceI>> cache = CacheFactory.createMappedSequenceCache(master, ref, uuid);
         assertNotNull(cache);
         //
         //
