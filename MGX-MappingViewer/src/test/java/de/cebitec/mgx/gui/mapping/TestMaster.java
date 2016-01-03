@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.mapping;
 
+import de.cebitec.gpms.core.GPMSException;
 import de.cebitec.gpms.rest.GPMSClientI;
 import de.cebitec.gpms.rest.RESTMembershipI;
 import de.cebitec.mgx.api.MGXMasterI;
@@ -45,13 +46,23 @@ public class TestMaster {
             fail();
         }
 
-        Iterator<RESTMembershipI> mbr = gpms.getMemberships();
+        Iterator<RESTMembershipI> mbr = null;
+        try {
+            mbr = gpms.getMemberships();
+        } catch (GPMSException ex) {
+            fail(ex.getMessage());
+        }
         Assert.assertNotNull(mbr);
 
         while (mbr.hasNext()) {
             RESTMembershipI m = mbr.next();
             if ("MGX".equals(m.getProject().getProjectClass().getName()) && ("MGX_Unittest".equals(m.getProject().getName()))) {
-                MGXDTOMaster dtomaster = new MGXDTOMaster(gpms, m);
+                MGXDTOMaster dtomaster = null;
+                try {
+                    dtomaster = new MGXDTOMaster(gpms.createMaster(m));
+                } catch (GPMSException ex) {
+                    fail(ex.getMessage());
+                }
                 masterRO = new MGXMaster(dtomaster);
                 break;
             }
@@ -81,13 +92,23 @@ public class TestMaster {
         if (!gpms.login("mgx_unittestRW", "hL0amo3oLae")) {
             return null;
         }
-        Iterator<RESTMembershipI> mbr = gpms.getMemberships();
+        Iterator<RESTMembershipI> mbr = null;
+        try {
+            mbr = gpms.getMemberships();
+        } catch (GPMSException ex) {
+            fail(ex.getMessage());
+        }
         Assert.assertNotNull(mbr);
 
         while (mbr.hasNext()) {
             RESTMembershipI m = mbr.next();
             if ("MGX".equals(m.getProject().getProjectClass().getName()) && ("MGX_Unittest".equals(m.getProject().getName()))) {
-                MGXDTOMaster dtomaster = new MGXDTOMaster(gpms, m);
+                MGXDTOMaster dtomaster = null;
+                try {
+                    dtomaster = new MGXDTOMaster(gpms.createMaster(m));
+                } catch (GPMSException ex) {
+                    fail(ex.getMessage());
+                }
                 master = new MGXMaster(dtomaster);
                 break;
             }
@@ -116,13 +137,23 @@ public class TestMaster {
         if (!gpms.login(p.getProperty("username"), p.getProperty("password"))) {
             return null;
         }
-        Iterator<RESTMembershipI> mbr = gpms.getMemberships();
+        Iterator<RESTMembershipI> mbr = null;
+        try {
+            mbr = gpms.getMemberships();
+        } catch (GPMSException ex) {
+            fail(ex.getMessage());
+        }
         Assert.assertNotNull(mbr);
-        
+
         while (mbr.hasNext()) {
             RESTMembershipI m = mbr.next();
             if ("MGX".equals(m.getProject().getProjectClass().getName()) && (targetProject.equals(m.getProject().getName()))) {
-                MGXDTOMaster dtomaster = new MGXDTOMaster(gpms, m);
+                MGXDTOMaster dtomaster = null;
+                try {
+                    dtomaster = new MGXDTOMaster(gpms.createMaster(m));
+                } catch (GPMSException ex) {
+                    fail(ex.getMessage());
+                }
                 master = new MGXMaster(dtomaster);
                 break;
             }

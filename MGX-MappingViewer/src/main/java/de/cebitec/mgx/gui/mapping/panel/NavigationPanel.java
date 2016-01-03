@@ -14,7 +14,7 @@ import java.awt.Color;
 import java.awt.Composite;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
-import java.awt.Shape;
+import java.awt.RenderingHints;
 import java.awt.Stroke;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -25,10 +25,6 @@ import java.awt.geom.Area;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import javax.swing.SwingWorker;
 import javax.swing.ToolTipManager;
@@ -44,16 +40,17 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
 
     private final static int CAPTURE_DIST = 3; // px
     private final int refLength;
+    private double scaleFactor;
     private int[] previewBounds = null;
     private int[] offSet = null;
-    private double scaleFactor;
-    private final Set<Area> coverage = new HashSet<>();
+    // back image
     private BufferedImage coverageImage = null;
-    private Shape currentScope = null;
-    private Shape currentPreviewScope = null;
+    private final int BACKIMAGE_WIDTH = 2500;
+    private final int BACKIMAGE_HEIGHT = 100;
+    //
+    private BufferedImage scaledImage = null;
+
     private long maxCov = -1;
-    private double[] scaledBounds;
-    private double[] scaledPreviewBounds;
     //
     private final static float dash1[] = {5.0f};
     private final BasicStroke dashed = new BasicStroke(1.0f,
@@ -66,62 +63,74 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
      */
     public NavigationPanel(final ViewController vc) {
         super(vc, true);
-        refLength = vc.getReference().getLength();
         initComponents();
         setPreferredSize(new Dimension(5000, 35));
         setMaximumSize(new Dimension(5000, 35));
+
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
         ToolTipManager.sharedInstance().registerComponent(this);
         ToolTipManager.sharedInstance().setDismissDelay(5000);
-        //generateCoverage();
+
+        refLength = vc.getReference().getLength();
+        scaleFactor = 1d * refLength / getWidth();
+
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
                 super.componentResized(e);
-                update();
-                if (getHeight() > 0) {
-                    try {
-                        generateCoverage();
-                    } catch (MGXException ex) {
-                        Exceptions.printStackTrace(ex);
-                    }
-                    //generateCovImage();
+
+                scaleFactor = 1d * refLength / getWidth();
+
+                if (getHeight() == 0 || getWidth() == 0) {
+                    return;
                 }
+
+                if (scaledImage != null && (scaledImage.getWidth() != getWidth() || scaledImage.getHeight() != getHeight())) {
+                    scaledImage = null; // invalidate
+                }
+
+                if (coverageImage != null && scaledImage == null) {
+                    createScaledImage();
+                }
+                repaint();
             }
 
         });
         setBorder(javax.swing.BorderFactory.createLineBorder(Color.BLACK));
 
-        //update();
+        generateCoverageImage();
     }
 
     @Override
     void draw(Graphics2D g2) {
 
-        if (coverageImage != null) {
-            g2.drawImage(coverageImage, 0, 0, this);
-        } else {
-            drawAxis(g2);
+        if (scaledImage != null) {
+            g2.drawImage(scaledImage, 0, 0, this);
         }
 
-        if (currentPreviewScope != null) {
+        if (previewBounds != null) {
             Stroke oldStroke = g2.getStroke();
             g2.setStroke(dashed);
             g2.setColor(Color.BLACK);
+            double[] scaledPreviewBounds = getScaledValues(previewBounds);
+            Rectangle2D.Double currentPreviewScope = new Rectangle2D.Double(scaledPreviewBounds[0], 0, scaledPreviewBounds[1] - scaledPreviewBounds[0] + 1, getHeight() - 1);
             g2.draw(currentPreviewScope);
             g2.setStroke(oldStroke);
         }
 
         // draw box indicating current scope
-        if (currentScope != null) {
+        if (bounds != null) {
             Composite oldcomp = g2.getComposite();
             AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.4f);
             g2.setComposite(ac);
             g2.setColor(Color.red);
+            double[] scaledBounds = getScaledValues(bounds);
+            Rectangle2D.Double currentScope = new Rectangle2D.Double(scaledBounds[0], 0, scaledBounds[1] - scaledBounds[0] + 1, getHeight() - 1);
             g2.fill(currentScope);
             g2.setComposite(oldcomp);
         }
+        drawAxis(g2);
     }
 
     private double[] getScaledValues(int[] in) {
@@ -170,9 +179,7 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
         }
         int posInRef = px2bp(e.getX());
         e.consume();
-
-        int[] oldBounds = vc.getBounds();
-        int len = oldBounds[1] - oldBounds[0] + 1;
+        int len = bounds[1] - bounds[0] + 1;
         vc.setBounds(posInRef, FastMath.min(posInRef + len, refLength - 1));
     }
 
@@ -184,8 +191,8 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
             return;
         }
 
-        int[] bounds = vc.getBounds();
-        scaledBounds = getScaledValues(bounds);
+        //int[] bounds = vc.getBounds();
+        double[] scaledBounds = getScaledValues(bounds);
 
         int x = e.getX();
         int posInRef = px2bp(e.getX());
@@ -220,8 +227,7 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
 
         int posInRef = px2bp(e.getX());
 
-        int[] bounds = vc.getBounds();
-        scaledBounds = getScaledValues(bounds);
+        //int[] bounds = vc.getBounds();
 
         switch (dragType) {
             case 1:
@@ -259,8 +265,6 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
     public void mouseExited(MouseEvent e) {
         dragType = 0;
         previewBounds = null;
-        scaledPreviewBounds = null;
-        currentPreviewScope = null;
         offSet = null;
         repaint();
     }
@@ -273,29 +277,28 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
 
         int posInRef = px2bp(e.getX());
 
-        int[] bounds1 = vc.getBounds();
+        //int[] bounds1 = vc.getBounds();
 
         switch (dragType) {
             case 1:
                 // preview left bound
-                if (posInRef < bounds1[1]) {
-                    previewBounds = new int[]{posInRef, bounds1[1]};
+                if (posInRef < bounds[1]) {
+                    previewBounds = new int[]{posInRef, bounds[1]};
                 }
                 break;
             case 2:
                 // preview mid
-                int len = bounds1[1] - bounds1[0] + 1;
+                int len = bounds[1] - bounds[0] + 1;
                 previewBounds = new int[]{posInRef - offSet[0], posInRef - offSet[0] + len};
                 break;
             case 3:
                 // preview right
-                if (posInRef > bounds1[0]) {
-                    previewBounds = new int[]{bounds1[0], posInRef};
+                if (posInRef > bounds[0]) {
+                    previewBounds = new int[]{bounds[0], posInRef};
                 }
                 break;
         }
-        scaledPreviewBounds = getScaledValues(previewBounds);
-        currentPreviewScope = new Rectangle2D.Double(scaledPreviewBounds[0], 0, scaledPreviewBounds[1] - scaledPreviewBounds[0] + 1, getHeight() - 1);
+
         repaint();
     }
 
@@ -317,41 +320,147 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
     @Override
     public boolean update() {
         scaleFactor = 1d * refLength / getWidth();
-        scaledBounds = getScaledValues(vc.getBounds());
-        currentScope = new Rectangle2D.Double(scaledBounds[0], 0, scaledBounds[1] - scaledBounds[0] + 1, getHeight() - 1);
-        if (previewBounds != null) {
-            scaledPreviewBounds = getScaledValues(previewBounds);
-            currentPreviewScope = new Rectangle2D.Double(scaledPreviewBounds[0], 0, scaledPreviewBounds[1] - scaledPreviewBounds[0] + 1, getHeight() - 1);
-        }
         return true;
     }
 
-    private volatile ProgressHandle ph = null;
+    private void generateCoverageImage() {
 
-    private void generateCovImage() {
-        coverageImage = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2 = coverageImage.createGraphics();
+        SwingWorker<BufferedImage, Void> worker = new SwingWorker<BufferedImage, Void>() {
 
-        if (useAntialiasing) {
-            g2.setRenderingHints(antiAlias);
+            @Override
+            protected BufferedImage doInBackground() throws Exception {
+                BufferedImage backImage;
+                if (getWidth() > 0 && getHeight() > 0) {
+                    backImage = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+                } else {
+                    backImage = new BufferedImage(BACKIMAGE_WIDTH, BACKIMAGE_HEIGHT, BufferedImage.TYPE_INT_ARGB);
+                }
+                Graphics2D g2 = backImage.createGraphics();
+
+                if (useAntialiasing) {
+                    g2.setRenderingHints(antiAlias);
+                }
+
+                Composite oldcomp = g2.getComposite();
+                AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f);
+                g2.setComposite(ac);
+                plotCoverage(backImage);
+                g2.setComposite(oldcomp);
+                return backImage;
+            }
+
+            @Override
+            protected void done() {
+                super.done();
+                try {
+                    coverageImage = get();
+                    scaledImage = null;
+                    createScaledImage();
+                } catch (InterruptedException | ExecutionException ex) {
+                    Exceptions.printStackTrace(ex);
+                } finally {
+                    repaint();
+                }
+            }
+        };
+        worker.execute();
+    }
+
+    private void plotCoverage(final BufferedImage targetImage) throws MGXException {
+
+        if (maxCov != -1) {
+            return;
+        }
+        ProgressHandle ph = ProgressHandle.createHandle("Fetching coverage data");
+        ph.start(refLength);
+
+        maxCov = vc.getMaxCoverage();
+
+        double covScaleX = 1d * refLength / targetImage.getWidth();
+        double covScaleY = (targetImage.getHeight() * 1d) / (FastMath.log(maxCov * 1d));
+
+        Graphics2D g2 = targetImage.createGraphics();
+
+        int baseY = targetImage.getHeight() - 1;
+        int pos = 0;
+
+        GeneralPath gp = null;
+        double[] gpStart = new double[2];
+        double[] lastPoint = new double[2];
+
+        IntIterator covIter = vc.getCoverageIterator();
+        while (covIter.hasNext()) {
+            int cov = covIter.next();
+
+            if (cov == 0) {
+                if (gp != null) {
+                    gp.lineTo(lastPoint[0], baseY); // down to bottom line
+                    gp.lineTo(gpStart[0], gpStart[1]); // close shape
+                    gp.closePath();
+                    drawArea(g2, new Area(gp));
+                    lastPoint[0] = gpStart[0];
+                    lastPoint[1] = gpStart[1];
+                    gp = null;
+                }
+            } else {
+                // we have some coverage..
+                double drawPos = pos * 1d / covScaleX;
+                double covPos = baseY - (FastMath.log(cov) * covScaleY);
+
+                if (gp == null) {
+                    gp = new GeneralPath();
+                    gpStart[0] = drawPos; // remember positions so we can close the shape later
+                    gpStart[1] = baseY;
+                    gp.moveTo(drawPos, baseY);
+
+                    gp.lineTo(drawPos, covPos);
+                    lastPoint[0] = drawPos;
+                    lastPoint[1] = baseY;
+                } else {
+                    // add a new point if distance >= 3px
+                    if (FastMath.abs(lastPoint[0] - drawPos) > 3 || FastMath.abs(lastPoint[1] - covPos) > 3) {
+                        gp.lineTo(drawPos, covPos);
+                        lastPoint[0] = drawPos;
+                        lastPoint[1] = covPos;
+                    }
+                }
+            }
+
+            ph.progress(pos);
+            pos++;
         }
 
-        Composite oldcomp = g2.getComposite();
-        AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f);
-        g2.setComposite(ac);
+        if (gp != null) {
+            gp.lineTo(lastPoint[0], baseY); // down to bottom line
+            gp.lineTo(gpStart[0], gpStart[1]); // close shape
+            gp.closePath();
+            drawArea(g2, new Area(gp));
+            gp = null;
+        }
+
+        ph.finish();
+        repaint();
+    }
+
+    @Override
+    public String getToolTipText(MouseEvent m) {
+        int bpPos = px2bp(m.getX());
+        int[] buf = new int[]{0};
+        try {
+            vc.getCoverage(bpPos, bpPos, buf);
+        } catch (MGXException ex) {
+            buf = null;
+        }
+        String tmp = buf != null ? String.valueOf(buf[0]) : "unknown";
+        return "<html>" + vc.getReference().getName() + "<br>Position: " + bpPos + "<br>Coverage: "
+                + tmp + "</html>";
+    }
+
+    private void drawArea(Graphics2D g2, Area a) {
         g2.setColor(Color.LIGHT_GRAY);
-
-        synchronized (coverage) {
-            for (Area l : coverage) {
-                g2.fill(l);
-            }
-            g2.setColor(Color.DARK_GRAY);
-            for (Area l : coverage) {
-                g2.draw(l);
-            }
-        }
-        g2.setComposite(oldcomp);
-        drawAxis(g2);
+        g2.fill(a);
+        g2.setColor(Color.DARK_GRAY);
+        g2.draw(a);
     }
 
     private void drawAxis(Graphics2D g2) {
@@ -378,117 +487,20 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
         g2.drawString(text3, 3 * getWidth() / 4 - textWidth(g2, text3) / 2, midY + 13);
     }
 
-    private void generateCoverage() throws MGXException {
-
-        if (maxCov != -1) {
-            return;
+    private void createScaledImage() {
+        if (coverageImage != null) {
+            if (coverageImage.getWidth() == getWidth() && coverageImage.getHeight() == getHeight()) {
+                scaledImage = coverageImage;
+            } else {
+                BufferedImage resized = new BufferedImage(getWidth(), getHeight(), coverageImage.getType());
+                Graphics2D g = resized.createGraphics();
+                g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+                        RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+                g.drawImage(coverageImage, 0, 0, getWidth(), getHeight(), 0, 0, coverageImage.getWidth(),
+                        coverageImage.getHeight(), null);
+                g.dispose();
+                scaledImage = resized;
+            }
         }
-
-        if (ph == null) {
-            ph = ProgressHandle.createHandle("Fetching coverage data");
-            ph.start(refLength);
-
-            SwingWorker<List<Area>, Void> sw = new SwingWorker<List<Area>, Void>() {
-
-                @Override
-                protected List<Area> doInBackground() throws Exception {
-                    maxCov = vc.getMaxCoverage();
-                    List<Area> ret = new ArrayList<>();
-
-                    int height = getHeight();
-                    int baseY = height - 1;
-                    int pos = 0;
-                    double covScale = (height * 1d) / (FastMath.log(maxCov * 1d));
-
-                    GeneralPath gp = null;
-                    double[] gpStart = new double[2];
-                    double[] lastPoint = new double[2];
-
-                    IntIterator covIter = vc.getCoverageIterator();
-                    while (covIter.hasNext()) {
-                        int cov = covIter.next();
-                        if (cov == 0) {
-                            if (gp != null) {
-                                gp.lineTo(lastPoint[0], baseY); // down to bottom line
-                                gp.lineTo(gpStart[0], gpStart[1]); // close shape
-                                gp.closePath();
-                                lastPoint[0] = gpStart[0];
-                                lastPoint[1] = gpStart[1];
-                                ret.add(new Area(gp));
-                                gp = null;
-                            }
-                        } else {
-                            // we have some coverage..
-                            double drawPos = bp2px(pos);
-                            ph.progress(pos);
-                            double covPos = baseY - (FastMath.log(cov) * covScale);
-
-                            if (gp == null) {
-                                gp = new GeneralPath();
-                                gpStart[0] = drawPos; // remember positions so we can close the shape later
-                                gpStart[1] = baseY;
-                                gp.moveTo(drawPos, baseY);
-
-                                gp.lineTo(drawPos, covPos);
-                                lastPoint[0] = drawPos;
-                                lastPoint[1] = baseY;
-                            } else {
-                                // add a new point if distance >= 3px
-                                if (FastMath.abs(lastPoint[0] - drawPos) > 3 || FastMath.abs(lastPoint[1] - covPos) > 3) {
-                                    gp.lineTo(drawPos, covPos);
-                                    lastPoint[0] = drawPos;
-                                    lastPoint[1] = covPos;
-                                }
-                            }
-                        }
-                        pos++;
-                    }
-
-                    if (gp != null) {
-                        gp.lineTo(lastPoint[0], baseY); // down to bottom line
-                        gp.lineTo(gpStart[0], gpStart[1]); // close shape
-                        gp.closePath();
-                        ret.add(new Area(gp));
-                        gp = null;
-                    }
-                    return ret;
-                }
-
-                @Override
-                protected void done() {
-                    super.done();
-                    try {
-                        List<Area> get = get();
-                        coverage.clear();
-                        coverage.addAll(get);
-                    } catch (InterruptedException | ExecutionException ex) {
-                        Exceptions.printStackTrace(ex);
-                    } finally {
-                        ph.finish();
-                    }
-                    if (coverage.size() > 0) {
-                        generateCovImage();
-                        repaint();
-                    }
-
-                }
-
-            };
-            sw.execute();
-        }
-    }
-
-    @Override
-    public String getToolTipText(MouseEvent m) {
-        int bpPos = px2bp(m.getX());
-        int[] buf = new int[]{0};
-        try {
-            vc.getCoverage(bpPos, bpPos, buf);
-        } catch (MGXException ex) {
-            buf = null;
-        }
-        String tmp = buf != null ? String.valueOf(buf[0]) : "unknown";
-        return "<html>" + vc.getReference().getName() + "<br>Position: " + bpPos + "<br>Coverage: "
-                + tmp + "</html>";
     }
 }

@@ -13,10 +13,11 @@ import de.cebitec.mgx.gui.mapping.viewer.SwitchModeBase;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
-import java.util.SortedSet;
 import org.apache.commons.math3.util.FastMath;
 import org.openide.util.Exceptions;
 
@@ -76,8 +77,7 @@ public class RecruitmentIdentityPanel extends PanelBase {
             return true;
         }
 
-        int[] bounds = vc.getBounds();
-
+        //int[] bounds = vc.getBounds();
         // adaptive bin size
         BIN_SIZE = 10_000;
         int intervalLength = vc.getIntervalLength();
@@ -105,7 +105,7 @@ public class RecruitmentIdentityPanel extends PanelBase {
 
         List<ColoredRectangle> newRects = new ArrayList<>();
 
-        SortedSet<MappedSequenceI> mappings = null;
+        Iterator<MappedSequenceI> mappings = null;
         try {
 
             double scale = availHeight / FastMath.log(maxBinCov);
@@ -125,7 +125,8 @@ public class RecruitmentIdentityPanel extends PanelBase {
                 binnedIdentity[1] = 0;
                 binnedIdentity[2] = 0;
                 mappings = vc.getMappings(from, FastMath.min(to, refLength - 1));
-                for (MappedSequenceI mSeq : mappings) {
+                while (mappings.hasNext()) {
+                    MappedSequenceI mSeq = mappings.next();
                     if (mSeq.getIdentity() >= HI_BIN_THRESHOLD) {
                         binnedIdentity[2]++;
                     } else if (mSeq.getIdentity() >= MID_BIN_THRESHOLD) {
@@ -142,7 +143,7 @@ public class RecruitmentIdentityPanel extends PanelBase {
                     maxBinCov = curBinCov;
                     return update();
                 }
-                
+
                 final double width = toPx - fromPx; // + 1;
 
                 if (curBinCov > 0) {
@@ -189,6 +190,15 @@ public class RecruitmentIdentityPanel extends PanelBase {
             rects.addAll(newRects);
         }
         return true;
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        switch (evt.getPropertyName()) {
+            case ViewController.MAX_COV_CHANGE:
+                return;
+        }
+        super.propertyChange(evt);
     }
 
 }

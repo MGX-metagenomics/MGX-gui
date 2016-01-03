@@ -21,6 +21,7 @@ import java.awt.event.MouseWheelListener;
 import java.awt.image.VolatileImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Arrays;
 import javax.swing.JComponent;
 import javax.swing.SwingWorker;
 import org.apache.commons.math3.util.FastMath;
@@ -32,7 +33,7 @@ import org.apache.commons.math3.util.FastMath;
 public abstract class PanelBase extends JComponent implements PropertyChangeListener, MouseWheelListener {
 
     protected final ViewController vc;
-    private int[] bounds;
+    protected int[] bounds;
     private int maxCoverage = 0;
     private double scale;
     //
@@ -60,8 +61,9 @@ public abstract class PanelBase extends JComponent implements PropertyChangeList
                 if (getHeight() == 0 || !isEnabled()) {
                     return;
                 }
-                bounds = vc.getBounds();
+                //bounds = vc.getBounds();
                 scale = 1d / (1d * vc.getIntervalLength() / getWidth());
+                createVolatileImage(Transparency.OPAQUE);
 
                 SwingWorker<Void, Void> sw = new SwingWorker<Void, Void>() {
 
@@ -110,12 +112,11 @@ public abstract class PanelBase extends JComponent implements PropertyChangeList
                 createVolatileImage(Transparency.OPAQUE);
             }
             Graphics2D g2 = vimage.createGraphics();
-            
+
             // clear image
             g2.setColor(getBackground());
-            g2.fillRect(0, 0, vimage.getWidth(),vimage.getHeight());
-            
-            
+            g2.fillRect(0, 0, vimage.getWidth(), vimage.getHeight());
+
             if (getHeight() > 0) {
                 if (useAntialiasing) {
                     g2.setRenderingHints(antiAlias);
@@ -126,7 +127,7 @@ public abstract class PanelBase extends JComponent implements PropertyChangeList
                 g2.setFont(defaultFont);
 
                 draw(g2);
-                
+
             }
             g2.dispose();
 
@@ -149,15 +150,22 @@ public abstract class PanelBase extends JComponent implements PropertyChangeList
     public abstract boolean update();
 
     @Override
-    public final void propertyChange(PropertyChangeEvent evt) {
+    public void propertyChange(PropertyChangeEvent evt) {
         if (!isEnabled()) {
             return;
         }
 
         switch (evt.getPropertyName()) {
             case ViewController.BOUNDS_CHANGE:
-                bounds = vc.getBounds();
+                bounds = (int[]) evt.getNewValue();
                 scale = 1d / (1d * vc.getIntervalLength() / getWidth());
+                if (getHeight() > 0) {
+                    if (update()) {
+                        repaint();
+                    }
+                }
+                break;
+            case ViewController.MIN_IDENTITY_CHANGE:
                 if (getHeight() > 0) {
                     if (update()) {
                         repaint();
@@ -171,7 +179,7 @@ public abstract class PanelBase extends JComponent implements PropertyChangeList
                 }
                 break;
             default:
-                System.err.println("Unknown event: " + evt.getPropertyName());
+                System.err.println("Unknown event in PanelBase: " + evt.getPropertyName());
                 assert false;
         }
 
@@ -182,6 +190,7 @@ public abstract class PanelBase extends JComponent implements PropertyChangeList
     }
 
     protected double bp2px(int i) {
+        assert bounds != null;
         return scale * (i - bounds[0]);
     }
 
@@ -199,24 +208,24 @@ public abstract class PanelBase extends JComponent implements PropertyChangeList
             return;
         }
         int notches = e.getWheelRotation();
-        int[] b = vc.getBounds();
+        int[] newBounds = Arrays.copyOf(bounds, 2);
         int len = vc.getIntervalLength();
         int adjust = len / 25;
 
         if (notches < 0) {
-            b[0] += adjust;
-            b[1] -= adjust;
+            newBounds[0] += adjust;
+            newBounds[1] -= adjust;
         } else {
-            b[0] -= adjust;
-            b[1] += adjust;
+            newBounds[0] -= adjust;
+            newBounds[1] += adjust;
         }
-        vc.setBounds(FastMath.max(b[0], 0), FastMath.min(b[1], vc.getReference().getLength() - 1));
+        vc.setBounds(FastMath.max(newBounds[0], 0), FastMath.min(newBounds[1], vc.getReference().getLength() - 1));
         e.consume();
     }
 
     @Override
     public void setEnabled(boolean enable) {
         super.setEnabled(enable);
-        propertyChange(new PropertyChangeEvent(vc, ViewController.BOUNDS_CHANGE, 0, 1));
+        propertyChange(new PropertyChangeEvent(vc, ViewController.BOUNDS_CHANGE, 0, vc.getBounds()));
     }
 }
