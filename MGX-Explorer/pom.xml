@@ -75,9 +75,13 @@
             <artifactId>MGX-client-api</artifactId>
             <groupId>de.cebitec.mgx.client</groupId>
         </dependency>
-        <dependency>
+        <!-- <dependency>
             <artifactId>MGX-restgpms</artifactId>
             <groupId>de.cebitec.mgx</groupId>
+        </dependency> -->
+        <dependency>
+            <groupId>de.cebitec.gpms</groupId>
+            <artifactId>GPMS-rest-api</artifactId>
         </dependency>
     </dependencies>
 

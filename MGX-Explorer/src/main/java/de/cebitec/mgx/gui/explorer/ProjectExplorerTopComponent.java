@@ -1,8 +1,8 @@
 package de.cebitec.mgx.gui.explorer;
 
+import de.cebitec.gpms.rest.GPMSClientI;
 import de.cebitec.mgx.gui.nodefactory.ServerNodeFactory;
 import de.cebitec.mgx.gui.nodes.ServerNode;
-import de.cebitec.mgx.restgpms.GPMS;
 import java.awt.BorderLayout;
 import java.util.List;
 import javax.swing.SwingWorker;
@@ -31,7 +31,7 @@ import org.openide.windows.TopComponent;
         preferredID = "ProjectExplorerTopComponent")
 public final class ProjectExplorerTopComponent extends TopComponent implements ExplorerManager.Provider {
 
-    private final ExplorerManager exmngr = new ExplorerManager();
+    private final transient ExplorerManager exmngr = new ExplorerManager();
     private final BeanTreeView btv;
 
     public ProjectExplorerTopComponent() {
@@ -89,15 +89,15 @@ public final class ProjectExplorerTopComponent extends TopComponent implements E
         return exmngr;
     }
 
-    public void setGPMS(final GPMS gpms) {
+    public void setGPMS(final GPMSClientI gpms) {
         final AbstractNode root = new AbstractNode(Children.create(new ServerNodeFactory(gpms), false));
         exmngr.setRootContext(root);
         SwingWorker<Void, Node> sw = new SwingWorker<Void, Node>() {
             @Override
             protected Void doInBackground() throws Exception {
-                for (Node server : root.getChildren().getNodes()) {
-                    publish(server);
-                }
+//                for (Node server : root.getChildren().getNodes()) {
+                publish(root.getChildren().getNodes());
+//                }
                 return null;
             }
 
