@@ -10,6 +10,7 @@ import de.cebitec.mgx.api.misc.Triple;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.JobI;
+import de.cebitec.mgx.api.model.ModelBaseI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.tree.TreeI;
 import de.cebitec.mgx.pevents.ParallelPropertyChangeSupport;
@@ -21,6 +22,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -42,9 +44,6 @@ import org.openide.util.Exceptions;
  */
 public class VisualizationGroup implements VisualizationGroupI {
 
-    //public static final String VISGROUP_DESELECTED = "vgDeselected";
-    //
-    //
     private final VGroupManagerI vgmgr;
     private String name;
     private Color color;
@@ -56,7 +55,7 @@ public class VisualizationGroup implements VisualizationGroupI {
     private final Map<SeqRunI, Map<JobI, Set<AttributeTypeI>>> attributeTypes;
     private final Map<SeqRunI, DistributionI<Long>> currentDistributions;
     //
-    private final PropertyChangeSupport pcs = new ParallelPropertyChangeSupport(this);
+    private final PropertyChangeSupport pcs = new ParallelPropertyChangeSupport(this, true);
     //
     private final Map<String, DistributionI<Long>> distCache = new HashMap<>();
     private final Map<String, TreeI<Long>> hierarchyCache = new HashMap<>();
@@ -64,7 +63,8 @@ public class VisualizationGroup implements VisualizationGroupI {
     private final int id;
     private final UUID uuid = UUID.randomUUID();
     private final DataFlavor dataflavor;
-    private String managedState;
+    //
+    private String managedState = ModelBaseI.OBJECT_MANAGED;
 
     VisualizationGroup(VGroupManagerI vgmgr, int id, String groupName, Color color) {
         this(VisualizationGroupI.VISGROUP_DATA_FLAVOR, vgmgr, id, groupName, color);
@@ -109,6 +109,11 @@ public class VisualizationGroup implements VisualizationGroupI {
     }
 
     @Override
+    public String getDisplayName() {
+        return getName();
+    }
+
+    @Override
     public void setName(String name) {
         String oldVal = this.name;
         this.name = name;
@@ -117,7 +122,7 @@ public class VisualizationGroup implements VisualizationGroupI {
 
     @Override
     public boolean isActive() {
-        return is_active && attributeTypes.size() > 0;
+        return is_active && !isDeleted() && !attributeTypes.isEmpty();
     }
 
     @Override
@@ -147,7 +152,7 @@ public class VisualizationGroup implements VisualizationGroupI {
 
     @Override
     public final Set<SeqRunI> getSeqRuns() {
-        return attributeTypes.keySet();
+        return Collections.unmodifiableSet(attributeTypes.keySet());
     }
 
     @Override
@@ -246,15 +251,26 @@ public class VisualizationGroup implements VisualizationGroupI {
     }
 
     @Override
-    public final void addSeqRuns(final Set<SeqRunI> runs) {
+    public final void addSeqRuns(final SeqRunI... runs) {
+        if (runs.length == 0) {
+            return;
+        }
+
+        for (SeqRunI run : runs) {
+            if (run.isDeleted()) {
+                throw new IllegalArgumentException(run.getName() + " is already marked as deleted.");
+            }
+            run.addPropertyChangeListener(this);
+        }
+
         MultiAttributeTypeFetcher fetcher = new MultiAttributeTypeFetcher(runs);
         Future<Map<SeqRunI, Map<JobI, Set<AttributeTypeI>>>> f = vgmgr.submit(fetcher);
 
         try {
             Map<SeqRunI, Map<JobI, Set<AttributeTypeI>>> get = f.get();
             for (Map.Entry<SeqRunI, Map<JobI, Set<AttributeTypeI>>> e : get.entrySet()) {
-                e.getKey().addPropertyChangeListener(this);
-                attributeTypes.put(e.getKey(), e.getValue());
+                SeqRunI run = e.getKey();
+                attributeTypes.put(run, e.getValue());
 
                 // remove cached data for modified attribute types
                 for (Set<AttributeTypeI> s : e.getValue().values()) {
@@ -268,22 +284,30 @@ public class VisualizationGroup implements VisualizationGroupI {
         } catch (InterruptedException | ExecutionException ex) {
             Exceptions.printStackTrace(ex);
         }
-
         fireVGroupChanged(VISGROUP_CHANGED);
     }
+
+    //private final static Set<AttributeTypeI> NO_ATTRS = Collections.EMPTY_SET;
+    private final static Map<JobI, Set<AttributeTypeI>> NO_JOBS = new HashMap<>();
 
     @Override
     public final void addSeqRun(final SeqRunI sr) {
         if (sr == null || attributeTypes.containsKey(sr)) {
             return;
         }
+        if (sr.isDeleted()) {
+            throw new IllegalArgumentException(sr.getName() + " is already marked as deleted.");
+        }
+        sr.addPropertyChangeListener(this);
+
+        attributeTypes.put(sr, NO_JOBS);
 
         AttributeTypeFetcher fetcher = new AttributeTypeFetcher(sr);
         Future<Map<JobI, Set<AttributeTypeI>>> f = vgmgr.submit(fetcher);
 
         try {
             Map<JobI, Set<AttributeTypeI>> get = f.get();
-            sr.addPropertyChangeListener(this);
+
             attributeTypes.put(sr, get);
 
             // remove cached data for modified attribute types
@@ -298,6 +322,7 @@ public class VisualizationGroup implements VisualizationGroupI {
         }
 
         fireVGroupChanged(VISGROUP_CHANGED);
+        //modified();
     }
 
     @Override
@@ -305,9 +330,9 @@ public class VisualizationGroup implements VisualizationGroupI {
         if (!attributeTypes.containsKey(sr)) {
             return;
         }
-
         sr.removePropertyChangeListener(this);
         Map<JobI, Set<AttributeTypeI>> remove = attributeTypes.remove(sr);
+        currentDistributions.remove(sr);
 
         // remove cached data for modified attribute types
         for (Set<AttributeTypeI> s : remove.values()) {
@@ -318,6 +343,7 @@ public class VisualizationGroup implements VisualizationGroupI {
         }
 
         fireVGroupChanged(VISGROUP_CHANGED);
+        modified();
     }
 
     @Override
@@ -529,7 +555,7 @@ public class VisualizationGroup implements VisualizationGroupI {
 //        return curAttrTypeCnt;
 //    }
     @Override
-    public void modified() {
+    public final synchronized void modified() {
         if (managedState.equals(OBJECT_DELETED)) {
             throw new RuntimeException("Invalid object state, cannot modify deleted object.");
         }
@@ -537,7 +563,7 @@ public class VisualizationGroup implements VisualizationGroupI {
     }
 
     @Override
-    public void deleted() {
+    public final synchronized void deleted() {
         if (managedState.equals(OBJECT_DELETED)) {
             throw new RuntimeException("Invalid object state, cannot delete deleted object.");
         }
@@ -545,11 +571,15 @@ public class VisualizationGroup implements VisualizationGroupI {
         managedState = OBJECT_DELETED;
     }
 
+    @Override
+    public final boolean isDeleted() {
+        return managedState.equals(OBJECT_DELETED);
+    }
+
 //    @Override
 //    public int compareTo(VisualizationGroupI o) {
 //        return Integer.compare(getId(), o.getId());
 //    }
-
     @Override
     public final DataFlavor[] getTransferDataFlavors() {
         return new DataFlavor[]{dataflavor};
