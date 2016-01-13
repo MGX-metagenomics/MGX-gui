@@ -20,9 +20,9 @@ import java.util.Set;
  */
 public final class MultiAttributeTypeFetcher extends Fetcher<Map<SeqRunI, Map<JobI, Set<AttributeTypeI>>>> {
 
-    private final Set<SeqRunI> runs;
+    private final SeqRunI[] runs;
 
-    public MultiAttributeTypeFetcher(final Set<SeqRunI> runs) {
+    public MultiAttributeTypeFetcher(final SeqRunI... runs) {
         this.runs = runs;
     }
 
