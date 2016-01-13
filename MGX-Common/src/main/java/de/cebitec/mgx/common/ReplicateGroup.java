@@ -7,7 +7,8 @@ package de.cebitec.mgx.common;
 
 import de.cebitec.mgx.api.groups.ReplicateGroupI;
 import de.cebitec.mgx.api.groups.ReplicateI;
-import de.cebitec.mgx.api.groups.VGroupManagerI;
+import de.cebitec.mgx.api.model.ModelBaseI;
+import static de.cebitec.mgx.api.model.ModelBaseI.OBJECT_DELETED;
 import de.cebitec.mgx.pevents.ParallelPropertyChangeSupport;
 import java.awt.Color;
 import java.awt.datatransfer.DataFlavor;
@@ -26,28 +27,28 @@ import java.util.Collections;
  */
 public class ReplicateGroup implements ReplicateGroupI {
 
-    private final VGroupManagerI vgmgr;
     private String name;
     private Color color;
     private final Collection<ReplicateI> groups = new ArrayList<>();
     private boolean is_active = true;
     //
+    private String managedState = OBJECT_MANAGED;
+    //
     private final PropertyChangeSupport pcs = new ParallelPropertyChangeSupport(this, true);
     //
     int replCnt = 1;
 
-    ReplicateGroup(VGroupManagerI vgmgr, String name) {
-        this.vgmgr = vgmgr;
+    ReplicateGroup(String name) {
         this.name = name;
     }
 
     @Override
     public void add(ReplicateI replicate) {
-        assert replicate != null;
-        if (!groups.contains(replicate)) {
+        if (replicate != null && !groups.contains(replicate)) {
             replicate.addPropertyChangeListener(this);
             groups.add(replicate);
             pcs.firePropertyChange(REPLICATEGROUP_REPLICATE_ADDED, null, replicate);
+            modified();
         }
     }
 
@@ -58,6 +59,7 @@ public class ReplicateGroup implements ReplicateGroupI {
             replicate.close();
             groups.remove(replicate);
             pcs.firePropertyChange(REPLICATEGROUP_REPLICATE_REMOVED, null, replicate);
+            modified();
         }
     }
 
@@ -74,6 +76,7 @@ public class ReplicateGroup implements ReplicateGroupI {
     @Override
     public void setName(String name) {
         this.name = name;
+        modified();
     }
 
     @Override
@@ -84,6 +87,7 @@ public class ReplicateGroup implements ReplicateGroupI {
     @Override
     public void setColor(Color color) {
         this.color = color;
+        modified();
     }
 
     @Override
@@ -102,7 +106,7 @@ public class ReplicateGroup implements ReplicateGroupI {
 
     @Override
     public final boolean isActive() {
-        return is_active;
+        return is_active && !isDeleted();
     }
 
     @Override
@@ -133,12 +137,24 @@ public class ReplicateGroup implements ReplicateGroupI {
 
     @Override
     public void modified() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (managedState.equals(OBJECT_DELETED)) {
+            throw new RuntimeException("Invalid object state, cannot modify deleted object.");
+        }
+        firePropertyChange(ModelBaseI.OBJECT_MODIFIED, 1, 2);
     }
 
     @Override
     public void deleted() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (managedState.equals(OBJECT_DELETED)) {
+            throw new RuntimeException("Invalid object state, cannot delete deleted object.");
+        }
+        firePropertyChange(ModelBaseI.OBJECT_DELETED, 0, 1);
+        managedState = OBJECT_DELETED;
+    }
+
+    @Override
+    public final boolean isDeleted() {
+        return managedState.equals(OBJECT_DELETED);
     }
 
     @Override

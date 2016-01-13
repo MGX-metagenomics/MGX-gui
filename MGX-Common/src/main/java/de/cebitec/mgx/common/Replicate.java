@@ -8,6 +8,7 @@ package de.cebitec.mgx.common;
 import de.cebitec.mgx.api.groups.ReplicateGroupI;
 import de.cebitec.mgx.api.groups.ReplicateI;
 import de.cebitec.mgx.api.groups.VGroupManagerI;
+import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import java.awt.Color;
 
 /**
@@ -18,14 +19,19 @@ public class Replicate extends VisualizationGroup implements ReplicateI {
 
     private final ReplicateGroupI group;
 
-    Replicate(ReplicateGroupI group, VGroupManagerI vgmgr, int id, String groupName, Color color) {
-        super(ReplicateI.REPLICATE_DATA_FLAVOR, vgmgr, id, groupName, color);
+    Replicate(ReplicateGroupI group, VGroupManagerI vgmgr, int id, String replName, Color color) {
+        super(ReplicateI.REPLICATE_DATA_FLAVOR, vgmgr, id, replName, color);
         this.group = group;
     }
 
     @Override
     public final void setName(String name) {
         //super.setName(name);
+    }
+
+    @Override
+    public String getDisplayName() {
+        return group.getName() + " R" + getId();
     }
 
     @Override
@@ -42,6 +48,11 @@ public class Replicate extends VisualizationGroup implements ReplicateI {
     @Override
     public final ReplicateGroupI getReplicateGroup() {
         return group;
+    }
+
+    @Override
+    public int compareTo(VisualizationGroupI o) {
+        return super.compareTo(o);
     }
 
 }
