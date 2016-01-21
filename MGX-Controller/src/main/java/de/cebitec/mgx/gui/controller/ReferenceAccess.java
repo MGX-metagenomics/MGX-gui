@@ -122,6 +122,9 @@ public class ReferenceAccess implements ReferenceAccessI {
     @Override
     public String getSequence(final MGXReferenceI ref, int from, int to) throws MGXException {
         try {
+            if (from < 0 || to < 0 || from > ref.getLength() - 1 || to > ref.getLength() - 1) {
+                throw new IllegalArgumentException("Coordinates outside of reference sequence: requested " + from + "-" + to + ", reference length is " + ref.getLength());
+            }
             return dtomaster.Reference().getSequence(ref.getId(), from, to);
         } catch (MGXServerException | MGXClientException ex) {
             throw new MGXException(ex);
