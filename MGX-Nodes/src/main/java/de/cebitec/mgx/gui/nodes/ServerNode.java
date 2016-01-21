@@ -1,7 +1,7 @@
 package de.cebitec.mgx.gui.nodes;
 
+import de.cebitec.gpms.core.UserI;
 import de.cebitec.gpms.rest.GPMSClientI;
-import de.cebitec.gpms.rest.RESTUserI;
 import de.cebitec.mgx.gui.nodefactory.ProjectNodeFactory;
 import javax.swing.Action;
 import org.openide.nodes.AbstractNode;
@@ -20,7 +20,7 @@ public class ServerNode extends AbstractNode {
         super(Children.create(new ProjectNodeFactory(client), true), Lookups.singleton(client));
         this.gpmsclient = client;
         setDisplayName(client.getServerName());
-        RESTUserI user = gpmsclient.getUser();
+        UserI user = gpmsclient.getUser();
         if (user != null) {
             setShortDescription(client.getServerName() + " (Connected as " + gpmsclient.getUser().getLogin() + ")");
         }
