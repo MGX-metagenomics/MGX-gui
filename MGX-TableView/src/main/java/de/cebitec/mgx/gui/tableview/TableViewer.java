@@ -69,7 +69,7 @@ public class TableViewer extends ViewerI<DistributionI<Long>> {
         int i = 0;
         columns[i++] = getAttributeType().getName(); // first column
         for (Pair<VisualizationGroupI, DistributionI<Double>> p : ret) {
-            columns[i++] = p.getFirst().getName();
+            columns[i++] = p.getFirst().getDisplayName();
             allAttrs.addAll(p.getSecond().keySet());
         }
 
