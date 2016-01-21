@@ -49,7 +49,7 @@ public class StackedBar {
     }
 
     public String getLabel() {
-        return vGrp.getName() + " / " + attrType.getName();
+        return vGrp.getDisplayName() + " / " + attrType.getName();
     }
 
     int drawOn(Graphics2D g2, int x, int y) {
