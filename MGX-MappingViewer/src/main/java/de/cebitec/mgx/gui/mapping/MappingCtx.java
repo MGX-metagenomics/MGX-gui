@@ -21,7 +21,6 @@ import java.beans.PropertyChangeSupport;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.UUID;
-import java.util.function.Predicate;
 import org.openide.util.Exceptions;
 
 /**
@@ -134,6 +133,11 @@ public class MappingCtx implements PropertyChangeListener, AutoCloseable {
                 MappedSequenceI ms = cur;
                 cur = null;
                 return ms;
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException("Not supported.");
             }
         };
     }
