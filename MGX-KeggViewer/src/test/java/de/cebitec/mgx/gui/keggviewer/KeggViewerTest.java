@@ -46,7 +46,7 @@ public class KeggViewerTest {
     public void testRegressionInterrupted() throws MGXException {
         System.out.println("regressionInterrupted");
 
-        VisualizationGroupI vg = VGroupManager.getInstance().createVizGroup();
+        VisualizationGroupI vg = VGroupManager.getInstance().createVisualizationGroup();
         MGXMasterI master = TestMaster.getRO();
 
         // add first run
