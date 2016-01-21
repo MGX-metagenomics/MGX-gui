@@ -17,7 +17,6 @@ import de.cebitec.mgx.kegg.pathways.api.PathwayI;
 import de.cebitec.mgx.kegg.pathways.model.ECNumberFactory;
 import de.cebitec.mgx.kegg.pathways.paint.KEGGPanel;
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -105,7 +104,7 @@ public class KeggViewer extends CategoricalViewerI<Long> {
                     if (matcher.find()) {
                         ECNumberI ec = ECNumberFactory.fromString(e.getKey().getValue().substring(matcher.start(), matcher.end()));
                         String description = "<html><b>" + e.getKey().getValue() + "</b><br><hr>"
-                                + group.getName() + ": " + e.getValue().toString() + " hits</html>";
+                                + group.getDisplayName() + ": " + e.getValue().toString() + " hits</html>";
                         panel.addData(idx, ec, group.getColor(), description);
                     }
                 }
