@@ -60,8 +60,8 @@ public class VGroupFrame extends javax.swing.JPanel implements ExplorerManager.P
         //
         // set initial properties
         //
-        setTitle(vGroup.getName() + " (" + vGroup.getNumSequences() + " sequences)");
-        displayName.setText(vGroup.getName());
+        setTitle(vGroup.getDisplayName() + " (" + vGroup.getNumSequences() + " sequences)");
+        displayName.setText(vGroup.getDisplayName());
         color.setBackground(vGroup.getColor());
         //
         // add listeners _after_ setting initial values
@@ -72,7 +72,7 @@ public class VGroupFrame extends javax.swing.JPanel implements ExplorerManager.P
         //
         vgnf = new GroupedSeqRunNodeFactory(vGroup);
 
-        final InvisibleRoot root = new InvisibleRoot(Children.create(vgnf, true));
+        final InvisibleRoot root = new InvisibleRoot(vgnf);
         exmngr.setRootContext(root);
 
         listView = new MyListView();
@@ -184,7 +184,7 @@ public class VGroupFrame extends javax.swing.JPanel implements ExplorerManager.P
         if (displayName.getDocument() == d) {
             vGroup.setName(displayName.getText());
             DecimalFormat df = new DecimalFormat(",###"); // FIXME
-            setTitle(vGroup.getName() + " (" + df.format(vGroup.getNumSequences()) + " sequences)");
+            setTitle(vGroup.getDisplayName() + " (" + df.format(vGroup.getNumSequences()) + " sequences)");
             displayName.setBackground(Color.WHITE);
         }
     }
@@ -192,7 +192,7 @@ public class VGroupFrame extends javax.swing.JPanel implements ExplorerManager.P
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         if (VisualizationGroupI.VISGROUP_CHANGED.equals(evt.getPropertyName())) {
-            setTitle(vGroup.getName() + " (" + vGroup.getNumSequences() + " sequences)");
+            setTitle(vGroup.getDisplayName() + " (" + vGroup.getNumSequences() + " sequences)");
         }
     }
 

@@ -1,26 +1,22 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package de.cebitec.mgx.gui.attributevisualization;
 
 import de.cebitec.mgx.api.groups.ReplicateGroupI;
 import de.cebitec.mgx.gui.nodefactory.ReplicateNodeFactory;
 import java.awt.dnd.DnDConstants;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import org.openide.explorer.view.BeanTreeView;
 
 /**
  *
  * @author sjaenick
  */
-final class ReplicateGroupTreeView extends BeanTreeView implements PropertyChangeListener {
+final class ReplicateGroupTreeView extends BeanTreeView { //implements PropertyChangeListener {
 
     private final ReplicateGroupI rGroup;
     private final ReplicateNodeFactory rgnf;
-
+   @Override
+    public void setDragSource(boolean state) {
+    }
     public ReplicateGroupTreeView(ReplicateGroupI rGroup) {
         this(rGroup, new ReplicateNodeFactory(rGroup));
     }
@@ -31,69 +27,87 @@ final class ReplicateGroupTreeView extends BeanTreeView implements PropertyChang
         this.rgnf = rgnf;
         setRootVisible(false);
         setDropTarget(true);
-        //setShowParentNode(true);
         setAllowedDropActions(DnDConstants.ACTION_COPY + DnDConstants.ACTION_REFERENCE);
         //setDropTarget();
-        rGroup.addPropertyChangeListener(this);
-    } //setShowParentNode(true);
-
+        //rGroup.addPropertyChangeListener(this);
+    }
+//
 //    private void setDropTarget() {
 //        DropTarget dt = new DropTarget(this, new DropTargetAdapter() {
 //            @Override
 //            public void dragEnter(DropTargetDragEvent dtde) {
+//
+//                Set<SeqRunI> myRuns = new HashSet<>();
+//                for (ReplicateI repl : rGroup.getReplicates()) {
+//                    myRuns.addAll(repl.getSeqRuns());
+//                }
+//
 //                Transferable t = dtde.getTransferable();
 //                if (t.isDataFlavorSupported(ExTransferable.multiFlavor)) {
 //                    try {
 //                        final MultiTransferObject mto = (MultiTransferObject) t.getTransferData(ExTransferable.multiFlavor);
 //
-//                        // multiple visualization groups
-//                        if (mto.areDataFlavorsSupported(new DataFlavor[]{VisualizationGroupI.DATA_FLAVOR})) {
+//                        if (mto.areDataFlavorsSupported(new DataFlavor[]{SampleI.DATA_FLAVOR})) {
 //                            int elems = mto.getCount();
 //                            for (int i = 0; i < elems; i++) {
-//                                VisualizationGroupI vGroup = (VisualizationGroupI) mto.getTransferData(i, VisualizationGroupI.DATA_FLAVOR);
-//                                if (rGroup.getVisualizationGroups().contains(vGroup)) {
+//                                SampleI sample = (SampleI) mto.getTransferData(i, SampleI.DATA_FLAVOR);
+//                                MGXMasterI master = sample.getMaster();
+//                                Iterator<DNAExtractI> extractsIter = master.DNAExtract().BySample(sample);
+//                                while (extractsIter.hasNext()) {
+//                                    DNAExtractI extract = extractsIter.next();
+//                                    Iterator<SeqRunI> seqrunIter = master.SeqRun().ByExtract(extract);
+//                                    while (seqrunIter.hasNext()) {
+//                                        SeqRunI seqrun = seqrunIter.next();
+//                                        if (myRuns.contains(seqrun)) {
+//                                            dtde.rejectDrag();
+//                                            return;
+//                                        }
+//                                    }
+//                                }
+//                            }
+//                            dtde.acceptDrag(DnDConstants.ACTION_COPY);
+//                            return;
+//                        }
+//                    } catch (UnsupportedFlavorException | IOException | MGXException e) {
+//                    }
+//                }
+//
+//                // single sample
+//                if (dtde.isDataFlavorSupported(SampleI.DATA_FLAVOR)) {
+//                    try {
+//                        SampleI sample = (SampleI) dtde.getTransferable().getTransferData(SampleI.DATA_FLAVOR);
+//                        MGXMasterI master = sample.getMaster();
+//                        Iterator<DNAExtractI> extractsIter = master.DNAExtract().BySample(sample);
+//                        while (extractsIter.hasNext()) {
+//                            DNAExtractI extract = extractsIter.next();
+//                            Iterator<SeqRunI> seqrunIter = master.SeqRun().ByExtract(extract);
+//                            while (seqrunIter.hasNext()) {
+//                                SeqRunI seqrun = seqrunIter.next();
+//                                if (myRuns.contains(seqrun)) {
 //                                    dtde.rejectDrag();
 //                                    return;
 //                                }
 //                            }
-//                            dtde.acceptDrag(DnDConstants.ACTION_COPY);
-//                            return;
 //                        }
-//                    } catch (UnsupportedFlavorException | IOException e) {
+//                    } catch (UnsupportedFlavorException | IOException | MGXException ex) {
 //                    }
+//                    dtde.acceptDrag(DnDConstants.ACTION_COPY);
+//                    return;
 //                }
 //
-//                // single visualization group
-//                if (dtde.isDataFlavorSupported(VisualizationGroupI.DATA_FLAVOR)) {
-//                    try {
-//                        VisualizationGroupI vGroup = (VisualizationGroupI) dtde.getTransferable().getTransferData(VisualizationGroupI.DATA_FLAVOR);
-//                        if (vGroup != null && !rGroup.getVisualizationGroups().contains(vGroup)) {
-//                            dtde.acceptDrag(DnDConstants.ACTION_COPY);
-//                            return;
-//                        }
-//                    } catch (UnsupportedFlavorException | IOException ex) {
-//                    }
-//                }
-//
-//                // single seqrun - add within new visualization group
+//                // single seqrun
 //                if (dtde.isDataFlavorSupported(SeqRunI.DATA_FLAVOR)) {
 //                    try {
 //                        SeqRunI run = (SeqRunI) dtde.getTransferable().getTransferData(SeqRunI.DATA_FLAVOR);
-//
-//                        //
-//                        // check if the run is already present; if so, reject
-//                        //
-//                        for (VisualizationGroupI vg : rGroup.getVisualizationGroups()) {
-//                            for (SeqRunI sr : vg.getSeqRuns()) {
-//                                if (sr.equals(run)) {
-//                                    dtde.rejectDrag();
-//                                }
-//                            }
+//                        if (myRuns.contains(run)) {
+//                            dtde.rejectDrag();
+//                            return;
 //                        }
-//                        dtde.acceptDrag(DnDConstants.ACTION_COPY);
-//                        return;
 //                    } catch (UnsupportedFlavorException | IOException ex) {
+//                        dtde.rejectDrag();
 //                    }
+//                    dtde.acceptDrag(DnDConstants.ACTION_COPY);
+//                    return;
 //                }
 //
 //                // default: reject
@@ -102,77 +116,87 @@ final class ReplicateGroupTreeView extends BeanTreeView implements PropertyChang
 //
 //            @Override
 //            public void drop(DropTargetDropEvent dtde) {
+//
+//                Set<SeqRunI> myRuns = new HashSet<>();
+//                for (ReplicateI repl : rGroup.getReplicates()) {
+//                    myRuns.addAll(repl.getSeqRuns());
+//                }
+//
+//                Set<SeqRunI> newRuns = new HashSet<>();
+//
 //                Transferable t = dtde.getTransferable();
 //                if (t.isDataFlavorSupported(ExTransferable.multiFlavor)) {
 //                    try {
 //                        final MultiTransferObject mto = (MultiTransferObject) t.getTransferData(ExTransferable.multiFlavor);
-//                        if (mto.areDataFlavorsSupported(new DataFlavor[]{VisualizationGroupI.DATA_FLAVOR})) {
+//                        if (mto.areDataFlavorsSupported(new DataFlavor[]{SampleI.DATA_FLAVOR})) {
 //                            int elems = mto.getCount();
 //                            for (int i = 0; i < elems; i++) {
-//                                VisualizationGroupI vGroup = (VisualizationGroupI) mto.getTransferData(i, VisualizationGroupI.DATA_FLAVOR);
-//                                if (rGroup.getVisualizationGroups().contains(vGroup)) {
-//                                    dtde.rejectDrop();
-//                                    return;
+//                                SampleI sample = (SampleI) mto.getTransferData(i, SampleI.DATA_FLAVOR);
+//                                MGXMasterI master = sample.getMaster();
+//                                Iterator<DNAExtractI> extractsIter = master.DNAExtract().BySample(sample);
+//                                while (extractsIter.hasNext()) {
+//                                    DNAExtractI extract = extractsIter.next();
+//                                    Iterator<SeqRunI> seqrunIter = master.SeqRun().ByExtract(extract);
+//                                    while (seqrunIter.hasNext()) {
+//                                        SeqRunI seqrun = seqrunIter.next();
+//                                        if (myRuns.contains(seqrun)) {
+//                                            dtde.rejectDrop();
+//                                        } else {
+//                                            newRuns.add(seqrun);
+//                                        }
+//                                    }
 //                                }
+//
 //                            }
-//                            try {
-//                                setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-//                                Set<VisualizationGroupI> newVGroups = new HashSet<>();
-//                                for (int i = 0; i < elems; i++) {
-//                                    VisualizationGroupI vg = (VisualizationGroupI) mto.getTransferData(i, VisualizationGroupI.DATA_FLAVOR);
-//                                    newVGroups.add(vg);
-//                                }
-//                                rgnf.addVGroups(newVGroups);
-//                            } finally {
-//                                setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-//                            }
-//                            dtde.dropComplete(true);
-//                            return;
 //                        }
-//                    } catch (UnsupportedFlavorException | IOException e) {
+//                    } catch (UnsupportedFlavorException | IOException | MGXException e) {
 //                    }
 //                }
-//                if (dtde.isDataFlavorSupported(VisualizationGroupI.DATA_FLAVOR)) {
+//                if (dtde.isDataFlavorSupported(SampleI.DATA_FLAVOR)) {
 //                    try {
-//                        VisualizationGroupI vGroup = (VisualizationGroupI) dtde.getTransferable().getTransferData(VisualizationGroupI.DATA_FLAVOR);
-//                        if (vGroup != null && !rGroup.getVisualizationGroups().contains(vGroup)) {
-//                            rgnf.addVGroup(vGroup);
-//                            dtde.dropComplete(true);
-//                            return;
+//                        SampleI sample = (SampleI) dtde.getTransferable().getTransferData(SampleI.DATA_FLAVOR);
+//                        MGXMasterI master = sample.getMaster();
+//                        Iterator<DNAExtractI> extractsIter = master.DNAExtract().BySample(sample);
+//                        while (extractsIter.hasNext()) {
+//                            DNAExtractI extract = extractsIter.next();
+//                            Iterator<SeqRunI> seqrunIter = master.SeqRun().ByExtract(extract);
+//                            while (seqrunIter.hasNext()) {
+//                                SeqRunI seqrun = seqrunIter.next();
+//                                if (myRuns.contains(seqrun)) {
+//                                    dtde.rejectDrop();
+//                                } else {
+//                                    newRuns.add(seqrun);
+//                                }
+//                            }
 //                        }
-//                    } catch (UnsupportedFlavorException | IOException ex) {
+//                    } catch (UnsupportedFlavorException | IOException | MGXException ex) {
 //                    }
 //                }
 //
-//                // single seqrun - add within new visualization group
+//                // single seqrun - add as new replicate 
 //                if (dtde.isDataFlavorSupported(SeqRunI.DATA_FLAVOR)) {
 //                    try {
-//                        SeqRunI run = (SeqRunI) dtde.getTransferable().getTransferData(SeqRunI.DATA_FLAVOR);
-//
-//                        //
-//                        // check if the run is already present; if so, reject
-//                        //
-//                        for (VisualizationGroupI vg : rGroup.getVisualizationGroups()) {
-//                            for (SeqRunI sr : vg.getSeqRuns()) {
-//                                if (sr.equals(run)) { 
-//                                    dtde.rejectDrop();
-//                                }
-//                            }
+//                        SeqRunI seqrun = (SeqRunI) dtde.getTransferable().getTransferData(SeqRunI.DATA_FLAVOR);
+//                        if (myRuns.contains(seqrun)) {
+//                            dtde.rejectDrop();
+//                        } else {
+//                            newRuns.add(seqrun);
 //                        }
-//                        dtde.dropComplete(true);
-//                        return;
 //                    } catch (UnsupportedFlavorException | IOException ex) {
 //                    }
 //                }
-//                dtde.rejectDrop();
+//
+//                // add new runs
+//                for (SeqRunI seqrun : newRuns) {
+//                    ReplicateI newReplicate = VGroupManager.getInstance().createReplicate(rGroup);
+//                    newReplicate.addSeqRun(seqrun);
+//                }
+//                dtde.dropComplete(true);
 //            }
 //        });
 //        setDropTarget(dt);
 //    }
 
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-        //System.err.println("ListView got "+evt.getPropertyName());
-    }
+
 
 }
