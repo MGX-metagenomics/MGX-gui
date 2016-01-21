@@ -39,9 +39,9 @@ public class JFreeChartUtil {
         LegendItemCollection ret = new LegendItemCollection();
         DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.US);
         for (Pair<VisualizationGroupI, DistributionI<T>> gd : in) {
-            LegendItem li = new LegendItem(gd.getFirst().getName());
+            LegendItem li = new LegendItem(gd.getFirst().getDisplayName());
             li.setFillPaint(gd.getFirst().getColor());
-            li.setToolTipText("Classified sequences in " + gd.getFirst().getName() + ": " + formatter.format(gd.getSecond().getTotalClassifiedElements()));
+            li.setToolTipText("Classified sequences in " + gd.getFirst().getDisplayName() + ": " + formatter.format(gd.getSecond().getTotalClassifiedElements()));
             ret.add(li);
         }
         return ret;
@@ -53,7 +53,7 @@ public class JFreeChartUtil {
             DistributionI<T> d = groupDistribution.getSecond();
 
             for (Map.Entry<AttributeI, T> entry : d.entrySet()) {
-                dataset.addValue(entry.getValue(), groupDistribution.getFirst().getName(), entry.getKey().getValue());
+                dataset.addValue(entry.getValue(), groupDistribution.getFirst().getDisplayName(), entry.getKey().getValue());
             }
         }
         if (dataset.getColumnCount() > 25) {
@@ -82,7 +82,7 @@ public class JFreeChartUtil {
         XYSeriesCollection dataset = new XYSeriesCollection();
 
         for (Pair<VisualizationGroupI, DistributionI<T>> groupDistribution : in) {
-            XYSeries series = new XYSeries(groupDistribution.getFirst().getName());
+            XYSeries series = new XYSeries(groupDistribution.getFirst().getDisplayName());
 
             double[][] values = new double[groupDistribution.getSecond().size()][];
             int idx = 0;
@@ -122,7 +122,7 @@ public class JFreeChartUtil {
         DefaultTableXYDataset dataset = new DefaultTableXYDataset();
 
         for (Pair<VisualizationGroupI, DistributionI<T>> groupDistribution : in) {
-            XYSeries series = new XYSeries(groupDistribution.getFirst().getName(), true, false);
+            XYSeries series = new XYSeries(groupDistribution.getFirst().getDisplayName(), true, false);
 
             for (Map.Entry<AttributeI, T> entry : groupDistribution.getSecond().entrySet()) {
                 double attrVal = Double.parseDouble(entry.getKey().getValue());
@@ -140,7 +140,7 @@ public class JFreeChartUtil {
             DistributionI<T> d = groupDistribution.getSecond();
 
             for (Map.Entry<AttributeI, T> entry : d.entrySet()) {
-                dataset.addValue(entry.getValue(), groupDistribution.getFirst().getName(), entry.getKey().getValue());
+                dataset.addValue(entry.getValue(), groupDistribution.getFirst().getDisplayName(), entry.getKey().getValue());
             }
         }
 
