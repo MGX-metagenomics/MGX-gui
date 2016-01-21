@@ -11,17 +11,17 @@ public class RBAC {
 
     public static boolean isAdmin() {
         MGXMasterI m = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
-        return m != null && m.getMembership().getRole().getName().equals("Admin");
+        return m != null && m.getRoleName().equals("Admin");
     }
 
     public static boolean isUser() {
         MGXMasterI m = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
         // Admins are treated as users, as well..
-        return m != null && (isAdmin() || m.getMembership().getRole().getName().equals("User"));
+        return m != null && (isAdmin() || m.getRoleName().equals("User"));
     }
 
     public static boolean isGuest() {
         MGXMasterI m = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
-        return m != null && m.getMembership().getRole().getName().equals("Guest");
+        return m != null && m.getRoleName().equals("Guest");
     }
 }
