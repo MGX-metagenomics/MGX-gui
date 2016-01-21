@@ -43,7 +43,7 @@ public final class SeqExporter implements SequenceExporterI {
         final ExportSeqWizardIterator iter = new ExportSeqWizardIterator(vgroup, dist);
         WizardDescriptor wiz = new WizardDescriptor(iter);
         wiz.setTitleFormat(new MessageFormat("{0}"));
-        wiz.setTitle("Export sequences for " + vgroup.getName());
+        wiz.setTitle("Export sequences for " + vgroup.getDisplayName());
         
         Object notify = DialogDisplayer.getDefault().notify(wiz);
         
