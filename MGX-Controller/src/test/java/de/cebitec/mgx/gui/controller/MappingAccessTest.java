@@ -6,6 +6,8 @@
 package de.cebitec.mgx.gui.controller;
 
 import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.exception.MGXTimeoutException;
 import de.cebitec.mgx.api.model.MappedSequenceI;
 import de.cebitec.mgx.api.model.MappingI;
 import de.cebitec.mgx.api.model.SeqRunI;
@@ -16,10 +18,6 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.UUID;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -28,25 +26,6 @@ import static org.junit.Assert.*;
  * @author sj
  */
 public class MappingAccessTest {
-
-    public MappingAccessTest() {
-    }
-
-    @BeforeClass
-    public static void setUpClass() {
-    }
-
-    @AfterClass
-    public static void tearDownClass() {
-    }
-
-    @Before
-    public void setUp() {
-    }
-
-    @After
-    public void tearDown() {
-    }
 
     @Test
     public void testBySeqRun() throws Exception {
@@ -61,6 +40,21 @@ public class MappingAccessTest {
             data.add(it.next());
         }
         assertEquals(1, data.size());
+    }
+
+    @Test
+    public void testCloseInvalidSession() {
+        System.out.println("testCloseInvalidSession");
+        MGXMasterI master = TestMaster.getRO();
+        try {
+            master.Mapping().closeMapping(UUID.randomUUID());
+        } catch (MGXTimeoutException mte) {
+            // ok
+            return;
+        } catch (MGXException ex) {
+           fail(ex.getMessage());
+        }
+        fail("Closing a non-existing session should indicate a possible timeout.");
     }
 
     @Test
