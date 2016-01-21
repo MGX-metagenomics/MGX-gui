@@ -1,9 +1,10 @@
 package de.cebitec.mgx.gui.login.dialog;
 
+import de.cebitec.gpms.rest.GPMSClientI;
 import de.cebitec.mgx.gui.explorer.ProjectExplorerTopComponent;
 import de.cebitec.mgx.gui.login.LoginState;
 import de.cebitec.mgx.gui.login.configuration.MGXserverPanel;
-import de.cebitec.mgx.restgpms.GPMS;
+import de.cebitec.mgx.restgpms.GPMSClient;
 import java.awt.Cursor;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
@@ -97,7 +98,7 @@ public class LoginHandler implements ActionListener {
             String user = panel.getUser();
             String password = panel.getPassword();
             NbPreferences.forModule(MGXserverPanel.class).put("lastLogin", user);
-            final GPMS gpms = new GPMS(servername, serveruri);
+            final GPMSClient gpms = new GPMSClient(servername, serveruri);
             try {
                 panel.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                 if (gpms.login(user, password)) {
@@ -120,7 +121,7 @@ public class LoginHandler implements ActionListener {
         }
     }
 
-    private static void openProjectExplorer(final GPMS gpms) {
+    private static void openProjectExplorer(final GPMSClientI gpms) {
         ProjectExplorerTopComponent pe = new ProjectExplorerTopComponent();
         pe.setVisible(true);
         pe.setGPMS(gpms);
@@ -135,7 +136,7 @@ public class LoginHandler implements ActionListener {
         pe.requestActive();
     }
 
-    private static void startPing(final GPMS gpms) {
+    private static void startPing(final GPMSClient gpms) {
         Thread t = new Thread(new Runnable() {
             private int refresh = -1;
             private long rtt = 0;

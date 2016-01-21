@@ -72,6 +72,11 @@
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-util-ui</artifactId>
         </dependency>
+        <dependency>
+            <groupId>de.cebitec.gpms</groupId>
+            <artifactId>GPMS-rest-api</artifactId>
+            <version>1.1</version>
+        </dependency>
     </dependencies>
 
     <build>
