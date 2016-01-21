@@ -5,7 +5,6 @@
 package de.cebitec.mgx.gui.dtoconversion;
 
 import de.cebitec.mgx.api.MGXMasterI;
-import de.cebitec.mgx.api.model.Identifiable;
 import de.cebitec.mgx.api.model.RegionI;
 import de.cebitec.mgx.dto.dto.RegionDTO;
 import de.cebitec.mgx.dto.dto.RegionDTO.Builder;
@@ -20,7 +19,7 @@ public class RegionDTOFactory extends DTOConversionBase<RegionI, RegionDTO> {
     static {
         instance = new RegionDTOFactory();
     }
-    protected final static RegionDTOFactory instance;
+    private final static RegionDTOFactory instance;
 
     private RegionDTOFactory() {
     }
@@ -32,9 +31,9 @@ public class RegionDTOFactory extends DTOConversionBase<RegionI, RegionDTO> {
     @Override
     public RegionDTO toDTO(RegionI reg) {
         Builder b = RegionDTO.newBuilder();
-        if (reg.getId() != Identifiable.INVALID_IDENTIFIER) {
-            b.setId(reg.getId());
-        }
+//        if (reg.getId() != Identifiable.INVALID_IDENTIFIER) {
+//            b.setId(reg.getId());
+//        }
         b = b.setName(reg.getName());
         b = b.setDescription(reg.getDescription());
         b = b.setStart(reg.getStart());
@@ -44,10 +43,10 @@ public class RegionDTOFactory extends DTOConversionBase<RegionI, RegionDTO> {
 
     @Override
     public RegionI toModel(MGXMasterI m, RegionDTO dto) {
-        RegionI d = new Region(m, dto.getStart(), dto.getStop());
+        RegionI d = new Region(dto.getStart(), dto.getStop());
         d.setName(dto.getName());
         d.setDescription(dto.getDescription());
-        d.setId(dto.getId());
+//        d.setId(dto.getId());
         return d;
     }
 
