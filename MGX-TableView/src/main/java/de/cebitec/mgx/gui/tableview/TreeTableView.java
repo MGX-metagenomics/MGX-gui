@@ -39,7 +39,7 @@ public class TreeTableView extends ViewerI<TreeI<Long>> {
     @Override
     public boolean canHandle(AttributeTypeI valueType) {
         return valueType.getStructure() == AttributeTypeI.STRUCTURE_HIERARCHICAL
-                && VGroupManager.getInstance().getActiveVizGroups().size() == 1;
+                && VGroupManager.getInstance().getActiveVisualizationGroups().size() == 1;
     }
 
     @Override

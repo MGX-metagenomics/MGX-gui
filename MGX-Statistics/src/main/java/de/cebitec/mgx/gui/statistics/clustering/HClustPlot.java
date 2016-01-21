@@ -142,7 +142,7 @@ public class HClustPlot extends ViewerI<DistributionI<Long>> {
     public boolean canHandle(AttributeTypeI valueType) {
         try {
             return valueType.getValueType() == AttributeTypeI.VALUE_DISCRETE
-                    && VGroupManager.getInstance().getActiveVizGroups().size() > 1
+                    && VGroupManager.getInstance().getActiveVisualizationGroups().size() > 1
                     && VGroupManager.getInstance().getDistributions().size() > 1;
         } catch (ConflictingJobsException ex) {
             return false;

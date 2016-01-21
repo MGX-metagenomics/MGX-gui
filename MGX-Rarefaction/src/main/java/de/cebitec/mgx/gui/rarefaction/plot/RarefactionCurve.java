@@ -15,7 +15,6 @@ import de.cebitec.mgx.gui.swingutils.DelayedPlot;
 import de.cebitec.mgx.gui.swingutils.NonEDT;
 import java.awt.Color;
 import java.io.File;
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -132,7 +131,7 @@ public class RarefactionCurve extends ViewerI<DistributionI<Long>> {
 
                 @Override
                 public void run() {
-                    XYSeries series = new XYSeries(groupDistribution.getFirst().getName());
+                    XYSeries series = new XYSeries(groupDistribution.getFirst().getDisplayName());
                     DistributionI<Long> dist = groupDistribution.getSecond();
                     try {
                         Iterator<Point> iter = Rarefaction.rarefy(dist);
