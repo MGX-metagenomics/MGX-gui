@@ -1,6 +1,5 @@
 package de.cebitec.mgx.gui.controller;
 
-import de.cebitec.gpms.rest.RESTMembershipI;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.AttributeAccessI;
 import de.cebitec.mgx.api.access.DNAExtractAccessI;
@@ -8,12 +7,10 @@ import de.cebitec.mgx.api.access.ObservationAccessI;
 import de.cebitec.mgx.api.access.SeqRunAccessI;
 import de.cebitec.mgx.api.access.TaskAccessI;
 import de.cebitec.mgx.api.model.MGXDataModelBaseI;
+import de.cebitec.mgx.api.model.ModelBaseI;
 import de.cebitec.mgx.client.MGXDTOMaster;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.UnsupportedFlavorException;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -34,13 +31,13 @@ public class MGXMaster extends MGXMasterI implements PropertyChangeListener {
     }
 
     @Override
-    public RESTMembershipI getMembership() {
-        return dtomaster.getMembership();
+    public String getProject() {
+        return dtomaster.getProject().getName();
     }
 
     @Override
-    public String getProject() {
-        return dtomaster.getProject().getName();
+    public String getRoleName() {
+        return dtomaster.getRole().getName();
     }
 
     @Override
@@ -140,6 +137,12 @@ public class MGXMaster extends MGXMasterI implements PropertyChangeListener {
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        switch (evt.getPropertyName()) {
+            case ModelBaseI.OBJECT_DELETED:
+                dtomaster.removePropertyChangeListener(this);
+                deleted();
+            default:
+                System.err.println("MGXMaster received event " + evt);
+        }
     }
 }
