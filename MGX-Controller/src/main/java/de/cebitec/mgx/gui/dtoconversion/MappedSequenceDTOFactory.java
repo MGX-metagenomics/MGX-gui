@@ -29,8 +29,12 @@ public class MappedSequenceDTOFactory extends DTOConversionBase<MappedSequenceI,
     }
 
     @Override
-    public MappedSequenceI toModel(MGXMasterI m, MappedSequenceDTO dto) {
-        return new MappedSequence(m, dto.getSeqId(), dto.getStart(), dto.getStop(), dto.getIdentity());
+    public MappedSequenceI toModel(MGXMasterI master, MappedSequenceDTO dto) {
+        return toModel(dto);
+    }
+
+    public MappedSequenceI toModel(MappedSequenceDTO dto) {
+        return new MappedSequence(dto.getSeqId(), dto.getStart(), dto.getStop(), dto.getIdentity());
     }
 
 }
