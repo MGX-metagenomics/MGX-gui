@@ -130,7 +130,8 @@ public final class AttributeVisualizationTopComponent extends TopComponent {
 
     private void openVGroupTopComponent() {
         // TODO: prevent opening this twice
-        VisualizationGroupTopComponent pe = Lookup.getDefault().lookup(VisualizationGroupTopComponent.class);
+        //VisualizationGroupTopComponent pe = Lookup.getDefault().lookup(VisualizationGroupTopComponent.class);
+        VisualizationGroupTopComponent pe = new VisualizationGroupTopComponent();
         pe.setVisible(true);
 
         Mode m = WindowManager.getDefault().findMode("output");

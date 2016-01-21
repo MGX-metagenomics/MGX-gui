@@ -51,10 +51,10 @@ public final class ExportSeqVisualPanel2 extends JPanel implements DocumentListe
 
     public void setVisualizationGroup(VisualizationGroupI vg) {
         // suggest a file name
-        File suggestedName = new File(jFileChooser1.getCurrentDirectory(), cleanupName(vg.getName()) + ".fas");
+        File suggestedName = new File(jFileChooser1.getCurrentDirectory(), cleanupName(vg.getDisplayName()) + ".fas");
         int cnt = 1;
         while (suggestedName.exists()) {
-            String newName = new StringBuilder(cleanupName(vg.getName()))
+            String newName = new StringBuilder(cleanupName(vg.getDisplayName()))
                     .append(" (")
                     .append(cnt++)
                     .append(").fas")

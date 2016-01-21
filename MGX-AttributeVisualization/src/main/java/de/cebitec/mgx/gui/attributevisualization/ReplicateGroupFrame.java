@@ -10,7 +10,6 @@ import de.cebitec.mgx.api.groups.ReplicateI;
 import de.cebitec.mgx.api.groups.VGroupManagerI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.common.VGroupManager;
-import de.cebitec.mgx.gui.nodefactory.ReplicateNodeFactory;
 import de.cebitec.mgx.gui.nodes.ReplicateGroupNode;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -19,84 +18,125 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
-import java.text.DecimalFormat;
 import javax.swing.JColorChooser;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.ToolTipManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.text.Document;
-import org.openide.explorer.ExplorerManager;
-import org.openide.nodes.AbstractNode;
-import org.openide.nodes.Children;
+import javax.swing.event.InternalFrameAdapter;
+import javax.swing.event.InternalFrameEvent;
 import org.openide.util.Exceptions;
 
 /**
  *
  * @author sj
  */
-public class ReplicateGroupFrame extends javax.swing.JInternalFrame implements ExplorerManager.Provider, ItemListener, ActionListener, DocumentListener, PropertyChangeListener {
+public class ReplicateGroupFrame extends GroupFrameBase<ReplicateGroupI> {
 
-    private final ReplicateGroupI replGroup;
-    private final ExplorerManager exmngr = new ExplorerManager();
-
-    private final static String CHANGE_COLOR = "changeColor";
-    private final static String ADD_NEW_REPLICATE = "addNewReplicate";
-
-    public ReplicateGroupFrame(ReplicateGroupI rgroup) {
+    public ReplicateGroupFrame(final ReplicateGroupI rgroup) {
+        super(rgroup, new ReplicateGroupNode(rgroup));
         initComponents();
-        replGroup = rgroup;
-        replGroup.addPropertyChangeListener(this);
-        //
-        // needed to receive selectionChange events
-        VGroupManager.getInstance().addPropertyChangeListener(this);
+
         //
         // set initial properties
         //
-        setTitle(replGroup.getName() + " (" + replGroup.getNumSequences() + " sequences)");
-        displayName.setText(replGroup.getName());
-        color.setBackground(replGroup.getColor());
+        setTitle(rgroup.getName() + " (" + rgroup.getNumSequences() + " sequences)");
+        displayName.setText(rgroup.getName());
+        color.setBackground(rgroup.getColor());
         //
         // add listeners _after_ setting initial values
         //
-        displayName.getDocument().addDocumentListener(this);
-        color.setActionCommand(CHANGE_COLOR);
-        color.addActionListener(this);
-        addReplicate.setActionCommand(ADD_NEW_REPLICATE);
-        addReplicate.addActionListener(this);
-        active.addItemListener(this);
+        displayName.getDocument().addDocumentListener(new DocumentListener() {
+
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                handleUpdate(e);
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                handleUpdate(e);
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                handleUpdate(e);
+            }
+
+            private void handleUpdate(DocumentEvent e) {
+                if (displayName.getDocument() == e.getDocument()) {
+                    rgroup.setName(displayName.getText());
+//            DecimalFormat df = new DecimalFormat(",###"); // FIXME
+//            setTitle(vGroup.getName() + " (" + df.format(vGroup.getNumSequences()) + " sequences)");
+//            displayName.setBackground(Color.WHITE);
+                }
+            }
+
+        });
         //
-        addInternalFrameListener(new SelectionHandler());
+        color.addActionListener(new ActionListener() {
 
-        // root node
-        exmngr.setRootContext(new ReplicateGroupNode(rgroup));
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                final JColorChooser jcc = new JColorChooser(rgroup.getColor());
+                JDialog dialog = JColorChooser.createDialog(new JFrame(), "Choose color", false, jcc, new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent ae) {
+                        Color newColor = jcc.getColor();
+                        if (newColor != null) {
+                            color.setBackground(newColor);
+                            rgroup.setColor(newColor);
+                        }
+                    }
+                }, null);
+                dialog.setVisible(true);
+            }
+        });
+        addReplicate.addActionListener(new ActionListener() {
 
-        ReplicateGroupTreeView myListView = new ReplicateGroupTreeView(replGroup);
-        panel.add(myListView, BorderLayout.CENTER);
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                VGroupManager.getInstance().createReplicate(rgroup);
+            }
+        });
+        // 
+        active.addItemListener(new ItemListener() {
+
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                rgroup.setActive(active.isSelected());
+            }
+        });
+        //
+        addInternalFrameListener(new InternalFrameAdapter() {
+            @Override
+            public void internalFrameActivated(InternalFrameEvent e) {
+                VGroupManager.getInstance().setSelectedReplicateGroup(rgroup);
+            }
+        });
+
+        ReplicateGroupTreeView view = new ReplicateGroupTreeView(rgroup);
+        view.setRootVisible(false);
+        panel.add(view, BorderLayout.CENTER);
 
         setVisible(true);
-        ToolTipManager.sharedInstance().registerComponent(this);
         ToolTipManager.sharedInstance().registerComponent(panel);
-        //ToolTipManager.sharedInstance().registerComponent(myListView);
+        ToolTipManager.sharedInstance().registerComponent(view);
     }
 
-    public final ReplicateGroupI getReplicateGroup() {
-        return replGroup;
-    }
-
+//    public final ReplicateGroupI getReplicateGroup() {
+//        return replGroup;
+//    }
     @Override
     public String getToolTipText() {
-        return "Replicate group " + replGroup.getName();
+        return "Replicate group " + getContent().getName();
     }
 
     @Override
     public void dispose() {
-        replGroup.removePropertyChangeListener(this);
-        VGroupManager.getInstance().removePropertyChangeListener(this);
-        VGroupManager.getInstance().removeReplicateGroup(replGroup);
+        VGroupManager.getInstance().removeReplicateGroup(getContent());
         super.dispose();
     }
 
@@ -112,51 +152,46 @@ public class ReplicateGroupFrame extends javax.swing.JInternalFrame implements E
         panel = new javax.swing.JPanel();
         topPanel = new javax.swing.JPanel();
         active = new javax.swing.JCheckBox();
-        color = new javax.swing.JButton();
         displayName = new javax.swing.JTextField();
+        topRightPanel = new javax.swing.JPanel();
+        color = new javax.swing.JButton();
         addReplicate = new javax.swing.JButton();
 
         setClosable(true);
         setResizable(true);
+        setMaximumSize(new java.awt.Dimension(180, 200));
         setMinimumSize(new java.awt.Dimension(180, 200));
         setPreferredSize(new java.awt.Dimension(180, 200));
 
         panel.setLayout(new java.awt.BorderLayout());
 
+        topPanel.setLayout(new java.awt.BorderLayout());
+
         active.setSelected(true);
         active.setToolTipText("Show group?");
+        topPanel.add(active, java.awt.BorderLayout.WEST);
+
+        displayName.setToolTipText("Group name");
+        topPanel.add(displayName, java.awt.BorderLayout.CENTER);
+
+        topRightPanel.setLayout(new java.awt.BorderLayout());
 
         color.setToolTipText("Choose color");
         color.setMaximumSize(new java.awt.Dimension(16, 16));
         color.setMinimumSize(new java.awt.Dimension(16, 16));
         color.setPreferredSize(new java.awt.Dimension(16, 16));
+        topRightPanel.add(color, java.awt.BorderLayout.WEST);
 
-        addReplicate.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         addReplicate.setText("+");
+        addReplicate.setToolTipText("Add replicate");
+        addReplicate.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        addReplicate.setMargin(new java.awt.Insets(1, 1, 1, 1));
+        addReplicate.setMaximumSize(new java.awt.Dimension(22, 22));
+        addReplicate.setMinimumSize(new java.awt.Dimension(22, 22));
+        addReplicate.setPreferredSize(new java.awt.Dimension(22, 22));
+        topRightPanel.add(addReplicate, java.awt.BorderLayout.EAST);
 
-        javax.swing.GroupLayout topPanelLayout = new javax.swing.GroupLayout(topPanel);
-        topPanel.setLayout(topPanelLayout);
-        topPanelLayout.setHorizontalGroup(
-            topPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(topPanelLayout.createSequentialGroup()
-                .addComponent(active)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(displayName, javax.swing.GroupLayout.DEFAULT_SIZE, 241, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(color, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(addReplicate, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
-        );
-        topPanelLayout.setVerticalGroup(
-            topPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(topPanelLayout.createSequentialGroup()
-                .addGroup(topPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(addReplicate, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addComponent(displayName, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(active, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(color, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
+        topPanel.add(topRightPanel, java.awt.BorderLayout.EAST);
 
         panel.add(topPanel, java.awt.BorderLayout.NORTH);
 
@@ -171,74 +206,14 @@ public class ReplicateGroupFrame extends javax.swing.JInternalFrame implements E
     private javax.swing.JTextField displayName;
     private javax.swing.JPanel panel;
     private javax.swing.JPanel topPanel;
+    private javax.swing.JPanel topRightPanel;
     // End of variables declaration//GEN-END:variables
-
-    @Override
-    public ExplorerManager getExplorerManager() {
-        return exmngr;
-    }
-
-    @Override
-    public void itemStateChanged(ItemEvent e) {
-        replGroup.setActive(active.isSelected());
-    }
-
-    @Override
-    public void insertUpdate(DocumentEvent e) {
-        handleUpdate(e);
-    }
-
-    @Override
-    public void removeUpdate(DocumentEvent e) {
-        handleUpdate(e);
-    }
-
-    @Override
-    public void changedUpdate(DocumentEvent e) {
-        handleUpdate(e);
-    }
-
-    private void handleUpdate(DocumentEvent e) {
-        Document d = e.getDocument();
-        if (displayName.getDocument() == d) {
-            replGroup.setName(displayName.getText());
-//            DecimalFormat df = new DecimalFormat(",###"); // FIXME
-//            setTitle(vGroup.getName() + " (" + df.format(vGroup.getNumSequences()) + " sequences)");
-//            displayName.setBackground(Color.WHITE);
-        }
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent ae) {
-        switch (ae.getActionCommand()) {
-            case CHANGE_COLOR:
-                final JColorChooser jcc = new JColorChooser(replGroup.getColor());
-                JDialog dialog = JColorChooser.createDialog(new JFrame(), "Choose color", false, jcc, new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent ae) {
-                        Color newColor = jcc.getColor();
-                        if (newColor != null) {
-                            color.setBackground(newColor);
-                            replGroup.setColor(newColor);
-                        }
-                    }
-                }, null);
-                dialog.setVisible(true);
-                break;
-            case ADD_NEW_REPLICATE:
-                VGroupManager.getInstance().createReplicate(replGroup);
-                break;
-        }
-
-    }
-
-    private final static DecimalFormat df = new DecimalFormat(",###");
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {
             case ReplicateGroupI.REPLICATEGROUP_RENAMED:
-                setTitle(replGroup.getName() + " (" + df.format(replGroup.getNumSequences()) + " sequences)");
+                setTitle(getContent().getName() + " (" + decFormat.format(getContent().getNumSequences()) + " sequences)");
                 displayName.setBackground(Color.WHITE);
                 break;
             case ReplicateGroupI.REPLICATEGROUP_ACTIVATED:
@@ -249,7 +224,7 @@ public class ReplicateGroupFrame extends javax.swing.JInternalFrame implements E
                 break;
             case ReplicateGroupI.REPLICATEGROUP_REPLICATE_ADDED:
                 ReplicateI newGrp = (ReplicateI) evt.getNewValue();
-                newGrp.addPropertyChangeListener(this);
+//                newGrp.addPropertyChangeListener(this);
                 repaint();
                 break;
             case ReplicateGroupI.REPLICATEGROUP_REPLICATE_REMOVED:
@@ -261,11 +236,11 @@ public class ReplicateGroupFrame extends javax.swing.JInternalFrame implements E
                 // ignore
                 break;
             case ReplicateGroupI.REPLICATEGROUP_CHANGED:
-                setTitle(replGroup.getName() + " (" + df.format(replGroup.getNumSequences()) + " sequences)");
+                setTitle(getContent().getName() + " (" + decFormat.format(getContent().getNumSequences()) + " sequences)");
                 break;
             case VGroupManagerI.REPLICATEGROUP_SELECTION_CHANGED:
                 try {
-                    setSelected(replGroup == evt.getNewValue());
+                    setSelected(getContent() == evt.getNewValue());
                 } catch (PropertyVetoException ex) {
                     Exceptions.printStackTrace(ex);
                 }
@@ -274,7 +249,8 @@ public class ReplicateGroupFrame extends javax.swing.JInternalFrame implements E
                 repaint();
                 break;
             default:
-                System.err.println("ReplicateGroupFrame for " + replGroup.getName() + " got event " + evt.getPropertyName());
+                super.propertyChange(evt);
         }
     }
+
 }

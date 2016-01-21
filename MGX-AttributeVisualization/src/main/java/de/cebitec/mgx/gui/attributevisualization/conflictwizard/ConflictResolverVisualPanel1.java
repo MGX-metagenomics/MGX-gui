@@ -58,7 +58,7 @@ public final class ConflictResolverVisualPanel1 extends JPanel implements ListSe
 
     public void setVisualizationGroup(VisualizationGroupI vg) {
         this.vg = vg;
-        groupLabel.setText(vg.getName());
+        groupLabel.setText(vg.getDisplayName());
     }
 
     public JobI getSelectedJob() {
@@ -67,7 +67,7 @@ public final class ConflictResolverVisualPanel1 extends JPanel implements ListSe
 
     @Override
     public String getName() {
-        return vg.getName() + " " + run.getName();
+        return vg.getDisplayName() + " " + run.getName();
     }
 
     protected static String joinParameters(Iterable<JobParameterI> pColl, String separator) {

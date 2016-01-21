@@ -198,7 +198,8 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
             case VisualizationGroupI.VISGROUP_CHANGED:
                 updateAttributeTypeList();
                 break;
-            case VGroupManagerI.VISGROUP_NUM_CHANGED:
+            case VGroupManagerI.VISGROUP_ADDED:
+            case ModelBaseI.OBJECT_DELETED:
                 updateAttributeTypeList();
                 break;
             case VisualizationGroupI.VISGROUP_ACTIVATED:
@@ -209,8 +210,6 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
                 break;
             case VisualizationGroupI.VISGROUP_ATTRTYPE_CHANGED:
                 break; // ignore
-            case ModelBaseI.OBJECT_DELETED:
-                break;
             case ModelBaseI.OBJECT_MODIFIED:
                 break;
             case VGroupManagerI.VISGROUP_SELECTION_CHANGED:
@@ -223,6 +222,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
                 // ignore
                 break;
             case VGroupManagerI.REPLICATEGROUP_SELECTION_CHANGED:
+            case VGroupManagerI.REPLGROUP_ADDED:
                 // ignore
                 break;
             default:
@@ -244,7 +244,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
                 @Override
                 protected SortedSet<AttributeTypeI> doInBackground() throws Exception {
                     SortedSet<AttributeTypeI> types = new TreeSet<>();
-                    for (VisualizationGroupI vg : vgmgr.getActiveVizGroups()) {
+                    for (VisualizationGroupI vg : vgmgr.getActiveVisualizationGroups()) {
                         Iterator<AttributeTypeI> atIter = vg.getAttributeTypes();
                         while (atIter.hasNext()) {
                             types.add(atIter.next());
@@ -294,7 +294,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
             if (currentAttributeType == null) {
                 return;
             }
-            
+
             if (currentViewer != null) {
                 currentViewer.setAttributeType(currentAttributeType);
             }

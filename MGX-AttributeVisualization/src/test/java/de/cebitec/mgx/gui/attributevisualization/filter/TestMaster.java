@@ -1,10 +1,11 @@
 package de.cebitec.mgx.gui.attributevisualization.filter;
 
+import de.cebitec.gpms.core.GPMSException;
+import de.cebitec.gpms.core.MembershipI;
 import de.cebitec.gpms.rest.GPMSClientI;
-import de.cebitec.gpms.rest.RESTMembershipI;
 import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.gui.controller.MGXMaster;
-import de.cebitec.mgx.restgpms.GPMS;
+import de.cebitec.mgx.restgpms.GPMSClient;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -34,15 +35,20 @@ public class TestMaster {
                 System.out.println(ex.getMessage());
             }
         }
-        GPMSClientI gpms = new GPMS("MyServer", serverURI);
+        GPMSClientI gpms = new GPMSClient("MyServer", serverURI);
         if (!gpms.login("mgx_unittest", "gut-isM5iNt")) {
             fail();
         }
-        Iterator<RESTMembershipI> mIter = gpms.getMemberships();
+        Iterator<MembershipI> mIter = null;
+        try {
+            mIter = gpms.getMemberships();
+        } catch (GPMSException ex) {
+            fail(ex.getMessage());
+        }
         while (mIter.hasNext()) {
-            RESTMembershipI m = mIter.next();
+            MembershipI m = mIter.next();
             if ("MGX".equals(m.getProject().getProjectClass().getName()) && ("MGX_Unittest".equals(m.getProject().getName()))) {
-                MGXDTOMaster dtomaster = new MGXDTOMaster(gpms, m);
+                MGXDTOMaster dtomaster = new MGXDTOMaster(gpms.createMaster(m));
                 master = new MGXMaster(dtomaster);
                 break;
             }
