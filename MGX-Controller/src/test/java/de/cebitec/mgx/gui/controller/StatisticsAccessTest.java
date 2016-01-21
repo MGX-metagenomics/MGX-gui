@@ -19,11 +19,7 @@ import de.cebitec.mgx.gui.util.TestMaster;
 import de.cebitec.mgx.gui.vizfilter.LongToDouble;
 import java.util.List;
 import java.util.Set;
-import org.junit.After;
-import org.junit.AfterClass;
 import static org.junit.Assert.*;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
@@ -32,42 +28,24 @@ import org.junit.Test;
  */
 public class StatisticsAccessTest {
 
-    public StatisticsAccessTest() {
-    }
-
-    @BeforeClass
-    public static void setUpClass() {
-    }
-
-    @AfterClass
-    public static void tearDownClass() {
-    }
-
-    @Before
-    public void setUp() {
-    }
-
-    @After
-    public void tearDown() {
-    }
-
     @Test
     public void testPCA() throws Exception {
-        System.out.println("PCA");
-        MGXMasterI master = TestMaster.getRO();
 
-        VGroupManagerI vgmgr = VGroupManager.getInstance();
+        synchronized (this) {
+            System.out.println("PCA");
+            MGXMasterI master = TestMaster.getRO();
 
-        synchronized (vgmgr) {
-            for (VisualizationGroupI vg : vgmgr.getAllVizGroups().toArray(new VisualizationGroupI[]{})) {
-                vgmgr.removeVizGroup(vg);
+            VGroupManagerI vgmgr = VGroupManager.getInstance();
+
+            for (VisualizationGroupI vg : vgmgr.getAllVisualizationGroups()) {
+                vgmgr.removeVisualizationGroup(vg);
             }
             vgmgr.registerResolver(new Resolver());
-            VisualizationGroupI g1 = vgmgr.createVizGroup();
+            VisualizationGroupI g1 = vgmgr.createVisualizationGroup();
             g1.setName("grp1");
             g1.addSeqRun(master.SeqRun().fetch(1));
 
-            VisualizationGroupI g2 = vgmgr.createVizGroup();
+            VisualizationGroupI g2 = vgmgr.createVisualizationGroup();
             g2.setName("grp2");
             SeqRunI run = master.SeqRun().fetch(2);
             assertNotNull(run);
@@ -91,27 +69,27 @@ public class StatisticsAccessTest {
 
     @Test
     public void testPCANoPC23() throws Exception {
-        System.out.println("PCA no PC2/PC3");
-        MGXMasterI master = TestMaster.getRO();
+        synchronized (this) {
+            System.out.println("PCA no PC2/PC3");
+            MGXMasterI master = TestMaster.getRO();
 
-        VGroupManagerI vgmgr = VGroupManager.getInstance();
+            VGroupManagerI vgmgr = VGroupManager.getInstance();
 
-        synchronized (vgmgr) {
-            for (VisualizationGroupI vg : vgmgr.getAllVizGroups().toArray(new VisualizationGroupI[]{})) {
-                vgmgr.removeVizGroup(vg);
+            for (VisualizationGroupI vg : vgmgr.getAllVisualizationGroups()) {
+                vgmgr.removeVisualizationGroup(vg);
             }
             vgmgr.registerResolver(new Resolver());
-            VisualizationGroupI g1 = vgmgr.createVizGroup();
+            VisualizationGroupI g1 = vgmgr.createVisualizationGroup();
             g1.setName("grp1");
             g1.addSeqRun(master.SeqRun().fetch(1));
 
-            VisualizationGroupI g2 = vgmgr.createVizGroup();
+            VisualizationGroupI g2 = vgmgr.createVisualizationGroup();
             g2.setName("grp2");
             SeqRunI run = master.SeqRun().fetch(2);
             assertNotNull(run);
             g2.addSeqRun(run);
 
-            assertEquals(2, vgmgr.getActiveVizGroups().size());
+            assertEquals(2, vgmgr.getActiveVisualizationGroups().size());
 
             boolean ret = vgmgr.selectAttributeType(AttributeRank.PRIMARY, "EC_number");
             assertTrue(ret);
@@ -138,21 +116,21 @@ public class StatisticsAccessTest {
 
     @Test
     public void testClustering() throws Exception {
-        System.out.println("Clustering");
-        MGXMasterI master = TestMaster.getRO();
+        synchronized (this) {
+            System.out.println("Clustering");
+            MGXMasterI master = TestMaster.getRO();
 
-        VGroupManagerI vgmgr = VGroupManager.getInstance();
+            VGroupManagerI vgmgr = VGroupManager.getInstance();
 
-        synchronized (vgmgr) {
-            for (VisualizationGroupI vg : vgmgr.getAllVizGroups().toArray(new VisualizationGroupI[]{})) {
-                vgmgr.removeVizGroup(vg);
+            for (VisualizationGroupI vg : vgmgr.getAllVisualizationGroups()) {
+                vgmgr.removeVisualizationGroup(vg);
             }
             vgmgr.registerResolver(new Resolver());
-            VisualizationGroupI g1 = vgmgr.createVizGroup();
+            VisualizationGroupI g1 = vgmgr.createVisualizationGroup();
             g1.setName("grp1");
             g1.addSeqRun(master.SeqRun().fetch(1));
 
-            VisualizationGroupI g2 = vgmgr.createVizGroup();
+            VisualizationGroupI g2 = vgmgr.createVisualizationGroup();
             g2.setName("grp2");
             g2.addSeqRun(master.SeqRun().fetch(2));
 
@@ -175,7 +153,6 @@ public class StatisticsAccessTest {
 //            assertTrue(newick.contains(g2.getName()));
             //assertEquals("(grp1:5.74456264653803,grp2:5.74456264653803);", newick);
         }
-
     }
 
     private class Resolver implements ConflictResolver {
@@ -184,7 +161,7 @@ public class StatisticsAccessTest {
         public boolean resolve(List<VisualizationGroupI> vg) {
             for (VisualizationGroupI g : vg.toArray(new VisualizationGroupI[]{})) {
 
-                if (g.getName().equals("grp1")) {
+                if (g.getDisplayName().equals("grp1")) {
                     for (Triple<AttributeRank, SeqRunI, Set<JobI>> t : g.getConflicts()) {
                         if (t.getSecond().getId() == 1) {
                             g.resolveConflict(t.getFirst(), t.getSecond(), extract(4, t.getThird()));
