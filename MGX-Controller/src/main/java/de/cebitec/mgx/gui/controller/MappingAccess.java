@@ -3,6 +3,7 @@ package de.cebitec.mgx.gui.controller;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.MappingAccessI;
 import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.exception.MGXTimeoutException;
 import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.api.model.MappedSequenceI;
@@ -25,7 +26,7 @@ import java.util.UUID;
  * @author sjaenick
  */
 public class MappingAccess extends MappingAccessI {
-    
+
     private final MGXDTOMaster dtomaster;
     private final MGXMasterI master;
 
@@ -95,7 +96,7 @@ public class MappingAccess extends MappingAccessI {
                 }
             };
         } catch (MGXServerException | MGXClientException ex) {
-           throw new MGXException(ex);
+            throw new MGXException(ex);
         }
     }
 
@@ -119,7 +120,7 @@ public class MappingAccess extends MappingAccessI {
         try {
             return dtomaster.Mapping().openMapping(id);
         } catch (MGXServerException ex) {
-           throw new MGXException(ex);
+            throw new MGXException(ex);
         }
     }
 
@@ -128,16 +129,23 @@ public class MappingAccess extends MappingAccessI {
         try {
             dtomaster.Mapping().closeMapping(uuid);
         } catch (MGXServerException ex) {
+            if (ex.getMessage().contains("No mapping session for")) {
+                // session already closed due to timeout
+                throw new MGXTimeoutException(ex);
+            }
             throw new MGXException(ex);
         }
     }
-    
+
     @Override
     public long getMaxCoverage(UUID uuid) throws MGXException {
         try {
             return dtomaster.Mapping().getMaxCoverage(uuid);
         } catch (MGXServerException ex) {
-          throw new MGXException(ex);
+            if (ex.getMessage().contains("No mapping session for")) {
+                throw new MGXTimeoutException(ex);
+            }
+            throw new MGXException(ex);
         }
     }
 
@@ -148,12 +156,15 @@ public class MappingAccess extends MappingAccessI {
             return new BaseIterator<MappedSequenceDTO, MappedSequenceI>(mapped) {
                 @Override
                 public MappedSequenceI next() {
-                    MappedSequenceI ms = MappedSequenceDTOFactory.getInstance().toModel(master, iter.next());
+                    MappedSequenceI ms = MappedSequenceDTOFactory.getInstance().toModel(iter.next());
                     return ms;
                 }
             };
         } catch (MGXServerException | MGXClientException ex) {
-           throw new MGXException(ex);
+            if (ex.getMessage().contains("No mapping session for")) {
+                throw new MGXTimeoutException(ex);
+            }
+            throw new MGXException(ex);
         }
     }
 }
