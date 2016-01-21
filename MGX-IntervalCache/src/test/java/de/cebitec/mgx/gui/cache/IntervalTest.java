@@ -6,14 +6,14 @@
 package de.cebitec.mgx.gui.cache;
 
 import de.cebitec.gpms.core.GPMSException;
+import de.cebitec.gpms.core.MembershipI;
 import de.cebitec.gpms.rest.GPMSClientI;
-import de.cebitec.gpms.rest.RESTMembershipI;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.gui.controller.MGXMaster;
-import de.cebitec.mgx.restgpms.GPMS;
+import de.cebitec.mgx.restgpms.GPMSClient;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -25,7 +25,6 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.openide.util.Exceptions;
 
 /**
  *
@@ -98,25 +97,21 @@ public class IntervalTest {
                 System.out.println(ex.getMessage());
             }
         }
-        GPMSClientI gpms = new GPMS("MyServer", serverURI);
+        GPMSClientI gpms = new GPMSClient("MyServer", serverURI);
         if (!gpms.login("mgx_unittestRO", "gut-isM5iNt")) {
             fail();
         }
-        Iterator<RESTMembershipI> mIter = null;
+        Iterator<MembershipI> mIter = null;
         try {
             mIter = gpms.getMemberships();
         } catch (GPMSException ex) {
             fail(ex.getMessage());
         }
         while (mIter.hasNext()) {
-            RESTMembershipI m = mIter.next();
+            MembershipI m = mIter.next();
             if ("MGX".equals(m.getProject().getProjectClass().getName()) && ("MGX_Unittest".equals(m.getProject().getName()))) {
                 MGXDTOMaster dtomaster = null;
-                try {
-                    dtomaster = new MGXDTOMaster(gpms.createMaster(m));
-                } catch (GPMSException ex) {
-                    fail(ex.getMessage());
-                }
+                dtomaster = new MGXDTOMaster(gpms.createMaster(m));
                 master = new MGXMaster(dtomaster);
                 break;
             }
