@@ -38,7 +38,7 @@ public class StackedAreaChart extends AreaChart {
 
     @Override
     public boolean canHandle(AttributeTypeI valueType) {
-        return super.canHandle(valueType) && VGroupManager.getInstance().getActiveVizGroups().size() > 1;
+        return super.canHandle(valueType) && VGroupManager.getInstance().getActiveVisualizationGroups().size() > 1;
     }
 
     @Override

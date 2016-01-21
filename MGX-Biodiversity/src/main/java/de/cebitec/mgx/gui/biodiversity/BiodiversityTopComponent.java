@@ -221,7 +221,7 @@ public final class BiodiversityTopComponent extends TopComponent implements Look
     }
 
     private void update() {
-        groupName.setText(curGroup.getName());
+        groupName.setText(curGroup.getDisplayName());
 
         DistributionI<Long> dist = null;
         if (curGroup.getSelectedAttributeType() == null) {
@@ -300,7 +300,7 @@ public final class BiodiversityTopComponent extends TopComponent implements Look
         //       System.err.println("BioDiversityTC got " + evt.getPropertyName());
         switch (evt.getPropertyName()) {
             case VisualizationGroupI.VISGROUP_RENAMED:
-                groupName.setText(curGroup.getName());
+                groupName.setText(curGroup.getDisplayName());
                 break;
             case VisualizationGroupI.VISGROUP_DEACTIVATED:
                 // ignore

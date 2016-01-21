@@ -137,9 +137,9 @@ public class MAPlot extends NumericalViewerI<Long> {
             String toolTipText = new StringBuilder("<html>")
                     .append(a.getValue())
                     .append("<br><br>")
-                    .append(cur.get(0).getFirst().getName())
+                    .append(cur.get(0).getFirst().getDisplayName())
                     .append(": ").append(numAssigned1).append(" sequences").append("<br>")
-                    .append(cur.get(1).getFirst().getName())
+                    .append(cur.get(1).getFirst().getDisplayName())
                     .append(": ").append(numAssigned2).append(" sequences")
                     .append("</html>")
                     .toString();
@@ -150,10 +150,10 @@ public class MAPlot extends NumericalViewerI<Long> {
         posInf.addSeries(pos);
         negInf.addSeries(neg);
 
-        String xAxisLabel = "log2(" + cur.get(0).getFirst().getName() + ") + "
-                + "log2(" + cur.get(1).getFirst().getName() + ") / 2";
-        String yAxisLabel = "log2(" + cur.get(0).getFirst().getName() + "/"
-                + cur.get(1).getFirst().getName() + ")";
+        String xAxisLabel = "log2(" + cur.get(0).getFirst().getDisplayName() + ") + "
+                + "log2(" + cur.get(1).getFirst().getDisplayName() + ") / 2";
+        String yAxisLabel = "log2(" + cur.get(0).getFirst().getDisplayName() + "/"
+                + cur.get(1).getFirst().getDisplayName() + ")";
 
         XYToolTipGenerator tooltipGenerator = new XYToolTipGenerator() {
 
@@ -251,7 +251,7 @@ public class MAPlot extends NumericalViewerI<Long> {
     public boolean canHandle(AttributeTypeI valueType) {
         try {
             return valueType.getValueType() == AttributeTypeI.VALUE_DISCRETE
-                    && VGroupManager.getInstance().getActiveVizGroups().size() == 2
+                    && VGroupManager.getInstance().getActiveVisualizationGroups().size() == 2
                     && VGroupManager.getInstance().getDistributions().size() == 2;
         } catch (ConflictingJobsException ex) {
             return false;
