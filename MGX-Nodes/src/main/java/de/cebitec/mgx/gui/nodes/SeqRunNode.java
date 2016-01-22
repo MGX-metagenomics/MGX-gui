@@ -20,7 +20,6 @@ import org.openide.util.lookup.Lookups;
 public class SeqRunNode extends MGXNodeBase<SeqRunI> {
 
     //
-    //public static final DataFlavor DATA_FLAVOR = new DataFlavor(SeqRunNode.class, "SeqRunNode");
     public SeqRunNode(SeqRunI s, Children children) {
         super(s.getMaster(), children, Lookups.fixed(s.getMaster(), s), s);
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/SeqRun.png");
