@@ -2,17 +2,19 @@ package de.cebitec.mgx.gui.nodes;
 
 import de.cebitec.mgx.api.model.ModelBaseI;
 import java.awt.datatransfer.Transferable;
+import java.awt.dnd.DnDConstants;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.IOException;
+import java.util.List;
 import javax.swing.Action;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.util.Lookup;
+import org.openide.util.datatransfer.PasteType;
 
 /**
  *
- * @author sj
+ * @author sjaenick
  * @param <T> object
  */
 public abstract class AbstractNodeBase<T extends ModelBaseI<T>> extends AbstractNode implements Comparable<AbstractNodeBase<? extends T>>, PropertyChangeListener {
@@ -29,9 +31,35 @@ public abstract class AbstractNodeBase<T extends ModelBaseI<T>> extends Abstract
         return content;
     }
 
+//    @Override
+//    public final Transferable drag() throws IOException {
+//        return content;
+//    }
     @Override
-    public final Transferable drag() throws IOException {
-        return content;
+    protected final void createPasteTypes(Transferable t, List<PasteType> s) {
+        super.createPasteTypes(t, s);
+        PasteType paste = getDropType(t, DnDConstants.ACTION_REFERENCE, -1);
+        if (paste != null) {
+            s.add(paste);
+        }
+    }
+
+    @Override
+    public PasteType getDropType(Transferable t, int action, int index) {
+        return null;
+//        java.util.List<PasteType> s = new LinkedList<>();
+//        createPasteTypes(t, s);
+//        return s.isEmpty() ? null : s.get(0);
+    }
+
+    @Override
+    public boolean canCut() {
+        return false;
+    }
+
+    @Override
+    public boolean canCopy() {
+        return true;
     }
 
     @Override
@@ -45,8 +73,8 @@ public abstract class AbstractNodeBase<T extends ModelBaseI<T>> extends Abstract
                 updateModified();
                 break;
             default:
-                System.err.println("AbstractNodeBase got unhandled event: " + evt.getPropertyName());
-                assert false;
+                System.err.println(getClass().getName() + " in AbstractNodeBase got unhandled event: " + evt.getPropertyName());
+            //assert false;
         }
     }
 

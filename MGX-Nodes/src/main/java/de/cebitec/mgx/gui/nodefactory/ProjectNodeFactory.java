@@ -1,7 +1,8 @@
 package de.cebitec.mgx.gui.nodefactory;
 
+import de.cebitec.gpms.core.GPMSException;
+import de.cebitec.gpms.core.MembershipI;
 import de.cebitec.gpms.rest.GPMSClientI;
-import de.cebitec.gpms.rest.RESTMembershipI;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.gui.controller.MGXMaster;
@@ -15,12 +16,13 @@ import org.openide.nodes.NodeEvent;
 import org.openide.nodes.NodeListener;
 import org.openide.nodes.NodeMemberEvent;
 import org.openide.nodes.NodeReorderEvent;
+import org.openide.util.Exceptions;
 
 /**
  *
  * @author sj
  */
-public class ProjectNodeFactory extends ChildFactory<RESTMembershipI> implements NodeListener {
+public class ProjectNodeFactory extends ChildFactory<MembershipI> implements NodeListener {
 
     private final GPMSClientI gpms;
 
@@ -29,10 +31,16 @@ public class ProjectNodeFactory extends ChildFactory<RESTMembershipI> implements
     }
 
     @Override
-    protected boolean createKeys(List<RESTMembershipI> list) {
-        Iterator<RESTMembershipI> iter = gpms.getMemberships();
-        while(iter.hasNext()) {
-            RESTMembershipI m = iter.next();
+    protected boolean createKeys(List<MembershipI> list) {
+        Iterator<MembershipI> iter = null;
+        try {
+            iter = gpms.getMemberships();
+        } catch (GPMSException ex) {
+            Exceptions.printStackTrace(ex);
+            return false;
+        }
+        while (iter != null && iter.hasNext()) {
+            MembershipI m = iter.next();
             if ("MGX".equals(m.getProject().getProjectClass().getName())) {
                 list.add(m);
             }
@@ -41,22 +49,22 @@ public class ProjectNodeFactory extends ChildFactory<RESTMembershipI> implements
     }
 
     @Override
-    protected Node createNodeForKey(RESTMembershipI m) {
-        MGXDTOMaster dtomaster = new MGXDTOMaster(gpms, m);
+    protected Node createNodeForKey(MembershipI m) {
+        MGXDTOMaster dtomaster = new MGXDTOMaster(gpms.createMaster(m));
         MGXMasterI master = new MGXMaster(dtomaster);
-        ProjectNode node = new ProjectNode(master, m); 
+        ProjectNode node = new ProjectNode(master, m);
         node.addNodeListener(this);
         return node;
     }
 
     @Override
     public void childrenAdded(NodeMemberEvent ev) {
-       // this.refresh(true);
+        // this.refresh(true);
     }
 
     @Override
     public void childrenRemoved(NodeMemberEvent ev) {
-       // this.refresh(true);
+        // this.refresh(true);
     }
 
     @Override

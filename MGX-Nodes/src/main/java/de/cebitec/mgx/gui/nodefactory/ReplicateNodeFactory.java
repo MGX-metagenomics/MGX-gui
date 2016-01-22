@@ -1,15 +1,14 @@
 package de.cebitec.mgx.gui.nodefactory;
 
-import de.cebitec.mgx.gui.nodes.VizGroupNode;
 import de.cebitec.mgx.api.groups.ReplicateGroupI;
 import de.cebitec.mgx.api.groups.ReplicateI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.model.ModelBaseI;
 import de.cebitec.mgx.gui.nodes.ReplicateNode;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Collections;
-import java.util.List;
-import org.openide.nodes.ChildFactory;
+import org.openide.nodes.Children;
 import org.openide.nodes.Node;
 import org.openide.nodes.NodeEvent;
 import org.openide.nodes.NodeListener;
@@ -20,18 +19,18 @@ import org.openide.nodes.NodeReorderEvent;
  *
  * @author sjaenick
  */
-public class ReplicateNodeFactory extends ChildFactory<ReplicateI> implements NodeListener {
+public class ReplicateNodeFactory extends Children.Keys<ReplicateI> implements NodeListener {
 
     private final ReplicateGroupI group;
-    //private final List<SeqRunNode> nodes = new ArrayList<>();
 
-    public ReplicateNodeFactory(ReplicateGroupI group) {
+    public ReplicateNodeFactory(final ReplicateGroupI group) {
+        super(false);
         this.group = group;
         group.addPropertyChangeListener(new PropertyChangeListener() {
 
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
-                System.err.println("RGNF got PCE " + evt.toString());
+                //System.err.println("RGNF got PCE " + evt.toString());
                 switch (evt.getPropertyName()) {
                     case ReplicateGroupI.REPLICATEGROUP_REPLICATE_ADDED:
                     case ReplicateGroupI.REPLICATEGROUP_REPLICATE_REMOVED:
@@ -44,8 +43,11 @@ public class ReplicateNodeFactory extends ChildFactory<ReplicateI> implements No
                     case VisualizationGroupI.VISGROUP_CHANGED:
                         refreshChildren();
                         return;
+                    case ModelBaseI.OBJECT_DELETED:
+                        group.removePropertyChangeListener(this);
+                        break;
                     default:
-                        System.err.println("RGNF got unhandled PCE " + evt.toString());
+                        System.err.println("RNF got unhandled PCE " + evt.toString());
                         refreshChildren();
                 }
             }
@@ -53,42 +55,39 @@ public class ReplicateNodeFactory extends ChildFactory<ReplicateI> implements No
     }
 
     @Override
-    protected boolean createKeys(List<ReplicateI> toPopulate) {
-        toPopulate.addAll(group.getReplicates());
-        Collections.sort(toPopulate);
-        return true;
+    protected void addNotify() {
+        super.addNotify();
+        setKeys(group.getReplicates());
     }
 
-    public void addReplicate(ReplicateI r) {
-        group.add(r);
-        refreshChildren();
-    }
-
-//    public void removeNode(SeqRunNode node) {
-//        node.removeNodeListener(this);
-//        //nodes.remove(node);
-//        group.removeSeqRun(node.getContent());
-//        refreshChildren();
-//    }
     @Override
-    protected Node createNodeForKey(ReplicateI replicate) {
-        Node rNode = new ReplicateNode(replicate);
+    protected void removeNotify() {
+        super.removeNotify();
+        setKeys(Collections.<ReplicateI>emptySet());
+    }
+
+    @Override
+    protected Node[] createNodes(ReplicateI replicate) {
+        ReplicateNode rNode = new ReplicateNode(replicate);
+//        FilterNode fn = new ReplicateFilterNode(rNode, this);
+//        fn.addNodeListener(this);
         rNode.addNodeListener(this);
-        return rNode;
+        return new Node[]{rNode};
     }
 
     public final void refreshChildren() {
-        refresh(true);
+        setKeys(group.getReplicates());
+        refresh();
     }
 
     @Override
     public void childrenAdded(NodeMemberEvent ev) {
-        refresh(true);
+        refresh();
     }
 
     @Override
     public void childrenRemoved(NodeMemberEvent ev) {
-        refresh(true);
+        refresh();
     }
 
     @Override
@@ -97,8 +96,22 @@ public class ReplicateNodeFactory extends ChildFactory<ReplicateI> implements No
 
     @Override
     public void nodeDestroyed(NodeEvent ev) {
-        refresh(true);
+        refresh();
     }
+
+//    public void addReplicate(ReplicateI r) {
+//        group.add(r);
+//        refreshChildren();
+//    }
+//
+//    public void removeNode(ReplicateNode node) {
+//        node.removeNodeListener(this);
+//        //nodes.remove(node);
+//        VisualizationGroupI vg = node.getContent();
+//        assert vg instanceof ReplicateI;
+//        group.remove((ReplicateI) vg);
+//        refreshChildren();
+//    }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {

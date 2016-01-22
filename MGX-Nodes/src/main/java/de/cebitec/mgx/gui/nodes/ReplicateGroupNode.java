@@ -5,15 +5,28 @@
  */
 package de.cebitec.mgx.gui.nodes;
 
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.groups.ReplicateGroupI;
+import de.cebitec.mgx.api.groups.ReplicateI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
-import de.cebitec.mgx.api.model.ModelBaseI;
+import de.cebitec.mgx.api.model.DNAExtractI;
+import de.cebitec.mgx.api.model.SeqRunI;
+import de.cebitec.mgx.common.VGroupManager;
 import de.cebitec.mgx.gui.nodefactory.ReplicateNodeFactory;
-import java.awt.event.ActionEvent;
+import de.cebitec.mgx.gui.nodes.util.MGXPasteTypes;
+import java.awt.datatransfer.Transferable;
+import java.awt.dnd.DnDConstants;
 import java.beans.PropertyChangeEvent;
-import javax.swing.AbstractAction;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Iterator;
 import javax.swing.Action;
-import org.openide.nodes.Children;
+import org.openide.nodes.Node;
+import org.openide.nodes.NodeTransfer;
+import org.openide.util.Exceptions;
+import org.openide.util.datatransfer.ExTransferable;
+import org.openide.util.datatransfer.PasteType;
 import org.openide.util.lookup.Lookups;
 
 /**
@@ -22,11 +35,17 @@ import org.openide.util.lookup.Lookups;
  */
 public class ReplicateGroupNode extends AbstractNodeBase<ReplicateGroupI> {
 
+    private final ReplicateNodeFactory rnf;
 
     public ReplicateGroupNode(ReplicateGroupI rGroup) {
-        super(Children.create(new ReplicateNodeFactory(rGroup), false), Lookups.singleton(rGroup), rGroup);
-        setName(rGroup.getName());
-        setDisplayName(rGroup.getName());
+        this(new ReplicateNodeFactory(rGroup), rGroup);
+    }
+
+    private ReplicateGroupNode(ReplicateNodeFactory rnf, ReplicateGroupI rg) {
+        super(rnf, Lookups.singleton(rg), rg);
+        this.rnf = rnf;
+        setName(rg.getName());
+        setDisplayName(rg.getName());
     }
 
     @Override
@@ -41,28 +60,70 @@ public class ReplicateGroupNode extends AbstractNodeBase<ReplicateGroupI> {
                 setName((String) evt.getNewValue());
                 setDisplayName((String) evt.getNewValue());
                 break;
-            case ModelBaseI.OBJECT_DELETED:
-                getContent().removePropertyChangeListener(this);
-                fireNodeDestroyed();
-                break;
+            default:
+                super.propertyChange(evt);
         }
     }
 
     @Override
     public void updateModified() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        setName(getContent().getName());
+        setDisplayName(getContent().getName());
     }
 
-//    private class RemoveVGroupAction extends AbstractAction {
-//
-//        public RemoveVGroupAction() {
-//            putValue(NAME, "Remove");
-//        }
-//
-//        @Override
-//        public void actionPerformed(ActionEvent e) {
-//            // FIXME
-//        }
-//    }
+    @Override
+    public PasteType getDropType(Transferable t, final int action, int index) {
+        final Node dropNode = NodeTransfer.node(t, DnDConstants.ACTION_REFERENCE + NodeTransfer.CLIPBOARD_COPY);
+        if (dropNode != null) {
+
+            final ReplicateGroupI replGroup = getLookup().lookup(ReplicateGroupI.class);
+
+            // check for replicates being added
+            final Collection<? extends ReplicateI> replicates = dropNode.getLookup().lookupAll(ReplicateI.class);
+            if (replicates != null && !replicates.isEmpty() && !this.equals(dropNode.getParentNode())) {
+                return new PasteType() {
+
+                    @Override
+                    public Transferable paste() throws IOException {
+                        for (ReplicateI r : replicates) {
+                            replGroup.add(r);
+                        }
+                        return null;
+                    }
+                };
+            }
+
+            //
+            // if a dna extract is being transferred, obtain all sequencing runs generated from
+            // it and add them individually as new replicates
+            //
+            final Collection<? extends DNAExtractI> extracts = dropNode.getLookup().lookupAll(DNAExtractI.class);
+
+            if (extracts != null && !extracts.isEmpty() && !this.equals(dropNode.getParentNode())) {
+                return new PasteType() {
+
+                    @Override
+                    public Transferable paste() throws IOException {
+                        for (DNAExtractI e : extracts) {
+                            MGXMasterI master = e.getMaster();
+                            Iterator<SeqRunI> iter;
+                            try {
+                                iter = master.SeqRun().ByExtract(e);
+                            } catch (MGXException ex) {
+                                Exceptions.printStackTrace(ex);
+                                return ExTransferable.EMPTY;
+                            }
+                            while (iter != null && iter.hasNext()) {
+                                ReplicateI newReplicate = VGroupManager.getInstance().createReplicate(replGroup);
+                                newReplicate.addSeqRun(iter.next());
+                            }
+                        }
+                        return null;
+                    }
+                };
+            }
+        }
+        return MGXPasteTypes.REJECT;
+    }
 
 }

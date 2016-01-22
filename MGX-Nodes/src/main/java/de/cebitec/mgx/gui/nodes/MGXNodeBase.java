@@ -2,7 +2,6 @@ package de.cebitec.mgx.gui.nodes;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.ModelBaseI;
-import java.beans.PropertyChangeEvent;
 import javax.swing.Action;
 import org.openide.nodes.Children;
 import org.openide.util.Lookup;
@@ -15,7 +14,6 @@ import org.openide.util.Lookup;
 public abstract class MGXNodeBase<T extends ModelBaseI<T>> extends AbstractNodeBase<T> {
 
     private final MGXMasterI master;
-//    private final T content;
 
     protected MGXNodeBase(MGXMasterI master, Children children, Lookup lookup, T data) {
         super(children, lookup, data);
@@ -23,29 +21,16 @@ public abstract class MGXNodeBase<T extends ModelBaseI<T>> extends AbstractNodeB
             throw new IllegalArgumentException("null master supplied");
         }
         this.master = master;
-//        content = data;
-//        content.addPropertyChangeListener(this);
     }
 
     protected final MGXMasterI getMaster() {
         return master;
     }
 
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-        switch (evt.getPropertyName()) { 
-            case ModelBaseI.OBJECT_DELETED:
-                getContent().removePropertyChangeListener(this);
-                fireNodeDestroyed();
-                break;
-            case ModelBaseI.OBJECT_MODIFIED:
-                updateModified();
-                break;
-            default:
-                System.err.println("MGXNodeBase got unhandled event: " + evt.getPropertyName());
-                assert false;
-        }
-    }
+//    @Override
+//    public void propertyChange(PropertyChangeEvent evt) {
+//        super.propertyChange(evt);
+//    }
 
     @Override
     public Action[] getActions(boolean popup) {
@@ -62,8 +47,5 @@ public abstract class MGXNodeBase<T extends ModelBaseI<T>> extends AbstractNodeB
 //        content.removePropertyChangeListener(pcl);
 //    }
 
-    public abstract void updateModified();
 
-    
-    
 }
