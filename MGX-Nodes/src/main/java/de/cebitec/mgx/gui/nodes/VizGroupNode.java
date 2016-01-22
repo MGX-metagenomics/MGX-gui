@@ -6,13 +6,19 @@
 package de.cebitec.mgx.gui.nodes;
 
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
-import de.cebitec.mgx.api.model.ModelBaseI;
+import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.nodefactory.GroupedSeqRunNodeFactory;
-import java.awt.event.ActionEvent;
+import de.cebitec.mgx.gui.nodes.util.MGXPasteTypes;
+import java.awt.datatransfer.Transferable;
+import java.awt.dnd.DnDConstants;
 import java.beans.PropertyChangeEvent;
-import javax.swing.AbstractAction;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Set;
 import javax.swing.Action;
-import org.openide.nodes.Children;
+import org.openide.nodes.Node;
+import org.openide.nodes.NodeTransfer;
+import org.openide.util.datatransfer.PasteType;
 import org.openide.util.lookup.Lookups;
 
 /**
@@ -21,41 +27,50 @@ import org.openide.util.lookup.Lookups;
  */
 public class VizGroupNode extends AbstractNodeBase<VisualizationGroupI> {
 
-    private final VisualizationGroupI vGroup;
-
     public VizGroupNode(VisualizationGroupI vGroup) {
-        super(Children.create(new GroupedSeqRunNodeFactory(vGroup), false), Lookups.singleton(vGroup), vGroup);
-        this.vGroup = vGroup;
+        this(new GroupedSeqRunNodeFactory(vGroup), vGroup);
+    }
+
+    private VizGroupNode(GroupedSeqRunNodeFactory nf, VisualizationGroupI vGroup) {
+        super(nf, Lookups.singleton(vGroup), vGroup);
         setName(vGroup.getName());
         setDisplayName(vGroup.getName());
-        vGroup.addPropertyChangeListener(this);
+    }
+
+    @Override
+    public PasteType getDropType(Transferable t, final int action, int index) {
+        final Node dropNode = NodeTransfer.node(t, DnDConstants.ACTION_REFERENCE + NodeTransfer.CLIPBOARD_COPY);
+        if (dropNode != null) {
+
+            final VisualizationGroupI vg = getLookup().lookup(VisualizationGroupI.class);
+            final Collection<? extends SeqRunI> seqruns = dropNode.getLookup().lookupAll(SeqRunI.class);
+
+            // reject, if any run is already present
+            Set<SeqRunI> oldRuns = vg.getSeqRuns();
+            for (SeqRunI newRun : seqruns) {
+                if (oldRuns.contains(newRun)) {
+                    return MGXPasteTypes.REJECT;
+                }
+            }
+
+            if (seqruns != null && !seqruns.isEmpty() && !this.equals(dropNode.getParentNode())) {
+                return new PasteType() {
+
+                    @Override
+                    public Transferable paste() throws IOException {
+                        vg.addSeqRuns(seqruns.toArray(new SeqRunI[]{}));
+                        return null;
+                    }
+                };
+            }
+        }
+        return MGXPasteTypes.REJECT;
     }
 
     @Override
     public Action[] getActions(boolean context) {
-        return new Action[]{new RemoveVGroupAction()};
+        return new Action[]{}; //new RemoveVGroupAction()};
     }
-
-//    @Override
-//    public void childrenAdded(NodeMemberEvent ev) {
-//        throw new UnsupportedOperationException("Not supported yet.");
-//    }
-//
-//    @Override
-//    public void childrenRemoved(NodeMemberEvent ev) {
-//        throw new UnsupportedOperationException("Not supported yet.");
-//    }
-//
-//    @Override
-//    public void childrenReordered(NodeReorderEvent ev) {
-//        throw new UnsupportedOperationException("Not supported yet.");
-//    }
-//
-//    @Override
-//    public void nodeDestroyed(NodeEvent ev) {
-//        //nf.removeNode(n);
-//        //fireNodeDestroyed();
-//    }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
@@ -64,10 +79,11 @@ public class VizGroupNode extends AbstractNodeBase<VisualizationGroupI> {
                 setName((String) evt.getNewValue());
                 setDisplayName((String) evt.getNewValue());
                 break;
-            case ModelBaseI.OBJECT_DELETED:
-                getContent().removePropertyChangeListener(this);
-                fireNodeDestroyed();
+            case VisualizationGroupI.VISGROUP_HAS_DIST:
+                // ignore
                 break;
+            default:
+                super.propertyChange(evt);
         }
     }
 
@@ -75,18 +91,6 @@ public class VizGroupNode extends AbstractNodeBase<VisualizationGroupI> {
     public void updateModified() {
         setDisplayName(getContent().getName());
         setShortDescription(getContent().getName());
-    }
-
-    private class RemoveVGroupAction extends AbstractAction {
-
-        public RemoveVGroupAction() {
-            putValue(NAME, "Remove");
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            // FIXME
-        }
     }
 
 }
