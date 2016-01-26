@@ -13,7 +13,6 @@ import de.cebitec.mgx.api.model.DNAExtractI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.controller.RBAC;
 import de.cebitec.mgx.gui.nodefactory.MGXNodeFactoryBase;
-import de.cebitec.mgx.gui.nodefactory.SeqRunNodeFactory;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
 import de.cebitec.mgx.gui.wizard.seqrun.SeqRunWizardDescriptor;
