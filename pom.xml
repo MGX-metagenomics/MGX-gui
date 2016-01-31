@@ -10,7 +10,7 @@
     <name>MGX-gui - NB App Parent</name>
     
     <prerequisites>
-        <maven>2.2.1</maven>
+        <maven>3.0</maven>
     </prerequisites>
 
 
