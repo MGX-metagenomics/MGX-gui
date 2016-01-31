@@ -24,11 +24,11 @@ import de.cebitec.mgx.gui.dtoconversion.SequenceDTOFactory;
 import de.cebitec.mgx.sequence.DNASequenceI;
 import de.cebitec.mgx.sequence.SeqReaderI;
 import de.cebitec.mgx.sequence.SeqWriterI;
+import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -69,7 +69,6 @@ public class SequenceAccess extends AccessBase<SequenceI> implements SequenceAcc
 //            throw new MGXException(ex);
 //        }
 //    }
-
     @Override
     public DownloadBaseI createDownloaderByAttributes(Set<AttributeI> attrs, SeqWriterI<DNASequenceI> writer, boolean closeWriter) {
         Builder b = AttributeDTOList.newBuilder();
@@ -111,7 +110,7 @@ public class SequenceAccess extends AccessBase<SequenceI> implements SequenceAcc
 
     @Override
     public void fetchSeqData(Iterable<SequenceI> seqs) throws MGXException {
-        Map<Long, SequenceI> idx = new HashMap<>();
+        TLongObjectMap<SequenceI> idx = new TLongObjectHashMap<>();
         try {
             for (SequenceI s : seqs) {
                 if (s.getSequence() == null) {
@@ -123,11 +122,13 @@ public class SequenceAccess extends AccessBase<SequenceI> implements SequenceAcc
                 return;
             }
 
-            SequenceDTOList dto = getDTOmaster().Sequence().fetchSeqData(idx.keySet());
+            SequenceDTOList dto = getDTOmaster().Sequence().fetchSeqData(idx.keys());
 
             // update fields
             for (SequenceDTO sdto : dto.getSeqList()) {
-                assert idx.containsKey(sdto.getId());
+                if (!idx.containsKey(sdto.getId())) {
+                    throw new MGXException("MGX server returned sequence ID " + sdto.getId() + " which was not included in the request");
+                }
                 SequenceI s = idx.get(sdto.getId());
 
                 s.setName(sdto.getName());
