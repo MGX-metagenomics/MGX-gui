@@ -70,7 +70,7 @@ public class VGroupManager implements VGroupManagerI {
         Color.decode("#795892"), Color.decode("#0099b2"), Color.decode("#f38533"), Color.decode("#8baad1")};
     
     private VGroupManager() {
-        pcs = new ParallelPropertyChangeSupport(this);
+        pcs = new ParallelPropertyChangeSupport(this, false);
         //
         // limit pool size to 20
         //
