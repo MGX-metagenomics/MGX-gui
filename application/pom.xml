@@ -143,11 +143,6 @@
             <groupId>org.netbeans.api</groupId> 
             <artifactId>org-netbeans-modules-netbinox</artifactId> 
         </dependency>-->
-    <!--    <dependency>
-            <groupId>org.netbeans.api</groupId>
-            <artifactId>org-netbeans-core-netigso</artifactId>
-            <version>RELEASE74</version>
-        </dependency> -->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>MGX-QCMonitor</artifactId>
@@ -157,6 +152,22 @@
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-compat</artifactId>
         </dependency>
+        <!--
+        <dependency>
+            <groupId>org.apache.aries.spifly</groupId>
+            <artifactId>org.apache.aries.spifly.dynamic.bundle</artifactId>
+            <version>1.0.8</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>osgi-over-slf4j</artifactId>
+            <version>1.7.14</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-jdk14</artifactId>
+            <version>1.7.14</version>
+        </dependency> -->
     </dependencies>
 
     <build>
