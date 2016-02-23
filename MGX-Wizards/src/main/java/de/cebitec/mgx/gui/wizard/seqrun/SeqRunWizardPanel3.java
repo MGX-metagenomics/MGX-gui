@@ -1,32 +1,31 @@
 package de.cebitec.mgx.gui.wizard.seqrun;
 
-import java.awt.Component;
+import de.cebitec.mgx.api.model.SeqRunI;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
 import org.openide.WizardDescriptor;
 import org.openide.util.HelpCtx;
 
-public class SeqRunWizardPanel2 implements WizardDescriptor.Panel<WizardDescriptor>, PropertyChangeListener {
+public class SeqRunWizardPanel3 implements WizardDescriptor.Panel<WizardDescriptor>, PropertyChangeListener{
 
     /**
      * The visual component that displays this panel. If you need to access the
      * component from this class, just use getComponent().
      */
-    private SeqRunVisualPanel2 component;
+    private SeqRunVisualPanel3 component;
     private WizardDescriptor model = null;
     private boolean isValid = true;
     private final EventListenerList listeners = new EventListenerList();
+    private Collection<SeqRunI> allRuns;
 
     @Override
-    public SeqRunVisualPanel2 getComponent() {
+    public SeqRunVisualPanel3 getComponent() {
         if (component == null) {
-            component = new SeqRunVisualPanel2();
+            component = new SeqRunVisualPanel3();
             component.putClientProperty(WizardDescriptor.PROP_AUTO_WIZARD_STYLE, Boolean.TRUE);
             component.putClientProperty(WizardDescriptor.PROP_CONTENT_DISPLAYED, Boolean.TRUE);
             component.putClientProperty(WizardDescriptor.PROP_CONTENT_NUMBERED, Boolean.TRUE);
@@ -36,7 +35,7 @@ public class SeqRunWizardPanel2 implements WizardDescriptor.Panel<WizardDescript
     }
 
     public String getName() {
-        return "Sequence data";
+        return "Paired-End parameters";
     }
 
     @Override
@@ -50,15 +49,39 @@ public class SeqRunWizardPanel2 implements WizardDescriptor.Panel<WizardDescript
     }
 
     @Override
-    public final void addChangeListener(ChangeListener l) {
-        listeners.add(ChangeListener.class, l);
+    public void readSettings(WizardDescriptor settings) {
+        model = settings;
+        SeqRunVisualPanel3 c = getComponent();
+        c.addPropertyChangeListener(this);
     }
 
     @Override
-    public final void removeChangeListener(ChangeListener l) {
-        listeners.remove(ChangeListener.class, l);
+    public void storeSettings(WizardDescriptor settings) {
+        model = settings;
+        SeqRunVisualPanel3 c = getComponent();
+        model.putProperty(SeqRunVisualPanel3.PROP_QTHRESHOLD, c.getQualityThreshold());
+        model.putProperty(SeqRunVisualPanel3.PROP_MINOVERLAP, c.getMinimalOverlap());
+        model.putProperty(SeqRunVisualPanel3.PROP_MAXMISMATCHES, c.getMaximalMismatches());        
     }
 
+    public void setProperties(WizardDescriptor settings) {
+        model = settings;
+        SeqRunVisualPanel3 c = getComponent();
+        c.setQualityThreshold((int) model.getProperty(SeqRunVisualPanel3.PROP_QTHRESHOLD));
+        c.setMinimalOverlap((int) model.getProperty(SeqRunVisualPanel3.PROP_MINOVERLAP));
+        c.setMaximalMismatches((int) model.getProperty(SeqRunVisualPanel3.PROP_MAXMISMATCHES));
+    }
+
+    @Override
+    public void addChangeListener(ChangeListener cl) {
+        listeners.add(ChangeListener.class, cl);
+    }
+
+    @Override
+    public void removeChangeListener(ChangeListener cl) {
+        listeners.remove(ChangeListener.class, cl);
+    }
+    
     protected final void fireChangeEvent(Object src, boolean old, boolean newState) {
         if (old != newState) {
             ChangeEvent ev = new ChangeEvent(src);
@@ -69,24 +92,6 @@ public class SeqRunWizardPanel2 implements WizardDescriptor.Panel<WizardDescript
     }
 
     @Override
-    public void readSettings(WizardDescriptor settings) {
-        model = settings;
-        SeqRunVisualPanel2 c = getComponent();
-        c.addPropertyChangeListener(this);
-    }
-
-    @Override
-    public void storeSettings(WizardDescriptor settings) {
-        model = settings;
-        SeqRunVisualPanel2 c = getComponent();
-        List<File> list = (List)model.getProperty(SeqRunVisualPanel2.PROP_SEQFILE);
-        if (list == null)
-            list = new ArrayList<>();
-        list.add(c.getSelectedFile());
-        model.putProperty(SeqRunVisualPanel2.PROP_SEQFILE, list);
-    }
-
-    @Override
     public void propertyChange(PropertyChangeEvent evt) {
         boolean oldState = isValid;
         isValid = checkValidity();
@@ -94,13 +99,6 @@ public class SeqRunWizardPanel2 implements WizardDescriptor.Panel<WizardDescript
     }
 
     private boolean checkValidity() {
-        isValid = true;
-        SeqRunVisualPanel2 c = getComponent();
-        File test = c.getSelectedFile();
-        if (test == null || test.isDirectory() || !test.exists()) {
-            isValid = false;
-        }
-
-        return isValid;
+        return true;
     }
 }

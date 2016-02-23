@@ -13,10 +13,10 @@ import de.cebitec.mgx.api.model.DNAExtractI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.controller.RBAC;
 import de.cebitec.mgx.gui.nodefactory.MGXNodeFactoryBase;
-import de.cebitec.mgx.gui.nodefactory.SeqRunNodeFactory;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
-import de.cebitec.mgx.gui.wizard.seqrun.SeqRunWizardDescriptor;
+import de.cebitec.mgx.gui.wizard.seqrun.SeqRunWizardIterator;
+import de.cebitec.mgx.seqoverlap.PairedEndOverlap;
 import de.cebitec.mgx.sequence.DNASequenceI;
 import de.cebitec.mgx.sequence.SeqReaderFactory;
 import de.cebitec.mgx.sequence.SeqReaderI;
@@ -24,6 +24,7 @@ import de.cebitec.mgx.sequence.SeqStoreException;
 import java.awt.Dialog;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -50,11 +51,13 @@ public class AddSeqRun extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        final SeqRunWizardDescriptor wd = new SeqRunWizardDescriptor();
-        Dialog dialog = DialogDisplayer.getDefault().createDialog(wd);
+        final SeqRunWizardIterator iterator = new SeqRunWizardIterator();
+        WizardDescriptor wizardDescriptor = new WizardDescriptor(iterator);
+        iterator.setWizardDescriptor(wizardDescriptor);        
+        Dialog dialog = DialogDisplayer.getDefault().createDialog(wizardDescriptor);
         dialog.setVisible(true);
         dialog.toFront();
-        boolean cancelled = wd.getValue() != WizardDescriptor.FINISH_OPTION;
+        boolean cancelled = wizardDescriptor.getValue() != WizardDescriptor.FINISH_OPTION;
         if (!cancelled) {
             final DNAExtractI extract = Utilities.actionsGlobalContext().lookup(DNAExtractI.class);
             final MGXMasterI m = extract.getMaster();
@@ -62,13 +65,19 @@ public class AddSeqRun extends AbstractAction {
             SwingWorker<SeqRunI, Exception> sw = new SwingWorker<SeqRunI, Exception>() {
                 @Override
                 protected SeqRunI doInBackground() throws MGXException {
-                    final SeqRunI seqrun = m.SeqRun().create(extract, wd.getSeqRunName(), wd.getSequencingMethod(), wd.getSequencingTechnology(), wd.getSubmittedToINSDC(), wd.getAccession());
+                    final SeqRunI seqrun = m.SeqRun().create(extract, iterator.getSeqRunName(), iterator.getSequencingMethod(), iterator.getSequencingTechnology(), iterator.getSubmittedToINSDC(), iterator.getAccession());
                     // create a sequence reader
                     String canonicalPath;
                     SeqReaderI<? extends DNASequenceI> reader;
                     try {
-                        canonicalPath = wd.getSequenceFile().getCanonicalPath();
-                        reader = SeqReaderFactory.<DNASequenceI>getReader(canonicalPath);
+                        canonicalPath = iterator.getSequenceFile().getCanonicalPath();
+                        if (iterator.isPairedEnd()) {
+                            List<File> files = iterator.getSequenceFiles();
+                            reader = new PairedEndOverlap(files.get(0).getCanonicalPath(), false, files.get(1).getCanonicalPath(), false,
+                                        iterator.getQualityThreshold(), iterator.getMinimalOverlap(), iterator.getMaximalMismatches());                            
+                        } else {                            
+                            reader = SeqReaderFactory.<DNASequenceI>getReader(canonicalPath);
+                        }
                     } catch (IOException | SeqStoreException ex) {
                         m.SeqRun().delete(seqrun);
                         parent.refreshChildren();

@@ -8,7 +8,7 @@ package de.cebitec.mgx.gui.actions;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.controller.RBAC;
-import de.cebitec.mgx.gui.wizard.seqrun.SeqRunWizardDescriptor;
+import de.cebitec.mgx.gui.wizard.seqrun.SeqRunWizardIterator;
 import java.awt.Dialog;
 import java.awt.event.ActionEvent;
 import java.util.concurrent.ExecutionException;
@@ -32,13 +32,15 @@ public class EditSeqRun extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         final SeqRunI seqrun = Utilities.actionsGlobalContext().lookup(SeqRunI.class);
-        SeqRunWizardDescriptor wd = new SeqRunWizardDescriptor(seqrun);
+        SeqRunWizardIterator iterator = new SeqRunWizardIterator(seqrun);
+        WizardDescriptor wd = new WizardDescriptor(iterator);
+        iterator.setWizardDescriptor(wd);
         Dialog dialog = DialogDisplayer.getDefault().createDialog(wd);
         dialog.setVisible(true);
         dialog.toFront();
         boolean cancelled = wd.getValue() != WizardDescriptor.FINISH_OPTION;
         if (!cancelled) {
-            final SeqRunI run = wd.getSeqRun(seqrun.getMaster());
+            final SeqRunI run = iterator.getSeqRun(seqrun.getMaster());
             SwingWorker<Void, Void> sw = new SwingWorker<Void, Void>() {
                 @Override
                 protected Void doInBackground() throws Exception {

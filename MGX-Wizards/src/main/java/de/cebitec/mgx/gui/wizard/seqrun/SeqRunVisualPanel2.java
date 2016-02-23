@@ -13,11 +13,13 @@ public final class SeqRunVisualPanel2 extends JPanel {
 
     public static final String PROP_SEQFILE = "seqfile";
     private File file = null;
+    private String header;
 
     /**
      * Creates new form SeqRunVisualPanel2
+     * @param header String for the header of the panel
      */
-    public SeqRunVisualPanel2() {
+    public SeqRunVisualPanel2(String header) {
         initComponents();
         String last = NbPreferences.forModule(JFileChooser.class).get("lastDirectory", null);
         if (last != null) {
@@ -43,11 +45,21 @@ public final class SeqRunVisualPanel2 extends JPanel {
                 }
             }
         });
+        
+        this.header = header;
     }
 
+    public SeqRunVisualPanel2() {
+        this("Select sequence data");
+    }
+    
     @Override
     public String getName() {
-        return "Select sequence data";
+        return header;
+    }
+    
+    public void setName(String header) {
+        this.header = header;
     }
 
     public File getSelectedFile() {
