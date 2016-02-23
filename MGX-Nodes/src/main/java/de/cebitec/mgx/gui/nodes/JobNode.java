@@ -13,6 +13,8 @@ import static de.cebitec.mgx.api.model.JobState.RUNNING;
 import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.api.model.ToolI;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 import javax.swing.Action;
 import org.openide.filesystems.FileUtil;
 import org.openide.nodes.Children;
@@ -48,12 +50,35 @@ public class JobNode extends MGXNodeBase<JobI> {
                 .append("Job created by: ")
                 .append(job.getCreator())
                 .append("<br>")
+                .append(getProcessingTime(job))
                 .append(getParameterToolTip(job))
                 .append("</html>")
                 .toString();
         setShortDescription(shortDesc);
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/AnalysisTasks.png");
     }
+    
+    private String getProcessingTime(JobI job) {
+        if (job.getStatus() == JobState.FINISHED) {
+            
+            String timeUnit = "minutes";
+            long time = getDateDiff(job.getFinishDate(), job.getStartDate(), TimeUnit.MINUTES);
+            
+            if (time < 2) {
+                timeUnit = "seconds";
+                time = getDateDiff(job.getFinishDate(), job.getStartDate(), TimeUnit.SECONDS);
+            }
+                    
+            return "Processing time: "+time+" "+timeUnit+"<br>";
+        } else {
+            return "";
+        }
+    }
+    
+    public static long getDateDiff(Date date1, Date date2, TimeUnit timeUnit) {
+    long diffInMillies = date1.getTime() - date2.getTime();
+    return timeUnit.convert(diffInMillies,TimeUnit.MILLISECONDS);
+}
 
     private String getParameterToolTip(JobI job) {
         if (job.getParameters() == null || job.getParameters().isEmpty()) {
