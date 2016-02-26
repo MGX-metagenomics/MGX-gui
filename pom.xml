@@ -553,6 +553,7 @@
         <module>MGX-Common</module>
         <module>MGX-QCMonitor</module>
         <module>MGX-VizFilter</module>
+        <module>MGX-Server</module>
     </modules>
     
     <properties>
