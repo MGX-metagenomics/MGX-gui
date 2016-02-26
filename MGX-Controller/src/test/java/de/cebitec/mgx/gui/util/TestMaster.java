@@ -42,8 +42,10 @@ public class TestMaster {
             }
         }
         GPMSClient gpms = new GPMSClient("MyServer", serverURI);
-        if (!gpms.login("mgx_unittestRO", "gut-isM5iNt")) {
-            fail(gpms.getError());
+        try {
+            gpms.login("mgx_unittestRO", "gut-isM5iNt");
+        } catch (GPMSException ex) {
+            fail(ex.getMessage());
         }
 
         Iterator<MembershipI> mbr = null;
@@ -85,9 +87,12 @@ public class TestMaster {
             }
         }
         GPMSClientI gpms = new GPMSClient("MyServer", serverURI);
-        if (!gpms.login("mgx_unittestRW", "hL0amo3oLae")) {
+        try {
+            gpms.login("mgx_unittestRW", "hL0amo3oLae");
+        } catch (GPMSException ex) {
             return null;
         }
+
         Iterator<MembershipI> mbr = null;
         try {
             mbr = gpms.getMemberships();
@@ -126,9 +131,12 @@ public class TestMaster {
             }
         }
         GPMSClientI gpms = new GPMSClient("MyServer", serverURI);
-        if (!gpms.login(p.getProperty("username"), p.getProperty("password"))) {
+        try {
+            gpms.login(p.getProperty("username"), p.getProperty("password"));
+        } catch (GPMSException ex) {
             return null;
         }
+
         Iterator<MembershipI> mbr = null;
         try {
             mbr = gpms.getMemberships();
