@@ -98,8 +98,10 @@ public class IntervalTest {
             }
         }
         GPMSClientI gpms = new GPMSClient("MyServer", serverURI);
-        if (!gpms.login("mgx_unittestRO", "gut-isM5iNt")) {
-            fail();
+        try {
+            gpms.login("mgx_unittestRO", "gut-isM5iNt");
+        } catch (GPMSException ex) {
+            fail(ex.getMessage());
         }
         Iterator<MembershipI> mIter = null;
         try {
