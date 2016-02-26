@@ -168,16 +168,21 @@ public abstract class GroupFrameBase<T extends ModelBaseI<T>> extends javax.swin
         return group;
     }
 
+    private volatile boolean isDisposed = false;
+
     @Override
-    public void dispose() {
-        try {
-            exmngr.setSelectedNodes(new Node[]{});
-        } catch (PropertyVetoException ex) {
+    public synchronized void dispose() {
+        if (!isDisposed) {
+            isDisposed = true;
+            try {
+                exmngr.setSelectedNodes(new Node[]{});
+            } catch (PropertyVetoException ex) {
+            }
+            nodeListeners.clear();
+            VGroupManager.getInstance().removePropertyChangeListener(this);
+            group.removePropertyChangeListener(this);
+            super.dispose();
         }
-        nodeListeners.clear();
-        VGroupManager.getInstance().removePropertyChangeListener(this);
-        group.removePropertyChangeListener(this);
-        super.dispose();
     }
 
     protected final static DecimalFormat decFormat = new DecimalFormat(",###");
