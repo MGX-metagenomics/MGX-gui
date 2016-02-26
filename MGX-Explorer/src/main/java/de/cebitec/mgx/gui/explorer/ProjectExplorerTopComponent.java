@@ -4,6 +4,7 @@ import de.cebitec.gpms.rest.GPMSClientI;
 import de.cebitec.mgx.gui.nodefactory.ServerNodeFactory;
 import de.cebitec.mgx.gui.nodes.ServerNode;
 import java.awt.BorderLayout;
+import java.net.Authenticator;
 import java.util.List;
 import javax.swing.SwingWorker;
 import org.netbeans.api.settings.ConvertAsProperties;
@@ -25,7 +26,7 @@ import org.openide.windows.TopComponent;
 @TopComponent.Description(preferredID = "ProjectExplorerTopComponent",
         //iconBase="SET/PATH/TO/ICON/HERE",
         persistenceType = TopComponent.PERSISTENCE_NEVER)
-@TopComponent.Registration(mode = "explorer", openAtStartup = false, position = 1)
+@TopComponent.Registration(mode = "explorer", openAtStartup = true, position = 1)
 @ActionID(category = "Window", id = "de.cebitec.mgx.gui.explorer.ProjectExplorerTopComponent")
 @TopComponent.OpenActionRegistration(displayName = "#CTL_ProjectExplorerAction",
         preferredID = "ProjectExplorerTopComponent")
@@ -37,8 +38,8 @@ public final class ProjectExplorerTopComponent extends TopComponent implements E
     public ProjectExplorerTopComponent() {
         btv = new BeanTreeView();
         btv.setRootVisible(false);
-        setLayout(new BorderLayout());
-        add(btv, BorderLayout.CENTER);
+        this.setLayout(new BorderLayout());
+        this.add(btv, BorderLayout.CENTER);
 //        initComponents();
         setName(NbBundle.getMessage(ProjectExplorerTopComponent.class, "CTL_ProjectExplorerTopComponent"));
         setToolTipText(NbBundle.getMessage(ProjectExplorerTopComponent.class, "HINT_ProjectExplorerTopComponent"));
@@ -50,6 +51,7 @@ public final class ProjectExplorerTopComponent extends TopComponent implements E
         putClientProperty(TopComponent.PROP_KEEP_PREFERRED_SIZE_WHEN_SLIDED_IN, Boolean.TRUE);
         associateLookup(ExplorerUtils.createLookup(exmngr, getActionMap()));
         getActionMap().put("delete", ExplorerUtils.actionDelete(exmngr, true));
+        setUp();
     }
 
 //    private void initComponents() {
@@ -89,27 +91,37 @@ public final class ProjectExplorerTopComponent extends TopComponent implements E
         return exmngr;
     }
 
-    public void setGPMS(final GPMSClientI gpms) {
-        final AbstractNode root = new AbstractNode(Children.create(new ServerNodeFactory(gpms), false));
-        exmngr.setRootContext(root);
-        SwingWorker<Void, Node> sw = new SwingWorker<Void, Node>() {
-            @Override
-            protected Void doInBackground() throws Exception {
-//                for (Node server : root.getChildren().getNodes()) {
-                publish(root.getChildren().getNodes());
+    private void setUp() {
+        // set default authenticator to null to avoid NB-integrated password dialog
+        Authenticator.setDefault(null);
+        final AbstractNode root = new InvisibleRoot(Children.create(new ServerNodeFactory(), false));
+        exmngr.setRootContext(root); 
+//        SwingWorker<Void, Node> sw = new SwingWorker<Void, Node>() {
+//            @Override
+//            protected Void doInBackground() throws Exception {
+////                for (Node server : root.getChildren().getNodes()) {
+//                publish(root.getChildren().getNodes());
+////                }
+//                return null;
+//            }
+//
+//            @Override
+//            protected void process(List<Node> chunks) {
+//                for (Node n : chunks) {
+//                    if (n instanceof ServerNode) {
+//                        btv.expandNode(n);
+//                    }
 //                }
-                return null;
-            }
+//            }
+//        };
+//        sw.execute();
+    }
+    
+    private class InvisibleRoot extends AbstractNode {
 
-            @Override
-            protected void process(List<Node> chunks) {
-                for (Node n : chunks) {
-                    if (n instanceof ServerNode) {
-                        btv.expandNode(n);
-                    }
-                }
-            }
-        };
-        sw.execute();
+        public InvisibleRoot(Children children) {
+            super(children);
+        }
+        
     }
 }

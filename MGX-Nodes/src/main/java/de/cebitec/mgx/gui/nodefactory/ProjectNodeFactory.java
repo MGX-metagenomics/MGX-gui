@@ -24,17 +24,18 @@ import org.openide.util.Exceptions;
  */
 public class ProjectNodeFactory extends ChildFactory<MembershipI> implements NodeListener {
 
-    private final GPMSClientI gpms;
+    private final GPMSClientI gpmsclient;
 
     public ProjectNodeFactory(GPMSClientI gpms) {
-        this.gpms = gpms;
+        this.gpmsclient = gpms;
+        gpmsclient.addPropertyChangeListener(this);
     }
 
     @Override
     protected boolean createKeys(List<MembershipI> list) {
         Iterator<MembershipI> iter = null;
         try {
-            iter = gpms.getMemberships();
+            iter = gpmsclient.getMemberships();
         } catch (GPMSException ex) {
             Exceptions.printStackTrace(ex);
             return false;
@@ -50,7 +51,7 @@ public class ProjectNodeFactory extends ChildFactory<MembershipI> implements Nod
 
     @Override
     protected Node createNodeForKey(MembershipI m) {
-        MGXDTOMaster dtomaster = new MGXDTOMaster(gpms.createMaster(m));
+        MGXDTOMaster dtomaster = new MGXDTOMaster(gpmsclient.createMaster(m));
         MGXMasterI master = new MGXMaster(dtomaster);
         ProjectNode node = new ProjectNode(master, m);
         node.addNodeListener(this);
@@ -78,7 +79,10 @@ public class ProjectNodeFactory extends ChildFactory<MembershipI> implements Nod
     }
 
     @Override
-    public void propertyChange(PropertyChangeEvent pce) {
+    public void propertyChange(PropertyChangeEvent evt) {
         //this.refresh(true);
+        if (evt.getSource().equals(gpmsclient) && GPMSClientI.PROP_LOGGEDIN.equals(evt.getPropertyName())) {
+            this.refresh(true);
+        }
     }
 }
