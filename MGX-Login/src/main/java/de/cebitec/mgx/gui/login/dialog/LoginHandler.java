@@ -1,25 +1,21 @@
 package de.cebitec.mgx.gui.login.dialog;
 
+import de.cebitec.gpms.core.GPMSException;
 import de.cebitec.gpms.rest.GPMSClientI;
-import de.cebitec.mgx.gui.explorer.ProjectExplorerTopComponent;
-import de.cebitec.mgx.gui.login.LoginState;
 import de.cebitec.mgx.gui.login.configuration.MGXserverPanel;
-import de.cebitec.mgx.restgpms.GPMSClient;
 import java.awt.Cursor;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.net.Authenticator;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.NotificationLineSupport;
 import org.openide.NotifyDescriptor;
 import org.openide.awt.StatusDisplayer;
 import org.openide.util.NbPreferences;
-import org.openide.windows.Mode;
-import org.openide.windows.WindowManager;
+import org.openide.util.Utilities;
 
 /**
  *
@@ -33,18 +29,15 @@ public class LoginHandler implements ActionListener {
     private DialogDescriptor dialog = null;
     private NotificationLineSupport nline;
     //
-    private String servername = null;
-    private String serveruri = null;
 
     private LoginHandler() {
-        Authenticator.setDefault(null);
     }
 
     public static LoginHandler getDefault() {
         return instance;
     }
 
-    public void showDialog() {
+    public void showDialog(GPMSClientI gpmsClient) {
         if (!checkVersion()) {
             return;
         }
@@ -64,27 +57,23 @@ public class LoginHandler implements ActionListener {
         panel.setUser(NbPreferences.forModule(MGXserverPanel.class).get("lastLogin", ""));
         panel.setPassword("");
 
-        servername = NbPreferences.forModule(MGXserverPanel.class).get("servername", "CeBiTec");
-        //servername = NbPreferences.forModule(MGXserverPanel.class).get("servername", "azteca-TEST");
-        serveruri = NbPreferences.forModule(MGXserverPanel.class).get("serveruri", "https://mgx.cebitec.uni-bielefeld.de/MGX-maven-web/webresources/");
-        //serveruri = NbPreferences.forModule(MGXserverPanel.class).get("serveruri", "http://azteca.cebitec.uni-bielefeld.de:8080/MGX-maven-web/webresources/");
-        if ("".equals(serveruri)) {
+        if ("".equals(gpmsClient.getBaseURI())) {
             dialog.setClosingOptions(new Object[]{DialogDescriptor.CANCEL_OPTION});
             nline.setErrorMessage("No server configured!");
             dialog.setValid(false);
         } else {
-            nline.setInformationMessage("Current server is " + servername);
+            nline.setInformationMessage("Current server is " + gpmsClient.getServerName());
         }
 
         DialogDisplayer.getDefault().notify(dialog);
     }
 
-    private boolean checkVersion() {
+    private static boolean checkVersion() {
         String version = System.getProperty("java.version");
         float ver = Float.valueOf(version.substring(0, 3));
         if (ver < 1.7) {
-            String msg = "Your Java runtime version ("+version+") is too old. MGX requires at least Java 7.";
-            NotifyDescriptor nd = new NotifyDescriptor(msg, "Java too old", 
+            String msg = "Your Java runtime version (" + version + ") is too old. MGX requires at least Java 7.";
+            NotifyDescriptor nd = new NotifyDescriptor(msg, "Java too old",
                     NotifyDescriptor.OK_CANCEL_OPTION, NotifyDescriptor.ERROR_MESSAGE, null, null);
             DialogDisplayer.getDefault().notify(nd);
             return false;
@@ -98,22 +87,31 @@ public class LoginHandler implements ActionListener {
             String user = panel.getUser();
             String password = panel.getPassword();
             NbPreferences.forModule(MGXserverPanel.class).put("lastLogin", user);
-            final GPMSClient gpms = new GPMSClient(servername, serveruri);
+            final GPMSClientI gpms = Utilities.actionsGlobalContext().lookup(GPMSClientI.class);
             try {
                 panel.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-                if (gpms.login(user, password)) {
+
+                boolean loggedIn = false;
+                String errorMsg = "";
+                try {
+                    loggedIn = gpms.login(user, password);
+                } catch (GPMSException ex) {
+                    loggedIn = false;
+                    errorMsg = ex.getMessage();
+                }
+                if (loggedIn) {
                     dialog.setClosingOptions(new Object[]{DialogDescriptor.CANCEL_OPTION, DialogDescriptor.OK_OPTION});
                     EventQueue.invokeLater(new Runnable() {
                         @Override
                         public void run() {
-                            LoginState.getInstance().disable();
-                            openProjectExplorer(gpms);
+//                            LoginState.getInstance().disable();
+//                            openProjectExplorer(gpms);
                             startPing(gpms);
                         }
                     });
                 } else {
                     dialog.setClosingOptions(new Object[]{DialogDescriptor.CANCEL_OPTION});
-                    nline.setErrorMessage("Login failed: " + gpms.getError());
+                    nline.setErrorMessage("Login failed: " + errorMsg);
                 }
             } finally {
                 panel.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
@@ -121,37 +119,22 @@ public class LoginHandler implements ActionListener {
         }
     }
 
-    private static void openProjectExplorer(final GPMSClientI gpms) {
-        ProjectExplorerTopComponent pe = new ProjectExplorerTopComponent();
-        pe.setVisible(true);
-        pe.setGPMS(gpms);
-
-        Mode m = WindowManager.getDefault().findMode("explorer");
-        if (m != null) {
-            m.dockInto(pe);
-        } else {
-            System.err.println("explorer mode not found");
-        }
-        pe.open();
-        pe.requestActive();
-    }
-
-    private static void startPing(final GPMSClient gpms) {
+    private static void startPing(final GPMSClientI gpmsClient) {
         Thread t = new Thread(new Runnable() {
             private int refresh = -1;
             private long rtt = 0;
 
             @Override
             public void run() {
-                while (LoginState.getInstance().loggedIn()) {
+                while (gpmsClient.loggedIn()) {
                     refresh++;
                     if (refresh == 30) {
                         refresh = 0;
                         long now = System.currentTimeMillis();
-                        long serverTime = gpms.ping();
+                        long serverTime = gpmsClient.ping();
                         rtt = System.currentTimeMillis() - now;
-                    } 
-                    StatusDisplayer.getDefault().setStatusText("Connected to " + gpms.getServerName() + " " + rtt + " ms RTT");
+                    }
+                    StatusDisplayer.getDefault().setStatusText("Connected to " + gpmsClient.getServerName() + " " + rtt + " ms RTT");
                     try {
                         Thread.sleep(2500);
                     } catch (InterruptedException ex) {
@@ -160,7 +143,7 @@ public class LoginHandler implements ActionListener {
                 StatusDisplayer.getDefault().setStatusText("");
             }
         });
-        t.setName("Ping-" + gpms.getServerName());
+        t.setName("Ping-" + gpmsClient.getServerName());
         t.setDaemon(true);
         t.start();
     }
