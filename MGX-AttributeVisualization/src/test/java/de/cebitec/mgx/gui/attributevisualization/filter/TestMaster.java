@@ -36,8 +36,10 @@ public class TestMaster {
             }
         }
         GPMSClientI gpms = new GPMSClient("MyServer", serverURI);
-        if (!gpms.login("mgx_unittest", "gut-isM5iNt")) {
-            fail();
+        try {
+            gpms.login("mgx_unittest", "gut-isM5iNt");
+        } catch (GPMSException ex) {
+            fail(ex.getMessage());
         }
         Iterator<MembershipI> mIter = null;
         try {

@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Properties;
 import static org.junit.Assert.fail;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -41,8 +42,10 @@ public class TestMaster {
             }
         }
         GPMSClientI gpms = new GPMSClient("MyServer", serverURI);
-        if (!gpms.login("mgx_unittestRO", "gut-isM5iNt")) {
-            fail();
+        try {
+            gpms.login("mgx_unittestRO", "gut-isM5iNt");
+        } catch (GPMSException ex) {
+            fail(ex.getMessage());
         }
         Iterator<MembershipI> mIter = null;
         try {
@@ -80,8 +83,10 @@ public class TestMaster {
             }
         }
         GPMSClientI gpms = new GPMSClient("MyServer", serverURI);
-        if (!gpms.login("mgx_unittestRW", "hL0amo3oLae")) {
-            return null;
+        try {
+            gpms.login("mgx_unittestRW", "hL0amo3oLae");
+        } catch (GPMSException ex) {
+            fail(ex.getMessage());
         }
         Iterator<MembershipI> mIter = null;
         try {
