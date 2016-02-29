@@ -64,6 +64,8 @@ public final class AttributeVisualizationTopComponent extends TopComponent {
         associateLookup(lookup);
         controlPanel1.setTopComponent(this);
         jSplitPane1.setRightComponent(controlPanel1);
+        //
+        chartpane.getVerticalScrollBar().setUnitIncrement(16);
     }
 
     /**
