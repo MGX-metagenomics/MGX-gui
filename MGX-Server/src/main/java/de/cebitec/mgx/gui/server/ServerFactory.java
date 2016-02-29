@@ -10,6 +10,8 @@ import de.cebitec.mgx.restgpms.GPMSClient;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import org.openide.util.NbPreferences;
 
@@ -39,6 +41,12 @@ public class ServerFactory {
             data.add(new GPMSClient("CeBiTec", "https://mgx.cebitec.uni-bielefeld.de/MGX-maven-web/webresources/"));
             data.add(new GPMSClient("JLU", "https://mgx.computational.bio.uni-giessen.de/MGX-maven-web/webresources/"));
         }
+        Collections.sort(data, new Comparator<GPMSClientI>(){
+            @Override
+            public int compare(GPMSClientI o1, GPMSClientI o2) {
+                return o1.getServerName().compareTo(o2.getServerName());
+            }
+        });
     }
 
     private final static ServerFactory instance = new ServerFactory();
@@ -60,7 +68,7 @@ public class ServerFactory {
                     throw new RuntimeException("A server named " + client.getServerName() + " is already configured.");
                 }
                 if (c.getBaseURI().equals(client.getBaseURI())) {
-                    throw new RuntimeException("This server is already present as " + c.getServerName());
+                    throw new RuntimeException("This server is already present as " + c.getServerName() + ".");
                 }
             }
             int i = 0;
