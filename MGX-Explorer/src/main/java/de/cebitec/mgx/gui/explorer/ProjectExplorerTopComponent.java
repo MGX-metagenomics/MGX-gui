@@ -4,6 +4,8 @@ import de.cebitec.gpms.rest.GPMSClientI;
 import de.cebitec.mgx.gui.nodefactory.ServerNodeFactory;
 import de.cebitec.mgx.gui.nodes.ServerNode;
 import java.awt.BorderLayout;
+import java.awt.EventQueue;
+import java.beans.PropertyVetoException;
 import java.net.Authenticator;
 import java.util.List;
 import javax.swing.SwingWorker;
@@ -15,6 +17,7 @@ import org.openide.explorer.view.BeanTreeView;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
+import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
@@ -40,7 +43,6 @@ public final class ProjectExplorerTopComponent extends TopComponent implements E
         btv.setRootVisible(false);
         this.setLayout(new BorderLayout());
         this.add(btv, BorderLayout.CENTER);
-//        initComponents();
         setName(NbBundle.getMessage(ProjectExplorerTopComponent.class, "CTL_ProjectExplorerTopComponent"));
         setToolTipText(NbBundle.getMessage(ProjectExplorerTopComponent.class, "HINT_ProjectExplorerTopComponent"));
         putClientProperty(TopComponent.PROP_DRAGGING_DISABLED, Boolean.TRUE);
@@ -54,12 +56,6 @@ public final class ProjectExplorerTopComponent extends TopComponent implements E
         setUp();
     }
 
-//    private void initComponents() {
-//        btv = new BeanTreeView();
-//        btv.setRootVisible(false);
-//        setLayout(new BorderLayout());
-//        add(btv, BorderLayout.CENTER);
-//    }
     @Override
     public void componentOpened() {
     }
@@ -96,6 +92,21 @@ public final class ProjectExplorerTopComponent extends TopComponent implements E
         Authenticator.setDefault(null);
         final AbstractNode root = new InvisibleRoot(Children.create(new ServerNodeFactory(), false));
         exmngr.setRootContext(root); 
+        Node firstServer = root.getChildren().getNodeAt(0);
+        if (firstServer != null) {
+            try {
+                exmngr.setSelectedNodes(new Node[]{firstServer});
+                EventQueue.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        // needs to be invoked later (or it doesn't work)
+                        requestActive();
+                    }
+                });
+            } catch (PropertyVetoException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+        }
 //        SwingWorker<Void, Node> sw = new SwingWorker<Void, Node>() {
 //            @Override
 //            protected Void doInBackground() throws Exception {
