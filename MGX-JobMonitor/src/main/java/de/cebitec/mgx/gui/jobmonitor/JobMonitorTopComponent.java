@@ -11,6 +11,7 @@ import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import javax.swing.JPopupMenu;
@@ -54,7 +55,7 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
     private final Lookup.Result<SeqRunI> resultSeqRun;
     private final Lookup.Result<JobI> resultJobs;
     private MGXMasterI currentMaster = null;
-    private Set<SeqRunI> currentSeqRuns = new HashSet<>();
+    private Set<SeqRunI> currentSeqRuns = Collections.<SeqRunI>synchronizedSet(new HashSet<SeqRunI>());
     private transient ExplorerManager explorerManager = new ExplorerManager();
     private final static int MASTER_MODE = 1;
     private final static int SEQRUN_MODE = 2;
