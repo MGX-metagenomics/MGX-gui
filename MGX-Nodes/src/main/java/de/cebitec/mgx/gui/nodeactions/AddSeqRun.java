@@ -70,10 +70,9 @@ public class AddSeqRun extends AbstractAction {
                     String canonicalPath;
                     SeqReaderI<? extends DNASequenceI> reader;
                     try {
-                        canonicalPath = iterator.getSequenceFile().getCanonicalPath();
+                        canonicalPath = iterator.getForwardFile().getCanonicalPath();
                         if (iterator.isPairedEnd()) {
-                            List<File> files = iterator.getSequenceFiles();
-                            reader = new PairedEndOverlap(files.get(0).getCanonicalPath(), false, files.get(1).getCanonicalPath(), false,
+                            reader = new PairedEndOverlap(canonicalPath, false, iterator.getReverseFile().getCanonicalPath(), false,
                                         iterator.getQualityThreshold(), iterator.getMinimalOverlap(), iterator.getMaximalMismatches());                            
                         } else {                            
                             reader = SeqReaderFactory.<DNASequenceI>getReader(canonicalPath);

@@ -11,15 +11,17 @@ import org.openide.util.NbPreferences;
 
 public final class SeqRunVisualPanel2 extends JPanel {
 
-    public static final String PROP_SEQFILE = "seqfile";
+    public static final String PROP_FORWARD = "seqfile_forward";
+    public static final String PROP_REVERSE = "seqfile_reverse";
     private File file = null;
     private String header;
+    private boolean forward;
 
     /**
      * Creates new form SeqRunVisualPanel2
      * @param header String for the header of the panel
      */
-    public SeqRunVisualPanel2(String header) {
+    public SeqRunVisualPanel2(String header, boolean seqfileForward) {
         initComponents();
         String last = NbPreferences.forModule(JFileChooser.class).get("lastDirectory", null);
         if (last != null) {
@@ -35,22 +37,35 @@ public final class SeqRunVisualPanel2 extends JPanel {
         fchooser.addChoosableFileFilter(new SuffixFilter(FileType.FASTQGZ));
         fchooser.addChoosableFileFilter(new SuffixFilter(FileType.SFF));
 
-        fchooser.addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                if ("SelectedFileChangedProperty".equals(evt.getPropertyName())) {
-                    NbPreferences.forModule(JFileChooser.class).put("lastDirectory", fchooser.getCurrentDirectory().getAbsolutePath().toString());
-                    file = fchooser.getSelectedFile();
-                    firePropertyChange(PROP_SEQFILE, 0, 1);
-                }
-            }
-        });
-        
         this.header = header;
+        this.forward = seqfileForward;
+        
+        if (forward)
+            fchooser.addPropertyChangeListener(new PropertyChangeListener() {
+                @Override
+                public void propertyChange(PropertyChangeEvent evt) {
+                    if ("SelectedFileChangedProperty".equals(evt.getPropertyName())) {
+                        NbPreferences.forModule(JFileChooser.class).put("lastDirectory", fchooser.getCurrentDirectory().getAbsolutePath().toString());
+                        file = fchooser.getSelectedFile();
+                        firePropertyChange(PROP_FORWARD, 0, 1);
+                    }
+                }
+            });
+        else
+            fchooser.addPropertyChangeListener(new PropertyChangeListener() {
+                @Override
+                public void propertyChange(PropertyChangeEvent evt) {
+                    if ("SelectedFileChangedProperty".equals(evt.getPropertyName())) {
+                        NbPreferences.forModule(JFileChooser.class).put("lastDirectory", fchooser.getCurrentDirectory().getAbsolutePath().toString());
+                        file = fchooser.getSelectedFile();
+                        firePropertyChange(PROP_REVERSE, 0, 1);
+                    }
+                }
+            });        
     }
 
     public SeqRunVisualPanel2() {
-        this("Select sequence data");
+        this("Select sequence data", true);
     }
     
     @Override
@@ -58,12 +73,17 @@ public final class SeqRunVisualPanel2 extends JPanel {
         return header;
     }
     
+    @Override
     public void setName(String header) {
         this.header = header;
     }
 
     public File getSelectedFile() {
         return file;
+    }
+    
+    public boolean isForward(){
+        return forward;
     }
 
     /**

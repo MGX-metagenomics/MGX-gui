@@ -74,10 +74,15 @@ public final class SeqRunVisualPanel3 extends JPanel {
 
         org.openide.awt.Mnemonics.setLocalizedText(maximalMismatchesLabel, org.openide.util.NbBundle.getMessage(SeqRunVisualPanel3.class, "SeqRunVisualPanel3.maximalMismatchesLabel.text")); // NOI18N
 
+        qualityThresholdSlider.setMaximum(60);
+        qualityThresholdSlider.setValue(20);
         qualityThresholdSlider.setName("qualityThresholdSlider"); // NOI18N
 
+        minimalOverlapSlider.setValue(10);
         minimalOverlapSlider.setName("minimalOverlapSlider"); // NOI18N
 
+        maximalMismatchesSlider.setMaximum(20);
+        maximalMismatchesSlider.setValue(5);
         maximalMismatchesSlider.setName("maximalMismatchesSlider"); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);

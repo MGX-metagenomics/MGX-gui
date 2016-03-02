@@ -154,13 +154,13 @@ public class SeqRunWizardPanel1 implements WizardDescriptor.Panel<WizardDescript
 
     private boolean checkDuplicate(String name) {
         boolean alreadyExists = false;
-        if (model.getProperty(SeqRunWizardDescriptor.INVOCATION_MODE).equals(SeqRunWizardDescriptor.CREATE_MODE)) {
+        if (model.getProperty(SeqRunWizardIterator.INVOCATION_MODE).equals(SeqRunWizardIterator.CREATE_MODE)) {
             for (SeqRunI seqrun : allRuns) {
                 if (seqrun.getName().equals(name)) {
                     alreadyExists = true;
                 }
             }
-        } else if(model.getProperty(SeqRunWizardDescriptor.INVOCATION_MODE).equals(SeqRunWizardDescriptor.EDIT_MODE)){
+        } else if(model.getProperty(SeqRunWizardIterator.INVOCATION_MODE).equals(SeqRunWizardIterator.EDIT_MODE)){
             for (SeqRunI seqrun : allRuns) {
                 if (seqrun.getName().equals(name) && !seqrun.getName().equals(model.getProperty(SeqRunVisualPanel1.PROP_NAME))) {
                     alreadyExists = true;

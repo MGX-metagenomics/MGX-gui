@@ -1,15 +1,10 @@
 package de.cebitec.mgx.gui.wizard.seqrun;
 
-import de.cebitec.mgx.gui.wizard.analysis.*;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.TermAccessI;
 import de.cebitec.mgx.api.exception.MGXException;
-import de.cebitec.mgx.api.model.JobParameterI;
-import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.TermI;
-import de.cebitec.mgx.api.model.ToolI;
-import static de.cebitec.mgx.gui.wizard.seqrun.SeqRunWizardDescriptor.EDIT_MODE;
 import java.awt.Component;
 import java.io.File;
 import java.text.MessageFormat;
@@ -74,8 +69,12 @@ public final class SeqRunWizardIterator implements WizardDescriptor.Iterator<Wiz
         wd.setTitle("Sequencing run wizard");
         createPanels();
         setData();
-        if (seqrun != null)
+        if (seqrun != null){
+            this.wd.putProperty(INVOCATION_MODE, EDIT_MODE);
             loadData();
+        } else {
+            this.wd.putProperty(INVOCATION_MODE, CREATE_MODE);
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -84,10 +83,10 @@ public final class SeqRunWizardIterator implements WizardDescriptor.Iterator<Wiz
         if (allPanels == null){
             allPanels = new WizardDescriptor.Panel[]{
                 new SeqRunWizardPanel1(),
-                new SeqRunWizardPanel2(),
+                new SeqRunWizardPanel2("Select sequence data", true),
                 new SeqRunWizardPanel3(),
-                new SeqRunWizardPanel2(),
-                new SeqRunWizardPanel2()
+                new SeqRunWizardPanel2("Select forward sequence data", true),
+                new SeqRunWizardPanel2("Select reverse sequence data", false)
             };
             
             String[] steps = new String[allPanels.length];
@@ -266,12 +265,12 @@ public final class SeqRunWizardIterator implements WizardDescriptor.Iterator<Wiz
         return seqrun;
     }
 
-    public File getSequenceFile() {
-        return ((List<File>) wd.getProperty(SeqRunVisualPanel2.PROP_SEQFILE)).get(0);
+    public File getForwardFile() {
+        return (File)wd.getProperty(SeqRunVisualPanel2.PROP_FORWARD);
     }    
     
-    public List<File> getSequenceFiles() {
-        return (List<File>) wd.getProperty(SeqRunVisualPanel2.PROP_SEQFILE);
+    public File getReverseFile() {
+        return (File)wd.getProperty(SeqRunVisualPanel2.PROP_REVERSE);
     }
     
     public boolean isPairedEnd(){

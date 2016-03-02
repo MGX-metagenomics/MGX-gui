@@ -22,11 +22,24 @@ public class SeqRunWizardPanel2 implements WizardDescriptor.Panel<WizardDescript
     private WizardDescriptor model = null;
     private boolean isValid = true;
     private final EventListenerList listeners = new EventListenerList();
+    private String header = null;
+    private boolean forward = true;
 
+    public SeqRunWizardPanel2(){};
+    
+    public SeqRunWizardPanel2(String name, boolean seqfileForward){
+        header = name;
+        this.forward = seqfileForward;
+    };
+    
     @Override
     public SeqRunVisualPanel2 getComponent() {
         if (component == null) {
-            component = new SeqRunVisualPanel2();
+            if (header != null)
+                component = new SeqRunVisualPanel2(header, forward);
+            else
+                component = new SeqRunVisualPanel2();
+            
             component.putClientProperty(WizardDescriptor.PROP_AUTO_WIZARD_STYLE, Boolean.TRUE);
             component.putClientProperty(WizardDescriptor.PROP_CONTENT_DISPLAYED, Boolean.TRUE);
             component.putClientProperty(WizardDescriptor.PROP_CONTENT_NUMBERED, Boolean.TRUE);
@@ -76,14 +89,14 @@ public class SeqRunWizardPanel2 implements WizardDescriptor.Panel<WizardDescript
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void storeSettings(WizardDescriptor settings) {
         model = settings;
         SeqRunVisualPanel2 c = getComponent();
-        List<File> list = (List)model.getProperty(SeqRunVisualPanel2.PROP_SEQFILE);
-        if (list == null)
-            list = new ArrayList<>();
-        list.add(c.getSelectedFile());
-        model.putProperty(SeqRunVisualPanel2.PROP_SEQFILE, list);
+        if (forward)
+            model.putProperty(SeqRunVisualPanel2.PROP_FORWARD, c.getSelectedFile());
+        else
+            model.putProperty(SeqRunVisualPanel2.PROP_REVERSE, c.getSelectedFile());
     }
 
     @Override
