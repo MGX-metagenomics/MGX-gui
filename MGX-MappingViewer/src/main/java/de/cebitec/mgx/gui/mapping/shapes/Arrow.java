@@ -158,7 +158,10 @@ public class Arrow implements Shape {
     }
 
     public String getToolTipText() {
-        return "<html><b>" + region.getName() + "</b><hr>"
+        String type = region.getType() != null 
+                ? region.getType() + ": " 
+                : "";
+        return "<html><b>" + type + region.getName() + "</b><hr>"
                 + "Location: " + region.getStart() + "-"+ region.getStop() + "<br>"
                 + "Frame: " + region.getFrame() + "<br><br>"
                 + region.getDescription() + "</html>";
