@@ -11,6 +11,7 @@ public class Region extends RegionI {
     protected long reference_id;
     private String name;
     private String description;
+    private String type;
 
     public Region(int start, int stop) {
         super(start, stop);
@@ -34,6 +35,14 @@ public class Region extends RegionI {
     @Override
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     @Override
