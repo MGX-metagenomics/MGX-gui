@@ -19,8 +19,7 @@ public class SeqRunWizardPanel3 implements WizardDescriptor.Panel<WizardDescript
     private SeqRunVisualPanel3 component;
     private WizardDescriptor model = null;
     private boolean isValid = true;
-    private final EventListenerList listeners = new EventListenerList();
-    private Collection<SeqRunI> allRuns;
+    private final EventListenerList listeners = new EventListenerList();    
 
     @Override
     public SeqRunVisualPanel3 getComponent() {
@@ -69,7 +68,7 @@ public class SeqRunWizardPanel3 implements WizardDescriptor.Panel<WizardDescript
         SeqRunVisualPanel3 c = getComponent();
         c.setQualityThreshold((int) model.getProperty(SeqRunVisualPanel3.PROP_QTHRESHOLD));
         c.setMinimalOverlap((int) model.getProperty(SeqRunVisualPanel3.PROP_MINOVERLAP));
-        c.setMaximalMismatches((int) model.getProperty(SeqRunVisualPanel3.PROP_MAXMISMATCHES));
+        c.setMaximalMismatches((float) model.getProperty(SeqRunVisualPanel3.PROP_MAXMISMATCHES));
     }
 
     @Override

@@ -37,8 +37,8 @@ public final class SeqRunVisualPanel3 extends JPanel {
         return minimalOverlapSlider.getValue();
     }
     
-    public int getMaximalMismatches() {
-        return maximalMismatchesSlider.getValue();
+    public float getMaximalMismatches() {
+        return maximalMismatchesSlider.getValue() / 100f;
     }
 
     public void setQualityThreshold(int qt) {
@@ -49,8 +49,8 @@ public final class SeqRunVisualPanel3 extends JPanel {
         minimalOverlapSlider.setValue(mo);
     }
     
-    public void setMaximalMismatches(int mm) {
-        maximalMismatchesSlider.setValue(mm);
+    public void setMaximalMismatches(float mm) {
+        maximalMismatchesSlider.setValue((int) (mm * 100));
     }
     
     /**
@@ -81,7 +81,6 @@ public final class SeqRunVisualPanel3 extends JPanel {
         minimalOverlapSlider.setValue(10);
         minimalOverlapSlider.setName("minimalOverlapSlider"); // NOI18N
 
-        maximalMismatchesSlider.setMaximum(20);
         maximalMismatchesSlider.setValue(5);
         maximalMismatchesSlider.setName("maximalMismatchesSlider"); // NOI18N
 
@@ -94,8 +93,9 @@ public final class SeqRunVisualPanel3 extends JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(maximalMismatchesLabel)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 46, Short.MAX_VALUE)
-                        .addComponent(maximalMismatchesSlider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(maximalMismatchesSlider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(minimalOverlapLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -117,14 +117,11 @@ public final class SeqRunVisualPanel3 extends JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(minimalOverlapLabel)
                     .addComponent(minimalOverlapSlider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(7, 7, 7)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(7, 7, 7)
-                        .addComponent(maximalMismatchesLabel))
-                    .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(maximalMismatchesSlider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(182, Short.MAX_VALUE))
+                    .addComponent(maximalMismatchesLabel)
+                    .addComponent(maximalMismatchesSlider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(187, Short.MAX_VALUE))
         );
 
         qualityThresholdSlider.getAccessibleContext().setAccessibleName(org.openide.util.NbBundle.getMessage(SeqRunVisualPanel3.class, "SeqRunVisualPanel3.qualityThresholdSlider.AccessibleContext.accessibleName")); // NOI18N
