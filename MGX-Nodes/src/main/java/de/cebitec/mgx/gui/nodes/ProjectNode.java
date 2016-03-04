@@ -30,7 +30,7 @@ public class ProjectNode extends MGXNodeBase<MGXMasterI> {
 
     @Override
     public boolean canDestroy() {
-        return false;
+        return true;
     }
 
     @Override

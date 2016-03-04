@@ -141,6 +141,14 @@ public class MGXMaster extends MGXMasterI implements PropertyChangeListener {
             case ModelBaseI.OBJECT_DELETED:
                 dtomaster.removePropertyChangeListener(this);
                 deleted();
+                break;
+            case MGXDTOMaster.PROP_LOGGEDIN:
+                Boolean isLoggedIn = (Boolean) evt.getNewValue();
+                if (!isLoggedIn) {
+                    dtomaster.removePropertyChangeListener(this);
+                    deleted();
+                }
+                break;
             default:
                 System.err.println("MGXMaster received event " + evt);
         }

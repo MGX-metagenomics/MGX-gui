@@ -4,7 +4,6 @@
  */
 package de.cebitec.mgx.gui.login.configuration;
 
-import de.cebitec.mgx.pevents.ParallelPropertyChangeSupport;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import javax.swing.JComponent;
@@ -19,7 +18,7 @@ keywordsCategory = "MGXserver")
 public final class MGXserverOptionsPanelController extends OptionsPanelController {
 
     private MGXserverPanel panel;
-    private final PropertyChangeSupport pcs = new ParallelPropertyChangeSupport(this);
+    private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
     private boolean changed;
 
     @Override

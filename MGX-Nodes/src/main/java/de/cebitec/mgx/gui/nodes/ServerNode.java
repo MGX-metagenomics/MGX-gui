@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.nodes;
 
 import de.cebitec.gpms.core.UserI;
 import de.cebitec.gpms.rest.GPMSClientI;
+import de.cebitec.mgx.gui.nodeactions.DisconnectAction;
 import de.cebitec.mgx.gui.nodefactory.ProjectNodeFactory;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -22,20 +23,24 @@ public class ServerNode extends AbstractNode implements PropertyChangeListener {
     public ServerNode(GPMSClientI client) {
         super(Children.create(new ProjectNodeFactory(client), true), Lookups.singleton(client));
         this.gpmsclient = client;
-        this.setDisplayName(client.getServerName());
+        
+        setDisplayName(gpmsclient.getServerName());
+        setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/Server.png");
+        
         UserI user = gpmsclient.getUser();
         if (user != null) {
-            this.setShortDescription(client.getServerName() + " (Connected as " + gpmsclient.getUser().getLogin() + ")");
+            setShortDescription(gpmsclient.getServerName() + " (Connected as " + gpmsclient.getUser().getLogin() + ")");
+        } else {
+            setShortDescription(gpmsclient.getServerName() + " (Not connected)");
         }
 
         gpmsclient.addPropertyChangeListener(this);
 
-        setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/Server.png");
     }
 
     @Override
     public Action[] getActions(boolean popup) {
-        return new Action[0]; // disables context menu
+        return new Action[]{new DisconnectAction()};
     }
 
     @Override
