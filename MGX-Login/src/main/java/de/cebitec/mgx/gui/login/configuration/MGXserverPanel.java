@@ -11,14 +11,15 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.AbstractListModel;
-import javax.swing.JLabel;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
-import javax.swing.ListCellRenderer;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import org.openide.DialogDisplayer;
+import org.openide.NotifyDescriptor;
 import org.openide.util.NbPreferences;
 
 public class MGXserverPanel extends javax.swing.JPanel implements DocumentListener {
@@ -56,8 +57,13 @@ public class MGXserverPanel extends javax.swing.JPanel implements DocumentListen
             @Override
             public void actionPerformed(ActionEvent e) {
                 GPMSClientI cli = new GPMSClient(site.getText().trim(), server.getText().trim());
-                ServerFactory.getDefault().addServer(cli);
-                serverListModel.add(cli);
+                try {
+                    ServerFactory.getDefault().addServer(cli);
+                    serverListModel.add(cli);
+                } catch (RuntimeException rte) {
+                    NotifyDescriptor.Message msg = new NotifyDescriptor.Message(rte.getMessage(), NotifyDescriptor.ERROR_MESSAGE);
+                    DialogDisplayer.getDefault().notify(msg);
+                }
             }
         });
 
@@ -262,19 +268,11 @@ public class MGXserverPanel extends javax.swing.JPanel implements DocumentListen
 
     }
 
-    public class ServerListCellRenderer extends JLabel implements ListCellRenderer<GPMSClientI> {
+    private final class ServerListCellRenderer extends DefaultListCellRenderer {
 
         @Override
-        public Component getListCellRendererComponent(JList list, GPMSClientI value, int index, boolean isSelected, boolean cellHasFocus) {
-            this.setText(value.getServerName());
-            if (isSelected) {
-                setBackground(list.getSelectionBackground());
-                setForeground(list.getSelectionForeground());
-            } else {
-                setBackground(list.getBackground());
-                setForeground(list.getForeground());
-            }
-            return this;
+        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+            return super.getListCellRendererComponent(list, ((GPMSClientI) value).getServerName(), index, isSelected, cellHasFocus);
         }
     }
 }

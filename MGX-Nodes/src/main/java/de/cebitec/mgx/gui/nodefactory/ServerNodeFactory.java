@@ -5,6 +5,8 @@ import de.cebitec.mgx.gui.nodes.ServerNode;
 import de.cebitec.mgx.gui.server.ServerFactory;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import org.openide.nodes.ChildFactory;
 import org.openide.nodes.Node;
@@ -16,6 +18,10 @@ import org.openide.nodes.Node;
 public class ServerNodeFactory extends ChildFactory<GPMSClientI> {
 
     public ServerNodeFactory() {
+        /*
+         *  listen on server factory to get notified of servers being added
+         *  or removed
+         */
         ServerFactory.getDefault().addPropertyChangeListener(new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
@@ -32,6 +38,13 @@ public class ServerNodeFactory extends ChildFactory<GPMSClientI> {
         for (GPMSClientI gc : servers) {
             toPopulate.add(gc);
         }
+        Collections.sort(servers, new Comparator<GPMSClientI>(){
+            @Override
+            public int compare(GPMSClientI o1, GPMSClientI o2) {
+                return o1.getServerName().compareTo(o2.getServerName());
+            }
+            
+        });
         return true;
     }
 

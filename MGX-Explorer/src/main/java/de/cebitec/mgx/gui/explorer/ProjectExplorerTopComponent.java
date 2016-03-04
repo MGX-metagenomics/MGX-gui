@@ -1,14 +1,10 @@
 package de.cebitec.mgx.gui.explorer;
 
-import de.cebitec.gpms.rest.GPMSClientI;
 import de.cebitec.mgx.gui.nodefactory.ServerNodeFactory;
-import de.cebitec.mgx.gui.nodes.ServerNode;
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.beans.PropertyVetoException;
 import java.net.Authenticator;
-import java.util.List;
-import javax.swing.SwingWorker;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.explorer.ExplorerManager;
@@ -90,8 +86,19 @@ public final class ProjectExplorerTopComponent extends TopComponent implements E
     private void setUp() {
         // set default authenticator to null to avoid NB-integrated password dialog
         Authenticator.setDefault(null);
+
         final AbstractNode root = new InvisibleRoot(Children.create(new ServerNodeFactory(), false));
-        exmngr.setRootContext(root); 
+        exmngr.setRootContext(root);
+
+//        ServerFactory.getDefault().addPropertyChangeListener(new PropertyChangeListener() {
+//            @Override
+//            public void propertyChange(PropertyChangeEvent evt) {
+//                if (evt.getSource() instanceof ServerFactory && evt.getPropertyName().equals(ServerFactory.PROP_CHANGED)) {
+//                    ServerFactory.getDefault().
+//                }
+//            }
+//        });
+
         Node firstServer = root.getChildren().getNodeAt(0);
         if (firstServer != null) {
             try {
@@ -104,7 +111,7 @@ public final class ProjectExplorerTopComponent extends TopComponent implements E
                     }
                 });
             } catch (PropertyVetoException ex) {
-                Exceptions.printStackTrace(ex);
+                // ignore
             }
         }
 //        SwingWorker<Void, Node> sw = new SwingWorker<Void, Node>() {
@@ -127,12 +134,12 @@ public final class ProjectExplorerTopComponent extends TopComponent implements E
 //        };
 //        sw.execute();
     }
-    
+
     private class InvisibleRoot extends AbstractNode {
 
         public InvisibleRoot(Children children) {
             super(children);
         }
-        
+
     }
 }

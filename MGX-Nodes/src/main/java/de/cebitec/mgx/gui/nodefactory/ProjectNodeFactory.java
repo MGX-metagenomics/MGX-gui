@@ -75,14 +75,13 @@ public class ProjectNodeFactory extends ChildFactory<MembershipI> implements Nod
 
     @Override
     public void nodeDestroyed(NodeEvent ev) {
-        this.refresh(true);
+        refresh(true);
     }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        //this.refresh(true);
         if (evt.getSource().equals(gpmsclient) && GPMSClientI.PROP_LOGGEDIN.equals(evt.getPropertyName())) {
-            this.refresh(true);
+            refresh(true);
         }
     }
 }
