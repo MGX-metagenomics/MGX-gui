@@ -24,17 +24,11 @@ import de.cebitec.mgx.dto.dto.ProfileDTO;
 import de.cebitec.mgx.gui.dtoconversion.PCAResultDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.PointDTOFactory;
 import de.cebitec.mgx.gui.util.BaseIterator;
-import de.cebitec.mgx.newick.NewickParser;
-import de.cebitec.mgx.newick.NodeI;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
@@ -66,43 +60,43 @@ public class StatisticsAccess implements StatisticsAccessI {
             throw new MGXException(ex);
         }
     }
-    
 
     @Override
     public String Clustering(Collection<Pair<VisualizationGroupI, DistributionI<Double>>> dists, String distanceMethod, String agglomeration) throws MGXException {
-        // map to hold obfuscated group name mapping
-        Map<String, UUID> tmpNames = new HashMap<>();
-        MGXMatrixDTO matrix = buildMatrix(dists, tmpNames, false);
+        MGXMatrixDTO matrix = buildMatrix(dists, false);
 
-        String nwk = null;
         try {
-            nwk = dtomaster.Statistics().Clustering(matrix, distanceMethod, agglomeration);
+            String nwk = dtomaster.Statistics().Clustering(matrix, distanceMethod, agglomeration);
 
-            // de-obfuscate group names
-            for (Entry<String, UUID> e : tmpNames.entrySet()) {
-                nwk = nwk.replace(e.getValue().toString(), e.getKey());
+            for (Pair<VisualizationGroupI, DistributionI<Double>> pair : dists) {
+                VisualizationGroupI vGrp = pair.getFirst();
+                nwk = nwk.replaceFirst(vGrp.getUUID().toString(), vGrp.getName());
             }
-            return nwk; // NewickParser.parse(nwk);
+
+            //NodeI newickRoot = NewickParser.parse(nwk);
+            return nwk;
         } catch (MGXServerException | MGXClientException ex) {
             throw new MGXException(ex);
         }
-        //NodeI root = NewickParser.parse(nwk);
-        
     }
 
     @Override
     public PCAResultI PCA(Collection<Pair<VisualizationGroupI, DistributionI<Double>>> groups, PrincipalComponent pc1, PrincipalComponent pc2) throws MGXException {
 
-        // map to hold obfuscated group name mapping
-        Map<String, UUID> tmpNames = new HashMap<>();
-        MGXMatrixDTO matrix = buildMatrix(groups, tmpNames, true);
+        MGXMatrixDTO matrix = buildMatrix(groups, true);
 
         try {
             PCAResultDTO ret = dtomaster.Statistics().PCA(matrix, pc1.getValue(), pc2.getValue());
             PCAResultI pca = PCAResultDTOFactory.getInstance().toModel(master, ret);
-            // de-obfuscate group names
+
+            // replace group uuids by group names
             for (Point p : pca.getDatapoints()) {
-                p.setName(tmpNames.get(p.getName()).toString());
+                for (Pair<VisualizationGroupI, DistributionI<Double>> pair : groups) {
+                    if (pair.getFirst().getUUID().toString().equals(p.getName())) {
+                        p.setName(pair.getFirst().getName());
+                        break;
+                    }
+                }
             }
             return pca;
         } catch (MGXServerException | MGXClientException ex) {
@@ -113,16 +107,21 @@ public class StatisticsAccess implements StatisticsAccessI {
     @Override
     public List<Point> PCoA(Collection<Pair<VisualizationGroupI, DistributionI<Double>>> groups) throws MGXException {
 
-        // map to hold obfuscated group name mapping
-        Map<String, UUID> tmpNames = new HashMap<>();
-        MGXMatrixDTO matrix = buildMatrix(groups, tmpNames, true);
+        MGXMatrixDTO matrix = buildMatrix(groups, true);
 
         List<Point> pcoa = new LinkedList<>();
         try {
             PointDTOList ret = dtomaster.Statistics().PCoA(matrix);
             for (PointDTO pdto : ret.getPointList()) {
                 Point p = PointDTOFactory.getInstance().toModel(master, pdto);
-                p.setName(tmpNames.get(p.getName()).toString()); // de-obfuscate group name
+
+                // replace group uuids by group names
+                for (Pair<VisualizationGroupI, DistributionI<Double>> pair : groups) {
+                    if (pair.getFirst().getUUID().toString().equals(p.getName())) {
+                        p.setName(pair.getFirst().getName());
+                        break;
+                    }
+                }
                 pcoa.add(p);
             }
             return pcoa;
@@ -131,7 +130,7 @@ public class StatisticsAccess implements StatisticsAccessI {
         }
     }
 
-    private static <T extends Number> MGXMatrixDTO buildMatrix(Collection<Pair<VisualizationGroupI, DistributionI<T>>> groups, Map<String, UUID> tmpNames, boolean includeColNames) {
+    private static <T extends Number> MGXMatrixDTO buildMatrix(Collection<Pair<VisualizationGroupI, DistributionI<T>>> groups, boolean includeColNames) {
         MGXMatrixDTO.Builder b = MGXMatrixDTO.newBuilder();
 
         // collect all attributes first
@@ -151,11 +150,9 @@ public class StatisticsAccess implements StatisticsAccessI {
         }
 
         for (Pair<VisualizationGroupI, DistributionI<T>> dataset : groups) {
-            String obfusName = generateName();
-            tmpNames.put(obfusName, dataset.getFirst().getUUID());
-
+            UUID grpUUID = dataset.getFirst().getUUID();
             ProfileDTO prof = ProfileDTO.newBuilder()
-                    .setName(obfusName)
+                    .setName(grpUUID.toString())
                     .setValues(buildVector(ordered, dataset.getSecond()))
                     .build();
             b.addRow(prof);
@@ -173,20 +170,19 @@ public class StatisticsAccess implements StatisticsAccessI {
         return b.build();
     }
 
-    private static String generateName() {
-        return generateName(8);
-    }
-
-    private static String generateName(int len) {
-        char[] chars = "abcdefghijklmnopqrstuvwxyz".toCharArray();
-        StringBuilder sb = new StringBuilder(len);
-        Random random = new Random();
-        for (int i = 0; i < len; i++) {
-            char c = chars[random.nextInt(chars.length)];
-            sb.append(c);
-        }
-        return sb.toString();
-    }
-
+//    private static String generateName() {
+//        return generateName(8);
+//    }
+//
+//    private static String generateName(int len) {
+//        char[] chars = "abcdefghijklmnopqrstuvwxyz".toCharArray();
+//        StringBuilder sb = new StringBuilder(len);
+//        Random random = new Random();
+//        for (int i = 0; i < len; i++) {
+//            char c = chars[random.nextInt(chars.length)];
+//            sb.append(c);
+//        }
+//        return sb.toString();
+//    }
 
 }
