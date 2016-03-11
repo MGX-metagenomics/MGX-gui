@@ -285,8 +285,8 @@ public final class SeqRunWizardIterator implements WizardDescriptor.Iterator<Wiz
         return (Integer) wd.getProperty(SeqRunVisualPanel3.PROP_MINOVERLAP);
     }
     
-    public float getMaximalMismatches(){
-        return (Float) wd.getProperty(SeqRunVisualPanel3.PROP_MAXMISMATCHES);
+    public int getMaximalMismatches(){
+        return (Integer) wd.getProperty(SeqRunVisualPanel3.PROP_MAXMISMATCHES);
     }
 
 

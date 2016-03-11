@@ -1,9 +1,7 @@
 package de.cebitec.mgx.gui.wizard.seqrun;
 
-import de.cebitec.mgx.api.model.SeqRunI;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.Collection;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
@@ -68,7 +66,7 @@ public class SeqRunWizardPanel3 implements WizardDescriptor.Panel<WizardDescript
         SeqRunVisualPanel3 c = getComponent();
         c.setQualityThreshold((int) model.getProperty(SeqRunVisualPanel3.PROP_QTHRESHOLD));
         c.setMinimalOverlap((int) model.getProperty(SeqRunVisualPanel3.PROP_MINOVERLAP));
-        c.setMaximalMismatches((float) model.getProperty(SeqRunVisualPanel3.PROP_MAXMISMATCHES));
+        c.setMaximalMismatches((int) model.getProperty(SeqRunVisualPanel3.PROP_MAXMISMATCHES));
     }
 
     @Override

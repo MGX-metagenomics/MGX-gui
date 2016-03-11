@@ -3,9 +3,6 @@ package de.cebitec.mgx.gui.wizard.seqrun;
 import javax.swing.JPanel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.text.Document;
 
 
 public final class SeqRunVisualPanel3 extends JPanel {
@@ -37,8 +34,8 @@ public final class SeqRunVisualPanel3 extends JPanel {
         return minimalOverlapSlider.getValue();
     }
     
-    public float getMaximalMismatches() {
-        return maximalMismatchesSlider.getValue() / 100f;
+    public int getMaximalMismatches() {
+        return maximalMismatchesSlider.getValue();
     }
 
     public void setQualityThreshold(int qt) {
@@ -49,8 +46,8 @@ public final class SeqRunVisualPanel3 extends JPanel {
         minimalOverlapSlider.setValue(mo);
     }
     
-    public void setMaximalMismatches(float mm) {
-        maximalMismatchesSlider.setValue((int) (mm * 100));
+    public void setMaximalMismatches(int mm) {
+        maximalMismatchesSlider.setValue(mm);
     }
     
     /**
