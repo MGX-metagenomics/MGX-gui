@@ -7,6 +7,7 @@ package de.cebitec.mgx.common;
 
 import de.cebitec.mgx.api.groups.ReplicateGroupI;
 import de.cebitec.mgx.api.groups.ReplicateI;
+import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.model.ModelBaseI;
 import static de.cebitec.mgx.api.model.ModelBaseI.OBJECT_DELETED;
 import de.cebitec.mgx.pevents.ParallelPropertyChangeSupport;
@@ -213,6 +214,16 @@ public class ReplicateGroup implements ReplicateGroupI {
     @Override
     public int compareTo(ReplicateGroupI o) {
         return getName().compareTo(o.getName());
+    }
+
+    @Override
+    public DistributionI<Double> getMeanDistribution() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public DistributionI<Double> getStdvDistribution() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }
