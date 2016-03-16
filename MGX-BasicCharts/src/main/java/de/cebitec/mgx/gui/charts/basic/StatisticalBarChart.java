@@ -8,11 +8,16 @@ import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
 import de.cebitec.mgx.gui.charts.basic.util.ScrollableBarChart;
 import de.cebitec.mgx.gui.charts.basic.util.SlidingCategoryDataset;
 import de.cebitec.mgx.api.groups.ImageExporterI;
+import de.cebitec.mgx.api.groups.ReplicateGroupI;
+import de.cebitec.mgx.api.groups.VGroupManagerI;
+import de.cebitec.mgx.common.VGroupManager;
 import de.cebitec.mgx.common.visualization.CategoricalViewerI;
 import de.cebitec.mgx.common.visualization.ViewerI;
 import de.cebitec.mgx.gui.charts.basic.util.LogAxis;
 import java.awt.Color;
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import javax.swing.JComponent;
@@ -31,6 +36,7 @@ import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.CategoryItemRenderer;
+import org.jfree.chart.renderer.category.StatisticalBarRenderer;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.data.category.CategoryDataset;
 import org.openide.util.lookup.ServiceProvider;
@@ -40,14 +46,14 @@ import org.openide.util.lookup.ServiceProvider;
  * @author sjaenick
  */
 @ServiceProvider(service = ViewerI.class)
-public class BarChartViewer extends CategoricalViewerI<Long> {
+public class StatisticalBarChart extends CategoricalViewerI<Long> {
 
     private ChartPanel cPanel = null;
     private BarChartCustomizer customizer = null;
     private JFreeChart chart = null;
     private CategoryDataset dataset;
 
-    public BarChartViewer() {
+    public StatisticalBarChart() {
         // disable the stupid glossy effect
         ChartFactory.setChartTheme(StandardChartTheme.createLegacyTheme());
         BarRenderer.setDefaultShadowsVisible(false);
@@ -56,7 +62,7 @@ public class BarChartViewer extends CategoricalViewerI<Long> {
 
     @Override
     public String getName() {
-        return "Bar Chart";
+        return "Statistical Bar Chart";
     }
 
     @Override
@@ -71,24 +77,28 @@ public class BarChartViewer extends CategoricalViewerI<Long> {
     @Override
     public void show(List<Pair<VisualizationGroupI, DistributionI<Long>>> in) {
         
-        List<Pair<VisualizationGroupI, DistributionI<Double>>> data = getCustomizer().filter(in);
+        Collection<ReplicateGroupI> rg = VGroupManager.getInstance().getReplicateGroups();
+        List<ReplicateGroupI> replicateGroups = new ArrayList<>(rg);
 
-        dataset = JFreeChartUtil.createCategoryDataset(data);
+//        List<Pair<VisualizationGroupI, DistributionI<Double>>> data = getCustomizer().filter(in);
+
+        dataset = JFreeChartUtil.createStatisticalCategoryDataset(replicateGroups);
 
         String xAxisLabel = "";
-        String yAxisLabel = getCustomizer().useFractions() ? "Fraction" : "Count";
+//        String yAxisLabel = getCustomizer().useFractions() ? "Fraction" : "Count";
+        String yAxisLabel = "Count";
 
-        chart = ChartFactory.createBarChart(getTitle(), xAxisLabel, yAxisLabel, dataset, PlotOrientation.VERTICAL, true, true, false);
-
+        CategoryPlot plot = new CategoryPlot(dataset, new CategoryAxis(xAxisLabel), new NumberAxis(yAxisLabel), new StatisticalBarRenderer());
+        plot.setOrientation(PlotOrientation.VERTICAL);
+        plot.setFixedLegendItems(JFreeChartUtil.createReplicateLegend(replicateGroups));
+        plot.setBackgroundPaint(Color.WHITE);
+        
+        chart = new JFreeChart(getTitle(), plot);                
         chart.setBorderPaint(Color.WHITE);
         chart.setBackgroundPaint(Color.WHITE);
         chart.setAntiAlias(true);
         cPanel = new ChartPanel(chart);
-        CategoryPlot plot = chart.getCategoryPlot();
-
-        plot.setFixedLegendItems(JFreeChartUtil.createLegend(data));
-        plot.setBackgroundPaint(Color.WHITE);
-
+        
         BarRenderer br = (BarRenderer) plot.getRenderer();
         br.setItemMargin(customizer.getItemMargin());
         br.setBaseToolTipGenerator(new StandardCategoryToolTipGenerator("<html>Group: {0} <br> Attribute: {1} <br> " + yAxisLabel + ": {2}</html>", NumberFormat.getInstance()));
@@ -126,8 +136,8 @@ public class BarChartViewer extends CategoricalViewerI<Long> {
         // colors
         int i = 0;
         CategoryItemRenderer renderer = plot.getRenderer();
-        for (Pair<VisualizationGroupI, DistributionI<Double>> groupDistribution : data) {
-            renderer.setSeriesPaint(i++, groupDistribution.getFirst().getColor());
+        for (ReplicateGroupI group : replicateGroups) {
+            renderer.setSeriesPaint(i++, group.getColor());
         }
     }
 
