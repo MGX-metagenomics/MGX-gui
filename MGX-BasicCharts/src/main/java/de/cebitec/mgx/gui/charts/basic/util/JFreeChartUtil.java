@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.charts.basic.util;
 
 import de.cebitec.mgx.api.groups.FileType;
 import de.cebitec.mgx.api.groups.ImageExporterI;
+import de.cebitec.mgx.api.groups.ReplicateGroupI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
@@ -12,6 +13,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -23,6 +25,8 @@ import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultKeyedValues2DDataset;
 import org.jfree.data.general.KeyedValues2DDataset;
+import org.jfree.data.statistics.DefaultStatisticalCategoryDataset;
+import org.jfree.data.statistics.StatisticalCategoryDataset;
 import org.jfree.data.xy.DefaultTableXYDataset;
 import org.jfree.data.xy.TableXYDataset;
 import org.jfree.data.xy.XYSeries;
@@ -46,6 +50,18 @@ public class JFreeChartUtil {
         }
         return ret;
     }
+    
+    public static LegendItemCollection createReplicateLegend(List<ReplicateGroupI> in) {
+        LegendItemCollection ret = new LegendItemCollection();
+        DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.US);
+        for (ReplicateGroupI rg : in) {
+            LegendItem li = new LegendItem(rg.getName());
+            li.setFillPaint(rg.getColor());
+            li.setToolTipText("Classified sequences in " + rg.getName() + ": " + formatter.format(rg.getMeanDistribution().getTotalClassifiedElements()));
+            ret.add(li);
+        }
+        return ret;
+    }
 
     public static <T extends Number> CategoryDataset createCategoryDataset(List<Pair<VisualizationGroupI, DistributionI<T>>> in) {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
@@ -61,6 +77,20 @@ public class JFreeChartUtil {
         } else {
             return dataset;
         }
+    }
+    
+    public static StatisticalCategoryDataset createStatisticalCategoryDataset(List<ReplicateGroupI> groups){
+        DefaultStatisticalCategoryDataset dataset = new DefaultStatisticalCategoryDataset();
+        for (ReplicateGroupI rg : groups){
+            DistributionI<Double> mean = rg.getMeanDistribution();
+            DistributionI<Double> stdv = rg.getStdvDistribution();
+                        
+            for (Map.Entry<AttributeI, Double> entry : mean.entrySet()){
+                dataset.add(entry.getValue(), stdv.get(entry.getKey()), rg.getName(), entry.getKey().getValue());
+            }            
+        }
+        
+        return dataset;
     }
 
 //    public static DefaultCategoryDataset createCategoryDataset(List<Pair<VisualizationGroup, Distribution>> in) {
