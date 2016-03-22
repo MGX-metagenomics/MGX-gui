@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Set;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import static org.junit.Assume.assumeNotNull;
 
 /**
  *
@@ -65,6 +66,22 @@ public class SeqRunAccessTest {
         assertNotNull(sr1);
         assertNotNull(sr2);
         assertEquals(sr1, sr2);
+    }
+
+    @Test
+    public void testRegressionEquality() throws MGXException {
+        System.out.println("testRegressionEquality");
+        MGXMasterI m1 = TestMaster.getPrivate("MGX_deNBI1");
+        MGXMasterI m2 = TestMaster.getPrivate("MGX_deNBI4");
+        assumeNotNull(m1);
+        assumeNotNull(m2);
+        SeqRunI run1 = m1.SeqRun().fetch(2);
+        SeqRunI run2 = m2.SeqRun().fetch(2);
+        assertNotNull(run1);
+        assertNotNull(run2);
+        assertEquals(run1.getName(), run2.getName());
+        assertNotEquals(run1.getMaster(), run2.getMaster());
+        assertNotEquals("runs from different projects should not be equal", run1, run2);
     }
 
     @Test
