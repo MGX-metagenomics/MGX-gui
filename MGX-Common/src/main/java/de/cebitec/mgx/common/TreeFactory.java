@@ -26,9 +26,9 @@ public class TreeFactory {
 
     public static <T> void dumpNode(NodeI<? extends T> node, int offset) {
         for (int i = 0; i < offset; i++) {
-            System.err.print(" ");
+            System.err.print("TreeFactory#dump:  ");
         }
-        System.err.println(node.getAttribute().toString());
+        System.err.println("TreeFactory#dump: "+node.getAttribute().toString());
         if (node.hasChildren()) {
             for (NodeI<? extends T> n : node.getChildren()) {
                 dumpNode(n, offset + 5);
@@ -308,7 +308,7 @@ public class TreeFactory {
 
         @Override
         public Long cloneContent(Long content) {
-            return Long.valueOf(content.longValue());
+            return content;
         }
     }
 
