@@ -52,6 +52,8 @@ public class ServerNode extends AbstractNode implements PropertyChangeListener {
                 setShortDescription(gpmsclient.getServerName() + " (Not connected)");
             }
         }
+        // pass on event
+        firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
     }
 
     @Override
