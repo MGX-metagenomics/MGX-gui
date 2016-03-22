@@ -88,13 +88,6 @@ public class Sample extends SampleI {
     }
 
     @Override
-    public int hashCode() {
-        int hash = 0;
-        hash = (int) (31 * hash + this.id);
-        return hash;
-    }
-
-    @Override
     public boolean equals(Object object) {
         if (!(object instanceof SampleI)) {
             return false;
