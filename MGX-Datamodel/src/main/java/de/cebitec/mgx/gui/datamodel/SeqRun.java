@@ -123,7 +123,7 @@ public class SeqRun extends SeqRunI {
         if ((this.id == INVALID_IDENTIFIER && other.getId() != INVALID_IDENTIFIER) || (this.id != INVALID_IDENTIFIER && this.id != other.getId())) {
             return false;
         }
-        return true;
+        return this.getId() == other.getId() && this.getMaster().equals(other.getMaster());
     }
 
     @Override
