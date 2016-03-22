@@ -87,14 +87,6 @@ public class Tool extends ToolI {
     }
 
     @Override
-    public int hashCode() {
-        int hash = 0;
-        hash = (int) (31 * hash + this.id);
-        return hash;
-    }
-
-
-    @Override
     public boolean equals(Object object) {
         if (!(object instanceof ToolI)) {
             return false;
