@@ -34,20 +34,33 @@ public class ReplicateNodeFactory extends Children.Keys<ReplicateI> implements N
                 switch (evt.getPropertyName()) {
                     case ReplicateGroupI.REPLICATEGROUP_REPLICATE_ADDED:
                     case ReplicateGroupI.REPLICATEGROUP_REPLICATE_REMOVED:
-                        refreshChildren();
-                        return;
+                        if (evt.getSource().equals(group)) {
+                            refreshChildren();
+                        }
+                        break;
+                    case ReplicateGroupI.REPLICATEGROUP_ACTIVATED:
+                    case ReplicateGroupI.REPLICATEGROUP_DEACTIVATED:
+                        break;
                     case VisualizationGroupI.VISGROUP_RENAMED:
                     case VisualizationGroupI.VISGROUP_DEACTIVATED:
                     case VisualizationGroupI.VISGROUP_ACTIVATED:
+                    case VisualizationGroupI.VISGROUP_HAS_DIST:
                         return;
                     case VisualizationGroupI.VISGROUP_CHANGED:
                         refreshChildren();
                         return;
                     case ModelBaseI.OBJECT_DELETED:
-                        group.removePropertyChangeListener(this);
+                        if (group.equals(evt.getSource())) {
+                            group.removePropertyChangeListener(this);
+                        }
+                        break;
+                    case ModelBaseI.OBJECT_MODIFIED:
+                        if (group.equals(evt.getSource())) {
+                            refreshChildren();
+                        }
                         break;
                     default:
-                        System.err.println("RNF got unhandled PCE " + evt.toString());
+                        System.err.println("ReplicateNodeFactory got unhandled PCE " + evt.toString());
                         refreshChildren();
                 }
             }
@@ -112,7 +125,6 @@ public class ReplicateNodeFactory extends Children.Keys<ReplicateI> implements N
 //        group.remove((ReplicateI) vg);
 //        refreshChildren();
 //    }
-
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         //refresh(true);

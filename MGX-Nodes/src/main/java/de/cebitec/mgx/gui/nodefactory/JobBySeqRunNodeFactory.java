@@ -2,8 +2,11 @@ package de.cebitec.mgx.gui.nodefactory;
 
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.JobI;
+import de.cebitec.mgx.api.model.ModelBaseI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.ToolI;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -18,14 +21,33 @@ import org.openide.util.Exceptions;
 public class JobBySeqRunNodeFactory extends JobNodeFactory {
 
     private final Collection<SeqRunI> runs;
+    private final PropertyChangeListener stateListener;
 
     public JobBySeqRunNodeFactory(Collection<SeqRunI> runs) {
         super(null);
+        stateListener = new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                if (evt.getPropertyName().equals(ModelBaseI.OBJECT_DELETED)) {
+                    if (evt.getSource() instanceof SeqRunI) {
+                        SeqRunI sr = (SeqRunI) evt.getSource();
+                        if (JobBySeqRunNodeFactory.this.runs.contains(sr)) {
+                            sr.removePropertyChangeListener(stateListener);
+                            JobBySeqRunNodeFactory.this.runs.remove(sr);
+                        }
+                    }
+                }
+            }
+
+        };
         this.runs = runs;
+        for (final SeqRunI run : runs) {
+            run.addPropertyChangeListener(stateListener);
+        }
     }
 
     @Override
-    protected synchronized boolean createKeys(List<JobI> toPopulate) {
+    protected synchronized boolean addKeys(List<JobI> toPopulate) {
         Collection<JobI> tmp = new HashSet<>();
         try {
             for (SeqRunI run : runs) {
@@ -46,10 +68,9 @@ public class JobBySeqRunNodeFactory extends JobNodeFactory {
 
                     if (t != null) {
                         j.setTool(t);
-                        if (tmp.contains(j)) {
-                            assert false;
+                        if (!run.isDeleted()) {
+                            tmp.add(j);
                         }
-                        tmp.add(j);
                     }
                 }
             }
