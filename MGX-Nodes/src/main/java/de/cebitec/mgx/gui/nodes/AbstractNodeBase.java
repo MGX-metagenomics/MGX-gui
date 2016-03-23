@@ -63,17 +63,21 @@ public abstract class AbstractNodeBase<T extends ModelBaseI<T>> extends Abstract
     }
 
     @Override
-    public void propertyChange(PropertyChangeEvent evt) {
+    public synchronized void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {
             case ModelBaseI.OBJECT_DELETED:
-                content.removePropertyChangeListener(this);
-                fireNodeDestroyed();
+                if (evt.getSource().equals(content)) {
+                    content.removePropertyChangeListener(this);
+                    fireNodeDestroyed();
+                }
                 break;
             case ModelBaseI.OBJECT_MODIFIED:
-                updateModified();
+                if (evt.getSource().equals(content)) {
+                    updateModified();
+                }
                 break;
             default:
-                System.err.println(getClass().getName() + " in AbstractNodeBase got unhandled event: " + evt.getPropertyName());
+                System.err.println(getClass().getSimpleName() + " in AbstractNodeBase got unhandled event: " + evt.getPropertyName());
             //assert false;
         }
     }
