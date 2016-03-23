@@ -33,12 +33,15 @@ public class ProjectNodeFactory extends ChildFactory<MembershipI> implements Nod
 
     @Override
     protected boolean createKeys(List<MembershipI> list) {
+        if (!gpmsclient.loggedIn()) {
+            return true;
+        }
         Iterator<MembershipI> iter = null;
         try {
             iter = gpmsclient.getMemberships();
         } catch (GPMSException ex) {
             Exceptions.printStackTrace(ex);
-            return false;
+            return true;
         }
         while (iter != null && iter.hasNext()) {
             MembershipI m = iter.next();
