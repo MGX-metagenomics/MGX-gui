@@ -25,7 +25,7 @@ public class ReferenceNodeFactory extends MGXNodeFactoryBase<MGXReferenceI> impl
     }
 
     @Override
-    protected boolean createKeys(List<MGXReferenceI> toPopulate) {
+    protected boolean addKeys(List<MGXReferenceI> toPopulate) {
         try {
             Iterator<MGXReferenceI> iter = getMaster().Reference().fetchall();
             while (iter.hasNext()) {

@@ -43,10 +43,14 @@ public class VisualizationGroupSet extends ChildFactory<ModelBaseI> implements N
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
                 switch (evt.getPropertyName()) {
+                    case Node.PROP_DISPLAY_NAME:
+                    case Node.PROP_NAME:
+                        break;
                     case VGroupManagerI.VISGROUP_ADDED:
                         add((VisualizationGroupI) evt.getNewValue());
                         refresh(true);
                         break;
+
 //                    case ModelBaseI.OBJECT_DELETED:
 //                        remove((ModelBaseI) evt.getSource());
 //                        refresh(true);
@@ -59,17 +63,20 @@ public class VisualizationGroupSet extends ChildFactory<ModelBaseI> implements N
             }
         });
     }
-    
+
     private void add(ModelBaseI obj) {
-        data.add(obj);
-        obj.addPropertyChangeListener(this);
+        if (!data.contains(obj)) {
+            data.add(obj);
+            obj.addPropertyChangeListener(this);
+        }
     }
-    
+
     private void remove(ModelBaseI obj) {
-        data.remove(obj);
-        obj.removePropertyChangeListener(this);
+        if (data.contains(obj)) {
+            data.remove(obj);
+            obj.removePropertyChangeListener(this);
+        }
     }
-    
 
     @Override
     protected boolean createKeys(List<ModelBaseI> toPopulate) {
@@ -101,11 +108,32 @@ public class VisualizationGroupSet extends ChildFactory<ModelBaseI> implements N
     public void propertyChange(PropertyChangeEvent evt) {
         //refresh(true);
         switch (evt.getPropertyName()) {
+            case Node.PROP_PARENT_NODE:
+            case Node.PROP_DISPLAY_NAME:
+            case Node.PROP_NAME:
+                // ignore
+                break;
+            case VisualizationGroupI.VISGROUP_HAS_DIST:
+                // ignore
+                break;
+            case VisualizationGroupI.VISGROUP_CHANGED:
+            case VisualizationGroupI.VISGROUP_ACTIVATED:
+            case VisualizationGroupI.VISGROUP_DEACTIVATED:
+            case VisualizationGroupI.VISGROUP_RENAMED:
+            case ReplicateGroupI.REPLICATEGROUP_ACTIVATED:
+            case ReplicateGroupI.REPLICATEGROUP_DEACTIVATED:
+            case ReplicateGroupI.REPLICATEGROUP_REPLICATE_ADDED:
+            case ReplicateGroupI.REPLICATEGROUP_REPLICATE_REMOVED:
+                // ignore
+                break;
             case ModelBaseI.OBJECT_DELETED:
                 remove((ModelBaseI) evt.getSource());
                 break;
+            case ModelBaseI.OBJECT_MODIFIED:
+                // ignore
+                break;
             default:
-                System.err.println("Unknown event "+evt+ "in VisualizationGroupSet");
+                System.err.println("Unknown event " + evt + " in VisualizationGroupSet");
         }
     }
 

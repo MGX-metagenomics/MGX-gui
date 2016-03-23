@@ -4,14 +4,10 @@ import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.HabitatI;
 import de.cebitec.mgx.gui.nodes.HabitatNode;
-import java.beans.PropertyChangeEvent;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import org.openide.nodes.Node;
-import org.openide.nodes.NodeEvent;
-import org.openide.nodes.NodeMemberEvent;
-import org.openide.nodes.NodeReorderEvent;
 import org.openide.util.Exceptions;
 
 /**
@@ -25,7 +21,7 @@ public class HabitatNodeFactory extends MGXNodeFactoryBase<HabitatI> {
     }
 
     @Override
-    protected boolean createKeys(List<HabitatI> toPopulate) {
+    protected boolean addKeys(List<HabitatI> toPopulate) {
         try {
             Iterator<HabitatI> iter = getMaster().Habitat().fetchall();
             while (iter.hasNext()) {
@@ -36,7 +32,7 @@ public class HabitatNodeFactory extends MGXNodeFactoryBase<HabitatI> {
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);
         }
-        return false;
+        return true;
     }
 
     @Override
@@ -45,30 +41,4 @@ public class HabitatNodeFactory extends MGXNodeFactoryBase<HabitatI> {
         node.addNodeListener(this);
         return node;
     }
-
-//    @Override
-//    public void childrenAdded(NodeMemberEvent ev) {
-//        refresh(true);
-//    }
-//
-//    @Override
-//    public void childrenRemoved(NodeMemberEvent ev) {
-//        refresh(true);
-//    }
-//
-//    @Override
-//    public void childrenReordered(NodeReorderEvent ev) {
-//    }
-//
-//    @Override
-//    public void nodeDestroyed(NodeEvent ev) {
-//        refresh(true);
-//    }
-//
-//    @Override
-//    public void propertyChange(PropertyChangeEvent evt) {
-//        //System.err.println("HNF got PCE "+evt.getPropertyName());
-////        if (!Node.PROP_PARENT_NODE.equals(evt.getPropertyName())) {
-////        refresh(true); }
-//    }
 }
