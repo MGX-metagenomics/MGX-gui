@@ -27,25 +27,8 @@ public abstract class MGXNodeBase<T extends ModelBaseI<T>> extends AbstractNodeB
         return master;
     }
 
-//    @Override
-//    public void propertyChange(PropertyChangeEvent evt) {
-//        super.propertyChange(evt);
-//    }
-
     @Override
     public Action[] getActions(boolean popup) {
         return new Action[0]; // disables context menu
     }
-
-//    public void addPropertyChangelistener(PropertyChangeListener pcl) {
-//        super.addPropertyChangeListener(pcl);
-//        content.addPropertyChangeListener(pcl);
-//    }
-//
-//    public void removePropertyChangelistener(PropertyChangeListener pcl) {
-//        super.removePropertyChangeListener(pcl);
-//        content.removePropertyChangeListener(pcl);
-//    }
-
-
 }
