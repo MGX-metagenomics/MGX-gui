@@ -29,7 +29,7 @@ import org.openide.util.Utilities;
 )
 @TopComponent.Registration(mode = "satellite", openAtStartup = false)
 @ActionID(category = "Window", id = "de.cebitec.mgx.gui.attributevisualization.ui.LookupBrowserTopComponent")
-@ActionReference(path = "Menu/Window" /*, position = 333 */)
+@ActionReference(path = "Menu/Window", position = 555)
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_LookupBrowserAction",
         preferredID = "LookupBrowserTopComponent"

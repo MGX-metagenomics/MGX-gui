@@ -119,7 +119,7 @@ public class MappingAccess extends MappingAccessI {
     public UUID openMapping(long id) throws MGXException {
         try {
             return dtomaster.Mapping().openMapping(id);
-        } catch (MGXServerException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             throw new MGXException(ex);
         }
     }
@@ -128,7 +128,7 @@ public class MappingAccess extends MappingAccessI {
     public void closeMapping(UUID uuid) throws MGXException {
         try {
             dtomaster.Mapping().closeMapping(uuid);
-        } catch (MGXServerException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             if (ex.getMessage().contains("No mapping session for")) {
                 // session already closed due to timeout
                 throw new MGXTimeoutException(ex);
@@ -141,7 +141,7 @@ public class MappingAccess extends MappingAccessI {
     public long getMaxCoverage(UUID uuid) throws MGXException {
         try {
             return dtomaster.Mapping().getMaxCoverage(uuid);
-        } catch (MGXServerException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             if (ex.getMessage().contains("No mapping session for")) {
                 throw new MGXTimeoutException(ex);
             }

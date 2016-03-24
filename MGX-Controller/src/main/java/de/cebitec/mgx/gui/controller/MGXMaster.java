@@ -11,6 +11,7 @@ import de.cebitec.mgx.api.model.ModelBaseI;
 import de.cebitec.mgx.client.MGXDTOMaster;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,6 +29,16 @@ public class MGXMaster extends MGXMasterI implements PropertyChangeListener {
         super();
         this.dtomaster = dtomaster;
         dtomaster.addPropertyChangeListener(this);
+    }
+
+    @Override
+    public String getServerName() {
+        return dtomaster.getServerName();
+    }
+
+    @Override
+    public synchronized void logout() {
+        dtomaster.logout();
     }
 
     @Override
@@ -136,7 +147,7 @@ public class MGXMaster extends MGXMasterI implements PropertyChangeListener {
     }
 
     @Override
-    public void propertyChange(PropertyChangeEvent evt) {
+    public synchronized void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {
             case ModelBaseI.OBJECT_DELETED:
                 dtomaster.removePropertyChangeListener(this);
@@ -144,7 +155,7 @@ public class MGXMaster extends MGXMasterI implements PropertyChangeListener {
                 break;
             case MGXDTOMaster.PROP_LOGGEDIN:
                 Boolean isLoggedIn = (Boolean) evt.getNewValue();
-                if (!isLoggedIn) {
+                if (!isDeleted() && !isLoggedIn) {
                     dtomaster.removePropertyChangeListener(this);
                     deleted();
                 }
@@ -153,4 +164,31 @@ public class MGXMaster extends MGXMasterI implements PropertyChangeListener {
                 System.err.println("MGXMaster received event " + evt);
         }
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 59 * hash + Objects.hashCode(this.dtomaster);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final MGXMaster other = (MGXMaster) obj;
+        if (!Objects.equals(this.dtomaster, other.dtomaster)) {
+            return false;
+        }
+        return true;
+    }
+    
+    
 }
