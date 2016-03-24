@@ -80,7 +80,7 @@ public class AttributeTypeAccess extends AccessBase<AttributeTypeI> {
                     return attr;
                 }
             };
-        } catch (MGXServerException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             throw new MGXException(ex);
         }
     }

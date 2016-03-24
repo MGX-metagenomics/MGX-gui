@@ -54,7 +54,7 @@ public class JobAccess implements JobAccessI {
         boolean ret;
         try {
             ret = getDTOmaster().Job().verify(obj.getId());
-        } catch (MGXServerException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             throw new MGXException(ex);
         }
         obj.modified();
@@ -67,7 +67,7 @@ public class JobAccess implements JobAccessI {
         boolean ret;
         try {
             ret = getDTOmaster().Job().execute(obj.getId());
-        } catch (MGXServerException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             throw new MGXException(ex);
         }
         obj.modified();
@@ -93,7 +93,7 @@ public class JobAccess implements JobAccessI {
         boolean ret;
         try {
             ret = getDTOmaster().Job().cancel(obj.getId());
-        } catch (MGXServerException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             throw new MGXException(ex);
         }
         if (ret) {
@@ -184,7 +184,7 @@ public class JobAccess implements JobAccessI {
                 j.setSeqrun(run);
                 all.add(j);
             }
-        } catch (MGXServerException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             throw new MGXException(ex);
         }
         return all;
@@ -199,7 +199,7 @@ public class JobAccess implements JobAccessI {
                 j.setSeqrun(run);
                 all.add(j);
             }
-        } catch (MGXServerException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             throw new MGXException(ex);
         }
         return all;
@@ -210,7 +210,7 @@ public class JobAccess implements JobAccessI {
         try {
             MGXString err = getDTOmaster().Job().getError(job.getId());
             return err.getValue();
-        } catch (MGXServerException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             throw new MGXException(ex);
         }
     }

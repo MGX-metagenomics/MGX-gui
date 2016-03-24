@@ -65,7 +65,7 @@ public class AttributeAccess implements AttributeAccessI {
                 }
             };
 
-        } catch (MGXServerException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             Logger.getLogger(AttributeAccess.class.getName()).log(Level.SEVERE, null, ex);
             throw new MGXException(ex);
         }
@@ -132,7 +132,7 @@ public class AttributeAccess implements AttributeAccessI {
                 total += ac.getCount();
                 res.put(attr, ac.getCount());
             }
-        } catch (MGXServerException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             Logger.getLogger(AttributeAccess.class.getName()).log(Level.SEVERE, null, ex);
             throw new MGXException(ex);
         }
@@ -177,7 +177,7 @@ public class AttributeAccess implements AttributeAccessI {
         try {
             AttributeCorrelation corr = dtomaster.Attribute().getCorrelation(attributeType1.getId(), job1.getId(), attributeType2.getId(), job2.getId());
             return MatrixDTOFactory.getInstance().toModel(master, corr);
-        } catch (MGXServerException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             throw new MGXException(ex);
         }
     }
@@ -203,7 +203,7 @@ public class AttributeAccess implements AttributeAccessI {
                 res.put(attr, ac.getCount());
             }
 
-        } catch (MGXServerException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             Logger.getLogger(AttributeAccess.class.getName()).log(Level.SEVERE, null, ex);
             throw new MGXException(ex);
         }
@@ -253,7 +253,7 @@ public class AttributeAccess implements AttributeAccessI {
         Iterator<SequenceDTO> searchResult = null;
         try {
             searchResult = dtomaster.Attribute().search(reqdto);
-        } catch (MGXServerException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             throw new MGXException(ex);
         }
 

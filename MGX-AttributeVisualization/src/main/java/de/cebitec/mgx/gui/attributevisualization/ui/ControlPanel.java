@@ -5,6 +5,7 @@
  */
 package de.cebitec.mgx.gui.attributevisualization.ui;
 
+import de.cebitec.mgx.api.groups.ReplicateGroupI;
 import de.cebitec.mgx.api.groups.VGroupManagerI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.AttributeRank;
@@ -203,9 +204,11 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
                 updateAttributeTypeList();
                 break;
             case VisualizationGroupI.VISGROUP_ACTIVATED:
+            case ReplicateGroupI.REPLICATEGROUP_ACTIVATED:
                 updateAttributeTypeList();
                 break;
             case VisualizationGroupI.VISGROUP_DEACTIVATED:
+            case ReplicateGroupI.REPLICATEGROUP_DEACTIVATED:
                 updateAttributeTypeList();
                 break;
             case VisualizationGroupI.VISGROUP_ATTRTYPE_CHANGED:
@@ -225,8 +228,13 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
             case VGroupManagerI.REPLGROUP_ADDED:
                 // ignore
                 break;
+            case ReplicateGroupI.REPLICATEGROUP_REPLICATE_ADDED:
+                break;
+            case ReplicateGroupI.REPLICATEGROUP_REPLICATE_REMOVED:
+                updateAttributeTypeList();
+                break;
             default:
-                System.err.println("ControlPanel received unknown event " + evt.getPropertyName());
+                System.err.println("ControlPanel received unknown event " + evt);
         }
     }
 
@@ -234,6 +242,8 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
 
         @Override
         public void update() {
+            final List<AttributeTypeI> previousContent = new ArrayList<>(content.size());
+            previousContent.addAll(content);
             // disable all downstream elements, including self
             content.clear();
             attributeTypeList.setEnabled(false);
@@ -277,8 +287,27 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
 
                         attributeTypeList.setEnabled(true);
                     }
-                    fireContentsChanged();
+                    if (contentDiffers(previousContent, content)) {
+                        fireContentsChanged();
+                    }
                     super.done();
+                }
+
+                private boolean contentDiffers(List<AttributeTypeI> l1, List<AttributeTypeI> l2) {
+                    if (l1.size() != l2.size()) {
+                        return true;
+                    }
+                    for (AttributeTypeI at : l1) {
+                        if (!l2.contains(at)) {
+                            return true;
+                        }
+                    }
+                    for (AttributeTypeI at : l2) {
+                        if (!l1.contains(at)) {
+                            return true;
+                        }
+                    }
+                    return false;
                 }
             };
             worker.execute();
@@ -369,6 +398,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
 //                customPane.setViewportView(customizer);
 //            }
             customPane.setViewportView(currentViewer.getCustomizer());
+            customPane.getVerticalScrollBar().setUnitIncrement(16);
 
         }
     }
