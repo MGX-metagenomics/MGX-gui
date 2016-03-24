@@ -48,9 +48,16 @@ public class VizGroupNode extends AbstractNodeBase<VisualizationGroupI> {
             // reject, if any run is already present
             Set<SeqRunI> oldRuns = vg.getSeqRuns();
             for (SeqRunI newRun : seqruns) {
-                if (oldRuns.contains(newRun)) {
-                    return MGXPasteTypes.REJECT;
+                for (SeqRunI oldRun : oldRuns) {
+                    if (oldRun.equals(newRun)) {
+                        //System.err.println("rejecting " + newRun.getName() + ", already present as " + oldRun.getName());
+                        return MGXPasteTypes.REJECT;
+                    }
                 }
+//                if (oldRuns.contains(newRun)) {
+//                    System.err.println("rejecting "+newRun.getName()+", already present");
+//                    return MGXPasteTypes.REJECT;
+//                }
             }
 
             if (seqruns != null && !seqruns.isEmpty() && !this.equals(dropNode.getParentNode())) {
@@ -80,6 +87,13 @@ public class VizGroupNode extends AbstractNodeBase<VisualizationGroupI> {
                 setDisplayName((String) evt.getNewValue());
                 break;
             case VisualizationGroupI.VISGROUP_HAS_DIST:
+                // ignore
+                break;
+            case VisualizationGroupI.VISGROUP_CHANGED:
+                this.updateModified();
+                break;
+            case VisualizationGroupI.VISGROUP_DEACTIVATED:
+            case VisualizationGroupI.VISGROUP_ACTIVATED:
                 // ignore
                 break;
             default:
