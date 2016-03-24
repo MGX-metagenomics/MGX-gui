@@ -14,13 +14,12 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
 import javax.swing.Action;
-import org.openide.actions.DeleteAction;
+import org.openide.filesystems.FileUtil;
 import org.openide.nodes.FilterNode;
 import org.openide.nodes.NodeEvent;
 import org.openide.nodes.NodeListener;
 import org.openide.nodes.NodeMemberEvent;
 import org.openide.nodes.NodeReorderEvent;
-import org.openide.util.actions.SystemAction;
 import org.openide.util.lookup.Lookups;
 
 /**
@@ -86,7 +85,8 @@ public class SeqRunFilterNode extends FilterNode implements NodeListener {
 
     @Override
     public Action[] getActions(boolean context) {
-        return new Action[]{SystemAction.get(DeleteAction.class)};
+        Action a = FileUtil.getConfigObject("Actions/Edit/de-cebitec-mgx-gui-actions-RemoveSeqRunFromGroupAction.instance", Action.class);
+        return new Action[]{a};
     }
 
     @Override
