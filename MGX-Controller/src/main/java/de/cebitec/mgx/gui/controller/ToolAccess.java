@@ -38,7 +38,7 @@ public class ToolAccess extends AccessBase<ToolI> implements ToolAccessI {
         Iterator<ToolDTO> listGlobalTools;
         try {
             listGlobalTools = getDTOmaster().Tool().listGlobalTools();
-        } catch (MGXServerException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             throw new MGXException(ex);
         }
         return new BaseIterator<ToolDTO, ToolI>(listGlobalTools) {
@@ -54,7 +54,7 @@ public class ToolAccess extends AccessBase<ToolI> implements ToolAccessI {
         assert global_id != Identifiable.INVALID_IDENTIFIER;
         try {
             return getDTOmaster().Tool().installGlobalTool(global_id);
-        } catch (MGXServerException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             throw new MGXException(ex);
         }
     }
@@ -84,7 +84,7 @@ public class ToolAccess extends AccessBase<ToolI> implements ToolAccessI {
                 ret.add(JobParameterDTOFactory.getInstance().toModel(getMaster(), dto));
             }
 
-        } catch (MGXServerException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             throw new MGXException(ex);
         }
         return ret;

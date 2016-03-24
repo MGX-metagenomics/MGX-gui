@@ -5,15 +5,10 @@
  */
 package de.cebitec.mgx.gui.controller;
 
-import de.cebitec.mgx.api.MGXMasterI;
-import de.cebitec.mgx.gui.util.TestMaster;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
-import static org.junit.Assume.assumeNotNull;
 
 /**
  *

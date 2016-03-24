@@ -30,6 +30,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Iterator;
 import java.util.Set;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -45,21 +46,29 @@ public class SequenceAccess extends AccessBase<SequenceI> implements SequenceAcc
     public void sendSequences(SeqRunI seqrun, SeqReaderI<? extends DNASequenceI> reader) throws MGXException {
         try {
             getDTOmaster().Sequence().sendSequences(seqrun.getId(), reader);
-        } catch (MGXServerException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             throw new MGXException(ex);
         }
     }
 
     @Override
-    public UploadBaseI createUploader(SeqRunI seqrun, SeqReaderI<? extends DNASequenceI> reader) {
-        final SeqUploader su = getDTOmaster().Sequence().createUploader(seqrun.getId(), reader);
-        return new ServerSeqRunUploader(seqrun, su);
+    public UploadBaseI createUploader(SeqRunI seqrun, SeqReaderI<? extends DNASequenceI> reader) throws MGXException {
+        try {
+            final SeqUploader su = getDTOmaster().Sequence().createUploader(seqrun.getId(), reader);
+            return new ServerSeqRunUploader(seqrun, su);
+        } catch (MGXClientException ex) {
+            throw new MGXException(ex);
+        }
     }
 
     @Override
-    public DownloadBaseI createDownloader(SeqRunI seqrun, SeqWriterI<DNASequenceI> writer, boolean closeWriter) {
-        final SeqDownloader sd = getDTOmaster().Sequence().createDownloader(seqrun.getId(), writer, closeWriter);
-        return new ServerSeqRunDownloader(sd);
+    public DownloadBaseI createDownloader(SeqRunI seqrun, SeqWriterI<DNASequenceI> writer, boolean closeWriter) throws MGXException {
+        try {
+            final SeqDownloader sd = getDTOmaster().Sequence().createDownloader(seqrun.getId(), writer, closeWriter);
+            return new ServerSeqRunDownloader(sd);
+        } catch (MGXClientException ex) {
+            throw new MGXException(ex);
+        }
     }
 
 //    public void downloadSXXXequences(long seqrun_id, SeqWriterI<DNASequenceI> writer, boolean closeWriter) throws MGXException {
@@ -70,12 +79,17 @@ public class SequenceAccess extends AccessBase<SequenceI> implements SequenceAcc
 //        }
 //    }
     @Override
-    public DownloadBaseI createDownloaderByAttributes(Set<AttributeI> attrs, SeqWriterI<DNASequenceI> writer, boolean closeWriter) {
+    public DownloadBaseI createDownloaderByAttributes(Set<AttributeI> attrs, SeqWriterI<DNASequenceI> writer, boolean closeWriter) throws MGXException {
         Builder b = AttributeDTOList.newBuilder();
         for (AttributeI a : attrs) {
             b.addAttribute(AttributeDTOFactory.getInstance().toDTO(a));
         }
-        final SeqByAttributeDownloader dl = getDTOmaster().Sequence().createDownloaderByAttributes(b.build(), writer, closeWriter);
+        final SeqByAttributeDownloader dl;
+        try {
+            dl = getDTOmaster().Sequence().createDownloaderByAttributes(b.build(), writer, closeWriter);
+        } catch (MGXClientException ex) {
+            throw new MGXException(ex);
+        }
         return new ServerSeqRunDownloader(dl);
     }
 
@@ -87,7 +101,7 @@ public class SequenceAccess extends AccessBase<SequenceI> implements SequenceAcc
                 b.addAttribute(AttributeDTOFactory.getInstance().toDTO(a));
             }
             getDTOmaster().Sequence().fetchAnnotatedReads(b.build(), writer, closeWriter);
-        } catch (MGXServerException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             throw new MGXException(ex);
         }
     }

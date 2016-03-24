@@ -23,6 +23,7 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.Iterator;
 import java.util.UUID;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -143,7 +144,7 @@ public class ReferenceAccess implements ReferenceAccessI {
                     return reference;
                 }
             };
-        } catch (MGXServerException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             throw new MGXException(ex);
         }
     }
@@ -153,7 +154,7 @@ public class ReferenceAccess implements ReferenceAccessI {
         try {
             UUID uuid = dtomaster.Reference().installGlobalReference(obj.getId());
             return master.<MGXReferenceI>Task().get(obj, uuid, Task.TaskType.MODIFY);
-        } catch (MGXServerException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             throw new MGXException(ex);
         }
     }
@@ -169,8 +170,13 @@ public class ReferenceAccess implements ReferenceAccessI {
     }
 
     @Override
-    public UploadBaseI createUploader(File localFile) {
-        ReferenceUploader ru = dtomaster.Reference().createUploader(localFile);
+    public UploadBaseI createUploader(File localFile) throws MGXException {
+        ReferenceUploader ru;
+        try {
+            ru = dtomaster.Reference().createUploader(localFile);
+        } catch (MGXClientException ex) {
+            throw new MGXException(ex);
+        }
         return new ServerReferenceUploader(ru);
     }
 
