@@ -7,6 +7,8 @@ package de.cebitec.mgx.gui.login.dialog;
 
 import de.cebitec.gpms.rest.GPMSClientI;
 import java.awt.event.ActionEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Collection;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -33,10 +35,10 @@ import org.openide.util.WeakListeners;
     @ActionReference(path = "Toolbars/File", position = 300),
     @ActionReference(path = "Shortcuts", name = "D-L")
 })
-public class LoginAction extends AbstractAction implements ContextAwareAction, LookupListener {
+public class LoginAction extends AbstractAction implements ContextAwareAction, LookupListener, PropertyChangeListener {
 
-    private final Lookup lkp;
     private final Lookup.Result<GPMSClientI> result;
+    private GPMSClientI curClient = null;
 
     public LoginAction() {
         this(Utilities.actionsGlobalContext());
@@ -44,11 +46,10 @@ public class LoginAction extends AbstractAction implements ContextAwareAction, L
 
     private LoginAction(Lookup lkp) {
         super("Login");
-        this.lkp = lkp;
         result = lkp.lookupResult(GPMSClientI.class);
         result.addLookupListener(WeakListeners.create(LookupListener.class, this, result));
-        putValue("iconBase", "de/cebitec/mgx/gui/login/dialog/Login.png");
-        setEnabled(false);
+        super.putValue("iconBase", "de/cebitec/mgx/gui/login/dialog/Login.png");
+        super.setEnabled(false);
     }
 
     @Override
@@ -58,17 +59,23 @@ public class LoginAction extends AbstractAction implements ContextAwareAction, L
 
     @Override
     public void actionPerformed(ActionEvent ev) {
-        GPMSClientI gpmsClient = lkp.lookup(GPMSClientI.class);
-        LoginHandler.getDefault().showDialog(gpmsClient);
+        LoginHandler.getDefault().showDialog(curClient);
     }
 
     @Override
     public void resultChanged(LookupEvent le) {
+        if (curClient != null) {
+            curClient.removePropertyChangeListener(this);
+            curClient = null;
+        }
         Collection<? extends GPMSClientI> allClients = result.allInstances();
         if (allClients.size() == 1) {
             for (GPMSClientI gpmsClient : allClients) {
                 if (gpmsClient != null && !gpmsClient.loggedIn()) {
                     super.setEnabled(true);
+                    curClient = gpmsClient;
+                    curClient.addPropertyChangeListener(this);
+                    break;
                 } else {
                     super.setEnabled(false);
                 }
@@ -78,4 +85,10 @@ public class LoginAction extends AbstractAction implements ContextAwareAction, L
         }
     }
 
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (curClient != null && curClient.equals(evt.getSource())) {
+            super.setEnabled(!curClient.loggedIn());
+        }
+    }
 }
