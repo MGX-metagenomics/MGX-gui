@@ -9,6 +9,7 @@ import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.tree.NodeI;
 import de.cebitec.mgx.api.model.tree.TreeI;
 import de.cebitec.mgx.gui.datamodel.misc.Distribution;
+import de.cebitec.mgx.gui.datamodel.misc.NormalizedDistribution;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -45,6 +46,33 @@ public class DistributionFactory {
 
         return new Distribution(anyMaster, summary, total);
     }
+    
+    public static Pair<DistributionI<Double>, DistributionI<Double>> statisticalMerge(final Iterable<DistributionI<Long>> dists) throws InterruptedException, ExecutionException {
+        Map<AttributeI, StatisticsCalculator> summary = new HashMap<>();
+        Map<AttributeI, Double> mean = new HashMap<>();
+        Map<AttributeI, Double> stdv = new HashMap<>();
+        long total = 0;
+        MGXMasterI anyMaster = null;
+
+        for (DistributionI<Long> d : dists) {            
+            anyMaster = d.getMaster();
+            total += d.getTotalClassifiedElements();
+            for (Entry<AttributeI, Long> e : d.entrySet()) {
+                AttributeI attr = e.getKey();
+                long count = e.getValue();
+                if (!summary.containsKey(attr)) {
+                    summary.put(attr, new StatisticsCalculator());
+                }
+                summary.get(attr).add(count);
+            }
+        }        
+        for (Entry<AttributeI, StatisticsCalculator> entry : summary.entrySet()){
+            mean.put(entry.getKey(), entry.getValue().getMean());
+            stdv.put(entry.getKey(), entry.getValue().getStdv());
+        }
+
+        return new Pair<DistributionI<Double>, DistributionI<Double>>(new NormalizedDistribution(anyMaster, mean, total), new NormalizedDistribution(anyMaster, stdv, total));
+    }
 
     public static <T extends Long> DistributionI<Long> fromTree(TreeI<T> tree, AttributeTypeI aType) {
         Map<AttributeI, Long> summary = new HashMap<>();
@@ -58,5 +86,39 @@ public class DistributionFactory {
             }
         }
         return new Distribution(master, summary, total);
+    }
+    
+    private static class StatisticsCalculator {
+
+        private long n;
+        private double mean, m2;
+        
+        public StatisticsCalculator() {
+            n = 0;
+            mean = 0;
+            m2 = 0;
+        }
+        
+        public void add(double value){
+            n++;
+            double delta = value - mean;
+            mean += delta / n;
+            m2 += delta * (value - mean); 
+        }
+        
+        public double getMean(){
+            return mean;
+        }
+        
+        public double getStdv(){
+            if (n<2)
+                return Double.NaN;
+            else
+                return m2 / (n-1);
+        }
+        
+        public long getCount(){
+            return n;
+        }
     }
 }
