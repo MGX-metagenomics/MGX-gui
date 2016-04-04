@@ -92,6 +92,10 @@ public class VGroupManager implements VGroupManagerI {
     public void registerResolver(ConflictResolver cr) {
         resolver = cr;
     }
+    
+    public ConflictResolver getResolver(){
+        return resolver;
+    }
 
     private boolean hasVizGroup(String name) {
         for (VisualizationGroupI vg : vizGroups) {
