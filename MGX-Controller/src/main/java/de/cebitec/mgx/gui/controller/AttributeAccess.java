@@ -140,8 +140,15 @@ public class AttributeAccess implements AttributeAccessI {
     }
 
     @Override
-    public AttributeI create(AttributeI obj) {
-        throw new UnsupportedOperationException("Not supported.");
+    public AttributeI create(AttributeI obj) throws MGXException {
+         try {
+            AttributeDTO dto = AttributeDTOFactory.getInstance().toDTO(obj);
+            long objId = dtomaster.Attribute().create(dto);
+            obj.setId(objId);
+        } catch (MGXServerException | MGXClientException ex) {
+            throw new MGXException(ex);
+        }
+        return obj;
     }
 
     @Override
