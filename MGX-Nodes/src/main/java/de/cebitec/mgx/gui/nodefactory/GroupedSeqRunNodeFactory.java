@@ -38,11 +38,13 @@ public class GroupedSeqRunNodeFactory extends Children.Keys<SeqRunI> implements 
                     case VisualizationGroupI.VISGROUP_ACTIVATED:
                         return;
                     case VisualizationGroupI.VISGROUP_CHANGED:
-                        System.err.println("vgchanged, updating node view");
+                        //System.err.println("GroupedSeqRunNodeFactory: vgchanged, updating node view");
                         refreshChildren();
                         return;
                     case ModelBaseI.OBJECT_DELETED:
-                        vGroup.removePropertyChangeListener(this);
+                        if (vGroup.equals(evt.getSource())) {
+                            vGroup.removePropertyChangeListener(this);
+                        }
                         break;
                     default:
                         System.err.println(getClass().getName() + " in GroupedSeqRunNodeFactory got PCE " + evt.toString());

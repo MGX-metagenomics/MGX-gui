@@ -3,6 +3,7 @@ package de.cebitec.mgx.gui.controller;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.AttributeAccessI;
 import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.exception.MGXLoggedoutException;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.SearchRequestI;
 import de.cebitec.mgx.api.misc.TaskI;
@@ -47,9 +48,12 @@ public class AttributeAccess implements AttributeAccessI {
     private final MGXDTOMaster dtomaster;
     private final MGXMasterI master;
 
-    public AttributeAccess(MGXDTOMaster dtomaster, MGXMasterI master) {
+    public AttributeAccess(MGXDTOMaster dtomaster, MGXMasterI master) throws MGXException {
         this.dtomaster = dtomaster;
         this.master = master;
+          if (master.isDeleted()) {
+            throw new MGXLoggedoutException("You are disconnected.");
+        }
     }
 
     @Override
@@ -65,7 +69,7 @@ public class AttributeAccess implements AttributeAccessI {
                 }
             };
 
-        } catch (MGXServerException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             Logger.getLogger(AttributeAccess.class.getName()).log(Level.SEVERE, null, ex);
             throw new MGXException(ex);
         }
@@ -132,7 +136,7 @@ public class AttributeAccess implements AttributeAccessI {
                 total += ac.getCount();
                 res.put(attr, ac.getCount());
             }
-        } catch (MGXServerException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             Logger.getLogger(AttributeAccess.class.getName()).log(Level.SEVERE, null, ex);
             throw new MGXException(ex);
         }
@@ -140,8 +144,15 @@ public class AttributeAccess implements AttributeAccessI {
     }
 
     @Override
-    public AttributeI create(AttributeI obj) {
-        throw new UnsupportedOperationException("Not supported.");
+    public AttributeI create(AttributeI obj) throws MGXException {
+         try {
+            AttributeDTO dto = AttributeDTOFactory.getInstance().toDTO(obj);
+            long objId = dtomaster.Attribute().create(dto);
+            obj.setId(objId);
+        } catch (MGXServerException | MGXClientException ex) {
+            throw new MGXException(ex);
+        }
+        return obj;
     }
 
     @Override
@@ -177,7 +188,7 @@ public class AttributeAccess implements AttributeAccessI {
         try {
             AttributeCorrelation corr = dtomaster.Attribute().getCorrelation(attributeType1.getId(), job1.getId(), attributeType2.getId(), job2.getId());
             return MatrixDTOFactory.getInstance().toModel(master, corr);
-        } catch (MGXServerException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             throw new MGXException(ex);
         }
     }
@@ -203,7 +214,7 @@ public class AttributeAccess implements AttributeAccessI {
                 res.put(attr, ac.getCount());
             }
 
-        } catch (MGXServerException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             Logger.getLogger(AttributeAccess.class.getName()).log(Level.SEVERE, null, ex);
             throw new MGXException(ex);
         }
@@ -253,7 +264,7 @@ public class AttributeAccess implements AttributeAccessI {
         Iterator<SequenceDTO> searchResult = null;
         try {
             searchResult = dtomaster.Attribute().search(reqdto);
-        } catch (MGXServerException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             throw new MGXException(ex);
         }
 

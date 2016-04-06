@@ -6,7 +6,6 @@
 package de.cebitec.mgx.gui.nodeactions;
 
 import de.cebitec.gpms.rest.GPMSClientI;
-import de.cebitec.mgx.gui.controller.RBAC;
 import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import org.openide.util.Utilities;

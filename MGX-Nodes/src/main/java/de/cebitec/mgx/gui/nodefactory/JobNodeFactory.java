@@ -40,7 +40,7 @@ public class JobNodeFactory extends MGXNodeFactoryBase<JobI> implements NodeList
     }
 
     @Override
-    protected boolean createKeys(List<JobI> toPopulate) {
+    protected boolean addKeys(List<JobI> toPopulate) {
         List<JobI> tmp = new ArrayList<>();
         try {
             Iterator<SeqRunI> iter = getMaster().SeqRun().fetchall();

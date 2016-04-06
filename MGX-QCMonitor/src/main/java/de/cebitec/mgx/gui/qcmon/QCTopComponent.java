@@ -5,12 +5,15 @@
  */
 package de.cebitec.mgx.gui.qcmon;
 
+import de.cebitec.mgx.api.model.ModelBaseI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.qc.DataRowI;
 import de.cebitec.mgx.api.model.qc.QCResultI;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Component;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -56,7 +59,7 @@ import org.openide.util.Utilities;
         displayName = "Quality Control",
         preferredID = "QCTopComponent"
 )
-public final class QCTopComponent extends TopComponent implements LookupListener {
+public final class QCTopComponent extends TopComponent implements LookupListener, PropertyChangeListener {
 
     private final Lookup.Result<SeqRunI> resultSeqRun;
     private SeqRunI currentSeqRun = null;
@@ -130,18 +133,21 @@ public final class QCTopComponent extends TopComponent implements LookupListener
     private void update() {
         SeqRunI prevRun = currentSeqRun;
 
-        Collection<? extends SeqRunI> runs = resultSeqRun.allInstances();
-        for (SeqRunI run : runs) {
+        for (SeqRunI run : resultSeqRun.allInstances()) {
             if (currentSeqRun == null || !run.equals(currentSeqRun)) {
                 currentSeqRun = run;
+                break;
             }
         }
-        if (currentSeqRun == null) {
-            return;
-        }
-        if (currentSeqRun.equals(prevRun)) {
+
+        if (currentSeqRun == null || currentSeqRun.equals(prevRun)) {
             return; // no update needed
         }
+
+        if (prevRun != null) {
+            prevRun.removePropertyChangeListener(this);
+        }
+        currentSeqRun.addPropertyChangeListener(this);
 
         SwingWorker<List<QCResultI>, Void> sw = new SwingWorker<List<QCResultI>, Void>() {
 
@@ -163,7 +169,7 @@ public final class QCTopComponent extends TopComponent implements LookupListener
                 } else {
                     int idx = tabbedPane.getSelectedIndex();
                     tabbedPane.removeAll();
-                    int cnt=0;
+                    int cnt = 0;
                     for (QCResultI qcr : qc) {
                         Component chart = createChart(qcr);
                         tabbedPane.add(qcr.getName(), chart);
@@ -180,49 +186,61 @@ public final class QCTopComponent extends TopComponent implements LookupListener
         sw.execute();
     }
 
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (evt.getSource() instanceof SeqRunI && currentSeqRun != null && currentSeqRun.equals(evt.getSource())) {
+            if (ModelBaseI.OBJECT_DELETED.equals(evt.getPropertyName())) {
+                SeqRunI src = (SeqRunI) evt.getSource();
+                src.removePropertyChangeListener(this);
+                currentSeqRun = null;
+                tabbedPane.removeAll();
+            }
+        }
+    }
+
     private static Component createChart(QCResultI qcr) {
-        if (qcr.getName().equals("Sequence quality distribution")) {            
+        if (qcr.getName().equals("Sequence quality distribution")) {
             YIntervalSeriesCollection qualityDataset = new YIntervalSeriesCollection();
             DataRowI[] data = qcr.getData();
             DataRowI quality = data[0];
             DataRowI error = data[1];
-            
+
             YIntervalSeries qualitySeries = new YIntervalSeries(quality.getName(), true, false);
             float[] qualityData = quality.getData();
             float[] errorData = error.getData();
-            for (int x=1; x < qualityData.length; x++){
-                qualitySeries.add(x, qualityData[x], qualityData[x]-errorData[x], qualityData[x]+errorData[x]);
+            for (int x = 1; x < qualityData.length; x++) {
+                qualitySeries.add(x, qualityData[x], qualityData[x] - errorData[x], qualityData[x] + errorData[x]);
             }
             qualityDataset.addSeries(qualitySeries);
-            
+
             boolean showLegend = false;
             JFreeChart chart = ChartFactory.createXYLineChart(null, null, null, qualityDataset, PlotOrientation.VERTICAL, showLegend, true, false);
-            XYPlot plot = (XYPlot) chart.getPlot();            
-            
+            XYPlot plot = (XYPlot) chart.getPlot();
+
             plot.addRangeMarker(new IntervalMarker(0, 20, Color.RED, new BasicStroke(0.5f), null, null, 0.3f));
             plot.addRangeMarker(new IntervalMarker(20, 28, Color.YELLOW, new BasicStroke(0.5f), null, null, 0.3f));
             plot.addRangeMarker(new IntervalMarker(28, 500, Color.GREEN, new BasicStroke(0.5f), null, null, 0.3f));
-            
+
             XYLineAndShapeRenderer dataRenderer = new XYLineAndShapeRenderer();
             dataRenderer.setSeriesPaint(0, Color.BLUE);
             dataRenderer.setSeriesShapesVisible(0, false);
             dataRenderer.setSeriesStroke(0, new BasicStroke(1.0f));
             plot.setRenderer(0, dataRenderer);
             plot.setDataset(1, qualityDataset);
-            
+
             XYErrorRenderer errorRenderer = new XYErrorRenderer();
             errorRenderer.setDrawXError(false);
             errorRenderer.setErrorPaint(Color.BLACK);
             errorRenderer.setErrorStroke(new BasicStroke(1.0f));
             errorRenderer.setSeriesShapesVisible(0, false);
-            errorRenderer.setSeriesShapesVisible(1, false);            
+            errorRenderer.setSeriesShapesVisible(1, false);
             plot.setRenderer(1, errorRenderer);
-            
+
             plot.getRangeAxis().setRange(new Range(0, errorRenderer.findRangeBounds(qualityDataset).getUpperBound() + 5));
 
             chart.setBorderPaint(Color.WHITE);
             chart.setBackgroundPaint(Color.WHITE);
-            ChartPanel cPanel = new ChartPanel(chart);            
+            ChartPanel cPanel = new ChartPanel(chart);
             plot.setBackgroundPaint(Color.WHITE);
             return cPanel;
         } else {

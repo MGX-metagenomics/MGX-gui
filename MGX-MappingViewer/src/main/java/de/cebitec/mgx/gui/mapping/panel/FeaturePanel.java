@@ -166,6 +166,10 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
                 newData.add(r2a(r));
             }
         } catch (MGXException ex) {
+            if (vc.isClosed()) {
+                regs.clear();
+                return true;
+            }
             Exceptions.printStackTrace(ex);
         }
 
@@ -201,11 +205,16 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
             }
         }
         DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.US);
-        String seqLen = formatter.format(vc.getReference().getLength());
-
-        return "<html><b>" + vc.getReference().getName() + "</b><hr>"
-                + seqLen + " bp</html>";
+        String seqLen;
+        try {
+            seqLen = formatter.format(getReferenceLength());
+            return "<html><b>" + vc.getReference().getName() + "</b><hr>"
+                    + seqLen + " bp</html>";
+        } catch (MGXException ex) {
+            return null;
+        }
     }
+
     private boolean inDrag = false;
     private int dragStart = -1;
 
@@ -245,7 +254,7 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
             int posInRef = px2bp(e.getX());
             int offset = posInRef - dragStart + 1;
             dragStart = posInRef;
-            vc.setBounds(FastMath.max(0, bounds[0] - offset), FastMath.min(vc.getReference().getLength() - 1, bounds[1] - offset));
+            vc.setBounds(FastMath.max(0, bounds[0] - offset), FastMath.min(getReferenceLength() - 1, bounds[1] - offset));
         }
     }
 

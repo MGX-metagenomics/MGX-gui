@@ -119,13 +119,13 @@ public class DownloadSeqRun extends AbstractAction {
                         writer.close();
                         super.finished();
                     } catch (Exception ex) {
-                        failed();
+                        failed(ex.getMessage());
                     }
                     complete = true;
                 }
 
                 @Override
-                public void failed() {
+                public void failed(String reason) {
                     try {
                         writer.close();
                     } catch (Exception ex) {
@@ -133,8 +133,9 @@ public class DownloadSeqRun extends AbstractAction {
                     if (target.exists()) {
                         target.delete();
                     }
-                    super.failed();
+                    setStatus(downloader.getErrorMessage());
                     complete = true;
+                    super.failed(reason);
                 }
 
                 @Override
@@ -146,9 +147,7 @@ public class DownloadSeqRun extends AbstractAction {
                             }
                             break;
                         case DownloadBaseI.TRANSFER_FAILED:
-                            setStatus(downloader.getErrorMessage());
-                            failed();
-                            downloader.removePropertyChangeListener(this);
+                            failed(pce.getNewValue().toString());
                             break;
                         default:
                             super.propertyChange(pce);

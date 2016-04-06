@@ -6,6 +6,7 @@
 package de.cebitec.mgx.gui.mapping.panel;
 
 import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.exception.MGXLoggedoutException;
 import de.cebitec.mgx.api.model.MappedSequenceI;
 import de.cebitec.mgx.gui.mapping.ViewController;
 import de.cebitec.mgx.gui.mapping.shapes.ColoredRectangle;
@@ -32,7 +33,6 @@ public class RecruitmentIdentityPanel extends PanelBase {
     private final static float MID_BIN_THRESHOLD = 75f;
     private final static float HI_BIN_THRESHOLD = 97f;
     private final List<ColoredRectangle> rects = new ArrayList<>();
-    private final int refLength;
     private long maxBinCov = -1;
     private final int topBorderPx = 3;
     private final int bottomBorderPx = 5;
@@ -43,7 +43,6 @@ public class RecruitmentIdentityPanel extends PanelBase {
         setPreferredSize(new Dimension(5000, 50));
         setMaximumSize(new Dimension(5000, 50));
         setBorder(javax.swing.BorderFactory.createLineBorder(Color.BLACK));
-        refLength = vc.getReference().getLength();
     }
 
     @Override
@@ -92,6 +91,9 @@ public class RecruitmentIdentityPanel extends PanelBase {
         if (maxBinCov == -1) {
             try {
                 maxBinCov = vc.getMaxCoverage();
+            } catch (MGXLoggedoutException mle) {
+                rects.clear();
+                return true;
             } catch (MGXException ex) {
                 Exceptions.printStackTrace(ex);
             }
@@ -124,7 +126,7 @@ public class RecruitmentIdentityPanel extends PanelBase {
                 binnedIdentity[0] = 0;
                 binnedIdentity[1] = 0;
                 binnedIdentity[2] = 0;
-                mappings = vc.getMappings(from, FastMath.min(to, refLength - 1));
+                mappings = vc.getMappings(from, FastMath.min(to, getReferenceLength() - 1));
                 while (mappings.hasNext()) {
                     MappedSequenceI mSeq = mappings.next();
                     if (mSeq.getIdentity() >= HI_BIN_THRESHOLD) {

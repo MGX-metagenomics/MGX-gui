@@ -194,6 +194,8 @@ public class GroupFrame extends GroupFrameBase<VisualizationGroupI> {
                 break;
             case ReplicateGroupI.REPLICATEGROUP_REPLICATE_ADDED:
             case ReplicateGroupI.REPLICATEGROUP_REPLICATE_REMOVED:
+            case ReplicateGroupI.REPLICATEGROUP_ACTIVATED:
+            case ReplicateGroupI.REPLICATEGROUP_DEACTIVATED:
             case VGroupManagerI.REPLICATEGROUP_SELECTION_CHANGED:
                 // ignore
                 break;

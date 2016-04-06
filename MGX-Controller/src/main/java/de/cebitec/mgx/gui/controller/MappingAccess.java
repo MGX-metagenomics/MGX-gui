@@ -3,6 +3,7 @@ package de.cebitec.mgx.gui.controller;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.MappingAccessI;
 import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.exception.MGXLoggedoutException;
 import de.cebitec.mgx.api.exception.MGXTimeoutException;
 import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.model.MGXReferenceI;
@@ -30,9 +31,12 @@ public class MappingAccess extends MappingAccessI {
     private final MGXDTOMaster dtomaster;
     private final MGXMasterI master;
 
-    public MappingAccess(MGXDTOMaster dtomaster, MGXMasterI master) {
+    public MappingAccess(MGXDTOMaster dtomaster, MGXMasterI master) throws MGXException {
         this.dtomaster = dtomaster;
         this.master = master;
+          if (master.isDeleted()) {
+            throw new MGXLoggedoutException("You are disconnected.");
+        }
     }
 
     @Override
@@ -119,7 +123,7 @@ public class MappingAccess extends MappingAccessI {
     public UUID openMapping(long id) throws MGXException {
         try {
             return dtomaster.Mapping().openMapping(id);
-        } catch (MGXServerException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             throw new MGXException(ex);
         }
     }
@@ -128,7 +132,7 @@ public class MappingAccess extends MappingAccessI {
     public void closeMapping(UUID uuid) throws MGXException {
         try {
             dtomaster.Mapping().closeMapping(uuid);
-        } catch (MGXServerException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             if (ex.getMessage().contains("No mapping session for")) {
                 // session already closed due to timeout
                 throw new MGXTimeoutException(ex);
@@ -141,7 +145,7 @@ public class MappingAccess extends MappingAccessI {
     public long getMaxCoverage(UUID uuid) throws MGXException {
         try {
             return dtomaster.Mapping().getMaxCoverage(uuid);
-        } catch (MGXServerException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             if (ex.getMessage().contains("No mapping session for")) {
                 throw new MGXTimeoutException(ex);
             }

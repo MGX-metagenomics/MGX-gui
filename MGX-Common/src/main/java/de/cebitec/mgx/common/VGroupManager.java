@@ -66,11 +66,11 @@ public class VGroupManager implements VGroupManagerI {
     private final Map<AttributeRank, String> currentAttributeType = new HashMap<>();
     private ConflictResolver resolver = null;
 
-    private static final Color colors[] = {Color.decode("#1d72aa"), Color.decode("#c44440"), Color.decode("#8cbb4e"), 
+    private static final Color colors[] = {Color.decode("#1d72aa"), Color.decode("#c44440"), Color.decode("#8cbb4e"),
         Color.decode("#795892"), Color.decode("#0099b2"), Color.decode("#f38533"), Color.decode("#8baad1")};
-    
+
     private VGroupManager() {
-        pcs = new ParallelPropertyChangeSupport(this, false);
+        pcs = new ParallelPropertyChangeSupport(this);
         //
         // limit pool size to 20
         //
@@ -83,7 +83,7 @@ public class VGroupManager implements VGroupManagerI {
         }
         return instance;
     }
-    
+
     public static VGroupManagerI getTestInstance() {
         return new VGroupManager();
     }
@@ -117,19 +117,14 @@ public class VGroupManager implements VGroupManagerI {
 
     @Override
     public List<VisualizationGroupI> getActiveVisualizationGroups() {
-        List<VisualizationGroupI> ret = new ArrayList<>();
-        for (VisualizationGroupI g : vizGroups) {
-            if (g.isActive()) {
-                ret.add(g);
+        List<VisualizationGroupI> ret = new ArrayList<>(vizGroups.size());
+        synchronized (vizGroups) {
+            for (VisualizationGroupI g : vizGroups) {
+                if (g.isActive()) {
+                    ret.add(g);
+                }
             }
         }
-        return ret;
-    }
-
-    @Override
-    public Collection<VisualizationGroupI> getAllVisualizationGroups() {
-        List<VisualizationGroupI> ret = new ArrayList<>(vizGroups.size());
-        ret.addAll(vizGroups);
         return ret;
     }
 
@@ -142,7 +137,8 @@ public class VGroupManager implements VGroupManagerI {
         assert resolver != null;
 
         if (!aType.equals(currentAttributeType.get(rank))) {
-            List<VisualizationGroupI> conflicts = new ArrayList<>();
+            //currentAttributeType.put(rank, aType);
+            List<VisualizationGroupI> conflicts = new ArrayList<>(vizGroups.size());
             for (VisualizationGroupI vg : getActiveVisualizationGroups()) {
                 try {
                     vg.selectAttributeType(rank, aType);
@@ -247,63 +243,29 @@ public class VGroupManager implements VGroupManagerI {
                 vg.close();
                 vizGroups.remove(vg);
                 vg.deleted();
+                vg.removePropertyChangeListener(this);
+                if (vg.equals(selectedGroup)) {
+                    selectedGroup = null;
+                    firePropertyChange(VISGROUP_SELECTION_CHANGED, vg, null);
+                }
             }
         }
-    }
-
-    @Override
-    public void propertyChange(PropertyChangeEvent pce) {
-        pcs.firePropertyChange(pce);
-    }
-
-//    private VisualizationGroupI getGroup(String name) {
-//        for (VisualizationGroupI vg : groups.values()) {
-//            if (name.equals(vg.getName())) {
-//                return vg;
-//            }
-//        }
-//        //System.err.println("group " + name + " not found");
-//        assert false; // shouldn't happen
-//        return null;
-//    }
-    private void firePropertyChange(String name, Object oldValue, Object newValue) {
-        pcs.firePropertyChange(name, oldValue, newValue);
-    }
-
-    @Override
-    public void addPropertyChangeListener(PropertyChangeListener p) {
-        pcs.addPropertyChangeListener(p);
-    }
-
-    @Override
-    public void removePropertyChangeListener(PropertyChangeListener p) {
-        pcs.removePropertyChangeListener(p);
     }
 
     private VisualizationGroupI selectedGroup = null;
     private ReplicateGroupI selectedReplicateGroup = null;
 
     @Override
-    public void setSelectedVizGroup(VisualizationGroupI group) {
+    public final void setSelectedVizGroup(VisualizationGroupI group) {
         if (group != null && selectedGroup != group && !group.isDeleted()) {
             selectedGroup = group;
-            firePropertyChange(VISGROUP_SELECTION_CHANGED, 0, selectedGroup);
+            firePropertyChange(VISGROUP_SELECTION_CHANGED, null, selectedGroup);
         }
     }
 
     @Override
     public final VisualizationGroupI getSelectedVisualizationGroup() {
         return selectedGroup;
-    }
-
-    @Override
-    public <T> Future<T> submit(Fetcher<T> f) {
-        return pool.submit(f);
-    }
-
-    @Override
-    public Collection<ReplicateGroupI> getReplicateGroups() {
-        return Collections.unmodifiableCollection(replicateGroups);
     }
 
     @Override
@@ -329,22 +291,61 @@ public class VGroupManager implements VGroupManagerI {
 
     @Override
     public void removeReplicateGroup(ReplicateGroupI rg) {
-        for (ReplicateI r : rg.getReplicates()) {
-            vizGroups.remove(r);
+        if (rg != null && replicateGroups.contains(rg)) {
+            for (ReplicateI r : rg.getReplicates()) {
+                //vizGroups.remove(r);
+                removeVisualizationGroup(r);
+            }
+            rg.close();
+            replicateGroups.remove(rg);
+            if (selectedReplicateGroup != null && selectedReplicateGroup.equals(rg)) {
+                selectedReplicateGroup = null;
+                firePropertyChange(REPLICATEGROUP_SELECTION_CHANGED, rg, null);
+            }
+            rg.deleted();
+            rg.removePropertyChangeListener(this);
         }
-        rg.close();
-        replicateGroups.remove(rg);
-        if (selectedReplicateGroup != null && selectedReplicateGroup.equals(rg)) {
-            selectedReplicateGroup = null;
-        }
-        rg.deleted();
     }
 
     @Override
     public void setSelectedReplicateGroup(ReplicateGroupI replicateGroup) {
         if (selectedReplicateGroup != replicateGroup) {
             selectedReplicateGroup = replicateGroup;
-            firePropertyChange(REPLICATEGROUP_SELECTION_CHANGED, 0, selectedReplicateGroup);
+            firePropertyChange(REPLICATEGROUP_SELECTION_CHANGED, null, selectedReplicateGroup);
         }
+    }
+
+    @Override
+    public Collection<VisualizationGroupI> getAllVisualizationGroups() {
+        return Collections.unmodifiableCollection(vizGroups);
+    }
+
+    @Override
+    public Collection<ReplicateGroupI> getReplicateGroups() {
+        return Collections.unmodifiableCollection(replicateGroups);
+    }
+
+    @Override
+    public <T> Future<T> submit(Fetcher<T> f) {
+        return pool.submit(f);
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent pce) {
+        pcs.firePropertyChange(pce);
+    }
+
+    private void firePropertyChange(String name, Object oldValue, Object newValue) {
+        pcs.firePropertyChange(name, oldValue, newValue);
+    }
+
+    @Override
+    public void addPropertyChangeListener(PropertyChangeListener p) {
+        pcs.addPropertyChangeListener(p);
+    }
+
+    @Override
+    public void removePropertyChangeListener(PropertyChangeListener p) {
+        pcs.removePropertyChangeListener(p);
     }
 }

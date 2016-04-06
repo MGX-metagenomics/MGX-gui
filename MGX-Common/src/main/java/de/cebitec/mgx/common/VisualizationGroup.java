@@ -85,7 +85,7 @@ public class VisualizationGroup implements VisualizationGroupI {
     }
 
     @Override
-    public void close() {
+    public synchronized void close() {
         for (SeqRunI sr : getSeqRuns()) {
             sr.removePropertyChangeListener(this);
         }
@@ -343,7 +343,7 @@ public class VisualizationGroup implements VisualizationGroupI {
         }
 
         fireVGroupChanged(VISGROUP_CHANGED);
-        modified();
+        //modified();
     }
 
     @Override
@@ -359,7 +359,7 @@ public class VisualizationGroup implements VisualizationGroupI {
                 pcs.firePropertyChange(evt);
                 break;
             default:
-                System.err.println("unhandled PCE: " + evt.getPropertyName());
+                System.err.println("unhandled PCE in VGroup: " + evt.getPropertyName());
                 assert false;
         }
     }

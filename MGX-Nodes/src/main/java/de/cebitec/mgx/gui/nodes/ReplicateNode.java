@@ -90,6 +90,10 @@ public class ReplicateNode extends AbstractNodeBase<VisualizationGroupI> {
                 setName((String) evt.getNewValue());
                 setDisplayName((String) evt.getNewValue());
                 break;
+            case VisualizationGroupI.VISGROUP_HAS_DIST:
+                break;
+            case VisualizationGroupI.VISGROUP_CHANGED:
+                break;
             default:
                 super.propertyChange(evt);
                 break;

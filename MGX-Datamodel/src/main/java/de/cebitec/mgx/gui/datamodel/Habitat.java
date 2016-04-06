@@ -102,13 +102,6 @@ public class Habitat extends HabitatI {
     }
 
     @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = (int) (31 * hash + this.id);
-        return hash;
-    }
-
-    @Override
     public int compareTo(HabitatI o) {
         return name.compareTo(o.getName());
     }

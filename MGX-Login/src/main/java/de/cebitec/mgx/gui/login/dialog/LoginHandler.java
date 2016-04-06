@@ -9,6 +9,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.List;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.NotificationLineSupport;
@@ -29,6 +31,7 @@ public class LoginHandler implements ActionListener {
     private DialogDescriptor dialog = null;
     private NotificationLineSupport nline;
     //
+    private PingMaster pingMaster = null;
 
     private LoginHandler() {
     }
@@ -54,7 +57,7 @@ public class LoginHandler implements ActionListener {
             }
         });
 
-        panel.setUser(NbPreferences.forModule(MGXserverPanel.class).get("lastLogin", ""));
+        panel.setUser(NbPreferences.forModule(MGXserverPanel.class).get("lastLogin" + gpmsClient.getServerName(), ""));
         panel.setPassword("");
 
         if ("".equals(gpmsClient.getBaseURI())) {
@@ -86,15 +89,21 @@ public class LoginHandler implements ActionListener {
         if (ae.getSource() == DialogDescriptor.OK_OPTION) {
             String user = panel.getUser();
             String password = panel.getPassword();
-            NbPreferences.forModule(MGXserverPanel.class).put("lastLogin", user);
-            final GPMSClientI gpms = Utilities.actionsGlobalContext().lookup(GPMSClientI.class);
+
+            final GPMSClientI gpmsClient = Utilities.actionsGlobalContext().lookup(GPMSClientI.class);
+
+            if (gpmsClient == null) {
+                return;
+            }
+            NbPreferences.forModule(MGXserverPanel.class).put("lastLogin" + gpmsClient.getServerName(), user);
+
             try {
                 panel.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
                 boolean loggedIn = false;
                 String errorMsg = "";
                 try {
-                    loggedIn = gpms.login(user, password);
+                    loggedIn = gpmsClient.login(user, password);
                 } catch (GPMSException ex) {
                     loggedIn = false;
                     errorMsg = ex.getMessage();
@@ -104,9 +113,7 @@ public class LoginHandler implements ActionListener {
                     EventQueue.invokeLater(new Runnable() {
                         @Override
                         public void run() {
-//                            LoginState.getInstance().disable();
-//                            openProjectExplorer(gpms);
-                            startPing(gpms);
+                            startPing(gpmsClient);
                         }
                     });
                 } else {
@@ -119,32 +126,111 @@ public class LoginHandler implements ActionListener {
         }
     }
 
-    private static void startPing(final GPMSClientI gpmsClient) {
-        Thread t = new Thread(new Runnable() {
-            private int refresh = -1;
-            private long rtt = 0;
+    private void startPing(final GPMSClientI gpmsClient) {
+        GPMSPinger t = new GPMSPinger(gpmsClient);
+        t.start();
 
-            @Override
-            public void run() {
-                while (gpmsClient.loggedIn()) {
-                    refresh++;
-                    if (refresh == 30) {
-                        refresh = 0;
-                        long now = System.currentTimeMillis();
-                        long serverTime = gpmsClient.ping();
-                        rtt = System.currentTimeMillis() - now;
-                    }
-                    StatusDisplayer.getDefault().setStatusText("Connected to " + gpmsClient.getServerName() + " " + rtt + " ms RTT");
-                    try {
-                        Thread.sleep(2500);
-                    } catch (InterruptedException ex) {
+        if (pingMaster == null) {
+            pingMaster = new PingMaster(t);
+            pingMaster.start();
+        } else {
+            pingMaster.add(t);
+        }
+    }
+
+    private static class PingMaster extends Thread {
+
+        private final List<GPMSPinger> pingers = new ArrayList<>();
+
+        public PingMaster(GPMSPinger p) {
+            pingers.add(p);
+            setName("PingMaster");
+            setDaemon(true);
+        }
+
+        @Override
+        public void run() {
+            while (true) {
+                String statusMessage = "<html>";
+
+                GPMSPinger[] tmp;
+                synchronized (pingers) {
+                    tmp = pingers.toArray(new GPMSPinger[]{});
+                }
+
+                for (GPMSPinger p : tmp) {
+                    if (p.isAlive()) {
+                        String msg = p.getMessage();
+                        if (msg != null) {
+                            statusMessage += msg;
+                        }
+                        if (p != tmp[tmp.length - 1]) {
+                            statusMessage += "<b>|</b>";
+                        }
+                    } else {
+                        synchronized (pingers) {
+                            pingers.remove(p);
+                        }
                     }
                 }
-                StatusDisplayer.getDefault().setStatusText("");
+
+                statusMessage += "</html>";
+
+                StatusDisplayer.getDefault().setStatusText(statusMessage);
+                try {
+                    Thread.sleep(2500);
+                } catch (InterruptedException ex) {
+                }
             }
-        });
-        t.setName("Ping-" + gpmsClient.getServerName());
-        t.setDaemon(true);
-        t.start();
+            //StatusDisplayer.getDefault().setStatusText("");
+        }
+
+        private void add(GPMSPinger t) {
+            synchronized (pingers) {
+                pingers.add(t);
+            }
+        }
+    }
+
+    private static class GPMSPinger extends Thread {
+
+        private final GPMSClientI gpmsClient;
+        private int refresh = 29;
+        private long rtt = 0;
+        private String text = null;
+
+        public GPMSPinger(GPMSClientI gpmsClient) {
+            this.gpmsClient = gpmsClient;
+            setName("Ping-" + gpmsClient.getServerName());
+            setDaemon(true);
+        }
+
+        @Override
+        public void run() {
+            while (gpmsClient.loggedIn()) {
+                refresh++;
+                if (refresh == 30) {
+                    refresh = 0;
+                    long now = System.currentTimeMillis();
+                    long serverTime = gpmsClient.ping();
+                    rtt = System.currentTimeMillis() - now;
+                }
+
+                String color = rtt > 10
+                        ? rtt > 1000 ? "red" : "orange"
+                        : "black";
+
+                text = String.format("&nbsp;%s&nbsp;<font color=\"%s\">%d</font> ms&nbsp;", gpmsClient.getServerName(), color, rtt);
+                try {
+                    Thread.sleep(2400);
+                } catch (InterruptedException ex) {
+                }
+            }
+            text = null;
+        }
+
+        public String getMessage() {
+            return text;
+        }
     }
 }

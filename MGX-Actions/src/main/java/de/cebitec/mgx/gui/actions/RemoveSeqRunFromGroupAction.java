@@ -3,17 +3,20 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.cebitec.mgx.gui.nodeactions;
+package de.cebitec.mgx.gui.actions;
 
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import java.util.Collection;
 import static javax.swing.Action.NAME;
+import org.openide.awt.ActionID;
+import org.openide.awt.ActionRegistration;
 import org.openide.nodes.Node;
 import org.openide.util.HelpCtx;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
+import org.openide.util.NbBundle;
 import org.openide.util.Utilities;
 import org.openide.util.actions.NodeAction;
 
@@ -21,6 +24,16 @@ import org.openide.util.actions.NodeAction;
  *
  * @author sjaenick
  */
+@ActionID(
+        category = "Edit",
+        id = "de.cebitec.mgx.gui.actions.RemoveSeqRunFromGroupAction"
+)
+@ActionRegistration(
+        displayName = "#CTL_RemoveSeqRunFromGroupAction", 
+        lazy = false,
+        asynchronous = false
+)
+@NbBundle.Messages("CTL_RemoveSeqRunFromGroupAction=RemoveSeqRunFromGroupAction")
 public class RemoveSeqRunFromGroupAction extends NodeAction implements LookupListener {
 
     private final Lookup context;
