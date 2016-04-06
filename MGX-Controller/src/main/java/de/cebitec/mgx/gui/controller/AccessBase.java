@@ -2,6 +2,8 @@ package de.cebitec.mgx.gui.controller;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.AccessBaseI;
+import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.exception.MGXLoggedoutException;
 import de.cebitec.mgx.api.model.MGXDataModelBaseI;
 import de.cebitec.mgx.client.MGXDTOMaster;
 import java.util.Arrays;
@@ -17,11 +19,12 @@ public abstract class AccessBase<T extends MGXDataModelBaseI<T>> implements Acce
     private final MGXMasterI master;
     private final MGXDTOMaster dtomaster;
 
-    public AccessBase(MGXMasterI master, MGXDTOMaster dtomaster) {
-        assert master != null;
-        assert dtomaster != null;
+    public AccessBase(MGXMasterI master, MGXDTOMaster dtomaster) throws MGXException {
         this.master = master;
         this.dtomaster = dtomaster;
+        if (master.isDeleted()) {
+            throw new MGXLoggedoutException("You are disconnected.");
+        }
     }
 
     protected MGXDTOMaster getDTOmaster() {

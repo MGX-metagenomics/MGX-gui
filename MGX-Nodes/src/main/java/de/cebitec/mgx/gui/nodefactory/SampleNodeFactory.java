@@ -49,32 +49,4 @@ public class SampleNodeFactory extends MGXNodeFactoryBase<SampleI> {
         node.addNodeListener(this);
         return node;
     }
-
-//    public void refreshChildren() {
-//        refresh(true);
-//    }
-//
-//    @Override
-//    public void childrenAdded(NodeMemberEvent ev) {
-//        refresh(true);
-//    }
-//
-//    @Override
-//    public void childrenRemoved(NodeMemberEvent ev) {
-//        refresh(true);
-//    }
-//
-//    @Override
-//    public void childrenReordered(NodeReorderEvent ev) {
-//    }
-//
-//    @Override
-//    public void nodeDestroyed(NodeEvent ev) {
-//        refresh(true);
-//    }
-//
-//    @Override
-//    public void propertyChange(PropertyChangeEvent evt) {
-//        //refresh(true);
-//    }
 }

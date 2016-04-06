@@ -84,6 +84,9 @@ public class JobBySeqRunNodeFactory extends JobNodeFactory {
 
     @Override
     public void destroy() {
+        for (final SeqRunI run : runs) {
+            run.removePropertyChangeListener(stateListener);
+        }
         super.destroy();
     }
 

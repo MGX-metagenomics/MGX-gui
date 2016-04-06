@@ -39,7 +39,6 @@ import org.openide.util.Exceptions;
 public class NavigationPanel extends PanelBase implements MouseListener, MouseMotionListener {
 
     private final static int CAPTURE_DIST = 3; // px
-    private final int refLength;
     private double scaleFactor;
     private int[] previewBounds = null;
     private int[] offSet = null;
@@ -72,15 +71,14 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
         ToolTipManager.sharedInstance().registerComponent(this);
         ToolTipManager.sharedInstance().setDismissDelay(5000);
 
-        refLength = vc.getReference().getLength();
-        scaleFactor = 1d * refLength / getWidth();
+        scaleFactor = 1d * getReferenceLength() / getWidth();
 
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
                 super.componentResized(e);
 
-                scaleFactor = 1d * refLength / getWidth();
+                scaleFactor = 1d * getReferenceLength() / getWidth();
 
                 if (getHeight() == 0 || getWidth() == 0) {
                     return;
@@ -180,7 +178,7 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
         int posInRef = px2bp(e.getX());
         e.consume();
         int len = bounds[1] - bounds[0] + 1;
-        vc.setBounds(posInRef, FastMath.min(posInRef + len, refLength - 1));
+        vc.setBounds(posInRef, FastMath.min(posInRef + len, getReferenceLength() - 1));
     }
 
     private int dragType = 0;  // 1=left, 2=mid, 3=right
@@ -228,7 +226,6 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
         int posInRef = px2bp(e.getX());
 
         //int[] bounds = vc.getBounds();
-
         switch (dragType) {
             case 1:
                 // update left bound
@@ -240,7 +237,7 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
                 // move interval
                 if (previewBounds != null) {
                     previewBounds[0] = FastMath.max(0, previewBounds[0]);
-                    previewBounds[1] = FastMath.min(refLength - 1, previewBounds[1]);
+                    previewBounds[1] = FastMath.min(getReferenceLength() - 1, previewBounds[1]);
                     vc.setBounds(previewBounds[0], previewBounds[1]);
                 }
                 break;
@@ -278,7 +275,6 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
         int posInRef = px2bp(e.getX());
 
         //int[] bounds1 = vc.getBounds();
-
         switch (dragType) {
             case 1:
                 // preview left bound
@@ -319,7 +315,7 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
 
     @Override
     public boolean update() {
-        scaleFactor = 1d * refLength / getWidth();
+        scaleFactor = 1d * getReferenceLength() / getWidth();
         return true;
     }
 
@@ -357,7 +353,11 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
                     scaledImage = null;
                     createScaledImage();
                 } catch (InterruptedException | ExecutionException ex) {
-                    Exceptions.printStackTrace(ex);
+                    if (vc.isClosed()) {
+                        return;
+                    } else {
+                        Exceptions.printStackTrace(ex);
+                    }
                 } finally {
                     repaint();
                 }
@@ -372,11 +372,11 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
             return;
         }
         ProgressHandle ph = ProgressHandle.createHandle("Fetching coverage data");
-        ph.start(refLength);
+        ph.start(getReferenceLength());
 
         maxCov = vc.getMaxCoverage();
 
-        double covScaleX = 1d * refLength / targetImage.getWidth();
+        double covScaleX = 1d * getReferenceLength() / targetImage.getWidth();
         double covScaleY = (targetImage.getHeight() * 1d) / (FastMath.log(maxCov * 1d));
 
         Graphics2D g2 = targetImage.createGraphics();
@@ -388,58 +388,58 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
         double[] gpStart = new double[2];
         double[] lastPoint = new double[2];
 
-        IntIterator covIter = vc.getCoverageIterator();
-        while (covIter.hasNext()) {
-            int cov = covIter.next();
+        try {
+            IntIterator covIter = vc.getCoverageIterator();
+            while (covIter.hasNext()) {
+                int cov = covIter.next();
 
-            if (cov == 0) {
-                if (gp != null) {
-                    gp.lineTo(lastPoint[0], baseY); // down to bottom line
-                    gp.lineTo(gpStart[0], gpStart[1]); // close shape
-                    gp.closePath();
-                    drawArea(g2, new Area(gp));
-                    lastPoint[0] = gpStart[0];
-                    lastPoint[1] = gpStart[1];
-                    gp = null;
-                }
-            } else {
-                // we have some coverage..
-                double drawPos = pos * 1d / covScaleX;
-                double covPos = baseY - (FastMath.log(cov) * covScaleY);
-
-                if (gp == null) {
-                    gp = new GeneralPath();
-                    gpStart[0] = drawPos; // remember positions so we can close the shape later
-                    gpStart[1] = baseY;
-                    gp.moveTo(drawPos, baseY);
-
-                    gp.lineTo(drawPos, covPos);
-                    lastPoint[0] = drawPos;
-                    lastPoint[1] = baseY;
+                if (cov == 0) {
+                    if (gp != null) {
+                        gp.lineTo(lastPoint[0], baseY); // down to bottom line
+                        gp.lineTo(gpStart[0], gpStart[1]); // close shape
+                        gp.closePath();
+                        drawArea(g2, new Area(gp));
+                        lastPoint[0] = gpStart[0];
+                        lastPoint[1] = gpStart[1];
+                        gp = null;
+                    }
                 } else {
-                    // add a new point if distance >= 3px
-                    if (FastMath.abs(lastPoint[0] - drawPos) > 3 || FastMath.abs(lastPoint[1] - covPos) > 3) {
+                    // we have some coverage..
+                    double drawPos = pos * 1d / covScaleX;
+                    double covPos = baseY - (FastMath.log(cov) * covScaleY);
+
+                    if (gp == null) {
+                        gp = new GeneralPath();
+                        gpStart[0] = drawPos; // remember positions so we can close the shape later
+                        gpStart[1] = baseY;
+                        gp.moveTo(drawPos, baseY);
+
                         gp.lineTo(drawPos, covPos);
                         lastPoint[0] = drawPos;
-                        lastPoint[1] = covPos;
-                    }
+                        lastPoint[1] = baseY;
+                    } else // add a new point if distance >= 3px
+                     if (FastMath.abs(lastPoint[0] - drawPos) > 3 || FastMath.abs(lastPoint[1] - covPos) > 3) {
+                            gp.lineTo(drawPos, covPos);
+                            lastPoint[0] = drawPos;
+                            lastPoint[1] = covPos;
+                        }
                 }
+
+                ph.progress(pos);
+                pos++;
             }
 
-            ph.progress(pos);
-            pos++;
+            if (gp != null) {
+                gp.lineTo(lastPoint[0], baseY); // down to bottom line
+                gp.lineTo(gpStart[0], gpStart[1]); // close shape
+                gp.closePath();
+                drawArea(g2, new Area(gp));
+                gp = null;
+            }
+        } finally {
+            ph.finish();
+            repaint();
         }
-
-        if (gp != null) {
-            gp.lineTo(lastPoint[0], baseY); // down to bottom line
-            gp.lineTo(gpStart[0], gpStart[1]); // close shape
-            gp.closePath();
-            drawArea(g2, new Area(gp));
-            gp = null;
-        }
-
-        ph.finish();
-        repaint();
     }
 
     @Override
@@ -452,8 +452,12 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
             buf = null;
         }
         String tmp = buf != null ? String.valueOf(buf[0]) : "unknown";
-        return "<html>" + vc.getReference().getName() + "<br>Position: " + bpPos + "<br>Coverage: "
-                + tmp + "</html>";
+        try {
+            return "<html>" + vc.getReference().getName() + "<br>Position: " + bpPos + "<br>Coverage: "
+                    + tmp + "</html>";
+        } catch (MGXException ex) {
+            return null;
+        }
     }
 
     private void drawArea(Graphics2D g2, Area a) {
@@ -475,15 +479,15 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
         g2.drawLine(0, midY, getWidth(), midY); // midline
 
         g2.drawLine(getWidth() / 4, midY - 3, getWidth() / 4, midY + 3);
-        String text1 = String.valueOf(refLength / 4);
+        String text1 = String.valueOf(getReferenceLength() / 4);
         g2.drawString(text1, getWidth() / 4 - textWidth(g2, text1) / 2, midY + 13);
 
         g2.drawLine(getWidth() / 2, midY - 3, getWidth() / 2, midY + 3);
-        String text2 = String.valueOf(refLength / 2);
+        String text2 = String.valueOf(getReferenceLength() / 2);
         g2.drawString(text2, getWidth() / 2 - textWidth(g2, text2) / 2, midY + 13);
 
         g2.drawLine(3 * getWidth() / 4, midY - 3, 3 * getWidth() / 4, midY + 3);
-        String text3 = String.valueOf(3 * refLength / 4);
+        String text3 = String.valueOf(3 * getReferenceLength() / 4);
         g2.drawString(text3, 3 * getWidth() / 4 - textWidth(g2, text3) / 2, midY + 13);
     }
 

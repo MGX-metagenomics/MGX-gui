@@ -29,7 +29,7 @@ import java.util.UUID;
  */
 public class ToolAccess extends AccessBase<ToolI> implements ToolAccessI {
 
-    public ToolAccess(MGXMasterI master, MGXDTOMaster dtomaster) {
+    public ToolAccess(MGXMasterI master, MGXDTOMaster dtomaster) throws MGXException {
         super(master, dtomaster);
     }
 

@@ -19,9 +19,10 @@ public abstract class MGXTask implements Runnable, PropertyChangeListener {
     public static final int PROGRESS_UNKNOWN = -1;
     private final PropertyChangeSupport pcs;
     private final String taskName;
-    private String statusMessage = "";
+    private volatile String statusMessage = null;
     private String state = TASK_CHANGED;
     private final UUID uuid = UUID.randomUUID();
+    private volatile boolean processingDone = false;
 
     public MGXTask(String name) {
         taskName = name;
@@ -31,15 +32,15 @@ public abstract class MGXTask implements Runnable, PropertyChangeListener {
 
     @Override
     public final void run() {
-        fireTaskChanged();
+        pcs.firePropertyChange(state, 0, 1);
         if (process()) {
             finished();
         } else {
-            failed();
+            failed(getStatus());
         }
     }
 
-    public final String getStatus() {
+    public final synchronized String getStatus() {
         return statusMessage;
     }
 
@@ -47,10 +48,12 @@ public abstract class MGXTask implements Runnable, PropertyChangeListener {
         return taskName;
     }
 
-    protected final void setStatus(String s) {
-        if (statusMessage == null || !statusMessage.equals(s)) {
-            statusMessage = s;
-            fireTaskChanged();
+    protected final synchronized void setStatus(String s) {
+        if (s!= null && !"".equals(s.trim())) {
+            if (statusMessage == null || !s.equals(statusMessage)) {
+                statusMessage = s;
+                pcs.firePropertyChange(state, 0, s);
+            }
         }
     }
 
@@ -69,20 +72,21 @@ public abstract class MGXTask implements Runnable, PropertyChangeListener {
         return MGXTask.PROGRESS_UNKNOWN;
     }
 
-    public void finished() {
-        setStatus("Done");
-        state = TASK_FINISHED;
-        fireTaskChanged();
+    public synchronized void finished() {
+        if (!processingDone) {
+            state = TASK_FINISHED;
+            processingDone = true;
+            setStatus("Done");
+        }
     }
 
-    public void failed() {
-        setStatus("Failed: " + getStatus());
-        state = TASK_FAILED;
-        fireTaskChanged();
-    }
-
-    private void fireTaskChanged() {
-        pcs.firePropertyChange(state, 0, 1);
+    public synchronized void failed(String reason) {
+        if (!processingDone) {
+            processingDone = true;
+            setStatus("Failed: " + reason);
+            state = TASK_FAILED;
+            pcs.firePropertyChange(state, 0, reason);
+        }
     }
 
     public final void addPropertyChangeListener(PropertyChangeListener p) {

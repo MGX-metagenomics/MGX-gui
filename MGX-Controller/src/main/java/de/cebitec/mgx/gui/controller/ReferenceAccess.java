@@ -4,6 +4,7 @@ import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.ReferenceAccessI;
 import de.cebitec.mgx.api.access.datatransfer.UploadBaseI;
 import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.exception.MGXLoggedoutException;
 import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.model.Identifiable;
 import de.cebitec.mgx.api.model.MGXReferenceI;
@@ -23,7 +24,6 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.Iterator;
 import java.util.UUID;
-import org.openide.util.Exceptions;
 
 /**
  *
@@ -34,9 +34,12 @@ public class ReferenceAccess implements ReferenceAccessI {
     private final MGXDTOMaster dtomaster;
     private final MGXMasterI master;
 
-    public ReferenceAccess(MGXDTOMaster dtomaster, MGXMasterI master) {
+    public ReferenceAccess(MGXDTOMaster dtomaster, MGXMasterI master) throws MGXException {
         this.dtomaster = dtomaster;
         this.master = master;
+          if (master.isDeleted()) {
+            throw new MGXLoggedoutException("You are disconnected.");
+        }
     }
 
     @Override

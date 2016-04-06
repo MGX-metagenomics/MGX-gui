@@ -29,7 +29,7 @@ import org.openide.util.Exceptions;
  */
 public class MappingCtx implements PropertyChangeListener, AutoCloseable {
 
-    private final MappingI m;
+    private final MappingI mapping;
     private final MGXReferenceI ref;
     private final JobI job;
     private final SeqRunI run;
@@ -38,15 +38,17 @@ public class MappingCtx implements PropertyChangeListener, AutoCloseable {
     private CoverageInfoCache<Set<MappedSequenceI>> mapCache = null;
     private UUID sessionUUID = null;
     private long maxCoverage = -1;
+    private final int refLength;
     private final PropertyChangeSupport pcs = new ParallelPropertyChangeSupport(this);
     private volatile boolean isClosed = false;
     public static final String MAPPING_CLOSED = "MappingClosed";
 
     public MappingCtx(MappingI m, MGXReferenceI ref, JobI job, SeqRunI run) throws MGXException {
-        this.m = m;
+        this.mapping = m;
         this.ref = ref;
         this.job = job;
         this.run = run;
+        this.refLength = ref.getLength();
         MGXMasterI master = m.getMaster();
 
         if (m.getJobID() != job.getId() || m.getReferenceID() != ref.getId() || m.getSeqrunID() != run.getId()) {
@@ -65,16 +67,20 @@ public class MappingCtx implements PropertyChangeListener, AutoCloseable {
         mapCache = CacheFactory.createMappedSequenceCache(ref.getMaster(), ref, sessionUUID);
     }
 
+    public int getReferenceLength() {
+        return refLength;
+    }
+
     public MGXReferenceI getReference() {
         return ref;
     }
 
     public MGXMasterI getMaster() {
-        return m.getMaster();
+        return mapping.getMaster();
     }
 
     public MappingI getMapping() {
-        return m;
+        return mapping;
     }
 
     public SeqRunI getRun() {
@@ -104,13 +110,19 @@ public class MappingCtx implements PropertyChangeListener, AutoCloseable {
 //                }
 //            }
 //        }
+        if (isClosed()) {
+            throw new MGXException("Mapping context is closed.");
+        }
         return regCache.get(from, to);
     }
 
     public final Iterator<MappedSequenceI> getMappings(final int from, final int to, final int minIdentity) throws MGXException {
+        if (isClosed()) {
+            throw new MGXException("Mapping context is closed.");
+        }
         final Iterator<MappedSequenceI> iterator = mapCache.get(from, to).iterator();
         return new Iterator<MappedSequenceI>() {
-            
+
             private MappedSequenceI cur = null;
 
             @Override
@@ -186,7 +198,7 @@ public class MappingCtx implements PropertyChangeListener, AutoCloseable {
     }
 
     @Override
-    public void propertyChange(PropertyChangeEvent evt) {
+    public synchronized void propertyChange(PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals(ModelBaseI.OBJECT_DELETED)) {
             close();
         }
@@ -198,32 +210,37 @@ public class MappingCtx implements PropertyChangeListener, AutoCloseable {
 
     @Override
     public synchronized void close() {
-        isClosed = true;
-        // close caches first
-        if (seqCache != null) {
-            seqCache.close();
-            seqCache = null;
-        }
-        if (regCache != null) {
-            regCache.close();
-            regCache = null;
-        }
-        if (mapCache != null) {
-            mapCache.close();
-            mapCache = null;
-        }
+        if (!isClosed()) {
+            isClosed = true;
+            // close caches first
+            if (seqCache != null) {
+                seqCache.close();
+                seqCache = null;
+            }
+            if (regCache != null) {
+                regCache.close();
+                regCache = null;
+            }
+            if (mapCache != null) {
+                mapCache.close();
+                mapCache = null;
+            }
 
-        try {
-            ref.getMaster().Mapping().closeMapping(sessionUUID);
-        } catch (MGXException ex) {
-            Exceptions.printStackTrace(ex);
-        }
-        m.removePropertyChangeListener(this);
-        ref.removePropertyChangeListener(this);
-        run.removePropertyChangeListener(this);
-        job.removePropertyChangeListener(this);
+            try {
+                MGXMasterI master = ref.getMaster();
+                if (!master.isDeleted()) {
+                    master.Mapping().closeMapping(sessionUUID);
+                }
+            } catch (MGXException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+            mapping.removePropertyChangeListener(this);
+            ref.removePropertyChangeListener(this);
+            run.removePropertyChangeListener(this);
+            job.removePropertyChangeListener(this);
 
-        pcs.firePropertyChange(MAPPING_CLOSED, false, true);
+            pcs.firePropertyChange(MAPPING_CLOSED, false, true);
+        }
     }
 
 }

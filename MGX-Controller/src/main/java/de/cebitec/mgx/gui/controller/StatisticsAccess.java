@@ -3,6 +3,7 @@ package de.cebitec.mgx.gui.controller;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.StatisticsAccessI;
 import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.exception.MGXLoggedoutException;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.PrincipalComponent;
@@ -41,9 +42,12 @@ public class StatisticsAccess implements StatisticsAccessI {
     private final MGXMasterI master;
     private final MGXDTOMaster dtomaster;
 
-    public StatisticsAccess(MGXMasterI master, MGXDTOMaster dtomaster) {
+    public StatisticsAccess(MGXMasterI master, MGXDTOMaster dtomaster) throws MGXException {
         this.master = master;
         this.dtomaster = dtomaster;
+          if (master.isDeleted()) {
+            throw new MGXLoggedoutException("You are disconnected.");
+        }
     }
 
     @Override

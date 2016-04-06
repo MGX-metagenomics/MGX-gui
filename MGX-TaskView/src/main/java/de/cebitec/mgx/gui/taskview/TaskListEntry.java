@@ -24,6 +24,7 @@ public class TaskListEntry extends javax.swing.JPanel implements PropertyChangeL
 //        initComponents();
 //    }
     private final MGXTask task;
+    private volatile boolean processingDone = false;
 
     public TaskListEntry(MGXTask task) {
         this.task = task;
@@ -50,26 +51,32 @@ public class TaskListEntry extends javax.swing.JPanel implements PropertyChangeL
     }
     private ImagePanel ip = new ImagePanel();
 
-    private void finished() {
-        setDetailText(task.getStatus());
-        task.removePropertyChangeListener(this);
-        jProgressBar1.setIndeterminate(false);
-        jProgressBar1.setValue(jProgressBar1.getMaximum());
-        imagepanel.add(ip, BorderLayout.CENTER);
-        ip.setImage("de/cebitec/mgx/gui/taskview/ok.png");
-        revalidate();
-        repaint();
+    private synchronized void finished() {
+        if (!processingDone) {
+            processingDone = true;
+            setDetailText(task.getStatus());
+            task.removePropertyChangeListener(this);
+            jProgressBar1.setIndeterminate(false);
+            jProgressBar1.setValue(jProgressBar1.getMaximum());
+            imagepanel.add(ip, BorderLayout.CENTER);
+            ip.setImage("de/cebitec/mgx/gui/taskview/ok.png");
+            revalidate();
+            repaint();
+        }
     }
 
-    private void failed() {
-        setDetailText(task.getStatus());
-        task.removePropertyChangeListener(this);
-        jProgressBar1.setIndeterminate(false);
-        jProgressBar1.setValue(jProgressBar1.getMinimum());
-        imagepanel.add(ip, BorderLayout.CENTER);
-        ip.setImage("de/cebitec/mgx/gui/taskview/fail.png");
-        revalidate();
-        repaint();
+    private synchronized void failed(String reason) {
+        if (!processingDone) {
+            processingDone = true;
+            setDetailText(reason);
+            task.removePropertyChangeListener(this);
+            jProgressBar1.setIndeterminate(false);
+            jProgressBar1.setValue(jProgressBar1.getMinimum());
+            imagepanel.add(ip, BorderLayout.CENTER);
+            ip.setImage("de/cebitec/mgx/gui/taskview/fail.png");
+            revalidate();
+            repaint();
+        }
     }
 
     public JProgressBar getProgressBar() {
@@ -173,7 +180,7 @@ public class TaskListEntry extends javax.swing.JPanel implements PropertyChangeL
                 EventQueue.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        failed();
+                        failed(pce.getNewValue().toString());
                     }
                 });
                 break;
