@@ -93,6 +93,7 @@ public class VGroupManager implements VGroupManagerI {
         resolver = cr;
     }
     
+    @Override
     public ConflictResolver getResolver(){
         return resolver;
     }
