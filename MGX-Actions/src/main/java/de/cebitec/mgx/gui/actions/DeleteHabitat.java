@@ -53,7 +53,7 @@ public class DeleteHabitat extends AbstractAction {
                         return task != null && task.getState() == TaskI.State.FINISHED;
                     } catch (MGXException ex) {
                         setStatus(ex.getMessage());
-                        failed();
+                        failed(ex.getMessage());
                         return false;
                     }
                 }

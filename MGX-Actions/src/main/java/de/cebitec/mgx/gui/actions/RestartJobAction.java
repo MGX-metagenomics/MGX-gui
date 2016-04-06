@@ -54,7 +54,7 @@ public final class RestartJobAction extends NodeAction {
                         task = job.getMaster().Job().restart(job);
                     } catch (MGXException ex) {
                         setStatus(ex.getMessage());
-                        failed();
+                        failed(ex.getMessage());
                         return false;
                     }
                     while (task != null && !task.done()) {
@@ -63,7 +63,7 @@ public final class RestartJobAction extends NodeAction {
                             job.getMaster().<JobI>Task().refresh(task);
                         } catch (MGXException ex) {
                             setStatus(ex.getMessage());
-                            failed();
+                            failed(ex.getMessage());
                             return false;
                         }
                         sleep();

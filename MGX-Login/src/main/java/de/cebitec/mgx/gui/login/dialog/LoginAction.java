@@ -63,30 +63,26 @@ public class LoginAction extends AbstractAction implements ContextAwareAction, L
     }
 
     @Override
-    public void resultChanged(LookupEvent le) {
-        if (curClient != null) {
-            curClient.removePropertyChangeListener(this);
-            curClient = null;
-        }
+    public synchronized void resultChanged(LookupEvent le) {
         Collection<? extends GPMSClientI> allClients = result.allInstances();
         if (allClients.size() == 1) {
-            for (GPMSClientI gpmsClient : allClients) {
-                if (gpmsClient != null && !gpmsClient.loggedIn()) {
-                    super.setEnabled(true);
-                    curClient = gpmsClient;
-                    curClient.addPropertyChangeListener(this);
-                    break;
-                } else {
-                    super.setEnabled(false);
+            GPMSClientI newClient = allClients.toArray(new GPMSClientI[]{})[0];
+
+            if (newClient != null && !newClient.equals(curClient)) {
+                if (curClient != null) {
+                    curClient.removePropertyChangeListener(this);
                 }
+                newClient.addPropertyChangeListener(this);
+                curClient = newClient;
             }
+            super.setEnabled(!curClient.loggedIn());
         } else {
             super.setEnabled(false);
         }
     }
 
     @Override
-    public void propertyChange(PropertyChangeEvent evt) {
+    public synchronized void propertyChange(PropertyChangeEvent evt) {
         if (curClient != null && curClient.equals(evt.getSource())) {
             super.setEnabled(!curClient.loggedIn());
         }

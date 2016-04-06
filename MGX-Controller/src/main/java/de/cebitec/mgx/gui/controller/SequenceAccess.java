@@ -7,6 +7,7 @@ import de.cebitec.mgx.api.access.datatransfer.UploadBaseI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.model.AttributeI;
+import de.cebitec.mgx.api.model.ModelBaseI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.SequenceI;
 import de.cebitec.mgx.client.MGXDTOMaster;
@@ -30,7 +31,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Iterator;
 import java.util.Set;
-import org.openide.util.Exceptions;
 
 /**
  *
@@ -38,7 +38,7 @@ import org.openide.util.Exceptions;
  */
 public class SequenceAccess extends AccessBase<SequenceI> implements SequenceAccessI {
 
-    public SequenceAccess(MGXMasterI master, MGXDTOMaster dtomaster) {
+    public SequenceAccess(MGXMasterI master, MGXDTOMaster dtomaster) throws MGXException {
         super(master, dtomaster);
     }
 
@@ -65,7 +65,9 @@ public class SequenceAccess extends AccessBase<SequenceI> implements SequenceAcc
     public DownloadBaseI createDownloader(SeqRunI seqrun, SeqWriterI<DNASequenceI> writer, boolean closeWriter) throws MGXException {
         try {
             final SeqDownloader sd = getDTOmaster().Sequence().createDownloader(seqrun.getId(), writer, closeWriter);
-            return new ServerSeqRunDownloader(sd);
+            ServerSeqRunDownloader ret = new ServerSeqRunDownloader(sd);
+            seqrun.addPropertyChangeListener(ret);
+            return ret;
         } catch (MGXClientException ex) {
             throw new MGXException(ex);
         }
@@ -236,7 +238,14 @@ public class SequenceAccess extends AccessBase<SequenceI> implements SequenceAcc
 
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
-            fireTaskChange(evt.getPropertyName(), sd.getProgress());
+            System.err.println(evt);
+            switch (evt.getPropertyName()) {
+                case TRANSFER_FAILED:
+                    fireTaskChange(evt.getPropertyName(), evt.getNewValue());
+                    break;
+                default:
+                    fireTaskChange(evt.getPropertyName(), sd.getProgress());
+            }
         }
 
     }

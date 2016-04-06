@@ -21,10 +21,9 @@ import java.util.Iterator;
  */
 public class ObservationAccess extends AccessBase<ObservationI> implements ObservationAccessI {
 
-    public ObservationAccess(MGXMasterI master, MGXDTOMaster dtomaster) {
+    public ObservationAccess(MGXMasterI master, MGXDTOMaster dtomaster) throws MGXException {
         super(master, dtomaster);
     }
-
     
     @Override
     public Iterator<ObservationI> ByRead(SequenceI s) throws MGXException {

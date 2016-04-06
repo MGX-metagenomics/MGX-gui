@@ -78,17 +78,7 @@ public abstract class MGXNodeFactoryBase<T> extends ChildFactory<T> implements N
 
     @Override
     public final void nodeDestroyed(NodeEvent ev) {
-        // this is ugly, and unnecessary everywhere else. however, here
-        // it triggers a stack overflow otherwise: refresh() makes the
-        // childfactory remove (and re-add) all nodes, which triggers a 
-        // nodeDestroyed() call for each removed node.
-        //
-        // I have no idea....
-//        if (!refreshing) {
-//            refreshing = true;
-//            refresh(true);
-//            refreshing = false;
-//        }
+
     }
 
     @Override
