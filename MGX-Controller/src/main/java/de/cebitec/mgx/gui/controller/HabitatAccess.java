@@ -23,7 +23,7 @@ import java.util.UUID;
  */
 public class HabitatAccess extends AccessBase<HabitatI> implements HabitatAccessI {
 
-    public HabitatAccess(MGXMasterI master, MGXDTOMaster dtomaster) {
+    public HabitatAccess(MGXMasterI master, MGXDTOMaster dtomaster) throws MGXException {
         super(master, dtomaster);
     }
 

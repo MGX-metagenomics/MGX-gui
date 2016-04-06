@@ -81,7 +81,13 @@ public class MappingPanel extends PanelBase {
             }
         });
 
-        mappingName = vc.getSeqRun().getName() + " vs. " + vc.getReference().getName();
+        String name = null;
+        try {
+            name = vc.getSeqRun().getName() + " vs. " + vc.getReference().getName();
+        } catch (MGXException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+        mappingName = name;
 
         setComponentPopupMenu(sm);
     }
@@ -130,8 +136,12 @@ public class MappingPanel extends PanelBase {
         }
 
         String tmp = buf != null ? String.valueOf(buf[0]) : "unknown";
-        return "<html>" + mappingName + "<br>Mapped with: " + vc.getTool().getName() + "<br>Position: " + bpPos + "<br>Coverage: "
-                + tmp + "</html>";
+        try {
+            return "<html>" + mappingName + "<br>Mapped with: " + vc.getTool().getName() + "<br>Position: " + bpPos + "<br>Coverage: "
+                    + tmp + "</html>";
+        } catch (MGXException ex) {
+            return null;
+        }
     }
 
     @Override
@@ -148,6 +158,11 @@ public class MappingPanel extends PanelBase {
                 // FIXME - reopen?
             }
         } catch (MGXException ex) {
+            if (vc.isClosed()) {
+                coverage.clear();
+                tracks.clear();
+                return true;
+            }
             Exceptions.printStackTrace(ex);
             return true;
         }
@@ -203,11 +218,11 @@ public class MappingPanel extends PanelBase {
             coverage.addAll(ret);
         }
 
-        now = System.currentTimeMillis() - now;
-        if (now > 30) {
-            System.err.println("update() for " + getClass().getSimpleName() + " took " + now + " ms");
-            System.err.println(String.format("  getMappings: %d createLayout: %d createShapes: %d", timeGetMappings, timeCreateLayout, timeCreateShapes));
-        }
+//        now = System.currentTimeMillis() - now;
+//        if (now > 30) {
+//            System.err.println("update() for " + getClass().getSimpleName() + " took " + now + " ms");
+//            System.err.println(String.format("  getMappings: %d createLayout: %d createShapes: %d", timeGetMappings, timeCreateLayout, timeCreateShapes));
+//        }
         return true;
     }
 

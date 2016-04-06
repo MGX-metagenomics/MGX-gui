@@ -78,8 +78,8 @@ public class UploadFile extends AbstractAction {
                 }
 
                 @Override
-                public void failed() {
-                    super.failed();
+                public void failed(String reason) {
+                    super.failed(reason);
                     uploader.removePropertyChangeListener(this);
                     parent.refreshChildren();
                 }
@@ -91,7 +91,7 @@ public class UploadFile extends AbstractAction {
                             setStatus(String.format("%1$d bytes sent", pce.getNewValue()));
                             break;
                         case TransferBaseI.TRANSFER_FAILED:
-                            failed();
+                            failed(pce.getNewValue().toString());
                             break;
                         default:
                             super.propertyChange(pce);

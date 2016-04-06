@@ -3,6 +3,7 @@ package de.cebitec.mgx.gui.controller;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.JobAccessI;
 import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.exception.MGXLoggedoutException;
 import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.misc.TaskI.TaskType;
 import de.cebitec.mgx.api.model.AttributeTypeI;
@@ -35,9 +36,12 @@ public class JobAccess implements JobAccessI {
     private final MGXDTOMaster dtomaster;
     private final MGXMasterI master;
 
-    public JobAccess(MGXMasterI master, MGXDTOMaster dtomaster) {
+    public JobAccess(MGXMasterI master, MGXDTOMaster dtomaster) throws MGXException {
         this.dtomaster = dtomaster;
         this.master = master;
+          if (master.isDeleted()) {
+            throw new MGXLoggedoutException("You are disconnected.");
+        }
     }
 
     protected MGXDTOMaster getDTOmaster() {
@@ -54,7 +58,7 @@ public class JobAccess implements JobAccessI {
         boolean ret;
         try {
             ret = getDTOmaster().Job().verify(obj.getId());
-        } catch (MGXServerException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             throw new MGXException(ex);
         }
         obj.modified();
@@ -67,7 +71,7 @@ public class JobAccess implements JobAccessI {
         boolean ret;
         try {
             ret = getDTOmaster().Job().execute(obj.getId());
-        } catch (MGXServerException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             throw new MGXException(ex);
         }
         obj.modified();
@@ -93,7 +97,7 @@ public class JobAccess implements JobAccessI {
         boolean ret;
         try {
             ret = getDTOmaster().Job().cancel(obj.getId());
-        } catch (MGXServerException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             throw new MGXException(ex);
         }
         if (ret) {
@@ -184,7 +188,7 @@ public class JobAccess implements JobAccessI {
                 j.setSeqrun(run);
                 all.add(j);
             }
-        } catch (MGXServerException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             throw new MGXException(ex);
         }
         return all;
@@ -199,7 +203,7 @@ public class JobAccess implements JobAccessI {
                 j.setSeqrun(run);
                 all.add(j);
             }
-        } catch (MGXServerException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             throw new MGXException(ex);
         }
         return all;
@@ -210,7 +214,7 @@ public class JobAccess implements JobAccessI {
         try {
             MGXString err = getDTOmaster().Job().getError(job.getId());
             return err.getValue();
-        } catch (MGXServerException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             throw new MGXException(ex);
         }
     }

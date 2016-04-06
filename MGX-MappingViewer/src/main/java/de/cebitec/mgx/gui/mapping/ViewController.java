@@ -6,6 +6,7 @@
 package de.cebitec.mgx.gui.mapping;
 
 import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.exception.MGXLoggedoutException;
 import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.api.model.MappedSequenceI;
 import de.cebitec.mgx.api.model.RegionI;
@@ -20,6 +21,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Set;
 import org.apache.commons.math3.util.FastMath;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -27,7 +29,7 @@ import org.apache.commons.math3.util.FastMath;
  */
 public class ViewController implements PropertyChangeListener {
 
-    private final MappingCtx ctx;
+    private MappingCtx ctx;
     private final int[] curBounds;
     private int intervalLen;
     private int[] previewBounds;
@@ -35,6 +37,7 @@ public class ViewController implements PropertyChangeListener {
     private final PropertyChangeSupport pcs;
     private int minIdentity = 0;
     //
+    public static final String VIEWCONTROLLER_CLOSED = "viewControllerClosed";
     public static final String BOUNDS_CHANGE = "boundsChange";
     public static final String MAX_COV_CHANGE = "maxCoverageChange";
     public static final String PREVIEWBOUNDS_CHANGE = "previewBoundsChange";
@@ -49,26 +52,38 @@ public class ViewController implements PropertyChangeListener {
         pcs = new ParallelPropertyChangeSupport(this, true);
     }
 
-    public MGXReferenceI getReference() {
+    public MGXReferenceI getReference() throws MGXException {
+        if (isClosed()) {
+            throw new MGXLoggedoutException("ViewController is closed");
+        }
         return ctx.getReference();
     }
 
-    public SeqRunI getSeqRun() {
+    public SeqRunI getSeqRun() throws MGXException {
+        if (isClosed()) {
+            throw new MGXLoggedoutException("ViewController is closed");
+        }
         return ctx.getRun();
     }
 
-    public ToolI getTool() {
+    public ToolI getTool() throws MGXException {
+        if (isClosed()) {
+            throw new MGXLoggedoutException("ViewController is closed");
+        }
         return ctx.getTool();
     }
 
     public long getMaxCoverage() throws MGXException {
+        if (isClosed()) {
+            throw new MGXLoggedoutException("ViewController is closed");
+        }
         return ctx.getMaxCoverage();
     }
 
     public int[] getBounds() {
         return Arrays.copyOf(curBounds, 2);
     }
-    
+
     public final int getIntervalLength() {
         return intervalLen;
     }
@@ -79,7 +94,13 @@ public class ViewController implements PropertyChangeListener {
 
     public void setBounds(int i, int j) {
         newBounds[0] = FastMath.max(0, i);
-        newBounds[1] = FastMath.min(ctx.getReference().getLength(), j);
+        try {
+            newBounds[1] = FastMath.min(getReference().getLength(), j);
+        } catch (MGXLoggedoutException ex) {
+            return;
+        } catch (MGXException ex) {
+            Exceptions.printStackTrace(ex);
+        }
 
         if (curBounds[0] != newBounds[0] || curBounds[1] != newBounds[1]) {
             curBounds[0] = newBounds[0];
@@ -105,34 +126,58 @@ public class ViewController implements PropertyChangeListener {
     }
 
     public String getSequence(int from, int to) throws MGXException {
+        if (isClosed()) {
+            throw new MGXLoggedoutException("ViewController is closed");
+        }
         return ctx.getSequence(from, to);
     }
 
     public Set<RegionI> getRegions() throws MGXException {
+        if (isClosed()) {
+            throw new MGXLoggedoutException("ViewController is closed");
+        }
         return ctx.getRegions(curBounds[0], curBounds[1]);
     }
 
     public Set<RegionI> getRegions(int from, int to) throws MGXException {
+        if (isClosed()) {
+            throw new MGXLoggedoutException("ViewController is closed");
+        }
         return ctx.getRegions(from, to);
     }
 
     public Iterator<MappedSequenceI> getMappings() throws MGXException {
+        if (isClosed()) {
+            throw new MGXLoggedoutException("ViewController is closed");
+        }
         return ctx.getMappings(curBounds[0], curBounds[1], minIdentity);
     }
 
     public Iterator<MappedSequenceI> getMappings(int from, int to) throws MGXException {
+        if (isClosed()) {
+            throw new MGXLoggedoutException("ViewController is closed");
+        }
         return ctx.getMappings(from, to, minIdentity);
     }
 
     public Iterator<MappedSequenceI> getMappings(int from, int to, int minIdent) throws MGXException {
+        if (isClosed()) {
+            throw new MGXLoggedoutException("ViewController is closed");
+        }
         return ctx.getMappings(from, to, minIdent);
     }
 
     public void getCoverage(int from, int to, int[] dest) throws MGXException {
+        if (isClosed()) {
+            throw new MGXLoggedoutException("ViewController is closed");
+        }
         ctx.getCoverage(from, to, dest);
     }
 
     public IntIterator getCoverageIterator() throws MGXException {
+        if (isClosed()) {
+            throw new MGXLoggedoutException("ViewController is closed");
+        }
         return ctx.getCoverageIterator(0, ctx.getReference().getLength() - 1);
     }
 
@@ -146,18 +191,24 @@ public class ViewController implements PropertyChangeListener {
     }
 
     @Override
-    public void propertyChange(PropertyChangeEvent evt) {
+    public synchronized void propertyChange(PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals(MappingCtx.MAPPING_CLOSED)) {
             ctx.removePropertyChangeListener(this);
+            ctx = null;
             curBounds[0] = 0;
             curBounds[1] = 0;
             intervalLen = -1;
             minIdentity = -1;
             pcs.firePropertyChange(BOUNDS_CHANGE, 0, curBounds);
+            pcs.firePropertyChange(VIEWCONTROLLER_CLOSED, false, true);
         }
     }
 
     public boolean isClosed() {
-        return ctx.isClosed();
+        return ctx == null || ctx.isClosed();
+    }
+
+    public synchronized void close() {
+        ctx.close();
     }
 }

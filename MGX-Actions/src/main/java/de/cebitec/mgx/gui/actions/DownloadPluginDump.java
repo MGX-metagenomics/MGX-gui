@@ -96,16 +96,16 @@ public class DownloadPluginDump extends AbstractAction {
                         writer.close();
                         super.finished();
                     } catch (IOException ex) {
-                        failed();
+                        failed(ex.getMessage());
                     }
                 }
 
                 @Override
-                public void failed() {
+                public void failed(String reason) {
                     if (target.exists()) {
                         target.delete();
                     }
-                    super.failed();
+                    super.failed(reason);
                 }
 
                 @Override
@@ -115,7 +115,7 @@ public class DownloadPluginDump extends AbstractAction {
                             setStatus(String.format("%1$d bytes received", pce.getNewValue()));
                             break;
                         case DownloadBaseI.TRANSFER_FAILED:
-                            failed();
+                            failed(pce.getNewValue().toString());
                             break;
                         default:
                             super.propertyChange(pce);

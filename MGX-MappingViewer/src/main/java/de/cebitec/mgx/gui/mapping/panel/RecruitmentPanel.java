@@ -101,7 +101,11 @@ public class RecruitmentPanel extends PanelBase {
         try {
             mappings = vc.getMappings();
         } catch (MGXException ex) {
-            Exceptions.printStackTrace(ex);
+            if (vc.isClosed()) {
+                return true;
+            } else {
+                Exceptions.printStackTrace(ex);
+            }
             return true;
         }
         double height = getHeight() - topBorder - bottomBorder - topVSpace;

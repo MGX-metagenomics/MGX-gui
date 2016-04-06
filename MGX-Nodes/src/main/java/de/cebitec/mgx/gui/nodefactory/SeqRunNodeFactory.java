@@ -25,7 +25,7 @@ public class SeqRunNodeFactory extends MGXNodeFactoryBase<SeqRunI> {
     }
 
     @Override
-    protected boolean createKeys(List<SeqRunI> toPopulate) {
+    protected boolean addKeys(List<SeqRunI> toPopulate) {
         try {
             Iterator<SeqRunI> ByExtract = getMaster().SeqRun().ByExtract(extract);
             while (ByExtract.hasNext()) {

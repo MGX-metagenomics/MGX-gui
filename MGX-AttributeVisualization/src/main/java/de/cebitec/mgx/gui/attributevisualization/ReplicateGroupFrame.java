@@ -217,9 +217,12 @@ public class ReplicateGroupFrame extends GroupFrameBase<ReplicateGroupI> {
                 displayName.setBackground(Color.WHITE);
                 break;
             case ReplicateGroupI.REPLICATEGROUP_ACTIVATED:
+            case VisualizationGroupI.VISGROUP_ACTIVATED:
                 //ignore
                 break;
             case ReplicateGroupI.REPLICATEGROUP_DEACTIVATED:
+            case VisualizationGroupI.VISGROUP_DEACTIVATED:
+            case VisualizationGroupI.VISGROUP_RENAMED:
                 //ignore
                 break;
             case ReplicateGroupI.REPLICATEGROUP_REPLICATE_ADDED:
