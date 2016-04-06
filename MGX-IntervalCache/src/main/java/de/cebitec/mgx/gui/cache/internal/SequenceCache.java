@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.cache.internal;
 
 import de.cebitec.mgx.gui.cache.Interval;
 import com.google.common.cache.LoadingCache;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.gui.cache.Cache;
 import java.util.Iterator;
@@ -24,7 +25,7 @@ public class SequenceCache extends Cache<String> {
     }
 
     @Override
-    public String getInternal(int from, int to) {
+    public String getInternal(int from, int to) throws MGXException {
         assert from > -1;
         assert from < to;
         assert to < ref.getLength();
@@ -40,6 +41,9 @@ public class SequenceCache extends Cache<String> {
 
             }
         } catch (ExecutionException ex) {
+            if (ex.getCause() != null && ex.getCause() instanceof MGXException) {
+                throw (MGXException) ex.getCause();
+            }
             Logger.getLogger(SequenceCache.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }

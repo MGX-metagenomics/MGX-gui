@@ -25,7 +25,7 @@ import java.util.UUID;
  */
 public class SampleAccess extends AccessBase<SampleI> implements SampleAccessI {
 
-    public SampleAccess(MGXMasterI master, MGXDTOMaster dtomaster) {
+    public SampleAccess(MGXMasterI master, MGXDTOMaster dtomaster) throws MGXException {
         super(master, dtomaster);
     }
 

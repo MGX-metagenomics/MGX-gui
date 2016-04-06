@@ -106,7 +106,7 @@ public class PCoAPlot extends ViewerI<DistributionI<Long>> {
         };
         sw.execute();
 
-        List<Point> pcoa = null;
+        List<Point> pcoa;
         try {
             pcoa = sw.get();
         } catch (InterruptedException | ExecutionException ex) {

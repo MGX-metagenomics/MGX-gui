@@ -25,7 +25,7 @@ public class DNAExtractNodeFactory extends MGXNodeFactoryBase<DNAExtractI> {
     }
 
     @Override
-    protected boolean createKeys(List<DNAExtractI> toPopulate) {
+    protected boolean addKeys(List<DNAExtractI> toPopulate) {
         Iterator<DNAExtractI> iter = null;
         try {
             iter = getMaster().DNAExtract().BySample(sample);

@@ -57,8 +57,8 @@ public class UploadReference extends AbstractAction {
                 }
 
                 @Override
-                public void failed() {
-                    super.failed();
+                public void failed(String reason) {
+                    super.failed(reason);
                     parent.refreshChildren();
                 }
 

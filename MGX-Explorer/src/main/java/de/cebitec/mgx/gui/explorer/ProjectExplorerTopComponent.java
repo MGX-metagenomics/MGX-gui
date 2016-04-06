@@ -1,8 +1,12 @@
 package de.cebitec.mgx.gui.explorer;
 
+import de.cebitec.gpms.rest.GPMSClientI;
 import de.cebitec.mgx.gui.nodefactory.ServerNodeFactory;
+import de.cebitec.mgx.gui.nodes.ServerNode;
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 import java.net.Authenticator;
 import org.netbeans.api.settings.ConvertAsProperties;
@@ -13,7 +17,6 @@ import org.openide.explorer.view.BeanTreeView;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
-import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
@@ -87,18 +90,11 @@ public final class ProjectExplorerTopComponent extends TopComponent implements E
         // set default authenticator to null to avoid NB-integrated password dialog
         Authenticator.setDefault(null);
 
-        final AbstractNode root = new InvisibleRoot(Children.create(new ServerNodeFactory(), false));
+        ServerNodeFactory serverNodeFactory = new ServerNodeFactory();
+        final AbstractNode root = new InvisibleRoot(Children.create(serverNodeFactory, false));
         exmngr.setRootContext(root);
 
-//        ServerFactory.getDefault().addPropertyChangeListener(new PropertyChangeListener() {
-//            @Override
-//            public void propertyChange(PropertyChangeEvent evt) {
-//                if (evt.getSource() instanceof ServerFactory && evt.getPropertyName().equals(ServerFactory.PROP_CHANGED)) {
-//                    ServerFactory.getDefault().
-//                }
-//            }
-//        });
-
+        // select first server node programmatically to enable the lookup-based toolbar action
         Node firstServer = root.getChildren().getNodeAt(0);
         if (firstServer != null) {
             try {
@@ -114,25 +110,23 @@ public final class ProjectExplorerTopComponent extends TopComponent implements E
                 // ignore
             }
         }
-//        SwingWorker<Void, Node> sw = new SwingWorker<Void, Node>() {
-//            @Override
-//            protected Void doInBackground() throws Exception {
-////                for (Node server : root.getChildren().getNodes()) {
-//                publish(root.getChildren().getNodes());
-////                }
-//                return null;
-//            }
-//
-//            @Override
-//            protected void process(List<Node> chunks) {
-//                for (Node n : chunks) {
-//                    if (n instanceof ServerNode) {
-//                        btv.expandNode(n);
-//                    }
-//                }
-//            }
-//        };
-//        sw.execute();
+
+        serverNodeFactory.addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                if (evt.getSource() instanceof ServerNode) {
+                    ServerNode src = (ServerNode) evt.getSource();
+                    if (evt.getPropertyName().equals(GPMSClientI.PROP_LOGGEDIN)) {
+                        Boolean newState = (Boolean) evt.getNewValue();
+                        if (newState) {
+                            btv.expandNode(src);
+                        } else {
+                            btv.collapseNode(src);
+                        }
+                    }
+                }
+            }
+        });
     }
 
     private class InvisibleRoot extends AbstractNode {

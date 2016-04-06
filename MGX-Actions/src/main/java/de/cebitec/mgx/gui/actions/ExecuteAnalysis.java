@@ -235,7 +235,7 @@ public class ExecuteAnalysis extends NodeAction implements LookupListener {
                 return master.Job().execute(job);
             } catch (MGXException ex) {
                 setStatus(ex.getMessage());
-                failed();
+                failed(ex.getMessage());
                 Exceptions.printStackTrace(ex);
             }
             return false;

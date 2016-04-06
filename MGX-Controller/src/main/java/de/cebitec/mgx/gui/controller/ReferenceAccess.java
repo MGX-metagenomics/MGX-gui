@@ -4,6 +4,7 @@ import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.ReferenceAccessI;
 import de.cebitec.mgx.api.access.datatransfer.UploadBaseI;
 import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.exception.MGXLoggedoutException;
 import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.model.Identifiable;
 import de.cebitec.mgx.api.model.MGXReferenceI;
@@ -33,9 +34,12 @@ public class ReferenceAccess implements ReferenceAccessI {
     private final MGXDTOMaster dtomaster;
     private final MGXMasterI master;
 
-    public ReferenceAccess(MGXDTOMaster dtomaster, MGXMasterI master) {
+    public ReferenceAccess(MGXDTOMaster dtomaster, MGXMasterI master) throws MGXException {
         this.dtomaster = dtomaster;
         this.master = master;
+          if (master.isDeleted()) {
+            throw new MGXLoggedoutException("You are disconnected.");
+        }
     }
 
     @Override
@@ -143,7 +147,7 @@ public class ReferenceAccess implements ReferenceAccessI {
                     return reference;
                 }
             };
-        } catch (MGXServerException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             throw new MGXException(ex);
         }
     }
@@ -153,7 +157,7 @@ public class ReferenceAccess implements ReferenceAccessI {
         try {
             UUID uuid = dtomaster.Reference().installGlobalReference(obj.getId());
             return master.<MGXReferenceI>Task().get(obj, uuid, Task.TaskType.MODIFY);
-        } catch (MGXServerException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             throw new MGXException(ex);
         }
     }
@@ -169,8 +173,13 @@ public class ReferenceAccess implements ReferenceAccessI {
     }
 
     @Override
-    public UploadBaseI createUploader(File localFile) {
-        ReferenceUploader ru = dtomaster.Reference().createUploader(localFile);
+    public UploadBaseI createUploader(File localFile) throws MGXException {
+        ReferenceUploader ru;
+        try {
+            ru = dtomaster.Reference().createUploader(localFile);
+        } catch (MGXClientException ex) {
+            throw new MGXException(ex);
+        }
         return new ServerReferenceUploader(ru);
     }
 

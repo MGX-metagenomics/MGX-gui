@@ -4,10 +4,9 @@ import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.SequenceI;
-import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.sequence.DNASequenceI;
+import de.cebitec.mgx.sequence.SeqStoreException;
 import de.cebitec.mgx.sequence.SeqWriterI;
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 import org.junit.After;
@@ -55,7 +54,7 @@ public class DownloadTest {
         
         SeqWriterI<DNASequenceI> dummy = new SeqWriterI<DNASequenceI>() {
             @Override
-            public void addSequence(DNASequenceI seq) throws IOException {
+            public void addSequence(DNASequenceI seq) throws SeqStoreException {
                 cnt.set(cnt.get() + 1);
             }
 

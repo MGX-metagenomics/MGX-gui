@@ -9,7 +9,6 @@ import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.AttributeTypeDTO;
 import de.cebitec.mgx.gui.datamodel.Job;
-import de.cebitec.mgx.gui.datamodel.misc.Task;
 import de.cebitec.mgx.gui.dtoconversion.AttributeTypeDTOFactory;
 import de.cebitec.mgx.gui.util.BaseIterator;
 import java.util.Iterator;
@@ -20,13 +19,20 @@ import java.util.Iterator;
  */
 public class AttributeTypeAccess extends AccessBase<AttributeTypeI> {
 
-    public AttributeTypeAccess(MGXMasterI master, MGXDTOMaster dtomaster) {
+    public AttributeTypeAccess(MGXMasterI master, MGXDTOMaster dtomaster) throws MGXException {
         super(master, dtomaster);
     }
 
     @Override
-    public AttributeTypeI create(AttributeTypeI obj) {
-        throw new UnsupportedOperationException("Not supported.");
+    public AttributeTypeI create(AttributeTypeI obj) throws MGXException {
+        try {
+            AttributeTypeDTO dto = AttributeTypeDTOFactory.getInstance().toDTO(obj);
+            long objId = getDTOmaster().AttributeType().create(dto);
+            obj.setId(objId);
+        } catch (MGXServerException | MGXClientException ex) {
+            throw new MGXException(ex);
+        }
+        return obj;
     }
 
     @Override
@@ -80,7 +86,7 @@ public class AttributeTypeAccess extends AccessBase<AttributeTypeI> {
                     return attr;
                 }
             };
-        } catch (MGXServerException ex) {
+        } catch (MGXServerException | MGXClientException ex) {
             throw new MGXException(ex);
         }
     }

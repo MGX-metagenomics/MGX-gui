@@ -52,7 +52,7 @@ public class MappedSequenceCache extends CoverageInfoCache<Set<MappedSequenceI>>
             }
         } catch (ExecutionException ex) {
             if (ex.getCause() instanceof MGXException) {
-                throw (MGXException)ex.getCause();
+                throw (MGXException) ex.getCause();
             }
             throw new MGXException(ex);
         }
@@ -148,6 +148,9 @@ public class MappedSequenceCache extends CoverageInfoCache<Set<MappedSequenceI>>
             }
 
         } catch (ExecutionException ex) {
+            if (ex.getCause() != null && ex.getCause() instanceof MGXException) {
+                throw (MGXException) ex.getCause();
+            }
             throw new MGXException(ex);
         }
         return ret;

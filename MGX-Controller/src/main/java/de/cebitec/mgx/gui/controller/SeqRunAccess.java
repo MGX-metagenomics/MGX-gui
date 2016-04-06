@@ -40,7 +40,7 @@ import java.util.UUID;
  */
 public class SeqRunAccess extends AccessBase<SeqRunI> implements SeqRunAccessI {
 
-    public SeqRunAccess(MGXMasterI master, MGXDTOMaster dtomaster) {
+    public SeqRunAccess(MGXMasterI master, MGXDTOMaster dtomaster) throws MGXException {
         super(master, dtomaster);
     }
 

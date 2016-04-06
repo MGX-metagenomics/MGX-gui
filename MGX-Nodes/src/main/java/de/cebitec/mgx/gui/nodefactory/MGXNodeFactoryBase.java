@@ -4,6 +4,7 @@ import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.gui.swingutils.NonEDT;
 import java.awt.EventQueue;
 import java.beans.PropertyChangeEvent;
+import java.util.List;
 import org.openide.nodes.ChildFactory;
 import org.openide.nodes.NodeEvent;
 import org.openide.nodes.NodeListener;
@@ -23,10 +24,21 @@ public abstract class MGXNodeFactoryBase<T> extends ChildFactory<T> implements N
     public MGXNodeFactoryBase(MGXMasterI master) {
         this.master = master;
     }
-    
+
     protected final MGXMasterI getMaster() {
         return master;
     }
+
+    @Override
+    protected final synchronized boolean createKeys(List<T> toPopulate) {
+        if (master != null && master.isDeleted()) {
+            return true;
+        } else {
+            return addKeys(toPopulate);
+        }
+    }
+
+    protected abstract boolean addKeys(List<T> toPopulate);
 
     public final void refreshChildren() {
 
@@ -41,13 +53,15 @@ public abstract class MGXNodeFactoryBase<T> extends ChildFactory<T> implements N
             return;
         }
         if (!refreshing) {
-            refreshing = true;
-            //System.err.println("refreshing on EDT? " + EventQueue.isDispatchThread());
-            refresh(true);
-            refreshing = false;
+            if (!master.isDeleted()) {
+                refreshing = true;
+                //System.err.println("refreshing on EDT? " + EventQueue.isDispatchThread());
+                refresh(true);
+                refreshing = false;
+            }
         }
     }
-    
+
     @Override
     public final void childrenAdded(NodeMemberEvent ev) {
         refresh(true);
@@ -64,21 +78,11 @@ public abstract class MGXNodeFactoryBase<T> extends ChildFactory<T> implements N
 
     @Override
     public final void nodeDestroyed(NodeEvent ev) {
-        // this is ugly, and unnecessary everywhere else. however, here
-        // it triggers a stack overflow otherwise: refresh() makes the
-        // childfactory remove (and re-add) all nodes, which triggers a 
-        // nodeDestroyed() call for each removed node.
-        //
-        // I have no idea....
-        if (!refreshing) {
-            refreshing = true;
-            refresh(true);
-            refreshing = false;
-        }
+
     }
 
     @Override
-    public final void propertyChange(PropertyChangeEvent evt) { 
+    public final void propertyChange(PropertyChangeEvent evt) {
         //getMaster().log(Level.SEVERE, evt.toString() + " in " + getClass().getName());
         //refresh(true); 
     }

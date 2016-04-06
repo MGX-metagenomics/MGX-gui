@@ -7,16 +7,19 @@ package de.cebitec.mgx.gui.nodes;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.model.SeqRunI;
 import java.beans.PropertyChangeEvent;
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Locale;
 import javax.swing.Action;
-import org.openide.actions.DeleteAction;
+import org.openide.filesystems.FileUtil;
 import org.openide.nodes.FilterNode;
 import org.openide.nodes.NodeEvent;
 import org.openide.nodes.NodeListener;
 import org.openide.nodes.NodeMemberEvent;
 import org.openide.nodes.NodeReorderEvent;
-import org.openide.util.actions.SystemAction;
 import org.openide.util.lookup.Lookups;
 
 /**
@@ -24,7 +27,7 @@ import org.openide.util.lookup.Lookups;
  * @author sjaenick
  */
 public class SeqRunFilterNode extends FilterNode implements NodeListener {
-    
+
     private final SeqRunNode n;
     private final VisualizationGroupI vGroup;
 
@@ -33,6 +36,7 @@ public class SeqRunFilterNode extends FilterNode implements NodeListener {
         disableDelegation(DELEGATE_SET_DISPLAY_NAME + DELEGATE_GET_ACTIONS);
         n = node;
         this.vGroup = vGroup;
+        setShortDescription(getToolTipText(n.getContent()));
         node.addNodeListener(this);
     }
 
@@ -57,6 +61,22 @@ public class SeqRunFilterNode extends FilterNode implements NodeListener {
         return false;
     }
 
+    private String getToolTipText(SeqRunI run) {
+        DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.US);
+        String numSeqs = formatter.format(run.getNumSequences());
+
+        return new StringBuilder("<html><b>Sequencing run: </b>").append(run.getName())
+                .append("<br>")
+                .append("<b>Server: </b>").append(run.getMaster().getServerName())
+                .append("<br><b>Project: </b>").append(run.getMaster().getProject())
+                .append("<br><hr><br>")
+                .append(run.getSequencingTechnology().getName()).append(" ")
+                .append(run.getSequencingMethod().getName())
+                .append("<br>")
+                .append(numSeqs).append(" reads")
+                .append("</html>").toString();
+    }
+
     @Override
     public String getDisplayName() {
         MGXMasterI m = n.getContent().getMaster();
@@ -65,7 +85,8 @@ public class SeqRunFilterNode extends FilterNode implements NodeListener {
 
     @Override
     public Action[] getActions(boolean context) {
-        return new Action[]{SystemAction.get(DeleteAction.class)};
+        Action a = FileUtil.getConfigObject("Actions/Edit/de-cebitec-mgx-gui-actions-RemoveSeqRunFromGroupAction.instance", Action.class);
+        return new Action[]{a};
     }
 
     @Override
@@ -93,5 +114,4 @@ public class SeqRunFilterNode extends FilterNode implements NodeListener {
         firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
     }
 
-    
 }

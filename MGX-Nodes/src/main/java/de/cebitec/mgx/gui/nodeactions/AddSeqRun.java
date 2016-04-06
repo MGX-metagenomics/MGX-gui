@@ -92,7 +92,7 @@ public class AddSeqRun extends AbstractAction {
                         }
 
                         @Override
-                        public void failed() {
+                        public void failed(String reason) {
                             MGXMasterI m = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
                             try {
                                 m.SeqRun().delete(seqrun);
@@ -100,7 +100,7 @@ public class AddSeqRun extends AbstractAction {
                                 Exceptions.printStackTrace(ex);
                             }
                             parent.refreshChildren();
-                            super.failed();
+                            super.failed(reason);
                         }
 
                         @Override

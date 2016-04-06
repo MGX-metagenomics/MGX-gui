@@ -61,7 +61,7 @@ public final class DeleteJobNodeAction extends NodeAction {
                             task = m.Job().delete(job);
                         } catch (MGXException ex) {
                             setStatus(ex.getMessage());
-                            failed();
+                            failed(ex.getMessage());
                             return false;
                         }
                         while (!task.done()) {
@@ -70,7 +70,7 @@ public final class DeleteJobNodeAction extends NodeAction {
                                 m.<JobI>Task().refresh(task);
                             } catch (MGXException ex) {
                                 setStatus(ex.getMessage());
-                                failed();
+                                failed(ex.getMessage());
                                 return false;
                             }
                             sleep();

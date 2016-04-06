@@ -23,7 +23,7 @@ import java.util.UUID;
  */
 public class DNAExtractAccess extends AccessBase<DNAExtractI> implements DNAExtractAccessI {
 
-    public DNAExtractAccess(MGXMasterI master, MGXDTOMaster dtomaster) {
+    public DNAExtractAccess(MGXMasterI master, MGXDTOMaster dtomaster) throws MGXException {
         super(master, dtomaster);
     }
 

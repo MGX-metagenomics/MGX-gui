@@ -8,6 +8,9 @@ import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.nodes.ProjectNode;
 import java.beans.PropertyChangeEvent;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import org.openide.nodes.ChildFactory;
@@ -25,6 +28,8 @@ import org.openide.util.Exceptions;
 public class ProjectNodeFactory extends ChildFactory<MembershipI> implements NodeListener {
 
     private final GPMSClientI gpmsclient;
+    private final List<MembershipI> tmpData = new ArrayList<>();
+    private final static Comparator<MembershipI> sortByName = new SortProjects();
 
     public ProjectNodeFactory(GPMSClientI gpms) {
         this.gpmsclient = gpms;
@@ -32,20 +37,26 @@ public class ProjectNodeFactory extends ChildFactory<MembershipI> implements Nod
     }
 
     @Override
-    protected boolean createKeys(List<MembershipI> list) {
+    protected synchronized boolean createKeys(List<MembershipI> list) {
+        if (!gpmsclient.loggedIn()) {
+            return true;
+        }
         Iterator<MembershipI> iter = null;
         try {
             iter = gpmsclient.getMemberships();
         } catch (GPMSException ex) {
             Exceptions.printStackTrace(ex);
-            return false;
+            return true;
         }
+        tmpData.clear();
         while (iter != null && iter.hasNext()) {
             MembershipI m = iter.next();
             if ("MGX".equals(m.getProject().getProjectClass().getName())) {
-                list.add(m);
+                tmpData.add(m);
             }
         }
+        Collections.sort(tmpData, sortByName);
+        list.addAll(tmpData);
         return true;
     }
 
@@ -83,5 +94,15 @@ public class ProjectNodeFactory extends ChildFactory<MembershipI> implements Nod
         if (evt.getSource().equals(gpmsclient) && GPMSClientI.PROP_LOGGEDIN.equals(evt.getPropertyName())) {
             refresh(true);
         }
+    }
+
+    private final static class SortProjects implements Comparator<MembershipI> {
+
+        @Override
+        public int compare(MembershipI m1, MembershipI m2) {
+            // sort by project name
+            return m1.getProject().getName().toLowerCase().compareTo(m2.getProject().getName().toLowerCase());
+        }
+
     }
 }

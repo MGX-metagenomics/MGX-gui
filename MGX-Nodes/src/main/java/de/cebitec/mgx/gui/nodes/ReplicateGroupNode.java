@@ -60,6 +60,18 @@ public class ReplicateGroupNode extends AbstractNodeBase<ReplicateGroupI> {
                 setName((String) evt.getNewValue());
                 setDisplayName((String) evt.getNewValue());
                 break;
+            case VisualizationGroupI.VISGROUP_HAS_DIST:
+            case VisualizationGroupI.VISGROUP_CHANGED:
+                // ignore
+                break;
+            case ReplicateGroupI.REPLICATEGROUP_ACTIVATED:
+            case ReplicateGroupI.REPLICATEGROUP_DEACTIVATED:
+                // ignore;
+                break;
+            case ReplicateGroupI.REPLICATEGROUP_REPLICATE_ADDED:
+            case ReplicateGroupI.REPLICATEGROUP_REPLICATE_REMOVED:
+                //ignore
+                break;
             default:
                 super.propertyChange(evt);
         }

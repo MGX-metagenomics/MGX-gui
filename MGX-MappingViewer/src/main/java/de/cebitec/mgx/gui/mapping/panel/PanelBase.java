@@ -5,6 +5,7 @@
  */
 package de.cebitec.mgx.gui.mapping.panel;
 
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.gui.mapping.ViewController;
 import java.awt.Color;
 import java.awt.Font;
@@ -25,6 +26,7 @@ import java.util.Arrays;
 import javax.swing.JComponent;
 import javax.swing.SwingWorker;
 import org.apache.commons.math3.util.FastMath;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -35,6 +37,7 @@ public abstract class PanelBase extends JComponent implements PropertyChangeList
     protected final ViewController vc;
     protected int[] bounds;
     private int maxCoverage = 0;
+    private int refLength;
     private double scale;
     //
     protected static final RenderingHints antiAlias = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -81,6 +84,12 @@ public abstract class PanelBase extends JComponent implements PropertyChangeList
             }
         });
         addMouseWheelListener(this);
+        
+        try {
+            refLength = vc.getReference().getLength();
+        } catch (MGXException ex) {
+            Exceptions.printStackTrace(ex);
+        }
     }
 
     private VolatileImage vimage = null;
@@ -156,6 +165,10 @@ public abstract class PanelBase extends JComponent implements PropertyChangeList
         }
 
         switch (evt.getPropertyName()) {
+            case ViewController.VIEWCONTROLLER_CLOSED:
+                vc.removePropertyChangeListener(this);
+                removeAll();
+                break;
             case ViewController.BOUNDS_CHANGE:
                 bounds = (int[]) evt.getNewValue();
                 scale = 1d / (1d * vc.getIntervalLength() / getWidth());
@@ -188,6 +201,10 @@ public abstract class PanelBase extends JComponent implements PropertyChangeList
     protected int getMaxCoverage() {
         return maxCoverage;
     }
+    
+    protected int getReferenceLength() {
+        return refLength;
+    }
 
     protected double bp2px(int i) {
         assert bounds != null;
@@ -219,7 +236,7 @@ public abstract class PanelBase extends JComponent implements PropertyChangeList
             newBounds[0] -= adjust;
             newBounds[1] += adjust;
         }
-        vc.setBounds(FastMath.max(newBounds[0], 0), FastMath.min(newBounds[1], vc.getReference().getLength() - 1));
+        vc.setBounds(FastMath.max(newBounds[0], 0), FastMath.min(newBounds[1], refLength - 1));
         e.consume();
     }
 

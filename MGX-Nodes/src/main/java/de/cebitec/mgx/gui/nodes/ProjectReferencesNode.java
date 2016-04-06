@@ -111,9 +111,9 @@ public class ProjectReferencesNode extends MGXNodeBase<MGXMasterI> {
                     }
 
                     @Override
-                    public void failed() {
+                    public void failed(String reason) {
                         setStatus(err);
-                        super.failed();
+                        super.failed(reason);
                         nf.refreshChildren();
                     }
                 };

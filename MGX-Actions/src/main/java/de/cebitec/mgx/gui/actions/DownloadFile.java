@@ -103,16 +103,16 @@ public class DownloadFile extends AbstractAction {
                         super.finished();
                     } catch (IOException ex) {
                         setStatus(ex.getMessage());
-                        failed();
+                        failed(ex.getMessage());
                     }
                 }
 
                 @Override
-                public void failed() {
+                public void failed(String reason) {
                     if (target.exists()) {
                         target.delete();
                     }
-                    super.failed();
+                    super.failed(reason);
                 }
 
                 @Override
@@ -122,7 +122,7 @@ public class DownloadFile extends AbstractAction {
                             setStatus(String.format("%1$d bytes received", pce.getNewValue()));
                             break;
                         case TransferBaseI.TRANSFER_FAILED:
-                            failed();
+                            failed(pce.getNewValue().toString());
                             break;
                         default:
                             super.propertyChange(pce);
