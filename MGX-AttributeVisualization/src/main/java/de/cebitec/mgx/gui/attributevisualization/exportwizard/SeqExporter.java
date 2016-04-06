@@ -146,7 +146,7 @@ public final class SeqExporter implements SequenceExporterI {
                 downloader.removePropertyChangeListener(this);
                 if (!ret) {
                     setStatus(downloader.getErrorMessage());
-                    failed();
+                    failed(downloader.getErrorMessage());
                 }
                 numSeqsTotal += numSeqs;
                 numSeqs = 0;
@@ -161,8 +161,8 @@ public final class SeqExporter implements SequenceExporterI {
         }
 
         @Override
-        public void failed() {
-            super.failed();
+        public void failed(String reason) {
+            super.failed(reason);
             latch.countDown();
         }
 
@@ -174,7 +174,7 @@ public final class SeqExporter implements SequenceExporterI {
                     setStatus(String.format("%1$d sequences received", numSeqsTotal + numSeqs));
                     break;
                 case TransferBaseI.TRANSFER_FAILED:
-                    failed();
+                    failed(pce.getNewValue().toString());
                     break;
                 default:
                     super.propertyChange(pce);
