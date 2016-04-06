@@ -4,13 +4,16 @@ import com.google.common.cache.LoadingCache;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.exception.MGXTimeoutException;
 import de.cebitec.mgx.api.model.MGXReferenceI;
+import de.cebitec.mgx.api.model.ModelBaseI;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Iterator;
 
 /**
  *
  * @author sjaenick
  */
-public abstract class Cache<T> {
+public abstract class Cache<T> implements PropertyChangeListener {
 
     protected final MGXReferenceI ref;
     protected final LoadingCache<Interval, T> lcache;
@@ -28,6 +31,15 @@ public abstract class Cache<T> {
         this.ref = ref;
         this.lcache = lcache;
         this.segmentSize = segSize;
+        ref.addPropertyChangeListener(this);
+    }
+
+    @Override
+    public final void propertyChange(PropertyChangeEvent evt) {
+        if (evt.getSource().equals(ref) && ModelBaseI.OBJECT_DELETED.equals(evt.getPropertyName())) {
+            ref.removePropertyChangeListener(this);
+            close();
+        }
     }
 
     public final int getSegmentSize() {
