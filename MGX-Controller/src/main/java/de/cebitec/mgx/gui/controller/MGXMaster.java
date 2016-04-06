@@ -3,9 +3,17 @@ package de.cebitec.mgx.gui.controller;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.AttributeAccessI;
 import de.cebitec.mgx.api.access.DNAExtractAccessI;
+import de.cebitec.mgx.api.access.FileAccessI;
+import de.cebitec.mgx.api.access.HabitatAccessI;
+import de.cebitec.mgx.api.access.JobAccessI;
+import de.cebitec.mgx.api.access.MappingAccessI;
 import de.cebitec.mgx.api.access.ObservationAccessI;
+import de.cebitec.mgx.api.access.ReferenceAccessI;
 import de.cebitec.mgx.api.access.SeqRunAccessI;
+import de.cebitec.mgx.api.access.SequenceAccessI;
 import de.cebitec.mgx.api.access.TaskAccessI;
+import de.cebitec.mgx.api.access.ToolAccessI;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.MGXDataModelBaseI;
 import de.cebitec.mgx.api.model.ModelBaseI;
 import de.cebitec.mgx.client.MGXDTOMaster;
@@ -32,22 +40,27 @@ public class MGXMaster extends MGXMasterI implements PropertyChangeListener {
     }
 
     @Override
-    public String getServerName() {
+    public final String getServerName() {
         return dtomaster.getServerName();
     }
 
     @Override
-    public synchronized void logout() {
-        dtomaster.logout();
+    public synchronized void close() {
+        dtomaster.close();
     }
 
     @Override
-    public String getProject() {
+    public synchronized boolean isDeleted() {
+        return super.isDeleted() || dtomaster.isClosed(); 
+    }
+
+    @Override
+    public final String getProject() {
         return dtomaster.getProject().getName();
     }
 
     @Override
-    public String getRoleName() {
+    public final String getRoleName() {
         return dtomaster.getRole().getName();
     }
 
@@ -57,82 +70,82 @@ public class MGXMaster extends MGXMasterI implements PropertyChangeListener {
     }
 
     @Override
-    public HabitatAccess Habitat() {
+    public HabitatAccessI Habitat() throws MGXException {
         return new HabitatAccess(this, dtomaster);
     }
 
     @Override
-    public AttributeAccessI Attribute() {
+    public AttributeAccessI Attribute() throws MGXException {
         return new AttributeAccess(dtomaster, this);
     }
 
     @Override
-    public AttributeTypeAccess AttributeType() {
+    public AttributeTypeAccess AttributeType() throws MGXException {
         return new AttributeTypeAccess(this, dtomaster);
     }
 
     @Override
-    public SampleAccess Sample() {
+    public SampleAccess Sample() throws MGXException {
         return new SampleAccess(this, dtomaster);
     }
 
     @Override
-    public DNAExtractAccessI DNAExtract() {
+    public DNAExtractAccessI DNAExtract() throws MGXException {
         return new DNAExtractAccess(this, dtomaster);
     }
 
     @Override
-    public SeqRunAccessI SeqRun() {
+    public SeqRunAccessI SeqRun() throws MGXException {
         return new SeqRunAccess(this, dtomaster);
     }
 
     @Override
-    public ReferenceAccess Reference() {
+    public ReferenceAccessI Reference() throws MGXException {
         return new ReferenceAccess(dtomaster, this);
     }
 
     @Override
-    public MappingAccess Mapping() {
+    public MappingAccessI Mapping() throws MGXException {
         return new MappingAccess(dtomaster, this);
     }
 
     @Override
-    public ObservationAccessI Observation() {
+    public ObservationAccessI Observation() throws MGXException {
         return new ObservationAccess(this, dtomaster);
     }
 
     @Override
-    public SequenceAccess Sequence() {
+    public SequenceAccessI Sequence() throws MGXException {
         return new SequenceAccess(this, dtomaster);
     }
 
     @Override
-    public ToolAccess Tool() {
+    public ToolAccessI Tool() throws MGXException {
         return new ToolAccess(this, dtomaster);
     }
 
     @Override
-    public JobAccess Job() {
+    public JobAccessI Job() throws MGXException {
         return new JobAccess(this, dtomaster);
     }
 
     @Override
-    public FileAccess File() {
+    public FileAccessI File() throws MGXException {
         return new FileAccess(this, dtomaster);
     }
 
     @Override
-    public TermAccess Term() {
+    public TermAccess Term() throws MGXException {
         return new TermAccess(this, dtomaster);
     }
 
     @Override
-    public <T extends MGXDataModelBaseI<T>> TaskAccessI<T> Task() {
+    public <T extends MGXDataModelBaseI<T>> TaskAccessI<T> Task() throws MGXException {
         return new TaskAccess<>(this, dtomaster);
     }
 
     @Override
-    public StatisticsAccess Statistics() {
+    public StatisticsAccess Statistics() throws MGXException {
         return new StatisticsAccess(this, dtomaster);
     }
 

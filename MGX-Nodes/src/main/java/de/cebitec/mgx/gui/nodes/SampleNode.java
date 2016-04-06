@@ -157,7 +157,7 @@ public class SampleNode extends MGXNodeBase<SampleI> {
                             return task != null && task.getState() == TaskI.State.FINISHED;
                         } catch (MGXException ex) {
                             setStatus(ex.getMessage());
-                            failed();
+                            failed(ex.getMessage());
                             return false;
                         }
                     }

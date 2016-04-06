@@ -3,6 +3,7 @@ package de.cebitec.mgx.gui.controller;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.AttributeAccessI;
 import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.exception.MGXLoggedoutException;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.SearchRequestI;
 import de.cebitec.mgx.api.misc.TaskI;
@@ -47,9 +48,12 @@ public class AttributeAccess implements AttributeAccessI {
     private final MGXDTOMaster dtomaster;
     private final MGXMasterI master;
 
-    public AttributeAccess(MGXDTOMaster dtomaster, MGXMasterI master) {
+    public AttributeAccess(MGXDTOMaster dtomaster, MGXMasterI master) throws MGXException {
         this.dtomaster = dtomaster;
         this.master = master;
+          if (master.isDeleted()) {
+            throw new MGXLoggedoutException("You are disconnected.");
+        }
     }
 
     @Override

@@ -19,7 +19,7 @@ import java.util.Iterator;
  */
 public class AttributeTypeAccess extends AccessBase<AttributeTypeI> {
 
-    public AttributeTypeAccess(MGXMasterI master, MGXDTOMaster dtomaster) {
+    public AttributeTypeAccess(MGXMasterI master, MGXDTOMaster dtomaster) throws MGXException {
         super(master, dtomaster);
     }
 

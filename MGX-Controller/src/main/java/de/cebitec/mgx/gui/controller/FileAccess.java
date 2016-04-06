@@ -5,6 +5,7 @@ import de.cebitec.mgx.api.access.FileAccessI;
 import de.cebitec.mgx.api.access.datatransfer.DownloadBaseI;
 import de.cebitec.mgx.api.access.datatransfer.UploadBaseI;
 import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.exception.MGXLoggedoutException;
 import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.model.MGXFileI;
 import de.cebitec.mgx.client.MGXDTOMaster;
@@ -33,9 +34,12 @@ public class FileAccess implements FileAccessI {
     private final MGXMasterI master;
     private final MGXDTOMaster dtomaster;
 
-    public FileAccess(MGXMasterI master, MGXDTOMaster dtomaster) {
+    public FileAccess(MGXMasterI master, MGXDTOMaster dtomaster) throws MGXException {
         this.master = master;
         this.dtomaster = dtomaster;
+          if (master.isDeleted()) {
+            throw new MGXLoggedoutException("You are disconnected.");
+        }
     }
 
     @Override

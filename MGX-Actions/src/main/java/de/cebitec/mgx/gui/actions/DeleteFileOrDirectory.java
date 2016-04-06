@@ -72,7 +72,7 @@ public class DeleteFileOrDirectory extends AbstractAction {
                 delTask = master.File().delete(file);
             } catch (MGXException ex) {
                 setStatus(ex.getMessage());
-                failed();
+                failed(ex.getMessage());
                 return false;
             }
             while (delTask != null && !delTask.done()) {
@@ -80,7 +80,7 @@ public class DeleteFileOrDirectory extends AbstractAction {
                     master.<MGXFileI>Task().refresh(delTask);
                 } catch (MGXException ex) {
                     setStatus(ex.getMessage());
-                    failed();
+                    failed(ex.getMessage());
                     return false;
                 }
                 sleep();

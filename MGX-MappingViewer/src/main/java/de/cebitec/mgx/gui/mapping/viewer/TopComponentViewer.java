@@ -16,6 +16,7 @@ import de.cebitec.mgx.gui.mapping.panel.RecruitmentIdentityPanel;
 import de.cebitec.mgx.gui.mapping.panel.RecruitmentPanel;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
@@ -50,7 +51,6 @@ import org.openide.windows.TopComponent;
     "CTL_TopComponentViewer=Mapping Window",})
 public final class TopComponentViewer extends TopComponent implements PropertyChangeListener {
 
-    private final MappingCtx ctx;
     private final InstanceContent content = new InstanceContent();
     private final Lookup lookup;
 
@@ -69,7 +69,6 @@ public final class TopComponentViewer extends TopComponent implements PropertyCh
     private final ViewController vc;
 
     public TopComponentViewer(MappingCtx ctx) {
-        this.ctx = ctx;
         lookup = new AbstractLookup(content);
         associateLookup(lookup);
         content.add(new SaveView());
@@ -79,7 +78,7 @@ public final class TopComponentViewer extends TopComponent implements PropertyCh
     }
 
     private void createView() {
-        ctx.addPropertyChangeListener(this);
+        vc.addPropertyChangeListener(this);
         removeAll();
         setLayout(new BorderLayout());
 
@@ -92,27 +91,6 @@ public final class TopComponentViewer extends TopComponent implements PropertyCh
         top.setPreferredSize(new Dimension(500, 205));
         add(top, BorderLayout.PAGE_START);
 
-//        // precache regions
-//        SwingWorker<Void, Void> sw = new SwingWorker<Void, Void>() {
-//
-//            @Override
-//            protected Void doInBackground() throws Exception {
-//                vc.getRegions(0, vc.getReference().getLength() - 1);
-//                return null;
-//            }
-//
-//            @Override
-//            protected void done() {
-//                super.done();
-//                try {
-//                    get();
-//                } catch (InterruptedException | ExecutionException ex) {
-//                    Exceptions.printStackTrace(ex);
-//                }
-//            }
-//
-//        };
-//        sw.execute();
         mp = new MappingPanel(vc, new SwitchToRecruitment(this));
         mp.setEnabled(true);
         add(mp, BorderLayout.CENTER);
@@ -187,13 +165,13 @@ public final class TopComponentViewer extends TopComponent implements PropertyCh
 
     @Override
     public void componentClosed() {
-        ctx.close();
-        //ctx.removePropertyChangeListener(this);
+        removeAll();
+        if (!vc.isClosed()) {
+            vc.close();
+        }
     }
 
     void writeProperties(java.util.Properties p) {
-        // better to version settings since initial version as advocated at
-        // http://wiki.apidesign.org/wiki/PropertyFiles
         p.setProperty("version", "1.0");
     }
 
@@ -202,10 +180,19 @@ public final class TopComponentViewer extends TopComponent implements PropertyCh
     }
 
     @Override
-    public void propertyChange(PropertyChangeEvent evt) {
+    public synchronized void propertyChange(PropertyChangeEvent evt) {
+        if (evt.getSource().equals(vc) && evt.getPropertyName().equals(ViewController.VIEWCONTROLLER_CLOSED)) {
+            vc.removePropertyChangeListener(this);
+            EventQueue.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    close();
+                }
+            });
+            return;
+        }
         if (evt.getPropertyName().equals(ModelBaseI.OBJECT_DELETED)) {
-            ctx.removePropertyChangeListener(this);
-            //ctx = null;
+            vc.removePropertyChangeListener(this);
             removeAll();
         }
     }

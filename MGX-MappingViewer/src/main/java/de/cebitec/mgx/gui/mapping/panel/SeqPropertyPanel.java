@@ -65,14 +65,13 @@ public class SeqPropertyPanel extends PanelBase {
     public boolean update() {
         String seq = null;
 
-        window = FastMath.max(50, vc.getIntervalLength()/500);
-        int shift = window/10;
+        window = FastMath.max(50, vc.getIntervalLength() / 500);
+        int shift = window / 10;
         int win_half = window / 2;
         int lowBound = FastMath.max(0, bounds[0] - win_half);
-        int hiBound = FastMath.min(vc.getReference().getLength(), bounds[1] + win_half);
-        
-        System.err.println("win "+window+" shift "+ shift);
+        int hiBound = FastMath.min(getReferenceLength(), bounds[1] + win_half);
 
+        //System.err.println("win "+window+" shift "+ shift);
         List<Point> newPoints = new ArrayList<>();
 
         Iterator<Interval> slidingWindow = IntervalFactory.slidingWindow(lowBound, hiBound, window, shift);

@@ -3,6 +3,7 @@ package de.cebitec.mgx.gui.controller;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.MappingAccessI;
 import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.exception.MGXLoggedoutException;
 import de.cebitec.mgx.api.exception.MGXTimeoutException;
 import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.model.MGXReferenceI;
@@ -30,9 +31,12 @@ public class MappingAccess extends MappingAccessI {
     private final MGXDTOMaster dtomaster;
     private final MGXMasterI master;
 
-    public MappingAccess(MGXDTOMaster dtomaster, MGXMasterI master) {
+    public MappingAccess(MGXDTOMaster dtomaster, MGXMasterI master) throws MGXException {
         this.dtomaster = dtomaster;
         this.master = master;
+          if (master.isDeleted()) {
+            throw new MGXLoggedoutException("You are disconnected.");
+        }
     }
 
     @Override
