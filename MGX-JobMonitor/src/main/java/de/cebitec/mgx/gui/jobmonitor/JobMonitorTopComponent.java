@@ -213,7 +213,7 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
         }
     }
 
-    private void updateJobs() {
+    private synchronized void updateJobs() {
         if (currentRoot != null) {
             try {
                 currentRoot.destroy();
