@@ -32,8 +32,12 @@ public class JobNodeFactory extends MGXNodeFactoryBase<JobI> implements NodeList
         timer = new Timer(1000 * 10, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //refreshChildren();
-                refresh(false);
+//                refresh(false);
+                if (!refreshing) {
+                        refreshing = true;
+                        refresh(true);
+                        refreshing = false;
+                }
             }
         });
         timer.start();
