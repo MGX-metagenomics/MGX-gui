@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.nodefactory;
 
 import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.exception.MGXLoggedoutException;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.ModelBaseI;
 import de.cebitec.mgx.api.model.SeqRunI;
@@ -48,7 +49,7 @@ public class JobBySeqRunNodeFactory extends JobNodeFactory {
         System.err.println("Created new JobBySeqRunNodeFactory listener " + stateListener);
         synchronized (LOCK) {
             this.content.addAll(runs);
-            for (final SeqRunI run : runs) {
+            for (final SeqRunI run : content) {
                 run.addPropertyChangeListener(stateListener);
             }
         }
@@ -84,6 +85,9 @@ public class JobBySeqRunNodeFactory extends JobNodeFactory {
             }
             toPopulate.addAll(tmp);
             Collections.sort(toPopulate);
+        } catch (MGXLoggedoutException ex) {
+            toPopulate.clear();
+            return true;
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);
         }
@@ -94,7 +98,7 @@ public class JobBySeqRunNodeFactory extends JobNodeFactory {
     public void destroy() {
         synchronized (LOCK) {
             for (final SeqRunI run : content) {
-                System.err.println("destroy(): removing listener " + stateListener + " from run "+ run.getName());
+                System.err.println("destroy(): removing listener " + stateListener + " from run " + run.getName());
                 run.removePropertyChangeListener(stateListener);
             }
         }
