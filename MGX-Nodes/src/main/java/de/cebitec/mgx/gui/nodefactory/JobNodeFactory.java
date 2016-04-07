@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.nodefactory;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.exception.MGXLoggedoutException;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.ToolI;
@@ -34,9 +35,9 @@ public class JobNodeFactory extends MGXNodeFactoryBase<JobI> implements NodeList
             public void actionPerformed(ActionEvent e) {
 //                refresh(false);
                 if (!refreshing) {
-                        refreshing = true;
-                        refresh(true);
-                        refreshing = false;
+                    refreshing = true;
+                    refresh(true);
+                    refreshing = false;
                 }
             }
         });
@@ -68,6 +69,9 @@ public class JobNodeFactory extends MGXNodeFactoryBase<JobI> implements NodeList
             }
             toPopulate.addAll(tmp);
             Collections.sort(toPopulate);
+        } catch (MGXLoggedoutException ex) {
+            toPopulate.clear();
+            return true;
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);
         }
