@@ -29,6 +29,18 @@ public class VGroupManagerTest {
     }
 
     @Test
+    public void testAddRemove() {
+        System.out.println("testAddRemove");
+        VGroupManagerI vgmgr = VGroupManager.getTestInstance();
+        assertEquals(0, vgmgr.getAllVisualizationGroups().size());
+        VisualizationGroupI vg = vgmgr.createVisualizationGroup();
+        assertNotNull(vg);
+        assertEquals(1, vgmgr.getAllVisualizationGroups().size());
+        vgmgr.removeVisualizationGroup(vg);
+        assertEquals(0, vgmgr.getAllVisualizationGroups().size());
+    }
+
+    @Test
     public void testCreateVGroup() {
         System.out.println("createVGroup");
         VGroupManagerI mgr = VGroupManager.getTestInstance();
