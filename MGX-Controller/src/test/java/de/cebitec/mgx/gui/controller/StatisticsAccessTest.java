@@ -35,7 +35,7 @@ public class StatisticsAccessTest {
             System.out.println("PCA");
             MGXMasterI master = TestMaster.getRO();
 
-            VGroupManagerI vgmgr = VGroupManager.getInstance();
+            VGroupManagerI vgmgr = VGroupManager.getTestInstance();
 
             for (VisualizationGroupI vg : vgmgr.getAllVisualizationGroups()) {
                 vgmgr.removeVisualizationGroup(vg);
@@ -73,7 +73,7 @@ public class StatisticsAccessTest {
             System.out.println("PCA no PC2/PC3");
             MGXMasterI master = TestMaster.getRO();
 
-            VGroupManagerI vgmgr = VGroupManager.getInstance();
+            VGroupManagerI vgmgr = VGroupManager.getTestInstance();
 
             for (VisualizationGroupI vg : vgmgr.getAllVisualizationGroups()) {
                 vgmgr.removeVisualizationGroup(vg);
@@ -120,7 +120,7 @@ public class StatisticsAccessTest {
             System.out.println("Clustering");
             MGXMasterI master = TestMaster.getRO();
 
-            VGroupManagerI vgmgr = VGroupManager.getInstance();
+            VGroupManagerI vgmgr = VGroupManager.getTestInstance();
 
             for (VisualizationGroupI vg : vgmgr.getAllVisualizationGroups()) {
                 vgmgr.removeVisualizationGroup(vg);
