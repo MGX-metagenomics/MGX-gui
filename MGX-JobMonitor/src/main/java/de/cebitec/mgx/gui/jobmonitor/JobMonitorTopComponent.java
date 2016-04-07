@@ -118,6 +118,7 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
 
     @Override
     public void componentOpened() {
+        super.componentOpened();
         resultMaster.addLookupListener(this);
         resultSeqRun.addLookupListener(this);
         resultJobs.addLookupListener(this);
@@ -126,6 +127,7 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
 
     @Override
     public void componentClosed() {
+        super.componentClosed();
         resultMaster.removeLookupListener(this);
         resultSeqRun.removeLookupListener(this);
         resultJobs.removeLookupListener(this);
@@ -136,7 +138,6 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
             }
             currentRoot = null;
         }
-
     }
 
     void writeProperties(java.util.Properties p) {
