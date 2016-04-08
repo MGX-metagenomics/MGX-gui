@@ -51,27 +51,24 @@ public class VisualizationGroup implements VisualizationGroupI {
     private String selectedAttributeType;
     private String secondaryAttributeType; // 2nd attr type for correlation matrices
     private final Map<AttributeRank, Map<SeqRunI, JobI>> uniqueJobs = new HashMap<>();
-    private final Map<AttributeRank, Map<SeqRunI, Set<JobI>>> needsResolval = new HashMap<>();
+    private final Map<AttributeRank, Map<SeqRunI, Set<JobI>>> needsResolval = new ConcurrentHashMap<>();
     private final Map<SeqRunI, Map<JobI, Set<AttributeTypeI>>> attributeTypes;
     private final Map<SeqRunI, DistributionI<Long>> currentDistributions;
     //
-    private final PropertyChangeSupport pcs = new ParallelPropertyChangeSupport(this, true);
+    private final PropertyChangeSupport pcs = new ParallelPropertyChangeSupport(this);
     //
     private final Map<String, DistributionI<Long>> distCache = new HashMap<>();
     private final Map<String, TreeI<Long>> hierarchyCache = new HashMap<>();
     //
     private final int id;
     private final UUID uuid = UUID.randomUUID();
-    private final DataFlavor dataflavor;
     //
     private String managedState = ModelBaseI.OBJECT_MANAGED;
 
+//    VisualizationGroup(VGroupManagerI vgmgr, int id, String groupName, Color color) {
+//        this(vgmgr, id, groupName, color);
+//    }
     VisualizationGroup(VGroupManagerI vgmgr, int id, String groupName, Color color) {
-        this(VisualizationGroupI.VISGROUP_DATA_FLAVOR, vgmgr, id, groupName, color);
-    }
-
-    VisualizationGroup(DataFlavor dataFlavor, VGroupManagerI vgmgr, int id, String groupName, Color color) {
-        this.dataflavor = dataFlavor;
         this.id = id;
         this.vgmgr = vgmgr;
         this.name = groupName;
@@ -114,10 +111,12 @@ public class VisualizationGroup implements VisualizationGroupI {
     }
 
     @Override
-    public void setName(String name) {
-        String oldVal = this.name;
-        this.name = name;
-        firePropertyChange(VISGROUP_RENAMED, oldVal, name);
+    public void setName(String newName) {
+        if (!name.equals(newName)) {
+            String oldVal = this.name;
+            this.name = newName;
+            firePropertyChange(VISGROUP_RENAMED, oldVal, name);
+        }
     }
 
     @Override
@@ -184,11 +183,11 @@ public class VisualizationGroup implements VisualizationGroupI {
         // clear caches - the cache might already contain data for the
         // selected attribute type, but from a different set of selected
         // jobs
-        if (distCache.containsKey(attrType)) {
-            distCache.remove(attrType);
+        if (distCache.containsKey(selectedAttributeType)) {
+            distCache.remove(selectedAttributeType);
         }
-        if (hierarchyCache.containsKey(attrType)) {
-            hierarchyCache.remove(attrType);
+        if (hierarchyCache.containsKey(selectedAttributeType)) {
+            hierarchyCache.remove(selectedAttributeType);
         }
 
         for (SeqRunI run : getSeqRuns()) {
@@ -365,9 +364,12 @@ public class VisualizationGroup implements VisualizationGroupI {
     }
 
     @Override
-    public final TreeI<Long> getHierarchy() {
+    public final TreeI<Long> getHierarchy() throws ConflictingJobsException {
         assert selectedAttributeType != null;
-        assert needsResolval.get(AttributeRank.PRIMARY).isEmpty();
+
+        if (!needsResolval.get(AttributeRank.PRIMARY).isEmpty()) {
+            throw new ConflictingJobsException(this, needsResolval.get(AttributeRank.PRIMARY));
+        }
 
         if (hierarchyCache.containsKey(selectedAttributeType)) {
             return hierarchyCache.get(selectedAttributeType);
@@ -581,13 +583,13 @@ public class VisualizationGroup implements VisualizationGroupI {
 //        return Integer.compare(getId(), o.getId());
 //    }
     @Override
-    public final DataFlavor[] getTransferDataFlavors() {
-        return new DataFlavor[]{dataflavor};
+    public DataFlavor[] getTransferDataFlavors() {
+        return new DataFlavor[]{VisualizationGroupI.VISGROUP_DATA_FLAVOR};
     }
 
     @Override
-    public final boolean isDataFlavorSupported(DataFlavor flavor) {
-        return flavor != null && flavor.equals(dataflavor);
+    public boolean isDataFlavorSupported(DataFlavor flavor) {
+        return flavor != null && flavor.equals(VisualizationGroupI.VISGROUP_DATA_FLAVOR);
     }
 
     @Override
