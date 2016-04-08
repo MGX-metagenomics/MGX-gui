@@ -73,16 +73,14 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
         updateButton.addActionListener(this);
 
         vgmgr.addPropertyChangeListener(this);
+        
         vgmgr.registerResolver(new ConflictResolver() {
             @Override
             public boolean resolve(List<VisualizationGroupI> groups) {
                 ConflictResolverWizardIterator iter = new ConflictResolverWizardIterator(groups);
-                //iter.setGroups(groups);
                 WizardDescriptor wiz = new WizardDescriptor(iter);
-                //             // {0} will be replaced by WizardDescriptor.Panel.getComponent().getName()
-                //             // {1} will be replaced by WizardDescriptor.Iterator.name()
                 wiz.setTitleFormat(new MessageFormat("{0}"));
-                wiz.setTitle("Tool selection");
+                wiz.setTitle("Job selection");
                 if (DialogDisplayer.getDefault().notify(wiz) == WizardDescriptor.FINISH_OPTION) {
                     for (Pair<VisualizationGroupI, Triple<AttributeRank, SeqRunI, JobI>> p : iter.getSelection()) {
                         VisualizationGroupI vg = p.getFirst();
@@ -102,11 +100,11 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
         this.topComponent = tc;
     }
 
-    public final void updateAttributeTypeList() {
+    public final synchronized void updateAttributeTypeList() {
         attrListModel.update();
     }
 
-    public final void updateViewerList() {
+    public final synchronized void updateViewerList() {
         vizListModel.update();
     }
 
@@ -347,7 +345,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
 
         @Override
         @SuppressWarnings("unchecked")
-        public void update() {
+        public synchronized void update() {
             // disable all downstream elements
             content.clear();
             visualizationTypeList.setEnabled(false);
@@ -393,13 +391,8 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
             currentViewer = vizListModel.getSelectedItem();
             currentViewer.setAttributeType(currentAttributeType);
 
-//            JComponent customizer = currentViewer.getCustomizer();
-//            if (customizer != null) {
-//                customPane.setViewportView(customizer);
-//            }
             customPane.setViewportView(currentViewer.getCustomizer());
             customPane.getVerticalScrollBar().setUnitIncrement(16);
-
         }
     }
 
@@ -409,10 +402,6 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
         try {
             setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             if (currentViewer.getInputType().equals(DistributionI.class)) {
-//                // reset previous settings 
-//                for (Pair<VisualizationGroupI, DistributionI<Long>> p : currentDistributions) {
-//                    p.getSecond().reset();
-//                }
                 currentViewer.show(currentDistributions);
             } else {
                 currentViewer.show(currentHierarchies);
@@ -428,5 +417,6 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
         if (currentViewer != null) {
             currentViewer.dispose();
         }
+        vgmgr.removePropertyChangeListener(this);
     }
 }

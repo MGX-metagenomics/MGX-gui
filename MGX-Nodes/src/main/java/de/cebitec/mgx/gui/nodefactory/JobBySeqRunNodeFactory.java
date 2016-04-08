@@ -24,7 +24,6 @@ public class JobBySeqRunNodeFactory extends JobNodeFactory {
 
     private final Collection<SeqRunI> content;
     private final PropertyChangeListener stateListener;
-    private final Object LOCK = new Object();
 
     public JobBySeqRunNodeFactory(Collection<SeqRunI> runs) {
         super(null);
@@ -35,8 +34,9 @@ public class JobBySeqRunNodeFactory extends JobNodeFactory {
                 if (evt.getPropertyName().equals(ModelBaseI.OBJECT_DELETED)) {
                     if (evt.getSource() instanceof SeqRunI) {
                         SeqRunI sr = (SeqRunI) evt.getSource();
-                        synchronized (LOCK) {
+                        synchronized (content) {
                             if (content.contains(sr)) {
+                                System.err.println(Thread.currentThread().getName() + " propChange(): removing listener " + stateListener + " from run " + sr.getName());
                                 sr.removePropertyChangeListener(stateListener);
                                 content.remove(sr);
                             }
@@ -46,8 +46,7 @@ public class JobBySeqRunNodeFactory extends JobNodeFactory {
             }
 
         };
-        System.err.println("Created new JobBySeqRunNodeFactory listener " + stateListener);
-        synchronized (LOCK) {
+        synchronized (content) {
             this.content.addAll(runs);
             for (final SeqRunI run : content) {
                 run.addPropertyChangeListener(stateListener);
@@ -56,10 +55,14 @@ public class JobBySeqRunNodeFactory extends JobNodeFactory {
     }
 
     @Override
-    protected synchronized boolean addKeys(List<JobI> toPopulate) {
+    protected boolean addKeys(List<JobI> toPopulate) {
         Collection<JobI> tmp = new HashSet<>();
         try {
-            for (SeqRunI run : content) {
+            SeqRunI[] toArray;
+            synchronized (content) {
+               toArray = content.toArray(new SeqRunI[]{});
+            }
+            for (SeqRunI run : toArray) {
                 for (JobI j : run.getMaster().Job().BySeqRun(run)) {
                     if (Thread.interrupted()) {
                         run.getMaster().log(Level.INFO, "interrupted in NF");
@@ -96,11 +99,12 @@ public class JobBySeqRunNodeFactory extends JobNodeFactory {
 
     @Override
     public void destroy() {
-        synchronized (LOCK) {
+        synchronized (content) {
             for (final SeqRunI run : content) {
                 System.err.println("destroy(): removing listener " + stateListener + " from run " + run.getName());
                 run.removePropertyChangeListener(stateListener);
             }
+            content.clear();
         }
         super.destroy();
     }
