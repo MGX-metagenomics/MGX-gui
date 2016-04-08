@@ -36,7 +36,7 @@ public class ReplicateGroup implements ReplicateGroupI {
     //
     private final PropertyChangeSupport pcs = new ParallelPropertyChangeSupport(this, true);
     //
-    int replCnt = 1;
+    int nextReplicateNum = 1;
 
     ReplicateGroup(String name) {
         this.name = name;
@@ -213,6 +213,13 @@ public class ReplicateGroup implements ReplicateGroupI {
     @Override
     public int compareTo(ReplicateGroupI o) {
         return getName().compareTo(o.getName());
+    }
+
+    @Override
+    public synchronized int getNextReplicateNum() {
+        int ret = nextReplicateNum;
+        nextReplicateNum++;
+        return ret;
     }
 
 }

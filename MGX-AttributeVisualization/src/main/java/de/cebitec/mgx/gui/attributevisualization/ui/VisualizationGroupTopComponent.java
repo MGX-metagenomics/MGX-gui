@@ -89,10 +89,10 @@ public final class VisualizationGroupTopComponent extends TopComponent implement
             Exceptions.printStackTrace(ex);
         }
 
-        // create initial group, if necessary
-        if (VGroupManager.getInstance().getAllVisualizationGroups().isEmpty()) {
-            VGroupManager.getInstance().createVisualizationGroup();
-        }
+//        // create initial group, if necessary
+//        if (VGroupManager.getInstance().getAllVisualizationGroups().isEmpty()) {
+//            VGroupManager.getInstance().createVisualizationGroup();
+//        }
     }
 
     /**

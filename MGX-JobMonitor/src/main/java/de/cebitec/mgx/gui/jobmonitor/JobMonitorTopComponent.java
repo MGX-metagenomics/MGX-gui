@@ -243,6 +243,9 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
             if (evt.getSource() instanceof SeqRunI) {
                 SeqRunI run = (SeqRunI) evt.getSource();
                 run.removePropertyChangeListener(this);
+                if (currentSeqRuns.contains(run)) {
+                    currentSeqRuns.remove(run);
+                }
             }
         }
         updateJobs();
