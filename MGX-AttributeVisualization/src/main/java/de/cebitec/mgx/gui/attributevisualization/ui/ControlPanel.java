@@ -330,7 +330,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
             visualizationTypeList.setEnabled(false);
             updateButton.setEnabled(false);
 
-            if (vgmgr.selectAttributeType(AttributeRank.PRIMARY, currentAttributeType.getName())) {
+            if (vgmgr.selectAttributeType(currentAttributeType.getName())) {
                 // fetch distribution (and hierarchy) in background
                 ResultCollector rc = new ResultCollector(vgmgr, currentAttributeType, currentDistributions, currentHierarchies, ControlPanel.this);
                 rc.execute();
