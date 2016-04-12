@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Future;
+import org.openide.util.Exceptions;
 import org.openide.util.RequestProcessor;
 
 /**
@@ -138,6 +139,11 @@ public class VGroupManager implements VGroupManagerI {
     }
 
     @Override
+    public String getSelectedAttributeType() {
+        return currentAttributeType.get(AttributeRank.PRIMARY);
+    }
+
+    @Override
     public synchronized boolean selectAttributeType(AttributeRank rank, String aType) {
         if (aType == null || rank == null || resolver == null) {
             return false;
@@ -146,11 +152,11 @@ public class VGroupManager implements VGroupManagerI {
         //
         // check if aType is changed at all
         //
-        synchronized (currentAttributeType) {
-            if (currentAttributeType.containsKey(rank) && aType.equals(currentAttributeType.get(rank))) {
-                return true;
-            }
-        }
+//        synchronized (currentAttributeType) {
+//            if (currentAttributeType.containsKey(rank) && aType.equals(currentAttributeType.get(rank))) {
+//                return true;
+//            }
+//        }
 
         List<VisualizationGroupI> conflicts = null;
         synchronized (vizGroups) {
@@ -182,6 +188,10 @@ public class VGroupManager implements VGroupManagerI {
 
     @Override
     public List<Pair<VisualizationGroupI, DistributionI<Long>>> getDistributions() throws ConflictingJobsException {
+
+        if (currentAttributeType.get(AttributeRank.PRIMARY) == null) {
+            throw new RuntimeException("VGMGR: primary attribute type is null");
+        }
 
         int numActiveGroups = 0;
         // make sure there are no unresolved ambiguities left
@@ -216,6 +226,10 @@ public class VGroupManager implements VGroupManagerI {
     @Override
     public List<Pair<VisualizationGroupI, TreeI<Long>>> getHierarchies() throws ConflictingJobsException {
 
+        if (currentAttributeType.get(AttributeRank.PRIMARY) == null) {
+            throw new RuntimeException("VGMGR: primary attribute type is null");
+        }
+
         int numActiveGroups = 0;
         // make sure there are no unresolved ambiguities left
         synchronized (vizGroups) {
@@ -242,7 +256,7 @@ public class VGroupManager implements VGroupManagerI {
                 }
             }
         }
-        
+
         return ret;
     }
 
@@ -257,6 +271,12 @@ public class VGroupManager implements VGroupManagerI {
             }
             Color groupColor = groupColors[(vizGroupCount - 1) % groupColors.length];
             group = new VisualizationGroup(this, vizGroupCount, newName, groupColor);
+            try {
+                group.selectAttributeType(AttributeRank.PRIMARY, currentAttributeType.get(AttributeRank.PRIMARY));
+                group.selectAttributeType(AttributeRank.SECONDARY, currentAttributeType.get(AttributeRank.SECONDARY));
+            } catch (ConflictingJobsException ex) {
+                // unreachable since group is empty
+            }
             group.addPropertyChangeListener(this);
             vizGroups.add(group);
             vizGroupCount++;
@@ -267,7 +287,7 @@ public class VGroupManager implements VGroupManagerI {
 
     @Override
     public ReplicateI createReplicate(ReplicateGroupI rGroup) {
-        
+
         ReplicateI newGrp;
         int cnt = 1;
         String nameTemplate = "Replicate " + String.valueOf(cnt);
@@ -277,6 +297,12 @@ public class VGroupManager implements VGroupManagerI {
         }
 
         newGrp = new Replicate(rGroup, this, vizGroupCount, nameTemplate, rGroup.getColor());
+        try {
+            newGrp.selectAttributeType(AttributeRank.PRIMARY, currentAttributeType.get(AttributeRank.PRIMARY));
+            newGrp.selectAttributeType(AttributeRank.SECONDARY, currentAttributeType.get(AttributeRank.SECONDARY));
+        } catch (ConflictingJobsException ex) {
+            // unreachable since group is empty
+        }
         newGrp.addPropertyChangeListener(this);
         rGroup.add(newGrp);
         vizGroupCount++;
@@ -386,7 +412,7 @@ public class VGroupManager implements VGroupManagerI {
 
     @Override
     public Collection<VisualizationGroupI> getAllVisualizationGroups() {
-        List<VisualizationGroupI> ret = new ArrayList<>();
+        List<VisualizationGroupI> ret = new ArrayList<>(vizGroups.size());
         synchronized (vizGroups) {
             ret.addAll(vizGroups);
         }
@@ -395,7 +421,7 @@ public class VGroupManager implements VGroupManagerI {
 
     @Override
     public Collection<ReplicateGroupI> getReplicateGroups() {
-        List<ReplicateGroupI> ret = new ArrayList<>();
+        List<ReplicateGroupI> ret = new ArrayList<>(replicateGroups.size());
         synchronized (replicateGroups) {
             ret.addAll(replicateGroups);
         }
@@ -408,7 +434,19 @@ public class VGroupManager implements VGroupManagerI {
     }
 
     @Override
-    public void propertyChange(PropertyChangeEvent pce) {
+    public final void propertyChange(PropertyChangeEvent pce) {
+        //System.err.println("VGMGR got " + pce);
+//        if (VisualizationGroupI.VISGROUP_RUN_ADDED.equals(pce.getPropertyName()) && pce.getSource() instanceof VisualizationGroupI) {
+//            VisualizationGroupI vGrp = (VisualizationGroupI) pce.getSource();
+//            try {
+//                vGrp.selectAttributeType(AttributeRank.PRIMARY, currentAttributeType.get(AttributeRank.PRIMARY));
+//            } catch (ConflictingJobsException ex) {
+//                List<VisualizationGroupI> tmp = new ArrayList<>(1);
+//                tmp.add(vGrp);
+//                resolver.resolve(tmp);
+//            }
+//            
+//        }
         pcs.firePropertyChange(pce);
     }
 

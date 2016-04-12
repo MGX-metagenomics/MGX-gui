@@ -115,10 +115,10 @@ public class KeggViewer extends CategoricalViewerI<Long> {
         }
 
     }
-    private final static RequestProcessor RP = new RequestProcessor("KEGG-Viewer", 35, true);
+    private final static RequestProcessor reqProcessor = new RequestProcessor("KEGG-Viewer", 35, true);
 
     public Set<PathwayI> selectPathways() throws ConflictingJobsException, KEGGException {
-        return customizer.selectPathways(master, RP);
+        return customizer.selectPathways(master, getVGroupManager(), reqProcessor);
     }
 //        final Set<ECNumberI> ecNumbers = new HashSet<>();
 //        for (Pair<VisualizationGroupI, DistributionI> p : VGroupManager.getInstance().getDistributions()) {
@@ -155,7 +155,7 @@ public class KeggViewer extends CategoricalViewerI<Long> {
         SwingWorker<Set<PathwayI>, Void> sw = new SwingWorker<Set<PathwayI>, Void>() {
             @Override
             protected Set<PathwayI> doInBackground() throws Exception {
-                return customizer.selectPathways(master, RP);
+                return customizer.selectPathways(master, getVGroupManager(), reqProcessor);
             }
 
             @Override
@@ -181,7 +181,7 @@ public class KeggViewer extends CategoricalViewerI<Long> {
 
     @Override
     public void dispose() {
-        RP.shutdownNow();
+        reqProcessor.shutdownNow();
         super.dispose();
     }
 }
