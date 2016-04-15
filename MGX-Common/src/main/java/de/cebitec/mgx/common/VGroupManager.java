@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Future;
-import org.openide.util.Exceptions;
 import org.openide.util.RequestProcessor;
 
 /**
@@ -281,7 +280,14 @@ public class VGroupManager implements VGroupManagerI {
             vizGroups.add(group);
             vizGroupCount++;
         }
+        
         firePropertyChange(VISGROUP_ADDED, 0, group);
+        
+        // auto-select initial group
+        if (vizGroups.size() == 1) {
+            setSelectedVisualizationGroup(group);
+        }
+        
         return group;
     }
 
