@@ -43,20 +43,20 @@ public class ACE implements Statistic<DistributionI<Long>> {
 
     private double getGamma(DistributionI<Long> data) {
         double ret = 0;
-        
+
         // zaehler
         for (int i = 1; i <= 10; i++) {
             ret += i * (i - 1) * getF(data, i);
         }
         ret = ret * getSrare(data);
-        
+
         // nenner
         double F1 = getF(data, 1);
         double Nrare = getNrare(data);
         double Cace = 1 - (F1 / Nrare);
-        
-        ret = (ret / (Cace * Nrare * (Nrare -1))) -1;
-        
+
+        ret = (ret / (Cace * Nrare * (Nrare - 1))) - 1;
+
         return FastMath.max(ret, 0);
     }
 
