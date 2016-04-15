@@ -14,6 +14,8 @@ import javax.swing.JComponent;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import org.jdesktop.swingx.JXTable;
+import org.jdesktop.swingx.decorator.Highlighter;
+import org.jdesktop.swingx.decorator.HighlighterFactory;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -104,6 +106,7 @@ public class TreeTableView extends ViewerI<TreeI<Long>> {
                 tc.setWidth(40);
             }
         }
+        table.setHighlighters(new Highlighter[]{HighlighterFactory.createAlternateStriping()});
     }
 
     @Override
