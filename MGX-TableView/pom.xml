@@ -75,7 +75,6 @@
             <groupId>de.cebitec.mgx.gui</groupId>
             <artifactId>MGX-VizFilter</artifactId>
             <version>1.0-SNAPSHOT</version>
-            <type>jar</type>
         </dependency>
     </dependencies>
 
