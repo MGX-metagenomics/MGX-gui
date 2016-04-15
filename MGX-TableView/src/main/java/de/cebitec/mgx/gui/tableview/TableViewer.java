@@ -18,6 +18,8 @@ import javax.swing.JComponent;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import org.jdesktop.swingx.JXTable;
+import org.jdesktop.swingx.decorator.Highlighter;
+import org.jdesktop.swingx.decorator.HighlighterFactory;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -76,14 +78,17 @@ public class TableViewer extends ViewerI<DistributionI<Long>> {
         SortOrder<Double> order = new SortOrder<>(getAttributeType(), SortOrder.DESCENDING);
         ret = order.filter(ret);
 
+        final boolean useFractions = getCustomizer().useFractions();
+
         DefaultTableModel model = new DefaultTableModel(columns, 0) {
+
             @Override
             public Class<?> getColumnClass(int column) {
                 switch (column) {
                     case 0:
                         return String.class;
                     default:
-                        return getCustomizer().useFractions() ? Double.class : Long.class;
+                        return useFractions ? Double.class : Long.class;
                 }
             }
 
@@ -117,6 +122,7 @@ public class TableViewer extends ViewerI<DistributionI<Long>> {
                 tc.setWidth(40);
             }
         }
+        table.setHighlighters(new Highlighter[]{HighlighterFactory.createAlternateStriping()});
     }
 
     @Override
