@@ -43,7 +43,7 @@ import org.openide.util.Exceptions;
  */
 public class VisualizationGroup implements VisualizationGroupI {
 
-    private final static Map<JobI, Set<AttributeTypeI>> NO_JOBS = new HashMap<>();
+    //private final static Map<JobI, Set<AttributeTypeI>> NO_JOBS = new HashMap<>();
     //
     private final VGroupManagerI vgmgr;
     private String name;
@@ -52,13 +52,13 @@ public class VisualizationGroup implements VisualizationGroupI {
     //
     private String selectedAttributeType;
     private String secondaryAttributeType; // 2nd attr type for correlation matrices
-    private final Map<AttributeRank, Map<SeqRunI, JobI>> uniqueJobs = new HashMap<>();
+    private final Map<AttributeRank, Map<SeqRunI, JobI>> uniqueJobs = new ConcurrentHashMap<>();
     private final Map<AttributeRank, Map<SeqRunI, Set<JobI>>> needsResolval = new ConcurrentHashMap<>();
     private final Map<SeqRunI, Map<JobI, Set<AttributeTypeI>>> attributeTypes;
     private final Map<SeqRunI, DistributionI<Long>> currentDistributions;
     //
-    private final Map<String, DistributionI<Long>> distCache = new HashMap<>();
-    private final Map<String, TreeI<Long>> hierarchyCache = new HashMap<>();
+    private final Map<String, DistributionI<Long>> distCache = new ConcurrentHashMap<>();
+    private final Map<String, TreeI<Long>> hierarchyCache = new ConcurrentHashMap<>();
     //
     //
     private final int id;
@@ -72,10 +72,10 @@ public class VisualizationGroup implements VisualizationGroupI {
         this.vgmgr = vgmgr;
         this.name = groupName;
         this.color = color;
-        uniqueJobs.put(AttributeRank.PRIMARY, new HashMap<SeqRunI, JobI>());
-        uniqueJobs.put(AttributeRank.SECONDARY, new HashMap<SeqRunI, JobI>());
-        needsResolval.put(AttributeRank.PRIMARY, new HashMap<SeqRunI, Set<JobI>>());
-        needsResolval.put(AttributeRank.SECONDARY, new HashMap<SeqRunI, Set<JobI>>());
+        uniqueJobs.put(AttributeRank.PRIMARY, new ConcurrentHashMap<SeqRunI, JobI>());
+        uniqueJobs.put(AttributeRank.SECONDARY, new ConcurrentHashMap<SeqRunI, JobI>());
+        needsResolval.put(AttributeRank.PRIMARY, new ConcurrentHashMap<SeqRunI, Set<JobI>>());
+        needsResolval.put(AttributeRank.SECONDARY, new ConcurrentHashMap<SeqRunI, Set<JobI>>());
         attributeTypes = new ConcurrentHashMap<>();
         currentDistributions = new ConcurrentHashMap<>();
     }
@@ -287,20 +287,23 @@ public class VisualizationGroup implements VisualizationGroupI {
                 throw new IllegalArgumentException(run.getName() + " is already marked as deleted.");
             }
             run.addPropertyChangeListener(this);
+            
+//            attributeTypes.put(run, NO_JOBS);
         }
 
-        //selectedAttributeType = null;
         MultiAttributeTypeFetcher fetcher = new MultiAttributeTypeFetcher(runs);
         Future<Map<SeqRunI, Map<JobI, Set<AttributeTypeI>>>> f = vgmgr.submit(fetcher);
 
         try {
             Map<SeqRunI, Map<JobI, Set<AttributeTypeI>>> get = f.get();
-            for (Map.Entry<SeqRunI, Map<JobI, Set<AttributeTypeI>>> e : get.entrySet()) {
-                SeqRunI run = e.getKey();
-                attributeTypes.put(run, e.getValue());
+            for (Map.Entry<SeqRunI, Map<JobI, Set<AttributeTypeI>>> entry : get.entrySet()) {
+                SeqRunI run = entry.getKey();
+                Map<JobI, Set<AttributeTypeI>> jobData = entry.getValue();
+                
+                attributeTypes.put(run, jobData);
 
                 // remove cached data for modified attribute types
-                for (Set<AttributeTypeI> s : e.getValue().values()) {
+                for (Set<AttributeTypeI> s : jobData.values()) {
                     for (AttributeTypeI attrType : s) {
                         distCache.remove(attrType.getName());
                         hierarchyCache.remove(attrType.getName());
@@ -354,8 +357,7 @@ public class VisualizationGroup implements VisualizationGroupI {
         }
         sr.addPropertyChangeListener(this);
 
-        //selectedAttributeType = null;
-        attributeTypes.put(sr, NO_JOBS);
+        //attributeTypes.put(sr, NO_JOBS);
 
         AttributeTypeFetcher fetcher = new AttributeTypeFetcher(sr);
         Future<Map<JobI, Set<AttributeTypeI>>> f = vgmgr.submit(fetcher);
@@ -580,10 +582,11 @@ public class VisualizationGroup implements VisualizationGroupI {
         Set<AttributeTypeI> attributesForJob = jobattrtypes.get(job);
         if (attributesForJob == null) {
             Logger.getGlobal().log(Level.SEVERE, "no attributes for run {0} from job {1}", new Object[]{run.getName(), job.getId()});
-        }
-        for (AttributeTypeI atype : attributesForJob) {
-            if (atype.getName().equals(attrTypeName)) {
-                validTypes.add(atype);
+        } else {
+            for (AttributeTypeI atype : attributesForJob) {
+                if (atype.getName().equals(attrTypeName)) {
+                    validTypes.add(atype);
+                }
             }
         }
         assert validTypes.size() == 1; // shouldn't happen
