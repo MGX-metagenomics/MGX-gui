@@ -34,7 +34,7 @@ public class Chao1 implements Statistic<DistributionI<Long>> {
         // classic formula
         double ret = numCategories + (FastMath.pow(numSingletons, 2f) / 2 * numDoubletons);
 
-        return String.format("%.2f", ret);
+        return Double.isNaN(ret) ? "N/A" : String.format("%.2f", ret);
     }
 
     @Override
