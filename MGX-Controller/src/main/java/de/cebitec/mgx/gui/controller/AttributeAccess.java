@@ -24,6 +24,7 @@ import de.cebitec.mgx.dto.dto.AttributeDistribution;
 import de.cebitec.mgx.dto.dto.AttributeTypeDTO;
 import de.cebitec.mgx.dto.dto.SearchRequestDTO;
 import de.cebitec.mgx.dto.dto.SequenceDTO;
+import de.cebitec.mgx.gui.datamodel.Attribute;
 import de.cebitec.mgx.gui.datamodel.misc.Distribution;
 import de.cebitec.mgx.gui.datamodel.misc.Matrix;
 import de.cebitec.mgx.gui.datamodel.misc.SearchRequest;
@@ -51,9 +52,14 @@ public class AttributeAccess implements AttributeAccessI {
     public AttributeAccess(MGXDTOMaster dtomaster, MGXMasterI master) throws MGXException {
         this.dtomaster = dtomaster;
         this.master = master;
-          if (master.isDeleted()) {
+        if (master.isDeleted()) {
             throw new MGXLoggedoutException("You are disconnected.");
         }
+    }
+    
+    @Override
+    public Iterator<AttributeI> ByJob(JobI job) throws MGXException {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
@@ -75,46 +81,6 @@ public class AttributeAccess implements AttributeAccessI {
         }
     }
 
-//    public Collection<String> listTypes() throws MGXServerException {
-//        Collection<String> ret = new HashSet<String>();
-//        Collection<MGXString> dtolist = getDTOmaster().Attribute().listTypes();
-//        for (MGXString adto : dtolist) {
-//            ret.add(adto.getValue());
-//        }
-//        return ret;
-//    }
-//
-//    public Collection<String> listTypesByJob(Long jobId) throws MGXServerException {
-//        Collection<String> ret = new HashSet<String>();
-//        Collection<MGXString> dtolist = getDTOmaster().Attribute().listTypesByJob(jobId);
-//        for (MGXString adto : dtolist) {
-//            ret.add(adto.getValue());
-//        }
-//        return ret;
-//    }
-//
-//    public Collection<Attribute> listTypesBySeqRun(Long seqrunId) throws MGXServerException {
-//        Collection<Attribute> ret = new HashSet<Attribute>();
-//        Collection<MGXString> dtolist = getDTOmaster().Attribute().listTypesBySeqRun(seqrunId);
-//        for (MGXString adto : dtolist) {
-//            ret.add(adto.getValue());
-//        }
-//        return ret;
-//    }
-//    public Map<Attribute, Long> getDistributionByRuns(String attributeName, List<Long> seqrun_ids) {
-//        Map<Attribute, Long> res = new HashMap<Attribute, Long>();
-//        try {
-//            for (AttributeCount ac : getDTOmaster().Attribute().getDistributionByRuns(attributeName, seqrun_ids)) {
-//                AttributeDTO adto = ac.getAttribute();
-//                Attribute attr = AttributeDTOFactory.getInstance().toModel(adto);
-//                Long count = ac.getCount();
-//                res.put(attr, count);
-//            }
-//        } catch (MGXServerException ex) {
-//            Logger.getLogger(AttributeAccess.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//        return res;
-//    }
     @Override
     public DistributionI<Long> getDistribution(AttributeTypeI attrType, JobI job) throws MGXException {
         Map<AttributeI, Long> res;
@@ -144,15 +110,32 @@ public class AttributeAccess implements AttributeAccessI {
     }
 
     @Override
-    public AttributeI create(AttributeI obj) throws MGXException {
-         try {
-            AttributeDTO dto = AttributeDTOFactory.getInstance().toDTO(obj);
+    public AttributeI create(JobI job, AttributeTypeI attrType, String attrValue, AttributeI parent) throws MGXException {
+        
+        if (!master.equals(job.getMaster()) || !master.equals(attrType.getMaster())) {
+            throw new MGXException("MGX master instances need to be equal.");
+        }
+        if (parent != null && !master.equals(parent.getMaster())) {
+            throw new MGXException("MGX master instances need to be equal.");
+        }
+        
+        AttributeI attr = new Attribute(getMaster());
+        attr.setAttributeType(attrType);
+        attr.setJobId(job.getId());
+        attr.setValue(attrValue);
+
+        if (parent != null) {
+            attr.setParentID(parent.getId());
+        }
+
+        try {
+            AttributeDTO dto = AttributeDTOFactory.getInstance().toDTO(attr);
             long objId = dtomaster.Attribute().create(dto);
-            obj.setId(objId);
+            attr.setId(objId);
         } catch (MGXServerException | MGXClientException ex) {
             throw new MGXException(ex);
         }
-        return obj;
+        return attr;
     }
 
     @Override
@@ -169,20 +152,20 @@ public class AttributeAccess implements AttributeAccessI {
         return ret;
     }
 
-    @Override
-    public Iterator<AttributeI> fetchall() {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    @Override
-    public void update(AttributeI obj) {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    @Override
-    public TaskI<AttributeI> delete(AttributeI obj) {
-        throw new UnsupportedOperationException("Not supported.");
-    }
+//    @Override
+//    public Iterator<AttributeI> fetchall() {
+//        throw new UnsupportedOperationException("Not supported.");
+//    }
+//
+//    @Override
+//    public void update(AttributeI obj) {
+//        throw new UnsupportedOperationException("Not supported.");
+//    }
+//
+//    @Override
+//    public TaskI<AttributeI> delete(AttributeI obj) {
+//        throw new UnsupportedOperationException("Not supported.");
+//    }
 
     public Matrix getCorrelation(AttributeTypeI attributeType1, JobI job1, AttributeTypeI attributeType2, JobI job2) throws MGXException {
         try {
@@ -284,6 +267,14 @@ public class AttributeAccess implements AttributeAccessI {
 //        }
 //
 //        return ret;
+    }
+
+    private MGXDTOMaster getDTOmaster() {
+        return dtomaster;
+    }
+
+    private MGXMasterI getMaster() {
+        return master;
     }
 
 //    private boolean checkHasValue(Set<Attribute> set, String value) {
