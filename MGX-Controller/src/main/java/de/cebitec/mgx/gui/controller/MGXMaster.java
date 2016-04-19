@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.controller;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.AttributeAccessI;
+import de.cebitec.mgx.api.access.AttributeTypeAccessI;
 import de.cebitec.mgx.api.access.DNAExtractAccessI;
 import de.cebitec.mgx.api.access.FileAccessI;
 import de.cebitec.mgx.api.access.HabitatAccessI;
@@ -80,7 +81,7 @@ public class MGXMaster extends MGXMasterI implements PropertyChangeListener {
     }
 
     @Override
-    public AttributeTypeAccess AttributeType() throws MGXException {
+    public AttributeTypeAccessI AttributeType() throws MGXException {
         return new AttributeTypeAccess(this, dtomaster);
     }
 
