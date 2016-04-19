@@ -1,11 +1,11 @@
 package de.cebitec.mgx.gui.keggviewer;
 
 import de.cebitec.mgx.api.groups.ConflictingJobsException;
+import de.cebitec.mgx.api.groups.VGroupManagerI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.AttributeI;
-import de.cebitec.mgx.common.VGroupManager;
 import de.cebitec.mgx.kegg.pathways.KEGGException;
 import de.cebitec.mgx.kegg.pathways.KEGGMaster;
 import de.cebitec.mgx.kegg.pathways.api.ECNumberI;
@@ -26,6 +26,7 @@ import org.openide.util.RequestProcessor;
  * @author sj
  */
 public class KeggCustomizer extends javax.swing.JPanel {
+    
 
     /**
      * Creates new form KeggCustomizer
@@ -69,10 +70,10 @@ public class KeggCustomizer extends javax.swing.JPanel {
 
     private final static Pattern ecNumber = Pattern.compile("\\d+[.](-|\\d+)[.](-|\\d+)[.](-|\\d+)");
 
-    public Set<PathwayI> selectPathways(final KEGGMaster master, RequestProcessor RP) throws ConflictingJobsException, KEGGException {
+    public Set<PathwayI> selectPathways(final KEGGMaster master, final VGroupManagerI vgmgr, RequestProcessor RP) throws ConflictingJobsException, KEGGException {
         final Set<ECNumberI> ecNumbers = new HashSet<>();
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-        for (Pair<VisualizationGroupI, DistributionI<Long>> p : VGroupManager.getInstance().getDistributions()) {
+        for (Pair<VisualizationGroupI, DistributionI<Long>> p : vgmgr.getDistributions()) {
             DistributionI<Long> dist = p.getSecond();
             for (Map.Entry<AttributeI, Long> e : dist.entrySet()) {
                 Matcher matcher = ecNumber.matcher(e.getKey().getValue());

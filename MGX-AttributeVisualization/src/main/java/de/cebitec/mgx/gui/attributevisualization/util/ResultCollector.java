@@ -34,16 +34,16 @@ public class ResultCollector extends SwingWorker<Pair<List<Pair<VisualizationGro
 
     @Override
     protected Pair<List<Pair<VisualizationGroupI, DistributionI<Long>>>, List<Pair<VisualizationGroupI, TreeI<Long>>>> doInBackground() throws Exception {
-        
+
         List<Pair<VisualizationGroupI, DistributionI<Long>>> distributions = mgr.getDistributions();
         assert distributions != null;
         List<Pair<VisualizationGroupI, TreeI<Long>>> hierarchies = null;
-        
+
         if (aType.getStructure() == AttributeTypeI.STRUCTURE_HIERARCHICAL) {
             hierarchies = mgr.getHierarchies();
             assert hierarchies != null;
         }
-        
+
         return new Pair<>(distributions, hierarchies);
     }
 
@@ -51,22 +51,17 @@ public class ResultCollector extends SwingWorker<Pair<List<Pair<VisualizationGro
     protected void done() {
         Pair<List<Pair<VisualizationGroupI, DistributionI<Long>>>, List<Pair<VisualizationGroupI, TreeI<Long>>>> p = null;
         try {
-             p = get();
+            p = get();
         } catch (InterruptedException | ExecutionException ex) {
             Exceptions.printStackTrace(ex);
         }
-        assert p != null;
         distHolder.clear();
         hierarchyHolder.clear();
         distHolder.addAll(p.getFirst());
-        
         if (p.getSecond() != null) {
             hierarchyHolder.addAll(p.getSecond());
         }
 
-        if (aType.getStructure() == AttributeTypeI.STRUCTURE_HIERARCHICAL) {
-            assert hierarchyHolder != null;
-        }
         // we have the distribution, trigger update of viewer list
         ctl.updateViewerList();
         super.done();

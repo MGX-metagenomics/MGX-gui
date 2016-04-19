@@ -119,7 +119,7 @@ public class Job extends JobI {
         if ((this.id == INVALID_IDENTIFIER && other.getId() != INVALID_IDENTIFIER) || (this.id != INVALID_IDENTIFIER && this.id != other.getId())) {
             return false;
         }
-        return getMaster().getProject().equals(other.getMaster().getProject()) && getStatus() == other.getStatus();
+        return getStatus() == other.getStatus() && getMaster().getProject().equals(other.getMaster().getProject()) ;
     }
 
     @Override

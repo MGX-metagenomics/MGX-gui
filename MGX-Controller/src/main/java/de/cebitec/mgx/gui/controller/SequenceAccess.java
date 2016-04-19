@@ -238,7 +238,6 @@ public class SequenceAccess extends AccessBase<SequenceI> implements SequenceAcc
 
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
-            System.err.println(evt);
             switch (evt.getPropertyName()) {
                 case TRANSFER_FAILED:
                     fireTaskChange(evt.getPropertyName(), evt.getNewValue());

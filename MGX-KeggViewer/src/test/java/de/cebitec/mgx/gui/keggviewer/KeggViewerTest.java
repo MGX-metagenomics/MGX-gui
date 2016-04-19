@@ -3,12 +3,15 @@ package de.cebitec.mgx.gui.keggviewer;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.groups.ConflictingJobsException;
+import de.cebitec.mgx.api.groups.VGroupManagerI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.AttributeRank;
 import de.cebitec.mgx.api.model.SeqRunI;
+import de.cebitec.mgx.api.visualization.ConflictResolver;
 import de.cebitec.mgx.common.VGroupManager;
 import de.cebitec.mgx.kegg.pathways.KEGGException;
 import java.util.Iterator;
+import java.util.List;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -46,7 +49,8 @@ public class KeggViewerTest {
     public void testRegressionInterrupted() throws MGXException {
         System.out.println("regressionInterrupted");
 
-        VisualizationGroupI vg = VGroupManager.getInstance().createVisualizationGroup();
+        VGroupManagerI mgr = VGroupManager.getTestInstance();
+        VisualizationGroupI vg = mgr.createVisualizationGroup();
         MGXMasterI master = TestMaster.getRO();
 
         // add first run
@@ -58,15 +62,31 @@ public class KeggViewerTest {
             }
         }
 
+        mgr.registerResolver(new ConflictResolver() {
+            @Override
+            public boolean resolve(List<VisualizationGroupI> data) {
+                data.clear();
+                return true;
+            }
+        });
+
         // select ec_number attribute type
-        try {
-            vg.selectAttributeType(AttributeRank.PRIMARY, "EC_number");
-        } catch (ConflictingJobsException ex) {
-            fail(ex.getMessage());
-        }
+        boolean ok = mgr.selectAttributeType(AttributeRank.PRIMARY, "EC_number");
+        assertTrue(ok);
+
+        String attrType = mgr.getSelectedAttributeType();
+        assertNotNull(attrType);
+        assertEquals("EC_number", attrType);
+
+        attrType = vg.getSelectedAttributeType();
+        assertNotNull(attrType);
+        assertEquals("EC_number", attrType);
 
         KeggViewer kv = new KeggViewer();
+        kv.setVGroupManager(mgr);
         kv.getCustomizer();
+        
+        assertTrue(mgr == kv.getVGroupManager());
 
         // add second run
         iter = master.SeqRun().fetchall();

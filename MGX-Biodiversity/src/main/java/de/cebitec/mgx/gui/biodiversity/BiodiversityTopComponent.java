@@ -2,15 +2,23 @@ package de.cebitec.mgx.gui.biodiversity;
 
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
+import de.cebitec.mgx.api.model.ModelBaseI;
+import de.cebitec.mgx.gui.biodiversity.statistic.Statistic;
 import de.cebitec.mgx.gui.biodiversity.statistic.impl.ACE;
 import de.cebitec.mgx.gui.biodiversity.statistic.impl.Chao1;
 import de.cebitec.mgx.gui.biodiversity.statistic.impl.Shannon;
 import de.cebitec.mgx.gui.biodiversity.statistic.impl.Simpson;
+import java.awt.Cursor;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Collection;
 import java.util.concurrent.ExecutionException;
 import javax.swing.SwingWorker;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableModel;
+import org.jdesktop.swingx.decorator.Highlighter;
+import org.jdesktop.swingx.decorator.HighlighterFactory;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.util.Exceptions;
@@ -42,16 +50,53 @@ import org.openide.windows.TopComponent;
 )
 @Messages({
     "CTL_BiodiversityAction=Biodiversity",
-    "CTL_BiodiversityTopComponent=Biodiversity Window",
-    "HINT_BiodiversityTopComponent=Biodiversity Window"
+    "CTL_BiodiversityTopComponent=Biodiversity Indices",
+    "HINT_BiodiversityTopComponent=Biodiversity Indices"
 })
 public final class BiodiversityTopComponent extends TopComponent implements LookupListener, PropertyChangeListener {
 
     private final Lookup.Result<VisualizationGroupI> result;
     private VisualizationGroupI curGroup = null;
+    private final TableModel model;
+    private final Statistic<DistributionI<Long>>[] stats;
+    //
+    private final static String NOT_AVAILABLE = "N/A";
 
+    @SuppressWarnings("unchecked")
     private BiodiversityTopComponent() {
+        this.stats = new Statistic[]{new ACE(), new Chao1(), new Shannon(), new Simpson()};
+
+        model = new DefaultTableModel(new String[]{"Index", "Value"}, stats.length) {
+
+            @Override
+            public Class<?> getColumnClass(int column) {
+                switch (column) {
+                    case 0:
+                        return String.class;
+                    default:
+                        return Double.class;
+                }
+            }
+
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        for (int i = 0; i < stats.length; i++) {
+            model.setValueAt(stats[i].getName(), i, 0);
+        }
+        setEmptyTable();
         initComponents();
+
+        for (TableColumn tc : table.getColumns()) {
+            if (0 != tc.getModelIndex()) {
+                tc.setMinWidth(20);
+                tc.setPreferredWidth(40);
+                tc.setWidth(40);
+            }
+        }
+
         setName(Bundle.CTL_BiodiversityTopComponent());
         setToolTipText(Bundle.HINT_BiodiversityTopComponent());
         putClientProperty(TopComponent.PROP_MAXIMIZATION_DISABLED, Boolean.TRUE);
@@ -81,14 +126,8 @@ public final class BiodiversityTopComponent extends TopComponent implements Look
         groupName = new javax.swing.JLabel();
         attrType = new javax.swing.JLabel();
         panel = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
-        ace = new javax.swing.JTextField();
-        chao1 = new javax.swing.JTextField();
-        shannon = new javax.swing.JTextField();
-        simpson = new javax.swing.JTextField();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        table = new org.jdesktop.swingx.JXTable();
 
         org.openide.awt.Mnemonics.setLocalizedText(jLabel6, org.openide.util.NbBundle.getMessage(BiodiversityTopComponent.class, "BiodiversityTopComponent.jLabel6.text")); // NOI18N
 
@@ -104,34 +143,24 @@ public final class BiodiversityTopComponent extends TopComponent implements Look
 
         panel.setLayout(new java.awt.GridLayout(1, 0));
 
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(BiodiversityTopComponent.class, "BiodiversityTopComponent.jLabel1.text")); // NOI18N
-
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel2, org.openide.util.NbBundle.getMessage(BiodiversityTopComponent.class, "BiodiversityTopComponent.jLabel2.text")); // NOI18N
-
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel3, org.openide.util.NbBundle.getMessage(BiodiversityTopComponent.class, "BiodiversityTopComponent.jLabel3.text")); // NOI18N
-
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel4, org.openide.util.NbBundle.getMessage(BiodiversityTopComponent.class, "BiodiversityTopComponent.jLabel4.text")); // NOI18N
-
-        ace.setEditable(false);
-        ace.setText(org.openide.util.NbBundle.getMessage(BiodiversityTopComponent.class, "BiodiversityTopComponent.ace.text")); // NOI18N
-
-        chao1.setEditable(false);
-        chao1.setText(org.openide.util.NbBundle.getMessage(BiodiversityTopComponent.class, "BiodiversityTopComponent.chao1.text")); // NOI18N
-
-        shannon.setEditable(false);
-        shannon.setText(org.openide.util.NbBundle.getMessage(BiodiversityTopComponent.class, "BiodiversityTopComponent.shannon.text")); // NOI18N
-
-        simpson.setEditable(false);
-        simpson.setText(org.openide.util.NbBundle.getMessage(BiodiversityTopComponent.class, "BiodiversityTopComponent.simpson.text")); // NOI18N
+        table.setModel(model);
+        table.setEditable(false);
+        table.setHighlighters(new Highlighter[] {HighlighterFactory.createAlternateStriping()});
+        table.setSortable(false);
+        table.getTableHeader().setReorderingAllowed(false);
+        jScrollPane1.setViewportView(table);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(309, 309, 309)
+                .addComponent(panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel6)
                         .addGap(18, 18, 18)
@@ -140,23 +169,7 @@ public final class BiodiversityTopComponent extends TopComponent implements Look
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel7)
                         .addGap(18, 18, 18)
-                        .addComponent(attrType, javax.swing.GroupLayout.DEFAULT_SIZE, 235, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel4)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(simpson, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(ace, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(chao1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(shannon, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(attrType, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -173,41 +186,21 @@ public final class BiodiversityTopComponent extends TopComponent implements Look
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 13, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(ace, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(chao1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(shannon, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
-                    .addComponent(simpson, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 11, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 308, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextField ace;
     private javax.swing.JLabel attrType;
-    private javax.swing.JTextField chao1;
     private javax.swing.JLabel groupName;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JPanel panel;
-    private javax.swing.JTextField shannon;
-    private javax.swing.JTextField simpson;
+    private org.jdesktop.swingx.JXTable table;
     // End of variables declaration//GEN-END:variables
     @Override
     public void componentOpened() {
@@ -221,45 +214,69 @@ public final class BiodiversityTopComponent extends TopComponent implements Look
     }
 
     private void update() {
-        groupName.setText(curGroup.getDisplayName());
-
-        DistributionI<Long> dist = null;
-        if (curGroup.getSelectedAttributeType() == null) {
-            attrType.setText("n/a");
+        if (curGroup != null) {
+            groupName.setText("<html><b>" + curGroup.getDisplayName() + "</b></html>");
+            if (curGroup.getSelectedAttributeType() == null) {
+                attrType.setText(NOT_AVAILABLE);
+            } else {
+                attrType.setText("<html><b>" + curGroup.getSelectedAttributeType() + "</b></html>");
+                processDistribution();
+            }
         } else {
-            attrType.setText(curGroup.getSelectedAttributeType());
-            dist = getDistribution();
+            groupName.setText(NOT_AVAILABLE);
+            attrType.setText(NOT_AVAILABLE);
+            setEmptyTable();
         }
-
-        if (dist == null) {
-            ace.setText("n/a");
-            chao1.setText("n/a");
-            shannon.setText("n/a");
-            simpson.setText("n/a");
-            return;
-        }
-        ace.setText(new ACE().measure(dist));
-        chao1.setText(new Chao1().measure(dist));
-        shannon.setText(new Shannon().measure(dist));
-        simpson.setText(new Simpson().measure(dist));
     }
 
-    private DistributionI<Long> getDistribution() {
+    private void processDistribution() {
 
-        SwingWorker<DistributionI<Long>, Void> worker = new SwingWorker<DistributionI<Long>, Void>() {
+        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+
+        SwingWorker<String[], Void> worker = new SwingWorker<String[], Void>() {
 
             @Override
-            protected DistributionI<Long> doInBackground() throws Exception {
-                return curGroup.getDistribution();
+            protected String[] doInBackground() throws Exception {
+
+                DistributionI<Long> dist = curGroup.getDistribution();
+                String[] ret = null;
+                if (dist.getTotalClassifiedElements() > 0) {
+                    ret = new String[stats.length];
+                    for (int i = 0; i < stats.length; i++) {
+                        ret[i] = stats[i].measure(dist);
+                    }
+                }
+                return ret;
+            }
+
+            @Override
+            protected void done() {
+                super.done();
+                String[] indices = null;
+                try {
+                    indices = get();
+                } catch (InterruptedException | ExecutionException ex) {
+                    Exceptions.printStackTrace(ex);
+                } finally {
+                    setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                }
+                if (indices == null || indices.length != stats.length) {
+                    setEmptyTable();
+                } else {
+                    for (int i = 0; i < indices.length; i++) {
+                        model.setValueAt(indices[i], i, 1);
+                    }
+                }
+                repaint();
             }
 
         };
         worker.execute();
-        try {
-            return worker.get();
-        } catch (InterruptedException | ExecutionException ex) {
-            Exceptions.printStackTrace(ex);
-            return null;
+    }
+
+    private void setEmptyTable() {
+        for (int i = 0; i < stats.length; i++) {
+            model.setValueAt(NOT_AVAILABLE, i, 1);
         }
     }
 
@@ -285,19 +302,20 @@ public final class BiodiversityTopComponent extends TopComponent implements Look
             newGroup = vg;
         }
 
-        if (newGroup != null && newGroup != curGroup) {
-            if (curGroup != null) {
-                curGroup.removePropertyChangeListener(this);
+        if (newGroup != null && !newGroup.equals(curGroup)) {
+            synchronized (this) {
+                if (curGroup != null) {
+                    curGroup.removePropertyChangeListener(this);
+                }
+                curGroup = newGroup;
+                curGroup.addPropertyChangeListener(this);
             }
-            newGroup.addPropertyChangeListener(this);
-            curGroup = newGroup;
             update();
         }
     }
 
     @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-        //       System.err.println("BioDiversityTC got " + evt.getPropertyName());
+    public void propertyChange(final PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {
             case VisualizationGroupI.VISGROUP_RENAMED:
                 groupName.setText(curGroup.getDisplayName());
@@ -306,13 +324,24 @@ public final class BiodiversityTopComponent extends TopComponent implements Look
                 // ignore
                 break;
             case VisualizationGroupI.VISGROUP_HAS_DIST:
+            case VisualizationGroupI.VISGROUP_ATTRTYPE_CHANGED:
+            case VisualizationGroupI.VISGROUP_CHANGED:
                 update();
                 break;
-            case VisualizationGroupI.VISGROUP_ATTRTYPE_CHANGED:
+            case ModelBaseI.OBJECT_DELETED:
+                if (evt.getSource() instanceof VisualizationGroupI) {
+                    VisualizationGroupI vGrp = (VisualizationGroupI) evt.getSource();
+                    if (vGrp != null && vGrp.equals(curGroup)) {
+                        synchronized (this) {
+                            curGroup.removePropertyChangeListener(this);
+                            curGroup = null;
+                        }
+                    }
+                }
                 update();
                 break;
             default:
-                System.err.println("BioDiversityTopComponent got unhandled " + evt.getPropertyName());
+                System.err.println("BioDiversityTopComponent got unhandled event " + evt);
         }
 
     }

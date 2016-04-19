@@ -20,8 +20,8 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -56,17 +56,17 @@ public class VGroupManager implements VGroupManagerI {
     private static VGroupManagerI instance = null;
 
     // LinkedHashSet keeps the order elements are added
-    private final List<VisualizationGroupI> vizGroups = new ArrayList<>();
-    private final List<ReplicateGroupI> replicateGroups = new ArrayList<>(5);
+    private final Set<VisualizationGroupI> vizGroups = new LinkedHashSet<>();
+    private final Set<ReplicateGroupI> replicateGroups = new LinkedHashSet<>();
     private int vizGroupCount = 1;
     private int replicateGroupCount = 1;
     private final PropertyChangeSupport pcs;
-    final RequestProcessor pool;
+    private final RequestProcessor pool;
 
     private final Map<AttributeRank, String> currentAttributeType = new HashMap<>();
     private ConflictResolver resolver = null;
 
-    private static final Color colors[] = {Color.decode("#1d72aa"), Color.decode("#c44440"), Color.decode("#8cbb4e"),
+    private static final Color groupColors[] = {Color.decode("#1d72aa"), Color.decode("#c44440"), Color.decode("#8cbb4e"),
         Color.decode("#795892"), Color.decode("#0099b2"), Color.decode("#f38533"), Color.decode("#8baad1")};
 
     private VGroupManager() {
@@ -84,13 +84,17 @@ public class VGroupManager implements VGroupManagerI {
         return instance;
     }
 
-    public static VGroupManagerI getTestInstance() {
+    public synchronized static VGroupManagerI getTestInstance() {
         return new VGroupManager();
     }
 
     @Override
-    public void registerResolver(ConflictResolver cr) {
-        resolver = cr;
+    public synchronized void registerResolver(ConflictResolver cr) {
+        if (resolver == null) {
+            resolver = cr;
+        } else {
+            throw new RuntimeException("Cannot register additional ConflictResolver");
+        }
     }
     
     @Override
@@ -99,18 +103,22 @@ public class VGroupManager implements VGroupManagerI {
     }
 
     private boolean hasVizGroup(String name) {
-        for (VisualizationGroupI vg : vizGroups) {
-            if (name.equals(vg.getDisplayName()) || name.equals(vg.getName())) {
-                return true;
+        synchronized (vizGroups) {
+            for (VisualizationGroupI vg : vizGroups) {
+                if (name.equals(vg.getDisplayName()) || name.equals(vg.getName())) {
+                    return true;
+                }
             }
         }
         return false;
     }
 
     private boolean hasReplicateGroup(String name) {
-        for (ReplicateGroupI rg : replicateGroups) {
-            if (name.equals(rg.getName())) {
-                return true;
+        synchronized (replicateGroups) {
+            for (ReplicateGroupI rg : replicateGroups) {
+                if (name.equals(rg.getName())) {
+                    return true;
+                }
             }
         }
         return false;
@@ -130,89 +138,168 @@ public class VGroupManager implements VGroupManagerI {
     }
 
     @Override
-    public boolean selectAttributeType(AttributeRank rank, String aType) {
-        if (aType == null) {
+    public boolean selectAttributeType(String aType) {
+        return selectAttributeType(AttributeRank.PRIMARY, aType);
+    }
+
+    @Override
+    public String getSelectedAttributeType() {
+        return currentAttributeType.get(AttributeRank.PRIMARY);
+    }
+
+    @Override
+    public synchronized boolean selectAttributeType(AttributeRank rank, String aType) {
+        if (aType == null || rank == null || resolver == null) {
             return false;
         }
 
-        assert resolver != null;
+        //
+        // check if aType is changed at all
+        //
+//        synchronized (currentAttributeType) {
+//            if (currentAttributeType.containsKey(rank) && aType.equals(currentAttributeType.get(rank))) {
+//                return true;
+//            }
+//        }
 
-        if (!aType.equals(currentAttributeType.get(rank))) {
-            //currentAttributeType.put(rank, aType);
-            List<VisualizationGroupI> conflicts = new ArrayList<>(vizGroups.size());
-            for (VisualizationGroupI vg : getActiveVisualizationGroups()) {
-                try {
-                    vg.selectAttributeType(rank, aType);
-                } catch (ConflictingJobsException ex) {
-                    conflicts.add(vg);
+        List<VisualizationGroupI> conflicts = null;
+        synchronized (vizGroups) {
+            for (VisualizationGroupI vg : vizGroups) {
+                if (vg.isActive()) {
+                    try {
+                        vg.selectAttributeType(rank, aType);
+                    } catch (ConflictingJobsException ex) {
+                        if (conflicts == null) {
+                            conflicts = new ArrayList<>();
+                        }
+                        conflicts.add(vg);
+                    }
                 }
             }
-
-            if (!conflicts.isEmpty()) {
-                resolver.resolve(conflicts);
-            }
-
-            return conflicts.isEmpty();
         }
 
-        return true;
+        if (conflicts != null && !conflicts.isEmpty()) {
+            resolver.resolve(conflicts);
+        }
+
+        if (conflicts == null || conflicts.isEmpty()) {
+            currentAttributeType.put(rank, aType); // remember selection
+            return true;
+        }
+
+        return false;
     }
 
     @Override
     public List<Pair<VisualizationGroupI, DistributionI<Long>>> getDistributions() throws ConflictingJobsException {
-        List<Pair<VisualizationGroupI, DistributionI<Long>>> ret = new ArrayList<>(getActiveVisualizationGroups().size());
-        for (VisualizationGroupI vg : getActiveVisualizationGroups()) {
-            DistributionI<Long> dist = vg.getDistribution();
-            if (!dist.isEmpty()) {
-                ret.add(new Pair<>(vg, dist));
+
+        if (currentAttributeType.get(AttributeRank.PRIMARY) == null) {
+            throw new RuntimeException("VGMGR: primary attribute type is null");
+        }
+
+        int numActiveGroups = 0;
+        // make sure there are no unresolved ambiguities left
+        synchronized (vizGroups) {
+            for (VisualizationGroupI vg : vizGroups) {
+                if (vg.isActive()) {
+                    numActiveGroups++;
+                    Map<SeqRunI, Set<JobI>> conflicts = vg.getConflicts(AttributeRank.PRIMARY);
+                    if (!conflicts.isEmpty()) {
+                        assert false;
+                        return null;
+                    }
+                }
             }
         }
+
+        List<Pair<VisualizationGroupI, DistributionI<Long>>> ret = new ArrayList<>(numActiveGroups);
+        synchronized (vizGroups) {
+            for (VisualizationGroupI vg : vizGroups) {
+                if (vg.isActive()) {
+                    DistributionI<Long> dist = vg.getDistribution();
+                    if (!dist.isEmpty()) {
+                        ret.add(new Pair<>(vg, dist));
+                    }
+                }
+            }
+        }
+
         return ret;
     }
 
     @Override
-    public List<Pair<VisualizationGroupI, TreeI<Long>>> getHierarchies() {
+    public List<Pair<VisualizationGroupI, TreeI<Long>>> getHierarchies() throws ConflictingJobsException {
+
+        if (currentAttributeType.get(AttributeRank.PRIMARY) == null) {
+            throw new RuntimeException("VGMGR: primary attribute type is null");
+        }
+
+        int numActiveGroups = 0;
         // make sure there are no unresolved ambiguities left
-        for (VisualizationGroupI vg : getActiveVisualizationGroups()) {
-            Map<SeqRunI, Set<JobI>> conflicts = vg.getConflicts(AttributeRank.PRIMARY);
-            if (!conflicts.isEmpty()) {
-                return null;
+        synchronized (vizGroups) {
+            for (VisualizationGroupI vg : vizGroups) {
+                if (vg.isActive()) {
+                    numActiveGroups++;
+                    Map<SeqRunI, Set<JobI>> conflicts = vg.getConflicts(AttributeRank.PRIMARY);
+                    if (!conflicts.isEmpty()) {
+                        assert false;
+                        return null;
+                    }
+                }
             }
         }
 
-        List<Pair<VisualizationGroupI, TreeI<Long>>> ret = new ArrayList<>();
-        for (VisualizationGroupI vg : getActiveVisualizationGroups()) {
-            TreeI<Long> tree = vg.getHierarchy();
-            if (tree != null && !tree.isEmpty()) {
-                ret.add(new Pair<>(vg, tree));
+        List<Pair<VisualizationGroupI, TreeI<Long>>> ret = new ArrayList<>(numActiveGroups);
+        synchronized (vizGroups) {
+            for (VisualizationGroupI vg : vizGroups) {
+                if (vg.isActive()) {
+                    TreeI<Long> tree = vg.getHierarchy();
+                    if (tree != null && !tree.isEmpty()) {
+                        ret.add(new Pair<>(vg, tree));
+                    }
+                }
             }
         }
+
         return ret;
     }
 
     @Override
     public VisualizationGroupI createVisualizationGroup() {
-        VisualizationGroupI group = null;
+        VisualizationGroupI group;
 
         synchronized (vizGroups) {
             String newName = "Group " + vizGroupCount;
             while (hasVizGroup(newName)) {
                 newName = "Group " + ++vizGroupCount;
             }
-            Color groupColor = colors[(vizGroupCount - 1) % colors.length];
+            Color groupColor = groupColors[(vizGroupCount - 1) % groupColors.length];
             group = new VisualizationGroup(this, vizGroupCount, newName, groupColor);
+            try {
+                group.selectAttributeType(AttributeRank.PRIMARY, currentAttributeType.get(AttributeRank.PRIMARY));
+                group.selectAttributeType(AttributeRank.SECONDARY, currentAttributeType.get(AttributeRank.SECONDARY));
+            } catch (ConflictingJobsException ex) {
+                // unreachable since group is empty
+            }
             group.addPropertyChangeListener(this);
             vizGroups.add(group);
             vizGroupCount++;
         }
+        
         firePropertyChange(VISGROUP_ADDED, 0, group);
+        
+        // auto-select initial group
+        if (vizGroups.size() == 1) {
+            setSelectedVisualizationGroup(group);
+        }
+        
         return group;
     }
 
     @Override
     public ReplicateI createReplicate(ReplicateGroupI rGroup) {
-        Replicate newGrp = null;
 
+        ReplicateI newGrp;
         int cnt = 1;
         String nameTemplate = "Replicate " + String.valueOf(cnt);
         while (hasReplicate(nameTemplate, rGroup)) {
@@ -221,14 +308,22 @@ public class VGroupManager implements VGroupManagerI {
         }
 
         newGrp = new Replicate(rGroup, this, vizGroupCount, nameTemplate, rGroup.getColor());
+        try {
+            newGrp.selectAttributeType(AttributeRank.PRIMARY, currentAttributeType.get(AttributeRank.PRIMARY));
+            newGrp.selectAttributeType(AttributeRank.SECONDARY, currentAttributeType.get(AttributeRank.SECONDARY));
+        } catch (ConflictingJobsException ex) {
+            // unreachable since group is empty
+        }
         newGrp.addPropertyChangeListener(this);
         rGroup.add(newGrp);
         vizGroupCount++;
-        vizGroups.add(newGrp); // a replicate is a visualization group, as well
+        synchronized (vizGroups) {
+            vizGroups.add(newGrp); // a replicate is a visualization group, as well
+        }
         return newGrp;
     }
 
-    private boolean hasReplicate(String template, ReplicateGroupI rGroup) {
+    private static boolean hasReplicate(String template, ReplicateGroupI rGroup) {
         for (ReplicateI r : rGroup.getReplicates()) {
             if (r.getDisplayName().equals(template) || r.getName().equals(template)) {
                 return true;
@@ -257,7 +352,7 @@ public class VGroupManager implements VGroupManagerI {
     private ReplicateGroupI selectedReplicateGroup = null;
 
     @Override
-    public final void setSelectedVizGroup(VisualizationGroupI group) {
+    public final void setSelectedVisualizationGroup(VisualizationGroupI group) {
         if (group != null && selectedGroup != group && !group.isDeleted()) {
             selectedGroup = group;
             firePropertyChange(VISGROUP_SELECTION_CHANGED, null, selectedGroup);
@@ -279,7 +374,7 @@ public class VGroupManager implements VGroupManagerI {
                 replicateGroupCount++;
                 newName = "Replicate Group " + replicateGroupCount;
             }
-            Color groupColor = colors[(replicateGroupCount - 1) % colors.length];
+            Color groupColor = groupColors[(replicateGroupCount - 1) % groupColors.length];
             replGroup = new ReplicateGroup(newName);
             replGroup.setColor(groupColor);
             replicateGroups.add(replGroup);
@@ -287,6 +382,10 @@ public class VGroupManager implements VGroupManagerI {
         }
 
         firePropertyChange(REPLGROUP_ADDED, 0, replGroup);
+
+        if (getSelectedReplicateGroup() == null) {
+            setSelectedReplicateGroup(replGroup);
+        }
         return replGroup;
     }
 
@@ -294,11 +393,12 @@ public class VGroupManager implements VGroupManagerI {
     public void removeReplicateGroup(ReplicateGroupI rg) {
         if (rg != null && replicateGroups.contains(rg)) {
             for (ReplicateI r : rg.getReplicates()) {
-                //vizGroups.remove(r);
                 removeVisualizationGroup(r);
             }
             rg.close();
-            replicateGroups.remove(rg);
+            synchronized (replicateGroups) {
+                replicateGroups.remove(rg);
+            }
             if (selectedReplicateGroup != null && selectedReplicateGroup.equals(rg)) {
                 selectedReplicateGroup = null;
                 firePropertyChange(REPLICATEGROUP_SELECTION_CHANGED, rg, null);
@@ -310,20 +410,33 @@ public class VGroupManager implements VGroupManagerI {
 
     @Override
     public void setSelectedReplicateGroup(ReplicateGroupI replicateGroup) {
-        if (selectedReplicateGroup != replicateGroup) {
+        if (replicateGroup != null && selectedReplicateGroup != replicateGroup && !replicateGroup.isDeleted()) {
             selectedReplicateGroup = replicateGroup;
             firePropertyChange(REPLICATEGROUP_SELECTION_CHANGED, null, selectedReplicateGroup);
         }
     }
 
     @Override
+    public ReplicateGroupI getSelectedReplicateGroup() {
+        return selectedReplicateGroup;
+    }
+
+    @Override
     public Collection<VisualizationGroupI> getAllVisualizationGroups() {
-        return Collections.unmodifiableCollection(vizGroups);
+        List<VisualizationGroupI> ret = new ArrayList<>(vizGroups.size());
+        synchronized (vizGroups) {
+            ret.addAll(vizGroups);
+        }
+        return ret;
     }
 
     @Override
     public Collection<ReplicateGroupI> getReplicateGroups() {
-        return Collections.unmodifiableCollection(replicateGroups);
+        List<ReplicateGroupI> ret = new ArrayList<>(replicateGroups.size());
+        synchronized (replicateGroups) {
+            ret.addAll(replicateGroups);
+        }
+        return ret;
     }
 
     @Override
@@ -332,7 +445,19 @@ public class VGroupManager implements VGroupManagerI {
     }
 
     @Override
-    public void propertyChange(PropertyChangeEvent pce) {
+    public final void propertyChange(PropertyChangeEvent pce) {
+        //System.err.println("VGMGR got " + pce);
+//        if (VisualizationGroupI.VISGROUP_RUN_ADDED.equals(pce.getPropertyName()) && pce.getSource() instanceof VisualizationGroupI) {
+//            VisualizationGroupI vGrp = (VisualizationGroupI) pce.getSource();
+//            try {
+//                vGrp.selectAttributeType(AttributeRank.PRIMARY, currentAttributeType.get(AttributeRank.PRIMARY));
+//            } catch (ConflictingJobsException ex) {
+//                List<VisualizationGroupI> tmp = new ArrayList<>(1);
+//                tmp.add(vGrp);
+//                resolver.resolve(tmp);
+//            }
+//            
+//        }
         pcs.firePropertyChange(pce);
     }
 
@@ -349,4 +474,5 @@ public class VGroupManager implements VGroupManagerI {
     public void removePropertyChangeListener(PropertyChangeListener p) {
         pcs.removePropertyChangeListener(p);
     }
+
 }
