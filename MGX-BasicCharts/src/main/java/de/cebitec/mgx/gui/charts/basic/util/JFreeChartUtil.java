@@ -33,6 +33,7 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.graphics2d.svg.SVGGraphics2D;
 
+
 /**
  *
  * @author sj
@@ -90,7 +91,11 @@ public class JFreeChartUtil {
             }            
         }
         
-        return dataset;
+        if (dataset.getColumnCount() > 25) {
+            return new SlidingStatisticalCategoryDataset(dataset, 25);
+        } else {
+            return dataset;
+        }
     }
 
 //    public static DefaultCategoryDataset createCategoryDataset(List<Pair<VisualizationGroup, Distribution>> in) {
