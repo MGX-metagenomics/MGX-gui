@@ -1,13 +1,18 @@
 package de.cebitec.mgx.gui.controller;
 
 import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.access.AttributeTypeAccessI;
 import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.exception.MGXLoggedoutException;
 import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
+import de.cebitec.mgx.api.model.Identifiable;
+import de.cebitec.mgx.api.model.ModelBaseI;
 import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.AttributeTypeDTO;
+import de.cebitec.mgx.gui.datamodel.AttributeType;
 import de.cebitec.mgx.gui.datamodel.Job;
 import de.cebitec.mgx.gui.dtoconversion.AttributeTypeDTOFactory;
 import de.cebitec.mgx.gui.util.BaseIterator;
@@ -17,22 +22,37 @@ import java.util.Iterator;
  *
  * @author sjaenick
  */
-public class AttributeTypeAccess extends AccessBase<AttributeTypeI> {
+public class AttributeTypeAccess implements AttributeTypeAccessI {
+
+    private final MGXDTOMaster dtomaster;
+    private final MGXMasterI master;
 
     public AttributeTypeAccess(MGXMasterI master, MGXDTOMaster dtomaster) throws MGXException {
-        super(master, dtomaster);
+        this.dtomaster = dtomaster;
+        this.master = master;
+        if (master.isDeleted()) {
+            throw new MGXLoggedoutException("You are disconnected.");
+        }
     }
 
     @Override
-    public AttributeTypeI create(AttributeTypeI obj) throws MGXException {
+    public AttributeTypeI create(String name, char valueType, char structure) throws MGXException {
+        if (valueType != AttributeTypeI.VALUE_DISCRETE && valueType != AttributeTypeI.VALUE_NUMERIC) {
+            throw new MGXException(String.valueOf(valueType) + " is not a valid value type");
+        }
+        if (structure != AttributeTypeI.STRUCTURE_BASIC && structure != AttributeTypeI.STRUCTURE_HIERARCHICAL) {
+            throw new MGXException(String.valueOf(structure) + " is not a valid attribute structure");
+        }
+        
+        AttributeTypeI attrType = new AttributeType(getMaster(), Identifiable.INVALID_IDENTIFIER, name, valueType, structure);
         try {
-            AttributeTypeDTO dto = AttributeTypeDTOFactory.getInstance().toDTO(obj);
+            AttributeTypeDTO dto = AttributeTypeDTOFactory.getInstance().toDTO(attrType);
             long objId = getDTOmaster().AttributeType().create(dto);
-            obj.setId(objId);
+            attrType.setId(objId);
         } catch (MGXServerException | MGXClientException ex) {
             throw new MGXException(ex);
         }
-        return obj;
+        return attrType;
     }
 
     @Override
@@ -48,11 +68,6 @@ public class AttributeTypeAccess extends AccessBase<AttributeTypeI> {
 
     @Override
     public Iterator<AttributeTypeI> fetchall() {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    @Override
-    public void update(AttributeTypeI obj) {
         throw new UnsupportedOperationException("Not supported.");
     }
 
@@ -90,4 +105,13 @@ public class AttributeTypeAccess extends AccessBase<AttributeTypeI> {
             throw new MGXException(ex);
         }
     }
+
+    private MGXDTOMaster getDTOmaster() {
+        return dtomaster;
+    }
+
+    private MGXMasterI getMaster() {
+        return master;
+    }
+
 }
