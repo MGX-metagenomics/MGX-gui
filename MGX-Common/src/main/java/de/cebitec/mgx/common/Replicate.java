@@ -10,6 +10,7 @@ import de.cebitec.mgx.api.groups.ReplicateI;
 import de.cebitec.mgx.api.groups.VGroupManagerI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import java.awt.Color;
+import java.awt.datatransfer.DataFlavor;
 
 /**
  *
@@ -18,10 +19,12 @@ import java.awt.Color;
 public class Replicate extends VisualizationGroup implements ReplicateI {
 
     private final ReplicateGroupI group;
+    private final int replicateNum;
 
     Replicate(ReplicateGroupI group, VGroupManagerI vgmgr, int id, String replName, Color color) {
-        super(ReplicateI.REPLICATE_DATA_FLAVOR, vgmgr, id, replName, color);
+        super(vgmgr, id, replName, color);
         this.group = group;
+        this.replicateNum = group.getNextReplicateNum();
     }
 
     @Override
@@ -31,7 +34,7 @@ public class Replicate extends VisualizationGroup implements ReplicateI {
 
     @Override
     public String getDisplayName() {
-        return group.getName() + " R" + getId();
+        return group.getName() + " Replicate " + replicateNum;
     }
 
     @Override
@@ -48,6 +51,16 @@ public class Replicate extends VisualizationGroup implements ReplicateI {
     @Override
     public final ReplicateGroupI getReplicateGroup() {
         return group;
+    }
+    
+       @Override
+    public DataFlavor[] getTransferDataFlavors() {
+        return new DataFlavor[]{VisualizationGroupI.VISGROUP_DATA_FLAVOR, ReplicateI.REPLICATE_DATA_FLAVOR};
+    }
+
+    @Override
+    public boolean isDataFlavorSupported(DataFlavor flavor) {
+        return flavor != null && (flavor.equals(VisualizationGroupI.VISGROUP_DATA_FLAVOR) || flavor.equals(ReplicateI.REPLICATE_DATA_FLAVOR));
     }
 
     @Override

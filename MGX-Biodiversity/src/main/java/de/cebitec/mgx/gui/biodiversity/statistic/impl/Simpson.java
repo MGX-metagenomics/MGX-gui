@@ -13,11 +13,11 @@ public class Simpson implements Statistic<DistributionI<Long>> {
 
     @Override
     public String measure(DistributionI<Long> data) {
-        
+
         if (data.size() == 1) {
             return "0.00";
         }
-        
+
         double value = 0;
         long n = data.getTotalClassifiedElements();
         n = n * (n - 1);
@@ -25,7 +25,8 @@ public class Simpson implements Statistic<DistributionI<Long>> {
             double tmp = e.getValue().doubleValue();
             value += (tmp * (tmp - 1)) / n;
         }
-        return String.format("%.2f", 1 - value);
+        double ret = 1 - value;
+        return Double.isNaN(ret) ? "N/A" : String.format("%.2f", ret);
     }
 
     @Override

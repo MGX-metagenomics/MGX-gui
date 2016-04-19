@@ -102,6 +102,8 @@ public final class AttributeVisualizationTopComponent extends TopComponent {
     private javax.swing.JSplitPane jSplitPane1;
     // End of variables declaration//GEN-END:variables
 
+    private final VisualizationGroupTopComponent vgtc = new VisualizationGroupTopComponent();
+
     @Override
     public void componentOpened() {
         openVGroupTopComponent();
@@ -109,7 +111,12 @@ public final class AttributeVisualizationTopComponent extends TopComponent {
 
     @Override
     public void componentClosed() {
-        controlPanel1.dispose();
+        if (vgtc.isVisible()) {
+            vgtc.setVisible(false);
+        }
+        if (vgtc.isOpened()) {
+            vgtc.close();
+        }
     }
 
     void writeProperties(java.util.Properties p) {
@@ -131,20 +138,17 @@ public final class AttributeVisualizationTopComponent extends TopComponent {
     }
 
     private void openVGroupTopComponent() {
-        // TODO: prevent opening this twice
-        //VisualizationGroupTopComponent pe = Lookup.getDefault().lookup(VisualizationGroupTopComponent.class);
-        VisualizationGroupTopComponent pe = new VisualizationGroupTopComponent();
-        pe.setVisible(true);
-
+        if (!vgtc.isVisible()) {
+            vgtc.setVisible(true);
+        }
+        
         Mode m = WindowManager.getDefault().findMode("output");
         if (m != null) {
-            m.dockInto(pe);
-        } else {
-            System.err.println("output mode not found");
+            m.dockInto(vgtc);
         }
-        pe.open();
-
-        //pe.requestActive();
+        if (!vgtc.isOpened()) {
+            vgtc.open();
+        }
     }
 
     void updateLookup(List<Pair<VisualizationGroupI, DistributionI<Long>>> currentDistributions) {

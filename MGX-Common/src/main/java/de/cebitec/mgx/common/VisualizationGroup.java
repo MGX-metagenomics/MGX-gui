@@ -19,7 +19,6 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,53 +43,57 @@ import org.openide.util.Exceptions;
  */
 public class VisualizationGroup implements VisualizationGroupI {
 
+    //private final static Map<JobI, Set<AttributeTypeI>> NO_JOBS = new HashMap<>();
+    //
     private final VGroupManagerI vgmgr;
     private String name;
     private Color color;
     private boolean is_active = true;
+    //
     private String selectedAttributeType;
     private String secondaryAttributeType; // 2nd attr type for correlation matrices
-    private final Map<AttributeRank, Map<SeqRunI, JobI>> uniqueJobs = new HashMap<>();
-    private final Map<AttributeRank, Map<SeqRunI, Set<JobI>>> needsResolval = new HashMap<>();
+    private final Map<AttributeRank, Map<SeqRunI, JobI>> uniqueJobs = new ConcurrentHashMap<>();
+    private final Map<AttributeRank, Map<SeqRunI, Set<JobI>>> needsResolval = new ConcurrentHashMap<>();
     private final Map<SeqRunI, Map<JobI, Set<AttributeTypeI>>> attributeTypes;
     private final Map<SeqRunI, DistributionI<Long>> currentDistributions;
     //
-    private final PropertyChangeSupport pcs = new ParallelPropertyChangeSupport(this, true);
+    private final Map<String, DistributionI<Long>> distCache = new ConcurrentHashMap<>();
+    private final Map<String, TreeI<Long>> hierarchyCache = new ConcurrentHashMap<>();
     //
-    private final Map<String, DistributionI<Long>> distCache = new HashMap<>();
-    private final Map<String, TreeI<Long>> hierarchyCache = new HashMap<>();
     //
     private final int id;
     private final UUID uuid = UUID.randomUUID();
-    private final DataFlavor dataflavor;
+    private final ParallelPropertyChangeSupport pcs = new ParallelPropertyChangeSupport(this);
     //
     private String managedState = ModelBaseI.OBJECT_MANAGED;
 
     VisualizationGroup(VGroupManagerI vgmgr, int id, String groupName, Color color) {
-        this(VisualizationGroupI.VISGROUP_DATA_FLAVOR, vgmgr, id, groupName, color);
-    }
-
-    VisualizationGroup(DataFlavor dataFlavor, VGroupManagerI vgmgr, int id, String groupName, Color color) {
-        this.dataflavor = dataFlavor;
         this.id = id;
         this.vgmgr = vgmgr;
         this.name = groupName;
         this.color = color;
-        uniqueJobs.put(AttributeRank.PRIMARY, new HashMap<SeqRunI, JobI>());
-        uniqueJobs.put(AttributeRank.SECONDARY, new HashMap<SeqRunI, JobI>());
-        needsResolval.put(AttributeRank.PRIMARY, new HashMap<SeqRunI, Set<JobI>>());
-        needsResolval.put(AttributeRank.SECONDARY, new HashMap<SeqRunI, Set<JobI>>());
+        uniqueJobs.put(AttributeRank.PRIMARY, new ConcurrentHashMap<SeqRunI, JobI>());
+        uniqueJobs.put(AttributeRank.SECONDARY, new ConcurrentHashMap<SeqRunI, JobI>());
+        needsResolval.put(AttributeRank.PRIMARY, new ConcurrentHashMap<SeqRunI, Set<JobI>>());
+        needsResolval.put(AttributeRank.SECONDARY, new ConcurrentHashMap<SeqRunI, Set<JobI>>());
         attributeTypes = new ConcurrentHashMap<>();
         currentDistributions = new ConcurrentHashMap<>();
     }
 
     @Override
     public synchronized void close() {
-        for (SeqRunI sr : getSeqRuns()) {
+        for (SeqRunI sr : attributeTypes.keySet()) {
             sr.removePropertyChangeListener(this);
         }
         attributeTypes.clear();
         currentDistributions.clear();
+        uniqueJobs.get(AttributeRank.PRIMARY).clear();
+        uniqueJobs.get(AttributeRank.SECONDARY).clear();
+        needsResolval.get(AttributeRank.PRIMARY).clear();
+        needsResolval.get(AttributeRank.SECONDARY).clear();
+        distCache.clear();
+        hierarchyCache.clear();
+        pcs.close();
     }
 
     @Override
@@ -114,20 +117,29 @@ public class VisualizationGroup implements VisualizationGroupI {
     }
 
     @Override
-    public void setName(String name) {
-        String oldVal = this.name;
-        this.name = name;
-        firePropertyChange(VISGROUP_RENAMED, oldVal, name);
+    public void setName(String newName) {
+        if (!name.equals(newName)) {
+            String oldVal = this.name;
+            this.name = newName;
+            firePropertyChange(VISGROUP_RENAMED, oldVal, name);
+        }
     }
 
     @Override
     public boolean isActive() {
-        return is_active && !isDeleted() && !attributeTypes.isEmpty();
+        return is_active && !isDeleted(); // && !attributeTypes.isEmpty();
     }
 
     @Override
     public void setActive(boolean is_active) {
         this.is_active = is_active;
+        if (!is_active) {
+            selectedAttributeType = null;
+            uniqueJobs.get(AttributeRank.PRIMARY).clear();
+            uniqueJobs.get(AttributeRank.SECONDARY).clear();
+            needsResolval.get(AttributeRank.PRIMARY).clear();
+            needsResolval.get(AttributeRank.SECONDARY).clear();
+        }
         pcs.firePropertyChange(is_active ? VISGROUP_ACTIVATED : VISGROUP_DEACTIVATED, !is_active, is_active);
     }
 
@@ -174,9 +186,21 @@ public class VisualizationGroup implements VisualizationGroupI {
      */
     @Override
     public final void selectAttributeType(AttributeRank rank, String attrType) throws ConflictingJobsException {
-        assert attrType != null;
-        selectedAttributeType = attrType;
+        if (attrType == null || attrType.isEmpty()) {
+            return;
+        }
+
+        if (attrType.equals(getSelectedAttributeType())) {
+            return;
+        }
+
+        if (!rank.equals(AttributeRank.PRIMARY)) {
+            // everything else is unsupported so far
+            return;
+        }
+
         synchronized (needsResolval) {
+            selectedAttributeType = attrType;
             uniqueJobs.get(rank).clear();
             needsResolval.get(rank).clear();
         }
@@ -184,11 +208,11 @@ public class VisualizationGroup implements VisualizationGroupI {
         // clear caches - the cache might already contain data for the
         // selected attribute type, but from a different set of selected
         // jobs
-        if (distCache.containsKey(attrType)) {
-            distCache.remove(attrType);
+        if (distCache.containsKey(selectedAttributeType)) {
+            distCache.remove(selectedAttributeType);
         }
-        if (hierarchyCache.containsKey(attrType)) {
-            hierarchyCache.remove(attrType);
+        if (hierarchyCache.containsKey(selectedAttributeType)) {
+            hierarchyCache.remove(selectedAttributeType);
         }
 
         for (SeqRunI run : getSeqRuns()) {
@@ -206,7 +230,9 @@ public class VisualizationGroup implements VisualizationGroupI {
                     uniqueJobs.get(rank).put(run, validJobs.toArray(new JobI[]{})[0]);
                     break;
                 default:
-                    needsResolval.get(rank).put(run, validJobs);
+                    synchronized (needsResolval) {
+                        needsResolval.get(rank).put(run, validJobs);
+                    }
                     break;
             }
         }
@@ -261,6 +287,8 @@ public class VisualizationGroup implements VisualizationGroupI {
                 throw new IllegalArgumentException(run.getName() + " is already marked as deleted.");
             }
             run.addPropertyChangeListener(this);
+            
+//            attributeTypes.put(run, NO_JOBS);
         }
 
         MultiAttributeTypeFetcher fetcher = new MultiAttributeTypeFetcher(runs);
@@ -268,15 +296,17 @@ public class VisualizationGroup implements VisualizationGroupI {
 
         try {
             Map<SeqRunI, Map<JobI, Set<AttributeTypeI>>> get = f.get();
-            for (Map.Entry<SeqRunI, Map<JobI, Set<AttributeTypeI>>> e : get.entrySet()) {
-                SeqRunI run = e.getKey();
-                attributeTypes.put(run, e.getValue());
+            for (Map.Entry<SeqRunI, Map<JobI, Set<AttributeTypeI>>> entry : get.entrySet()) {
+                SeqRunI run = entry.getKey();
+                Map<JobI, Set<AttributeTypeI>> jobData = entry.getValue();
+                
+                attributeTypes.put(run, jobData);
 
                 // remove cached data for modified attribute types
-                for (Set<AttributeTypeI> s : e.getValue().values()) {
-                    for (AttributeTypeI at : s) {
-                        distCache.remove(at.getName());
-                        hierarchyCache.remove(at.getName());
+                for (Set<AttributeTypeI> s : jobData.values()) {
+                    for (AttributeTypeI attrType : s) {
+                        distCache.remove(attrType.getName());
+                        hierarchyCache.remove(attrType.getName());
                     }
                 }
             }
@@ -284,11 +314,38 @@ public class VisualizationGroup implements VisualizationGroupI {
         } catch (InterruptedException | ExecutionException ex) {
             Exceptions.printStackTrace(ex);
         }
+
+        for (SeqRunI run : runs) {
+
+            Set<JobI> validJobs = getJobsProvidingAttributeType(run, selectedAttributeType);
+            //
+            // select the job to use - either we can automatically determine
+            // the correct job or we have to ask the user
+            //
+            switch (validJobs.size()) {
+                case 0:
+                    // nothing to do, no job provides this attribute type
+                    break;
+                case 1:
+                    uniqueJobs.get(AttributeRank.PRIMARY).put(run, validJobs.toArray(new JobI[]{})[0]);
+                    break;
+                default:
+                    synchronized (needsResolval) {
+                        needsResolval.get(AttributeRank.PRIMARY).put(run, validJobs);
+                    }
+                    break;
+            }
+        }
+
+        // if unresolved conflicts remain, reset the currently selected attribute type,
+        // so the next invocation of selectAttributeType(sameAttrType) will lead to 
+        // conflict resolution instead of returning previously cached data
+        if (!needsResolval.get(AttributeRank.PRIMARY).isEmpty()) {
+            selectedAttributeType = null;
+        }
+
         fireVGroupChanged(VISGROUP_CHANGED);
     }
-
-    //private final static Set<AttributeTypeI> NO_ATTRS = Collections.EMPTY_SET;
-    private final static Map<JobI, Set<AttributeTypeI>> NO_JOBS = new HashMap<>();
 
     @Override
     public final void addSeqRun(final SeqRunI sr) {
@@ -300,7 +357,7 @@ public class VisualizationGroup implements VisualizationGroupI {
         }
         sr.addPropertyChangeListener(this);
 
-        attributeTypes.put(sr, NO_JOBS);
+        //attributeTypes.put(sr, NO_JOBS);
 
         AttributeTypeFetcher fetcher = new AttributeTypeFetcher(sr);
         Future<Map<JobI, Set<AttributeTypeI>>> f = vgmgr.submit(fetcher);
@@ -312,13 +369,39 @@ public class VisualizationGroup implements VisualizationGroupI {
 
             // remove cached data for modified attribute types
             for (Set<AttributeTypeI> s : get.values()) {
-                for (AttributeTypeI at : s) {
-                    distCache.remove(at.getName());
-                    hierarchyCache.remove(at.getName());
+                for (AttributeTypeI attrType : s) {
+                    distCache.remove(attrType.getName());
+                    hierarchyCache.remove(attrType.getName());
                 }
             }
         } catch (InterruptedException | ExecutionException ex) {
             Exceptions.printStackTrace(ex);
+        }
+
+        Set<JobI> validJobs = getJobsProvidingAttributeType(sr, selectedAttributeType);
+        //
+        // select the job to use - either we can automatically determine
+        // the correct job or we have to ask the user
+        //
+        switch (validJobs.size()) {
+            case 0:
+                // nothing to do, no job provides this attribute type
+                break;
+            case 1:
+                uniqueJobs.get(AttributeRank.PRIMARY).put(sr, validJobs.toArray(new JobI[]{})[0]);
+                break;
+            default:
+                synchronized (needsResolval) {
+                    needsResolval.get(AttributeRank.PRIMARY).put(sr, validJobs);
+                }
+                break;
+        }
+
+        // if unresolved conflicts remain, reset the currently selected attribute type,
+        // so the next invocation of selectAttributeType(sameAttrType) will lead to 
+        // conflict resolution instead of returning previously cached data
+        if (!needsResolval.get(AttributeRank.PRIMARY).isEmpty()) {
+            selectedAttributeType = null;
         }
 
         fireVGroupChanged(VISGROUP_CHANGED);
@@ -347,27 +430,14 @@ public class VisualizationGroup implements VisualizationGroupI {
     }
 
     @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-        switch (evt.getPropertyName()) {
-            case OBJECT_DELETED:
-                if (evt.getSource() instanceof SeqRunI) {
-                    removeSeqRun((SeqRunI) evt.getSource());
-                }
-                pcs.firePropertyChange(evt);
-                break;
-            case OBJECT_MODIFIED:
-                pcs.firePropertyChange(evt);
-                break;
-            default:
-                System.err.println("unhandled PCE in VGroup: " + evt.getPropertyName());
-                assert false;
+    public final TreeI<Long> getHierarchy() throws ConflictingJobsException {
+        if (selectedAttributeType == null) {
+            throw new RuntimeException("VGroup" + getDisplayName() + ": attribute type is null");
         }
-    }
 
-    @Override
-    public final TreeI<Long> getHierarchy() {
-        assert selectedAttributeType != null;
-        assert needsResolval.get(AttributeRank.PRIMARY).isEmpty();
+        if (!needsResolval.get(AttributeRank.PRIMARY).isEmpty()) {
+            throw new ConflictingJobsException(this, needsResolval.get(AttributeRank.PRIMARY));
+        }
 
         if (hierarchyCache.containsKey(selectedAttributeType)) {
             return hierarchyCache.get(selectedAttributeType);
@@ -417,7 +487,9 @@ public class VisualizationGroup implements VisualizationGroupI {
     @Override
     public final DistributionI<Long> getDistribution() throws ConflictingJobsException {
 
-        assert selectedAttributeType != null;
+        if (selectedAttributeType == null) {
+            throw new RuntimeException("VGroup " + getDisplayName() + ": attribute type is null");
+        }
         //assert needsResolval.get(AttributeRank.PRIMARY).isEmpty();
         if (!needsResolval.get(AttributeRank.PRIMARY).isEmpty()) {
             throw new ConflictingJobsException(this, needsResolval.get(AttributeRank.PRIMARY));
@@ -510,10 +582,11 @@ public class VisualizationGroup implements VisualizationGroupI {
         Set<AttributeTypeI> attributesForJob = jobattrtypes.get(job);
         if (attributesForJob == null) {
             Logger.getGlobal().log(Level.SEVERE, "no attributes for run {0} from job {1}", new Object[]{run.getName(), job.getId()});
-        }
-        for (AttributeTypeI atype : attributesForJob) {
-            if (atype.getName().equals(attrTypeName)) {
-                validTypes.add(atype);
+        } else {
+            for (AttributeTypeI atype : attributesForJob) {
+                if (atype.getName().equals(attrTypeName)) {
+                    validTypes.add(atype);
+                }
             }
         }
         assert validTypes.size() == 1; // shouldn't happen
@@ -555,6 +628,24 @@ public class VisualizationGroup implements VisualizationGroupI {
 //        return curAttrTypeCnt;
 //    }
     @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        switch (evt.getPropertyName()) {
+            case OBJECT_DELETED:
+                if (evt.getSource() instanceof SeqRunI) {
+                    removeSeqRun((SeqRunI) evt.getSource());
+                }
+                pcs.firePropertyChange(evt);
+                break;
+            case OBJECT_MODIFIED:
+                pcs.firePropertyChange(evt);
+                break;
+            default:
+                System.err.println("unhandled PCE in VGroup: " + evt.getPropertyName());
+                assert false;
+        }
+    }
+
+    @Override
     public final synchronized void modified() {
         if (managedState.equals(OBJECT_DELETED)) {
             throw new RuntimeException("Invalid object state, cannot modify deleted object.");
@@ -581,13 +672,13 @@ public class VisualizationGroup implements VisualizationGroupI {
 //        return Integer.compare(getId(), o.getId());
 //    }
     @Override
-    public final DataFlavor[] getTransferDataFlavors() {
-        return new DataFlavor[]{dataflavor};
+    public DataFlavor[] getTransferDataFlavors() {
+        return new DataFlavor[]{VisualizationGroupI.VISGROUP_DATA_FLAVOR};
     }
 
     @Override
-    public final boolean isDataFlavorSupported(DataFlavor flavor) {
-        return flavor != null && flavor.equals(dataflavor);
+    public boolean isDataFlavorSupported(DataFlavor flavor) {
+        return flavor != null && flavor.equals(VisualizationGroupI.VISGROUP_DATA_FLAVOR);
     }
 
     @Override

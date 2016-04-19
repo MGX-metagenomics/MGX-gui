@@ -29,6 +29,18 @@ public class VGroupManagerTest {
     }
 
     @Test
+    public void testAddRemove() {
+        System.out.println("testAddRemove");
+        VGroupManagerI vgmgr = VGroupManager.getTestInstance();
+        assertEquals(0, vgmgr.getAllVisualizationGroups().size());
+        VisualizationGroupI vg = vgmgr.createVisualizationGroup();
+        assertNotNull(vg);
+        assertEquals(1, vgmgr.getAllVisualizationGroups().size());
+        vgmgr.removeVisualizationGroup(vg);
+        assertEquals(0, vgmgr.getAllVisualizationGroups().size());
+    }
+
+    @Test
     public void testCreateVGroup() {
         System.out.println("createVGroup");
         VGroupManagerI mgr = VGroupManager.getTestInstance();
@@ -70,7 +82,7 @@ public class VGroupManagerTest {
         assertEquals(replicate.getReplicateGroup(), rGroup);
         assertEquals(1, rGroup.getReplicates().size());
         assertTrue(rGroup.getReplicates().contains(replicate));
-        assertFalse("Empty replicate should not be active", replicate.isActive());
+//        assertFalse("Empty replicate should not be active", replicate.isActive());
         assertTrue(mgr.getAllVisualizationGroups().contains(replicate)); // replicate is a Vizgroup, as well
 
         // remove replicategroup it again
@@ -139,7 +151,7 @@ public class VGroupManagerTest {
         ReplicateI r1 = mgr.createReplicate(rGroup);
         assertEquals("Replicate Group 1", rGroup.getName());
         assertEquals("Replicate 1", r1.getName());
-        assertEquals("Replicate Group 1 R1", r1.getDisplayName());
+        assertEquals("Replicate Group 1 Replicate 1", r1.getDisplayName());
 
         mgr.removeReplicateGroup(rGroup);
     }

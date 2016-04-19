@@ -21,7 +21,8 @@ public class Shannon implements Statistic<DistributionI<Long>> {
             double relAbun = e.getValue().doubleValue() / (double)numElem;
             ret += relAbun * FastMath.log(relAbun);
         }
-        return String.format("%.2f", -1 * ret);
+        ret = -1 * ret;
+        return Double.isNaN(ret) ? "N/A" : String.format("%.2f", ret);
     }
 
     @Override
