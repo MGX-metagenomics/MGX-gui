@@ -60,7 +60,7 @@ public class VGroupManager implements VGroupManagerI {
     private final Set<ReplicateGroupI> replicateGroups = new LinkedHashSet<>();
     private int vizGroupCount = 1;
     private int replicateGroupCount = 1;
-    private final PropertyChangeSupport pcs;
+    private final ParallelPropertyChangeSupport pcs;
     private final RequestProcessor pool;
 
     private final Map<AttributeRank, String> currentAttributeType = new HashMap<>();
