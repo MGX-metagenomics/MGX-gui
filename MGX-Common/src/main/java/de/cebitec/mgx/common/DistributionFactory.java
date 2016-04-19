@@ -114,7 +114,7 @@ public class DistributionFactory {
             if (n<2)
                 return Double.NaN;
             else
-                return m2 / (n-1);
+                return Math.sqrt(m2 / (n-1));
         }
         
         public long getCount(){
