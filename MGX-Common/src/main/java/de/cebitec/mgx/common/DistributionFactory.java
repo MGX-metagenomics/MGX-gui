@@ -15,6 +15,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import org.apache.commons.math3.util.FastMath;
+
 
 /**
  *
@@ -114,7 +116,7 @@ public class DistributionFactory {
             if (n<2)
                 return Double.NaN;
             else
-                return Math.sqrt(m2 / (n-1));
+                return FastMath.sqrt(m2 / (n-1));
         }
         
         public long getCount(){
