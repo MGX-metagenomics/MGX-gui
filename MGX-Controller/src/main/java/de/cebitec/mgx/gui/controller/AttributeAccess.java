@@ -6,7 +6,6 @@ import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.exception.MGXLoggedoutException;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.SearchRequestI;
-import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.JobI;
@@ -56,10 +55,24 @@ public class AttributeAccess implements AttributeAccessI {
             throw new MGXLoggedoutException("You are disconnected.");
         }
     }
-    
+
     @Override
     public Iterator<AttributeI> ByJob(JobI job) throws MGXException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        try {
+            Iterator<AttributeDTO> BySeqRun = dtomaster.Attribute().ByJob(job.getId());
+
+            return new BaseIterator<AttributeDTO, AttributeI>(BySeqRun) {
+                @Override
+                public AttributeI next() {
+                    AttributeI attr = AttributeDTOFactory.getInstance().toModel(master, iter.next());
+                    return attr;
+                }
+            };
+
+        } catch (MGXServerException | MGXClientException ex) {
+            Logger.getLogger(AttributeAccess.class.getName()).log(Level.SEVERE, null, ex);
+            throw new MGXException(ex);
+        }
     }
 
     @Override
@@ -111,14 +124,14 @@ public class AttributeAccess implements AttributeAccessI {
 
     @Override
     public AttributeI create(JobI job, AttributeTypeI attrType, String attrValue, AttributeI parent) throws MGXException {
-        
+
         if (!master.equals(job.getMaster()) || !master.equals(attrType.getMaster())) {
             throw new MGXException("MGX master instances need to be equal.");
         }
         if (parent != null && !master.equals(parent.getMaster())) {
             throw new MGXException("MGX master instances need to be equal.");
         }
-        
+
         AttributeI attr = new Attribute(getMaster());
         attr.setAttributeType(attrType);
         attr.setJobId(job.getId());
@@ -166,7 +179,6 @@ public class AttributeAccess implements AttributeAccessI {
 //    public TaskI<AttributeI> delete(AttributeI obj) {
 //        throw new UnsupportedOperationException("Not supported.");
 //    }
-
     public Matrix getCorrelation(AttributeTypeI attributeType1, JobI job1, AttributeTypeI attributeType2, JobI job2) throws MGXException {
         try {
             AttributeCorrelation corr = dtomaster.Attribute().getCorrelation(attributeType1.getId(), job1.getId(), attributeType2.getId(), job2.getId());
