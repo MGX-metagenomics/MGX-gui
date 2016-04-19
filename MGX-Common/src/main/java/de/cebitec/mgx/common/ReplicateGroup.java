@@ -47,11 +47,11 @@ public class ReplicateGroup implements ReplicateGroupI {
     //
     private final PropertyChangeSupport pcs = new ParallelPropertyChangeSupport(this, true);
     //
-    int replCnt = 1;
-    
     DistributionI<Double> meanDist = null;
     DistributionI<Double> stdvDist = null;
     
+    int nextReplicateNum = 1;
+
     ReplicateGroup(String name) {
         this.name = name;
     }
@@ -285,4 +285,11 @@ public class ReplicateGroup implements ReplicateGroupI {
         
         return DistributionFactory.statisticalMerge(dists);
     }
+    
+    public synchronized int getNextReplicateNum() {
+        int ret = nextReplicateNum;
+        nextReplicateNum++;
+        return ret;
+    }
+
 }

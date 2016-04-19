@@ -19,14 +19,17 @@ public abstract class ViewerI<T extends Visualizable> implements Comparable<View
 
     private AttributeTypeI attrType;
     private String chartTitle;
-    private final VGroupManagerI mgr;
+    private VGroupManagerI mgr;
 
     public ViewerI() {
-        this.mgr = VGroupManager.getInstance();
     }
 
     public VGroupManagerI getVGroupManager() {
-        return mgr;
+        return mgr != null ? mgr : VGroupManager.getInstance();
+    }
+
+    public void setVGroupManager(VGroupManagerI mgr) {
+        this.mgr = mgr;
     }
 
     /**
@@ -79,7 +82,7 @@ public abstract class ViewerI<T extends Visualizable> implements Comparable<View
     }
 
     /**
-     * 
+     *
      * @param aType indicates the attribute type to be displayed
      */
     public void setAttributeType(AttributeTypeI aType) {
