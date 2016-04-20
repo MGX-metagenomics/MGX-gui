@@ -59,13 +59,12 @@ public class AttributeAccess implements AttributeAccessI {
     @Override
     public Iterator<AttributeI> ByJob(JobI job) throws MGXException {
         try {
-            Iterator<AttributeDTO> BySeqRun = dtomaster.Attribute().ByJob(job.getId());
+            Iterator<AttributeDTO> BySeqRun = getDTOmaster().Attribute().ByJob(job.getId());
 
             return new BaseIterator<AttributeDTO, AttributeI>(BySeqRun) {
                 @Override
                 public AttributeI next() {
-                    AttributeI attr = AttributeDTOFactory.getInstance().toModel(master, iter.next());
-                    return attr;
+                    return AttributeDTOFactory.getInstance().toModel(getMaster(), iter.next());
                 }
             };
 
@@ -78,13 +77,12 @@ public class AttributeAccess implements AttributeAccessI {
     @Override
     public Iterator<AttributeI> BySeqRun(final SeqRunI seqrun) throws MGXException {
         try {
-            Iterator<AttributeDTO> BySeqRun = dtomaster.Attribute().BySeqRun(seqrun.getId());
+            Iterator<AttributeDTO> BySeqRun = getDTOmaster().Attribute().BySeqRun(seqrun.getId());
 
             return new BaseIterator<AttributeDTO, AttributeI>(BySeqRun) {
                 @Override
                 public AttributeI next() {
-                    AttributeI attr = AttributeDTOFactory.getInstance().toModel(master, iter.next());
-                    return attr;
+                    return AttributeDTOFactory.getInstance().toModel(master, iter.next());
                 }
             };
 
@@ -179,6 +177,7 @@ public class AttributeAccess implements AttributeAccessI {
 //    public TaskI<AttributeI> delete(AttributeI obj) {
 //        throw new UnsupportedOperationException("Not supported.");
 //    }
+    
     public Matrix getCorrelation(AttributeTypeI attributeType1, JobI job1, AttributeTypeI attributeType2, JobI job2) throws MGXException {
         try {
             AttributeCorrelation corr = dtomaster.Attribute().getCorrelation(attributeType1.getId(), job1.getId(), attributeType2.getId(), job2.getId());
