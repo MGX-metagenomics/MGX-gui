@@ -90,7 +90,7 @@ public class StatisticalBarChart extends CategoricalViewerI<Long> implements Adj
             JPanel frame = new JPanel(new BorderLayout());
             frame.add(cPanel);
             JPanel dashboard = new JPanel(new BorderLayout());
-            scrollBar = new JScrollBar(JScrollBar.HORIZONTAL, 0, 1, 0, data.getTotalColumnCount()-data.getColumnCount());
+            scrollBar = new JScrollBar(JScrollBar.HORIZONTAL, 0, 1, 0, data.getTotalColumnCount()-data.getColumnCount()+1);
             scrollBar.addAdjustmentListener(this);
             dashboard.add(scrollBar);
             frame.add(dashboard, BorderLayout.SOUTH);
@@ -109,8 +109,6 @@ public class StatisticalBarChart extends CategoricalViewerI<Long> implements Adj
             replicateGroups.add(new Triple<>(rg, rg.getMeanDistribution(), rg.getStdvDistribution()));
         }
         List<Triple<ReplicateGroupI, DistributionI<Double>, DistributionI<Double>>> filteredRg = getCustomizer().filterRep(replicateGroups);
-
-//        List<ReplicateGroupI> replicateGroups = new ArrayList<>(repGroup);
 
         dataset = JFreeChartUtil.createStatisticalCategoryDataset(filteredRg);
 
@@ -195,6 +193,5 @@ public class StatisticalBarChart extends CategoricalViewerI<Long> implements Adj
     public void adjustmentValueChanged(AdjustmentEvent ae) {
         SlidingStatisticalCategoryDataset data = (SlidingStatisticalCategoryDataset) dataset;
         data.setOffset(scrollBar.getValue());
-        //((CategoryPlot)chart.getPlot()).getRangeAxis().setRange(0, data.getMaxY());
     }
 }
