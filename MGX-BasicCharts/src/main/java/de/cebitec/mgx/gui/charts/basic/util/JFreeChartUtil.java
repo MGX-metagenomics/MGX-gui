@@ -6,6 +6,7 @@ import de.cebitec.mgx.api.groups.ReplicateGroupI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
+import de.cebitec.mgx.api.misc.Triple;
 import de.cebitec.mgx.api.model.AttributeI;
 import java.awt.Rectangle;
 import java.io.BufferedWriter;
@@ -52,13 +53,13 @@ public class JFreeChartUtil {
         return ret;
     }
     
-    public static LegendItemCollection createReplicateLegend(List<ReplicateGroupI> in) {
+    public static LegendItemCollection createReplicateLegend(List<Triple<ReplicateGroupI, DistributionI<Double>, DistributionI<Double>>> in) {
         LegendItemCollection ret = new LegendItemCollection();
         DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.US);
-        for (ReplicateGroupI rg : in) {
-            LegendItem li = new LegendItem(rg.getName());
-            li.setFillPaint(rg.getColor());
-            li.setToolTipText("Classified sequences in " + rg.getName() + ": " + formatter.format(rg.getMeanDistribution().getTotalClassifiedElements()));
+        for (Triple<ReplicateGroupI, DistributionI<Double>, DistributionI<Double>> rg : in) {
+            LegendItem li = new LegendItem(rg.getFirst().getName());
+            li.setFillPaint(rg.getFirst().getColor());
+            li.setToolTipText("Classified sequences in " + rg.getFirst().getName() + ": " + formatter.format(rg.getSecond().getTotalClassifiedElements()));
             ret.add(li);
         }
         return ret;
@@ -80,14 +81,14 @@ public class JFreeChartUtil {
         }
     }
     
-    public static StatisticalCategoryDataset createStatisticalCategoryDataset(List<ReplicateGroupI> groups){
+    public static StatisticalCategoryDataset createStatisticalCategoryDataset(List<Triple<ReplicateGroupI, DistributionI<Double>, DistributionI<Double>>> groups){
         DefaultStatisticalCategoryDataset dataset = new DefaultStatisticalCategoryDataset();
-        for (ReplicateGroupI rg : groups){
-            DistributionI<Double> mean = rg.getMeanDistribution();
-            DistributionI<Double> stdv = rg.getStdvDistribution();
+        for (Triple<ReplicateGroupI, DistributionI<Double>, DistributionI<Double>> group : groups){
+            DistributionI<Double> mean = group.getSecond();
+            DistributionI<Double> stdv = group.getThird();
                         
             for (Map.Entry<AttributeI, Double> entry : mean.entrySet()){
-                dataset.add(entry.getValue(), stdv.get(entry.getKey()), rg.getName(), entry.getKey().getValue());
+                dataset.add(entry.getValue(), stdv.get(entry.getKey()), group.getFirst().getName(), entry.getKey().getValue());
             }            
         }
         
