@@ -20,7 +20,7 @@ import java.util.Map.Entry;
  *
  * @author pblumenk
  */
-public class ReplicateSortOrder<T extends Number> implements ReplicateVisFilterI<DistributionI<T>, DistributionI<T>> {
+public class ReplicateSortOrder implements ReplicateVisFilterI<DistributionI<Double>, DistributionI<Double>> {
 
     public final static int BY_VALUE = 0;
     public final static int BY_TYPE = 1;
@@ -48,21 +48,21 @@ public class ReplicateSortOrder<T extends Number> implements ReplicateVisFilterI
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<Triple<ReplicateGroupI, DistributionI<T>, DistributionI<T>>> filter(List<Triple<ReplicateGroupI, DistributionI<T>, DistributionI<T>>> dists) {
+    public List<Triple<ReplicateGroupI, DistributionI<Double>, DistributionI<Double>>> filter(List<Triple<ReplicateGroupI, DistributionI<Double>, DistributionI<Double>>> dists) {
 
-        List<Triple<ReplicateGroupI, DistributionI<T>, DistributionI<T>>> ret = new ArrayList<>();
+        List<Triple<ReplicateGroupI, DistributionI<Double>, DistributionI<Double>>> ret = new ArrayList<>();
 
         // summary distribution over all groups
         Map<AttributeI, Double> summary = new HashMap<>();
-        for (Triple<ReplicateGroupI, DistributionI<T>, DistributionI<T>> trip : dists) {
-            DistributionI<T> mean = trip.getSecond();
-            DistributionI<T> stdv = trip.getThird();
-            for (Entry<AttributeI, T> p : mean.entrySet()) {
+        for (Triple<ReplicateGroupI, DistributionI<Double>, DistributionI<Double>> trip : dists) {
+            DistributionI<Double> mean = trip.getSecond();
+            DistributionI<Double> stdv = trip.getThird();
+            for (Entry<AttributeI, Double> p : mean.entrySet()) {
                 if (summary.containsKey(p.getKey())) {
                     Double old = summary.get(p.getKey());
-                    summary.put(p.getKey(), old + p.getValue().doubleValue());
+                    summary.put(p.getKey(), old + p.getValue());
                 } else {
-                    summary.put(p.getKey(), p.getValue().doubleValue());
+                    summary.put(p.getKey(), p.getValue());
                 }
             }
         }
@@ -89,14 +89,14 @@ public class ReplicateSortOrder<T extends Number> implements ReplicateVisFilterI
             Collections.reverse(sortList);
         }
 
-        for (Triple<ReplicateGroupI, DistributionI<T>, DistributionI<T>> t : dists) {
-            DistributionI<T> mean = t.getSecond();
-            DistributionI<T> stdv = t.getThird();
+        for (Triple<ReplicateGroupI, DistributionI<Double>, DistributionI<Double>> t : dists) {
+            DistributionI<Double> mean = t.getSecond();
+            DistributionI<Double> stdv = t.getThird();
 
             Map<AttributeI, Double> tmpMean = (Map<AttributeI, Double>) mean;
             Map<AttributeI, Double> tmpStdv = (Map<AttributeI, Double>) stdv;
-            DistributionI<T> sortedMean = (DistributionI<T>) new NormalizedDistribution(mean.getMaster(), tmpMean, sortList, mean.getTotalClassifiedElements());
-            DistributionI<T> sortedStdv = (DistributionI<T>) new NormalizedDistribution(stdv.getMaster(), tmpStdv, sortList, stdv.getTotalClassifiedElements());
+            DistributionI<Double> sortedMean = (DistributionI<Double>) new NormalizedDistribution(mean.getMaster(), tmpMean, sortList, mean.getTotalClassifiedElements());
+            DistributionI<Double> sortedStdv = (DistributionI<Double>) new NormalizedDistribution(stdv.getMaster(), tmpStdv, sortList, stdv.getTotalClassifiedElements());
             
 
             ret.add(new Triple<>(t.getFirst(), sortedMean, sortedStdv));
@@ -106,14 +106,14 @@ public class ReplicateSortOrder<T extends Number> implements ReplicateVisFilterI
     }
 
     @SuppressWarnings("unchecked")
-    public DistributionI<T> filterDist(DistributionI<T> d) {
+    public DistributionI<Double> filterDist(DistributionI<Double> d) {
         Map<AttributeI, Double> summary = new HashMap<>();
-        for (Entry<AttributeI, T> p : d.entrySet()) {
+        for (Entry<AttributeI, Double> p : d.entrySet()) {
             if (summary.containsKey(p.getKey())) {
                 Double old = summary.get(p.getKey());
-                summary.put(p.getKey(), old + p.getValue().doubleValue());
+                summary.put(p.getKey(), old + p.getValue());
             } else {
-                summary.put(p.getKey(), p.getValue().doubleValue());
+                summary.put(p.getKey(), p.getValue());
             }
         }
 
@@ -139,14 +139,8 @@ public class ReplicateSortOrder<T extends Number> implements ReplicateVisFilterI
             Collections.reverse(sortList);
         }
 
-        DistributionI<T> sortedDist = null;
-        if (d.getEntryType().equals(Long.class)) {
-            Map<AttributeI, Long> tmp = (Map<AttributeI, Long>) d;
-            sortedDist = (DistributionI<T>) new Distribution(d.getMaster(), tmp, sortList, d.getTotalClassifiedElements());
-        } else if (d.getEntryType().equals(Double.class)) {
-            Map<AttributeI, Double> tmp = (Map<AttributeI, Double>) d;
-            sortedDist = (DistributionI<T>) new NormalizedDistribution(d.getMaster(), tmp, sortList, d.getTotalClassifiedElements());
-        }
+        Map<AttributeI, Double> tmp = (Map<AttributeI, Double>) d;
+        DistributionI<Double> sortedDist = (DistributionI<Double>) new NormalizedDistribution(d.getMaster(), tmp, sortList, d.getTotalClassifiedElements());
         return sortedDist;
     }
 
