@@ -18,7 +18,7 @@ import java.util.Map.Entry;
 
 /**
  *
- * @author sjaenick
+ * @author pblumenk
  */
 public class ReplicateSortOrder<T extends Number> implements ReplicateVisFilterI<DistributionI<T>, DistributionI<T>> {
 

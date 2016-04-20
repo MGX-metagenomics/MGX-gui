@@ -7,6 +7,7 @@ import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.misc.Triple;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
+import de.cebitec.mgx.api.visualization.filter.ReplicateVisFilterI;
 import de.cebitec.mgx.gui.vizfilter.ExcludeFilter;
 import de.cebitec.mgx.gui.vizfilter.LimitFilter;
 import de.cebitec.mgx.gui.vizfilter.SortOrder;
@@ -14,6 +15,7 @@ import de.cebitec.mgx.gui.vizfilter.ToFractionFilter;
 import de.cebitec.mgx.api.visualization.filter.VisFilterI;
 import de.cebitec.mgx.gui.vizfilter.LongToDouble;
 import de.cebitec.mgx.gui.vizfilter.ReplicateSortOrder;
+import de.cebitec.mgx.gui.vizfilter.ReplicateToFractionFilter;
 import java.util.List;
 import java.util.Set;
 
@@ -223,12 +225,10 @@ public class BarChartCustomizer extends javax.swing.JPanel implements VisFilterI
     public List<Triple<ReplicateGroupI, DistributionI<Double>, DistributionI<Double>>> filterRep(List<Triple<ReplicateGroupI, DistributionI<Double>, DistributionI<Double>>> dists) {
 
         List<Triple<ReplicateGroupI, DistributionI<Double>, DistributionI<Double>>> ret = dists;
-//        if (useFractions()) {
-//            VisFilterI<DistributionI<Long>, DistributionI<Double>> fracFilter = new ToFractionFilter();
-//            ret = fracFilter.filter(dists);
-//        } else {
-//            ret = new LongToDouble().filter(dists);
-//        }
+        if (useFractions()) {
+            ReplicateToFractionFilter fracFilter = new ReplicateToFractionFilter();
+            ret = fracFilter.filter(dists);
+        }
 //
 //        if (at.getStructure() == AttributeTypeI.STRUCTURE_HIERARCHICAL) {
 //            Set<AttributeI> blackList = treeFilter.getBlackList();
