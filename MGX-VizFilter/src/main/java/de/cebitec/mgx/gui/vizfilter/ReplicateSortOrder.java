@@ -55,8 +55,9 @@ public class ReplicateSortOrder<T extends Number> implements ReplicateVisFilterI
         // summary distribution over all groups
         Map<AttributeI, Double> summary = new HashMap<>();
         for (Triple<ReplicateGroupI, DistributionI<T>, DistributionI<T>> trip : dists) {
-            DistributionI<T> dist = trip.getSecond();
-            for (Entry<AttributeI, T> p : dist.entrySet()) {
+            DistributionI<T> mean = trip.getSecond();
+            DistributionI<T> stdv = trip.getThird();
+            for (Entry<AttributeI, T> p : mean.entrySet()) {
                 if (summary.containsKey(p.getKey())) {
                     Double old = summary.get(p.getKey());
                     summary.put(p.getKey(), old + p.getValue().doubleValue());
@@ -89,18 +90,16 @@ public class ReplicateSortOrder<T extends Number> implements ReplicateVisFilterI
         }
 
         for (Triple<ReplicateGroupI, DistributionI<T>, DistributionI<T>> t : dists) {
-            DistributionI<T> d = t.getSecond();
+            DistributionI<T> mean = t.getSecond();
+            DistributionI<T> stdv = t.getThird();
 
-            DistributionI<T> sortedDist = null;
-            if (d.getEntryType().equals(Long.class)) {
-                Map<AttributeI, Long> tmp = (Map<AttributeI, Long>) d;
-                sortedDist = (DistributionI<T>) new Distribution(d.getMaster(), tmp, sortList, d.getTotalClassifiedElements());
-            } else if (d.getEntryType().equals(Double.class)) {
-                Map<AttributeI, Double> tmp = (Map<AttributeI, Double>) d;
-                sortedDist = (DistributionI<T>) new NormalizedDistribution(d.getMaster(), tmp, sortList, d.getTotalClassifiedElements());
-            }
+            Map<AttributeI, Double> tmpMean = (Map<AttributeI, Double>) mean;
+            Map<AttributeI, Double> tmpStdv = (Map<AttributeI, Double>) stdv;
+            DistributionI<T> sortedMean = (DistributionI<T>) new NormalizedDistribution(mean.getMaster(), tmpMean, sortList, mean.getTotalClassifiedElements());
+            DistributionI<T> sortedStdv = (DistributionI<T>) new NormalizedDistribution(stdv.getMaster(), tmpStdv, sortList, stdv.getTotalClassifiedElements());
+            
 
-//            ret.add(new Pair<>(t.getFirst(), sortedDist));
+            ret.add(new Triple<>(t.getFirst(), sortedMean, sortedStdv));
         }
 
         return ret;

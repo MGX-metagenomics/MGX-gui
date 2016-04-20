@@ -222,7 +222,7 @@ public class BarChartCustomizer extends javax.swing.JPanel implements VisFilterI
     
     public List<Triple<ReplicateGroupI, DistributionI<Double>, DistributionI<Double>>> filterRep(List<Triple<ReplicateGroupI, DistributionI<Double>, DistributionI<Double>>> dists) {
 
-        List<Triple<ReplicateGroupI, DistributionI<Double>, DistributionI<Double>>> ret = null;
+        List<Triple<ReplicateGroupI, DistributionI<Double>, DistributionI<Double>>> ret = dists;
 //        if (useFractions()) {
 //            VisFilterI<DistributionI<Long>, DistributionI<Double>> fracFilter = new ToFractionFilter();
 //            ret = fracFilter.filter(dists);
