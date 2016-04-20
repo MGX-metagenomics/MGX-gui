@@ -241,7 +241,7 @@ public class BarChartCustomizer extends javax.swing.JPanel implements VisFilterI
 //        LimitFilter<Double> lf = new LimitFilter<>(LimitFilter.LIMITS.values()[limit.getSelectedIndex()]);
 //        ret = lf.filter(ret);
 
-        ReplicateSortOrder<Double> sorter = new ReplicateSortOrder<>(at, sortAscending.isSelected() ? ReplicateSortOrder.ASCENDING : ReplicateSortOrder.DESCENDING);
+        ReplicateSortOrder sorter = new ReplicateSortOrder(at, sortAscending.isSelected() ? ReplicateSortOrder.ASCENDING : ReplicateSortOrder.DESCENDING);
         ret = sorter.filter(ret);
 
         return ret;
