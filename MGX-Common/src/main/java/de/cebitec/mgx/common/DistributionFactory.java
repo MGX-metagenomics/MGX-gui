@@ -54,11 +54,13 @@ public class DistributionFactory {
         Map<AttributeI, Double> mean = new HashMap<>();
         Map<AttributeI, Double> stdv = new HashMap<>();
         long total = 0;
+        long iterableSize=0;
         MGXMasterI anyMaster = null;
 
-        for (DistributionI<Long> d : dists) {            
+        for (DistributionI<Long> d : dists) {                        
             anyMaster = d.getMaster();
             total += d.getTotalClassifiedElements();
+            iterableSize++;
             for (Entry<AttributeI, Long> e : d.entrySet()) {
                 AttributeI attr = e.getKey();
                 long count = e.getValue();
@@ -69,9 +71,12 @@ public class DistributionFactory {
             }
         }        
         for (Entry<AttributeI, StatisticsCalculator> entry : summary.entrySet()){
+            for (long i = entry.getValue().count(); i < iterableSize; i++)
+                entry.getValue().add(0);
+            
             mean.put(entry.getKey(), entry.getValue().getMean());
             stdv.put(entry.getKey(), entry.getValue().getStdv());
-        }
+        }        
 
         return new Pair<DistributionI<Double>, DistributionI<Double>>(new NormalizedDistribution(anyMaster, mean, total), new NormalizedDistribution(anyMaster, stdv, total));
     }
@@ -117,6 +122,10 @@ public class DistributionFactory {
                 return Double.NaN;
             else
                 return FastMath.sqrt(m2 / (n-1));
+        }
+        
+        public long count(){
+            return n;
         }
         
         public long getCount(){
