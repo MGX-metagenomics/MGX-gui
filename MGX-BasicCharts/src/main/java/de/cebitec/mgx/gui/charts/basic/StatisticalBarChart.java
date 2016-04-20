@@ -104,15 +104,15 @@ public class StatisticalBarChart extends CategoricalViewerI<Long> implements Adj
     public void show(List<Pair<VisualizationGroupI, DistributionI<Long>>> in) {
         
         Collection<ReplicateGroupI> repGroup = VGroupManager.getInstance().getReplicateGroups();
-//        List<Triple<ReplicateGroupI, DistributionI<Double>, DistributionI<Double>>> replicateGroups = new ArrayList<>();
-//        for (ReplicateGroupI rg : repGroup){
-//            replicateGroups.add(new Triple<>(rg, rg.getMeanDistribution(), rg.getStdvDistribution()));
-//        }
-//        List<Triple<ReplicateGroupI, DistributionI<Double>, DistributionI<Double>>> data = getCustomizer().filter(in);
+        List<Triple<ReplicateGroupI, DistributionI<Double>, DistributionI<Double>>> replicateGroups = new ArrayList<>();
+        for (ReplicateGroupI rg : repGroup){
+            replicateGroups.add(new Triple<>(rg, rg.getMeanDistribution(), rg.getStdvDistribution()));
+        }
+        List<Triple<ReplicateGroupI, DistributionI<Double>, DistributionI<Double>>> filteredRg = getCustomizer().filterRep(replicateGroups);
 
-        List<ReplicateGroupI> replicateGroups = new ArrayList<>(repGroup);
+//        List<ReplicateGroupI> replicateGroups = new ArrayList<>(repGroup);
 
-        dataset = JFreeChartUtil.createStatisticalCategoryDataset(replicateGroups);
+        dataset = JFreeChartUtil.createStatisticalCategoryDataset(filteredRg);
 
         String xAxisLabel = "";
 //        String yAxisLabel = getCustomizer().useFractions() ? "Fraction" : "Count";
@@ -120,7 +120,7 @@ public class StatisticalBarChart extends CategoricalViewerI<Long> implements Adj
 
         CategoryPlot plot = new CategoryPlot(dataset, new CategoryAxis(xAxisLabel), new NumberAxis(yAxisLabel), new StatisticalBarRenderer());
         plot.setOrientation(PlotOrientation.VERTICAL);
-        plot.setFixedLegendItems(JFreeChartUtil.createReplicateLegend(replicateGroups));
+        plot.setFixedLegendItems(JFreeChartUtil.createReplicateLegend(filteredRg));
         plot.setBackgroundPaint(Color.WHITE);
         
         chart = new JFreeChart(getTitle(), plot);                
@@ -129,10 +129,11 @@ public class StatisticalBarChart extends CategoricalViewerI<Long> implements Adj
         chart.setAntiAlias(true);
         cPanel = new ChartPanel(chart);
         
-        BarRenderer br = (BarRenderer) plot.getRenderer();
+        StatisticalBarRenderer br = (StatisticalBarRenderer) plot.getRenderer();
         br.setItemMargin(customizer.getItemMargin());
         br.setBaseToolTipGenerator(new StandardCategoryToolTipGenerator("<html>Group: {0} <br> Attribute: {1} <br> " + yAxisLabel + ": {2}</html>", NumberFormat.getInstance()));
         br.setMaximumBarWidth(.1); // set maximum width to 10% of chart
+        br.setErrorIndicatorPaint(Color.BLACK);
         
         // x axis
         CategoryAxis domainAxis = plot.getDomainAxis();
@@ -159,15 +160,15 @@ public class StatisticalBarChart extends CategoricalViewerI<Long> implements Adj
         if (dataset instanceof SlidingStatisticalCategoryDataset) {
             SlidingStatisticalCategoryDataset scd = (SlidingStatisticalCategoryDataset) dataset;
             rangeAxis.setAutoRange(false);
-            rangeAxis.setRange(0, scd.getMaxY());
+            rangeAxis.setRange(0, scd.getMaxY()*1.05);
         }
         plot.setRangeAxis(rangeAxis);
 
         // colors
         int i = 0;
         CategoryItemRenderer renderer = plot.getRenderer();
-        for (ReplicateGroupI group : replicateGroups) {
-            renderer.setSeriesPaint(i++, group.getColor());
+        for (Triple<ReplicateGroupI, DistributionI<Double>, DistributionI<Double>> group : filteredRg) {
+            renderer.setSeriesPaint(i++, group.getFirst().getColor());
         }
     }
 
