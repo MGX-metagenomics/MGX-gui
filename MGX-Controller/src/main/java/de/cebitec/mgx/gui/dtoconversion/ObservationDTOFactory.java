@@ -24,8 +24,13 @@ public class ObservationDTOFactory extends DTOConversionBase<ObservationI, Obser
     }
 
     @Override
-    public ObservationDTO toDTO(ObservationI a) {
-        throw new UnsupportedOperationException("Not supported.");
+    public ObservationDTO toDTO(ObservationI obs) {
+        return ObservationDTO.newBuilder()
+                .setAttributeName(obs.getAttributeName())
+                .setAttributeTypeValue(obs.getAttributeTypeName())
+                .setStart(obs.getStart())
+                .setStop(obs.getStop())
+                .build();
     }
 
     @Override
