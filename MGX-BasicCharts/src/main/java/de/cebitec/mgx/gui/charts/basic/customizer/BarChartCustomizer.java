@@ -14,6 +14,7 @@ import de.cebitec.mgx.gui.vizfilter.SortOrder;
 import de.cebitec.mgx.gui.vizfilter.ToFractionFilter;
 import de.cebitec.mgx.api.visualization.filter.VisFilterI;
 import de.cebitec.mgx.gui.vizfilter.LongToDouble;
+import de.cebitec.mgx.gui.vizfilter.ReplicateLimitFilter;
 import de.cebitec.mgx.gui.vizfilter.ReplicateSortOrder;
 import de.cebitec.mgx.gui.vizfilter.ReplicateToFractionFilter;
 import java.util.List;
@@ -238,12 +239,12 @@ public class BarChartCustomizer extends javax.swing.JPanel implements VisFilterI
 //            }
 //        }
 //
-//        LimitFilter<Double> lf = new LimitFilter<>(LimitFilter.LIMITS.values()[limit.getSelectedIndex()]);
-//        ret = lf.filter(ret);
+        ReplicateLimitFilter lf = new ReplicateLimitFilter(ReplicateLimitFilter.LIMITS.values()[limit.getSelectedIndex()]);
+        ret = lf.filter(ret);
 
         ReplicateSortOrder sorter = new ReplicateSortOrder(at, sortAscending.isSelected() ? ReplicateSortOrder.ASCENDING : ReplicateSortOrder.DESCENDING);
         ret = sorter.filter(ret);
-
+        
         return ret;
     }
 }
