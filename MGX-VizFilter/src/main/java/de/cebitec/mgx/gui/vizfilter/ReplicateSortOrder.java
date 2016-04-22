@@ -6,7 +6,6 @@ import de.cebitec.mgx.api.misc.Triple;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.visualization.filter.ReplicateVisFilterI;
-import de.cebitec.mgx.gui.datamodel.misc.Distribution;
 import de.cebitec.mgx.gui.datamodel.misc.NormalizedDistribution;
 import java.util.ArrayList;
 import java.util.Collections;

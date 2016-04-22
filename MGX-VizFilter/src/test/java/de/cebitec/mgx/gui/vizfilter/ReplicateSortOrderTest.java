@@ -68,8 +68,8 @@ public class ReplicateSortOrderTest {
         mean2.put(a4, 2.0);
         DistributionI<Double> meanDist2 = new NormalizedDistribution(null, mean2, 2);
         Map<AttributeI, Double> stdv2 = new HashMap<>();
-        stdv2.put(a1, 1.0);
-        stdv2.put(a3, 0.5);
+        stdv2.put(a1, 2.0);
+        stdv2.put(a3, 1.5);
         DistributionI<Double> stdvDist2 = new NormalizedDistribution(null, stdv2, 2);
 
         List<Triple<ReplicateGroupI, DistributionI<Double>, DistributionI<Double>>> in = new ArrayList<>();
@@ -96,10 +96,14 @@ public class ReplicateSortOrderTest {
         
         // verify order of first dist - "FOO" has to appear first since
         // sorting order is determined by the summarized data
-        Set<AttributeI> keySet = meanDist1.keySet();
-        assertEquals(2, keySet.size());
-        AttributeI[] attrOrdered = keySet.toArray(new AttributeI[]{});
-        assertEquals("FOO", attrOrdered[0].getValue());
+        Set<AttributeI> meanKeySet = meanDist1.keySet();
+        Set<AttributeI> stdvKeySet = stdvDist1.keySet();
+        assertEquals(2, meanKeySet.size());
+        assertEquals(2, stdvKeySet.size());
+        AttributeI[] meanAttrOrdered = meanKeySet.toArray(new AttributeI[]{});
+        AttributeI[] stdvAttrOrdered = stdvKeySet.toArray(new AttributeI[]{});
+        assertEquals("FOO", stdvAttrOrdered[0].getValue());
+        assertEquals("FOO", stdvAttrOrdered[0].getValue());
     }
 
 }
