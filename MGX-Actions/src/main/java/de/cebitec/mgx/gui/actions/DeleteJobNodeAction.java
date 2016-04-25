@@ -107,6 +107,11 @@ public final class DeleteJobNodeAction extends NodeAction {
     }
 
     @Override
+    protected boolean asynchronous() {
+        return false;
+    }
+
+    @Override
     public HelpCtx getHelpCtx() {
         return HelpCtx.DEFAULT_HELP;
     }
