@@ -78,7 +78,7 @@ public abstract class MGXNodeFactoryBase<T> extends ChildFactory<T> implements N
 
     @Override
     public final void nodeDestroyed(NodeEvent ev) {
-
+        refresh(true);
     }
 
     @Override
