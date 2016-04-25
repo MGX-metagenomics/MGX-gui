@@ -533,37 +533,33 @@
     <modules>
         <module>branding</module>
         <module>application</module>
-        <module>MGX-Login</module>
-        <module>MGX-Explorer</module>
-        <module>MGX-Nodes</module>
-        <module>MGX-Wizards</module>
-        <module>MGX-Datamodel</module>
-        <module>MGX-Controller</module>
-        <module>MGX-TaskView</module>
-        <module>MGX-AttributeVisualization</module>
-        <module>MGX-Treeview</module>
-        <module>MGX-BasicCharts</module>
-        <!-- 
-                <module>MGX-Charts3D</module> 
-                <module>MGX-Jzy3D-Wrapper</module>
-        -->
-        <module>MGX-Search</module>
-        <module>MGX-TableView</module>
-        <module>MGX-JobMonitor</module>
-        <module>MGX-Statistics</module>
         <module>MGX-Actions</module>
-        <module>MGX-KeggViewer</module>
-        <module>MGX-SwingUtils</module>
-        <module>MGX-MappingViewer</module>
-        <module>MGX-UpdateCenter</module>
-        <module>MGX-IntervalCache</module>
+        <module>MGX-AttributeVisualization</module>
+        <module>MGX-BasicCharts</module>
         <module>MGX-Biodiversity</module>
-        <module>MGX-Rarefaction</module>
-        <module>MGX-PCA</module>
         <module>MGX-Common</module>
+        <module>MGX-Controller</module>
+        <module>MGX-Datamodel</module>
+        <module>MGX-Explorer</module>
+        <module>MGX-IntervalCache</module>
+        <module>MGX-JobMonitor</module>
+        <module>MGX-KeggViewer</module>
+        <module>MGX-Login</module>
+        <module>MGX-MappingViewer</module>
+        <module>MGX-Nodes</module>
+        <module>MGX-PCA</module>
         <module>MGX-QCMonitor</module>
-        <module>MGX-VizFilter</module>
+        <module>MGX-Rarefaction</module>
+        <module>MGX-Search</module>
         <module>MGX-Server</module>
+        <module>MGX-Statistics</module>
+        <module>MGX-SwingUtils</module>
+        <module>MGX-TaskView</module>
+        <module>MGX-Treeview</module>
+        <module>MGX-TableView</module>
+        <module>MGX-UpdateCenter</module>
+        <module>MGX-VizFilter</module>
+        <module>MGX-Wizards</module>
     </modules>
     
     <properties>
