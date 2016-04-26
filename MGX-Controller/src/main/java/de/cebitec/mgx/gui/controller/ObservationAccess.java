@@ -3,13 +3,15 @@ package de.cebitec.mgx.gui.controller;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.ObservationAccessI;
 import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.exception.MGXLoggedoutException;
+import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.ObservationI;
 import de.cebitec.mgx.api.model.SequenceI;
 import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.ObservationDTO;
-import de.cebitec.mgx.gui.datamodel.misc.Task;
+import de.cebitec.mgx.gui.datamodel.Observation;
 import de.cebitec.mgx.gui.dtoconversion.ObservationDTOFactory;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,12 +21,19 @@ import java.util.Iterator;
  *
  * @author sj
  */
-public class ObservationAccess extends AccessBase<ObservationI> implements ObservationAccessI {
+public class ObservationAccess implements ObservationAccessI {
+
+    private final MGXDTOMaster dtomaster;
+    private final MGXMasterI master;
 
     public ObservationAccess(MGXMasterI master, MGXDTOMaster dtomaster) throws MGXException {
-        super(master, dtomaster);
+        this.dtomaster = dtomaster;
+        this.master = master;
+        if (master.isDeleted()) {
+            throw new MGXLoggedoutException("You are disconnected.");
+        }
     }
-    
+
     @Override
     public Iterator<ObservationI> ByRead(SequenceI s) throws MGXException {
         Collection<ObservationI> ret = new ArrayList<>();
@@ -42,27 +51,32 @@ public class ObservationAccess extends AccessBase<ObservationI> implements Obser
     }
 
     @Override
-    public ObservationI create(ObservationI obj) {
-        throw new UnsupportedOperationException("Not supported.");
+    public ObservationI create(SequenceI seq, AttributeI attr, int start, int stop) throws MGXException {
+        
+        if (start < 0 || stop < 0 || start >= seq.getLength() || stop >= seq.getLength()) {
+            throw new MGXException("Coordinates cannot point outside of sequence.");
+        }
+        
+        ObservationI obj = new Observation(getMaster());
+        obj.setAttributeName(attr.getValue());
+        obj.setAttributeTypeName(attr.getAttributeType().getName());
+        obj.setStart(start);
+        obj.setStop(stop);
+
+        ObservationDTO dto = ObservationDTOFactory.getInstance().toDTO(obj);
+        try {
+            getDTOmaster().Observation().create(seq.getId(), dto);
+        } catch (MGXServerException | MGXClientException ex) {
+            throw new MGXException(ex);
+        }
+        return obj;
     }
 
-    @Override
-    public ObservationI fetch(long id) {
-        throw new UnsupportedOperationException("Not supported.");
+    private MGXDTOMaster getDTOmaster() {
+        return dtomaster;
     }
 
-    @Override
-    public Iterator<ObservationI> fetchall() {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    @Override
-    public void update(ObservationI obj) {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    @Override
-    public Task<ObservationI> delete(ObservationI obj) {
-        throw new UnsupportedOperationException("Not supported.");
+    private MGXMasterI getMaster() {
+        return master;
     }
 }
