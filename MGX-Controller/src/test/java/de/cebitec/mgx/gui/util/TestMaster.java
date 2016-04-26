@@ -58,7 +58,7 @@ public class TestMaster {
 
         while (mbr.hasNext()) {
             MembershipI m = mbr.next();
-            if ("MGX".equals(m.getProject().getProjectClass().getName()) && ("MGX_EvalModule".equals(m.getProject().getName()))) {
+            if ("MGX".equals(m.getProject().getProjectClass().getName()) && ("MGX_Unittest".equals(m.getProject().getName()))) {
                 MGXDTOMaster dtomaster = null;
                 dtomaster = new MGXDTOMaster(gpms.createMaster(m));
                 masterRO = new MGXMaster(dtomaster);
@@ -103,7 +103,7 @@ public class TestMaster {
 
         while (mbr.hasNext()) {
             MembershipI m = mbr.next();
-            if ("MGX".equals(m.getProject().getProjectClass().getName()) && ("MGX_EvalModule".equals(m.getProject().getName()))) {
+            if ("MGX".equals(m.getProject().getProjectClass().getName()) && ("MGX_Unittest".equals(m.getProject().getName()))) {
                 MGXDTOMaster dtomaster = null;
                 dtomaster = new MGXDTOMaster(gpms.createMaster(m));
                 master = new MGXMaster(dtomaster);
