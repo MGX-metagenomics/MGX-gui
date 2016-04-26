@@ -22,7 +22,11 @@ public class AttributeTypeDTOFactory extends DTOConversionBase<AttributeTypeI, A
 
     @Override
     public AttributeTypeDTO toDTO(AttributeTypeI a) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return AttributeTypeDTO.newBuilder()
+                .setName(a.getName())
+                .setStructure(String.valueOf(a.getStructure()))
+                .setValueType(String.valueOf(a.getValueType()))
+                .build();
     }
 
     @Override
