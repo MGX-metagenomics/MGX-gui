@@ -5,6 +5,7 @@ import de.cebitec.mgx.api.model.ModelBaseI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.nodefactory.JobBySeqRunNodeFactory;
 import de.cebitec.mgx.gui.nodefactory.JobNodeFactory;
+import java.awt.EventQueue;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
@@ -60,9 +61,16 @@ public class ProjectRootNode extends AbstractNode implements PropertyChangeListe
                     runs.remove(run);
                 }
             }
-            fireNodeDestroyed();
-        } else {
-            //System.err.println("ProjectRootNode got event " + evt);
+            if (!EventQueue.isDispatchThread()) {
+                EventQueue.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        fireNodeDestroyed();
+                    }
+                });
+            } else {
+                fireNodeDestroyed();
+            }
         }
     }
 

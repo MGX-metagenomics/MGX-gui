@@ -36,7 +36,7 @@ public class JobBySeqRunNodeFactory extends JobNodeFactory {
                         SeqRunI sr = (SeqRunI) evt.getSource();
                         synchronized (content) {
                             if (content.contains(sr)) {
-                                System.err.println(Thread.currentThread().getName() + " propChange(): removing listener " + stateListener + " from run " + sr.getName());
+                                //System.err.println(Thread.currentThread().getName() + " propChange(): removing listener " + stateListener + " from run " + sr.getName());
                                 sr.removePropertyChangeListener(stateListener);
                                 content.remove(sr);
                             }
@@ -101,7 +101,7 @@ public class JobBySeqRunNodeFactory extends JobNodeFactory {
     public void destroy() {
         synchronized (content) {
             for (final SeqRunI run : content) {
-                System.err.println("destroy(): removing listener " + stateListener + " from run " + run.getName());
+                //System.err.println("destroy(): removing listener " + stateListener + " from run " + run.getName());
                 run.removePropertyChangeListener(stateListener);
             }
             content.clear();

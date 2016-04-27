@@ -8,6 +8,7 @@ package de.cebitec.mgx.gui.nodes;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.model.SeqRunI;
+import java.awt.EventQueue;
 import java.beans.PropertyChangeEvent;
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -106,7 +107,16 @@ public class SeqRunFilterNode extends FilterNode implements NodeListener {
 
     @Override
     public void nodeDestroyed(NodeEvent ev) {
-        fireNodeDestroyed();
+        if (!EventQueue.isDispatchThread()) {
+            EventQueue.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    fireNodeDestroyed();
+                }
+            });
+        } else {
+            fireNodeDestroyed();
+        }
     }
 
     @Override

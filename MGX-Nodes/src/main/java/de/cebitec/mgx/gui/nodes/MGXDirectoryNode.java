@@ -41,7 +41,7 @@ public class MGXDirectoryNode extends MGXNodeBase<MGXFileI> {
 
     @Override
     public Action[] getActions(boolean context) {
-        return new Action[]{new CreateDirectory(nf), new DeleteFileOrDirectory(), new UploadFile(nf)};
+        return new Action[]{new CreateDirectory(), new DeleteFileOrDirectory(), new UploadFile(nf)};
     }
 
     @Override
