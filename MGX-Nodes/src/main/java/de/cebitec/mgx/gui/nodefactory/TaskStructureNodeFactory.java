@@ -24,10 +24,6 @@ public class TaskStructureNodeFactory extends ChildFactory<Node> {
         //
         tools = new ProjectToolsNode(master);
         jobs = new ProjectJobsNode(master);
-
-//        structure = new HashMap<>();
-//        structure.put("local_tools", tools);
-//        structure.put("jobs", jobs);
     }
 
     @Override

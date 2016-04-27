@@ -7,6 +7,7 @@ import de.cebitec.mgx.gui.nodes.SeqRunNode;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
 import org.openide.util.Exceptions;
@@ -27,11 +28,15 @@ public class SeqRunNodeFactory extends MGXNodeFactoryBase<SeqRunI> {
     @Override
     protected boolean addKeys(List<SeqRunI> toPopulate) {
         try {
-            Iterator<SeqRunI> ByExtract = getMaster().SeqRun().ByExtract(extract);
-            while (ByExtract.hasNext()) {
-                toPopulate.add(ByExtract.next());
+            Iterator<SeqRunI> iter = getMaster().SeqRun().ByExtract(extract);
+            while (iter != null && iter.hasNext()) {
+                if (Thread.interrupted()) {
+                    extract.getMaster().log(Level.INFO, "interrupted in NF");
+                    return true;
+                }
+                toPopulate.add(iter.next());
             }
-            
+
             Collections.sort(toPopulate);
             return true;
         } catch (MGXException ex) {
@@ -47,28 +52,4 @@ public class SeqRunNodeFactory extends MGXNodeFactoryBase<SeqRunI> {
         return node;
     }
 
-//    public void refreshChildren() {
-//        refresh(true);
-//    }
-
-//    @Override
-//    public void childrenAdded(NodeMemberEvent ev) {
-//    }
-//
-//    @Override
-//    public void childrenRemoved(NodeMemberEvent ev) {
-//    }
-//
-//    @Override
-//    public void childrenReordered(NodeReorderEvent ev) {
-//    }
-
-//    @Override
-//    public void nodeDestroyed(NodeEvent ev) {
-//        this.refresh(true);
-//    }
-
-//    @Override
-//    public void propertyChange(PropertyChangeEvent pce) {
-//    }
 }

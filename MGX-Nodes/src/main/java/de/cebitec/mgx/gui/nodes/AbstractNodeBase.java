@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.nodes;
 
 import de.cebitec.mgx.api.model.ModelBaseI;
+import java.awt.EventQueue;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DnDConstants;
 import java.beans.PropertyChangeEvent;
@@ -63,12 +64,21 @@ public abstract class AbstractNodeBase<T extends ModelBaseI<T>> extends Abstract
     }
 
     @Override
-    public synchronized void propertyChange(PropertyChangeEvent evt) {
+    public void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {
             case ModelBaseI.OBJECT_DELETED:
                 if (evt.getSource().equals(content)) {
                     content.removePropertyChangeListener(this);
-                    fireNodeDestroyed();
+                    if (!EventQueue.isDispatchThread()) {
+                        EventQueue.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                fireNodeDestroyed();
+                            }
+                        });
+                    } else {
+                        fireNodeDestroyed();
+                    }
                 }
                 break;
             case ModelBaseI.OBJECT_MODIFIED:

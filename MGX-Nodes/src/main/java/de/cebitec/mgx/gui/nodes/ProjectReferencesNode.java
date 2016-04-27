@@ -87,7 +87,7 @@ public class ProjectReferencesNode extends MGXNodeBase<MGXMasterI> {
                         try {
                             setStatus("Installing reference");
                             serverTask = master.Reference().installGlobalReference(ref);
-                            while (!serverTask.done()) {
+                            while (serverTask != null && !serverTask.done()) {
                                 sleep();
                                 master.<MGXReferenceI>Task().refresh(serverTask);
                             }
@@ -101,7 +101,7 @@ public class ProjectReferencesNode extends MGXNodeBase<MGXMasterI> {
                         if (serverTask != null && !serverTask.getState().equals(TaskI.State.FINISHED)) {
                             err = serverTask.getStatusMessage();
                         }
-                        return serverTask.getState().equals(TaskI.State.FINISHED);
+                        return serverTask != null && serverTask.getState().equals(TaskI.State.FINISHED);
                     }
 
                     @Override
