@@ -16,7 +16,6 @@ import de.cebitec.mgx.gui.cache.IntIterator;
 import de.cebitec.mgx.pevents.ParallelPropertyChangeSupport;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Set;
@@ -34,7 +33,7 @@ public class ViewController implements PropertyChangeListener {
     private int intervalLen;
     private int[] previewBounds;
     private final int[] newBounds;
-    private final PropertyChangeSupport pcs;
+    private final ParallelPropertyChangeSupport pcs;
     private int minIdentity = 0;
     //
     public static final String VIEWCONTROLLER_CLOSED = "viewControllerClosed";
@@ -210,5 +209,6 @@ public class ViewController implements PropertyChangeListener {
 
     public synchronized void close() {
         ctx.close();
+        pcs.close();
     }
 }
