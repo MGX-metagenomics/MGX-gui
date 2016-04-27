@@ -6,7 +6,6 @@ import de.cebitec.mgx.gui.server.ServerFactory;
 import de.cebitec.mgx.pevents.ParallelPropertyChangeSupport;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -19,7 +18,7 @@ import org.openide.nodes.Node;
  */
 public class ServerNodeFactory extends ChildFactory<GPMSClientI> implements PropertyChangeListener {
 
-    private final PropertyChangeSupport pcs = new ParallelPropertyChangeSupport(this);
+    private final ParallelPropertyChangeSupport pcs = new ParallelPropertyChangeSupport(this);
 
     public ServerNodeFactory() {
         /*
@@ -35,7 +34,7 @@ public class ServerNodeFactory extends ChildFactory<GPMSClientI> implements Prop
             }
         });
     }
-
+    
     @Override
     protected boolean createKeys(List<GPMSClientI> toPopulate) {
         List<GPMSClientI> servers = ServerFactory.getDefault().getServers();
