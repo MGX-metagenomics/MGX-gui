@@ -17,7 +17,6 @@ import de.cebitec.mgx.gui.cache.IntIterator;
 import de.cebitec.mgx.pevents.ParallelPropertyChangeSupport;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.UUID;
@@ -39,7 +38,7 @@ public class MappingCtx implements PropertyChangeListener, AutoCloseable {
     private UUID sessionUUID = null;
     private long maxCoverage = -1;
     private final int refLength;
-    private final PropertyChangeSupport pcs = new ParallelPropertyChangeSupport(this);
+    private final ParallelPropertyChangeSupport pcs = new ParallelPropertyChangeSupport(this);
     private volatile boolean isClosed = false;
     public static final String MAPPING_CLOSED = "MappingClosed";
 
@@ -240,6 +239,7 @@ public class MappingCtx implements PropertyChangeListener, AutoCloseable {
             job.removePropertyChangeListener(this);
 
             pcs.firePropertyChange(MAPPING_CLOSED, false, true);
+            pcs.close();
         }
     }
 
