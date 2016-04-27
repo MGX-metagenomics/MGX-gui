@@ -10,7 +10,6 @@ import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.model.DNAExtractI;
 import de.cebitec.mgx.gui.controller.RBAC;
-import de.cebitec.mgx.gui.nodefactory.MGXNodeFactoryBase;
 import de.cebitec.mgx.gui.swingutils.NonEDT;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
@@ -26,11 +25,8 @@ import org.openide.util.Utilities;
  */
 public class DeleteDNAExtract extends AbstractAction {
 
-    private final MGXNodeFactoryBase parent;
-
-    public DeleteDNAExtract(MGXNodeFactoryBase parent) {
+    public DeleteDNAExtract() {
         putValue(NAME, "Delete");
-        this.parent = parent;
     }
 
     @Override
@@ -62,12 +58,6 @@ public class DeleteDNAExtract extends AbstractAction {
                     }
                 }
 
-                @Override
-                public void finished() {
-                    super.finished();
-                    parent.refreshChildren();
-                    //fireNodeDestroyed();
-                }
             };
             NonEDT.invoke(new Runnable() {
                 @Override

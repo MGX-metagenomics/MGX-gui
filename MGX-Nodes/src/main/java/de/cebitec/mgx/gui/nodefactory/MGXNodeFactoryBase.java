@@ -32,6 +32,7 @@ public abstract class MGXNodeFactoryBase<T> extends ChildFactory<T> implements N
     @Override
     protected final synchronized boolean createKeys(List<T> toPopulate) {
         if (master != null && master.isDeleted()) {
+            toPopulate.clear();
             return true;
         } else {
             return addKeys(toPopulate);
@@ -55,7 +56,6 @@ public abstract class MGXNodeFactoryBase<T> extends ChildFactory<T> implements N
         if (!refreshing) {
             if (!master.isDeleted()) {
                 refreshing = true;
-                //System.err.println("refreshing on EDT? " + EventQueue.isDispatchThread());
                 refresh(true);
                 refreshing = false;
             }
@@ -83,7 +83,6 @@ public abstract class MGXNodeFactoryBase<T> extends ChildFactory<T> implements N
 
     @Override
     public final void propertyChange(PropertyChangeEvent evt) {
-        //getMaster().log(Level.SEVERE, evt.toString() + " in " + getClass().getName());
-        //refresh(true); 
+        //System.err.println("MGXNFBase: " + evt.toString() + " in " + getClass().getName());
     }
 }

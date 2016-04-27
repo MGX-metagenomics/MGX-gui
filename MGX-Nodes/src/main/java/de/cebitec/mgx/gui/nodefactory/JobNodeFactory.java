@@ -52,6 +52,7 @@ public class JobNodeFactory extends MGXNodeFactoryBase<JobI> implements NodeList
             while (iter != null && iter.hasNext()) {
                 if (Thread.interrupted()) {
                     getMaster().log(Level.INFO, "interrupted in NF");
+                    toPopulate.clear();
                     return true;
                 }
                 SeqRunI sr = iter.next();

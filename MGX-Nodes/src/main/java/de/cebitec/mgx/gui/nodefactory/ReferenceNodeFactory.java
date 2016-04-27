@@ -17,11 +17,8 @@ import org.openide.util.Exceptions;
  */
 public class ReferenceNodeFactory extends MGXNodeFactoryBase<MGXReferenceI> implements NodeListener {
 
-    //
-   // private boolean refreshing = false;
-
     public ReferenceNodeFactory(MGXMasterI master) {
-       super(master);
+        super(master);
     }
 
     @Override
@@ -45,46 +42,4 @@ public class ReferenceNodeFactory extends MGXNodeFactoryBase<MGXReferenceI> impl
         node.addNodeListener(this);
         return node;
     }
-
-//    public void refreshChildren() {
-//        if (!refreshing) {
-//            refreshing = true;
-//            refresh(true);
-//            refreshing = false;
-//        }
-//    }
-
-//    @Override
-//    public void childrenAdded(NodeMemberEvent ev) {
-//        //refresh(true);
-//    }
-//
-//    @Override
-//    public void childrenRemoved(NodeMemberEvent ev) {
-//        //refresh(true);
-//    }
-//
-//    @Override
-//    public void childrenReordered(NodeReorderEvent ev) {
-//    }
-//
-//    @Override
-//    public void nodeDestroyed(NodeEvent ev) {
-//        // this is ugly, and unnecessary everywhere else. however, here
-//        // it triggers a stack overflow otherwise: refresh() makes the
-//        // childfactory remove (and re-add) all nodes, which triggers a 
-//        // nodeDestroyed() call for each removed node.
-//        //
-//        // I have no idea....
-//        if (!refreshing) {
-//            refreshing = true;
-//            refresh(true);
-//            refreshing = false;
-//        }
-//    }
-//
-//    @Override
-//    public void propertyChange(PropertyChangeEvent evt) {
-//        //refresh(true);
-//    }
 }
