@@ -35,15 +35,12 @@ import org.openide.util.lookup.Lookups;
  */
 public class ReplicateGroupNode extends AbstractNodeBase<ReplicateGroupI> {
 
-    private final ReplicateNodeFactory rnf;
-
     public ReplicateGroupNode(ReplicateGroupI rGroup) {
         this(new ReplicateNodeFactory(rGroup), rGroup);
     }
 
     private ReplicateGroupNode(ReplicateNodeFactory rnf, ReplicateGroupI rg) {
         super(rnf, Lookups.singleton(rg), rg);
-        this.rnf = rnf;
         setName(rg.getName());
         setDisplayName(rg.getName());
     }
