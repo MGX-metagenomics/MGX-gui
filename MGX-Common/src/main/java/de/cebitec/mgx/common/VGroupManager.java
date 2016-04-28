@@ -17,7 +17,6 @@ import de.cebitec.mgx.pevents.ParallelPropertyChangeSupport;
 import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;

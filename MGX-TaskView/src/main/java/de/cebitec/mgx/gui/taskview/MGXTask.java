@@ -3,7 +3,6 @@ package de.cebitec.mgx.gui.taskview;
 import de.cebitec.mgx.pevents.ParallelPropertyChangeSupport;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -17,7 +16,7 @@ public abstract class MGXTask implements Runnable, PropertyChangeListener {
     public static final String TASK_FAILED = "MGXTask_Failed";
     public static final String TASK_FINISHED = "MGXTask_Finished";
     public static final int PROGRESS_UNKNOWN = -1;
-    private final PropertyChangeSupport pcs;
+    private final ParallelPropertyChangeSupport pcs;
     private final String taskName;
     private volatile String statusMessage = null;
     private String state = TASK_CHANGED;
@@ -78,6 +77,7 @@ public abstract class MGXTask implements Runnable, PropertyChangeListener {
             processingDone = true;
             setStatus("Done");
         }
+        pcs.close();
     }
 
     public synchronized void failed(String reason) {
@@ -87,6 +87,7 @@ public abstract class MGXTask implements Runnable, PropertyChangeListener {
             state = TASK_FAILED;
             pcs.firePropertyChange(state, 0, reason);
         }
+        pcs.close();
     }
 
     public final void addPropertyChangeListener(PropertyChangeListener p) {

@@ -15,7 +15,6 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,7 +33,7 @@ public class ReplicateGroup implements ReplicateGroupI {
     //
     private String managedState = OBJECT_MANAGED;
     //
-    private final PropertyChangeSupport pcs = new ParallelPropertyChangeSupport(this, true);
+    private final ParallelPropertyChangeSupport pcs = new ParallelPropertyChangeSupport(this, true);
     //
     int nextReplicateNum = 1;
 
@@ -123,6 +122,7 @@ public class ReplicateGroup implements ReplicateGroupI {
             pcs.firePropertyChange(REPLICATEGROUP_REPLICATE_REMOVED, null, r);
         }
         groups.clear();
+        pcs.close();
     }
 
     @Override
