@@ -96,6 +96,11 @@ public class VGroupManager implements VGroupManagerI {
             throw new RuntimeException("Cannot register additional ConflictResolver");
         }
     }
+    
+    @Override
+    public ConflictResolver getResolver(){
+        return resolver;
+    }
 
     private boolean hasVizGroup(String name) {
         synchronized (vizGroups) {
