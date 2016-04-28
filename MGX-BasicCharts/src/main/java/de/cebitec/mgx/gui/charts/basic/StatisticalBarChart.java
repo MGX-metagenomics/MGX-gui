@@ -48,7 +48,7 @@ import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
- * @author sjaenick
+ * @author pblumenk
  */
 @ServiceProvider(service = ViewerI.class)
 public class StatisticalBarChart extends CategoricalViewerI<Long> implements AdjustmentListener{
@@ -74,19 +74,6 @@ public class StatisticalBarChart extends CategoricalViewerI<Long> implements Adj
     @Override
     public JComponent getComponent() {
         if (dataset instanceof SlidingStatisticalCategoryDataset) {
-//             super(new BorderLayout());
-//            this.chart = createChart();
-//            this.chartPanel = new ChartPanel(this.chart);
-//            this.chartPanel.setPreferredSize(new java.awt.Dimension(600, 270));
-//            this.chartPanel.setDomainZoomable(true);
-//            this.chartPanel.setRangeZoomable(true);
-//            Border border = BorderFactory.createCompoundBorder(
-//                BorderFactory.createEmptyBorder(4, 4, 4, 4),
-//                BorderFactory.createEtchedBorder()
-//            );
-//            this.chartPanel.setBorder(border);
-//            add(this.chartPanel);
-
             SlidingStatisticalCategoryDataset data = (SlidingStatisticalCategoryDataset) dataset;
             JPanel frame = new JPanel(new BorderLayout());
             frame.add(cPanel);
@@ -114,8 +101,7 @@ public class StatisticalBarChart extends CategoricalViewerI<Long> implements Adj
         dataset = JFreeChartUtil.createStatisticalCategoryDataset(filteredRg);
 
         String xAxisLabel = "";
-//        String yAxisLabel = getCustomizer().useFractions() ? "Fraction" : "Count";
-        String yAxisLabel = "Count";
+        String yAxisLabel = getCustomizer().useFractions() ? "Fraction" : "Count";
 
         CategoryPlot plot = new CategoryPlot(dataset, new CategoryAxis(xAxisLabel), new NumberAxis(yAxisLabel), new StatisticalBarRenderer());
         plot.setOrientation(PlotOrientation.VERTICAL);
