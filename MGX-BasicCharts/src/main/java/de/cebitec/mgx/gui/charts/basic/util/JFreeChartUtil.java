@@ -2,9 +2,11 @@ package de.cebitec.mgx.gui.charts.basic.util;
 
 import de.cebitec.mgx.api.groups.FileType;
 import de.cebitec.mgx.api.groups.ImageExporterI;
+import de.cebitec.mgx.api.groups.ReplicateGroupI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
+import de.cebitec.mgx.api.misc.Triple;
 import de.cebitec.mgx.api.model.AttributeI;
 import java.awt.Rectangle;
 import java.io.BufferedWriter;
@@ -12,6 +14,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -23,11 +26,14 @@ import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultKeyedValues2DDataset;
 import org.jfree.data.general.KeyedValues2DDataset;
+import org.jfree.data.statistics.DefaultStatisticalCategoryDataset;
+import org.jfree.data.statistics.StatisticalCategoryDataset;
 import org.jfree.data.xy.DefaultTableXYDataset;
 import org.jfree.data.xy.TableXYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.graphics2d.svg.SVGGraphics2D;
+
 
 /**
  *
@@ -46,6 +52,18 @@ public class JFreeChartUtil {
         }
         return ret;
     }
+    
+    public static LegendItemCollection createReplicateLegend(List<Triple<ReplicateGroupI, DistributionI<Double>, DistributionI<Double>>> in) {
+        LegendItemCollection ret = new LegendItemCollection();
+        DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.US);
+        for (Triple<ReplicateGroupI, DistributionI<Double>, DistributionI<Double>> rg : in) {
+            LegendItem li = new LegendItem(rg.getFirst().getName());
+            li.setFillPaint(rg.getFirst().getColor());
+            li.setToolTipText("Classified sequences in " + rg.getFirst().getName() + ": " + formatter.format(rg.getSecond().getTotalClassifiedElements()));
+            ret.add(li);
+        }
+        return ret;
+    }
 
     public static <T extends Number> CategoryDataset createCategoryDataset(List<Pair<VisualizationGroupI, DistributionI<T>>> in) {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
@@ -58,6 +76,24 @@ public class JFreeChartUtil {
         }
         if (dataset.getColumnCount() > 25) {
             return new SlidingCategoryDataset(dataset, 25);
+        } else {
+            return dataset;
+        }
+    }
+    
+    public static StatisticalCategoryDataset createStatisticalCategoryDataset(List<Triple<ReplicateGroupI, DistributionI<Double>, DistributionI<Double>>> groups){
+        DefaultStatisticalCategoryDataset dataset = new DefaultStatisticalCategoryDataset();
+        for (Triple<ReplicateGroupI, DistributionI<Double>, DistributionI<Double>> group : groups){
+            DistributionI<Double> mean = group.getSecond();
+            DistributionI<Double> stdv = group.getThird();
+                        
+            for (Map.Entry<AttributeI, Double> entry : mean.entrySet()){
+                dataset.add(entry.getValue(), stdv.get(entry.getKey()), group.getFirst().getName(), entry.getKey().getValue());
+            }            
+        }
+        
+        if (dataset.getColumnCount() > 25) {
+            return new SlidingStatisticalCategoryDataset(dataset, 25);
         } else {
             return dataset;
         }
