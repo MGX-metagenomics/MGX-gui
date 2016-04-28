@@ -1,8 +1,10 @@
 package de.cebitec.mgx.gui.charts.basic.customizer;
 
+import de.cebitec.mgx.api.groups.ReplicateGroupI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
+import de.cebitec.mgx.api.misc.Triple;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.gui.vizfilter.ExcludeFilter;
@@ -11,6 +13,10 @@ import de.cebitec.mgx.gui.vizfilter.SortOrder;
 import de.cebitec.mgx.gui.vizfilter.ToFractionFilter;
 import de.cebitec.mgx.api.visualization.filter.VisFilterI;
 import de.cebitec.mgx.gui.vizfilter.LongToDouble;
+import de.cebitec.mgx.gui.vizfilter.ReplicateExcludeFilter;
+import de.cebitec.mgx.gui.vizfilter.ReplicateLimitFilter;
+import de.cebitec.mgx.gui.vizfilter.ReplicateSortOrder;
+import de.cebitec.mgx.gui.vizfilter.ReplicateToFractionFilter;
 import java.util.List;
 import java.util.Set;
 
@@ -214,6 +220,31 @@ public class BarChartCustomizer extends javax.swing.JPanel implements VisFilterI
         SortOrder<Double> sorter = new SortOrder<>(at, sortAscending.isSelected() ? SortOrder.ASCENDING : SortOrder.DESCENDING);
         ret = sorter.filter(ret);
 
+        return ret;
+    }
+    
+    public List<Triple<ReplicateGroupI, DistributionI<Double>, DistributionI<Double>>> filterRep(List<Triple<ReplicateGroupI, DistributionI<Double>, DistributionI<Double>>> dists) {
+
+        List<Triple<ReplicateGroupI, DistributionI<Double>, DistributionI<Double>>> ret = dists;
+        if (useFractions()) {
+            ReplicateToFractionFilter fracFilter = new ReplicateToFractionFilter();
+            ret = fracFilter.filter(dists);
+        }
+
+        if (at.getStructure() == AttributeTypeI.STRUCTURE_HIERARCHICAL) {
+            Set<AttributeI> blackList = treeFilter.getBlackList();
+            if (blackList.size() > 0) {
+                ReplicateExcludeFilter<Double> ef = new ReplicateExcludeFilter<>(blackList);
+                ret = ef.filter(ret);
+            }
+        }
+
+        ReplicateLimitFilter lf = new ReplicateLimitFilter(ReplicateLimitFilter.LIMITS.values()[limit.getSelectedIndex()]);
+        ret = lf.filter(ret);
+
+        ReplicateSortOrder sorter = new ReplicateSortOrder(at, sortAscending.isSelected() ? ReplicateSortOrder.ASCENDING : ReplicateSortOrder.DESCENDING);
+        ret = sorter.filter(ret);
+        
         return ret;
     }
 }
