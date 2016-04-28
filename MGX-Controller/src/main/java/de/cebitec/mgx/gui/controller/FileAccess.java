@@ -113,7 +113,7 @@ public class FileAccess implements FileAccessI {
         String fullPath = targetDir.getFullPath() + MGXFileI.separator + targetName;
         try {
             final FileUploader up = dtomaster.File().createUploader(localFile, fullPath);
-            return new ServerFileUploader(up);
+            return new ServerFileUploader(targetDir, up);
         } catch (MGXClientException ex) {
             throw new MGXException(ex);
         }
@@ -151,6 +151,7 @@ public class FileAccess implements FileAccessI {
         @Override
         public boolean download() {
             boolean ret = fd.download();
+            fd.removePropertyChangeListener(this);
             if (!ret) {
                 setErrorMessage(fd.getErrorMessage());
             }
@@ -181,6 +182,7 @@ public class FileAccess implements FileAccessI {
         @Override
         public boolean download() {
             boolean ret = fd.download();
+            fd.removePropertyChangeListener(this);
             if (!ret) {
                 setErrorMessage(fd.getErrorMessage());
             }
@@ -202,17 +204,22 @@ public class FileAccess implements FileAccessI {
     private class ServerFileUploader extends UploadBaseI implements PropertyChangeListener {
 
         private final FileUploader fu;
+        private final MGXFileI targetDir;
 
-        public ServerFileUploader(FileUploader fu) {
+        public ServerFileUploader(MGXFileI targetDir, FileUploader fu) {
             this.fu = fu;
+            this.targetDir = targetDir;
             fu.addPropertyChangeListener(this);
         }
 
         @Override
         public boolean upload() {
             boolean ret = fu.upload();
+            fu.removePropertyChangeListener(this);
             if (!ret) {
                 setErrorMessage(fu.getErrorMessage());
+            } else {
+                targetDir.modified();
             }
             return ret;
         }
