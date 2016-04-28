@@ -560,6 +560,7 @@
         <module>MGX-UpdateCenter</module>
         <module>MGX-VizFilter</module>
         <module>MGX-Wizards</module>
+        <module>MGX-Goldstandard</module>
     </modules>
     
     <properties>

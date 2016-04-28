@@ -43,7 +43,11 @@ public class SeqRunNode extends MGXNodeBase<SeqRunI> {
     @Override
     public Action[] getActions(boolean context) {
         Action analyze = FileUtil.getConfigObject("Actions/Edit/de-cebitec-mgx-gui-actions-ExecuteAnalysis.instance", Action.class);
-        return new Action[]{analyze, new OpenMappingBySeqRun(), new EditSeqRun(), new DeleteSeqRun(), new DownloadSeqRun()};
+        Action goldstandard = FileUtil.getConfigObject("Actions/Edit/de-cebitec-mgx-gui-goldstandard-actions-AddGoldstandard.instance", Action.class);
+        if (goldstandard != null)
+            return new Action[]{analyze, goldstandard, new OpenMappingBySeqRun(), new EditSeqRun(), new DeleteSeqRun(), new DownloadSeqRun()};
+        else
+            return new Action[]{analyze, new OpenMappingBySeqRun(), new EditSeqRun(), new DeleteSeqRun(), new DownloadSeqRun()};
     }
 
     @Override
