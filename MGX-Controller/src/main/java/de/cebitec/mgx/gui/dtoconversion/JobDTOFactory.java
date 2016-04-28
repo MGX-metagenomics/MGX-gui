@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.dtoconversion;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.exception.MGXLoggedoutException;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.JobParameterI;
 import de.cebitec.mgx.api.model.JobState;
@@ -62,6 +63,8 @@ public class JobDTOFactory extends DTOConversionBase<JobI, JobDTO> {
         
         try {
             j.setSeqrun(m.SeqRun().fetch(dto.getSeqrunId()));
+        } catch (MGXLoggedoutException lex) {
+            return null;
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);
         }
