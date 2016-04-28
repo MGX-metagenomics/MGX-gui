@@ -188,7 +188,6 @@ public final class TopComponentViewer extends TopComponent implements PropertyCh
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        System.err.println(getClass().getSimpleName() + " got "+ evt);
         if (evt.getSource().equals(vc) && evt.getPropertyName().equals(ViewController.VIEWCONTROLLER_CLOSED)) {
             vc.removePropertyChangeListener(this);
             EventQueue.invokeLater(new Runnable() {
