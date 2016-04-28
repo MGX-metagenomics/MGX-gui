@@ -88,6 +88,11 @@ public class RemoveSeqRunFromGroupAction extends NodeAction implements LookupLis
     }
 
     @Override
+    protected boolean asynchronous() {
+        return false;
+    }
+    
+    @Override
     public HelpCtx getHelpCtx() {
         return HelpCtx.DEFAULT_HELP;
     }
