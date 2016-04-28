@@ -31,18 +31,22 @@ import java.util.logging.Logger;
 public class MGXMaster extends MGXMasterI implements PropertyChangeListener {
 
     private final MGXDTOMaster dtomaster;
+    private final String serverName;
+    private final String projectName;
     private static final Logger logger = Logger.getLogger("MGX");
     //
 
     public MGXMaster(MGXDTOMaster dtomaster) {
         super();
+        this.serverName = dtomaster.getServerName();
+        this.projectName = dtomaster.getProject().getName();
         this.dtomaster = dtomaster;
         dtomaster.addPropertyChangeListener(this);
     }
 
     @Override
     public final String getServerName() {
-        return dtomaster.getServerName();
+        return serverName;
     }
 
     @Override
@@ -51,13 +55,13 @@ public class MGXMaster extends MGXMasterI implements PropertyChangeListener {
     }
 
     @Override
-    public synchronized boolean isDeleted() {
+    public boolean isDeleted() {
         return super.isDeleted() || dtomaster.isClosed(); 
     }
 
     @Override
     public final String getProject() {
-        return dtomaster.getProject().getName();
+        return projectName;
     }
 
     @Override
@@ -161,7 +165,7 @@ public class MGXMaster extends MGXMasterI implements PropertyChangeListener {
     }
 
     @Override
-    public synchronized void propertyChange(PropertyChangeEvent evt) {
+    public void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {
             case ModelBaseI.OBJECT_DELETED:
                 dtomaster.removePropertyChangeListener(this);
