@@ -8,6 +8,7 @@ import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
 import de.cebitec.mgx.api.groups.ImageExporterI;
 import de.cebitec.mgx.api.groups.ReplicateGroupI;
 import de.cebitec.mgx.api.misc.Triple;
+import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.common.VGroupManager;
 import de.cebitec.mgx.common.visualization.CategoricalViewerI;
 import de.cebitec.mgx.common.visualization.ViewerI;
@@ -194,4 +195,17 @@ public class StatisticalBarChart extends CategoricalViewerI<Long> implements Adj
         SlidingStatisticalCategoryDataset data = (SlidingStatisticalCategoryDataset) dataset;
         data.setOffset(scrollBar.getValue());
     }
+
+    @Override
+    public boolean canHandle(AttributeTypeI valueType) {
+        long replicatesCount = 0;
+        for (ReplicateGroupI rg : VGroupManager.getInstance().getReplicateGroups())
+            replicatesCount =+ rg.getReplicates().size();
+        
+        return super.canHandle(valueType) &&
+                VGroupManager.getInstance().getReplicateGroups().size() > 0 &&
+                VGroupManager.getInstance().getAllVisualizationGroups().size() == replicatesCount;
+    }
+    
+    
 }
