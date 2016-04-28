@@ -62,6 +62,9 @@ public class JobNodeFactory extends MGXNodeFactoryBase<JobI> implements NodeList
                         ToolI t = sr.getMaster().Tool().ByJob(j);
                         tmp.add(j);
                     }
+                } catch (MGXLoggedoutException lex) {
+                    toPopulate.clear();
+                    return true;
                 } catch (MGXException ex) {
                     // silently ignore exception here, since it might
                     // be cause by an intermediate refresh while a 
