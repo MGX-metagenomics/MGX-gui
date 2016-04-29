@@ -3,6 +3,7 @@ package de.cebitec.mgx.gui.controller;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.ToolAccessI;
 import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.exception.MGXLoggedoutException;
 import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.misc.TaskI.TaskType;
 import de.cebitec.mgx.api.model.Identifiable;
@@ -14,6 +15,7 @@ import de.cebitec.mgx.client.exception.MGXClientException;
 import de.cebitec.mgx.client.exception.MGXServerException;
 import de.cebitec.mgx.dto.dto.JobParameterDTO;
 import de.cebitec.mgx.dto.dto.ToolDTO;
+import de.cebitec.mgx.gui.datamodel.Tool;
 import de.cebitec.mgx.gui.dtoconversion.JobParameterDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.ToolDTOFactory;
 import de.cebitec.mgx.gui.util.BaseIterator;
@@ -27,10 +29,25 @@ import java.util.UUID;
  *
  * @author sjaenick
  */
-public class ToolAccess extends AccessBase<ToolI> implements ToolAccessI {
+public class ToolAccess implements ToolAccessI {
+
+    private final MGXMasterI master;
+    private final MGXDTOMaster dtomaster;
 
     public ToolAccess(MGXMasterI master, MGXDTOMaster dtomaster) throws MGXException {
-        super(master, dtomaster);
+        this.master = master;
+        this.dtomaster = dtomaster;
+        if (master.isDeleted()) {
+            throw new MGXLoggedoutException("You are disconnected.");
+        }
+    }
+
+    protected MGXDTOMaster getDTOmaster() {
+        return dtomaster;
+    }
+
+    protected MGXMasterI getMaster() {
+        return master;
     }
 
     @Override
@@ -60,13 +77,10 @@ public class ToolAccess extends AccessBase<ToolI> implements ToolAccessI {
     }
 
     @Override
-    public Collection<JobParameterI> getAvailableParameters(ToolI tool) throws MGXException {
-
-        ToolDTO dto = ToolDTOFactory.getInstance().toDTO(tool);
-
+    public Collection<JobParameterI> getAvailableParameters(String toolXml) throws MGXException {
         List<JobParameterI> ret = new ArrayList<>();
         try {
-            for (JobParameterDTO dtoParameter : getDTOmaster().Tool().getAvailableParameters(dto)) {
+            for (JobParameterDTO dtoParameter : getDTOmaster().Tool().getAvailableParameters(toolXml)) {
                 ret.add(JobParameterDTOFactory.getInstance().toModel(getMaster(), dtoParameter));
             }
         } catch (MGXServerException | MGXClientException ex) {
@@ -91,8 +105,14 @@ public class ToolAccess extends AccessBase<ToolI> implements ToolAccessI {
     }
 
     @Override
-    public ToolI create(ToolI obj) throws MGXException {
-        assert obj.getId() == Identifiable.INVALID_IDENTIFIER;
+    public ToolI create(String name, String description, String author, String webSite, float version, String xmlData) throws MGXException {
+        ToolI obj = new Tool(getMaster());
+        obj.setName(name);
+        obj.setDescription(description);
+        obj.setAuthor(author);
+        obj.setUrl(webSite);
+        obj.setVersion(version);
+        obj.setXML(xmlData);
         ToolDTO dto = ToolDTOFactory.getInstance().toDTO(obj);
         long id = Identifiable.INVALID_IDENTIFIER;
         try {
@@ -132,10 +152,10 @@ public class ToolAccess extends AccessBase<ToolI> implements ToolAccessI {
         }
     }
 
-    @Override
-    public void update(ToolI obj) {
-        throw new UnsupportedOperationException("Not supported.");
-    }
+//    @Override
+//    public void update(ToolI obj) {
+//        throw new UnsupportedOperationException("Not supported.");
+//    }
 
     @Override
     public TaskI<ToolI> delete(ToolI obj) throws MGXException {

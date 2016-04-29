@@ -3,6 +3,7 @@ package de.cebitec.mgx.gui.wizard.analysis;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.misc.ToolType;
 import static de.cebitec.mgx.api.misc.ToolType.PROJECT;
+import de.cebitec.mgx.api.model.Identifiable;
 import de.cebitec.mgx.api.model.ToolI;
 import de.cebitec.mgx.gui.wizard.analysis.misc.NewToolPanel;
 import de.cebitec.mgx.gui.wizard.analysis.misc.ToolPanel;
@@ -25,14 +26,13 @@ import javax.swing.event.ListSelectionListener;
 public final class AnalysisVisualPanel1 extends JPanel implements ListSelectionListener, ChangeListener {
 
     //private final MGXMasterI master;
-
     /**
      * Creates new form AnalysisVisualPanel1
      */
     public AnalysisVisualPanel1(MGXMasterI master) {
         //this.master = m;
         initComponents();
-        newTool = new NewToolPanel(master);
+        newTool = new NewToolPanel();
         projectTools = setupTab("Project");
         serverTools = setupTab("Repository");
 
@@ -78,22 +78,24 @@ public final class AnalysisVisualPanel1 extends JPanel implements ListSelectionL
         return list;
     }
 
-    public ToolI getTool() {
+    public long getToolId() {
         switch (getToolType()) {
             case PROJECT:
-                return projectTools.getSelectedValue();
+                return projectTools.getSelectedValue() != null ? projectTools.getSelectedValue().getId() : Identifiable.INVALID_IDENTIFIER;
             case GLOBAL:
-                return serverTools.getSelectedValue();
+                return serverTools.getSelectedValue() != null ? serverTools.getSelectedValue().getId() : Identifiable.INVALID_IDENTIFIER;
             case USER_PROVIDED:
-                return newTool.getTool();
-            default:
-                assert false;
-                return null;
+                return Identifiable.INVALID_IDENTIFIER;
         }
+        return -1;
     }
 
-    public String getNewToolVersion() {
+    public String getToolVersion() {
         switch (getToolType()) {
+            case PROJECT:
+                return projectTools.getSelectedValue() != null ? String.valueOf(projectTools.getSelectedValue().getVersion()) : null;
+            case GLOBAL:
+                return serverTools.getSelectedValue() != null ? String.valueOf(serverTools.getSelectedValue().getVersion()) : null;
             case USER_PROVIDED:
                 return newTool.getVersion();
             default:
@@ -109,6 +111,69 @@ public final class AnalysisVisualPanel1 extends JPanel implements ListSelectionL
                 return ToolType.GLOBAL;
             case 2:
                 return ToolType.USER_PROVIDED;
+            default:
+                assert false;
+                return null;
+        }
+    }
+
+    public String getToolName() {
+        switch (getToolType()) {
+            case PROJECT:
+                return projectTools.getSelectedValue() != null ? projectTools.getSelectedValue().getName() : null;
+            case GLOBAL:
+                return serverTools.getSelectedValue() != null ? serverTools.getSelectedValue().getName() : null;
+            case USER_PROVIDED:
+                return newTool.getToolName();
+            default:
+                return null;
+        }
+    }
+
+    public String getToolDescription() {
+        switch (getToolType()) {
+            case PROJECT:
+                return projectTools.getSelectedValue() != null ? projectTools.getSelectedValue().getDescription() : null;
+            case GLOBAL:
+                return serverTools.getSelectedValue() != null ? serverTools.getSelectedValue().getDescription() : null;
+            case USER_PROVIDED:
+                return newTool.getToolDescription();
+            default:
+                return null;
+        }
+
+    }
+
+    public String getToolAuthor() {
+        switch (getToolType()) {
+            case PROJECT:
+                return projectTools.getSelectedValue() != null ? projectTools.getSelectedValue().getAuthor() : null;
+            case GLOBAL:
+                return serverTools.getSelectedValue() != null ? serverTools.getSelectedValue().getAuthor() : null;
+            case USER_PROVIDED:
+                return newTool.getToolAuthor();
+            default:
+                return null;
+        }
+    }
+
+    public String getToolWebsite() {
+        switch (getToolType()) {
+            case PROJECT:
+                return projectTools.getSelectedValue() != null ? projectTools.getSelectedValue().getUrl() : null;
+            case GLOBAL:
+                return serverTools.getSelectedValue() != null ? serverTools.getSelectedValue().getUrl() : null;
+            case USER_PROVIDED:
+                return newTool.getToolWebsite();
+            default:
+                return null;
+        }
+    }
+
+    public String getToolXML() {
+        switch (getToolType()) {
+            case USER_PROVIDED:
+                return newTool.getToolXML();
             default:
                 assert false;
                 return null;
@@ -183,11 +248,32 @@ public final class AnalysisVisualPanel1 extends JPanel implements ListSelectionL
     }
 
     private void updated() {
-        ToolI tool = getTool();
         selectedTool.setText("");
-        if (tool != null) {
-            selectedTool.setText(tool.getName());
-            firePropertyChange("toolSelected", null, tool);
+        ToolI tool = null;
+        switch (getToolType()) {
+            case PROJECT:
+                tool = projectTools.getSelectedValue();
+                if (tool != null) {
+                    selectedTool.setText(tool.getName());
+                    firePropertyChange("toolSelected", null, tool);
+                }
+                break;
+            case GLOBAL:
+                tool = serverTools.getSelectedValue();
+                if (tool != null) {
+                    selectedTool.setText(tool.getName());
+                    firePropertyChange("toolSelected", null, tool);
+                }
+                break;
+            case USER_PROVIDED:
+                String toolName = newTool.getToolName();
+                if (toolName != null) {
+                    selectedTool.setText(toolName);
+                    firePropertyChange("toolSelected", null, tool);
+                }
+                break;
+            default:
+                assert false;
         }
     }
 

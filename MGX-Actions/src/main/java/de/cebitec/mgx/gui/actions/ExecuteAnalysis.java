@@ -8,6 +8,7 @@ package de.cebitec.mgx.gui.actions;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.misc.ToolType;
+import de.cebitec.mgx.api.model.Identifiable;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.JobParameterI;
 import de.cebitec.mgx.api.model.MGXReferenceI;
@@ -137,8 +138,11 @@ public class ExecuteAnalysis extends NodeAction implements LookupListener {
         wiz.setTitleFormat(new MessageFormat("{0}"));
         wiz.setTitle("Tool selection");
         if (DialogDisplayer.getDefault().notify(wiz) == WizardDescriptor.FINISH_OPTION) {
-            ToolI tool = (ToolI) wiz.getProperty(AnalysisWizardIterator.PROP_TOOL);
+            Long toolId = (Long) wiz.getProperty(AnalysisWizardIterator.PROP_TOOLID);
             ToolType tooltype = (ToolType) wiz.getProperty(AnalysisWizardIterator.PROP_TOOLTYPE);
+
+            String toolName = (String) wiz.getProperty(AnalysisWizardIterator.PROP_TOOLNAME);
+
             @SuppressWarnings(value = "unchecked")
             List<JobParameterI> params = (List<JobParameterI>) wiz.getProperty(AnalysisWizardIterator.PROP_PARAMETERS);
 
@@ -152,7 +156,19 @@ public class ExecuteAnalysis extends NodeAction implements LookupListener {
                     continue;
                 }
 
-                final SubmitTask sTask = new SubmitTask(tool, tooltype, seqrun, params, toolIsCreated);
+                SubmitTask submitTask = null;
+                if (tooltype == ToolType.USER_PROVIDED) {
+                    String toolDesc = (String) wiz.getProperty(AnalysisWizardIterator.PROP_TOOLDESC);
+                    String toolAuthor = (String) wiz.getProperty(AnalysisWizardIterator.PROP_TOOLAUTHOR);
+                    String toolWebsite = (String) wiz.getProperty(AnalysisWizardIterator.PROP_TOOL_URL);
+                    String toolXML = (String) wiz.getProperty(AnalysisWizardIterator.PROP_TOOL_XML);
+                    Float toolVersion = (Float) wiz.getProperty(AnalysisWizardIterator.PROP_TOOLVERSION);
+                    submitTask = new SubmitTask(toolName, toolDesc, toolAuthor, toolWebsite, toolVersion, toolXML, seqrun, params, toolIsCreated);
+                } else {
+                    submitTask = new SubmitTask(toolId, toolName, tooltype, seqrun, params, toolIsCreated);
+                }
+                final SubmitTask sTask = submitTask;
+
                 NonEDT.invoke(new Runnable() {
                     @Override
                     public void run() {
@@ -190,16 +206,51 @@ public class ExecuteAnalysis extends NodeAction implements LookupListener {
 
     private final class SubmitTask extends MGXTask {
 
-        private final ToolI tool;
+        private final long toolId;
         private final SeqRunI run;
         private final ToolType tooltype;
         private final Collection<JobParameterI> params;
         private final CountDownLatch toolCreated;
 
-        public SubmitTask(ToolI tool, ToolType tooltype, SeqRunI run, Collection<JobParameterI> params, CountDownLatch toolCreated) {
-            super("Submit " + run.getName() + " / " + tool.getName());
-            this.tool = tool;
+        public SubmitTask(long toolId, String toolName, ToolType tooltype, SeqRunI run, Collection<JobParameterI> params, CountDownLatch toolCreated) {
+            super("Submit " + run.getName() + " / " + toolName);
+            if (tooltype != ToolType.GLOBAL && tooltype != ToolType.PROJECT) {
+                throw new RuntimeException("Wrong ctor used");
+            }
+            this.toolId = toolId;
             this.tooltype = tooltype;
+            this.params = params;
+            this.run = run;
+            this.toolCreated = toolCreated;
+            //
+            this.toolName = null;
+            this.toolDesc = null;
+            this.toolAuthor = null;
+            this.toolUri = null;
+            this.toolVersion = -1;
+            this.toolXML = null;
+            //
+        }
+
+        private final String toolName;
+        private final String toolDesc;
+        private final String toolAuthor;
+        private final String toolUri;
+        private final String toolXML;
+        private final float toolVersion;
+
+        public SubmitTask(String toolName, String toolDesc, String toolAuthor, String toolUri, float toolVersion, String toolXML, SeqRunI run, Collection<JobParameterI> params, CountDownLatch toolCreated) {
+            super("Submit " + run.getName() + " / " + toolName);
+            this.toolId = Identifiable.INVALID_IDENTIFIER;
+            this.tooltype = ToolType.USER_PROVIDED;
+            //
+            this.toolName = toolName;
+            this.toolDesc = toolDesc;
+            this.toolAuthor = toolAuthor;
+            this.toolUri = toolUri;
+            this.toolVersion = toolVersion;
+            this.toolXML = toolXML;
+            //
             this.params = params;
             this.run = run;
             this.toolCreated = toolCreated;
@@ -207,21 +258,19 @@ public class ExecuteAnalysis extends NodeAction implements LookupListener {
 
         @Override
         public boolean process() {
-            final MGXMasterI master = tool.getMaster();
+            final MGXMasterI master = run.getMaster();
             try {
                 ToolI selectedTool = null;
                 switch (tooltype) {
                     case GLOBAL:
-                        long projToolId = master.Tool().installTool(tool.getId());
-                        tool.setId(projToolId);
+                        long projToolId = master.Tool().installTool(toolId);
                         selectedTool = master.Tool().fetch(projToolId);
                         break;
                     case PROJECT:
-                        selectedTool = tool;
+                        selectedTool = master.Tool().fetch(toolId);
                         break;
                     case USER_PROVIDED:
-                        master.Tool().create(tool);
-                        selectedTool = tool;
+                        selectedTool = master.Tool().create(toolName, toolDesc, toolAuthor, toolUri, toolVersion, toolXML);
                         break;
                     default:
                         assert false;
