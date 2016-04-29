@@ -61,6 +61,10 @@ public abstract class MGXTask implements Runnable, PropertyChangeListener {
     public boolean isDeterminate() {
         return false;
     }
+    
+    public final void dispose() {
+        pcs.close();
+    }
 
     /**
      *
@@ -77,7 +81,6 @@ public abstract class MGXTask implements Runnable, PropertyChangeListener {
             processingDone = true;
             setStatus("Done");
         }
-        pcs.close();
     }
 
     public synchronized void failed(String reason) {
@@ -87,7 +90,6 @@ public abstract class MGXTask implements Runnable, PropertyChangeListener {
             state = TASK_FAILED;
             pcs.firePropertyChange(state, 0, reason);
         }
-        pcs.close();
     }
 
     public final void addPropertyChangeListener(PropertyChangeListener p) {
