@@ -13,29 +13,17 @@ import org.openide.WizardDescriptor;
 
 public final class AnalysisWizardIterator implements WizardDescriptor.Iterator<WizardDescriptor> {
 
-    public static final String PROP_TOOL = "tool";
+    //public static final String PROP_TOOL = "tool";
+    public static final String PROP_TOOLID = "toolid";
+    public static final String PROP_TOOLNAME = "toolName";
+    public static final String PROP_TOOLDESC = "toolDesc";
+    public static final String PROP_TOOLAUTHOR = "toolAuthor";
+    public static final String PROP_TOOL_URL = "toolUrl";
+    public static final String PROP_TOOLVERSION = "toolVersion";
+    public static final String PROP_TOOL_XML = "toolXML";
     public static final String PROP_TOOLTYPE = "tooltype";
     public static final String PROP_PARAMETERS = "toolParameters";
-    // public static final String PROP_JOB = "job";
-    // Example of invoking this wizard:
-    // @ActionID(category="...", id="...")
-    // @ActionRegistration(displayName="...")
-    // @ActionReference(path="Menu/...")
-    // public static ActionListener run() {
-    //     return new ActionListener() {
-    //         @Override public void actionPerformed(ActionEvent e) {
-    //             WizardDescriptor wiz = new WizardDescriptor(new AnalysisWizardIterator());
-    //             // {0} will be replaced by WizardDescriptor.Panel.getComponent().getName()
-    //             // {1} will be replaced by WizardDescriptor.Iterator.name()
-    //             wiz.setTitleFormat(new MessageFormat("{0} ({1})"));
-    //             wiz.setTitle("...dialog title...");
-    //             if (DialogDisplayer.getDefault().notify(wiz) == WizardDescriptor.FINISH_OPTION) {
-    //                 ...do something...
-    //             }
-    //         }
-    //     };
-    // }
-    //private int index;
+    //
     private WizardDescriptor wd = null;
     private int numPanels = 2;
     private int idx = 0;

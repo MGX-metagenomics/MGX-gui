@@ -1,9 +1,7 @@
 package de.cebitec.mgx.gui.wizard.analysis;
 
-import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.JobParameterI;
 import de.cebitec.mgx.api.model.MGXReferenceI;
-import de.cebitec.mgx.api.model.ToolI;
 import java.util.List;
 import javax.swing.event.ChangeListener;
 import org.openide.WizardDescriptor;
@@ -52,9 +50,9 @@ public class AnalysisWizardPanel3 implements WizardDescriptor.Panel<WizardDescri
     @SuppressWarnings("unchecked")
     public void readSettings(WizardDescriptor wiz) {
         model = wiz;
-        ToolI tool = (ToolI) model.getProperty(AnalysisWizardIterator.PROP_TOOL);
+        String toolName = (String) model.getProperty(AnalysisWizardIterator.PROP_TOOLNAME);
         List<JobParameterI> params = (List<JobParameterI>) model.getProperty(AnalysisWizardIterator.PROP_PARAMETERS);
-        getComponent().setToolName(tool.getName());
+        getComponent().setToolName(toolName);
         getComponent().setParameters(params);
     }
 
