@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.cebitec.mgx.gui.nodeactions;
+package de.cebitec.gpms.actions;
 
 import de.cebitec.gpms.rest.GPMSClientI;
 import java.awt.event.ActionEvent;

@@ -1,7 +1,7 @@
 package de.cebitec.mgx.gui.login.configuration;
 
 import de.cebitec.gpms.rest.GPMSClientI;
-import de.cebitec.mgx.gui.server.ServerFactory;
+import de.cebitec.gpms.server.ServerFactory;
 import de.cebitec.mgx.restgpms.GPMSClient;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
