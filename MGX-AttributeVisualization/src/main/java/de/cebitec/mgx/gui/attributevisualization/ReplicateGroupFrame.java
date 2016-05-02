@@ -36,7 +36,7 @@ import org.openide.util.Exceptions;
 public class ReplicateGroupFrame extends GroupFrameBase<ReplicateGroupI> {
 
     public ReplicateGroupFrame(final ReplicateGroupI rgroup) {
-        super(rgroup, new ReplicateGroupNode(rgroup));
+        super(rgroup.getManager(), rgroup, new ReplicateGroupNode(rgroup));
         initComponents();
 
         //

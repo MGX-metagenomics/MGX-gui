@@ -8,6 +8,7 @@ package de.cebitec.mgx.common;
 import de.cebitec.mgx.api.groups.ConflictingJobsException;
 import de.cebitec.mgx.api.groups.ReplicateGroupI;
 import de.cebitec.mgx.api.groups.ReplicateI;
+import de.cebitec.mgx.api.groups.VGroupManagerI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
@@ -37,6 +38,7 @@ import org.openide.util.Exceptions;
  */
 public class ReplicateGroup implements ReplicateGroupI {
 
+    private final VGroupManagerI vgmgr;
     private String name;
     private Color color;
     private final Collection<ReplicateI> groups = new ArrayList<>();
@@ -48,11 +50,17 @@ public class ReplicateGroup implements ReplicateGroupI {
     //
     DistributionI<Double> meanDist = null;
     DistributionI<Double> stdvDist = null;
-    
+
     int nextReplicateNum = 1;
 
-    ReplicateGroup(String name) {
+    ReplicateGroup(VGroupManagerI vgmgr, String name) {
+        this.vgmgr = vgmgr;
         this.name = name;
+    }
+
+    @Override
+    public VGroupManagerI getManager() {
+        return vgmgr;
     }
 
     @Override
@@ -233,9 +241,9 @@ public class ReplicateGroup implements ReplicateGroupI {
     public DistributionI<Double> getMeanDistribution() {
 //        if (meanDist != null)
 //            return meanDist;
-        
+
         Pair<DistributionI<Double>, DistributionI<Double>> dists;
-        try{
+        try {
             dists = calcDistributions();
         } catch (InterruptedException | ExecutionException ex) {
             Exceptions.printStackTrace(ex);
@@ -243,7 +251,7 @@ public class ReplicateGroup implements ReplicateGroupI {
         }
         meanDist = dists.getFirst();
         stdvDist = dists.getSecond();
-        
+
         return meanDist;
     }
 
@@ -251,9 +259,9 @@ public class ReplicateGroup implements ReplicateGroupI {
     public DistributionI<Double> getStdvDistribution() {
 //        if (stdvDist != null)
 //            return stdvDist;
-        
+
         Pair<DistributionI<Double>, DistributionI<Double>> dists;
-        try{
+        try {
             dists = calcDistributions();
         } catch (InterruptedException | ExecutionException ex) {
             Exceptions.printStackTrace(ex);
@@ -261,31 +269,31 @@ public class ReplicateGroup implements ReplicateGroupI {
         }
         meanDist = dists.getFirst();
         stdvDist = dists.getSecond();
-        
+
         return stdvDist;
     }
 
-    private Pair<DistributionI<Double>, DistributionI<Double>> calcDistributions() throws InterruptedException, ExecutionException{
+    private Pair<DistributionI<Double>, DistributionI<Double>> calcDistributions() throws InterruptedException, ExecutionException {
         ConflictResolver resolver = VGroupManager.getInstance().getResolver();
         assert resolver != null;
-        
+
         Set<DistributionI<Long>> dists = new HashSet<>();
         List<VisualizationGroupI> conflicts = new ArrayList<>();
-        for (ReplicateI rep : getReplicates()){
+        for (ReplicateI rep : getReplicates()) {
             try {
                 dists.add(rep.getDistribution());
             } catch (ConflictingJobsException ex) {
                 conflicts.add(rep);
             }
         }
-        
+
         if (!conflicts.isEmpty()) {
             resolver.resolve(conflicts);
         }
-        
+
         return DistributionFactory.statisticalMerge(dists);
     }
-    
+
     public synchronized int getNextReplicateNum() {
         int ret = nextReplicateNum;
         nextReplicateNum++;
