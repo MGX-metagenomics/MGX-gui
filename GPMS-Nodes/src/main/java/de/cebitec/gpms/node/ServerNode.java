@@ -1,9 +1,9 @@
-package de.cebitec.mgx.gui.nodes;
+package de.cebitec.gpms.node;
 
+import de.cebitec.gpms.actions.DisconnectAction;
 import de.cebitec.gpms.core.UserI;
 import de.cebitec.gpms.rest.GPMSClientI;
-import de.cebitec.mgx.gui.nodeactions.DisconnectAction;
-import de.cebitec.mgx.gui.nodefactory.ProjectNodeFactory;
+import de.cebitec.gpms.nodefactory.ProjectNodeFactory;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
@@ -25,7 +25,7 @@ public class ServerNode extends AbstractNode implements PropertyChangeListener {
         this.gpmsclient = client;
         
         setDisplayName(gpmsclient.getServerName());
-        setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/Server.png");
+        setIconBaseWithExtension("de/cebitec/gpms/node/Server.png");
         
         UserI user = gpmsclient.getUser();
         if (user != null) {
