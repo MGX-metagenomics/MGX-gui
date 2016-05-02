@@ -1,12 +1,9 @@
-package de.cebitec.mgx.gui.nodefactory;
+package de.cebitec.gpms.nodefactory;
 
 import de.cebitec.gpms.core.GPMSException;
 import de.cebitec.gpms.core.MembershipI;
+import de.cebitec.gpms.nodesupport.GPMSNodeSupport;
 import de.cebitec.gpms.rest.GPMSClientI;
-import de.cebitec.mgx.api.MGXMasterI;
-import de.cebitec.mgx.client.MGXDTOMaster;
-import de.cebitec.mgx.gui.controller.MGXMaster;
-import de.cebitec.mgx.gui.nodes.ProjectNode;
 import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -51,7 +48,10 @@ public class ProjectNodeFactory extends ChildFactory<MembershipI> implements Nod
         tmpData.clear();
         while (iter != null && iter.hasNext()) {
             MembershipI m = iter.next();
-            if ("MGX".equals(m.getProject().getProjectClass().getName())) {
+//            if ("MGX".equals(m.getProject().getProjectClass().getName())) {
+//                tmpData.add(m);
+//            }
+            if (GPMSNodeSupport.isSupported(m)) {
                 tmpData.add(m);
             }
         }
@@ -62,10 +62,13 @@ public class ProjectNodeFactory extends ChildFactory<MembershipI> implements Nod
 
     @Override
     protected Node createNodeForKey(MembershipI m) {
-        MGXDTOMaster dtomaster = new MGXDTOMaster(gpmsclient.createMaster(m));
-        MGXMasterI master = new MGXMaster(dtomaster);
-        ProjectNode node = new ProjectNode(master, m);
-        node.addNodeListener(this);
+        Node node = null;
+        if (GPMSNodeSupport.isSupported(m)) {
+            node = GPMSNodeSupport.createProjectNode(gpmsclient.createMaster(m));
+            if (node != null) {
+                node.addNodeListener(this);
+            }
+        }
         return node;
     }
 

@@ -1,8 +1,8 @@
-package de.cebitec.mgx.gui.nodefactory;
+package de.cebitec.gpms.nodefactory;
 
 import de.cebitec.gpms.rest.GPMSClientI;
-import de.cebitec.mgx.gui.nodes.ServerNode;
-import de.cebitec.mgx.gui.server.ServerFactory;
+import de.cebitec.gpms.node.ServerNode;
+import de.cebitec.gpms.server.ServerFactory;
 import de.cebitec.mgx.pevents.ParallelPropertyChangeSupport;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
