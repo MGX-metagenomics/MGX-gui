@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.nodefactory;
 
+import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.exception.MGXLoggedoutException;
 import de.cebitec.mgx.api.model.JobI;

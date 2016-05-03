@@ -106,6 +106,7 @@ public class AnalysisWizardPanel1 implements WizardDescriptor.Panel<WizardDescri
             case PROJECT:
             case GLOBAL:
                 model.putProperty(AnalysisWizardIterator.PROP_TOOLID, c.getToolId());
+                model.putProperty(AnalysisWizardIterator.PROP_TOOLNAME, c.getToolName());
                 break;
             case USER_PROVIDED:
                 model.putProperty(AnalysisWizardIterator.PROP_TOOLNAME, c.getToolName());

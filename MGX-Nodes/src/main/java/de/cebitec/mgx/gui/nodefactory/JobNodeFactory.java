@@ -7,6 +7,7 @@ import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.ToolI;
 import de.cebitec.mgx.gui.nodes.JobNode;
+import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -36,7 +37,8 @@ public class JobNodeFactory extends MGXNodeFactoryBase<JobI> implements NodeList
 //                refresh(false);
                 if (!refreshing) {
                     refreshing = true;
-                    refresh(true);
+                    //refresh(true);
+                    refreshChildren();
                     refreshing = false;
                 }
             }
@@ -90,45 +92,6 @@ public class JobNodeFactory extends MGXNodeFactoryBase<JobI> implements NodeList
         return node;
     }
 
-//    public final void refreshChildren() {
-////        if (EventQueue.isDispatchThread()) {
-////            NonEDT.invoke(new Runnable() {
-////
-////                @Override
-////                public void run() {
-////                    refreshChildren();
-////                }
-////            });
-////            return;
-////        }
-//
-//        refresh(true);
-//    }
-//
-//    @Override
-//    public void childrenAdded(NodeMemberEvent ev) {
-//        refresh(true);
-//    }
-//
-//    @Override
-//    public void childrenRemoved(NodeMemberEvent ev) {
-//        refresh(true);
-//    }
-//
-//    @Override
-//    public void childrenReordered(NodeReorderEvent ev) {
-//    }
-//
-//    @Override
-//    public void nodeDestroyed(NodeEvent ev) { 
-//        ev.getNode().removeNodeListener(this);
-//        refresh(true);
-//    }
-//
-//    @Override
-//    public void propertyChange(PropertyChangeEvent evt) {
-//        //refresh(true);
-//    }
     public void destroy() {
         timer.stop();
     }

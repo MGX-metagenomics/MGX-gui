@@ -1,6 +1,5 @@
 package de.cebitec.mgx.gui.nodes;
 
-import de.cebitec.gpms.core.MembershipI;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.gui.actions.DownloadPluginDump;
 import de.cebitec.mgx.gui.nodefactory.ProjectStructureNodeFactory;
@@ -16,9 +15,9 @@ public class ProjectNode extends MGXNodeBase<MGXMasterI> {
 
     //private ProjectStructureNodeFactory nf = null;
 
-    public ProjectNode(MGXMasterI m, MembershipI mbr) {
+    public ProjectNode(MGXMasterI m) {
         this(m, new ProjectStructureNodeFactory(m));
-        String name = new StringBuilder(mbr.getProject().getName()).append(" (").append(mbr.getRole().getName()).append(")").toString();
+        String name = new StringBuilder(m.getProject()).append(" (").append(m.getRoleName()).append(")").toString();
         setDisplayName(name);
     }
 

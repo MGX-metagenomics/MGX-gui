@@ -8,6 +8,7 @@ package de.cebitec.mgx.common;
 import de.cebitec.mgx.api.groups.ConflictingJobsException;
 import de.cebitec.mgx.api.groups.ReplicateGroupI;
 import de.cebitec.mgx.api.groups.ReplicateI;
+import de.cebitec.mgx.api.groups.VGroupManagerI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
@@ -36,6 +37,7 @@ import org.openide.util.Exceptions;
  */
 public class ReplicateGroup implements ReplicateGroupI {
 
+    private final VGroupManagerI vgmgr;
     private String name;
     private Color color;
     private final Collection<ReplicateI> groups = new ArrayList<>();
@@ -50,8 +52,14 @@ public class ReplicateGroup implements ReplicateGroupI {
 
     int nextReplicateNum = 1;
 
-    ReplicateGroup(String name) {
+    ReplicateGroup(VGroupManagerI vgmgr, String name) {
+        this.vgmgr = vgmgr;
         this.name = name;
+    }
+
+    @Override
+    public VGroupManagerI getManager() {
+        return vgmgr;
     }
 
     @Override
