@@ -214,7 +214,8 @@ public class VisualizationGroupTest {
         SeqRunI seqrun = TestMaster.getRO().SeqRun().fetch(2); //dataset2
 
         VisualizationGroupI vg = vgmgr.createVisualizationGroup();
-        vgmgr.removeVisualizationGroup(vg);
+        //vgmgr.removeVisualizationGroup(vg);
+        vg.close();
         assertEquals(0, vgmgr.getAllVisualizationGroups().size());
 
         ReplicateGroupI rg1 = vgmgr.createReplicateGroup();
@@ -236,7 +237,8 @@ public class VisualizationGroupTest {
         assertEquals(2, dists.size());
         assertEquals(2, trees.size());
 
-        vgmgr.removeReplicateGroup(rg1);
+        //vgmgr.removeReplicateGroup(rg1);
+        rg1.close();
 
         dists = vgmgr.getDistributions();
         trees = vgmgr.getHierarchies();

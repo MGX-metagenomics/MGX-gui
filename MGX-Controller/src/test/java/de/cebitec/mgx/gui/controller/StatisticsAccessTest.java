@@ -38,7 +38,8 @@ public class StatisticsAccessTest {
             VGroupManagerI vgmgr = VGroupManager.getTestInstance();
 
             for (VisualizationGroupI vg : vgmgr.getAllVisualizationGroups()) {
-                vgmgr.removeVisualizationGroup(vg);
+                //vgmgr.removeVisualizationGroup(vg);
+                vg.close();
             }
             vgmgr.registerResolver(new Resolver());
             VisualizationGroupI g1 = vgmgr.createVisualizationGroup();
@@ -76,7 +77,8 @@ public class StatisticsAccessTest {
             VGroupManagerI vgmgr = VGroupManager.getTestInstance();
 
             for (VisualizationGroupI vg : vgmgr.getAllVisualizationGroups()) {
-                vgmgr.removeVisualizationGroup(vg);
+                //vgmgr.removeVisualizationGroup(vg);
+                vg.close();
             }
             vgmgr.registerResolver(new Resolver());
             VisualizationGroupI g1 = vgmgr.createVisualizationGroup();
@@ -123,7 +125,8 @@ public class StatisticsAccessTest {
             VGroupManagerI vgmgr = VGroupManager.getTestInstance();
 
             for (VisualizationGroupI vg : vgmgr.getAllVisualizationGroups()) {
-                vgmgr.removeVisualizationGroup(vg);
+                //vgmgr.removeVisualizationGroup(vg);
+                vg.close();
             }
             vgmgr.registerResolver(new Resolver());
             VisualizationGroupI g1 = vgmgr.createVisualizationGroup();

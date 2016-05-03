@@ -81,6 +81,12 @@ public class JobAccess implements JobAccessI {
     @Override
     public TaskI<JobI> restart(JobI job) throws MGXException {
         TaskI<JobI> ret = null;
+        if (job.getSeqrun() == null) {
+            throw new MGXException("Internal error: Job has no sequencing run.");
+        }
+        if (job.getTool() == null) {
+            throw new MGXException("Internal error: Job has no tool.");
+        }
         try {
             UUID uuid = getDTOmaster().Job().restart(job.getId());
             ret = getMaster().<JobI>Task().get(job, uuid, TaskType.MODIFY);
