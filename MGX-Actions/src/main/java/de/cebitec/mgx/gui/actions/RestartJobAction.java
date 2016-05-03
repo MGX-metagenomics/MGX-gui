@@ -45,6 +45,13 @@ public final class RestartJobAction extends NodeAction {
                 continue;
             }
 
+            if (job.getSeqrun() == null) {
+                throw new RuntimeException("Internal error: Job has no sequencing run.");
+            }
+            if (job.getTool() == null) {
+                throw new RuntimeException("Internal error: Job has no tool.");
+            }
+
             final MGXTask restartTask = new MGXTask("Restart " + job.getTool().getName()) {
                 @Override
                 public boolean process() {

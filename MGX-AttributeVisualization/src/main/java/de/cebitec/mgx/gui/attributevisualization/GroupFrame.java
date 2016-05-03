@@ -8,7 +8,6 @@ package de.cebitec.mgx.gui.attributevisualization;
 import de.cebitec.mgx.api.groups.ReplicateGroupI;
 import de.cebitec.mgx.api.groups.VGroupManagerI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
-import de.cebitec.mgx.common.VGroupManager;
 import de.cebitec.mgx.gui.nodes.VizGroupNode;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -31,7 +30,7 @@ import javax.swing.event.DocumentListener;
 public class GroupFrame extends GroupFrameBase<VisualizationGroupI> {
 
     public GroupFrame(final VisualizationGroupI vGroup) {
-        super(vGroup, new VizGroupNode(vGroup));
+        super(vGroup.getManager(), vGroup, new VizGroupNode(vGroup));
         initComponents();
         // set initial properties
         //
@@ -113,6 +112,11 @@ public class GroupFrame extends GroupFrameBase<VisualizationGroupI> {
 //    @Override
 //    public void dispose() {
 //        VGroupManager.getInstance().removeVisualizationGroup(getContent());
+//        super.dispose();
+//    }
+//    @Override
+//    public void dispose() {
+//        getContent().getManager().removeVisualizationGroup(getContent());
 //        super.dispose();
 //    }
 

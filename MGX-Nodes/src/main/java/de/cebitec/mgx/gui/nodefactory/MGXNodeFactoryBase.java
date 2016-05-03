@@ -54,7 +54,7 @@ public abstract class MGXNodeFactoryBase<T> extends ChildFactory<T> implements N
             return;
         }
         if (!refreshing) {
-            if (!master.isDeleted()) {
+            if (master == null || !master.isDeleted()) {
                 refreshing = true;
                 refresh(true);
                 refreshing = false;

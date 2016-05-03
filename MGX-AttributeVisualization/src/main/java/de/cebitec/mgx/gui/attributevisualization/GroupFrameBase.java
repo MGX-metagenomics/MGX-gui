@@ -9,7 +9,6 @@ import de.cebitec.mgx.api.groups.ReplicateGroupI;
 import de.cebitec.mgx.api.groups.VGroupManagerI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.model.ModelBaseI;
-import de.cebitec.mgx.common.VGroupManager;
 import de.cebitec.mgx.gui.attributevisualization.view.NodeProviderI;
 import de.cebitec.mgx.gui.attributevisualization.view.NodeSelectionEvent;
 import de.cebitec.mgx.gui.attributevisualization.view.NodeSelectionListener;
@@ -34,16 +33,18 @@ public abstract class GroupFrameBase<T extends ModelBaseI<T>> extends javax.swin
     private final transient ExplorerManager exmngr = new ExplorerManager();
     private final T group;
     private final Node groupNode;
+    private final VGroupManagerI vgmgr;
 
-    public GroupFrameBase(T group, Node groupNode) {
+    public GroupFrameBase(VGroupManagerI vgmgr, T group, Node groupNode) {
         super();
         this.group = group;
         this.groupNode = groupNode;
+        this.vgmgr = vgmgr;
         //
         group.addPropertyChangeListener(this);
         //
         // needed to receive selectionChange events
-        VGroupManager.getInstance().addPropertyChangeListener(this);
+        vgmgr.addPropertyChangeListener(this);
         ToolTipManager.sharedInstance().registerComponent(this);
         //
         exmngr.setRootContext(groupNode);
@@ -58,22 +59,7 @@ public abstract class GroupFrameBase<T extends ModelBaseI<T>> extends javax.swin
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
                 if (evt.getPropertyName().equals(ExplorerManager.PROP_SELECTED_NODES)) {
-                    Node[] nodes = (Node[]) evt.getNewValue();
-//                    System.err.println("sending new node selection:");
-//                    for (Node n : nodes) {
-//                        System.err.println("  " + n.getClass().getSimpleName() + " " + n.getName());
-//                        if (!isUnderRoot(n)) {
-//                            System.err.println("  NOT UNDER ROOT!");
-//                        }
-//                        if (n.getParentNode() == null) {
-//                            System.err.println("  NO PARENT!");
-//                        } else {
-//                            System.err.println("    P: " + n.getParentNode().getName());
-//                        }
-//                        for (Object o : n.getLookup().lookupAll(Object.class)) {
-//                            System.err.println("    L: " + o);
-//                        }
-//                    }
+//                    Node[] nodes = (Node[]) evt.getNewValue();
                     fireNodeSelectionEvent();
                 }
             }
@@ -177,7 +163,7 @@ public abstract class GroupFrameBase<T extends ModelBaseI<T>> extends javax.swin
     private volatile boolean isDisposed = false;
 
     @Override
-    public synchronized void dispose() {
+    public final synchronized void dispose() {
         if (!isDisposed) {
             isDisposed = true;
             try {
@@ -185,7 +171,7 @@ public abstract class GroupFrameBase<T extends ModelBaseI<T>> extends javax.swin
             } catch (PropertyVetoException ex) {
             }
             nodeListeners.clear();
-            VGroupManager.getInstance().removePropertyChangeListener(this);
+            vgmgr.removePropertyChangeListener(this);
             group.removePropertyChangeListener(this);
             if (group instanceof VisualizationGroupI) {
                 VisualizationGroupI vgrp = (VisualizationGroupI) group;

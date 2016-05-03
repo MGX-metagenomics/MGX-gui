@@ -214,6 +214,9 @@ public class ExecuteAnalysis extends NodeAction implements LookupListener {
 
         public SubmitTask(long toolId, String toolName, ToolType tooltype, SeqRunI run, Collection<JobParameterI> params, CountDownLatch toolCreated) {
             super("Submit " + run.getName() + " / " + toolName);
+            if (toolName == null) {
+                 throw new RuntimeException("No tool name supplied.");
+            }
             if (tooltype != ToolType.GLOBAL && tooltype != ToolType.PROJECT) {
                 throw new RuntimeException("Wrong ctor used");
             }

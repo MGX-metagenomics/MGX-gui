@@ -1,8 +1,8 @@
 package de.cebitec.mgx.gui.explorer;
 
+import de.cebitec.gpms.node.ServerNode;
+import de.cebitec.gpms.nodefactory.ServerNodeFactory;
 import de.cebitec.gpms.rest.GPMSClientI;
-import de.cebitec.mgx.gui.nodefactory.ServerNodeFactory;
-import de.cebitec.mgx.gui.nodes.ServerNode;
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.beans.PropertyChangeEvent;

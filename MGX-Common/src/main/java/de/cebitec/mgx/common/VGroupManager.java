@@ -365,7 +365,7 @@ public class VGroupManager implements VGroupManagerI {
                 newName = "Replicate Group " + replicateGroupCount;
             }
             Color groupColor = groupColors[(replicateGroupCount - 1) % groupColors.length];
-            replGroup = new ReplicateGroup(newName);
+            replGroup = new ReplicateGroup(this, newName);
             replGroup.setColor(groupColor);
             replicateGroups.add(replGroup);
             replGroup.addPropertyChangeListener(this);
