@@ -13,7 +13,6 @@ import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.ModelBaseI;
 import static de.cebitec.mgx.api.model.ModelBaseI.OBJECT_DELETED;
-import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.visualization.ConflictResolver;
 import de.cebitec.mgx.pevents.ParallelPropertyChangeSupport;
 import java.awt.Color;
@@ -48,7 +47,7 @@ public class ReplicateGroup implements ReplicateGroupI {
     //
     DistributionI<Double> meanDist = null;
     DistributionI<Double> stdvDist = null;
-    
+
     int nextReplicateNum = 1;
 
     ReplicateGroup(String name) {
@@ -59,7 +58,9 @@ public class ReplicateGroup implements ReplicateGroupI {
     public void add(ReplicateI replicate) {
         if (replicate != null && !groups.contains(replicate)) {
             replicate.addPropertyChangeListener(this);
-            groups.add(replicate);
+            synchronized (groups) {
+                groups.add(replicate);
+            }
             pcs.firePropertyChange(REPLICATEGROUP_REPLICATE_ADDED, null, replicate);
             modified();
         }
@@ -70,7 +71,9 @@ public class ReplicateGroup implements ReplicateGroupI {
         if (replicate != null && groups.contains(replicate)) {
             replicate.removePropertyChangeListener(this);
             replicate.close();
-            groups.remove(replicate);
+            synchronized (groups) {
+                groups.remove(replicate);
+            }
             pcs.firePropertyChange(REPLICATEGROUP_REPLICATE_REMOVED, null, replicate);
             modified();
         }
@@ -109,9 +112,11 @@ public class ReplicateGroup implements ReplicateGroupI {
             return 0;
         }
         long numSeq = 0;
-        for (ReplicateI replicate : getReplicates()) {
-            if (replicate.isActive()) {
-                numSeq += replicate.getNumSequences();
+        synchronized (groups) {
+            for (ReplicateI replicate : groups) {
+                if (replicate.isActive()) {
+                    numSeq += replicate.getNumSequences();
+                }
             }
         }
         return numSeq;
@@ -130,17 +135,35 @@ public class ReplicateGroup implements ReplicateGroupI {
 
     @Override
     public void close() {
-        for (ReplicateI r : groups) {
-            r.removePropertyChangeListener(this);
+        ReplicateI[] tmp;
+        synchronized (groups) {
+            tmp = groups.toArray(new ReplicateI[]{});
+        }
+        for (ReplicateI r : tmp) {
             r.close();
             pcs.firePropertyChange(REPLICATEGROUP_REPLICATE_REMOVED, null, r);
         }
-        groups.clear();
+
+        synchronized (groups) {
+            groups.clear();
+        }
+        deleted();
         pcs.close();
     }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
+        switch (evt.getPropertyName()) {
+            case ModelBaseI.OBJECT_DELETED:
+                if (evt.getSource() instanceof ReplicateI) {
+                    ReplicateI r = (ReplicateI) evt.getSource();
+                    r.removePropertyChangeListener(this);
+                    synchronized (groups) {
+                        groups.remove(r);
+                    }
+                }
+                break;
+        }
         pcs.firePropertyChange(evt);
     }
 
@@ -233,9 +256,9 @@ public class ReplicateGroup implements ReplicateGroupI {
     public DistributionI<Double> getMeanDistribution() {
 //        if (meanDist != null)
 //            return meanDist;
-        
+
         Pair<DistributionI<Double>, DistributionI<Double>> dists;
-        try{
+        try {
             dists = calcDistributions();
         } catch (InterruptedException | ExecutionException ex) {
             Exceptions.printStackTrace(ex);
@@ -243,7 +266,7 @@ public class ReplicateGroup implements ReplicateGroupI {
         }
         meanDist = dists.getFirst();
         stdvDist = dists.getSecond();
-        
+
         return meanDist;
     }
 
@@ -251,9 +274,9 @@ public class ReplicateGroup implements ReplicateGroupI {
     public DistributionI<Double> getStdvDistribution() {
 //        if (stdvDist != null)
 //            return stdvDist;
-        
+
         Pair<DistributionI<Double>, DistributionI<Double>> dists;
-        try{
+        try {
             dists = calcDistributions();
         } catch (InterruptedException | ExecutionException ex) {
             Exceptions.printStackTrace(ex);
@@ -261,31 +284,32 @@ public class ReplicateGroup implements ReplicateGroupI {
         }
         meanDist = dists.getFirst();
         stdvDist = dists.getSecond();
-        
+
         return stdvDist;
     }
 
-    private Pair<DistributionI<Double>, DistributionI<Double>> calcDistributions() throws InterruptedException, ExecutionException{
+    private Pair<DistributionI<Double>, DistributionI<Double>> calcDistributions() throws InterruptedException, ExecutionException {
         ConflictResolver resolver = VGroupManager.getInstance().getResolver();
         assert resolver != null;
-        
+
         Set<DistributionI<Long>> dists = new HashSet<>();
         List<VisualizationGroupI> conflicts = new ArrayList<>();
-        for (ReplicateI rep : getReplicates()){
+        for (ReplicateI rep : getReplicates()) {
             try {
                 dists.add(rep.getDistribution());
             } catch (ConflictingJobsException ex) {
                 conflicts.add(rep);
             }
         }
-        
+
         if (!conflicts.isEmpty()) {
             resolver.resolve(conflicts);
         }
-        
+
         return DistributionFactory.statisticalMerge(dists);
     }
-    
+
+    @Override
     public synchronized int getNextReplicateNum() {
         int ret = nextReplicateNum;
         nextReplicateNum++;

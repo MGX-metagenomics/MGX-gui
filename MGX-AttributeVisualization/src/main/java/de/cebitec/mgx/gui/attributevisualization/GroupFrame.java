@@ -110,11 +110,11 @@ public class GroupFrame extends GroupFrameBase<VisualizationGroupI> {
         return getContent().getDisplayName();
     }
 
-    @Override
-    public void dispose() {
-        VGroupManager.getInstance().removeVisualizationGroup(getContent());
-        super.dispose();
-    }
+//    @Override
+//    public void dispose() {
+//        VGroupManager.getInstance().removeVisualizationGroup(getContent());
+//        super.dispose();
+//    }
 
     /**
      * This method is called from within the constructor to initialize the form.

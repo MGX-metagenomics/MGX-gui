@@ -5,6 +5,7 @@
  */
 package de.cebitec.mgx.gui.attributevisualization;
 
+import de.cebitec.mgx.api.groups.ReplicateGroupI;
 import de.cebitec.mgx.api.groups.VGroupManagerI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.model.ModelBaseI;
@@ -17,8 +18,8 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 import java.text.DecimalFormat;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.Collection;
 import javax.swing.ToolTipManager;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.Node;
@@ -126,11 +127,13 @@ public abstract class GroupFrameBase<T extends ModelBaseI<T>> extends javax.swin
         }
     }
 
-    private final Set<NodeSelectionListener> nodeListeners = new HashSet<>();
+    private Collection<NodeSelectionListener> nodeListeners = null;
 
     @Override
     public final void addNodeSelectionListener(NodeSelectionListener nsl) {
-        assert !nodeListeners.contains(nsl);
+        if (nodeListeners == null) {
+            nodeListeners = new ArrayList<>();
+        }
         nodeListeners.add(nsl);
     }
 
@@ -140,9 +143,11 @@ public abstract class GroupFrameBase<T extends ModelBaseI<T>> extends javax.swin
     }
 
     private void fireNodeSelectionEvent() {
-        NodeSelectionEvent nev = new NodeSelectionEvent(this, exmngr.getSelectedNodes());
-        for (NodeSelectionListener nsl : nodeListeners) {
-            nsl.handleNodeSelection(nev);
+        if (nodeListeners != null && !nodeListeners.isEmpty()) {
+            NodeSelectionEvent nev = new NodeSelectionEvent(this, exmngr.getSelectedNodes());
+            for (NodeSelectionListener nsl : nodeListeners) {
+                nsl.handleNodeSelection(nev);
+            }
         }
     }
 
@@ -182,6 +187,13 @@ public abstract class GroupFrameBase<T extends ModelBaseI<T>> extends javax.swin
             nodeListeners.clear();
             VGroupManager.getInstance().removePropertyChangeListener(this);
             group.removePropertyChangeListener(this);
+            if (group instanceof VisualizationGroupI) {
+                VisualizationGroupI vgrp = (VisualizationGroupI) group;
+                vgrp.close();
+            } else if (group instanceof ReplicateGroupI) {
+                ReplicateGroupI rgrp = (ReplicateGroupI) group;
+                rgrp.close();
+            }
             super.dispose();
         }
     }

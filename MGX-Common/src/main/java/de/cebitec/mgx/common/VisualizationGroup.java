@@ -93,7 +93,8 @@ public class VisualizationGroup implements VisualizationGroupI {
         needsResolval.get(AttributeRank.SECONDARY).clear();
         distCache.clear();
         hierarchyCache.clear();
-        pcs.close();
+        deleted();
+        pcs.close(); 
     }
 
     @Override
@@ -634,7 +635,7 @@ public class VisualizationGroup implements VisualizationGroupI {
                 if (evt.getSource() instanceof SeqRunI) {
                     removeSeqRun((SeqRunI) evt.getSource());
                 }
-                pcs.firePropertyChange(evt);
+                //pcs.firePropertyChange(evt);
                 break;
             case OBJECT_MODIFIED:
                 pcs.firePropertyChange(evt);

@@ -36,7 +36,8 @@ public class VGroupManagerTest {
         VisualizationGroupI vg = vgmgr.createVisualizationGroup();
         assertNotNull(vg);
         assertEquals(1, vgmgr.getAllVisualizationGroups().size());
-        vgmgr.removeVisualizationGroup(vg);
+        //vgmgr.removeVisualizationGroup(vg);
+        vg.close();
         assertEquals(0, vgmgr.getAllVisualizationGroups().size());
     }
 
@@ -54,7 +55,8 @@ public class VGroupManagerTest {
         assertTrue(mgr.getReplicateGroups().isEmpty());
 
         // removal of vGrp
-        mgr.removeVisualizationGroup(vGrp);
+        //mgr.removeVisualizationGroup(vGrp);
+        vGrp.close();
         assertTrue(mgr.getReplicateGroups().isEmpty());
         assertTrue(mgr.getAllVisualizationGroups().isEmpty());
     }
@@ -86,7 +88,8 @@ public class VGroupManagerTest {
         assertTrue(mgr.getAllVisualizationGroups().contains(replicate)); // replicate is a Vizgroup, as well
 
         // remove replicategroup it again
-        mgr.removeReplicateGroup(rGroup);
+        //mgr.removeReplicateGroup(rGroup);
+        rGroup.close();
         assertTrue(mgr.getReplicateGroups().isEmpty());
     }
 
@@ -104,8 +107,12 @@ public class VGroupManagerTest {
         assertNotNull(rGroup2);
         assertNotEquals(rGroup1.getName(), rGroup2.getName());
         assertNotEquals(rGroup1.getColor(), rGroup2.getColor());
-        mgr.removeReplicateGroup(rGroup1);
-        mgr.removeReplicateGroup(rGroup2);
+        
+        rGroup1.close();
+        rGroup2.close();
+                
+//        mgr.removeReplicateGroup(rGroup1);
+//        mgr.removeReplicateGroup(rGroup2);
     }
 
     @Test
@@ -122,7 +129,8 @@ public class VGroupManagerTest {
         assertTrue(mgr.getAllVisualizationGroups().contains(r1));
         assertTrue(mgr.getAllVisualizationGroups().contains(r2));
         //
-        mgr.removeReplicateGroup(rGroup);
+        //mgr.removeReplicateGroup(rGroup);
+        rGroup.close();
         assertEquals("Replicate group must not contain any replicates after group has been removed", 0, rGroup.getReplicates().size());
         //
         //
@@ -140,7 +148,8 @@ public class VGroupManagerTest {
         ReplicateI r2 = mgr.createReplicate(rGroup1);
         assertEquals("Replicate 1", r1.getName());
         assertNotEquals(r1.getName(), r2.getName());
-        mgr.removeReplicateGroup(rGroup1);
+        //mgr.removeReplicateGroup(rGroup1);
+        rGroup1.close();
     }
 
     @Test
@@ -153,6 +162,7 @@ public class VGroupManagerTest {
         assertEquals("Replicate 1", r1.getName());
         assertEquals("Replicate Group 1 Replicate 1", r1.getDisplayName());
 
-        mgr.removeReplicateGroup(rGroup);
+        //mgr.removeReplicateGroup(rGroup);
+        rGroup.close();
     }
 }
