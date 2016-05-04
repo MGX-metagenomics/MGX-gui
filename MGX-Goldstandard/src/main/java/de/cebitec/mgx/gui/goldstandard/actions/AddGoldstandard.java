@@ -13,6 +13,7 @@ import de.cebitec.mgx.gui.goldstandard.wizard.AddGoldstandardWizardDescriptor;
 import java.awt.Dialog;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import static javax.swing.Action.NAME;
 import org.openide.DialogDisplayer;
@@ -34,6 +35,13 @@ import org.openide.util.actions.NodeAction;
 public final class AddGoldstandard extends NodeAction implements LookupListener {
     private final Lookup context;
     private Lookup.Result<SeqRunI> lkpInfo;
+    
+    private final static String TOOL_NAME = "Goldstandard";
+    private final static String TOOL_AUTHOR = "XX";
+    private final static String TOOL_LONG_DESCRIPTION = "";
+    private final static String TOOL_WEBSITE = "";
+    private final static String TOOL_XML = "";
+    private final static float TOOL_VERSION = 1.0f;
 
     public AddGoldstandard() {
         this(Utilities.actionsGlobalContext());
@@ -95,13 +103,13 @@ public final class AddGoldstandard extends NodeAction implements LookupListener 
         if (!cancelled) {            
             for (final SeqRunI seqrun : seqruns){
                 try {
-//                    ToolI tool = master.Tool().create(obj);
-                    ToolI tool = null;
-                    Collection<JobParameterI> params = null;
+                    ToolI tool = master.Tool().create(TOOL_NAME, TOOL_LONG_DESCRIPTION, TOOL_AUTHOR, TOOL_WEBSITE, TOOL_VERSION, TOOL_XML);
+                    Collection<JobParameterI> params = new ArrayList<>(1);
                     JobI job = master.Job().create(tool, seqrun, params);
                     MGSReader reader = new MGSReader(wd.getGoldstandardFile().getAbsolutePath(), master, job);
                     while (reader.hasNext()){
                         MGSEntry entry = reader.next();
+                        job.getMaster().Attribute().
                     }
 //            ToolI tool = (ToolI) wiz.getProperty(AnalysisWizardIterator.PROP_TOOL);
 //            ToolType tooltype = (ToolType) wiz.getProperty(AnalysisWizardIterator.PROP_TOOLTYPE);
