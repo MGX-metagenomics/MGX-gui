@@ -353,9 +353,7 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
                     scaledImage = null;
                     createScaledImage();
                 } catch (InterruptedException | ExecutionException ex) {
-                    if (vc.isClosed()) {
-                        return;
-                    } else {
+                    if (!vc.isClosed()) {
                         Exceptions.printStackTrace(ex);
                     }
                 } finally {
@@ -392,6 +390,12 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
             IntIterator covIter = vc.getCoverageIterator();
             while (covIter.hasNext()) {
                 int cov = covIter.next();
+                
+                // ViewController might change to 'closed' state e.g. if the
+                // topcomponent is closed with the swingworker still busy.
+                if (vc.isClosed()) {
+                    return;
+                }
 
                 if (cov == 0) {
                     if (gp != null) {

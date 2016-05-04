@@ -70,7 +70,7 @@ public class BarChartViewer extends CategoricalViewerI<Long> {
 
     @Override
     public void show(List<Pair<VisualizationGroupI, DistributionI<Long>>> in) {
-
+        
         List<Pair<VisualizationGroupI, DistributionI<Double>>> data = getCustomizer().filter(in);
 
         dataset = JFreeChartUtil.createCategoryDataset(data);

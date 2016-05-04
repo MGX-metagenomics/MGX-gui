@@ -1,10 +1,18 @@
 package de.cebitec.mgx.gui.goldstandard.actions;
 
 import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.model.JobI;
+import de.cebitec.mgx.api.model.JobParameterI;
 import de.cebitec.mgx.api.model.SeqRunI;
+import de.cebitec.mgx.api.model.ToolI;
+import de.cebitec.mgx.goldstandard.MGSEntry;
+import de.cebitec.mgx.goldstandard.MGSReader;
 import de.cebitec.mgx.gui.controller.RBAC;
 import de.cebitec.mgx.gui.goldstandard.wizard.AddGoldstandardWizardDescriptor;
 import java.awt.Dialog;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Collection;
 import static javax.swing.Action.NAME;
 import org.openide.DialogDisplayer;
@@ -12,6 +20,7 @@ import org.openide.WizardDescriptor;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionRegistration;
 import org.openide.nodes.Node;
+import org.openide.util.Exceptions;
 import org.openide.util.HelpCtx;
 import org.openide.util.Lookup;
 import org.openide.util.LookupListener;
@@ -83,7 +92,17 @@ public final class AddGoldstandard extends NodeAction implements LookupListener 
         dialog.setVisible(true);
         dialog.toFront();
         boolean cancelled = wd.getValue() != WizardDescriptor.FINISH_OPTION;
-        if (!cancelled) {
+        if (!cancelled) {            
+            for (final SeqRunI seqrun : seqruns){
+                try {
+//                    ToolI tool = master.Tool().create(obj);
+                    ToolI tool = null;
+                    Collection<JobParameterI> params = null;
+                    JobI job = master.Job().create(tool, seqrun, params);
+                    MGSReader reader = new MGSReader(wd.getGoldstandardFile().getAbsolutePath(), master, job);
+                    while (reader.hasNext()){
+                        MGSEntry entry = reader.next();
+                    }
 //            ToolI tool = (ToolI) wiz.getProperty(AnalysisWizardIterator.PROP_TOOL);
 //            ToolType tooltype = (ToolType) wiz.getProperty(AnalysisWizardIterator.PROP_TOOLTYPE);
 //            @SuppressWarnings(value = "unchecked")
@@ -119,7 +138,15 @@ public final class AddGoldstandard extends NodeAction implements LookupListener 
 //                    Exceptions.printStackTrace(ex);
 //                }
 //                tooltype = ToolType.PROJECT;
-//            }
+//            }                
+                } catch (MGXException ex) {
+                    Exceptions.printStackTrace(ex);
+                } catch (FileNotFoundException ex) {
+                    Exceptions.printStackTrace(ex);
+                } catch (IOException ex) {
+                    Exceptions.printStackTrace(ex);
+                }
+            }
         }
     }
 

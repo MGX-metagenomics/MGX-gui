@@ -331,11 +331,6 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>de.cebitec.mgx.gui</groupId>
-                <artifactId>MGX-Server</artifactId>
-                <version>1.0-SNAPSHOT</version>
-            </dependency>
-            <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>MGX-Common</artifactId>
                 <version>1.0-SNAPSHOT</version>
@@ -551,7 +546,6 @@
         <module>MGX-QCMonitor</module>
         <module>MGX-Rarefaction</module>
         <module>MGX-Search</module>
-        <module>MGX-Server</module>
         <module>MGX-Statistics</module>
         <module>MGX-SwingUtils</module>
         <module>MGX-TaskView</module>
@@ -561,6 +555,8 @@
         <module>MGX-VizFilter</module>
         <module>MGX-Wizards</module>
         <module>MGX-Goldstandard</module>
+        <module>GPMS-Nodes</module>
+        <module>GPMS-Actions</module>
     </modules>
     
     <properties>

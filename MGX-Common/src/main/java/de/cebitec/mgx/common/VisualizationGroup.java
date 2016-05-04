@@ -81,6 +81,11 @@ public class VisualizationGroup implements VisualizationGroupI {
     }
 
     @Override
+    public VGroupManagerI getManager() {
+        return vgmgr;
+    }
+
+    @Override
     public synchronized void close() {
         for (SeqRunI sr : attributeTypes.keySet()) {
             sr.removePropertyChangeListener(this);
@@ -93,7 +98,8 @@ public class VisualizationGroup implements VisualizationGroupI {
         needsResolval.get(AttributeRank.SECONDARY).clear();
         distCache.clear();
         hierarchyCache.clear();
-        pcs.close();
+        deleted();
+        pcs.close(); 
     }
 
     @Override
@@ -287,7 +293,7 @@ public class VisualizationGroup implements VisualizationGroupI {
                 throw new IllegalArgumentException(run.getName() + " is already marked as deleted.");
             }
             run.addPropertyChangeListener(this);
-            
+
 //            attributeTypes.put(run, NO_JOBS);
         }
 
@@ -299,7 +305,7 @@ public class VisualizationGroup implements VisualizationGroupI {
             for (Map.Entry<SeqRunI, Map<JobI, Set<AttributeTypeI>>> entry : get.entrySet()) {
                 SeqRunI run = entry.getKey();
                 Map<JobI, Set<AttributeTypeI>> jobData = entry.getValue();
-                
+
                 attributeTypes.put(run, jobData);
 
                 // remove cached data for modified attribute types
@@ -358,7 +364,6 @@ public class VisualizationGroup implements VisualizationGroupI {
         sr.addPropertyChangeListener(this);
 
         //attributeTypes.put(sr, NO_JOBS);
-
         AttributeTypeFetcher fetcher = new AttributeTypeFetcher(sr);
         Future<Map<JobI, Set<AttributeTypeI>>> f = vgmgr.submit(fetcher);
 
@@ -634,7 +639,7 @@ public class VisualizationGroup implements VisualizationGroupI {
                 if (evt.getSource() instanceof SeqRunI) {
                     removeSeqRun((SeqRunI) evt.getSource());
                 }
-                pcs.firePropertyChange(evt);
+                //pcs.firePropertyChange(evt);
                 break;
             case OBJECT_MODIFIED:
                 pcs.firePropertyChange(evt);

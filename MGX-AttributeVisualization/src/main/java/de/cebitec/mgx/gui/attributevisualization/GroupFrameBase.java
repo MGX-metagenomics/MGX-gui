@@ -5,10 +5,10 @@
  */
 package de.cebitec.mgx.gui.attributevisualization;
 
+import de.cebitec.mgx.api.groups.ReplicateGroupI;
 import de.cebitec.mgx.api.groups.VGroupManagerI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.model.ModelBaseI;
-import de.cebitec.mgx.common.VGroupManager;
 import de.cebitec.mgx.gui.attributevisualization.view.NodeProviderI;
 import de.cebitec.mgx.gui.attributevisualization.view.NodeSelectionEvent;
 import de.cebitec.mgx.gui.attributevisualization.view.NodeSelectionListener;
@@ -17,8 +17,8 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 import java.text.DecimalFormat;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.Collection;
 import javax.swing.ToolTipManager;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.Node;
@@ -33,16 +33,18 @@ public abstract class GroupFrameBase<T extends ModelBaseI<T>> extends javax.swin
     private final transient ExplorerManager exmngr = new ExplorerManager();
     private final T group;
     private final Node groupNode;
+    private final VGroupManagerI vgmgr;
 
-    public GroupFrameBase(T group, Node groupNode) {
+    public GroupFrameBase(VGroupManagerI vgmgr, T group, Node groupNode) {
         super();
         this.group = group;
         this.groupNode = groupNode;
+        this.vgmgr = vgmgr;
         //
         group.addPropertyChangeListener(this);
         //
         // needed to receive selectionChange events
-        VGroupManager.getInstance().addPropertyChangeListener(this);
+        vgmgr.addPropertyChangeListener(this);
         ToolTipManager.sharedInstance().registerComponent(this);
         //
         exmngr.setRootContext(groupNode);
@@ -57,22 +59,7 @@ public abstract class GroupFrameBase<T extends ModelBaseI<T>> extends javax.swin
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
                 if (evt.getPropertyName().equals(ExplorerManager.PROP_SELECTED_NODES)) {
-                    Node[] nodes = (Node[]) evt.getNewValue();
-//                    System.err.println("sending new node selection:");
-//                    for (Node n : nodes) {
-//                        System.err.println("  " + n.getClass().getSimpleName() + " " + n.getName());
-//                        if (!isUnderRoot(n)) {
-//                            System.err.println("  NOT UNDER ROOT!");
-//                        }
-//                        if (n.getParentNode() == null) {
-//                            System.err.println("  NO PARENT!");
-//                        } else {
-//                            System.err.println("    P: " + n.getParentNode().getName());
-//                        }
-//                        for (Object o : n.getLookup().lookupAll(Object.class)) {
-//                            System.err.println("    L: " + o);
-//                        }
-//                    }
+//                    Node[] nodes = (Node[]) evt.getNewValue();
                     fireNodeSelectionEvent();
                 }
             }
@@ -126,11 +113,13 @@ public abstract class GroupFrameBase<T extends ModelBaseI<T>> extends javax.swin
         }
     }
 
-    private final Set<NodeSelectionListener> nodeListeners = new HashSet<>();
+    private Collection<NodeSelectionListener> nodeListeners = null;
 
     @Override
     public final void addNodeSelectionListener(NodeSelectionListener nsl) {
-        assert !nodeListeners.contains(nsl);
+        if (nodeListeners == null) {
+            nodeListeners = new ArrayList<>();
+        }
         nodeListeners.add(nsl);
     }
 
@@ -140,9 +129,11 @@ public abstract class GroupFrameBase<T extends ModelBaseI<T>> extends javax.swin
     }
 
     private void fireNodeSelectionEvent() {
-        NodeSelectionEvent nev = new NodeSelectionEvent(this, exmngr.getSelectedNodes());
-        for (NodeSelectionListener nsl : nodeListeners) {
-            nsl.handleNodeSelection(nev);
+        if (nodeListeners != null && !nodeListeners.isEmpty()) {
+            NodeSelectionEvent nev = new NodeSelectionEvent(this, exmngr.getSelectedNodes());
+            for (NodeSelectionListener nsl : nodeListeners) {
+                nsl.handleNodeSelection(nev);
+            }
         }
     }
 
@@ -172,7 +163,7 @@ public abstract class GroupFrameBase<T extends ModelBaseI<T>> extends javax.swin
     private volatile boolean isDisposed = false;
 
     @Override
-    public synchronized void dispose() {
+    public final synchronized void dispose() {
         if (!isDisposed) {
             isDisposed = true;
             try {
@@ -180,8 +171,15 @@ public abstract class GroupFrameBase<T extends ModelBaseI<T>> extends javax.swin
             } catch (PropertyVetoException ex) {
             }
             nodeListeners.clear();
-            VGroupManager.getInstance().removePropertyChangeListener(this);
+            vgmgr.removePropertyChangeListener(this);
             group.removePropertyChangeListener(this);
+            if (group instanceof VisualizationGroupI) {
+                VisualizationGroupI vgrp = (VisualizationGroupI) group;
+                vgrp.close();
+            } else if (group instanceof ReplicateGroupI) {
+                ReplicateGroupI rgrp = (ReplicateGroupI) group;
+                rgrp.close();
+            }
             super.dispose();
         }
     }

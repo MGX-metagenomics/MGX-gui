@@ -36,7 +36,7 @@ import org.openide.util.Exceptions;
 public class ReplicateGroupFrame extends GroupFrameBase<ReplicateGroupI> {
 
     public ReplicateGroupFrame(final ReplicateGroupI rgroup) {
-        super(rgroup, new ReplicateGroupNode(rgroup));
+        super(rgroup.getManager(), rgroup, new ReplicateGroupNode(rgroup));
         initComponents();
 
         //
@@ -134,11 +134,12 @@ public class ReplicateGroupFrame extends GroupFrameBase<ReplicateGroupI> {
         return "Replicate group " + getContent().getName();
     }
 
-    @Override
-    public void dispose() {
-        VGroupManager.getInstance().removeReplicateGroup(getContent());
-        super.dispose();
-    }
+//    @Override
+//    public void dispose() {
+//        getContent().removePropertyChangeListener(this);
+//        VGroupManager.getInstance().removeReplicateGroup(getContent());
+//        super.dispose();
+//    }
 
     /**
      * This method is called from within the constructor to initialize the form.

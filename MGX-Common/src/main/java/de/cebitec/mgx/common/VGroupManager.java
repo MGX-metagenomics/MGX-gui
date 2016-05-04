@@ -10,6 +10,7 @@ import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Fetcher;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.JobI;
+import de.cebitec.mgx.api.model.ModelBaseI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.tree.TreeI;
 import de.cebitec.mgx.api.visualization.ConflictResolver;
@@ -17,7 +18,6 @@ import de.cebitec.mgx.pevents.ParallelPropertyChangeSupport;
 import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -97,6 +97,11 @@ public class VGroupManager implements VGroupManagerI {
         }
     }
 
+    @Override
+    public ConflictResolver getResolver() {
+        return resolver;
+    }
+
     private boolean hasVizGroup(String name) {
         synchronized (vizGroups) {
             for (VisualizationGroupI vg : vizGroups) {
@@ -156,7 +161,6 @@ public class VGroupManager implements VGroupManagerI {
 //                return true;
 //            }
 //        }
-
         List<VisualizationGroupI> conflicts = null;
         synchronized (vizGroups) {
             for (VisualizationGroupI vg : vizGroups) {
@@ -280,14 +284,14 @@ public class VGroupManager implements VGroupManagerI {
             vizGroups.add(group);
             vizGroupCount++;
         }
-        
+
         firePropertyChange(VISGROUP_ADDED, 0, group);
-        
+
         // auto-select initial group
         if (vizGroups.size() == 1) {
             setSelectedVisualizationGroup(group);
         }
-        
+
         return group;
     }
 
@@ -327,21 +331,12 @@ public class VGroupManager implements VGroupManagerI {
         return false;
     }
 
-    @Override
-    public void removeVisualizationGroup(VisualizationGroupI vg) {
-        if (vg != null && vizGroups.contains(vg)) {
-            synchronized (vizGroups) {
-                vg.close();
-                vizGroups.remove(vg);
-                vg.deleted();
-                vg.removePropertyChangeListener(this);
-                if (vg.equals(selectedGroup)) {
-                    selectedGroup = null;
-                    firePropertyChange(VISGROUP_SELECTION_CHANGED, vg, null);
-                }
-            }
-        }
-    }
+//    @Override
+//    public void removeVisualizationGroup(VisualizationGroupI vg) {
+//        if (vg != null && vizGroups.contains(vg)) {
+//            vg.close();
+//        }
+//    }
 
     private VisualizationGroupI selectedGroup = null;
     private ReplicateGroupI selectedReplicateGroup = null;
@@ -370,7 +365,7 @@ public class VGroupManager implements VGroupManagerI {
                 newName = "Replicate Group " + replicateGroupCount;
             }
             Color groupColor = groupColors[(replicateGroupCount - 1) % groupColors.length];
-            replGroup = new ReplicateGroup(newName);
+            replGroup = new ReplicateGroup(this, newName);
             replGroup.setColor(groupColor);
             replicateGroups.add(replGroup);
             replGroup.addPropertyChangeListener(this);
@@ -384,24 +379,12 @@ public class VGroupManager implements VGroupManagerI {
         return replGroup;
     }
 
-    @Override
-    public void removeReplicateGroup(ReplicateGroupI rg) {
-        if (rg != null && replicateGroups.contains(rg)) {
-            for (ReplicateI r : rg.getReplicates()) {
-                removeVisualizationGroup(r);
-            }
-            rg.close();
-            synchronized (replicateGroups) {
-                replicateGroups.remove(rg);
-            }
-            if (selectedReplicateGroup != null && selectedReplicateGroup.equals(rg)) {
-                selectedReplicateGroup = null;
-                firePropertyChange(REPLICATEGROUP_SELECTION_CHANGED, rg, null);
-            }
-            rg.deleted();
-            rg.removePropertyChangeListener(this);
-        }
-    }
+//    @Override
+//    public void removeReplicateGroup(ReplicateGroupI rg) {
+//        if (rg != null && replicateGroups.contains(rg)) {
+//            rg.close();
+//        }
+//    }
 
     @Override
     public void setSelectedReplicateGroup(ReplicateGroupI replicateGroup) {
@@ -442,6 +425,38 @@ public class VGroupManager implements VGroupManagerI {
     @Override
     public final void propertyChange(PropertyChangeEvent pce) {
         //System.err.println("VGMGR got " + pce);
+        switch (pce.getPropertyName()) {
+            case ModelBaseI.OBJECT_DELETED:
+                if (pce.getSource() instanceof VisualizationGroupI) {
+                    VisualizationGroupI vg = (VisualizationGroupI) pce.getSource();
+
+                    synchronized (vizGroups) {
+                        if (vizGroups.contains(vg)) {
+                            vizGroups.remove(vg);
+                            vg.removePropertyChangeListener(this);
+                        }
+                    }
+                    if (vg.equals(selectedGroup)) {
+                        selectedGroup = null;
+                        firePropertyChange(VISGROUP_SELECTION_CHANGED, vg, null);
+                    }
+                } else if (pce.getSource() instanceof ReplicateGroupI) {
+                    ReplicateGroupI rg = (ReplicateGroupI) pce.getSource();
+
+                    synchronized (replicateGroups) {
+                        if (replicateGroups.contains(rg)) {
+                            replicateGroups.remove(rg);
+                            rg.removePropertyChangeListener(this);
+                        }
+                    }
+                    if (rg.equals(selectedReplicateGroup)) {
+                        selectedReplicateGroup = null;
+                        firePropertyChange(REPLICATEGROUP_SELECTION_CHANGED, rg, null);
+                    }
+                    //rg.deleted();
+                }
+                break;
+        }
 //        if (VisualizationGroupI.VISGROUP_RUN_ADDED.equals(pce.getPropertyName()) && pce.getSource() instanceof VisualizationGroupI) {
 //            VisualizationGroupI vGrp = (VisualizationGroupI) pce.getSource();
 //            try {

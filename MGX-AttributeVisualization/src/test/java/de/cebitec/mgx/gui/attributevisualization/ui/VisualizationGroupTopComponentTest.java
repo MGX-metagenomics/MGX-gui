@@ -38,7 +38,8 @@ public class VisualizationGroupTopComponentTest {
         System.out.println("testExplorerManagerContent");
         VGroupManagerI vgmgr = VGroupManager.getInstance();
         for (VisualizationGroupI vGrp : vgmgr.getActiveVisualizationGroups()) {
-            vgmgr.removeVisualizationGroup(vGrp);
+            //vgmgr.removeVisualizationGroup(vGrp);
+            vGrp.close();
         }
         VisualizationGroupTopComponent tc = new VisualizationGroupTopComponent();
         ExplorerManager em = tc.getExplorerManager();

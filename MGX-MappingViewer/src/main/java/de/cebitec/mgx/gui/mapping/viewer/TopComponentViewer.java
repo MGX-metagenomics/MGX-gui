@@ -14,6 +14,7 @@ import de.cebitec.mgx.gui.mapping.panel.MappingPanel;
 import de.cebitec.mgx.gui.mapping.panel.NavigationPanel;
 import de.cebitec.mgx.gui.mapping.panel.RecruitmentIdentityPanel;
 import de.cebitec.mgx.gui.mapping.panel.RecruitmentPanel;
+import de.cebitec.mgx.gui.swingutils.NonEDT;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.EventQueue;
@@ -166,9 +167,15 @@ public final class TopComponentViewer extends TopComponent implements PropertyCh
     @Override
     public void componentClosed() {
         removeAll();
-        if (!vc.isClosed()) {
-            vc.close();
-        }
+        
+        NonEDT.invoke(new Runnable() {
+            @Override
+            public void run() {
+                if (!vc.isClosed()) {
+                    vc.close();
+                }
+            }
+        });
     }
 
     void writeProperties(java.util.Properties p) {
@@ -180,7 +187,7 @@ public final class TopComponentViewer extends TopComponent implements PropertyCh
     }
 
     @Override
-    public synchronized void propertyChange(PropertyChangeEvent evt) {
+    public void propertyChange(PropertyChangeEvent evt) {
         if (evt.getSource().equals(vc) && evt.getPropertyName().equals(ViewController.VIEWCONTROLLER_CLOSED)) {
             vc.removePropertyChangeListener(this);
             EventQueue.invokeLater(new Runnable() {

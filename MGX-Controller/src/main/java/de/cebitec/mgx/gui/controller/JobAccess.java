@@ -39,7 +39,7 @@ public class JobAccess implements JobAccessI {
     public JobAccess(MGXMasterI master, MGXDTOMaster dtomaster) throws MGXException {
         this.dtomaster = dtomaster;
         this.master = master;
-          if (master.isDeleted()) {
+        if (master.isDeleted()) {
             throw new MGXLoggedoutException("You are disconnected.");
         }
     }
@@ -59,7 +59,7 @@ public class JobAccess implements JobAccessI {
         try {
             ret = getDTOmaster().Job().verify(obj.getId());
         } catch (MGXServerException | MGXClientException ex) {
-            throw new MGXException(ex);
+            throw new MGXException(ex.getMessage());
         }
         obj.modified();
         return ret;
@@ -72,7 +72,7 @@ public class JobAccess implements JobAccessI {
         try {
             ret = getDTOmaster().Job().execute(obj.getId());
         } catch (MGXServerException | MGXClientException ex) {
-            throw new MGXException(ex);
+            throw new MGXException(ex.getMessage());
         }
         obj.modified();
         return ret;
@@ -81,12 +81,18 @@ public class JobAccess implements JobAccessI {
     @Override
     public TaskI<JobI> restart(JobI job) throws MGXException {
         TaskI<JobI> ret = null;
+        if (job.getSeqrun() == null) {
+            throw new MGXException("Internal error: Job has no sequencing run.");
+        }
+        if (job.getTool() == null) {
+            throw new MGXException("Internal error: Job has no tool.");
+        }
         try {
             UUID uuid = getDTOmaster().Job().restart(job.getId());
             ret = getMaster().<JobI>Task().get(job, uuid, TaskType.MODIFY);
             job.modified();
         } catch (MGXServerException | MGXClientException ex) {
-            throw new MGXException(ex);
+            throw new MGXException(ex.getMessage());
         }
         return ret;
     }
@@ -98,7 +104,7 @@ public class JobAccess implements JobAccessI {
         try {
             ret = getDTOmaster().Job().cancel(obj.getId());
         } catch (MGXServerException | MGXClientException ex) {
-            throw new MGXException(ex);
+            throw new MGXException(ex.getMessage());
         }
         if (ret) {
             obj.modified();
@@ -123,7 +129,7 @@ public class JobAccess implements JobAccessI {
             job.setId(id);
             job.modified();
         } catch (MGXServerException | MGXClientException ex) {
-            throw new MGXException(ex);
+            throw new MGXException(ex.getMessage());
         }
 
         return job;
@@ -135,7 +141,7 @@ public class JobAccess implements JobAccessI {
         try {
             h = getDTOmaster().Job().fetch(id);
         } catch (MGXServerException | MGXClientException ex) {
-            throw new MGXException(ex);
+            throw new MGXException(ex.getMessage());
         }
         JobI j = JobDTOFactory.getInstance().toModel(getMaster(), h);
         return j;
@@ -154,7 +160,7 @@ public class JobAccess implements JobAccessI {
             };
 
         } catch (MGXServerException | MGXClientException ex) {
-            throw new MGXException(ex);
+            throw new MGXException(ex.getMessage());
         }
     }
 
@@ -164,7 +170,7 @@ public class JobAccess implements JobAccessI {
         try {
             getDTOmaster().Job().update(dto);
         } catch (MGXServerException | MGXClientException ex) {
-            throw new MGXException(ex);
+            throw new MGXException(ex.getMessage());
         }
         obj.modified();
     }
@@ -175,7 +181,7 @@ public class JobAccess implements JobAccessI {
             UUID uuid = getDTOmaster().Job().delete(obj.getId());
             return getMaster().<JobI>Task().get(obj, uuid, TaskType.DELETE);
         } catch (MGXServerException | MGXClientException ex) {
-            throw new MGXException(ex);
+            throw new MGXException(ex.getMessage());
         }
     }
 
@@ -189,7 +195,7 @@ public class JobAccess implements JobAccessI {
                 all.add(j);
             }
         } catch (MGXServerException | MGXClientException ex) {
-            throw new MGXException(ex);
+            throw new MGXException(ex.getMessage());
         }
         return all;
     }
@@ -200,11 +206,13 @@ public class JobAccess implements JobAccessI {
         try {
             for (JobDTO dto : getDTOmaster().Job().BySeqRun(run.getId())) {
                 JobI j = JobDTOFactory.getInstance().toModel(getMaster(), dto);
-                j.setSeqrun(run);
-                all.add(j);
+                if (j != null) {
+                    j.setSeqrun(run);
+                    all.add(j);
+                }
             }
         } catch (MGXServerException | MGXClientException ex) {
-            throw new MGXException(ex);
+            throw new MGXException(ex.getMessage());
         }
         return all;
     }
@@ -215,7 +223,7 @@ public class JobAccess implements JobAccessI {
             MGXString err = getDTOmaster().Job().getError(job.getId());
             return err.getValue();
         } catch (MGXServerException | MGXClientException ex) {
-            throw new MGXException(ex);
+            throw new MGXException(ex.getMessage());
         }
     }
 

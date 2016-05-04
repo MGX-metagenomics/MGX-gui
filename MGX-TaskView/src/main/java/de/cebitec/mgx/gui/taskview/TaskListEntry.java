@@ -82,6 +82,10 @@ public class TaskListEntry extends javax.swing.JPanel implements PropertyChangeL
     public JProgressBar getProgressBar() {
         return jProgressBar1;
     }
+    
+    final void dispose() {
+        task.dispose();
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.

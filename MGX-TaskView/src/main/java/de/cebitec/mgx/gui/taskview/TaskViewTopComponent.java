@@ -56,6 +56,7 @@ public final class TaskViewTopComponent extends TopComponent implements Property
                     for (TaskListEntry tle : completedTasks) {
                         assert tle != null;
                         tasklistpanel.remove(tle);
+                        tle.dispose();
                     }
                     completedTasks.clear();
                 }

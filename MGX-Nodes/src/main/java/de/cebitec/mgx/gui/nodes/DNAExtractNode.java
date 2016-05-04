@@ -45,7 +45,7 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtractI> {
 
     @Override
     public Action[] getActions(boolean context) {
-        return new Action[]{new EditDNAExtract(), new DeleteDNAExtract(snf), new AddSeqRun(snf)};
+        return new Action[]{new EditDNAExtract(), new DeleteDNAExtract(), new AddSeqRun()};
     }
 
     @Override

@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.wizard.analysis;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.misc.ToolType;
+import de.cebitec.mgx.api.model.Identifiable;
 import de.cebitec.mgx.api.model.JobParameterI;
 import de.cebitec.mgx.api.model.ToolI;
 import de.cebitec.mgx.gui.wizard.analysis.workers.ParameterRetriever;
@@ -30,14 +31,17 @@ public class AnalysisWizardPanel1 implements WizardDescriptor.Panel<WizardDescri
     private boolean isValid = false;
     private final EventListenerList listeners = new EventListenerList();
     //
+    private final MGXMasterI master;
+    //
     private final List<ToolI> projTools;
     private final List<ToolI> serverTools;
-    private ToolI currentTool = null;
+    private String currentToolName = null;
     private List<JobParameterI> currentParams = null;
 
     public AnalysisWizardPanel1(MGXMasterI master, List<ToolI> projectTools, List<ToolI> serverTools) {
         this.projTools = projectTools;
         this.serverTools = serverTools;
+        this.master = master;
         component = new AnalysisVisualPanel1(master);
         component.addPropertyChangeListener(this);
         component.setProjectTools(projTools);
@@ -96,8 +100,23 @@ public class AnalysisWizardPanel1 implements WizardDescriptor.Panel<WizardDescri
     public void storeSettings(WizardDescriptor settings) {
         AnalysisVisualPanel1 c = getComponent();
 
-        model.putProperty(AnalysisWizardIterator.PROP_TOOL, currentTool);
         model.putProperty(AnalysisWizardIterator.PROP_TOOLTYPE, c.getToolType());
+
+        switch (c.getToolType()) {
+            case PROJECT:
+            case GLOBAL:
+                model.putProperty(AnalysisWizardIterator.PROP_TOOLID, c.getToolId());
+                model.putProperty(AnalysisWizardIterator.PROP_TOOLNAME, c.getToolName());
+                break;
+            case USER_PROVIDED:
+                model.putProperty(AnalysisWizardIterator.PROP_TOOLNAME, c.getToolName());
+                model.putProperty(AnalysisWizardIterator.PROP_TOOLDESC, c.getToolDescription());
+                model.putProperty(AnalysisWizardIterator.PROP_TOOLAUTHOR, c.getToolAuthor());
+                model.putProperty(AnalysisWizardIterator.PROP_TOOL_URL, c.getToolWebsite());
+                model.putProperty(AnalysisWizardIterator.PROP_TOOL_XML, c.getToolXML());
+                model.putProperty(AnalysisWizardIterator.PROP_TOOLVERSION, c.getToolVersion());
+                break;
+        }
         model.putProperty(AnalysisWizardIterator.PROP_PARAMETERS, currentParams);
     }
 
@@ -109,89 +128,112 @@ public class AnalysisWizardPanel1 implements WizardDescriptor.Panel<WizardDescri
             return;
         }
 
-        ToolI newTool = checkTool();
-        if (newTool == null) {
-            currentTool = null;
+        boolean newToolIsValid = checkToolIsValid();
+        if (!newToolIsValid) {
+            currentToolName = null;
             currentParams = null;
         }
+        String newToolName = getComponent().getToolName();
 
-        if (newTool != null && !newTool.equals(currentTool)) {
-            currentTool = newTool;
+        if (newToolIsValid && !newToolName.equals(currentToolName)) {
+            currentToolName = newToolName;
             // fetch parameters
-            currentParams = fetchParameters(newTool);
+            switch (getComponent().getToolType()) {
+                case GLOBAL:
+                case PROJECT:
+                    currentParams = fetchParameters(getComponent().getToolId());
+                    break;
+                case USER_PROVIDED:
+                    currentParams = fetchParameters(getComponent().getToolXML());
+                    break;
+            }
         }
 
         // panel is valid, if parameters have been determined; even empty
         // parameter list is ok
-        isValid = currentTool != null && currentParams != null;
+        isValid = currentToolName != null && currentParams != null;
 
         if (oldState != isValid) {
             fireChangeEvent(this, oldState, isValid);
         }
     }
 
-    private ToolI checkTool() {
+    private boolean checkToolIsValid() {
         NotificationLineSupport nls = model.getNotificationLineSupport();
         nls.clearMessages();
-        ToolI t = getComponent().getTool();
-        ToolType tt = getComponent().getToolType();
+        ToolType toolType = getComponent().getToolType();
 
-        switch (tt) {
+        switch (toolType) {
             case PROJECT:
-                return t;
+                return getComponent().getToolId() != Identifiable.INVALID_IDENTIFIER;
             case GLOBAL:
-                if (t == null) {
-                    return null;
+                if (getComponent().getToolId() == Identifiable.INVALID_IDENTIFIER) {
+                    return false;
                 }
+                String toolName = getComponent().getToolName();
                 for (ToolI pTool : projTools) {
-                    if (pTool.getName().equals(t.getName())) {
+                    if (pTool.getName().equals(toolName)) {
                         nls.setErrorMessage("Tool with same name already exists in project.");
-                        return null; // tool already present in project
+                        return false; // tool already present in project
                     }
                 }
-                return t;
+                return true;
             case USER_PROVIDED:
-                if (t == null) {
-                    return null;
+                AnalysisVisualPanel1 c = getComponent();
+                if (c.getToolName() == null || c.getToolDescription() == null || c.getToolAuthor() == null || c.getToolXML() == null) {
+                    return false;
                 }
 
-                String newVersion = getComponent().getNewToolVersion();
+                String newVersion = getComponent().getToolVersion();
                 if (newVersion == null || newVersion.isEmpty()) {
                     nls.setErrorMessage("Missing version.");
-                    return null;
+                    return false;
                 } else {
                     try {
-                        float parseFloat = Float.parseFloat(newVersion);
-                        t.setVersion(parseFloat);
+                        Float.parseFloat(newVersion);
                     } catch (NumberFormatException nfe) {
                         nls.setErrorMessage("Invalid version, needs to be numeric (e.g. 1.1)");
-                        return null;
+                        return false;
                     }
                 }
 
                 for (ToolI pTool : projTools) {
-                    if (pTool.getName().equals(t.getName())) {
+                    if (pTool.getName().equals(getComponent().getToolName())) {
                         nls.setErrorMessage("Tool with same name already exists in project.");
-                        return null; // tool already present in project
+                        return false; // tool already present in project
                     }
                 }
 
-                String xmlData = t.getXML();
+                String xmlData = getComponent().getToolXML();
                 // TODO: validate content
 
-                return t;
+                return true;
             default:
                 assert false;
-                return null;
+                return false;
         }
     }
 
-    private List<JobParameterI> fetchParameters(ToolI t) {
-        if (t == null) {
+    private List<JobParameterI> fetchParameters(long toolId) {
+        if (toolId == Identifiable.INVALID_IDENTIFIER) {
             return null;
         }
 
-        ParameterRetriever pr = new ParameterRetriever(t.getMaster(), t, getComponent().getToolType());
+        ParameterRetriever pr = new ParameterRetriever(master, toolId, getComponent().getToolType());
+        pr.execute();
+        try {
+            Collection<JobParameterI> params = pr.get();
+            // we need a list instead of a collection, convert..
+            return new ArrayList<>(params);
+        } catch (InterruptedException | ExecutionException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+        return null;
+    }
+
+    private List<JobParameterI> fetchParameters(String toolXml) {
+
+        ParameterRetriever pr = new ParameterRetriever(master, toolXml);
         pr.execute();
         try {
             Collection<JobParameterI> params = pr.get();

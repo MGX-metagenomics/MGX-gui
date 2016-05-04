@@ -7,6 +7,7 @@ import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.ToolI;
 import de.cebitec.mgx.gui.nodes.JobNode;
+import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -36,7 +37,8 @@ public class JobNodeFactory extends MGXNodeFactoryBase<JobI> implements NodeList
 //                refresh(false);
                 if (!refreshing) {
                     refreshing = true;
-                    refresh(true);
+                    //refresh(true);
+                    refreshChildren();
                     refreshing = false;
                 }
             }
@@ -52,6 +54,7 @@ public class JobNodeFactory extends MGXNodeFactoryBase<JobI> implements NodeList
             while (iter != null && iter.hasNext()) {
                 if (Thread.interrupted()) {
                     getMaster().log(Level.INFO, "interrupted in NF");
+                    toPopulate.clear();
                     return true;
                 }
                 SeqRunI sr = iter.next();
@@ -61,6 +64,9 @@ public class JobNodeFactory extends MGXNodeFactoryBase<JobI> implements NodeList
                         ToolI t = sr.getMaster().Tool().ByJob(j);
                         tmp.add(j);
                     }
+                } catch (MGXLoggedoutException lex) {
+                    toPopulate.clear();
+                    return true;
                 } catch (MGXException ex) {
                     // silently ignore exception here, since it might
                     // be cause by an intermediate refresh while a 
@@ -86,45 +92,6 @@ public class JobNodeFactory extends MGXNodeFactoryBase<JobI> implements NodeList
         return node;
     }
 
-//    public final void refreshChildren() {
-////        if (EventQueue.isDispatchThread()) {
-////            NonEDT.invoke(new Runnable() {
-////
-////                @Override
-////                public void run() {
-////                    refreshChildren();
-////                }
-////            });
-////            return;
-////        }
-//
-//        refresh(true);
-//    }
-//
-//    @Override
-//    public void childrenAdded(NodeMemberEvent ev) {
-//        refresh(true);
-//    }
-//
-//    @Override
-//    public void childrenRemoved(NodeMemberEvent ev) {
-//        refresh(true);
-//    }
-//
-//    @Override
-//    public void childrenReordered(NodeReorderEvent ev) {
-//    }
-//
-//    @Override
-//    public void nodeDestroyed(NodeEvent ev) { 
-//        ev.getNode().removeNodeListener(this);
-//        refresh(true);
-//    }
-//
-//    @Override
-//    public void propertyChange(PropertyChangeEvent evt) {
-//        //refresh(true);
-//    }
     public void destroy() {
         timer.stop();
     }

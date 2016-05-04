@@ -62,14 +62,7 @@ public class ToolAccessTest {
         String xmlData = readFile(pipe.getAbsolutePath());
 
         MGXMasterI master = TestMaster.getRO();
-        ToolI tool = new Tool(master);
-        tool.setAuthor("foo");
-        tool.setName("bar");
-        tool.setVersion(1.0f);
-        tool.setXML(xmlData);
-        tool.setDescription("sdffdsgd");
-        tool.setUrl("fdgdfgfd");
-        Collection<JobParameterI> params = master.Tool().getAvailableParameters(tool);
+        Collection<JobParameterI> params = master.Tool().getAvailableParameters(xmlData);
         assertNotNull(params);
         assertEquals(4, params.size());
         

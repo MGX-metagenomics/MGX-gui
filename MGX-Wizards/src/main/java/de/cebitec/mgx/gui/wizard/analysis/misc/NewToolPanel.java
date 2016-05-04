@@ -1,10 +1,7 @@
 package de.cebitec.mgx.gui.wizard.analysis.misc;
 
-import de.cebitec.mgx.api.MGXMasterI;
-import de.cebitec.mgx.api.model.ToolI;
-import de.cebitec.mgx.gui.datamodel.Tool;
-import de.cebitec.mgx.gui.swingutils.util.FileChooserUtils;
 import de.cebitec.mgx.api.groups.FileType;
+import de.cebitec.mgx.gui.swingutils.util.FileChooserUtils;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
@@ -22,13 +19,11 @@ import org.openide.util.Exceptions;
 public class NewToolPanel extends javax.swing.JPanel implements DocumentListener {
 
     public static final String TOOL_DEFINED = "toolDefined";
-    private final MGXMasterI master;
 
     /**
      * Creates new form NewToolPanel
      */
-    public NewToolPanel(MGXMasterI m) {
-        this.master = m;
+    public NewToolPanel() {
         initComponents();
         toolName.getDocument().addDocumentListener(this);
         author.getDocument().addDocumentListener(this);
@@ -205,31 +200,10 @@ public class NewToolPanel extends javax.swing.JPanel implements DocumentListener
             return;
         }
 
-        ToolI t = getTool();
+        String t = getToolName();
         if (t != null) {
             firePropertyChange(TOOL_DEFINED, null, t);
         }
-    }
-
-    public ToolI getTool() {
-        if (Empty(toolName) || Empty(author) || Empty(description) || Empty(xml)) {
-            return null;
-        }
-
-        ToolI tool = new Tool(master);
-        tool.setName(toolName.getText().trim());
-        tool.setAuthor(author.getText().trim());
-        tool.setDescription(description.getText().trim());
-        tool.setUrl(uriField.getText().trim());
-        try {
-            String xmlData = readFile(xml.getText());
-            tool.setXML(xmlData);
-
-        } catch (IOException ex) {
-            Exceptions.printStackTrace(ex);
-            return null;
-        }
-        return tool;
     }
 
     public String getVersion() {
@@ -253,5 +227,48 @@ public class NewToolPanel extends javax.swing.JPanel implements DocumentListener
         }
 
         return content.toString();
+    }
+
+    public String getToolName() {
+        if (Empty(toolName) || Empty(author) || Empty(description) || Empty(xml)) {
+            return null;
+        }
+
+        return toolName.getText().trim();
+    }
+
+    public String getToolDescription() {
+        if (Empty(toolName) || Empty(author) || Empty(description) || Empty(xml)) {
+            return null;
+        }
+        return description.getText().trim();
+    }
+
+    public String getToolAuthor() {
+        if (Empty(toolName) || Empty(author) || Empty(description) || Empty(xml)) {
+            return null;
+        }
+        return author.getText().trim();
+    }
+
+    public String getToolWebsite() {
+        if (Empty(toolName) || Empty(author) || Empty(description) || Empty(xml)) {
+            return null;
+        }
+        return uriField.getText().trim();
+    }
+
+    public String getToolXML() {
+        if (Empty(toolName) || Empty(author) || Empty(description) || Empty(xml)) {
+            return null;
+        }
+        String xmlData;
+        try {
+            xmlData = readFile(xml.getText());
+        } catch (IOException ex) {
+            Exceptions.printStackTrace(ex);
+            return null;
+        }
+        return xmlData;
     }
 }

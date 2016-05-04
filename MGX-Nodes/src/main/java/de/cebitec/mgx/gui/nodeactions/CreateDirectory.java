@@ -22,11 +22,11 @@ import org.openide.util.Utilities;
  */
 public class CreateDirectory extends AbstractAction {
 
-    private final MGXNodeFactoryBase parent;
+    //private final MGXNodeFactoryBase parent;
 
-    public CreateDirectory(MGXNodeFactoryBase nf) {
+    public CreateDirectory() { //MGXNodeFactoryBase nf) {
         putValue(NAME, "Create directory");
-        parent = nf;
+        //parent = nf;
     }
 
     @Override
@@ -74,7 +74,8 @@ public class CreateDirectory extends AbstractAction {
                     protected void done() {
                         try {
                             if (get()) {
-                                parent.refreshChildren();
+                                currentDir.modified();
+                                //parent.refreshChildren();
                             }
                         } catch (InterruptedException | ExecutionException ex) {
                             Exceptions.printStackTrace(ex);
@@ -90,6 +91,6 @@ public class CreateDirectory extends AbstractAction {
     @Override
     public boolean isEnabled() {
         MGXFileI currentDir = Utilities.actionsGlobalContext().lookup(MGXFileI.class);
-        return (super.isEnabled() && currentDir.isDirectory() && RBAC.isUser());
+        return (super.isEnabled() && currentDir != null && currentDir.isDirectory() && RBAC.isUser());
     }
 }

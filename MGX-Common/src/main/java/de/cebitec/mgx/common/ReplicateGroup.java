@@ -5,21 +5,31 @@
  */
 package de.cebitec.mgx.common;
 
+import de.cebitec.mgx.api.groups.ConflictingJobsException;
 import de.cebitec.mgx.api.groups.ReplicateGroupI;
 import de.cebitec.mgx.api.groups.ReplicateI;
+import de.cebitec.mgx.api.groups.VGroupManagerI;
+import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.misc.DistributionI;
+import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.ModelBaseI;
 import static de.cebitec.mgx.api.model.ModelBaseI.OBJECT_DELETED;
+import de.cebitec.mgx.api.visualization.ConflictResolver;
 import de.cebitec.mgx.pevents.ParallelPropertyChangeSupport;
 import java.awt.Color;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -27,6 +37,7 @@ import java.util.Collections;
  */
 public class ReplicateGroup implements ReplicateGroupI {
 
+    private final VGroupManagerI vgmgr;
     private String name;
     private Color color;
     private final Collection<ReplicateI> groups = new ArrayList<>();
@@ -34,19 +45,30 @@ public class ReplicateGroup implements ReplicateGroupI {
     //
     private String managedState = OBJECT_MANAGED;
     //
-    private final PropertyChangeSupport pcs = new ParallelPropertyChangeSupport(this, true);
+    private final ParallelPropertyChangeSupport pcs = new ParallelPropertyChangeSupport(this, true);
     //
+    DistributionI<Double> meanDist = null;
+    DistributionI<Double> stdvDist = null;
+
     int nextReplicateNum = 1;
 
-    ReplicateGroup(String name) {
+    ReplicateGroup(VGroupManagerI vgmgr, String name) {
+        this.vgmgr = vgmgr;
         this.name = name;
+    }
+
+    @Override
+    public VGroupManagerI getManager() {
+        return vgmgr;
     }
 
     @Override
     public void add(ReplicateI replicate) {
         if (replicate != null && !groups.contains(replicate)) {
             replicate.addPropertyChangeListener(this);
-            groups.add(replicate);
+            synchronized (groups) {
+                groups.add(replicate);
+            }
             pcs.firePropertyChange(REPLICATEGROUP_REPLICATE_ADDED, null, replicate);
             modified();
         }
@@ -57,7 +79,9 @@ public class ReplicateGroup implements ReplicateGroupI {
         if (replicate != null && groups.contains(replicate)) {
             replicate.removePropertyChangeListener(this);
             replicate.close();
-            groups.remove(replicate);
+            synchronized (groups) {
+                groups.remove(replicate);
+            }
             pcs.firePropertyChange(REPLICATEGROUP_REPLICATE_REMOVED, null, replicate);
             modified();
         }
@@ -96,9 +120,11 @@ public class ReplicateGroup implements ReplicateGroupI {
             return 0;
         }
         long numSeq = 0;
-        for (ReplicateI replicate : getReplicates()) {
-            if (replicate.isActive()) {
-                numSeq += replicate.getNumSequences();
+        synchronized (groups) {
+            for (ReplicateI replicate : groups) {
+                if (replicate.isActive()) {
+                    numSeq += replicate.getNumSequences();
+                }
             }
         }
         return numSeq;
@@ -117,16 +143,35 @@ public class ReplicateGroup implements ReplicateGroupI {
 
     @Override
     public void close() {
-        for (ReplicateI r : groups) {
-            r.removePropertyChangeListener(this);
+        ReplicateI[] tmp;
+        synchronized (groups) {
+            tmp = groups.toArray(new ReplicateI[]{});
+        }
+        for (ReplicateI r : tmp) {
             r.close();
             pcs.firePropertyChange(REPLICATEGROUP_REPLICATE_REMOVED, null, r);
         }
-        groups.clear();
+
+        synchronized (groups) {
+            groups.clear();
+        }
+        deleted();
+        pcs.close();
     }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
+        switch (evt.getPropertyName()) {
+            case ModelBaseI.OBJECT_DELETED:
+                if (evt.getSource() instanceof ReplicateI) {
+                    ReplicateI r = (ReplicateI) evt.getSource();
+                    r.removePropertyChangeListener(this);
+                    synchronized (groups) {
+                        groups.remove(r);
+                    }
+                }
+                break;
+        }
         pcs.firePropertyChange(evt);
     }
 
@@ -213,6 +258,63 @@ public class ReplicateGroup implements ReplicateGroupI {
     @Override
     public int compareTo(ReplicateGroupI o) {
         return getName().compareTo(o.getName());
+    }
+
+    @Override
+    public DistributionI<Double> getMeanDistribution() {
+//        if (meanDist != null)
+//            return meanDist;
+
+        Pair<DistributionI<Double>, DistributionI<Double>> dists;
+        try {
+            dists = calcDistributions();
+        } catch (InterruptedException | ExecutionException ex) {
+            Exceptions.printStackTrace(ex);
+            return null;
+        }
+        meanDist = dists.getFirst();
+        stdvDist = dists.getSecond();
+
+        return meanDist;
+    }
+
+    @Override
+    public DistributionI<Double> getStdvDistribution() {
+//        if (stdvDist != null)
+//            return stdvDist;
+
+        Pair<DistributionI<Double>, DistributionI<Double>> dists;
+        try {
+            dists = calcDistributions();
+        } catch (InterruptedException | ExecutionException ex) {
+            Exceptions.printStackTrace(ex);
+            return null;
+        }
+        meanDist = dists.getFirst();
+        stdvDist = dists.getSecond();
+
+        return stdvDist;
+    }
+
+    private Pair<DistributionI<Double>, DistributionI<Double>> calcDistributions() throws InterruptedException, ExecutionException {
+        ConflictResolver resolver = VGroupManager.getInstance().getResolver();
+        assert resolver != null;
+
+        Set<DistributionI<Long>> dists = new HashSet<>();
+        List<VisualizationGroupI> conflicts = new ArrayList<>();
+        for (ReplicateI rep : getReplicates()) {
+            try {
+                dists.add(rep.getDistribution());
+            } catch (ConflictingJobsException ex) {
+                conflicts.add(rep);
+            }
+        }
+
+        if (!conflicts.isEmpty()) {
+            resolver.resolve(conflicts);
+        }
+
+        return DistributionFactory.statisticalMerge(dists);
     }
 
     @Override
