@@ -6,6 +6,7 @@ import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.exception.MGXLoggedoutException;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.SearchRequestI;
+import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.JobI;
@@ -161,6 +162,12 @@ public class AttributeAccess implements AttributeAccessI {
             throw new MGXException(ex);
         }
         return ret;
+    }
+    
+    
+    @Override
+    public TaskI<AttributeI> delete(AttributeI attr) throws MGXException {
+        throw new MGXException("Attribute deletion is not supported. Delete the corresponding job instead.");
     }
 
 //    @Override
@@ -319,4 +326,5 @@ public class AttributeAccess implements AttributeAccessI {
 //            }
 //        }
 //    }
+
 }
