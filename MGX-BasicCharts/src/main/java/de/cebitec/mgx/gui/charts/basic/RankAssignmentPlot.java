@@ -3,7 +3,6 @@ package de.cebitec.mgx.gui.charts.basic;
 import de.cebitec.mgx.api.groups.FileType;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.Pair;
-import de.cebitec.mgx.gui.charts.basic.customizer.BarChartCustomizer;
 import de.cebitec.mgx.api.groups.ImageExporterI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.model.AttributeI;
@@ -13,6 +12,7 @@ import de.cebitec.mgx.common.DistributionFactory;
 import de.cebitec.mgx.common.TreeFactory;
 import de.cebitec.mgx.common.visualization.HierarchicalViewerI;
 import de.cebitec.mgx.common.visualization.ViewerI;
+import de.cebitec.mgx.gui.charts.basic.customizer.StackedRankCustomizer;
 import de.cebitec.mgx.gui.charts.basic.j2d.PlotPanel;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -42,6 +42,8 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = ViewerI.class)
 public class RankAssignmentPlot extends HierarchicalViewerI {
 
+    private StackedRankCustomizer customizer = null;
+
     public RankAssignmentPlot() {
     }
 
@@ -60,13 +62,14 @@ public class RankAssignmentPlot extends HierarchicalViewerI {
     @Override
     public void show(List<Pair<VisualizationGroupI, TreeI<Long>>> data) {
 
+        // get longest path in tree to determine ordering of attribute types
         TreeI<Map<VisualizationGroupI, Long>> combinedTree = TreeFactory.combineTrees(data);
         AttributeTypeI[] longestPath = TreeFactory.getLongestPath(combinedTree);
 
+        // collect distributions per rank
         Map<AttributeTypeI, List<DistributionI<Long>>> byRank = new HashMap<>();
-
         for (AttributeTypeI attrType : longestPath) {
-            List<DistributionI<Long>> dists = new ArrayList<>();
+            List<DistributionI<Long>> dists = new ArrayList<>(data.size());
             for (Pair<VisualizationGroupI, TreeI<Long>> p : data) {
                 dists.add(DistributionFactory.fromTree(p.getSecond(), attrType));
             }
@@ -132,8 +135,11 @@ public class RankAssignmentPlot extends HierarchicalViewerI {
     }
 
     @Override
-    public BarChartCustomizer getCustomizer() {
-        return null;
+    public JComponent getCustomizer() {
+        if (customizer == null) {
+            customizer = new StackedRankCustomizer();
+        }
+        return customizer;
     }
 
     @Override
@@ -159,11 +165,11 @@ public class RankAssignmentPlot extends HierarchicalViewerI {
                             return Result.ERROR;
                         }
                         return Result.SUCCESS;
-                        /*
+                    /*
                          *
                          * JPEG support disabled for now because it produces a red background
                          *
-                         */
+                     */
 //                    case JPEG:
 //                        BufferedImage bi2 = new BufferedImage(jcomp.getSize().width, jcomp.getSize().height, BufferedImage.TYPE_INT_ARGB);
 //                        Graphics g2 = bi2.createGraphics();
