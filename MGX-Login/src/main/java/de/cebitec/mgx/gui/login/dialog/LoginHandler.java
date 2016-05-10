@@ -27,13 +27,16 @@ public class LoginHandler implements ActionListener {
 
     private final static LoginHandler instance = new LoginHandler();
     //
-    private final LoginPanel panel = new LoginPanel();
-    private DialogDescriptor dialog = null;
-    private NotificationLineSupport nline;
+    private final LoginPanel panel;
+    private final DialogDescriptor dialog;
+    private NotificationLineSupport nline = null;
     //
     private PingMaster pingMaster = null;
 
     private LoginHandler() {
+        panel = new LoginPanel(this);
+        dialog = new DialogDescriptor(panel, "Login", true, this);
+        nline = dialog.createNotificationLineSupport();
     }
 
     public static LoginHandler getDefault() {
@@ -44,10 +47,11 @@ public class LoginHandler implements ActionListener {
         if (!checkVersion()) {
             return;
         }
-        dialog = new DialogDescriptor(panel, "Login", true, this);
+        //dialog = new DialogDescriptor(panel, "Login", true, this);
+        dialog.setValid(false);
         dialog.setClosingOptions(new Object[]{DialogDescriptor.CANCEL_OPTION, DialogDescriptor.OK_OPTION});
-        nline = dialog.createNotificationLineSupport();
-        dialog.addPropertyChangeListener(new PropertyChangeListener() {
+        
+        PropertyChangeListener pcl = new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
                 if (evt.getPropertyName().equals(DialogDescriptor.PROP_VALUE)
@@ -55,8 +59,11 @@ public class LoginHandler implements ActionListener {
                     dialog.setClosingOptions(null);
                 }
             }
-        });
+        };
 
+        dialog.addPropertyChangeListener(pcl);
+
+        // restore saved settings
         panel.setUser(NbPreferences.forModule(MGXserverPanel.class).get("lastLogin" + gpmsClient.getServerName(), ""));
         panel.setPassword("");
 
@@ -69,6 +76,13 @@ public class LoginHandler implements ActionListener {
         }
 
         DialogDisplayer.getDefault().notify(dialog);
+        
+        dialog.removePropertyChangeListener(pcl);
+    }
+
+    void update(boolean valid) {
+        dialog.setValid(valid);
+
     }
 
     private static boolean checkVersion() {
