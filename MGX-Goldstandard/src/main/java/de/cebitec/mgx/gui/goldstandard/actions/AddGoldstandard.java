@@ -7,6 +7,7 @@ import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.JobParameterI;
 import de.cebitec.mgx.api.model.SeqRunI;
+import de.cebitec.mgx.api.model.SequenceI;
 import de.cebitec.mgx.api.model.ToolI;
 import de.cebitec.mgx.goldstandard.MGSEntry;
 import de.cebitec.mgx.goldstandard.MGSReader;
@@ -112,7 +113,7 @@ public final class AddGoldstandard extends NodeAction implements LookupListener 
                     while (reader.hasNext()){
                         MGSEntry entry = reader.next();
                         SequenceI seq = master.Sequence().fetch(seqrun, entry.getHeader());
-                        for (Triple<AttributeI, Long, Long> t : entry.getAttributes()){
+                        for (Triple<AttributeI, Integer, Integer> t : entry.getAttributes()){
                             master.Observation().create(seq, t.getFirst(), t.getSecond(), t.getThird());
                         }
                     }
