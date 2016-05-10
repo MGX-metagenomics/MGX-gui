@@ -5,6 +5,7 @@ import de.cebitec.mgx.api.access.ObservationAccessI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.exception.MGXLoggedoutException;
 import de.cebitec.mgx.api.model.AttributeI;
+import de.cebitec.mgx.api.model.Identifiable;
 import de.cebitec.mgx.api.model.ObservationI;
 import de.cebitec.mgx.api.model.SequenceI;
 import de.cebitec.mgx.client.MGXDTOMaster;
@@ -52,9 +53,15 @@ public class ObservationAccess implements ObservationAccessI {
 
     @Override
     public ObservationI create(SequenceI seq, AttributeI attr, int start, int stop) throws MGXException {
-        
+
         if (start < 0 || stop < 0 || start >= seq.getLength() || stop >= seq.getLength()) {
             throw new MGXException("Coordinates cannot point outside of sequence.");
+        }
+        if (seq == null || seq.getId() == Identifiable.INVALID_IDENTIFIER) {
+            throw new MGXException("Invalid sequence");
+        }
+        if (attr == null || attr.getId() == Identifiable.INVALID_IDENTIFIER) {
+            throw new MGXException("Invalid attribute");
         }
         
         ObservationI obj = new Observation(getMaster());
