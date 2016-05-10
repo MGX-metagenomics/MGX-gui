@@ -2,6 +2,8 @@ package de.cebitec.mgx.gui.goldstandard.actions;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.misc.Triple;
+import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.JobParameterI;
 import de.cebitec.mgx.api.model.SeqRunI;
@@ -37,8 +39,8 @@ public final class AddGoldstandard extends NodeAction implements LookupListener 
     private Lookup.Result<SeqRunI> lkpInfo;
     
     private final static String TOOL_NAME = "Goldstandard";
-    private final static String TOOL_AUTHOR = "XX";
-    private final static String TOOL_LONG_DESCRIPTION = "";
+    private final static String TOOL_AUTHOR = "Patrick Blumenkamp";
+    private final static String TOOL_LONG_DESCRIPTION = "fake tool for gold standard results";
     private final static String TOOL_WEBSITE = "";
     private final static String TOOL_XML = "";
     private final static float TOOL_VERSION = 1.0f;
@@ -109,7 +111,10 @@ public final class AddGoldstandard extends NodeAction implements LookupListener 
                     MGSReader reader = new MGSReader(wd.getGoldstandardFile().getAbsolutePath(), master, job);
                     while (reader.hasNext()){
                         MGSEntry entry = reader.next();
-                        job.getMaster().Attribute().
+                        SequenceI seq = master.Sequence().fetch(seqrun, entry.getHeader());
+                        for (Triple<AttributeI, Long, Long> t : entry.getAttributes()){
+                            master.Observation().create(seq, t.getFirst(), t.getSecond(), t.getThird());
+                        }
                     }
 //            ToolI tool = (ToolI) wiz.getProperty(AnalysisWizardIterator.PROP_TOOL);
 //            ToolType tooltype = (ToolType) wiz.getProperty(AnalysisWizardIterator.PROP_TOOLTYPE);
