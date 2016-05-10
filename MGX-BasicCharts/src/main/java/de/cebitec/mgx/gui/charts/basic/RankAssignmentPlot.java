@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.charts.basic;
 
+import de.cebitec.mgx.api.groups.FileType;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.gui.charts.basic.customizer.BarChartCustomizer;
@@ -13,7 +14,13 @@ import de.cebitec.mgx.common.TreeFactory;
 import de.cebitec.mgx.common.visualization.HierarchicalViewerI;
 import de.cebitec.mgx.common.visualization.ViewerI;
 import de.cebitec.mgx.gui.charts.basic.j2d.PlotPanel;
+import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.event.MouseWheelEvent;
+import java.awt.image.BufferedImage;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -21,9 +28,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
+import org.jfree.graphics2d.svg.SVGGraphics2D;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -33,14 +42,7 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = ViewerI.class)
 public class RankAssignmentPlot extends HierarchicalViewerI {
 
-//    private ChartPanel cPanel = null;
-//    private JFreeChart chart = null;
-//    private DefaultCategoryDataset dataset;
     public RankAssignmentPlot() {
-        // disable the stupid glossy effect
-//        ChartFactory.setChartTheme(StandardChartTheme.createLegacyTheme());
-//        BarRenderer.setDefaultShadowsVisible(false);
-//        XYBarRenderer.setDefaultShadowsVisible(false);
     }
 
     @Override
@@ -123,80 +125,10 @@ public class RankAssignmentPlot extends HierarchicalViewerI {
             }
 
         };
+        jp.setBackground(Color.WHITE);
         jp.setViewportView(p);
         jp.setWheelScrollingEnabled(false);
         jcomp = jp;
-
-//        dataset = new DefaultCategoryDataset();
-//        GroupedStackedBarRenderer renderer = new GroupedStackedBarRenderer();
-//        renderer.setBaseToolTipGenerator(new StandardCategoryToolTipGenerator("<html>Name: {0} <br> Rank: {1} <br> Count: {2} ({3})</html>", NumberFormat.getInstance()));
-//
-//        KeyToGroupMap map = new KeyToGroupMap("G1");
-//
-//        Map<String, Paint> attrPaints = new HashMap<>();
-//        List<VisualizationGroupI> groups = new ArrayList<>(data.size());
-//        List<AttributeI> allAttrs = new ArrayList<>();
-//        Map<VisualizationGroupI, Map<AttributeTypeI, DistributionI<Long>>> byGroup = new HashMap<>();
-//        for (Pair<VisualizationGroupI, TreeI<Long>> p : data) {
-//            groups.add(p.getFirst());
-//            Map<AttributeTypeI, DistributionI<Long>> byAttrType = new HashMap<>();
-//            for (AttributeTypeI aType : longestPath) {
-//                DistributionI<Long> dist = DistributionFactory.fromTree(p.getSecond(), aType);
-//                SortOrder<Long> sorter = new SortOrder<>(aType, SortOrder.DESCENDING);
-//                dist = sorter.filterDist(dist);
-//
-//                byAttrType.put(aType, dist);
-//                for (AttributeI attr : dist.keySet()) {
-//                    if (!allAttrs.contains(attr)) {
-//                        allAttrs.add(attr);
-//                        attrPaints.put(attr.getValue(), paints[paintIdx % paints.length]);
-//                        paintIdx++;
-//                    }
-//                }
-//            }
-//            byGroup.put(p.getFirst(), byAttrType);
-//        }
-//
-//        int seriesIdx = 0;
-//        for (VisualizationGroupI vgrp : groups) {
-//            Map<AttributeTypeI, DistributionI<Long>> byAttrType = byGroup.get(vgrp);
-//            for (AttributeI attr : allAttrs) {
-//                for (AttributeTypeI rank : longestPath) {
-//                    DistributionI<Long> curDist = byAttrType.get(rank);
-//                    dataset.addValue(curDist.containsKey(attr) ? curDist.get(attr) : 0.0, vgrp.getName() + " " + attr.getValue(), rank.getName());
-//                }
-//                renderer.setSeriesPaint(seriesIdx++, attrPaints.get(attr.getValue()));
-//                map.mapKeyToGroup(vgrp.getName() + " " + attr.getValue(), vgrp.getName());
-//            }
-//        }
-//
-//        renderer.setSeriesToGroupMap(map);
-//        renderer.setItemMargin(0.0);
-//
-//        chart = ChartFactory.createStackedBarChart(
-//                getTitle(),
-//                "Rank",
-//                "Count",
-//                dataset,
-//                PlotOrientation.VERTICAL,
-//                false,
-//                true,
-//                false
-//        );
-//
-//        SubCategoryAxis domainAxis = new SubCategoryAxis("");
-//        domainAxis.setCategoryMargin(0.05);
-//        for (Pair<VisualizationGroupI, TreeI<Long>> p : data) {
-//            domainAxis.addSubCategory(p.getFirst().getName());
-//        }
-//        CategoryPlot plot = (CategoryPlot) chart.getPlot();
-//        plot.setDomainAxis(domainAxis);
-//        plot.setRenderer(renderer);
-//
-//        chart.setBorderPaint(Color.WHITE);
-//        chart.setBackgroundPaint(Color.WHITE);
-//        chart.setAntiAlias(true);
-//        cPanel = new ChartPanel(chart);
     }
 
     @Override
@@ -206,7 +138,56 @@ public class RankAssignmentPlot extends HierarchicalViewerI {
 
     @Override
     public ImageExporterI getImageExporter() {
-        return null; // JFreeChartUtil.getImageExporter(chart);
+        return new ImageExporterI() {
+
+            @Override
+            public FileType[] getSupportedTypes() {
+                return new FileType[]{FileType.PNG, FileType.SVG};
+            }
+
+            @Override
+            public Result export(FileType type, String fName) throws Exception {
+                switch (type) {
+                    case PNG:
+                        BufferedImage bi = new BufferedImage(jcomp.getSize().width, jcomp.getSize().height, BufferedImage.TYPE_INT_ARGB);
+                        Graphics g = bi.createGraphics();
+                        jcomp.paint(g);
+                        g.dispose();
+                        try {
+                            ImageIO.write(bi, "png", new File(fName));
+                        } catch (Exception e) {
+                            return Result.ERROR;
+                        }
+                        return Result.SUCCESS;
+                        /*
+                         *
+                         * JPEG support disabled for now because it produces a red background
+                         *
+                         */
+//                    case JPEG:
+//                        BufferedImage bi2 = new BufferedImage(jcomp.getSize().width, jcomp.getSize().height, BufferedImage.TYPE_INT_ARGB);
+//                        Graphics g2 = bi2.createGraphics();
+//                        jcomp.paint(g2);
+//                        g2.dispose();
+//                        try {
+//                            ImageIO.write(bi2, "jpg", new File(fName));
+//                        } catch (Exception e) {
+//                            return Result.ERROR;
+//                        }
+//                        return Result.SUCCESS;
+                    case SVG:
+                        SVGGraphics2D svg = new SVGGraphics2D(1280, 1024);
+                        jcomp.paintComponents(svg);
+                        String svgElement = svg.getSVGElement();
+                        try (BufferedWriter bw = new BufferedWriter(new FileWriter(fName))) {
+                            bw.write(svgElement);
+                        }
+                        return Result.SUCCESS;
+                    default:
+                        return Result.ERROR;
+                }
+            }
+        };
     }
 
 }
