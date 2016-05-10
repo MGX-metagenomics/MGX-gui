@@ -65,7 +65,7 @@ public class ObservationAccess implements ObservationAccessI {
 
         ObservationDTO dto = ObservationDTOFactory.getInstance().toDTO(obj);
         try {
-            getDTOmaster().Observation().create(seq.getId(), dto);
+            getDTOmaster().Observation().create(seq.getId(), attr.getId(), dto);
         } catch (MGXServerException | MGXClientException ex) {
             throw new MGXException(ex);
         }
