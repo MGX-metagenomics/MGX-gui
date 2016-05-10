@@ -16,6 +16,7 @@ import de.cebitec.mgx.gui.datamodel.Job;
 import de.cebitec.mgx.gui.dtoconversion.AttributeTypeDTOFactory;
 import de.cebitec.mgx.gui.util.BaseIterator;
 import java.util.Iterator;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -42,7 +43,7 @@ public class AttributeTypeAccess implements AttributeTypeAccessI {
         if (structure != AttributeTypeI.STRUCTURE_BASIC && structure != AttributeTypeI.STRUCTURE_HIERARCHICAL) {
             throw new MGXException(String.valueOf(structure) + " is not a valid attribute structure");
         }
-        
+
         AttributeTypeI attrType = new AttributeType(getMaster(), Identifiable.INVALID_IDENTIFIER, name, valueType, structure);
         try {
             AttributeTypeDTO dto = AttributeTypeDTOFactory.getInstance().toDTO(attrType);
@@ -66,8 +67,20 @@ public class AttributeTypeAccess implements AttributeTypeAccessI {
     }
 
     @Override
-    public Iterator<AttributeTypeI> fetchall() {
-        throw new UnsupportedOperationException("Not supported.");
+    public Iterator<AttributeTypeI> fetchall() throws MGXException {
+        Iterator<AttributeTypeDTO> it;
+        try {
+            it = getDTOmaster().AttributeType().fetchall();
+        } catch (MGXServerException | MGXClientException ex) {
+            throw new MGXException(ex);
+        }
+        return new BaseIterator<AttributeTypeDTO, AttributeTypeI>(it) {
+            @Override
+            public AttributeTypeI next() {
+                AttributeTypeI attr = AttributeTypeDTOFactory.getInstance().toModel(getMaster(), iter.next());
+                return attr;
+            }
+        };
     }
 
     @Override
