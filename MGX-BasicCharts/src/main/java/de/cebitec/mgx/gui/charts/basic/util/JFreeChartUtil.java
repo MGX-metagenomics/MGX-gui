@@ -14,7 +14,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
