@@ -12,6 +12,7 @@ import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.DNAExtractI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.controller.RBAC;
+import de.cebitec.mgx.gui.nodefactory.MGXNodeFactoryBase;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
 import de.cebitec.mgx.gui.wizard.seqrun.SeqRunWizardDescriptor;
@@ -39,10 +40,10 @@ import org.openide.util.Utilities;
  */
 public class AddSeqRun extends AbstractAction {
 
-    //private final MGXNodeFactoryBase parent;
+    private final MGXNodeFactoryBase parent;
 
-    public AddSeqRun() {//final MGXNodeFactoryBase snf) {
-        //this.parent = snf;
+    public AddSeqRun(final MGXNodeFactoryBase snf) {
+        this.parent = snf;
         putValue(NAME, "Add sequencing run");
     }
 
@@ -69,7 +70,7 @@ public class AddSeqRun extends AbstractAction {
                         reader = SeqReaderFactory.<DNASequenceI>getReader(canonicalPath);
                     } catch (IOException | SeqStoreException ex) {
                         m.SeqRun().delete(seqrun);
-                        //parent.refreshChildren();
+                        parent.refreshChildren();
                         extract.modified();
                         publish(ex);
                         return null;
@@ -88,7 +89,7 @@ public class AddSeqRun extends AbstractAction {
                         @Override
                         public void finished() {
                             super.finished();
-                            //parent.refreshChildren();
+                            parent.refreshChildren();
                             extract.modified();
                             //seqrun.modified();
                         }
@@ -101,7 +102,7 @@ public class AddSeqRun extends AbstractAction {
                             } catch (MGXException ex) {
                                 Exceptions.printStackTrace(ex);
                             }
-                            //parent.refreshChildren();
+                            parent.refreshChildren();
                             extract.modified();
                             super.failed(reason);
                         }
