@@ -124,6 +124,17 @@ public class SequenceAccess extends AccessBase<SequenceI> implements SequenceAcc
     }
 
     @Override
+    public SequenceI fetch(SeqRunI seqrun, String seqName) throws MGXException {
+        SequenceDTO dto = null;
+        try {
+            dto = getDTOmaster().Sequence().byName(seqrun.getId(), seqName);
+        } catch (MGXServerException | MGXClientException ex) {
+            throw new MGXException(ex);
+        }
+        return SequenceDTOFactory.getInstance().toModel(getMaster(), dto);
+    }
+
+    @Override
     public void fetchSeqData(Iterable<SequenceI> seqs) throws MGXException {
         TLongObjectMap<SequenceI> idx = new TLongObjectHashMap<>();
         try {
