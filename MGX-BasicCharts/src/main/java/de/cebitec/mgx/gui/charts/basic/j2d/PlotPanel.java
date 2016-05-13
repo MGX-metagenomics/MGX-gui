@@ -9,6 +9,7 @@ import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
+import de.cebitec.mgx.common.VGroupManager;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -30,12 +31,17 @@ import org.jfree.chart.ChartColor;
  */
 public class PlotPanel extends JPanel {
 
+    private final Normalization norm;
+    private final Map<VisualizationGroupI, Long> maxAssignedByGroup;
+    //
     private final List<StackedBar> bars = new ArrayList<>();
     private final Map<AttributeI, Color> colorMap = new HashMap<>();
     private final int vSpacePx = 10;
 
-    public PlotPanel() {
+    public PlotPanel(Normalization norm, Map<VisualizationGroupI, Long> maxAssignedByGroup) {
         super();
+        this.norm = norm;
+        this.maxAssignedByGroup = maxAssignedByGroup;
         ToolTipManager.sharedInstance().registerComponent(this);
         ToolTipManager.sharedInstance().setDismissDelay(5000);
         setBackground(Color.WHITE);
@@ -88,19 +94,27 @@ public class PlotPanel extends JPanel {
         return super.getToolTipText(m);
     }
 
-    private long maxNumelements = 0;
+    private long maxNumElements = 0;
 
-    public StackedBar createBar(VisualizationGroupI vgrp, AttributeTypeI aType, List<AttributeI> sortOrder, DistributionI<Long> dist) {
-        if (dist.getTotalClassifiedElements() > maxNumelements) {
-            maxNumelements = dist.getTotalClassifiedElements();
+    public void createBar(VisualizationGroupI vgrp, AttributeTypeI aType, List<AttributeI> sortOrder, DistributionI<Long> dist) {
+        if (dist.getTotalClassifiedElements() > maxNumElements) {
+            maxNumElements = dist.getTotalClassifiedElements();
         }
         StackedBar ret = new StackedBar(this, vgrp, aType, sortOrder, dist);
         bars.add(ret);
-        return ret;
+        //return ret;
     }
 
     long getMaxNumElements() {
-        return maxNumelements;
+        return maxNumElements;
+    }
+    
+    long getMaxNumAssigned(VisualizationGroupI vGrp) {
+        return maxAssignedByGroup.get(vGrp);
+    }
+
+    final Normalization getNormalizationType() {
+        return norm;
     }
 
     Color getColor(AttributeI attr) {
