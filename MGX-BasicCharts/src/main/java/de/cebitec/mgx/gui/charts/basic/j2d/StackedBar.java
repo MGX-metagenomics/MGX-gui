@@ -24,7 +24,7 @@ import java.util.List;
  */
 public class StackedBar {
 
-    private final PlotPanel pp;
+    private final PlotPanel plotPanel;
     private final VisualizationGroupI vGrp;
     private final AttributeTypeI attrType;
     private final DistributionI<Long> dist;
@@ -34,7 +34,7 @@ public class StackedBar {
     private Rectangle textBounds;
 
     StackedBar(PlotPanel pp, VisualizationGroupI vGrp, AttributeTypeI attrType, List<AttributeI> sortOrder, DistributionI<Long> dist) {
-        this.pp = pp;
+        this.plotPanel = pp;
         this.vGrp = vGrp;
         this.attrType = attrType;
         this.dist = dist;
@@ -54,28 +54,39 @@ public class StackedBar {
 
     int drawOn(Graphics2D g2, int x, int y) {
         int textHeight = g2.getFontMetrics(g2.getFont()).getHeight();
-        int maxTextWidth = pp.getMaxTextWidth();
+        int maxTextWidth = plotPanel.getMaxTextWidth();
 
-        double maxBarWidth = pp.getWidth() - maxTextWidth - 20;
-        double xx = pp.getMaxNumElements();
-        double scaleX = maxBarWidth / xx;
+        float maxBarWidth = plotPanel.getWidth() - maxTextWidth - 20;
 
-        int xOffset = x;
+        float scaleX = 0;
+        switch (plotPanel.getNormalizationType()) {
+            case DISABLED:
+                scaleX = maxBarWidth / (1f * plotPanel.getMaxNumElements());
+                break;
+            case ROOT:
+                scaleX = maxBarWidth / (1f * plotPanel.getMaxNumAssigned(vGrp));
+                break;
+            case ALL:
+                scaleX = maxBarWidth / (1f * dist.getTotalClassifiedElements());
+                break;
+        }
+
+        float xOffset = x;
+        float yy = y;
 
         // labels
         g2.setColor(Color.BLACK);
-        g2.drawString(getLabel(), x, y + ((height + textHeight) / 2) - 2);
+        g2.drawString(getLabel(), x, yy + ((height + textHeight) / 2) - 2);
         textBounds = new Rectangle2D.Float(x, y + ((height / 2) - 6), maxTextWidth, textHeight).getBounds();
 
         rects.clear();
 
         xOffset += maxTextWidth;
         for (AttributeI attr : attrs) {
-            Long value = dist.get(attr);
-            g2.setColor(pp.getColor(attr));
-            double delta = value.doubleValue() * scaleX;
-
-            BarSegment<AttributeI> segment = new BarSegment<>(attr, xOffset, y, Math.max(1d, delta), height);
+            g2.setColor(plotPanel.getColor(attr));
+            float numAssigned = dist.get(attr).floatValue();
+            float delta = numAssigned * scaleX;
+            BarSegment<AttributeI> segment = new BarSegment<>(attr, xOffset, y, delta, height);
             g2.fill(segment);
             rects.add(segment);
             xOffset += delta;
@@ -99,11 +110,11 @@ public class StackedBar {
         return null;
     }
 
-    private static class BarSegment<T> extends Rectangle2D.Double {
+    private static class BarSegment<T> extends Rectangle2D.Float {
 
         private final T data;
 
-        public BarSegment(T data, double x, double y, double w, double h) {
+        public BarSegment(T data, float x, float y, float w, float h) {
             super(x, y, w, h);
             this.data = data;
         }

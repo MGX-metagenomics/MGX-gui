@@ -13,6 +13,7 @@ import de.cebitec.mgx.common.TreeFactory;
 import de.cebitec.mgx.common.visualization.HierarchicalViewerI;
 import de.cebitec.mgx.common.visualization.ViewerI;
 import de.cebitec.mgx.gui.charts.basic.customizer.StackedRankCustomizer;
+import de.cebitec.mgx.gui.charts.basic.j2d.Normalization;
 import de.cebitec.mgx.gui.charts.basic.j2d.PlotPanel;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -59,6 +60,8 @@ public class RankAssignmentPlot extends HierarchicalViewerI {
         return jcomp;
     }
 
+    Map<VisualizationGroupI, Long> maxAssignedByGroup = new HashMap<>();
+
     @Override
     public void show(List<Pair<VisualizationGroupI, TreeI<Long>>> data) {
 
@@ -66,12 +69,24 @@ public class RankAssignmentPlot extends HierarchicalViewerI {
         TreeI<Map<VisualizationGroupI, Long>> combinedTree = TreeFactory.combineTrees(data);
         AttributeTypeI[] longestPath = TreeFactory.getLongestPath(combinedTree);
 
+        maxAssignedByGroup.clear();
+
         // collect distributions per rank
         Map<AttributeTypeI, List<DistributionI<Long>>> byRank = new HashMap<>();
         for (AttributeTypeI attrType : longestPath) {
             List<DistributionI<Long>> dists = new ArrayList<>(data.size());
             for (Pair<VisualizationGroupI, TreeI<Long>> p : data) {
-                dists.add(DistributionFactory.fromTree(p.getSecond(), attrType));
+                DistributionI<Long> fromTree = DistributionFactory.fromTree(p.getSecond(), attrType);
+                dists.add(fromTree);
+
+                // this is only needed when normalizing to the root
+                if (getCustomizer().normToRoot()) {
+                    if (!maxAssignedByGroup.containsKey(p.getFirst())) {
+                        maxAssignedByGroup.put(p.getFirst(), fromTree.getTotalClassifiedElements());
+                    } else if (fromTree.getTotalClassifiedElements() > maxAssignedByGroup.get(p.getFirst())) {
+                        maxAssignedByGroup.put(p.getFirst(), fromTree.getTotalClassifiedElements());
+                    }
+                }
             }
             byRank.put(attrType, dists);
         }
@@ -102,13 +117,20 @@ public class RankAssignmentPlot extends HierarchicalViewerI {
             sortedAttrsByAbundance.put(attrType, sortedDesc);
         }
 
-        PlotPanel p = new PlotPanel();
+        Normalization norm = Normalization.DISABLED;
+        if (getCustomizer().normToRoot()) {
+            norm = Normalization.ROOT;
+        } else if (getCustomizer().normAll()) {
+            norm = Normalization.ALL;
+        }
+
+        PlotPanel plotPanel = new PlotPanel(norm, maxAssignedByGroup);
 
         for (AttributeTypeI attrType : longestPath) {
             int i = 0;
-            for (DistributionI<Long> d : byRank.get(attrType)) {
+            for (DistributionI<Long> dist : byRank.get(attrType)) {
                 VisualizationGroupI vGrp = data.get(i).getFirst();
-                p.createBar(vGrp, attrType, sortedAttrsByAbundance.get(attrType), d);
+                plotPanel.createBar(vGrp, attrType, sortedAttrsByAbundance.get(attrType), dist);
                 i++;
             }
         }
@@ -129,13 +151,13 @@ public class RankAssignmentPlot extends HierarchicalViewerI {
 
         };
         jp.setBackground(Color.WHITE);
-        jp.setViewportView(p);
+        jp.setViewportView(plotPanel);
         jp.setWheelScrollingEnabled(false);
         jcomp = jp;
     }
 
     @Override
-    public JComponent getCustomizer() {
+    public StackedRankCustomizer getCustomizer() {
         if (customizer == null) {
             customizer = new StackedRankCustomizer();
         }
