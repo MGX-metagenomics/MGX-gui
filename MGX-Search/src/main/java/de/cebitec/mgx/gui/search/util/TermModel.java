@@ -84,9 +84,9 @@ public class TermModel extends BaseModel<String> {
         }
         content.clear();
         while (iter != null && iter.hasNext()) {
-            String term = iter.next();
-            if (!content.contains(term)) {
-                content.add(term);
+            String term1 = iter.next();
+            if (!content.contains(term1)) {
+                content.add(term1);
             }
         }
         Collections.sort(content);
