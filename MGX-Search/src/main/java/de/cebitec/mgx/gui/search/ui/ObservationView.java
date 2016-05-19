@@ -24,6 +24,7 @@ public class ObservationView extends javax.swing.JPanel {
      * Creates new form ObservationView
      */
     public ObservationView() {
+        super();
         initComponents();
         drawArea.add(view, BorderLayout.CENTER);
     }
@@ -82,7 +83,7 @@ public class ObservationView extends javax.swing.JPanel {
                 g2.drawString(String.valueOf(seqLen), width - borderWidth - 13, height - borderWidth + 14); // XXXXbp position
             }
 
-            if (obs == null) {
+            if (obs == null || obs.length == 0) {
                 g2.dispose();
                 return;
             }
@@ -117,7 +118,6 @@ public class ObservationView extends javax.swing.JPanel {
             if (obs != null) {
                 // create layers for the observations
                 createLayers(obs);
-                //Logger.getAnonymousLogger().info(seq.getName() + " needs " + layers.size() + " layers.");
                 setMinimumSize(new Dimension(getWidth(), 2 * borderWidth + 30 + layers.size() * 15));
                 setPreferredSize(new Dimension(getWidth(), 2 * borderWidth + 30 + layers.size() * 15));
                 setMaximumSize(new Dimension(getWidth(), 2 * borderWidth + 30 + layers.size() * 15));
