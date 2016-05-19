@@ -8,6 +8,7 @@ import de.cebitec.mgx.gui.search.util.ReadModel;
 import de.cebitec.mgx.gui.search.util.SeqRunModel;
 import de.cebitec.mgx.gui.search.util.TermModel;
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,6 +16,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JList;
 import javax.swing.SwingWorker;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -85,6 +88,13 @@ public final class SearchTopComponent extends TopComponent implements LookupList
                 hitNum.setText(readModel.getSize() + " hits");
                 setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             }
+        });
+        runList.setCellRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                return super.getListCellRendererComponent(list, ((SeqRunI)value).getName(), index, isSelected, cellHasFocus);
+            }
+        
         });
 
         termField.getDocument().addDocumentListener(new DocumentListener() {
