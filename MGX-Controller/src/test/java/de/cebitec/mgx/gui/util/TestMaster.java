@@ -41,7 +41,7 @@ public class TestMaster {
                 System.out.println(ex.getMessage());
             }
         }
-        GPMSClient gpms = new GPMSClient("MyServer", serverURI);
+        GPMSClient gpms = new GPMSClient("MyServer", serverURI, false);
         try {
             gpms.login("mgx_unittestRO", "gut-isM5iNt");
         } catch (GPMSException ex) {
@@ -86,7 +86,7 @@ public class TestMaster {
                 System.out.println(ex.getMessage());
             }
         }
-        GPMSClientI gpms = new GPMSClient("MyServer", serverURI);
+        GPMSClientI gpms = new GPMSClient("MyServer", serverURI, false);
         try {
             gpms.login("mgx_unittestRW", "hL0amo3oLae");
         } catch (GPMSException ex) {
