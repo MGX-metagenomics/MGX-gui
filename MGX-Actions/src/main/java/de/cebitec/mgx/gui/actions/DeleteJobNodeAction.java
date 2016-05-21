@@ -75,7 +75,7 @@ public final class DeleteJobNodeAction extends NodeAction {
                             }
                             sleep();
                         }
-                        task.finish();
+//                        task.finish();
                         return task.getState() == TaskI.State.FINISHED;
                     }
                 };
