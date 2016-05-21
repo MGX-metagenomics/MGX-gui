@@ -76,7 +76,7 @@ public final class RestartJobAction extends NodeAction {
                         sleep();
                     }
                     if (task != null) {
-                        task.finish();
+//                        task.finish();
                         job.modified();
                         return task.getState() == TaskI.State.FINISHED;
                     }
