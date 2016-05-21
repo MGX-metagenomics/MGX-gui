@@ -85,9 +85,9 @@ public class DeleteFileOrDirectory extends AbstractAction {
                 }
                 sleep();
             }
-            if (delTask != null) {
-                delTask.finish();
-            }
+//            if (delTask != null) {
+//                delTask.finish();
+//            }
             return true;
         }
     }
