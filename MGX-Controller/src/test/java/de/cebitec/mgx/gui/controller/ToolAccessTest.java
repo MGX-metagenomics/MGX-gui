@@ -6,6 +6,7 @@
 package de.cebitec.mgx.gui.controller;
 
 import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.JobParameterI;
 import de.cebitec.mgx.api.model.ToolI;
 import de.cebitec.mgx.gui.datamodel.Tool;
@@ -22,9 +23,11 @@ import org.junit.After;
 import org.junit.AfterClass;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -55,20 +58,35 @@ public class ToolAccessTest {
      * Test of getAvailableParameters method, of class ToolAccess.
      */
     @Test
-    public void testGetAvailableParameters() throws Exception {
+    public void testGetAvailableParameters() {
         System.out.println("getAvailableParameters");
         //File plugin = TestInput.copyTestResource(getClass(), "/de/cebitec/mgx/gui/controller/plugindump.xml");
-        File pipe = TestInput.copyTestResource(getClass(), "de/cebitec/mgx/gui/controller/qiime_assignTaxonomy.xml");
-        String xmlData = readFile(pipe.getAbsolutePath());
+        File pipe = null;
+        try {
+            pipe = TestInput.copyTestResource(getClass(), "de/cebitec/mgx/gui/controller/qiime_assignTaxonomy.xml");
+        } catch (Exception ex) {
+            fail(ex.getMessage());
+        }
+        String xmlData = null;
+        try {
+            xmlData = readFile(pipe.getAbsolutePath());
+        } catch (IOException ex) {
+            fail(ex.getMessage());
+        }
 
         MGXMasterI master = TestMaster.getRO();
-        Collection<JobParameterI> params = master.Tool().getAvailableParameters(xmlData);
+        Collection<JobParameterI> params = null;
+        try {
+            params = master.Tool().getAvailableParameters(xmlData);
+        } catch (MGXException ex) {
+            fail(ex.getMessage());
+        }
         assertNotNull(params);
         assertEquals(4, params.size());
-        
+
         JobParameterI dbParam = null;
         for (JobParameterI jp : params) {
-            if  (jp.getUserName().equals("database")) {
+            if (jp.getUserName().equals("database")) {
                 dbParam = jp;
                 break;
             }
