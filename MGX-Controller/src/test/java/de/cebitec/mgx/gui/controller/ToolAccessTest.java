@@ -244,7 +244,8 @@ public class ToolAccessTest {
         assertNotNull(dbParam);
         assertNotNull(dbParam.getChoices());
         Map<String, String> choices = dbParam.getChoices();
-
+        assertTrue(choices.containsKey("SILVA"));
+        assertTrue(choices.containsKey("Greengenes"));
         assertEquals(2, choices.size());
     }
 
