@@ -8,8 +8,6 @@ package de.cebitec.mgx.gui.controller;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.JobParameterI;
-import de.cebitec.mgx.api.model.ToolI;
-import de.cebitec.mgx.gui.datamodel.Tool;
 import de.cebitec.mgx.gui.util.TestMaster;
 import de.cebitec.mgx.testutils.TestInput;
 import java.io.BufferedReader;
@@ -27,7 +25,6 @@ import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.openide.util.Exceptions;
 
 /**
  *
