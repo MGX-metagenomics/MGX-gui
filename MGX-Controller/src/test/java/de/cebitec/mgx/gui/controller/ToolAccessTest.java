@@ -223,14 +223,29 @@ public class ToolAccessTest {
      * Test of getAvailableParameters method, of class ToolAccess.
      */
     @Test
-    public void testGetAvailableParameters() throws Exception {
+    public void testGetAvailableParameters() {
         System.out.println("getAvailableParameters");
         //File plugin = TestInput.copyTestResource(getClass(), "/de/cebitec/mgx/gui/controller/plugindump.xml");
-        File pipe = TestInput.copyTestResource(getClass(), "de/cebitec/mgx/gui/controller/qiime_assignTaxonomy.xml");
-        String xmlData = readFile(pipe.getAbsolutePath());
+        File pipe = null;
+        try {
+            pipe = TestInput.copyTestResource(getClass(), "de/cebitec/mgx/gui/controller/qiime_assignTaxonomy.xml");
+        } catch (Exception ex) {
+            fail(ex.getMessage());
+        }
+        String xmlData = null;
+        try {
+            xmlData = readFile(pipe.getAbsolutePath());
+        } catch (IOException ex) {
+            fail(ex.getMessage());
+        }
 
         MGXMasterI master = TestMaster.getRO();
-        Collection<JobParameterI> params = master.Tool().getAvailableParameters(xmlData);
+        Collection<JobParameterI> params = null;
+        try {
+            params = master.Tool().getAvailableParameters(xmlData);
+        } catch (MGXException ex) {
+            fail(ex.getMessage());
+        }
         assertNotNull(params);
         assertEquals(4, params.size());
 
