@@ -1,12 +1,18 @@
 package de.cebitec.mgx.gui.goldstandard.ui.charts;
 
+import de.cebitec.mgx.api.groups.VGroupManagerI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.visualization.filter.VisFilterI;
+import de.cebitec.mgx.common.VGroupManager;
+import de.cebitec.mgx.gui.goldstandard.util.SeqRunDropList;
+import de.cebitec.mgx.gui.goldstandard.util.SeqRunList;
+import de.cebitec.mgx.gui.goldstandard.util.SingleSeqRunNodeFactory;
 import de.cebitec.mgx.gui.vizfilter.ExcludeFilter;
+import java.awt.BorderLayout;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.BufferedWriter;
@@ -19,13 +25,17 @@ import javax.swing.JFileChooser;
 import javax.swing.table.AbstractTableModel;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
+import org.openide.explorer.ExplorerManager;
+import org.openide.nodes.AbstractNode;
+import org.openide.nodes.Children;
+import org.openide.util.Lookup;
 import org.openide.util.NbPreferences;
 
 /**
  *
- * @author sjaenick
+ * @author pblumenk
  */
-public class ErrorTableViewCustomizer extends javax.swing.JPanel implements VisFilterI<DistributionI<Long>, DistributionI<Long>> {
+public class ErrorTableViewCustomizer extends javax.swing.JPanel implements VisFilterI<DistributionI<Long>, DistributionI<Long>>, PropertyChangeListener {
 
     /**
      * Creates new form TableViewCustomizer
@@ -103,6 +113,11 @@ public class ErrorTableViewCustomizer extends javax.swing.JPanel implements VisF
         includeHeaders.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         includeHeaders.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(includeHeaders, "Include column headers");
+        includeHeaders.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                includeHeadersActionPerformed(evt);
+            }
+        });
 
         jLabel4.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(jLabel4, "Include:");
@@ -120,26 +135,24 @@ public class ErrorTableViewCustomizer extends javax.swing.JPanel implements VisF
                     .addComponent(treeFilter1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(fractions)
                             .addComponent(export)
                             .addComponent(includeHeaders)
+                            .addComponent(fractions)
                             .addComponent(jLabel4))
-                        .addContainerGap(18, Short.MAX_VALUE))))
+                        .addContainerGap(94, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
+            .addGroup(layout.createSequentialGroup()
                 .addComponent(includeHeaders)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(fractions)
-                .addGap(6, 6, 6)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(treeFilter1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 17, Short.MAX_VALUE)
-                .addComponent(export)
-                .addContainerGap())
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(export))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -216,6 +229,11 @@ public class ErrorTableViewCustomizer extends javax.swing.JPanel implements VisF
             }
         }
     }//GEN-LAST:event_exportActionPerformed
+
+    private void includeHeadersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_includeHeadersActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_includeHeadersActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton export;
     private javax.swing.JCheckBox fractions;
@@ -223,5 +241,23 @@ public class ErrorTableViewCustomizer extends javax.swing.JPanel implements VisF
     private javax.swing.JLabel jLabel4;
     private de.cebitec.mgx.gui.swingutils.TreeFilter treeFilter1;
     // End of variables declaration//GEN-END:variables
+
+    private class InvisibleRoot extends AbstractNode {
+
+        public InvisibleRoot(Children children, Lookup lookup) {
+            super(children, lookup);
+        }
+
+        public InvisibleRoot(Children children) {
+            super(children);
+        }
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        return;
+    }
+    
+    
 
 }

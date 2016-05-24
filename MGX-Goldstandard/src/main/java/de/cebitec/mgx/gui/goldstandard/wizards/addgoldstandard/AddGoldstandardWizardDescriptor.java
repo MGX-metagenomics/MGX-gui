@@ -1,7 +1,7 @@
-package de.cebitec.mgx.gui.goldstandard.wizard;
+package de.cebitec.mgx.gui.goldstandard.wizards.addgoldstandard;
 
-import de.cebitec.mgx.gui.goldstandard.wizard.AddGoldstandardVisualPanel1;
-import de.cebitec.mgx.gui.goldstandard.wizard.AddGoldstandardWizardPanel1;
+import de.cebitec.mgx.gui.goldstandard.wizards.addgoldstandard.AddGoldstandardVisualPanel1;
+import de.cebitec.mgx.gui.goldstandard.wizards.addgoldstandard.AddGoldstandardWizardPanel1;
 import java.io.File;
 import java.text.MessageFormat;
 import java.util.ArrayList;

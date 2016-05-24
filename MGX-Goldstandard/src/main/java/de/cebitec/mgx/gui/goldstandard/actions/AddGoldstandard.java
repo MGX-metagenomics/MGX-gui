@@ -13,7 +13,7 @@ import de.cebitec.mgx.api.model.ToolI;
 import de.cebitec.mgx.gui.controller.RBAC;
 import de.cebitec.mgx.gui.goldstandard.util.MGSEntry;
 import de.cebitec.mgx.gui.goldstandard.util.MGSReader;
-import de.cebitec.mgx.gui.goldstandard.wizard.AddGoldstandardWizardDescriptor;
+import de.cebitec.mgx.gui.goldstandard.wizards.addgoldstandard.AddGoldstandardWizardDescriptor;
 import java.awt.Dialog;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -40,12 +40,12 @@ public final class AddGoldstandard extends NodeAction implements LookupListener 
     private final Lookup context;
     private Lookup.Result<SeqRunI> lkpInfo;
     
-    private final static String TOOL_NAME = "Goldstandard";
-    private final static String TOOL_AUTHOR = "Patrick Blumenkamp";
-    private final static String TOOL_LONG_DESCRIPTION = "fake tool for gold standard results";
-    private final static String TOOL_WEBSITE = "";
-    private final static String TOOL_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><graph description=\"\" name=\"Goldstandard\" service=\"MGX\"><composites/><nodes><node id=\"1\" name=\"\" type=\"Conveyor.MGX.GetMGXJob\" x=\"407\" y=\"162\"><configuration_items/><typeParameters/></node><node id=\"2\" name=\"\" type=\"Conveyor.Core.Discard\" x=\"412\" y=\"310\"><configuration_items/><typeParameters/></node></nodes><links><link from_connector=\"output\" from_node=\"1\" to_connector=\"input\" to_node=\"2\"/></links></graph>";
-    private final static float TOOL_VERSION = 1.0f;
+    public final static String TOOL_NAME = "Goldstandard";
+    public final static String TOOL_AUTHOR = "Patrick Blumenkamp";
+    public final static String TOOL_LONG_DESCRIPTION = "fake tool for gold standard results";
+    public final static String TOOL_WEBSITE = "";
+    public final static String TOOL_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><graph description=\"\" name=\"Goldstandard\" service=\"MGX\"><composites/><nodes><node id=\"1\" name=\"\" type=\"Conveyor.MGX.GetMGXJob\" x=\"407\" y=\"162\"><configuration_items/><typeParameters/></node><node id=\"2\" name=\"\" type=\"Conveyor.Core.Discard\" x=\"412\" y=\"310\"><configuration_items/><typeParameters/></node></nodes><links><link from_connector=\"output\" from_node=\"1\" to_connector=\"input\" to_node=\"2\"/></links></graph>";
+    public final static float TOOL_VERSION = 1.0f;
     
     public AddGoldstandard() {
         this(Utilities.actionsGlobalContext());

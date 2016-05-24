@@ -76,7 +76,7 @@ public final class EvaluationTopComponent extends TopComponent {
 
         jSplitPane1.setDividerLocation(300);
 
-        chartpane.setMinimumSize(new java.awt.Dimension(800, 500));
+        chartpane.setMinimumSize(new java.awt.Dimension(600, 400));
         jSplitPane1.setLeftComponent(chartpane);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);

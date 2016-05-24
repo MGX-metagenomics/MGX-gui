@@ -36,7 +36,7 @@
         <Container class="javax.swing.JScrollPane" name="chartpane">
           <Properties>
             <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-              <Dimension value="[800, 500]"/>
+              <Dimension value="[600, 400]"/>
             </Property>
           </Properties>
           <Constraints>

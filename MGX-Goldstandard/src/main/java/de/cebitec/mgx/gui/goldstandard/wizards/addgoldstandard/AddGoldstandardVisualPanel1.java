@@ -1,4 +1,4 @@
-package de.cebitec.mgx.gui.goldstandard.wizard;
+package de.cebitec.mgx.gui.goldstandard.wizards.addgoldstandard;
 
 import de.cebitec.mgx.api.groups.FileType;
 import de.cebitec.mgx.gui.swingutils.util.SuffixFilter;

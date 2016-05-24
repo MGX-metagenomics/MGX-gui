@@ -1,4 +1,4 @@
-package de.cebitec.mgx.gui.goldstandard.wizard;
+package de.cebitec.mgx.gui.goldstandard.wizards.addgoldstandard;
 
 import java.awt.Component;
 import java.beans.PropertyChangeEvent;

@@ -1,7 +1,13 @@
 package de.cebitec.mgx.gui.goldstandard.ui;
 
+import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Visualizable;
 import de.cebitec.mgx.api.model.AttributeTypeI;
+import de.cebitec.mgx.api.model.JobI;
+import de.cebitec.mgx.api.model.SeqRunI;
+import de.cebitec.mgx.api.model.tree.TreeI;
+import de.cebitec.mgx.gui.goldstandard.actions.AddGoldstandard;
 import de.cebitec.mgx.gui.goldstandard.ui.charts.EvaluationViewerI;
 import de.cebitec.mgx.gui.swingutils.BaseModel;
 import java.awt.Cursor;
@@ -11,28 +17,43 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.List;
+import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
+import org.openide.util.LookupEvent;
+import org.openide.util.LookupListener;
+import org.openide.util.Utilities;
 
 /**
  *
  * @author plumenk
  */
-public class EvaluationControlPanel extends javax.swing.JPanel implements PropertyChangeListener, ActionListener {
+public class EvaluationControlPanel extends javax.swing.JPanel implements PropertyChangeListener, ActionListener, LookupListener {
 
     private EvaluationTopComponent topComponent;
     //
     private EvaluationViewerI currentViewer;
     //
-    private AttributeTypeListModel attrListModel = new AttributeTypeListModel();
-    private VisualizationTypeListModel vizListModel = new VisualizationTypeListModel();
-
+    private final VisualizationTypeListModel vizListModel = new VisualizationTypeListModel();
+    //
+    private final Lookup lkp;
+    private final Lookup.Result<SeqRunI> res;
+    //
+    private SeqRunI currentSeqrun;
+    private List<JobsI> currentJobs;
+    //
     /**
      * Creates new form ControlPanel
      */
     public EvaluationControlPanel() {
         initComponents();
+        lkp = Utilities.actionsGlobalContext();
+        res = lkp.lookupResult(SeqRunI.class);
+        res.addLookupListener(this);
         updateButton.addActionListener(this);
     }
 
@@ -43,8 +64,9 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Proper
     public final synchronized void updateViewerList() {
         vizListModel.update();
         currentViewer = vizListModel.getSelectedItem();
-    }
-    
+        controlSplitPane.setBottomComponent(currentViewer.getCustomizer());
+    }       
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -54,28 +76,63 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Proper
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        attributeTypeList = new javax.swing.JComboBox();
-        jLabel1 = new javax.swing.JLabel();
+        controlSplitPane = new javax.swing.JSplitPane();
+        jPanel1 = new javax.swing.JPanel();
         visualizationTypeList = new javax.swing.JComboBox();
         jLabel2 = new javax.swing.JLabel();
+        jPanel2 = new javax.swing.JPanel();
         updateButton = new javax.swing.JButton();
-        customPane = new javax.swing.JScrollPane();
 
         setMaximumSize(new java.awt.Dimension(300, 32767));
-        setPreferredSize(new java.awt.Dimension(300, 504));
+        setMinimumSize(new java.awt.Dimension(100, 0));
+        setPreferredSize(new java.awt.Dimension(200, 504));
 
-        attributeTypeList.setModel(attrListModel);
-        attributeTypeList.setActionCommand("");
-        attributeTypeList.setEnabled(false);
-
-        jLabel1.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
-        jLabel1.setText("Attribute:");
+        controlSplitPane.setDividerLocation(80);
+        controlSplitPane.setDividerSize(1);
+        controlSplitPane.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
+        controlSplitPane.setPreferredSize(new java.awt.Dimension(200, 450));
 
         visualizationTypeList.setModel(vizListModel);
         visualizationTypeList.setEnabled(false);
 
         jLabel2.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         jLabel2.setText("Visualization type:");
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(visualizationTypeList, 0, 158, Short.MAX_VALUE)
+                    .addComponent(jLabel2))
+                .addContainerGap())
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(visualizationTypeList, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(22, Short.MAX_VALUE))
+        );
+
+        controlSplitPane.setTopComponent(jPanel1);
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 182, Short.MAX_VALUE)
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 369, Short.MAX_VALUE)
+        );
+
+        controlSplitPane.setRightComponent(jPanel2);
 
         updateButton.setText("Update");
         updateButton.setEnabled(false);
@@ -85,44 +142,29 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Proper
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addGap(6, 6, 6)
+                .addComponent(controlSplitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 182, Short.MAX_VALUE)
+                .addGap(12, 12, 12))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(customPane)
-                    .addComponent(attributeTypeList, 0, 276, Short.MAX_VALUE)
-                    .addComponent(visualizationTypeList, 0, 276, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(updateButton))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1)
-                            .addComponent(jLabel2))
-                        .addGap(0, 189, Short.MAX_VALUE)))
+                .addComponent(updateButton)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(attributeTypeList, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(20, 20, 20)
-                .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(visualizationTypeList, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(customPane, javax.swing.GroupLayout.DEFAULT_SIZE, 319, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(5, 5, 5)
+                .addComponent(controlSplitPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(updateButton)
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JComboBox attributeTypeList;
-    private javax.swing.JScrollPane customPane;
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JSplitPane controlSplitPane;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JButton updateButton;
     private javax.swing.JComboBox visualizationTypeList;
     // End of variables declaration//GEN-END:variables
@@ -142,6 +184,18 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Proper
         try {
             setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             topComponent.setVisualization(currentViewer);
+            List<JobI> selectedJobs;
+            AttributeTypeI selectedAT;
+            if (currentViewer.getInputType() == DistributionI.class){
+                
+            } else if (currentViewer.getInputType() == TreeI.class){
+                List<TreeI> trees = new ArrayList<>();
+                for (JobI job : selectedJobs)
+                    trees.add(currentSeqrun.getMaster().Attribute().getHierarchy(selectedAT, job));
+                currentViewer.show();
+            }
+        } catch (MGXException ex) {
+            Exceptions.printStackTrace(ex);
         } finally {
             setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         }
@@ -151,110 +205,24 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Proper
         if (currentViewer != null) {
             currentViewer.dispose();
         }
+        res.removeLookupListener(this);
+        updateButton.removeActionListener(this);
     }
-    
-    private final class AttributeTypeListModel extends BaseModel<AttributeTypeI> implements ItemListener {
 
-        @Override
-        public void update() {
-//            final List<AttributeTypeI> previousContent = new ArrayList<>(content.size());
-//            previousContent.addAll(content);
-//            // disable all downstream elements, including self
-//            content.clear();
-//            attributeTypeList.setEnabled(false);
-//            visualizationTypeList.setEnabled(false);
-//            updateButton.setEnabled(false);
-//
-//            SwingWorker<SortedSet<AttributeTypeI>, Void> worker = new SwingWorker<SortedSet<AttributeTypeI>, Void>() {
-//                @Override
-//                protected SortedSet<AttributeTypeI> doInBackground() throws Exception {
-//                    SortedSet<AttributeTypeI> types = new TreeSet<>();
-//                    for (VisualizationGroupI vg : vgmgr.getActiveVisualizationGroups()) {
-//                        Iterator<AttributeTypeI> atIter = vg.getAttributeTypes();
-//                        while (atIter.hasNext()) {
-//                            types.add(atIter.next());
-//                        }
-//                    }
-//                    return types;
-//                }
-//
-//                @Override
-//                protected void done() {
-//                    SortedSet<AttributeTypeI> types = null;
-//                    try {
-//                        types = get();
-//                    } catch (InterruptedException | ExecutionException ex) {
-//                        Exceptions.printStackTrace(ex);
-//                    }
-//                    content.addAll(types);
-//
-//                    if (attrListModel.getSize() > 0) {
-//                        // if previously selected attribute type still exists, restore selection
-//                        if (currentAttributeType != null && content.contains(currentAttributeType)) {
-//                            setSelectedItem(currentAttributeType);
-//                            AttributeTypeListModel.this.itemStateChanged(new ItemEvent(attributeTypeList,
-//                                    ItemEvent.ITEM_STATE_CHANGED,
-//                                    getSelectedItem(),
-//                                    ItemEvent.SELECTED));
-//                        } else {
-//                            attributeTypeList.setSelectedIndex(0);
-//                        }
-//
-//                        attributeTypeList.setEnabled(true);
-//                    }
-//                    if (contentDiffers(previousContent, content)) {
-//                        fireContentsChanged();
-//                    }
-//                    super.done();
-//                }
-//
-//                private boolean contentDiffers(List<AttributeTypeI> l1, List<AttributeTypeI> l2) {
-//                    if (l1.size() != l2.size()) {
-//                        return true;
-//                    }
-//                    for (AttributeTypeI at : l1) {
-//                        if (!l2.contains(at)) {
-//                            return true;
-//                        }
-//                    }
-//                    for (AttributeTypeI at : l2) {
-//                        if (!l1.contains(at)) {
-//                            return true;
-//                        }
-//                    }
-//                    return false;
-//                }
-//            };
-//            worker.execute();
-        }
-
-        @Override
-        public void itemStateChanged(ItemEvent e) {
-//            if (e.getStateChange() != ItemEvent.SELECTED) {
-//                return;
-//            }
-//
-//            currentAttributeType = getSelectedItem();
-//            if (currentAttributeType == null) {
-//                return;
-//            }
-//
-//            if (currentViewer != null) {
-//                currentViewer.setAttributeType(currentAttributeType);
-//            }
-//
-//            // disable all downstream elements, excluding self
-//            visualizationTypeList.setEnabled(false);
-//            updateButton.setEnabled(false);
-//
-//            if (vgmgr.selectAttributeType(currentAttributeType.getName())) {
-//                // fetch distribution (and hierarchy) in background
-//                ResultCollector rc = new ResultCollector(vgmgr, currentAttributeType, currentDistributions, currentHierarchies, ControlPanel.this);
-//                rc.execute();
-//            } else {
-//                // unresolved conflicts remain
-//                //assert false;
-//            }
+    @Override
+    public void resultChanged(LookupEvent ev) {
+        updateButton.setEnabled(false);
+        Collection<? extends SeqRunI> seqruns = res.allInstances();
+        currentSeqrun = seqruns.iterator().next();    
+        try {
+            currentJobs = currentSeqrun.getMaster().Job().BySeqRun(currentSeqrun);
+            for (JobI job : currentJobs)
+                if (job.getTool().getName().equals(AddGoldstandard.TOOL_NAME)){
+                    updateButton.setEnabled(true);
+                    return;
+                }                
+        } catch (MGXException ex) {
+            Exceptions.printStackTrace(ex);
         }
     }
 
@@ -305,8 +273,7 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Proper
 
             currentViewer = vizListModel.getSelectedItem();
 
-            customPane.setViewportView(currentViewer.getCustomizer());
-            customPane.getVerticalScrollBar().setUnitIncrement(16);
+            controlSplitPane.setBottomComponent(currentViewer.getCustomizer());
         }
     }
 }

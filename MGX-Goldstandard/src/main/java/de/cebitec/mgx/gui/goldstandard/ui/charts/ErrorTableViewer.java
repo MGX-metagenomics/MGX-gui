@@ -1,8 +1,9 @@
 package de.cebitec.mgx.gui.goldstandard.ui.charts;
 
 import de.cebitec.mgx.api.groups.ImageExporterI;
-import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
+import de.cebitec.mgx.api.model.tree.TreeI;
+import de.cebitec.mgx.gui.datamodel.tree.Tree;
 import java.util.List;
 import javax.swing.JComponent;
 import org.jdesktop.swingx.JXTable;
@@ -13,7 +14,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author pblumenk
  */
 @ServiceProvider(service = EvaluationViewerI.class)
-public class ErrorTableViewer extends EvaluationViewerI<DistributionI<Long>>{
+public class ErrorTableViewer extends EvaluationViewerI<Tree<Long>>{
 
     private JXTable table;
     private ErrorTableViewCustomizer cust = null;
@@ -40,12 +41,17 @@ public class ErrorTableViewer extends EvaluationViewerI<DistributionI<Long>>{
 
     @Override
     public Class getInputType() {
-        return DistributionI.class;
+        return TreeI.class;
     }
 
     @Override
-    public void show(List<DistributionI<Long>> dists) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void show(List<Tree<Long>> trees) {
+        if (trees.size() != 2)
+            return;
+        
+        Tree<Long> gsTree = trees.get(0);
+        Tree<Long> sampleTree = trees.get(1);
+        return;
     }
 
     @Override
