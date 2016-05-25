@@ -1,13 +1,16 @@
 <html>
     <meta charset="utf-8">
     <style type="text/css">
-
+        body {
+            background-color: white;
+        }
+        
         .node {
             cursor: pointer;
         }
 
-        .overlay{
-            background-color:#EEE;
+        .overlay {
+            background-color: white;
         }
 
         .node circle {
@@ -33,11 +36,11 @@
             stroke-width: 3px;
         }
 
-        .ghostCircle.show{
+        .ghostCircle.show {
             display:block;
         }
 
-        .ghostCircle, .activeDrag .ghostCircle{
+        .ghostCircle, .activeDrag .ghostCircle {
             display: none;
         }
 
@@ -72,13 +75,9 @@
          NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
          EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.*/
 
-
-        
-        // Get JSON data
-        treeJSON = d3.json(MGXDATA, function (error, treeData) {
-
+        function runDisplay() {
             treeData = JSON.parse(document.getElementById('MGXDATA').innerHTML);
-            
+
             // Calculate total nodes, max label length
             var totalNodes = 0;
             var maxLabelLength = 0;
@@ -602,14 +601,12 @@
             // Layout the tree initially and center on the root node.
             update(root);
             centerNode(root);
-        });
-
+        }
     </script>
     <script id="MGXDATA" type="application/json">
         MGXCONTENT
     </script> 
-    <body>
-        <p>Hello <a href="http://java-buddy.blogspot.com/">Java-Buddy</a></p>
+    <body onload="runDisplay()">
         <div id="tree-container"></div>
     </body>
 </html>
