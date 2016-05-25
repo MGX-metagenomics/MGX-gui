@@ -1,7 +1,6 @@
 package de.cebitec.mgx.gui.goldstandard.ui;
 
 import de.cebitec.mgx.api.groups.ImageExporterI;
-import de.cebitec.mgx.common.visualization.ViewerI;
 import de.cebitec.mgx.gui.goldstandard.ui.charts.EvaluationViewerI;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
@@ -45,6 +44,7 @@ public final class EvaluationTopComponent extends TopComponent {
     private final EvaluationControlPanel controlPanel1 = new EvaluationControlPanel();
     private final Lookup lookup;
     private final InstanceContent content = new InstanceContent();
+    
 
 
     public EvaluationTopComponent() {

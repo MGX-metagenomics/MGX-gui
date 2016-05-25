@@ -1,18 +1,12 @@
 package de.cebitec.mgx.gui.goldstandard.ui.charts;
 
-import de.cebitec.mgx.api.groups.VGroupManagerI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.visualization.filter.VisFilterI;
-import de.cebitec.mgx.common.VGroupManager;
-import de.cebitec.mgx.gui.goldstandard.util.SeqRunDropList;
-import de.cebitec.mgx.gui.goldstandard.util.SeqRunList;
-import de.cebitec.mgx.gui.goldstandard.util.SingleSeqRunNodeFactory;
 import de.cebitec.mgx.gui.vizfilter.ExcludeFilter;
-import java.awt.BorderLayout;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.BufferedWriter;
@@ -25,7 +19,6 @@ import javax.swing.JFileChooser;
 import javax.swing.table.AbstractTableModel;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
-import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.util.Lookup;

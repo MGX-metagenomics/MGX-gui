@@ -1,5 +1,9 @@
 package de.cebitec.mgx.gui.goldstandard.wizards.selectjobs;
 
+import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.model.JobI;
+import de.cebitec.mgx.api.model.SeqRunI;
+import java.util.List;
 import javax.swing.event.ChangeListener;
 import org.openide.WizardDescriptor;
 import org.openide.util.HelpCtx;
@@ -11,7 +15,16 @@ public class SelectSingleJobWizardPanel1 implements WizardDescriptor.Panel<Wizar
      * component from this class, just use getComponent().
      */
     private SelectSingleJobVisualPanel1 component;
+    private List<JobI> jobs;
 
+    public SelectSingleJobWizardPanel1(SeqRunI seqrun) throws MGXException {
+        jobs = seqrun.getMaster().Job().BySeqRun(seqrun);
+        for (JobI job : jobs){
+            job.setTool(seqrun.getMaster().Tool().ByJob(job));
+        }
+    }    
+    
+    
     // Get the visual component for the panel. In this template, the component
     // is kept separate. This can be more efficient: if the wizard is created
     // but never displayed, or not all panels are displayed, it is better to
@@ -19,7 +32,7 @@ public class SelectSingleJobWizardPanel1 implements WizardDescriptor.Panel<Wizar
     @Override
     public SelectSingleJobVisualPanel1 getComponent() {
         if (component == null) {
-            component = new SelectSingleJobVisualPanel1();
+            component = new SelectSingleJobVisualPanel1(jobs);
         }
         return component;
     }
@@ -30,6 +43,10 @@ public class SelectSingleJobWizardPanel1 implements WizardDescriptor.Panel<Wizar
         return HelpCtx.DEFAULT_HELP;
         // If you have context help:
         // return new HelpCtx("help.key.here");
+    }
+    
+    public String getName(){
+        return component.getName();
     }
 
     @Override

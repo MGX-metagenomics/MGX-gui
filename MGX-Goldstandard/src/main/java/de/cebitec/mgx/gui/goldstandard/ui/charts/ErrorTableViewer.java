@@ -14,7 +14,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author pblumenk
  */
 @ServiceProvider(service = EvaluationViewerI.class)
-public class ErrorTableViewer extends EvaluationViewerI<Tree<Long>>{
+public class ErrorTableViewer extends EvaluationViewerI<TreeI<Long>>{
 
     private JXTable table;
     private ErrorTableViewCustomizer cust = null;
@@ -45,12 +45,12 @@ public class ErrorTableViewer extends EvaluationViewerI<Tree<Long>>{
     }
 
     @Override
-    public void show(List<Tree<Long>> trees) {
+    public void show(List<TreeI<Long>> trees) {
         if (trees.size() != 2)
             return;
         
-        Tree<Long> gsTree = trees.get(0);
-        Tree<Long> sampleTree = trees.get(1);
+        TreeI<Long> gsTree = trees.get(0);
+        TreeI<Long> sampleTree = trees.get(1);
         return;
     }
 

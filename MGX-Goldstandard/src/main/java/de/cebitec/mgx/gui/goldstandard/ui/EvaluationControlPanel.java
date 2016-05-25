@@ -1,14 +1,14 @@
 package de.cebitec.mgx.gui.goldstandard.ui;
 
 import de.cebitec.mgx.api.exception.MGXException;
-import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Visualizable;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.SeqRunI;
-import de.cebitec.mgx.api.model.tree.TreeI;
+import de.cebitec.mgx.api.model.ToolI;
 import de.cebitec.mgx.gui.goldstandard.actions.AddGoldstandard;
 import de.cebitec.mgx.gui.goldstandard.ui.charts.EvaluationViewerI;
+import de.cebitec.mgx.gui.goldstandard.wizards.selectjobs.SelectSingleJobWizardAction;
 import de.cebitec.mgx.gui.swingutils.BaseModel;
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
@@ -17,7 +17,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -33,10 +32,11 @@ import org.openide.util.Utilities;
  * @author plumenk
  */
 public class EvaluationControlPanel extends javax.swing.JPanel implements PropertyChangeListener, ActionListener, LookupListener {
-
+    
     private EvaluationTopComponent topComponent;
     //
     private EvaluationViewerI currentViewer;
+    private final SelectSingleJobWizardAction jobWizard = new SelectSingleJobWizardAction();
     //
     private final VisualizationTypeListModel vizListModel = new VisualizationTypeListModel();
     //
@@ -44,7 +44,8 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Proper
     private final Lookup.Result<SeqRunI> res;
     //
     private SeqRunI currentSeqrun;
-    private List<JobsI> currentJobs;
+    private List<JobI> currentJobs;
+
     //
     /**
      * Creates new form ControlPanel
@@ -56,16 +57,16 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Proper
         res.addLookupListener(this);
         updateButton.addActionListener(this);
     }
-
+    
     public final void setTopComponent(EvaluationTopComponent tc) {
         this.topComponent = tc;
     }
-
+    
     public final synchronized void updateViewerList() {
         vizListModel.update();
         currentViewer = vizListModel.getSelectedItem();
         controlSplitPane.setBottomComponent(currentViewer.getCustomizer());
-    }       
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -176,31 +177,34 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Proper
 //            default:
 //                System.err.println("ControlPanel received unknown event " + evt);
 //        }
-    }
-
+    }      
+    
     @Override
     @SuppressWarnings("unchecked")
-    public void actionPerformed(ActionEvent e) {
+    public void actionPerformed(ActionEvent e) {        
+        jobWizard.setRun(currentSeqrun);        
+        jobWizard.actionPerformed(e);
         try {
             setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             topComponent.setVisualization(currentViewer);
             List<JobI> selectedJobs;
             AttributeTypeI selectedAT;
-            if (currentViewer.getInputType() == DistributionI.class){
-                
-            } else if (currentViewer.getInputType() == TreeI.class){
-                List<TreeI> trees = new ArrayList<>();
-                for (JobI job : selectedJobs)
-                    trees.add(currentSeqrun.getMaster().Attribute().getHierarchy(selectedAT, job));
-                currentViewer.show();
-            }
-        } catch (MGXException ex) {
-            Exceptions.printStackTrace(ex);
+//            if (currentViewer.getInputType() == DistributionI.class) {
+//                
+//            } else if (currentViewer.getInputType() == TreeI.class) {
+//                List<TreeI> trees = new ArrayList<>();
+//                for (JobI job : selectedJobs) {
+//                    trees.add(currentSeqrun.getMaster().Attribute().getHierarchy(selectedAT, job));
+//                }
+//                currentViewer.show();
+//            }
+//        } catch (MGXException ex) {
+//            Exceptions.printStackTrace(ex);
         } finally {
             setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         }
     }
-
+    
     public final void dispose() {
         if (currentViewer != null) {
             currentViewer.dispose();
@@ -208,26 +212,30 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Proper
         res.removeLookupListener(this);
         updateButton.removeActionListener(this);
     }
-
+    
     @Override
-    public void resultChanged(LookupEvent ev) {
-        updateButton.setEnabled(false);
+    public void resultChanged(LookupEvent ev) {        
         Collection<? extends SeqRunI> seqruns = res.allInstances();
-        currentSeqrun = seqruns.iterator().next();    
+        if (seqruns == null || seqruns.isEmpty())
+            return;
+        currentSeqrun = seqruns.iterator().next();        
         try {
             currentJobs = currentSeqrun.getMaster().Job().BySeqRun(currentSeqrun);
-            for (JobI job : currentJobs)
-                if (job.getTool().getName().equals(AddGoldstandard.TOOL_NAME)){
+            for (JobI job : currentJobs) {
+                ToolI tool = currentSeqrun.getMaster().Tool().ByJob(job);
+                if (tool.getName().equals(AddGoldstandard.TOOL_NAME)) {
                     updateButton.setEnabled(true);
                     return;
-                }                
+                }
+            }
+            updateButton.setEnabled(false);
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);
         }
     }
-
+    
     private final class VisualizationTypeListModel extends BaseModel<EvaluationViewerI<Visualizable>> implements ItemListener {
-
+        
         @Override
         @SuppressWarnings("unchecked")
         public synchronized void update() {
@@ -235,14 +243,14 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Proper
             content.clear();
             visualizationTypeList.setEnabled(false);
             updateButton.setEnabled(false);
-
+            
             SortedSet<EvaluationViewerI<Visualizable>> viewers = new TreeSet<>();
             for (EvaluationViewerI viewer : Lookup.getDefault().<EvaluationViewerI>lookupAll(EvaluationViewerI.class)) {
                 viewers.add(viewer);
             }
-
+            
             content.addAll(viewers);
-
+            
             if (vizListModel.getSize() > 0) {
                 // if previously selected element still exists, restore selection
                 if (currentViewer != null && content.contains(currentViewer)) {
@@ -254,25 +262,25 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Proper
                 } else {
                     visualizationTypeList.setSelectedIndex(0);
                 }
-
+                
                 visualizationTypeList.setEnabled(true);
                 updateButton.setEnabled(true);
             }
             fireContentsChanged();
         }
-
+        
         @Override
         public void itemStateChanged(ItemEvent e) {
             if (e.getStateChange() != ItemEvent.SELECTED) {
                 return;
             }
-
+            
             if (currentViewer != null) {
                 currentViewer.dispose();
             }
-
+            
             currentViewer = vizListModel.getSelectedItem();
-
+            
             controlSplitPane.setBottomComponent(currentViewer.getCustomizer());
         }
     }

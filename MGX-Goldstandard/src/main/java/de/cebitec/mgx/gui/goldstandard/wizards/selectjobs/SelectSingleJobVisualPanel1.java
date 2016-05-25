@@ -5,6 +5,9 @@
  */
 package de.cebitec.mgx.gui.goldstandard.wizards.selectjobs;
 
+import de.cebitec.mgx.api.model.JobI;
+import java.util.List;
+import javax.swing.DefaultListModel;
 import javax.swing.JPanel;
 
 public final class SelectSingleJobVisualPanel1 extends JPanel {
@@ -12,8 +15,13 @@ public final class SelectSingleJobVisualPanel1 extends JPanel {
     /**
      * Creates new form SelectSingleJobVisualPanel1
      */
-    public SelectSingleJobVisualPanel1() {
+    public SelectSingleJobVisualPanel1(List<JobI> jobs) {
         initComponents();
+        DefaultListModel<JobI> jobModel = new DefaultListModel<>();
+        for (JobI job : jobs)
+            jobModel.addElement(job);
+        jobList.setModel(jobModel);
+        jobList.setCellRenderer(new JobRenderer());
     }
 
     @Override
@@ -30,12 +38,12 @@ public final class SelectSingleJobVisualPanel1 extends JPanel {
     private void initComponents() {
 
         jScrollPane1 = new javax.swing.JScrollPane();
-        jList1 = new javax.swing.JList<>();
+        jobList = new javax.swing.JList<>();
         jComboBox1 = new javax.swing.JComboBox<>();
         jLabel1 = new javax.swing.JLabel();
 
-        jList1.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        jScrollPane1.setViewportView(jList1);
+        jobList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jScrollPane1.setViewportView(jobList);
 
         jComboBox1.setEnabled(false);
 
@@ -73,7 +81,7 @@ public final class SelectSingleJobVisualPanel1 extends JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JList<String> jList1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JList<JobI> jobList;
     // End of variables declaration//GEN-END:variables
 }
