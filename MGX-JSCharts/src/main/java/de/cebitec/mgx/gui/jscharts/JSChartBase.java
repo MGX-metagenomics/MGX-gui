@@ -9,8 +9,6 @@ import de.cebitec.mgx.api.misc.Visualizable;
 import de.cebitec.mgx.common.visualization.ViewerI;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
