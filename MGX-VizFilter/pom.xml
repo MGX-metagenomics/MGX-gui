@@ -44,13 +44,12 @@
     
     <dependencies>
         <dependency>
-            <groupId>de.cebitec.mgx</groupId>
+            <groupId>de.cebitec.mgx.gui</groupId>
             <artifactId>MGX-API</artifactId>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.12</version>
             <scope>test</scope>
         </dependency>
         <dependency>

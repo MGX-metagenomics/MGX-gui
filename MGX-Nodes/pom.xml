@@ -84,7 +84,7 @@
             <groupId>de.cebitec.mgx</groupId>
         </dependency>
         <dependency>
-            <groupId>de.cebitec.mgx</groupId>
+            <groupId>de.cebitec.mgx.gui</groupId>
             <artifactId>MGX-API</artifactId>
         </dependency>
         <dependency>
@@ -106,7 +106,6 @@
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-util-ui</artifactId>
-            <version>${netbeans.version}</version>
         </dependency>
         <dependency>
             <groupId>de.cebitec.mgx.gui</groupId>
@@ -124,7 +123,6 @@
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-modules</artifactId>
-            <version>${netbeans.version}</version>
         </dependency>
         <dependency>
             <groupId>de.cebitec.gpms</groupId>
@@ -135,12 +133,10 @@
         <dependency>
             <groupId>de.cebitec.gpms</groupId>
             <artifactId>GPMS-core-api</artifactId>
-            <version>1.1</version>
         </dependency>
         <dependency>
             <groupId>de.cebitec.gpms</groupId>
             <artifactId>GPMS-rest-api</artifactId>
-            <version>1.1</version>
         </dependency>
     </dependencies>
 
