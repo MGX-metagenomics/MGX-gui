@@ -129,4 +129,11 @@ public class SeqRunWizardDescriptor extends WizardDescriptor {
     public File getSequenceFile() {
         return (File) getProperty(SeqRunVisualPanel2.PROP_SEQFILE);
     }
+    
+    public boolean runDefaultTools() {
+        if (getProperty(SeqRunWizardDescriptor.INVOCATION_MODE).equals(EDIT_MODE)) {
+            return false;
+        }
+        return (boolean) getProperty(SeqRunVisualPanel1.PROP_RUNTOOLS);
+    }
 }

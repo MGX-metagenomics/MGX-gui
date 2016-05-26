@@ -17,6 +17,7 @@ public final class SeqRunVisualPanel1 extends JPanel implements DocumentListener
     public static final String PROP_ACCESSION = "accession";
     public static final String PROP_PLATFORM = "seqPlatform";
     public static final String PROP_METHOD = "seqMethod";
+    public static final String PROP_RUNTOOLS = "runDefaultTools";
 
     /**
      * Creates new form SeqRunVisualPanel1
@@ -47,7 +48,7 @@ public final class SeqRunVisualPanel1 extends JPanel implements DocumentListener
     }
 
     public String getRunName() {
-        return name.getText();
+        return name.getText().trim();
     }
 
     public void setRunName(String n) {
@@ -63,7 +64,7 @@ public final class SeqRunVisualPanel1 extends JPanel implements DocumentListener
     }
 
     public String getAccession() {
-        return accession.getText();
+        return accession.getText().trim();
     }
 
     public void setAccession(String acc) {
@@ -86,6 +87,14 @@ public final class SeqRunVisualPanel1 extends JPanel implements DocumentListener
         method.setSelectedItem(m);
     }
 
+    public boolean runDefaultTools() {
+        return runDefaultTools.isSelected();
+    }
+
+    public void runDefaultTools(boolean run) {
+        runDefaultTools.setSelected(run);
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -103,6 +112,7 @@ public final class SeqRunVisualPanel1 extends JPanel implements DocumentListener
         jLabel3 = new javax.swing.JLabel();
         name = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
+        runDefaultTools = new javax.swing.JCheckBox();
 
         org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(SeqRunVisualPanel1.class, "SeqRunVisualPanel1.jLabel1.text")); // NOI18N
 
@@ -119,33 +129,34 @@ public final class SeqRunVisualPanel1 extends JPanel implements DocumentListener
 
         org.openide.awt.Mnemonics.setLocalizedText(jLabel4, org.openide.util.NbBundle.getMessage(SeqRunVisualPanel1.class, "SeqRunVisualPanel1.jLabel4.text")); // NOI18N
 
+        runDefaultTools.setSelected(true);
+        org.openide.awt.Mnemonics.setLocalizedText(runDefaultTools, org.openide.util.NbBundle.getMessage(SeqRunVisualPanel1.class, "SeqRunVisualPanel1.runDefaultTools.text")); // NOI18N
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(accession))
+                        .addComponent(jLabel1)
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(submitted)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addGap(0, 0, Short.MAX_VALUE)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)))
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(method, 0, 221, Short.MAX_VALUE)
-                            .addComponent(platform, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(name))))
+                            .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(runDefaultTools)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(accession, javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(submitted)
+                        .addComponent(method, 0, 221, Short.MAX_VALUE)
+                        .addComponent(platform, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(name)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -155,21 +166,23 @@ public final class SeqRunVisualPanel1 extends JPanel implements DocumentListener
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(name, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel4))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 63, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(platform, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel1))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(method, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(36, 36, 36)
-                .addComponent(submitted)
+                    .addComponent(method, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel2))
                 .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addComponent(submitted)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel3)
                     .addComponent(accession, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(21, 21, 21))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 45, Short.MAX_VALUE)
+                .addComponent(runDefaultTools)
+                .addGap(26, 26, 26))
         );
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -181,6 +194,7 @@ public final class SeqRunVisualPanel1 extends JPanel implements DocumentListener
     private javax.swing.JComboBox<TermI> method;
     private javax.swing.JTextField name;
     private javax.swing.JComboBox<TermI> platform;
+    private javax.swing.JCheckBox runDefaultTools;
     private javax.swing.JCheckBox submitted;
     // End of variables declaration//GEN-END:variables
 
