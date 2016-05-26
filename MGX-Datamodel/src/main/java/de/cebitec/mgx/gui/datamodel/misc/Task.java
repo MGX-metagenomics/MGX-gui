@@ -59,7 +59,9 @@ public class Task<T extends MGXDataModelBaseI<T>> extends TaskI<T> {
     public TaskI<T> setState(State state) {
         if (state != this.state) {
             this.state = state;
-            getObject().modified();
+            if (!obj.isDeleted()) {
+                obj.modified();
+            }
             if (state == State.FINISHED) {
                 finish();
             }
@@ -77,10 +79,14 @@ public class Task<T extends MGXDataModelBaseI<T>> extends TaskI<T> {
         if (getState() == State.FINISHED) {
             switch (taskType) {
                 case DELETE:
-                    getObject().deleted();
+                    if (!obj.isDeleted()) {
+                        obj.deleted();
+                    }
                     break;
                 case MODIFY:
-                    getObject().modified();
+                    if (!obj.isDeleted()) {
+                        obj.modified();
+                    }
                     break;
             }
         }

@@ -45,7 +45,7 @@ public class OpenMappingBySeqRun extends OpenMappingBase {
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);
         }
-        hasData = mappings.hasNext();
+        hasData = mappings != null && mappings.hasNext();
     }
 
     @Override
