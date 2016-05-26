@@ -556,6 +556,7 @@
         <module>MGX-Wizards</module>
         <module>GPMS-Nodes</module>
         <module>GPMS-Actions</module>
+        <module>MGX-JSCharts</module>
     </modules>
     
     <properties>
