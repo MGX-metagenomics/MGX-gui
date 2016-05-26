@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.controller;
 
+import de.cebitec.gpms.rest.RESTMasterI;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.AttributeAccessI;
 import de.cebitec.mgx.api.access.AttributeTypeAccessI;
@@ -35,8 +36,12 @@ public class MGXMaster extends MGXMasterI implements PropertyChangeListener {
     private final String projectName;
     private static final Logger logger = Logger.getLogger("MGX");
     //
+    
+    public MGXMaster(RESTMasterI restMaster) {
+        this(new MGXDTOMaster(restMaster));
+    }
 
-    public MGXMaster(MGXDTOMaster dtomaster) {
+    private MGXMaster(MGXDTOMaster dtomaster) {
         super();
         this.serverName = dtomaster.getServerName();
         this.projectName = dtomaster.getProject().getName();

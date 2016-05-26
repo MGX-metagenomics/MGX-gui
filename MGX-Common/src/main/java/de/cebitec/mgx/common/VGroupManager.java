@@ -25,8 +25,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import org.openide.util.RequestProcessor;
 
 /**
  *
@@ -61,7 +62,7 @@ public class VGroupManager implements VGroupManagerI {
     private int vizGroupCount = 1;
     private int replicateGroupCount = 1;
     private final ParallelPropertyChangeSupport pcs;
-    private final RequestProcessor pool;
+    private final ExecutorService pool;
 
     private final Map<AttributeRank, String> currentAttributeType = new HashMap<>();
     private ConflictResolver resolver = null;
@@ -74,7 +75,7 @@ public class VGroupManager implements VGroupManagerI {
         //
         // limit pool size to 20
         //
-        pool = new RequestProcessor("VGroupTasks", Math.min(20, Runtime.getRuntime().availableProcessors() + 3));
+        pool = Executors.newFixedThreadPool(Math.min(20, Runtime.getRuntime().availableProcessors() + 3));
     }
 
     public synchronized static VGroupManagerI getInstance() {
@@ -337,7 +338,6 @@ public class VGroupManager implements VGroupManagerI {
 //            vg.close();
 //        }
 //    }
-
     private VisualizationGroupI selectedGroup = null;
     private ReplicateGroupI selectedReplicateGroup = null;
 
@@ -385,7 +385,6 @@ public class VGroupManager implements VGroupManagerI {
 //            rg.close();
 //        }
 //    }
-
     @Override
     public void setSelectedReplicateGroup(ReplicateGroupI replicateGroup) {
         if (replicateGroup != null && selectedReplicateGroup != replicateGroup && !replicateGroup.isDeleted()) {

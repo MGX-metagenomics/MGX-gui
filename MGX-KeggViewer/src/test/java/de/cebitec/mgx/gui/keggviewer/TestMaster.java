@@ -4,7 +4,6 @@ import de.cebitec.gpms.core.GPMSException;
 import de.cebitec.gpms.core.MembershipI;
 import de.cebitec.gpms.rest.GPMSClientI;
 import de.cebitec.mgx.api.MGXMasterI;
-import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.restgpms.GPMSClient;
 import java.io.File;
@@ -13,7 +12,6 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Properties;
 import static org.junit.Assert.fail;
-import org.openide.util.Exceptions;
 
 /**
  *
@@ -56,8 +54,7 @@ public class TestMaster {
         while (mIter.hasNext()) {
             MembershipI m = mIter.next();
             if ("MGX".equals(m.getProject().getProjectClass().getName()) && ("MGX_Unittest".equals(m.getProject().getName()))) {
-                MGXDTOMaster dtomaster = new MGXDTOMaster(gpms.createMaster(m));
-                masterRO = new MGXMaster(dtomaster);
+                masterRO = new MGXMaster(gpms.createMaster(m));
                 break;
             }
         }
@@ -97,8 +94,7 @@ public class TestMaster {
         while (mIter.hasNext()) {
             MembershipI m = mIter.next();
             if ("MGX".equals(m.getProject().getProjectClass().getName()) && ("MGX_Unittest".equals(m.getProject().getName()))) {
-                MGXDTOMaster dtomaster = new MGXDTOMaster(gpms.createMaster(m));
-                master = new MGXMaster(dtomaster);
+                master =  new MGXMaster(gpms.createMaster(m));
                 break;
             }
         }

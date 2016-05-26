@@ -35,7 +35,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.openide.util.Exceptions;
 
 /**
  *
@@ -99,7 +98,7 @@ public class VisualizationGroup implements VisualizationGroupI {
         distCache.clear();
         hierarchyCache.clear();
         deleted();
-        pcs.close(); 
+        pcs.close();
     }
 
     @Override
@@ -318,7 +317,7 @@ public class VisualizationGroup implements VisualizationGroupI {
             }
 
         } catch (InterruptedException | ExecutionException ex) {
-            Exceptions.printStackTrace(ex);
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
         }
 
         for (SeqRunI run : runs) {
@@ -380,7 +379,7 @@ public class VisualizationGroup implements VisualizationGroupI {
                 }
             }
         } catch (InterruptedException | ExecutionException ex) {
-            Exceptions.printStackTrace(ex);
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
         }
 
         Set<JobI> validJobs = getJobsProvidingAttributeType(sr, selectedAttributeType);
@@ -481,7 +480,7 @@ public class VisualizationGroup implements VisualizationGroupI {
         try {
             ret = TreeFactory.mergeTrees(results);
         } catch (InterruptedException | ExecutionException ex) {
-            Exceptions.printStackTrace(ex);
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
             return null;
         }
 
@@ -536,7 +535,7 @@ public class VisualizationGroup implements VisualizationGroupI {
         try {
             ret = DistributionFactory.merge(results, currentDistributions);
         } catch (InterruptedException | ExecutionException ex) {
-            Exceptions.printStackTrace(ex);
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
             return null;
         }
         distCache.put(selectedAttributeType, ret);
