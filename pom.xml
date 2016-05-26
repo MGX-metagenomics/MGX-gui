@@ -259,6 +259,11 @@
                 <artifactId>GPMS-DTO</artifactId>
                 <version>1.1</version>
             </dependency>
+            <dependency>
+                <groupId>de.cebitec.gpms</groupId>
+                <artifactId>GPMS-Server</artifactId>
+                <version>1.1</version>
+            </dependency>
             
             
             <!-- MGX -->

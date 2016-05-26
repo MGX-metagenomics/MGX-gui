@@ -66,7 +66,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>MGX-Controller</artifactId>
-        </dependency>
+        </dependency> 
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>MGX-Wizards</artifactId>
@@ -80,16 +80,8 @@
             <artifactId>MGX-SwingUtils</artifactId>
         </dependency>
         <dependency>
-            <artifactId>MGX-DTO</artifactId>
-            <groupId>de.cebitec.mgx</groupId>
-        </dependency>
-        <dependency>
             <groupId>de.cebitec.mgx.gui</groupId>
             <artifactId>MGX-API</artifactId>
-        </dependency>
-        <dependency>
-            <artifactId>MGX-client-api</artifactId>
-            <groupId>de.cebitec.mgx.client</groupId>
         </dependency>
         <dependency>
             <groupId>org.netbeans.api</groupId>
@@ -116,7 +108,7 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
-       <dependency>
+        <dependency>
             <groupId>de.cebitec.mgx</groupId>
             <artifactId>MGX-parallelPropChange</artifactId>
         </dependency>
@@ -128,7 +120,6 @@
             <groupId>de.cebitec.gpms</groupId>
             <artifactId>GPMS-Nodesupport</artifactId>
             <version>1.0-SNAPSHOT</version>
-            <type>jar</type>
         </dependency>
         <dependency>
             <groupId>de.cebitec.gpms</groupId>

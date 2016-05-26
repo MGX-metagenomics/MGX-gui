@@ -9,7 +9,6 @@ import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.api.model.MappedSequenceI;
 import de.cebitec.mgx.api.model.MappingI;
 import de.cebitec.mgx.api.model.RegionI;
-import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.restgpms.GPMSClient;
 import java.io.File;
@@ -386,9 +385,7 @@ public class CacheTest {
         while (mIter.hasNext()) {
             MembershipI m = mIter.next();
             if ("MGX".equals(m.getProject().getProjectClass().getName()) && ("MGX_Unittest".equals(m.getProject().getName()))) {
-                MGXDTOMaster dtomaster = null;
-                dtomaster = new MGXDTOMaster(gpms.createMaster(m));
-                master = new MGXMaster(dtomaster);
+                master = new MGXMaster(gpms.createMaster(m));
                 break;
             }
         }
