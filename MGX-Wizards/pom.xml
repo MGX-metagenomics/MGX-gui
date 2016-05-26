@@ -84,10 +84,12 @@
             <artifactId>MGX-API</artifactId>
             <groupId>de.cebitec.mgx.gui</groupId>
         </dependency>
+              <!--
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>MGX-Controller</artifactId>
-        </dependency>
+        </dependency> 
+        -->
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-util-ui</artifactId>
