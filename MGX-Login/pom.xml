@@ -52,10 +52,6 @@
             <artifactId>MGX-Explorer</artifactId>
         </dependency>
         <dependency>
-            <artifactId>MGX-client-api</artifactId>
-            <groupId>de.cebitec.mgx.client</groupId>
-        </dependency>
-        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
@@ -87,8 +83,6 @@
         <dependency>
             <groupId>de.cebitec.gpms</groupId>
             <artifactId>GPMS-Server</artifactId>
-            <version>1.1</version>
-            <type>jar</type>
         </dependency>
     </dependencies>
 

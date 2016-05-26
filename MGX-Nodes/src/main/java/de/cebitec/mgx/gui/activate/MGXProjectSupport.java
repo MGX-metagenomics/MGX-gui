@@ -9,7 +9,6 @@ import de.cebitec.gpms.core.MembershipI;
 import de.cebitec.gpms.nodesupport.GPMSProjectSupportI;
 import de.cebitec.gpms.rest.RESTMasterI;
 import de.cebitec.mgx.api.MGXMasterI;
-import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.gui.nodes.ProjectNode;
 import org.openide.nodes.Node;
@@ -27,8 +26,7 @@ public class MGXProjectSupport implements GPMSProjectSupportI {
 
     @Override
     public Node createProjectNode(RESTMasterI restMaster) {
-        MGXDTOMaster dtomaster = new MGXDTOMaster(restMaster);
-        MGXMasterI master = new MGXMaster(dtomaster);
+        MGXMasterI master = new MGXMaster(restMaster);
         return new ProjectNode(master);
     }
 }
