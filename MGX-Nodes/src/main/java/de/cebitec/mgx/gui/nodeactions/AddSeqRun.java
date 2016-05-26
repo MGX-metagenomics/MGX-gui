@@ -92,6 +92,10 @@ public class AddSeqRun extends AbstractAction {
                             parent.refreshChildren();
                             extract.modified();
                             //seqrun.modified();
+                            
+                            if (wd.runDefaultTools()) {
+                                // FIXME
+                            }
                         }
 
                         @Override
