@@ -12,8 +12,7 @@ import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.client.datatransfer.FileDownloader;
 import de.cebitec.mgx.client.datatransfer.FileUploader;
 import de.cebitec.mgx.client.datatransfer.PluginDumpDownloader;
-import de.cebitec.mgx.client.exception.MGXClientException;
-import de.cebitec.mgx.client.exception.MGXServerException;
+import de.cebitec.mgx.client.exception.MGXDTOException;
 import de.cebitec.mgx.dto.dto.FileDTO;
 import de.cebitec.mgx.gui.datamodel.MGXFile;
 import de.cebitec.mgx.gui.dtoconversion.FileDTOFactory;
@@ -65,7 +64,7 @@ public class FileAccess implements FileAccessI {
         FileDTO dto = FileDTOFactory.getInstance().toDTO(newDir);
         try {
             return 1 == dtomaster.File().create(dto);
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
     }
@@ -81,7 +80,7 @@ public class FileAccess implements FileAccessI {
                     return f;
                 }
             };
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
     }
@@ -93,7 +92,7 @@ public class FileAccess implements FileAccessI {
             FileDTO dto = FileDTOFactory.getInstance().toDTO(obj);
             UUID uuid = dtomaster.File().delete(dto);
             t = getMaster().<MGXFileI>Task().get(obj, uuid, TaskI.TaskType.DELETE);
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
         return t;
@@ -114,7 +113,7 @@ public class FileAccess implements FileAccessI {
         try {
             final FileUploader up = dtomaster.File().createUploader(localFile, fullPath);
             return new ServerFileUploader(targetDir, up);
-        } catch (MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
     }
@@ -124,7 +123,7 @@ public class FileAccess implements FileAccessI {
         try {
             final FileDownloader fd = dtomaster.File().createDownloader(serverFname, out);
             return new ServerFileDownloader(fd);
-        } catch (MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
     }
@@ -134,12 +133,12 @@ public class FileAccess implements FileAccessI {
         try {
             final PluginDumpDownloader pd = dtomaster.File().createPluginDumpDownloader(out);
             return new ServerPluginDumpDownloader(pd);
-        } catch (MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
     }
 
-    private class ServerPluginDumpDownloader extends DownloadBaseI implements PropertyChangeListener {
+    private static class ServerPluginDumpDownloader extends DownloadBaseI implements PropertyChangeListener {
 
         private final PluginDumpDownloader fd;
 
@@ -170,7 +169,7 @@ public class FileAccess implements FileAccessI {
 
     }
 
-    private class ServerFileDownloader extends DownloadBaseI implements PropertyChangeListener {
+    private static class ServerFileDownloader extends DownloadBaseI implements PropertyChangeListener {
 
         private final FileDownloader fd;
 

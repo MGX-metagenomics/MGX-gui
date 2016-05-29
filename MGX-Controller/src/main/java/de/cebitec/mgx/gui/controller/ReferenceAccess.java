@@ -11,8 +11,7 @@ import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.api.model.RegionI;
 import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.client.datatransfer.ReferenceUploader;
-import de.cebitec.mgx.client.exception.MGXClientException;
-import de.cebitec.mgx.client.exception.MGXServerException;
+import de.cebitec.mgx.client.exception.MGXDTOException;
 import de.cebitec.mgx.dto.dto.ReferenceDTO;
 import de.cebitec.mgx.dto.dto.RegionDTO;
 import de.cebitec.mgx.gui.datamodel.misc.Task;
@@ -48,7 +47,7 @@ public class ReferenceAccess implements ReferenceAccessI {
         long id = Identifiable.INVALID_IDENTIFIER;
         try {
             id = dtomaster.Reference().create(dto);
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
         obj.setId(id);
@@ -60,7 +59,7 @@ public class ReferenceAccess implements ReferenceAccessI {
         ReferenceDTO dto = null;
         try {
             dto = dtomaster.Reference().fetch(id);
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
         MGXReferenceI ret = ReferenceDTOFactory.getInstance().toModel(master, dto);
@@ -90,7 +89,7 @@ public class ReferenceAccess implements ReferenceAccessI {
                     throw new UnsupportedOperationException("Not supported.");
                 }
             };
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
     }
@@ -100,7 +99,7 @@ public class ReferenceAccess implements ReferenceAccessI {
         ReferenceDTO dto = ReferenceDTOFactory.getInstance().toDTO(obj);
         try {
             dtomaster.Reference().update(dto);
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
         obj.modified();
@@ -118,7 +117,7 @@ public class ReferenceAccess implements ReferenceAccessI {
                     return s;
                 }
             };
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
     }
@@ -130,7 +129,7 @@ public class ReferenceAccess implements ReferenceAccessI {
                 throw new IllegalArgumentException("Coordinates outside of reference sequence: requested " + from + "-" + to + ", reference length is " + ref.getLength());
             }
             return dtomaster.Reference().getSequence(ref.getId(), from, to);
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
     }
@@ -147,7 +146,7 @@ public class ReferenceAccess implements ReferenceAccessI {
                     return reference;
                 }
             };
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
     }
@@ -157,7 +156,7 @@ public class ReferenceAccess implements ReferenceAccessI {
         try {
             UUID uuid = dtomaster.Reference().installGlobalReference(obj.getId());
             return master.<MGXReferenceI>Task().get(obj, uuid, Task.TaskType.MODIFY);
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
     }
@@ -167,7 +166,7 @@ public class ReferenceAccess implements ReferenceAccessI {
         try {
             UUID uuid = dtomaster.Reference().delete(obj.getId());
             return master.<MGXReferenceI>Task().get(obj, uuid, Task.TaskType.DELETE);
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
     }
@@ -177,13 +176,13 @@ public class ReferenceAccess implements ReferenceAccessI {
         ReferenceUploader ru;
         try {
             ru = dtomaster.Reference().createUploader(localFile);
-        } catch (MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
         return new ServerReferenceUploader(ru);
     }
 
-    private class ServerReferenceUploader extends UploadBaseI implements PropertyChangeListener {
+    private static class ServerReferenceUploader extends UploadBaseI implements PropertyChangeListener {
 
         private final ReferenceUploader ru;
 

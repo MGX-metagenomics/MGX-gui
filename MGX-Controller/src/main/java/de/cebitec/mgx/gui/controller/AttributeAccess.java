@@ -14,8 +14,7 @@ import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.SequenceI;
 import de.cebitec.mgx.api.model.tree.TreeI;
 import de.cebitec.mgx.client.MGXDTOMaster;
-import de.cebitec.mgx.client.exception.MGXClientException;
-import de.cebitec.mgx.client.exception.MGXServerException;
+import de.cebitec.mgx.client.exception.MGXDTOException;
 import de.cebitec.mgx.common.TreeFactory;
 import de.cebitec.mgx.dto.dto.AttributeCorrelation;
 import de.cebitec.mgx.dto.dto.AttributeCount;
@@ -69,7 +68,7 @@ public class AttributeAccess implements AttributeAccessI {
                 }
             };
 
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             Logger.getLogger(AttributeAccess.class.getName()).log(Level.SEVERE, null, ex);
             throw new MGXException(ex);
         }
@@ -87,7 +86,7 @@ public class AttributeAccess implements AttributeAccessI {
                 }
             };
 
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             Logger.getLogger(AttributeAccess.class.getName()).log(Level.SEVERE, null, ex);
             throw new MGXException(ex);
         }
@@ -114,7 +113,7 @@ public class AttributeAccess implements AttributeAccessI {
                 total += ac.getCount();
                 res.put(attr, ac.getCount());
             }
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             Logger.getLogger(AttributeAccess.class.getName()).log(Level.SEVERE, null, ex);
             throw new MGXException(ex);
         }
@@ -144,7 +143,7 @@ public class AttributeAccess implements AttributeAccessI {
             AttributeDTO dto = AttributeDTOFactory.getInstance().toDTO(attr);
             long objId = dtomaster.Attribute().create(dto);
             attr.setId(objId);
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
         return attr;
@@ -158,7 +157,7 @@ public class AttributeAccess implements AttributeAccessI {
             ret = AttributeDTOFactory.getInstance().toModel(master, dto);
             AttributeTypeDTO aType = dtomaster.AttributeType().fetch(dto.getAttributeTypeId());
             ret.setAttributeType(AttributeTypeDTOFactory.getInstance().toModel(master, aType));
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
         return ret;
@@ -189,7 +188,7 @@ public class AttributeAccess implements AttributeAccessI {
         try {
             AttributeCorrelation corr = dtomaster.Attribute().getCorrelation(attributeType1.getId(), job1.getId(), attributeType2.getId(), job2.getId());
             return MatrixDTOFactory.getInstance().toModel(master, corr);
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
     }
@@ -215,7 +214,7 @@ public class AttributeAccess implements AttributeAccessI {
                 res.put(attr, ac.getCount());
             }
 
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             Logger.getLogger(AttributeAccess.class.getName()).log(Level.SEVERE, null, ex);
             throw new MGXException(ex);
         }
@@ -249,7 +248,7 @@ public class AttributeAccess implements AttributeAccessI {
         sr.setRuns(targets);
         try {
             return dtomaster.Attribute().find(SearchRequestDTOFactory.getInstance().toDTO(sr));
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
     }
@@ -265,7 +264,7 @@ public class AttributeAccess implements AttributeAccessI {
         Iterator<SequenceDTO> searchResult = null;
         try {
             searchResult = dtomaster.Attribute().search(reqdto);
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
 

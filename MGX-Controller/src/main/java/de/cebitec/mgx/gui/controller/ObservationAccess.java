@@ -9,8 +9,7 @@ import de.cebitec.mgx.api.model.Identifiable;
 import de.cebitec.mgx.api.model.ObservationI;
 import de.cebitec.mgx.api.model.SequenceI;
 import de.cebitec.mgx.client.MGXDTOMaster;
-import de.cebitec.mgx.client.exception.MGXClientException;
-import de.cebitec.mgx.client.exception.MGXServerException;
+import de.cebitec.mgx.client.exception.MGXDTOException;
 import de.cebitec.mgx.dto.dto.ObservationDTO;
 import de.cebitec.mgx.gui.datamodel.Observation;
 import de.cebitec.mgx.gui.dtoconversion.ObservationDTOFactory;
@@ -44,7 +43,7 @@ public class ObservationAccess implements ObservationAccessI {
                 ObservationI obs = ObservationDTOFactory.getInstance().toModel(getMaster(), iter.next());
                 ret.add(obs);
             }
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
 
@@ -73,7 +72,7 @@ public class ObservationAccess implements ObservationAccessI {
         ObservationDTO dto = ObservationDTOFactory.getInstance().toDTO(obj);
         try {
             getDTOmaster().Observation().create(seq.getId(), attr.getId(), dto);
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
         return obj;
