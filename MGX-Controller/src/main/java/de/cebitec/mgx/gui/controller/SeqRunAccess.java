@@ -13,8 +13,7 @@ import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.TermI;
 import de.cebitec.mgx.api.model.qc.QCResultI;
 import de.cebitec.mgx.client.MGXDTOMaster;
-import de.cebitec.mgx.client.exception.MGXClientException;
-import de.cebitec.mgx.client.exception.MGXServerException;
+import de.cebitec.mgx.client.exception.MGXDTOException;
 import de.cebitec.mgx.dto.dto.AttributeTypeDTO;
 import de.cebitec.mgx.dto.dto.JobAndAttributeTypes;
 import de.cebitec.mgx.dto.dto.QCResultDTO;
@@ -57,7 +56,7 @@ public class SeqRunAccess extends AccessBase<SeqRunI> implements SeqRunAccessI {
         long id = Identifiable.INVALID_IDENTIFIER;
         try {
             id = getDTOmaster().SeqRun().create(dto);
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
         obj.setId(id);
@@ -70,7 +69,7 @@ public class SeqRunAccess extends AccessBase<SeqRunI> implements SeqRunAccessI {
         long id = Identifiable.INVALID_IDENTIFIER;
         try {
             id = getDTOmaster().SeqRun().create(dto);
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
         obj.setId(id);
@@ -82,7 +81,7 @@ public class SeqRunAccess extends AccessBase<SeqRunI> implements SeqRunAccessI {
         SeqRunDTO dto = null;
         try {
             dto = getDTOmaster().SeqRun().fetch(id);
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
         SeqRunI ret = SeqRunDTOFactory.getInstance().toModel(getMaster(), dto);
@@ -100,7 +99,7 @@ public class SeqRunAccess extends AccessBase<SeqRunI> implements SeqRunAccessI {
                     return sr;
                 }
             };
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
     }
@@ -110,7 +109,7 @@ public class SeqRunAccess extends AccessBase<SeqRunI> implements SeqRunAccessI {
         SeqRunDTO dto = SeqRunDTOFactory.getInstance().toDTO(obj);
         try {
             getDTOmaster().SeqRun().update(dto);
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
         obj.modified();
@@ -121,7 +120,7 @@ public class SeqRunAccess extends AccessBase<SeqRunI> implements SeqRunAccessI {
         try {
             UUID uuid = getDTOmaster().SeqRun().delete(obj.getId());
             return getMaster().<SeqRunI>Task().get(obj, uuid, TaskType.DELETE);
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
     }
@@ -137,7 +136,7 @@ public class SeqRunAccess extends AccessBase<SeqRunI> implements SeqRunAccessI {
                     return sr;
                 }
             };
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
     }
@@ -158,7 +157,7 @@ public class SeqRunAccess extends AccessBase<SeqRunI> implements SeqRunAccessI {
 
                 ret.put(job, all);
             }
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
 
@@ -173,7 +172,7 @@ public class SeqRunAccess extends AccessBase<SeqRunI> implements SeqRunAccessI {
             for (QCResultDTO dto : qc) {
                 ret.add(QCResultDTOFactory.getInstance().toModel(getMaster(), dto));
             }
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
         return ret;
