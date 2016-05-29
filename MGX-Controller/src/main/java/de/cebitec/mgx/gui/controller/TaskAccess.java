@@ -8,8 +8,7 @@ import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.misc.TaskI.TaskType;
 import de.cebitec.mgx.api.model.MGXDataModelBaseI;
 import de.cebitec.mgx.client.MGXDTOMaster;
-import de.cebitec.mgx.client.exception.MGXClientException;
-import de.cebitec.mgx.client.exception.MGXServerException;
+import de.cebitec.mgx.client.exception.MGXDTOException;
 import de.cebitec.mgx.dto.dto.TaskDTO;
 import de.cebitec.mgx.gui.datamodel.misc.Task;
 import de.cebitec.mgx.gui.dtoconversion.TaskDTOFactory;
@@ -41,7 +40,7 @@ public class TaskAccess<T extends MGXDataModelBaseI<T>> implements TaskAccessI<T
             TaskDTO dto = dtomaster.Task().get(taskId);
             TaskDTOFactory fact = TaskDTOFactory.<T>getInstance(obj, taskId, tt);
             t = fact.toModel(master, dto);
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
         return t;
@@ -54,7 +53,7 @@ public class TaskAccess<T extends MGXDataModelBaseI<T>> implements TaskAccessI<T
             origTask.setState(Task.State.values()[dto.getState().ordinal()]);
             origTask.setStatusMessage(dto.getMessage());
             //t = TaskDTOFactory.getInstance(origTask.getObject(), origTask.getUuid(), origTask.getTaskType()).toModel(dto);
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
     }

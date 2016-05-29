@@ -12,8 +12,7 @@ import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.misc.Point;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.client.MGXDTOMaster;
-import de.cebitec.mgx.client.exception.MGXClientException;
-import de.cebitec.mgx.client.exception.MGXServerException;
+import de.cebitec.mgx.client.exception.MGXDTOException;
 import de.cebitec.mgx.dto.dto.MGXDoubleList;
 import de.cebitec.mgx.dto.dto.MGXMatrixDTO;
 import de.cebitec.mgx.dto.dto.MGXString;
@@ -60,7 +59,7 @@ public class StatisticsAccess implements StatisticsAccessI {
                     return PointDTOFactory.getInstance().toModel(master, iter.next());
                 }
             };
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
     }
@@ -79,7 +78,7 @@ public class StatisticsAccess implements StatisticsAccessI {
 
             //NodeI newickRoot = NewickParser.parse(nwk);
             return nwk;
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
     }
@@ -103,7 +102,7 @@ public class StatisticsAccess implements StatisticsAccessI {
                 }
             }
             return pca;
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
     }
@@ -129,7 +128,7 @@ public class StatisticsAccess implements StatisticsAccessI {
                 pcoa.add(p);
             }
             return pcoa;
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
     }

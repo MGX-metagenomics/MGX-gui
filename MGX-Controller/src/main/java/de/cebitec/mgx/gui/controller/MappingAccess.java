@@ -11,8 +11,7 @@ import de.cebitec.mgx.api.model.MappedSequenceI;
 import de.cebitec.mgx.api.model.MappingI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.client.MGXDTOMaster;
-import de.cebitec.mgx.client.exception.MGXClientException;
-import de.cebitec.mgx.client.exception.MGXServerException;
+import de.cebitec.mgx.client.exception.MGXDTOException;
 import de.cebitec.mgx.dto.dto.MappedSequenceDTO;
 import de.cebitec.mgx.dto.dto.MappingDTO;
 import de.cebitec.mgx.gui.datamodel.misc.Task;
@@ -49,7 +48,7 @@ public class MappingAccess extends MappingAccessI {
         MappingDTO dto = null;
         try {
             dto = dtomaster.Mapping().fetch(id);
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
         MappingI ret = MappingDTOFactory.getInstance().toModel(master, dto);
@@ -67,7 +66,7 @@ public class MappingAccess extends MappingAccessI {
                     return sr;
                 }
             };
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
     }
@@ -83,7 +82,7 @@ public class MappingAccess extends MappingAccessI {
                     return sr;
                 }
             };
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
     }
@@ -99,7 +98,7 @@ public class MappingAccess extends MappingAccessI {
                     return sr;
                 }
             };
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
     }
@@ -114,7 +113,7 @@ public class MappingAccess extends MappingAccessI {
         try {
             UUID uuid = dtomaster.Mapping().delete(obj.getId());
             return master.<MappingI>Task().get(obj, uuid, Task.TaskType.DELETE);
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
     }
@@ -123,7 +122,7 @@ public class MappingAccess extends MappingAccessI {
     public UUID openMapping(long id) throws MGXException {
         try {
             return dtomaster.Mapping().openMapping(id);
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
     }
@@ -132,7 +131,7 @@ public class MappingAccess extends MappingAccessI {
     public void closeMapping(UUID uuid) throws MGXException {
         try {
             dtomaster.Mapping().closeMapping(uuid);
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             if (ex.getMessage().contains("No mapping session for")) {
                 // session already closed due to timeout
                 throw new MGXTimeoutException(ex);
@@ -145,7 +144,7 @@ public class MappingAccess extends MappingAccessI {
     public long getMaxCoverage(UUID uuid) throws MGXException {
         try {
             return dtomaster.Mapping().getMaxCoverage(uuid);
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             if (ex.getMessage().contains("No mapping session for")) {
                 throw new MGXTimeoutException(ex);
             }
@@ -164,7 +163,7 @@ public class MappingAccess extends MappingAccessI {
                     return ms;
                 }
             };
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             if (ex.getMessage().contains("No mapping session for")) {
                 throw new MGXTimeoutException(ex);
             }

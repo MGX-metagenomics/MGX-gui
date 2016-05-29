@@ -8,15 +8,13 @@ import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.Identifiable;
 import de.cebitec.mgx.client.MGXDTOMaster;
-import de.cebitec.mgx.client.exception.MGXClientException;
-import de.cebitec.mgx.client.exception.MGXServerException;
+import de.cebitec.mgx.client.exception.MGXDTOException;
 import de.cebitec.mgx.dto.dto.AttributeTypeDTO;
 import de.cebitec.mgx.gui.datamodel.AttributeType;
 import de.cebitec.mgx.gui.datamodel.Job;
 import de.cebitec.mgx.gui.dtoconversion.AttributeTypeDTOFactory;
 import de.cebitec.mgx.gui.util.BaseIterator;
 import java.util.Iterator;
-import org.openide.util.Exceptions;
 
 /**
  *
@@ -49,7 +47,7 @@ public class AttributeTypeAccess implements AttributeTypeAccessI {
             AttributeTypeDTO dto = AttributeTypeDTOFactory.getInstance().toDTO(attrType);
             long objId = getDTOmaster().AttributeType().create(dto);
             attrType.setId(objId);
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
         return attrType;
@@ -60,7 +58,7 @@ public class AttributeTypeAccess implements AttributeTypeAccessI {
         AttributeTypeDTO h = null;
         try {
             h = getDTOmaster().AttributeType().fetch(id);
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
         return AttributeTypeDTOFactory.getInstance().toModel(getMaster(), h);
@@ -71,7 +69,7 @@ public class AttributeTypeAccess implements AttributeTypeAccessI {
         Iterator<AttributeTypeDTO> it;
         try {
             it = getDTOmaster().AttributeType().fetchall();
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
         return new BaseIterator<AttributeTypeDTO, AttributeTypeI>(it) {
@@ -98,7 +96,7 @@ public class AttributeTypeAccess implements AttributeTypeAccessI {
                     return attr;
                 }
             };
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
     }
@@ -113,7 +111,7 @@ public class AttributeTypeAccess implements AttributeTypeAccessI {
                     return attr;
                 }
             };
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
     }

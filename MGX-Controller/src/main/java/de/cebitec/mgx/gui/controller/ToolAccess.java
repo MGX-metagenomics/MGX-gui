@@ -11,8 +11,7 @@ import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.JobParameterI;
 import de.cebitec.mgx.api.model.ToolI;
 import de.cebitec.mgx.client.MGXDTOMaster;
-import de.cebitec.mgx.client.exception.MGXClientException;
-import de.cebitec.mgx.client.exception.MGXServerException;
+import de.cebitec.mgx.client.exception.MGXDTOException;
 import de.cebitec.mgx.dto.dto.JobParameterDTO;
 import de.cebitec.mgx.dto.dto.ToolDTO;
 import de.cebitec.mgx.gui.datamodel.Tool;
@@ -55,7 +54,7 @@ public class ToolAccess implements ToolAccessI {
         Iterator<ToolDTO> listGlobalTools;
         try {
             listGlobalTools = getDTOmaster().Tool().listGlobalTools();
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }
         return new BaseIterator<ToolDTO, ToolI>(listGlobalTools) {
@@ -71,7 +70,7 @@ public class ToolAccess implements ToolAccessI {
         assert global_id != Identifiable.INVALID_IDENTIFIER;
         try {
             return getDTOmaster().Tool().installGlobalTool(global_id);
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }
     }
@@ -83,7 +82,7 @@ public class ToolAccess implements ToolAccessI {
             for (JobParameterDTO dtoParameter : getDTOmaster().Tool().getAvailableParameters(toolXml)) {
                 ret.add(JobParameterDTOFactory.getInstance().toModel(getMaster(), dtoParameter));
             }
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }
         return ret;
@@ -98,7 +97,7 @@ public class ToolAccess implements ToolAccessI {
                 ret.add(JobParameterDTOFactory.getInstance().toModel(getMaster(), dto));
             }
 
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }
         return ret;
@@ -117,7 +116,7 @@ public class ToolAccess implements ToolAccessI {
         long id = Identifiable.INVALID_IDENTIFIER;
         try {
             id = getDTOmaster().Tool().create(dto);
-        } catch (MGXClientException | MGXServerException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }
         obj.setId(id);
@@ -130,7 +129,7 @@ public class ToolAccess implements ToolAccessI {
         try {
             ToolDTO dto = getDTOmaster().Tool().fetch(id);
             t = ToolDTOFactory.getInstance().toModel(getMaster(), dto);
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }
         return t;
@@ -147,7 +146,7 @@ public class ToolAccess implements ToolAccessI {
                     return tool;
                 }
             };
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }
     }
@@ -162,7 +161,7 @@ public class ToolAccess implements ToolAccessI {
         try {
             UUID uuid = getDTOmaster().Tool().delete(obj.getId());
             return getMaster().<ToolI>Task().get(obj, uuid, TaskType.DELETE);
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }
     }
@@ -174,7 +173,7 @@ public class ToolAccess implements ToolAccessI {
             ToolDTO dto = getDTOmaster().Tool().ByJob(job.getId());
             t = ToolDTOFactory.getInstance().toModel(getMaster(), dto);
             job.setTool(t);
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }
         return t;
@@ -188,7 +187,7 @@ public class ToolAccess implements ToolAccessI {
         String xmlData;
         try {
             xmlData = getDTOmaster().Tool().getXMLDefinition(tool.getId());
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }
         tool.setXML(xmlData);

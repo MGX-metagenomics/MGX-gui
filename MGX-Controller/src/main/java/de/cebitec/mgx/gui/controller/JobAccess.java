@@ -14,8 +14,7 @@ import de.cebitec.mgx.api.model.JobState;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.ToolI;
 import de.cebitec.mgx.client.MGXDTOMaster;
-import de.cebitec.mgx.client.exception.MGXClientException;
-import de.cebitec.mgx.client.exception.MGXServerException;
+import de.cebitec.mgx.client.exception.MGXDTOException;
 import de.cebitec.mgx.dto.dto.JobDTO;
 import de.cebitec.mgx.dto.dto.MGXString;
 import de.cebitec.mgx.gui.datamodel.Job;
@@ -58,7 +57,7 @@ public class JobAccess implements JobAccessI {
         boolean ret;
         try {
             ret = getDTOmaster().Job().verify(obj.getId());
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }
         obj.modified();
@@ -71,7 +70,7 @@ public class JobAccess implements JobAccessI {
         boolean ret;
         try {
             ret = getDTOmaster().Job().execute(obj.getId());
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }
         obj.modified();
@@ -91,7 +90,7 @@ public class JobAccess implements JobAccessI {
             UUID uuid = getDTOmaster().Job().restart(job.getId());
             ret = getMaster().<JobI>Task().get(job, uuid, TaskType.MODIFY);
             job.modified();
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }
         return ret;
@@ -103,7 +102,7 @@ public class JobAccess implements JobAccessI {
         boolean ret;
         try {
             ret = getDTOmaster().Job().cancel(obj.getId());
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }
         if (ret) {
@@ -128,7 +127,7 @@ public class JobAccess implements JobAccessI {
             id = getDTOmaster().Job().create(dto);
             job.setId(id);
             job.modified();
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }
 
@@ -140,7 +139,7 @@ public class JobAccess implements JobAccessI {
         JobDTO h = null;
         try {
             h = getDTOmaster().Job().fetch(id);
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }
         JobI j = JobDTOFactory.getInstance().toModel(getMaster(), h);
@@ -159,7 +158,7 @@ public class JobAccess implements JobAccessI {
                 }
             };
 
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }
     }
@@ -169,7 +168,7 @@ public class JobAccess implements JobAccessI {
         JobDTO dto = JobDTOFactory.getInstance().toDTO(obj);
         try {
             getDTOmaster().Job().update(dto);
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }
         obj.modified();
@@ -180,7 +179,7 @@ public class JobAccess implements JobAccessI {
         try {
             UUID uuid = getDTOmaster().Job().delete(obj.getId());
             return getMaster().<JobI>Task().get(obj, uuid, TaskType.DELETE);
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }
     }
@@ -194,7 +193,7 @@ public class JobAccess implements JobAccessI {
                 j.setSeqrun(run);
                 all.add(j);
             }
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }
         return all;
@@ -211,7 +210,7 @@ public class JobAccess implements JobAccessI {
                     all.add(j);
                 }
             }
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }
         return all;
@@ -222,7 +221,7 @@ public class JobAccess implements JobAccessI {
         try {
             MGXString err = getDTOmaster().Job().getError(job.getId());
             return err.getValue();
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }
     }
