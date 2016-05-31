@@ -538,6 +538,7 @@ public class VisualizationGroup implements VisualizationGroupI {
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
             return null;
         }
+        assert ret != null;
         distCache.put(selectedAttributeType, ret);
         fireVGroupChanged(VISGROUP_HAS_DIST);
 
