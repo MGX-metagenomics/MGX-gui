@@ -7,6 +7,7 @@ import de.cebitec.mgx.api.exception.MGXLoggedoutException;
 import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.Identifiable;
+import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.client.exception.MGXDTOException;
 import de.cebitec.mgx.dto.dto.AttributeTypeDTO;
@@ -69,6 +70,23 @@ public class AttributeTypeAccess implements AttributeTypeAccessI {
         Iterator<AttributeTypeDTO> it;
         try {
             it = getDTOmaster().AttributeType().fetchall();
+        } catch (MGXDTOException ex) {
+            throw new MGXException(ex);
+        }
+        return new BaseIterator<AttributeTypeDTO, AttributeTypeI>(it) {
+            @Override
+            public AttributeTypeI next() {
+                AttributeTypeI attr = AttributeTypeDTOFactory.getInstance().toModel(getMaster(), iter.next());
+                return attr;
+            }
+        };
+    }
+
+    @Override
+    public Iterator<AttributeTypeI> byJob(JobI job) throws MGXException {
+        Iterator<AttributeTypeDTO> it;
+        try {
+            it = getDTOmaster().AttributeType().ByJob(job.getId());
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
