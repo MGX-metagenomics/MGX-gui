@@ -57,13 +57,15 @@ public class ResultCollector extends SwingWorker<Pair<List<Pair<VisualizationGro
         }
         distHolder.clear();
         hierarchyHolder.clear();
-        distHolder.addAll(p.getFirst());
-        if (p.getSecond() != null) {
-            hierarchyHolder.addAll(p.getSecond());
-        }
+        if (p != null) {
+            distHolder.addAll(p.getFirst());
+            if (aType.getStructure() == AttributeTypeI.STRUCTURE_HIERARCHICAL) {
+                hierarchyHolder.addAll(p.getSecond());
+            }
 
-        // we have the distribution, trigger update of viewer list
-        ctl.updateViewerList();
+            // we have the distribution, trigger update of viewer list
+            ctl.updateViewerList();
+        }
         super.done();
     }
 }
