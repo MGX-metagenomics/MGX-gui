@@ -57,8 +57,8 @@ public class VGroupManager implements VGroupManagerI {
     private static VGroupManagerI instance = null;
 
     // LinkedHashSet keeps the order elements are added
-    private final Set<VisualizationGroupI> vizGroups = new LinkedHashSet<>();
-    private final Set<ReplicateGroupI> replicateGroups = new LinkedHashSet<>();
+    private final Collection<VisualizationGroupI> vizGroups = new LinkedHashSet<>();
+    private final Collection<ReplicateGroupI> replicateGroups = new LinkedHashSet<>();
     private int vizGroupCount = 1;
     private int replicateGroupCount = 1;
     private final ParallelPropertyChangeSupport pcs;
