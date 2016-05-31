@@ -35,10 +35,6 @@
     </repositories>
 
     <dependencies>
-        <!-- <dependency>
-            <groupId>org.netbeans.api</groupId>
-            <artifactId>org-netbeans-api-annotations-common</artifactId>
-        </dependency> -->
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
@@ -49,7 +45,7 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>de.cebitec.mgx</groupId>
+            <groupId>de.cebitec.mgx.gui</groupId>
             <artifactId>MGX-API</artifactId>
         </dependency>
         <dependency>

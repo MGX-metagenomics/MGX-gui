@@ -3,7 +3,6 @@ package de.cebitec.mgx.gui.attributevisualization.filter;
 import de.cebitec.gpms.core.GPMSException;
 import de.cebitec.gpms.core.MembershipI;
 import de.cebitec.gpms.rest.GPMSClientI;
-import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.restgpms.GPMSClient;
 import java.io.File;
@@ -50,8 +49,7 @@ public class TestMaster {
         while (mIter.hasNext()) {
             MembershipI m = mIter.next();
             if ("MGX".equals(m.getProject().getProjectClass().getName()) && ("MGX_Unittest".equals(m.getProject().getName()))) {
-                MGXDTOMaster dtomaster = new MGXDTOMaster(gpms.createMaster(m));
-                master = new MGXMaster(dtomaster);
+                master = new MGXMaster(gpms.createMaster(m));
                 break;
             }
         }

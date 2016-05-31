@@ -87,6 +87,7 @@ public class SeqRunWizardPanel1 implements WizardDescriptor.Panel<WizardDescript
         model.putProperty(SeqRunVisualPanel1.PROP_METHOD, c.getMethod());
         model.putProperty(SeqRunVisualPanel1.PROP_SUBMITTED, c.getSubmittedState());
         model.putProperty(SeqRunVisualPanel1.PROP_ACCESSION, c.getAccession());
+        model.putProperty(SeqRunVisualPanel1.PROP_RUNTOOLS, c.runDefaultTools());
     }
 
     public void setProperties(WizardDescriptor settings) {
@@ -97,6 +98,7 @@ public class SeqRunWizardPanel1 implements WizardDescriptor.Panel<WizardDescript
         c.setMethod((TermI) model.getProperty(SeqRunVisualPanel1.PROP_METHOD));
         c.setSubmittedState((Boolean) model.getProperty(SeqRunVisualPanel1.PROP_SUBMITTED));
         c.setAccession((String) model.getProperty(SeqRunVisualPanel1.PROP_ACCESSION));
+        c.runDefaultTools((boolean) model.getProperty(SeqRunVisualPanel1.PROP_RUNTOOLS));
     }
 
     @Override
@@ -121,7 +123,7 @@ public class SeqRunWizardPanel1 implements WizardDescriptor.Panel<WizardDescript
         if (alreadyExists) {
             model.getNotificationLineSupport().setErrorMessage("Sequencing run with same name already exists.");
             isValid = false;
-        } 
+        }
 
         // if it's submitted, we require the accession
         if (c.getSubmittedState()) {
@@ -130,9 +132,9 @@ public class SeqRunWizardPanel1 implements WizardDescriptor.Panel<WizardDescript
                 model.getNotificationLineSupport().setErrorMessage("Please enter accession.");
                 isValid = false;
             }
-        } 
-        if(isValid){
-             model.getNotificationLineSupport().clearMessages();
+        }
+        if (isValid) {
+            model.getNotificationLineSupport().clearMessages();
         }
         return isValid;
     }
@@ -160,7 +162,7 @@ public class SeqRunWizardPanel1 implements WizardDescriptor.Panel<WizardDescript
                     alreadyExists = true;
                 }
             }
-        } else if(model.getProperty(SeqRunWizardDescriptor.INVOCATION_MODE).equals(SeqRunWizardDescriptor.EDIT_MODE)){
+        } else if (model.getProperty(SeqRunWizardDescriptor.INVOCATION_MODE).equals(SeqRunWizardDescriptor.EDIT_MODE)) {
             for (SeqRunI seqrun : allRuns) {
                 if (seqrun.getName().equals(name) && !seqrun.getName().equals(model.getProperty(SeqRunVisualPanel1.PROP_NAME))) {
                     alreadyExists = true;

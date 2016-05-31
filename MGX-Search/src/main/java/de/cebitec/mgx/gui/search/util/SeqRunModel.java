@@ -6,8 +6,11 @@
 package de.cebitec.mgx.gui.search.util;
 
 import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.ModelBaseI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.swingutils.BaseModel;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.concurrent.ExecutionException;
@@ -18,12 +21,16 @@ import org.openide.util.Exceptions;
  *
  * @author sjaenick
  */
-public class SeqRunModel extends BaseModel<SeqRunI> {
+public class SeqRunModel extends BaseModel<SeqRunI> implements PropertyChangeListener {
 
     private MGXMasterI currentMaster;
 
     public void setMaster(MGXMasterI m) {
+        if (currentMaster != null) {
+            currentMaster.removePropertyChangeListener(this);
+        }
         currentMaster = m;
+        currentMaster.addPropertyChangeListener(this);
     }
 
     @Override
@@ -56,5 +63,15 @@ public class SeqRunModel extends BaseModel<SeqRunI> {
         }
         Collections.sort(content);
         fireContentsChanged();
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (evt.getSource().equals(currentMaster) && ModelBaseI.OBJECT_DELETED.equals(evt.getPropertyName())) {
+            currentMaster.removePropertyChangeListener(this);
+            currentMaster = null;
+            content.clear();
+            fireContentsChanged();
+        }
     }
 }

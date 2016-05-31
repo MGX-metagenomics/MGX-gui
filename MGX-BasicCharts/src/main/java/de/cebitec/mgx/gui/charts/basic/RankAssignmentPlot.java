@@ -1,8 +1,8 @@
 package de.cebitec.mgx.gui.charts.basic;
 
+import de.cebitec.mgx.api.groups.FileType;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.Pair;
-import de.cebitec.mgx.gui.charts.basic.customizer.BarChartCustomizer;
 import de.cebitec.mgx.api.groups.ImageExporterI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.model.AttributeI;
@@ -12,8 +12,16 @@ import de.cebitec.mgx.common.DistributionFactory;
 import de.cebitec.mgx.common.TreeFactory;
 import de.cebitec.mgx.common.visualization.HierarchicalViewerI;
 import de.cebitec.mgx.common.visualization.ViewerI;
+import de.cebitec.mgx.gui.charts.basic.customizer.StackedRankCustomizer;
+import de.cebitec.mgx.gui.charts.basic.j2d.Normalization;
 import de.cebitec.mgx.gui.charts.basic.j2d.PlotPanel;
+import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.event.MouseWheelEvent;
+import java.awt.image.BufferedImage;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -21,9 +29,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
+import org.jfree.graphics2d.svg.SVGGraphics2D;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -33,14 +43,9 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = ViewerI.class)
 public class RankAssignmentPlot extends HierarchicalViewerI {
 
-//    private ChartPanel cPanel = null;
-//    private JFreeChart chart = null;
-//    private DefaultCategoryDataset dataset;
+    private StackedRankCustomizer customizer = null;
+
     public RankAssignmentPlot() {
-        // disable the stupid glossy effect
-//        ChartFactory.setChartTheme(StandardChartTheme.createLegacyTheme());
-//        BarRenderer.setDefaultShadowsVisible(false);
-//        XYBarRenderer.setDefaultShadowsVisible(false);
     }
 
     @Override
@@ -55,18 +60,33 @@ public class RankAssignmentPlot extends HierarchicalViewerI {
         return jcomp;
     }
 
+    Map<VisualizationGroupI, Long> maxAssignedByGroup = new HashMap<>();
+
     @Override
     public void show(List<Pair<VisualizationGroupI, TreeI<Long>>> data) {
 
+        // get longest path in tree to determine ordering of attribute types
         TreeI<Map<VisualizationGroupI, Long>> combinedTree = TreeFactory.combineTrees(data);
         AttributeTypeI[] longestPath = TreeFactory.getLongestPath(combinedTree);
 
-        Map<AttributeTypeI, List<DistributionI<Long>>> byRank = new HashMap<>();
+        maxAssignedByGroup.clear();
 
+        // collect distributions per rank
+        Map<AttributeTypeI, List<DistributionI<Long>>> byRank = new HashMap<>();
         for (AttributeTypeI attrType : longestPath) {
-            List<DistributionI<Long>> dists = new ArrayList<>();
+            List<DistributionI<Long>> dists = new ArrayList<>(data.size());
             for (Pair<VisualizationGroupI, TreeI<Long>> p : data) {
-                dists.add(DistributionFactory.fromTree(p.getSecond(), attrType));
+                DistributionI<Long> fromTree = DistributionFactory.fromTree(p.getSecond(), attrType);
+                dists.add(fromTree);
+
+                // this is only needed when normalizing to the root
+                if (getCustomizer().normToRoot()) {
+                    if (!maxAssignedByGroup.containsKey(p.getFirst())) {
+                        maxAssignedByGroup.put(p.getFirst(), fromTree.getTotalClassifiedElements());
+                    } else if (fromTree.getTotalClassifiedElements() > maxAssignedByGroup.get(p.getFirst())) {
+                        maxAssignedByGroup.put(p.getFirst(), fromTree.getTotalClassifiedElements());
+                    }
+                }
             }
             byRank.put(attrType, dists);
         }
@@ -97,13 +117,20 @@ public class RankAssignmentPlot extends HierarchicalViewerI {
             sortedAttrsByAbundance.put(attrType, sortedDesc);
         }
 
-        PlotPanel p = new PlotPanel();
+        Normalization norm = Normalization.DISABLED;
+        if (getCustomizer().normToRoot()) {
+            norm = Normalization.ROOT;
+        } else if (getCustomizer().normAll()) {
+            norm = Normalization.ALL;
+        }
+
+        PlotPanel plotPanel = new PlotPanel(norm, maxAssignedByGroup);
 
         for (AttributeTypeI attrType : longestPath) {
             int i = 0;
-            for (DistributionI<Long> d : byRank.get(attrType)) {
+            for (DistributionI<Long> dist : byRank.get(attrType)) {
                 VisualizationGroupI vGrp = data.get(i).getFirst();
-                p.createBar(vGrp, attrType, sortedAttrsByAbundance.get(attrType), d);
+                plotPanel.createBar(vGrp, attrType, sortedAttrsByAbundance.get(attrType), dist);
                 i++;
             }
         }
@@ -123,90 +150,72 @@ public class RankAssignmentPlot extends HierarchicalViewerI {
             }
 
         };
-        jp.setViewportView(p);
+        jp.setBackground(Color.WHITE);
+        jp.setViewportView(plotPanel);
         jp.setWheelScrollingEnabled(false);
         jcomp = jp;
-
-//        dataset = new DefaultCategoryDataset();
-//        GroupedStackedBarRenderer renderer = new GroupedStackedBarRenderer();
-//        renderer.setBaseToolTipGenerator(new StandardCategoryToolTipGenerator("<html>Name: {0} <br> Rank: {1} <br> Count: {2} ({3})</html>", NumberFormat.getInstance()));
-//
-//        KeyToGroupMap map = new KeyToGroupMap("G1");
-//
-//        Map<String, Paint> attrPaints = new HashMap<>();
-//        List<VisualizationGroupI> groups = new ArrayList<>(data.size());
-//        List<AttributeI> allAttrs = new ArrayList<>();
-//        Map<VisualizationGroupI, Map<AttributeTypeI, DistributionI<Long>>> byGroup = new HashMap<>();
-//        for (Pair<VisualizationGroupI, TreeI<Long>> p : data) {
-//            groups.add(p.getFirst());
-//            Map<AttributeTypeI, DistributionI<Long>> byAttrType = new HashMap<>();
-//            for (AttributeTypeI aType : longestPath) {
-//                DistributionI<Long> dist = DistributionFactory.fromTree(p.getSecond(), aType);
-//                SortOrder<Long> sorter = new SortOrder<>(aType, SortOrder.DESCENDING);
-//                dist = sorter.filterDist(dist);
-//
-//                byAttrType.put(aType, dist);
-//                for (AttributeI attr : dist.keySet()) {
-//                    if (!allAttrs.contains(attr)) {
-//                        allAttrs.add(attr);
-//                        attrPaints.put(attr.getValue(), paints[paintIdx % paints.length]);
-//                        paintIdx++;
-//                    }
-//                }
-//            }
-//            byGroup.put(p.getFirst(), byAttrType);
-//        }
-//
-//        int seriesIdx = 0;
-//        for (VisualizationGroupI vgrp : groups) {
-//            Map<AttributeTypeI, DistributionI<Long>> byAttrType = byGroup.get(vgrp);
-//            for (AttributeI attr : allAttrs) {
-//                for (AttributeTypeI rank : longestPath) {
-//                    DistributionI<Long> curDist = byAttrType.get(rank);
-//                    dataset.addValue(curDist.containsKey(attr) ? curDist.get(attr) : 0.0, vgrp.getName() + " " + attr.getValue(), rank.getName());
-//                }
-//                renderer.setSeriesPaint(seriesIdx++, attrPaints.get(attr.getValue()));
-//                map.mapKeyToGroup(vgrp.getName() + " " + attr.getValue(), vgrp.getName());
-//            }
-//        }
-//
-//        renderer.setSeriesToGroupMap(map);
-//        renderer.setItemMargin(0.0);
-//
-//        chart = ChartFactory.createStackedBarChart(
-//                getTitle(),
-//                "Rank",
-//                "Count",
-//                dataset,
-//                PlotOrientation.VERTICAL,
-//                false,
-//                true,
-//                false
-//        );
-//
-//        SubCategoryAxis domainAxis = new SubCategoryAxis("");
-//        domainAxis.setCategoryMargin(0.05);
-//        for (Pair<VisualizationGroupI, TreeI<Long>> p : data) {
-//            domainAxis.addSubCategory(p.getFirst().getName());
-//        }
-//        CategoryPlot plot = (CategoryPlot) chart.getPlot();
-//        plot.setDomainAxis(domainAxis);
-//        plot.setRenderer(renderer);
-//
-//        chart.setBorderPaint(Color.WHITE);
-//        chart.setBackgroundPaint(Color.WHITE);
-//        chart.setAntiAlias(true);
-//        cPanel = new ChartPanel(chart);
     }
 
     @Override
-    public BarChartCustomizer getCustomizer() {
-        return null;
+    public StackedRankCustomizer getCustomizer() {
+        if (customizer == null) {
+            customizer = new StackedRankCustomizer();
+        }
+        return customizer;
     }
 
     @Override
     public ImageExporterI getImageExporter() {
-        return null; // JFreeChartUtil.getImageExporter(chart);
+        return new ImageExporterI() {
+
+            @Override
+            public FileType[] getSupportedTypes() {
+                return new FileType[]{FileType.PNG, FileType.SVG};
+            }
+
+            @Override
+            public Result export(FileType type, String fName) throws Exception {
+                switch (type) {
+                    case PNG:
+                        BufferedImage bi = new BufferedImage(jcomp.getSize().width, jcomp.getSize().height, BufferedImage.TYPE_INT_ARGB);
+                        Graphics g = bi.createGraphics();
+                        jcomp.paint(g);
+                        g.dispose();
+                        try {
+                            ImageIO.write(bi, "png", new File(fName));
+                        } catch (Exception e) {
+                            return Result.ERROR;
+                        }
+                        return Result.SUCCESS;
+                    /*
+                         *
+                         * JPEG support disabled for now because it produces a red background
+                         *
+                     */
+//                    case JPEG:
+//                        BufferedImage bi2 = new BufferedImage(jcomp.getSize().width, jcomp.getSize().height, BufferedImage.TYPE_INT_ARGB);
+//                        Graphics g2 = bi2.createGraphics();
+//                        jcomp.paint(g2);
+//                        g2.dispose();
+//                        try {
+//                            ImageIO.write(bi2, "jpg", new File(fName));
+//                        } catch (Exception e) {
+//                            return Result.ERROR;
+//                        }
+//                        return Result.SUCCESS;
+                    case SVG:
+                        SVGGraphics2D svg = new SVGGraphics2D(1280, 1024);
+                        jcomp.paintComponents(svg);
+                        String svgElement = svg.getSVGElement();
+                        try (BufferedWriter bw = new BufferedWriter(new FileWriter(fName))) {
+                            bw.write(svgElement);
+                        }
+                        return Result.SUCCESS;
+                    default:
+                        return Result.ERROR;
+                }
+            }
+        };
     }
 
 }

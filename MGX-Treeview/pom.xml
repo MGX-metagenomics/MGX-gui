@@ -56,7 +56,7 @@
             <groupId>org.netbeans.api</groupId>
         </dependency>
         <dependency>
-            <groupId>de.cebitec.mgx</groupId>
+            <groupId>de.cebitec.mgx.gui</groupId>
             <artifactId>MGX-API</artifactId>
         </dependency>
         <dependency>

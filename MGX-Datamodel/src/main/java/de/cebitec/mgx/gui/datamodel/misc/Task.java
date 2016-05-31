@@ -11,7 +11,6 @@ import java.util.UUID;
  */
 public class Task<T extends MGXDataModelBaseI<T>> extends TaskI<T> {
 
-  
     private String statusMessage = "";
     private State state;
     //
@@ -58,8 +57,15 @@ public class Task<T extends MGXDataModelBaseI<T>> extends TaskI<T> {
 
     @Override
     public TaskI<T> setState(State state) {
-        this.state = state;
-        getObject().modified();
+        if (state != this.state) {
+            this.state = state;
+            if (!obj.isDeleted()) {
+                obj.modified();
+            }
+            if (state == State.FINISHED) {
+                finish();
+            }
+        }
         return this;
     }
 
@@ -69,14 +75,18 @@ public class Task<T extends MGXDataModelBaseI<T>> extends TaskI<T> {
     }
 
     @Override
-    public void finish() {
+    protected final void finish() {
         if (getState() == State.FINISHED) {
             switch (taskType) {
                 case DELETE:
-                    getObject().deleted();
+                    if (!obj.isDeleted()) {
+                        obj.deleted();
+                    }
                     break;
                 case MODIFY:
-                    getObject().modified();
+                    if (!obj.isDeleted()) {
+                        obj.modified();
+                    }
                     break;
             }
         }

@@ -7,8 +7,7 @@ import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.model.HabitatI;
 import de.cebitec.mgx.api.model.Identifiable;
 import de.cebitec.mgx.client.MGXDTOMaster;
-import de.cebitec.mgx.client.exception.MGXClientException;
-import de.cebitec.mgx.client.exception.MGXServerException;
+import de.cebitec.mgx.client.exception.MGXDTOException;
 import de.cebitec.mgx.dto.dto.HabitatDTO;
 import de.cebitec.mgx.gui.datamodel.Habitat;
 import de.cebitec.mgx.gui.datamodel.misc.Task;
@@ -39,7 +38,7 @@ public class HabitatAccess extends AccessBase<HabitatI> implements HabitatAccess
         long id = Identifiable.INVALID_IDENTIFIER;
         try {
             id = getDTOmaster().Habitat().create(dto);
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
         obj.setId(id);
@@ -52,7 +51,7 @@ public class HabitatAccess extends AccessBase<HabitatI> implements HabitatAccess
         long id = Identifiable.INVALID_IDENTIFIER;
         try {
             id = getDTOmaster().Habitat().create(dto);
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
         obj.setId(id);
@@ -64,7 +63,7 @@ public class HabitatAccess extends AccessBase<HabitatI> implements HabitatAccess
         HabitatDTO h = null;
         try {
             h = getDTOmaster().Habitat().fetch(id);
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
         Habitat ret = HabitatDTOFactory.getInstance().toModel(getMaster(), h);
@@ -83,7 +82,7 @@ public class HabitatAccess extends AccessBase<HabitatI> implements HabitatAccess
                 }
             };
 
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
     }
@@ -93,7 +92,7 @@ public class HabitatAccess extends AccessBase<HabitatI> implements HabitatAccess
         HabitatDTO dto = HabitatDTOFactory.getInstance().toDTO(obj);
         try {
             getDTOmaster().Habitat().update(dto);
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
         obj.modified();
@@ -104,7 +103,7 @@ public class HabitatAccess extends AccessBase<HabitatI> implements HabitatAccess
         try {
             UUID uuid = getDTOmaster().Habitat().delete(obj.getId());
             return getMaster().<HabitatI>Task().get(obj, uuid, Task.TaskType.DELETE);
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
     }

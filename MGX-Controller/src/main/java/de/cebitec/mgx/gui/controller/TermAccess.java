@@ -6,8 +6,7 @@ import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.exception.MGXLoggedoutException;
 import de.cebitec.mgx.api.model.TermI;
 import de.cebitec.mgx.client.MGXDTOMaster;
-import de.cebitec.mgx.client.exception.MGXClientException;
-import de.cebitec.mgx.client.exception.MGXServerException;
+import de.cebitec.mgx.client.exception.MGXDTOException;
 import de.cebitec.mgx.dto.dto.TermDTO;
 import de.cebitec.mgx.gui.dtoconversion.TermDTOFactory;
 import java.util.ArrayList;
@@ -38,7 +37,7 @@ public class TermAccess implements TermAccessI {
             for (TermDTO dto : dtomaster.Term().byCategory(cat)) {
                 ret.add(TermDTOFactory.getInstance().toModel(master, dto));
             }
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
         Collections.sort(ret);

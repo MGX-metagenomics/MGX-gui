@@ -13,8 +13,7 @@ import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.client.datatransfer.SeqByAttributeDownloader;
 import de.cebitec.mgx.client.datatransfer.SeqDownloader;
 import de.cebitec.mgx.client.datatransfer.SeqUploader;
-import de.cebitec.mgx.client.exception.MGXClientException;
-import de.cebitec.mgx.client.exception.MGXServerException;
+import de.cebitec.mgx.client.exception.MGXDTOException;
 import de.cebitec.mgx.dto.dto.AttributeDTOList;
 import de.cebitec.mgx.dto.dto.AttributeDTOList.Builder;
 import de.cebitec.mgx.dto.dto.SequenceDTO;
@@ -45,7 +44,7 @@ public class SequenceAccess extends AccessBase<SequenceI> implements SequenceAcc
     public void sendSequences(SeqRunI seqrun, SeqReaderI<? extends DNASequenceI> reader) throws MGXException {
         try {
             getDTOmaster().Sequence().sendSequences(seqrun.getId(), reader);
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
     }
@@ -55,7 +54,7 @@ public class SequenceAccess extends AccessBase<SequenceI> implements SequenceAcc
         try {
             final SeqUploader su = getDTOmaster().Sequence().createUploader(seqrun.getId(), reader);
             return new ServerSeqRunUploader(seqrun, su);
-        } catch (MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
     }
@@ -67,7 +66,7 @@ public class SequenceAccess extends AccessBase<SequenceI> implements SequenceAcc
             ServerSeqRunDownloader ret = new ServerSeqRunDownloader(sd);
             seqrun.addPropertyChangeListener(ret);
             return ret;
-        } catch (MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
     }
@@ -88,7 +87,7 @@ public class SequenceAccess extends AccessBase<SequenceI> implements SequenceAcc
         final SeqByAttributeDownloader dl;
         try {
             dl = getDTOmaster().Sequence().createDownloaderByAttributes(b.build(), writer, closeWriter);
-        } catch (MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
         return new ServerSeqRunDownloader(dl);
@@ -102,7 +101,7 @@ public class SequenceAccess extends AccessBase<SequenceI> implements SequenceAcc
                 b.addAttribute(AttributeDTOFactory.getInstance().toDTO(a));
             }
             getDTOmaster().Sequence().fetchAnnotatedReads(b.build(), writer, closeWriter);
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
     }
@@ -117,7 +116,7 @@ public class SequenceAccess extends AccessBase<SequenceI> implements SequenceAcc
         SequenceDTO dto = null;
         try {
             dto = getDTOmaster().Sequence().fetch(id);
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
         return SequenceDTOFactory.getInstance().toModel(getMaster(), dto);
@@ -128,7 +127,7 @@ public class SequenceAccess extends AccessBase<SequenceI> implements SequenceAcc
         SequenceDTO dto = null;
         try {
             dto = getDTOmaster().Sequence().byName(seqrun.getId(), seqName);
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
         return SequenceDTOFactory.getInstance().toModel(getMaster(), dto);
@@ -165,7 +164,7 @@ public class SequenceAccess extends AccessBase<SequenceI> implements SequenceAcc
                     s.setSequence(sdto.getSequence());
                 }
             }
-        } catch (MGXServerException | MGXClientException ex) {
+        } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         } finally {
             idx.clear();
@@ -187,7 +186,7 @@ public class SequenceAccess extends AccessBase<SequenceI> implements SequenceAcc
         throw new UnsupportedOperationException("Not supported.");
     }
 
-    private class ServerSeqRunUploader extends UploadBaseI implements PropertyChangeListener {
+    private static class ServerSeqRunUploader extends UploadBaseI implements PropertyChangeListener {
 
         private final SeqUploader su;
         private final SeqRunI run;
@@ -222,7 +221,7 @@ public class SequenceAccess extends AccessBase<SequenceI> implements SequenceAcc
 
     }
 
-    private class ServerSeqRunDownloader extends DownloadBaseI implements PropertyChangeListener {
+    private static class ServerSeqRunDownloader extends DownloadBaseI implements PropertyChangeListener {
 
         private final SeqDownloader sd;
 

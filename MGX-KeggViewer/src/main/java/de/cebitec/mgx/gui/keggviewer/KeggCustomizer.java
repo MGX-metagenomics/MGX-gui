@@ -47,7 +47,7 @@ public class KeggCustomizer extends javax.swing.JPanel {
             pathwayList.addItem(new PathwayI() {
 
                 @Override
-                public String getMapNum() {
+                public String getMapNumber() {
                     return "";
                 }
 
@@ -68,7 +68,7 @@ public class KeggCustomizer extends javax.swing.JPanel {
         return (PathwayI) pathwayList.getSelectedItem();
     }
 
-    private final static Pattern ecNumber = Pattern.compile("\\d+[.](-|\\d+)[.](-|\\d+)[.](-|\\d+)");
+    private final static Pattern ECNUMBER_PATTERN = Pattern.compile("\\d+[.](-|\\d+)[.](-|\\d+)[.](-|\\d+)");
 
     public Set<PathwayI> selectPathways(final KEGGMaster master, final VGroupManagerI vgmgr, RequestProcessor RP) throws ConflictingJobsException, KEGGException {
         final Set<ECNumberI> ecNumbers = new HashSet<>();
@@ -76,7 +76,7 @@ public class KeggCustomizer extends javax.swing.JPanel {
         for (Pair<VisualizationGroupI, DistributionI<Long>> p : vgmgr.getDistributions()) {
             DistributionI<Long> dist = p.getSecond();
             for (Map.Entry<AttributeI, Long> e : dist.entrySet()) {
-                Matcher matcher = ecNumber.matcher(e.getKey().getValue());
+                Matcher matcher = ECNUMBER_PATTERN.matcher(e.getKey().getValue());
                 if (matcher.find()) {
                     try {
                         ECNumberI ec = ECNumberFactory.fromString(e.getKey().getValue().substring(matcher.start(), matcher.end()));

@@ -29,7 +29,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
-import org.openide.util.Exceptions;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -269,7 +270,7 @@ public class ReplicateGroup implements ReplicateGroupI {
         try {
             dists = calcDistributions();
         } catch (InterruptedException | ExecutionException ex) {
-            Exceptions.printStackTrace(ex);
+            Logger.getLogger(ReplicateGroup.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
         meanDist = dists.getFirst();
@@ -287,9 +288,10 @@ public class ReplicateGroup implements ReplicateGroupI {
         try {
             dists = calcDistributions();
         } catch (InterruptedException | ExecutionException ex) {
-            Exceptions.printStackTrace(ex);
+            Logger.getLogger(ReplicateGroup.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
+
         meanDist = dists.getFirst();
         stdvDist = dists.getSecond();
 
