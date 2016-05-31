@@ -5,25 +5,56 @@
  */
 package de.cebitec.mgx.gui.goldstandard.wizards.selectjobs;
 
+import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.JobI;
+import de.cebitec.mgx.gui.goldstandard.actions.AddGoldstandard;
 import java.util.List;
+import java.util.Set;
+import javax.swing.ComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JPanel;
+import javax.swing.event.ListSelectionListener;
 
-public final class SelectSingleJobVisualPanel1 extends JPanel {
+public final class SelectSingleJobVisualPanel1 extends JPanel{
 
     /**
      * Creates new form SelectSingleJobVisualPanel1
      */
-    public SelectSingleJobVisualPanel1(List<JobI> jobs) {
+    public SelectSingleJobVisualPanel1(List<JobI> jobs){
         initComponents();
         DefaultListModel<JobI> jobModel = new DefaultListModel<>();
-        for (JobI job : jobs)
+        for (JobI job : jobs)            
             jobModel.addElement(job);
         jobList.setModel(jobModel);
         jobList.setCellRenderer(new JobRenderer());
+        
+        attributeTypeBox.setRenderer(new AttributeTypeRenderer());
+        
+        clearSelections();
+    }
+    
+    public void addListSelectionListener(ListSelectionListener lsl){
+        jobList.getSelectionModel().addListSelectionListener(lsl);
     }
 
+    public JobI getSelectedJob(){
+        return jobList.getSelectedValue();
+    }
+    
+    public void setAttributeTypeList(Set<AttributeTypeI> attrTypes){
+        attributeTypeBox.removeAllItems();
+        for (AttributeTypeI at : attrTypes)
+            attributeTypeBox.addItem(at);        
+    }
+    
+    public void enableAttributeTypeBox(boolean enable){
+        attributeTypeBox.setEnabled(enable);
+    }
+    
+    public void clearSelections(){
+        jobList.getSelectionModel().clearSelection();
+    }
+    
     @Override
     public String getName() {
         return "Step #1";
@@ -39,13 +70,13 @@ public final class SelectSingleJobVisualPanel1 extends JPanel {
 
         jScrollPane1 = new javax.swing.JScrollPane();
         jobList = new javax.swing.JList<>();
-        jComboBox1 = new javax.swing.JComboBox<>();
+        attributeTypeBox = new javax.swing.JComboBox<>();
         jLabel1 = new javax.swing.JLabel();
 
         jobList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jScrollPane1.setViewportView(jobList);
 
-        jComboBox1.setEnabled(false);
+        attributeTypeBox.setEnabled(false);
 
         org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(SelectSingleJobVisualPanel1.class, "SelectSingleJobVisualPanel1.jLabel1.text")); // NOI18N
 
@@ -59,7 +90,7 @@ public final class SelectSingleJobVisualPanel1 extends JPanel {
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 376, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(attributeTypeBox, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addGap(0, 0, Short.MAX_VALUE)))
@@ -73,15 +104,16 @@ public final class SelectSingleJobVisualPanel1 extends JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 218, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(attributeTypeBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JComboBox<String> jComboBox1;
+    private javax.swing.JComboBox<AttributeTypeI> attributeTypeBox;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JList<JobI> jobList;
     // End of variables declaration//GEN-END:variables
+
 }
