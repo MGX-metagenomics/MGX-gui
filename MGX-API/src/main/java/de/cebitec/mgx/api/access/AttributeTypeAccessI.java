@@ -8,6 +8,7 @@ package de.cebitec.mgx.api.access;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
+import de.cebitec.mgx.api.model.JobI;
 import java.util.Iterator;
 
 /**
@@ -21,6 +22,8 @@ public interface AttributeTypeAccessI {
     public AttributeTypeI fetch(long id) throws MGXException;
 
     public Iterator<AttributeTypeI> fetchall() throws MGXException;
+
+    public Iterator<AttributeTypeI> byJob(JobI job) throws MGXException;
 
     public TaskI<AttributeTypeI> delete(AttributeTypeI obj) throws MGXException;
 }
