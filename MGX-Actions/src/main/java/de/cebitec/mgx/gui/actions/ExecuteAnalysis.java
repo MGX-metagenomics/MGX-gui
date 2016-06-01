@@ -204,7 +204,7 @@ public class ExecuteAnalysis extends NodeAction implements LookupListener {
         return super.isEnabled() && RBAC.isUser() && numSeqs > 0;
     }
 
-    private final class SubmitTask extends MGXTask {
+    private final static class SubmitTask extends MGXTask {
 
         private final long toolId;
         private final SeqRunI run;
