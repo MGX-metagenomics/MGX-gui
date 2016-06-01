@@ -14,9 +14,11 @@ import de.cebitec.mgx.gui.swingutils.NonEDT;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
 import java.util.Collection;
+import java.util.concurrent.CountDownLatch;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionRegistration;
 import org.openide.nodes.Node;
+import org.openide.util.Exceptions;
 import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.Utilities;
@@ -37,59 +39,49 @@ public final class RestartJobAction extends NodeAction {
     @Override
     protected void performAction(Node[] activatedNodes) {
 
-        for (final JobI job : Utilities.actionsGlobalContext().lookupAll(JobI.class)) {
+        final Collection<? extends JobI> jobs = Utilities.actionsGlobalContext().lookupAll(JobI.class);
 
-            // skip over jobs that are still running or being deleted
-            JobState state = job.getStatus();
-            if (!(state.equals(JobState.ABORTED) || state.equals(JobState.FAILED))) {
-                continue;
-            }
+        // leave EDT
+        NonEDT.invoke(new Runnable() {
+            @Override
+            public void run() {
+                for (final JobI job : jobs) {
 
-            if (job.getSeqrun() == null) {
-                throw new RuntimeException("Internal error: Job has no sequencing run.");
-            }
-            if (job.getTool() == null) {
-                throw new RuntimeException("Internal error: Job has no tool.");
-            }
-
-            final MGXTask restartTask = new MGXTask("Restart " + job.getTool().getName()) {
-                @Override
-                public boolean process() {
-                    setStatus("Restarting job..");
-                    TaskI<JobI> task = null;
-                    try {
-                        task = job.getMaster().Job().restart(job);
-                    } catch (MGXException ex) {
-                        setStatus(ex.getMessage());
-                        failed(ex.getMessage());
-                        return false;
+                    // skip over jobs that are still running or being deleted
+                    if (!(job.getStatus().equals(JobState.ABORTED) || job.getStatus().equals(JobState.FAILED))) {
+                        continue;
                     }
-                    while (task != null && !task.done()) {
-                        setStatus(task.getStatusMessage());
-                        try {
-                            job.getMaster().<JobI>Task().refresh(task);
-                        } catch (MGXException ex) {
-                            setStatus(ex.getMessage());
-                            failed(ex.getMessage());
-                            return false;
+
+                    if (job.getSeqrun() == null) {
+                        throw new RuntimeException("Internal error: Job has no sequencing run.");
+                    }
+                    if (job.getTool() == null) {
+                        throw new RuntimeException("Internal error: Job has no tool.");
+                    }
+
+                    final CountDownLatch restartComplete = new CountDownLatch(1);
+
+                    NonEDT.invoke(new Runnable() {
+                        @Override
+                        public void run() {
+                            TaskManager.getInstance().addTask(new RestartTask(job, restartComplete));
                         }
-                        sleep();
+                    });
+
+                    //
+                    // throttle submission of subsequent jobs to prevent overloading
+                    // the server instance
+                    //
+                    try {
+                        restartComplete.await();
+                    } catch (InterruptedException ex) {
+                        Exceptions.printStackTrace(ex);
                     }
-                    if (task != null) {
-//                        task.finish();
-                        job.modified();
-                        return task.getState() == TaskI.State.FINISHED;
-                    }
-                    return false;
                 }
-            };
-            NonEDT.invoke(new Runnable() {
-                @Override
-                public void run() {
-                    TaskManager.getInstance().addTask(restartTask);
-                }
-            });
-        }
+            }
+
+        });
+
     }
 
     @Override
@@ -125,4 +117,49 @@ public final class RestartJobAction extends NodeAction {
     protected boolean asynchronous() {
         return false;
     }
+
+    private final static class RestartTask extends MGXTask {
+
+        private final JobI job;
+        private final CountDownLatch done;
+
+        public RestartTask(JobI job, CountDownLatch done) {
+            super("Restart " + job.getTool().getName());
+            this.job = job;
+            this.done = done;
+        }
+
+        @Override
+        public boolean process() {
+            setStatus("Restarting job..");
+            TaskI<JobI> task = null;
+            try {
+                task = job.getMaster().Job().restart(job);
+            } catch (MGXException ex) {
+                setStatus(ex.getMessage());
+                failed(ex.getMessage());
+                done.countDown();
+                return false;
+            }
+            while (task != null && !task.done()) {
+                setStatus(task.getStatusMessage());
+                try {
+                    job.getMaster().<JobI>Task().refresh(task);
+                } catch (MGXException ex) {
+                    setStatus(ex.getMessage());
+                    failed(ex.getMessage());
+                    done.countDown();
+                    return false;
+                }
+                sleep();
+            }
+            if (task != null) {
+                job.modified();
+                done.countDown();
+                return task.getState() == TaskI.State.FINISHED;
+            }
+            done.countDown();
+            return false;
+        }
+    };
 }
