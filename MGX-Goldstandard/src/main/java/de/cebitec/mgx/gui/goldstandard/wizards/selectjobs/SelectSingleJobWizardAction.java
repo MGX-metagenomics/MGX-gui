@@ -1,6 +1,8 @@
 package de.cebitec.mgx.gui.goldstandard.wizards.selectjobs;
 
 import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.model.AttributeTypeI;
+import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import java.awt.Component;
 import java.awt.Dialog;
@@ -14,6 +16,7 @@ import org.openide.util.Exceptions;
 
 public final class SelectSingleJobWizardAction implements ActionListener {
 
+    private WizardDescriptor wizardDescriptor;
     private WizardDescriptor.Panel<WizardDescriptor>[] panels;
     private SeqRunI currentRun;
     
@@ -24,7 +27,7 @@ public final class SelectSingleJobWizardAction implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         try {
-            WizardDescriptor wizardDescriptor = new WizardDescriptor(getPanels());
+            wizardDescriptor = new WizardDescriptor(getPanels());
             // {0} will be replaced by WizardDesriptor.Panel.getComponent().getName()
             wizardDescriptor.setTitleFormat(new MessageFormat("{0}"));
             wizardDescriptor.setTitle("Your wizard dialog title here");
@@ -74,5 +77,13 @@ public final class SelectSingleJobWizardAction implements ActionListener {
             }
         }
         return panels;
+    }
+    
+    public JobI getJob(){
+        return (JobI)wizardDescriptor.getProperty(SelectSingleJobVisualPanel1.PROP_JOB);
+    }
+    
+    public AttributeTypeI getAttributeType(){
+        return (AttributeTypeI)wizardDescriptor.getProperty(SelectSingleJobVisualPanel1.PROP_ATTRIBUTETYPE);
     }
 }

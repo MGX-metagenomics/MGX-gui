@@ -9,8 +9,10 @@ import de.cebitec.mgx.api.model.ToolI;
 import de.cebitec.mgx.gui.goldstandard.actions.AddGoldstandard;
 import de.cebitec.mgx.gui.goldstandard.ui.charts.EvaluationViewerI;
 import de.cebitec.mgx.gui.goldstandard.wizards.selectjobs.SelectSingleJobWizardAction;
+import de.cebitec.mgx.gui.goldstandard.wizards.selectjobs.SelectSingleJobWizardDescriptor;
 import de.cebitec.mgx.gui.swingutils.BaseModel;
 import java.awt.Cursor;
+import java.awt.Dialog;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -21,6 +23,8 @@ import java.util.Collection;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.List;
+import org.openide.DialogDisplayer;
+import org.openide.WizardDescriptor;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
@@ -32,11 +36,12 @@ import org.openide.util.Utilities;
  * @author plumenk
  */
 public class EvaluationControlPanel extends javax.swing.JPanel implements PropertyChangeListener, ActionListener, LookupListener {
-    
+
     private EvaluationTopComponent topComponent;
     //
     private EvaluationViewerI currentViewer;
     private final SelectSingleJobWizardAction jobWizard = new SelectSingleJobWizardAction();
+    private SelectSingleJobWizardDescriptor jobWz;
     //
     private final VisualizationTypeListModel vizListModel = new VisualizationTypeListModel();
     //
@@ -57,11 +62,11 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Proper
         res.addLookupListener(this);
         updateButton.addActionListener(this);
     }
-    
+
     public final void setTopComponent(EvaluationTopComponent tc) {
         this.topComponent = tc;
     }
-    
+
     public final synchronized void updateViewerList() {
         vizListModel.update();
         currentViewer = vizListModel.getSelectedItem();
@@ -177,18 +182,25 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Proper
 //            default:
 //                System.err.println("ControlPanel received unknown event " + evt);
 //        }
-    }      
-    
+    }
+
     @Override
     @SuppressWarnings("unchecked")
-    public void actionPerformed(ActionEvent e) {        
-        jobWizard.setRun(currentSeqrun);        
-        jobWizard.actionPerformed(e);
+    public void actionPerformed(ActionEvent e) {
+        currentViewer.init(currentSeqrun);
+//        jobWizard.setRun(currentSeqrun);        
+//        jobWizard.actionPerformed(e);
         try {
-            setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-            topComponent.setVisualization(currentViewer);
-            List<JobI> selectedJobs;
-            AttributeTypeI selectedAT;
+            jobWz = new SelectSingleJobWizardDescriptor(currentSeqrun);
+            Dialog dialog = DialogDisplayer.getDefault().createDialog(jobWz);
+            dialog.setVisible(true);
+            dialog.toFront();
+            boolean cancelled = jobWz.getValue() != WizardDescriptor.FINISH_OPTION;
+            if (!cancelled) {
+                setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+                topComponent.setVisualization(currentViewer);
+                List<JobI> selectedJobs;
+                AttributeTypeI selectedAT;
 //            if (currentViewer.getInputType() == DistributionI.class) {
 //                
 //            } else if (currentViewer.getInputType() == TreeI.class) {
@@ -200,11 +212,15 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Proper
 //            }
 //        } catch (MGXException ex) {
 //            Exceptions.printStackTrace(ex);
+            }
+        } catch (MGXException ex) {
+            Exceptions.printStackTrace(ex);
         } finally {
             setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         }
     }
     
+
     public final void dispose() {
         if (currentViewer != null) {
             currentViewer.dispose();
@@ -212,13 +228,14 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Proper
         res.removeLookupListener(this);
         updateButton.removeActionListener(this);
     }
-    
+
     @Override
-    public void resultChanged(LookupEvent ev) {        
+    public void resultChanged(LookupEvent ev) {
         Collection<? extends SeqRunI> seqruns = res.allInstances();
-        if (seqruns == null || seqruns.isEmpty())
+        if (seqruns == null || seqruns.isEmpty()) {
             return;
-        currentSeqrun = seqruns.iterator().next();        
+        }
+        currentSeqrun = seqruns.iterator().next();
         try {
             currentJobs = currentSeqrun.getMaster().Job().BySeqRun(currentSeqrun);
             for (JobI job : currentJobs) {
@@ -233,9 +250,9 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Proper
             Exceptions.printStackTrace(ex);
         }
     }
-    
+
     private final class VisualizationTypeListModel extends BaseModel<EvaluationViewerI<Visualizable>> implements ItemListener {
-        
+
         @Override
         @SuppressWarnings("unchecked")
         public synchronized void update() {
@@ -243,14 +260,14 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Proper
             content.clear();
             visualizationTypeList.setEnabled(false);
             updateButton.setEnabled(false);
-            
+
             SortedSet<EvaluationViewerI<Visualizable>> viewers = new TreeSet<>();
             for (EvaluationViewerI viewer : Lookup.getDefault().<EvaluationViewerI>lookupAll(EvaluationViewerI.class)) {
                 viewers.add(viewer);
             }
-            
+
             content.addAll(viewers);
-            
+
             if (vizListModel.getSize() > 0) {
                 // if previously selected element still exists, restore selection
                 if (currentViewer != null && content.contains(currentViewer)) {
@@ -262,25 +279,25 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Proper
                 } else {
                     visualizationTypeList.setSelectedIndex(0);
                 }
-                
+
                 visualizationTypeList.setEnabled(true);
                 updateButton.setEnabled(true);
             }
             fireContentsChanged();
         }
-        
+
         @Override
         public void itemStateChanged(ItemEvent e) {
             if (e.getStateChange() != ItemEvent.SELECTED) {
                 return;
             }
-            
+
             if (currentViewer != null) {
                 currentViewer.dispose();
             }
-            
+
             currentViewer = vizListModel.getSelectedItem();
-            
+
             controlSplitPane.setBottomComponent(currentViewer.getCustomizer());
         }
     }

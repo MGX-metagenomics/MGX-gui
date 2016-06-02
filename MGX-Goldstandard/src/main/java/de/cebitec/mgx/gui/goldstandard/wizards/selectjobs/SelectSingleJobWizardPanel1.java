@@ -27,7 +27,9 @@ public class SelectSingleJobWizardPanel1 implements WizardDescriptor.Panel<Wizar
      * component from this class, just use getComponent().
      */
     private SelectSingleJobVisualPanel1 component;
+    private WizardDescriptor model;
     private List<JobI> jobs;
+    private JobI goldstandard;
     private SeqRunI seqrun;
 
     public SelectSingleJobWizardPanel1(SeqRunI seqrun) throws MGXException {
@@ -39,6 +41,9 @@ public class SelectSingleJobWizardPanel1 implements WizardDescriptor.Panel<Wizar
                 job.setTool(seqrun.getMaster().Tool().ByJob(job));
                 if (!job.getTool().getName().equals(AddGoldstandard.TOOL_NAME))
                     jobs.add(job);
+                else {
+                    goldstandard = job;
+                }
             }
         }
     }    
@@ -94,21 +99,22 @@ public class SelectSingleJobWizardPanel1 implements WizardDescriptor.Panel<Wizar
 
     @Override
     public void storeSettings(WizardDescriptor wiz) {
-        // use wiz.putProperty to remember current panel state
+        model = wiz;
+        model.putProperty(SelectSingleJobVisualPanel1.PROP_JOB, getComponent().getSelectedJob());
+        model.putProperty(SelectSingleJobVisualPanel1.PROP_ATTRIBUTETYPE, getComponent().getSelectedAttributeType());
+        model.putProperty(SelectSingleJobVisualPanel1.PROP_GOLDSTANDARD, goldstandard);
     }
 
     @Override
     public void valueChanged(ListSelectionEvent e) {
-        ListSelectionModel lsm = (ListSelectionModel) e.getSource();
+//        ListSelectionModel lsm = (ListSelectionModel) e.getSource();
         if (! e.getValueIsAdjusting()){
             try {
                 JobI job = component.getSelectedJob();
-                Iterator<AttributeI> it = job.getMaster().Attribute().ByJob(job);
+                Iterator<AttributeTypeI> it = job.getMaster().AttributeType().byJob(job);
                 Set<AttributeTypeI> set = new HashSet<>();
-                while (it.hasNext()){
-                    AttributeI attr = it.next();
-                    set.add(attr.getAttributeType());
-                }
+                while (it.hasNext())
+                    set.add(it.next());
                 component.setAttributeTypeList(set);
                 component.enableAttributeTypeBox(!set.isEmpty());                
             } catch (MGXException ex) {

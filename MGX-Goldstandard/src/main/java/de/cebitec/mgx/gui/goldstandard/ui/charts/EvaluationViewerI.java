@@ -1,12 +1,9 @@
 package de.cebitec.mgx.gui.goldstandard.ui.charts;
 
 import de.cebitec.mgx.api.groups.ImageExporterI;
-import de.cebitec.mgx.api.groups.VGroupManagerI;
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
-import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.misc.Visualizable;
 import de.cebitec.mgx.api.model.AttributeTypeI;
-import de.cebitec.mgx.common.VGroupManager;
+import de.cebitec.mgx.api.model.SeqRunI;
 import java.util.List;
 import javax.swing.JComponent;
 
@@ -65,6 +62,12 @@ public abstract class EvaluationViewerI<T extends Visualizable> implements Compa
      */
     public abstract JComponent getCustomizer();
 
+    
+    /**
+     * 
+     */
+    public abstract void init(SeqRunI seqrun);
+    
     /**
      *
      */

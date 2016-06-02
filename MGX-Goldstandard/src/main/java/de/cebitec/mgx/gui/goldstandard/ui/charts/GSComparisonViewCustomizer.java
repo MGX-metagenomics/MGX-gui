@@ -6,6 +6,7 @@ import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.visualization.filter.VisFilterI;
+import de.cebitec.mgx.gui.goldstandard.ui.charts.GSComparisonViewer.ComparisonViews;
 import de.cebitec.mgx.gui.vizfilter.ExcludeFilter;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -15,6 +16,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFileChooser;
 import javax.swing.table.AbstractTableModel;
 import org.openide.DialogDisplayer;
@@ -28,13 +30,14 @@ import org.openide.util.NbPreferences;
  *
  * @author pblumenk
  */
-public class ErrorTableViewCustomizer extends javax.swing.JPanel implements VisFilterI<DistributionI<Long>, DistributionI<Long>>, PropertyChangeListener {
+public class GSComparisonViewCustomizer extends javax.swing.JPanel implements VisFilterI<DistributionI<Long>, DistributionI<Long>>, PropertyChangeListener {
 
     /**
      * Creates new form TableViewCustomizer
      */
-    public ErrorTableViewCustomizer() {
+    public GSComparisonViewCustomizer() {
         initComponents();
+        viewTypeBox.setModel(new DefaultComboBoxModel(ComparisonViews.values()));
     }
 
     private AttributeTypeI at;
@@ -94,6 +97,7 @@ public class ErrorTableViewCustomizer extends javax.swing.JPanel implements VisF
         jLabel4 = new javax.swing.JLabel();
         fractions = new javax.swing.JCheckBox();
         treeFilter1 = new de.cebitec.mgx.gui.swingutils.TreeFilter();
+        viewTypeBox = new javax.swing.JComboBox<>();
 
         org.openide.awt.Mnemonics.setLocalizedText(export, "Export TSV");
         export.setEnabled(false);
@@ -132,11 +136,15 @@ public class ErrorTableViewCustomizer extends javax.swing.JPanel implements VisF
                             .addComponent(includeHeaders)
                             .addComponent(fractions)
                             .addComponent(jLabel4))
-                        .addContainerGap(94, Short.MAX_VALUE))))
+                        .addContainerGap(94, Short.MAX_VALUE))
+                    .addComponent(viewTypeBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(viewTypeBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(includeHeaders)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(fractions)
@@ -144,7 +152,7 @@ public class ErrorTableViewCustomizer extends javax.swing.JPanel implements VisF
                 .addComponent(jLabel4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(treeFilter1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 44, Short.MAX_VALUE)
                 .addComponent(export))
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -233,6 +241,7 @@ public class ErrorTableViewCustomizer extends javax.swing.JPanel implements VisF
     private javax.swing.JCheckBox includeHeaders;
     private javax.swing.JLabel jLabel4;
     private de.cebitec.mgx.gui.swingutils.TreeFilter treeFilter1;
+    private javax.swing.JComboBox<String> viewTypeBox;
     // End of variables declaration//GEN-END:variables
 
     private class InvisibleRoot extends AbstractNode {
@@ -251,6 +260,8 @@ public class ErrorTableViewCustomizer extends javax.swing.JPanel implements VisF
         return;
     }
     
-    
+    public ComparisonViews getCurrentComparisonView(){
+        return (ComparisonViews)viewTypeBox.getSelectedItem();
+    }
 
 }

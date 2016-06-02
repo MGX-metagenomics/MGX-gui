@@ -30,6 +30,7 @@
                       </Group>
                       <EmptySpace pref="94" max="32767" attributes="0"/>
                   </Group>
+                  <Component id="viewTypeBox" alignment="0" max="32767" attributes="0"/>
               </Group>
           </Group>
       </Group>
@@ -37,6 +38,9 @@
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="viewTypeBox" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
               <Component id="includeHeaders" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="fractions" min="-2" max="-2" attributes="0"/>
@@ -44,7 +48,7 @@
               <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="treeFilter1" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="32767" attributes="0"/>
+              <EmptySpace pref="44" max="32767" attributes="0"/>
               <Component id="export" min="-2" max="-2" attributes="0"/>
           </Group>
       </Group>
@@ -89,6 +93,16 @@
       </Properties>
     </Component>
     <Component class="de.cebitec.mgx.gui.swingutils.TreeFilter" name="treeFilter1">
+    </Component>
+    <Component class="javax.swing.JComboBox" name="viewTypeBox">
+      <Properties>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+          <StringArray count="0"/>
+        </Property>
+      </Properties>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+      </AuxValues>
     </Component>
   </SubComponents>
 </Form>
