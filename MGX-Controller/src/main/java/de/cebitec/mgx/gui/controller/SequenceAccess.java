@@ -41,6 +41,16 @@ public class SequenceAccess extends AccessBase<SequenceI> implements SequenceAcc
     }
 
     @Override
+    public Iterator<Long> fetchSequenceIDs(AttributeI attr) throws MGXException {
+          try {
+            Iterator<Long> ret = getDTOmaster().Sequence().fetchSequenceIDs(attr.getId());
+            return ret;
+        } catch (MGXDTOException ex) {
+            throw new MGXException(ex);
+        }
+    }
+    
+    @Override
     public void sendSequences(SeqRunI seqrun, SeqReaderI<? extends DNASequenceI> reader) throws MGXException {
         try {
             getDTOmaster().Sequence().sendSequences(seqrun.getId(), reader);
