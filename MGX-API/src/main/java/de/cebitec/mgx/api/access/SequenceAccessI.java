@@ -14,6 +14,7 @@ import de.cebitec.mgx.api.model.SequenceI;
 import de.cebitec.mgx.sequence.DNASequenceI;
 import de.cebitec.mgx.sequence.SeqReaderI;
 import de.cebitec.mgx.sequence.SeqWriterI;
+import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -27,6 +28,8 @@ public interface SequenceAccessI extends AccessBaseI<SequenceI> {
     public SequenceI fetch(SeqRunI seqrun, String seqName) throws MGXException;
 
     public void sendSequences(SeqRunI seqrun, SeqReaderI<? extends DNASequenceI> reader) throws MGXException;
+    
+    public Iterator<Long> fetchSequenceIDs(AttributeI attr) throws MGXException;
 
     public void downloadSequencesForAttributes(Set<AttributeI> attrs, SeqWriterI<DNASequenceI> writer, boolean closeWriter) throws MGXException;
 

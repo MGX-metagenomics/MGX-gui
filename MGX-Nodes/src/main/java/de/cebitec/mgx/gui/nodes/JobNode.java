@@ -97,8 +97,8 @@ public class JobNode extends MGXNodeBase<JobI> {
                 } catch (MGXException ex) {
                     Exceptions.printStackTrace(ex);
                 }
-            }
-            sb.append(jp.getParameterName())
+            } 
+            sb.append(jp.getUserName())
                     .append(": ")
                     .append(paramValue)
                     .append("<br>");
