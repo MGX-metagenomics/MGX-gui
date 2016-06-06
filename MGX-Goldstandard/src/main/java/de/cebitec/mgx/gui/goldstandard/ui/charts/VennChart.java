@@ -40,11 +40,15 @@ public class VennChart extends JPanel{
         image = img;
     }
 
-    public static <T> JPanel get2Venn(Collection<T> a, Collection<T> b) throws IOException{        
-        List<Collection<T>> collections = new ArrayList<>(3); 
-        collections.add(CollectionUtils.subtract(a, b));            //only a
-        collections.add(CollectionUtils.subtract(b, a));            //only b
-        collections.add(CollectionUtils.intersection(a, b));        //ab
+    public static VennChart get2Venn(Collection<?> a, Collection<?> b) throws IOException{        
+        return get2Venn(CollectionUtils.subtract(a, b).size(), CollectionUtils.subtract(b, a).size(), CollectionUtils.intersection(a, b).size());        
+    }
+    
+    public static VennChart get2Venn(long onlyA, long onlyB, long ab) throws IOException{        
+        List<Long> list = new ArrayList<>(3); 
+        list.add(onlyA);            //only a
+        list.add(onlyB);            //only b
+        list.add(ab);        //ab
         
         BufferedImage img;        
         try {
@@ -58,7 +62,7 @@ public class VennChart extends JPanel{
             g2d.drawImage(img, 0, 0, null);
             g2d.setPaint(getFontColor(fontColor2[i]));
             g2d.setFont(new Font("Serif", Font.BOLD, 22));
-            String str = String.valueOf(collections.get(i).size());
+            String str = String.valueOf(list.size());
             g2d.drawString(str, fontCoordinates2[i].x, fontCoordinates2[i].y);
         }
         g2d.dispose();        

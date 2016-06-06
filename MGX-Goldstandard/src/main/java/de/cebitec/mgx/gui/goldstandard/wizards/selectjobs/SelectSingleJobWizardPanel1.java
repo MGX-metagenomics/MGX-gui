@@ -1,18 +1,19 @@
 package de.cebitec.mgx.gui.goldstandard.wizards.selectjobs;
 
 import de.cebitec.mgx.api.exception.MGXException;
-import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.JobState;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.goldstandard.actions.AddGoldstandard;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
-import javax.swing.ListSelectionModel;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -28,21 +29,30 @@ public class SelectSingleJobWizardPanel1 implements WizardDescriptor.Panel<Wizar
      */
     private SelectSingleJobVisualPanel1 component;
     private WizardDescriptor model;
-    private List<JobI> jobs;
+    private Map<JobI, List<AttributeTypeI>> jobs;
     private JobI goldstandard;
+    private Set<AttributeTypeI> gsAttributeTypes;
     private SeqRunI seqrun;
 
     public SelectSingleJobWizardPanel1(SeqRunI seqrun) throws MGXException {
         this.seqrun = seqrun;
         List<JobI> allJobs = seqrun.getMaster().Job().BySeqRun(seqrun);
-        jobs = new ArrayList<>(allJobs.size());
+        jobs = new HashMap<>(allJobs.size());
         for (JobI job : allJobs){
             if (job.getStatus() == JobState.FINISHED){
                 job.setTool(seqrun.getMaster().Tool().ByJob(job));
-                if (!job.getTool().getName().equals(AddGoldstandard.TOOL_NAME))
-                    jobs.add(job);
-                else {
+                if (!job.getTool().getName().equals(AddGoldstandard.TOOL_NAME)){
+                    Iterator<AttributeTypeI> it = seqrun.getMaster().AttributeType().byJob(job);
+                    List<AttributeTypeI> ats = new LinkedList<>();
+                    while(it.hasNext())
+                        ats.add(it.next());
+                    jobs.put(job, ats);
+                } else {
                     goldstandard = job;
+                    gsAttributeTypes = new HashSet<>();
+                    Iterator<AttributeTypeI> it = seqrun.getMaster().AttributeType().byJob(goldstandard);
+                    while (it.hasNext())
+                        gsAttributeTypes.add(it.next());
                 }
             }
         }

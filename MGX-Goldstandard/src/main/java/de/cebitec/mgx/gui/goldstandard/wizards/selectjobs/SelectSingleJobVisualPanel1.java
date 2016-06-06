@@ -8,6 +8,7 @@ package de.cebitec.mgx.gui.goldstandard.wizards.selectjobs;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.JobI;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.swing.DefaultListModel;
 import javax.swing.JPanel;
@@ -22,10 +23,10 @@ public final class SelectSingleJobVisualPanel1 extends JPanel{
     /**
      * Creates new form SelectSingleJobVisualPanel1
      */
-    public SelectSingleJobVisualPanel1(List<JobI> jobs){
+    public SelectSingleJobVisualPanel1(Map<JobI, List<AttributeTypeI>> jobs){
         initComponents();
         DefaultListModel<JobI> jobModel = new DefaultListModel<>();
-        for (JobI job : jobs)            
+        for (JobI job : jobs.keySet())            
             jobModel.addElement(job);
         jobList.setModel(jobModel);
         jobList.setCellRenderer(new JobRenderer());

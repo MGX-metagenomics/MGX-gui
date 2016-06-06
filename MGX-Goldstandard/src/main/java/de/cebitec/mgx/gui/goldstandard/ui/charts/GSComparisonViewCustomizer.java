@@ -37,7 +37,7 @@ public class GSComparisonViewCustomizer extends javax.swing.JPanel implements Vi
      */
     public GSComparisonViewCustomizer() {
         initComponents();
-        viewTypeBox.setModel(new DefaultComboBoxModel(ComparisonViews.values()));
+        viewTypeBox.setModel(new DefaultComboBoxModel<>(ComparisonViews.values()));
     }
 
     private AttributeTypeI at;
@@ -241,7 +241,7 @@ public class GSComparisonViewCustomizer extends javax.swing.JPanel implements Vi
     private javax.swing.JCheckBox includeHeaders;
     private javax.swing.JLabel jLabel4;
     private de.cebitec.mgx.gui.swingutils.TreeFilter treeFilter1;
-    private javax.swing.JComboBox<String> viewTypeBox;
+    private javax.swing.JComboBox<ComparisonViews> viewTypeBox;
     // End of variables declaration//GEN-END:variables
 
     private class InvisibleRoot extends AbstractNode {

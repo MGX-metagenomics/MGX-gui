@@ -187,37 +187,10 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Proper
     @Override
     @SuppressWarnings("unchecked")
     public void actionPerformed(ActionEvent e) {
+        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         currentViewer.init(currentSeqrun);
-//        jobWizard.setRun(currentSeqrun);        
-//        jobWizard.actionPerformed(e);
-        try {
-            jobWz = new SelectSingleJobWizardDescriptor(currentSeqrun);
-            Dialog dialog = DialogDisplayer.getDefault().createDialog(jobWz);
-            dialog.setVisible(true);
-            dialog.toFront();
-            boolean cancelled = jobWz.getValue() != WizardDescriptor.FINISH_OPTION;
-            if (!cancelled) {
-                setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-                topComponent.setVisualization(currentViewer);
-                List<JobI> selectedJobs;
-                AttributeTypeI selectedAT;
-//            if (currentViewer.getInputType() == DistributionI.class) {
-//                
-//            } else if (currentViewer.getInputType() == TreeI.class) {
-//                List<TreeI> trees = new ArrayList<>();
-//                for (JobI job : selectedJobs) {
-//                    trees.add(currentSeqrun.getMaster().Attribute().getHierarchy(selectedAT, job));
-//                }
-//                currentViewer.show();
-//            }
-//        } catch (MGXException ex) {
-//            Exceptions.printStackTrace(ex);
-            }
-        } catch (MGXException ex) {
-            Exceptions.printStackTrace(ex);
-        } finally {
-            setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-        }
+        topComponent.setVisualization(currentViewer);
+        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
     }
     
 
