@@ -29,6 +29,13 @@ public class TermModel extends BaseModel<String> {
 
     public void setMaster(MGXMasterI m) {
         currentMaster = m;
+        if (currentMaster == null || runs == null || runs.length == 0 || currentMaster.isDeleted()) {
+            currentMaster = null;
+            if (!content.isEmpty()) {
+                content.clear();
+                fireContentsChanged();
+            }
+        }
     }
 
     public void setRuns(SeqRunI[] runs) {
@@ -43,21 +50,29 @@ public class TermModel extends BaseModel<String> {
 
     @Override
     public synchronized void update() {
+        if (currentMaster == null || runs == null || runs.length == 0 || currentMaster.isDeleted()) {
+            currentMaster = null;
+            if (!content.isEmpty()) {
+                content.clear();
+                fireContentsChanged();
+            }
+            return;
+        }
         if (currentMaster == null || runs == null || runs.length == 0) {
             return;
         }
         if (term == null || term.isEmpty()) {
             return;
         }
-        
+
         String prevSelection = getSelectedItem();
-        
+
         // if previous term is a prefix of current term, we can 
         // narrow down the current data instead of contacting the
         // server
         if (prevTerm != null && term.startsWith(prevTerm)) {
             List<String> oldTerms = new ArrayList<>(content.size());
-            oldTerms.addAll(content); 
+            oldTerms.addAll(content);
             content.clear();
             for (String s : oldTerms) {
                 if (s.contains(term)) {
@@ -71,7 +86,10 @@ public class TermModel extends BaseModel<String> {
 
             @Override
             protected Iterator<String> doInBackground() throws Exception {
-                return currentMaster.Attribute().find(term, runs);
+                if (!currentMaster.isDeleted()) {
+                    return currentMaster.Attribute().find(term, runs);
+                }
+                return null;
             }
         };
         sw.execute();
@@ -90,7 +108,7 @@ public class TermModel extends BaseModel<String> {
             }
         }
         Collections.sort(content);
-        
+
         if (prevSelection != null && content.contains(prevSelection)) {
             setSelectedItem(prevSelection);
         }
