@@ -70,8 +70,10 @@ public class SeqRunModel extends BaseModel<SeqRunI> implements PropertyChangeLis
         if (evt.getSource().equals(currentMaster) && ModelBaseI.OBJECT_DELETED.equals(evt.getPropertyName())) {
             currentMaster.removePropertyChangeListener(this);
             currentMaster = null;
-            content.clear();
-            fireContentsChanged();
+            if (!content.isEmpty()) {
+                content.clear();
+                fireContentsChanged();
+            }
         }
     }
 }

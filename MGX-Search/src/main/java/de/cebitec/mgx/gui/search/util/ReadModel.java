@@ -27,6 +27,11 @@ public class ReadModel extends BaseModel<SequenceI> {
 
     public void setMaster(MGXMasterI m) {
         currentMaster = m;
+        if (currentMaster == null || runs == null || runs.length == 0 || currentMaster.isDeleted()) {
+            content.clear();
+            currentMaster = null;
+            fireContentsChanged();
+        }
     }
 
     public void setRuns(SeqRunI[] runs) {
@@ -42,16 +47,19 @@ public class ReadModel extends BaseModel<SequenceI> {
         if (currentMaster == null || term == null || runs == null || runs.length == 0) {
             return;
         }
-        
+
         SwingWorker<Iterator<SequenceI>, Void> sw = new SwingWorker<Iterator<SequenceI>, Void>() {
 
             @Override
             protected Iterator<SequenceI> doInBackground() throws Exception {
-                return currentMaster.Attribute().search(term, true, runs);
+                if (!currentMaster.isDeleted()) {
+                    return currentMaster.Attribute().search(term, true, runs);
+                }
+                return null;
             }
         };
         sw.execute();
-        
+
         Iterator<SequenceI> iter;
         try {
             iter = sw.get();
@@ -59,9 +67,9 @@ public class ReadModel extends BaseModel<SequenceI> {
             Exceptions.printStackTrace(ex);
             return;
         }
-       
+
         content.clear();
-        while (iter.hasNext()) {
+        while (iter != null && iter.hasNext()) {
             SequenceI seq = iter.next();
             content.add(seq);
         }
