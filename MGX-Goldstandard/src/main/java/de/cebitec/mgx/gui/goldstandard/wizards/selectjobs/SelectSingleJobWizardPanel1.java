@@ -6,7 +6,7 @@ import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.JobState;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.goldstandard.actions.AddGoldstandard;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -29,36 +29,34 @@ public class SelectSingleJobWizardPanel1 implements WizardDescriptor.Panel<Wizar
      */
     private SelectSingleJobVisualPanel1 component;
     private WizardDescriptor model;
-    private Map<JobI, List<AttributeTypeI>> jobs;
+    private final Map<JobI, Collection<AttributeTypeI>> jobs;
     private JobI goldstandard;
     private Set<AttributeTypeI> gsAttributeTypes;
-    private SeqRunI seqrun;
+    private final SeqRunI seqrun;
 
     public SelectSingleJobWizardPanel1(SeqRunI seqrun) throws MGXException {
         this.seqrun = seqrun;
         List<JobI> allJobs = seqrun.getMaster().Job().BySeqRun(seqrun);
         jobs = new HashMap<>(allJobs.size());
-        for (JobI job : allJobs){
-            if (job.getStatus() == JobState.FINISHED){
-                job.setTool(seqrun.getMaster().Tool().ByJob(job));
-                if (!job.getTool().getName().equals(AddGoldstandard.TOOL_NAME)){
-                    Iterator<AttributeTypeI> it = seqrun.getMaster().AttributeType().byJob(job);
-                    List<AttributeTypeI> ats = new LinkedList<>();
-                    while(it.hasNext())
-                        ats.add(it.next());
-                    jobs.put(job, ats);
-                } else {
-                    goldstandard = job;
-                    gsAttributeTypes = new HashSet<>();
-                    Iterator<AttributeTypeI> it = seqrun.getMaster().AttributeType().byJob(goldstandard);
-                    while (it.hasNext())
-                        gsAttributeTypes.add(it.next());
+        for (JobI job : allJobs) {
+            job.setTool(seqrun.getMaster().Tool().ByJob(job));
+            if (job.getTool().getName().equals(AddGoldstandard.TOOL_NAME)) {
+                goldstandard = job;
+                gsAttributeTypes = new HashSet<>();
+                Iterator<AttributeTypeI> it = seqrun.getMaster().AttributeType().byJob(goldstandard);
+                while (it.hasNext()) {
+                    gsAttributeTypes.add(it.next());
                 }
             }
         }
-    }    
-    
-    
+        allJobs.remove(goldstandard);
+        for (JobI job : allJobs) {
+            if (job.getStatus() == JobState.FINISHED) {
+                jobs.put(job, null);
+            }
+        }
+    }
+
     // Get the visual component for the panel. In this template, the component
     // is kept separate. This can be more efficient: if the wizard is created
     // but never displayed, or not all panels are displayed, it is better to
@@ -79,8 +77,8 @@ public class SelectSingleJobWizardPanel1 implements WizardDescriptor.Panel<Wizar
         // If you have context help:
         // return new HelpCtx("help.key.here");
     }
-    
-    public String getName(){
+
+    public String getName() {
         return component.getName();
     }
 
@@ -118,18 +116,26 @@ public class SelectSingleJobWizardPanel1 implements WizardDescriptor.Panel<Wizar
     @Override
     public void valueChanged(ListSelectionEvent e) {
 //        ListSelectionModel lsm = (ListSelectionModel) e.getSource();
-        if (! e.getValueIsAdjusting()){
-            try {
-                JobI job = component.getSelectedJob();
-                Iterator<AttributeTypeI> it = job.getMaster().AttributeType().byJob(job);
-                Set<AttributeTypeI> set = new HashSet<>();
-                while (it.hasNext())
-                    set.add(it.next());
-                component.setAttributeTypeList(set);
-                component.enableAttributeTypeBox(!set.isEmpty());                
-            } catch (MGXException ex) {
-                Exceptions.printStackTrace(ex);
+        if (!e.getValueIsAdjusting()) {
+            JobI job = component.getSelectedJob();
+            Collection<AttributeTypeI> atList = jobs.get(job);
+            if (atList == null){
+                try {
+                    Iterator<AttributeTypeI> it = seqrun.getMaster().AttributeType().byJob(job);
+                    atList = new LinkedList<>();
+                    while (it.hasNext()) {
+                        AttributeTypeI at = it.next();
+                        if (gsAttributeTypes.contains(at)) {
+                            atList.add(at);
+                        }
+                    }
+                    jobs.put(job, atList);
+                } catch (MGXException ex) {
+                    Exceptions.printStackTrace(ex);
+                }
             }
+            component.setAttributeTypeList(atList);
+            component.enableAttributeTypeBox(atList != null && !atList.isEmpty());
         }
     }
 

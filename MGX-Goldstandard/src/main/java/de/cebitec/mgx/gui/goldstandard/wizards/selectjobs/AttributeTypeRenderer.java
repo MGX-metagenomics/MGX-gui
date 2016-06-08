@@ -10,28 +10,30 @@ import javax.swing.ListCellRenderer;
  *
  * @author patrick
  */
-public class AttributeTypeRenderer extends JLabel implements ListCellRenderer<AttributeTypeI>{
+public class AttributeTypeRenderer extends JLabel implements ListCellRenderer<AttributeTypeI> {
 
     public AttributeTypeRenderer() {
         setOpaque(true);
     }
 
     @Override
-    public Component getListCellRendererComponent(JList<? extends AttributeTypeI> list, AttributeTypeI value, int index, boolean isSelected, boolean cellHasFocus) {        
-        if (value == null)
+    public Component getListCellRendererComponent(JList<? extends AttributeTypeI> list, AttributeTypeI value, int index, boolean isSelected, boolean cellHasFocus) {
+        if (value == null) {
+            setText("");
             return this;
-        
+        }
+
         setText(value.getName());
-        
-        if (isSelected){
+
+        if (isSelected) {
             setBackground(list.getSelectionBackground());
             setForeground(list.getSelectionForeground());
         } else {
             setBackground(list.getBackground());
             setForeground(list.getForeground());
         }
-        
+
         return this;
     }
-    
+
 }

@@ -7,6 +7,7 @@ package de.cebitec.mgx.gui.goldstandard.wizards.selectjobs;
 
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.JobI;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -14,54 +15,61 @@ import javax.swing.DefaultListModel;
 import javax.swing.JPanel;
 import javax.swing.event.ListSelectionListener;
 
-public final class SelectSingleJobVisualPanel1 extends JPanel{
+public final class SelectSingleJobVisualPanel1 extends JPanel {
 
     public static final String PROP_JOB = "job";
     public static final String PROP_ATTRIBUTETYPE = "attribute_type";
     public static final String PROP_GOLDSTANDARD = "goldstandard";
-    
+
     /**
      * Creates new form SelectSingleJobVisualPanel1
      */
-    public SelectSingleJobVisualPanel1(Map<JobI, List<AttributeTypeI>> jobs){
+    public SelectSingleJobVisualPanel1(Map<JobI, Collection<AttributeTypeI>> jobs) {
         initComponents();
         DefaultListModel<JobI> jobModel = new DefaultListModel<>();
-        for (JobI job : jobs.keySet())            
+        for (JobI job : jobs.keySet()) {
             jobModel.addElement(job);
+        }
         jobList.setModel(jobModel);
         jobList.setCellRenderer(new JobRenderer());
-        
+
         attributeTypeBox.setRenderer(new AttributeTypeRenderer());
-        
+
         clearSelections();
     }
-    
-    public void addListSelectionListener(ListSelectionListener lsl){
+
+    public void addListSelectionListener(ListSelectionListener lsl) {
         jobList.getSelectionModel().addListSelectionListener(lsl);
     }
 
-    public JobI getSelectedJob(){
+    public JobI getSelectedJob() {
         return jobList.getSelectedValue();
     }
-    
-    public AttributeTypeI getSelectedAttributeType(){
-        return (AttributeTypeI)attributeTypeBox.getSelectedItem();
+
+    public AttributeTypeI getSelectedAttributeType() {
+        return (AttributeTypeI) attributeTypeBox.getSelectedItem();
     }
-    
-    public void setAttributeTypeList(Set<AttributeTypeI> attrTypes){
+
+    public void setAttributeTypeList(Collection<AttributeTypeI> attrTypes) {
         attributeTypeBox.removeAllItems();
-        for (AttributeTypeI at : attrTypes)
-            attributeTypeBox.addItem(at);        
+        for (AttributeTypeI at : attrTypes) {
+            attributeTypeBox.addItem(at);
+        }
+        if (!attrTypes.isEmpty()) {
+            attributeTypeBox.setSelectedIndex(0);
+        } else {
+            attributeTypeBox.setSelectedIndex(-1);
+        }
     }
-    
-    public void enableAttributeTypeBox(boolean enable){
+
+    public void enableAttributeTypeBox(boolean enable) {
         attributeTypeBox.setEnabled(enable);
     }
-    
-    public void clearSelections(){
+
+    public void clearSelections() {
         jobList.getSelectionModel().clearSelection();
     }
-    
+
     @Override
     public String getName() {
         return "Step #1";

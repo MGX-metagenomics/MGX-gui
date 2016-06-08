@@ -26,50 +26,49 @@ import org.openide.util.Exceptions;
  *
  * @author patrick
  */
-public class VennChart extends JPanel{
-    
+public class VennChart extends JPanel {
+
     private BufferedImage image;
-    
-    private static Point[] fontCoordinates2 = new Point[] {new Point(340, 420), new Point(1060, 420), new Point(700, 420)}; 
-    private static Color[] fontColor2 = new Color[] {new Color(255,0,0), new Color(255,255,0), new Color(255, 127, 0)};
+
+    private static Point[] fontCoordinates2 = new Point[]{new Point(340, 420), new Point(1060, 420), new Point(700, 420)};
+    private static Color[] fontColor2 = new Color[]{new Color(255, 0, 0), new Color(255, 255, 0), new Color(255, 127, 0)};
     private static Dimension venn2 = new Dimension(1500, 1000);
-    
-    
-    private VennChart(BufferedImage img){
+
+    private VennChart(BufferedImage img) {
         super();
         image = img;
     }
 
-    public static VennChart get2Venn(Collection<?> a, Collection<?> b) throws IOException{        
-        return get2Venn(CollectionUtils.subtract(a, b).size(), CollectionUtils.subtract(b, a).size(), CollectionUtils.intersection(a, b).size());        
+    public static VennChart get2Venn(Collection<?> a, Collection<?> b) throws IOException {
+        return get2Venn(CollectionUtils.subtract(a, b).size(), CollectionUtils.subtract(b, a).size(), CollectionUtils.intersection(a, b).size());
     }
-    
-    public static VennChart get2Venn(long onlyA, long onlyB, long ab) throws IOException{        
-        List<Long> list = new ArrayList<>(3); 
+
+    public static VennChart get2Venn(long onlyA, long onlyB, long ab) throws IOException {
+        List<Long> list = new ArrayList<>(3);
         list.add(onlyA);            //only a
         list.add(onlyB);            //only b
         list.add(ab);        //ab
-        
-        BufferedImage img;        
+
+        BufferedImage img;
         try {
             img = ImageIO.read(VennChart.class.getClassLoader().getResource("de/cebitec/mgx/gui/goldstandard/ui/charts/Venn_2er_big.png"));
         } catch (IOException ex) {
             throw new IOException("Venn image not found.", ex);
         }
-        
+
         Graphics2D g2d = img.createGraphics();
-        for (int i = 0; i < fontCoordinates2.length; i++){            
+        for (int i = 0; i < fontCoordinates2.length; i++) {
             g2d.drawImage(img, 0, 0, null);
             g2d.setPaint(getFontColor(fontColor2[i]));
-            g2d.setFont(new Font("Serif", Font.BOLD, 22));
-            String str = String.valueOf(list.size());
+            g2d.setFont(new Font("SansSerif", Font.BOLD, 28));
+            String str = String.valueOf(list.get(i));
             g2d.drawString(str, fontCoordinates2[i].x, fontCoordinates2[i].y);
         }
-        g2d.dispose();        
-        return new VennChart(img);        
+        g2d.dispose();
+        return new VennChart(img);
     }
-    
-    private static void create() throws IOException{
+
+    private static void create() throws IOException {
         Set<Integer> a = new HashSet<>();
         a.add(1);
         a.add(2);
@@ -86,8 +85,8 @@ public class VennChart extends JPanel{
         f.pack();
         f.setVisible(true);
     }
-    
-    public static void main(String[] args){
+
+    public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -99,17 +98,26 @@ public class VennChart extends JPanel{
             }
         });
     }
-    
+
     @Override
-    public void paintComponent(Graphics g){
+    public void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
+        double factor = (double) this.getWidth() / image.getWidth();
+        int newH = (int) (image.getHeight() * factor);
+        if (newH > this.getHeight()) {
+            factor = (double) this.getHeight() / image.getHeight();
+        }
+        int newW = (int) (image.getWidth() * factor);
+        newH = (int) (image.getHeight() * factor);
+
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
         super.paintComponent(g2);
-        g2.drawImage(image, 0, 0, null);
+        g2.drawImage(image, 0, 0, newW, newH, null);
     }
-    
-    private static Color getFontColor(Color background){
+
+    private static Color getFontColor(Color background) {
         return (background.getBlue() + background.getRed() + background.getGreen() > 254) ? Color.BLACK : Color.WHITE;
     }
-    
+
 }

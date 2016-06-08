@@ -131,11 +131,26 @@ public class GSComparisonViewer extends EvaluationViewerI<TreeI<Long>> {
                     onlySample.put(sampleNode.getAttribute(), oSample);
                 }
             }
+            
+            if (!sampleIndizes.isEmpty()){
+                for (Integer i : sampleIndizes){
+                    NodeI<Long> node = sampleLeaves.get(i);                    
+                    List<Long> seqIDs = NodeUtils.getSeqIDs(node);
+                    onlySample.put(node.getAttribute(), seqIDs);
+                }
+            }
 
             currentView = cust.getCurrentComparisonView();
 
             if (currentView == ComparisonViews.VennChart) {
-                venn = VennChart.get2Venn(onlyGS.size(), onlySample.size(), gsAndSample.size());
+                int a = 0, b = 0, ab = 0;
+                for (Collection<Long> i : onlyGS.values())
+                    a += i.size();
+                for (Collection<Long> i : onlySample.values())
+                    b += i.size();
+                for (Collection<Long> i : gsAndSample.values())
+                    ab += i.size();
+                venn = VennChart.get2Venn(a, b, ab);
             } else if (currentView == ComparisonViews.TableView) {
 
             }

@@ -11,7 +11,7 @@ import javax.swing.ListCellRenderer;
  *
  * @author patrick
  */
-public class JobRenderer extends JLabel implements ListCellRenderer<JobI>{
+public class JobRenderer extends JLabel implements ListCellRenderer<JobI> {
 
     public JobRenderer() {
         setOpaque(true);
@@ -19,25 +19,29 @@ public class JobRenderer extends JLabel implements ListCellRenderer<JobI>{
 
     @Override
     public Component getListCellRendererComponent(JList<? extends JobI> list, JobI value, int index, boolean isSelected, boolean cellHasFocus) {
-        StringBuilder code = new StringBuilder(value.getTool().getName() + " - ");
-        for (JobParameterI parameter : value.getParameters()){
-            code.append(parameter.getParameterName());
-            code.append(": ");
-            code.append(parameter.getParameterValue());
-            code.append(", ");
+        StringBuilder code = new StringBuilder(value.getTool().getName());
+        if (!value.getParameters().isEmpty()) {
+            code.append(" - ");
+            for (JobParameterI parameter : value.getParameters()) {
+                code.append(parameter.getParameterName());
+                code.append(": ");
+                code.append(parameter.getParameterValue());
+                code.append(", ");
+            }
+            code.deleteCharAt(code.length() - 1);
+            code.deleteCharAt(code.length() - 1);
         }
-        code.deleteCharAt(code.length()-1);
         setText(code.toString());
-        
-        if (isSelected){
+
+        if (isSelected) {
             setBackground(list.getSelectionBackground());
             setForeground(list.getSelectionForeground());
         } else {
             setBackground(list.getBackground());
             setForeground(list.getForeground());
         }
-        
+
         return this;
     }
-    
+
 }
