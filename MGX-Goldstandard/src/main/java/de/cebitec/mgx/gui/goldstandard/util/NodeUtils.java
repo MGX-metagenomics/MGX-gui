@@ -1,10 +1,7 @@
 package de.cebitec.mgx.gui.goldstandard.util;
 
 import de.cebitec.mgx.api.exception.MGXException;
-import de.cebitec.mgx.api.misc.Pair;
-import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.tree.NodeI;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;

@@ -8,9 +8,7 @@ package de.cebitec.mgx.gui.goldstandard.wizards.selectjobs;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.JobI;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import javax.swing.DefaultListModel;
 import javax.swing.JPanel;
 import javax.swing.event.ListSelectionListener;
@@ -50,6 +48,10 @@ public final class SelectSingleJobVisualPanel1 extends JPanel {
         return (AttributeTypeI) attributeTypeBox.getSelectedItem();
     }
 
+    public int getAttributeTypeListCount() {
+        return attributeTypeBox.getItemCount();
+    }
+    
     public void setAttributeTypeList(Collection<AttributeTypeI> attrTypes) {
         attributeTypeBox.removeAllItems();
         for (AttributeTypeI at : attrTypes) {

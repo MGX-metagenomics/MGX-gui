@@ -1,21 +1,13 @@
 package de.cebitec.mgx.gui.goldstandard.ui.charts;
 
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
-import de.cebitec.mgx.api.misc.DistributionI;
-import de.cebitec.mgx.api.misc.Pair;
-import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
-import de.cebitec.mgx.api.visualization.filter.VisFilterI;
 import de.cebitec.mgx.gui.goldstandard.ui.charts.GSComparisonViewer.ComparisonViews;
-import de.cebitec.mgx.gui.vizfilter.ExcludeFilter;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.List;
-import java.util.Set;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFileChooser;
 import javax.swing.table.AbstractTableModel;
@@ -30,7 +22,7 @@ import org.openide.util.NbPreferences;
  *
  * @author pblumenk
  */
-public class GSComparisonViewCustomizer extends javax.swing.JPanel implements VisFilterI<DistributionI<Long>, DistributionI<Long>>, PropertyChangeListener {
+public class GSComparisonViewCustomizer extends javax.swing.JPanel implements PropertyChangeListener {
 
     /**
      * Creates new form TableViewCustomizer
@@ -38,6 +30,7 @@ public class GSComparisonViewCustomizer extends javax.swing.JPanel implements Vi
     public GSComparisonViewCustomizer() {
         initComponents();
         viewTypeBox.setModel(new DefaultComboBoxModel<>(ComparisonViews.values()));
+        viewTypeBox.setSelectedIndex(0);
     }
 
     private AttributeTypeI at;
@@ -52,37 +45,6 @@ public class GSComparisonViewCustomizer extends javax.swing.JPanel implements Vi
         return includeHeaders.isSelected();
     }
 
-    public boolean useFractions() {
-        return fractions.isSelected();
-    }
-
-    public void setAttributeType(final AttributeTypeI aType) {
-        if (aType.equals(at)) {
-            return;
-        }
-        at = aType;
-        treeFilter1.setAttributeType(at);
-    }
-
-    @Override
-    public List<Pair<VisualizationGroupI, DistributionI<Long>>> filter(List<Pair<VisualizationGroupI, DistributionI<Long>>> dists) {
-
-        Set<AttributeI> filterEntries = treeFilter1.getBlackList();
-
-        if (filterEntries == null || filterEntries.isEmpty()) {
-            return dists;
-        }
-
-        ExcludeFilter<Long> ef = new ExcludeFilter<>(filterEntries);
-        dists = ef.filter(dists);
-
-        return dists;
-    }
-
-    public Set<AttributeI> getFilterEntries() {
-        return treeFilter1.getBlackList();
-    }
-
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -94,9 +56,6 @@ public class GSComparisonViewCustomizer extends javax.swing.JPanel implements Vi
 
         export = new javax.swing.JButton();
         includeHeaders = new javax.swing.JCheckBox();
-        jLabel4 = new javax.swing.JLabel();
-        fractions = new javax.swing.JCheckBox();
-        treeFilter1 = new de.cebitec.mgx.gui.swingutils.TreeFilter();
         viewTypeBox = new javax.swing.JComboBox<>();
 
         org.openide.awt.Mnemonics.setLocalizedText(export, "Export TSV");
@@ -116,12 +75,6 @@ public class GSComparisonViewCustomizer extends javax.swing.JPanel implements Vi
             }
         });
 
-        jLabel4.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel4, "Include:");
-
-        fractions.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
-        org.openide.awt.Mnemonics.setLocalizedText(fractions, "Show as fractions");
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -129,13 +82,10 @@ public class GSComparisonViewCustomizer extends javax.swing.JPanel implements Vi
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(treeFilter1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(export)
-                            .addComponent(includeHeaders)
-                            .addComponent(fractions)
-                            .addComponent(jLabel4))
+                            .addComponent(includeHeaders))
                         .addContainerGap(94, Short.MAX_VALUE))
                     .addComponent(viewTypeBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
@@ -146,13 +96,7 @@ public class GSComparisonViewCustomizer extends javax.swing.JPanel implements Vi
                 .addComponent(viewTypeBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(includeHeaders)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(fractions)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel4)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(treeFilter1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 44, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 271, Short.MAX_VALUE)
                 .addComponent(export))
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -237,10 +181,7 @@ public class GSComparisonViewCustomizer extends javax.swing.JPanel implements Vi
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton export;
-    private javax.swing.JCheckBox fractions;
     private javax.swing.JCheckBox includeHeaders;
-    private javax.swing.JLabel jLabel4;
-    private de.cebitec.mgx.gui.swingutils.TreeFilter treeFilter1;
     private javax.swing.JComboBox<ComparisonViews> viewTypeBox;
     // End of variables declaration//GEN-END:variables
 
@@ -256,9 +197,7 @@ public class GSComparisonViewCustomizer extends javax.swing.JPanel implements Vi
     }
 
     @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-        return;
-    }
+    public void propertyChange(PropertyChangeEvent evt) {}
     
     public ComparisonViews getCurrentComparisonView(){
         return (ComparisonViews)viewTypeBox.getSelectedItem();

@@ -14,14 +14,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.EventListenerList;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import org.openide.WizardDescriptor;
 import org.openide.util.Exceptions;
 import org.openide.util.HelpCtx;
 
-public class SelectSingleJobWizardPanel1 implements WizardDescriptor.Panel<WizardDescriptor>, ListSelectionListener {
+public class SelectSingleJobWizardPanel1 implements WizardDescriptor.Panel<WizardDescriptor>, ListSelectionListener{
 
     /**
      * The visual component that displays this panel. If you need to access the
@@ -29,10 +31,14 @@ public class SelectSingleJobWizardPanel1 implements WizardDescriptor.Panel<Wizar
      */
     private SelectSingleJobVisualPanel1 component;
     private WizardDescriptor model;
+    private final EventListenerList listeners = new EventListenerList();
+
     private final Map<JobI, Collection<AttributeTypeI>> jobs;
     private JobI goldstandard;
     private Set<AttributeTypeI> gsAttributeTypes;
     private final SeqRunI seqrun;
+
+    private boolean isValid = false;
 
     public SelectSingleJobWizardPanel1(SeqRunI seqrun) throws MGXException {
         this.seqrun = seqrun;
@@ -65,7 +71,8 @@ public class SelectSingleJobWizardPanel1 implements WizardDescriptor.Panel<Wizar
     public SelectSingleJobVisualPanel1 getComponent() {
         if (component == null) {
             component = new SelectSingleJobVisualPanel1(jobs);
-            component.addListSelectionListener(this);
+            component.addListSelectionListener(this);            
+
         }
         return component;
     }
@@ -85,7 +92,7 @@ public class SelectSingleJobWizardPanel1 implements WizardDescriptor.Panel<Wizar
     @Override
     public boolean isValid() {
         // If it is always OK to press Next or Finish, then:
-        return true;
+        return isValid;
         // If it depends on some condition (form filled out...) and
         // this condition changes (last form field filled in...) then
         // use ChangeSupport to implement add/removeChangeListener below.
@@ -94,20 +101,32 @@ public class SelectSingleJobWizardPanel1 implements WizardDescriptor.Panel<Wizar
 
     @Override
     public void addChangeListener(ChangeListener l) {
+        listeners.add(ChangeListener.class, l);
     }
 
     @Override
     public void removeChangeListener(ChangeListener l) {
+        listeners.remove(ChangeListener.class, l);
+    }
+
+    protected final void fireChangeEvent(Object source, boolean oldState, boolean newState) {
+        if (oldState != newState) {
+            ChangeEvent ev = new ChangeEvent(source);
+
+            for (ChangeListener listener
+                    : listeners.getListeners(ChangeListener.class)) {
+                listener.stateChanged(ev);
+            }
+        }
     }
 
     @Override
     public void readSettings(WizardDescriptor wiz) {
-        // use wiz.getProperty to retrieve previous panel state
+        this.model = wiz;
     }
 
     @Override
     public void storeSettings(WizardDescriptor wiz) {
-        model = wiz;
         model.putProperty(SelectSingleJobVisualPanel1.PROP_JOB, getComponent().getSelectedJob());
         model.putProperty(SelectSingleJobVisualPanel1.PROP_ATTRIBUTETYPE, getComponent().getSelectedAttributeType());
         model.putProperty(SelectSingleJobVisualPanel1.PROP_GOLDSTANDARD, goldstandard);
@@ -119,7 +138,7 @@ public class SelectSingleJobWizardPanel1 implements WizardDescriptor.Panel<Wizar
         if (!e.getValueIsAdjusting()) {
             JobI job = component.getSelectedJob();
             Collection<AttributeTypeI> atList = jobs.get(job);
-            if (atList == null){
+            if (atList == null) {
                 try {
                     Iterator<AttributeTypeI> it = seqrun.getMaster().AttributeType().byJob(job);
                     atList = new LinkedList<>();
@@ -136,7 +155,15 @@ public class SelectSingleJobWizardPanel1 implements WizardDescriptor.Panel<Wizar
             }
             component.setAttributeTypeList(atList);
             component.enableAttributeTypeBox(atList != null && !atList.isEmpty());
+
+            boolean oldState = isValid;
+            isValid = checkValidity();
+            fireChangeEvent(this, oldState, isValid);
         }
+    }
+
+    private boolean checkValidity() {
+        return component.getAttributeTypeListCount() != 0;
     }
 
 }

@@ -7,18 +7,21 @@ import de.cebitec.mgx.api.model.SeqRunI;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import org.openide.WizardDescriptor;
 
 /**
  *
  * @author sjaenick
  */
-public class SelectSingleJobWizardDescriptor extends WizardDescriptor {
+public class SelectSingleJobWizardDescriptor extends WizardDescriptor implements ChangeListener{
 
     private final SelectSingleJobWizardPanel1 p1;
     protected final SeqRunI seqrun;
 
     public SelectSingleJobWizardDescriptor(SeqRunI seqrun) throws MGXException {
+        super();
         this.seqrun = seqrun;
         p1 = new SelectSingleJobWizardPanel1(seqrun);
         List<Panel<WizardDescriptor>> panels = new ArrayList<>();
@@ -42,6 +45,11 @@ public class SelectSingleJobWizardDescriptor extends WizardDescriptor {
     
     public JobI getGoldstandard(){
         return (JobI) getProperty(SelectSingleJobVisualPanel1.PROP_GOLDSTANDARD);
+    }
+
+    @Override
+    public void stateChanged(ChangeEvent e) {
+        return;
     }
 
 }

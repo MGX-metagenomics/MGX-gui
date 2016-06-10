@@ -44,14 +44,12 @@ public final class EvaluationTopComponent extends TopComponent {
     private final EvaluationControlPanel controlPanel1 = new EvaluationControlPanel();
     private final Lookup lookup;
     private final InstanceContent content = new InstanceContent();
-    
-
 
     public EvaluationTopComponent() {
         initComponents();
         setName(Bundle.CTL_EvaluationTopComponent());
         setToolTipText(Bundle.HINT_EvaluationTopComponent());
-        
+
         int width = jSplitPane1.getSize().width;
         jSplitPane1.setDividerLocation(width - 50);
         lookup = new AbstractLookup(content);
@@ -116,12 +114,14 @@ public final class EvaluationTopComponent extends TopComponent {
         String version = p.getProperty("version");
         // TODO read your settings according to their version
     }
-    
+
     public void setVisualization(EvaluationViewerI v) {
-        chartpane.setViewportView(v.getComponent());
-        ImageExporterI exporter = v.getImageExporter();
-        if (exporter != null && exporter.getSupportedTypes().length > 0) {
-            content.add(exporter);
+        if (v.getComponent() != null) {
+            chartpane.setViewportView(v.getComponent());
+            ImageExporterI exporter = v.getImageExporter();
+            if (exporter != null && exporter.getSupportedTypes().length > 0) {
+                content.add(exporter);
+            }
         }
     }
 }

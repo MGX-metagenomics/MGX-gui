@@ -1,5 +1,7 @@
 package de.cebitec.mgx.gui.goldstandard.ui.charts;
 
+import de.cebitec.mgx.api.groups.FileType;
+import de.cebitec.mgx.api.groups.ImageExporterI;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -10,6 +12,7 @@ import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.FontMetrics;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -66,6 +69,28 @@ public class VennChart extends JPanel {
         }
         g2d.dispose();
         return new VennChart(img);
+    }
+
+    static ImageExporterI getImageExporter(final VennChart venn) {
+        return new ImageExporterI() {
+            @Override
+            public FileType[] getSupportedTypes() {
+                return new FileType[]{FileType.PNG, FileType.JPEG};
+            }
+
+            @Override
+            public ImageExporterI.Result export(FileType type, String fName) throws Exception {
+                switch (type) {
+                    case PNG:
+                        ImageIO.write(venn.image, "png", new File(fName));
+                        return ImageExporterI.Result.SUCCESS;
+                    case JPEG:
+                        return ImageExporterI.Result.SUCCESS;
+                    default:
+                        return ImageExporterI.Result.ERROR;
+                }
+            }
+        };
     }
 
     private static void create() throws IOException {
