@@ -23,12 +23,14 @@ import java.util.Set;
  */
 public interface SequenceAccessI extends AccessBaseI<SequenceI> {
 
+    public Iterator<SequenceI> fetchByIds(long[] id) throws MGXException;
+
     public void fetchSeqData(Iterable<SequenceI> sequences) throws MGXException;
 
     public SequenceI fetch(SeqRunI seqrun, String seqName) throws MGXException;
 
     public void sendSequences(SeqRunI seqrun, SeqReaderI<? extends DNASequenceI> reader) throws MGXException;
-    
+
     public Iterator<Long> fetchSequenceIDs(AttributeI attr) throws MGXException;
 
     public void downloadSequencesForAttributes(Set<AttributeI> attrs, SeqWriterI<DNASequenceI> writer, boolean closeWriter) throws MGXException;
