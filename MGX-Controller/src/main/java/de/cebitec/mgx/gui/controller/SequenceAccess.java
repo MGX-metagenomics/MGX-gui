@@ -20,6 +20,7 @@ import de.cebitec.mgx.dto.dto.SequenceDTO;
 import de.cebitec.mgx.dto.dto.SequenceDTOList;
 import de.cebitec.mgx.gui.dtoconversion.AttributeDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.SequenceDTOFactory;
+import de.cebitec.mgx.gui.util.BaseIterator;
 import de.cebitec.mgx.sequence.DNASequenceI;
 import de.cebitec.mgx.sequence.SeqReaderI;
 import de.cebitec.mgx.sequence.SeqWriterI;
@@ -42,14 +43,14 @@ public class SequenceAccess extends AccessBase<SequenceI> implements SequenceAcc
 
     @Override
     public Iterator<Long> fetchSequenceIDs(AttributeI attr) throws MGXException {
-          try {
+        try {
             Iterator<Long> ret = getDTOmaster().Sequence().fetchSequenceIDs(attr.getId());
             return ret;
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
     }
-    
+
     @Override
     public void sendSequences(SeqRunI seqrun, SeqReaderI<? extends DNASequenceI> reader) throws MGXException {
         try {
@@ -133,6 +134,23 @@ public class SequenceAccess extends AccessBase<SequenceI> implements SequenceAcc
     }
 
     @Override
+    public Iterator<SequenceI> fetchByIds(long[] ids) throws MGXException {
+        try {
+            Iterator<SequenceDTO> iter = getDTOmaster().Sequence().fetchByIds(ids).getSeqList().iterator();
+            return new BaseIterator<SequenceDTO, SequenceI>(iter) {
+                @Override
+                public SequenceI next() {
+                    SequenceI h = SequenceDTOFactory.getInstance().toModel(getMaster(), iter.next());
+                    return h;
+                }
+            };
+
+        } catch (MGXDTOException ex) {
+            throw new MGXException(ex);
+        }
+    }
+
+    @Override
     public SequenceI fetch(SeqRunI seqrun, String seqName) throws MGXException {
         SequenceDTO dto = null;
         try {
@@ -157,7 +175,7 @@ public class SequenceAccess extends AccessBase<SequenceI> implements SequenceAcc
                 return;
             }
 
-            SequenceDTOList dto = getDTOmaster().Sequence().fetchSeqData(idx.keys());
+            SequenceDTOList dto = getDTOmaster().Sequence().fetchByIds(idx.keys());
 
             // update fields
             for (SequenceDTO sdto : dto.getSeqList()) {
