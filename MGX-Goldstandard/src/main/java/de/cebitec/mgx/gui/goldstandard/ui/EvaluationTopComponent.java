@@ -72,7 +72,8 @@ public final class EvaluationTopComponent extends TopComponent {
         jSplitPane1 = new javax.swing.JSplitPane();
         chartpane = new javax.swing.JScrollPane();
 
-        jSplitPane1.setDividerLocation(300);
+        jSplitPane1.setDividerLocation(800);
+        jSplitPane1.setPreferredSize(new java.awt.Dimension(850, 700));
 
         chartpane.setMinimumSize(new java.awt.Dimension(600, 400));
         jSplitPane1.setLeftComponent(chartpane);
@@ -81,11 +82,13 @@ public final class EvaluationTopComponent extends TopComponent {
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jSplitPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 844, Short.MAX_VALUE)
+                .addGap(0, 0, 0))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jSplitPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 300, Short.MAX_VALUE)
+            .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 492, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
 

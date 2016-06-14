@@ -67,7 +67,7 @@ public final class ConflictResolverVisualPanel1 extends JPanel implements ListSe
 
     @Override
     public String getName() {
-        return vg.getDisplayName() + " " + run.getName();
+        return vg == null ? super.getName() : vg.getDisplayName() + " " + run.getName();
     }
 
     protected static String joinParameters(Iterable<JobParameterI> pColl, String separator) {

@@ -43,7 +43,7 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Proper
     private final SelectSingleJobWizardAction jobWizard = new SelectSingleJobWizardAction();
     private SelectSingleJobWizardDescriptor jobWz;
     //
-    private final VisualizationTypeListModel vizListModel = new VisualizationTypeListModel();
+    private final VisualizationTypeListModel visListModel = new VisualizationTypeListModel();
     //
     private final Lookup lkp;
     private final Lookup.Result<SeqRunI> res;
@@ -61,6 +61,7 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Proper
         res = lkp.lookupResult(SeqRunI.class);
         res.addLookupListener(this);
         updateButton.addActionListener(this);
+        visualizationTypeList.addActionListener(this);
     }
 
     public final void setTopComponent(EvaluationTopComponent tc) {
@@ -68,8 +69,8 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Proper
     }
 
     public final synchronized void updateViewerList() {
-        vizListModel.update();
-        currentViewer = vizListModel.getSelectedItem();
+        visListModel.update();
+        currentViewer = visListModel.getSelectedItem();
         controlSplitPane.setBottomComponent(currentViewer.getCustomizer());
     }
 
@@ -89,16 +90,16 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Proper
         jPanel2 = new javax.swing.JPanel();
         updateButton = new javax.swing.JButton();
 
-        setMaximumSize(new java.awt.Dimension(300, 32767));
+        setMaximumSize(new java.awt.Dimension(150, 32767));
         setMinimumSize(new java.awt.Dimension(100, 0));
-        setPreferredSize(new java.awt.Dimension(200, 504));
+        setPreferredSize(new java.awt.Dimension(150, 504));
 
         controlSplitPane.setDividerLocation(80);
         controlSplitPane.setDividerSize(1);
         controlSplitPane.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
         controlSplitPane.setPreferredSize(new java.awt.Dimension(200, 450));
 
-        visualizationTypeList.setModel(vizListModel);
+        visualizationTypeList.setModel(visListModel);
         visualizationTypeList.setEnabled(false);
 
         jLabel2.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
@@ -111,7 +112,7 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Proper
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(visualizationTypeList, 0, 158, Short.MAX_VALUE)
+                    .addComponent(visualizationTypeList, 0, 135, Short.MAX_VALUE)
                     .addComponent(jLabel2))
                 .addContainerGap())
         );
@@ -131,7 +132,7 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Proper
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 182, Short.MAX_VALUE)
+            .addGap(0, 159, Short.MAX_VALUE)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -149,7 +150,7 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Proper
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(6, 6, 6)
-                .addComponent(controlSplitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 182, Short.MAX_VALUE)
+                .addComponent(controlSplitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 159, Short.MAX_VALUE)
                 .addGap(12, 12, 12))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
@@ -187,12 +188,16 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Proper
     @Override
     @SuppressWarnings("unchecked")
     public void actionPerformed(ActionEvent e) {
-        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-        currentViewer.init(currentSeqrun);
-        topComponent.setVisualization(currentViewer);
-        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        if (e.getSource() == visualizationTypeList) {
+            currentViewer = visListModel.getSelectedItem();
+            controlSplitPane.setBottomComponent(currentViewer.getCustomizer());
+        } else {
+            setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+            currentViewer.init(currentSeqrun);
+            topComponent.setVisualization(currentViewer);
+            setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        }
     }
-    
 
     public final void dispose() {
         if (currentViewer != null) {
@@ -241,7 +246,7 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Proper
 
             content.addAll(viewers);
 
-            if (vizListModel.getSize() > 0) {
+            if (visListModel.getSize() > 0) {
                 // if previously selected element still exists, restore selection
                 if (currentViewer != null && content.contains(currentViewer)) {
                     setSelectedItem(currentViewer);
@@ -269,7 +274,7 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Proper
                 currentViewer.dispose();
             }
 
-            currentViewer = vizListModel.getSelectedItem();
+            currentViewer = visListModel.getSelectedItem();
 
             controlSplitPane.setBottomComponent(currentViewer.getCustomizer());
         }

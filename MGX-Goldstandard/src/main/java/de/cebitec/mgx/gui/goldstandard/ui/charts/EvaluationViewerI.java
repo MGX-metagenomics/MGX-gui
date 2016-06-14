@@ -12,7 +12,7 @@ import javax.swing.JComponent;
  * @param <T>
  * @author sjaenick
  */
-public abstract class EvaluationViewerI<T extends Visualizable> implements Comparable<EvaluationViewerI<T>> { //, VisFilterI<T>  {
+public abstract class EvaluationViewerI<T> implements Comparable<EvaluationViewerI<T>> { //, VisFilterI<T>  {
 
     private String chartTitle;
 
