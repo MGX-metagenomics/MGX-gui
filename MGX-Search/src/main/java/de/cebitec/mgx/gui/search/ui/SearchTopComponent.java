@@ -80,11 +80,11 @@ public final class SearchTopComponent extends TopComponent implements LookupList
                 setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                 termModel.setRuns(getSelectedSeqRuns());
                 termModel.update();
-                if (getSelectedSeqRuns().length > 0) {
-                    termField.setEnabled(true);
-                }
+                termField.setEnabled(getSelectedSeqRuns().length > 0);
+                termList.setEnabled(getSelectedSeqRuns().length > 0 && termModel.getSize() > 0);
                 readModel.setRuns(getSelectedSeqRuns());
                 readModel.update();
+                readList.setEnabled(getSelectedSeqRuns().length > 0);
                 hitNum.setText(readModel.getSize() + " hits");
                 setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             }
@@ -92,9 +92,9 @@ public final class SearchTopComponent extends TopComponent implements LookupList
         runList.setCellRenderer(new DefaultListCellRenderer() {
             @Override
             public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-                return super.getListCellRendererComponent(list, ((SeqRunI)value).getName(), index, isSelected, cellHasFocus);
+                return super.getListCellRendererComponent(list, ((SeqRunI) value).getName(), index, isSelected, cellHasFocus);
             }
-        
+
         });
 
         termField.getDocument().addDocumentListener(new DocumentListener() {
@@ -124,10 +124,13 @@ public final class SearchTopComponent extends TopComponent implements LookupList
                 readModel.setRuns(getSelectedSeqRuns());
                 readModel.setMaster(currentMaster);
                 readModel.update();
-                if (readModel.getSize() > 0) {
+                if (readModel.getSize() > 0 && !currentMaster.isDeleted()) {
                     readList.setEnabled(true);
                     readList.setSelectedIndex(0);
                     hitNum.setText(readModel.getSize() + " hits");
+                } else {
+                    readList.setEnabled(false);
+                    hitNum.setText("No hits");
                 }
                 setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             }
@@ -151,7 +154,10 @@ public final class SearchTopComponent extends TopComponent implements LookupList
 
                         @Override
                         protected Iterator<ObservationI> doInBackground() throws Exception {
-                            return currentMaster.Observation().ByRead(seq);
+                            if (!seq.isDeleted()) {
+                                return currentMaster.Observation().ByRead(seq);
+                            }
+                            return null;
                         }
                     };
                     sw.execute();
@@ -177,31 +183,37 @@ public final class SearchTopComponent extends TopComponent implements LookupList
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                final long seqId = readModel.getSelectedItem().getId();
+                final SequenceI seq = readModel.getSelectedItem();
                 SwingWorker<SequenceI, Void> sw = new SwingWorker<SequenceI, Void>() {
 
                     @Override
                     protected SequenceI doInBackground() throws Exception {
-                        return currentMaster.Sequence().fetch(seqId);
+                        if (seq != null && !currentMaster.isDeleted()) {
+                            return currentMaster.Sequence().fetch(seq.getId());
+                        }
+                        return null;
                     }
 
                     @Override
                     protected void done() {
+                        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
                         try {
                             SequenceI seq = get();
-                            String[] opts = new String[]{"Close"};
-                            NotifyDescriptor d = new NotifyDescriptor(
-                                    "Text",
-                                    "DNA sequence for " + seq.getName(),
-                                    NotifyDescriptor.DEFAULT_OPTION,
-                                    NotifyDescriptor.PLAIN_MESSAGE,
-                                    opts,
-                                    opts[0]
-                            );
-                            SeqPanel sp = new SeqPanel();
-                            sp.show(seq);
-                            d.setMessage(sp);
-                            DialogDisplayer.getDefault().notify(d);
+                            if (seq != null) {
+                                String[] opts = new String[]{"Close"};
+                                NotifyDescriptor d = new NotifyDescriptor(
+                                        "Text",
+                                        "DNA sequence for " + seq.getName(),
+                                        NotifyDescriptor.DEFAULT_OPTION,
+                                        NotifyDescriptor.PLAIN_MESSAGE,
+                                        opts,
+                                        opts[0]
+                                );
+                                SeqPanel sp = new SeqPanel();
+                                sp.show(seq);
+                                d.setMessage(sp);
+                                DialogDisplayer.getDefault().notify(d);
+                            }
                         } catch (InterruptedException | ExecutionException ex) {
                             Exceptions.printStackTrace(ex);
                         }
@@ -209,6 +221,7 @@ public final class SearchTopComponent extends TopComponent implements LookupList
                     }
 
                 };
+                setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                 sw.execute();
             }
         });
@@ -397,7 +410,7 @@ public final class SearchTopComponent extends TopComponent implements LookupList
         termModel.setRuns(getSelectedSeqRuns());
         termModel.setTerm(termField.getText());
         termModel.update();
-        termList.setEnabled(termModel.getSize() > 0);
+        termList.setEnabled(termModel.getSize() > 0 && !currentMaster.isDeleted());
         setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
     }
 }
