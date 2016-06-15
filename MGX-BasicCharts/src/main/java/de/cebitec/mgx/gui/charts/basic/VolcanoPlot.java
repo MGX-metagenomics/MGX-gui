@@ -11,18 +11,21 @@ import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.common.VGroupManager;
 import de.cebitec.mgx.common.visualization.CategoricalViewerI;
-import de.cebitec.mgx.common.visualization.NumericalViewerI;
 import de.cebitec.mgx.common.visualization.ViewerI;
+import de.cebitec.mgx.gui.charts.basic.customizer.VolcanoPlotCustomizer;
 import de.cebitec.mgx.gui.charts.basic.customizer.XYPlotCustomizer;
 import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.font.TextAttribute;
 import java.text.AttributedString;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import javax.swing.JComponent;
@@ -34,7 +37,12 @@ import org.apache.commons.math3.analysis.function.Log10;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.labels.CustomXYToolTipGenerator;
+import org.jfree.chart.labels.StandardXYToolTipGenerator;
+import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.openide.util.Exceptions;
@@ -47,7 +55,7 @@ import org.openide.util.Exceptions;
 public class VolcanoPlot extends CategoricalViewerI<Long> {
 
     private ChartPanel cPanel = null;
-    private XYPlotCustomizer customizer = null;
+    private VolcanoPlotCustomizer customizer = null;
     private JFreeChart chart = null;
 
     private final MannWhitneyUTest mwuTest = new MannWhitneyUTest();
@@ -87,10 +95,16 @@ public class VolcanoPlot extends CategoricalViewerI<Long> {
         Set<AttributeI> unusedAttributes = new HashSet<>();
         unusedAttributes.addAll(groupBMean.keySet());
 
-        double foldChangeThreshold = 1;
+        double foldChangeThreshold = customizer.getFoldChangeThreshold();
+        double pValueThreshold = -logBase10.value(customizer.getPValue());
+        double maxFoldChange = 0;
+        double maxPValue = 0;
 
-        XYSeries lowFoldChange = new XYSeries("low fold change");
-        XYSeries highFoldChange = new XYSeries("high fold change");
+        XYSeries lowFoldChange = new XYSeries("low fold change", false);
+        XYSeries highFoldChange = new XYSeries("high fold change", false);
+        List<List<String>> attributes = new ArrayList<>(2);
+        attributes.add(new ArrayList<String>(100));
+        attributes.add(new ArrayList<String>(100));
         try {
             for (AttributeI attr : groupAMean.keySet()) {
                 double[] groupASet = new double[groupARepCount];
@@ -107,7 +121,8 @@ public class VolcanoPlot extends CategoricalViewerI<Long> {
                     groupBSet[i] = (count != null) ? count : 0;
                     i++;
                 }
-                double pValue = -logBase10.value(mwuTest.mannWhitneyUTest(groupASet, groupBSet));
+                double pValue = mwuTest.mannWhitneyUTest(groupASet, groupBSet);
+                double logPValue = -logBase10.value(pValue);
                 Double meanA = groupAMean.get(attr);
                 if (meanA == null) {
                     meanA = 1.;
@@ -116,12 +131,19 @@ public class VolcanoPlot extends CategoricalViewerI<Long> {
                 if (meanB == null) {
                     meanB = 1.;
                 }
-                double foldChangeLog2 = logBase10.value(meanA / meanB) / logBase10Exp2;
+                double foldChange = meanA / meanB;
+                double foldChangeLog2 = logBase10.value(foldChange) / logBase10Exp2;
                 if (foldChangeLog2 < foldChangeThreshold && foldChangeLog2 > -foldChangeThreshold) {
-                    lowFoldChange.add(foldChangeLog2, pValue);
+                    lowFoldChange.add(foldChangeLog2, -logBase10.value(pValue));
+                    attributes.get(0).add(attr.getValue());
                 } else {
-                    highFoldChange.add(foldChangeLog2, pValue);
+                    highFoldChange.add(foldChangeLog2, -logBase10.value(pValue));
+                    attributes.get(1).add(attr.getValue());
                 }
+
+                maxPValue = (maxPValue < logPValue) ? logPValue : maxPValue;
+                maxFoldChange = (maxFoldChange < Math.abs(foldChangeLog2)) ? Math.abs(foldChangeLog2) : maxFoldChange;
+
                 unusedAttributes.remove(attr);
             }
 
@@ -135,7 +157,8 @@ public class VolcanoPlot extends CategoricalViewerI<Long> {
                     groupBSet[i] = (count != null) ? count : 0;
                     i++;
                 }
-                double pValue = -logBase10.value(mwuTest.mannWhitneyUTest(groupASet, groupBSet));
+                double pValue = mwuTest.mannWhitneyUTest(groupASet, groupBSet);
+                double logPValue = logBase10.value(pValue);
                 Double meanA = groupAMean.get(attr);
                 if (meanA == null) {
                     meanA = 1.;
@@ -144,12 +167,18 @@ public class VolcanoPlot extends CategoricalViewerI<Long> {
                 if (meanB == null) {
                     meanB = 1.;
                 }
-                double foldChangeLog2 = logBase10.value(meanA / meanB) / logBase10Exp2;
+                double foldChange = meanA / meanB;
+                double foldChangeLog2 = logBase10.value(foldChange) / logBase10Exp2;
                 if (foldChangeLog2 < foldChangeThreshold && foldChangeLog2 > -foldChangeThreshold) {
-                    lowFoldChange.add(foldChangeLog2, pValue);
+                    lowFoldChange.add(foldChangeLog2, -logBase10.value(pValue));
+                    attributes.get(0).add(attr.getValue());
                 } else {
-                    highFoldChange.add(foldChangeLog2, pValue);
+                    highFoldChange.add(foldChangeLog2, -logBase10.value(pValue));
+                    attributes.get(1).add(attr.getValue());
                 }
+
+                maxPValue = (maxPValue < logPValue) ? logPValue : maxPValue;
+                maxFoldChange = (maxFoldChange < Math.abs(foldChangeLog2)) ? Math.abs(foldChangeLog2) : maxFoldChange;
             }
         } catch (ConflictingJobsException ex) {
             Exceptions.printStackTrace(ex);
@@ -167,21 +196,31 @@ public class VolcanoPlot extends CategoricalViewerI<Long> {
         XYPlot plot = (XYPlot) chart.getPlot();
         plot.setBackgroundPaint(Color.WHITE);
 
+        plot.addRangeMarker(new ValueMarker(pValueThreshold, Color.BLACK, new BasicStroke(1f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10f, new float[]{10f, 3f}, 0f)));
+
         NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
-        rangeAxis.setRange(0.0, 2);
+        rangeAxis.setRange(0.0, (maxPValue < pValueThreshold) ? pValueThreshold * 1.15 : maxPValue * 1.15);
 
         ValueAxis domainAxis = plot.getDomainAxis();
+        domainAxis.setRange(-Math.abs(maxFoldChange) * 1.15, Math.abs(maxFoldChange) * 1.15);
         domainAxis.setLabel(xAxis);
         AttributedString domainAxisString = new AttributedString(xAxis);
         domainAxis.setAttributedLabel(domainAxisString);
         Font font = new Font(Font.SANS_SERIF, Font.ITALIC, 14);
         domainAxisString.addAttributes(font.getAttributes(), 0, xAxis.length());
         domainAxisString.addAttribute(TextAttribute.SUPERSCRIPT, TextAttribute.SUPERSCRIPT_SUB, 1, 5);
+
+        AttributeToolTipGenerator tooltipGen = new AttributeToolTipGenerator(attributes);
+        plot.getRenderer().setBaseToolTipGenerator(tooltipGen);
     }
 
     @Override
     public JComponent getCustomizer() {
-        return null;
+        if (customizer == null) {
+            customizer = new VolcanoPlotCustomizer();
+        }
+
+        return customizer;
     }
 
     @Override
@@ -195,4 +234,26 @@ public class VolcanoPlot extends CategoricalViewerI<Long> {
                 && VGroupManager.getInstance().getReplicateGroups().size() == 2
                 && VGroupManager.getInstance().getAllVisualizationGroups().size() == replicatesCount;
     }
+
+}
+
+class AttributeToolTipGenerator extends CustomXYToolTipGenerator{
+    private final List<List<String>> attributes;
+    
+    public AttributeToolTipGenerator(List<List<String>> attributes){
+        super();
+        this.attributes = attributes;
+    }
+
+    @Override
+    public String generateToolTip(XYDataset data, int series, int item) {
+        StringBuilder tooltip = new StringBuilder();
+        tooltip.append(String.format("<html><p style='color:#0000ff;'>Attribute: '%s'</p>", attributes.get(series).get(item)));
+        tooltip.append(String.format("fold change: '%f'<br/>", data.getX(series, item)));
+        tooltip.append(String.format("p value: '%f'<br/>", data.getYValue(series, item)));
+        tooltip.append("</html>");
+        return tooltip.toString();
+    }
+    
+    
 }
