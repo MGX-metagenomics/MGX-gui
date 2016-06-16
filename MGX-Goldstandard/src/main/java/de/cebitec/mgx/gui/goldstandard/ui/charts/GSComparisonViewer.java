@@ -7,6 +7,7 @@ import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.SeqRunI;
+import de.cebitec.mgx.api.model.SequenceI;
 import de.cebitec.mgx.api.model.tree.NodeI;
 import de.cebitec.mgx.api.model.tree.TreeI;
 import de.cebitec.mgx.gui.goldstandard.util.NodeUtils;
@@ -16,6 +17,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +39,7 @@ import org.jdesktop.swingx.decorator.HighlighterFactory;
  * @author pblumenk
  */
 @ServiceProvider(service = EvaluationViewerI.class)
-public class GSComparisonViewer extends EvaluationViewerI<TreeI<Long>>{
+public class GSComparisonViewer extends EvaluationViewerI<TreeI<Long>> {
 
     public enum ComparisonViews {
         TableView, VennChart
@@ -49,14 +51,14 @@ public class GSComparisonViewer extends EvaluationViewerI<TreeI<Long>>{
     private SeqRunI lastSeqrun;
     private SeqRunI currentSeqrun;
     private JobI currentJob;
-    private Map<JobI, Triple<Map<AttributeI, Collection<Long>>, Map<AttributeI, Collection<Long>>, Map<AttributeI, Collection<Long>>>> cache;     //JobI - onlyGS, onlySample, gsAndSample
+    private Map<JobI, Triple<Map<AttributeI, List<Long>>, Map<AttributeI, List<Long>>, Map<AttributeI, List<Long>>>> cache;     //JobI - onlyGS, onlySample, gsAndSample
 
     private ComparisonViews currentView;
     private GSComparisonViewCustomizer cust = null;
 
-    private Map<AttributeI, Collection<Long>> onlyGS;
-    private Map<AttributeI, Collection<Long>> onlySample;
-    private Map<AttributeI, Collection<Long>> gsAndSample;
+    private Map<AttributeI, List<Long>> onlyGS;
+    private Map<AttributeI, List<Long>> onlySample;
+    private Map<AttributeI, List<Long>> gsAndSample;
 
     @Override
     public JComponent getComponent() {
@@ -73,10 +75,11 @@ public class GSComparisonViewer extends EvaluationViewerI<TreeI<Long>>{
 
     @Override
     public ImageExporterI getImageExporter() {
-        if (currentView == ComparisonViews.VennChart)
+        if (currentView == ComparisonViews.VennChart) {
             return VennChart.getImageExporter(venn);    //no image to export here
-        else 
+        } else {
             return null;
+        }
     }
 
     @Override
@@ -94,6 +97,7 @@ public class GSComparisonViewer extends EvaluationViewerI<TreeI<Long>>{
         return TreeI.class;
     }
 
+    @SuppressWarnings("unchecked")   
     @Override
     public void show(List<TreeI<Long>> trees) {
         if (trees.size() != 2) {
@@ -102,7 +106,7 @@ public class GSComparisonViewer extends EvaluationViewerI<TreeI<Long>>{
 
         //if job is already in cache
         if (cache.containsKey(currentJob)) {
-            Triple<Map<AttributeI, Collection<Long>>, Map<AttributeI, Collection<Long>>, Map<AttributeI, Collection<Long>>> t
+            Triple<Map<AttributeI, List<Long>>, Map<AttributeI, List<Long>>, Map<AttributeI, List<Long>>> t
                     = cache.get(currentJob);
             onlyGS = t.getFirst();
             onlySample = t.getSecond();
@@ -140,9 +144,9 @@ public class GSComparisonViewer extends EvaluationViewerI<TreeI<Long>>{
                     List<Long> gsIDs = NodeUtils.getSeqIDs(gsNode);
                     List<Long> sampleIDs = NodeUtils.getSeqIDs(sampleNode);
 
-                    Collection<Long> intersect = CollectionUtils.intersection(gsIDs, sampleIDs);
-                    Collection<Long> oGS = CollectionUtils.subtract(gsIDs, sampleIDs);
-                    Collection<Long> oSample = CollectionUtils.subtract(sampleIDs, gsIDs);
+                    List<Long> intersect = new ArrayList<>(CollectionUtils.intersection(gsIDs, sampleIDs));
+                    List<Long> oGS = new ArrayList<>(CollectionUtils.subtract(gsIDs, sampleIDs));
+                    List<Long> oSample = new ArrayList<>(CollectionUtils.subtract(sampleIDs, gsIDs));
 
                     if (!intersect.isEmpty()) {
                         gsAndSample.put(gsNode.getAttribute(), intersect);
@@ -194,11 +198,8 @@ public class GSComparisonViewer extends EvaluationViewerI<TreeI<Long>>{
 
                 @Override
                 public Class<?> getColumnClass(int column) {
-                    if (column == 0) {
-                        return Long.class;
-                    } else {
-                        return String.class;
-                    }
+                    return String.class;
+
                 }
 
                 @Override
@@ -207,10 +208,17 @@ public class GSComparisonViewer extends EvaluationViewerI<TreeI<Long>>{
                 }
             };
 
+            Map<Long, String> headers = new HashMap<>();
+            try {
+                headers = getSequenceHeaders(gsAndSample.values(), onlyGS.values(), onlySample.values());
+            } catch (MGXException ex) {
+                Exceptions.printStackTrace(Exceptions.attachMessage(ex, "Cannot download sequences by ID"));
+            }
+
             for (AttributeI attribute : gsAndSample.keySet()) {
                 for (Long id : gsAndSample.get(attribute)) {
                     Object[] rowData = new Object[columns.length];
-                    rowData[0] = id;
+                    rowData[0] = headers.get(id);
                     rowData[1] = "";
                     rowData[2] = attribute.getValue();
                     rowData[3] = "";
@@ -220,7 +228,7 @@ public class GSComparisonViewer extends EvaluationViewerI<TreeI<Long>>{
             Map<Long, Object[]> merged = new HashMap<>();
             for (AttributeI attribute : onlyGS.keySet()) {
                 for (Long id : onlyGS.get(attribute)) {
-                    merged.put(id, new Object[]{id, attribute.getValue(), "", ""});
+                    merged.put(id, new Object[]{headers.get(id), attribute.getValue(), "", ""});
                 }
             }
             for (AttributeI attribute : onlySample.keySet()) {
@@ -230,7 +238,7 @@ public class GSComparisonViewer extends EvaluationViewerI<TreeI<Long>>{
                         row[3] = attribute.getValue();
                         merged.put(id, row);
                     } else {
-                        merged.put(id, new String[]{"", "", attribute.getValue()});
+                        merged.put(id, new Object[]{headers.get(id), "", "", attribute.getValue()});
                     }
                 }
             }
@@ -291,4 +299,26 @@ public class GSComparisonViewer extends EvaluationViewerI<TreeI<Long>>{
 
     }
 
+    @SafeVarargs
+    private final Map<Long, String> getSequenceHeaders(Collection<List<Long>>... values) throws MGXException {
+        Map<Long, String> headers = new HashMap<>();
+        for (Collection<List<Long>> idCollection : values) {
+            for (List<Long> idLists : idCollection) {
+                for (Long id : idLists) {
+                    headers.put(id, "");
+                }
+            }
+        }
+        long[] allIds = new long[headers.size()];
+        int i = 0;
+        for (Long key : headers.keySet()) {
+            allIds[i++] = key;
+        }
+        Iterator<SequenceI> seqs = currentSeqrun.getMaster().Sequence().fetchByIds(allIds);
+        while (seqs.hasNext()) {
+            SequenceI seq = seqs.next();
+            headers.put(seq.getId(), seq.getName());
+        }
+        return headers;
+    }
 }
