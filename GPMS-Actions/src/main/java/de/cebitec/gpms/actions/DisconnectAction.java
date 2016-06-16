@@ -23,7 +23,7 @@ public class DisconnectAction extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         final GPMSClientI gpmsClient = Utilities.actionsGlobalContext().lookup(GPMSClientI.class);
-        if (gpmsClient.loggedIn()) {
+        if (gpmsClient != null && gpmsClient.loggedIn()) {
             gpmsClient.logout();
         }
     }
@@ -31,7 +31,7 @@ public class DisconnectAction extends AbstractAction {
     @Override
     public boolean isEnabled() {
         final GPMSClientI gpmsClient = Utilities.actionsGlobalContext().lookup(GPMSClientI.class);
-        return super.isEnabled() && gpmsClient.loggedIn();
+        return super.isEnabled() && gpmsClient != null && gpmsClient.loggedIn();
     }
 
 }
