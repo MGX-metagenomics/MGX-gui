@@ -33,12 +33,13 @@ public class VennChart extends JPanel {
 
     private BufferedImage image;
 
-    private static Point[] fontCoordinates2 = new Point[]{new Point(340, 420), new Point(1060, 420), new Point(700, 420)};
-    private static Color[] fontColor2 = new Color[]{new Color(255, 0, 0), new Color(255, 255, 0), new Color(255, 127, 0)};
-    private static Dimension venn2 = new Dimension(1500, 1000);
+    private static final Point[] fontCoordinates2 = new Point[]{new Point(340, 420), new Point(1060, 420), new Point(700, 420)};
+    private static final Color[] fontColor2 = new Color[]{new Color(255, 0, 0), new Color(255, 255, 0), new Color(255, 127, 0)};
+    private static final Dimension venn2 = new Dimension(1500, 1000);
 
     private VennChart(BufferedImage img) {
         super();
+        super.setBackground(Color.WHITE);
         image = img;
     }
 
