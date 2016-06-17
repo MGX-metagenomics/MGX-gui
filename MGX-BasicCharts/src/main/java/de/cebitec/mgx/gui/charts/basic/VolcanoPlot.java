@@ -106,31 +106,22 @@ public class VolcanoPlot extends CategoricalViewerI<Long> {
         attributes.add(new ArrayList<String>(100));
         attributes.add(new ArrayList<String>(100));
         try {
+            //all attributes from first replicate group
             for (AttributeI attr : groupAMean.keySet()) {
-                double[] groupASet = new double[groupARepCount];
-                double[] groupBSet = new double[groupBRepCount];
+                double[] groupASet = new double[groupARepCount];        //all values for an attribute in group A
+                double[] groupBSet = new double[groupBRepCount];        //all values for an attribute in group B
                 int i = 0;
                 for (ReplicateI rep : groupA.getReplicates()) {
-                    Long count = rep.getDistribution().get(attr);
-                    groupASet[i] = (count != null) ? count : 0;
-                    i++;
+                    groupASet[i++] = rep.getDistribution().getOrDefault(attr, 0L);
                 }
                 i = 0;
                 for (ReplicateI rep : groupB.getReplicates()) {
-                    Long count = rep.getDistribution().get(attr);
-                    groupBSet[i] = (count != null) ? count : 0;
-                    i++;
+                    groupBSet[i++] = rep.getDistribution().getOrDefault(attr, 0L);
                 }
                 double pValue = mwuTest.mannWhitneyUTest(groupASet, groupBSet);
                 double logPValue = -logBase10.value(pValue);
-                Double meanA = groupAMean.get(attr);
-                if (meanA == null) {
-                    meanA = 1.;
-                }
-                Double meanB = groupBMean.get(attr);
-                if (meanB == null) {
-                    meanB = 1.;
-                }
+                Double meanA = groupAMean.getOrDefault(attr, 1.);   //Zero values will be replaced by 1 for calculating fold change
+                Double meanB = groupBMean.getOrDefault(attr, 1.);
                 double foldChange = meanA / meanB;
                 double foldChangeLog2 = logBase10.value(foldChange) / logBase10Exp2;
                 if (foldChangeLog2 < foldChangeThreshold && foldChangeLog2 > -foldChangeThreshold) {
@@ -147,26 +138,19 @@ public class VolcanoPlot extends CategoricalViewerI<Long> {
                 unusedAttributes.remove(attr);
             }
 
+            //remaining attributes from group B
             for (AttributeI attr : unusedAttributes) {
                 double[] groupASet = new double[groupARepCount];
                 double[] groupBSet = new double[groupBRepCount];
                 Arrays.fill(groupASet, 0);
                 int i = 0;
                 for (ReplicateI rep : groupB.getReplicates()) {
-                    Long count = rep.getDistribution().get(attr);
-                    groupBSet[i] = (count != null) ? count : 0;
-                    i++;
+                    groupBSet[i++] = rep.getDistribution().getOrDefault(attr, 0L);
                 }
                 double pValue = mwuTest.mannWhitneyUTest(groupASet, groupBSet);
                 double logPValue = logBase10.value(pValue);
-                Double meanA = groupAMean.get(attr);
-                if (meanA == null) {
-                    meanA = 1.;
-                }
-                Double meanB = groupBMean.get(attr);
-                if (meanB == null) {
-                    meanB = 1.;
-                }
+                Double meanA = groupAMean.getOrDefault(attr, 1.);   //Zero values will be replaced by 1 for calculating fold change
+                Double meanB = groupBMean.getOrDefault(attr, 1.);
                 double foldChange = meanA / meanB;
                 double foldChangeLog2 = logBase10.value(foldChange) / logBase10Exp2;
                 if (foldChangeLog2 < foldChangeThreshold && foldChangeLog2 > -foldChangeThreshold) {
@@ -192,6 +176,7 @@ public class VolcanoPlot extends CategoricalViewerI<Long> {
         chart = ChartFactory.createScatterPlot("Volcano Plot", xAxis, yAxis, dataset);
         chart.setBorderPaint(Color.WHITE);
         chart.setBackgroundPaint(Color.WHITE);
+        chart.removeLegend();
         cPanel = new ChartPanel(chart);
         XYPlot plot = (XYPlot) chart.getPlot();
         plot.setBackgroundPaint(Color.WHITE);
@@ -199,15 +184,20 @@ public class VolcanoPlot extends CategoricalViewerI<Long> {
         plot.addRangeMarker(new ValueMarker(pValueThreshold, Color.BLACK, new BasicStroke(1f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10f, new float[]{10f, 3f}, 0f)));
 
         NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
-        rangeAxis.setRange(0.0, (maxPValue < pValueThreshold) ? pValueThreshold * 1.15 : maxPValue * 1.15);
+        rangeAxis.setRange(0.0, (maxPValue < pValueThreshold) ? pValueThreshold * 1.15 : maxPValue * 1.15); 
+        AttributedString rangeAxisString = new AttributedString(yAxis);
+        rangeAxis.setAttributedLabel(rangeAxisString);
+        rangeAxisString.addAttribute(TextAttribute.SIZE, 14, 0, yAxis.length());
+        rangeAxisString.addAttribute(TextAttribute.SUPERSCRIPT, TextAttribute.SUPERSCRIPT_SUB, 4, 6);
+        rangeAxis.setAttributedLabel(rangeAxisString);
 
         ValueAxis domainAxis = plot.getDomainAxis();
-        domainAxis.setRange(-Math.abs(maxFoldChange) * 1.15, Math.abs(maxFoldChange) * 1.15);
-        domainAxis.setLabel(xAxis);
+        domainAxis.setRange(-Math.abs(maxFoldChange) * 1.15, Math.abs(maxFoldChange) * 1.15); 
         AttributedString domainAxisString = new AttributedString(xAxis);
         domainAxis.setAttributedLabel(domainAxisString);
-        Font font = new Font(Font.SANS_SERIF, Font.ITALIC, 14);
-        domainAxisString.addAttributes(font.getAttributes(), 0, xAxis.length());
+        domainAxisString.addAttribute(TextAttribute.SIZE, 14, 0, xAxis.length());
+        domainAxisString.addAttribute(TextAttribute.SUPERSCRIPT, TextAttribute.SUPERSCRIPT_SUB, 3, 5);
+        domainAxis.setAttributedLabel(domainAxisString);
         domainAxisString.addAttribute(TextAttribute.SUPERSCRIPT, TextAttribute.SUPERSCRIPT_SUB, 1, 5);
 
         AttributeToolTipGenerator tooltipGen = new AttributeToolTipGenerator(attributes);
