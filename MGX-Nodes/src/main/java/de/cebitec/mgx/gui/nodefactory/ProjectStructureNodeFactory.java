@@ -1,7 +1,6 @@
 package de.cebitec.mgx.gui.nodefactory;
 
 import de.cebitec.mgx.api.MGXMasterI;
-import de.cebitec.mgx.api.model.MGXFileI;
 import de.cebitec.mgx.gui.nodes.ProjectDataNode;
 import de.cebitec.mgx.gui.nodes.ProjectFilesNode;
 import de.cebitec.mgx.gui.nodes.ProjectReferencesNode;
@@ -26,7 +25,7 @@ public class ProjectStructureNodeFactory extends ChildFactory<Node> {
         // since creation of the "top-level" data objects require a master
         // to access the server
         //
-        files = new ProjectFilesNode(MGXFileI.getRoot(master));
+        files = new ProjectFilesNode(master);
         refs = new ProjectReferencesNode(master);
         data = new ProjectDataNode(master);
     }
