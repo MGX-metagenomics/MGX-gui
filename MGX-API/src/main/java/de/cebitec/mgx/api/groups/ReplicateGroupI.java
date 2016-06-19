@@ -11,6 +11,7 @@ import java.awt.Color;
 import java.awt.datatransfer.DataFlavor;
 import java.beans.PropertyChangeListener;
 import java.util.Collection;
+import java.util.List;
 
 /**
  *
@@ -44,7 +45,7 @@ public interface ReplicateGroupI extends ModelBaseI<ReplicateGroupI>, PropertyCh
     DistributionI<Double> getMeanDistribution();
     
     DistributionI<Double> getStdvDistribution();
-
+    
     long getNumSequences();
     
     int getNextReplicateNum();
