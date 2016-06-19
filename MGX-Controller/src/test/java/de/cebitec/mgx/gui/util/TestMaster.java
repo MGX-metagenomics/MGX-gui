@@ -40,7 +40,7 @@ public class TestMaster {
                 System.out.println(ex.getMessage());
             }
         }
-        GPMSClient gpms = new GPMSClient("MyServer", serverURI, false);
+        GPMSClient gpms = new GPMSClient(serverURI, serverURI, false);
         try {
             gpms.login("mgx_unittestRO", "gut-isM5iNt");
         } catch (GPMSException ex) {
