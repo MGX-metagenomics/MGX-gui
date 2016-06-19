@@ -28,6 +28,11 @@ public abstract class MGXNodeBase<T extends ModelBaseI<T>> extends AbstractNodeB
     }
 
     @Override
+    public final Action getPreferredAction() {
+        return null;
+    }
+
+    @Override
     public Action[] getActions(boolean popup) {
         return new Action[0]; // disables context menu
     }
