@@ -38,11 +38,6 @@ public class ProjectFilesNode extends MGXNodeBase<MGXFileI> {
     }
 
     @Override
-    public Action getPreferredAction() {
-        return null;
-    }
-
-    @Override
     public Action[] getActions(boolean ctx) {
         return new Action[]{new CreateDirectory(), new UploadFile(nf)};
     }
