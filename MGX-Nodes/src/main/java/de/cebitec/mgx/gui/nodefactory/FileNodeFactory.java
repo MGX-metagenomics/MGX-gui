@@ -17,7 +17,6 @@ import org.openide.util.Exceptions;
 public class FileNodeFactory extends MGXNodeFactoryBase<MGXFileI> {
 
     private final MGXFileI curDirectory;
-    //
 
     public FileNodeFactory(MGXFileI curDir) {
         super(curDir.getMaster());
