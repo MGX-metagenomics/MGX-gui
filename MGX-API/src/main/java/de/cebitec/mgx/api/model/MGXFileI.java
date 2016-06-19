@@ -48,7 +48,7 @@ public abstract class MGXFileI extends MGXDataModelBase<MGXFileI> {
 
             @Override
             public String getFullPath() {
-                return ROOT_PATH;
+                return ROOT_PATH + separator;
             }
 
             @Override
