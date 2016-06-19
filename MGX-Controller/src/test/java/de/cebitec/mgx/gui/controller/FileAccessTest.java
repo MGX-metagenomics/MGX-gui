@@ -30,6 +30,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -196,6 +197,46 @@ public class FileAccessTest {
         }
         assertEquals(1, numDirs);
         assertEquals(3, numFiles);
+    }
+
+    @Test
+    public void testListRecursive() throws MGXException {
+        System.out.println("testListRecursive");
+        System.out.println(master.getServerName());
+        int total = 0;
+        Iterator<MGXFileI> iter = master.File().fetchall();
+        while (iter.hasNext()) {
+            MGXFileI f = iter.next();
+            total += listDir(f);
+        }
+        
+        //  .|dir1
+        //  .|dir1|bar
+        //  .|dir1|foo
+        //  .|dir1|foo|bar
+        //  .|test1
+        //  .|test2
+        //  .|test3
+        
+        assertEquals(7, total);
+    }
+
+    private int listDir(MGXFileI dir) {
+        System.err.println(dir.getFullPath());
+        int num = 1;
+        if (dir.isDirectory()) {
+            Iterator<MGXFileI> iter = null;
+            try {
+                iter = dir.getMaster().File().fetchall(dir);
+            } catch (MGXException ex) {
+                fail(dir.getFullPath() + " " + ex.getMessage());
+            }
+            while (iter.hasNext()) {
+                num += listDir(iter.next());
+            }
+            return num;
+        }
+        return num;
     }
 
     @Test
