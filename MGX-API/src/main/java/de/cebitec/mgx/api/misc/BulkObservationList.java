@@ -6,7 +6,7 @@
 package de.cebitec.mgx.api.misc;
 
 import de.cebitec.mgx.api.model.AttributeI;
-import de.cebitec.mgx.api.model.SequenceI;
+import de.cebitec.mgx.api.model.SeqRunI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -22,8 +22,8 @@ public class BulkObservationList {
     public BulkObservationList() {
     }
 
-    public final void addObservation(SequenceI seq, AttributeI attr, int start, int stop) {
-        obs.add(new BulkObservation(seq.getId(), attr.getId(), start, stop));
+    public final void addObservation(SeqRunI run, String seqName, AttributeI attr, int start, int stop) {
+        obs.add(new BulkObservation(run.getId(), seqName, attr.getId(), start, stop));
     }
 
     public final List<BulkObservation> getObservations() {
@@ -32,20 +32,26 @@ public class BulkObservationList {
 
     public static class BulkObservation {
 
-        private final long seqId;
+        private final long seqRunId;
+        private final String seqName;
         private final long attrId;
         private final int start;
         private final int stop;
 
-        public BulkObservation(long seqId, long attrId, int start, int stop) {
-            this.seqId = seqId;
+        public BulkObservation(long seqRunId, String seqName, long attrId, int start, int stop) {
+            this.seqRunId = seqRunId;
+            this.seqName = seqName;
             this.attrId = attrId;
             this.start = start;
             this.stop = stop;
         }
 
-        public final long getSequenceId() {
-            return seqId;
+        public final long getSeqRunId() {
+            return seqRunId;
+        }
+        
+        public final String getSequenceName() {
+            return seqName;
         }
 
         public final long getAttributeId() {
