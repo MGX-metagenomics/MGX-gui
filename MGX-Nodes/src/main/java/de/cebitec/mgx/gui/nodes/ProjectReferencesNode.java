@@ -46,11 +46,6 @@ public class ProjectReferencesNode extends MGXNodeBase<MGXMasterI> {
     }
 
     @Override
-    public Action getPreferredAction() {
-        return null;
-    }
-
-    @Override
     public Action[] getActions(boolean ctx) {
         return new Action[]{new AddGlobalReference(), new UploadReference(nf)};
     }
