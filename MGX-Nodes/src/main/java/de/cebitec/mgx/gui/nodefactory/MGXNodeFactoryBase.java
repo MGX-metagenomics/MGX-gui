@@ -63,21 +63,21 @@ public abstract class MGXNodeFactoryBase<T> extends ChildFactory<T> implements N
     }
 
     @Override
-    public final void childrenAdded(NodeMemberEvent ev) {
+    public void childrenAdded(NodeMemberEvent ev) {
         refresh(true);
     }
 
     @Override
-    public final void childrenRemoved(NodeMemberEvent ev) {
+    public void childrenRemoved(NodeMemberEvent ev) {
         refresh(true);
     }
 
     @Override
-    public final void childrenReordered(NodeReorderEvent ev) {
+    public void childrenReordered(NodeReorderEvent ev) {
     }
 
     @Override
-    public final void nodeDestroyed(NodeEvent ev) {
+    public void nodeDestroyed(NodeEvent ev) {
         refresh(true);
     }
 
