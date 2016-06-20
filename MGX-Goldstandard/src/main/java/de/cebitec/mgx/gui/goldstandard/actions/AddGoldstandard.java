@@ -171,17 +171,17 @@ public final class AddGoldstandard extends NodeAction implements LookupListener 
                             }
                         });
                     }
-                        pool.submit(new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    master.Observation().createBulk(bol);
-                                    p.progress(i++);
-                                } catch (MGXException ex) {
-                                    Exceptions.printStackTrace(ex);
-                                }
-                            }
-                        });
+//                        pool.submit(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                try {
+//                                    master.Observation().createBulk(bol);
+//                                    p.progress(i++);
+//                                } catch (MGXException ex) {
+//                                    Exceptions.printStackTrace(ex);
+//                                }
+//                            }
+//                        });
                     pool.shutdown();
                     pool.awaitTermination(1L, TimeUnit.HOURS);
                     p.finish();
