@@ -186,7 +186,7 @@ public class StatisticalBarChart extends CategoricalViewerI<Long> implements Adj
     public boolean canHandle(AttributeTypeI valueType) {
         long replicatesCount = 0;
         for (ReplicateGroupI rg : VGroupManager.getInstance().getReplicateGroups())
-            replicatesCount =+ rg.getReplicates().size();
+            replicatesCount += rg.getReplicates().size();
         
         return super.canHandle(valueType) &&
                 VGroupManager.getInstance().getReplicateGroups().size() > 0 &&

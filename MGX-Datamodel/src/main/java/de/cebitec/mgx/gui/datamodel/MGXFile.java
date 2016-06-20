@@ -17,7 +17,7 @@ public class MGXFile extends MGXFileI {
 
     public MGXFile(MGXMasterI m, String path, boolean isDir, long size) {
         super(m);
-        if (!path.startsWith(".")) {
+        if (!path.startsWith(MGXFileI.ROOT_PATH)) {
             throw new RuntimeException(path + " is invalid");
         }
         this.fullPath = path;
