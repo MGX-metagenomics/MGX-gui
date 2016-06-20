@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.goldstandard.actions;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.misc.BulkObservationList;
 import de.cebitec.mgx.api.misc.Triple;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.JobI;
@@ -55,6 +56,8 @@ public final class AddGoldstandard extends NodeAction implements LookupListener 
     public final static String TOOL_WEBSITE = "";
     public final static String TOOL_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><graph description=\"\" name=\"Goldstandard\" service=\"MGX\"><composites/><nodes><node id=\"1\" name=\"\" type=\"Conveyor.MGX.GetMGXJob\" x=\"407\" y=\"162\"><configuration_items/><typeParameters/></node><node id=\"2\" name=\"\" type=\"Conveyor.Core.Discard\" x=\"412\" y=\"310\"><configuration_items/><typeParameters/></node></nodes><links><link from_connector=\"output\" from_node=\"1\" to_connector=\"input\" to_node=\"2\"/></links></graph>";
     public final static float TOOL_VERSION = 1.0f;
+    
+    public final static int CHUNKSIZE = 100_000;
 
     public AddGoldstandard() {
         this(Utilities.actionsGlobalContext());
@@ -127,23 +130,58 @@ public final class AddGoldstandard extends NodeAction implements LookupListener 
                     p.start((int) seqrun.getNumSequences());
                     MGSReader reader = new MGSReader(wd.getGoldstandardFile().getAbsolutePath(), master, job);
                     int i = 0;
+                    int numChunks = 0;
+                    BulkObservationList bol = new BulkObservationList();
+                    ArrayList<String> list = new ArrayList<>();                    
                     while (reader.hasNext()) {
                         final MGSEntry entry = reader.next();
+                        SequenceI seq = master.Sequence().fetch(seqrun, entry.getHeader().split(" ")[0]);
+                        for (MGSAttribute t : entry.getAttributes()) {
+//                                        master.Observation().create(seq, t.getAttribute(), t.getStart(), t.getStop());
+                            bol.addObservation(seq, t.getAttribute(), t.getStart(), t.getStop());
+                        }
+                        p.progress(i++);
+                        numChunks++;
+                        if (numChunks == CHUNKSIZE) {
+                            final BulkObservationList submitBol = bol;
+                            pool.submit(new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        master.Observation().createBulk(submitBol);
+                                    } catch (MGXException ex) {
+                                        Exceptions.printStackTrace(ex);
+                                    }
+                                }
+                            });
+                            bol = new BulkObservationList();
+                            numChunks = 0;
+                        }
+                    }
+                    if (numChunks > 0) {
+                        final BulkObservationList submitBol = bol;
                         pool.submit(new Runnable() {
                             @Override
                             public void run() {
                                 try {
-                                    SequenceI seq = master.Sequence().fetch(seqrun, entry.getHeader().split(" ")[0]);
-                                    for (MGSAttribute t : entry.getAttributes()) {
-                                        master.Observation().create(seq, t.getAttribute(), t.getStart(), t.getStop());
-                                    }
+                                    master.Observation().createBulk(submitBol);
                                 } catch (MGXException ex) {
                                     Exceptions.printStackTrace(ex);
                                 }
                             }
                         });
-                        p.progress(i++);
                     }
+                        pool.submit(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    master.Observation().createBulk(bol);
+                                    p.progress(i++);
+                                } catch (MGXException ex) {
+                                    Exceptions.printStackTrace(ex);
+                                }
+                            }
+                        });
                     pool.shutdown();
                     pool.awaitTermination(1L, TimeUnit.HOURS);
                     p.finish();
