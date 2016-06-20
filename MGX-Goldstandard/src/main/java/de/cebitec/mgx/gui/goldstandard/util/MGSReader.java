@@ -11,8 +11,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -21,20 +21,20 @@ import java.util.Map;
  */
 public class MGSReader{
 
-    MGSEntry nextElement = null;
-    boolean eof = false;
+    private MGSEntry nextElement = null;
+    private boolean eof = false;
     
-    MGXMasterI master;
-    JobI job;
-    Map<String, AttributeTypeI> attrTypeCache = new HashMap<>();
-    Map<AttributeTypeI, Collection<AttributeI>> attrCache = new HashMap<>();
+    private MGXMasterI master;
+    private JobI job;
+    private Map<String, AttributeTypeI> attrTypeCache = new HashMap<>();
+    private Map<AttributeTypeI, Collection<AttributeI>> attrCache = new HashMap<>();
     
-    BufferedReader input;
+    private BufferedReader input;
     
-    String nextHeader;
-    long line = 1;
+    private String nextHeader;
+    private long line = 1;
 
-    public MGSReader(String filePath, MGXMasterI master, JobI job) throws FileNotFoundException {
+    public MGSReader(String filePath, MGXMasterI master, JobI job) throws FileNotFoundException, MGXException {
         this.master = master;
         this.job = job;
         input = new BufferedReader(new FileReader(filePath));        
@@ -46,7 +46,9 @@ public class MGSReader{
             nextHeader = nextLine.substring(5); // READ\t == 5 chars
         } catch (IOException | NullPointerException ex) {
             eof = true;
-        }        
+            return;
+        }
+        initAttributeTypeCache();
     }    
     
     
@@ -66,11 +68,17 @@ public class MGSReader{
                 // e.g. "AT      NCBI_ROOT       Root    0       250     HD      1"
                 String[] splittedLine = nextLine.split("\t");
                 char valueType;
-                if (splittedLine[5].charAt(1) != 'N' && splittedLine[5].charAt(1) != 'D'){
-                    throw new IOException(String.format("Unknown attribute type value type in line %d", line));
-                } else {
-                    valueType = (splittedLine[5].charAt(1) == 'N') ? AttributeTypeI.VALUE_NUMERIC : AttributeTypeI.VALUE_DISCRETE;
-                }                    
+                switch (splittedLine[5].charAt(1)){
+                    case 'N':
+                        valueType = AttributeTypeI.VALUE_NUMERIC;
+                        break;
+                    case 'D':
+                        valueType = AttributeTypeI.VALUE_DISCRETE;
+                        break;
+                    default:
+                        throw new IOException(String.format("Unknown attribute type value type in line %d", line));
+                }
+                
                 int start = Integer.parseInt(splittedLine[3]);
                 int stop = Integer.parseInt(splittedLine[4]);
 
@@ -86,8 +94,9 @@ public class MGSReader{
                         {
                             if (splittedLine.length != 7)
                                 throw new IOException(String.format("Missing column in line %d", line));
-                            if (lastHDNumber != Integer.parseInt(splittedLine[6])){
-                                lastHDNumber = Integer.parseInt(splittedLine[6]);
+                            int currentHDNumber = Integer.parseInt(splittedLine[6]);
+                            if (lastHDNumber != currentHDNumber){
+                                lastHDNumber = currentHDNumber;
                                 lastHDAttribute = null;
                             }       
                             AttributeTypeI attrType = getAttributeType(splittedLine[1], valueType, AttributeTypeI.STRUCTURE_HIERARCHICAL);
@@ -121,7 +130,7 @@ public class MGSReader{
         
         attr = master.Attribute().create(job, attrType, attrValue, null);
         if (!attrCache.containsKey(attrType))
-            attrCache.put(attrType, new HashSet<AttributeI>());
+            attrCache.put(attrType, new LinkedList<AttributeI>());
         attrCache.get(attrType).add(attr);
         return attr;
     }
@@ -133,7 +142,7 @@ public class MGSReader{
         
         attr = master.Attribute().create(job, attrType, attrValue, parent);
         if (!attrCache.containsKey(attrType))
-            attrCache.put(attrType, new HashSet<AttributeI>());
+            attrCache.put(attrType, new LinkedList<AttributeI>());
         attrCache.get(attrType).add(attr);
         return attr;
     }
@@ -141,27 +150,33 @@ public class MGSReader{
     private AttributeTypeI getAttributeType(String name, char valueType, char structure) throws MGXException{
         if (attrTypeCache.containsKey(name)){
             return attrTypeCache.get(name);
-        } else {
-            Iterator<AttributeTypeI> it = master.AttributeType().fetchall();
-            while (it.hasNext()){
-                AttributeTypeI at = it.next();
-                if (at.getName().equals(name) && at.getStructure() == structure && at.getValueType() == valueType){
-                    attrTypeCache.put(name, at);
-                    return at;
-                }
-            }
-        }
+        } // else {
+//            Iterator<AttributeTypeI> it = master.AttributeType().fetchall();
+//            while (it.hasNext()){
+//                AttributeTypeI at = it.next();
+//                if (at.getName().equals(name) && at.getStructure() == structure && at.getValueType() == valueType){
+//                    attrTypeCache.put(name, at);
+//                    return at;
+//                }
+//            }
+//        }
             
         AttributeTypeI newAT = master.AttributeType().create(name, valueType, structure);
         attrTypeCache.put(name, newAT);
         return newAT;
     }
     
+    private void initAttributeTypeCache() throws MGXException{
+        Iterator<AttributeTypeI> it = master.AttributeType().fetchall();
+        while (it.hasNext()){
+            AttributeTypeI at = it.next();
+            attrTypeCache.put(at.getName(), at);
+        }        
+    }
+    
     private AttributeI getAttribute(AttributeTypeI at, String value){
-        Collection<AttributeI> attrCol;
-        if (attrCache.containsKey(at))
-            attrCol = attrCache.get(at);
-        else
+        Collection<AttributeI> attrCol = attrCache.get(at);
+        if (attrCol == null)
             return null;
         
         for (AttributeI attr : attrCol){

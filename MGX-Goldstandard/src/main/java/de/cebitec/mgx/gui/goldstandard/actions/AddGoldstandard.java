@@ -11,20 +11,23 @@ import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.SequenceI;
 import de.cebitec.mgx.api.model.ToolI;
 import de.cebitec.mgx.gui.controller.RBAC;
+import de.cebitec.mgx.gui.goldstandard.util.MGSAttribute;
 import de.cebitec.mgx.gui.goldstandard.util.MGSEntry;
 import de.cebitec.mgx.gui.goldstandard.util.MGSReader;
+import de.cebitec.mgx.gui.goldstandard.util.WaitTimeMonitoringExecutorService;
 import de.cebitec.mgx.gui.goldstandard.wizards.addgoldstandard.AddGoldstandardWizardDescriptor;
 import java.awt.Dialog;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionHandler;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import static javax.swing.Action.NAME;
 import org.netbeans.api.progress.ProgressHandle;
-import org.netbeans.api.progress.ProgressHandleFactory;
 import org.openide.DialogDisplayer;
 import org.openide.WizardDescriptor;
 import org.openide.awt.ActionID;
@@ -44,7 +47,7 @@ public final class AddGoldstandard extends NodeAction implements LookupListener 
 
     private final Lookup context;
     private Lookup.Result<SeqRunI> lkpInfo;
-    private final ExecutorService pool;
+    private final WaitTimeMonitoringExecutorService pool;
 
     public final static String TOOL_NAME = "Goldstandard";
     public final static String TOOL_AUTHOR = "Patrick Blumenkamp";
@@ -60,7 +63,10 @@ public final class AddGoldstandard extends NodeAction implements LookupListener 
     private AddGoldstandard(Lookup context) {
         putValue(NAME, "AddGoldstandard");
         this.context = context;
-        pool = Executors.newFixedThreadPool(Math.min(20, Runtime.getRuntime().availableProcessors() + 3));
+        int threads = Math.min(20, Runtime.getRuntime().availableProcessors() + 3);
+        RejectedExecutionHandler executionHandler = new ThreadPoolExecutor.CallerRunsPolicy();
+        ThreadPoolExecutor temp = new ThreadPoolExecutor(threads, threads, 2, TimeUnit.MINUTES, new ArrayBlockingQueue<Runnable>(100_000, true), executionHandler);
+        pool = new WaitTimeMonitoringExecutorService(temp);
         init();
     }
 
@@ -118,9 +124,9 @@ public final class AddGoldstandard extends NodeAction implements LookupListener 
                     Collection<JobParameterI> params = new ArrayList<>(1);
                     JobI job = master.Job().create(tool, seqrun, params);
                     ProgressHandle p = ProgressHandle.createHandle("AddGoldstandard");
-                    p.start((int)seqrun.getNumSequences());
+                    p.start((int) seqrun.getNumSequences());
                     MGSReader reader = new MGSReader(wd.getGoldstandardFile().getAbsolutePath(), master, job);
-                    long i = 0;
+                    int i = 0;
                     while (reader.hasNext()) {
                         final MGSEntry entry = reader.next();
                         pool.submit(new Runnable() {
@@ -128,15 +134,15 @@ public final class AddGoldstandard extends NodeAction implements LookupListener 
                             public void run() {
                                 try {
                                     SequenceI seq = master.Sequence().fetch(seqrun, entry.getHeader().split(" ")[0]);
-                                    for (Triple<AttributeI, Integer, Integer> t : entry.getAttributes()) {
-                                        master.Observation().create(seq, t.getFirst(), t.getSecond(), t.getThird());
+                                    for (MGSAttribute t : entry.getAttributes()) {
+                                        master.Observation().create(seq, t.getAttribute(), t.getStart(), t.getStop());
                                     }
                                 } catch (MGXException ex) {
                                     Exceptions.printStackTrace(ex);
                                 }
                             }
                         });
-                        p.progress(1);
+                        p.progress(i++);
                     }
                     pool.shutdown();
                     pool.awaitTermination(1L, TimeUnit.HOURS);

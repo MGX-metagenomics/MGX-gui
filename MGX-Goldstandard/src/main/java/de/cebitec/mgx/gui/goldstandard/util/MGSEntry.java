@@ -1,6 +1,5 @@
 package de.cebitec.mgx.gui.goldstandard.util;
 
-import de.cebitec.mgx.api.misc.Triple;
 import de.cebitec.mgx.api.model.AttributeI;
 import java.util.Collection;
 import java.util.HashSet;
@@ -12,7 +11,7 @@ import java.util.HashSet;
 public class MGSEntry {
     private final String header;
     
-    private final Collection<Triple<AttributeI, Integer, Integer>> attribute;
+    private final Collection<MGSAttribute> attribute;
 
     public MGSEntry(String header) {
         this.header = header;
@@ -20,11 +19,11 @@ public class MGSEntry {
     }
     
     public MGSEntry add(AttributeI at, int start, int stop){
-        attribute.add(new Triple<>(at, start, stop));        
+        attribute.add(new MGSAttribute(at, start, stop));        
         return this;
     }
     
-    public Collection<Triple<AttributeI, Integer, Integer>> getAttributes(){
+    public Collection<MGSAttribute> getAttributes(){
         return attribute;
     }
 
