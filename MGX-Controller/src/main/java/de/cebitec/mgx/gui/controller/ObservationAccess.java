@@ -4,13 +4,19 @@ import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.ObservationAccessI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.exception.MGXLoggedoutException;
+import de.cebitec.mgx.api.misc.BulkObservationList;
+import de.cebitec.mgx.api.misc.BulkObservationList.BulkObservation;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.Identifiable;
 import de.cebitec.mgx.api.model.ObservationI;
 import de.cebitec.mgx.api.model.SequenceI;
 import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.client.exception.MGXDTOException;
+import de.cebitec.mgx.dto.dto;
+import de.cebitec.mgx.dto.dto.BulkObservationDTO;
+import de.cebitec.mgx.dto.dto.BulkObservationDTOList;
 import de.cebitec.mgx.dto.dto.ObservationDTO;
+import de.cebitec.mgx.dto.dto.ObservationDTOList;
 import de.cebitec.mgx.gui.datamodel.Observation;
 import de.cebitec.mgx.gui.dtoconversion.ObservationDTOFactory;
 import java.util.ArrayList;
@@ -62,7 +68,7 @@ public class ObservationAccess implements ObservationAccessI {
         if (attr == null || attr.getId() == Identifiable.INVALID_IDENTIFIER) {
             throw new MGXException("Invalid attribute");
         }
-        
+
         ObservationI obj = new Observation(getMaster());
         obj.setAttributeName(attr.getValue());
         obj.setAttributeTypeName(attr.getAttributeType().getName());
@@ -76,6 +82,25 @@ public class ObservationAccess implements ObservationAccessI {
             throw new MGXException(ex);
         }
         return obj;
+    }
+
+    @Override
+    public void createBulk(BulkObservationList obsList) throws MGXException {
+        try {
+            BulkObservationDTOList.Builder b = BulkObservationDTOList.newBuilder();
+            for (BulkObservation bObs : obsList.getObservations()) {
+                b.addBulkObservation(BulkObservationDTO.newBuilder()
+                        .setSeqId(bObs.getSequenceId())
+                        .setAttributeId(bObs.getAttributeId())
+                        .setStart(bObs.getStart())
+                        .setStop(bObs.getStop())
+                        .build()
+                );
+            }
+            getDTOmaster().Observation().createBulk(b.build());
+        } catch (MGXDTOException ex) {
+            throw new MGXException(ex);
+        }
     }
 
     private MGXDTOMaster getDTOmaster() {
