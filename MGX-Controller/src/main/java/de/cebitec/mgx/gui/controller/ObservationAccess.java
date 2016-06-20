@@ -12,11 +12,9 @@ import de.cebitec.mgx.api.model.ObservationI;
 import de.cebitec.mgx.api.model.SequenceI;
 import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.client.exception.MGXDTOException;
-import de.cebitec.mgx.dto.dto;
 import de.cebitec.mgx.dto.dto.BulkObservationDTO;
 import de.cebitec.mgx.dto.dto.BulkObservationDTOList;
 import de.cebitec.mgx.dto.dto.ObservationDTO;
-import de.cebitec.mgx.dto.dto.ObservationDTOList;
 import de.cebitec.mgx.gui.datamodel.Observation;
 import de.cebitec.mgx.gui.dtoconversion.ObservationDTOFactory;
 import java.util.ArrayList;
@@ -90,7 +88,8 @@ public class ObservationAccess implements ObservationAccessI {
             BulkObservationDTOList.Builder b = BulkObservationDTOList.newBuilder();
             for (BulkObservation bObs : obsList.getObservations()) {
                 b.addBulkObservation(BulkObservationDTO.newBuilder()
-                        .setSeqId(bObs.getSequenceId())
+                        .setSeqrunId(bObs.getSeqRunId())
+                        .setSeqName(bObs.getSequenceName())
                         .setAttributeId(bObs.getAttributeId())
                         .setStart(bObs.getStart())
                         .setStop(bObs.getStop())
