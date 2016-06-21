@@ -112,16 +112,32 @@ public class VolcanoPlot extends CategoricalViewerI<Long> {
                 double[] groupBSet = new double[groupBRepCount];        //all values for an attribute in group B
                 int i = 0;
                 for (ReplicateI rep : groupA.getReplicates()) {
-                    groupASet[i++] = rep.getDistribution().getOrDefault(attr, 0L);
+                    Long value = rep.getDistribution().get(attr);
+                    if (value == null){
+                        value = 0L;
+                    }
+                    groupASet[i++] = value;
                 }
                 i = 0;
                 for (ReplicateI rep : groupB.getReplicates()) {
-                    groupBSet[i++] = rep.getDistribution().getOrDefault(attr, 0L);
+                    Long value = rep.getDistribution().get(attr);
+                    if (value == null){
+                        value = 0L;
+                    }
+                    groupBSet[i++] = value;
                 }
                 double pValue = mwuTest.mannWhitneyUTest(groupASet, groupBSet);
                 double logPValue = -logBase10.value(pValue);
-                Double meanA = groupAMean.getOrDefault(attr, 1.);   //Zero values will be replaced by 1 for calculating fold change
-                Double meanB = groupBMean.getOrDefault(attr, 1.);
+                Double value = groupAMean.get(attr); 
+                if (value == null){
+                    value = 1.;             //Zero values will be replaced by 1 for calculating fold change
+                }
+                double meanA = value;
+                value = groupBMean.get(attr);
+                if (value == null){
+                    value = 1.;
+                }
+                double meanB = value;                
                 double foldChange = meanA / meanB;
                 double foldChangeLog2 = logBase10.value(foldChange) / logBase10Exp2;
                 if (foldChangeLog2 < foldChangeThreshold && foldChangeLog2 > -foldChangeThreshold) {
@@ -145,12 +161,24 @@ public class VolcanoPlot extends CategoricalViewerI<Long> {
                 Arrays.fill(groupASet, 0);
                 int i = 0;
                 for (ReplicateI rep : groupB.getReplicates()) {
-                    groupBSet[i++] = rep.getDistribution().getOrDefault(attr, 0L);
+                    Long value = rep.getDistribution().get(attr);
+                    if (value == null){
+                        value = 0L;
+                    }
+                    groupBSet[i++] = value;
                 }
                 double pValue = mwuTest.mannWhitneyUTest(groupASet, groupBSet);
                 double logPValue = logBase10.value(pValue);
-                Double meanA = groupAMean.getOrDefault(attr, 1.);   //Zero values will be replaced by 1 for calculating fold change
-                Double meanB = groupBMean.getOrDefault(attr, 1.);
+                Double value = groupAMean.get(attr); 
+                if (value == null){
+                    value = 1.;             //Zero values will be replaced by 1 for calculating fold change
+                }
+                double meanA = value;
+                value = groupBMean.get(attr);
+                if (value == null){
+                    value = 1.;
+                }
+                double meanB = value;                
                 double foldChange = meanA / meanB;
                 double foldChangeLog2 = logBase10.value(foldChange) / logBase10Exp2;
                 if (foldChangeLog2 < foldChangeThreshold && foldChangeLog2 > -foldChangeThreshold) {
