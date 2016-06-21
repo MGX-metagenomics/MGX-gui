@@ -128,6 +128,10 @@ public class MGSReader {
     }
 
     private AttributeI createBasicAttribute(AttributeTypeI attrType, String attrValue) throws MGXException {
+        return createHierarchicalAttribute(attrType, attrValue, null);
+    }
+
+    private AttributeI createHierarchicalAttribute(AttributeTypeI attrType, String attrValue, AttributeI parent) throws MGXException {
         AttributeI attr;
         if (!attrCache.containsKey(attrType)) {
             attrCache.put(attrType, new LinkedList<AttributeI>());
@@ -139,21 +143,7 @@ public class MGSReader {
             }
         }
 
-        attr = master.Attribute().create(job, attrType, attrValue, null);
-        attrCache.get(attrType).add(attr);
-        return attr;
-    }
-
-    private AttributeI createHierarchicalAttribute(AttributeTypeI attrType, String attrValue, AttributeI parent) throws MGXException {
-        AttributeI attr = getAttribute(attrType, attrValue);
-        if (attr != null) {
-            return attr;
-        }
-
         attr = master.Attribute().create(job, attrType, attrValue, parent);
-        if (!attrCache.containsKey(attrType)) {
-            attrCache.put(attrType, new LinkedList<AttributeI>());
-        }
         attrCache.get(attrType).add(attr);
         return attr;
     }
@@ -161,16 +151,7 @@ public class MGSReader {
     private AttributeTypeI getAttributeType(String name, char valueType, char structure) throws MGXException {
         if (attrTypeCache.containsKey(name)) {
             return attrTypeCache.get(name);
-        } // else {
-//            Iterator<AttributeTypeI> it = master.AttributeType().fetchall();
-//            while (it.hasNext()){
-//                AttributeTypeI at = it.next();
-//                if (at.getName().equals(name) && at.getStructure() == structure && at.getValueType() == valueType){
-//                    attrTypeCache.put(name, at);
-//                    return at;
-//                }
-//            }
-//        }
+        }
 
         AttributeTypeI newAT = master.AttributeType().create(name, valueType, structure);
         attrTypeCache.put(name, newAT);

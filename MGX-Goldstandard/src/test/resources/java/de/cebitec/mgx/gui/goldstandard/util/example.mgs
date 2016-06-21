@@ -1,0 +1,100 @@
+READ	1/1 reference=gi|386593590|ref|NC_017625.1| position=complement(245487..245736) description="Escherichia coli DH1 chromosome, complete genome"
+AT	NCBI_ROOT	Root	0	249	HD	1
+AT	NCBI_SUPERKINGDOM	Bacteria	0	249	HD	1
+AT	NCBI_PHYLUM	Proteobacteria	0	249	HD	1
+AT	NCBI_CLASS	Gammaproteobacteria	0	249	HD	1
+AT	NCBI_ORDER	Enterobacteriales	0	249	HD	1
+AT	NCBI_FAMILY	Enterobacteriaceae	0	249	HD	1
+AT	NCBI_GENUS	Escherichia	0	249	HD	1
+AT	NCBI_SPECIES	Escherichia coli	0	249	HD	1
+AT	GC	52.8	0	249	BN
+READ	1/2 reference=gi|386593590|ref|NC_017625.1| position=244737..244986 description="Escherichia coli DH1 chromosome, complete genome"
+AT	NCBI_ROOT	Root	0	249	HD	1
+AT	NCBI_SUPERKINGDOM	Bacteria	0	249	HD	1
+AT	NCBI_PHYLUM	Proteobacteria	0	249	HD	1
+AT	NCBI_CLASS	Gammaproteobacteria	0	249	HD	1
+AT	NCBI_ORDER	Enterobacteriales	0	249	HD	1
+AT	NCBI_FAMILY	Enterobacteriaceae	0	249	HD	1
+AT	NCBI_GENUS	Escherichia	0	249	HD	1
+AT	NCBI_SPECIES	Escherichia coli	0	249	HD	1
+AT	GC	57.6	0	249	BN
+READ	2/1 reference=gi|350268398|ref|NC_016048.1| position=complement(2737893..2738142) description="Oscillibacter valericigenes Sjm18-20, complete genome"
+AT	NCBI_ROOT	Root	0	249	HD	1
+AT	NCBI_SUPERKINGDOM	Bacteria	0	249	HD	1
+AT	NCBI_PHYLUM	Firmicutes	0	249	HD	1
+AT	NCBI_CLASS	Clostridia	0	249	HD	1
+AT	NCBI_ORDER	Clostridiales	0	249	HD	1
+AT	NCBI_FAMILY	Oscillospiraceae	0	249	HD	1
+AT	NCBI_GENUS	Oscillibacter	0	249	HD	1
+AT	NCBI_SPECIES	Oscillibacter valericigenes	0	249	HD	1
+AT	GC	56.4	0	249	BN
+READ	2/2 reference=gi|350268398|ref|NC_016048.1| position=2737143..2737392 description="Oscillibacter valericigenes Sjm18-20, complete genome"
+AT	NCBI_ROOT	Root	0	249	HD	1
+AT	NCBI_SUPERKINGDOM	Bacteria	0	249	HD	1
+AT	NCBI_PHYLUM	Firmicutes	0	249	HD	1
+AT	NCBI_CLASS	Clostridia	0	249	HD	1
+AT	NCBI_ORDER	Clostridiales	0	249	HD	1
+AT	NCBI_FAMILY	Oscillospiraceae	0	249	HD	1
+AT	NCBI_GENUS	Oscillibacter	0	249	HD	1
+AT	NCBI_SPECIES	Oscillibacter valericigenes	0	249	HD	1
+AT	GC	49.6	0	249	BN
+READ	3/1 reference=gi|384511964|ref|NC_017316.1| position=2691143..2691392 description="Enterococcus faecalis OG1RF chromosome, complete genome"
+AT	NCBI_ROOT	Root	0	249	HD	1
+AT	NCBI_SUPERKINGDOM	Bacteria	0	249	HD	1
+AT	NCBI_PHYLUM	Firmicutes	0	249	HD	1
+AT	NCBI_CLASS	Bacilli	0	249	HD	1
+AT	NCBI_ORDER	Lactobacillales	0	249	HD	1
+AT	NCBI_FAMILY	Enterococcaceae	0	249	HD	1
+AT	NCBI_GENUS	Enterococcus	0	249	HD	1
+AT	NCBI_SPECIES	Enterococcus faecalis	0	249	HD	1
+AT	GC	54.8	0	249	BN
+READ	3/2 reference=gi|384511964|ref|NC_017316.1| position=complement(2691893..2692142) description="Enterococcus faecalis OG1RF chromosome, complete genome"
+AT	NCBI_ROOT	Root	0	249	HD	1
+AT	NCBI_SUPERKINGDOM	Bacteria	0	249	HD	1
+AT	NCBI_PHYLUM	Firmicutes	0	249	HD	1
+AT	NCBI_CLASS	Bacilli	0	249	HD	1
+AT	NCBI_ORDER	Lactobacillales	0	249	HD	1
+AT	NCBI_FAMILY	Enterococcaceae	0	249	HD	1
+AT	NCBI_GENUS	Enterococcus	0	249	HD	1
+AT	NCBI_SPECIES	Enterococcus faecalis	0	249	HD	1
+AT	GC	30.0	0	249	BN
+READ	4/1 reference=gi|384511964|ref|NC_017316.1| position=1689699..1689948 description="Enterococcus faecalis OG1RF chromosome, complete genome"
+AT	NCBI_ROOT	Root	0	249	HD	1
+AT	NCBI_SUPERKINGDOM	Bacteria	0	249	HD	1
+AT	NCBI_PHYLUM	Firmicutes	0	249	HD	1
+AT	NCBI_CLASS	Bacilli	0	249	HD	1
+AT	NCBI_ORDER	Lactobacillales	0	249	HD	1
+AT	NCBI_FAMILY	Enterococcaceae	0	249	HD	1
+AT	NCBI_GENUS	Enterococcus	0	249	HD	1
+AT	NCBI_SPECIES	Enterococcus faecalis	0	249	HD	1
+AT	GC	34.8	0	249	BN
+READ	4/2 reference=gi|384511964|ref|NC_017316.1| position=complement(1690449..1690698) description="Enterococcus faecalis OG1RF chromosome, complete genome"
+AT	NCBI_ROOT	Root	0	249	HD	1
+AT	NCBI_SUPERKINGDOM	Bacteria	0	249	HD	1
+AT	NCBI_PHYLUM	Firmicutes	0	249	HD	1
+AT	NCBI_CLASS	Bacilli	0	249	HD	1
+AT	NCBI_ORDER	Lactobacillales	0	249	HD	1
+AT	NCBI_FAMILY	Enterococcaceae	0	249	HD	1
+AT	NCBI_GENUS	Enterococcus	0	249	HD	1
+AT	NCBI_SPECIES	Enterococcus faecalis	0	249	HD	1
+AT	GC	32.8	0	249	BN
+READ	5/1 reference=gi|386593590|ref|NC_017625.1| position=complement(4533846..4534095) description="Escherichia coli DH1 chromosome, complete genome"
+AT	NCBI_ROOT	Root	0	249	HD	1
+AT	NCBI_SUPERKINGDOM	Bacteria	0	249	HD	1
+AT	NCBI_PHYLUM	Proteobacteria	0	249	HD	1
+AT	NCBI_CLASS	Gammaproteobacteria	0	249	HD	1
+AT	NCBI_ORDER	Enterobacteriales	0	249	HD	1
+AT	NCBI_FAMILY	Enterobacteriaceae	0	249	HD	1
+AT	NCBI_GENUS	Escherichia	0	249	HD	1
+AT	NCBI_SPECIES	Escherichia coli	0	249	HD	1
+AT	GC	56.0	0	249	BN
+READ	5/2 reference=gi|386593590|ref|NC_017625.1| position=4533096..4533345 description="Escherichia coli DH1 chromosome, complete genome"
+AT	NCBI_ROOT	Root	0	249	HD	1
+AT	NCBI_SUPERKINGDOM	Bacteria	0	249	HD	1
+AT	NCBI_PHYLUM	Proteobacteria	0	249	HD	1
+AT	NCBI_CLASS	Gammaproteobacteria	0	249	HD	1
+AT	NCBI_ORDER	Enterobacteriales	0	249	HD	1
+AT	NCBI_FAMILY	Enterobacteriaceae	0	249	HD	1
+AT	NCBI_GENUS	Escherichia	0	249	HD	1
+AT	NCBI_SPECIES	Escherichia coli	0	249	HD	1
+AT	GC	55.2	0	249	BN
