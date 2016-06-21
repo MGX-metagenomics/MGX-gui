@@ -102,6 +102,15 @@ public class ObservationAccess implements ObservationAccessI {
         }
     }
 
+    @Override
+    public void delete(SequenceI seq, AttributeI attr, int start, int stop) throws MGXException {
+        try {
+            getDTOmaster().Observation().delete(seq.getId(), attr.getId(), start, stop);
+        } catch (MGXDTOException ex) {
+            throw new MGXException(ex);
+        }
+    }
+
     private MGXDTOMaster getDTOmaster() {
         return dtomaster;
     }
