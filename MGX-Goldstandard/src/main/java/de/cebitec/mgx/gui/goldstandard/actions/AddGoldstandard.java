@@ -54,7 +54,7 @@ public final class AddGoldstandard extends NodeAction implements LookupListener 
     public final static String TOOL_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><graph description=\"\" name=\"Goldstandard\" service=\"MGX\"><composites/><nodes><node id=\"1\" name=\"\" type=\"Conveyor.MGX.GetMGXJob\" x=\"407\" y=\"162\"><configuration_items/><typeParameters/></node><node id=\"2\" name=\"\" type=\"Conveyor.Core.Discard\" x=\"412\" y=\"310\"><configuration_items/><typeParameters/></node></nodes><links><link from_connector=\"output\" from_node=\"1\" to_connector=\"input\" to_node=\"2\"/></links></graph>";
     public final static float TOOL_VERSION = 1.0f;
 
-    public final static int CHUNKSIZE = 5;
+    public final static int CHUNKSIZE = 2000;
 
     public AddGoldstandard() {
         this(Utilities.actionsGlobalContext());
@@ -107,6 +107,7 @@ public final class AddGoldstandard extends NodeAction implements LookupListener 
 
     @Override
     protected void performAction(Node[] activatedNodes) {
+        long start, stop, startFirstLoop, firstChunkFull, startHasNext;
         final MGXMasterI master = context.lookup(MGXMasterI.class);
         Collection<? extends SeqRunI> seqruns = lkpInfo.allInstances();
         if (seqruns.isEmpty()) {
@@ -121,17 +122,32 @@ public final class AddGoldstandard extends NodeAction implements LookupListener 
         if (!cancelled) {
             for (final SeqRunI seqrun : seqruns) {
                 try {
+                    start = System.currentTimeMillis();
                     ToolI tool = getTool(master, TOOL_NAME, TOOL_LONG_DESCRIPTION, TOOL_AUTHOR, TOOL_WEBSITE, TOOL_VERSION, TOOL_XML);
+                    stop = System.currentTimeMillis();
+                    System.out.println(String.format("getTool: %dms", stop - start));
+                    start = System.currentTimeMillis();
                     Collection<JobParameterI> params = new ArrayList<>(1);
                     JobI job = master.Job().create(tool, seqrun, params);
+                    stop = System.currentTimeMillis();
+                    System.out.println(String.format("create Job: %dms", stop - start));
+                    start = System.currentTimeMillis();
                     ProgressHandle p = ProgressHandle.createHandle("AddGoldstandard");
                     p.start((int) seqrun.getNumSequences());
+                    stop = System.currentTimeMillis();
+                    System.out.println(String.format("create ProgressBar: %dms", stop - start));
+                    start = System.currentTimeMillis();
                     MGSReader reader = new MGSReader(wd.getGoldstandardFile().getAbsolutePath(), master, job);
+                    stop = System.currentTimeMillis();
+                    System.out.println(String.format("create MGSReader: %dms", stop - start));
                     int i = 0;
                     int numChunks = 0;
                     BulkObservationList bol = new BulkObservationList();
                     ArrayList<String> list = new ArrayList<>();
+                    startHasNext = System.currentTimeMillis();
                     while (reader.hasNext()) {
+                        stop = System.currentTimeMillis();
+                        System.out.println(String.format("one hasNext: %dms", stop - startHasNext));
                         final MGSEntry entry = reader.next();
 //                        SequenceI seq = master.Sequence().fetch(seqrun, entry.getHeader().split(" ")[0]);
                         String seqName = entry.getHeader();
@@ -160,6 +176,7 @@ public final class AddGoldstandard extends NodeAction implements LookupListener 
                             bol = new BulkObservationList();
                             numChunks = 0;
                         }
+                        startHasNext = System.currentTimeMillis();
                     }
                     if (numChunks > 0) {
                         final BulkObservationList submitBol = bol;
