@@ -3,13 +3,10 @@ package de.cebitec.mgx.gui.goldstandard.actions;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.misc.BulkObservationList;
-import de.cebitec.mgx.api.misc.Triple;
-import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.JobParameterI;
 import de.cebitec.mgx.api.model.JobState;
 import de.cebitec.mgx.api.model.SeqRunI;
-import de.cebitec.mgx.api.model.SequenceI;
 import de.cebitec.mgx.api.model.ToolI;
 import de.cebitec.mgx.gui.controller.RBAC;
 import de.cebitec.mgx.gui.goldstandard.util.MGSAttribute;
@@ -48,7 +45,7 @@ public final class AddGoldstandard extends NodeAction implements LookupListener 
 
     private final Lookup context;
     private Lookup.Result<SeqRunI> lkpInfo;
-    private final WaitTimeMonitoringExecutorService pool;
+    private final ExecutorService pool;
 
     public final static String TOOL_NAME = "Goldstandard";
     public final static String TOOL_AUTHOR = "Patrick Blumenkamp";
@@ -57,7 +54,7 @@ public final class AddGoldstandard extends NodeAction implements LookupListener 
     public final static String TOOL_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><graph description=\"\" name=\"Goldstandard\" service=\"MGX\"><composites/><nodes><node id=\"1\" name=\"\" type=\"Conveyor.MGX.GetMGXJob\" x=\"407\" y=\"162\"><configuration_items/><typeParameters/></node><node id=\"2\" name=\"\" type=\"Conveyor.Core.Discard\" x=\"412\" y=\"310\"><configuration_items/><typeParameters/></node></nodes><links><link from_connector=\"output\" from_node=\"1\" to_connector=\"input\" to_node=\"2\"/></links></graph>";
     public final static float TOOL_VERSION = 1.0f;
 
-    public final static int CHUNKSIZE = 5_000;
+    public final static int CHUNKSIZE = 5;
 
     public AddGoldstandard() {
         this(Utilities.actionsGlobalContext());
@@ -68,8 +65,9 @@ public final class AddGoldstandard extends NodeAction implements LookupListener 
         this.context = context;
         int threads = Math.min(20, Runtime.getRuntime().availableProcessors() + 3);
         RejectedExecutionHandler executionHandler = new ThreadPoolExecutor.CallerRunsPolicy();
-        ThreadPoolExecutor temp = new ThreadPoolExecutor(threads, threads, 2, TimeUnit.MINUTES, new ArrayBlockingQueue<Runnable>(100_000, true), executionHandler);
-        pool = new WaitTimeMonitoringExecutorService(temp);
+//        ThreadPoolExecutor temp = new ThreadPoolExecutor(threads, threads, 2, TimeUnit.MINUTES, new ArrayBlockingQueue<Runnable>(100, true), executionHandler);
+//        pool = new WaitTimeMonitoringExecutorService(temp);
+        pool = new ThreadPoolExecutor(threads, threads, 2, TimeUnit.MINUTES, new ArrayBlockingQueue<Runnable>(100, true), executionHandler);
         init();
     }
 
@@ -150,8 +148,10 @@ public final class AddGoldstandard extends NodeAction implements LookupListener 
                                 @Override
                                 public void run() {
                                     try {
-                                        System.out.println("Run createBulk");
+//                                        long start = System.currentTimeMillis();
                                         master.Observation().createBulk(submitBol);
+//                                        long stop = System.currentTimeMillis();
+//                                        System.out.println(String.format("%dms", stop - start));
                                     } catch (MGXException ex) {
                                         Exceptions.printStackTrace(ex);
                                     }
