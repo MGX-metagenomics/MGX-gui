@@ -112,7 +112,10 @@ public class VolcanoPlot extends CategoricalViewerI<Long> {
                 double[] groupBSet = new double[groupBRepCount];        //all values for an attribute in group B
                 int i = 0;
                 for (ReplicateI rep : groupA.getReplicates()) {
-                    groupASet[i++] = rep.getDistribution().getOrDefault(attr, 0L);
+                    Long val = rep.getDistribution().get(attr);
+                    if (val == null)
+                        val = 0L;
+                    groupASet[i++] = val;
                 }
                 i = 0;
                 for (ReplicateI rep : groupB.getReplicates()) {
