@@ -24,4 +24,6 @@ public interface ObservationAccessI {
 
     public void createBulk(BulkObservationList obsList) throws MGXException;
 
+    public void delete(SequenceI seq, AttributeI attr, int start, int stop) throws MGXException;
+
 }
