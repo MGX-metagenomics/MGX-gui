@@ -4,7 +4,6 @@ import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.MGXFileI;
 import de.cebitec.mgx.gui.controller.RBAC;
-import de.cebitec.mgx.gui.nodefactory.MGXNodeFactoryBase;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.util.List;
@@ -33,8 +32,6 @@ public class CreateDirectory extends AbstractAction {
     public void actionPerformed(ActionEvent e) {
         final MGXMasterI m = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
         final MGXFileI currentDir = Utilities.actionsGlobalContext().lookup(MGXFileI.class);
-//        assert currentDir != null;
-//        assert currentDir.isDirectory();
         NotifyDescriptor.InputLine nd = new NotifyDescriptor.InputLine("Directory name:", "Choose directory name");
         if (NotifyDescriptor.OK_OPTION.equals(DialogDisplayer.getDefault().notify(nd))) {
             final String dirName = nd.getInputText().trim();
