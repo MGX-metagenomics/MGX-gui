@@ -63,7 +63,7 @@ public class UploadFile extends AbstractAction {
                 public boolean process() {
                     uploader.addPropertyChangeListener(this);
                     boolean ret = uploader.upload();
-                    
+
                     if (!ret) {
                         setStatus(uploader.getErrorMessage());
                     }
@@ -74,14 +74,16 @@ public class UploadFile extends AbstractAction {
                 public void finished() {
                     super.finished();
                     uploader.removePropertyChangeListener(this);
-                    parent.refreshChildren();
+//                    parent.refreshChildren();
+                    targetDir.modified();
                 }
 
                 @Override
                 public void failed(String reason) {
                     super.failed(reason);
                     uploader.removePropertyChangeListener(this);
-                    parent.refreshChildren();
+//                    parent.refreshChildren();
+                    targetDir.modified();
                 }
 
                 @Override
