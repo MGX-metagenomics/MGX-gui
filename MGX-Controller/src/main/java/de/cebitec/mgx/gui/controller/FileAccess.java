@@ -36,7 +36,7 @@ public class FileAccess implements FileAccessI {
     public FileAccess(MGXMasterI master, MGXDTOMaster dtomaster) throws MGXException {
         this.master = master;
         this.dtomaster = dtomaster;
-          if (master.isDeleted()) {
+        if (master.isDeleted()) {
             throw new MGXLoggedoutException("You are disconnected.");
         }
     }
@@ -47,7 +47,7 @@ public class FileAccess implements FileAccessI {
     }
 
     @Override
-    public boolean createDirectory(MGXFileI parent, String name) throws MGXException {
+    public boolean createDirectory(MGXFileI targetDir, String name) throws MGXException {
         // check name
         String[] invalid = new String[]{"|", "/", "\\", ".."};
 
@@ -57,9 +57,13 @@ public class FileAccess implements FileAccessI {
             }
         }
 
-        String targetPath = parent.getFullPath() + MGXFileI.separator + name;
+        if (!targetDir.isDirectory()) {
+            throw new MGXException("Selected parent " + targetDir.getName() + " is not a directory.");
+        }
+
+        String targetPath = targetDir.getFullPath() + MGXFileI.separator + name;
         final MGXFileI newDir = new MGXFile(getMaster(), targetPath, true, 0);
-        newDir.setParent(parent);
+        newDir.setParent(targetDir);
 
         FileDTO dto = FileDTOFactory.getInstance().toDTO(newDir);
         try {
@@ -81,7 +85,7 @@ public class FileAccess implements FileAccessI {
                 }
             };
         } catch (MGXDTOException ex) {
-            throw new MGXException(ex);
+            throw new MGXException(ex.getMessage());
         }
     }
 
@@ -105,7 +109,11 @@ public class FileAccess implements FileAccessI {
 
     @Override
     public UploadBaseI createUploader(File localFile, MGXFileI targetDir, String targetName) throws MGXException {
-        assert targetDir.isDirectory();
+
+        if (!targetDir.isDirectory()) {
+            throw new MGXException("Selected parent " + targetDir.getName() + " is not a directory.");
+        }
+        
         if (targetName.contains("/")) {
             assert false;
         }

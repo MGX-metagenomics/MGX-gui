@@ -533,6 +533,7 @@
     <modules>
         <module>branding</module>
         <module>application</module>
+        <module>MGX-API</module>
         <module>MGX-Actions</module>
         <module>MGX-AttributeVisualization</module>
         <module>MGX-BasicCharts</module>
@@ -550,7 +551,7 @@
         <module>MGX-PCA</module>
         <module>MGX-QCMonitor</module>
         <module>MGX-Rarefaction</module>
-        <module>MGX-Search</module>
+        <!-- <module>MGX-Search</module> -->
         <module>MGX-Statistics</module>
         <module>MGX-SwingUtils</module>
         <module>MGX-TaskView</module>
@@ -562,7 +563,6 @@
         <module>GPMS-Nodes</module>
         <module>GPMS-Actions</module>
         <module>MGX-JSCharts</module>
-        <module>MGX-API</module>
     </modules>
     
     <properties>
