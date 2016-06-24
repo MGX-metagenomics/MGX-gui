@@ -254,11 +254,11 @@ public class AttributeAccess implements AttributeAccessI {
     }
 
     @Override
-    public Iterator<SequenceI> search(String term, boolean exact, SeqRunI[] targets) throws MGXException {
+    public Iterator<SequenceI> search(String term, boolean exact, SeqRunI seqrun) throws MGXException {
         SearchRequestI sr = new SearchRequest();
         sr.setTerm(term);
         sr.setExact(exact);
-        sr.setRuns(targets);
+        sr.setRuns(new SeqRunI[]{seqrun});
         SearchRequestDTO reqdto = SearchRequestDTOFactory.getInstance().toDTO(sr);
 
         Iterator<SequenceDTO> searchResult = null;
