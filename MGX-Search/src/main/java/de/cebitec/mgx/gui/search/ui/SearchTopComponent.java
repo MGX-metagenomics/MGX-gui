@@ -1,23 +1,21 @@
 package de.cebitec.mgx.gui.search.ui;
 
-import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.ModelBaseI;
 import de.cebitec.mgx.api.model.ObservationI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.SequenceI;
 import de.cebitec.mgx.gui.search.util.ReadModel;
-import de.cebitec.mgx.gui.search.util.SeqRunModel;
 import de.cebitec.mgx.gui.search.util.TermModel;
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JList;
 import javax.swing.SwingWorker;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -56,75 +54,74 @@ import org.openide.windows.TopComponent;
         displayName = "Search",
         preferredID = "SearchTopComponent"
 )
-public final class SearchTopComponent extends TopComponent implements LookupListener {
-
-    private final Lookup.Result<MGXMasterI> result;
-    private MGXMasterI currentMaster = null;
-    private final SeqRunModel runListModel = new SeqRunModel();
+public final class SearchTopComponent extends TopComponent implements LookupListener, PropertyChangeListener {
+    
+    private final Lookup.Result<SeqRunI> result;
     private final TermModel termModel = new TermModel();
     private final ReadModel readModel = new ReadModel();
     private final ObservationView ov = new ObservationView();
-
+    
+    private final List<SeqRunI> currentRuns = new ArrayList<>();
+    
     public SearchTopComponent() {
         initComponents();
+        super.setName("Search");
+        super.setToolTipText("Metagenome search");
         obsPanel.add(ov, BorderLayout.CENTER);
-        result = Utilities.actionsGlobalContext().lookupResult(MGXMasterI.class);
+        result = Utilities.actionsGlobalContext().lookupResult(SeqRunI.class);
+        
 
-        setName("Search");
-        setToolTipText("Metagenome search");
-        runList.setModel(runListModel);
-        runList.setSelectedIndex(-1);
-        runList.addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-                termModel.setRuns(getSelectedSeqRuns());
-                termModel.update();
-                termField.setEnabled(getSelectedSeqRuns().length > 0);
-                termList.setEnabled(getSelectedSeqRuns().length > 0 && termModel.getSize() > 0);
-                readModel.setRuns(getSelectedSeqRuns());
-                readModel.update();
-                readList.setEnabled(getSelectedSeqRuns().length > 0);
-                hitNum.setText(readModel.getSize() + " hits");
-                setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-            }
-        });
-        runList.setCellRenderer(new DefaultListCellRenderer() {
-            @Override
-            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-                return super.getListCellRendererComponent(list, ((SeqRunI) value).getName(), index, isSelected, cellHasFocus);
-            }
-
-        });
-
+//        runList.setModel(runListModel);
+//        runList.setSelectedIndex(-1);
+//        runList.addListSelectionListener(new ListSelectionListener() {
+//            @Override
+//            public void valueChanged(ListSelectionEvent e) {
+//                setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+//                termModel.setRuns(getSelectedSeqRuns());
+//                termModel.update();
+//                termField.setEnabled(getSelectedSeqRuns().length > 0);
+//                termList.setEnabled(getSelectedSeqRuns().length > 0 && termModel.getSize() > 0);
+//                readModel.setRuns(getSelectedSeqRuns());
+//                readModel.update();
+//                readList.setEnabled(getSelectedSeqRuns().length > 0);
+//                hitNum.setText(readModel.getSize() + " hits");
+//                setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+//            }
+//        });
+//        runList.setCellRenderer(new DefaultListCellRenderer() {
+//            @Override
+//            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+//                return super.getListCellRendererComponent(list, ((SeqRunI) value).getName(), index, isSelected, cellHasFocus);
+//            }
+//
+//        });
         termField.getDocument().addDocumentListener(new DocumentListener() {
-
+            
             @Override
             public void insertUpdate(DocumentEvent e) {
                 updateTerm();
             }
-
+            
             @Override
             public void removeUpdate(DocumentEvent e) {
                 updateTerm();
             }
-
+            
             @Override
             public void changedUpdate(DocumentEvent e) {
                 updateTerm();
             }
         });
-
+        
         termList.setModel(termModel);
         termList.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                 readModel.setTerm((String) termList.getSelectedValue());
-                readModel.setRuns(getSelectedSeqRuns());
-                readModel.setMaster(currentMaster);
+                readModel.setRuns(currentRuns);
                 readModel.update();
-                if (readModel.getSize() > 0 && !currentMaster.isDeleted()) {
+                if (readModel.getSize() > 0) {
                     readList.setEnabled(true);
                     readList.setSelectedIndex(0);
                     hitNum.setText(readModel.getSize() + " hits");
@@ -139,9 +136,9 @@ public final class SearchTopComponent extends TopComponent implements LookupList
         // read list
         readList.setModel(readModel);
         readList.addActionListener(new ActionListener() {
-
+            
             private SequenceI curSeq = null;
-
+            
             @Override
             public void actionPerformed(ActionEvent e) {
                 final SequenceI seq = readModel.getSelectedItem();
@@ -151,11 +148,11 @@ public final class SearchTopComponent extends TopComponent implements LookupList
                 if (seq != curSeq) {
                     curSeq = seq;
                     SwingWorker<Iterator<ObservationI>, Void> sw = new SwingWorker<Iterator<ObservationI>, Void>() {
-
+                        
                         @Override
                         protected Iterator<ObservationI> doInBackground() throws Exception {
-                            if (!seq.isDeleted()) {
-                                return currentMaster.Observation().ByRead(seq);
+                            if (!curSeq.isDeleted()) {
+                                return curSeq.getMaster().Observation().ByRead(curSeq);
                             }
                             return null;
                         }
@@ -176,24 +173,24 @@ public final class SearchTopComponent extends TopComponent implements LookupList
                     showSeq.setEnabled(true);
                 }
             }
-
+            
         });
-
+        
         showSeq.addActionListener(new ActionListener() {
-
+            
             @Override
             public void actionPerformed(ActionEvent e) {
                 final SequenceI seq = readModel.getSelectedItem();
                 SwingWorker<SequenceI, Void> sw = new SwingWorker<SequenceI, Void>() {
-
+                    
                     @Override
                     protected SequenceI doInBackground() throws Exception {
-                        if (seq != null && !currentMaster.isDeleted()) {
-                            return currentMaster.Sequence().fetch(seq.getId());
+                        if (seq != null && !seq.isDeleted()) {
+                            return seq.getMaster().Sequence().fetch(seq.getId());
                         }
                         return null;
                     }
-
+                    
                     @Override
                     protected void done() {
                         setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
@@ -219,13 +216,13 @@ public final class SearchTopComponent extends TopComponent implements LookupList
                         }
                         super.done();
                     }
-
+                    
                 };
                 setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                 sw.execute();
             }
         });
-
+        
     }
 
     /**
@@ -236,20 +233,15 @@ public final class SearchTopComponent extends TopComponent implements LookupList
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jScrollPane1 = new javax.swing.JScrollPane();
-        runList = new javax.swing.JList<SeqRunI>();
         jLabel1 = new javax.swing.JLabel();
-        readList = new javax.swing.JComboBox<SequenceI>();
+        readList = new javax.swing.JComboBox<>();
         obsPanel = new javax.swing.JPanel();
-        jLabel2 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        termList = new javax.swing.JList<String>();
+        termList = new javax.swing.JList<>();
         termField = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         hitNum = new javax.swing.JLabel();
         showSeq = new javax.swing.JButton();
-
-        jScrollPane1.setViewportView(runList);
 
         jLabel1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(SearchTopComponent.class, "SearchTopComponent.jLabel1.text")); // NOI18N
@@ -258,9 +250,6 @@ public final class SearchTopComponent extends TopComponent implements LookupList
 
         obsPanel.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         obsPanel.setLayout(new java.awt.BorderLayout());
-
-        jLabel2.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel2, org.openide.util.NbBundle.getMessage(SearchTopComponent.class, "SearchTopComponent.jLabel2.text")); // NOI18N
 
         termList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         termList.setEnabled(false);
@@ -288,26 +277,19 @@ public final class SearchTopComponent extends TopComponent implements LookupList
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(obsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel2)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 319, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 531, Short.MAX_VALUE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel3)
-                                .addGap(0, 0, Short.MAX_VALUE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(termField))))
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(termField))
                     .addComponent(readList, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(hitNum, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(showSeq)))
+                        .addComponent(showSeq))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(hitNum, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel3))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 868, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -317,20 +299,16 @@ public final class SearchTopComponent extends TopComponent implements LookupList
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(termField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(jLabel3))
+                .addGap(18, 18, 18)
+                .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE))
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(readList, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(hitNum, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(obsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 297, Short.MAX_VALUE)
+                .addComponent(obsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 291, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(showSeq)
                 .addContainerGap())
@@ -339,13 +317,10 @@ public final class SearchTopComponent extends TopComponent implements LookupList
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel hitNum;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JPanel obsPanel;
     private javax.swing.JComboBox<SequenceI> readList;
-    private javax.swing.JList<SeqRunI> runList;
     private javax.swing.JButton showSeq;
     private javax.swing.JTextField termField;
     private javax.swing.JList<String> termList;
@@ -354,63 +329,58 @@ public final class SearchTopComponent extends TopComponent implements LookupList
     @Override
     public void componentOpened() {
         result.addLookupListener(this);
-        updateSeqRunList();
+        resultChanged(null);
     }
-
+    
     @Override
     public void componentClosed() {
         result.removeLookupListener(this);
     }
-
+    
     void writeProperties(java.util.Properties p) {
         p.setProperty("version", "1.0");
     }
-
+    
     void readProperties(java.util.Properties p) {
         String version = p.getProperty("version");
     }
-
+    
     @Override
-    public void resultChanged(LookupEvent le) {
-        updateSeqRunList();
-    }
-
-    private SeqRunI[] getSelectedSeqRuns() {
-        List<SeqRunI> selected = runList.getSelectedValuesList();
-        return selected.toArray(new SeqRunI[selected.size()]);
-    }
-
-    private void updateSeqRunList() {
-        for (MGXMasterI newMaster : result.allInstances()) {
-            if (currentMaster == null || !newMaster.equals(currentMaster)) {
-
-                /*
-                 * we have a new MGXMaster instance; remember it and start a
-                 * worker to fetch the list of associated sequencing runs
-                 */
-                currentMaster = newMaster;
-
-                runListModel.setMaster(currentMaster);
-                runListModel.update();
-
-                termModel.setMaster(currentMaster);
-                readModel.setMaster(currentMaster);
-                /*
-                 * we have a new MGXMaster set, return..
-                 */
-                return;
-            }
+    public synchronized void resultChanged(LookupEvent le) {
+        for (SeqRunI oldRun : currentRuns) {
+            oldRun.removePropertyChangeListener(this);
+        }
+        currentRuns.clear();
+        for (SeqRunI run : result.allInstances()) {
+            run.addPropertyChangeListener(this);
+            currentRuns.add(run);
+        }
+        
+        if (currentRuns.isEmpty()) {
+            termModel.clear();
+            readModel.clear();
         }
     }
-
+    
     private void updateTerm() {
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         //System.err.println("term is : " + termField.getText());
-        termModel.setMaster(currentMaster);
-        termModel.setRuns(getSelectedSeqRuns());
+//        termModel.setMaster(currentMaster);
+        termModel.setRuns(currentRuns);
         termModel.setTerm(termField.getText());
         termModel.update();
-        termList.setEnabled(termModel.getSize() > 0 && !currentMaster.isDeleted());
+//        termList.setEnabled(termModel.getSize() > 0 && !currentMaster.isDeleted());
         setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+    }
+
+    @Override
+    public synchronized void propertyChange(PropertyChangeEvent evt) {
+        if (evt.getSource() instanceof SeqRunI && evt.getPropertyName().equals(ModelBaseI.OBJECT_DELETED)) {
+            SeqRunI run = (SeqRunI) evt.getSource();
+            if (currentRuns.contains(run)) {
+                currentRuns.remove(run);
+            }
+            run.removePropertyChangeListener(this);
+        }
     }
 }

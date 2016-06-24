@@ -22,23 +22,11 @@ import org.openide.util.Exceptions;
  */
 public class TermModel extends BaseModel<String> {
 
-    private MGXMasterI currentMaster;
-    private SeqRunI[] runs;
+    private List<SeqRunI> runs;
     private String prevTerm = null;
     private String term;
 
-    public void setMaster(MGXMasterI m) {
-        currentMaster = m;
-        if (currentMaster == null || runs == null || runs.length == 0 || currentMaster.isDeleted()) {
-            currentMaster = null;
-            if (!content.isEmpty()) {
-                content.clear();
-                fireContentsChanged();
-            }
-        }
-    }
-
-    public void setRuns(SeqRunI[] runs) {
+    public void setRuns(List<SeqRunI> runs) {
         prevTerm = null; // make sure update() fetches fresh data
         this.runs = runs;
     }
@@ -50,15 +38,14 @@ public class TermModel extends BaseModel<String> {
 
     @Override
     public synchronized void update() {
-        if (currentMaster == null || runs == null || runs.length == 0 || currentMaster.isDeleted()) {
-            currentMaster = null;
+        if (runs == null || runs.isEmpty()) {
             if (!content.isEmpty()) {
                 content.clear();
                 fireContentsChanged();
             }
             return;
         }
-        if (currentMaster == null || runs == null || runs.length == 0) {
+        if (runs == null || runs.isEmpty()) {
             return;
         }
         if (term == null || term.isEmpty()) {
@@ -114,5 +101,4 @@ public class TermModel extends BaseModel<String> {
         }
         fireContentsChanged();
     }
-
 }

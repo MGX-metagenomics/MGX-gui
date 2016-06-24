@@ -6,11 +6,13 @@
 package de.cebitec.mgx.gui.search.util;
 
 import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.SequenceI;
 import de.cebitec.mgx.gui.swingutils.BaseModel;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import javax.swing.SwingWorker;
 import org.openide.util.Exceptions;
@@ -21,20 +23,10 @@ import org.openide.util.Exceptions;
  */
 public class ReadModel extends BaseModel<SequenceI> {
 
-    private MGXMasterI currentMaster;
-    private SeqRunI[] runs;
+    private List<SeqRunI> runs;
     private String term;
 
-    public void setMaster(MGXMasterI m) {
-        currentMaster = m;
-        if (currentMaster == null || runs == null || runs.length == 0 || currentMaster.isDeleted()) {
-            content.clear();
-            currentMaster = null;
-            fireContentsChanged();
-        }
-    }
-
-    public void setRuns(SeqRunI[] runs) {
+    public void setRuns(List<SeqRunI> runs) {
         this.runs = runs;
     }
 
@@ -43,36 +35,28 @@ public class ReadModel extends BaseModel<SequenceI> {
     }
 
     @Override
-    public void update() {
-        if (currentMaster == null || term == null || runs == null || runs.length == 0) {
+    public synchronized void update() {
+        if (term == null || runs == null || runs.isEmpty()) {
             return;
         }
 
-        SwingWorker<Iterator<SequenceI>, Void> sw = new SwingWorker<Iterator<SequenceI>, Void>() {
+        clear();
 
-            @Override
-            protected Iterator<SequenceI> doInBackground() throws Exception {
-                if (!currentMaster.isDeleted()) {
-                    return currentMaster.Attribute().search(term, true, runs);
+        for (SeqRunI run : runs) {
+            MGXMasterI master = run.getMaster();
+            if (!master.isDeleted()) {
+                Iterator<SequenceI> iter = null;
+                try {
+                    iter = master.Attribute().search(term, true, run);
+                } catch (MGXException ex) {
+                    Exceptions.printStackTrace(ex);
                 }
-                return null;
+                while (iter != null && iter.hasNext()) {
+                    content.add(iter.next());
+                }
             }
-        };
-        sw.execute();
-
-        Iterator<SequenceI> iter;
-        try {
-            iter = sw.get();
-        } catch (InterruptedException | ExecutionException ex) {
-            Exceptions.printStackTrace(ex);
-            return;
         }
 
-        content.clear();
-        while (iter != null && iter.hasNext()) {
-            SequenceI seq = iter.next();
-            content.add(seq);
-        }
         Collections.sort(content);
         fireContentsChanged();
     }
