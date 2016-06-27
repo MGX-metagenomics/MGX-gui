@@ -10,8 +10,10 @@ import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.swingutils.BaseModel;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import javax.swing.SwingWorker;
 import org.openide.util.Exceptions;
@@ -22,13 +24,13 @@ import org.openide.util.Exceptions;
  */
 public class TermModel extends BaseModel<String> {
 
-    private List<SeqRunI> runs;
+    private SeqRunI run;
     private String prevTerm = null;
     private String term;
 
-    public void setRuns(List<SeqRunI> runs) {
+    public void setRun(SeqRunI run) {
         prevTerm = null; // make sure update() fetches fresh data
-        this.runs = runs;
+        this.run = run;
     }
 
     public void setTerm(String t) {
@@ -38,17 +40,11 @@ public class TermModel extends BaseModel<String> {
 
     @Override
     public synchronized void update() {
-        if (runs == null || runs.isEmpty()) {
+        if (run == null || term == null || term.isEmpty()) {
             if (!content.isEmpty()) {
                 content.clear();
                 fireContentsChanged();
             }
-            return;
-        }
-        if (runs == null || runs.isEmpty()) {
-            return;
-        }
-        if (term == null || term.isEmpty()) {
             return;
         }
 
@@ -57,7 +53,7 @@ public class TermModel extends BaseModel<String> {
         // if previous term is a prefix of current term, we can 
         // narrow down the current data instead of contacting the
         // server
-        if (prevTerm != null && term.startsWith(prevTerm)) {
+        if (prevTerm != null && !prevTerm.isEmpty() && term.startsWith(prevTerm)) {
             List<String> oldTerms = new ArrayList<>(content.size());
             oldTerms.addAll(content);
             content.clear();
@@ -66,6 +62,10 @@ public class TermModel extends BaseModel<String> {
                     content.add(s);
                 }
             }
+            fireContentsChanged();
+            if (content.contains(prevSelection)) {
+                setSelectedItem(prevSelection);
+            }
             return;
         }
 
@@ -73,10 +73,15 @@ public class TermModel extends BaseModel<String> {
 
             @Override
             protected Iterator<String> doInBackground() throws Exception {
-                if (!currentMaster.isDeleted()) {
-                    return currentMaster.Attribute().find(term, runs);
+                Set<String> terms = new HashSet<>();
+                MGXMasterI master = run.getMaster();
+                if (!master.isDeleted()) {
+                    Iterator<String> iter = master.Attribute().find(term, run);
+                    while (iter != null && iter.hasNext()) {
+                        terms.add(iter.next());
+                    }
                 }
-                return null;
+                return terms.iterator();
             }
         };
         sw.execute();
