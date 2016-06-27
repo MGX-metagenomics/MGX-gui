@@ -361,11 +361,9 @@ public final class SearchTopComponent extends TopComponent implements LookupList
         for (SeqRunI run : result.allInstances()) {
             currentRun = run;
         }
-        if (currentRun != null) {
-            currentRun.addPropertyChangeListener(this);
-        }
-
-        if (currentRun != null) {
+        
+        if (currentRun == null) {
+            runName.setText("None");
             termField.setText("");
             termField.setEnabled(false);
             termModel.clear();
@@ -373,6 +371,8 @@ public final class SearchTopComponent extends TopComponent implements LookupList
             readModel.clear();
             readList.setEnabled(false);
         } else {
+            currentRun.addPropertyChangeListener(this);
+            runName.setText(currentRun.getName());
             termField.setEnabled(true);
             termList.setEnabled(true);
         }
