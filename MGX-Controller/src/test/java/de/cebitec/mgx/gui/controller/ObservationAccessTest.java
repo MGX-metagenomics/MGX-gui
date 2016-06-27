@@ -7,12 +7,13 @@ package de.cebitec.mgx.gui.controller;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
-import de.cebitec.mgx.api.misc.BulkObservationList;
+import de.cebitec.mgx.api.misc.BulkObservation;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.SequenceI;
 import de.cebitec.mgx.gui.util.TestMaster;
-import static javax.management.Query.attr;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -50,7 +51,7 @@ public class ObservationAccessTest {
     public void testCreateBulkRO() {
         System.out.println("testCreateBulkRO");
         MGXMasterI master = TestMaster.getRO();
-        BulkObservationList obsList = new BulkObservationList();
+        List<BulkObservation> obsList = new ArrayList<>();
         SeqRunI run = null;
         AttributeI attr = null;
         try {
@@ -61,7 +62,7 @@ public class ObservationAccessTest {
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);
         }
-        obsList.addObservation(run, "xx", attr, 0, 5);
+        obsList.add(new BulkObservation(run.getId(), "xx", attr.getId(), 0, 5));
         try {
             master.Observation().createBulk(obsList);
         } catch (MGXException ex) {
@@ -76,7 +77,7 @@ public class ObservationAccessTest {
     public void testCreateBulkInvalidReadName() {
         System.out.println("testCreateBulkInvalidReadName");
         MGXMasterI master = TestMaster.getRW();
-        BulkObservationList obsList = new BulkObservationList();
+        List<BulkObservation> obsList = new ArrayList<>();
         SeqRunI run = null;
         AttributeI attr = null;
         try {
@@ -87,7 +88,7 @@ public class ObservationAccessTest {
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);
         }
-        obsList.addObservation(run, "xx", attr, 0, 5);
+        obsList.add(new BulkObservation(run.getId(), "xx", attr.getId(), 0, 5));
         try {
             master.Observation().createBulk(obsList);
         } catch (MGXException ex) {
@@ -102,7 +103,7 @@ public class ObservationAccessTest {
     public void testCreateBulk() {
         System.out.println("testCreateBulk");
         MGXMasterI master = TestMaster.getRW();
-        BulkObservationList obsList = new BulkObservationList();
+        List<BulkObservation> obsList = new ArrayList<>();
         SeqRunI run = null;
         AttributeI attr = null;
         try {
@@ -113,7 +114,7 @@ public class ObservationAccessTest {
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);
         }
-        obsList.addObservation(run, "FI5LW4G01DZDXZ", attr, 0, 5);
+        obsList.add(new BulkObservation(run.getId(), "FI5LW4G01DZDXZ", attr.getId(), 0, 5));
         try {
             master.Observation().createBulk(obsList);
         } catch (MGXException ex) {
