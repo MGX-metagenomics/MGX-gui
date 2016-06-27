@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.search.ui;
 
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.ObservationI;
 import de.cebitec.mgx.api.model.SequenceI;
 import java.awt.BorderLayout;
@@ -7,11 +8,17 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.RenderingHints;
+import java.awt.event.MouseEvent;
 import java.awt.geom.Line2D;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import javax.swing.JComponent;
+import javax.swing.ToolTipManager;
 import org.apache.commons.math3.util.FastMath;
 
 /**
@@ -27,6 +34,8 @@ public class ObservationView extends javax.swing.JPanel {
         super();
         initComponents();
         drawArea.add(view, BorderLayout.CENTER);
+        ToolTipManager.sharedInstance().registerComponent(this);
+        ToolTipManager.sharedInstance().setDismissDelay(5000);
     }
     private final View view = new View();
 
@@ -48,6 +57,12 @@ public class ObservationView extends javax.swing.JPanel {
         private ObservationI[] obs;
         private String searchTerm;
         private final static int borderWidth = 15;
+        private final List<ObservationArrow> arrows = new ArrayList<>();
+
+        public View() {
+            ToolTipManager.sharedInstance().registerComponent(this);
+            ToolTipManager.sharedInstance().setDismissDelay(5000);
+        }
 
         public void clear() {
             setData(null, null, null);
@@ -110,18 +125,45 @@ public class ObservationView extends javax.swing.JPanel {
                     g2.setColor(Color.BLACK);
                 }
 
+                int obsLen;
+                ObservationArrow arrow;
+                if (o.getStart() < o.getStop()) {
+                    obsLen = o.getStop() - o.getStart();
+                    int scaledLen = FastMath.round(obsLen * scaleX);
+                    arrow = new ObservationArrow(o, borderWidth + scaledStart, layerY, scaledLen);
+                } else {
+                    obsLen = o.getStart() - o.getStop();
+                    int scaledLen = FastMath.round(obsLen * scaleX);
+                    arrow = new ObservationArrow(o, borderWidth + scaledStop, layerY, scaledLen);
+                }
+                g2.fill(arrow);
+                arrows.add(arrow);
+
                 g2.drawString(o.getAttributeTypeName() + ": " + o.getAttributeName(), borderWidth + FastMath.min(scaledStart, scaledStop), layerY - 4);
-                g2.draw(new Line2D.Double(borderWidth + scaledStart, layerY, borderWidth + scaledStop, layerY));
+                //g2.draw(new Line2D.Double(borderWidth + scaledStart, layerY, borderWidth + scaledStop, layerY));
+
                 layerY -= 15;
             }
 
             g2.dispose();
         }
 
+        @Override
+        public String getToolTipText(MouseEvent m) {
+            Point loc = m.getPoint();
+            for (ObservationArrow a : arrows) {
+                if (a.getBounds().contains(loc)) {
+                    return a.getToolTipText();
+                }
+            }
+            return null;
+        }
+
         public void setData(SequenceI s, ObservationI[] o, String term) {
             seq = s;
             obs = o;
             searchTerm = term;
+            arrows.clear();
 
             if (obs != null) {
                 // create layers for the observations
