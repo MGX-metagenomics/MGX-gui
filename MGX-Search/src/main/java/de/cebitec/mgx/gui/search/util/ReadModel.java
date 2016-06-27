@@ -13,8 +13,6 @@ import de.cebitec.mgx.gui.swingutils.BaseModel;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import javax.swing.SwingWorker;
 import org.openide.util.Exceptions;
 
 /**
@@ -23,11 +21,11 @@ import org.openide.util.Exceptions;
  */
 public class ReadModel extends BaseModel<SequenceI> {
 
-    private List<SeqRunI> runs;
+    private SeqRunI run;
     private String term;
 
-    public void setRuns(List<SeqRunI> runs) {
-        this.runs = runs;
+    public void setRun(SeqRunI run) {
+        this.run = run;
     }
 
     public void setTerm(String t) {
@@ -36,24 +34,23 @@ public class ReadModel extends BaseModel<SequenceI> {
 
     @Override
     public synchronized void update() {
-        if (term == null || runs == null || runs.isEmpty()) {
+        if (term == null || term.isEmpty() || run == null) {
+            clear();
             return;
         }
 
         clear();
 
-        for (SeqRunI run : runs) {
-            MGXMasterI master = run.getMaster();
-            if (!master.isDeleted()) {
-                Iterator<SequenceI> iter = null;
-                try {
-                    iter = master.Attribute().search(term, true, run);
-                } catch (MGXException ex) {
-                    Exceptions.printStackTrace(ex);
-                }
-                while (iter != null && iter.hasNext()) {
-                    content.add(iter.next());
-                }
+        MGXMasterI master = run.getMaster();
+        if (!master.isDeleted()) {
+            Iterator<SequenceI> iter = null;
+            try {
+                iter = master.Attribute().search(term, true, run);
+            } catch (MGXException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+            while (iter != null && iter.hasNext()) {
+                content.add(iter.next());
             }
         }
 
