@@ -264,7 +264,11 @@
                 <artifactId>GPMS-Server</artifactId>
                 <version>1.1</version>
             </dependency>
-            
+            <dependency>
+                <groupId>de.cebitec.gpms</groupId>
+                <artifactId>GPMS-Nodesupport</artifactId>
+                <version>1.0</version>
+            </dependency>
             
             <!-- MGX -->
             <dependency>
@@ -551,7 +555,7 @@
         <module>MGX-PCA</module>
         <module>MGX-QCMonitor</module>
         <module>MGX-Rarefaction</module>
-        <!-- <module>MGX-Search</module> -->
+        <module>MGX-Search</module>
         <module>MGX-Statistics</module>
         <module>MGX-SwingUtils</module>
         <module>MGX-TaskView</module>
