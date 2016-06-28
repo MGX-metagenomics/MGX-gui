@@ -159,6 +159,9 @@ public class ObservationArrow implements Shape {
     }
 
     public final String getToolTipText() {
-        return "<html><b>" + observation.getAttributeTypeName() + ": " + observation.getAttributeName() + "</b></html>";
+        return "<html>" + observation.getAttributeTypeName() + ": " + observation.getAttributeName() 
+                + "<hr>"
+                + String.valueOf(observation.getStart()) + " - " + String.valueOf(observation.getStop())
+                + "</html>";
     }
 }
