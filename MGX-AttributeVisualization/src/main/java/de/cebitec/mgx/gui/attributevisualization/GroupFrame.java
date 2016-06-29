@@ -37,6 +37,7 @@ public class GroupFrame extends GroupFrameBase<VisualizationGroupI> {
         setTitle(vGroup.getDisplayName() + " (" + vGroup.getNumSequences() + " sequences)");
         displayName.setText(vGroup.getDisplayName());
         color.setBackground(vGroup.getColor());
+        color.setForeground(vGroup.getColor());
         //
         // add listeners _after_ setting initial values
         //
@@ -77,6 +78,7 @@ public class GroupFrame extends GroupFrameBase<VisualizationGroupI> {
                         Color newColor = jcc.getColor();
                         if (newColor != null) {
                             color.setBackground(newColor);
+                            color.setForeground(newColor);
                             vGroup.setColor(newColor);
                         }
                     }
@@ -119,7 +121,6 @@ public class GroupFrame extends GroupFrameBase<VisualizationGroupI> {
 //        getContent().getManager().removeVisualizationGroup(getContent());
 //        super.dispose();
 //    }
-
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
