@@ -92,6 +92,7 @@ public class JobNode extends MGXNodeBase<JobI> {
             String paramValue = jp.getParameterValue();
             if (jp.getType().equals("ConfigMGXReference")) {
                 try {
+                    assert jp.getParameterValue() != null;
                     MGXReferenceI reference = job.getMaster().Reference().fetch(Long.parseLong(jp.getParameterValue()));
                     paramValue = reference.getName();
                 } catch (MGXException ex) {
