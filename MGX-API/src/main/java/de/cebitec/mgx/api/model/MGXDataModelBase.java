@@ -16,6 +16,7 @@ import java.io.IOException;
 /**
  *
  * @author sjaenick
+ * @param <T>
  */
 public abstract class MGXDataModelBase<T extends MGXDataModelBaseI<T>> implements MGXDataModelBaseI<T> {
 
@@ -43,17 +44,17 @@ public abstract class MGXDataModelBase<T extends MGXDataModelBaseI<T>> implement
     }
 
     @Override
-    public DataFlavor[] getTransferDataFlavors() {
+    public final DataFlavor[] getTransferDataFlavors() {
         return new DataFlavor[]{dataflavor};
     }
 
     @Override
-    public boolean isDataFlavorSupported(DataFlavor flavor) {
+    public final boolean isDataFlavorSupported(DataFlavor flavor) {
         return flavor != null && flavor.equals(dataflavor);
     }
 
     @Override
-    public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
+    public final Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
         if (isDataFlavorSupported(flavor)) {
             return this;
         } else {
@@ -62,7 +63,7 @@ public abstract class MGXDataModelBase<T extends MGXDataModelBaseI<T>> implement
     }
 
     @Override
-    public void modified() {
+    public final void modified() {
         if (managedState.equals(OBJECT_DELETED)) {
             throw new RuntimeException("Invalid object state for " + getClass().getSimpleName() + ", cannot modify deleted object.");
         }
@@ -70,14 +71,14 @@ public abstract class MGXDataModelBase<T extends MGXDataModelBaseI<T>> implement
     }
 
     @Override
-    public void deleted() {
+    public final void deleted() {
         if (managedState.equals(OBJECT_DELETED)) {
             throw new RuntimeException("Invalid object state for " + getClass().getSimpleName() + ", cannot delete deleted object.");
         }
-        firePropertyChange(OBJECT_DELETED, 0, 1);
         if (master != null) {
             master.removePropertyChangeListener(stateListener);
         }
+        firePropertyChange(OBJECT_DELETED, 0, 1);
         managedState = OBJECT_DELETED;
         if (pcs != null) {
             pcs.close();
@@ -93,15 +94,19 @@ public abstract class MGXDataModelBase<T extends MGXDataModelBaseI<T>> implement
     }
 
     @Override
-    public synchronized void addPropertyChangeListener(PropertyChangeListener listener) {
+    public final void addPropertyChangeListener(PropertyChangeListener listener) {
         if (pcs == null) {
-            pcs = new ParallelPropertyChangeSupport(this, true);
+            synchronized (this) {
+                if (pcs == null) {
+                    pcs = new ParallelPropertyChangeSupport(this, true);
+                }
+            }
         }
         pcs.addPropertyChangeListener(listener);
     }
 
     @Override
-    public void removePropertyChangeListener(PropertyChangeListener listener) {
+    public final void removePropertyChangeListener(PropertyChangeListener listener) {
         if (pcs != null) {
             pcs.removePropertyChangeListener(listener);
         }
@@ -142,7 +147,7 @@ public abstract class MGXDataModelBase<T extends MGXDataModelBaseI<T>> implement
     private class StateListener implements PropertyChangeListener {
 
         @Override
-        public void propertyChange(PropertyChangeEvent evt) {
+        public final void propertyChange(PropertyChangeEvent evt) {
             if (OBJECT_DELETED.equals(evt.getPropertyName())) {
                 deleted();
             }

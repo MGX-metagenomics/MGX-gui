@@ -64,12 +64,14 @@ public abstract class MGXNodeFactoryBase<T> extends ChildFactory<T> implements N
 
     @Override
     public void childrenAdded(NodeMemberEvent ev) {
-        refresh(true);
+//        refresh(true);
+        refreshChildren();
     }
 
     @Override
     public void childrenRemoved(NodeMemberEvent ev) {
-        refresh(true);
+//        refresh(true);
+        refreshChildren();
     }
 
     @Override
@@ -78,11 +80,12 @@ public abstract class MGXNodeFactoryBase<T> extends ChildFactory<T> implements N
 
     @Override
     public void nodeDestroyed(NodeEvent ev) {
-        refresh(true);
+//        refresh(true);
+        refreshChildren();
     }
 
     @Override
-    public final void propertyChange(PropertyChangeEvent evt) {
+    public void propertyChange(PropertyChangeEvent evt) {
         //System.err.println("MGXNFBase: " + evt.toString() + " in " + getClass().getName());
     }
 }

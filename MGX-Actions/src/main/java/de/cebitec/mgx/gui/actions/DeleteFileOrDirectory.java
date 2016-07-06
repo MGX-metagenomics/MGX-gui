@@ -67,7 +67,7 @@ public class DeleteFileOrDirectory extends AbstractAction {
         @Override
         public boolean process() {
             setStatus("Deleting..");
-            TaskI<MGXFileI> delTask = null;
+            TaskI<MGXFileI> delTask;
             try {
                 delTask = master.File().delete(file);
             } catch (MGXException ex) {
@@ -76,6 +76,7 @@ public class DeleteFileOrDirectory extends AbstractAction {
                 return false;
             }
             while (delTask != null && !delTask.done()) {
+                sleep();
                 try {
                     master.<MGXFileI>Task().refresh(delTask);
                 } catch (MGXException ex) {
@@ -83,11 +84,7 @@ public class DeleteFileOrDirectory extends AbstractAction {
                     failed(ex.getMessage());
                     return false;
                 }
-                sleep();
             }
-//            if (delTask != null) {
-//                delTask.finish();
-//            }
             return true;
         }
     }

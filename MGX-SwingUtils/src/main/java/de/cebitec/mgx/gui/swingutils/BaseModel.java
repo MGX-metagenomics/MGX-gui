@@ -42,12 +42,19 @@ public abstract class BaseModel<T> extends AbstractListModel<T> implements Combo
 
     @Override
     public T getElementAt(int index) {
-        return content.get(index);
+        return content.size() > index ? content.get(index) : null;
     }
 
     protected void fireContentsChanged() {
         ListDataEvent e = new ListDataEvent(this, ListDataEvent.CONTENTS_CHANGED, -1, -1);
         fireContentsChanged(e, -1, -1);
+    }
+
+    public final void clear() {
+        if (!content.isEmpty()) {
+            content.clear();
+            fireContentsChanged();
+        }
     }
 
     public abstract void update();
