@@ -2,7 +2,7 @@ package de.cebitec.mgx.gui.goldstandard.actions;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
-import de.cebitec.mgx.api.misc.BulkObservationList;
+import de.cebitec.mgx.api.misc.BulkObservation;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.JobParameterI;
 import de.cebitec.mgx.api.model.JobState;
@@ -12,13 +12,14 @@ import de.cebitec.mgx.gui.controller.RBAC;
 import de.cebitec.mgx.gui.goldstandard.util.MGSAttribute;
 import de.cebitec.mgx.gui.goldstandard.util.MGSEntry;
 import de.cebitec.mgx.gui.goldstandard.util.MGSReader;
-import de.cebitec.mgx.gui.goldstandard.util.WaitTimeMonitoringExecutorService;
 import de.cebitec.mgx.gui.goldstandard.wizards.addgoldstandard.AddGoldstandardWizardDescriptor;
 import java.awt.Dialog;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionHandler;
@@ -54,7 +55,7 @@ public final class AddGoldstandard extends NodeAction implements LookupListener 
     public final static String TOOL_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><graph description=\"\" name=\"Goldstandard\" service=\"MGX\"><composites/><nodes><node id=\"1\" name=\"\" type=\"Conveyor.MGX.GetMGXJob\" x=\"407\" y=\"162\"><configuration_items/><typeParameters/></node><node id=\"2\" name=\"\" type=\"Conveyor.Core.Discard\" x=\"412\" y=\"310\"><configuration_items/><typeParameters/></node></nodes><links><link from_connector=\"output\" from_node=\"1\" to_connector=\"input\" to_node=\"2\"/></links></graph>";
     public final static float TOOL_VERSION = 1.0f;
 
-    public final static int CHUNKSIZE = 1500;
+    public final static int CHUNKSIZE = 250;
 
     public AddGoldstandard() {
         this(Utilities.actionsGlobalContext());
@@ -131,7 +132,7 @@ public final class AddGoldstandard extends NodeAction implements LookupListener 
                     MGSReader reader = new MGSReader(wd.getGoldstandardFile().getAbsolutePath(), master, job);
                     int i = 0;
                     int numChunks = 0;
-                    BulkObservationList bol = new BulkObservationList();
+                    List<BulkObservation> bol = new LinkedList<>();
                     ArrayList<String> list = new ArrayList<>();
                     while (reader.hasNext()) {
                         final MGSEntry entry = reader.next();
@@ -140,36 +141,32 @@ public final class AddGoldstandard extends NodeAction implements LookupListener 
                         seqName = seqName.substring(0, seqName.indexOf(" "));
                         for (MGSAttribute t : entry.getAttributes()) {
 //                                        master.Observation().create(seq, t.getAttribute(), t.getStart(), t.getStop());                            
-                            bol.addObservation(seqrun, seqName, t.getAttribute(), t.getStart(), t.getStop());
+                            bol.add(new BulkObservation(seqrun.getId(), seqName, t.getAttribute().getId(), t.getStart(), t.getStop()));
                         }
                         p.progress(i++);
                         numChunks++;
                         if (numChunks == CHUNKSIZE) {
-                            final BulkObservationList submitBol = bol;
+                            final List<BulkObservation> submitBol = bol;
                             pool.submit(new Runnable() {
                                 @Override
                                 public void run() {
                                     try {
-//                                        long start = System.currentTimeMillis();
                                         master.Observation().createBulk(submitBol);
-//                                        long stop = System.currentTimeMillis();
-//                                        System.out.println(String.format("%dms", stop - start));
                                     } catch (MGXException ex) {
                                         Exceptions.printStackTrace(ex);
                                     }
                                 }
                             });
-                            bol = new BulkObservationList();
+                            bol = new LinkedList<>();
                             numChunks = 0;
                         }
                     }
                     if (numChunks > 0) {
-                        final BulkObservationList submitBol = bol;
+                        final List<BulkObservation> submitBol = bol;
                         pool.submit(new Runnable() {
                             @Override
                             public void run() {
                                 try {
-                                    System.out.println("Run last createBulk");
                                     master.Observation().createBulk(submitBol);
                                 } catch (MGXException ex) {
                                     Exceptions.printStackTrace(ex);
