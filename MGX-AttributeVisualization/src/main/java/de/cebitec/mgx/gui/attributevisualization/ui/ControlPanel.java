@@ -73,7 +73,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
         updateButton.addActionListener(this);
 
         vgmgr.addPropertyChangeListener(this);
-        
+
         vgmgr.registerResolver(new ConflictResolver() {
             @Override
             public boolean resolve(List<VisualizationGroupI> groups) {
@@ -240,10 +240,8 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
 
         @Override
         public void update() {
-            final List<AttributeTypeI> previousContent = new ArrayList<>(content.size());
-            previousContent.addAll(content);
             // disable all downstream elements, including self
-            content.clear();
+            clear();
             attributeTypeList.setEnabled(false);
             visualizationTypeList.setEnabled(false);
             updateButton.setEnabled(false);
@@ -285,27 +283,10 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
 
                         attributeTypeList.setEnabled(true);
                     }
-                    if (contentDiffers(previousContent, content)) {
+                    if (!content.isEmpty()) {
                         fireContentsChanged();
                     }
                     super.done();
-                }
-
-                private boolean contentDiffers(List<AttributeTypeI> l1, List<AttributeTypeI> l2) {
-                    if (l1.size() != l2.size()) {
-                        return true;
-                    }
-                    for (AttributeTypeI at : l1) {
-                        if (!l2.contains(at)) {
-                            return true;
-                        }
-                    }
-                    for (AttributeTypeI at : l2) {
-                        if (!l1.contains(at)) {
-                            return true;
-                        }
-                    }
-                    return false;
                 }
             };
             worker.execute();
@@ -347,7 +328,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
         @SuppressWarnings("unchecked")
         public synchronized void update() {
             // disable all downstream elements
-            content.clear();
+            clear();
             visualizationTypeList.setEnabled(false);
             updateButton.setEnabled(false);
 
@@ -375,7 +356,9 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
                 visualizationTypeList.setEnabled(true);
                 updateButton.setEnabled(true);
             }
-            fireContentsChanged();
+            if (!content.isEmpty()) {
+                fireContentsChanged();
+            }
         }
 
         @Override
