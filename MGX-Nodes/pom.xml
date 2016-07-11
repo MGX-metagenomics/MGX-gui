@@ -119,7 +119,6 @@
         <dependency>
             <groupId>de.cebitec.gpms</groupId>
             <artifactId>GPMS-Nodesupport</artifactId>
-            <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>de.cebitec.gpms</groupId>

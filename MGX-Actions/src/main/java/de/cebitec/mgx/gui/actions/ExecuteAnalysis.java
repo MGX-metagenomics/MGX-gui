@@ -93,7 +93,7 @@ public class ExecuteAnalysis extends NodeAction implements LookupListener {
 
     @Override
     public HelpCtx getHelpCtx() {
-        return null;
+        return HelpCtx.DEFAULT_HELP;
     }
 
     @Override
@@ -146,8 +146,9 @@ public class ExecuteAnalysis extends NodeAction implements LookupListener {
             @SuppressWarnings(value = "unchecked")
             List<JobParameterI> params = (List<JobParameterI>) wiz.getProperty(AnalysisWizardIterator.PROP_PARAMETERS);
 
+            CountDownLatch toolIsCreated = new CountDownLatch(1);
+            
             for (final SeqRunI seqrun : seqruns) {
-                CountDownLatch toolIsCreated = new CountDownLatch(1);
 
                 // skip empty seqruns
                 if (seqrun.getNumSequences() == 0) {
@@ -156,7 +157,7 @@ public class ExecuteAnalysis extends NodeAction implements LookupListener {
                     continue;
                 }
 
-                SubmitTask submitTask = null;
+                SubmitTask submitTask;
                 if (tooltype == ToolType.USER_PROVIDED) {
                     String toolDesc = (String) wiz.getProperty(AnalysisWizardIterator.PROP_TOOLDESC);
                     String toolAuthor = (String) wiz.getProperty(AnalysisWizardIterator.PROP_TOOLAUTHOR);
@@ -188,6 +189,7 @@ public class ExecuteAnalysis extends NodeAction implements LookupListener {
                     Exceptions.printStackTrace(ex);
                 }
                 tooltype = ToolType.PROJECT;
+                toolId = submitTask.getToolId();
             }
         }
     }
@@ -206,7 +208,7 @@ public class ExecuteAnalysis extends NodeAction implements LookupListener {
 
     private final static class SubmitTask extends MGXTask {
 
-        private final long toolId;
+        private long toolId;
         private final SeqRunI run;
         private final ToolType tooltype;
         private final Collection<JobParameterI> params;
@@ -215,7 +217,7 @@ public class ExecuteAnalysis extends NodeAction implements LookupListener {
         public SubmitTask(long toolId, String toolName, ToolType tooltype, SeqRunI run, Collection<JobParameterI> params, CountDownLatch toolCreated) {
             super("Submit " + run.getName() + " / " + toolName);
             if (toolName == null) {
-                 throw new RuntimeException("No tool name supplied.");
+                throw new RuntimeException("No tool name supplied.");
             }
             if (tooltype != ToolType.GLOBAL && tooltype != ToolType.PROJECT) {
                 throw new RuntimeException("Wrong ctor used");
@@ -259,6 +261,10 @@ public class ExecuteAnalysis extends NodeAction implements LookupListener {
             this.toolCreated = toolCreated;
         }
 
+        public final long getToolId() {
+            return toolId;
+        }
+
         @Override
         public boolean process() {
             final MGXMasterI master = run.getMaster();
@@ -278,6 +284,9 @@ public class ExecuteAnalysis extends NodeAction implements LookupListener {
                     default:
                         assert false;
                 }
+                // update tool id to refer to the project-specific 
+                // tool id _before_ releasing the latch 
+                toolId = selectedTool.getId();
                 toolCreated.countDown();
                 setStatus("Creating job..");
                 JobI job = master.Job().create(selectedTool, run, params);
