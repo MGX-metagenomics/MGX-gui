@@ -2,8 +2,10 @@ package de.cebitec.mgx.gui.nodefactory;
 
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.MGXFileI;
+import de.cebitec.mgx.api.model.ModelBaseI;
 import de.cebitec.mgx.gui.nodes.MGXDirectoryNode;
 import de.cebitec.mgx.gui.nodes.MGXFileNode;
+import java.beans.PropertyChangeEvent;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -24,6 +26,7 @@ public class FileNodeFactory extends MGXNodeFactoryBase<MGXFileI> {
     public FileNodeFactory(MGXFileI curDir) {
         super(curDir.getMaster());
         curDirectory = curDir;
+        curDirectory.addPropertyChangeListener(this);
     }
 
     @Override
@@ -81,9 +84,22 @@ public class FileNodeFactory extends MGXNodeFactoryBase<MGXFileI> {
             refreshing = false;
         }
     }
-//
-//    @Override
-//    public void propertyChange(PropertyChangeEvent evt) {
-//        //refresh(true);
-//    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        //refresh(true);
+        if (evt.getPropertyName().equals(Node.PROP_PARENT_NODE)) {
+            return;
+        }
+        if ((evt.getPropertyName().equals(ModelBaseI.OBJECT_DELETED)) && evt.getSource().equals(curDirectory)) {
+            curDirectory.removePropertyChangeListener(this);
+            return;
+        }
+        if ((evt.getPropertyName().equals(ModelBaseI.OBJECT_MODIFIED)) && evt.getSource().equals(curDirectory)) {
+            System.err.println("refreshing for " + curDirectory.getFullPath());
+            refreshChildren();
+            return;
+        }
+        System.err.println("FNF: " + evt.toString() + " in " + getClass().getName());
+    }
 }
