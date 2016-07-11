@@ -4,22 +4,22 @@ import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.ObservationAccessI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.exception.MGXLoggedoutException;
-import de.cebitec.mgx.api.misc.BulkObservationList;
-import de.cebitec.mgx.api.misc.BulkObservationList.BulkObservation;
+import de.cebitec.mgx.api.misc.BulkObservation;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.Identifiable;
 import de.cebitec.mgx.api.model.ObservationI;
 import de.cebitec.mgx.api.model.SequenceI;
 import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.client.exception.MGXDTOException;
-import de.cebitec.mgx.dto.dto.BulkObservationDTO;
 import de.cebitec.mgx.dto.dto.BulkObservationDTOList;
 import de.cebitec.mgx.dto.dto.ObservationDTO;
 import de.cebitec.mgx.gui.datamodel.Observation;
+import de.cebitec.mgx.gui.dtoconversion.BulkObservationDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.ObservationDTOFactory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  *
@@ -60,7 +60,7 @@ public class ObservationAccess implements ObservationAccessI {
         if (start < 0 || stop < 0 || start >= seq.getLength() || stop >= seq.getLength()) {
             throw new MGXException("Coordinates cannot point outside of sequence.");
         }
-        if (seq == null || seq.getId() == Identifiable.INVALID_IDENTIFIER) {
+        if (seq.getId() == Identifiable.INVALID_IDENTIFIER) {
             throw new MGXException("Invalid sequence");
         }
         if (attr == null || attr.getId() == Identifiable.INVALID_IDENTIFIER) {
@@ -83,20 +83,10 @@ public class ObservationAccess implements ObservationAccessI {
     }
 
     @Override
-    public void createBulk(BulkObservationList obsList) throws MGXException {
+    public void createBulk(List<BulkObservation> obsList) throws MGXException {
         try {
-            BulkObservationDTOList.Builder b = BulkObservationDTOList.newBuilder();
-            for (BulkObservation bObs : obsList.getObservations()) {
-                b.addBulkObservation(BulkObservationDTO.newBuilder()
-                        .setSeqrunId(bObs.getSeqRunId())
-                        .setSeqName(bObs.getSequenceName())
-                        .setAttributeId(bObs.getAttributeId())
-                        .setStart(bObs.getStart())
-                        .setStop(bObs.getStop())
-                        .build()
-                );
-            }
-            getDTOmaster().Observation().createBulk(b.build());
+            BulkObservationDTOList bol = BulkObservationDTOFactory.getInstance().toDTOList(obsList);
+            getDTOmaster().Observation().createBulk(bol);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }

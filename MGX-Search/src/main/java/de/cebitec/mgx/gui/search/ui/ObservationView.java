@@ -2,16 +2,23 @@ package de.cebitec.mgx.gui.search.ui;
 
 import de.cebitec.mgx.api.model.ObservationI;
 import de.cebitec.mgx.api.model.SequenceI;
+import java.awt.AlphaComposite;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Composite;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.RenderingHints;
+import java.awt.Shape;
+import java.awt.event.MouseEvent;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JComponent;
+import javax.swing.ToolTipManager;
 import org.apache.commons.math3.util.FastMath;
 
 /**
@@ -27,6 +34,8 @@ public class ObservationView extends javax.swing.JPanel {
         super();
         initComponents();
         drawArea.add(view, BorderLayout.CENTER);
+        ToolTipManager.sharedInstance().registerComponent(this);
+        ToolTipManager.sharedInstance().setDismissDelay(5000);
     }
     private final View view = new View();
 
@@ -36,21 +45,39 @@ public class ObservationView extends javax.swing.JPanel {
         repaint();
     }
 
+    public void clear() {
+        readName.setText("");
+        view.clear();
+        repaint();
+    }
 
-
-    private class View extends JComponent {
+    private static class View extends JComponent {
 
         private SequenceI seq;
         private ObservationI[] obs;
-        private String searchTerm;
+        private String selectedTerm;
         private final static int borderWidth = 15;
+        private final List<ObservationArrow> arrows = new ArrayList<>();
+        //
+        private final static Color lighterGray = new Color(210, 210, 210);
+
+        public View() {
+            setBackground(Color.WHITE);
+            ToolTipManager.sharedInstance().registerComponent(this);
+            ToolTipManager.sharedInstance().setDismissDelay(5000);
+        }
+
+        public void clear() {
+            setData(null, null, null);
+        }
 
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
             Graphics2D g2 = (Graphics2D) g;
-            
-            if (seq == null) {
+
+            if (seq == null || obs == null || obs.length == 0) {
+                g2.dispose();
                 return;
             }
 
@@ -83,37 +110,85 @@ public class ObservationView extends javax.swing.JPanel {
                 g2.drawString(String.valueOf(seqLen), width - borderWidth - 13, height - borderWidth + 14); // XXXXbp position
             }
 
-            if (obs == null || obs.length == 0) {
-                g2.dispose();
-                return;
-            }
+            float paintableX = getWidth() - 2 * borderWidth; // width of the sequence in px
+            float scaleX = paintableX / (1f * seqLen); // internal scale factor
 
-            float paintableX = width - 2 * borderWidth; // width of the sequence in px
-            float scaleX = paintableX / seqLen; // internal scale factor
-
-            int layerY = height - borderWidth - 5;
+            int layerY = height - borderWidth - 17;
             for (ObservationI o : obs) {
                 int scaledStart = FastMath.round(o.getStart() * scaleX);
                 int scaledStop = FastMath.round(o.getStop() * scaleX);
 
-                if (o.getAttributeName().contains(searchTerm)) {
+                if (o.getAttributeName().equals(selectedTerm)) {
                     g2.setColor(Color.RED);
                 } else {
                     g2.setColor(Color.BLACK);
                 }
 
-                g2.drawString(o.getAttributeTypeName() + ": " + o.getAttributeName(), borderWidth + FastMath.min(scaledStart, scaledStop), layerY - 4);
-                g2.draw(new Line2D.Double(borderWidth + scaledStart, layerY, borderWidth + scaledStop, layerY));
-                layerY -= 15;
+                int obsLen;
+                ObservationArrow arrow;
+                if (o.getStart() < o.getStop()) {
+                    obsLen = o.getStop() - o.getStart();
+                    int scaledLen = FastMath.round(obsLen * scaleX);
+                    arrow = new ObservationArrow(o, borderWidth + scaledStart, layerY, scaledLen);
+                    g2.drawString(o.getAttributeTypeName() + ": " + o.getAttributeName(), borderWidth + FastMath.min(scaledStart, scaledStop), layerY);
+                } else {
+                    obsLen = o.getStart() - o.getStop();
+                    int scaledLen = FastMath.round(obsLen * scaleX);
+                    arrow = new ObservationArrow(o, borderWidth + scaledStop, layerY, scaledLen);
+                    g2.drawString(o.getAttributeTypeName() + ": " + o.getAttributeName(), 10 + borderWidth + FastMath.min(scaledStart, scaledStop), layerY);
+                }
+                g2.fill(arrow);
+                arrows.add(arrow);
+
+                //g2.draw(new Line2D.Double(borderWidth + scaledStart, layerY, borderWidth + scaledStop, layerY));
+                layerY -= 24;
+            }
+
+            Composite oldComp = g2.getComposite();
+            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.7f));
+
+            g2.setColor(Color.LIGHT_GRAY);
+            for (ObservationArrow r : arrows) {
+                Shape shadow = AffineTransform.getTranslateInstance(4, 3).createTransformedShape(r);
+                g2.fill(shadow);
+            }
+            g2.setColor(lighterGray);
+            for (ObservationArrow r : arrows) {
+                Shape shadow = AffineTransform.getTranslateInstance(4, 3).createTransformedShape(r);
+                g2.draw(shadow);
+            }
+
+            g2.setComposite(oldComp);
+
+            // draw arrows (and borders)
+            g2.setColor(Color.GREEN);
+            for (ObservationArrow r : arrows) {
+                g2.fill(r);
+            }
+            g2.setColor(Color.DARK_GRAY);
+            for (ObservationArrow r : arrows) {
+                g2.draw(r);
             }
 
             g2.dispose();
         }
 
+        @Override
+        public String getToolTipText(MouseEvent m) {
+            Point loc = m.getPoint();
+            for (ObservationArrow a : arrows) {
+                if (a.getBounds().contains(loc)) {
+                    return a.getToolTipText();
+                }
+            }
+            return null;
+        }
+
         public void setData(SequenceI s, ObservationI[] o, String term) {
             seq = s;
             obs = o;
-            searchTerm = term;
+            selectedTerm = term;
+            arrows.clear();
 
             if (obs != null) {
                 // create layers for the observations
@@ -146,7 +221,8 @@ public class ObservationView extends javax.swing.JPanel {
     }
 
     /**
-     * This method is called from within the constructor to initialize the form. WARNING: Do NOT modify this code. The content of this method is always
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
      * regenerated by the Form Editor.
      */
     @SuppressWarnings("unchecked")

@@ -6,11 +6,12 @@
 package de.cebitec.mgx.api.access;
 
 import de.cebitec.mgx.api.exception.MGXException;
-import de.cebitec.mgx.api.misc.BulkObservationList;
+import de.cebitec.mgx.api.misc.BulkObservation;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.ObservationI;
 import de.cebitec.mgx.api.model.SequenceI;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  *
@@ -22,7 +23,7 @@ public interface ObservationAccessI {
 
     public ObservationI create(SequenceI seq, AttributeI attr, int start, int stop) throws MGXException;
 
-    public void createBulk(BulkObservationList obsList) throws MGXException;
+    public void createBulk(List<BulkObservation> obsList) throws MGXException;
 
     public void delete(SequenceI seq, AttributeI attr, int start, int stop) throws MGXException;
 
