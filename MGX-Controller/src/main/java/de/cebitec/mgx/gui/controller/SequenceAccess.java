@@ -138,10 +138,13 @@ public class SequenceAccess extends AccessBase<SequenceI> implements SequenceAcc
         try {
             Iterator<SequenceDTO> iter = getDTOmaster().Sequence().fetchByIds(ids).getSeqList().iterator();
             return new BaseIterator<SequenceDTO, SequenceI>(iter) {
+                
+                private final SequenceDTOFactory fact = SequenceDTOFactory.getInstance();
+                private final MGXMasterI master = getMaster();
+
                 @Override
                 public SequenceI next() {
-                    SequenceI h = SequenceDTOFactory.getInstance().toModel(getMaster(), iter.next());
-                    return h;
+                    return fact.toModel(master, iter.next());
                 }
             };
 
