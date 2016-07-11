@@ -9,13 +9,11 @@ import de.cebitec.mgx.api.model.ModelBaseI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.qc.DataRowI;
 import de.cebitec.mgx.api.model.qc.QCResultI;
-import de.cebitec.mgx.qc.impl.QualityDistribution;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Component;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import javax.swing.SwingWorker;
@@ -200,7 +198,7 @@ public final class QCTopComponent extends TopComponent implements LookupListener
     }
 
     private static Component createChart(QCResultI qcr) {
-        if (qcr.getName().equals(QualityDistribution.NAME)) {
+        if ("Sequence quality".equals(qcr.getName())) {
             YIntervalSeriesCollection qualityDataset = new YIntervalSeriesCollection();
             DataRowI[] data = qcr.getData();
             DataRowI quality = data[0];
