@@ -1,7 +1,6 @@
 package de.cebitec.mgx.gui.goldstandard.ui.charts;
 
 import de.cebitec.mgx.api.groups.ImageExporterI;
-import de.cebitec.mgx.api.misc.Visualizable;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import java.util.List;
@@ -66,7 +65,7 @@ public abstract class EvaluationViewerI<T> implements Comparable<EvaluationViewe
     /**
      * 
      */
-    public abstract void init(SeqRunI seqrun);
+    public abstract void start(SeqRunI seqrun);
     
     /**
      *

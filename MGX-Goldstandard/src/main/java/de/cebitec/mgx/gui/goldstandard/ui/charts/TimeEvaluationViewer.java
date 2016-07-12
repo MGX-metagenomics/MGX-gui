@@ -35,8 +35,8 @@ import org.openide.util.lookup.ServiceProvider;
  *
  * @author pblumenk
  */
-@ServiceProvider(service = EvaluationViewerI.class)
-public class TimeEvaluationViewer extends EvaluationViewerI<DistributionI<Long>> {
+@ServiceProvider(service = PipelineComparisonI.class)
+public class TimeEvaluationViewer extends EvaluationViewerI<DistributionI<Long>> implements PipelineComparisonI{
 
     enum StepSize {
         HOURS, MINUTES, SECONDS
@@ -162,7 +162,7 @@ public class TimeEvaluationViewer extends EvaluationViewerI<DistributionI<Long>>
     }
 
     @Override
-    public void init(SeqRunI seqrun) {
+    public void start(SeqRunI seqrun) {
         try {
             TimeEvalJobWizardDescriptor jobWizard = new TimeEvalJobWizardDescriptor(seqrun);
             Dialog dialog = DialogDisplayer.getDefault().createDialog(jobWizard);
