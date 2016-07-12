@@ -6,9 +6,12 @@
 package de.cebitec.mgx.gui.controller;
 
 import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.SequenceI;
 import de.cebitec.mgx.gui.util.TestMaster;
+import java.util.Arrays;
+import java.util.Iterator;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -53,6 +56,43 @@ public class SequenceAccessTest {
             assertNotNull(seq);
         }
         start = System.currentTimeMillis() - start;
-        System.err.println("duration in ms: "+ start);
+        System.err.println("duration in ms: " + start);
+    }
+
+    @Test
+    public void testFetchByIDsListPerformance() {
+        System.out.println("testFetchByIDsListPerformance");
+        MGXMasterI master = TestMaster.getRO();
+        long[] ids = new long[59482];
+        for (int i = 0; i < 59482; i++) {
+            ids[i] = i + 1;
+        }
+
+        int from = 0;
+        int size = 10_000;
+        long[] chunk;
+
+        while (from < ids.length) {
+            chunk = Arrays.copyOfRange(ids, from, Math.min(from + size, ids.length));
+
+            long start = System.currentTimeMillis();
+            Iterator<SequenceI> iter = null;
+            try {
+                iter = master.Sequence().fetchByIds(chunk);
+            } catch (MGXException ex) {
+                fail(ex.getMessage());
+            }
+            assertNotNull(iter);
+            System.err.println("  fetched interval " + chunk[0] + "-" + chunk[chunk.length - 1]+ " in "+ (System.currentTimeMillis()-start)+ " ms");
+            int numRes = 0;
+            while (iter.hasNext()) {
+                iter.next();
+                numRes++;
+            }
+            assertEquals(chunk.length, numRes);
+            System.err.println("  processed interval " + chunk[0] + "-" + chunk[chunk.length - 1]+ " in "+ (System.currentTimeMillis()-start)+ " ms");
+
+            from += size;
+        }
     }
 }
