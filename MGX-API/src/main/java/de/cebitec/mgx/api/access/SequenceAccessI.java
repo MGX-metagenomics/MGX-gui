@@ -21,7 +21,9 @@ import java.util.Set;
  *
  * @author sj
  */
-public interface SequenceAccessI extends AccessBaseI<SequenceI> {
+public interface SequenceAccessI { //extends AccessBaseI<SequenceI> {
+    
+    public SequenceI fetch(long id) throws MGXException;
 
     public Iterator<SequenceI> fetchByIds(long[] id) throws MGXException;
 
