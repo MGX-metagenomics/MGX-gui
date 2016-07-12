@@ -119,8 +119,8 @@ public final class SearchTopComponent extends TopComponent implements LookupList
 
                         @Override
                         protected Iterator<ObservationI> doInBackground() throws Exception {
-                            if (!curSeq.isDeleted()) {
-                                return curSeq.getMaster().Observation().ByRead(curSeq);
+                            if (!currentRun.isDeleted()) {
+                                return currentRun.getMaster().Observation().ByRead(curSeq);
                             }
                             return null;
                         }
@@ -153,8 +153,8 @@ public final class SearchTopComponent extends TopComponent implements LookupList
 
                     @Override
                     protected SequenceI doInBackground() throws Exception {
-                        if (seq != null && !seq.isDeleted()) {
-                            return seq.getMaster().Sequence().fetch(seq.getId());
+                        if (seq != null && !currentRun.isDeleted()) {
+                            return currentRun.getMaster().Sequence().fetch(seq.getId());
                         }
                         return null;
                     }
