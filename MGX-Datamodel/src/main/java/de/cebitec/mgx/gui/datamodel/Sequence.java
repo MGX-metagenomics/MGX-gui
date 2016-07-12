@@ -1,6 +1,5 @@
 package de.cebitec.mgx.gui.datamodel;
 
-import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.SequenceI;
 
 /**
@@ -13,9 +12,12 @@ public class Sequence extends SequenceI {
     protected int length = -1;
     protected String sequence = null;
 
-    public Sequence(MGXMasterI m) {
-        super(m);
+    public Sequence() {
     }
+
+//    public Sequence(MGXMasterI m) {
+//        super(m);
+//    }
     
     @Override
      public String getName() {
