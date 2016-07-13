@@ -28,7 +28,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author pblumenk
  */
 @ServiceProvider(service = GSComparisonI.class)
-public class GSComparisonVennChart extends GSComparisonViewer implements GSComparisonI {
+public class GSComparisonVennChart extends EvaluationViewerI<TreeI<Long>> implements GSComparisonI {
 
     private VennChart venn;
 

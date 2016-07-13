@@ -39,7 +39,7 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Proper
     private EvaluationTopComponent topComponent;
     //
     private ComparisonTypeI currentComparisonType;
-    private EvaluationViewerI currentViewer;
+    private EvaluationViewerI<Visualizable> currentViewer;
     private final SelectSingleJobWizardAction jobWizard = new SelectSingleJobWizardAction();
     private SelectSingleJobWizardDescriptor jobWz;
     //
@@ -63,6 +63,7 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Proper
         res.addLookupListener(this);
         updateButton.addActionListener(this);
         comparisonTypeList.addActionListener(this);
+        visualizationTypeList.addActionListener(this);
     }
 
     public final void setTopComponent(EvaluationTopComponent tc) {
@@ -71,10 +72,7 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Proper
 
     public final synchronized void updateViewerList() {
         compListModel.update();
-        currentComparisonType = compListModel.getSelectedItem();
-        visListModel.clear();
-        visualizationTypeList.setEnabled(false);
-        controlSplitPane.setBottomComponent(null);
+//        controlSplitPane.setBottomComponent(currentViewer.getCustomizer());
     }
 
     /**
@@ -113,6 +111,7 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Proper
         jLabel1.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         jLabel1.setText("Visualization type");
 
+        visualizationTypeList.setModel(visListModel);
         visualizationTypeList.setEnabled(false);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -142,7 +141,7 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Proper
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(visualizationTypeList, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(15, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         controlSplitPane.setTopComponent(jPanel1);
@@ -211,9 +210,13 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Proper
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == comparisonTypeList) {
             currentComparisonType = compListModel.getSelectedItem();
+            visListModel.update();
         } else if (e.getSource() == visualizationTypeList) {
+            if (currentViewer != null) {
+                currentViewer.dispose();
+            }
             currentViewer = visListModel.getSelectedItem();
-            controlSplitPane.setBottomComponent(currentViewer.getCustomizer());
+//            controlSplitPane.setBottomComponent(currentViewer.getCustomizer());
         } else {
             setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             currentViewer.start(currentSeqrun);
@@ -228,6 +231,8 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Proper
         }
         res.removeLookupListener(this);
         updateButton.removeActionListener(this);
+        comparisonTypeList.removeActionListener(this);
+        visualizationTypeList.removeActionListener(this);
     }
 
     @Override
@@ -278,7 +283,7 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Proper
                             getSelectedItem(),
                             ItemEvent.SELECTED));
                 } else {
-                    comparisonTypeList.setSelectedIndex(0);
+                    setSelectedItem(content.get(0));
                 }
 
                 comparisonTypeList.setEnabled(true);
@@ -336,15 +341,15 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Proper
                 // if previously selected element still exists, restore selection
                 if (currentViewer != null && content.contains(currentViewer)) {
                     setSelectedItem(currentViewer);
-                    itemStateChanged(new ItemEvent(comparisonTypeList,
+                    itemStateChanged(new ItemEvent(visualizationTypeList,
                             ItemEvent.ITEM_STATE_CHANGED,
                             getSelectedItem(),
                             ItemEvent.SELECTED));
                 } else {
-                    comparisonTypeList.setSelectedIndex(0);
+                    setSelectedItem(content.get(0));
                 }
 
-                comparisonTypeList.setEnabled(true);
+                visualizationTypeList.setEnabled(true);
                 updateButton.setEnabled(true);
             }
             fireContentsChanged();
