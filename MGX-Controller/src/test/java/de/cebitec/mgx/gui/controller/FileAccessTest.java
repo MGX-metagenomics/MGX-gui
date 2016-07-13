@@ -11,8 +11,8 @@ import de.cebitec.mgx.api.access.datatransfer.TransferBaseI;
 import de.cebitec.mgx.api.access.datatransfer.UploadBaseI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.misc.TaskI;
+import de.cebitec.mgx.api.misc.TaskI.State;
 import de.cebitec.mgx.api.model.MGXFileI;
-import de.cebitec.mgx.gui.datamodel.MGXFile;
 import de.cebitec.mgx.gui.util.TestMaster;
 import java.io.File;
 import java.io.FileInputStream;
@@ -38,8 +38,6 @@ import org.openide.util.Exceptions;
  */
 public class FileAccessTest {
 
-    private MGXMasterI master;
-
     public FileAccessTest() {
     }
 
@@ -53,7 +51,6 @@ public class FileAccessTest {
 
     @Before
     public void setUp() {
-        master = TestMaster.getRO();
     }
 
     @After
@@ -72,6 +69,48 @@ public class FileAccessTest {
             return;
         }
         fail();
+    }
+
+    @Test
+    public void testDeleteDir() throws MGXException {
+        System.out.println("testDeleteDir");
+        MGXMasterI m = TestMaster.getRW();
+        MGXFileI root = MGXFileI.getRoot(m);
+        boolean success = false;
+        try {
+            success = m.File().createDirectory(root, "delME");
+
+        } catch (MGXException ex) {
+            fail(ex.getMessage());
+        }
+        assertTrue(success);
+
+        MGXFileI delME = null;
+        Iterator<MGXFileI> iter = m.File().fetchall(root);
+        while (iter.hasNext()) {
+            MGXFileI entry = iter.next();
+            if ("delME".equals(entry.getName())) {
+                delME = entry;
+                break;
+            }
+        }
+        assertNotNull(delME);
+
+        TaskI<MGXFileI> delTask = m.File().delete(delME);
+        assertNotNull(delTask);
+
+        while (!delTask.done()) {
+            System.err.println(delTask.getState());
+            m.<MGXFileI>Task().refresh(delTask);
+            try {
+                Thread.sleep(20);
+            } catch (InterruptedException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+        }
+        assertTrue(delTask.done());
+        assertEquals(State.FINISHED, delTask.getState());
+        assertTrue(delME.isDeleted());
     }
 
     @Test
@@ -130,20 +169,18 @@ public class FileAccessTest {
         assertNotNull(m);
 
         File f = File.createTempFile("down", "xx");
-        long fileSize = -1;
         PropCounter pc = new PropCounter();
 
         try {
-            FileWriter fw = new FileWriter(f);
-            for (int i = 0; i < 90000; i++) {
-                fw.write("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+            try (FileWriter fw = new FileWriter(f)) {
+                for (int i = 0; i < 90000; i++) {
+                    fw.write("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+                }
             }
-            fw.close();
 
-            UploadBaseI up = null;
-            up = m.File().createUploader(f, MGXFileI.getRoot(m), "testUpload");
+            MGXFileI root = MGXFileI.getRoot(m);
+            UploadBaseI up =m.File().createUploader(f, root, "testUpload");
             assertNotNull(up);
-
             up.addPropertyChangeListener(pc);
 
             boolean success = up.upload();
@@ -153,9 +190,25 @@ public class FileAccessTest {
             if (!success) {
                 fail(up.getErrorMessage());
             }
+            long fileSize = f.length();
+            assertEquals(fileSize, pc.getLastEvent().getNewValue());
+            assertTrue(500 < pc.getCount());
+            assertEquals(TransferBaseI.TRANSFER_COMPLETED, pc.getLastEvent().getPropertyName());
 
-            fileSize = f.length();
-            TaskI<MGXFileI> task = m.File().delete(new MGXFile(m, ".|testUpload", false, 42));
+            // find uploaded remote file
+            MGXFileI delMe = null;
+            Iterator<MGXFileI> iter = m.File().fetchall(root);
+            while (iter.hasNext()) {
+                MGXFileI entry = iter.next();
+                if ("testUpload".equals(entry.getName())) {
+                    delMe = entry;
+                    break;
+                }
+            }
+            assertNotNull(delMe);
+
+            // delete it again
+            TaskI<MGXFileI> task = m.File().delete(delMe);
             while ((task.getState() != TaskI.State.FINISHED) || (task.getState() != TaskI.State.FAILED)) {
                 System.err.println(" --> " + task.getState());
                 Thread.sleep(1000);
@@ -174,14 +227,12 @@ public class FileAccessTest {
             }
         }
 
-        assertTrue(500 < pc.getCount());
-        assertEquals(fileSize, pc.getLastEvent().getNewValue());
-        assertEquals(TransferBaseI.TRANSFER_COMPLETED, pc.getLastEvent().getPropertyName());
     }
 
     @Test
     public void testFetchall() throws MGXException {
         System.out.println("fetchall");
+        MGXMasterI master = TestMaster.getRO();
         Iterator<MGXFileI> iter = master.File().fetchall();
         assertNotNull(iter);
         int numFiles = 0;
@@ -202,6 +253,7 @@ public class FileAccessTest {
     @Test
     public void testListRecursive() throws MGXException {
         System.out.println("testListRecursive");
+        MGXMasterI master = TestMaster.getRO();
         System.out.println(master.getServerName());
         int total = 0;
         Iterator<MGXFileI> iter = master.File().fetchall();
@@ -209,7 +261,7 @@ public class FileAccessTest {
             MGXFileI f = iter.next();
             total += listDir(f);
         }
-        
+
         //  .|dir1
         //  .|dir1|bar
         //  .|dir1|foo
@@ -217,7 +269,6 @@ public class FileAccessTest {
         //  .|test1
         //  .|test2
         //  .|test3
-        
         assertEquals(7, total);
     }
 
