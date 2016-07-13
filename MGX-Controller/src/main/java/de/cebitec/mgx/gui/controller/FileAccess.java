@@ -115,7 +115,7 @@ public class FileAccess implements FileAccessI {
         }
         
         if (targetName.contains("/")) {
-            assert false;
+            throw new MGXException("Invalid character in name: \"/\".");
         }
         String fullPath = targetDir.getFullPath() + MGXFileI.separator + targetName;
         try {
