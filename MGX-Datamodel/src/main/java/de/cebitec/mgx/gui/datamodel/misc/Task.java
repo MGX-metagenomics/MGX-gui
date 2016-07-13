@@ -57,15 +57,21 @@ public class Task<T extends MGXDataModelBaseI<T>> extends TaskI<T> {
 
     @Override
     public TaskI<T> setState(State newState) {
-        System.err.println("state change to "+newState);
         if (newState != this.state) {
             this.state = newState;
-            if (!obj.isDeleted()) {
-                obj.modified();
-            }
+            //
+            // handle FINISHED case first; no need to distribute
+            // an additional modification event
+            //
             if (state == State.FINISHED) {
                 finish();
+                return this;
             }
+            
+            if (taskType != TaskType.DELETE && !obj.isDeleted()) {
+                obj.modified();
+            }
+
         }
         return this;
     }
