@@ -37,7 +37,7 @@ public class DeleteFileOrDirectory extends AbstractAction {
         Object ret = DialogDisplayer.getDefault().notify(d);
         if (NotifyDescriptor.YES_OPTION.equals(ret)) {
 
-            final DeleteTask deleteTask = new DeleteTask(master, file, "Delete " + file.getName());
+            final DeleteFileTask deleteTask = new DeleteFileTask(master, file, "Delete " + file.getName());
 
             NonEDT.invoke(new Runnable() {
                 @Override
@@ -53,12 +53,12 @@ public class DeleteFileOrDirectory extends AbstractAction {
         return (super.isEnabled() && RBAC.isUser());
     }
 
-    private final class DeleteTask extends MGXTask {
+    private final static class DeleteFileTask extends MGXTask {
 
         private final MGXMasterI master;
         private final MGXFileI file;
 
-        public DeleteTask(MGXMasterI master, MGXFileI file, String name) {
+        public DeleteFileTask(MGXMasterI master, MGXFileI file, String name) {
             super(name);
             this.master = master;
             this.file = file;
