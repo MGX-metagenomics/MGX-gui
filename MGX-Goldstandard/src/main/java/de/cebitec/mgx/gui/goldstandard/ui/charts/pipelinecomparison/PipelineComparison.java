@@ -1,5 +1,6 @@
-package de.cebitec.mgx.gui.goldstandard.ui.charts;
+package de.cebitec.mgx.gui.goldstandard.ui.charts.pipelinecomparison;
 
+import de.cebitec.mgx.gui.goldstandard.ui.charts.ComparisonTypeI;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -7,9 +8,9 @@ import org.openide.util.lookup.ServiceProvider;
  * @author pblumenk
  */
 @ServiceProvider(service = ComparisonTypeI.class)
-public class PipelineComparisonViewer implements ComparisonTypeI, Comparable<ComparisonTypeI>{
+public class PipelineComparison implements ComparisonTypeI, Comparable<ComparisonTypeI>{
 
-    public PipelineComparisonViewer() {
+    public PipelineComparison() {
     }
     
     @Override

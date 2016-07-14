@@ -1,4 +1,4 @@
-package de.cebitec.mgx.gui.goldstandard.ui.charts;
+package de.cebitec.mgx.gui.goldstandard.ui.charts.pipelinecomparison;
 
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.groups.ImageExporterI;
@@ -6,6 +6,7 @@ import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.SeqRunI;
+import de.cebitec.mgx.gui.goldstandard.ui.charts.EvaluationViewerI;
 import de.cebitec.mgx.gui.goldstandard.wizards.selectjobs.TimeEvalJobWizardDescriptor;
 import java.awt.Color;
 import java.awt.Dialog;
@@ -36,16 +37,21 @@ import org.openide.util.lookup.ServiceProvider;
  * @author pblumenk
  */
 @ServiceProvider(service = PipelineComparisonI.class)
-public class TimeEvaluationViewer extends EvaluationViewerI<DistributionI<Long>> implements PipelineComparisonI{
+public class PCTimeEvaluationViewer extends EvaluationViewerI<DistributionI<Long>> implements PipelineComparisonI{
 
-    enum StepSize {
-        HOURS, MINUTES, SECONDS
+    public enum StepSize {
+        HOURS, MINUTES, SECONDS;
+        
+        @Override        
+        public String toString() {
+            return super.toString().toLowerCase();
+        }
     }
 
     private SeqRunI currentSeqrun;
     private ChartPanel cPanel = null;
     private List<JobI> jobs;
-    private TimeEvaluationViewCustomizer cust = null;
+    private PCTimeEvaluationViewCustomizer cust = null;
     private JFreeChart chart = null;
     private CategoryDataset dataset;
 
@@ -156,7 +162,7 @@ public class TimeEvaluationViewer extends EvaluationViewerI<DistributionI<Long>>
     @Override
     public JComponent getCustomizer() {
         if (cust == null) {
-            cust = new TimeEvaluationViewCustomizer();            
+            cust = new PCTimeEvaluationViewCustomizer();            
         }
         return cust;
     }

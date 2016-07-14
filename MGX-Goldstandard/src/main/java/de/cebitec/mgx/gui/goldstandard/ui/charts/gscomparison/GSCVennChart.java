@@ -1,4 +1,4 @@
-package de.cebitec.mgx.gui.goldstandard.ui.charts;
+package de.cebitec.mgx.gui.goldstandard.ui.charts.gscomparison;
 
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.groups.ImageExporterI;
@@ -7,6 +7,8 @@ import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.tree.NodeI;
 import de.cebitec.mgx.api.model.tree.TreeI;
+import de.cebitec.mgx.gui.goldstandard.ui.charts.EvaluationViewerI;
+import de.cebitec.mgx.gui.goldstandard.ui.charts.VennChart;
 import de.cebitec.mgx.gui.goldstandard.util.NodeUtils;
 import de.cebitec.mgx.gui.goldstandard.wizards.selectjobs.SelectSingleJobWizardDescriptor;
 import gnu.trove.map.TLongObjectMap;
@@ -28,14 +30,14 @@ import org.openide.util.lookup.ServiceProvider;
  * @author pblumenk
  */
 @ServiceProvider(service = GSComparisonI.class)
-public class GSComparisonVennChart extends EvaluationViewerI<TreeI<Long>> implements GSComparisonI {
+public class GSCVennChart extends EvaluationViewerI<TreeI<Long>> implements GSComparisonI {
 
     private VennChart venn;
 
     private SeqRunI currentSeqrun;
     private JobI currentJob;
     
-    private GSComparisonVennChartCustomizer cust = null;
+    private GSCVennChartCustomizer cust = null;
 
     private TLongObjectMap<String> onlyGSID;
     private TLongObjectMap<String> onlySampleID;
@@ -158,7 +160,7 @@ public class GSComparisonVennChart extends EvaluationViewerI<TreeI<Long>> implem
     @Override
     public JComponent getCustomizer() {
         if (cust == null) {
-            cust = new GSComparisonVennChartCustomizer();
+            cust = new GSCVennChartCustomizer();
         }
         return cust;
     }

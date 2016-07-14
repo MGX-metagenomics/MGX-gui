@@ -1,4 +1,4 @@
-package de.cebitec.mgx.gui.goldstandard.ui.charts;
+package de.cebitec.mgx.gui.goldstandard.ui.charts.pipelinecomparison;
 
 import java.beans.PropertyChangeListener;
 
@@ -6,14 +6,14 @@ import java.beans.PropertyChangeListener;
  *
  * @author pblumenk
  */
-public class GSComparisonViewCustomizer extends javax.swing.JPanel {
+public class PCAssignedReadsViewCustomizer extends javax.swing.JPanel{
 
     /**
      * Creates new form TableViewCustomizer
      */
-    public GSComparisonViewCustomizer() {
+    public PCAssignedReadsViewCustomizer() {
         initComponents();
-    }
+    }    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -28,16 +28,14 @@ public class GSComparisonViewCustomizer extends javax.swing.JPanel {
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 244, Short.MAX_VALUE)
+            .addGap(0, 153, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 369, Short.MAX_VALUE)
+            .addGap(0, 364, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
-
-
 }

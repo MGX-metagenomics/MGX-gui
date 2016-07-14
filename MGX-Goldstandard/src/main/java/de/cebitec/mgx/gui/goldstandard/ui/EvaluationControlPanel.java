@@ -8,8 +8,8 @@ import de.cebitec.mgx.api.model.ToolI;
 import de.cebitec.mgx.gui.goldstandard.actions.AddGoldstandard;
 import de.cebitec.mgx.gui.goldstandard.ui.charts.ComparisonTypeI;
 import de.cebitec.mgx.gui.goldstandard.ui.charts.EvaluationViewerI;
-import de.cebitec.mgx.gui.goldstandard.ui.charts.GSComparisonI;
-import de.cebitec.mgx.gui.goldstandard.ui.charts.PipelineComparisonI;
+import de.cebitec.mgx.gui.goldstandard.ui.charts.gscomparison.GSComparisonI;
+import de.cebitec.mgx.gui.goldstandard.ui.charts.pipelinecomparison.PipelineComparisonI;
 import de.cebitec.mgx.gui.goldstandard.wizards.selectjobs.SelectSingleJobWizardAction;
 import de.cebitec.mgx.gui.goldstandard.wizards.selectjobs.SelectSingleJobWizardDescriptor;
 import de.cebitec.mgx.gui.swingutils.BaseModel;
@@ -216,7 +216,7 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Proper
                 currentViewer.dispose();
             }
             currentViewer = visListModel.getSelectedItem();
-//            controlSplitPane.setBottomComponent(currentViewer.getCustomizer());
+            controlSplitPane.setBottomComponent(currentViewer.getCustomizer());
         } else {
             setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             currentViewer.start(currentSeqrun);

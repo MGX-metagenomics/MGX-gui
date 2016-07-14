@@ -72,7 +72,7 @@ public class VennChart extends JPanel {
         return new VennChart(img);
     }
 
-    static ImageExporterI getImageExporter(final VennChart venn) {
+    public static ImageExporterI getImageExporter(final VennChart venn) {
         return new ImageExporterI() {
             @Override
             public FileType[] getSupportedTypes() {

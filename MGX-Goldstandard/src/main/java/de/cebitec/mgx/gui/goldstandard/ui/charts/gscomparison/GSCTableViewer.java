@@ -1,4 +1,4 @@
-package de.cebitec.mgx.gui.goldstandard.ui.charts;
+package de.cebitec.mgx.gui.goldstandard.ui.charts.gscomparison;
 
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.groups.ImageExporterI;
@@ -8,6 +8,7 @@ import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.SequenceI;
 import de.cebitec.mgx.api.model.tree.NodeI;
 import de.cebitec.mgx.api.model.tree.TreeI;
+import de.cebitec.mgx.gui.goldstandard.ui.charts.EvaluationViewerI;
 import de.cebitec.mgx.gui.goldstandard.util.NodeUtils;
 import de.cebitec.mgx.gui.goldstandard.wizards.selectjobs.SelectSingleJobWizardDescriptor;
 import gnu.trove.map.TLongObjectMap;
@@ -38,7 +39,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author patrick
  */
 @ServiceProvider(service = GSComparisonI.class)
-public class GSComparisonTableViewer extends EvaluationViewerI<TreeI<Long>> implements GSComparisonI {
+public class GSCTableViewer extends EvaluationViewerI<TreeI<Long>> implements GSComparisonI {
 
     private static final int HEADER_CHUNK_SIZE = 10_000;
 
@@ -48,7 +49,7 @@ public class GSComparisonTableViewer extends EvaluationViewerI<TreeI<Long>> impl
 
     private JXTable table;
 
-    private GSComparisonViewCustomizer cust = null;
+    private GSCViewCustomizer cust = null;
 
     private TLongObjectMap<AttributeInfos> onlyGSID;
     private TLongObjectMap<AttributeInfos> onlySampleID;
@@ -276,7 +277,7 @@ public class GSComparisonTableViewer extends EvaluationViewerI<TreeI<Long>> impl
     @Override
     public JComponent getCustomizer() {
         if (cust == null) {
-            cust = new GSComparisonViewCustomizer();
+            cust = new GSCViewCustomizer();
         }
 //        cust.setAttributeType(getAttributeType());
         return cust;

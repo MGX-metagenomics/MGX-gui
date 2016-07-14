@@ -1,6 +1,6 @@
-package de.cebitec.mgx.gui.goldstandard.ui.charts;
+package de.cebitec.mgx.gui.goldstandard.ui.charts.pipelinecomparison;
 
-import de.cebitec.mgx.gui.goldstandard.ui.charts.TimeEvaluationViewer.StepSize;
+import de.cebitec.mgx.gui.goldstandard.ui.charts.pipelinecomparison.PCTimeEvaluationViewer.StepSize;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import javax.swing.DefaultComboBoxModel;
@@ -12,12 +12,12 @@ import org.openide.util.Lookup;
  *
  * @author pblumenk
  */
-public class TimeEvaluationViewCustomizer extends javax.swing.JPanel implements PropertyChangeListener {
+public class PCTimeEvaluationViewCustomizer extends javax.swing.JPanel implements PropertyChangeListener {
 
     /**
      * Creates new form TableViewCustomizer
      */
-    public TimeEvaluationViewCustomizer() {
+    public PCTimeEvaluationViewCustomizer() {
         initComponents();
         stepSizeBox.setModel(new DefaultComboBoxModel<>(StepSize.values()));
         stepSizeBox.setSelectedIndex(0);

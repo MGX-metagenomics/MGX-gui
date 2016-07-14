@@ -1,18 +1,19 @@
-package de.cebitec.mgx.gui.goldstandard.ui.charts;
+package de.cebitec.mgx.gui.goldstandard.ui.charts.gscomparison;
+
+import java.beans.PropertyChangeListener;
 
 /**
  *
  * @author pblumenk
  */
-public class GSComparisonVennChartCustomizer extends javax.swing.JPanel {
+public class GSCViewCustomizer extends javax.swing.JPanel {
 
     /**
      * Creates new form TableViewCustomizer
      */
-    public GSComparisonVennChartCustomizer() {
+    public GSCViewCustomizer() {
         initComponents();
     }
-
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -27,11 +28,11 @@ public class GSComparisonVennChartCustomizer extends javax.swing.JPanel {
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 245, Short.MAX_VALUE)
+            .addGap(0, 244, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 355, Short.MAX_VALUE)
+            .addGap(0, 369, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
 
