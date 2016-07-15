@@ -1,6 +1,5 @@
 package de.cebitec.mgx.gui.nodeactions;
 
-import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.datatransfer.TransferBaseI;
 import de.cebitec.mgx.api.access.datatransfer.UploadBaseI;
 import de.cebitec.mgx.api.exception.MGXException;
@@ -52,12 +51,11 @@ public class UploadFile extends AbstractAction {
         NbPreferences.forModule(JFileChooser.class).put("lastDirectory", fchooser.getCurrentDirectory().getAbsolutePath());
 
         final File localFile = fchooser.getSelectedFile();
-
-        final MGXMasterI master = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
         final MGXFileI targetDir = Utilities.actionsGlobalContext().lookup(MGXFileI.class);
+        
         final UploadBaseI uploader;
         try {
-            uploader = master.File().createUploader(localFile, targetDir, localFile.getName());
+            uploader = targetDir.getMaster().File().createUploader(localFile, targetDir, localFile.getName());
             final MGXTask upTask = new MGXTask("Upload " + fchooser.getSelectedFile().getName()) {
                 @Override
                 public boolean process() {
