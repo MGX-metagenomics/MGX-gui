@@ -9,7 +9,7 @@ import de.cebitec.mgx.api.model.tree.NodeI;
 import de.cebitec.mgx.api.model.tree.TreeI;
 import de.cebitec.mgx.gui.goldstandard.ui.charts.EvaluationViewerI;
 import de.cebitec.mgx.gui.goldstandard.util.NodeUtils;
-import de.cebitec.mgx.gui.goldstandard.wizards.selectjobs.SelectSingleJobWizardDescriptor;
+import de.cebitec.mgx.gui.goldstandard.wizards.selectjobs.SelectSingleJobWithGSWizardDescriptor;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import java.awt.Dialog;
@@ -152,7 +152,7 @@ public class GSCTableViewer extends EvaluationViewerI<TreeI<Long>> implements GS
     public void start(SeqRunI seqrun) {
         currentSeqrun = seqrun;
         try {
-            SelectSingleJobWizardDescriptor jobWizard = new SelectSingleJobWizardDescriptor(seqrun);
+            SelectSingleJobWithGSWizardDescriptor jobWizard = new SelectSingleJobWithGSWizardDescriptor(seqrun);
             Dialog dialog = DialogDisplayer.getDefault().createDialog(jobWizard);
             dialog.setVisible(true);
             dialog.toFront();
