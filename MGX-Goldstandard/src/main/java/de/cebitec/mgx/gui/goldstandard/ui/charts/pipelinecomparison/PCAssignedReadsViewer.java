@@ -9,11 +9,15 @@ import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.tree.NodeI;
 import de.cebitec.mgx.api.model.tree.TreeI;
 import de.cebitec.mgx.gui.goldstandard.ui.charts.EvaluationViewerI;
+import de.cebitec.mgx.gui.goldstandard.wizards.selectjobs.SelectJobsWizardDescriptor;
+import de.cebitec.mgx.gui.goldstandard.wizards.selectjobs.SelectSingleJobWithGSVisualPanel1;
 import de.cebitec.mgx.gui.goldstandard.wizards.selectjobs.TimeEvalJobWizardDescriptor;
 import java.awt.Color;
 import java.awt.Dialog;
 import java.text.NumberFormat;
+import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import javax.swing.JComponent;
 import org.apache.commons.math3.util.FastMath;
 import org.jfree.chart.ChartFactory;
@@ -21,7 +25,10 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.CategoryLabelPositions;
+import org.jfree.chart.axis.LogAxis;
+import org.jfree.chart.axis.LogarithmicAxis;
 import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.NumberTickUnit;
 import org.jfree.chart.axis.TickUnitSource;
 import org.jfree.chart.labels.StandardCategoryToolTipGenerator;
 import org.jfree.chart.plot.CategoryPlot;
@@ -44,7 +51,7 @@ public class PCAssignedReadsViewer extends EvaluationViewerI<TreeI<Long>> implem
     private SeqRunI currentSeqrun;
     private AttributeTypeI usedAttributeType;
     private ChartPanel cPanel = null;
-    private List<JobI> jobs;
+    private Collection<JobI> jobs;
     private PCAssignedReadsViewCustomizer cust = null;
     private JFreeChart chart = null;
     private CategoryDataset dataset;
@@ -77,7 +84,7 @@ public class PCAssignedReadsViewer extends EvaluationViewerI<TreeI<Long>> implem
     @Override
     public void show(List<TreeI<Long>> trees) {
         DefaultCategoryDataset data = new DefaultCategoryDataset();
-        String yAxisLabel = "";
+        String yAxisLabel = "assigned reads";
         for (JobI job : jobs) {
             try {
                 TreeI<Long> tree = job.getMaster().Attribute().getHierarchy(usedAttributeType, job);
@@ -119,20 +126,21 @@ public class PCAssignedReadsViewer extends EvaluationViewerI<TreeI<Long>> implem
         // y axis
         final NumberAxis rangeAxis;
         final TickUnitSource tus;
-//        if (getCustomizer().logY()) {
-//            rangeAxis = new LogarithmicAxis("log(" + yAxisLabel + ")");
-//            ((LogarithmicAxis) rangeAxis).setStrictValuesFlag(false);
+        if (((PCAssignedReadsViewCustomizer) getCustomizer()).inLogScale()) {
+            rangeAxis = new LogarithmicAxis("log(" + yAxisLabel + ")");
+            ((LogarithmicAxis) rangeAxis).setStrictValuesFlag(false);
+            ((LogarithmicAxis) rangeAxis).setTickUnit(new NumberTickUnit(1_000));
 //            tus = LogAxis.createLogTickUnits(Locale.getDefault());
-//
-//        } else {
-        rangeAxis = (NumberAxis) plot.getRangeAxis();
+        } else {
+            rangeAxis = (NumberAxis) plot.getRangeAxis();
 //            if (getCustomizer().useFractions()) {
 //                tus = NumberAxis.createStandardTickUnits();
 //            } else {
-        tus = NumberAxis.createIntegerTickUnits();
+            tus = NumberAxis.createIntegerTickUnits();
+            rangeAxis.setStandardTickUnits(tus);
 //            }
-//        }
-        rangeAxis.setStandardTickUnits(tus);
+        }
+
 //        if (dataset instanceof SlidingCategoryDataset) {
 //            SlidingCategoryDataset scd = (SlidingCategoryDataset) dataset;
 //            rangeAxis.setAutoRange(false);
@@ -159,13 +167,14 @@ public class PCAssignedReadsViewer extends EvaluationViewerI<TreeI<Long>> implem
     @Override
     public void start(SeqRunI seqrun) {
         try {
-            TimeEvalJobWizardDescriptor jobWizard = new TimeEvalJobWizardDescriptor(seqrun);
+            SelectJobsWizardDescriptor jobWizard = new SelectJobsWizardDescriptor(seqrun);
             Dialog dialog = DialogDisplayer.getDefault().createDialog(jobWizard);
             dialog.setVisible(true);
             dialog.toFront();
             boolean cancelled = jobWizard.getValue() != WizardDescriptor.FINISH_OPTION;
             if (!cancelled) {
                 jobs = jobWizard.getJobs();
+                usedAttributeType = jobWizard.getAttributeType();
                 show(null);
             }
         } catch (MGXException ex) {

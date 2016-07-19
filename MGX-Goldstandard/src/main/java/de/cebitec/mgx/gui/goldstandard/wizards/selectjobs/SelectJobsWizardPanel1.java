@@ -23,40 +23,27 @@ import org.openide.WizardDescriptor;
 import org.openide.util.Exceptions;
 import org.openide.util.HelpCtx;
 
-public class SelectSingleJobWizardPanel1 implements WizardDescriptor.Panel<WizardDescriptor>, ListSelectionListener{
+public class SelectJobsWizardPanel1 implements WizardDescriptor.Panel<WizardDescriptor>, ListSelectionListener {
 
     /**
      * The visual component that displays this panel. If you need to access the
      * component from this class, just use getComponent().
      */
-    private SelectSingleJobVisualPanel1 component;
+    private SelectJobsVisualPanel1 component;
     private WizardDescriptor model;
     private final EventListenerList listeners = new EventListenerList();
 
     private final Map<JobI, Collection<AttributeTypeI>> jobs;
-    private JobI goldstandard;
-    private Set<AttributeTypeI> gsAttributeTypes;
     private final SeqRunI seqrun;
 
     private boolean isValid = false;
 
-    public SelectSingleJobWizardPanel1(SeqRunI seqrun) throws MGXException {
+    public SelectJobsWizardPanel1(SeqRunI seqrun) throws MGXException {
         this.seqrun = seqrun;
         List<JobI> allJobs = seqrun.getMaster().Job().BySeqRun(seqrun);
         jobs = new HashMap<>(allJobs.size());
         for (JobI job : allJobs) {
             job.setTool(seqrun.getMaster().Tool().ByJob(job));
-            if (job.getTool().getName().equals(AddGoldstandard.TOOL_NAME)) {
-                goldstandard = job;
-                gsAttributeTypes = new HashSet<>();
-                Iterator<AttributeTypeI> it = seqrun.getMaster().AttributeType().byJob(goldstandard);
-                while (it.hasNext()) {
-                    gsAttributeTypes.add(it.next());
-                }
-            }
-        }
-        allJobs.remove(goldstandard);
-        for (JobI job : allJobs) {
             if (job.getStatus() == JobState.FINISHED) {
                 jobs.put(job, null);
             }
@@ -68,10 +55,10 @@ public class SelectSingleJobWizardPanel1 implements WizardDescriptor.Panel<Wizar
     // but never displayed, or not all panels are displayed, it is better to
     // create only those which really need to be visible.
     @Override
-    public SelectSingleJobVisualPanel1 getComponent() {
+    public SelectJobsVisualPanel1 getComponent() {
         if (component == null) {
-            component = new SelectSingleJobVisualPanel1(jobs);
-            component.addListSelectionListener(this);            
+            component = new SelectJobsVisualPanel1(jobs);
+            component.addListSelectionListener(this);
 
         }
         return component;
@@ -127,38 +114,46 @@ public class SelectSingleJobWizardPanel1 implements WizardDescriptor.Panel<Wizar
 
     @Override
     public void storeSettings(WizardDescriptor wiz) {
-        model.putProperty(SelectSingleJobVisualPanel1.PROP_JOB, getComponent().getSelectedJob());
-        model.putProperty(SelectSingleJobVisualPanel1.PROP_ATTRIBUTETYPE, getComponent().getSelectedAttributeType());
-        model.putProperty(SelectSingleJobVisualPanel1.PROP_GOLDSTANDARD, goldstandard);
+        model.putProperty(SelectJobsVisualPanel1.PROP_JOBS, getComponent().getSelectedJobs());
+        model.putProperty(SelectJobsVisualPanel1.PROP_ATTRIBUTETYPE, getComponent().getSelectedAttributeType());
     }
 
     @Override
     public void valueChanged(ListSelectionEvent e) {
 //        ListSelectionModel lsm = (ListSelectionModel) e.getSource();
         if (!e.getValueIsAdjusting()) {
-            JobI job = component.getSelectedJob();
-            Collection<AttributeTypeI> atList = jobs.get(job);
-            if (atList == null) {
-                try {
-                    Iterator<AttributeTypeI> it = seqrun.getMaster().AttributeType().byJob(job);
-                    atList = new LinkedList<>();
-                    while (it.hasNext()) {
-                        AttributeTypeI at = it.next();
-                        if (gsAttributeTypes.contains(at)) {
+            try {
+                List<JobI> jobList = component.getSelectedJobs();
+                Set<AttributeTypeI> sharedATs = null;
+                for (JobI job : jobList) {
+                    Collection<AttributeTypeI> atList = jobs.get(job);
+                    if (atList == null) {
+
+                        Iterator<AttributeTypeI> it = seqrun.getMaster().AttributeType().byJob(job);
+                        atList = new LinkedList<>();
+                        while (it.hasNext()) {
+                            AttributeTypeI at = it.next();
                             atList.add(at);
                         }
+                        jobs.put(job, atList);
                     }
-                    jobs.put(job, atList);
-                } catch (MGXException ex) {
-                    Exceptions.printStackTrace(ex);
+                    if (sharedATs == null) {
+                        sharedATs = new HashSet<>();
+                        sharedATs.addAll(atList);
+                    } else {
+                        sharedATs.retainAll(atList);
+                    }
                 }
-            }
-            component.setAttributeTypeList(atList);
-            component.enableAttributeTypeBox(atList != null && !atList.isEmpty());
 
-            boolean oldState = isValid;
-            isValid = checkValidity();
-            fireChangeEvent(this, oldState, isValid);
+                component.setAttributeTypeList(sharedATs);
+                component.enableAttributeTypeBox(sharedATs != null && !sharedATs.isEmpty());
+
+                boolean oldState = isValid;
+                isValid = checkValidity();
+                fireChangeEvent(this, oldState, isValid);
+            } catch (MGXException ex) {
+                Exceptions.printStackTrace(ex);
+            }
         }
     }
 

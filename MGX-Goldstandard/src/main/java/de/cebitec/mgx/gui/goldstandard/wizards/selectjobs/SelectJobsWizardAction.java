@@ -14,7 +14,7 @@ import org.openide.DialogDisplayer;
 import org.openide.WizardDescriptor;
 import org.openide.util.Exceptions;
 
-public final class SelectSingleJobWizardAction implements ActionListener {
+public final class SelectJobsWizardAction implements ActionListener {
 
     private WizardDescriptor wizardDescriptor;
     private WizardDescriptor.Panel<WizardDescriptor>[] panels;
@@ -51,7 +51,7 @@ public final class SelectSingleJobWizardAction implements ActionListener {
     private WizardDescriptor.Panel<WizardDescriptor>[] getPanels() throws MGXException {
         if (panels == null) {
             panels = new WizardDescriptor.Panel[]{
-                new SelectSingleJobWizardPanel1(currentRun),
+                new SelectJobsWizardPanel1(currentRun),
             };
             String[] steps = new String[panels.length];
             for (int i = 0; i < panels.length; i++) {
@@ -80,10 +80,10 @@ public final class SelectSingleJobWizardAction implements ActionListener {
     }
     
     public JobI getJob(){
-        return (JobI)wizardDescriptor.getProperty(SelectSingleJobVisualPanel1.PROP_JOB);
+        return (JobI)wizardDescriptor.getProperty(SelectJobsVisualPanel1.PROP_JOBS);
     }
     
     public AttributeTypeI getAttributeType(){
-        return (AttributeTypeI)wizardDescriptor.getProperty(SelectSingleJobVisualPanel1.PROP_ATTRIBUTETYPE);
+        return (AttributeTypeI)wizardDescriptor.getProperty(SelectJobsVisualPanel1.PROP_ATTRIBUTETYPE);
     }
 }

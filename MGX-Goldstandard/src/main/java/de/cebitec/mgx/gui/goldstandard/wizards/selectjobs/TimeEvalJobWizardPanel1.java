@@ -127,7 +127,7 @@ public class TimeEvalJobWizardPanel1 implements WizardDescriptor.Panel<WizardDes
 
     @Override
     public void storeSettings(WizardDescriptor wiz) {
-        model.putProperty(SelectSingleJobVisualPanel1.PROP_JOB, getComponent().getSelectedJobs());        
+        model.putProperty(SelectJobsVisualPanel1.PROP_JOBS, getComponent().getSelectedJobs());        
     }
 
     @Override

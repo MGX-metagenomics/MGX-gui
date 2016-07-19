@@ -1,7 +1,5 @@
 package de.cebitec.mgx.gui.goldstandard.ui.charts.pipelinecomparison;
 
-import java.beans.PropertyChangeListener;
-
 /**
  *
  * @author pblumenk
@@ -14,6 +12,10 @@ public class PCAssignedReadsViewCustomizer extends javax.swing.JPanel{
     public PCAssignedReadsViewCustomizer() {
         initComponents();
     }    
+    
+    public boolean inLogScale() {
+        return logScale.isSelected();
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -24,18 +26,28 @@ public class PCAssignedReadsViewCustomizer extends javax.swing.JPanel{
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        logScale = new javax.swing.JCheckBox();
+
+        org.openide.awt.Mnemonics.setLocalizedText(logScale, "Y axis in log scale");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 153, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(logScale)
+                .addGap(0, 32, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 364, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(logScale)
+                .addContainerGap(330, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JCheckBox logScale;
     // End of variables declaration//GEN-END:variables
 }

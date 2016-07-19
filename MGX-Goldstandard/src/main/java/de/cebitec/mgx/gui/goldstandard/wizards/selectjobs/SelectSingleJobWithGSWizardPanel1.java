@@ -132,9 +132,9 @@ public class SelectSingleJobWithGSWizardPanel1 implements WizardDescriptor.Panel
 
     @Override
     public void storeSettings(WizardDescriptor wiz) {
-        model.putProperty(SelectSingleJobVisualPanel1.PROP_JOB, getComponent().getSelectedJob());
-        model.putProperty(SelectSingleJobVisualPanel1.PROP_ATTRIBUTETYPE, getComponent().getSelectedAttributeType());
-        model.putProperty(SelectSingleJobVisualPanel1.PROP_GOLDSTANDARD, goldstandard);
+        model.putProperty(SelectSingleJobWithGSVisualPanel1.PROP_JOB, getComponent().getSelectedJob());
+        model.putProperty(SelectSingleJobWithGSVisualPanel1.PROP_ATTRIBUTETYPE, getComponent().getSelectedAttributeType());
+        model.putProperty(SelectSingleJobWithGSVisualPanel1.PROP_GOLDSTANDARD, goldstandard);
     }
 
     @Override

@@ -42,7 +42,7 @@ public class GSCTableViewer extends EvaluationViewerI<TreeI<Long>> implements GS
     private JXTable table;
     private JScrollPane pane;
 
-    private GSCViewCustomizer cust = null;
+    private GSCTableViewCustomizer cust = null;
 
     private TLongObjectMap<String[]> seqToAttribute;
 
@@ -121,8 +121,8 @@ public class GSCTableViewer extends EvaluationViewerI<TreeI<Long>> implements GS
             "SequenceID", "in Goldstandard", "in both", "in Sample",};
 
         GSTableViewerPagingModel model = new GSTableViewerPagingModel(seqToAttribute, columns, currentSeqrun.getMaster(), PAGESIZE);
-
-//        cust.setModel(model); // for tsv export
+        cust.setModel(model); // for tsv export
+        cust.setMaster(currentSeqrun.getMaster());
         table = new JXTable(model);
         table.setFillsViewportHeight(true);
         for (TableColumn tc : table.getColumns()) {
@@ -142,7 +142,7 @@ public class GSCTableViewer extends EvaluationViewerI<TreeI<Long>> implements GS
     @Override
     public JComponent getCustomizer() {
         if (cust == null) {
-            cust = new GSCViewCustomizer();
+            cust = new GSCTableViewCustomizer();
         }
 
         return cust;

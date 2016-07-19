@@ -37,7 +37,7 @@ public class TimeEvalJobWizardDescriptor extends WizardDescriptor implements Cha
     
     @SuppressWarnings("unchecked")
     public List<JobI> getJobs(){
-        return (List<JobI>)getProperty(SelectSingleJobVisualPanel1.PROP_JOB);
+        return (List<JobI>)getProperty(SelectJobsVisualPanel1.PROP_JOBS);
     }
     
     @Override

@@ -3,21 +3,21 @@ package de.cebitec.mgx.gui.goldstandard.wizards.selectjobs;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.JobI;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import javax.swing.DefaultListModel;
 import javax.swing.JPanel;
 import javax.swing.event.ListSelectionListener;
 
-public final class SelectSingleJobVisualPanel1 extends JPanel {
+public final class SelectJobsVisualPanel1 extends JPanel {
 
-    public static final String PROP_JOB = "job";
-    public static final String PROP_ATTRIBUTETYPE = "attribute_type";
-    public static final String PROP_GOLDSTANDARD = "goldstandard";
+    public static final String PROP_JOBS = "jobs";
+    public static final String PROP_ATTRIBUTETYPE = "attribute_type";    
 
     /**
      * Creates new form SelectSingleJobVisualPanel1
      */
-    public SelectSingleJobVisualPanel1(Map<JobI, Collection<AttributeTypeI>> jobs) {
+    public SelectJobsVisualPanel1(Map<JobI, Collection<AttributeTypeI>> jobs) {
         initComponents();
         DefaultListModel<JobI> jobModel = new DefaultListModel<>();
         for (JobI job : jobs.keySet()) {
@@ -35,8 +35,8 @@ public final class SelectSingleJobVisualPanel1 extends JPanel {
         jobList.getSelectionModel().addListSelectionListener(lsl);
     }
 
-    public JobI getSelectedJob() {
-        return jobList.getSelectedValue();
+    public List<JobI> getSelectedJobs() {
+        return jobList.getSelectedValuesList();
     }
 
     public AttributeTypeI getSelectedAttributeType() {
@@ -85,12 +85,11 @@ public final class SelectSingleJobVisualPanel1 extends JPanel {
         attributeTypeBox = new javax.swing.JComboBox<>();
         jLabel1 = new javax.swing.JLabel();
 
-        jobList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jScrollPane1.setViewportView(jobList);
 
         attributeTypeBox.setEnabled(false);
 
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(SelectSingleJobVisualPanel1.class, "SelectSingleJobVisualPanel1.jLabel1.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(SelectJobsVisualPanel1.class, "SelectJobsVisualPanel1.jLabel1.text")); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);

@@ -56,6 +56,10 @@ public class GSTableViewerPagingModel extends AbstractTableModel {
         updateSeqHeader();
     }
 
+    public TLongObjectMap<String[]> getData(){
+        return data;
+    }
+    
     // Return values appropriate for the visible table part.
     @Override
     public int getRowCount() {

@@ -6,6 +6,7 @@ import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -15,15 +16,15 @@ import org.openide.WizardDescriptor;
  *
  * @author sjaenick
  */
-public class SelectSingleJobWizardDescriptor extends WizardDescriptor implements ChangeListener{
+public class SelectJobsWizardDescriptor extends WizardDescriptor implements ChangeListener{
 
-    private final SelectSingleJobWizardPanel1 p1;
+    private final SelectJobsWizardPanel1 p1;
     protected final SeqRunI seqrun;
 
-    public SelectSingleJobWizardDescriptor(SeqRunI seqrun) throws MGXException {
+    public SelectJobsWizardDescriptor(SeqRunI seqrun) throws MGXException {
         super();
         this.seqrun = seqrun;
-        p1 = new SelectSingleJobWizardPanel1(seqrun);
+        p1 = new SelectJobsWizardPanel1(seqrun);
         List<Panel<WizardDescriptor>> panels = new ArrayList<>();
         panels.add(p1);        
         this.setPanelsAndSettings(new ArrayIterator<>(panels), this);
@@ -35,18 +36,15 @@ public class SelectSingleJobWizardDescriptor extends WizardDescriptor implements
         putProperty(WizardDescriptor.PROP_CONTENT_NUMBERED, Boolean.TRUE);        
     }
     
-    public JobI getJob(){
-        return (JobI)getProperty(SelectSingleJobVisualPanel1.PROP_JOB);
+    @SuppressWarnings("unchecked")
+    public Collection<JobI> getJobs(){        
+        return (Collection<JobI>)getProperty(SelectJobsVisualPanel1.PROP_JOBS);
     }
     
     public AttributeTypeI getAttributeType(){
-        return (AttributeTypeI) getProperty(SelectSingleJobVisualPanel1.PROP_ATTRIBUTETYPE);
+        return (AttributeTypeI) getProperty(SelectJobsVisualPanel1.PROP_ATTRIBUTETYPE);
     }
     
-    public JobI getGoldstandard(){
-        return (JobI) getProperty(SelectSingleJobVisualPanel1.PROP_GOLDSTANDARD);
-    }
-
     @Override
     public void stateChanged(ChangeEvent e) {
         return;

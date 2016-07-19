@@ -80,10 +80,10 @@ public final class SelectSingleJobWithGSWizardAction implements ActionListener {
     }
     
     public JobI getJob(){
-        return (JobI)wizardDescriptor.getProperty(SelectSingleJobVisualPanel1.PROP_JOB);
+        return (JobI)wizardDescriptor.getProperty(SelectJobsVisualPanel1.PROP_JOBS);
     }
     
     public AttributeTypeI getAttributeType(){
-        return (AttributeTypeI)wizardDescriptor.getProperty(SelectSingleJobVisualPanel1.PROP_ATTRIBUTETYPE);
+        return (AttributeTypeI)wizardDescriptor.getProperty(SelectJobsVisualPanel1.PROP_ATTRIBUTETYPE);
     }
 }

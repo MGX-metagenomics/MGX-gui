@@ -10,8 +10,8 @@ import de.cebitec.mgx.gui.goldstandard.ui.charts.ComparisonTypeI;
 import de.cebitec.mgx.gui.goldstandard.ui.charts.EvaluationViewerI;
 import de.cebitec.mgx.gui.goldstandard.ui.charts.gscomparison.GSComparisonI;
 import de.cebitec.mgx.gui.goldstandard.ui.charts.pipelinecomparison.PipelineComparisonI;
-import de.cebitec.mgx.gui.goldstandard.wizards.selectjobs.SelectSingleJobWizardAction;
-import de.cebitec.mgx.gui.goldstandard.wizards.selectjobs.SelectSingleJobWizardDescriptor;
+import de.cebitec.mgx.gui.goldstandard.wizards.selectjobs.SelectJobsWizardAction;
+import de.cebitec.mgx.gui.goldstandard.wizards.selectjobs.SelectJobsWizardDescriptor;
 import de.cebitec.mgx.gui.swingutils.BaseModel;
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
@@ -40,8 +40,8 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Proper
     //
     private ComparisonTypeI currentComparisonType;
     private EvaluationViewerI<Visualizable> currentViewer;
-    private final SelectSingleJobWizardAction jobWizard = new SelectSingleJobWizardAction();
-    private SelectSingleJobWizardDescriptor jobWz;
+    private final SelectJobsWizardAction jobWizard = new SelectJobsWizardAction();
+    private SelectJobsWizardDescriptor jobWz;
     //
     private final ComparisonTypeListModel compListModel = new ComparisonTypeListModel();
     private final VisualizationTypeListModel visListModel = new VisualizationTypeListModel();
