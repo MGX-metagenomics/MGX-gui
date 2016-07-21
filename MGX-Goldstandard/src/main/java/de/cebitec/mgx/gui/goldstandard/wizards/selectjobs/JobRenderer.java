@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.goldstandard.wizards.selectjobs;
 
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.JobParameterI;
+import de.cebitec.mgx.gui.goldstandard.util.JobUtils;
 import java.awt.Component;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -19,19 +20,21 @@ public class JobRenderer extends JLabel implements ListCellRenderer<JobI> {
 
     @Override
     public Component getListCellRendererComponent(JList<? extends JobI> list, JobI value, int index, boolean isSelected, boolean cellHasFocus) {
-        StringBuilder code = new StringBuilder(value.getTool().getName());
-        if (!value.getParameters().isEmpty()) {
-            code.append(" - ");
-            for (JobParameterI parameter : value.getParameters()) {
-                code.append(parameter.getParameterName());
-                code.append(": ");
-                code.append(parameter.getParameterValue());
-                code.append(", ");
-            }
-            code.deleteCharAt(code.length() - 1);
-            code.deleteCharAt(code.length() - 1);
-        }
-        setText(code.toString());
+//        StringBuilder code = new StringBuilder(value.getTool().getName());
+//        if (!value.getParameters().isEmpty()) {
+//            code.append(" - ");
+//            for (JobParameterI parameter : value.getParameters()) {
+//                code.append(parameter.getParameterName());
+//                code.append(": ");
+//                code.append(parameter.getParameterValue());
+//                code.append(", ");
+//            }
+//            code.deleteCharAt(code.length() - 1);
+//            code.deleteCharAt(code.length() - 1);
+//        }
+//        setText(code.toString());
+
+        setText(JobUtils.jobToString(value));
 
         if (isSelected) {
             setBackground(list.getSelectionBackground());

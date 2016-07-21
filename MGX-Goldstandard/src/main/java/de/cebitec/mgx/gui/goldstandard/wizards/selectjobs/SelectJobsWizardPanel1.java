@@ -5,7 +5,6 @@ import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.JobState;
 import de.cebitec.mgx.api.model.SeqRunI;
-import de.cebitec.mgx.gui.goldstandard.actions.AddGoldstandard;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -35,11 +34,21 @@ public class SelectJobsWizardPanel1 implements WizardDescriptor.Panel<WizardDesc
 
     private final Map<JobI, Collection<AttributeTypeI>> jobs;
     private final SeqRunI seqrun;
+    private final int maxSelected;
+    private final String atLabel;
 
     private boolean isValid = false;
 
-    public SelectJobsWizardPanel1(SeqRunI seqrun) throws MGXException {
+    public SelectJobsWizardPanel1(SeqRunI seqrun, boolean hierarchicAT, int maxSelected) throws MGXException {
         this.seqrun = seqrun;
+        this.maxSelected = maxSelected;
+        
+        if (hierarchicAT){
+            atLabel = "Select attribute type from wanted tree:";
+        } else {
+            atLabel = "Select wanted attribute type:";
+        }
+        
         List<JobI> allJobs = seqrun.getMaster().Job().BySeqRun(seqrun);
         jobs = new HashMap<>(allJobs.size());
         for (JobI job : allJobs) {
@@ -57,7 +66,7 @@ public class SelectJobsWizardPanel1 implements WizardDescriptor.Panel<WizardDesc
     @Override
     public SelectJobsVisualPanel1 getComponent() {
         if (component == null) {
-            component = new SelectJobsVisualPanel1(jobs);
+            component = new SelectJobsVisualPanel1(jobs, atLabel);
             component.addListSelectionListener(this);
 
         }
@@ -77,13 +86,8 @@ public class SelectJobsWizardPanel1 implements WizardDescriptor.Panel<WizardDesc
     }
 
     @Override
-    public boolean isValid() {
-        // If it is always OK to press Next or Finish, then:
-        return isValid;
-        // If it depends on some condition (form filled out...) and
-        // this condition changes (last form field filled in...) then
-        // use ChangeSupport to implement add/removeChangeListener below.
-        // WizardDescriptor.ERROR/WARNING/INFORMATION_MESSAGE will also be useful.
+    public boolean isValid() {        
+        return isValid;        
     }
 
     @Override
@@ -158,7 +162,7 @@ public class SelectJobsWizardPanel1 implements WizardDescriptor.Panel<WizardDesc
     }
 
     private boolean checkValidity() {
-        return component.getAttributeTypeListCount() != 0;
+        return component.getAttributeTypeListCount() != 0 && component.getSelectedJobs().size() < maxSelected;
     }
 
 }

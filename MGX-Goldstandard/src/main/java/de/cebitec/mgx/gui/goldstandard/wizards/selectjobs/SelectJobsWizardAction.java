@@ -19,9 +19,14 @@ public final class SelectJobsWizardAction implements ActionListener {
     private WizardDescriptor wizardDescriptor;
     private WizardDescriptor.Panel<WizardDescriptor>[] panels;
     private SeqRunI currentRun;
+    private boolean hierarchicAT;
     
     public void setRun(SeqRunI newRun) {
         currentRun = newRun;
+    }
+    
+    public void setHierarchicAT(boolean hierarchic){
+        hierarchicAT = hierarchic;
     }
 
     @Override
@@ -51,7 +56,7 @@ public final class SelectJobsWizardAction implements ActionListener {
     private WizardDescriptor.Panel<WizardDescriptor>[] getPanels() throws MGXException {
         if (panels == null) {
             panels = new WizardDescriptor.Panel[]{
-                new SelectJobsWizardPanel1(currentRun),
+                new SelectJobsWizardPanel1(currentRun, hierarchicAT, Integer.MAX_VALUE),
             };
             String[] steps = new String[panels.length];
             for (int i = 0; i < panels.length; i++) {

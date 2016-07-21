@@ -17,8 +17,11 @@ public final class SelectJobsVisualPanel1 extends JPanel {
     /**
      * Creates new form SelectSingleJobVisualPanel1
      */
-    public SelectJobsVisualPanel1(Map<JobI, Collection<AttributeTypeI>> jobs) {
+    public SelectJobsVisualPanel1(Map<JobI, Collection<AttributeTypeI>> jobs, String attrTypeLabel) {
         initComponents();
+        
+        atLabel.setText(attrTypeLabel);
+        
         DefaultListModel<JobI> jobModel = new DefaultListModel<>();
         for (JobI job : jobs.keySet()) {
             jobModel.addElement(job);
@@ -84,12 +87,15 @@ public final class SelectJobsVisualPanel1 extends JPanel {
         jobList = new javax.swing.JList<>();
         attributeTypeBox = new javax.swing.JComboBox<>();
         jLabel1 = new javax.swing.JLabel();
+        atLabel = new javax.swing.JLabel();
 
         jScrollPane1.setViewportView(jobList);
 
         attributeTypeBox.setEnabled(false);
 
         org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(SelectJobsVisualPanel1.class, "SelectJobsVisualPanel1.jLabel1.text")); // NOI18N
+
+        org.openide.awt.Mnemonics.setLocalizedText(atLabel, org.openide.util.NbBundle.getMessage(SelectJobsVisualPanel1.class, "SelectJobsVisualPanel1.atLabel.text")); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -100,7 +106,8 @@ public final class SelectJobsVisualPanel1 extends JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 376, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(atLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(attributeTypeBox, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
@@ -115,12 +122,15 @@ public final class SelectJobsVisualPanel1 extends JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 218, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(attributeTypeBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(attributeTypeBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(atLabel))
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel atLabel;
     private javax.swing.JComboBox<AttributeTypeI> attributeTypeBox;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;

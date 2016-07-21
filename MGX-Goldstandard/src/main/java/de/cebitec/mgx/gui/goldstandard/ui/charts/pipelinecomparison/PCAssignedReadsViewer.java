@@ -10,14 +10,11 @@ import de.cebitec.mgx.api.model.tree.NodeI;
 import de.cebitec.mgx.api.model.tree.TreeI;
 import de.cebitec.mgx.gui.goldstandard.ui.charts.EvaluationViewerI;
 import de.cebitec.mgx.gui.goldstandard.wizards.selectjobs.SelectJobsWizardDescriptor;
-import de.cebitec.mgx.gui.goldstandard.wizards.selectjobs.SelectSingleJobWithGSVisualPanel1;
-import de.cebitec.mgx.gui.goldstandard.wizards.selectjobs.TimeEvalJobWizardDescriptor;
 import java.awt.Color;
 import java.awt.Dialog;
 import java.text.NumberFormat;
 import java.util.Collection;
 import java.util.List;
-import java.util.Locale;
 import javax.swing.JComponent;
 import org.apache.commons.math3.util.FastMath;
 import org.jfree.chart.ChartFactory;
@@ -25,7 +22,6 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.CategoryLabelPositions;
-import org.jfree.chart.axis.LogAxis;
 import org.jfree.chart.axis.LogarithmicAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.NumberTickUnit;
@@ -87,11 +83,9 @@ public class PCAssignedReadsViewer extends EvaluationViewerI<TreeI<Long>> implem
         String yAxisLabel = "assigned reads";
         for (JobI job : jobs) {
             try {
-                TreeI<Long> tree = job.getMaster().Attribute().getHierarchy(usedAttributeType, job);
+                DistributionI<Long> dist = job.getMaster().Attribute().getDistribution(usedAttributeType, job);
                 long assignedReads = 0;
-                for (NodeI<Long> node : tree.getNodes()) {
-                    assignedReads += node.getContent();
-                }
+                assignedReads += dist.getTotalClassifiedElements();
                 data.addValue(assignedReads, "Assigned reads", job.getTool().getName());
             } catch (MGXException ex) {
                 Exceptions.printStackTrace(ex);
@@ -167,7 +161,7 @@ public class PCAssignedReadsViewer extends EvaluationViewerI<TreeI<Long>> implem
     @Override
     public void start(SeqRunI seqrun) {
         try {
-            SelectJobsWizardDescriptor jobWizard = new SelectJobsWizardDescriptor(seqrun);
+            SelectJobsWizardDescriptor jobWizard = new SelectJobsWizardDescriptor(seqrun, false);
             Dialog dialog = DialogDisplayer.getDefault().createDialog(jobWizard);
             dialog.setVisible(true);
             dialog.toFront();
