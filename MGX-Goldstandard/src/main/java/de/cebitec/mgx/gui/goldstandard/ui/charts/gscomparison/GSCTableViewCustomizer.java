@@ -3,6 +3,7 @@ package de.cebitec.mgx.gui.goldstandard.ui.charts.gscomparison;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.SequenceI;
+import de.cebitec.mgx.gui.goldstandard.ui.EvaluationTopComponent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.BufferedWriter;
@@ -12,6 +13,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Iterator;
 import javax.swing.JFileChooser;
+import org.netbeans.api.progress.ProgressHandle;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.util.Exceptions;
@@ -94,99 +96,103 @@ public class GSCTableViewCustomizer extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void exportTSVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportTSVActionPerformed
-        final JFileChooser fc = new JFileChooser();
-
-        String last = NbPreferences.forModule(JFileChooser.class).get("lastDirectory", null);
-        if (last != null) {
-            File f = new File(last);
-            if (f.exists() && f.isDirectory()) {
-                fc.setCurrentDirectory(f);
-            }
-        }
-
-        File f = new File("MGX_export.tsv");
-        fc.setSelectedFile(f);
-        fc.setVisible(true);
-
-        fc.addPropertyChangeListener(new PropertyChangeListener() {
+        EvaluationTopComponent.getExecutorService().submit(new Runnable() {
             @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                if ("SelectedFileChangedProperty".equals(evt.getPropertyName())) {
-                    NbPreferences.forModule(JFileChooser.class).put("lastDirectory", fc.getCurrentDirectory().getAbsolutePath());
-                }
-            }
-        });
+            public void run() {
+                ProgressHandle p = ProgressHandle.createHandle("export table view");
+                final JFileChooser fc = new JFileChooser();
 
-        if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
-
-            f = fc.getSelectedFile();
-            try {
-                if (f.exists()) {
-                    throw new IOException(f.getName() + " already exists.");
-                }
-                BufferedWriter w = new BufferedWriter(new FileWriter(f));
-
-                if (includeHeaders()) {
-                    for (int col = 0; col < model.getColumnCount() - 1; col++) {
-                        w.write(model.getColumnName(col));
-                        w.write("\t");
+                String last = NbPreferences.forModule(JFileChooser.class).get("lastDirectory", null);
+                if (last != null) {
+                    File f = new File(last);
+                    if (f.exists() && f.isDirectory()) {
+                        fc.setCurrentDirectory(f);
                     }
-                    w.write(model.getColumnName(model.getColumnCount() - 1));
-                    w.write(System.lineSeparator());
-                    w.write(System.lineSeparator());
                 }
 
-                // export data
-                long[] keys = model.getData().keys();
-                long start, stop;
-                for (int offset = 0; offset * CHUNKSIZE < model.getRealRowCount(); offset++) {
-                    start = System.currentTimeMillis();
-                    String[] header = updateHeader(keys, offset);
-                    stop = System.currentTimeMillis();
-                    System.out.println("updateHeader: " + (stop-start) + "ms");                    
-                    int size = model.getRealRowCount() - (offset * CHUNKSIZE);
-                    if (size > CHUNKSIZE) {
-                        size = CHUNKSIZE;
+                File f = new File("MGX_export.tsv");
+                fc.setSelectedFile(f);
+                fc.setVisible(true);
+
+                fc.addPropertyChangeListener(new PropertyChangeListener() {
+                    @Override
+                    public void propertyChange(PropertyChangeEvent evt) {
+                        if ("SelectedFileChangedProperty".equals(evt.getPropertyName())) {
+                            NbPreferences.forModule(JFileChooser.class).put("lastDirectory", fc.getCurrentDirectory().getAbsolutePath());
+                        }
                     }
-                    start=System.currentTimeMillis();
-                    for (int row = 0; row < size; row++) {
-                        for (int col = 0; col <= model.getColumnCount() - 1; col++) {
-                            Object val;
-                            if (col == 0) {
-                                val = header[row];
-                            } else {
-                                val = model.getRealValueAt(row + (offset * CHUNKSIZE), col);
-                            }
-                            if (val != null) {
-                                w.write(val.toString());
-                            }
-                            if (col <= model.getColumnCount() - 2 && model.getRealValueAt(row, col + 1) != null) {
+                });
+
+                if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+
+                    f = fc.getSelectedFile();
+                    try {
+                        if (f.exists()) {
+                            throw new IOException(f.getName() + " already exists.");
+                        }
+                        BufferedWriter w = new BufferedWriter(new FileWriter(f));
+
+                        if (includeHeaders()) {
+                            for (int col = 0; col < model.getColumnCount() - 1; col++) {
+                                w.write(model.getColumnName(col));
                                 w.write("\t");
                             }
+                            w.write(model.getColumnName(model.getColumnCount() - 1));
+                            w.write(System.lineSeparator());
+                            w.write(System.lineSeparator());
                         }
+
+                        // export data
+                        long[] keys = model.getData().keys();
+                        p.start(keys.length);
+                        int progress = 0;
+                        for (int offset = 0; offset * CHUNKSIZE < model.getRealRowCount(); offset++) {
+                            String[] header = updateHeader(keys, offset);
+                            int size = model.getRealRowCount() - (offset * CHUNKSIZE);
+                            if (size > CHUNKSIZE) {
+                                size = CHUNKSIZE;
+                            }
+                            for (int row = 0; row < size; row++) {
+                                for (int col = 0; col <= model.getColumnCount() - 1; col++) {
+                                    Object val;
+                                    if (col == 0) {
+                                        val = header[row];
+                                    } else {
+                                        val = model.getRealValueAt(row + (offset * CHUNKSIZE), col);
+                                    }
+                                    if (val != null) {
+                                        w.write(val.toString());
+                                    }
+                                    if (col <= model.getColumnCount() - 2 && model.getRealValueAt(row, col + 1) != null) {
+                                        w.write("\t");
+                                    }
+                                }
 //                    Object val = model.getValueAt(row, model.getColumnCount() - 1);
 //                    val = val != null ? val : "";
-                        //                  w.write(val.toString());
-                        w.write(System.lineSeparator());
-                    }
-                    stop = System.currentTimeMillis();
-                    System.out.println("writeLine: " + (stop-start) + "ms");                    
-                }
-                w.flush();
-                w.close();
+                                //                  w.write(val.toString());
+                                w.write(System.lineSeparator());
+                                p.progress(progress++);
+                            }
+                        }
+                        w.flush();
+                        w.close();
 
-                // report success
-                NotifyDescriptor nd = new NotifyDescriptor.Message("Data exported to " + f.getName());
-                DialogDisplayer.getDefault().notify(nd);
-            } catch (IOException ex) {
-                // some error occured, notify user
-                NotifyDescriptor nd = new NotifyDescriptor("Export failed: " + ex.getMessage(), "Error",
-                        NotifyDescriptor.DEFAULT_OPTION, NotifyDescriptor.ERROR_MESSAGE, null, null);
-                DialogDisplayer.getDefault().notify(nd);
-            } catch (MGXException ex) {
-                Exceptions.printStackTrace(ex);
+                        // report success
+                        NotifyDescriptor nd = new NotifyDescriptor.Message("Data exported to " + f.getName());
+                        DialogDisplayer.getDefault().notify(nd);
+                    } catch (IOException ex) {
+                        // some error occured, notify user
+                        NotifyDescriptor nd = new NotifyDescriptor("Export failed: " + ex.getMessage(), "Error",
+                                NotifyDescriptor.DEFAULT_OPTION, NotifyDescriptor.ERROR_MESSAGE, null, null);
+                        DialogDisplayer.getDefault().notify(nd);
+                    } catch (MGXException ex) {
+                        Exceptions.printStackTrace(ex);
+                    } finally {
+                        p.finish();
+                    }
+                };
             }
-        }
+        });
     }//GEN-LAST:event_exportTSVActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

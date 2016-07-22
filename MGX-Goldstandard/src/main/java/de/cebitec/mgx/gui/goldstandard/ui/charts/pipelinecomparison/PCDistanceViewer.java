@@ -35,7 +35,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author pblumenk
  */
 @ServiceProvider(service = PipelineComparisonI.class)
-public class PCDistanceViewer extends EvaluationViewerI<DistributionI<Long>> implements PipelineComparisonI {
+public class PCDistanceViewer extends EvaluationViewerI implements PipelineComparisonI {
 
     private SeqRunI currentSeqrun;
     private AttributeTypeI usedAttributeType;
@@ -47,6 +47,13 @@ public class PCDistanceViewer extends EvaluationViewerI<DistributionI<Long>> imp
 
     @Override
     public JComponent getComponent() {
+        if (usedAttributeType == null || jobs == null){
+            return null;
+        }
+        if (table == null){
+            evaluate();
+        }
+        
         return table;
     }
 
@@ -66,12 +73,7 @@ public class PCDistanceViewer extends EvaluationViewerI<DistributionI<Long>> imp
     }
 
     @Override
-    public Class getInputType() {
-        return DistributionI.class;
-    }
-
-    @Override
-    public void show(List<DistributionI<Long>> dists) {
+    public void evaluate() {
         Vector[] vectors;
         long start, stop;
         try {
@@ -188,7 +190,7 @@ public class PCDistanceViewer extends EvaluationViewerI<DistributionI<Long>> imp
     }
 
     @Override
-    public void start(SeqRunI seqrun) {
+    public void selectJobs(SeqRunI seqrun) {
         try {
             SelectJobsWizardDescriptor jobWizard = new SelectJobsWizardDescriptor(seqrun, false);
             Dialog dialog = DialogDisplayer.getDefault().createDialog(jobWizard);
@@ -196,12 +198,15 @@ public class PCDistanceViewer extends EvaluationViewerI<DistributionI<Long>> imp
             dialog.toFront();
             boolean cancelled = jobWizard.getValue() != WizardDescriptor.FINISH_OPTION;
             if (!cancelled) {
+                table = null;
                 jobs = jobWizard.getJobs();
                 usedAttributeType = jobWizard.getAttributeType();
-                show(null);
             }
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);
+            table = null;
+            jobs = null;
+            usedAttributeType = null;
         }
 
     }

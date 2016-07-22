@@ -37,7 +37,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author pblumenk
  */
 @ServiceProvider(service = PipelineComparisonI.class)
-public class PCTimeEvaluationViewer extends EvaluationViewerI<DistributionI<Long>> implements PipelineComparisonI{
+public class PCTimeEvaluationViewer extends EvaluationViewerI implements PipelineComparisonI{
 
     public enum StepSize {
         HOURS, MINUTES, SECONDS;
@@ -57,6 +57,12 @@ public class PCTimeEvaluationViewer extends EvaluationViewerI<DistributionI<Long
 
     @Override
     public JComponent getComponent() {
+        if (jobs == null){
+            return null;
+        }
+        if (cPanel == null){
+            evaluate();
+        }
         return cPanel;
     }
 
@@ -76,12 +82,7 @@ public class PCTimeEvaluationViewer extends EvaluationViewerI<DistributionI<Long
     }
 
     @Override
-    public Class getInputType() {
-        return JobI.class;
-    }
-
-    @Override
-    public void show(List<DistributionI<Long>> dist) {
+    public void evaluate() {
         DefaultCategoryDataset data = new DefaultCategoryDataset();
         int stepSize = 1;
         String yAxisLabel = "";
@@ -168,7 +169,7 @@ public class PCTimeEvaluationViewer extends EvaluationViewerI<DistributionI<Long
     }
 
     @Override
-    public void start(SeqRunI seqrun) {
+    public void selectJobs(SeqRunI seqrun) {
         try {
             TimeEvalJobWizardDescriptor jobWizard = new TimeEvalJobWizardDescriptor(seqrun);
             Dialog dialog = DialogDisplayer.getDefault().createDialog(jobWizard);
@@ -176,11 +177,13 @@ public class PCTimeEvaluationViewer extends EvaluationViewerI<DistributionI<Long
             dialog.toFront();
             boolean cancelled = jobWizard.getValue() != WizardDescriptor.FINISH_OPTION;
             if (!cancelled) {
+                cPanel = null;
                 jobs = jobWizard.getJobs();
-                show(null);
             }
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);
+            cPanel = null;
+            jobs = null;
         }
 
     }

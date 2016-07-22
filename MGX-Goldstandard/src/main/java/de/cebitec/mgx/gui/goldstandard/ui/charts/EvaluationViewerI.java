@@ -8,10 +8,9 @@ import javax.swing.JComponent;
 
 /**
  *
- * @param <T>
  * @author sjaenick
  */
-public abstract class EvaluationViewerI<T> implements Comparable<EvaluationViewerI<T>> { //, VisFilterI<T>  {
+public abstract class EvaluationViewerI implements Comparable<EvaluationViewerI> { //, VisFilterI<T>  {
 
     private String chartTitle;
 
@@ -45,15 +44,9 @@ public abstract class EvaluationViewerI<T> implements Comparable<EvaluationViewe
 
     /**
      *
-     * @return the expected class of data to be displayed
+     * calculates everything needed for painting the panel
      */
-    public abstract Class getInputType();
-
-    /**
-     *
-     * @param dists distributions to be displayed
-     */
-    public abstract void show(List<T> dists);
+    public abstract void evaluate();
 
     /**
      *
@@ -65,7 +58,7 @@ public abstract class EvaluationViewerI<T> implements Comparable<EvaluationViewe
     /**
      * 
      */
-    public abstract void start(SeqRunI seqrun);
+    public abstract void selectJobs(SeqRunI seqrun);
     
     /**
      *
@@ -95,7 +88,7 @@ public abstract class EvaluationViewerI<T> implements Comparable<EvaluationViewe
     }
 
     @Override
-    public int compareTo(EvaluationViewerI<T> t) {
+    public int compareTo(EvaluationViewerI t) {
         return getName().compareTo(t.getName());
     }
 }

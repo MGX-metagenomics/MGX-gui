@@ -32,7 +32,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author patrick
  */
 @ServiceProvider(service = GSComparisonI.class)
-public class GSCTableViewer extends EvaluationViewerI<TreeI<Long>> implements GSComparisonI {
+public class GSCTableViewer extends EvaluationViewerI implements GSComparisonI {
 
     private static final int PAGESIZE = 1_000;
 
@@ -40,14 +40,22 @@ public class GSCTableViewer extends EvaluationViewerI<TreeI<Long>> implements GS
     private JobI currentJob;
 
     private JXTable table;
-    private JScrollPane pane;
+    private JScrollPane pane = null;
 
     private GSCTableViewCustomizer cust = null;
 
     private TLongObjectMap<String[]> seqToAttribute;
+    private List<TreeI<Long>> treeList;
 
     @Override
     public JComponent getComponent() {
+        if (treeList == null){
+            return null;
+        }   
+        if (pane == null){
+            evaluate();
+        }
+        
         return pane;
     }
 
@@ -67,18 +75,13 @@ public class GSCTableViewer extends EvaluationViewerI<TreeI<Long>> implements GS
     }
 
     @Override
-    public Class getInputType() {
-        return TreeI.class;
-    }
-
-    @Override
-    public void show(List<TreeI<Long>> trees) {
-        if (trees.size() != 2) {
+    public void evaluate() {
+        if (treeList.size() != 2) {
             return;
         }
 
-        List<NodeI<Long>> gsLeaves = new ArrayList<>(trees.get(0).getLeaves());
-        List<NodeI<Long>> sampleLeaves = new ArrayList<>(trees.get(1).getLeaves());
+        List<NodeI<Long>> gsLeaves = new ArrayList<>(treeList.get(0).getLeaves());
+        List<NodeI<Long>> sampleLeaves = new ArrayList<>(treeList.get(1).getLeaves());
 
         ProgressHandle p = ProgressHandle.createHandle("create table view");
         p.start(gsLeaves.size() + sampleLeaves.size() + 1);
@@ -149,25 +152,36 @@ public class GSCTableViewer extends EvaluationViewerI<TreeI<Long>> implements GS
     }
 
     @Override
-    public void start(SeqRunI seqrun) {
+    public void selectJobs(final SeqRunI seqrun) {
         currentSeqrun = seqrun;
         try {
-            SelectSingleJobWithGSWizardDescriptor jobWizard = new SelectSingleJobWithGSWizardDescriptor(seqrun);
+            final SelectSingleJobWithGSWizardDescriptor jobWizard = new SelectSingleJobWithGSWizardDescriptor(seqrun);
             Dialog dialog = DialogDisplayer.getDefault().createDialog(jobWizard);
             dialog.setVisible(true);
             dialog.toFront();
             boolean cancelled = jobWizard.getValue() != WizardDescriptor.FINISH_OPTION;
             if (!cancelled) {
+                pane = null;
                 currentJob = jobWizard.getJob();
                 JobI gsJob = jobWizard.getGoldstandard();
                 AttributeTypeI attrType = jobWizard.getAttributeType();
-                List<TreeI<Long>> treeList = new ArrayList<>();
+                treeList = new ArrayList<>();
                 treeList.add(seqrun.getMaster().Attribute().getHierarchy(attrType, gsJob));
                 treeList.add(seqrun.getMaster().Attribute().getHierarchy(attrType, currentJob));
-                show(treeList);
             }
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);
         }
     }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        table = null;
+        pane = null;
+        seqToAttribute = null;
+        treeList = null;
+    }
+    
+    
 }

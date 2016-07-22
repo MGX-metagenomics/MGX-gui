@@ -6,15 +6,12 @@ import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.SeqRunI;
-import de.cebitec.mgx.api.model.tree.NodeI;
-import de.cebitec.mgx.api.model.tree.TreeI;
 import de.cebitec.mgx.gui.goldstandard.ui.charts.EvaluationViewerI;
 import de.cebitec.mgx.gui.goldstandard.wizards.selectjobs.SelectJobsWizardDescriptor;
 import java.awt.Color;
 import java.awt.Dialog;
 import java.text.NumberFormat;
 import java.util.Collection;
-import java.util.List;
 import javax.swing.JComponent;
 import org.apache.commons.math3.util.FastMath;
 import org.jfree.chart.ChartFactory;
@@ -42,7 +39,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author pblumenk
  */
 @ServiceProvider(service = PipelineComparisonI.class)
-public class PCAssignedReadsViewer extends EvaluationViewerI<TreeI<Long>> implements PipelineComparisonI {
+public class PCAssignedReadsViewer extends EvaluationViewerI implements PipelineComparisonI {
 
     private SeqRunI currentSeqrun;
     private AttributeTypeI usedAttributeType;
@@ -54,6 +51,13 @@ public class PCAssignedReadsViewer extends EvaluationViewerI<TreeI<Long>> implem
 
     @Override
     public JComponent getComponent() {
+        if (jobs == null || usedAttributeType == null) {
+            return null;
+        }
+        if (cPanel == null) {
+            evaluate();
+        }
+
         return cPanel;
     }
 
@@ -73,12 +77,7 @@ public class PCAssignedReadsViewer extends EvaluationViewerI<TreeI<Long>> implem
     }
 
     @Override
-    public Class getInputType() {
-        return TreeI.class;
-    }
-
-    @Override
-    public void show(List<TreeI<Long>> trees) {
+    public void evaluate() {
         DefaultCategoryDataset data = new DefaultCategoryDataset();
         String yAxisLabel = "assigned reads";
         for (JobI job : jobs) {
@@ -159,7 +158,7 @@ public class PCAssignedReadsViewer extends EvaluationViewerI<TreeI<Long>> implem
     }
 
     @Override
-    public void start(SeqRunI seqrun) {
+    public void selectJobs(SeqRunI seqrun) {
         try {
             SelectJobsWizardDescriptor jobWizard = new SelectJobsWizardDescriptor(seqrun, false);
             Dialog dialog = DialogDisplayer.getDefault().createDialog(jobWizard);
@@ -167,12 +166,15 @@ public class PCAssignedReadsViewer extends EvaluationViewerI<TreeI<Long>> implem
             dialog.toFront();
             boolean cancelled = jobWizard.getValue() != WizardDescriptor.FINISH_OPTION;
             if (!cancelled) {
+                cPanel = null;
                 jobs = jobWizard.getJobs();
                 usedAttributeType = jobWizard.getAttributeType();
-                show(null);
             }
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);
+            jobs = null;
+            usedAttributeType = null;
+            cPanel = null;
         }
 
     }

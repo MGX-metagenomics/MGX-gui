@@ -39,7 +39,7 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Proper
     private EvaluationTopComponent topComponent;
     //
     private ComparisonTypeI currentComparisonType;
-    private EvaluationViewerI<Visualizable> currentViewer;
+    private EvaluationViewerI currentViewer;
     private final SelectJobsWizardAction jobWizard = new SelectJobsWizardAction();
     private SelectJobsWizardDescriptor jobWz;
     //
@@ -218,10 +218,13 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Proper
             currentViewer = visListModel.getSelectedItem();
             controlSplitPane.setBottomComponent(currentViewer.getCustomizer());
         } else {
-            setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-            currentViewer.start(currentSeqrun);
-            topComponent.setVisualization(currentViewer);
-            setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            currentViewer.selectJobs(currentSeqrun);
+            EvaluationTopComponent.getExecutorService().submit(new Runnable() {
+                @Override
+                public void run() {
+                    topComponent.setVisualization(currentViewer);
+                }
+            });
         }
     }
 
@@ -254,6 +257,7 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Proper
             updateButton.setEnabled(false);
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);
+            updateButton.setEnabled(false);
         }
     }
 
@@ -308,7 +312,7 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Proper
         }
     }
 
-    private final class VisualizationTypeListModel extends BaseModel<EvaluationViewerI<Visualizable>> implements ItemListener {
+    private final class VisualizationTypeListModel extends BaseModel<EvaluationViewerI> implements ItemListener {
 
         @Override
         @SuppressWarnings("unchecked")
@@ -320,17 +324,17 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Proper
 
             Class chartInterface = currentComparisonType.getChartInterface();
 
-            SortedSet<EvaluationViewerI<Visualizable>> viewers = new TreeSet<>();
+            SortedSet<EvaluationViewerI> viewers = new TreeSet<>();
             if (chartInterface == GSComparisonI.class) {
                 for (GSComparisonI viewer : Lookup.getDefault().<GSComparisonI>lookupAll(GSComparisonI.class)) {
                     if (viewer instanceof EvaluationViewerI) {
-                        viewers.add((EvaluationViewerI<Visualizable>) viewer);
+                        viewers.add((EvaluationViewerI) viewer);
                     }
                 }
             } else if (chartInterface == PipelineComparisonI.class) {
                 for (PipelineComparisonI viewer : Lookup.getDefault().<PipelineComparisonI>lookupAll(PipelineComparisonI.class)) {
                     if (viewer instanceof EvaluationViewerI) {
-                        viewers.add((EvaluationViewerI<Visualizable>) viewer);
+                        viewers.add((EvaluationViewerI) viewer);
                     }
                 }
             }

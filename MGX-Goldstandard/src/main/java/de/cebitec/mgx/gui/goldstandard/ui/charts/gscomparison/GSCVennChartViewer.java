@@ -20,6 +20,7 @@ import java.util.LinkedList;
 import java.util.List;
 import javax.swing.JComponent;
 import org.apache.commons.collections4.CollectionUtils;
+import org.netbeans.api.progress.ProgressHandle;
 import org.openide.DialogDisplayer;
 import org.openide.WizardDescriptor;
 import org.openide.util.Exceptions;
@@ -30,13 +31,15 @@ import org.openide.util.lookup.ServiceProvider;
  * @author pblumenk
  */
 @ServiceProvider(service = GSComparisonI.class)
-public class GSCVennChart extends EvaluationViewerI<TreeI<Long>> implements GSComparisonI {
+public class GSCVennChartViewer extends EvaluationViewerI implements GSComparisonI {
 
-    private VennChart venn;
+    private VennChart venn = null;
 
     private SeqRunI currentSeqrun;
     private JobI currentJob;
     
+    List<TreeI<Long>> trees;
+
     private GSCVennChartCustomizer cust = null;
 
     private TLongObjectMap<String> onlyGSID;
@@ -45,8 +48,14 @@ public class GSCVennChart extends EvaluationViewerI<TreeI<Long>> implements GSCo
 
     @Override
     public JComponent getComponent() {
+        if (trees == null){
+            return null;
+        }
+        if (venn == null){
+            evaluate();
+        }
+        
         return venn;
-
     }
 
     @Override
@@ -64,14 +73,9 @@ public class GSCVennChart extends EvaluationViewerI<TreeI<Long>> implements GSCo
         return true;
     }
 
-    @Override
-    public Class getInputType() {
-        return TreeI.class;
-    }
-
     @SuppressWarnings("unchecked")
     @Override
-    public void show(List<TreeI<Long>> trees) {
+    public void evaluate() {
         if (trees.size() != 2) {
             return;
         }
@@ -82,6 +86,10 @@ public class GSCVennChart extends EvaluationViewerI<TreeI<Long>> implements GSCo
         for (int i = 0; i < sampleLeaves.size(); i++) {
             sampleIndizes.add(i);
         }
+        
+        ProgressHandle p = ProgressHandle.createHandle("create venn chart");
+        p.start(gsLeaves.size() + sampleLeaves.size());
+        int progress = 0;
 
         onlyGSID = new TLongObjectHashMap<>((int) currentSeqrun.getNumSequences() / 6);
         onlySampleID = new TLongObjectHashMap<>((int) currentSeqrun.getNumSequences() / 6);
@@ -129,6 +137,7 @@ public class GSCVennChart extends EvaluationViewerI<TreeI<Long>> implements GSCo
                         onlySampleID.put(l, attr);
                     }
                 }
+                p.progress(progress++);
             }
 
             if (!sampleIndizes.isEmpty()) {
@@ -139,11 +148,15 @@ public class GSCVennChart extends EvaluationViewerI<TreeI<Long>> implements GSCo
                         String attr = node.getAttribute().getValue();
                         onlyGSID.put(l, attr);
                     }
+                    p.progress(progress++);
                 }
             }
 
         } catch (MGXException ex) {
             Exceptions.printStackTrace(Exceptions.attachMessage(ex, "Cannot download sequence ids for NodeI instance"));
+            venn = null;
+            p.finish();
+            return;
         }
 
         int a = onlyGSID.size();
@@ -155,8 +168,10 @@ public class GSCVennChart extends EvaluationViewerI<TreeI<Long>> implements GSCo
         } catch (IOException ex) {
             Exceptions.printStackTrace(ex);
         }
+        
+        p.finish();
     }
-    
+
     @Override
     public JComponent getCustomizer() {
         if (cust == null) {
@@ -166,11 +181,8 @@ public class GSCVennChart extends EvaluationViewerI<TreeI<Long>> implements GSCo
     }
 
     @Override
-    public void start(SeqRunI seqrun) {
+    public void selectJobs(SeqRunI seqrun) {
         currentSeqrun = seqrun;
-//        if (lastSeqrun != currentSeqrun) {
-//            cache = new HashMap<>();
-//        }
         try {
             SelectSingleJobWithGSWizardDescriptor jobWizard = new SelectSingleJobWithGSWizardDescriptor(seqrun);
             Dialog dialog = DialogDisplayer.getDefault().createDialog(jobWizard);
@@ -178,17 +190,17 @@ public class GSCVennChart extends EvaluationViewerI<TreeI<Long>> implements GSCo
             dialog.toFront();
             boolean cancelled = jobWizard.getValue() != WizardDescriptor.FINISH_OPTION;
             if (!cancelled) {
+                venn = null;
                 currentJob = jobWizard.getJob();
                 JobI gsJob = jobWizard.getGoldstandard();
                 AttributeTypeI attrType = jobWizard.getAttributeType();
-                List<TreeI<Long>> treeList = new ArrayList<>();
-                treeList.add(seqrun.getMaster().Attribute().getHierarchy(attrType, gsJob));
-                treeList.add(seqrun.getMaster().Attribute().getHierarchy(attrType, currentJob));
-                show(treeList);
+                trees = new ArrayList<>();
+                trees.add(seqrun.getMaster().Attribute().getHierarchy(attrType, gsJob));
+                trees.add(seqrun.getMaster().Attribute().getHierarchy(attrType, currentJob));
             }
         } catch (MGXException ex) {
-            Exceptions.printStackTrace(ex);
+            Exceptions.printStackTrace(ex);            
         }
     }
-    
+
 }

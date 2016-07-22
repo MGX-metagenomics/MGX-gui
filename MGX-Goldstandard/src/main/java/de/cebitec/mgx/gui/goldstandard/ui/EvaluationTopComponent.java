@@ -2,6 +2,8 @@ package de.cebitec.mgx.gui.goldstandard.ui;
 
 import de.cebitec.mgx.api.groups.ImageExporterI;
 import de.cebitec.mgx.gui.goldstandard.ui.charts.EvaluationViewerI;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -44,6 +46,8 @@ public final class EvaluationTopComponent extends TopComponent {
     private final EvaluationControlPanel controlPanel1 = new EvaluationControlPanel();
     private final Lookup lookup;
     private final InstanceContent content = new InstanceContent();
+    
+    private static ExecutorService executor = null;
 
     public EvaluationTopComponent() {
         initComponents();
@@ -59,6 +63,15 @@ public final class EvaluationTopComponent extends TopComponent {
         controlPanel1.updateViewerList();
         //
         chartpane.getVerticalScrollBar().setUnitIncrement(16);
+    }
+    
+    public static ExecutorService getExecutorService(){
+        if (executor == null) {
+            int threads = Math.min(Runtime.getRuntime().availableProcessors(), 20);
+            executor = Executors.newFixedThreadPool(threads);
+        }
+
+        return executor;
     }
 
     /**
