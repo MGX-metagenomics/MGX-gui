@@ -65,8 +65,8 @@ public final class QCTopComponent extends TopComponent implements LookupListener
 
     private QCTopComponent() {
         initComponents();
-        setName("Quality Control");
-        setToolTipText("Quality Control");
+        super.setName("Quality Control");
+        super.setToolTipText("Quality Control");
         resultSeqRun = Utilities.actionsGlobalContext().lookupResult(SeqRunI.class);
         update();
     }
@@ -250,6 +250,15 @@ public final class QCTopComponent extends TopComponent implements LookupListener
                 for (float f : dr.getData()) {
                     series.add(x++, f);
                 }
+
+                // add some padding for read length
+                if ("Read length".equals(dr.getName())) {
+                    series.add(x++, 0f);
+                    series.add(x++, 0f);
+                    series.add(x++, 0f);
+                    series.add(x++, 0f);
+                }
+
                 dataset.addSeries(series);
             }
 
@@ -261,6 +270,16 @@ public final class QCTopComponent extends TopComponent implements LookupListener
             ChartPanel cPanel = new ChartPanel(chart);
             XYPlot plot = (XYPlot) chart.getPlot();
             plot.setBackgroundPaint(Color.WHITE);
+
+            switch (qcr.getName()) {
+                case "Read length":
+                    plot.getRenderer().setSeriesPaint(0, Color.decode("#1d72aa"));
+                    break;
+                case "GC":
+                    plot.getRenderer().setSeriesPaint(0, Color.decode("#8cbb4e"));
+                    break;
+            }
+
             return cPanel;
         }
     }
