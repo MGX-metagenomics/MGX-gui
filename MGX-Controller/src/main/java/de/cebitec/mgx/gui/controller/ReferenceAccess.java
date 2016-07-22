@@ -11,6 +11,7 @@ import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.api.model.RegionI;
 import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.client.datatransfer.ReferenceUploader;
+import de.cebitec.mgx.client.datatransfer.TransferBase;
 import de.cebitec.mgx.client.exception.MGXDTOException;
 import de.cebitec.mgx.dto.dto.ReferenceDTO;
 import de.cebitec.mgx.dto.dto.RegionDTO;
@@ -36,7 +37,7 @@ public class ReferenceAccess implements ReferenceAccessI {
     public ReferenceAccess(MGXDTOMaster dtomaster, MGXMasterI master) throws MGXException {
         this.dtomaster = dtomaster;
         this.master = master;
-          if (master.isDeleted()) {
+        if (master.isDeleted()) {
             throw new MGXLoggedoutException("You are disconnected.");
         }
     }
@@ -207,7 +208,14 @@ public class ReferenceAccess implements ReferenceAccessI {
 
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
-            fireTaskChange(evt.getPropertyName(), ru.getProgress());
+            switch (evt.getPropertyName()) {
+                case TransferBase.MESSAGE:
+                    fireTaskChange(MESSAGE, evt.getNewValue());
+                    break;
+                default:
+                    fireTaskChange(evt.getPropertyName(), ru.getProgress());
+                    break;
+            }
         }
 
     }
