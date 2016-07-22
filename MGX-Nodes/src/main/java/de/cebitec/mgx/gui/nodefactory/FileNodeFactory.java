@@ -39,6 +39,12 @@ public class FileNodeFactory extends MGXNodeFactoryBase<MGXFileI> {
             Collections.sort(toPopulate);
             return true;
         } catch (MGXException ex) {
+            // a refresh might occur while the directory is being deleted
+            // on another thread
+            if (curDirectory.isDeleted()) {
+                toPopulate.clear();
+                return true;
+            }
             Exceptions.printStackTrace(ex);
         }
         return false;

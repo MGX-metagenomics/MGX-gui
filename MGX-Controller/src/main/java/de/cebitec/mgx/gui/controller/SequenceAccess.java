@@ -5,7 +5,7 @@ import de.cebitec.mgx.api.access.SequenceAccessI;
 import de.cebitec.mgx.api.access.datatransfer.DownloadBaseI;
 import de.cebitec.mgx.api.access.datatransfer.UploadBaseI;
 import de.cebitec.mgx.api.exception.MGXException;
-import de.cebitec.mgx.api.misc.TaskI;
+import de.cebitec.mgx.api.exception.MGXLoggedoutException;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.SequenceI;
@@ -35,10 +35,26 @@ import java.util.Set;
  *
  * @author sjaenick
  */
-public class SequenceAccess extends AccessBase<SequenceI> implements SequenceAccessI {
+public class SequenceAccess implements SequenceAccessI { //extends AccessBase<SequenceI> implements SequenceAccessI {
+
+    private final MGXDTOMaster dtomaster;
+    private final MGXMasterI master;
 
     public SequenceAccess(MGXMasterI master, MGXDTOMaster dtomaster) throws MGXException {
-        super(master, dtomaster);
+//        super(master, dtomaster);
+        this.dtomaster = dtomaster;
+        this.master = master;
+        if (master.isDeleted()) {
+            throw new MGXLoggedoutException("You are disconnected.");
+        }
+    }
+
+    private MGXDTOMaster getDTOmaster() {
+        return dtomaster;
+    }
+
+    private MGXMasterI getMaster() {
+        return master;
     }
 
     @Override
@@ -117,10 +133,10 @@ public class SequenceAccess extends AccessBase<SequenceI> implements SequenceAcc
         }
     }
 
-    @Override
-    public SequenceI create(SequenceI obj) {
-        throw new UnsupportedOperationException("Not supported.");
-    }
+//    @Override
+//    public SequenceI create(SequenceI obj) {
+//        throw new UnsupportedOperationException("Not supported.");
+//    }
 
     @Override
     public SequenceI fetch(long id) throws MGXException {
@@ -138,10 +154,12 @@ public class SequenceAccess extends AccessBase<SequenceI> implements SequenceAcc
         try {
             Iterator<SequenceDTO> iter = getDTOmaster().Sequence().fetchByIds(ids).getSeqList().iterator();
             return new BaseIterator<SequenceDTO, SequenceI>(iter) {
+
+                private final SequenceDTOFactory fact = SequenceDTOFactory.getInstance();
+
                 @Override
                 public SequenceI next() {
-                    SequenceI h = SequenceDTOFactory.getInstance().toModel(getMaster(), iter.next());
-                    return h;
+                    return fact.toModel(null, iter.next());
                 }
             };
 
@@ -197,21 +215,6 @@ public class SequenceAccess extends AccessBase<SequenceI> implements SequenceAcc
         } finally {
             idx.clear();
         }
-    }
-
-    @Override
-    public Iterator<SequenceI> fetchall() {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    @Override
-    public void update(SequenceI obj) {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    @Override
-    public TaskI<SequenceI> delete(SequenceI obj) {
-        throw new UnsupportedOperationException("Not supported.");
     }
 
     private static class ServerSeqRunUploader extends UploadBaseI implements PropertyChangeListener {

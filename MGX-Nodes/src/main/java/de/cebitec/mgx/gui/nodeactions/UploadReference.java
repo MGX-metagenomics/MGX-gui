@@ -27,7 +27,7 @@ public class UploadReference extends AbstractAction {
     private final MGXNodeFactoryBase parent;
 
     public UploadReference(MGXNodeFactoryBase nf) {
-        putValue(NAME, "Upload EMBL/GenBank/FASTA reference");
+        super.putValue(NAME, "Upload EMBL/GenBank/FASTA reference");
         parent = nf;
     }
 
@@ -40,38 +40,58 @@ public class UploadReference extends AbstractAction {
         }
         File localFile = new File(fName);
         final MGXMasterI master = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
-        
+
         try {
             final UploadBaseI uploader = master.Reference().createUploader(localFile);
 
             final MGXTask run = new MGXTask("Upload " + fName) {
                 @Override
                 public boolean process() {
-                    return uploader.upload();
+                    uploader.addPropertyChangeListener(this);
+                    boolean ret = uploader.upload();
+
+                    if (!ret) {
+                        setStatus(uploader.getErrorMessage());
+                    }
+                    return ret;
                 }
 
                 @Override
                 public void finished() {
                     super.finished();
+                    uploader.removePropertyChangeListener(this);
                     parent.refreshChildren();
                 }
 
                 @Override
                 public void failed(String reason) {
                     super.failed(reason);
+                    uploader.removePropertyChangeListener(this);
                     parent.refreshChildren();
                 }
 
                 @Override
                 public void propertyChange(PropertyChangeEvent pce) {
-                    if (pce.getPropertyName().equals(TransferBaseI.NUM_ELEMENTS_TRANSFERRED)) {
-                        setStatus(String.format("%1$d subregions sent", pce.getNewValue()));
-                    } else {
-                        super.propertyChange(pce);
+                    switch (pce.getPropertyName()) {
+                        case TransferBaseI.NUM_ELEMENTS_TRANSFERRED:
+                            setStatus(String.format("%1$d subregions sent", pce.getNewValue()));
+                            break;
+                        case TransferBaseI.TRANSFER_FAILED:
+                            failed(pce.getNewValue().toString());
+                            break;
+                        case TransferBaseI.TRANSFER_COMPLETED:
+                            setStatus("Import complete.");
+                            break;
+                        case TransferBaseI.MESSAGE:
+                            setStatus(pce.getNewValue().toString());
+                            break;
+                        default:
+                            super.propertyChange(pce);
+                            break;
                     }
                 }
+
             };
-            uploader.addPropertyChangeListener(run);
 
             NonEDT.invoke(new Runnable() {
                 @Override

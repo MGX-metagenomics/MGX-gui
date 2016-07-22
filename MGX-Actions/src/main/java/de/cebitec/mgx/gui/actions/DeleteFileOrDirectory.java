@@ -1,6 +1,5 @@
 package de.cebitec.mgx.gui.actions;
 
-import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.model.MGXFileI;
@@ -21,13 +20,12 @@ import org.openide.util.Utilities;
 public class DeleteFileOrDirectory extends AbstractAction {
 
     public DeleteFileOrDirectory() {
-        putValue(NAME, "Delete");
+        super.putValue(NAME, "Delete");
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         final MGXFileI file = Utilities.actionsGlobalContext().lookup(MGXFileI.class);
-        final MGXMasterI master = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
         NotifyDescriptor d = new NotifyDescriptor("Really delete " + file.getName() + "?",
                 "Delete file/directory",
                 NotifyDescriptor.YES_NO_OPTION,
@@ -37,7 +35,7 @@ public class DeleteFileOrDirectory extends AbstractAction {
         Object ret = DialogDisplayer.getDefault().notify(d);
         if (NotifyDescriptor.YES_OPTION.equals(ret)) {
 
-            final DeleteTask deleteTask = new DeleteTask(master, file, "Delete " + file.getName());
+            final DeleteFileTask deleteTask = new DeleteFileTask(file);
 
             NonEDT.invoke(new Runnable() {
                 @Override
@@ -53,14 +51,12 @@ public class DeleteFileOrDirectory extends AbstractAction {
         return (super.isEnabled() && RBAC.isUser());
     }
 
-    private final class DeleteTask extends MGXTask {
+    private final static class DeleteFileTask extends MGXTask {
 
-        private final MGXMasterI master;
         private final MGXFileI file;
 
-        public DeleteTask(MGXMasterI master, MGXFileI file, String name) {
-            super(name);
-            this.master = master;
+        public DeleteFileTask(MGXFileI file) {
+            super("Delete " + file.getName());
             this.file = file;
         }
 
@@ -69,16 +65,15 @@ public class DeleteFileOrDirectory extends AbstractAction {
             setStatus("Deleting..");
             TaskI<MGXFileI> delTask;
             try {
-                delTask = master.File().delete(file);
+                delTask = file.getMaster().File().delete(file);
             } catch (MGXException ex) {
                 setStatus(ex.getMessage());
-                failed(ex.getMessage());
                 return false;
             }
             while (delTask != null && !delTask.done()) {
                 sleep();
                 try {
-                    master.<MGXFileI>Task().refresh(delTask);
+                    file.getMaster().<MGXFileI>Task().refresh(delTask);
                 } catch (MGXException ex) {
                     setStatus(ex.getMessage());
                     failed(ex.getMessage());

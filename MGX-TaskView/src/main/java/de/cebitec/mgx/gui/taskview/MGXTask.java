@@ -48,10 +48,10 @@ public abstract class MGXTask implements Runnable, PropertyChangeListener {
     }
 
     protected final synchronized void setStatus(String s) {
-        if (s!= null && !"".equals(s.trim())) {
+        if (s != null && !"".equals(s.trim())) {
             if (statusMessage == null || !s.equals(statusMessage)) {
                 statusMessage = s;
-                pcs.firePropertyChange(state, 0, s);
+                pcs.firePropertyChange(state, 0, statusMessage);
             }
         }
     }
@@ -61,7 +61,7 @@ public abstract class MGXTask implements Runnable, PropertyChangeListener {
     public boolean isDeterminate() {
         return false;
     }
-    
+
     public final void dispose() {
         pcs.close();
     }
