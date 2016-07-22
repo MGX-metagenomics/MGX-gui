@@ -92,11 +92,11 @@ public abstract class MGXTask implements Runnable, PropertyChangeListener {
         }
     }
 
-    public final void addPropertyChangeListener(PropertyChangeListener p) {
+    final void addPropertyChangeListener(PropertyChangeListener p) {
         pcs.addPropertyChangeListener(p);
     }
 
-    public final void removePropertyChangeListener(PropertyChangeListener p) {
+    final void removePropertyChangeListener(PropertyChangeListener p) {
         pcs.removePropertyChangeListener(p);
     }
 

@@ -9,7 +9,6 @@ import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import javax.swing.JProgressBar;
 
 /**
  *
@@ -25,6 +24,7 @@ public class TaskListEntry extends javax.swing.JPanel implements PropertyChangeL
 //    }
     private final MGXTask task;
     private volatile boolean processingDone = false;
+    private final ImagePanel ip = new ImagePanel();
 
     public TaskListEntry(MGXTask task) {
         this.task = task;
@@ -49,7 +49,6 @@ public class TaskListEntry extends javax.swing.JPanel implements PropertyChangeL
         detailtext.setText(t);
         repaint();
     }
-    private ImagePanel ip = new ImagePanel();
 
     private synchronized void finished() {
         if (!processingDone) {
@@ -79,10 +78,6 @@ public class TaskListEntry extends javax.swing.JPanel implements PropertyChangeL
         }
     }
 
-    public JProgressBar getProgressBar() {
-        return jProgressBar1;
-    }
-    
     final void dispose() {
         task.dispose();
     }
