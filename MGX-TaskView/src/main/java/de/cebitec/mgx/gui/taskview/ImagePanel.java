@@ -10,11 +10,11 @@ import org.openide.util.ImageUtilities;
  *
  * @author sjaenick
  */
-public class ImagePanel extends JComponent {
+class ImagePanel extends JComponent {
 
     private Image img = null;
 
-    public void setImage(String path) {
+    void setImage(String path) {
         img = ImageUtilities.loadImage(path);
         Dimension tmp = new Dimension(img.getWidth(this), img.getHeight(this));
         setMinimumSize(tmp);
