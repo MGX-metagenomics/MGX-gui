@@ -61,7 +61,7 @@ public class GSCTableViewCustomizer extends javax.swing.JPanel {
         includeHeader = new javax.swing.JCheckBox();
 
         org.openide.awt.Mnemonics.setLocalizedText(exportTSV, "Export TSV");
-        exportTSV.setActionCommand("Export TSV");
+        exportTSV.setEnabled(false);
         exportTSV.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 exportTSVActionPerformed(evt);
@@ -138,24 +138,29 @@ public class GSCTableViewCustomizer extends javax.swing.JPanel {
 
                 // export data
                 long[] keys = model.getData().keys();
+                long start, stop;
                 for (int offset = 0; offset * CHUNKSIZE < model.getRealRowCount(); offset++) {
+                    start = System.currentTimeMillis();
                     String[] header = updateHeader(keys, offset);
+                    stop = System.currentTimeMillis();
+                    System.out.println("updateHeader: " + (stop-start) + "ms");                    
                     int size = model.getRealRowCount() - (offset * CHUNKSIZE);
                     if (size > CHUNKSIZE) {
                         size = CHUNKSIZE;
                     }
+                    start=System.currentTimeMillis();
                     for (int row = 0; row < size; row++) {
                         for (int col = 0; col <= model.getColumnCount() - 1; col++) {
                             Object val;
                             if (col == 0) {
                                 val = header[row];
                             } else {
-                                val = model.getValueAt(row + (offset * CHUNKSIZE), col);
+                                val = model.getRealValueAt(row + (offset * CHUNKSIZE), col);
                             }
                             if (val != null) {
                                 w.write(val.toString());
                             }
-                            if (col <= model.getColumnCount() - 2 && model.getValueAt(row, col + 1) != null) {
+                            if (col <= model.getColumnCount() - 2 && model.getRealValueAt(row, col + 1) != null) {
                                 w.write("\t");
                             }
                         }
@@ -164,6 +169,8 @@ public class GSCTableViewCustomizer extends javax.swing.JPanel {
                         //                  w.write(val.toString());
                         w.write(System.lineSeparator());
                     }
+                    stop = System.currentTimeMillis();
+                    System.out.println("writeLine: " + (stop-start) + "ms");                    
                 }
                 w.flush();
                 w.close();

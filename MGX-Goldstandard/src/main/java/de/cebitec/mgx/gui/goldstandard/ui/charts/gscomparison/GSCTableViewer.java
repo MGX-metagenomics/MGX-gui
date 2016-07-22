@@ -34,7 +34,7 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = GSComparisonI.class)
 public class GSCTableViewer extends EvaluationViewerI<TreeI<Long>> implements GSComparisonI {
 
-    private static final int PAGESIZE = 2_500;
+    private static final int PAGESIZE = 1_000;
 
     private SeqRunI currentSeqrun;
     private JobI currentJob;

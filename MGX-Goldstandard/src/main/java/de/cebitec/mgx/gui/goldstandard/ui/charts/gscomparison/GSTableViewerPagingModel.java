@@ -94,6 +94,31 @@ public class GSTableViewerPagingModel extends AbstractTableModel {
         return "";
     }
 
+    /*
+    * returns ID if col == 0, not the header!
+    */
+    public Object getRealValueAt(int row, int col) {
+        long id = keys[row];
+        if (col == 0) {
+            return id;
+        }
+        String[] strList = data.get(id);
+        if (strList[0].equals(strList[1])) {
+            return (col == 2) ? strList[1] : "";
+        } else {
+            switch (col) {
+                case 1:
+                    return strList[0];
+                case 2:
+                    return "";
+                case 3:
+                    return strList[1];
+                default:
+                    return null;
+            }
+        }
+    }
+    
     @Override
     public String getColumnName(int col) {
         return colHeader[col];

@@ -125,7 +125,7 @@ public class PCDistanceViewer extends EvaluationViewerI<DistributionI<Long>> imp
         for (JobI job : jobs) {
             columns[i++] = JobUtils.jobToString(job);
         }
-        DefaultTableModel model = new DefaultTableModel(columns, columns.length) {
+        DefaultTableModel model = new DefaultTableModel(columns, 0) {
 
             @Override
             public Class<?> getColumnClass(int column) {
@@ -151,15 +151,16 @@ public class PCDistanceViewer extends EvaluationViewerI<DistributionI<Long>> imp
         stop = System.currentTimeMillis();
         System.out.println(stop - start + "ms");
 
-        i = 0;
-        for (JobI job : jobs) {
+        for (i = 0; i < jobs.size(); i++) {
             Object[] rowData = new Object[columns.length];
             rowData[0] = columns[i + 1];
             for (int j = 0; j < columns.length - 1; j++) {
                 if (i == j) {
                     rowData[j + 1] = "/";
+                } else if (j < i) {
+                    rowData[j + 1] = "";
                 } else {
-                    rowData[j + 1] = distances[i][j];
+                    rowData[j + 1] = String.format("%.2f", distances[i][j]);
                 }
             }
             model.addRow(rowData);
