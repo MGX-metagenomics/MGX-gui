@@ -51,7 +51,7 @@ public abstract class MGXTask implements Runnable, PropertyChangeListener {
         if (s != null && !"".equals(s.trim())) {
             if (statusMessage == null || !s.equals(statusMessage)) {
                 statusMessage = s;
-                pcs.firePropertyChange(state, 0, s);
+                pcs.firePropertyChange(state, 0, statusMessage);
             }
         }
     }
