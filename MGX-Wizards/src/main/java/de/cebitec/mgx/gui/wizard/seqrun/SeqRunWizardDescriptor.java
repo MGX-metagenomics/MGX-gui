@@ -64,6 +64,10 @@ public class SeqRunWizardDescriptor extends WizardDescriptor {
         putProperty(SeqRunVisualPanel1.PROP_PLATFORM, d.getSequencingTechnology());
         putProperty(SeqRunVisualPanel1.PROP_SUBMITTED, d.getSubmittedToINSDC());
         putProperty(SeqRunVisualPanel1.PROP_ACCESSION, d.getAccession());
+        
+        // in 'edit mode', do not run default tools
+        putProperty(SeqRunVisualPanel1.PROP_RUNTOOLS, false);
+        
         putProperty(SeqRunWizardDescriptor.INVOCATION_MODE, EDIT_MODE);
         p1.setProperties(this);
     }
@@ -129,7 +133,7 @@ public class SeqRunWizardDescriptor extends WizardDescriptor {
     public File getSequenceFile() {
         return (File) getProperty(SeqRunVisualPanel2.PROP_SEQFILE);
     }
-    
+
     public boolean runDefaultTools() {
         if (getProperty(SeqRunWizardDescriptor.INVOCATION_MODE).equals(EDIT_MODE)) {
             return false;
