@@ -47,13 +47,13 @@ public class PCDistanceViewer extends EvaluationViewerI implements PipelineCompa
 
     @Override
     public JComponent getComponent() {
-        if (usedAttributeType == null || jobs == null){
+        if (usedAttributeType == null || jobs == null) {
             return null;
         }
-        if (table == null){
+        if (table == null) {
             evaluate();
         }
-        
+
         return table;
     }
 
@@ -98,7 +98,7 @@ public class PCDistanceViewer extends EvaluationViewerI implements PipelineCompa
                 i++;
             }
             stop = System.currentTimeMillis();
-            System.out.println(stop - start + "ms");
+            System.out.println("A" + (stop - start) + "ms");
             start = System.currentTimeMillis();
 
             vectors = new Vector[jobs.size()];
@@ -106,7 +106,7 @@ public class PCDistanceViewer extends EvaluationViewerI implements PipelineCompa
                 vectors[i] = new Vector(attributes.size());
             }
             stop = System.currentTimeMillis();
-            System.out.println(stop - start + "ms");
+            System.out.println("B" + (stop - start) + "ms");
             start = System.currentTimeMillis();
             for (long key : attributes.keys()) {
                 long[] values = attributes.get(key);
@@ -115,7 +115,16 @@ public class PCDistanceViewer extends EvaluationViewerI implements PipelineCompa
                 }
             }
             stop = System.currentTimeMillis();
-            System.out.println(stop - start + "ms");
+            System.out.println("C" + (stop - start) + "ms");
+            start = System.currentTimeMillis();
+
+            if (((PCDistanceViewCustomizer)getCustomizer()).normalizeVectors()){
+                for (i = 0; i < vectors.length;  i++){
+                    vectors[i] = vectors[i].normalize();
+                }
+            }
+            stop = System.currentTimeMillis();
+            System.out.println("D" + (stop - start) + "ms");
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);
             return;
@@ -151,8 +160,15 @@ public class PCDistanceViewer extends EvaluationViewerI implements PipelineCompa
             }
         }
         stop = System.currentTimeMillis();
-        System.out.println(stop - start + "ms");
+        System.out.println("E" + (stop - start) + "ms");
 
+        String numberFormat;
+        if (((PCDistanceViewCustomizer)getCustomizer()).normalizeVectors()){
+            numberFormat = "%.5f";
+        } else {
+            numberFormat ="%.2f";
+        }
+        
         for (i = 0; i < jobs.size(); i++) {
             Object[] rowData = new Object[columns.length];
             rowData[0] = columns[i + 1];
@@ -162,7 +178,7 @@ public class PCDistanceViewer extends EvaluationViewerI implements PipelineCompa
                 } else if (j < i) {
                     rowData[j + 1] = "";
                 } else {
-                    rowData[j + 1] = String.format("%.2f", distances[i][j]);
+                    rowData[j + 1] = String.format(numberFormat, distances[i][j]);
                 }
             }
             model.addRow(rowData);

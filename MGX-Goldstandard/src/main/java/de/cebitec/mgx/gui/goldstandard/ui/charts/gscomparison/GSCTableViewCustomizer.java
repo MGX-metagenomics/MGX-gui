@@ -219,4 +219,8 @@ public class GSCTableViewCustomizer extends javax.swing.JPanel {
 
         return header;
     }
+    
+    public void dispose(){
+        model = null;
+    }
 }

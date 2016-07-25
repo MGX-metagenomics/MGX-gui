@@ -9,6 +9,7 @@ import de.cebitec.mgx.api.model.tree.NodeI;
 import de.cebitec.mgx.api.model.tree.TreeI;
 import de.cebitec.mgx.gui.goldstandard.ui.charts.EvaluationViewerI;
 import de.cebitec.mgx.gui.goldstandard.ui.charts.VennChart;
+import de.cebitec.mgx.gui.goldstandard.util.EvalExceptions;
 import de.cebitec.mgx.gui.goldstandard.util.NodeUtils;
 import de.cebitec.mgx.gui.goldstandard.wizards.selectjobs.SelectSingleJobWithGSWizardDescriptor;
 import gnu.trove.map.TLongObjectMap;
@@ -37,7 +38,7 @@ public class GSCVennChartViewer extends EvaluationViewerI implements GSCompariso
 
     private SeqRunI currentSeqrun;
     private JobI currentJob;
-    
+
     List<TreeI<Long>> trees;
 
     private GSCVennChartCustomizer cust = null;
@@ -48,13 +49,13 @@ public class GSCVennChartViewer extends EvaluationViewerI implements GSCompariso
 
     @Override
     public JComponent getComponent() {
-        if (trees == null){
+        if (trees == null) {
             return null;
         }
-        if (venn == null){
+        if (venn == null) {
             evaluate();
         }
-        
+
         return venn;
     }
 
@@ -86,7 +87,7 @@ public class GSCVennChartViewer extends EvaluationViewerI implements GSCompariso
         for (int i = 0; i < sampleLeaves.size(); i++) {
             sampleIndizes.add(i);
         }
-        
+
         ProgressHandle p = ProgressHandle.createHandle("create venn chart");
         p.start(gsLeaves.size() + sampleLeaves.size());
         int progress = 0;
@@ -153,7 +154,7 @@ public class GSCVennChartViewer extends EvaluationViewerI implements GSCompariso
             }
 
         } catch (MGXException ex) {
-            Exceptions.printStackTrace(Exceptions.attachMessage(ex, "Cannot download sequence ids for NodeI instance"));
+            EvalExceptions.printStackTrace(Exceptions.attachMessage(ex, "Cannot download sequence ids for NodeI instance"));
             venn = null;
             p.finish();
             return;
@@ -166,10 +167,10 @@ public class GSCVennChartViewer extends EvaluationViewerI implements GSCompariso
         try {
             venn = VennChart.get2Venn(a, b, ab);
         } catch (IOException ex) {
-            Exceptions.printStackTrace(ex);
-        }
-        
-        p.finish();
+            EvalExceptions.printStackTrace(ex);
+        } finally {
+            p.finish();
+        };
     }
 
     @Override
@@ -199,7 +200,7 @@ public class GSCVennChartViewer extends EvaluationViewerI implements GSCompariso
                 trees.add(seqrun.getMaster().Attribute().getHierarchy(attrType, currentJob));
             }
         } catch (MGXException ex) {
-            Exceptions.printStackTrace(ex);            
+            Exceptions.printStackTrace(ex);
         }
     }
 

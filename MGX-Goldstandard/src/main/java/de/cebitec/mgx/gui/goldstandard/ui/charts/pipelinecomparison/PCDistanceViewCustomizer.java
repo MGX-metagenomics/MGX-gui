@@ -11,7 +11,11 @@ public class PCDistanceViewCustomizer extends javax.swing.JPanel{
      */
     public PCDistanceViewCustomizer() {
         initComponents();
-    }           
+    }       
+
+public boolean normalizeVectors(){
+    return normalizeVectors.isSelected();
+}    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -22,18 +26,29 @@ public class PCDistanceViewCustomizer extends javax.swing.JPanel{
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        normalizeVectors = new javax.swing.JCheckBox();
+
+        org.openide.awt.Mnemonics.setLocalizedText(normalizeVectors, "normalize vectors");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 153, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(normalizeVectors)
+                .addContainerGap(17, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 364, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(normalizeVectors)
+                .addContainerGap(330, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JCheckBox normalizeVectors;
     // End of variables declaration//GEN-END:variables
 }

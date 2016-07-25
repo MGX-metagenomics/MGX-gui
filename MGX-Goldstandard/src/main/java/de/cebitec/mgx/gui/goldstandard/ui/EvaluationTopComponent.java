@@ -132,7 +132,10 @@ public final class EvaluationTopComponent extends TopComponent {
     }
 
     public void setVisualization(EvaluationViewerI v) {
-        if (v.getComponent() != null) {
+        if (v == null){
+            chartpane.setViewportView(null);            
+        }
+        else {
             chartpane.setViewportView(v.getComponent());
             ImageExporterI exporter = v.getImageExporter();
             if (exporter != null && exporter.getSupportedTypes().length > 0) {

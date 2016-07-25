@@ -10,8 +10,8 @@ import org.apache.commons.math3.util.FastMath;
  */
 public class Vector {
 
-    int pointer;
-    double[] data;
+    int pointer;    
+    double[] data;        
 
     public Vector(double[] array) {
         data = array;
@@ -25,9 +25,30 @@ public class Vector {
     public void add(double value) {
         if (pointer < data.length) {
             data[pointer++] = value;
+        }        
+    }
+    
+    public Vector normalize(){
+        Vector normalized = new Vector(this.dimensions());
+        double length = length();
+        for (int i = 0; i < data.length; i++){
+            normalized.add(data[i] / length);
         }
+        return normalized;
     }
 
+    public double length(){
+        double sum = 0;
+        for (double d : data){
+            sum += FastMath.pow(d, 2);
+        }
+        return FastMath.sqrt(sum);
+    }
+    
+    public int dimensions(){
+        return this.data.length;
+    }
+    
     public double euclideanDistance(Vector other) {
         return MathArrays.distance(this.data, other.data);
     }

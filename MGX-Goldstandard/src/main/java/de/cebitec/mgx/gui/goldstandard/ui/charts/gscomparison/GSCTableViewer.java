@@ -8,6 +8,7 @@ import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.tree.NodeI;
 import de.cebitec.mgx.api.model.tree.TreeI;
 import de.cebitec.mgx.gui.goldstandard.ui.charts.EvaluationViewerI;
+import de.cebitec.mgx.gui.goldstandard.util.EvalExceptions;
 import de.cebitec.mgx.gui.goldstandard.util.NodeUtils;
 import de.cebitec.mgx.gui.goldstandard.wizards.selectjobs.SelectSingleJobWithGSWizardDescriptor;
 import gnu.trove.map.TLongObjectMap;
@@ -49,13 +50,13 @@ public class GSCTableViewer extends EvaluationViewerI implements GSComparisonI {
 
     @Override
     public JComponent getComponent() {
-        if (treeList == null){
+        if (treeList == null) {
             return null;
-        }   
-        if (pane == null){
+        }
+        if (pane == null) {
             evaluate();
         }
-        
+
         return pane;
     }
 
@@ -113,7 +114,11 @@ public class GSCTableViewer extends EvaluationViewerI implements GSComparisonI {
             }
 
         } catch (MGXException ex) {
-            Exceptions.printStackTrace(Exceptions.attachMessage(ex, "Cannot download sequence ids for NodeI instance"));
+            EvalExceptions.printStackTrace(Exceptions.attachMessage(ex, "Cannot download sequence ids for NodeI instance"));
+            p.finish();
+            currentJob = null;
+            pane = null;
+            table = null;
         }
 //        }
 
@@ -177,11 +182,12 @@ public class GSCTableViewer extends EvaluationViewerI implements GSComparisonI {
     @Override
     public void dispose() {
         super.dispose();
+        cust.dispose();
+        cust = null;
         table = null;
         pane = null;
         seqToAttribute = null;
         treeList = null;
     }
-    
-    
+
 }

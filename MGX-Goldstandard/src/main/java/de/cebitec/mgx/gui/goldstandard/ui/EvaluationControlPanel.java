@@ -217,6 +217,7 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Proper
             }
             currentViewer = visListModel.getSelectedItem();
             controlSplitPane.setBottomComponent(currentViewer.getCustomizer());
+            topComponent.setVisualization(null);
         } else {
             currentViewer.selectJobs(currentSeqrun);
             EvaluationTopComponent.getExecutorService().submit(new Runnable() {
