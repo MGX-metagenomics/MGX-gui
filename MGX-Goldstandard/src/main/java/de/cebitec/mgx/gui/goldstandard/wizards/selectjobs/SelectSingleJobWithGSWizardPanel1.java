@@ -40,11 +40,21 @@ public class SelectSingleJobWithGSWizardPanel1 implements WizardDescriptor.Panel
     private final Map<JobI, Collection<AttributeTypeI>> jobs;
     private JobI goldstandard;
     private final SeqRunI seqrun;
+    private final int maxSelected;
+    private final String atLabel;
 
     private boolean isValid = false;
 
-    public SelectSingleJobWithGSWizardPanel1(SeqRunI seqrun) throws MGXException {
+    public SelectSingleJobWithGSWizardPanel1(SeqRunI seqrun, boolean hierarchicAT, int maxSelected) throws MGXException {
         this.seqrun = seqrun;
+        this.maxSelected = maxSelected;
+
+        if (hierarchicAT) {
+            atLabel = "Select attribute type from wanted tree:";
+        } else {
+            atLabel = "Select wanted attribute type:";
+        }
+
         List<JobI> allJobs = seqrun.getMaster().Job().BySeqRun(seqrun);
         jobs = new HashMap<>(allJobs.size());
 //        for (JobI job : allJobs) {
@@ -74,7 +84,7 @@ public class SelectSingleJobWithGSWizardPanel1 implements WizardDescriptor.Panel
     @Override
     public SelectSingleJobWithGSVisualPanel1 getComponent() {
         if (component == null) {
-            component = new SelectSingleJobWithGSVisualPanel1(jobs);
+            component = new SelectSingleJobWithGSVisualPanel1(jobs, atLabel);
             component.addListSelectionListener(this);
             component.addGSComboBoxSelectionListener(this);
             updateJobList();
@@ -132,7 +142,7 @@ public class SelectSingleJobWithGSWizardPanel1 implements WizardDescriptor.Panel
 
     @Override
     public void storeSettings(WizardDescriptor wiz) {
-        model.putProperty(SelectSingleJobWithGSVisualPanel1.PROP_JOB, getComponent().getSelectedJob());
+        model.putProperty(SelectSingleJobWithGSVisualPanel1.PROP_JOB, getComponent().getSelectedJobs());
         model.putProperty(SelectSingleJobWithGSVisualPanel1.PROP_ATTRIBUTETYPE, getComponent().getSelectedAttributeType());
         model.putProperty(SelectSingleJobWithGSVisualPanel1.PROP_GOLDSTANDARD, goldstandard);
     }
@@ -141,42 +151,39 @@ public class SelectSingleJobWithGSWizardPanel1 implements WizardDescriptor.Panel
     public void valueChanged(ListSelectionEvent e) {
 //        ListSelectionModel lsm = (ListSelectionModel) e.getSource();
         if (!e.getValueIsAdjusting()) {
-            JobI job = component.getSelectedJob();
-            if (job == null){
-                component.deactivateAttributeTypeList();
-                return;
-            }
-            Collection<AttributeTypeI> atList = jobs.get(job);
-            if (atList == null) {
-                try {
-                    Iterator<AttributeTypeI> it = seqrun.getMaster().AttributeType().byJob(job);
-                    atList = new LinkedList<>();
-                    while (it.hasNext()) {
-                        AttributeTypeI at = it.next();
-                        atList.add(at);
-                    }
-                    jobs.put(job, atList);
-                } catch (MGXException ex) {
-                    Exceptions.printStackTrace(ex);
-                }
-            }
-            Collection<AttributeTypeI> filteredATList = new ArrayList<>(atList.size());
-            for (AttributeTypeI at : atList) {
-                if (jobs.get(goldstandard).contains(at)) {
-                    filteredATList.add(at);
-                }
-            }
-            component.setAttributeTypeList(filteredATList);
-            component.enableAttributeTypeBox(atList != null && !atList.isEmpty());
+            try {
+                List<JobI> jobList = component.getSelectedJobs();
+                Set<AttributeTypeI> sharedATs = new HashSet<>(jobs.get(goldstandard));
+                for (JobI job : jobList) {
+                    Collection<AttributeTypeI> atList = jobs.get(job);
+                    if (atList == null) {
 
-            boolean oldState = isValid;
-            isValid = checkValidity();
-            fireChangeEvent(this, oldState, isValid);
-        }
+                        Iterator<AttributeTypeI> it = seqrun.getMaster().AttributeType().byJob(job);
+                        atList = new LinkedList<>();
+                        while (it.hasNext()) {
+                            AttributeTypeI at = it.next();
+                            atList.add(at);
+                        }
+                        jobs.put(job, atList);
+                    }
+                    sharedATs.retainAll(atList);
+
+                }
+
+                component.setAttributeTypeList(sharedATs);
+                component.enableAttributeTypeBox(!sharedATs.isEmpty());
+
+                boolean oldState = isValid;
+                isValid = checkValidity();
+                fireChangeEvent(this, oldState, isValid);
+            } catch (MGXException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+        }        
     }
 
     private boolean checkValidity() {
-        return component.getAttributeTypeListCount() != 0;
+        return component.getAttributeTypeListCount() != 0 && component.getSelectedJobs().size() < maxSelected;
     }
 
     @Override

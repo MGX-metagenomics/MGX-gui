@@ -6,6 +6,7 @@ import de.cebitec.mgx.gui.goldstandard.actions.AddGoldstandard;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import javax.swing.DefaultListModel;
 import javax.swing.JPanel;
@@ -23,9 +24,11 @@ public final class SelectSingleJobWithGSVisualPanel1 extends JPanel {
     /**
      * Creates new form SelectSingleJobVisualPanel1
      */
-    public SelectSingleJobWithGSVisualPanel1(Map<JobI, Collection<AttributeTypeI>> jobs) {
+    public SelectSingleJobWithGSVisualPanel1(Map<JobI, Collection<AttributeTypeI>> jobs, String attrTypeLabel) {
         initComponents();
         this.jobs = jobs.keySet();
+
+        attributeLabel.setText(attrTypeLabel);
 
         jobModel = new DefaultListModel<>();
 //        for (JobI job : this.jobs) {
@@ -43,7 +46,7 @@ public final class SelectSingleJobWithGSVisualPanel1 extends JPanel {
         }
         gsAttributeBox.setRenderer(new JobRenderer());
         if (gsAttributeBox.getItemCount() > 0) {
-            gsAttributeBox.setSelectedItem(gsJob);            
+            gsAttributeBox.setSelectedItem(gsJob);
             gsAttributeBox.setEnabled(true);
         }
 
@@ -75,8 +78,8 @@ public final class SelectSingleJobWithGSVisualPanel1 extends JPanel {
         }
     }
 
-    public JobI getSelectedJob() {
-        return jobList.getSelectedValue();
+    public List<JobI> getSelectedJobs() {
+        return jobList.getSelectedValuesList();
     }
 
     public AttributeTypeI getSelectedAttributeType() {
@@ -102,13 +105,11 @@ public final class SelectSingleJobWithGSVisualPanel1 extends JPanel {
             attributeTypeBox.setSelectedIndex(-1);
         }
     }
-    
-    public void deactivateAttributeTypeList(){
-        attributeTypeBox.removeAllItems();
-        attributeTypeBox.setEnabled(false);
-    }
 
     public void enableAttributeTypeBox(boolean enable) {
+        if (!enable) {
+            attributeTypeBox.removeAllItems();
+        }
         attributeTypeBox.setEnabled(enable);
     }
 
@@ -135,8 +136,8 @@ public final class SelectSingleJobWithGSVisualPanel1 extends JPanel {
         jLabel1 = new javax.swing.JLabel();
         gsAttributeBox = new javax.swing.JComboBox<>();
         jLabel2 = new javax.swing.JLabel();
+        attributeLabel = new javax.swing.JLabel();
 
-        jobList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jScrollPane1.setViewportView(jobList);
 
         attributeTypeBox.setEnabled(false);
@@ -147,6 +148,8 @@ public final class SelectSingleJobWithGSVisualPanel1 extends JPanel {
 
         org.openide.awt.Mnemonics.setLocalizedText(jLabel2, org.openide.util.NbBundle.getMessage(SelectSingleJobWithGSVisualPanel1.class, "SelectSingleJobWithGSVisualPanel1.jLabel2.text")); // NOI18N
 
+        org.openide.awt.Mnemonics.setLocalizedText(attributeLabel, org.openide.util.NbBundle.getMessage(SelectSingleJobWithGSVisualPanel1.class, "SelectSingleJobWithGSVisualPanel1.attributeLabel.text")); // NOI18N
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -156,7 +159,8 @@ public final class SelectSingleJobWithGSVisualPanel1 extends JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 376, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(attributeLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(attributeTypeBox, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
@@ -179,12 +183,15 @@ public final class SelectSingleJobWithGSVisualPanel1 extends JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 234, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(attributeTypeBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(attributeTypeBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(attributeLabel))
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel attributeLabel;
     private javax.swing.JComboBox<AttributeTypeI> attributeTypeBox;
     private javax.swing.JComboBox<JobI> gsAttributeBox;
     private javax.swing.JLabel jLabel1;

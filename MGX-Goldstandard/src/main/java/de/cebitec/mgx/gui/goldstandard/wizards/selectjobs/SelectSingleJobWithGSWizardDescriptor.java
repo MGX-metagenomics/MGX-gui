@@ -20,10 +20,10 @@ public class SelectSingleJobWithGSWizardDescriptor extends WizardDescriptor impl
     private final SelectSingleJobWithGSWizardPanel1 p1;
     protected final SeqRunI seqrun;
 
-    public SelectSingleJobWithGSWizardDescriptor(SeqRunI seqrun) throws MGXException {
+    public SelectSingleJobWithGSWizardDescriptor(SeqRunI seqrun, boolean hierarchicAT, int maxSelected) throws MGXException {
         super();
         this.seqrun = seqrun;
-        p1 = new SelectSingleJobWithGSWizardPanel1(seqrun);
+        p1 = new SelectSingleJobWithGSWizardPanel1(seqrun, hierarchicAT, maxSelected);
         List<Panel<WizardDescriptor>> panels = new ArrayList<>();
         panels.add(p1);        
         this.setPanelsAndSettings(new ArrayIterator<>(panels), this);
