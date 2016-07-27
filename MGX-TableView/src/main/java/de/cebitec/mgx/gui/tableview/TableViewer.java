@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.tableview;
 
+import de.cebitec.mgx.gui.swingutils.DecimalFormatRenderer;
 import de.cebitec.mgx.api.groups.ImageExporterI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
@@ -114,6 +115,7 @@ public class TableViewer extends ViewerI<DistributionI<Long>> {
         cust.setModel(model); // for tsv export
 
         table = new JXTable(model);
+        table.setDefaultRenderer(Double.class, new DecimalFormatRenderer());
         table.setFillsViewportHeight(true);
         for (TableColumn tc : table.getColumns()) {
             if (0 != tc.getModelIndex()) {
