@@ -54,30 +54,36 @@ public class TableViewer extends ViewerI<DistributionI<Long>> {
     }
 
     @Override
-    public void show(List<Pair<VisualizationGroupI, DistributionI<Long>>> in) {
+    public void show(final List<Pair<VisualizationGroupI, DistributionI<Long>>> in) {
 
-        in = getCustomizer().filter(in);
-
-        List<Pair<VisualizationGroupI, DistributionI<Double>>> ret = null;
+        //
+        // check whether assigned reads should be displayed as counts or fractions
+        //
+        List<Pair<VisualizationGroupI, DistributionI<Double>>> data = null;
         if (getCustomizer().useFractions()) {
             VisFilterI<DistributionI<Long>, DistributionI<Double>> fracFilter = new ToFractionFilter();
-            ret = fracFilter.filter(in);
+            data = fracFilter.filter(in);
         } else {
-            ret = new LongToDouble().filter(in);
+            data = new LongToDouble().filter(in);
         }
 
+        //
+        // exclude filter must be applied _AFTER_ converting to fractions
+        //
+        data = getCustomizer().filter(data);
+
         Set<AttributeI> allAttrs = new HashSet<>();
-        int numColumns = ret.size() + 1;
+        int numColumns = data.size() + 1;
         String[] columns = new String[numColumns];
         int i = 0;
         columns[i++] = getAttributeType().getName(); // first column
-        for (Pair<VisualizationGroupI, DistributionI<Double>> p : ret) {
+        for (Pair<VisualizationGroupI, DistributionI<Double>> p : data) {
             columns[i++] = p.getFirst().getDisplayName();
             allAttrs.addAll(p.getSecond().keySet());
         }
 
         SortOrder<Double> order = new SortOrder<>(getAttributeType(), SortOrder.DESCENDING);
-        ret = order.filter(ret);
+        data = order.filter(data);
 
         final boolean useFractions = getCustomizer().useFractions();
 
@@ -103,7 +109,7 @@ public class TableViewer extends ViewerI<DistributionI<Long>> {
             Object[] rowData = new Object[numColumns];
             rowData[0] = a.getValue();
             int col = 1;
-            for (Pair<VisualizationGroupI, DistributionI<Double>> p : ret) {
+            for (Pair<VisualizationGroupI, DistributionI<Double>> p : data) {
                 DistributionI<Double> d = p.getSecond();
                 rowData[col++] = d.containsKey(a)
                         ? getCustomizer().useFractions() ? d.get(a) : d.get(a).longValue()

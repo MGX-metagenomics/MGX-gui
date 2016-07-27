@@ -52,7 +52,7 @@ public class TreeTableView extends ViewerI<TreeI<Long>> {
     @Override
     public void show(List<Pair<VisualizationGroupI, TreeI<Long>>> dists) {
 
-        TreeI<Long> tree = dists.get(0).getSecond();
+        final TreeI<Long> tree = dists.get(0).getSecond();
 
         // convert data to KRONA style
         TreeI<Long> kronaTree = TreeFactory.createKRONATree(tree);
