@@ -13,6 +13,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Set;
 import javax.swing.JFileChooser;
@@ -185,13 +186,18 @@ public class TableViewCustomizer extends javax.swing.JPanel implements VisFilter
                     w.write(System.lineSeparator());
                     w.write(System.lineSeparator());
                 }
+                
+               DecimalFormat FMT = new DecimalFormat("#.######");
 
                 // export data
                 for (int row = 0; row < model.getRowCount(); row++) {
                     for (int col = 0; col <= model.getColumnCount() - 1; col++) {
-                        Object val = model.getValueAt(row, col);
-                        if (val != null) {
-                            w.write(val.toString());
+                        Object value = model.getValueAt(row, col);
+                        if (value != null) {
+                            if (value instanceof Double) {
+                                value = FMT.format((Double) value);
+                            }
+                            w.write(value.toString());
                         }
                         if (col <= model.getColumnCount() - 2 && model.getValueAt(row, col + 1) != null) {
                             w.write("\t");
