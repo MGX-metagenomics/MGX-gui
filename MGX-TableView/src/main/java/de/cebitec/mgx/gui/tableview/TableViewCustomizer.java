@@ -26,7 +26,7 @@ import org.openide.util.NbPreferences;
  *
  * @author sjaenick
  */
-public class TableViewCustomizer extends javax.swing.JPanel implements VisFilterI<DistributionI<Long>, DistributionI<Long>> {
+public class TableViewCustomizer extends javax.swing.JPanel implements VisFilterI<DistributionI<Double>, DistributionI<Double>> {
 
     /**
      * Creates new form TableViewCustomizer
@@ -60,7 +60,7 @@ public class TableViewCustomizer extends javax.swing.JPanel implements VisFilter
     }
 
     @Override
-    public List<Pair<VisualizationGroupI, DistributionI<Long>>> filter(List<Pair<VisualizationGroupI, DistributionI<Long>>> dists) {
+    public List<Pair<VisualizationGroupI, DistributionI<Double>>> filter(List<Pair<VisualizationGroupI, DistributionI<Double>>> dists) {
 
         Set<AttributeI> filterEntries = treeFilter1.getBlackList();
 
@@ -68,7 +68,7 @@ public class TableViewCustomizer extends javax.swing.JPanel implements VisFilter
             return dists;
         }
 
-        ExcludeFilter<Long> ef = new ExcludeFilter<>(filterEntries);
+        ExcludeFilter ef = new ExcludeFilter(filterEntries);
         dists = ef.filter(dists);
 
         return dists;
