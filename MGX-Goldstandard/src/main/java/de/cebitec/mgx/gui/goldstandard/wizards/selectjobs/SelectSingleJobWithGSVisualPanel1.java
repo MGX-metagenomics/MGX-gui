@@ -77,6 +77,10 @@ public final class SelectSingleJobWithGSVisualPanel1 extends JPanel {
             jobModel.addElement(job);
         }
     }
+    
+    public void setSelectionMode(int selectionMode) {
+        jobList.setSelectionMode(selectionMode);
+    }
 
     public List<JobI> getSelectedJobs() {
         return jobList.getSelectedValuesList();

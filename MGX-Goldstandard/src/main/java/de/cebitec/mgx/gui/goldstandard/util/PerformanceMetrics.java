@@ -6,12 +6,12 @@ import org.apache.commons.math3.util.FastMath;
  *
  * @author pblumenk
  */
-public class ClassificationErrorTable {
+public class PerformanceMetrics {
 
     private final long fp, fn,
             tp, tn;
 
-    public ClassificationErrorTable(long falsePostive, long falseNegative, long truePositive, long trueNegative) {
+    public PerformanceMetrics(long falsePostive, long falseNegative, long truePositive, long trueNegative) {
         this.fp = falsePostive;
         this.fn = falseNegative;
         this.tp = truePositive;

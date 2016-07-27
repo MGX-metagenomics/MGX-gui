@@ -13,7 +13,7 @@ import org.openide.WizardDescriptor;
 
 /**
  *
- * @author sjaenick
+ * @author pblumenk
  */
 public class SelectSingleJobWithGSWizardDescriptor extends WizardDescriptor implements ChangeListener{
 
@@ -35,8 +35,8 @@ public class SelectSingleJobWithGSWizardDescriptor extends WizardDescriptor impl
         putProperty(WizardDescriptor.PROP_CONTENT_NUMBERED, Boolean.TRUE);        
     }
     
-    public JobI getJob(){
-        return (JobI)getProperty(SelectSingleJobWithGSVisualPanel1.PROP_JOB);
+    public List<JobI> getJobs(){
+        return (List<JobI>)getProperty(SelectSingleJobWithGSVisualPanel1.PROP_JOB);
     }
     
     public AttributeTypeI getAttributeType(){

@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.swing.JComboBox;
+import javax.swing.JList;
+import javax.swing.ListSelectionModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
@@ -87,6 +89,9 @@ public class SelectSingleJobWithGSWizardPanel1 implements WizardDescriptor.Panel
             component = new SelectSingleJobWithGSVisualPanel1(jobs, atLabel);
             component.addListSelectionListener(this);
             component.addGSComboBoxSelectionListener(this);
+            if (maxSelected == 1){
+                component.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            }            
             updateJobList();
         }
         return component;
@@ -179,7 +184,7 @@ public class SelectSingleJobWithGSWizardPanel1 implements WizardDescriptor.Panel
             } catch (MGXException ex) {
                 Exceptions.printStackTrace(ex);
             }
-        }        
+        }
     }
 
     private boolean checkValidity() {

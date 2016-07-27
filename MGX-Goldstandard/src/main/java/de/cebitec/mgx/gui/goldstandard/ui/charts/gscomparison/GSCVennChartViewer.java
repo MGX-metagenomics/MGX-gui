@@ -185,7 +185,7 @@ public class GSCVennChartViewer extends EvaluationViewerI implements GSCompariso
     public void selectJobs(SeqRunI seqrun) {
         currentSeqrun = seqrun;
         try {
-            SelectSingleJobWithGSWizardDescriptor jobWizard = new SelectSingleJobWithGSWizardDescriptor(seqrun);
+            SelectSingleJobWithGSWizardDescriptor jobWizard = new SelectSingleJobWithGSWizardDescriptor(seqrun, true, 1);
             Dialog dialog = DialogDisplayer.getDefault().createDialog(jobWizard);
             dialog.setVisible(true);
             dialog.toFront();

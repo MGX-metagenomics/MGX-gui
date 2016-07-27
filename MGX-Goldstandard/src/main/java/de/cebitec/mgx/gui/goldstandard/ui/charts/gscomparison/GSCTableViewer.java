@@ -160,7 +160,7 @@ public class GSCTableViewer extends EvaluationViewerI implements GSComparisonI {
     public void selectJobs(final SeqRunI seqrun) {
         currentSeqrun = seqrun;
         try {
-            final SelectSingleJobWithGSWizardDescriptor jobWizard = new SelectSingleJobWithGSWizardDescriptor(seqrun);
+            final SelectSingleJobWithGSWizardDescriptor jobWizard = new SelectSingleJobWithGSWizardDescriptor(seqrun, true, 1);
             Dialog dialog = DialogDisplayer.getDefault().createDialog(jobWizard);
             dialog.setVisible(true);
             dialog.toFront();
