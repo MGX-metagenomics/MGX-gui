@@ -16,17 +16,23 @@ import de.cebitec.mgx.gui.goldstandard.util.PerformanceMetrics;
 import de.cebitec.mgx.gui.goldstandard.wizards.selectjobs.SelectSingleJobWithGSWizardDescriptor;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
+import gnu.trove.set.TLongSet;
+import gnu.trove.set.hash.TLongHashSet;
 import java.awt.Dialog;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 import javax.swing.SortOrder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
+import org.apache.commons.collections4.CollectionUtils;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.decorator.Highlighter;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
@@ -82,64 +88,82 @@ public class GSCPerformanceMetricsViewer extends EvaluationViewerI implements GS
 
     @Override
     public void evaluate() {
-        List<PerformanceMetrics> performanceMetrics = new ArrayList<>(currentJobs.size());
         ProgressHandle p = ProgressHandle.createHandle("calculating...");
-        p.start(currentJobs.size());
+        p.start(currentJobs.size() + 2);
         int progress = 0;
-        
+        p.progress(progress++);
+
+        long numSeqs = currentSeqrun.getNumSequences();
+        TLongObjectMap<String> goldstandard = new TLongObjectHashMap<>(currentJobs.size());
+
+        long start, stop;
+        start = System.currentTimeMillis();
         try {
-            DistributionI dist = gsJob.getMaster().Attribute().getDistribution(attrType, gsJob);
-            
+            DistributionI<Long> dist = gsJob.getMaster().Attribute().getDistribution(attrType, gsJob);
+            for (Map.Entry<AttributeI, Long> entry : dist.entrySet()) {
+                Iterator<Long> it = dist.getMaster().Sequence().fetchSequenceIDs(entry.getKey());
+                while (it.hasNext()) {
+                    goldstandard.put(it.next(), entry.getKey().getValue());
+                }
+            }
+            p.progress(progress++);
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);
+            table = null;
+            return;
         }
-        Set<AttributeI> goldstandard = new HashSet<>();
-        
-        for (JobI job : currentJobs){
-            
-        }
-        
-        List<NodeI<Long>> gsLeaves = new ArrayList<>(treeList.get(0).getLeaves());
-        List<NodeI<Long>> sampleLeaves = new ArrayList<>(treeList.get(1).getLeaves());        
+        stop = System.currentTimeMillis();
+        System.out.println("GS: " + (stop - start) + "ms");
 
-        seqToAttribute = new TLongObjectHashMap<>((int) currentSeqrun.getNumSequences());
+        PerformanceMetrics[] performanceMetrics = new PerformanceMetrics[currentJobs.size()];
 
         try {
-            for (NodeI<Long> node : gsLeaves) {
-                List<Long> ids = NodeUtils.getSeqIDs(node);
-                String attr = node.getAttribute().getValue();
-                for (long id : ids) {
-                    seqToAttribute.put(id, new String[]{attr, ""});
-                }
-                p.progress(progress++);
-            }
-
-            for (NodeI<Long> node : sampleLeaves) {
-                List<Long> ids = NodeUtils.getSeqIDs(node);
-                String attr = node.getAttribute().getValue();
-                for (long id : ids) {
-                    if (seqToAttribute.containsKey(id)) {
-                        seqToAttribute.get(id)[1] = attr;
-                    } else {
-                        seqToAttribute.put(id, new String[]{"", attr});
+            int i = 0;
+            for (JobI job : currentJobs) {
+                start = System.currentTimeMillis();
+                PerformanceMetrics pm = new PerformanceMetrics();
+                DistributionI<Long> dist = gsJob.getMaster().Attribute().getDistribution(attrType, job);
+                int usedGsIds = 0;
+                for (Map.Entry<AttributeI, Long> entry : dist.entrySet()) {
+                    long startInside = System.currentTimeMillis();
+                    Iterator<Long> it = dist.getMaster().Sequence().fetchSequenceIDs(entry.getKey());
+                    TLongSet ids = new TLongHashSet(entry.getValue().intValue());
+                    while (it.hasNext()) {
+                        Long id = it.next();
+                        if (goldstandard.containsKey(id)) {
+                            String gs = goldstandard.get(id);
+                            usedGsIds++;
+                            if (gs.equals(entry.getKey().getValue())) {
+                                pm.incrementTP();
+                            } else {
+                                pm.incrementFN();
+                            }
+                        } else {
+                            pm.incrementFP();
+                        }
                     }
+                    long stopInside = System.currentTimeMillis();
+                    System.out.println(entry.getKey().getValue() + ": " + (stopInside - startInside) + "ms");
                 }
+                pm.add(0, goldstandard.size() - usedGsIds,
+                        0, currentSeqrun.getNumSequences() - pm.getFN() - pm.getFP() - pm.getTP());
+                performanceMetrics[i++] = pm;
                 p.progress(progress++);
+                stop = System.currentTimeMillis();
+                System.out.println("Job " + i + ": " + (stop - start) + "ms");
+                System.out.println("");
+                System.out.println("");
+                System.out.println("");
+                System.out.println("");
             }
-
         } catch (MGXException ex) {
-            EvalExceptions.printStackTrace(Exceptions.attachMessage(ex, "Cannot download sequence ids for NodeI instance"));
-            p.finish();
-            currentJobs = null;
+            Exceptions.printStackTrace(ex);
             table = null;
+            return;
         }
-//        }
-
-        gsLeaves = null;
-        sampleLeaves = null;
 
         String[] columns = new String[]{
-            "SequenceID", "in Goldstandard", "in both", "in Sample",};
+            "Job", "True positve", "False positve", "False negative", "True negative"};
 
         DefaultTableModel model = new DefaultTableModel(columns, 0) {
 
@@ -164,6 +188,16 @@ public class GSCPerformanceMetricsViewer extends EvaluationViewerI implements GS
             }
         };
 
+        for (int i = 0; i < currentJobs.size(); i++) {
+            Object[] rowData = new Object[columns.length];
+            rowData[0] = currentJobs.get(i);
+            rowData[1] = performanceMetrics[i].getTP();
+            rowData[2] = performanceMetrics[i].getFP();
+            rowData[3] = performanceMetrics[i].getFN();
+            rowData[4] = performanceMetrics[i].getTN();
+            model.addRow(rowData);
+        }
+
         table = new JXTable(model);
         table.setFillsViewportHeight(true);
         for (TableColumn tc : table.getColumns()) {
@@ -174,7 +208,7 @@ public class GSCPerformanceMetricsViewer extends EvaluationViewerI implements GS
             }
         }
         table.setHighlighters(new Highlighter[]{HighlighterFactory.createAlternateStriping()});
-        table.setSortOrder("SequenceID", SortOrder.ASCENDING);
+        table.setSortOrder("Job", SortOrder.ASCENDING);
         p.progress(progress++);
         p.finish();
     }
@@ -201,14 +235,13 @@ public class GSCPerformanceMetricsViewer extends EvaluationViewerI implements GS
                 table = null;
                 currentJobs = jobWizard.getJobs();
                 gsJob = jobWizard.getGoldstandard();
-                attrType = jobWizard.getAttributeType();                
+                attrType = jobWizard.getAttributeType();
             }
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);
             cust = null;
             table = null;
             seqToAttribute = null;
-            treeList = null;
             currentJobs = null;
         }
     }
@@ -220,7 +253,6 @@ public class GSCPerformanceMetricsViewer extends EvaluationViewerI implements GS
         cust = null;
         table = null;
         seqToAttribute = null;
-        treeList = null;
         currentJobs = null;
     }
 

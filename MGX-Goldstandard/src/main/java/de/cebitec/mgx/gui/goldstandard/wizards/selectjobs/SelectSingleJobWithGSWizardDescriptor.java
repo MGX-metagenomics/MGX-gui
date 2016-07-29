@@ -34,7 +34,8 @@ public class SelectSingleJobWithGSWizardDescriptor extends WizardDescriptor impl
         putProperty(WizardDescriptor.PROP_CONTENT_DISPLAYED, Boolean.TRUE);
         putProperty(WizardDescriptor.PROP_CONTENT_NUMBERED, Boolean.TRUE);        
     }
-    
+
+@SuppressWarnings("unchecked")    
     public List<JobI> getJobs(){
         return (List<JobI>)getProperty(SelectSingleJobWithGSVisualPanel1.PROP_JOB);
     }

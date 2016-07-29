@@ -37,7 +37,7 @@ public class GSCVennChartViewer extends EvaluationViewerI implements GSCompariso
     private VennChart venn = null;
 
     private SeqRunI currentSeqrun;
-    private JobI currentJob;
+    private List<JobI> currentJobs;
 
     List<TreeI<Long>> trees;
 
@@ -168,6 +168,7 @@ public class GSCVennChartViewer extends EvaluationViewerI implements GSCompariso
             venn = VennChart.get2Venn(a, b, ab);
         } catch (IOException ex) {
             EvalExceptions.printStackTrace(ex);
+            venn = null;
         } finally {
             p.finish();
         };
@@ -192,15 +193,18 @@ public class GSCVennChartViewer extends EvaluationViewerI implements GSCompariso
             boolean cancelled = jobWizard.getValue() != WizardDescriptor.FINISH_OPTION;
             if (!cancelled) {
                 venn = null;
-                currentJob = jobWizard.getJob();
+                currentJobs = jobWizard.getJobs();
                 JobI gsJob = jobWizard.getGoldstandard();
                 AttributeTypeI attrType = jobWizard.getAttributeType();
                 trees = new ArrayList<>();
                 trees.add(seqrun.getMaster().Attribute().getHierarchy(attrType, gsJob));
-                trees.add(seqrun.getMaster().Attribute().getHierarchy(attrType, currentJob));
+                trees.add(seqrun.getMaster().Attribute().getHierarchy(attrType, currentJobs.get(0)));
             }
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);
+            venn = null;
+            trees = null;
+            currentJobs = null;
         }
     }
 

@@ -38,7 +38,7 @@ public class GSCTableViewer extends EvaluationViewerI implements GSComparisonI {
     private static final int PAGESIZE = 1_000;
 
     private SeqRunI currentSeqrun;
-    private JobI currentJob;
+    private List<JobI> currentJobs;
 
     private JXTable table;
     private JScrollPane pane = null;
@@ -116,7 +116,7 @@ public class GSCTableViewer extends EvaluationViewerI implements GSComparisonI {
         } catch (MGXException ex) {
             EvalExceptions.printStackTrace(Exceptions.attachMessage(ex, "Cannot download sequence ids for NodeI instance"));
             p.finish();
-            currentJob = null;
+            currentJobs = null;
             pane = null;
             table = null;
         }
@@ -167,12 +167,12 @@ public class GSCTableViewer extends EvaluationViewerI implements GSComparisonI {
             boolean cancelled = jobWizard.getValue() != WizardDescriptor.FINISH_OPTION;
             if (!cancelled) {
                 pane = null;
-                currentJob = jobWizard.getJob();
+                currentJobs = jobWizard.getJobs();
                 JobI gsJob = jobWizard.getGoldstandard();
                 AttributeTypeI attrType = jobWizard.getAttributeType();
                 treeList = new ArrayList<>();
                 treeList.add(seqrun.getMaster().Attribute().getHierarchy(attrType, gsJob));
-                treeList.add(seqrun.getMaster().Attribute().getHierarchy(attrType, currentJob));
+                treeList.add(seqrun.getMaster().Attribute().getHierarchy(attrType, currentJobs.get(0)));
             }
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);

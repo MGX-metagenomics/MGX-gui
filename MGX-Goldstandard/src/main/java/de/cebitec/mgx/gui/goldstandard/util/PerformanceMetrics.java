@@ -8,8 +8,11 @@ import org.apache.commons.math3.util.FastMath;
  */
 public class PerformanceMetrics {
 
-    private final long fp, fn,
-            tp, tn;
+    private long fp, fn, tp, tn;
+    
+    public PerformanceMetrics(){
+        this(0, 0, 0, 0);
+    }
 
     public PerformanceMetrics(long falsePostive, long falseNegative, long truePositive, long trueNegative) {
         this.fp = falsePostive;
@@ -17,6 +20,47 @@ public class PerformanceMetrics {
         this.tp = truePositive;
         this.tn = trueNegative;
     }
+    
+    public void add(long falsePostive, long falseNegative, long truePositive, long trueNegative){
+        this.fp += falsePostive;
+        this.fn += falseNegative;
+        this.tp += truePositive;
+        this.tn += trueNegative;
+    }
+    
+    public void incrementFP(){
+        this.fp++;
+    }
+    
+    public void incrementFN(){
+        this.fn++;
+    }
+    
+    public void incrementTP(){
+        this.tp++;
+    }
+    
+    public void incrementTN(){
+        this.tn++;
+    }
+
+    public long getFP() {
+        return fp;
+    }
+
+    public long getFN() {
+        return fn;
+    }
+
+    public long getTP() {
+        return tp;
+    }
+
+    public long getTN() {
+        return tn;
+    }
+    
+    
     
     /**
      * Calculating the sensitivity or true positive rate
