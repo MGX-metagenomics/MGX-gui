@@ -209,7 +209,7 @@ public class BarChartCustomizer extends javax.swing.JPanel implements VisFilterI
         if (at.getStructure() == AttributeTypeI.STRUCTURE_HIERARCHICAL) {
             Set<AttributeI> blackList = treeFilter.getBlackList();
             if (blackList.size() > 0) {
-                ExcludeFilter<Double> ef = new ExcludeFilter<>(blackList);
+                ExcludeFilter ef = new ExcludeFilter(blackList);
                 ret = ef.filter(ret);
             }
         }

@@ -567,6 +567,7 @@
         <module>MGX-Goldstandard</module>
         <module>GPMS-Nodes</module>
         <module>GPMS-Actions</module>
+        <module>MGX-JSCharts</module>
     </modules>
     
     <properties>
