@@ -128,7 +128,7 @@ public class GSCTableViewer extends EvaluationViewerI implements GSComparisonI {
         String[] columns = new String[]{
             "SequenceID", "in Goldstandard", "in both", "in Sample",};
 
-        GSTableViewerPagingModel model = new GSTableViewerPagingModel(seqToAttribute, columns, currentSeqrun.getMaster(), PAGESIZE);
+        GSCTableViewerPagingModel model = new GSCTableViewerPagingModel(seqToAttribute, columns, currentSeqrun.getMaster(), PAGESIZE);
         cust.setModel(model); // for tsv export
         cust.setMaster(currentSeqrun.getMaster());
         table = new JXTable(model);
@@ -142,7 +142,7 @@ public class GSCTableViewer extends EvaluationViewerI implements GSComparisonI {
         }
         table.setHighlighters(new Highlighter[]{HighlighterFactory.createAlternateStriping()});
         table.setSortOrder("SequenceID", SortOrder.ASCENDING);
-        pane = GSTableViewerPagingModel.createPagingScrollPaneForTable(table);
+        pane = GSCTableViewerPagingModel.createPagingScrollPaneForTable(table);
         p.progress(progress++);
         p.finish();
     }

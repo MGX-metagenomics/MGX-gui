@@ -67,7 +67,7 @@ public class PerformanceMetrics {
      * @return \(\frac{TP}{TP+FN}\)
      */
     public double getSensitivity(){
-        return tp/(tp+fn);
+        return (double)tp/(tp+fn);
     }
     
      /**
@@ -75,7 +75,7 @@ public class PerformanceMetrics {
      * @return \(\frac{TN}{TN+FP}\)
      */
     public double getSpecifity(){
-        return tn/(tn+fp);
+        return (double)tn/(tn+fp);
     }
     
     /**
@@ -83,7 +83,7 @@ public class PerformanceMetrics {
      * @return \(\frac{TP}{TP+FP}\)
      */
     public double getPrecision(){
-        return tp/(tp+fp);
+        return (double)tp/(tp+fp);
     }
     
     /**
@@ -91,7 +91,7 @@ public class PerformanceMetrics {
      * @return \(\frac{TN}{TN+FN}\)
      */
     public double getNegativePredictiveValue(){
-        return tn/(tn+fn);
+        return (double)tn/(tn+fn);
     }
     
     /**
@@ -99,7 +99,7 @@ public class PerformanceMetrics {
      * @return \(\frac{FP}{FP+TN}\)
      */
     public double getFalsePositiveRate(){
-        return fp/(fp+tn);
+        return (double)fp/(fp+tn);
     }
     
     /**
@@ -107,7 +107,7 @@ public class PerformanceMetrics {
      * @return \(\frac{FN}{TP+FN}\)
      */
     public double getFalseNegativeRate(){
-        return fn/(tp+fn);
+        return (double)fn/(tp+fn);
     }
     
     /**
@@ -115,7 +115,7 @@ public class PerformanceMetrics {
      * @return \(\frac{FP}{TP+FP}\)
      */
     public double getFalseDiscoveryRate(){
-        return fp/(tp+fp);
+        return (double)fp/(tp+fp);
     }
     
     /**
@@ -123,7 +123,7 @@ public class PerformanceMetrics {
      * @return \(\frac{TP+TN}{TP+FP+FN+TN}\)
      */
     public double getAccuracy(){
-        return (tp+tn)/(tp+fp+fn+tn);
+        return (double)(tp+tn)/(tp+fp+fn+tn);
     }
     
     /**
@@ -131,7 +131,7 @@ public class PerformanceMetrics {
      * @return \(\frac{2TP}{2TP+FP+FN}\)
      */
     public double getF1Score(){
-        return 2*tp/(2*tp+fp+fn);
+        return 2.0*tp/(2*tp+fp+fn);
     }
     
     /**

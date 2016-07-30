@@ -27,7 +27,7 @@ import org.openide.util.Exceptions;
  *
  * @author pblumenk
  */
-public class GSTableViewerPagingModel extends AbstractTableModel {
+public class GSCTableViewerPagingModel extends AbstractTableModel {
 
     private int pageSize;
 
@@ -41,11 +41,11 @@ public class GSTableViewerPagingModel extends AbstractTableModel {
 
     private MGXMasterI master;
 
-    public GSTableViewerPagingModel(TLongObjectMap<String[]> data, String[] colHeader, MGXMasterI master) {
+    public GSCTableViewerPagingModel(TLongObjectMap<String[]> data, String[] colHeader, MGXMasterI master) {
         this(data, colHeader, master, 1_000);
     }
 
-    public GSTableViewerPagingModel(TLongObjectMap<String[]> data, String[] colHeader, MGXMasterI master, int pageSize) {
+    public GSCTableViewerPagingModel(TLongObjectMap<String[]> data, String[] colHeader, MGXMasterI master, int pageSize) {
         this.data = data;
         this.keys = data.keys();
         Arrays.sort(keys);
@@ -183,12 +183,12 @@ public class GSTableViewerPagingModel extends AbstractTableModel {
         TableModel tmodel = jt.getModel();
 
         // Don't choke if this is called on a regular table . . .
-        if (!(tmodel instanceof GSTableViewerPagingModel)) {
+        if (!(tmodel instanceof GSCTableViewerPagingModel)) {
             return jsp;
         }
 
         // Okay, go ahead and build the real scrollpane
-        final GSTableViewerPagingModel model = (GSTableViewerPagingModel) tmodel;
+        final GSCTableViewerPagingModel model = (GSCTableViewerPagingModel) tmodel;
         final JButton upButton = new JButton(new ArrowIcon(ArrowIcon.UP));
         upButton.setEnabled(false); // starts off at 0, so can't go up
         final JButton downButton = new JButton(new ArrowIcon(ArrowIcon.DOWN));

@@ -1,8 +1,5 @@
 package de.cebitec.mgx.gui.goldstandard.ui.charts.gscomparison;
 
-import de.cebitec.mgx.api.MGXMasterI;
-import de.cebitec.mgx.api.exception.MGXException;
-import de.cebitec.mgx.api.model.SequenceI;
 import de.cebitec.mgx.gui.goldstandard.ui.EvaluationTopComponent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -10,13 +7,10 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Iterator;
 import javax.swing.JFileChooser;
 import org.netbeans.api.progress.ProgressHandle;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
-import org.openide.util.Exceptions;
 import org.openide.util.NbPreferences;
 
 /**
@@ -25,10 +19,7 @@ import org.openide.util.NbPreferences;
  */
 public class GSCPerformanceMetricsViewCustomizer extends javax.swing.JPanel {
 
-    private static final int CHUNKSIZE = 2_500;
-
-    private GSTableViewerPagingModel model;
-    private MGXMasterI master;
+    private GSCPerformanceMetricsTableModel model;
 
     /**
      * Creates new form TableViewCustomizer
@@ -37,7 +28,7 @@ public class GSCPerformanceMetricsViewCustomizer extends javax.swing.JPanel {
         initComponents();
     }
 
-    public void setModel(GSTableViewerPagingModel m) {
+    public void setModel(GSCPerformanceMetricsTableModel m) {
         model = m;
         exportTSV.setEnabled(m != null && m.getColumnCount() > 0 && m.getRowCount() > 0);
     }
@@ -139,36 +130,17 @@ public class GSCPerformanceMetricsViewCustomizer extends javax.swing.JPanel {
                         }
 
                         // export data
-                        long[] keys = model.getData().keys();
-                        p.start(keys.length);
-                        int progress = 0;
-                        for (int offset = 0; offset * CHUNKSIZE < model.getRealRowCount(); offset++) {
-                            String[] header = updateHeader(keys, offset);
-                            int size = model.getRealRowCount() - (offset * CHUNKSIZE);
-                            if (size > CHUNKSIZE) {
-                                size = CHUNKSIZE;
-                            }
-                            for (int row = 0; row < size; row++) {
-                                for (int col = 0; col <= model.getColumnCount() - 1; col++) {
-                                    Object val;
-                                    if (col == 0) {
-                                        val = header[row];
-                                    } else {
-                                        val = model.getRealValueAt(row + (offset * CHUNKSIZE), col);
-                                    }
-                                    if (val != null) {
-                                        w.write(val.toString());
-                                    }
-                                    if (col <= model.getColumnCount() - 2 && model.getRealValueAt(row, col + 1) != null) {
-                                        w.write("\t");
-                                    }
+                        for (int row = 0; row < model.getRowCount(); row++) {
+                            for (int col = 0; col <= model.getColumnCount() - 1; col++) {
+                                Object value = model.getValueAt(row, col);
+                                if (value != null) {
+                                    w.write(value.toString());
                                 }
-//                    Object val = model.getValueAt(row, model.getColumnCount() - 1);
-//                    val = val != null ? val : "";
-                                //                  w.write(val.toString());
-                                w.write(System.lineSeparator());
-                                p.progress(progress++);
+                                if (col <= model.getColumnCount() - 2 && model.getValueAt(row, col + 1) != null) {
+                                    w.write("\t");
+                                }
                             }
+                            w.write(System.lineSeparator());
                         }
                         w.flush();
                         w.close();
@@ -181,8 +153,6 @@ public class GSCPerformanceMetricsViewCustomizer extends javax.swing.JPanel {
                         NotifyDescriptor nd = new NotifyDescriptor("Export failed: " + ex.getMessage(), "Error",
                                 NotifyDescriptor.DEFAULT_OPTION, NotifyDescriptor.ERROR_MESSAGE, null, null);
                         DialogDisplayer.getDefault().notify(nd);
-                    } catch (MGXException ex) {
-                        Exceptions.printStackTrace(ex);
                     } finally {
                         p.finish();
                     }
@@ -196,27 +166,7 @@ public class GSCPerformanceMetricsViewCustomizer extends javax.swing.JPanel {
     private javax.swing.JCheckBox includeHeader;
     // End of variables declaration//GEN-END:variables
 
-    private String[] updateHeader(long[] keys, int offset) throws MGXException {
-        long[] ids;
-        int size;
-        if (model.getRealRowCount() - offset * CHUNKSIZE < CHUNKSIZE) {
-            size = model.getRealRowCount() - (offset * CHUNKSIZE);
-            ids = Arrays.copyOfRange(keys, offset * CHUNKSIZE, model.getRealRowCount());
-        } else {
-            size = CHUNKSIZE;
-            ids = Arrays.copyOfRange(keys, offset * CHUNKSIZE, offset * CHUNKSIZE + CHUNKSIZE);
-        }
-        Iterator<SequenceI> it = master.Sequence().fetchByIds(ids);
-        String[] header = new String[size];
-        int i = 0;
-        while (it.hasNext()) {
-            header[i++] = it.next().getName();
-        }
-
-        return header;
-    }
-    
-    public void dispose(){
+    public void dispose() {
         model = null;
     }
 }

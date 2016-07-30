@@ -564,9 +564,7 @@
         <module>MGX-UpdateCenter</module>
         <module>MGX-VizFilter</module>
         <module>MGX-Wizards</module>
-        <module>MGX-Goldstandard</module>
-        <module>GPMS-Nodes</module>
-        <module>GPMS-Actions</module>
+        <module>MGX-Goldstandard</module>        
         <module>MGX-JSCharts</module>
     </modules>
     

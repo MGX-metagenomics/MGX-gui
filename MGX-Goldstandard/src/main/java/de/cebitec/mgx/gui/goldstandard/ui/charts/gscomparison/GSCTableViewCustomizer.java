@@ -27,7 +27,7 @@ public class GSCTableViewCustomizer extends javax.swing.JPanel {
 
     private static final int CHUNKSIZE = 2_500;
 
-    private GSTableViewerPagingModel model;
+    private GSCTableViewerPagingModel model;
     private MGXMasterI master;
 
     /**
@@ -37,7 +37,7 @@ public class GSCTableViewCustomizer extends javax.swing.JPanel {
         initComponents();
     }
 
-    public void setModel(GSTableViewerPagingModel m) {
+    public void setModel(GSCTableViewerPagingModel m) {
         model = m;
         exportTSV.setEnabled(m != null && m.getColumnCount() > 0 && m.getRowCount() > 0);
     }

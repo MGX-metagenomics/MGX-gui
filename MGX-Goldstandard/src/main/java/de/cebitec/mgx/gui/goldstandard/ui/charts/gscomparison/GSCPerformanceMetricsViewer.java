@@ -11,6 +11,7 @@ import de.cebitec.mgx.api.model.tree.NodeI;
 import de.cebitec.mgx.api.model.tree.TreeI;
 import de.cebitec.mgx.gui.goldstandard.ui.charts.EvaluationViewerI;
 import de.cebitec.mgx.gui.goldstandard.util.EvalExceptions;
+import de.cebitec.mgx.gui.goldstandard.util.JobUtils;
 import de.cebitec.mgx.gui.goldstandard.util.NodeUtils;
 import de.cebitec.mgx.gui.goldstandard.util.PerformanceMetrics;
 import de.cebitec.mgx.gui.goldstandard.wizards.selectjobs.SelectSingleJobWithGSWizardDescriptor;
@@ -125,7 +126,6 @@ public class GSCPerformanceMetricsViewer extends EvaluationViewerI implements GS
                 DistributionI<Long> dist = gsJob.getMaster().Attribute().getDistribution(attrType, job);
                 int usedGsIds = 0;
                 for (Map.Entry<AttributeI, Long> entry : dist.entrySet()) {
-                    long startInside = System.currentTimeMillis();
                     Iterator<Long> it = dist.getMaster().Sequence().fetchSequenceIDs(entry.getKey());
                     TLongSet ids = new TLongHashSet(entry.getValue().intValue());
                     while (it.hasNext()) {
@@ -142,19 +142,14 @@ public class GSCPerformanceMetricsViewer extends EvaluationViewerI implements GS
                             pm.incrementFP();
                         }
                     }
-                    long stopInside = System.currentTimeMillis();
-                    System.out.println(entry.getKey().getValue() + ": " + (stopInside - startInside) + "ms");
                 }
                 pm.add(0, goldstandard.size() - usedGsIds,
-                        0, currentSeqrun.getNumSequences() - pm.getFN() - pm.getFP() - pm.getTP());
+                        0, 0);
+                pm.add(0, 0, 0, numSeqs - pm.getFN() - pm.getFP() - pm.getTP());
                 performanceMetrics[i++] = pm;
                 p.progress(progress++);
                 stop = System.currentTimeMillis();
                 System.out.println("Job " + i + ": " + (stop - start) + "ms");
-                System.out.println("");
-                System.out.println("");
-                System.out.println("");
-                System.out.println("");
             }
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);
@@ -162,42 +157,15 @@ public class GSCPerformanceMetricsViewer extends EvaluationViewerI implements GS
             return;
         }
 
-        String[] columns = new String[]{
-            "Job", "True positve", "False positve", "False negative", "True negative"};
-
-        DefaultTableModel model = new DefaultTableModel(columns, 0) {
-
-            @Override
-            public Class<?> getColumnClass(int column) {
-                switch (column) {
-                    case 0:
-                        return String.class;
-                    case 1:
-                    case 2:
-                    case 3:
-                    case 4:
-                        return Long.class;
-                    default:
-                        return Double.class;
-                }
-            }
-
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-        };
-
-        for (int i = 0; i < currentJobs.size(); i++) {
-            Object[] rowData = new Object[columns.length];
-            rowData[0] = currentJobs.get(i);
-            rowData[1] = performanceMetrics[i].getTP();
-            rowData[2] = performanceMetrics[i].getFP();
-            rowData[3] = performanceMetrics[i].getFN();
-            rowData[4] = performanceMetrics[i].getTN();
-            model.addRow(rowData);
+        String[] columns = new String[currentJobs.size()+1];
+        columns[0] = "";
+        for (int i = 1; i<currentJobs.size()+1; i++){
+            columns[i] = JobUtils.jobToString(currentJobs.get(i-1));
         }
 
+        GSCPerformanceMetricsTableModel model = new GSCPerformanceMetricsTableModel(columns, performanceMetrics);
+        cust.setModel(model);
+        
         table = new JXTable(model);
         table.setFillsViewportHeight(true);
         for (TableColumn tc : table.getColumns()) {
@@ -208,7 +176,6 @@ public class GSCPerformanceMetricsViewer extends EvaluationViewerI implements GS
             }
         }
         table.setHighlighters(new Highlighter[]{HighlighterFactory.createAlternateStriping()});
-        table.setSortOrder("Job", SortOrder.ASCENDING);
         p.progress(progress++);
         p.finish();
     }

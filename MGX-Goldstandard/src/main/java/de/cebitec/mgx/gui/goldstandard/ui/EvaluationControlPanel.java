@@ -10,6 +10,7 @@ import de.cebitec.mgx.gui.goldstandard.ui.charts.ComparisonTypeI;
 import de.cebitec.mgx.gui.goldstandard.ui.charts.EvaluationViewerI;
 import de.cebitec.mgx.gui.goldstandard.ui.charts.gscomparison.GSComparisonI;
 import de.cebitec.mgx.gui.goldstandard.ui.charts.pipelinecomparison.PipelineComparisonI;
+import de.cebitec.mgx.gui.goldstandard.util.EvalExceptions;
 import de.cebitec.mgx.gui.goldstandard.wizards.selectjobs.SelectJobsWizardAction;
 import de.cebitec.mgx.gui.goldstandard.wizards.selectjobs.SelectJobsWizardDescriptor;
 import de.cebitec.mgx.gui.swingutils.BaseModel;
@@ -24,6 +25,8 @@ import java.util.Collection;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.List;
+import org.netbeans.api.progress.ProgressHandle;
+import org.netbeans.api.progress.ProgressHandleFactory;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
@@ -219,11 +222,16 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Proper
             controlSplitPane.setBottomComponent(currentViewer.getCustomizer());
             topComponent.setVisualization(null);
         } else {
+            topComponent.setVisualization(null);
             currentViewer.selectJobs(currentSeqrun);
             EvaluationTopComponent.getExecutorService().submit(new Runnable() {
                 @Override
                 public void run() {
-                    topComponent.setVisualization(currentViewer);
+                    try {
+                        topComponent.setVisualization(currentViewer);
+                    } catch (Exception ex) {
+                        EvalExceptions.printStackTrace(ex);                        
+                    }
                 }
             });
         }
