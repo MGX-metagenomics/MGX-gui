@@ -163,7 +163,7 @@ public class ExecuteAnalysis extends NodeAction implements LookupListener {
                     String toolAuthor = (String) wiz.getProperty(AnalysisWizardIterator.PROP_TOOLAUTHOR);
                     String toolWebsite = (String) wiz.getProperty(AnalysisWizardIterator.PROP_TOOL_URL);
                     String toolXML = (String) wiz.getProperty(AnalysisWizardIterator.PROP_TOOL_XML);
-                    Float toolVersion = (Float) wiz.getProperty(AnalysisWizardIterator.PROP_TOOLVERSION);
+                    Float toolVersion = Float.parseFloat((String) wiz.getProperty(AnalysisWizardIterator.PROP_TOOLVERSION));
                     submitTask = new SubmitTask(toolName, toolDesc, toolAuthor, toolWebsite, toolVersion, toolXML, seqrun, params, toolIsCreated);
                 } else {
                     submitTask = new SubmitTask(toolId, toolName, tooltype, seqrun, params, toolIsCreated);
