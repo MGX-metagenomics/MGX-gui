@@ -23,8 +23,8 @@ public class SeqRunNode extends MGXNodeBase<SeqRunI> {
     public SeqRunNode(SeqRunI s, Children children) {
         super(children, Lookups.fixed(s.getMaster(), s), s);
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/SeqRun.png");
-        setShortDescription(getToolTipText(s));
-        setDisplayName(s.getName());
+        super.setShortDescription(getToolTipText(s));
+        super.setDisplayName(s.getName());
     }
 
     private String getToolTipText(SeqRunI run) {

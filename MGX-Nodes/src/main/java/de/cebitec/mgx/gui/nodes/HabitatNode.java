@@ -35,9 +35,9 @@ public class HabitatNode extends MGXNodeBase<HabitatI> {
 
     private HabitatNode(HabitatI h, SampleNodeFactory snf) {
         super(Children.create(snf, true), Lookups.fixed(h.getMaster(), h), h);
-        setDisplayName(h.getName());
-        setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/Habitat.png");
-        setShortDescription(getToolTipText(h));
+        super.setDisplayName(h.getName());
+        super.setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/Habitat.png");
+        super.setShortDescription(getToolTipText(h));
         this.snf = snf;
     }
 
@@ -75,7 +75,7 @@ public class HabitatNode extends MGXNodeBase<HabitatI> {
     private class AddSample extends AbstractAction {
 
         public AddSample() {
-            putValue(NAME, "Add sample");
+            super.putValue(NAME, "Add sample");
         }
 
         @Override

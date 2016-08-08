@@ -64,12 +64,10 @@ public class FileNodeFactory extends MGXNodeFactoryBase<MGXFileI> {
 
     @Override
     public void childrenAdded(NodeMemberEvent ev) {
-        //refresh(true);
     }
 
     @Override
     public void childrenRemoved(NodeMemberEvent ev) {
-        //refresh(true);
     }
 
     @Override
@@ -102,7 +100,7 @@ public class FileNodeFactory extends MGXNodeFactoryBase<MGXFileI> {
             return;
         }
         if ((evt.getPropertyName().equals(ModelBaseI.OBJECT_MODIFIED)) && evt.getSource().equals(curDirectory)) {
-            System.err.println("refreshing for " + curDirectory.getFullPath());
+            //System.err.println("refreshing for " + curDirectory.getFullPath());
             refreshChildren();
             return;
         }

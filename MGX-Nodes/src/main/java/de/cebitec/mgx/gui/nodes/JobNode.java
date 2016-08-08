@@ -33,12 +33,11 @@ public class JobNode extends MGXNodeBase<JobI> {
     public static String TOOL_PROPERTY = "tool";
     public static String SEQRUN_PROPERTY = "seqrun";
     public static String STATE_PROPERTY = "state";
-    //private final Job job;
 
     public JobNode(JobI job, Children c) {
         super(Children.LEAF, Lookups.fixed(job.getMaster(), job), job);
         ToolI tool = job.getTool();
-        setDisplayName(tool.getName());
+        super.setDisplayName(tool.getName());
         String shortDesc = new StringBuilder("<html><b>")
                 .append(tool.getName()).append("</b>")
                 .append("<br><hr><br>")
@@ -54,7 +53,7 @@ public class JobNode extends MGXNodeBase<JobI> {
                 .append(getParameterToolTip(job))
                 .append("</html>")
                 .toString();
-        setShortDescription(shortDesc);
+        super.setShortDescription(shortDesc);
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/AnalysisTasks.png");
     }
     

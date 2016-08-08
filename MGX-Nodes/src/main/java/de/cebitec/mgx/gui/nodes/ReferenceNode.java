@@ -15,9 +15,9 @@ public class ReferenceNode extends MGXNodeBase<MGXReferenceI> {
 
     public ReferenceNode(MGXReferenceI ref) {
         super(Children.LEAF, Lookups.fixed(ref.getMaster(), ref), ref);
-        setDisplayName(ref.getName());
-        setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/Habitat.png");
-        setShortDescription(getToolTipText(ref));
+        super.setDisplayName(ref.getName());
+        super.setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/Habitat.png");
+        super.setShortDescription(getToolTipText(ref));
     }
 
     private String getToolTipText(MGXReferenceI ref) {
