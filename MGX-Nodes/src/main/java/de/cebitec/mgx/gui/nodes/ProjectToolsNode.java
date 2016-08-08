@@ -12,7 +12,7 @@ public class ProjectToolsNode extends MGXNodeBase<MGXMasterI> {
 
     public ProjectToolsNode(MGXMasterI m) {
         super(Children.LEAF, Lookups.singleton(m), m);
-        setDisplayName("Tools");
+        super.setDisplayName("Tools");
     }
 
     @Override

@@ -1,6 +1,5 @@
 package de.cebitec.mgx.gui.nodes;
 
-import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.ModelBaseI;
 import javax.swing.Action;
 import org.openide.nodes.Children;

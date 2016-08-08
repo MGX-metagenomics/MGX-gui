@@ -32,9 +32,8 @@ public class ReplicateNode extends AbstractNodeBase<VisualizationGroupI> {
 
     public ReplicateNode(ReplicateI replicate) {
         super(new GroupedSeqRunNodeFactory(replicate), Lookups.singleton(replicate), replicate);
-        //super(replicate);
-        setName(replicate.getName());
-        setDisplayName(replicate.getName());
+        super.setName(replicate.getName());
+        super.setDisplayName(replicate.getName());
     }
 
     @Override

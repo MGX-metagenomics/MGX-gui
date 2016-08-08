@@ -19,8 +19,8 @@ public final class VgMgrNode extends AbstractNode {
 
     public VgMgrNode(VGroupManagerI vgmgr) {
         super(Children.create(new VisualizationGroupSet(vgmgr), false), Lookups.singleton(vgmgr));
-        setName("Visualization group manager");
-        setDisplayName("Visualization group manager");
+        super.setName("Visualization group manager");
+        super.setDisplayName("Visualization group manager");
     }
 
 }

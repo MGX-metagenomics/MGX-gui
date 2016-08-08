@@ -33,8 +33,8 @@ public class VizGroupNode extends AbstractNodeBase<VisualizationGroupI> {
 
     private VizGroupNode(GroupedSeqRunNodeFactory nf, VisualizationGroupI vGroup) {
         super(nf, Lookups.singleton(vGroup), vGroup);
-        setName(vGroup.getName());
-        setDisplayName(vGroup.getName());
+        super.setName(vGroup.getName());
+        super.setDisplayName(vGroup.getName());
     }
 
     @Override
