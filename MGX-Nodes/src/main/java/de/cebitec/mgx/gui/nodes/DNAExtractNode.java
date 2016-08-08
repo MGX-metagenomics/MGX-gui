@@ -22,7 +22,7 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtractI> {
     }
 
     private DNAExtractNode(DNAExtractI d, SeqRunNodeFactory snf) {
-        super(d.getMaster(), Children.create(snf, true), Lookups.fixed(d.getMaster(), d), d);
+        super(Children.create(snf, true), Lookups.fixed(d.getMaster(), d), d);
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/DNAExtract.png");
         setShortDescription(getToolTipText(d));
         setDisplayName(d.getName());

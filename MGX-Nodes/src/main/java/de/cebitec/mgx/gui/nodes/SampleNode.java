@@ -40,7 +40,7 @@ public class SampleNode extends MGXNodeBase<SampleI> {
     }
 
     private SampleNode(SampleI s, DNAExtractNodeFactory snf) {
-        super(s.getMaster(), Children.create(snf, true), Lookups.fixed(s.getMaster(), s), s);
+        super(Children.create(snf, true), Lookups.fixed(s.getMaster(), s), s);
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/Sample.png");
         setShortDescription(getToolTipText(s));
         setDisplayName(s.getMaterial());

@@ -22,7 +22,7 @@ public class ProjectNode extends MGXNodeBase<MGXMasterI> {
     }
 
     private ProjectNode(MGXMasterI m, ProjectStructureNodeFactory nf) {
-        super(m, Children.create(nf, false), Lookups.fixed(m), m);
+        super(Children.create(nf, false), Lookups.fixed(m), m);
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/mgx.png");
         //this.nf = nf;
     }

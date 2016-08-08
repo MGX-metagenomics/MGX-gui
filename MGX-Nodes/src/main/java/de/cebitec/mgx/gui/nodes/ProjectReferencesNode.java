@@ -36,7 +36,7 @@ public class ProjectReferencesNode extends MGXNodeBase<MGXMasterI> {
     }
 
     private ProjectReferencesNode(ReferenceNodeFactory rnf, MGXMasterI m) {
-        super(m, Children.create(rnf, true), Lookups.fixed(m), m);
+        super(Children.create(rnf, true), Lookups.fixed(m), m);
         nf = rnf;
     }
 
