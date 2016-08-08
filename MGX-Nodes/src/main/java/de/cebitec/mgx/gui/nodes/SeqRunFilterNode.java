@@ -37,7 +37,7 @@ public class SeqRunFilterNode extends FilterNode implements NodeListener {
         disableDelegation(DELEGATE_SET_DISPLAY_NAME + DELEGATE_GET_ACTIONS);
         n = node;
         this.vGroup = vGroup;
-        setShortDescription(getToolTipText(n.getContent()));
+        super.setShortDescription(getToolTipText(n.getContent()));
         node.addNodeListener(this);
     }
 

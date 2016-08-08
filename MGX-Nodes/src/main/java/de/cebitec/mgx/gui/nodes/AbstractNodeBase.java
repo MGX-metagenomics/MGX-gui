@@ -32,10 +32,6 @@ public abstract class AbstractNodeBase<T extends ModelBaseI<T>> extends Abstract
         return content;
     }
 
-//    @Override
-//    public final Transferable drag() throws IOException {
-//        return content;
-//    }
     @Override
     protected final void createPasteTypes(Transferable t, List<PasteType> s) {
         super.createPasteTypes(t, s);

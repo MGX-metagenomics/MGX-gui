@@ -13,7 +13,7 @@ public class ProjectJobsNode extends MGXNodeBase<MGXMasterI> {
 
     public ProjectJobsNode(MGXMasterI m) {
         super(Children.LEAF, Lookups.singleton(m), m);
-        setDisplayName("Jobs");
+        super.setDisplayName("Jobs");
     }
 
     @Override

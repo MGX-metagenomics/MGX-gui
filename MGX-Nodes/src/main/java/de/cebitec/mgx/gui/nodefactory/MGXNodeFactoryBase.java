@@ -64,13 +64,11 @@ public abstract class MGXNodeFactoryBase<T> extends ChildFactory<T> implements N
 
     @Override
     public void childrenAdded(NodeMemberEvent ev) {
-//        refresh(true);
         refreshChildren();
     }
 
     @Override
     public void childrenRemoved(NodeMemberEvent ev) {
-//        refresh(true);
         refreshChildren();
     }
 
@@ -80,7 +78,6 @@ public abstract class MGXNodeFactoryBase<T> extends ChildFactory<T> implements N
 
     @Override
     public void nodeDestroyed(NodeEvent ev) {
-//        refresh(true);
         refreshChildren();
     }
 

@@ -23,7 +23,7 @@ public class ProjectFilesNode extends MGXNodeBase<MGXFileI> {
 
     private ProjectFilesNode(MGXFileI root) {
         this(new FileNodeFactory(root), root);
-        setDisplayName("Project Files");
+        super.setDisplayName("Project Files");
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/ProjectFiles.png");
     }
 
