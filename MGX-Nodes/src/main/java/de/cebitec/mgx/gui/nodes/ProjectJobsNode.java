@@ -12,7 +12,7 @@ import org.openide.util.lookup.Lookups;
 public class ProjectJobsNode extends MGXNodeBase<MGXMasterI> {
 
     public ProjectJobsNode(MGXMasterI m) {
-        super(m, Children.LEAF, Lookups.singleton(m), m);
+        super(Children.LEAF, Lookups.singleton(m), m);
         setDisplayName("Jobs");
     }
 
