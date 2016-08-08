@@ -13,18 +13,8 @@ import org.openide.util.Lookup;
  */
 public abstract class MGXNodeBase<T extends ModelBaseI<T>> extends AbstractNodeBase<T> {
 
-    private final MGXMasterI master;
-
-    protected MGXNodeBase(MGXMasterI master, Children children, Lookup lookup, T data) {
+    protected MGXNodeBase(Children children, Lookup lookup, T data) {
         super(children, lookup, data);
-        if (master == null) {
-            throw new IllegalArgumentException("null master supplied");
-        }
-        this.master = master;
-    }
-
-    protected final MGXMasterI getMaster() {
-        return master;
     }
 
     @Override
