@@ -6,6 +6,7 @@
 package de.cebitec.mgx.gui.groups;
 
 import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.groups.ConflictingJobsException;
 import de.cebitec.mgx.api.groups.ReplicateGroupI;
 import de.cebitec.mgx.api.groups.ReplicateI;
@@ -30,6 +31,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -247,10 +249,42 @@ public class VisualizationGroupTest {
 
     }
 
+    @Test
+    public void testRegression() throws MGXException, ConflictingJobsException {
+        System.out.println("testRegression");
+        VGroupManagerI mgr = VGroupManager.getTestInstance();
+
+        mgr.registerResolver(new ConflictResolver() {
+            @Override
+            public void resolve(List<VisualizationGroupI> vg) {
+                System.err.println("Resolving for " + vg.size() + " groups.");
+            }
+        });
+        MGXMasterI master = TestMaster.getRO();
+        SeqRunI dataset1 = master.SeqRun().fetch(1);
+        assertEquals("dataset1", dataset1.getName());
+        VisualizationGroupI vGrp = mgr.createVisualizationGroup();
+        //
+        vGrp.addSeqRun(dataset1);
+
+        boolean mayContinue = mgr.selectAttributeType("COG");
+        assertTrue(mayContinue);
+
+        mayContinue = mgr.selectAttributeType("NCBI_PHYLUM");
+        assertFalse(mayContinue);
+
+        //mgr.createVisualizationGroup();
+        mayContinue = mgr.selectAttributeType("NCBI_PHYLUM");
+        assertFalse(mayContinue);
+
+        mayContinue = mgr.selectAttributeType("NCBI_PHYLUM");
+        assertFalse(mayContinue);
+    }
+
     private final class DummyResolver implements ConflictResolver {
 
         @Override
-        public boolean resolve(List<VisualizationGroupI> vgroups) {
+        public void resolve(List<VisualizationGroupI> vgroups) {
             for (VisualizationGroupI vg : vgroups) {
                 List<Triple<AttributeRank, SeqRunI, Set<JobI>>> conflicts = vg.getConflicts();
                 for (Triple<AttributeRank, SeqRunI, Set<JobI>> t : conflicts) {
@@ -259,7 +293,6 @@ public class VisualizationGroupTest {
                 }
             }
             vgroups.clear();
-            return true;
         }
     }
 }
