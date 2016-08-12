@@ -23,7 +23,7 @@ import org.openide.util.lookup.InstanceContent;
 )
 @TopComponent.Description(
         preferredID = "EvaluationTopComponent",
-        iconBase = "de/cebitec/mgx/gui/goldstandard/ui/stopwatch.png",
+        iconBase = "de/cebitec/mgx/gui/goldstandard/ui/icon.png",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(mode = "editor", openAtStartup = false)
@@ -37,9 +37,9 @@ import org.openide.util.lookup.InstanceContent;
         preferredID = "EvaluationTopComponent"
 )
 @Messages({
-    "CTL_EvaluationAction=EvaluationTopComponent",
-    "CTL_EvaluationTopComponent=EvaluationTopComponent Window",
-    "HINT_EvaluationTopComponent=This is a EvaluationTopComponent window"
+    "CTL_EvaluationAction=Evaluate pipelines",
+    "CTL_EvaluationTopComponent=Evaluate pipelines",
+    "HINT_EvaluationTopComponent=Tool for a fast evaluation of pipelines"
 })
 public final class EvaluationTopComponent extends TopComponent {
 
