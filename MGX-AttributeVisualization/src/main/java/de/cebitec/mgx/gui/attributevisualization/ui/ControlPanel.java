@@ -76,7 +76,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
 
         vgmgr.registerResolver(new ConflictResolver() {
             @Override
-            public boolean resolve(List<VisualizationGroupI> groups) {
+            public void resolve(List<VisualizationGroupI> groups) {
                 ConflictResolverWizardIterator iter = new ConflictResolverWizardIterator(groups);
                 WizardDescriptor wiz = new WizardDescriptor(iter);
                 wiz.setTitleFormat(new MessageFormat("{0}"));
@@ -87,10 +87,6 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
                         vg.resolveConflict(p.getSecond().getFirst(), p.getSecond().getSecond(), p.getSecond().getThird());
                         groups.remove(vg);
                     }
-                    return true; // groups.isempty()?
-                } else {
-                    // FIXME - cancel?
-                    return false;
                 }
             }
         });
@@ -310,6 +306,8 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
             // disable all downstream elements, excluding self
             visualizationTypeList.setEnabled(false);
             updateButton.setEnabled(false);
+            
+            System.err.println("Selecting " +currentAttributeType.getName());
 
             if (vgmgr.selectAttributeType(currentAttributeType.getName())) {
                 // fetch distribution (and hierarchy) in background

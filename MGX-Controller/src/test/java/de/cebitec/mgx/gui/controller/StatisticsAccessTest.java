@@ -161,7 +161,7 @@ public class StatisticsAccessTest {
     private class Resolver implements ConflictResolver {
 
         @Override
-        public boolean resolve(List<VisualizationGroupI> vg) {
+        public void resolve(List<VisualizationGroupI> vg) {
             for (VisualizationGroupI g : vg.toArray(new VisualizationGroupI[]{})) {
 
                 if (g.getDisplayName().equals("grp1")) {
@@ -179,7 +179,6 @@ public class StatisticsAccessTest {
                 }
                 vg.remove(g);
             }
-            return true;
         }
 
         private JobI extract(long id, Set<JobI> jobs) {
