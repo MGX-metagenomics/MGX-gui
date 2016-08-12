@@ -14,5 +14,5 @@ import java.util.List;
  */
 public interface ConflictResolver {
 
-    public boolean resolve(List<VisualizationGroupI> vg);
+    public void resolve(List<VisualizationGroupI> vg);
 }
