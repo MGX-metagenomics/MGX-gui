@@ -184,9 +184,11 @@ public class VGroupManager implements VGroupManagerI {
 
         if (conflicts == null || conflicts.isEmpty()) {
             currentAttributeType.put(rank, aType); // remember selection
+            System.err.println("selectAttributeType for "+aType+": true");
             return true;
         }
 
+        System.err.println("selectAttributeType for "+aType+": false");
         return false;
     }
 
@@ -205,6 +207,7 @@ public class VGroupManager implements VGroupManagerI {
                     numActiveGroups++;
                     Map<SeqRunI, Set<JobI>> conflicts = vg.getConflicts(AttributeRank.PRIMARY);
                     if (!conflicts.isEmpty()) {
+                        System.err.println("CONFLICT for " + vg.getName());
                         assert false;
                         return null;
                     }
