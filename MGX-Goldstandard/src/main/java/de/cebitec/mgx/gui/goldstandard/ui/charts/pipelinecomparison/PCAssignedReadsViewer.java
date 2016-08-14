@@ -17,6 +17,7 @@ import org.apache.commons.math3.util.FastMath;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.StandardChartTheme;
 import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.CategoryLabelPositions;
 import org.jfree.chart.axis.LogarithmicAxis;
@@ -27,6 +28,7 @@ import org.jfree.chart.labels.StandardCategoryToolTipGenerator;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.BarRenderer;
+import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.openide.DialogDisplayer;
@@ -47,8 +49,15 @@ public class PCAssignedReadsViewer extends EvaluationViewerI implements Pipeline
     private Collection<JobI> jobs;
     private PCAssignedReadsViewCustomizer cust = null;
     private JFreeChart chart = null;
-    private CategoryDataset dataset;
+    private CategoryDataset dataset;    
 
+    public PCAssignedReadsViewer() {
+        //deactivate glossy effect
+        ChartFactory.setChartTheme(StandardChartTheme.createLegacyTheme());
+        BarRenderer.setDefaultShadowsVisible(false);
+        XYBarRenderer.setDefaultShadowsVisible(false);
+    }        
+    
     @Override
     public JComponent getComponent() {
         if (jobs == null || usedAttributeType == null) {

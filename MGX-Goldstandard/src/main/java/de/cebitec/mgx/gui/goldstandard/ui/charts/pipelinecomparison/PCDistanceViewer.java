@@ -23,7 +23,11 @@ import javax.swing.table.TableColumn;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.decorator.Highlighter;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
+import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.StandardChartTheme;
+import org.jfree.chart.renderer.category.BarRenderer;
+import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.data.category.CategoryDataset;
 import org.openide.DialogDisplayer;
 import org.openide.WizardDescriptor;
@@ -44,6 +48,13 @@ public class PCDistanceViewer extends EvaluationViewerI implements PipelineCompa
     private PCDistanceViewCustomizer cust = null;
     private JFreeChart chart = null;
     private CategoryDataset dataset;
+
+    public PCDistanceViewer() {
+        //deactivate glossy effect
+        ChartFactory.setChartTheme(StandardChartTheme.createLegacyTheme());
+        BarRenderer.setDefaultShadowsVisible(false);
+        XYBarRenderer.setDefaultShadowsVisible(false);
+    }
 
     @Override
     public JComponent getComponent() {
@@ -118,8 +129,8 @@ public class PCDistanceViewer extends EvaluationViewerI implements PipelineCompa
             System.out.println("C" + (stop - start) + "ms");
             start = System.currentTimeMillis();
 
-            if (((PCDistanceViewCustomizer)getCustomizer()).normalizeVectors()){
-                for (i = 0; i < vectors.length;  i++){
+            if (((PCDistanceViewCustomizer) getCustomizer()).normalizeVectors()) {
+                for (i = 0; i < vectors.length; i++) {
                     vectors[i] = vectors[i].normalize();
                 }
             }
@@ -163,12 +174,12 @@ public class PCDistanceViewer extends EvaluationViewerI implements PipelineCompa
         System.out.println("E" + (stop - start) + "ms");
 
         String numberFormat;
-        if (((PCDistanceViewCustomizer)getCustomizer()).normalizeVectors()){
+        if (((PCDistanceViewCustomizer) getCustomizer()).normalizeVectors()) {
             numberFormat = "%.5f";
         } else {
-            numberFormat ="%.2f";
+            numberFormat = "%.2f";
         }
-        
+
         for (i = 0; i < jobs.size(); i++) {
             Object[] rowData = new Object[columns.length];
             rowData[0] = columns[i + 1];
