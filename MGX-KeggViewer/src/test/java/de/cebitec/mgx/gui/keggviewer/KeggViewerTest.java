@@ -64,7 +64,7 @@ public class KeggViewerTest {
 
         mgr.registerResolver(new ConflictResolver() {
             @Override
-            public void resolve(List<VisualizationGroupI> data) {
+            public void resolve(String attrType, List<VisualizationGroupI> data) {
                 data.clear();
             }
         });
