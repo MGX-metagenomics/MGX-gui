@@ -76,7 +76,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
 
         vgmgr.registerResolver(new ConflictResolver() {
             @Override
-            public void resolve(List<VisualizationGroupI> groups) {
+            public void resolve(String attrType, List<VisualizationGroupI> groups) {
                 ConflictResolverWizardIterator iter = new ConflictResolverWizardIterator(groups);
                 WizardDescriptor wiz = new WizardDescriptor(iter);
                 wiz.setTitleFormat(new MessageFormat("{0}"));
@@ -84,7 +84,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
                 if (DialogDisplayer.getDefault().notify(wiz) == WizardDescriptor.FINISH_OPTION) {
                     for (Pair<VisualizationGroupI, Triple<AttributeRank, SeqRunI, JobI>> p : iter.getSelection()) {
                         VisualizationGroupI vg = p.getFirst();
-                        vg.resolveConflict(p.getSecond().getFirst(), p.getSecond().getSecond(), p.getSecond().getThird());
+                        vg.resolveConflict(p.getSecond().getFirst(), attrType, p.getSecond().getSecond(), p.getSecond().getThird());
                         groups.remove(vg);
                     }
                 }

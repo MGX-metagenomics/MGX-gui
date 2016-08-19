@@ -313,7 +313,7 @@ public class ReplicateGroup implements ReplicateGroupI {
         }
 
         if (!conflicts.isEmpty()) {
-            resolver.resolve(conflicts);
+            resolver.resolve(VGroupManager.getInstance().getSelectedAttributeType(), conflicts);
         }
 
         return DistributionFactory.statisticalMerge(dists);
