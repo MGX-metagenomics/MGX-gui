@@ -84,7 +84,7 @@ public interface VisualizationGroupI extends ModelBaseI<VisualizationGroupI>, Pr
 //    void removePropertyChangeListener(PropertyChangeListener p);
     public void removeSeqRun(final SeqRunI sr);
 
-    public void resolveConflict(AttributeRank rank, SeqRunI sr, JobI j);
+    public void resolveConflict(AttributeRank rank, String attributeType, SeqRunI sr, JobI j);
 
     /**
      *

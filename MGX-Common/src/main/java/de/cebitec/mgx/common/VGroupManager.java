@@ -174,21 +174,24 @@ public class VGroupManager implements VGroupManagerI {
                         }
                         conflicts.add(vg);
                     }
+                } else {
+                    System.err.println(vg.getName() + " is not active");
                 }
             }
         }
 
         if (conflicts != null && !conflicts.isEmpty()) {
-            resolver.resolve(conflicts);
+            resolver.resolve(aType, conflicts);
         }
 
         if (conflicts == null || conflicts.isEmpty()) {
-            currentAttributeType.put(rank, aType); // remember selection
-            System.err.println("selectAttributeType for "+aType+": true");
+            currentAttributeType.put(rank, aType); // remember attribute type selection
+            System.err.println("selectAttributeType for " + aType + ": true");
             return true;
         }
 
-        System.err.println("selectAttributeType for "+aType+": false");
+        System.err.println("selectAttributeType for " + aType + ": false");
+        currentAttributeType.put(rank, null);
         return false;
     }
 

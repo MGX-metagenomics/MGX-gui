@@ -33,6 +33,7 @@ import java.util.UUID;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import org.junit.Test;
@@ -210,10 +211,32 @@ public class VisualizationGroupTest {
     }
 
     @Test
+    public void testSelectedAttributeAfterConflict() throws MGXException {
+        System.out.println("testSelectedAttributeAfterConflict");
+        VGroupManagerI mgr = VGroupManager.getTestInstance();
+
+        MGXMasterI master = TestMaster.getRO();
+        SeqRunI dataset1 = master.SeqRun().fetch(1);
+        assertEquals("dataset1", dataset1.getName());
+        VisualizationGroupI vGrp = mgr.createVisualizationGroup();
+        vGrp.addSeqRun(dataset1);
+
+        boolean haveException = false;
+        try {
+            vGrp.selectAttributeType(AttributeRank.PRIMARY, "NCBI_PHYLUM");
+        } catch (ConflictingJobsException ex) {
+            haveException = true;
+        }
+        assertTrue("Job conflict exception should have been thrown.", haveException);
+        assertNull("attribute type should be null if a conflict occurs", vGrp.getSelectedAttributeType());
+    }
+
+    @Test
     public void testReplicateGroupRegression() throws Exception {
         System.out.println("testReplicateGroupRegression");
         VGroupManagerI vgmgr = VGroupManager.getTestInstance();
         SeqRunI seqrun = TestMaster.getRO().SeqRun().fetch(2); //dataset2
+        assertEquals("dataset2", seqrun.getName());
 
         VisualizationGroupI vg = vgmgr.createVisualizationGroup();
         //vgmgr.removeVisualizationGroup(vg);
@@ -233,6 +256,9 @@ public class VisualizationGroupTest {
 
         boolean ok = vgmgr.selectAttributeType(AttributeRank.PRIMARY, "NCBI_GENUS");
         assertTrue(ok);
+        assertNotNull(vgmgr.getSelectedAttributeType());
+        assertNotNull(rg1r1.getSelectedAttributeType());
+        assertNotNull(rg2r1.getSelectedAttributeType());
 
         List<Pair<VisualizationGroupI, DistributionI<Long>>> dists = vgmgr.getDistributions();
         List<Pair<VisualizationGroupI, TreeI<Long>>> trees = vgmgr.getHierarchies();
@@ -250,13 +276,48 @@ public class VisualizationGroupTest {
     }
 
     @Test
+    public void testVGroupRegression() throws MGXException {
+        System.out.println("testVGroupRegression");
+        VGroupManagerI mgr = VGroupManager.getTestInstance();
+
+        mgr.registerResolver(new ConflictResolver() {
+            @Override
+            public void resolve(String attrType, List<VisualizationGroupI> vg) {
+                System.err.println("Resolving for " + vg.size() + " groups.");
+            }
+        });
+        MGXMasterI master = TestMaster.getRO();
+        SeqRunI dataset1 = master.SeqRun().fetch(1);
+        assertEquals("dataset1", dataset1.getName());
+        VisualizationGroupI vGrp = mgr.createVisualizationGroup();
+        vGrp.addSeqRun(dataset1);
+
+        boolean haveException = false;
+        try {
+            vGrp.selectAttributeType(AttributeRank.PRIMARY, "NCBI_PHYLUM");
+        } catch (ConflictingJobsException ex) {
+            haveException = true;
+        }
+        assertTrue(haveException);
+
+        haveException = false;
+
+        try {
+            vGrp.selectAttributeType(AttributeRank.PRIMARY, "NCBI_PHYLUM");
+        } catch (ConflictingJobsException ex) {
+            haveException = true;
+        }
+        assertTrue(haveException);
+    }
+
+    @Test
     public void testRegression() throws MGXException, ConflictingJobsException {
         System.out.println("testRegression");
         VGroupManagerI mgr = VGroupManager.getTestInstance();
 
         mgr.registerResolver(new ConflictResolver() {
             @Override
-            public void resolve(List<VisualizationGroupI> vg) {
+            public void resolve(String attrType, List<VisualizationGroupI> vg) {
                 System.err.println("Resolving for " + vg.size() + " groups.");
             }
         });
@@ -267,29 +328,28 @@ public class VisualizationGroupTest {
         //
         vGrp.addSeqRun(dataset1);
 
-        boolean mayContinue = mgr.selectAttributeType("COG");
-        assertTrue(mayContinue);
-
-        mayContinue = mgr.selectAttributeType("NCBI_PHYLUM");
-        assertFalse(mayContinue);
-
-        //mgr.createVisualizationGroup();
-        mayContinue = mgr.selectAttributeType("NCBI_PHYLUM");
+//        boolean mayContinue = mgr.selectAttributeType("COG");
+//        assertTrue(mayContinue);
+        boolean mayContinue = mgr.selectAttributeType("NCBI_PHYLUM");
         assertFalse(mayContinue);
 
         mayContinue = mgr.selectAttributeType("NCBI_PHYLUM");
         assertFalse(mayContinue);
+
+//        mayContinue = mgr.selectAttributeType("NCBI_PHYLUM");
+//        assertFalse(mayContinue);
     }
 
     private final class DummyResolver implements ConflictResolver {
 
         @Override
-        public void resolve(List<VisualizationGroupI> vgroups) {
+        public void resolve(String attributeType, List<VisualizationGroupI> vgroups) {
             for (VisualizationGroupI vg : vgroups) {
+                System.err.println("Resolving group " + vg.getName());
                 List<Triple<AttributeRank, SeqRunI, Set<JobI>>> conflicts = vg.getConflicts();
                 for (Triple<AttributeRank, SeqRunI, Set<JobI>> t : conflicts) {
                     // always resolve to conflict to first job
-                    vg.resolveConflict(AttributeRank.PRIMARY, t.getSecond(), t.getThird().toArray(new JobI[]{})[0]);
+                    vg.resolveConflict(AttributeRank.PRIMARY, attributeType, t.getSecond(), t.getThird().toArray(new JobI[]{})[0]);
                 }
             }
             vgroups.clear();
