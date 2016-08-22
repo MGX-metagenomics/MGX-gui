@@ -15,7 +15,9 @@ import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import java.awt.Dialog;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import javax.swing.JComponent;
 import javax.swing.table.DefaultTableModel;
@@ -45,8 +47,7 @@ public class PCDistanceViewer extends EvaluationViewerI implements PipelineCompa
     private AttributeTypeI usedAttributeType;
     private JXTable table;
     private List<JobI> jobs;
-    private PCDistanceViewCustomizer cust = null;
-    private JFreeChart chart = null;
+    private PCDistanceViewCustomizer cust = null;    
     private CategoryDataset dataset;
 
     public PCDistanceViewer() {
@@ -86,56 +87,43 @@ public class PCDistanceViewer extends EvaluationViewerI implements PipelineCompa
     @Override
     public void evaluate() {
         Vector[] vectors;
-        long start, stop;
         try {
-            TLongObjectMap<long[]> attributes = null;
+            Map<AttributeI, long[]> attributes = null;
             int i = 0;
-            start = System.currentTimeMillis();
             for (JobI job : jobs) {
                 DistributionI<Long> dist = job.getMaster().Attribute().getDistribution(usedAttributeType, job);
                 if (attributes == null) {
-                    attributes = new TLongObjectHashMap<>((int) (dist.size() * 1.3));
+                    attributes = new HashMap<>((int) (dist.size() * 1.3));
                 }
                 for (Entry<AttributeI, Long> attr : dist.entrySet()) {
-                    if (attributes.containsKey(attr.getKey().getId())) {
-                        attributes.get(attr.getKey().getId())[i] = attr.getValue();
+                    if (attributes.containsKey(attr.getKey())) {
+                        attributes.get(attr.getKey())[i] = attr.getValue();
                     } else {
                         long[] array = new long[jobs.size()];
                         Arrays.fill(array, 0);
                         array[i] = attr.getValue();
-                        attributes.put(attr.getKey().getId(), array);
+                        attributes.put(attr.getKey(), array);
                     }
                 }
                 i++;
             }
-            stop = System.currentTimeMillis();
-            System.out.println("A" + (stop - start) + "ms");
-            start = System.currentTimeMillis();
 
             vectors = new Vector[jobs.size()];
             for (i = 0; i < jobs.size(); i++) {
                 vectors[i] = new Vector(attributes.size());
             }
-            stop = System.currentTimeMillis();
-            System.out.println("B" + (stop - start) + "ms");
-            start = System.currentTimeMillis();
-            for (long key : attributes.keys()) {
+            for (AttributeI key : attributes.keySet()) {
                 long[] values = attributes.get(key);
                 for (i = 0; i < values.length; i++) {
                     vectors[i].add(values[i]);
                 }
             }
-            stop = System.currentTimeMillis();
-            System.out.println("C" + (stop - start) + "ms");
-            start = System.currentTimeMillis();
 
             if (((PCDistanceViewCustomizer) getCustomizer()).normalizeVectors()) {
                 for (i = 0; i < vectors.length; i++) {
                     vectors[i] = vectors[i].normalize();
                 }
             }
-            stop = System.currentTimeMillis();
-            System.out.println("D" + (stop - start) + "ms");
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);
             return;
@@ -161,7 +149,6 @@ public class PCDistanceViewer extends EvaluationViewerI implements PipelineCompa
             }
         };
 
-        start = System.currentTimeMillis();
         double[][] distances = new double[jobs.size()][jobs.size()];
 
         for (i = 0; i < distances.length - 1; i++) {
@@ -170,8 +157,6 @@ public class PCDistanceViewer extends EvaluationViewerI implements PipelineCompa
                 distances[j][i] = distances[i][j];
             }
         }
-        stop = System.currentTimeMillis();
-        System.out.println("E" + (stop - start) + "ms");
 
         String numberFormat;
         if (((PCDistanceViewCustomizer) getCustomizer()).normalizeVectors()) {
