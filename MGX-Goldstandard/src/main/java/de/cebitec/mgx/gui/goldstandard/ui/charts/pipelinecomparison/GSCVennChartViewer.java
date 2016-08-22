@@ -9,7 +9,6 @@ import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.goldstandard.ui.charts.EvaluationViewerI;
 import de.cebitec.mgx.gui.goldstandard.ui.charts.VennChart;
-import de.cebitec.mgx.gui.goldstandard.ui.charts.gscomparison.GSComparisonI;
 import de.cebitec.mgx.gui.goldstandard.util.EvalExceptions;
 import de.cebitec.mgx.gui.goldstandard.util.JobUtils;
 import de.cebitec.mgx.gui.goldstandard.wizards.selectjobs.SelectJobsWizardDescriptor;
@@ -78,7 +77,7 @@ public class GSCVennChartViewer extends EvaluationViewerI implements PipelineCom
 
     @SuppressWarnings("unchecked")
     @Override
-    public void evaluate() {
+    public void evaluate() {        
         DistributionI<Long> distA = dists.get(0);
         DistributionI<Long> distB = dists.get(1);
         
