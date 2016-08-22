@@ -1,4 +1,4 @@
-package de.cebitec.mgx.gui.goldstandard.ui.charts.gscomparison;
+package de.cebitec.mgx.gui.goldstandard.ui.charts.pipelinecomparison;
 
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.groups.ImageExporterI;
@@ -9,7 +9,9 @@ import de.cebitec.mgx.api.model.tree.NodeI;
 import de.cebitec.mgx.api.model.tree.TreeI;
 import de.cebitec.mgx.gui.goldstandard.ui.charts.EvaluationViewerI;
 import de.cebitec.mgx.gui.goldstandard.util.EvalExceptions;
+import de.cebitec.mgx.gui.goldstandard.util.JobUtils;
 import de.cebitec.mgx.gui.goldstandard.util.NodeUtils;
+import de.cebitec.mgx.gui.goldstandard.wizards.selectjobs.SelectJobsWizardDescriptor;
 import de.cebitec.mgx.gui.goldstandard.wizards.selectjobs.SelectSingleJobWithGSWizardDescriptor;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
@@ -32,8 +34,8 @@ import org.openide.util.lookup.ServiceProvider;
 /**
  * @author patrick
  */
-@ServiceProvider(service = GSComparisonI.class)
-public class GSCTableViewer extends EvaluationViewerI implements GSComparisonI {
+@ServiceProvider(service = PipelineComparisonI.class)
+public class GSCTableViewer extends EvaluationViewerI implements PipelineComparisonI {
 
     private static final int PAGESIZE = 1_000;
 
@@ -47,6 +49,8 @@ public class GSCTableViewer extends EvaluationViewerI implements GSComparisonI {
 
     private TLongObjectMap<String[]> seqToAttribute;
     private List<TreeI<Long>> treeList;
+    private String jobAName;
+    private String jobBName;
 
     @Override
     public JComponent getComponent() {
@@ -81,17 +85,17 @@ public class GSCTableViewer extends EvaluationViewerI implements GSComparisonI {
             return;
         }
 
-        List<NodeI<Long>> gsLeaves = new ArrayList<>(treeList.get(0).getLeaves());
-        List<NodeI<Long>> sampleLeaves = new ArrayList<>(treeList.get(1).getLeaves());
+        List<NodeI<Long>> jobALeaves = new ArrayList<>(treeList.get(0).getLeaves());
+        List<NodeI<Long>> jobBLeaves = new ArrayList<>(treeList.get(1).getLeaves());
 
         ProgressHandle p = ProgressHandle.createHandle("create table view");
-        p.start(gsLeaves.size() + sampleLeaves.size() + 1);
+        p.start(jobALeaves.size() + jobBLeaves.size() + 1);
         int progress = 0;
 
         seqToAttribute = new TLongObjectHashMap<>((int) currentSeqrun.getNumSequences());
 
         try {
-            for (NodeI<Long> node : gsLeaves) {
+            for (NodeI<Long> node : jobALeaves) {
                 List<Long> ids = NodeUtils.getSeqIDs(node);
                 String attr = node.getAttribute().getValue();
                 for (long id : ids) {
@@ -100,7 +104,7 @@ public class GSCTableViewer extends EvaluationViewerI implements GSComparisonI {
                 p.progress(progress++);
             }
 
-            for (NodeI<Long> node : sampleLeaves) {
+            for (NodeI<Long> node : jobBLeaves) {
                 List<Long> ids = NodeUtils.getSeqIDs(node);
                 String attr = node.getAttribute().getValue();
                 for (long id : ids) {
@@ -122,11 +126,11 @@ public class GSCTableViewer extends EvaluationViewerI implements GSComparisonI {
         }
 //        }
 
-        gsLeaves = null;
-        sampleLeaves = null;
+        jobALeaves = null;
+        jobBLeaves = null;
 
         String[] columns = new String[]{
-            "SequenceID", "in Goldstandard", "in both", "in Sample",};
+            "SequenceID", "in " + jobAName, "in both", "in " + jobBName};
 
         GSCTableViewerPagingModel model = new GSCTableViewerPagingModel(seqToAttribute, columns, currentSeqrun.getMaster(), PAGESIZE);
         cust.setModel(model); // for tsv export
@@ -160,7 +164,7 @@ public class GSCTableViewer extends EvaluationViewerI implements GSComparisonI {
     public void selectJobs(final SeqRunI seqrun) {
         currentSeqrun = seqrun;
         try {
-            final SelectSingleJobWithGSWizardDescriptor jobWizard = new SelectSingleJobWithGSWizardDescriptor(seqrun, true, 1);
+            final SelectJobsWizardDescriptor jobWizard = new SelectJobsWizardDescriptor(seqrun, true, 2, true);
             Dialog dialog = DialogDisplayer.getDefault().createDialog(jobWizard);
             dialog.setVisible(true);
             dialog.toFront();
@@ -168,11 +172,12 @@ public class GSCTableViewer extends EvaluationViewerI implements GSComparisonI {
             if (!cancelled) {
                 pane = null;
                 currentJobs = jobWizard.getJobs();
-                JobI gsJob = jobWizard.getGoldstandard();
                 AttributeTypeI attrType = jobWizard.getAttributeType();
+                jobAName = JobUtils.jobToString(currentJobs.get(0));
+                jobBName = JobUtils.jobToString(currentJobs.get(1));
                 treeList = new ArrayList<>();
-                treeList.add(seqrun.getMaster().Attribute().getHierarchy(attrType, gsJob));
                 treeList.add(seqrun.getMaster().Attribute().getHierarchy(attrType, currentJobs.get(0)));
+                treeList.add(seqrun.getMaster().Attribute().getHierarchy(attrType, currentJobs.get(1)));
             }
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);

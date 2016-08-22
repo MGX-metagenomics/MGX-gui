@@ -56,7 +56,7 @@ public final class SelectJobsWizardAction implements ActionListener {
     private WizardDescriptor.Panel<WizardDescriptor>[] getPanels() throws MGXException {
         if (panels == null) {
             panels = new WizardDescriptor.Panel[]{
-                new SelectJobsWizardPanel1(currentRun, hierarchicAT, Integer.MAX_VALUE),
+                new SelectJobsWizardPanel1(currentRun, hierarchicAT, Integer.MAX_VALUE, false),
             };
             String[] steps = new String[panels.length];
             for (int i = 0; i < panels.length; i++) {

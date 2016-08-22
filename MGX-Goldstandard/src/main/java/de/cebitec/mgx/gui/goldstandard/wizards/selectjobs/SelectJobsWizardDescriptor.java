@@ -22,15 +22,19 @@ public class SelectJobsWizardDescriptor extends WizardDescriptor implements Chan
     protected final SeqRunI seqrun;
 
     public SelectJobsWizardDescriptor(SeqRunI seqrun, boolean hierarchicAT) throws MGXException {
-        this(seqrun, hierarchicAT, Integer.MAX_VALUE);
+        this(seqrun, hierarchicAT, Integer.MAX_VALUE, false);
     }
     
     
 
     public SelectJobsWizardDescriptor(SeqRunI seqrun, boolean hierarchicAT, int maxSelected) throws MGXException {
+        this(seqrun, hierarchicAT, maxSelected, false);
+    }
+    
+    public SelectJobsWizardDescriptor(SeqRunI seqrun, boolean hierarchicAT, int maxSelected, boolean exactlySelected) throws MGXException {
         super();
         this.seqrun = seqrun;
-        p1 = new SelectJobsWizardPanel1(seqrun, hierarchicAT, maxSelected);
+        p1 = new SelectJobsWizardPanel1(seqrun, hierarchicAT, maxSelected, exactlySelected);
         List<Panel<WizardDescriptor>> panels = new ArrayList<>();
         panels.add(p1);        
         this.setPanelsAndSettings(new ArrayIterator<>(panels), this);
@@ -41,6 +45,7 @@ public class SelectJobsWizardDescriptor extends WizardDescriptor implements Chan
         putProperty(WizardDescriptor.PROP_CONTENT_DISPLAYED, Boolean.TRUE);
         putProperty(WizardDescriptor.PROP_CONTENT_NUMBERED, Boolean.TRUE);        
     }
+    
     
     @SuppressWarnings("unchecked")
     public List<JobI> getJobs(){        

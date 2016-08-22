@@ -35,18 +35,31 @@ public class SelectJobsWizardPanel1 implements WizardDescriptor.Panel<WizardDesc
     private final Map<JobI, Collection<AttributeTypeI>> jobs;
     private final SeqRunI seqrun;
     private final int maxSelected;
+    private final boolean exactlySelected;
     private final String atLabel;
+    private final String selectJobsLabel;
 
     private boolean isValid = false;
 
-    public SelectJobsWizardPanel1(SeqRunI seqrun, boolean hierarchicAT, int maxSelected) throws MGXException {
+    public SelectJobsWizardPanel1(SeqRunI seqrun, boolean hierarchicAT, int maxSelected, boolean exactlySelected) throws MGXException {
         this.seqrun = seqrun;
         this.maxSelected = maxSelected;
+        this.exactlySelected = exactlySelected;
         
         if (hierarchicAT){
             atLabel = "Select attribute type from wanted tree:";
         } else {
             atLabel = "Select wanted attribute type:";
+        }
+        
+        if (maxSelected == 1){
+            selectJobsLabel = "Select one job:";
+        } else if (exactlySelected){            
+            selectJobsLabel = "Select exactly " + maxSelected + "jobs for comparison:";
+        } else if (maxSelected == Integer.MAX_VALUE) {
+            selectJobsLabel = "Select jobs for comparison:";
+        } else {
+            selectJobsLabel = "Select up to " + maxSelected + "jobs for comparison:";
         }
         
         List<JobI> allJobs = seqrun.getMaster().Job().BySeqRun(seqrun);
@@ -66,7 +79,7 @@ public class SelectJobsWizardPanel1 implements WizardDescriptor.Panel<WizardDesc
     @Override
     public SelectJobsVisualPanel1 getComponent() {
         if (component == null) {
-            component = new SelectJobsVisualPanel1(jobs, atLabel);
+            component = new SelectJobsVisualPanel1(jobs, atLabel, selectJobsLabel);
             component.addListSelectionListener(this);
 
         }
@@ -162,7 +175,10 @@ public class SelectJobsWizardPanel1 implements WizardDescriptor.Panel<WizardDesc
     }
 
     private boolean checkValidity() {
-        return component.getAttributeTypeListCount() != 0 && component.getSelectedJobs().size() < maxSelected;
+        if (exactlySelected)
+            return component.getAttributeTypeListCount() != 0 && component.getSelectedJobs().size() == maxSelected;
+        else
+            return component.getAttributeTypeListCount() != 0 && component.getSelectedJobs().size() < maxSelected;
     }
 
 }

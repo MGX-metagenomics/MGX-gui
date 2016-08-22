@@ -7,12 +7,8 @@ import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.SeqRunI;
-import de.cebitec.mgx.api.model.tree.NodeI;
-import de.cebitec.mgx.api.model.tree.TreeI;
 import de.cebitec.mgx.gui.goldstandard.ui.charts.EvaluationViewerI;
-import de.cebitec.mgx.gui.goldstandard.util.EvalExceptions;
 import de.cebitec.mgx.gui.goldstandard.util.JobUtils;
-import de.cebitec.mgx.gui.goldstandard.util.NodeUtils;
 import de.cebitec.mgx.gui.goldstandard.util.PerformanceMetrics;
 import de.cebitec.mgx.gui.goldstandard.wizards.selectjobs.SelectSingleJobWithGSWizardDescriptor;
 import gnu.trove.map.TLongObjectMap;
@@ -20,20 +16,11 @@ import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
 import java.awt.Dialog;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import javax.swing.JComponent;
-import javax.swing.JScrollPane;
-import javax.swing.SortOrder;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
-import org.apache.commons.collections4.CollectionUtils;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.decorator.Highlighter;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
@@ -97,8 +84,6 @@ public class GSCPerformanceMetricsViewer extends EvaluationViewerI implements GS
         long numSeqs = currentSeqrun.getNumSequences();
         TLongObjectMap<String> goldstandard = new TLongObjectHashMap<>(currentJobs.size());
 
-        long start, stop;
-        start = System.currentTimeMillis();
         try {
             DistributionI<Long> dist = gsJob.getMaster().Attribute().getDistribution(attrType, gsJob);
             for (Map.Entry<AttributeI, Long> entry : dist.entrySet()) {
@@ -113,15 +98,12 @@ public class GSCPerformanceMetricsViewer extends EvaluationViewerI implements GS
             table = null;
             return;
         }
-        stop = System.currentTimeMillis();
-        System.out.println("GS: " + (stop - start) + "ms");
 
         PerformanceMetrics[] performanceMetrics = new PerformanceMetrics[currentJobs.size()];
 
         try {
             int i = 0;
             for (JobI job : currentJobs) {
-                start = System.currentTimeMillis();
                 PerformanceMetrics pm = new PerformanceMetrics();
                 DistributionI<Long> dist = gsJob.getMaster().Attribute().getDistribution(attrType, job);
                 int usedGsIds = 0;
@@ -148,8 +130,6 @@ public class GSCPerformanceMetricsViewer extends EvaluationViewerI implements GS
                 pm.add(0, 0, 0, numSeqs - pm.getFN() - pm.getFP() - pm.getTP());
                 performanceMetrics[i++] = pm;
                 p.progress(progress++);
-                stop = System.currentTimeMillis();
-                System.out.println("Job " + i + ": " + (stop - start) + "ms");
             }
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);

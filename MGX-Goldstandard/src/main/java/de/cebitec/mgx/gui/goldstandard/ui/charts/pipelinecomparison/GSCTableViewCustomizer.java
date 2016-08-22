@@ -1,4 +1,4 @@
-package de.cebitec.mgx.gui.goldstandard.ui.charts.gscomparison;
+package de.cebitec.mgx.gui.goldstandard.ui.charts.pipelinecomparison;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
