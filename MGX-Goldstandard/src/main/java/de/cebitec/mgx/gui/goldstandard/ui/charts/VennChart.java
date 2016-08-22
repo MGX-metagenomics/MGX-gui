@@ -11,7 +11,6 @@ import java.awt.image.BufferedImage;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
-import java.awt.FontMetrics;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -33,7 +32,8 @@ public class VennChart extends JPanel {
 
     private BufferedImage image;
 
-    private static final Point[] fontCoordinates2 = new Point[]{new Point(340, 420), new Point(1060, 420), new Point(700, 420)};
+    private static final Point[] VALUE_COORDINATES_2 = new Point[]{new Point(340, 420), new Point(1060, 420), new Point(700, 420)};
+    private static final Point[] LABEL_COORDINATES_2 = new Point[]{new Point(650, 850), new Point(650, 900)};
     private static final Color[] fontColor2 = new Color[]{new Color(255, 0, 0), new Color(255, 255, 0), new Color(255, 127, 0)};
     private static final Dimension venn2 = new Dimension(1500, 1000);
 
@@ -43,11 +43,11 @@ public class VennChart extends JPanel {
         image = img;
     }
 
-    public static VennChart get2Venn(Collection<?> a, Collection<?> b) throws IOException {
-        return get2Venn(CollectionUtils.subtract(a, b).size(), CollectionUtils.subtract(b, a).size(), CollectionUtils.intersection(a, b).size());
+    public static VennChart get2Venn(Collection<?> a, Collection<?> b, String labelA, String labelB) throws IOException {
+        return get2Venn(CollectionUtils.subtract(a, b).size(), CollectionUtils.subtract(b, a).size(), CollectionUtils.intersection(a, b).size(), labelA, labelB);
     }
 
-    public static VennChart get2Venn(long onlyA, long onlyB, long ab) throws IOException {
+    public static VennChart get2Venn(long onlyA, long onlyB, long ab, String labelA, String labelB) throws IOException {
         List<Long> list = new ArrayList<>(3);
         list.add(onlyA);            //only a
         list.add(onlyB);            //only b
@@ -61,13 +61,24 @@ public class VennChart extends JPanel {
         }
 
         Graphics2D g2d = img.createGraphics();
-        for (int i = 0; i < fontCoordinates2.length; i++) {
+        for (int i = 0; i < VALUE_COORDINATES_2.length; i++) {
             g2d.drawImage(img, 0, 0, null);
             g2d.setPaint(getFontColor(fontColor2[i]));
             g2d.setFont(new Font("SansSerif", Font.BOLD, 28));
             String str = String.valueOf(list.get(i));
-            g2d.drawString(str, fontCoordinates2[i].x, fontCoordinates2[i].y);
+            g2d.drawString(str, VALUE_COORDINATES_2[i].x, VALUE_COORDINATES_2[i].y);
         }
+        
+        g2d.drawImage(img, 0, 0, null);
+        g2d.setPaint(Color.BLACK);
+        g2d.setFont(new Font("SansSerif", Font.BOLD, 28));        
+        g2d.drawString("A: " + labelA, LABEL_COORDINATES_2[0].x, LABEL_COORDINATES_2[0].y);
+        
+        g2d.drawImage(img, 0, 0, null);
+        g2d.setPaint(Color.BLACK);
+        g2d.setFont(new Font("SansSerif", Font.BOLD, 28));        
+        g2d.drawString("B: " + labelB, LABEL_COORDINATES_2[1].x, LABEL_COORDINATES_2[1].y);
+        
         g2d.dispose();
         return new VennChart(img);
     }
@@ -107,7 +118,7 @@ public class VennChart extends JPanel {
         b.add(4);
         JFrame f = new JFrame();
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        f.add(get2Venn(a, b));
+        f.add(get2Venn(a, b, "Group A", "Group B"));
         f.pack();
         f.setVisible(true);
     }

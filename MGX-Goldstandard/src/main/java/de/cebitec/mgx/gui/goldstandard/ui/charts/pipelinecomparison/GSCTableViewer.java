@@ -12,7 +12,6 @@ import de.cebitec.mgx.gui.goldstandard.util.EvalExceptions;
 import de.cebitec.mgx.gui.goldstandard.util.JobUtils;
 import de.cebitec.mgx.gui.goldstandard.util.NodeUtils;
 import de.cebitec.mgx.gui.goldstandard.wizards.selectjobs.SelectJobsWizardDescriptor;
-import de.cebitec.mgx.gui.goldstandard.wizards.selectjobs.SelectSingleJobWithGSWizardDescriptor;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import java.awt.Dialog;
@@ -130,7 +129,7 @@ public class GSCTableViewer extends EvaluationViewerI implements PipelineCompari
         jobBLeaves = null;
 
         String[] columns = new String[]{
-            "SequenceID", "in " + jobAName, "in both", "in " + jobBName};
+            "Sequence", "in " + jobAName, "in both", "in " + jobBName};
 
         GSCTableViewerPagingModel model = new GSCTableViewerPagingModel(seqToAttribute, columns, currentSeqrun.getMaster(), PAGESIZE);
         cust.setModel(model); // for tsv export
@@ -145,7 +144,7 @@ public class GSCTableViewer extends EvaluationViewerI implements PipelineCompari
             }
         }
         table.setHighlighters(new Highlighter[]{HighlighterFactory.createAlternateStriping()});
-        table.setSortOrder("SequenceID", SortOrder.ASCENDING);
+        table.setSortOrder("Sequence", SortOrder.ASCENDING);
         pane = GSCTableViewerPagingModel.createPagingScrollPaneForTable(table);
         p.progress(progress++);
         p.finish();
