@@ -35,7 +35,11 @@ public class VennChart extends JPanel {
     private static final Point[] VALUE_COORDINATES_2 = new Point[]{new Point(340, 420), new Point(1060, 420), new Point(700, 420)};
     private static final Point[] LABEL_COORDINATES_2 = new Point[]{new Point(650, 850), new Point(650, 900)};
     private static final Color[] fontColor2 = new Color[]{new Color(255, 0, 0), new Color(255, 255, 0), new Color(255, 127, 0)};
+    private static final Point[] VALUE_COORDINATES_3 = new Point[]{new Point(696, 232), new Point(216, 730), new Point(912, 920), new Point(474, 454), new Point(880, 574), new Point(596, 856), new Point(660, 618)};
+    private static final Point[] LABEL_COORDINATES_3 = new Point[]{new Point(400, 1250), new Point(400, 1300), new Point(400, 1350)};
+    private static final Color[] fontColor3 = new Color[]{new Color(255, 0, 0), new Color(0, 255, 0), new Color(0, 0, 255), new Color(127, 127, 0), new Color(127, 0, 127), new Color(0, 127, 127), new Color(85, 85, 85)};
     private static final Dimension venn2 = new Dimension(1500, 1000);
+    private static final Dimension venn3 = new Dimension(1500, 1500);
 
     private VennChart(BufferedImage img) {
         super();
@@ -72,12 +76,57 @@ public class VennChart extends JPanel {
         g2d.drawImage(img, 0, 0, null);
         g2d.setPaint(Color.BLACK);
         g2d.setFont(new Font("SansSerif", Font.BOLD, 28));        
-        g2d.drawString("A: " + labelA, LABEL_COORDINATES_2[0].x, LABEL_COORDINATES_2[0].y);
+        g2d.drawString("1: " + labelA, LABEL_COORDINATES_2[0].x, LABEL_COORDINATES_2[0].y);
         
         g2d.drawImage(img, 0, 0, null);
         g2d.setPaint(Color.BLACK);
         g2d.setFont(new Font("SansSerif", Font.BOLD, 28));        
-        g2d.drawString("B: " + labelB, LABEL_COORDINATES_2[1].x, LABEL_COORDINATES_2[1].y);
+        g2d.drawString("2: " + labelB, LABEL_COORDINATES_2[1].x, LABEL_COORDINATES_2[1].y);
+        
+        g2d.dispose();
+        return new VennChart(img);
+    }
+    
+    public static VennChart get3Venn(long onlyA, long onlyB, long onlyC, long ab, long ac, long bc, long abc, String labelA, String labelB, String labelC) throws IOException {
+        List<Long> list = new ArrayList<>(7);
+        list.add(onlyA);            //only a
+        list.add(onlyB);            //only b
+        list.add(onlyC);            //only c
+        list.add(ab);        //ab
+        list.add(ac);        //ac
+        list.add(bc);        //bc
+        list.add(abc);        //abc
+
+        BufferedImage img;
+        try {
+            img = ImageIO.read(VennChart.class.getClassLoader().getResource("de/cebitec/mgx/gui/goldstandard/ui/charts/Venn_3er_big.png"));
+        } catch (IOException ex) {
+            throw new IOException("Venn image not found.", ex);
+        }
+
+        Graphics2D g2d = img.createGraphics();
+        for (int i = 0; i < VALUE_COORDINATES_3.length; i++) {
+            g2d.drawImage(img, 0, 0, null);
+            g2d.setPaint(Color.BLACK);
+            g2d.setFont(new Font("SansSerif", Font.BOLD, 28));
+            String str = String.valueOf(list.get(i));
+            g2d.drawString(str, VALUE_COORDINATES_3[i].x, VALUE_COORDINATES_3[i].y);
+        }
+        
+        g2d.drawImage(img, 0, 0, null);
+        g2d.setPaint(Color.BLACK);
+        g2d.setFont(new Font("SansSerif", Font.BOLD, 28));        
+        g2d.drawString("1: " + labelA, LABEL_COORDINATES_3[0].x, LABEL_COORDINATES_3[0].y);
+        
+        g2d.drawImage(img, 0, 0, null);
+        g2d.setPaint(Color.BLACK);
+        g2d.setFont(new Font("SansSerif", Font.BOLD, 28));        
+        g2d.drawString("2: " + labelB, LABEL_COORDINATES_3[1].x, LABEL_COORDINATES_3[1].y);
+        
+        g2d.drawImage(img, 0, 0, null);
+        g2d.setPaint(Color.BLACK);
+        g2d.setFont(new Font("SansSerif", Font.BOLD, 28));        
+        g2d.drawString("3: " + labelC, LABEL_COORDINATES_3[2].x, LABEL_COORDINATES_3[2].y);
         
         g2d.dispose();
         return new VennChart(img);
@@ -118,7 +167,8 @@ public class VennChart extends JPanel {
         b.add(4);
         JFrame f = new JFrame();
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        f.add(get2Venn(a, b, "Group A", "Group B"));
+        //f.add(get2Venn(a, b, "Group A", "Group B"));
+        f.add(get3Venn(10, 10, 10, 5, 5, 5, 1, "Label A", "Label B", "Label C"));
         f.pack();
         f.setVisible(true);
     }

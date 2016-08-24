@@ -44,9 +44,7 @@ public class GSCVennChartViewer extends EvaluationViewerI implements PipelineCom
     private TLongObjectMap<String> onlyGSID;
     private TLongObjectMap<String> onlySampleID;
     private TLongObjectMap<String> gsAndSampleID;
-    
-    private String jobAName;
-    private String jobBName;
+
 
     @Override
     public JComponent getComponent() {
@@ -77,104 +75,52 @@ public class GSCVennChartViewer extends EvaluationViewerI implements PipelineCom
 
     @SuppressWarnings("unchecked")
     @Override
-    public void evaluate() {        
-        DistributionI<Long> distA = dists.get(0);
-        DistributionI<Long> distB = dists.get(1);
-        
-        Collection<AttributeI> both = CollectionUtils.intersection(distA.keySet(), distB.keySet());
-        Collection<AttributeI> onlyA = CollectionUtils.subtract(distA.keySet(), distB.keySet());
-        Collection<AttributeI> onlyB = CollectionUtils.subtract(distB.keySet(), distA.keySet());
-        
-        
-//        List<Integer> sampleIndizes = new LinkedList<>();
-//        for (int i = 0; i < sampleLeaves.size(); i++) {
-//            sampleIndizes.add(i);
-//        }
-//
-//        ProgressHandle p = ProgressHandle.createHandle("create venn chart");
-//        p.start(gsLeaves.size() + sampleLeaves.size());
-//        int progress = 0;
-//
-//        onlyGSID = new TLongObjectHashMap<>((int) currentSeqrun.getNumSequences() / 6);
-//        onlySampleID = new TLongObjectHashMap<>((int) currentSeqrun.getNumSequences() / 6);
-//        gsAndSampleID = new TLongObjectHashMap<>((int) currentSeqrun.getNumSequences() / 3 * 2);
-//        try {
-//            for (NodeI<Long> gsNode : gsLeaves) {
-//                NodeI<Long> sampleNode = null;
-//                for (Integer i : sampleIndizes) {
-//                    if (sampleLeaves.get(i).getAttribute().equals(gsNode.getAttribute())) {
-//                        sampleNode = sampleLeaves.get(i);
-//                        sampleIndizes.remove(i);
-//                        break;
-//                    }
-//                }
-//                if (sampleNode == null) {
-//                    String attr = gsNode.getAttribute().getValue();
-//                    for (long l : NodeUtils.getSeqIDs(gsNode)) {
-//                        onlyGSID.put(l, attr);
-//                    }
-//                    continue;
-//                }
-//
-//                List<Long> gsIDs = NodeUtils.getSeqIDs(gsNode);
-//                List<Long> sampleIDs = NodeUtils.getSeqIDs(sampleNode);
-//
-//                List<Long> intersect = new ArrayList<>(CollectionUtils.intersection(gsIDs, sampleIDs));
-//                List<Long> oGS = new ArrayList<>(CollectionUtils.subtract(gsIDs, sampleIDs));
-//                List<Long> oSample = new ArrayList<>(CollectionUtils.subtract(sampleIDs, gsIDs));
-//
-//                if (!intersect.isEmpty()) {
-//                    String attr = gsNode.getAttribute().getValue();
-//                    for (long l : intersect) {
-//                        gsAndSampleID.put(l, attr);
-//                    }
-//                }
-//                if (!oGS.isEmpty()) {
-//                    String attr = gsNode.getAttribute().getValue();
-//                    for (long l : oGS) {
-//                        onlyGSID.put(l, attr);
-//                    }
-//                }
-//                if (!oSample.isEmpty()) {
-//                    String attr = sampleNode.getAttribute().getValue();
-//                    for (long l : oSample) {
-//                        onlySampleID.put(l, attr);
-//                    }
-//                }
-//                p.progress(progress++);
-//            }
-//
-//            if (!sampleIndizes.isEmpty()) {
-//                for (Integer i : sampleIndizes) {
-//                    NodeI<Long> node = sampleLeaves.get(i);
-//                    List<Long> seqIDs = NodeUtils.getSeqIDs(node);
-//                    for (long l : seqIDs) {
-//                        String attr = node.getAttribute().getValue();
-//                        onlyGSID.put(l, attr);
-//                    }
-//                    p.progress(progress++);
-//                }
-//            }
-//
-//        } catch (MGXException ex) {
-//            EvalExceptions.printStackTrace(Exceptions.attachMessage(ex, "Cannot download sequence ids for NodeI instance"));
-//            venn = null;
-//            p.finish();
-//            return;
-//        }
-//
-//        int a = onlyGSID.size();
-//        int b = onlySampleID.size();
-//        int ab = gsAndSampleID.size();
+    public void evaluate() {
+        if (dists.size() == 2) {
+            DistributionI<Long> distA = dists.get(0);
+            DistributionI<Long> distB = dists.get(1);
+            
+            String jobAName = JobUtils.jobToString(currentJobs.get(0));
+            String jobBName = JobUtils.jobToString(currentJobs.get(1));            
 
-        try {
-            venn = VennChart.get2Venn(onlyA.size(), onlyB.size(), both.size(), jobAName, jobBName);
-        } catch (IOException ex) {
-            EvalExceptions.printStackTrace(ex);
-            venn = null;
-        } finally {
+            Collection<AttributeI> both = CollectionUtils.intersection(distA.keySet(), distB.keySet());
+            Collection<AttributeI> onlyA = CollectionUtils.subtract(distA.keySet(), distB.keySet());
+            Collection<AttributeI> onlyB = CollectionUtils.subtract(distB.keySet(), distA.keySet());
+
+            try {
+                venn = VennChart.get2Venn(onlyA.size(), onlyB.size(), both.size(), jobAName, jobBName);
+            } catch (IOException ex) {
+                EvalExceptions.printStackTrace(ex);
+                venn = null;
+            } finally {
 //            p.finish();
-        };
+            };
+        } else if (dists.size() == 3){
+            DistributionI<Long> distA = dists.get(0);
+            DistributionI<Long> distB = dists.get(1);
+            DistributionI<Long> distC = dists.get(2);
+
+            String jobAName = JobUtils.jobToString(currentJobs.get(0));
+            String jobBName = JobUtils.jobToString(currentJobs.get(1));
+            String jobCName = JobUtils.jobToString(currentJobs.get(2));
+            
+            Collection<AttributeI> abc = CollectionUtils.intersection(CollectionUtils.intersection(distA.keySet(), distC.keySet()), distC.keySet());
+            Collection<AttributeI> ab = CollectionUtils.subtract(CollectionUtils.intersection(distA.keySet(), distB.keySet()), abc);
+            Collection<AttributeI> bc = CollectionUtils.subtract(CollectionUtils.intersection(distB.keySet(), distC.keySet()), abc);
+            Collection<AttributeI> ac = CollectionUtils.subtract(CollectionUtils.intersection(distA.keySet(), distC.keySet()), abc);
+            Collection<AttributeI> onlyA = CollectionUtils.subtract(CollectionUtils.subtract(distA.keySet(), distB.keySet()), distC.keySet());
+            Collection<AttributeI> onlyB = CollectionUtils.subtract(CollectionUtils.subtract(distB.keySet(), distA.keySet()), distC.keySet());
+            Collection<AttributeI> onlyC = CollectionUtils.subtract(CollectionUtils.subtract(distC.keySet(), distA.keySet()), distB.keySet());
+            
+            try {
+                venn = VennChart.get3Venn(onlyA.size(), onlyB.size(), onlyC.size(), ab.size(), ac.size(), bc.size(), abc.size(), jobAName, jobBName, jobCName);
+            } catch (IOException ex) {
+                EvalExceptions.printStackTrace(ex);
+                venn = null;
+            } finally {
+//            p.finish();
+            };
+        }
     }
 
     @Override
@@ -189,20 +135,19 @@ public class GSCVennChartViewer extends EvaluationViewerI implements PipelineCom
     public void selectJobs(SeqRunI seqrun) {
         currentSeqrun = seqrun;
         try {
-            SelectJobsWizardDescriptor jobWizard = new SelectJobsWizardDescriptor(seqrun, false, 2, true);
+            SelectJobsWizardDescriptor jobWizard = new SelectJobsWizardDescriptor(seqrun, false, 3, false);
             Dialog dialog = DialogDisplayer.getDefault().createDialog(jobWizard);
             dialog.setVisible(true);
             dialog.toFront();
             boolean cancelled = jobWizard.getValue() != WizardDescriptor.FINISH_OPTION;
             if (!cancelled) {
                 venn = null;
-                currentJobs = jobWizard.getJobs();                
-                AttributeTypeI attrType = jobWizard.getAttributeType();
-                jobAName = JobUtils.jobToString(currentJobs.get(0));
-                jobBName = JobUtils.jobToString(currentJobs.get(1));
+                currentJobs = jobWizard.getJobs();
+                AttributeTypeI attrType = jobWizard.getAttributeType();                
                 dists = new ArrayList<>();
-                dists.add(seqrun.getMaster().Attribute().getDistribution(attrType, currentJobs.get(0)));
-                dists.add(seqrun.getMaster().Attribute().getDistribution(attrType, currentJobs.get(1)));
+                for (JobI job : currentJobs){
+                    dists.add(seqrun.getMaster().Attribute().getDistribution(attrType, job));
+                }                               
             }
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);

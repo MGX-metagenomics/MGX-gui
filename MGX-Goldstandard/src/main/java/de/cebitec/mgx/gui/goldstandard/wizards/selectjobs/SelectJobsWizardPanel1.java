@@ -55,11 +55,11 @@ public class SelectJobsWizardPanel1 implements WizardDescriptor.Panel<WizardDesc
         if (maxSelected == 1){
             selectJobsLabel = "Select one job:";
         } else if (exactlySelected){            
-            selectJobsLabel = "Select exactly " + maxSelected + "jobs for comparison:";
+            selectJobsLabel = "Select exactly " + maxSelected + " jobs for comparison:";
         } else if (maxSelected == Integer.MAX_VALUE) {
             selectJobsLabel = "Select jobs for comparison:";
         } else {
-            selectJobsLabel = "Select up to " + maxSelected + "jobs for comparison:";
+            selectJobsLabel = "Select up to " + maxSelected + " jobs for comparison:";
         }
         
         List<JobI> allJobs = seqrun.getMaster().Job().BySeqRun(seqrun);
@@ -175,10 +175,12 @@ public class SelectJobsWizardPanel1 implements WizardDescriptor.Panel<WizardDesc
     }
 
     private boolean checkValidity() {
+        if (component.getSelectedJobs().size() < 2)
+            return false;
         if (exactlySelected)
             return component.getAttributeTypeListCount() != 0 && component.getSelectedJobs().size() == maxSelected;
         else
-            return component.getAttributeTypeListCount() != 0 && component.getSelectedJobs().size() < maxSelected;
+            return component.getAttributeTypeListCount() != 0 && component.getSelectedJobs().size() <= maxSelected;
     }
 
 }
