@@ -19,7 +19,7 @@ public class GSCPerformanceMetricsTableModel extends AbstractTableModel {
 
     @Override
     public int getRowCount() {
-        return 14;
+        return 13;
     }
 
     @Override
@@ -71,9 +71,9 @@ public class GSCPerformanceMetricsTableModel extends AbstractTableModel {
                 case 12:
                     value = "F1 score";
                     break;
-                case 13:
-                    value = "Matthews correlation coefficient";
-                    break;
+//                case 13:
+//                    value = "Matthews correlation coefficient";
+//                    break;
             }
         } else {
             String format = "%.4f";
@@ -117,9 +117,9 @@ public class GSCPerformanceMetricsTableModel extends AbstractTableModel {
                 case 12:
                     value = String.format(format, data[columnIndex - 1].getF1Score());
                     break;
-                case 13:
-                    value = String.format(format, data[columnIndex - 1].getMatthewsCorrelationCoefficient());
-                    break;
+//                case 13:
+//                    value = String.format(format, data[columnIndex - 1].getMatthewsCorrelationCoefficient());
+//                    break;
             }
         }
         return value;
