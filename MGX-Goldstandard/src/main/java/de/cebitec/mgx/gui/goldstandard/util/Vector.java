@@ -54,11 +54,11 @@ public class Vector {
     }
 
     public double manhattanDistance(Vector other) {
-        return MathArrays.distance1(data, data);
+        return MathArrays.distance1(this.data, other.data);
     }
 
     public double chebyshevDistance(Vector other) {
-        return MathArrays.distanceInf(data, other.data);
+        return MathArrays.distanceInf(this.data, other.data);
     }
 
     public double pDistance(Vector other, double p) {

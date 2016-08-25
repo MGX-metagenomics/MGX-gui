@@ -47,6 +47,15 @@ public class PCDistanceViewer extends EvaluationViewerI implements PipelineCompa
     private PCDistanceViewCustomizer cust = null;    
     private CategoryDataset dataset;
 
+    public enum DistanceMethod{
+        MANHATTAN, EUCLIDEAN, CHEBYSHEV;
+        
+        @Override        
+        public String toString() {
+            return super.toString().toLowerCase();
+        }
+    }
+    
     public PCDistanceViewer() {
         //deactivate glossy effect
         ChartFactory.setChartTheme(StandardChartTheme.createLegacyTheme());
@@ -147,10 +156,21 @@ public class PCDistanceViewer extends EvaluationViewerI implements PipelineCompa
         };
 
         double[][] distances = new double[jobs.size()][jobs.size()];
+        DistanceMethod currentDistanceMethod = cust.getDistanceMethod();
 
         for (i = 0; i < distances.length - 1; i++) {
             for (int j = i + 1; j < distances.length; j++) {
-                distances[i][j] = vectors[i].euclideanDistance(vectors[j]);
+                switch (currentDistanceMethod){
+                    case EUCLIDEAN:
+                        distances[i][j] = vectors[i].euclideanDistance(vectors[j]);
+                        break;
+                    case MANHATTAN:
+                        distances[i][j] = vectors[i].manhattanDistance(vectors[j]);
+                        break;
+                    case CHEBYSHEV:
+                        distances[i][j] = vectors[i].chebyshevDistance(vectors[j]);
+                        break;
+                }
                 distances[j][i] = distances[i][j];
             }
         }
