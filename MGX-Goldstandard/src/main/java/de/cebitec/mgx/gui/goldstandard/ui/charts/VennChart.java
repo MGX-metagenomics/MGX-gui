@@ -36,10 +36,12 @@ public class VennChart extends JPanel {
     private static final Point[] LABEL_COORDINATES_2 = new Point[]{new Point(650, 850), new Point(650, 900)};
     private static final Color[] fontColor2 = new Color[]{new Color(255, 0, 0), new Color(255, 255, 0), new Color(255, 127, 0)};
     private static final Point[] VALUE_COORDINATES_3 = new Point[]{new Point(696, 232), new Point(216, 730), new Point(912, 920), new Point(474, 454), new Point(880, 574), new Point(596, 856), new Point(660, 618)};
-    private static final Point[] LABEL_COORDINATES_3 = new Point[]{new Point(400, 1250), new Point(400, 1300), new Point(400, 1350)};
+    private static final Point[] LABEL_COORDINATES_3 = new Point[]{new Point(400, 1270), new Point(400, 1340), new Point(400, 1410)};
     private static final Color[] fontColor3 = new Color[]{new Color(255, 0, 0), new Color(0, 255, 0), new Color(0, 0, 255), new Color(127, 127, 0), new Color(127, 0, 127), new Color(0, 127, 127), new Color(85, 85, 85)};
     private static final Dimension venn2 = new Dimension(1500, 1000);
     private static final Dimension venn3 = new Dimension(1500, 1500);
+
+    private static final int FONTSIZE = 32;
 
     private VennChart(BufferedImage img) {
         super();
@@ -68,19 +70,19 @@ public class VennChart extends JPanel {
         for (int i = 0; i < VALUE_COORDINATES_2.length; i++) {
             g2d.drawImage(img, 0, 0, null);
             g2d.setPaint(getFontColor(fontColor2[i]));
-            g2d.setFont(new Font("SansSerif", Font.BOLD, 28));
+            g2d.setFont(new Font("SansSerif", Font.BOLD, FONTSIZE));
             String str = String.valueOf(list.get(i));
             g2d.drawString(str, VALUE_COORDINATES_2[i].x, VALUE_COORDINATES_2[i].y);
         }
         
         g2d.drawImage(img, 0, 0, null);
         g2d.setPaint(Color.BLACK);
-        g2d.setFont(new Font("SansSerif", Font.BOLD, 28));        
+        g2d.setFont(new Font("SansSerif", Font.BOLD, FONTSIZE));        
         g2d.drawString("1: " + labelA, LABEL_COORDINATES_2[0].x, LABEL_COORDINATES_2[0].y);
         
         g2d.drawImage(img, 0, 0, null);
         g2d.setPaint(Color.BLACK);
-        g2d.setFont(new Font("SansSerif", Font.BOLD, 28));        
+        g2d.setFont(new Font("SansSerif", Font.BOLD, FONTSIZE));        
         g2d.drawString("2: " + labelB, LABEL_COORDINATES_2[1].x, LABEL_COORDINATES_2[1].y);
         
         g2d.dispose();
@@ -108,24 +110,24 @@ public class VennChart extends JPanel {
         for (int i = 0; i < VALUE_COORDINATES_3.length; i++) {
             g2d.drawImage(img, 0, 0, null);
             g2d.setPaint(Color.WHITE);
-            g2d.setFont(new Font("SansSerif", Font.BOLD, 28));
+            g2d.setFont(new Font("SansSerif", Font.BOLD, FONTSIZE));
             String str = String.valueOf(list.get(i));
             g2d.drawString(str, VALUE_COORDINATES_3[i].x, VALUE_COORDINATES_3[i].y);
         }
         
         g2d.drawImage(img, 0, 0, null);
         g2d.setPaint(Color.BLACK);
-        g2d.setFont(new Font("SansSerif", Font.BOLD, 28));        
+        g2d.setFont(new Font("SansSerif", Font.BOLD, FONTSIZE));        
         g2d.drawString("1: " + labelA, LABEL_COORDINATES_3[0].x, LABEL_COORDINATES_3[0].y);
         
         g2d.drawImage(img, 0, 0, null);
         g2d.setPaint(Color.BLACK);
-        g2d.setFont(new Font("SansSerif", Font.BOLD, 28));        
+        g2d.setFont(new Font("SansSerif", Font.BOLD, FONTSIZE));        
         g2d.drawString("2: " + labelB, LABEL_COORDINATES_3[1].x, LABEL_COORDINATES_3[1].y);
         
         g2d.drawImage(img, 0, 0, null);
         g2d.setPaint(Color.BLACK);
-        g2d.setFont(new Font("SansSerif", Font.BOLD, 28));        
+        g2d.setFont(new Font("SansSerif", Font.BOLD, FONTSIZE));        
         g2d.drawString("3: " + labelC, LABEL_COORDINATES_3[2].x, LABEL_COORDINATES_3[2].y);
         
         g2d.dispose();

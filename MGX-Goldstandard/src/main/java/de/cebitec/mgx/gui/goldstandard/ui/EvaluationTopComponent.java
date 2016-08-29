@@ -42,18 +42,20 @@ import org.openide.util.lookup.InstanceContent;
     "HINT_EvaluationTopComponent=Tool for a fast evaluation of pipelines"
 })
 public final class EvaluationTopComponent extends TopComponent {
-
+    
     private final EvaluationControlPanel controlPanel1 = new EvaluationControlPanel();
     private final Lookup lookup;
     private final InstanceContent content = new InstanceContent();
     
+    private ImageExporterI exporter;    
+    
     private static ExecutorService executor = null;
-
+    
     public EvaluationTopComponent() {
         initComponents();
         setName(Bundle.CTL_EvaluationTopComponent());
         setToolTipText(Bundle.HINT_EvaluationTopComponent());
-
+        
         int width = jSplitPane1.getSize().width;
         jSplitPane1.setDividerLocation(width - 50);
         lookup = new AbstractLookup(content);
@@ -65,12 +67,12 @@ public final class EvaluationTopComponent extends TopComponent {
         chartpane.getVerticalScrollBar().setUnitIncrement(16);
     }
     
-    public static ExecutorService getExecutorService(){
+    public static ExecutorService getExecutorService() {
         if (executor == null) {
             int threads = Math.min(Runtime.getRuntime().availableProcessors(), 20);
             executor = Executors.newFixedThreadPool(threads);
         }
-
+        
         return executor;
     }
 
@@ -113,31 +115,34 @@ public final class EvaluationTopComponent extends TopComponent {
     public void componentOpened() {
         // TODO add custom code on component opening
     }
-
+    
     @Override
     public void componentClosed() {
         // TODO add custom code on component closing
     }
-
+    
     void writeProperties(java.util.Properties p) {
         // better to version settings since initial version as advocated at
         // http://wiki.apidesign.org/wiki/PropertyFiles
         p.setProperty("version", "1.0");
         // TODO store your settings
     }
-
+    
     void readProperties(java.util.Properties p) {
         String version = p.getProperty("version");
         // TODO read your settings according to their version
     }
-
+    
     public void setVisualization(EvaluationViewerI v) {
-        if (v == null){
-            chartpane.setViewportView(null);            
-        }
-        else {
+        if (v == null) {
+            chartpane.setViewportView(null);
+            if (exporter != null) {
+                content.remove(exporter);
+            }
+            exporter = null;
+        } else {
             chartpane.setViewportView(v.getComponent());
-            ImageExporterI exporter = v.getImageExporter();
+            exporter = v.getImageExporter();
             if (exporter != null && exporter.getSupportedTypes().length > 0) {
                 content.add(exporter);
             }
