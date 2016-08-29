@@ -122,6 +122,7 @@ public class GSCTableViewer extends EvaluationViewerI implements PipelineCompari
             currentJobs = null;
             pane = null;
             table = null;
+            return;
         }
 //        }
 

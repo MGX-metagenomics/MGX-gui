@@ -107,7 +107,7 @@ public class VennChart extends JPanel {
         Graphics2D g2d = img.createGraphics();
         for (int i = 0; i < VALUE_COORDINATES_3.length; i++) {
             g2d.drawImage(img, 0, 0, null);
-            g2d.setPaint(Color.BLACK);
+            g2d.setPaint(Color.WHITE);
             g2d.setFont(new Font("SansSerif", Font.BOLD, 28));
             String str = String.valueOf(list.get(i));
             g2d.drawString(str, VALUE_COORDINATES_3[i].x, VALUE_COORDINATES_3[i].y);

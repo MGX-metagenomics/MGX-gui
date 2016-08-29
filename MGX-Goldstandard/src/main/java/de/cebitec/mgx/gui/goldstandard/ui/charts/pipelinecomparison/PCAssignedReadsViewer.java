@@ -106,6 +106,7 @@ public class PCAssignedReadsViewer extends EvaluationViewerI implements Pipeline
 
         chart = ChartFactory.createBarChart(getTitle(), xAxisLabel, yAxisLabel, dataset, PlotOrientation.HORIZONTAL, true, true, false);
 
+        chart.removeLegend();
         chart.setBorderPaint(Color.WHITE);
         chart.setBackgroundPaint(Color.WHITE);
         chart.setAntiAlias(true);
