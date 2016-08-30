@@ -7,7 +7,7 @@ package de.cebitec.mgx.api.access.datatransfer;
  */
 public abstract class DownloadBaseI extends TransferBaseI {
     
-    private CallbackI cb = null;
+//    private CallbackI cb = null;
 
     protected void abortTransfer(String reason, long total) {
         setErrorMessage(reason);
@@ -15,14 +15,14 @@ public abstract class DownloadBaseI extends TransferBaseI {
         fireTaskChange(TransferBaseI.TRANSFER_FAILED, 1);
     }
 
-    public void setProgressCallback(CallbackI cb) {
-        this.cb = cb;
-    }
+//    public void setProgressCallback(CallbackI cb) {
+//        this.cb = cb;
+//    }
 
-    protected CallbackI getProgressCallback() {
-        return cb != null ? cb
-                : new DownloadBaseI.NullCallBack();
-    }
+//    protected CallbackI getProgressCallback() {
+//        return cb != null ? cb
+//                : new DownloadBaseI.NullCallBack();
+//    }
 
     public abstract boolean download();
 
