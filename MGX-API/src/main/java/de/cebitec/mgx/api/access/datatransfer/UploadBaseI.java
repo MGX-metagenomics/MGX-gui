@@ -6,7 +6,7 @@ package de.cebitec.mgx.api.access.datatransfer;
  */
 public abstract class UploadBaseI extends TransferBaseI {
 
-    private CallbackI cb = null;
+//    private CallbackI cb = null;
     protected static int DEFAULT_CHUNK_SIZE = 2048;
     protected int chunk_size = DEFAULT_CHUNK_SIZE;
 
@@ -24,23 +24,23 @@ public abstract class UploadBaseI extends TransferBaseI {
         fireTaskChange(TransferBaseI.TRANSFER_FAILED, total);
     }
 
-    public void setProgressCallback(CallbackI cb) {
-        this.cb = cb;
-    }
+//    public void setProgressCallback(CallbackI cb) {
+//        this.cb = cb;
+//    }
 
-    protected CallbackI getProgressCallback() {
-        return cb != null ? cb
-                : new NullCallBack();
-    }
+//    protected CallbackI getProgressCallback() {
+//        return cb != null ? cb
+//                : new NullCallBack();
+//    }
 
     public abstract boolean upload();
 
     public abstract long getNumElementsSent();
 
-    private final static class NullCallBack implements CallbackI {
-
-        @Override
-        public void callback(long i) {
-        }
-    }
+//    private final static class NullCallBack implements CallbackI {
+//
+//        @Override
+//        public void callback(long i) {
+//        }
+//    }
 }
