@@ -87,15 +87,16 @@ public class JobNode extends MGXNodeBase<JobI> {
         // FIXME: handle MGXFile
         StringBuilder sb = new StringBuilder();
         for (JobParameterI jp : job.getParameters()) {
-            //jp.getMaster().log(Level.INFO, jp.getType());
             String paramValue = jp.getParameterValue();
-            if (jp.getType().equals("ConfigMGXReference")) {
+            if (jp.getType().equals("ConfigMGXReference") && jp.getParameterValue() != null) {
                 try {
-                    assert jp.getParameterValue() != null;
                     MGXReferenceI reference = job.getMaster().Reference().fetch(Long.parseLong(jp.getParameterValue()));
                     paramValue = reference.getName();
                 } catch (MGXException ex) {
                     Exceptions.printStackTrace(ex);
+                    paramValue = jp.getParameterValue();
+                } catch (NumberFormatException nfe) {
+                    paramValue = jp.getParameterValue();
                 }
             } 
             sb.append(jp.getUserName())
