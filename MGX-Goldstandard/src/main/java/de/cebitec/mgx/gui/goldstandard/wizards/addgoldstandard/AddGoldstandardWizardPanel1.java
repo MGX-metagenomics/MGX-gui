@@ -1,6 +1,5 @@
 package de.cebitec.mgx.gui.goldstandard.wizards.addgoldstandard;
 
-import java.awt.Component;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -28,7 +27,7 @@ public class AddGoldstandardWizardPanel1 implements WizardDescriptor.Panel<Wizar
             component.putClientProperty(WizardDescriptor.PROP_AUTO_WIZARD_STYLE, Boolean.TRUE);
             component.putClientProperty(WizardDescriptor.PROP_CONTENT_DISPLAYED, Boolean.TRUE);
             component.putClientProperty(WizardDescriptor.PROP_CONTENT_NUMBERED, Boolean.TRUE);
-            component.putClientProperty(WizardDescriptor.PROP_CONTENT_SELECTED_INDEX, Integer.valueOf(1));
+            component.putClientProperty(WizardDescriptor.PROP_CONTENT_SELECTED_INDEX, 1);
         }
         return component;
     }

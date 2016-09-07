@@ -9,8 +9,8 @@ import javax.swing.table.AbstractTableModel;
  */
 public class GSCPerformanceMetricsTableModel extends AbstractTableModel {
 
-    PerformanceMetrics[] data;
-    String[] header;
+    private PerformanceMetrics[] data;
+    private String[] header;
 
     public GSCPerformanceMetricsTableModel(String[] header, PerformanceMetrics[] data) {
         this.data = data;

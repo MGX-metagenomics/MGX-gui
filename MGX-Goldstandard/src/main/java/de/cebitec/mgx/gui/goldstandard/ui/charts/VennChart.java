@@ -9,20 +9,15 @@ import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.awt.Dimension;
-import java.awt.EventQueue;
 import java.awt.Font;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import javax.imageio.ImageIO;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import org.apache.commons.collections4.CollectionUtils;
-import org.openide.util.Exceptions;
 
 /**
  *
@@ -148,6 +143,7 @@ public class VennChart extends JPanel {
                         ImageIO.write(venn.image, "png", new File(fName));
                         return ImageExporterI.Result.SUCCESS;
                     case JPEG:
+                        // FIXME?
                         return ImageExporterI.Result.SUCCESS;
                     default:
                         return ImageExporterI.Result.ERROR;
@@ -156,37 +152,27 @@ public class VennChart extends JPanel {
         };
     }
 
-    private static void create() throws IOException {
-        Set<Integer> a = new HashSet<>();
-        a.add(1);
-        a.add(2);
-        a.add(3);
-        a.add(4);
-        Set<Integer> b = new HashSet<>();
-        b.add(5);
-        b.add(6);
-        b.add(3);
-        b.add(4);
-        JFrame f = new JFrame();
-        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        //f.add(get2Venn(a, b, "Group A", "Group B"));
-        f.add(get3Venn(10, 10, 10, 5, 5, 5, 1, "Label A", "Label B", "Label C"));
-        f.pack();
-        f.setVisible(true);
-    }
-
-    public static void main(String[] args) {
-        EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    create();
-                } catch (IOException ex) {
-                    Exceptions.printStackTrace(ex);
-                }
-            }
-        });
-    }
+//    private static void create() throws IOException {
+//        JFrame f = new JFrame();
+//        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//        //f.add(get2Venn(a, b, "Group A", "Group B"));
+//        f.add(get3Venn(10, 10, 10, 5, 5, 5, 1, "Label A", "Label B", "Label C"));
+//        f.pack();
+//        f.setVisible(true);
+//    }
+//
+//    public static void main(String[] args) {
+//        EventQueue.invokeLater(new Runnable() {
+//            @Override
+//            public void run() {
+//                try {
+//                    create();
+//                } catch (IOException ex) {
+//                    Exceptions.printStackTrace(ex);
+//                }
+//            }
+//        });
+//    }
 
     @Override
     public void paintComponent(Graphics g) {

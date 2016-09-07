@@ -13,9 +13,9 @@ import de.cebitec.mgx.api.model.AttributeI;
  */
 public class MGSAttribute {
 
-        private final AttributeI attribute;
-        private final int start;
-        private final int stop;
+    private final AttributeI attribute;
+    private final int start;
+    private final int stop;
 
     public MGSAttribute(AttributeI attribute, int start, int stop) {
         this.attribute = attribute;
@@ -34,8 +34,5 @@ public class MGSAttribute {
     public int getStop() {
         return stop;
     }
-    
-    
-        
-        
+
 }

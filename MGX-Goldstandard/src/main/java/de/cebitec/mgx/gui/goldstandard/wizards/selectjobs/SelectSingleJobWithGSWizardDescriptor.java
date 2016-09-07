@@ -15,7 +15,7 @@ import org.openide.WizardDescriptor;
  *
  * @author pblumenk
  */
-public class SelectSingleJobWithGSWizardDescriptor extends WizardDescriptor implements ChangeListener{
+public class SelectSingleJobWithGSWizardDescriptor extends WizardDescriptor implements ChangeListener {
 
     private final SelectSingleJobWithGSWizardPanel1 p1;
     protected final SeqRunI seqrun;
@@ -25,32 +25,31 @@ public class SelectSingleJobWithGSWizardDescriptor extends WizardDescriptor impl
         this.seqrun = seqrun;
         p1 = new SelectSingleJobWithGSWizardPanel1(seqrun, hierarchicAT, maxSelected);
         List<Panel<WizardDescriptor>> panels = new ArrayList<>();
-        panels.add(p1);        
+        panels.add(p1);
         this.setPanelsAndSettings(new ArrayIterator<>(panels), this);
         this.setTitleFormat(new MessageFormat("{0}"));
         this.setTitle("Select job wizard");
         putProperty(WizardDescriptor.PROP_CONTENT_DATA, new String[]{p1.getName()});
         putProperty(WizardDescriptor.PROP_AUTO_WIZARD_STYLE, Boolean.TRUE);
         putProperty(WizardDescriptor.PROP_CONTENT_DISPLAYED, Boolean.TRUE);
-        putProperty(WizardDescriptor.PROP_CONTENT_NUMBERED, Boolean.TRUE);        
+        putProperty(WizardDescriptor.PROP_CONTENT_NUMBERED, Boolean.TRUE);
     }
 
-@SuppressWarnings("unchecked")    
-    public List<JobI> getJobs(){
-        return (List<JobI>)getProperty(SelectSingleJobWithGSVisualPanel1.PROP_JOB);
+    @SuppressWarnings("unchecked")
+    public List<JobI> getJobs() {
+        return (List<JobI>) getProperty(SelectSingleJobWithGSVisualPanel1.PROP_JOB);
     }
-    
-    public AttributeTypeI getAttributeType(){
+
+    public AttributeTypeI getAttributeType() {
         return (AttributeTypeI) getProperty(SelectSingleJobWithGSVisualPanel1.PROP_ATTRIBUTETYPE);
     }
-    
-    public JobI getGoldstandard(){
+
+    public JobI getGoldstandard() {
         return (JobI) getProperty(SelectSingleJobWithGSVisualPanel1.PROP_GOLDSTANDARD);
     }
 
     @Override
     public void stateChanged(ChangeEvent e) {
-        return;
     }
 
 }

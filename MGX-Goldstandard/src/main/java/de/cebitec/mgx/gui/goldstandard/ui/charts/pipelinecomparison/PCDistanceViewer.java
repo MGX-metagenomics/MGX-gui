@@ -27,7 +27,6 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.StandardChartTheme;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
-import org.jfree.data.category.CategoryDataset;
 import org.openide.DialogDisplayer;
 import org.openide.WizardDescriptor;
 import org.openide.util.Exceptions;
@@ -40,12 +39,10 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = PipelineComparisonI.class)
 public class PCDistanceViewer extends EvaluationViewerI implements PipelineComparisonI {
 
-    private SeqRunI currentSeqrun;
     private AttributeTypeI usedAttributeType;
     private JXTable table;
     private List<JobI> jobs;
     private PCDistanceViewCustomizer cust = null;    
-    private CategoryDataset dataset;
 
     public enum DistanceMethod{
         MANHATTAN, EUCLIDEAN, CHEBYSHEV;

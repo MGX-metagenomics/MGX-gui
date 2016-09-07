@@ -26,8 +26,8 @@ import org.openide.util.datatransfer.MultiTransferObject;
  */
 public class SeqRunList extends TreeTableView implements PropertyChangeListener {
 
-    private VisualizationGroupI vGroup;
-    private SingleSeqRunNodeFactory vgnf;
+    private final VisualizationGroupI vGroup;
+    private final SingleSeqRunNodeFactory vgnf;
 
     public SeqRunList(VisualizationGroupI vGroup, SingleSeqRunNodeFactory vgnf) {
         super();

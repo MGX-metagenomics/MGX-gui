@@ -12,7 +12,6 @@ import de.cebitec.mgx.gui.goldstandard.ui.charts.VennChart;
 import de.cebitec.mgx.gui.goldstandard.util.EvalExceptions;
 import de.cebitec.mgx.gui.goldstandard.util.JobUtils;
 import de.cebitec.mgx.gui.goldstandard.wizards.selectjobs.SelectJobsWizardDescriptor;
-import gnu.trove.map.TLongObjectMap;
 import java.awt.Dialog;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -33,18 +32,9 @@ import org.openide.util.lookup.ServiceProvider;
 public class GSCVennChartViewer extends EvaluationViewerI implements PipelineComparisonI {
 
     private VennChart venn = null;
-
-    private SeqRunI currentSeqrun;
     private List<JobI> currentJobs;
-
-    List<DistributionI<Long>> dists;
-
+    private List<DistributionI<Long>> dists;
     private GSCVennChartCustomizer cust = null;
-
-    private TLongObjectMap<String> onlyGSID;
-    private TLongObjectMap<String> onlySampleID;
-    private TLongObjectMap<String> gsAndSampleID;
-
 
     @Override
     public JComponent getComponent() {
@@ -79,9 +69,9 @@ public class GSCVennChartViewer extends EvaluationViewerI implements PipelineCom
         if (dists.size() == 2) {
             DistributionI<Long> distA = dists.get(0);
             DistributionI<Long> distB = dists.get(1);
-            
+
             String jobAName = JobUtils.jobToString(currentJobs.get(0));
-            String jobBName = JobUtils.jobToString(currentJobs.get(1));            
+            String jobBName = JobUtils.jobToString(currentJobs.get(1));
 
             Collection<AttributeI> both = CollectionUtils.intersection(distA.keySet(), distB.keySet());
             Collection<AttributeI> onlyA = CollectionUtils.subtract(distA.keySet(), distB.keySet());
@@ -94,8 +84,8 @@ public class GSCVennChartViewer extends EvaluationViewerI implements PipelineCom
                 venn = null;
             } finally {
 //            p.finish();
-            };
-        } else if (dists.size() == 3){
+            }
+        } else if (dists.size() == 3) {
             DistributionI<Long> distA = dists.get(0);
             DistributionI<Long> distB = dists.get(1);
             DistributionI<Long> distC = dists.get(2);
@@ -103,7 +93,7 @@ public class GSCVennChartViewer extends EvaluationViewerI implements PipelineCom
             String jobAName = JobUtils.jobToString(currentJobs.get(0));
             String jobBName = JobUtils.jobToString(currentJobs.get(1));
             String jobCName = JobUtils.jobToString(currentJobs.get(2));
-            
+
             Collection<AttributeI> abc = CollectionUtils.intersection(CollectionUtils.intersection(distA.keySet(), distC.keySet()), distC.keySet());
             Collection<AttributeI> ab = CollectionUtils.subtract(CollectionUtils.intersection(distA.keySet(), distB.keySet()), abc);
             Collection<AttributeI> bc = CollectionUtils.subtract(CollectionUtils.intersection(distB.keySet(), distC.keySet()), abc);
@@ -111,7 +101,7 @@ public class GSCVennChartViewer extends EvaluationViewerI implements PipelineCom
             Collection<AttributeI> onlyA = CollectionUtils.subtract(CollectionUtils.subtract(distA.keySet(), distB.keySet()), distC.keySet());
             Collection<AttributeI> onlyB = CollectionUtils.subtract(CollectionUtils.subtract(distB.keySet(), distA.keySet()), distC.keySet());
             Collection<AttributeI> onlyC = CollectionUtils.subtract(CollectionUtils.subtract(distC.keySet(), distA.keySet()), distB.keySet());
-            
+
             try {
                 venn = VennChart.get3Venn(onlyA.size(), onlyB.size(), onlyC.size(), ab.size(), ac.size(), bc.size(), abc.size(), jobAName, jobBName, jobCName);
             } catch (IOException ex) {
@@ -119,7 +109,7 @@ public class GSCVennChartViewer extends EvaluationViewerI implements PipelineCom
                 venn = null;
             } finally {
 //            p.finish();
-            };
+            }
         }
     }
 
@@ -133,7 +123,6 @@ public class GSCVennChartViewer extends EvaluationViewerI implements PipelineCom
 
     @Override
     public void selectJobs(SeqRunI seqrun) {
-        currentSeqrun = seqrun;
         try {
             SelectJobsWizardDescriptor jobWizard = new SelectJobsWizardDescriptor(seqrun, false, 3, false);
             Dialog dialog = DialogDisplayer.getDefault().createDialog(jobWizard);
@@ -143,11 +132,11 @@ public class GSCVennChartViewer extends EvaluationViewerI implements PipelineCom
             if (!cancelled) {
                 venn = null;
                 currentJobs = jobWizard.getJobs();
-                AttributeTypeI attrType = jobWizard.getAttributeType();                
+                AttributeTypeI attrType = jobWizard.getAttributeType();
                 dists = new ArrayList<>();
-                for (JobI job : currentJobs){
+                for (JobI job : currentJobs) {
                     dists.add(seqrun.getMaster().Attribute().getDistribution(attrType, job));
-                }                               
+                }
             }
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);

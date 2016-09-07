@@ -1,11 +1,9 @@
 package de.cebitec.mgx.gui.goldstandard.util;
 
 import de.cebitec.mgx.api.model.SeqRunI;
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.datatransfer.DataFlavor;
-import java.util.List;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DnDConstants;
@@ -21,7 +19,6 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import org.openide.util.datatransfer.ExTransferable;
 import org.openide.util.datatransfer.MultiTransferObject;
 import org.openide.nodes.Node;
@@ -33,10 +30,10 @@ import org.openide.nodes.NodeTransfer;
  */
 public class SeqRunDropList extends JPanel implements DropTargetListener {
 
-    private DefaultListModel listModel = new DefaultListModel<>();
+    private final DefaultListModel listModel = new DefaultListModel<>();
     private DropTarget dropTarget;
-    private JLabel jLabel1;
-    private JScrollPane jScrollPane1;
+//    private JLabel jLabel1;
+//    private JScrollPane jScrollPane1;
     private JList<String> list;
 
     public SeqRunDropList() {
@@ -113,14 +110,17 @@ public class SeqRunDropList extends JPanel implements DropTargetListener {
 //        dtde.rejectDrag();
     }
 
+    @Override
     public void dragOver(DropTargetDragEvent arg0) {
         // nothing
     }
 
+    @Override
     public void dropActionChanged(DropTargetDragEvent arg0) {
         // nothing
     }
 
+    @Override
     public void dragExit(DropTargetEvent arg0) {
         // nothing
     }
@@ -148,11 +148,11 @@ public class SeqRunDropList extends JPanel implements DropTargetListener {
 class SeqRunListCellRenderer extends DefaultListCellRenderer {
 
     private static final long serialVersionUID = -7799441088157759804L;
-    private JLabel label;
-    private Color textSelectionColor = Color.BLACK;
-    private Color backgroundSelectionColor = Color.CYAN;
-    private Color textNonSelectionColor = Color.BLACK;
-    private Color backgroundNonSelectionColor = Color.WHITE;
+    private final JLabel label;
+    private final Color textSelectionColor = Color.BLACK;
+    private final Color backgroundSelectionColor = Color.CYAN;
+    private final Color textNonSelectionColor = Color.BLACK;
+    private final Color backgroundNonSelectionColor = Color.WHITE;
 
     SeqRunListCellRenderer() {
         label = new JLabel();
@@ -167,9 +167,8 @@ class SeqRunListCellRenderer extends DefaultListCellRenderer {
             boolean selected,
             boolean expanded) {
 
-        SeqRunI seqrun;
         if (value instanceof SeqRunI) {
-            seqrun = (SeqRunI) value;
+            SeqRunI seqrun = (SeqRunI) value;
             label.setText(seqrun.getName());
             label.setToolTipText(seqrun.getAccession());
 

@@ -3,7 +3,6 @@ package de.cebitec.mgx.gui.goldstandard.ui.charts;
 import de.cebitec.mgx.api.groups.ImageExporterI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.SeqRunI;
-import java.util.List;
 import javax.swing.JComponent;
 
 /**

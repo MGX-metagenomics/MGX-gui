@@ -43,7 +43,6 @@ public class GSCPerformanceMetricsViewer extends EvaluationViewerI implements GS
 
     private GSCPerformanceMetricsViewCustomizer cust = null;
 
-    private TLongObjectMap<String[]> seqToAttribute;
     private JobI gsJob;
     private AttributeTypeI attrType;
 
@@ -125,8 +124,7 @@ public class GSCPerformanceMetricsViewer extends EvaluationViewerI implements GS
                         }
                     }
                 }
-                pm.add(0, goldstandard.size() - usedGsIds,
-                        0, 0);
+                pm.add(0, goldstandard.size() - usedGsIds, 0, 0);
                 pm.add(0, 0, 0, numSeqs - pm.getFN() - pm.getFP() - pm.getTP());
                 performanceMetrics[i++] = pm;
                 p.progress(progress++);
@@ -137,15 +135,15 @@ public class GSCPerformanceMetricsViewer extends EvaluationViewerI implements GS
             return;
         }
 
-        String[] columns = new String[currentJobs.size()+1];
+        String[] columns = new String[currentJobs.size() + 1];
         columns[0] = "";
-        for (int i = 1; i<currentJobs.size()+1; i++){
-            columns[i] = JobUtils.jobToString(currentJobs.get(i-1));
+        for (int i = 1; i < currentJobs.size() + 1; i++) {
+            columns[i] = JobUtils.jobToString(currentJobs.get(i - 1));
         }
 
         GSCPerformanceMetricsTableModel model = new GSCPerformanceMetricsTableModel(columns, performanceMetrics);
         cust.setModel(model);
-        
+
         table = new JXTable(model);
         table.setFillsViewportHeight(true);
         for (TableColumn tc : table.getColumns()) {
@@ -188,7 +186,6 @@ public class GSCPerformanceMetricsViewer extends EvaluationViewerI implements GS
             Exceptions.printStackTrace(ex);
             cust = null;
             table = null;
-            seqToAttribute = null;
             currentJobs = null;
         }
     }
@@ -199,7 +196,6 @@ public class GSCPerformanceMetricsViewer extends EvaluationViewerI implements GS
         cust.dispose();
         cust = null;
         table = null;
-        seqToAttribute = null;
         currentJobs = null;
     }
 

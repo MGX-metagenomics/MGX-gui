@@ -8,29 +8,28 @@ import org.openide.util.lookup.ServiceProvider;
  * @author pblumenk
  */
 @ServiceProvider(service = ComparisonTypeI.class)
-public class PipelineComparison implements ComparisonTypeI, Comparable<ComparisonTypeI>{
+public class PipelineComparison implements ComparisonTypeI, Comparable<ComparisonTypeI> {
 
     public PipelineComparison() {
     }
-    
+
     @Override
-    public Class getChartInterface() {
+    public final Class getChartInterface() {
         return PipelineComparisonI.class;
     }
-    
-    
+
     @Override
-    public String getName() {
+    public final String getName() {
         return "Compare pipelines";
     }
 
     @Override
-    public int compareTo(ComparisonTypeI o) {
+    public final int compareTo(ComparisonTypeI o) {
         return this.getName().compareTo(o.getName());
     }
-    
+
     @Override
-    public String toString() {
+    public final String toString() {
         return getName();
     }
 

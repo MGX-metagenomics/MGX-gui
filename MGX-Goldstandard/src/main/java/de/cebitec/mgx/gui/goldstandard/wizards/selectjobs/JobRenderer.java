@@ -1,7 +1,6 @@
 package de.cebitec.mgx.gui.goldstandard.wizards.selectjobs;
 
 import de.cebitec.mgx.api.model.JobI;
-import de.cebitec.mgx.api.model.JobParameterI;
 import de.cebitec.mgx.gui.goldstandard.util.JobUtils;
 import java.awt.Component;
 import javax.swing.JLabel;

@@ -3,7 +3,6 @@ package de.cebitec.mgx.gui.goldstandard.wizards.selectjobs;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.gui.goldstandard.actions.AddGoldstandard;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collection;
 import java.util.List;
@@ -18,8 +17,8 @@ public final class SelectSingleJobWithGSVisualPanel1 extends JPanel {
     public static final String PROP_ATTRIBUTETYPE = "attribute_type";
     public static final String PROP_GOLDSTANDARD = "goldstandard";
 
-    Collection<JobI> jobs;
-    DefaultListModel<JobI> jobModel;
+    private final Collection<JobI> jobs;
+    private final DefaultListModel<JobI> jobModel;
 
     /**
      * Creates new form SelectSingleJobVisualPanel1
@@ -31,9 +30,6 @@ public final class SelectSingleJobWithGSVisualPanel1 extends JPanel {
         attributeLabel.setText(attrTypeLabel);
 
         jobModel = new DefaultListModel<>();
-//        for (JobI job : this.jobs) {
-//            jobModel.addElement(job);
-//        }
         jobList.setModel(jobModel);
         jobList.setCellRenderer(new JobRenderer());
 

@@ -7,7 +7,7 @@ import de.cebitec.mgx.gui.goldstandard.ui.charts.pipelinecomparison.PCDistanceVi
  *
  * @author pblumenk
  */
-public class PCDistanceViewCustomizer extends javax.swing.JPanel{
+public class PCDistanceViewCustomizer extends javax.swing.JPanel {
 
     /**
      * Creates new form TableViewCustomizer
@@ -16,15 +16,15 @@ public class PCDistanceViewCustomizer extends javax.swing.JPanel{
         initComponents();
         distanceMethodComboBox.setModel(new DefaultComboBoxModel<>(DistanceMethod.values()));
         distanceMethodComboBox.setSelectedIndex(0);
-    }       
+    }
 
-public boolean normalizeVectors(){
-    return normalizeVectors.isSelected();
-}    
+    public boolean normalizeVectors() {
+        return normalizeVectors.isSelected();
+    }
 
-public DistanceMethod getDistanceMethod(){
-    return (DistanceMethod)distanceMethodComboBox.getSelectedItem();
-}
+    public DistanceMethod getDistanceMethod() {
+        return (DistanceMethod) distanceMethodComboBox.getSelectedItem();
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.

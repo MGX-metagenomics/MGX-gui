@@ -1,8 +1,5 @@
 package de.cebitec.mgx.gui.goldstandard.util;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.math.RoundingMode;
 import org.apache.commons.math3.util.FastMath;
 
 /**

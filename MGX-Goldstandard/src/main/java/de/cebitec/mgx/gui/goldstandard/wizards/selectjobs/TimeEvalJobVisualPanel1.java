@@ -11,7 +11,7 @@ import javax.swing.event.ListSelectionListener;
 
 public final class TimeEvalJobVisualPanel1 extends JPanel {
 
-    public static final String PROP_JOBS = "job";    
+    public static final String PROP_JOBS = "job";
 
     /**
      * Creates new form SelectSingleJobVisualPanel1
@@ -23,7 +23,7 @@ public final class TimeEvalJobVisualPanel1 extends JPanel {
             jobModel.addElement(job);
         }
         jobList.setModel(jobModel);
-        jobList.setCellRenderer(new JobRenderer());        
+        jobList.setCellRenderer(new JobRenderer());
 
         clearSelections();
     }

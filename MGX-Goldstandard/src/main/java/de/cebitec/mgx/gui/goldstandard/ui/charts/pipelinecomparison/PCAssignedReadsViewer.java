@@ -43,7 +43,6 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = PipelineComparisonI.class)
 public class PCAssignedReadsViewer extends EvaluationViewerI implements PipelineComparisonI {
 
-    private SeqRunI currentSeqrun;
     private AttributeTypeI usedAttributeType;
     private ChartPanel cPanel = null;
     private Collection<JobI> jobs;

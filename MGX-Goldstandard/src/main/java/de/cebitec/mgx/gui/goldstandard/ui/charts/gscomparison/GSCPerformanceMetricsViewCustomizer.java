@@ -156,7 +156,7 @@ public class GSCPerformanceMetricsViewCustomizer extends javax.swing.JPanel {
                     } finally {
                         p.finish();
                     }
-                };
+                }
             }
         });
     }//GEN-LAST:event_exportTSVActionPerformed

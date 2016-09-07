@@ -56,10 +56,10 @@ public class GSCTableViewerPagingModel extends AbstractTableModel {
         updateSeqHeader();
     }
 
-    public TLongObjectMap<String[]> getData(){
+    public TLongObjectMap<String[]> getData() {
         return data;
     }
-    
+
     // Return values appropriate for the visible table part.
     @Override
     public int getRowCount() {
@@ -96,7 +96,7 @@ public class GSCTableViewerPagingModel extends AbstractTableModel {
 
     /*
     * returns ID if col == 0, not the header!
-    */
+     */
     public Object getRealValueAt(int row, int col) {
         long id = keys[row];
         if (col == 0) {
@@ -118,7 +118,7 @@ public class GSCTableViewerPagingModel extends AbstractTableModel {
             }
         }
     }
-    
+
     @Override
     public String getColumnName(int col) {
         return colHeader[col];
@@ -197,6 +197,7 @@ public class GSCTableViewerPagingModel extends AbstractTableModel {
         }
 
         upButton.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent ae) {
                 model.pageUp();
 
@@ -209,6 +210,7 @@ public class GSCTableViewerPagingModel extends AbstractTableModel {
         });
 
         downButton.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent ae) {
                 model.pageDown();
 
@@ -221,10 +223,8 @@ public class GSCTableViewerPagingModel extends AbstractTableModel {
         });
 
         // Turn on the scrollbars; otherwise we won't get our corners.
-        jsp
-                .setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        jsp
-                .setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+        jsp.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        jsp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
 
         // Add in the corners (page up/down).
         jsp.setCorner(ScrollPaneConstants.UPPER_RIGHT_CORNER, upButton);
@@ -262,17 +262,17 @@ class ArrowIcon implements Icon {
 
     public static final int DOWN = 1;
 
-    private int direction;
+    private final int direction;
 
-    private Polygon pagePolygon = new Polygon(new int[]{2, 4, 4, 10, 10, 2},
+    private final Polygon pagePolygon = new Polygon(new int[]{2, 4, 4, 10, 10, 2},
             new int[]{4, 4, 2, 2, 12, 12}, 6);
 
-    private int[] arrowX = {4, 9, 6};
+    private final int[] arrowX = {4, 9, 6};
 
-    private Polygon arrowUpPolygon = new Polygon(arrowX,
+    private final Polygon arrowUpPolygon = new Polygon(arrowX,
             new int[]{10, 10, 4}, 3);
 
-    private Polygon arrowDownPolygon = new Polygon(arrowX,
+    private final Polygon arrowDownPolygon = new Polygon(arrowX,
             new int[]{6, 6, 11}, 3);
 
     public ArrowIcon(int which) {

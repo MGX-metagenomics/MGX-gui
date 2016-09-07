@@ -1,7 +1,6 @@
 package de.cebitec.mgx.gui.goldstandard.ui;
 
 import de.cebitec.mgx.api.exception.MGXException;
-import de.cebitec.mgx.api.misc.Visualizable;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.ToolI;
@@ -11,22 +10,15 @@ import de.cebitec.mgx.gui.goldstandard.ui.charts.EvaluationViewerI;
 import de.cebitec.mgx.gui.goldstandard.ui.charts.gscomparison.GSComparisonI;
 import de.cebitec.mgx.gui.goldstandard.ui.charts.pipelinecomparison.PipelineComparisonI;
 import de.cebitec.mgx.gui.goldstandard.util.EvalExceptions;
-import de.cebitec.mgx.gui.goldstandard.wizards.selectjobs.SelectJobsWizardAction;
-import de.cebitec.mgx.gui.goldstandard.wizards.selectjobs.SelectJobsWizardDescriptor;
 import de.cebitec.mgx.gui.swingutils.BaseModel;
-import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.Collection;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.List;
-import org.netbeans.api.progress.ProgressHandle;
-import org.netbeans.api.progress.ProgressHandleFactory;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
@@ -37,14 +29,12 @@ import org.openide.util.Utilities;
  *
  * @author plumenk
  */
-public class EvaluationControlPanel extends javax.swing.JPanel implements PropertyChangeListener, ActionListener, LookupListener {
+public class EvaluationControlPanel extends javax.swing.JPanel implements ActionListener, LookupListener {
 
     private EvaluationTopComponent topComponent;
     //
     private ComparisonTypeI currentComparisonType;
     private EvaluationViewerI currentViewer;
-    private final SelectJobsWizardAction jobWizard = new SelectJobsWizardAction();
-    private SelectJobsWizardDescriptor jobWz;
     //
     private final ComparisonTypeListModel compListModel = new ComparisonTypeListModel();
     private final VisualizationTypeListModel visListModel = new VisualizationTypeListModel();
@@ -198,15 +188,6 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Proper
     private javax.swing.JButton updateButton;
     private javax.swing.JComboBox visualizationTypeList;
     // End of variables declaration//GEN-END:variables
-
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-
-//        switch (evt.getPropertyName()) {
-//            default:
-//                System.err.println("ControlPanel received unknown event " + evt);
-//        }
-    }
 
     @Override
     @SuppressWarnings("unchecked")

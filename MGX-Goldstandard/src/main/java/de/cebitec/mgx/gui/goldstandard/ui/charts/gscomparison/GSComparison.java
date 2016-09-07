@@ -14,22 +14,22 @@ public class GSComparison implements ComparisonTypeI, Comparable<ComparisonTypeI
     }
 
     @Override
-    public Class getChartInterface() {
+    public final Class getChartInterface() {
         return GSComparisonI.class;
     }
 
     @Override
-    public String getName() {
+    public final String getName() {
         return "Compare to Goldstandard";
     }
 
     @Override
-    public int compareTo(ComparisonTypeI o) {
+    public final int compareTo(ComparisonTypeI o) {
         return this.getName().compareTo(o.getName());
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return getName();
     }
 }

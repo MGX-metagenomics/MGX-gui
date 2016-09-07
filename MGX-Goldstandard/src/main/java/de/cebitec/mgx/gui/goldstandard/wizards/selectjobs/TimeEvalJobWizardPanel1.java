@@ -10,7 +10,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -20,10 +19,9 @@ import javax.swing.event.EventListenerList;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import org.openide.WizardDescriptor;
-import org.openide.util.Exceptions;
 import org.openide.util.HelpCtx;
 
-public class TimeEvalJobWizardPanel1 implements WizardDescriptor.Panel<WizardDescriptor>, ListSelectionListener{
+public class TimeEvalJobWizardPanel1 implements WizardDescriptor.Panel<WizardDescriptor>, ListSelectionListener {
 
     /**
      * The visual component that displays this panel. If you need to access the
@@ -36,12 +34,10 @@ public class TimeEvalJobWizardPanel1 implements WizardDescriptor.Panel<WizardDes
     private final Map<JobI, Collection<AttributeTypeI>> jobs;
     private JobI goldstandard;
     private Set<AttributeTypeI> gsAttributeTypes;
-    private final SeqRunI seqrun;
 
     private boolean isValid = false;
 
     public TimeEvalJobWizardPanel1(SeqRunI seqrun) throws MGXException {
-        this.seqrun = seqrun;
         List<JobI> allJobs = seqrun.getMaster().Job().BySeqRun(seqrun);
         jobs = new HashMap<>(allJobs.size());
         for (JobI job : allJobs) {
@@ -71,7 +67,7 @@ public class TimeEvalJobWizardPanel1 implements WizardDescriptor.Panel<WizardDes
     public TimeEvalJobVisualPanel1 getComponent() {
         if (component == null) {
             component = new TimeEvalJobVisualPanel1(jobs);
-            component.addListSelectionListener(this);            
+            component.addListSelectionListener(this);
 
         }
         return component;
@@ -127,13 +123,13 @@ public class TimeEvalJobWizardPanel1 implements WizardDescriptor.Panel<WizardDes
 
     @Override
     public void storeSettings(WizardDescriptor wiz) {
-        model.putProperty(SelectJobsVisualPanel1.PROP_JOBS, getComponent().getSelectedJobs());        
+        model.putProperty(SelectJobsVisualPanel1.PROP_JOBS, getComponent().getSelectedJobs());
     }
 
     @Override
     public void valueChanged(ListSelectionEvent e) {
 //        ListSelectionModel lsm = (ListSelectionModel) e.getSource();
-        if (!e.getValueIsAdjusting()) {            
+        if (!e.getValueIsAdjusting()) {
             boolean oldState = isValid;
             isValid = checkValidity();
             fireChangeEvent(this, oldState, isValid);

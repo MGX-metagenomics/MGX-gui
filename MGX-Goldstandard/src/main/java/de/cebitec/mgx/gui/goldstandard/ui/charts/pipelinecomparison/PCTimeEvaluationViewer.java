@@ -2,7 +2,6 @@ package de.cebitec.mgx.gui.goldstandard.ui.charts.pipelinecomparison;
 
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.groups.ImageExporterI;
-import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.SeqRunI;

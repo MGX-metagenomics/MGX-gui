@@ -13,7 +13,7 @@ import javax.swing.ListCellRenderer;
 public class AttributeTypeRenderer extends JLabel implements ListCellRenderer<AttributeTypeI> {
 
     public AttributeTypeRenderer() {
-        setOpaque(true);
+        super.setOpaque(true);
     }
 
     @Override
