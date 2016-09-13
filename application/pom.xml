@@ -15,7 +15,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <netbeans.run.params.ide>-J-Xmx256m</netbeans.run.params.ide>
+        <netbeans.run.params.ide>-J-Xmx1024m</netbeans.run.params.ide>
         <netbeans.run.params>${netbeans.run.params.ide}</netbeans.run.params>
 <!--        <all.clusters>${project.build.directory}/${brandingToken}</all.clusters> -->
     </properties>
@@ -137,19 +137,17 @@
             <artifactId>MGX-Biodiversity</artifactId>
             <version>${project.version}</version>
         </dependency>
-<!--        <dependency> 
-            <groupId>org.netbeans.api</groupId> 
-            <artifactId>org-netbeans-modules-netbinox</artifactId> 
-        </dependency>-->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>MGX-QCMonitor</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <!--
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-compat</artifactId>
         </dependency>
+        -->
         <!--
         <dependency>
             <groupId>org.apache.aries.spifly</groupId>
@@ -211,7 +209,7 @@
                     <systemProperties>
                         <property>
                             <name>cluster.path.final</name>
-                            <value>${project.build.directory}/${brandingToken}/${brandingToken}:${project.build.directory}/${brandingToken}/extra:${project.build.directory}/${brandingToken}/platform</value>
+                            <value>${project.build.directory}/${brandingToken}/${brandingToken}:${project.build.directory}/${brandingToken}/extra::${project.build.directory}/${brandingToken}/gpms:${project.build.directory}/${brandingToken}/platform</value>
                         </property>
                     </systemProperties>
                     <systemPropertyVariables>
