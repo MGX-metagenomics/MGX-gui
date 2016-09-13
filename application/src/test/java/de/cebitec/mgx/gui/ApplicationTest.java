@@ -10,11 +10,11 @@ public class ApplicationTest extends NbTestCase {
     public static Test suite() {
         return NbModuleSuite.createConfiguration(ApplicationTest.class).
                 gui(false).
-                failOnMessage(Level.WARNING). // works at least in RELEASE71
+                failOnMessage(Level.WARNING).
                 failOnException(Level.INFO).
                 enableClasspathModules(false).
                 clusters(".*").
-                suite(); // RELEASE71+, else use NbModuleSuite.create(NbModuleSuite.createConfiguration(...))
+                suite();
     }
 
     public ApplicationTest(String n) {
