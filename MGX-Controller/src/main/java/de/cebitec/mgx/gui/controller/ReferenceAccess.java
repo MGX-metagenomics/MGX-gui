@@ -210,6 +210,7 @@ public class ReferenceAccess implements ReferenceAccessI {
         public void propertyChange(PropertyChangeEvent evt) {
             switch (evt.getPropertyName()) {
                 case TransferBase.MESSAGE:
+                case TransferBase.TRANSFER_FAILED:
                     fireTaskChange(MESSAGE, evt.getNewValue());
                     break;
                 default:
