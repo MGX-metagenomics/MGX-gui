@@ -84,7 +84,7 @@ public abstract class MGXDataModelBase<T extends MGXDataModelBaseI<T>> implement
             pcs.close();
             pcs = null;
         }
-        System.err.println("instance "+getClass().getSimpleName()+" marked as deleted.");
+        //System.err.println("instance "+getClass().getSimpleName()+" marked as deleted.");
     }
 
     @Override
