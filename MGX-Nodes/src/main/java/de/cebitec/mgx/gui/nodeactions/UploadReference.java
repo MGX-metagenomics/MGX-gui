@@ -45,6 +45,9 @@ public class UploadReference extends AbstractAction {
             final UploadBaseI uploader = master.Reference().createUploader(localFile);
 
             final MGXTask run = new MGXTask("Upload " + fName) {
+
+                private volatile boolean complete = false;
+
                 @Override
                 public boolean process() {
                     uploader.addPropertyChangeListener(this);
@@ -58,16 +61,22 @@ public class UploadReference extends AbstractAction {
 
                 @Override
                 public void finished() {
-                    super.finished();
-                    uploader.removePropertyChangeListener(this);
-                    parent.refreshChildren();
+                    if (!complete) {
+                        complete = true;
+                        super.finished();
+                        uploader.removePropertyChangeListener(this);
+                        parent.refreshChildren();
+                    }
                 }
 
                 @Override
                 public void failed(String reason) {
-                    super.failed(reason);
-                    uploader.removePropertyChangeListener(this);
-                    parent.refreshChildren();
+                    if (!complete) {
+                        complete = true;
+                        super.failed(reason);
+                        uploader.removePropertyChangeListener(this);
+                        parent.refreshChildren();
+                    }
                 }
 
                 @Override

@@ -59,7 +59,7 @@ public class AttributeAccess implements AttributeAccessI {
     @Override
     public Iterator<AttributeI> ByJob(JobI job) throws MGXException {
         try {
-            Iterator<AttributeDTO> BySeqRun = getDTOmaster().Attribute().ByJob(job.getId());
+            Iterator<AttributeDTO> BySeqRun = getDTOmaster().Attribute().byJob(job.getId());
 
             return new BaseIterator<AttributeDTO, AttributeI>(BySeqRun) {
                 @Override
@@ -77,7 +77,7 @@ public class AttributeAccess implements AttributeAccessI {
     @Override
     public Iterator<AttributeI> BySeqRun(final SeqRunI seqrun) throws MGXException {
         try {
-            Iterator<AttributeDTO> BySeqRun = getDTOmaster().Attribute().BySeqRun(seqrun.getId());
+            Iterator<AttributeDTO> BySeqRun = getDTOmaster().Attribute().bySeqRun(seqrun.getId());
 
             return new BaseIterator<AttributeDTO, AttributeI>(BySeqRun) {
                 @Override

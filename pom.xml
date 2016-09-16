@@ -29,11 +29,14 @@
                 <artifactId>org-netbeans-modules-netbinox</artifactId> 
                 <version>${netbeans.version}</version> 
             </dependency>-->
+            
+            <!--
             <dependency>
                 <groupId>org.netbeans.api</groupId>
                 <artifactId>org-openide-compat</artifactId>
                 <version>${netbeans.version}</version>
             </dependency>
+            -->
             <dependency>
                 <groupId>org.netbeans.api</groupId>
                 <artifactId>org-netbeans-api-annotations-common</artifactId>
