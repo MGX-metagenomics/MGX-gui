@@ -116,7 +116,7 @@ public class SampleAccess extends AccessBase<SampleI> implements SampleAccessI {
     @Override
     public Iterator<SampleI> ByHabitat(final HabitatI habitat) throws MGXException {
         try {
-            Iterator<SampleDTO> fetchall = getDTOmaster().Sample().ByHabitat(habitat.getId());
+            Iterator<SampleDTO> fetchall = getDTOmaster().Sample().byHabitat(habitat.getId());
             return new BaseIterator<SampleDTO, SampleI>(fetchall) {
                 @Override
                 public SampleI next() {
