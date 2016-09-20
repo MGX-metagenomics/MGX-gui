@@ -4,12 +4,12 @@
     <parent>
         <artifactId>MGX-gui</artifactId>
         <groupId>de.cebitec.mgx.gui</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0</version>
     </parent>
 
     <groupId>de.cebitec.mgx.gui</groupId>
     <artifactId>MGX-IntervalCache</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
     <packaging>bundle</packaging>
 
     <name>MGX-IntervalCache</name>
