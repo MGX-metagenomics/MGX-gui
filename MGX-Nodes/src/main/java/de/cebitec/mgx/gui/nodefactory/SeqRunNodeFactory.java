@@ -28,7 +28,7 @@ public class SeqRunNodeFactory extends MGXNodeFactoryBase<SeqRunI> {
     @Override
     protected boolean addKeys(List<SeqRunI> toPopulate) {
         try {
-            Iterator<SeqRunI> iter = getMaster().SeqRun().ByExtract(extract);
+            Iterator<SeqRunI> iter = extract.getMaster().SeqRun().ByExtract(extract);
             while (iter != null && iter.hasNext()) {
                 if (Thread.interrupted()) {
                     extract.getMaster().log(Level.INFO, "interrupted in NF");
@@ -46,10 +46,8 @@ public class SeqRunNodeFactory extends MGXNodeFactoryBase<SeqRunI> {
     }
 
     @Override
-    protected Node createNodeForKey(SeqRunI key) {
-        SeqRunNode node = new SeqRunNode(key, Children.LEAF);
-        node.addNodeListener(this);
-        return node;
+    protected Node createNodeFor(SeqRunI key) {
+        return new SeqRunNode(key, Children.LEAF);
     }
 
 }
