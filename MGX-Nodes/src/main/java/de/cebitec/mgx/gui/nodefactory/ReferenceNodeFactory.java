@@ -8,14 +8,13 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import org.openide.nodes.Node;
-import org.openide.nodes.NodeListener;
 import org.openide.util.Exceptions;
 
 /**
  *
  * @author sj
  */
-public class ReferenceNodeFactory extends MGXNodeFactoryBase<MGXReferenceI> implements NodeListener {
+public class ReferenceNodeFactory extends MGXNodeFactoryBase<MGXReferenceI> {
 
     public ReferenceNodeFactory(MGXMasterI master) {
         super(master);
@@ -37,9 +36,7 @@ public class ReferenceNodeFactory extends MGXNodeFactoryBase<MGXReferenceI> impl
     }
 
     @Override
-    protected Node createNodeForKey(MGXReferenceI ref) {
-        Node node = new ReferenceNode(ref);
-        node.addNodeListener(this);
-        return node;
+    protected Node createNodeFor(MGXReferenceI ref) {
+        return new ReferenceNode(ref);
     }
 }
