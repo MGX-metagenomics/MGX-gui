@@ -130,7 +130,7 @@ public class DNAExtractAccess extends AccessBase<DNAExtractI> implements DNAExtr
 
         try {
             return new Iterator<DNAExtractI>() {
-                final Iterator<DNAExtractDTO> iter = getDTOmaster().DNAExtract().BySample(sample.getId());
+                final Iterator<DNAExtractDTO> iter = getDTOmaster().DNAExtract().bySample(sample.getId());
 
                 @Override
                 public boolean hasNext() {

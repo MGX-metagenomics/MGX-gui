@@ -175,7 +175,7 @@ public class VGroupManager implements VGroupManagerI {
                         conflicts.add(vg);
                     }
                 } else {
-                    System.err.println(vg.getName() + " is not active");
+                    //System.err.println(vg.getName() + " is not active");
                 }
             }
         }
@@ -186,11 +186,11 @@ public class VGroupManager implements VGroupManagerI {
 
         if (conflicts == null || conflicts.isEmpty()) {
             currentAttributeType.put(rank, aType); // remember attribute type selection
-            System.err.println("selectAttributeType for " + aType + ": true");
+//            System.err.println("selectAttributeType for " + aType + ": true");
             return true;
         }
 
-        System.err.println("selectAttributeType for " + aType + ": false");
+//        System.err.println("selectAttributeType for " + aType + ": false");
         currentAttributeType.put(rank, null);
         return false;
     }
@@ -210,7 +210,7 @@ public class VGroupManager implements VGroupManagerI {
                     numActiveGroups++;
                     Map<SeqRunI, Set<JobI>> conflicts = vg.getConflicts(AttributeRank.PRIMARY);
                     if (!conflicts.isEmpty()) {
-                        System.err.println("CONFLICT for " + vg.getName());
+//                        System.err.println("CONFLICT for " + vg.getName());
                         assert false;
                         return null;
                     }

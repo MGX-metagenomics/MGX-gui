@@ -26,7 +26,7 @@ import org.openide.util.Utilities;
 public class GetError extends AbstractAction {
 
     public GetError() {
-        putValue(NAME, "Show error");
+        super.putValue(NAME, "Show error");
     }
 
     @Override

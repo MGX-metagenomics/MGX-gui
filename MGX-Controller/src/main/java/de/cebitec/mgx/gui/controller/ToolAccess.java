@@ -170,7 +170,7 @@ public class ToolAccess implements ToolAccessI {
     public ToolI ByJob(JobI job) throws MGXException {
         ToolI t = null;
         try {
-            ToolDTO dto = getDTOmaster().Tool().ByJob(job.getId());
+            ToolDTO dto = getDTOmaster().Tool().byJob(job.getId());
             t = ToolDTOFactory.getInstance().toModel(getMaster(), dto);
             job.setTool(t);
         } catch (MGXDTOException ex) {

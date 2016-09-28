@@ -12,6 +12,7 @@ import de.cebitec.mgx.kegg.pathways.api.ECNumberI;
 import de.cebitec.mgx.kegg.pathways.api.PathwayI;
 import de.cebitec.mgx.kegg.pathways.model.ECNumberFactory;
 import java.awt.Cursor;
+import java.awt.EventQueue;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
@@ -26,7 +27,6 @@ import org.openide.util.RequestProcessor;
  * @author sj
  */
 public class KeggCustomizer extends javax.swing.JPanel {
-    
 
     /**
      * Creates new form KeggCustomizer
@@ -105,7 +105,13 @@ public class KeggCustomizer extends javax.swing.JPanel {
         });
         task.waitFinished();
 
-        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            }
+        });
+
         return ret;
     }
 

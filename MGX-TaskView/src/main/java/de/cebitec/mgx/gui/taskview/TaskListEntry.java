@@ -9,6 +9,7 @@ import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import javax.swing.ToolTipManager;
 
 /**
  *
@@ -38,6 +39,7 @@ public class TaskListEntry extends javax.swing.JPanel implements PropertyChangeL
             jProgressBar1.setMaximum(100);
             jProgressBar1.setValue(task.getProgress());
         }
+        ToolTipManager.sharedInstance().registerComponent(this);
     }
 
     private void setMainText(String t) {
@@ -47,6 +49,7 @@ public class TaskListEntry extends javax.swing.JPanel implements PropertyChangeL
 
     private void setDetailText(String t) {
         detailtext.setText(t);
+        setToolTipText(t);
         repaint();
     }
 
