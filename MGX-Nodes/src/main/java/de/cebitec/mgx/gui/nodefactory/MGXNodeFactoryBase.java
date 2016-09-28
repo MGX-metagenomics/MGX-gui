@@ -32,6 +32,9 @@ public abstract class MGXNodeFactoryBase<T> extends ChildFactory<T> implements N
 
     @Override
     protected final synchronized boolean createKeys(List<T> toPopulate) {
+        if (!toPopulate.isEmpty()) {
+            System.err.println("createKeys on non-empty list for "+ getClass().getSimpleName());
+        }
         if (master != null && master.isDeleted()) {
             toPopulate.clear();
             return true;

@@ -42,7 +42,7 @@ public class ObservationAccess implements ObservationAccessI {
     public Iterator<ObservationI> ByRead(SequenceI s) throws MGXException {
         Collection<ObservationI> ret = new ArrayList<>();
         try {
-            Iterator<ObservationDTO> iter = getDTOmaster().Observation().ByRead(s.getId());
+            Iterator<ObservationDTO> iter = getDTOmaster().Observation().byRead(s.getId());
             while (iter.hasNext()) {
                 ObservationI obs = ObservationDTOFactory.getInstance().toModel(getMaster(), iter.next());
                 ret.add(obs);
