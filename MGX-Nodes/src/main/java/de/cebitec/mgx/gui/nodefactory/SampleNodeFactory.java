@@ -27,10 +27,10 @@ public class SampleNodeFactory extends MGXNodeFactoryBase<SampleI> {
     @Override
     protected boolean addKeys(List<SampleI> toPopulate) {
         try {
-            Iterator<SampleI> iter = getMaster().Sample().ByHabitat(habitat);
+            Iterator<SampleI> iter = habitat.getMaster().Sample().ByHabitat(habitat);
             while (iter != null && iter.hasNext()) {
                 if (Thread.interrupted()) {
-                    getMaster().log(Level.INFO, "interrupted in NF");
+                    habitat.getMaster().log(Level.INFO, "interrupted in NF");
                     return true;
                 }
                 toPopulate.add(iter.next());
@@ -44,9 +44,7 @@ public class SampleNodeFactory extends MGXNodeFactoryBase<SampleI> {
     }
 
     @Override
-    protected Node createNodeForKey(SampleI key) {
-        SampleNode node = new SampleNode(key);
-        node.addNodeListener(this);
-        return node;
+    protected Node createNodeFor(SampleI key) {
+        return new SampleNode(key);
     }
 }

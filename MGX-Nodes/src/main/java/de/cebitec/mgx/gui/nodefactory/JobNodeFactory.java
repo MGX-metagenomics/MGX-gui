@@ -7,7 +7,6 @@ import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.ToolI;
 import de.cebitec.mgx.gui.nodes.JobNode;
-import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -18,14 +17,13 @@ import java.util.logging.Level;
 import javax.swing.Timer;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
-import org.openide.nodes.NodeListener;
 import org.openide.util.Exceptions;
 
 /**
  *
  * @author sjaenick
  */
-public class JobNodeFactory extends MGXNodeFactoryBase<JobI> implements NodeListener {
+public class JobNodeFactory extends MGXNodeFactoryBase<JobI> { //implements NodeListener {
 
     private final Timer timer;
 
@@ -61,7 +59,11 @@ public class JobNodeFactory extends MGXNodeFactoryBase<JobI> implements NodeList
 
                 try {
                     for (JobI j : sr.getMaster().Job().BySeqRun(sr)) {
-                        ToolI t = sr.getMaster().Tool().ByJob(j);
+                        if (j.getTool() == null) {
+                            // trigger fetch of tool
+                            ToolI t = sr.getMaster().Tool().ByJob(j);
+                        }
+                        j.addPropertyChangeListener(this);
                         tmp.add(j);
                     }
                 } catch (MGXLoggedoutException lex) {
@@ -86,10 +88,8 @@ public class JobNodeFactory extends MGXNodeFactoryBase<JobI> implements NodeList
     }
 
     @Override
-    protected Node createNodeForKey(JobI key) {
-        JobNode node = new JobNode(key, Children.LEAF);
-        node.addNodeListener(this);
-        return node;
+    protected Node createNodeFor(JobI key) {
+        return new JobNode(key, Children.LEAF);
     }
 
     public void destroy() {

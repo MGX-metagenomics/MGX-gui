@@ -12,7 +12,6 @@ import java.util.List;
 import org.openide.nodes.Node;
 import org.openide.nodes.NodeEvent;
 import org.openide.nodes.NodeMemberEvent;
-import org.openide.nodes.NodeReorderEvent;
 import org.openide.util.Exceptions;
 
 /**
@@ -32,7 +31,7 @@ public class FileNodeFactory extends MGXNodeFactoryBase<MGXFileI> {
     @Override
     protected boolean addKeys(List<MGXFileI> toPopulate) {
         try {
-            Iterator<MGXFileI> iter = getMaster().File().fetchall(curDirectory);
+            Iterator<MGXFileI> iter = curDirectory.getMaster().File().fetchall(curDirectory);
             while (iter.hasNext()) {
                 toPopulate.add(iter.next());
             }
@@ -51,14 +50,13 @@ public class FileNodeFactory extends MGXNodeFactoryBase<MGXFileI> {
     }
 
     @Override
-    protected Node createNodeForKey(MGXFileI file) {
+    protected Node createNodeFor(MGXFileI file) {
         Node node;
         if (!file.isDirectory()) {
             node = new MGXFileNode(file);
         } else {
             node = new MGXDirectoryNode(file);
         }
-        node.addNodeListener(this);
         return node;
     }
 
@@ -68,10 +66,6 @@ public class FileNodeFactory extends MGXNodeFactoryBase<MGXFileI> {
 
     @Override
     public void childrenRemoved(NodeMemberEvent ev) {
-    }
-
-    @Override
-    public void childrenReordered(NodeReorderEvent ev) {
     }
 
     @Override

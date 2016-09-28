@@ -6,6 +6,7 @@ import java.awt.EventQueue;
 import java.beans.PropertyChangeEvent;
 import java.util.List;
 import org.openide.nodes.ChildFactory;
+import org.openide.nodes.Node;
 import org.openide.nodes.NodeEvent;
 import org.openide.nodes.NodeListener;
 import org.openide.nodes.NodeMemberEvent;
@@ -41,6 +42,15 @@ public abstract class MGXNodeFactoryBase<T> extends ChildFactory<T> implements N
 
     protected abstract boolean addKeys(List<T> toPopulate);
 
+    @Override
+    protected final Node createNodeForKey(T key) {
+        Node node = createNodeFor(key);
+        node.addNodeListener(this);
+        return node;
+    }
+
+    protected abstract Node createNodeFor(T key);
+
     public final void refreshChildren() {
 
         if (EventQueue.isDispatchThread()) {
@@ -64,11 +74,25 @@ public abstract class MGXNodeFactoryBase<T> extends ChildFactory<T> implements N
 
     @Override
     public void childrenAdded(NodeMemberEvent ev) {
+        if (ev.getDelta().length == 1 && ev.getDelta()[0].getClass().getSimpleName().equals("WaitFilterNode")) {
+            return;
+        }
+        System.err.println("childrenAdded for " + ev.getDelta().length + " nodes:");
+        for (Node n : ev.getDelta()) {
+            System.err.println("  " + n.getDisplayName() + " (" + n.getClass().getSimpleName() + ")");
+        }
         refreshChildren();
     }
 
     @Override
     public void childrenRemoved(NodeMemberEvent ev) {
+        if (ev.getDelta().length == 1 && ev.getDelta()[0].getClass().getSimpleName().equals("WaitFilterNode")) {
+            return;
+        }
+        System.err.println("childrenRemoved for " + ev.getDelta().length + " nodes");
+        for (Node n : ev.getDelta()) {
+            System.err.println("  " + n.getDisplayName());
+        }
         refreshChildren();
     }
 
@@ -78,6 +102,8 @@ public abstract class MGXNodeFactoryBase<T> extends ChildFactory<T> implements N
 
     @Override
     public void nodeDestroyed(NodeEvent ev) {
+        System.err.println(getClass().getSimpleName() + " got nodeDestroyed for " + ev.getNode().getClass().getSimpleName());
+        ev.getNode().removeNodeListener(this);
         refreshChildren();
     }
 
