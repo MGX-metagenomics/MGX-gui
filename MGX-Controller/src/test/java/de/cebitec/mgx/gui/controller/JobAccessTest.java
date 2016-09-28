@@ -23,6 +23,16 @@ public class JobAccessTest {
     }
 
     @Test
+    public void testFetch() throws Exception {
+        System.out.println("fetch");
+        MGXMasterI master = TestMaster.getRO();
+        JobI job = master.Job().fetch(1);
+        assertNotNull(job);
+        assertEquals("Thu Jun 20 15:19:18 CEST 2013", job.getStartDate().toString());
+        assertEquals("Thu Jun 20 15:20:01 CEST 2013", job.getFinishDate().toString());
+    }
+
+    @Test
     public void testBySeqRun() throws Exception {
         System.out.println("BySeqRun");
         MGXMasterI master = TestMaster.getRO();

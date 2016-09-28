@@ -128,7 +128,7 @@ public class SeqRunAccess extends AccessBase<SeqRunI> implements SeqRunAccessI {
     @Override
     public Iterator<SeqRunI> ByExtract(final DNAExtractI extract) throws MGXException {
         try {
-            Iterator<SeqRunDTO> fetchall = getDTOmaster().SeqRun().ByExtract(extract.getId());
+            Iterator<SeqRunDTO> fetchall = getDTOmaster().SeqRun().byExtract(extract.getId());
             return new BaseIterator<SeqRunDTO, SeqRunI>(fetchall) {
                 @Override
                 public SeqRunI next() {

@@ -59,6 +59,17 @@ public abstract class AbstractNodeBase<T extends ModelBaseI<T>> extends Abstract
         return true;
     }
 
+//    @Override
+//    public boolean canDestroy() {
+//        return true;
+//    }
+//
+//    @Override
+//    public void destroy() throws IOException {
+//        content.removePropertyChangeListener(this);
+//        super.destroy();
+//    }
+    
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {

@@ -37,7 +37,7 @@ public class TrackFactory {
         tracks.clear();
         boolean placed;
         Track last = null;
-        while (mappings.hasNext()) {
+        while (mappings != null && mappings.hasNext()) {
             MappedSequenceI ms = mappings.next();
             placed = false;
                 // check last track first as a quick check;
