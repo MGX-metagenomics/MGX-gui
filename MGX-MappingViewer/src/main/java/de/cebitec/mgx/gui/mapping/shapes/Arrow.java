@@ -6,7 +6,7 @@
 package de.cebitec.mgx.gui.mapping.shapes;
 
 import de.cebitec.mgx.api.model.RegionI;
-import java.awt.Rectangle;
+import java.awt.Color;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
@@ -19,7 +19,7 @@ import java.awt.geom.Rectangle2D;
  *
  * @author sj
  */
-public class Arrow implements Shape {
+public final class Arrow implements ShapeBase {
 
     public final static int FORWARD = 1;
     public final static int REVERSE = 2;
@@ -50,14 +50,14 @@ public class Arrow implements Shape {
     private final static int TRIANGLE_HEIGHT = 12;
     private final static int RECT_HEIGHT = 6;
     public final static int HEIGHT = TRIANGLE_HEIGHT;
-    public final static int HALF_HEIGHT = HEIGHT / 2;
+    public final static float HALF_HEIGHT = HEIGHT / 2;
 
-    public Arrow(final RegionI r, double x, double y, double length) {
+    public Arrow(final RegionI r, float x, float y, float length) {
 
         region = r;
 
         //float height = 14;
-        double mid = y + HALF_HEIGHT;
+        float mid = y + HALF_HEIGHT;
 
         if (length < 1) {
             length = 1;
@@ -103,12 +103,18 @@ public class Arrow implements Shape {
 
     }
 
-    public RegionI getRegion() {
+    @Override
+    public final Color getColor() {
+        return Color.GREEN;
+    }
+
+    @Override
+    public final RegionI getRegion() {
         return region;
     }
 
     @Override
-    public Rectangle getBounds() {
+    public java.awt.Rectangle getBounds() {
         return shape.getBounds();
     }
 
@@ -157,13 +163,20 @@ public class Arrow implements Shape {
         return shape.getPathIterator(at, flatness);
     }
 
+    @Override
     public String getToolTipText() {
-        String type = region.getType() != null 
-                ? region.getType() + ": " 
+        String type = region.getType() != null
+                ? region.getType() + ": "
                 : "";
+        String framePrefix = region.getFrame() > 0 ? "+" : "";
         return "<html><b>" + type + region.getName() + "</b><hr>"
-                + "Location: " + region.getStart() + "-"+ region.getStop() + "<br>"
-                + "Frame: " + region.getFrame() + "<br><br>"
+                + "Location: " + region.getStart() + "-" + region.getStop() + "<br>"
+                + "Frame: " + framePrefix + region.getFrame() + "<br><br>"
                 + region.getDescription() + "</html>";
+    }
+
+    @Override
+    public int compareTo(ShapeBase o) {
+        return Integer.compare(getColor().getRGB(), o.getColor().getRGB());
     }
 }

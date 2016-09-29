@@ -29,15 +29,15 @@ public class SeqPropertyPanel extends PanelBase {
 
     public SeqPropertyPanel(ViewController vc, boolean antiAlias) {
         super(vc, antiAlias);
-        setPreferredSize(new Dimension(5000, 35));
-        setMaximumSize(new Dimension(5000, 35));
-        setBorder(javax.swing.BorderFactory.createLineBorder(Color.BLACK));
+        super.setPreferredSize(new Dimension(5000, 35));
+        super.setMaximumSize(new Dimension(5000, 35));
+        super.setBorder(javax.swing.BorderFactory.createLineBorder(Color.BLACK));
     }
 
     @Override
     void draw(Graphics2D g2) {
-        double height = getHeight();
-        double heightScale = height / 100d;
+        float height = getHeight();
+        float heightScale = height / 100f;
         boolean isFirst = true;
 
         g2.setColor(Color.GREEN);
@@ -45,8 +45,8 @@ public class SeqPropertyPanel extends PanelBase {
 
         synchronized (points) {
             for (Point p : points) {
-                double x = bp2px((int) p.getX());
-                double y = p.getY() * heightScale;
+                float x = bp2px((int) p.getX());
+                float y = (float) (p.getY() * heightScale);
                 if (isFirst) {
                     polyline.moveTo(x, y);
                     isFirst = false;
@@ -63,7 +63,7 @@ public class SeqPropertyPanel extends PanelBase {
 
     @Override
     public boolean update() {
-        String seq = null;
+        String seq;
 
         window = FastMath.max(50, vc.getIntervalLength() / 500);
         int shift = window / 10;
@@ -71,7 +71,6 @@ public class SeqPropertyPanel extends PanelBase {
         int lowBound = FastMath.max(0, bounds[0] - win_half);
         int hiBound = FastMath.min(getReferenceLength(), bounds[1] + win_half);
 
-        //System.err.println("win "+window+" shift "+ shift);
         List<Point> newPoints = new ArrayList<>();
 
         Iterator<Interval> slidingWindow = IntervalFactory.slidingWindow(lowBound, hiBound, window, shift);
@@ -79,8 +78,8 @@ public class SeqPropertyPanel extends PanelBase {
             while (slidingWindow.hasNext()) {
                 Interval i = slidingWindow.next();
                 seq = vc.getSequence(i.getFrom(), i.getTo());
-                double midPos = i.getFrom() + (i.length() / 2);
-                double gc = gc(seq);
+                float midPos = i.getFrom() + (i.length() / 2);
+                float gc = gc(seq);
                 newPoints.add(new Point(midPos, gc));
             }
         } catch (MGXException ex) {

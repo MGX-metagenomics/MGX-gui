@@ -89,7 +89,7 @@ public class MappingPanel extends PanelBase {
         }
         mappingName = name;
 
-        setComponentPopupMenu(sm);
+        super.setComponentPopupMenu(sm);
     }
 
     @Override
@@ -173,8 +173,8 @@ public class MappingPanel extends PanelBase {
 
         long timeCreateLayout = System.currentTimeMillis() - timeGetMappings - now;
 
-        final double spaceing = TRACKHEIGHT * 0.1;
-        final double mappingHeight = 0.75d * TRACKHEIGHT;
+        final float spaceing = TRACKHEIGHT * 0.1f;
+        final float mappingHeight = 0.75f * TRACKHEIGHT;
 
         int height = getHeight();
         int maxVisibleTracks = height / TRACKHEIGHT;
@@ -197,8 +197,8 @@ public class MappingPanel extends PanelBase {
 
             while (iter.hasNext()) {
                 MappedSequenceI ms = iter.next();
-                double pos0 = bp2px(ms.getMin());
-                double pos1 = bp2px(ms.getMax());
+                float pos0 = bp2px(ms.getMin());
+                float pos1 = bp2px(ms.getMax());
                 if (pos1 - pos0 < MIN_MAPPING_WIDTH) {
                     pos1 = pos0 + MIN_MAPPING_WIDTH;
                 }

@@ -38,7 +38,7 @@ public abstract class PanelBase extends JComponent implements PropertyChangeList
     protected int[] bounds;
     private int maxCoverage = 0;
     private int refLength;
-    private double scale;
+    private float scale;
     //
     protected static final RenderingHints antiAlias = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
     protected final boolean useAntialiasing;
@@ -52,12 +52,12 @@ public abstract class PanelBase extends JComponent implements PropertyChangeList
         this.useAntialiasing = antiAlias;
         this.vc = vc;
         bounds = vc.getBounds();
-        scale = 1d / (1d * vc.getIntervalLength() / getWidth());
+        scale = 1f / (1f * vc.getIntervalLength() / super.getWidth());
         vc.addPropertyChangeListener(this);
-        setBackground(Color.WHITE);
-        setForeground(Color.DARK_GRAY);
+        super.setBackground(Color.WHITE);
+        super.setForeground(Color.DARK_GRAY);
 
-        addComponentListener(new ComponentAdapter() {
+        super.addComponentListener(new ComponentAdapter() {
 
             @Override
             public void componentResized(ComponentEvent e) {
@@ -65,7 +65,7 @@ public abstract class PanelBase extends JComponent implements PropertyChangeList
                     return;
                 }
                 //bounds = vc.getBounds();
-                scale = 1d / (1d * vc.getIntervalLength() / getWidth());
+                scale = 1f / (1f * vc.getIntervalLength() / getWidth());
                 createVolatileImage(Transparency.OPAQUE);
 
                 SwingWorker<Void, Void> sw = new SwingWorker<Void, Void>() {
@@ -83,7 +83,7 @@ public abstract class PanelBase extends JComponent implements PropertyChangeList
                 super.componentResized(e);
             }
         });
-        addMouseWheelListener(this);
+        super.addMouseWheelListener(this);
         
         try {
             refLength = vc.getReference().getLength();
@@ -112,7 +112,7 @@ public abstract class PanelBase extends JComponent implements PropertyChangeList
             createVolatileImage(Transparency.OPAQUE);
         }
 
-        long now = System.currentTimeMillis();
+//        long now = System.currentTimeMillis();
 
         // draw to back buffer image
         do {
@@ -148,10 +148,10 @@ public abstract class PanelBase extends JComponent implements PropertyChangeList
         super.paintComponent(g);
         super.paintChildren(g);
         g.dispose();
-        now = System.currentTimeMillis() - now;
-        if (now > 35) {
-            System.err.println("paint for " + getClass().getSimpleName() + " took " + now + " ms");
-        }
+//        now = System.currentTimeMillis() - now;
+//        if (now > 1) {
+//            System.err.println("paint for " + getClass().getSimpleName() + " took " + now + " ms");
+//        }
     }
 
     abstract void draw(Graphics2D g2);
@@ -171,7 +171,7 @@ public abstract class PanelBase extends JComponent implements PropertyChangeList
                 break;
             case ViewController.BOUNDS_CHANGE:
                 bounds = (int[]) evt.getNewValue();
-                scale = 1d / (1d * vc.getIntervalLength() / getWidth());
+                scale = 1f / (1f * vc.getIntervalLength() / getWidth());
                 if (getHeight() > 0) {
                     if (update()) {
                         repaint();
@@ -206,12 +206,12 @@ public abstract class PanelBase extends JComponent implements PropertyChangeList
         return refLength;
     }
 
-    protected double bp2px(int i) {
-        assert bounds != null;
+    protected float bp2px(int i) {
+        //assert bounds != null;
         return scale * (i - bounds[0]);
     }
 
-    protected int px2bp(double d) {
+    protected int px2bp(float d) {
         return (int) (d / scale) + bounds[0];
     }
 

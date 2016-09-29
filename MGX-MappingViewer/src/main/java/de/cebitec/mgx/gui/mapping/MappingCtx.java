@@ -66,31 +66,31 @@ public class MappingCtx implements PropertyChangeListener, AutoCloseable {
         mapCache = CacheFactory.createMappedSequenceCache(ref.getMaster(), ref, sessionUUID);
     }
 
-    public int getReferenceLength() {
+    public final int getReferenceLength() {
         return refLength;
     }
 
-    public MGXReferenceI getReference() {
+    public final MGXReferenceI getReference() {
         return ref;
     }
 
-    public MGXMasterI getMaster() {
+    public final MGXMasterI getMaster() {
         return mapping.getMaster();
     }
 
-    public MappingI getMapping() {
+    public final MappingI getMapping() {
         return mapping;
     }
 
-    public SeqRunI getRun() {
+    public final SeqRunI getRun() {
         return run;
     }
 
-    public ToolI getTool() {
+    public final ToolI getTool() {
         return job.getTool();
     }
 
-    public String getSequence(int from, int to) throws MGXException {
+    public final String getSequence(int from, int to) throws MGXException {
         if (seqCache == null) {
             synchronized (this) {
                 if (seqCache == null) {
@@ -101,7 +101,7 @@ public class MappingCtx implements PropertyChangeListener, AutoCloseable {
         return seqCache.get(from, to);
     }
 
-    public Set<RegionI> getRegions(int from, int to) throws MGXException {
+    public final Set<RegionI> getRegions(int from, int to) throws MGXException {
 //        if (regCache == null) {
 //            synchronized (this) {
 //                if (regCache == null) {
@@ -153,7 +153,7 @@ public class MappingCtx implements PropertyChangeListener, AutoCloseable {
         };
     }
 
-    public void getCoverage(final int from, final int to, final int[] dest) throws MGXException {
+    public final void getCoverage(final int from, final int to, final int[] dest) throws MGXException {
 //        if (mapCache == null) {
 //            synchronized (this) {
 //                if (mapCache == null) {
@@ -164,7 +164,7 @@ public class MappingCtx implements PropertyChangeListener, AutoCloseable {
         mapCache.getCoverage(from, to, dest);
     }
 
-    public IntIterator getCoverageIterator(final int from, final int to) throws MGXException {
+    public final IntIterator getCoverageIterator(final int from, final int to) throws MGXException {
 //        if (mapCache == null) {
 //            synchronized (this) {
 //                if (mapCache == null) {
@@ -176,7 +176,7 @@ public class MappingCtx implements PropertyChangeListener, AutoCloseable {
         return mapCache.getCoverageIterator(from, to);
     }
 
-    public long getMaxCoverage() throws MGXException {
+    public final long getMaxCoverage() throws MGXException {
         if (maxCoverage == -1) {
             synchronized (this) {
                 if (maxCoverage == -1) {
@@ -188,11 +188,11 @@ public class MappingCtx implements PropertyChangeListener, AutoCloseable {
         return maxCoverage;
     }
 
-    public void addPropertyChangeListener(PropertyChangeListener listener) {
+    public final void addPropertyChangeListener(PropertyChangeListener listener) {
         pcs.addPropertyChangeListener(listener);
     }
 
-    public void removePropertyChangeListener(PropertyChangeListener listener) {
+    public final void removePropertyChangeListener(PropertyChangeListener listener) {
         pcs.removePropertyChangeListener(listener);
     }
 
@@ -203,12 +203,12 @@ public class MappingCtx implements PropertyChangeListener, AutoCloseable {
         }
     }
 
-    public boolean isClosed() {
+    public final boolean isClosed() {
         return isClosed;
     }
 
     @Override
-    public synchronized void close() {
+    public final synchronized void close() {
         if (!isClosed()) {
             isClosed = true;
             // close caches first
