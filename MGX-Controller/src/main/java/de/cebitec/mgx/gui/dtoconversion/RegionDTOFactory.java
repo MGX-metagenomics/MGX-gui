@@ -38,9 +38,7 @@ public class RegionDTOFactory extends DTOConversionBase<RegionI, RegionDTO> {
         b = b.setDescription(reg.getDescription());
         b = b.setStart(reg.getStart());
         b = b.setStop(reg.getStop());
-        if (reg.getType() != null) {
-            b.setType(reg.getType());
-        }
+        b.setType(reg.getType());
         return b.build();
     }
 
@@ -49,9 +47,7 @@ public class RegionDTOFactory extends DTOConversionBase<RegionI, RegionDTO> {
         RegionI d = new Region(dto.getStart(), dto.getStop());
         d.setName(dto.getName());
         d.setDescription(dto.getDescription());
-        if (dto.hasType()) {
-            d.setType(dto.getType());
-        }
+        d.setType(dto.getType());
 //        d.setId(dto.getId());
         return d;
     }
