@@ -10,6 +10,8 @@ import de.cebitec.mgx.api.model.MappedSequenceI;
 import de.cebitec.mgx.api.model.RegionI;
 import de.cebitec.mgx.gui.mapping.ViewController;
 import de.cebitec.mgx.gui.mapping.shapes.Arrow;
+import de.cebitec.mgx.gui.mapping.shapes.Rectangle;
+import de.cebitec.mgx.gui.mapping.shapes.ShapeBase;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Composite;
@@ -25,7 +27,10 @@ import java.awt.geom.AffineTransform;
 import java.beans.PropertyChangeEvent;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.SortedSet;
@@ -47,7 +52,7 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
         -1 * FRAME_VOFFSET * 1,
         -1 * FRAME_VOFFSET * 2,
         -1 * FRAME_VOFFSET * 3};
-    private final Set<Arrow> regs = new HashSet<>();
+    private final List<ShapeBase> regs = new ArrayList<>();
     private final static Color lighterGray = new Color(210, 210, 210);
 
     /**
@@ -56,14 +61,14 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
     public FeaturePanel(ViewController vc) {
         super(vc, true);
         initComponents();
-        setMinimumSize(new Dimension(500, 175));
-        setPreferredSize(new Dimension(5000, 175));
+        super.setMinimumSize(new Dimension(500, 175));
+        super.setPreferredSize(new Dimension(5000, 175));
         //setMaximumSize(new Dimension(5000, 80));
-        this.addMouseListener(this);
-        this.addMouseMotionListener(this);
+        super.addMouseListener(this);
+        super.addMouseMotionListener(this);
         ToolTipManager.sharedInstance().registerComponent(this);
         ToolTipManager.sharedInstance().setDismissDelay(5000);
-        repaint();
+        super.repaint();
     }
 
     @Override
@@ -100,7 +105,7 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
         }
         for (int i = firstpos; i < bounds[1]; i += separate) {
             //if (i % separate == 0) {
-            double pos = bp2px(i);
+            float pos = bp2px(i);
             g2.drawLine((int) pos, midY - 3, (int) pos, midY + 3);
             String text1 = String.valueOf(i);
             g2.drawString(text1, (int) pos - textWidth(g2, text1) / 2, midY + 13);
@@ -120,12 +125,12 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
             g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.7f));
 
             g2.setColor(Color.LIGHT_GRAY);
-            for (Arrow r : regs) {
+            for (ShapeBase r : regs) {
                 Shape shadow = AffineTransform.getTranslateInstance(4, 3).createTransformedShape(r);
                 g2.fill(shadow);
             }
             g2.setColor(lighterGray);
-            for (Arrow r : regs) {
+            for (ShapeBase r : regs) {
                 Shape shadow = AffineTransform.getTranslateInstance(4, 3).createTransformedShape(r);
                 g2.draw(shadow);
             }
@@ -133,12 +138,17 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
             g2.setComposite(oldComp);
 
             // draw arrows (and borders)
-            g2.setColor(Color.GREEN);
-            for (Arrow r : regs) {
+            Color curColor = Color.RED;
+            //g2.setColor(Color.GREEN);
+            for (ShapeBase r : regs) {
+                if (!curColor.equals(r.getColor())) {
+                    g2.setColor(r.getColor());
+                    curColor = r.getColor();
+                }
                 g2.fill(r);
             }
             g2.setColor(Color.DARK_GRAY);
-            for (Arrow r : regs) {
+            for (ShapeBase r : regs) {
                 g2.draw(r);
             }
         }
@@ -160,10 +170,11 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
     @Override
     public boolean update() {
         // fetch features
-        Set<Arrow> newData = new HashSet<>();
+        List<ShapeBase> newData = new ArrayList<>();
         try {
+            int midY = getHeight() / 2;
             for (RegionI r : vc.getRegions()) {
-                newData.add(r2a(r));
+                newData.add(r2a(r, midY));
             }
         } catch (MGXException ex) {
             if (vc.isClosed()) {
@@ -172,25 +183,49 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
             }
             Exceptions.printStackTrace(ex);
         }
+        
 
         synchronized (regs) {
             regs.clear();
             regs.addAll(newData);
+            Collections.sort(regs);
         }
 
         return true;
     }
 
-    private Arrow r2a(final RegionI r) {
-        int midY = getHeight() / 2;
-        double pos0 = bp2px(r.getStart() - 1);
-        double pos1 = bp2px(r.getStop() - 1);
-        if (r.getFrame() < 0) {
-            int frameOffset = frameOffsets[r.getFrame() + 3];
-            return new Arrow(r, pos1, midY + frameOffset - Arrow.HALF_HEIGHT, pos0 - pos1);
-        } else {
-            int frameOffset = frameOffsets[r.getFrame() + 2];
-            return new Arrow(r, pos0, midY + frameOffset - Arrow.HALF_HEIGHT, pos1 - pos0);
+    private ShapeBase r2a(final RegionI r, int midY) {
+        //int midY = getHeight() / 2;
+        float pos0 = bp2px(r.getStart() - 1);
+        float pos1 = bp2px(r.getStop() - 1);
+
+        switch (r.getType()) {
+            case "CDS":
+                if (r.getFrame() < 0) {
+                    int frameOffset = frameOffsets[r.getFrame() + 3];
+                    return new Arrow(r, pos1, midY + frameOffset - Arrow.HALF_HEIGHT, pos0 - pos1);
+                } else {
+                    int frameOffset = frameOffsets[r.getFrame() + 2];
+                    return new Arrow(r, pos0, midY + frameOffset - Arrow.HALF_HEIGHT, pos1 - pos0);
+                }
+            case "rRNA":
+            case "tRNA":
+                if (r.getFrame() < 0) {
+                    int frameOffset = frameOffsets[r.getFrame() + 3];
+                    return new Rectangle(r, pos1, midY + frameOffset - Rectangle.HALF_HEIGHT, pos0 - pos1);
+                } else {
+                    int frameOffset = frameOffsets[r.getFrame() + 2];
+                    return new Rectangle(r, pos0, midY + frameOffset - Rectangle.HALF_HEIGHT, pos1 - pos0);
+                }
+            default:
+                System.err.println("Unhandled region type " + r.getType() + ", using default shape");
+                if (r.getFrame() < 0) {
+                    int frameOffset = frameOffsets[r.getFrame() + 3];
+                    return new Rectangle(r, pos1, midY + frameOffset - Rectangle.HALF_HEIGHT, pos0 - pos1);
+                } else {
+                    int frameOffset = frameOffsets[r.getFrame() + 2];
+                    return new Rectangle(r, pos0, midY + frameOffset - Rectangle.HALF_HEIGHT, pos1 - pos0);
+                }
         }
     }
 
@@ -198,7 +233,7 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
     public String getToolTipText(MouseEvent m) {
         Point loc = m.getPoint();
         if (regs != null) {
-            for (Arrow a : regs) {
+            for (ShapeBase a : regs) {
                 if (a.getBounds().contains(loc)) {
                     return a.getToolTipText();
                 }
@@ -299,10 +334,11 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
     // End of variables declaration//GEN-END:variables
     public void process(SortedSet<MappedSequenceI> mapped) {
         // fetch features
-        Set<Arrow> newData = new HashSet<>();
+        Set<ShapeBase> newData = new HashSet<>();
         try {
+            int midY = getHeight() / 2;
             for (RegionI r : vc.getRegions()) {
-                newData.add(r2a(r));
+                newData.add(r2a(r, midY));
             }
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);

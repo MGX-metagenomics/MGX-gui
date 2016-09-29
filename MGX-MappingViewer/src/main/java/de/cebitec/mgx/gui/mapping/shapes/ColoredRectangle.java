@@ -12,16 +12,16 @@ import java.awt.geom.Rectangle2D;
  *
  * @author sjaenick
  */
-public class ColoredRectangle extends Rectangle2D.Double implements Comparable<ColoredRectangle> {
+public class ColoredRectangle extends Rectangle2D.Float implements Comparable<ColoredRectangle> {
     
     private final Color color;
 
-    public ColoredRectangle(Color color, double x, double y, double w, double h) {
+    public ColoredRectangle(Color color, float x, float y, float w, float h) {
         super(x, y, w, h);
         this.color = color;
     }
 
-    public Color getColor() {
+    public final Color getColor() {
         return color;
     }
 

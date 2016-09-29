@@ -138,28 +138,28 @@ public class ViewController implements PropertyChangeListener {
         return ctx.getRegions(curBounds[0], curBounds[1]);
     }
 
-    public Set<RegionI> getRegions(int from, int to) throws MGXException {
+    public final Set<RegionI> getRegions(int from, int to) throws MGXException {
         if (isClosed()) {
             throw new MGXLoggedoutException("ViewController is closed");
         }
         return ctx.getRegions(from, to);
     }
 
-    public Iterator<MappedSequenceI> getMappings() throws MGXException {
+    public final Iterator<MappedSequenceI> getMappings() throws MGXException {
         if (isClosed()) {
             throw new MGXLoggedoutException("ViewController is closed");
         }
         return ctx.getMappings(curBounds[0], curBounds[1], minIdentity);
     }
 
-    public Iterator<MappedSequenceI> getMappings(int from, int to) throws MGXException {
+    public final Iterator<MappedSequenceI> getMappings(int from, int to) throws MGXException {
         if (isClosed()) {
             throw new MGXLoggedoutException("ViewController is closed");
         }
         return ctx.getMappings(from, to, minIdentity);
     }
 
-    public Iterator<MappedSequenceI> getMappings(int from, int to, int minIdent) throws MGXException {
+    public final Iterator<MappedSequenceI> getMappings(int from, int to, int minIdent) throws MGXException {
         if (isClosed()) {
             throw new MGXLoggedoutException("ViewController is closed");
         }
@@ -173,19 +173,19 @@ public class ViewController implements PropertyChangeListener {
         ctx.getCoverage(from, to, dest);
     }
 
-    public IntIterator getCoverageIterator() throws MGXException {
+    public final IntIterator getCoverageIterator() throws MGXException {
         if (isClosed()) {
             throw new MGXLoggedoutException("ViewController is closed");
         }
         return ctx.getCoverageIterator(0, ctx.getReference().getLength() - 1);
     }
 
-    public void addPropertyChangeListener(PropertyChangeListener listener) {
+    public final void addPropertyChangeListener(PropertyChangeListener listener) {
         listener.propertyChange(new PropertyChangeEvent(this, BOUNDS_CHANGE, 0, curBounds));
         pcs.addPropertyChangeListener(listener);
     }
 
-    public void removePropertyChangeListener(PropertyChangeListener listener) {
+    public final void removePropertyChangeListener(PropertyChangeListener listener) {
         pcs.removePropertyChangeListener(listener);
     }
 
@@ -203,7 +203,7 @@ public class ViewController implements PropertyChangeListener {
         }
     }
 
-    public boolean isClosed() {
+    public final boolean isClosed() {
         return ctx == null || ctx.isClosed();
     }
 
