@@ -12,7 +12,7 @@ import java.awt.geom.Rectangle2D;
  *
  * @author sj
  */
-public class MappedRead2D extends Rectangle2D.Double implements Comparable<MappedRead2D> {
+public class MappedRead2D extends Rectangle2D.Float implements Comparable<MappedRead2D> {
 
     private final MappedSequenceI ms;
     //private final Shape shape;
@@ -22,7 +22,7 @@ public class MappedRead2D extends Rectangle2D.Double implements Comparable<Mappe
         generateGradient();
     }
 
-    public MappedRead2D(MappedSequenceI ms, double x, double y, double height, double length) {
+    public MappedRead2D(MappedSequenceI ms, float x, float y, float height, float length) {
         super(x, y, length, height);
         this.ms = ms;
         //shape = new Rectangle2D.Double(x, y, length, height);
