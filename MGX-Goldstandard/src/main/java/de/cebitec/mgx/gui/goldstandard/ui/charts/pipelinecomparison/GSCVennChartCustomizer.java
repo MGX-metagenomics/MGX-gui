@@ -12,6 +12,10 @@ public class GSCVennChartCustomizer extends javax.swing.JPanel {
     public GSCVennChartCustomizer() {
         initComponents();
     }
+    
+    public void dispose(){
+        
+    }
 
 
     /**

@@ -132,7 +132,7 @@ public class GSCPerformanceMetricsViewer extends EvaluationViewerI implements GS
         super.dispose();
         tidyUp();
     }
-    
+
     private void tidyUp() {
         cust.dispose();
         cust = null;
@@ -143,9 +143,11 @@ public class GSCPerformanceMetricsViewer extends EvaluationViewerI implements GS
     }
 
     public GSCPerformanceMetricsTableModel calcPerformanceMetrics(List<JobI> jobs, JobI gsJob, AttributeTypeI attributeType, long seqrunSequenceCount, ProgressHandle p) throws MGXException {
-        p.start(jobs.size() + 2);
         int progress = 0;
-        p.progress(progress++);
+        if (p != null) {
+            p.start(jobs.size() + 2);
+            p.progress(progress++);
+        }
 
         long numSeqs = seqrunSequenceCount;
         TLongObjectMap<String> goldstandard = new TLongObjectHashMap<>(jobs.size());
@@ -157,14 +159,16 @@ public class GSCPerformanceMetricsViewer extends EvaluationViewerI implements GS
                 goldstandard.put(it.next(), entry.getKey().getValue());
             }
         }
-        p.progress(progress++);
+        if (p != null) {
+            p.progress(progress++);
+        }
 
         PerformanceMetrics[] performanceMetrics = new PerformanceMetrics[jobs.size()];
 
         int i = 0;
         for (JobI job : jobs) {
             PerformanceMetrics pm = new PerformanceMetrics();
-            DistributionI<Long> dist = gsJob.getMaster().Attribute().getDistribution(attributeType, job);
+            DistributionI<Long> dist = job.getMaster().Attribute().getDistribution(attributeType, job);
             int usedGsIds = 0;
             for (Map.Entry<AttributeI, Long> entry : dist.entrySet()) {
                 Iterator<Long> it = dist.getMaster().Sequence().fetchSequenceIDs(entry.getKey());
@@ -186,7 +190,9 @@ public class GSCPerformanceMetricsViewer extends EvaluationViewerI implements GS
             pm.add(0, goldstandard.size() - usedGsIds, 0, 0);
             pm.add(0, 0, 0, numSeqs - pm.getFN() - pm.getFP() - pm.getTP());
             performanceMetrics[i++] = pm;
-            p.progress(progress++);
+            if (p != null) {
+                p.progress(progress++);
+            }
         }
 
         String[] columns = new String[jobs.size() + 1];
