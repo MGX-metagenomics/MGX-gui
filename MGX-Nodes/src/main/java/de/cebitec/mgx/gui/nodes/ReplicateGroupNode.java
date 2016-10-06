@@ -41,8 +41,8 @@ public class ReplicateGroupNode extends AbstractNodeBase<ReplicateGroupI> {
 
     private ReplicateGroupNode(ReplicateNodeFactory rnf, ReplicateGroupI rg) {
         super(rnf, Lookups.singleton(rg), rg);
-        setName(rg.getName());
-        setDisplayName(rg.getName());
+        super.setName(rg.getName());
+        super.setDisplayName(rg.getName());
     }
 
     @Override

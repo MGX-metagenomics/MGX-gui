@@ -32,10 +32,6 @@ public abstract class AbstractNodeBase<T extends ModelBaseI<T>> extends Abstract
         return content;
     }
 
-//    @Override
-//    public final Transferable drag() throws IOException {
-//        return content;
-//    }
     @Override
     protected final void createPasteTypes(Transferable t, List<PasteType> s) {
         super.createPasteTypes(t, s);
@@ -63,6 +59,17 @@ public abstract class AbstractNodeBase<T extends ModelBaseI<T>> extends Abstract
         return true;
     }
 
+//    @Override
+//    public boolean canDestroy() {
+//        return true;
+//    }
+//
+//    @Override
+//    public void destroy() throws IOException {
+//        content.removePropertyChangeListener(this);
+//        super.destroy();
+//    }
+    
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {

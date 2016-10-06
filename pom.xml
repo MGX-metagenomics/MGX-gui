@@ -4,13 +4,13 @@
 
     <groupId>de.cebitec.mgx.gui</groupId>
     <artifactId>MGX-gui</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
     <packaging>pom</packaging>
 
     <name>MGX-gui - NB App Parent</name>
     
     <prerequisites>
-        <maven>3.0</maven>
+        <maven>3.0.5</maven>
     </prerequisites>
 
 
@@ -29,11 +29,14 @@
                 <artifactId>org-netbeans-modules-netbinox</artifactId> 
                 <version>${netbeans.version}</version> 
             </dependency>-->
+            
+            <!--
             <dependency>
                 <groupId>org.netbeans.api</groupId>
                 <artifactId>org-openide-compat</artifactId>
                 <version>${netbeans.version}</version>
             </dependency>
+            -->
             <dependency>
                 <groupId>org.netbeans.api</groupId>
                 <artifactId>org-netbeans-api-annotations-common</artifactId>
@@ -294,12 +297,12 @@
             <dependency>
                 <groupId>de.cebitec.mgx.gui</groupId>
                 <artifactId>MGX-API</artifactId>
-                <version>1.0-SNAPSHOT</version>
+                <version>1.0</version>
             </dependency>
             <dependency>
                 <groupId>de.cebitec.mgx.client</groupId>
                 <artifactId>MGX-client-api</artifactId>
-                <version>${project.version}</version>
+                <version>1.0</version>
             </dependency>
             <dependency>
                 <groupId>de.cebitec.mgx</groupId>
@@ -315,7 +318,7 @@
             <dependency>
                 <groupId>de.cebitec.mgx</groupId>
                 <artifactId>KEGG-Pathways</artifactId>
-                <version>1.0-SNAPSHOT</version>
+                <version>1.0</version>
             </dependency>
             <dependency>
                 <groupId>de.cebitec.mgx</groupId>
@@ -342,7 +345,7 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>MGX-Common</artifactId>
-                <version>1.0-SNAPSHOT</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
@@ -377,7 +380,7 @@
             <dependency>
                 <artifactId>MGX-MappingViewer</artifactId>
                 <groupId>${project.groupId}</groupId>
-                <version>1.0-SNAPSHOT</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
@@ -387,7 +390,12 @@
             <dependency>
                 <groupId>de.cebitec.mgx</groupId>
                 <artifactId>JFreeChart-OSGi</artifactId>
-                <version>1.0-SNAPSHOT</version>
+                <version>1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>de.cebitec.mgx</groupId>
+                <artifactId>JFreeSVG-OSGi</artifactId>
+                <version>1.0</version>
             </dependency>
             <dependency>
                 <groupId>de.cebitec.mgx</groupId>
@@ -397,7 +405,7 @@
             <dependency>
                 <groupId>de.cebitec.mgx.gui</groupId>
                 <artifactId>MGX-VizFilter</artifactId>
-                <version>1.0-SNAPSHOT</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
@@ -426,8 +434,13 @@
             </dependency>
             <dependency>
                 <groupId>de.cebitec.mgx</groupId>
+                <artifactId>Trove-OSGi</artifactId>
+                <version>1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>de.cebitec.mgx</groupId>
                 <artifactId>Prefuse-OSGi</artifactId>
-                <version>1.0-SNAPSHOT</version>
+                <version>1.0</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
@@ -475,6 +488,16 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
+                <groupId>de.cebitec.mgx</groupId>
+                <artifactId>MGX-QualityControl</artifactId>
+                <version>1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>de.cebitec.mgx</groupId>
+                <artifactId>MGX-TestUtils</artifactId>
+                <version>1.0</version>
+            </dependency>
+            <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>MGX-UpdateCenter</artifactId>
                 <version>${project.version}</version>
@@ -492,12 +515,12 @@
                     -->
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>versions-maven-plugin</artifactId>
-                    <version>2.2</version>
+                    <version>2.3</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>nbm-maven-plugin</artifactId>
-                    <version>3.14</version>
+                    <version>4.1</version>
                     <extensions>true</extensions>
                     <configuration>
                         <brandingToken>${brandingToken}</brandingToken>
@@ -506,10 +529,9 @@
                     </configuration>
                 </plugin>
                 <plugin>
-                    <!-- NetBeans 6.9+ requires JDK 6 -->
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.3</version>
+                    <version>3.5.1</version>
                     <configuration>
                         <compilerArgument>-Xlint:all</compilerArgument>
                         <source>1.7</source>
@@ -533,7 +555,7 @@
                 <plugin>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>maven-bundle-plugin</artifactId>
-                    <version>2.5.3</version>
+                    <version>3.2.0</version>
                 </plugin>
             </plugins>
         </pluginManagement>

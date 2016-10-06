@@ -36,9 +36,7 @@ public class HabitatNodeFactory extends MGXNodeFactoryBase<HabitatI> {
     }
 
     @Override
-    protected Node createNodeForKey(HabitatI key) {
-        HabitatNode node = new HabitatNode(key);
-        node.addNodeListener(this);
-        return node;
+    protected Node createNodeFor(HabitatI key) {
+        return new HabitatNode(key);
     }
 }

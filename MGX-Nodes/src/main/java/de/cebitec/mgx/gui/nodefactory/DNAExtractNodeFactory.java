@@ -28,13 +28,13 @@ public class DNAExtractNodeFactory extends MGXNodeFactoryBase<DNAExtractI> {
     protected boolean addKeys(List<DNAExtractI> toPopulate) {
         Iterator<DNAExtractI> iter = null;
         try {
-            iter = getMaster().DNAExtract().BySample(sample);
+            iter = sample.getMaster().DNAExtract().BySample(sample);
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);
         }
         while (iter != null && iter.hasNext()) {
             if (Thread.interrupted()) {
-                getMaster().log(Level.INFO, "interrupted in NF");
+                sample.getMaster().log(Level.INFO, "interrupted in NF");
                 return true;
             }
             toPopulate.add(iter.next());
@@ -44,37 +44,7 @@ public class DNAExtractNodeFactory extends MGXNodeFactoryBase<DNAExtractI> {
     }
 
     @Override
-    protected Node createNodeForKey(DNAExtractI key) {
-        DNAExtractNode node = new DNAExtractNode(key);
-        node.addNodeListener(this);
-        return node;
+    protected Node createNodeFor(DNAExtractI key) {
+        return new DNAExtractNode(key);
     }
-
-//    public void refreshChildren() {
-//        refresh(true);
-//    }
-//
-//    @Override
-//    public void childrenAdded(NodeMemberEvent ev) {
-//        refresh(true);
-//    }
-//
-//    @Override
-//    public void childrenRemoved(NodeMemberEvent ev) {
-//        refresh(true);
-//    }
-//
-//    @Override
-//    public void childrenReordered(NodeReorderEvent ev) {
-//    }
-//
-//    @Override
-//    public void nodeDestroyed(NodeEvent ev) {
-//        refresh(true);
-//    }
-//
-//    @Override
-//    public void propertyChange(PropertyChangeEvent evt) {
-//        //refresh(true);
-//    }
 }

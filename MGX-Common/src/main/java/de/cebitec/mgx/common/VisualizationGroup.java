@@ -243,9 +243,8 @@ public class VisualizationGroup implements VisualizationGroupI {
         }
 
         if (!needsResolval.get(rank).isEmpty()) {
+            selectedAttributeType = null;
             throw new ConflictingJobsException(this, needsResolval.get(rank));
-//        } else {
-//            fireVGroupChanged(VISGROUP_ATTRTYPE_CHANGED);
         }
     }
 
@@ -267,7 +266,7 @@ public class VisualizationGroup implements VisualizationGroupI {
     }
 
     @Override
-    public final void resolveConflict(AttributeRank rank, SeqRunI sr, JobI j) {
+    public final void resolveConflict(AttributeRank rank, String attributeType, SeqRunI sr, JobI j) {
         assert j != null;
         assert needsResolval.get(rank).containsKey(sr);
         synchronized (needsResolval) {
@@ -276,7 +275,9 @@ public class VisualizationGroup implements VisualizationGroupI {
             uniqueJobs.get(rank).put(sr, j);
         }
 
-//        if (needsResolval.get(rank).isEmpty()) {
+        if (needsResolval.get(rank).isEmpty()) {
+            selectedAttributeType = attributeType;
+        }
 //            fireVGroupChanged(VISGROUP_ATTRTYPE_CHANGED);
 //        }
     }

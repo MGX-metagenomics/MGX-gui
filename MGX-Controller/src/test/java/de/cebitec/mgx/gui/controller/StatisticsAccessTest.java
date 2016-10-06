@@ -161,25 +161,24 @@ public class StatisticsAccessTest {
     private class Resolver implements ConflictResolver {
 
         @Override
-        public boolean resolve(List<VisualizationGroupI> vg) {
+        public void resolve(String attrType, List<VisualizationGroupI> vg) {
             for (VisualizationGroupI g : vg.toArray(new VisualizationGroupI[]{})) {
 
                 if (g.getDisplayName().equals("grp1")) {
                     for (Triple<AttributeRank, SeqRunI, Set<JobI>> t : g.getConflicts()) {
                         if (t.getSecond().getId() == 1) {
-                            g.resolveConflict(t.getFirst(), t.getSecond(), extract(4, t.getThird()));
+                            g.resolveConflict(t.getFirst(), attrType, t.getSecond(), extract(4, t.getThird()));
                         }
                     }
                 } else { // grp2
                     for (Triple<AttributeRank, SeqRunI, Set<JobI>> t : g.getConflicts()) {
                         if (t.getSecond().getId() == 2) {
-                            g.resolveConflict(t.getFirst(), t.getSecond(), extract(7, t.getThird()));
+                            g.resolveConflict(t.getFirst(), attrType, t.getSecond(), extract(7, t.getThird()));
                         }
                     }
                 }
                 vg.remove(g);
             }
-            return true;
         }
 
         private JobI extract(long id, Set<JobI> jobs) {

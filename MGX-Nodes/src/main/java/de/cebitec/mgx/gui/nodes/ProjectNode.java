@@ -13,18 +13,15 @@ import org.openide.util.lookup.Lookups;
  */
 public class ProjectNode extends MGXNodeBase<MGXMasterI> {
 
-    //private ProjectStructureNodeFactory nf = null;
-
     public ProjectNode(MGXMasterI m) {
         this(m, new ProjectStructureNodeFactory(m));
         String name = new StringBuilder(m.getProject()).append(" (").append(m.getRoleName()).append(")").toString();
-        setDisplayName(name);
+        super.setDisplayName(name);
     }
 
     private ProjectNode(MGXMasterI m, ProjectStructureNodeFactory nf) {
-        super(m, Children.create(nf, false), Lookups.fixed(m), m);
+        super(Children.create(nf, false), Lookups.fixed(m), m);
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/mgx.png");
-        //this.nf = nf;
     }
 
     @Override

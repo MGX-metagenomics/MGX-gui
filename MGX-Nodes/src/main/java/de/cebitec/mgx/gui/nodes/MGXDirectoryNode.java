@@ -22,10 +22,10 @@ public class MGXDirectoryNode extends MGXNodeBase<MGXFileI> {
     }
 
     private MGXDirectoryNode(MGXFileI f, FileNodeFactory fnf) {
-        super(f.getMaster(), Children.create(fnf, true), Lookups.fixed(f.getMaster(), f), f);
-        setDisplayName(f.getName());
-        setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/Directory.png");
-        setShortDescription(f.getName());
+        super(Children.create(fnf, true), Lookups.fixed(f.getMaster(), f), f);
+        super.setDisplayName(f.getName());
+        super.setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/Directory.png");
+        super.setShortDescription(f.getName());
         this.nf = fnf;
     }
 

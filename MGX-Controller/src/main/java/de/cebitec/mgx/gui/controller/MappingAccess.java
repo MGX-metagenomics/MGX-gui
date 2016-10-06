@@ -6,6 +6,7 @@ import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.exception.MGXLoggedoutException;
 import de.cebitec.mgx.api.exception.MGXTimeoutException;
 import de.cebitec.mgx.api.misc.TaskI;
+import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.api.model.MappedSequenceI;
 import de.cebitec.mgx.api.model.MappingI;
@@ -33,7 +34,7 @@ public class MappingAccess extends MappingAccessI {
     public MappingAccess(MGXDTOMaster dtomaster, MGXMasterI master) throws MGXException {
         this.dtomaster = dtomaster;
         this.master = master;
-          if (master.isDeleted()) {
+        if (master.isDeleted()) {
             throw new MGXLoggedoutException("You are disconnected.");
         }
     }
@@ -74,7 +75,7 @@ public class MappingAccess extends MappingAccessI {
     @Override
     public Iterator<MappingI> BySeqRun(SeqRunI run) throws MGXException {
         try {
-            Iterator<MappingDTO> fetchall = dtomaster.Mapping().BySeqRun(run.getId());
+            Iterator<MappingDTO> fetchall = dtomaster.Mapping().bySeqRun(run.getId());
             return new BaseIterator<MappingDTO, MappingI>(fetchall) {
                 @Override
                 public MappingI next() {
@@ -90,7 +91,23 @@ public class MappingAccess extends MappingAccessI {
     @Override
     public Iterator<MappingI> ByReference(MGXReferenceI ref) throws MGXException {
         try {
-            Iterator<MappingDTO> fetchall = dtomaster.Mapping().ByReference(ref.getId());
+            Iterator<MappingDTO> fetchall = dtomaster.Mapping().byReference(ref.getId());
+            return new BaseIterator<MappingDTO, MappingI>(fetchall) {
+                @Override
+                public MappingI next() {
+                    MappingI sr = MappingDTOFactory.getInstance().toModel(master, iter.next());
+                    return sr;
+                }
+            };
+        } catch (MGXDTOException ex) {
+            throw new MGXException(ex);
+        }
+    }
+
+    @Override
+    public Iterator<MappingI> ByJob(JobI job) throws MGXException {
+        try {
+            Iterator<MappingDTO> fetchall = dtomaster.Mapping().byJob(job.getId());
             return new BaseIterator<MappingDTO, MappingI>(fetchall) {
                 @Override
                 public MappingI next() {

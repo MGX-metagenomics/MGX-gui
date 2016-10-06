@@ -4,12 +4,12 @@
     <parent>
     <artifactId>MGX-gui</artifactId>
     <groupId>de.cebitec.mgx.gui</groupId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
   </parent>
 
     <groupId>de.cebitec.mgx.gui</groupId>
     <artifactId>MGX-PCA</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
     <packaging>nbm</packaging>
 
     <name>MGX-PCA</name>
@@ -87,26 +87,6 @@
 
     <build>
         <plugins>
-<!--             <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <version>2.4.0</version>
-                <extensions>true</extensions>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>bundle</goal>
-                        </goals>
-                    </execution>
-                </executions>
-
-                <configuration>
-                    <instructions>
-                        <Export-Package>de.cebitec.mgx.gui.pca,de.cebitec.mgx.gui.pcoa</Export-Package>
-                        <Private-Package></Private-Package>
-                    </instructions>
-                </configuration>
-            </plugin>-->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>nbm-maven-plugin</artifactId>
@@ -117,22 +97,14 @@
             </plugin>
 
             <plugin>
-                <!-- NetBeans 6.9+ requires JDK 6, starting NetBeans 7.4 source 1.7 will be required   -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.5.1</version>
-                <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
-                </configuration>
             </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>2.4</version>
                 <configuration>
-                    <!-- to have the jar plugin pickup the nbm generated manifest -->
                     <useDefaultManifestFile>true</useDefaultManifestFile>
                 </configuration>
             </plugin>

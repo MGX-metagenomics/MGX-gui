@@ -23,12 +23,12 @@ public class ProjectFilesNode extends MGXNodeBase<MGXFileI> {
 
     private ProjectFilesNode(MGXFileI root) {
         this(new FileNodeFactory(root), root);
-        setDisplayName("Project Files");
+        super.setDisplayName("Project Files");
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/ProjectFiles.png");
     }
 
     private ProjectFilesNode(FileNodeFactory fnf, MGXFileI root) {
-        super(root.getMaster(), Children.create(fnf, true), Lookups.fixed(root.getMaster(), root), root);
+        super(Children.create(fnf, true), Lookups.fixed(root.getMaster(), root), root);
         nf = fnf;
     }
 

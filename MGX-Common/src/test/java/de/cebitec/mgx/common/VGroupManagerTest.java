@@ -107,10 +107,10 @@ public class VGroupManagerTest {
         assertNotNull(rGroup2);
         assertNotEquals(rGroup1.getName(), rGroup2.getName());
         assertNotEquals(rGroup1.getColor(), rGroup2.getColor());
-        
+
         rGroup1.close();
         rGroup2.close();
-                
+
 //        mgr.removeReplicateGroup(rGroup1);
 //        mgr.removeReplicateGroup(rGroup2);
     }

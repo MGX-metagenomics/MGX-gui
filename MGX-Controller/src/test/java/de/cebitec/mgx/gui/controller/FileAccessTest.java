@@ -43,6 +43,33 @@ public class FileAccessTest {
 
     @BeforeClass
     public static void setUpClass() {
+        //
+        // testUpload sometimes fails due to ceph latency issues; perform
+        // a single cleanup run before executing any tests
+        //
+        MGXMasterI m = TestMaster.getRW();
+        MGXFileI root = MGXFileI.getRoot(m);
+
+        try {
+            Iterator<MGXFileI> iter = m.File().fetchall(root);
+            while (iter.hasNext()) {
+                MGXFileI entry = iter.next();
+                if ("testUpload".equals(entry.getName())) {
+                    TaskI<MGXFileI> task = m.File().delete(entry);
+                    while ((task.getState() != TaskI.State.FINISHED) || (task.getState() != TaskI.State.FAILED)) {
+                        System.err.println(" --> " + task.getState());
+                        Thread.sleep(1000);
+                        if ((task.getState() == TaskI.State.FINISHED) || (task.getState() == TaskI.State.FAILED)) {
+                            break;
+                        } else {
+                            m.<MGXFileI>Task().refresh(task);
+                        }
+                    }
+                }
+            }
+
+        } catch (MGXException | InterruptedException ex) {
+        }
     }
 
     @AfterClass
@@ -158,7 +185,7 @@ public class FileAccessTest {
             }
         }
 
-        assertEquals(69, pc.getCount());
+        assertEquals(35, pc.getCount());
         assertEquals(TransferBaseI.TRANSFER_COMPLETED, pc.getLastEvent().getPropertyName());
     }
 
@@ -179,12 +206,12 @@ public class FileAccessTest {
             }
 
             MGXFileI root = MGXFileI.getRoot(m);
-            UploadBaseI up =m.File().createUploader(f, root, "testUpload");
+            UploadBaseI up = m.File().createUploader(f, root, "testUpload");
             assertNotNull(up);
             up.addPropertyChangeListener(pc);
 
             boolean success = up.upload();
-            assertTrue(success);
+            assertTrue(up.getErrorMessage(), success);
             up.removePropertyChangeListener(pc);
 
             if (!success) {
@@ -192,7 +219,7 @@ public class FileAccessTest {
             }
             long fileSize = f.length();
             assertEquals(fileSize, pc.getLastEvent().getNewValue());
-            assertTrue(500 < pc.getCount());
+            assertTrue(200 < pc.getCount());
             assertEquals(TransferBaseI.TRANSFER_COMPLETED, pc.getLastEvent().getPropertyName());
 
             // find uploaded remote file
@@ -224,6 +251,27 @@ public class FileAccessTest {
             // cleanup
             if (f.exists()) {
                 f.delete();
+            }
+
+            // attempt cleanup
+            try {
+                Iterator<MGXFileI> iter = m.File().fetchall(MGXFileI.getRoot(m));
+                while (iter.hasNext()) {
+                    MGXFileI entry = iter.next();
+                    if ("testUpload".equals(entry.getName())) {
+                        TaskI<MGXFileI> task = m.File().delete(entry);
+                        while ((task.getState() != TaskI.State.FINISHED) || (task.getState() != TaskI.State.FAILED)) {
+                            System.err.println(" --> " + task.getState());
+                            Thread.sleep(1000);
+                            if ((task.getState() == TaskI.State.FINISHED) || (task.getState() == TaskI.State.FAILED)) {
+                                break;
+                            } else {
+                                m.<MGXFileI>Task().refresh(task);
+                            }
+                        }
+                    }
+                }
+            } catch (MGXException | InterruptedException ex) {
             }
         }
 

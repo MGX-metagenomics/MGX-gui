@@ -76,7 +76,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
 
         vgmgr.registerResolver(new ConflictResolver() {
             @Override
-            public boolean resolve(List<VisualizationGroupI> groups) {
+            public void resolve(String attrType, List<VisualizationGroupI> groups) {
                 ConflictResolverWizardIterator iter = new ConflictResolverWizardIterator(groups);
                 WizardDescriptor wiz = new WizardDescriptor(iter);
                 wiz.setTitleFormat(new MessageFormat("{0}"));
@@ -84,13 +84,9 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
                 if (DialogDisplayer.getDefault().notify(wiz) == WizardDescriptor.FINISH_OPTION) {
                     for (Pair<VisualizationGroupI, Triple<AttributeRank, SeqRunI, JobI>> p : iter.getSelection()) {
                         VisualizationGroupI vg = p.getFirst();
-                        vg.resolveConflict(p.getSecond().getFirst(), p.getSecond().getSecond(), p.getSecond().getThird());
+                        vg.resolveConflict(p.getSecond().getFirst(), attrType, p.getSecond().getSecond(), p.getSecond().getThird());
                         groups.remove(vg);
                     }
-                    return true; // groups.isempty()?
-                } else {
-                    // FIXME - cancel?
-                    return false;
                 }
             }
         });
@@ -273,10 +269,10 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
                         // if previously selected attribute type still exists, restore selection
                         if (currentAttributeType != null && content.contains(currentAttributeType)) {
                             setSelectedItem(currentAttributeType);
-                            AttributeTypeListModel.this.itemStateChanged(new ItemEvent(attributeTypeList,
-                                    ItemEvent.ITEM_STATE_CHANGED,
-                                    getSelectedItem(),
-                                    ItemEvent.SELECTED));
+//                            AttributeTypeListModel.this.itemStateChanged(new ItemEvent(attributeTypeList,
+//                                    ItemEvent.ITEM_STATE_CHANGED,
+//                                    getSelectedItem(),
+//                                    ItemEvent.SELECTED));
                         } else {
                             attributeTypeList.setSelectedIndex(0);
                         }
@@ -297,6 +293,8 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
             if (e.getStateChange() != ItemEvent.SELECTED) {
                 return;
             }
+//            System.err.println("itemStateChange from " + currentAttributeType + " to "
+//                    + getSelectedItem());
 
             currentAttributeType = getSelectedItem();
             if (currentAttributeType == null) {
@@ -310,6 +308,8 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
             // disable all downstream elements, excluding self
             visualizationTypeList.setEnabled(false);
             updateButton.setEnabled(false);
+
+//            System.err.println("Selecting " + currentAttributeType.getName());
 
             if (vgmgr.selectAttributeType(currentAttributeType.getName())) {
                 // fetch distribution (and hierarchy) in background

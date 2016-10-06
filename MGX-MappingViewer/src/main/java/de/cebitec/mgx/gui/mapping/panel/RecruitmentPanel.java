@@ -36,7 +36,7 @@ public class RecruitmentPanel extends PanelBase {
     private final int topBorder = 0;
     private final int topVSpace = 6;
     private final int bottomBorder = 10;
-    private final List<Rectangle2D.Double> shapes = new ArrayList<>();
+    private final List<Rectangle2D> shapes = new ArrayList<>();
 
     /**
      * Creates new form
@@ -46,9 +46,9 @@ public class RecruitmentPanel extends PanelBase {
         initComponents();
         ToolTipManager.sharedInstance().registerComponent(this);
         ToolTipManager.sharedInstance().setDismissDelay(5000);
-        setBackground(Color.WHITE);
-        setPreferredSize(new Dimension(5000, 800));
-        setComponentPopupMenu(sm);
+        super.setBackground(Color.WHITE);
+        super.setPreferredSize(new Dimension(5000, 800));
+        super.setComponentPopupMenu(sm);
 
         identityFilter.addChangeListener(new ChangeListener() {
 
@@ -86,7 +86,7 @@ public class RecruitmentPanel extends PanelBase {
         g2.setColor(shapeColor);
 
         synchronized (shapes) {
-            for (Rectangle2D.Double rect : shapes) {
+            for (Rectangle2D rect : shapes) {
                 g2.fill(rect);
             }
         }
@@ -97,7 +97,7 @@ public class RecruitmentPanel extends PanelBase {
 
     @Override
     public boolean update() {
-        Iterator<MappedSequenceI> mappings = null;
+        Iterator<MappedSequenceI> mappings;
         try {
             mappings = vc.getMappings();
         } catch (MGXException ex) {
@@ -108,20 +108,20 @@ public class RecruitmentPanel extends PanelBase {
             }
             return true;
         }
-        double height = getHeight() - topBorder - bottomBorder - topVSpace;
-        double heightScale = height / (100 - vc.getMinIdentity());
+        float height = getHeight() - topBorder - bottomBorder - topVSpace;
+        float heightScale = height / (100 - vc.getMinIdentity());
 
         // precomputed vert. offsets
         for (int i = 0; i <= 100; i++) {
             offsets[i] = topVSpace + topBorder + (int) (1d * i * heightScale) - (rectHeight / 2);
         }
 
-        List<Rectangle2D.Double> newShapes = new ArrayList<>();
+        List<Rectangle2D.Float> newShapes = new ArrayList<>();
 
         while (mappings.hasNext()) {
             MappedSequenceI ms = mappings.next();
-            double pos0 = bp2px(ms.getMin());
-            double pos1 = bp2px(ms.getMax());
+            float pos0 = bp2px(ms.getMin());
+            float pos1 = bp2px(ms.getMax());
             if (pos1 - pos0 < MIN_MAPPING_WIDTH) {
                 pos1 = pos0 + MIN_MAPPING_WIDTH;
             }
@@ -129,7 +129,7 @@ public class RecruitmentPanel extends PanelBase {
             pos0 = FastMath.max(pos0, 0);
             pos1 = FastMath.min(pos1, getWidth());
             int yPos = offsets[100 - (int) ms.getIdentity()]; //(int) ((100 - ms.getIdentity()) * heightScale);
-            Rectangle2D.Double rect = new Rectangle2D.Double(pos0, yPos, pos1 - pos0 + 1, rectHeight);
+            Rectangle2D.Float rect = new Rectangle2D.Float(pos0, yPos, pos1 - pos0 + 1, rectHeight);
             newShapes.add(rect);
         }
         synchronized (shapes) {

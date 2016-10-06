@@ -86,7 +86,7 @@ public class AttributeTypeAccess implements AttributeTypeAccessI {
     public Iterator<AttributeTypeI> byJob(JobI job) throws MGXException {
         Iterator<AttributeTypeDTO> it;
         try {
-            it = getDTOmaster().AttributeType().ByJob(job.getId());
+            it = getDTOmaster().AttributeType().byJob(job.getId());
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -106,7 +106,7 @@ public class AttributeTypeAccess implements AttributeTypeAccessI {
 
     public Iterator<AttributeTypeI> BySeqRun(long id) throws MGXException {
         try {
-            Iterator<AttributeTypeDTO> it = getDTOmaster().AttributeType().BySeqRun(id);
+            Iterator<AttributeTypeDTO> it = getDTOmaster().AttributeType().bySeqRun(id);
             return new BaseIterator<AttributeTypeDTO, AttributeTypeI>(it) {
                 @Override
                 public AttributeTypeI next() {
@@ -121,7 +121,7 @@ public class AttributeTypeAccess implements AttributeTypeAccessI {
 
     public Iterator<AttributeTypeI> ByJob(Job job) throws MGXException {
         try {
-            Iterator<AttributeTypeDTO> it = getDTOmaster().AttributeType().ByJob(job.getId());
+            Iterator<AttributeTypeDTO> it = getDTOmaster().AttributeType().byJob(job.getId());
             return new BaseIterator<AttributeTypeDTO, AttributeTypeI>(it) {
                 @Override
                 public AttributeTypeI next() {

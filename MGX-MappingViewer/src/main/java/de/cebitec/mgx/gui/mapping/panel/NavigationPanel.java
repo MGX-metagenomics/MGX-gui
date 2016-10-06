@@ -39,7 +39,7 @@ import org.openide.util.Exceptions;
 public class NavigationPanel extends PanelBase implements MouseListener, MouseMotionListener {
 
     private final static int CAPTURE_DIST = 3; // px
-    private double scaleFactor;
+    private float scaleFactor;
     private int[] previewBounds = null;
     private int[] offSet = null;
     // back image
@@ -63,22 +63,22 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
     public NavigationPanel(final ViewController vc) {
         super(vc, true);
         initComponents();
-        setPreferredSize(new Dimension(5000, 35));
-        setMaximumSize(new Dimension(5000, 35));
+        super.setPreferredSize(new Dimension(5000, 35));
+        super.setMaximumSize(new Dimension(5000, 35));
 
-        this.addMouseListener(this);
-        this.addMouseMotionListener(this);
+        super.addMouseListener(this);
+        super.addMouseMotionListener(this);
         ToolTipManager.sharedInstance().registerComponent(this);
         ToolTipManager.sharedInstance().setDismissDelay(5000);
 
-        scaleFactor = 1d * getReferenceLength() / getWidth();
+        scaleFactor = 1f * getReferenceLength() / getWidth();
 
-        addComponentListener(new ComponentAdapter() {
+        super.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
                 super.componentResized(e);
 
-                scaleFactor = 1d * getReferenceLength() / getWidth();
+                scaleFactor = 1f * getReferenceLength() / getWidth();
 
                 if (getHeight() == 0 || getWidth() == 0) {
                     return;
@@ -95,7 +95,7 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
             }
 
         });
-        setBorder(javax.swing.BorderFactory.createLineBorder(Color.BLACK));
+        super.setBorder(javax.swing.BorderFactory.createLineBorder(Color.BLACK));
 
         generateCoverageImage();
     }
@@ -111,8 +111,8 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
             Stroke oldStroke = g2.getStroke();
             g2.setStroke(dashed);
             g2.setColor(Color.BLACK);
-            double[] scaledPreviewBounds = getScaledValues(previewBounds);
-            Rectangle2D.Double currentPreviewScope = new Rectangle2D.Double(scaledPreviewBounds[0], 0, scaledPreviewBounds[1] - scaledPreviewBounds[0] + 1, getHeight() - 1);
+            float[] scaledPreviewBounds = getScaledValues(previewBounds);
+            Rectangle2D.Float currentPreviewScope = new Rectangle2D.Float(scaledPreviewBounds[0], 0, scaledPreviewBounds[1] - scaledPreviewBounds[0] + 1, getHeight() - 1);
             g2.draw(currentPreviewScope);
             g2.setStroke(oldStroke);
         }
@@ -123,22 +123,22 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
             AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.4f);
             g2.setComposite(ac);
             g2.setColor(Color.red);
-            double[] scaledBounds = getScaledValues(bounds);
-            Rectangle2D.Double currentScope = new Rectangle2D.Double(scaledBounds[0], 0, scaledBounds[1] - scaledBounds[0] + 1, getHeight() - 1);
+            float[] scaledBounds = getScaledValues(bounds);
+            Rectangle2D.Float currentScope = new Rectangle2D.Float(scaledBounds[0], 0, scaledBounds[1] - scaledBounds[0] + 1, getHeight() - 1);
             g2.fill(currentScope);
             g2.setComposite(oldcomp);
         }
         drawAxis(g2);
     }
 
-    private double[] getScaledValues(int[] in) {
+    private float[] getScaledValues(int[] in) {
         if (in == null) {
             return null;
         }
-        double[] ret = new double[in.length];
+        float[] ret = new float[in.length];
         int pos = 0;
         for (int i : in) {
-            double f = bp2px(i);
+            float f = bp2px(i);
             ret[pos++] = f;
         }
         return ret;
@@ -190,7 +190,7 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
         }
 
         //int[] bounds = vc.getBounds();
-        double[] scaledBounds = getScaledValues(bounds);
+        float[] scaledBounds = getScaledValues(bounds);
 
         int x = e.getX();
         int posInRef = px2bp(e.getX());
@@ -304,18 +304,18 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
     }
 
     @Override
-    protected double bp2px(int i) {
-        return i * 1d / scaleFactor;
+    protected float bp2px(int i) {
+        return 1f * i / scaleFactor;
     }
 
     @Override
-    protected int px2bp(double d) {
+    protected int px2bp(float d) {
         return (int) (d * scaleFactor);
     }
 
     @Override
     public boolean update() {
-        scaleFactor = 1d * getReferenceLength() / getWidth();
+        scaleFactor = 1f * getReferenceLength() / getWidth();
         return true;
     }
 
@@ -374,8 +374,8 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
 
         maxCov = vc.getMaxCoverage();
 
-        double covScaleX = 1d * getReferenceLength() / targetImage.getWidth();
-        double covScaleY = (targetImage.getHeight() * 1d) / (FastMath.log(maxCov * 1d));
+        float covScaleX = 1f * getReferenceLength() / targetImage.getWidth();
+        float covScaleY = (float) ((targetImage.getHeight() * 1f) / (FastMath.log(maxCov * 1d)));
 
         Graphics2D g2 = targetImage.createGraphics();
 
@@ -383,8 +383,8 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
         int pos = 0;
 
         GeneralPath gp = null;
-        double[] gpStart = new double[2];
-        double[] lastPoint = new double[2];
+        float[] gpStart = new float[2];
+        float[] lastPoint = new float[2];
 
         try {
             IntIterator covIter = vc.getCoverageIterator();
@@ -409,8 +409,8 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
                     }
                 } else {
                     // we have some coverage..
-                    double drawPos = pos * 1d / covScaleX;
-                    double covPos = baseY - (FastMath.log(cov) * covScaleY);
+                    float drawPos = pos * 1f / covScaleX;
+                    float covPos = (float) (baseY - (covScaleY * FastMath.log(cov)));
 
                     if (gp == null) {
                         gp = new GeneralPath();

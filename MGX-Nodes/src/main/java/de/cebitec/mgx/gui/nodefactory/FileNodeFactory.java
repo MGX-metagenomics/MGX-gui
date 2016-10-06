@@ -12,7 +12,6 @@ import java.util.List;
 import org.openide.nodes.Node;
 import org.openide.nodes.NodeEvent;
 import org.openide.nodes.NodeMemberEvent;
-import org.openide.nodes.NodeReorderEvent;
 import org.openide.util.Exceptions;
 
 /**
@@ -32,7 +31,7 @@ public class FileNodeFactory extends MGXNodeFactoryBase<MGXFileI> {
     @Override
     protected boolean addKeys(List<MGXFileI> toPopulate) {
         try {
-            Iterator<MGXFileI> iter = getMaster().File().fetchall(curDirectory);
+            Iterator<MGXFileI> iter = curDirectory.getMaster().File().fetchall(curDirectory);
             while (iter.hasNext()) {
                 toPopulate.add(iter.next());
             }
@@ -51,29 +50,22 @@ public class FileNodeFactory extends MGXNodeFactoryBase<MGXFileI> {
     }
 
     @Override
-    protected Node createNodeForKey(MGXFileI file) {
+    protected Node createNodeFor(MGXFileI file) {
         Node node;
         if (!file.isDirectory()) {
             node = new MGXFileNode(file);
         } else {
             node = new MGXDirectoryNode(file);
         }
-        node.addNodeListener(this);
         return node;
     }
 
     @Override
     public void childrenAdded(NodeMemberEvent ev) {
-        //refresh(true);
     }
 
     @Override
     public void childrenRemoved(NodeMemberEvent ev) {
-        //refresh(true);
-    }
-
-    @Override
-    public void childrenReordered(NodeReorderEvent ev) {
     }
 
     @Override
@@ -102,7 +94,7 @@ public class FileNodeFactory extends MGXNodeFactoryBase<MGXFileI> {
             return;
         }
         if ((evt.getPropertyName().equals(ModelBaseI.OBJECT_MODIFIED)) && evt.getSource().equals(curDirectory)) {
-            System.err.println("refreshing for " + curDirectory.getFullPath());
+            //System.err.println("refreshing for " + curDirectory.getFullPath());
             refreshChildren();
             return;
         }

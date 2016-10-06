@@ -60,7 +60,7 @@ public class HabitatAccessTest {
             assertNotNull(h);
             cnt++;
         }
-        assertEquals(1, cnt);
+        assertEquals(2, cnt);
     }
     
 }

@@ -14,10 +14,10 @@ import org.openide.util.lookup.Lookups;
 public class MGXFileNode extends MGXNodeBase<MGXFileI> {
 
     public MGXFileNode(MGXFileI f) {
-        super(f.getMaster(), Children.LEAF, Lookups.fixed(f.getMaster(), f), f);
-        setDisplayName(f.getName());
-        setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/File.png");
-        setShortDescription(f.getName() + " (" + f.getSize() + " bytes)");
+        super(Children.LEAF, Lookups.fixed(f.getMaster(), f), f);
+        super.setDisplayName(f.getName());
+        super.setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/File.png");
+        super.setShortDescription(f.getName() + " (" + f.getSize() + " bytes)");
     }
 
     @Override
