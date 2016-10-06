@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.goldstandard.util;
 
+import java.util.Arrays;
 import org.apache.commons.math3.exception.DimensionMismatchException;
 import org.apache.commons.math3.util.MathArrays;
 import org.apache.commons.math3.util.FastMath;
@@ -14,12 +15,37 @@ public class Vector {
     double[] data;        
 
     public Vector(double[] array) {
-        data = array;
+        data = array.clone();
     }
 
     public Vector(int size) {
         pointer = 0;
         data = new double[size];
+        for (int i=0; i<size; i++){
+            data[i] = 0;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;        
+        hash = 47 * hash + Arrays.hashCode(this.data);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Vector other = (Vector) obj;        
+        return Arrays.equals(this.data, other.data);
     }
 
     public void add(double value) {

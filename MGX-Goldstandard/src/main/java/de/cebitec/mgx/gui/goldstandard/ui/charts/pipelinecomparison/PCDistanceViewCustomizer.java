@@ -25,6 +25,8 @@ public class PCDistanceViewCustomizer extends javax.swing.JPanel {
     public DistanceMethod getDistanceMethod() {
         return (DistanceMethod) distanceMethodComboBox.getSelectedItem();
     }
+    
+    public void dispose(){ }
 
     /**
      * This method is called from within the constructor to initialize the form.

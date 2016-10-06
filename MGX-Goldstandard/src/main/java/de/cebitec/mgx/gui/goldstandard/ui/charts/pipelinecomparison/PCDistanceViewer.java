@@ -8,6 +8,7 @@ import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.goldstandard.ui.charts.EvaluationViewerI;
+import de.cebitec.mgx.gui.goldstandard.util.EvalExceptions;
 import de.cebitec.mgx.gui.goldstandard.util.JobUtils;
 import de.cebitec.mgx.gui.goldstandard.util.Vector;
 import de.cebitec.mgx.gui.goldstandard.wizards.selectjobs.SelectJobsWizardDescriptor;
@@ -42,17 +43,17 @@ public class PCDistanceViewer extends EvaluationViewerI implements PipelineCompa
     private AttributeTypeI usedAttributeType;
     private JXTable table;
     private List<JobI> jobs;
-    private PCDistanceViewCustomizer cust = null;    
+    private PCDistanceViewCustomizer cust = null;
 
-    public enum DistanceMethod{
+    public enum DistanceMethod {
         MANHATTAN, EUCLIDEAN, CHEBYSHEV;
-        
-        @Override        
+
+        @Override
         public String toString() {
             return super.toString().toLowerCase();
         }
     }
-    
+
     public PCDistanceViewer() {
         //deactivate glossy effect
         ChartFactory.setChartTheme(StandardChartTheme.createLegacyTheme());
@@ -91,44 +92,10 @@ public class PCDistanceViewer extends EvaluationViewerI implements PipelineCompa
     public void evaluate() {
         Vector[] vectors;
         try {
-            Map<AttributeI, long[]> attributes = null;
-            int i = 0;
-            for (JobI job : jobs) {
-                DistributionI<Long> dist = job.getMaster().Attribute().getDistribution(usedAttributeType, job);
-                if (attributes == null) {
-                    attributes = new HashMap<>((int) (dist.size() * 1.3));
-                }
-                for (Entry<AttributeI, Long> attr : dist.entrySet()) {
-                    if (attributes.containsKey(attr.getKey())) {
-                        attributes.get(attr.getKey())[i] = attr.getValue();
-                    } else {
-                        long[] array = new long[jobs.size()];
-                        Arrays.fill(array, 0);
-                        array[i] = attr.getValue();
-                        attributes.put(attr.getKey(), array);
-                    }
-                }
-                i++;
-            }
-
-            vectors = new Vector[jobs.size()];
-            for (i = 0; i < jobs.size(); i++) {
-                vectors[i] = new Vector(attributes.size());
-            }
-            for (AttributeI key : attributes.keySet()) {
-                long[] values = attributes.get(key);
-                for (i = 0; i < values.length; i++) {
-                    vectors[i].add(values[i]);
-                }
-            }
-
-            if (((PCDistanceViewCustomizer) getCustomizer()).normalizeVectors()) {
-                for (i = 0; i < vectors.length; i++) {
-                    vectors[i] = vectors[i].normalize();
-                }
-            }
+            vectors = calcAttributeVectors(jobs, usedAttributeType);
         } catch (MGXException ex) {
-            Exceptions.printStackTrace(ex);
+            EvalExceptions.printStackTrace(ex);
+            tidyUp();
             return;
         }
 
@@ -157,7 +124,7 @@ public class PCDistanceViewer extends EvaluationViewerI implements PipelineCompa
 
         for (i = 0; i < distances.length - 1; i++) {
             for (int j = i + 1; j < distances.length; j++) {
-                switch (currentDistanceMethod){
+                switch (currentDistanceMethod) {
                     case EUCLIDEAN:
                         distances[i][j] = vectors[i].euclideanDistance(vectors[j]);
                         break;
@@ -216,6 +183,20 @@ public class PCDistanceViewer extends EvaluationViewerI implements PipelineCompa
     }
 
     @Override
+    public void dispose() {
+        super.dispose();
+        cust.dispose();
+        cust = null;
+        tidyUp();
+    }
+
+    private void tidyUp() {
+        usedAttributeType = null;
+        table = null;
+        jobs = null;
+    }
+
+    @Override
     public void selectJobs(SeqRunI seqrun) {
         try {
             SelectJobsWizardDescriptor jobWizard = new SelectJobsWizardDescriptor(seqrun, false);
@@ -230,10 +211,51 @@ public class PCDistanceViewer extends EvaluationViewerI implements PipelineCompa
             }
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);
-            table = null;
-            jobs = null;
-            usedAttributeType = null;
+            tidyUp();
+        }
+    }
+
+    public Vector[] calcAttributeVectors(List<JobI> usedJobs, AttributeTypeI attrType) throws MGXException {
+        if (usedJobs == null || usedJobs.isEmpty())
+            return new Vector[0];
+        
+        Map<AttributeI, long[]> attributes = null;
+        int i = 0;        
+        for (JobI job : usedJobs) {
+            DistributionI<Long> dist = job.getMaster().Attribute().getDistribution(attrType, job);
+            if (attributes == null) {
+                attributes = new HashMap<>((int) (dist.size() * 1.3));
+            }
+            for (Entry<AttributeI, Long> attr : dist.entrySet()) {
+                if (attributes.containsKey(attr.getKey())) {
+                    attributes.get(attr.getKey())[i] = attr.getValue();
+                } else {
+                    long[] array = new long[usedJobs.size()];
+                    Arrays.fill(array, 0);
+                    array[i] = attr.getValue();
+                    attributes.put(attr.getKey(), array);
+                }
+            }
+            i++;
         }
 
+        Vector[] vectors = new Vector[usedJobs.size()];
+        for (i = 0; i < usedJobs.size(); i++) {
+            vectors[i] = new Vector(attributes.size());
+        }
+        for (AttributeI key : attributes.keySet()) {
+            long[] values = attributes.get(key);
+            for (i = 0; i < values.length; i++) {
+                vectors[i].add(values[i]);
+            }
+        }
+
+        if (((PCDistanceViewCustomizer) getCustomizer()).normalizeVectors()) {
+            for (i = 0; i < vectors.length; i++) {
+                vectors[i] = vectors[i].normalize();
+            }
+        }
+        
+        return vectors;
     }
 }
