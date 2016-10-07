@@ -6,6 +6,7 @@
 package de.cebitec.mgx.gui.attributevisualization.view;
 
 import de.cebitec.mgx.gui.attributevisualization.GroupFrameBase;
+import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -14,9 +15,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import javax.swing.Action;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 import org.openide.explorer.ExplorerManager;
@@ -26,7 +25,6 @@ import org.openide.nodes.NodeEvent;
 import org.openide.nodes.NodeMemberEvent;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
-import org.openide.util.Utilities;
 import org.openide.util.lookup.AbstractLookup;
 import org.openide.util.lookup.InstanceContent;
 
@@ -42,16 +40,19 @@ public class GroupExplorerView<T extends GroupFrameBase> extends JScrollPane { /
     private transient ExplorerManager exmngr;
     private final NodeMapperI<T> mapper;
     //
+    private final InstanceContent content = new InstanceContent();
+    private final Lookup lookup = new AbstractLookup(content);
+    //
     private final JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-    
+
     public GroupExplorerView(NodeMapperI<T> mapper) {
         //addMouseListener(this);
-        setViewportView(panel);
-        setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+        super.setViewportView(panel);
+        super.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        super.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
         this.mapper = mapper;
     }
-    
+
     @Override
     public void addNotify() {
         super.addNotify();
@@ -67,24 +68,35 @@ public class GroupExplorerView<T extends GroupFrameBase> extends JScrollPane { /
 
         // listen for subsequent changes
         root.addNodeListener(new NodeAdapter() {
-            
+
             @Override
             public void childrenRemoved(NodeMemberEvent ev) {
                 for (Node rmNode : ev.getDelta()) {
                     delNode(rmNode);
                 }
-                panel.repaint();
+                EventQueue.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        panel.repaint();
+                    }
+
+                });
             }
-            
+
             @Override
-            public void childrenAdded(NodeMemberEvent ev) {
-                for (Node newNode : ev.getDelta()) {
-                    addNode(newNode);
-                }
-                panel.repaint();
+            public void childrenAdded(final NodeMemberEvent ev) {
+                EventQueue.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        for (Node newNode : ev.getDelta()) {
+                            addNode(newNode);
+                        }
+                        panel.repaint();
+                    }
+                });
             }
         });
-        
+
         panel.addMouseListener(new MouseAdapter() {
 
             @Override
@@ -94,17 +106,16 @@ public class GroupExplorerView<T extends GroupFrameBase> extends JScrollPane { /
                 if (e.getSource() == panel) {
                     content.set(Collections.emptyList(), null);
                     content.add(root);
-                     for (Object o : root.getLookup().lookupAll(Object.class)) {
+                    for (Object o : root.getLookup().lookupAll(Object.class)) {
                         content.add(o);
                     }
                 }
             }
-            
+
         });
-        
-        
+
     }
-    
+
     private void delNode(Node oldNode) {
         T component = null;
         for (Entry<T, Node> e : componentToNodeMap.entrySet()) {
@@ -125,16 +136,16 @@ public class GroupExplorerView<T extends GroupFrameBase> extends JScrollPane { /
                 Exceptions.printStackTrace(ex);
             }
             component.dispose();
-            panel.repaint();
+            //panel.repaint();
         }
     }
-    
+
     private void addNode(final Node newNode) {
         final T comp = mapper.getComponent(newNode);
         componentToNodeMap.put(comp, newNode);
-        
+
         newNode.addNodeListener(new NodeAdapter() {
-            
+
             @Override
             public void nodeDestroyed(NodeEvent ev) {
                 panel.remove(comp);
@@ -145,16 +156,16 @@ public class GroupExplorerView<T extends GroupFrameBase> extends JScrollPane { /
                 ev.getNode().removeNodeListener(this);
                 panel.repaint();
             }
-            
+
             @Override
             public void childrenAdded(NodeMemberEvent ev) {
                 System.err.println("children added to node " + newNode.getName());
             }
-            
+
         });
 
         comp.addNodeSelectionListener(new NodeSelectionListener() {
-            
+
             @Override
             public void handleNodeSelection(final NodeSelectionEvent nse) {
                 Node[] nodes = nse.getSelectedNodes();
@@ -165,60 +176,31 @@ public class GroupExplorerView<T extends GroupFrameBase> extends JScrollPane { /
                         content.add(o);
                     }
                 }
-//                if (exmngr != null) {
-//                    
-//                    Node[] currentSelection = exmngr.getSelectedNodes();
-//                    if (Arrays.equals(nodes, currentSelection)) {
-//                        return; // no change
-//                    }
-//                    try {
-//                        System.err.println("view received new node selection:");
-//                        for (Node n : nodes) {
-//                            System.err.println("  " + n.getClass().getSimpleName() + " " + n.getName());
-//                            if (!isUnderRoot(n)) {
-//                                System.err.println("  NOT UNDER ROOT!");
-//                            }
-//                            if (n.getParentNode() == null) {
-//                                System.err.println("  NO PARENT!");
-//                            } else {
-//                                System.err.println("    P: " + n.getParentNode().getName());
-//                            }
-//                            for (Object o : n.getLookup().lookupAll(Object.class)) {
-//                                System.err.println("    L: " + o);
-//                            }
-//                        }
-//                        System.err.println();
-//                        exmngr.setSelectedNodes(nodes);
-//                    } catch (PropertyVetoException ex) {
-//                        Exceptions.printStackTrace(ex);
-//                    }
-//                }
             }
         });
         panel.add(comp);
         panel.repaint();
     }
-    
+
     @Override
     public void removeNotify() {
         exmngr = null;
         super.removeNotify();
     }
-    
-    private void setSelectedComponent(T c) {
-        this.selectedComponent = c;
-    }
-    
-    private boolean isUnderRoot(Node node) {
-        while (node != null) {
-            if (node.equals(root)) {
-                return true;
-            }
-            node = node.getParentNode();
-        }
-        return false;
-    }
 
+//    private void setSelectedComponent(T c) {
+//        this.selectedComponent = c;
+//    }
+//
+//    private boolean isUnderRoot(Node node) {
+//        while (node != null) {
+//            if (node.equals(root)) {
+//                return true;
+//            }
+//            node = node.getParentNode();
+//        }
+//        return false;
+//    }
 //    @Override
 //    @SuppressWarnings("unchecked")
 //    public void mouseClicked(MouseEvent ev) {
@@ -256,17 +238,14 @@ public class GroupExplorerView<T extends GroupFrameBase> extends JScrollPane { /
 //
 //        panel.repaint();
 //    }
-    private void showPopupMenu(MouseEvent evt) {
-        Node[] n = exmngr.getSelectedNodes();
-        if (n.length == 1) {
-            Action[] a = n[0].getActions(true);
-            JPopupMenu popup = Utilities.actionsToPopup(a, this);
-            popup.show(this, evt.getX(), evt.getY());
-        }
-    }
-    private final InstanceContent content = new InstanceContent();
-    private final Lookup lookup = new AbstractLookup(content);
-    
+//    private void showPopupMenu(MouseEvent evt) {
+//        Node[] n = exmngr.getSelectedNodes();
+//        if (n.length == 1) {
+//            Action[] a = n[0].getActions(true);
+//            JPopupMenu popup = Utilities.actionsToPopup(a, this);
+//            popup.show(this, evt.getX(), evt.getY());
+//        }
+//    }
     public Lookup getLookup() {
         return lookup;
     }
