@@ -33,7 +33,7 @@ public abstract class MGXNodeFactoryBase<T> extends ChildFactory<T> implements N
     @Override
     protected final synchronized boolean createKeys(List<T> toPopulate) {
         if (!toPopulate.isEmpty()) {
-            System.err.println("createKeys on non-empty list for "+ getClass().getSimpleName());
+            System.err.println("createKeys on non-empty list for " + getClass().getSimpleName());
         }
         if (master != null && master.isDeleted()) {
             toPopulate.clear();
@@ -80,11 +80,15 @@ public abstract class MGXNodeFactoryBase<T> extends ChildFactory<T> implements N
         if (ev.getDelta().length == 1 && ev.getDelta()[0].getClass().getSimpleName().equals("WaitFilterNode")) {
             return;
         }
-        System.err.println("childrenAdded for " + ev.getDelta().length + " nodes:");
+        boolean needRefresh = false;
         for (Node n : ev.getDelta()) {
-            System.err.println("  " + n.getDisplayName() + " (" + n.getClass().getSimpleName() + ")");
+            if (!"WaitFilterNode".equals(n.getClass().getSimpleName())) {
+                needRefresh = true;
+            }
         }
-        refreshChildren();
+        if (needRefresh) {
+            refreshChildren();
+        }
     }
 
     @Override
@@ -105,13 +109,20 @@ public abstract class MGXNodeFactoryBase<T> extends ChildFactory<T> implements N
 
     @Override
     public void nodeDestroyed(NodeEvent ev) {
-        System.err.println(getClass().getSimpleName() + " got nodeDestroyed for " + ev.getNode().getClass().getSimpleName());
+        //System.err.println(getClass().getSimpleName() + " got nodeDestroyed for " + ev.getNode().getClass().getSimpleName());
         ev.getNode().removeNodeListener(this);
         refreshChildren();
     }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        //System.err.println("MGXNFBase: " + evt.toString() + " in " + getClass().getName());
+        switch (evt.getPropertyName()) {
+            case Node.PROP_PARENT_NODE:
+                //ignore
+                break;
+            default:
+                System.err.println("MGXNodeFactoryBase: " + evt.toString() + " in " + getClass().getName());
+                break;
+        }
     }
 }
