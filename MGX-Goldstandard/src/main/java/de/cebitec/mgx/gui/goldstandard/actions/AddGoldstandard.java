@@ -25,6 +25,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import static javax.swing.Action.NAME;
 import org.netbeans.api.progress.ProgressHandle;
 import org.openide.DialogDisplayer;
@@ -55,7 +56,7 @@ public final class AddGoldstandard extends NodeAction implements LookupListener 
     public final static String TOOL_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><graph description=\"\" name=\"Goldstandard\" service=\"MGX\"><composites/><nodes><node id=\"1\" name=\"\" type=\"Conveyor.MGX.GetMGXJob\" x=\"407\" y=\"162\"><configuration_items/><typeParameters/></node><node id=\"2\" name=\"\" type=\"Conveyor.Core.Discard\" x=\"412\" y=\"310\"><configuration_items/><typeParameters/></node></nodes><links><link from_connector=\"output\" from_node=\"1\" to_connector=\"input\" to_node=\"2\"/></links></graph>";
     public final static float TOOL_VERSION = 1.0f;
 
-    public final static int CHUNKSIZE = 2000;
+    public final static int CHUNKSIZE = 1500;
 
     public AddGoldstandard() {
         this(Utilities.actionsGlobalContext());
@@ -105,6 +106,7 @@ public final class AddGoldstandard extends NodeAction implements LookupListener 
     protected void performAction(Node[] activatedNodes) {
         final MGXMasterI master = context.lookup(MGXMasterI.class);
         Collection<? extends SeqRunI> seqruns = lkpInfo.allInstances();
+        final AtomicBoolean hasError = new AtomicBoolean(false);
         if (seqruns.isEmpty()) {
             return;
         }
@@ -116,10 +118,13 @@ public final class AddGoldstandard extends NodeAction implements LookupListener 
         boolean cancelled = wd.getValue() != WizardDescriptor.FINISH_OPTION;
         if (!cancelled) {
             for (final SeqRunI seqrun : seqruns) {
+                JobI job = null;
                 try {
                     ToolI tool = getTool(master, TOOL_NAME, TOOL_LONG_DESCRIPTION, TOOL_AUTHOR, TOOL_WEBSITE, TOOL_VERSION, TOOL_XML);
                     Collection<JobParameterI> params = new ArrayList<>(1);
-                    JobI job = master.Job().create(tool, seqrun, params);
+                    job = master.Job().create(tool, seqrun, params);
+                    job.setStatus(JobState.RUNNING);
+                    master.Job().update(job);
                     ProgressHandle p = ProgressHandle.createHandle("AddGoldstandard");
                     p.start((int) seqrun.getNumSequences());
 
@@ -133,8 +138,11 @@ public final class AddGoldstandard extends NodeAction implements LookupListener 
                     int i = 0;
                     int numChunks = 0;
                     List<BulkObservation> bol = new LinkedList<>();
-                    
+
                     while (reader.hasNext()) {
+                        if (hasError.get()) {
+                            break;
+                        }
                         final MGSEntry entry = reader.next();
                         String seqName = entry.getHeader();
                         seqName = seqName.substring(0, seqName.indexOf(" "));
@@ -149,9 +157,12 @@ public final class AddGoldstandard extends NodeAction implements LookupListener 
                                 @Override
                                 public void run() {
                                     try {
-                                        master.Observation().createBulk(submitBol);
+                                        if (!hasError.get()) {
+                                            master.Observation().createBulk(submitBol);
+                                        }
                                     } catch (MGXException ex) {
                                         Exceptions.printStackTrace(ex);
+                                        hasError.set(true);
                                     }
                                 }
                             });
@@ -159,24 +170,32 @@ public final class AddGoldstandard extends NodeAction implements LookupListener 
                             numChunks = 0;
                         }
                     }
-                    if (numChunks > 0) {
+                    if (!hasError.get() && numChunks > 0) {
                         final List<BulkObservation> submitBol = bol;
                         pool.submit(new Runnable() {
                             @Override
                             public void run() {
                                 try {
-                                    master.Observation().createBulk(submitBol);
+                                    if (!hasError.get()) {
+                                        master.Observation().createBulk(submitBol);
+                                    }
                                 } catch (MGXException ex) {
                                     Exceptions.printStackTrace(ex);
+                                    hasError.set(true);
                                 }
                             }
-                        });
+                        }
+                        );
                     }
                     pool.shutdown();
                     pool.awaitTermination(1L, TimeUnit.HOURS);
                     p.finish();
-                    job.setStatus(JobState.FINISHED);
-                    master.Job().update(job);
+                    if (hasError.get()) {
+                        master.Job().delete(job);
+                    } else {
+                        job.setStatus(JobState.FINISHED);
+                        master.Job().update(job);
+                    }
                 } catch (MGXException | IOException | InterruptedException ex) {
                     Exceptions.printStackTrace(ex);
                 }
