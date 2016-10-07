@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Semaphore;
 import static javax.swing.Action.NAME;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
@@ -147,12 +148,15 @@ public class ExecuteAnalysis extends NodeAction implements LookupListener {
             List<JobParameterI> params = (List<JobParameterI>) wiz.getProperty(AnalysisWizardIterator.PROP_PARAMETERS);
 
             CountDownLatch toolIsCreated = new CountDownLatch(1);
-            
+
+            // throttle parallel creation/submission of jobs
+            Semaphore submissionRateLimit = new Semaphore(2);
+
             for (final SeqRunI seqrun : seqruns) {
 
                 // skip empty seqruns
                 if (seqrun.getNumSequences() == 0) {
-                    NotifyDescriptor d = new NotifyDescriptor.Message("Sequencing run has no sequences, skipping..");
+                    NotifyDescriptor d = new NotifyDescriptor.Message("Sequencing run " + seqrun.getName() + " has no sequences, skipping..");
                     DialogDisplayer.getDefault().notify(d);
                     continue;
                 }
@@ -164,9 +168,9 @@ public class ExecuteAnalysis extends NodeAction implements LookupListener {
                     String toolWebsite = (String) wiz.getProperty(AnalysisWizardIterator.PROP_TOOL_URL);
                     String toolXML = (String) wiz.getProperty(AnalysisWizardIterator.PROP_TOOL_XML);
                     Float toolVersion = Float.parseFloat((String) wiz.getProperty(AnalysisWizardIterator.PROP_TOOLVERSION));
-                    submitTask = new SubmitTask(toolName, toolDesc, toolAuthor, toolWebsite, toolVersion, toolXML, seqrun, params, toolIsCreated);
+                    submitTask = new SubmitTask(toolName, toolDesc, toolAuthor, toolWebsite, toolVersion, toolXML, seqrun, params, toolIsCreated, submissionRateLimit);
                 } else {
-                    submitTask = new SubmitTask(toolId, toolName, tooltype, seqrun, params, toolIsCreated);
+                    submitTask = new SubmitTask(toolId, toolName, tooltype, seqrun, params, toolIsCreated, submissionRateLimit);
                 }
                 final SubmitTask sTask = submitTask;
 
@@ -213,8 +217,9 @@ public class ExecuteAnalysis extends NodeAction implements LookupListener {
         private final ToolType tooltype;
         private final Collection<JobParameterI> params;
         private final CountDownLatch toolCreated;
+        private final Semaphore rateLimit;
 
-        public SubmitTask(long toolId, String toolName, ToolType tooltype, SeqRunI run, Collection<JobParameterI> params, CountDownLatch toolCreated) {
+        public SubmitTask(long toolId, String toolName, ToolType tooltype, SeqRunI run, Collection<JobParameterI> params, CountDownLatch toolCreated, Semaphore rateLimit) {
             super("Submit " + run.getName() + " / " + toolName);
             if (toolName == null) {
                 throw new RuntimeException("No tool name supplied.");
@@ -227,6 +232,7 @@ public class ExecuteAnalysis extends NodeAction implements LookupListener {
             this.params = params;
             this.run = run;
             this.toolCreated = toolCreated;
+            this.rateLimit = rateLimit;
             //
             this.toolName = null;
             this.toolDesc = null;
@@ -234,6 +240,7 @@ public class ExecuteAnalysis extends NodeAction implements LookupListener {
             this.toolUri = null;
             this.toolVersion = -1;
             this.toolXML = null;
+            setStatus("Waiting..");
             //
         }
 
@@ -244,7 +251,7 @@ public class ExecuteAnalysis extends NodeAction implements LookupListener {
         private final String toolXML;
         private final float toolVersion;
 
-        public SubmitTask(String toolName, String toolDesc, String toolAuthor, String toolUri, float toolVersion, String toolXML, SeqRunI run, Collection<JobParameterI> params, CountDownLatch toolCreated) {
+        public SubmitTask(String toolName, String toolDesc, String toolAuthor, String toolUri, float toolVersion, String toolXML, SeqRunI run, Collection<JobParameterI> params, CountDownLatch toolCreated, Semaphore rateLimit) {
             super("Submit " + run.getName() + " / " + toolName);
             this.toolId = Identifiable.INVALID_IDENTIFIER;
             this.tooltype = ToolType.USER_PROVIDED;
@@ -259,6 +266,8 @@ public class ExecuteAnalysis extends NodeAction implements LookupListener {
             this.params = params;
             this.run = run;
             this.toolCreated = toolCreated;
+            this.rateLimit = rateLimit;
+            setStatus("Waiting..");
         }
 
         public final long getToolId() {
@@ -268,6 +277,7 @@ public class ExecuteAnalysis extends NodeAction implements LookupListener {
         @Override
         public boolean process() {
             final MGXMasterI master = run.getMaster();
+            rateLimit.acquireUninterruptibly();
             try {
                 ToolI selectedTool = null;
                 switch (tooltype) {
@@ -288,16 +298,20 @@ public class ExecuteAnalysis extends NodeAction implements LookupListener {
                 // tool id _before_ releasing the latch 
                 toolId = selectedTool.getId();
                 toolCreated.countDown();
+
                 setStatus("Creating job..");
                 JobI job = master.Job().create(selectedTool, run, params);
                 setStatus("Validating configuration..");
                 master.Job().verify(job);
                 setStatus("Submitting..");
-                return master.Job().execute(job);
+                boolean success = master.Job().execute(job);
+                return success;
             } catch (MGXException ex) {
                 setStatus(ex.getMessage());
                 failed(ex.getMessage());
                 Exceptions.printStackTrace(ex);
+            } finally {
+                rateLimit.release();
             }
             return false;
         }
