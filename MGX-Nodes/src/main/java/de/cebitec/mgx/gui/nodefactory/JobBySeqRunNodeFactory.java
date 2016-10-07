@@ -1,6 +1,5 @@
 package de.cebitec.mgx.gui.nodefactory;
 
-import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.exception.MGXLoggedoutException;
 import de.cebitec.mgx.api.model.JobI;
@@ -28,7 +27,7 @@ public class JobBySeqRunNodeFactory extends JobNodeFactory {
 
     public JobBySeqRunNodeFactory(Collection<SeqRunI> runs) {
         super(null);
-        content = new ArrayList<>();
+        content = new ArrayList<>(runs.size());
         stateListener = new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
