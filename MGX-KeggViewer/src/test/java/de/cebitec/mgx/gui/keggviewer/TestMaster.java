@@ -54,7 +54,11 @@ public class TestMaster {
         while (mIter.hasNext()) {
             MembershipI m = mIter.next();
             if ("MGX".equals(m.getProject().getProjectClass().getName()) && ("MGX_Unittest".equals(m.getProject().getName()))) {
-                masterRO = new MGXMaster(gpms.createMaster(m));
+                try {
+                    masterRO = new MGXMaster(gpms.createMaster(m));
+                } catch (GPMSException ex) {
+                    fail(ex.getMessage());
+                }
                 break;
             }
         }
@@ -94,7 +98,11 @@ public class TestMaster {
         while (mIter.hasNext()) {
             MembershipI m = mIter.next();
             if ("MGX".equals(m.getProject().getProjectClass().getName()) && ("MGX_Unittest".equals(m.getProject().getName()))) {
-                master =  new MGXMaster(gpms.createMaster(m));
+                try {
+                    master =  new MGXMaster(gpms.createMaster(m));
+                } catch (GPMSException ex) {
+                    fail(ex.getMessage());
+                }
                 break;
             }
         }
