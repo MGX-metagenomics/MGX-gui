@@ -90,7 +90,7 @@ public class ToolAccessTest {
             assertNotNull(tool);
             cnt++;
         }
-        assertEquals("Unit test project contains 17 tools", 17, cnt);
+        assertEquals("Unit test project contains 18 tools", 18, cnt);
     }
 
     @Test
