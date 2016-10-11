@@ -97,6 +97,14 @@
             <groupId>de.cebitec.mgx.gui</groupId>
             <artifactId>MGX-SwingUtils</artifactId>
         </dependency>
+        <dependency>
+            <groupId>de.cebitec.mgx.gui</groupId>
+            <artifactId>MGX-TaskView</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-util-ui</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
