@@ -5,12 +5,14 @@
  */
 package de.cebitec.mgx.api.access;
 
+import de.cebitec.mgx.api.access.datatransfer.DownloadBaseI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.api.model.MappedSequenceI;
 import de.cebitec.mgx.api.model.MappingI;
 import de.cebitec.mgx.api.model.SeqRunI;
+import java.io.OutputStream;
 import java.util.Iterator;
 import java.util.UUID;
 
@@ -33,4 +35,6 @@ public abstract class MappingAccessI implements AccessBaseI<MappingI> {
     public abstract Iterator<MappingI> ByJob(JobI job) throws MGXException;
 
     public abstract long getMaxCoverage(UUID sessionUUID) throws MGXException;
+    
+    public abstract DownloadBaseI createDownloader(MappingI mapping, OutputStream writer) throws MGXException;
 }
