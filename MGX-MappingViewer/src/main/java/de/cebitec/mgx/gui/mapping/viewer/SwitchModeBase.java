@@ -22,20 +22,41 @@ public abstract class SwitchModeBase extends JPopupMenu implements ActionListene
     protected SwitchModeBase(TopComponentViewer tc, String target) {
         super();
         this.tc = tc;
-        JMenuItem item = new JMenuItem("Switch to "+ target);
+        JMenuItem item = new JMenuItem("Switch to " + target);
         item.addActionListener(this);
-        add(item);
+        item.setActionCommand("switchMode");
+        super.add(item);
+        //
+        JMenuItem item2 = new JMenuItem("Download as BAM");
+        item2.addActionListener(this);
+        item2.setActionCommand("downloadBAM");
+        super.add(item2);
     }
 
     @Override
     public final void actionPerformed(ActionEvent e) {
-        EventQueue.invokeLater(new Runnable() {
+        switch (e.getActionCommand()) {
+            case "switchMode":
+                EventQueue.invokeLater(new Runnable() {
 
-            @Override
-            public void run() {
-                tc.switchMode();
-            }
-        });
+                    @Override
+                    public void run() {
+                        tc.switchMode();
+                    }
+                });
+                break;
+            case "downloadBAM":
+                EventQueue.invokeLater(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        tc.downloadBAM();
+                    }
+                });
+                break;
+            default:
+                assert false;
+        }
     }
 
 }
