@@ -102,21 +102,23 @@ public class ToolAccessTest {
             tool = master.Tool().create("Tool Name", "Tool description", "Tool author", "http://", 1.0f, "<xml>");
         } catch (MGXException ex) {
             fail(ex.getMessage());
-        }
-        boolean toolCreated = tool != null;
-        if (tool != null) {
-            try {
-                TaskI<ToolI> task = master.Tool().delete(tool);
-                while (!task.done()) {
-                    master.<ToolI>Task().refresh(task);
+        } finally {
+            boolean toolCreated = tool != null;
+            if (tool != null) {
+                try {
+                    TaskI<ToolI> task = master.Tool().delete(tool);
+                    while (!task.done()) {
+                        master.<ToolI>Task().refresh(task);
+                    }
+                    assertEquals(State.FINISHED, task.getState());
+                } catch (MGXException ex) {
+                    fail(ex.getMessage());
                 }
-                assertEquals(State.FINISHED, task.getState());
-            } catch (MGXException ex) {
-                fail(ex.getMessage());
             }
+            assertTrue(toolCreated);
+            assertTrue(tool.isDeleted());
         }
-        assertTrue(toolCreated);
-        assertTrue(tool.isDeleted());
+
     }
 
     @Test
@@ -229,7 +231,7 @@ public class ToolAccessTest {
         File pipe = null;
         try {
             pipe = TestInput.copyTestResource(getClass(), "de/cebitec/mgx/gui/controller/qiime_assignTaxonomy.xml");
-        } catch (Exception ex) {
+        } catch (IOException ex) {
             fail(ex.getMessage());
         }
         String xmlData = null;
