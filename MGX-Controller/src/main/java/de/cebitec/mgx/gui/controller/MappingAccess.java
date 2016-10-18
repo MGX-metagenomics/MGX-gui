@@ -155,8 +155,10 @@ public class MappingAccess extends MappingAccessI {
             dtomaster.Mapping().closeMapping(uuid);
         } catch (MGXDTOException ex) {
             if (ex.getMessage().contains("No mapping session for")) {
-                // session already closed due to timeout
-                throw new MGXTimeoutException(ex);
+                if (!dtomaster.isClosed()) {
+                    // session already closed due to timeout
+                    throw new MGXTimeoutException(ex);
+                }
             }
             throw new MGXException(ex);
         }
@@ -202,8 +204,8 @@ public class MappingAccess extends MappingAccessI {
             throw new MGXException(ex);
         }
     }
-    
-        private static class ServerBAMFileDownloader extends DownloadBaseI implements PropertyChangeListener {
+
+    private static class ServerBAMFileDownloader extends DownloadBaseI implements PropertyChangeListener {
 
         private final BAMFileDownloader fd;
 
