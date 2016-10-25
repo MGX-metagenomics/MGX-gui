@@ -5,10 +5,12 @@
  */
 package de.cebitec.mgx.gui.mapping;
 
+import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.exception.MGXLoggedoutException;
 import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.api.model.MappedSequenceI;
+import de.cebitec.mgx.api.model.MappingI;
 import de.cebitec.mgx.api.model.RegionI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.ToolI;
@@ -49,6 +51,17 @@ public class ViewController implements PropertyChangeListener {
         curBounds = new int[]{0, FastMath.min(15000, ctx.getReference().getLength() - 1)};
         intervalLen = curBounds[1] - curBounds[0] + 1;
         pcs = new ParallelPropertyChangeSupport(this, true);
+    }
+
+    public final MGXMasterI getMaster() {
+        return ctx.getMaster();
+    }
+
+    public MappingI getMapping() throws MGXException {
+        if (isClosed()) {
+            throw new MGXLoggedoutException("ViewController is closed");
+        }
+        return ctx.getMapping();
     }
 
     public MGXReferenceI getReference() throws MGXException {

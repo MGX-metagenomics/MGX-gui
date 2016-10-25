@@ -15,7 +15,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import javax.swing.Timer;
-import org.openide.nodes.Children;
 import org.openide.nodes.Node;
 import org.openide.util.Exceptions;
 
@@ -23,7 +22,7 @@ import org.openide.util.Exceptions;
  *
  * @author sjaenick
  */
-public class JobNodeFactory extends MGXNodeFactoryBase<JobI> { //implements NodeListener {
+public class JobNodeFactory extends MGXNodeFactoryBase<JobI> {
 
     private final Timer timer;
 
@@ -63,7 +62,7 @@ public class JobNodeFactory extends MGXNodeFactoryBase<JobI> { //implements Node
                             // trigger fetch of tool
                             ToolI t = sr.getMaster().Tool().ByJob(j);
                         }
-                        j.addPropertyChangeListener(this);
+                        //j.addPropertyChangeListener(this);
                         tmp.add(j);
                     }
                 } catch (MGXLoggedoutException lex) {
@@ -88,8 +87,8 @@ public class JobNodeFactory extends MGXNodeFactoryBase<JobI> { //implements Node
     }
 
     @Override
-    protected Node createNodeFor(JobI key) {
-        return new JobNode(key, Children.LEAF);
+    protected Node createNodeFor(JobI job) {
+        return new JobNode(job);
     }
 
     public void destroy() {

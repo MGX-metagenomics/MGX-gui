@@ -34,7 +34,7 @@ public class JobNode extends MGXNodeBase<JobI> {
     public static String SEQRUN_PROPERTY = "seqrun";
     public static String STATE_PROPERTY = "state";
 
-    public JobNode(JobI job, Children c) {
+    public JobNode(JobI job) {
         super(Children.LEAF, Lookups.fixed(job.getMaster(), job), job);
         ToolI tool = job.getTool();
         super.setDisplayName(tool.getName());
@@ -51,7 +51,7 @@ public class JobNode extends MGXNodeBase<JobI> {
                 .append("<br><br>Start time: ")
                 .append(job.getStartDate() != null ? job.getStartDate() : "n/a")
                 .append("<br>Finish time: ")
-                .append(job.getFinishDate() != null ? job.getFinishDate() : "n/a")
+                .append(job.getStatus() == JobState.FINISHED ? job.getFinishDate() : "n/a")
                 .append("<br>")
                 .append(getProcessingTime(job))
                 .append(getParameterToolTip(job))
@@ -183,6 +183,27 @@ public class JobNode extends MGXNodeBase<JobI> {
     @Override
     public void updateModified() {
         setDisplayName(getContent().getTool().getName());
+        ToolI tool = getContent().getTool();
+        String shortDesc = new StringBuilder("<html><b>")
+                .append(tool.getName()).append("</b>")
+                .append("<br><hr><br>")
+                .append("Tool version: ")
+                .append(tool.getVersion())
+                .append("<br>")
+                .append(tool.getDescription())
+                .append("<br><br>")
+                .append("Job created by: ")
+                .append(getContent().getCreator())
+                .append("<br><br>Start time: ")
+                .append(getContent().getStartDate() != null ? getContent().getStartDate() : "n/a")
+                .append("<br>Finish time: ")
+                .append(getContent().getStatus() == JobState.FINISHED ? getContent().getFinishDate() : "n/a")
+                .append("<br>")
+                .append(getProcessingTime(getContent()))
+                .append(getParameterToolTip(getContent()))
+                .append("</html>")
+                .toString();
+        super.setShortDescription(shortDesc);
     }
 
 }

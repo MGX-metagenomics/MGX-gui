@@ -109,7 +109,7 @@ public class VisualizationGroupTest {
                 //System.err.println("  " + next.getName());
                 cnt++;
             }
-            assertEquals(21, cnt);
+            assertEquals(22, cnt);
         }
     }
 
@@ -189,7 +189,7 @@ public class VisualizationGroupTest {
         while (iter.hasNext()) {
             vg.addSeqRun(iter.next());
         }
-        assertEquals(3, vg.getSeqRuns().size());
+        assertEquals(4, vg.getSeqRuns().size());
 
         int atCount = 0;
         Iterator<AttributeTypeI> atIter = vg.getAttributeTypes();
@@ -198,7 +198,7 @@ public class VisualizationGroupTest {
             atIter.next();
             atCount++;
         }
-        assertEquals(21, atCount);
+        assertEquals(22, atCount);
 
         try {
             vg.selectAttributeType(AttributeRank.PRIMARY, "NCBI_SUPERKINGDOM");

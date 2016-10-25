@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.controller;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.MappingAccessI;
+import de.cebitec.mgx.api.access.datatransfer.DownloadBaseI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.exception.MGXLoggedoutException;
 import de.cebitec.mgx.api.exception.MGXTimeoutException;
@@ -12,6 +13,7 @@ import de.cebitec.mgx.api.model.MappedSequenceI;
 import de.cebitec.mgx.api.model.MappingI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.client.MGXDTOMaster;
+import de.cebitec.mgx.client.datatransfer.BAMFileDownloader;
 import de.cebitec.mgx.client.exception.MGXDTOException;
 import de.cebitec.mgx.dto.dto.MappedSequenceDTO;
 import de.cebitec.mgx.dto.dto.MappingDTO;
@@ -19,6 +21,9 @@ import de.cebitec.mgx.gui.datamodel.misc.Task;
 import de.cebitec.mgx.gui.dtoconversion.MappedSequenceDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.MappingDTOFactory;
 import de.cebitec.mgx.gui.util.BaseIterator;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.OutputStream;
 import java.util.Iterator;
 import java.util.UUID;
 
@@ -150,8 +155,10 @@ public class MappingAccess extends MappingAccessI {
             dtomaster.Mapping().closeMapping(uuid);
         } catch (MGXDTOException ex) {
             if (ex.getMessage().contains("No mapping session for")) {
-                // session already closed due to timeout
-                throw new MGXTimeoutException(ex);
+                if (!dtomaster.isClosed()) {
+                    // session already closed due to timeout
+                    throw new MGXTimeoutException(ex);
+                }
             }
             throw new MGXException(ex);
         }
@@ -186,5 +193,46 @@ public class MappingAccess extends MappingAccessI {
             }
             throw new MGXException(ex);
         }
+    }
+
+    @Override
+    public DownloadBaseI createDownloader(MappingI mapping, OutputStream out) throws MGXException {
+        try {
+            final BAMFileDownloader fd = dtomaster.Mapping().createDownloader(mapping.getId(), out);
+            return new ServerBAMFileDownloader(fd);
+        } catch (MGXDTOException ex) {
+            throw new MGXException(ex);
+        }
+    }
+
+    private static class ServerBAMFileDownloader extends DownloadBaseI implements PropertyChangeListener {
+
+        private final BAMFileDownloader fd;
+
+        public ServerBAMFileDownloader(BAMFileDownloader fd) {
+            this.fd = fd;
+            fd.addPropertyChangeListener(this);
+        }
+
+        @Override
+        public boolean download() {
+            boolean ret = fd.download();
+            fd.removePropertyChangeListener(this);
+            if (!ret) {
+                setErrorMessage(fd.getErrorMessage());
+            }
+            return ret;
+        }
+
+        @Override
+        public long getProgress() {
+            return fd.getProgress();
+        }
+
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+            fireTaskChange(evt.getPropertyName(), fd.getProgress());
+        }
+
     }
 }
