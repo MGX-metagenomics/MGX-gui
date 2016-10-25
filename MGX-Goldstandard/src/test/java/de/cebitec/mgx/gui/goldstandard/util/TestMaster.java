@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.Properties;
 import org.junit.Assert;
 import static org.junit.Assert.fail;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -58,7 +59,11 @@ public class TestMaster {
         while (mbr.hasNext()) {
             MembershipI m = mbr.next();
             if ("MGX".equals(m.getProject().getProjectClass().getName()) && ("MGX_Unittest".equals(m.getProject().getName()))) {
-                masterRO = new MGXMaster(gpms.createMaster(m));
+                try {
+                    masterRO = new MGXMaster(gpms.createMaster(m));
+                } catch (GPMSException ex) {
+                    fail(ex.getMessage());
+                }
                 break;
             }
         }
@@ -73,7 +78,7 @@ public class TestMaster {
         String serverURI = "https://mgx.computational.bio.uni-giessen.de/MGX-maven-web/webresources/";
 
         Properties p = new Properties();
-        String config = System.getProperty("user.home") + "/.m2/mgx.private";
+        String config = System.getProperty("user.home") + "/.m2/mgx.junit";
         File f = new File(config);
         if (f.exists() && f.canRead()) {
             try {
@@ -101,7 +106,11 @@ public class TestMaster {
         while (mbr.hasNext()) {
             MembershipI m = mbr.next();
             if ("MGX".equals(m.getProject().getProjectClass().getName()) && ("MGX_Unittest".equals(m.getProject().getName()))) {
-                master = new MGXMaster(gpms.createMaster(m));
+                try {
+                    master = new MGXMaster(gpms.createMaster(m));
+                } catch (GPMSException ex) {
+                    fail(ex.getMessage());
+                }
                 break;
             }
         }
@@ -143,7 +152,11 @@ public class TestMaster {
         while (mbr.hasNext()) {
             MembershipI m = mbr.next();
             if ("MGX".equals(m.getProject().getProjectClass().getName()) && (targetProject.equals(m.getProject().getName()))) {
-                master = new MGXMaster(gpms.createMaster(m));
+                try {
+                    master = new MGXMaster(gpms.createMaster(m));
+                } catch (GPMSException ex) {
+                    fail(ex.getMessage());
+                }
                 break;
             }
         }
