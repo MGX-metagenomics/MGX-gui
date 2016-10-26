@@ -184,7 +184,7 @@ public class SelectSingleJobWithGSWizardPanel1 implements WizardDescriptor.Panel
     }
 
     private boolean checkValidity() {
-        return component.getAttributeTypeListCount() != 0 && component.getSelectedJobs().size() < maxSelected;
+        return component.getAttributeTypeListCount() != 0 && component.getSelectedJobs().size() <= maxSelected;
     }
 
     @Override

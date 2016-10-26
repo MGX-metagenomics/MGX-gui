@@ -92,7 +92,7 @@ public class PCDistanceViewer extends EvaluationViewerI implements PipelineCompa
     public void evaluate() {
         Vector[] vectors;
         try {
-            vectors = calcAttributeVectors(jobs, usedAttributeType);
+            vectors = calcAttributeVectors(jobs, usedAttributeType, ((PCDistanceViewCustomizer)getCustomizer()).normalizeVectors());
         } catch (MGXException ex) {
             EvalExceptions.printStackTrace(ex);
             tidyUp();
@@ -215,7 +215,7 @@ public class PCDistanceViewer extends EvaluationViewerI implements PipelineCompa
         }
     }
 
-    public Vector[] calcAttributeVectors(List<JobI> usedJobs, AttributeTypeI attrType) throws MGXException {
+    public static Vector[] calcAttributeVectors(List<JobI> usedJobs, AttributeTypeI attrType, boolean normalizeVectors) throws MGXException {
         if (usedJobs == null || usedJobs.isEmpty())
             return new Vector[0];
         
@@ -250,7 +250,7 @@ public class PCDistanceViewer extends EvaluationViewerI implements PipelineCompa
             }
         }
 
-        if (((PCDistanceViewCustomizer) getCustomizer()).normalizeVectors()) {
+        if (normalizeVectors) {
             for (i = 0; i < vectors.length; i++) {
                 vectors[i] = vectors[i].normalize();
             }

@@ -11,8 +11,8 @@ import org.apache.commons.math3.util.FastMath;
  */
 public class Vector {
 
-    int pointer;    
-    double[] data;        
+    int pointer;
+    double[] data;
 
     public Vector(double[] array) {
         data = array.clone();
@@ -21,14 +21,14 @@ public class Vector {
     public Vector(int size) {
         pointer = 0;
         data = new double[size];
-        for (int i=0; i<size; i++){
+        for (int i = 0; i < size; i++) {
             data[i] = 0;
         }
     }
 
     @Override
     public int hashCode() {
-        int hash = 7;        
+        int hash = 7;
         hash = 47 * hash + Arrays.hashCode(this.data);
         return hash;
     }
@@ -44,37 +44,41 @@ public class Vector {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final Vector other = (Vector) obj;        
+        final Vector other = (Vector) obj;
         return Arrays.equals(this.data, other.data);
+    }
+
+    public double[] asArray() {
+        return data.clone();
     }
 
     public void add(double value) {
         if (pointer < data.length) {
             data[pointer++] = value;
-        }        
+        }
     }
-    
-    public Vector normalize(){
+
+    public Vector normalize() {
         Vector normalized = new Vector(this.dimensions());
         double length = length();
-        for (int i = 0; i < data.length; i++){
+        for (int i = 0; i < data.length; i++) {
             normalized.add(data[i] / length);
         }
         return normalized;
     }
 
-    public double length(){
+    public double length() {
         double sum = 0;
-        for (double d : data){
+        for (double d : data) {
             sum += FastMath.pow(d, 2);
         }
         return FastMath.sqrt(sum);
     }
-    
-    public int dimensions(){
+
+    public int dimensions() {
         return this.data.length;
     }
-    
+
     public double euclideanDistance(Vector other) {
         return MathArrays.distance(this.data, other.data);
     }
