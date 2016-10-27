@@ -12,6 +12,7 @@ import static de.cebitec.mgx.api.model.JobState.FINISHED;
 import static de.cebitec.mgx.api.model.JobState.RUNNING;
 import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.api.model.ToolI;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -59,6 +60,17 @@ public class JobNode extends MGXNodeBase<JobI> {
                 .toString();
         super.setShortDescription(shortDesc);
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/AnalysisTasks.png");
+    }
+    
+    @Override
+    public boolean canDestroy() {
+        return true;
+    }
+
+    @Override
+    public void destroy() throws IOException {
+        System.err.println("JobNode#destroy");
+        super.destroy(); //To change body of generated methods, choose Tools | Templates.
     }
 
     private String getProcessingTime(JobI job) {
