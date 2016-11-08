@@ -61,6 +61,7 @@ public class MappedSequenceCacheTest {
         while (iter.hasNext()) {
             mapping = iter.next();
         }
+        assertNotNull(mapping);
         MGXReferenceI ref = master.Reference().fetch(mapping.getReferenceID());
         UUID uuid = master.Mapping().openMapping(1);
         CoverageInfoCache<Set<MappedSequenceI>> cache = CacheFactory.createMappedSequenceCache(master, ref, uuid);
@@ -83,6 +84,7 @@ public class MappedSequenceCacheTest {
         while (iter.hasNext()) {
             mapping = iter.next();
         }
+        assertNotNull(mapping);
         MGXReferenceI ref = master.Reference().fetch(mapping.getReferenceID());
         UUID uuid = master.Mapping().openMapping(1);
         CoverageInfoCache<Set<MappedSequenceI>> cache = CacheFactory.createMappedSequenceCache(master, ref, uuid);
@@ -103,6 +105,7 @@ public class MappedSequenceCacheTest {
         while (iter.hasNext()) {
             mapping = iter.next();
         }
+        assertNotNull(mapping);
         MGXReferenceI ref = master.Reference().fetch(mapping.getReferenceID());
         UUID uuid = master.Mapping().openMapping(1);
         CoverageInfoCache<Set<MappedSequenceI>> cache = CacheFactory.createMappedSequenceCache(master, ref, uuid);
@@ -117,7 +120,6 @@ public class MappedSequenceCacheTest {
     @Test
     public void testOverlaps() {
         System.err.println("testOverlaps");
-        MGXMasterI master = get();
         // 6391-6796 outside of 0-49999
         MappedSequenceI ms = new MappedSequence(1, 6391, 6796, 1);
         boolean overlaps = MappedSequenceCache.overlaps(ms, 0, 49999);
