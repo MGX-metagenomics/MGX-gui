@@ -10,8 +10,8 @@ import de.cebitec.mgx.api.exception.MGXTimeoutException;
 import de.cebitec.mgx.api.model.MappedSequenceI;
 import de.cebitec.mgx.gui.mapping.ViewController;
 import de.cebitec.mgx.gui.mapping.shapes.MappedRead2D;
-import de.cebitec.mgx.gui.mapping.tracks.Track;
 import de.cebitec.mgx.gui.mapping.tracks.TrackFactory;
+import de.cebitec.mgx.gui.mapping.tracks.TrackI;
 import de.cebitec.mgx.gui.mapping.viewer.SwitchModeBase;
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -40,7 +40,7 @@ import org.openide.util.Exceptions;
 public class MappingPanel extends PanelBase {
 
     private final SortedSet<MappedRead2D> coverage = new TreeSet<>();
-    private final List<Track> tracks = new ArrayList<>();
+    private final List<TrackI> tracks = new ArrayList<>();
     private int scrollOffset = 0;
     private final String mappingName;
 
@@ -191,7 +191,7 @@ public class MappingPanel extends PanelBase {
         int vOffset = TRACK_VOFFSET;
 
         for (int i = scrollOffset; i < tracks.size(); i++) {
-            Track t = tracks.get(i);
+            TrackI t = tracks.get(i);
             Iterator<MappedSequenceI> iter = t.getSequences();
             vOffset += TRACKHEIGHT;
 
