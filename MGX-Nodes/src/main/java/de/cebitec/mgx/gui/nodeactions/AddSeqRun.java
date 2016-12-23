@@ -24,7 +24,10 @@ import java.awt.Dialog;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 import javax.swing.AbstractAction;
 import javax.swing.SwingWorker;
@@ -44,7 +47,7 @@ public class AddSeqRun extends AbstractAction {
 
     public AddSeqRun(final MGXNodeFactoryBase snf) {
         this.parent = snf;
-        putValue(NAME, "Add sequencing run");
+        super.putValue(NAME, "Add sequencing run");
     }
 
     @Override
@@ -57,7 +60,7 @@ public class AddSeqRun extends AbstractAction {
         if (!cancelled) {
             final DNAExtractI extract = Utilities.actionsGlobalContext().lookup(DNAExtractI.class);
             final MGXMasterI m = extract.getMaster();
-            
+
             SwingWorker<SeqRunI, Exception> sw = new SwingWorker<SeqRunI, Exception>() {
                 @Override
                 protected SeqRunI doInBackground() throws MGXException {
@@ -92,7 +95,7 @@ public class AddSeqRun extends AbstractAction {
                             parent.refreshChildren();
                             extract.modified();
                             //seqrun.modified();
-                            
+
                             if (wd.runDefaultTools()) {
                                 // FIXME
                             }
@@ -114,7 +117,7 @@ public class AddSeqRun extends AbstractAction {
                         @Override
                         public void propertyChange(PropertyChangeEvent pce) {
                             if (pce.getPropertyName().equals(TransferBaseI.NUM_ELEMENTS_TRANSFERRED)) {
-                                setStatus(String.format("%1$d sequences sent", pce.getNewValue()));
+                                setStatus(NumberFormat.getInstance(Locale.US).format(pce.getNewValue()) + " sequences sent");
                                 //seqrun.setNumSequences((Long) pce.getNewValue());
                             } else {
                                 super.propertyChange(pce);
