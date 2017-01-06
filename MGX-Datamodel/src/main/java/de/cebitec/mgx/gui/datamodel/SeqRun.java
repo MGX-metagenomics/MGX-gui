@@ -94,15 +94,15 @@ public class SeqRun extends SeqRunI {
     }
 
     @Override
-    public void setNumSequences(long numSequences) {
+    public SeqRun setNumSequences(long numSequences) {
         this.numSequences = numSequences;
+        return this;
     }
 
 //    @Override
 //    public String toString() {
 //        return name;
 //    }
-
     @Override
     public int hashCode() {
         int hash = 0;
@@ -130,5 +130,5 @@ public class SeqRun extends SeqRunI {
     public int compareTo(SeqRunI o) {
         return getName().compareTo(o.getName());
     }
- 
+
 }
