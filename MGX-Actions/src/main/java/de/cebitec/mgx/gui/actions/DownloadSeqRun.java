@@ -17,6 +17,8 @@ import de.cebitec.mgx.sequence.SeqWriterI;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.io.File;
+import java.text.NumberFormat;
+import java.util.Locale;
 import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
@@ -33,7 +35,7 @@ import org.openide.util.Utilities;
 public class DownloadSeqRun extends AbstractAction {
 
     public DownloadSeqRun() {
-        putValue(NAME, "Download FASTA");
+        super.putValue(NAME, "Download FASTA");
     }
 
     @Override
@@ -143,7 +145,7 @@ public class DownloadSeqRun extends AbstractAction {
                     switch (pce.getPropertyName()) {
                         case TransferBaseI.NUM_ELEMENTS_TRANSFERRED:
                             if (!complete) {
-                                setStatus(String.format("%1$d sequences received", pce.getNewValue()));
+                                setStatus(NumberFormat.getInstance(Locale.US).format(pce.getNewValue()) + " sequences received");
                             }
                             break;
                         case DownloadBaseI.TRANSFER_FAILED:
