@@ -6,6 +6,7 @@
 package de.cebitec.mgx.gui.actions;
 
 import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.JobState;
 import de.cebitec.mgx.gui.controller.RBAC;
@@ -41,7 +42,11 @@ public class CancelJob extends AbstractAction {
         try {
             sw.get();
         } catch (InterruptedException | ExecutionException ex) {
-            NotifyDescriptor nd = new NotifyDescriptor("Could not cancel job: " + ex.getMessage(), "Job cancellation failed", NotifyDescriptor.OK_CANCEL_OPTION, NotifyDescriptor.ERROR_MESSAGE, null, null);
+            String msg = ex.getMessage();
+            if (ex.getCause() != null && ex.getCause().getMessage() != null) {
+                msg = ex.getCause().getMessage();
+            }
+            NotifyDescriptor nd = new NotifyDescriptor("Could not cancel job: " + msg, "Job cancellation failed", NotifyDescriptor.OK_CANCEL_OPTION, NotifyDescriptor.ERROR_MESSAGE, null, null);
             DialogDisplayer.getDefault().notifyLater(nd);
         }
     }
