@@ -2,10 +2,10 @@ package de.cebitec.mgx.gui.nodes;
 
 import de.cebitec.mgx.api.model.MGXFileI;
 import de.cebitec.mgx.gui.nodeactions.CreateDirectory;
-import de.cebitec.mgx.gui.actions.DeleteFileOrDirectory;
 import de.cebitec.mgx.gui.nodeactions.UploadFile;
 import de.cebitec.mgx.gui.nodefactory.FileNodeFactory;
 import javax.swing.Action;
+import org.openide.filesystems.FileUtil;
 import org.openide.nodes.Children;
 import org.openide.util.lookup.Lookups;
 
@@ -36,7 +36,8 @@ public class MGXDirectoryNode extends MGXNodeBase<MGXFileI> {
 
     @Override
     public Action[] getActions(boolean context) {
-        return new Action[]{new CreateDirectory(), new DeleteFileOrDirectory(), new UploadFile(nf)};
+        Action delAction = FileUtil.getConfigObject("Actions/Edit/de-cebitec-mgx-gui-actions-DeleteFileOrDirectory.instance", Action.class);
+        return new Action[]{new CreateDirectory(), delAction, new UploadFile(nf)};
     }
 
     @Override
