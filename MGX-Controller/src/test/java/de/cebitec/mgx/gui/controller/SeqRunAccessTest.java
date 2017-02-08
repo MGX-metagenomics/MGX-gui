@@ -75,6 +75,7 @@ public class SeqRunAccessTest {
         SeqRunI sr2 = m.SeqRun().fetch(1);
         assertNotNull(sr1);
         assertNotNull(sr2);
+        assertNotSame(sr1, sr2);
         assertEquals(sr1, sr2);
     }
 
