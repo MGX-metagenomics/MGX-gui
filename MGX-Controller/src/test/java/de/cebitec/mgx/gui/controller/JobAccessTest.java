@@ -31,6 +31,8 @@ public class JobAccessTest {
         assertEquals("Thu Jun 20 15:19:18 CEST 2013", job.getStartDate().toString());
         assertEquals("Thu Jun 20 15:20:01 CEST 2013", job.getFinishDate().toString());
     }
+    
+    
 
     @Test
     public void testBySeqRun() throws Exception {
@@ -49,6 +51,7 @@ public class JobAccessTest {
         JobI j1 = master.Job().fetch(1);
         JobI j2 = master.Job().fetch(1);
         JobI j3 = master.Job().fetch(2);
+        assertNotSame(j1, j2);
         assertEquals(j1, j2);
         assertNotEquals(j1, j3);
     }
