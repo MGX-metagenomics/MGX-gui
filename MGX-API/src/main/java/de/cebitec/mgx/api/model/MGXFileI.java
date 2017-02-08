@@ -7,6 +7,7 @@ package de.cebitec.mgx.api.model;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import java.awt.datatransfer.DataFlavor;
+import java.util.Objects;
 
 /**
  *
@@ -64,7 +65,7 @@ public abstract class MGXFileI extends MGXDataModelBase<MGXFileI> {
             }
         };
     }
-    
+
     public MGXFileI(MGXMasterI m) {
         super(m, DATA_FLAVOR);
     }
@@ -83,5 +84,34 @@ public abstract class MGXFileI extends MGXDataModelBase<MGXFileI> {
 
     @Override
     public abstract int compareTo(MGXFileI o);
+
+    @Override
+    public final int hashCode() {
+        int hash = 7;
+        hash = 29 * hash + (this.isDirectory() ? 1 : 0);
+        hash = 29 * hash + (int) (this.getSize() ^ (this.getSize() >>> 32));
+        return hash;
+    }
+
+    @Override
+    public final boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final MGXFileI other = (MGXFileI) obj;
+        if (!Objects.equals(this.getFullPath(), other.getFullPath())) {
+            return false;
+        }
+        if (!Objects.equals(this.getMaster(), other.getMaster())) {
+            return false;
+        }
+        return true;
+    }
 
 }
