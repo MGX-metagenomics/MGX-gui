@@ -45,6 +45,19 @@ public class DNAExtractAccessTest {
             fail(ex1.getMessage());
         }
     }
+
+    @Test
+    public void testEquals() throws MGXException {
+        System.out.println("testEquals");
+        MGXMasterI master = TestMaster.getRO();
+        DNAExtractI d1 = master.DNAExtract().fetch(1);
+        DNAExtractI d2 = master.DNAExtract().fetch(1);
+        assertNotNull(d1);
+        assertNotNull(d2);
+        assertNotSame(d1, d2);
+        assertEquals(d1, d2);
+    }
+
     @Test
     public void testFetchInvalid() {
         System.out.println("fetchInvalid");
