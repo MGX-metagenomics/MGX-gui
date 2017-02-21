@@ -99,6 +99,15 @@ public class SeqRunWizardPanel1 implements WizardDescriptor.Panel<WizardDescript
         c.setSubmittedState((Boolean) model.getProperty(SeqRunVisualPanel1.PROP_SUBMITTED));
         c.setAccession((String) model.getProperty(SeqRunVisualPanel1.PROP_ACCESSION));
         c.runDefaultTools((boolean) model.getProperty(SeqRunVisualPanel1.PROP_RUNTOOLS));
+
+        String mode = (String) model.getProperty(SeqRunWizardDescriptor.INVOCATION_MODE);
+        if (SeqRunWizardDescriptor.EDIT_MODE.equals(mode)) {
+            c.disableRunDefaultTools(true);
+        } else if (SeqRunWizardDescriptor.CREATE_MODE.equals(mode)) {
+            c.disableRunDefaultTools(false);
+        } else {
+            throw new RuntimeException("Unknown mode " + mode);
+        }
     }
 
     @Override
