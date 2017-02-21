@@ -26,7 +26,7 @@ import org.openide.util.Utilities;
 public class EditDNAExtract extends AbstractAction {
 
     public EditDNAExtract() {
-        putValue(NAME, "Edit");
+        super.putValue(NAME, "Edit");
     }
 
     @Override
