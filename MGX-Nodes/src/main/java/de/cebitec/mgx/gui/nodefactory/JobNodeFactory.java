@@ -7,22 +7,33 @@ import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.ToolI;
 import de.cebitec.mgx.gui.nodes.JobNode;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
-import org.openide.nodes.Node;
+import javax.swing.Timer;
 import org.openide.util.Exceptions;
 
 /**
  *
  * @author sjaenick
  */
-public class JobNodeFactory extends MGXNodeFactoryBase<JobI> {
+public class JobNodeFactory extends MGXNodeFactoryBase<MGXMasterI, JobI> {
+
+    private final Timer timer;
 
     public JobNodeFactory(MGXMasterI master) {
         super(master);
+        timer = new Timer(1000 * 10, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                refresh(false);
+            }
+        });
+        timer.start();
     }
 
     @Override
@@ -69,11 +80,12 @@ public class JobNodeFactory extends MGXNodeFactoryBase<JobI> {
     }
 
     @Override
-    protected Node createNodeFor(JobI job) {
+    protected JobNode createNodeFor(JobI job) {
         return new JobNode(job);
     }
 
     public void destroy() {
+        timer.stop();
     }
 
 }
