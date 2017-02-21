@@ -15,6 +15,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.NumberFormat;
+import java.util.Locale;
 import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
 import org.openide.DialogDisplayer;
@@ -30,7 +32,7 @@ import org.openide.util.Utilities;
 public class DownloadFile extends AbstractAction {
 
     public DownloadFile() {
-        putValue(NAME, "Download");
+        super.putValue(NAME, "Download");
     }
 
     @Override
@@ -119,7 +121,7 @@ public class DownloadFile extends AbstractAction {
                 public void propertyChange(PropertyChangeEvent pce) {
                     switch (pce.getPropertyName()) {
                         case TransferBaseI.NUM_ELEMENTS_TRANSFERRED:
-                            setStatus(String.format("%1$d bytes received", pce.getNewValue()));
+                            setStatus(NumberFormat.getInstance(Locale.US).format(pce.getNewValue()) + " bytes received");
                             break;
                         case TransferBaseI.TRANSFER_FAILED:
                             failed(pce.getNewValue().toString());
