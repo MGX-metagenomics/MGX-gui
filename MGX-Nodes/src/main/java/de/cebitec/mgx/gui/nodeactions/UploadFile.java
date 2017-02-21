@@ -5,13 +5,15 @@ import de.cebitec.mgx.api.access.datatransfer.UploadBaseI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.MGXFileI;
 import de.cebitec.mgx.gui.controller.RBAC;
-import de.cebitec.mgx.gui.nodefactory.MGXNodeFactoryBase;
 import de.cebitec.mgx.gui.swingutils.NonEDT;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.io.File;
+import java.text.NumberFormat;
+import java.util.Locale;
+import java.util.concurrent.Semaphore;
 import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
 import org.openide.util.Exceptions;
@@ -24,18 +26,18 @@ import org.openide.util.Utilities;
  */
 public class UploadFile extends AbstractAction {
 
-    private final MGXNodeFactoryBase parent;
-
-    public UploadFile(MGXNodeFactoryBase nf) {
-        putValue(NAME, "Upload file");
-        parent = nf;
+    public UploadFile() {
+        super.putValue(NAME, "Upload file(s)");
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
 
         JFileChooser fchooser = new JFileChooser();
+        fchooser.setMultiSelectionEnabled(true);
 
+        // TODO: restrict valid selection to files, not directories
+        
         // try to restore last directory selection
         String last = NbPreferences.forModule(JFileChooser.class).get("lastDirectory", null);
         if (last != null) {
@@ -50,78 +52,85 @@ public class UploadFile extends AbstractAction {
 
         NbPreferences.forModule(JFileChooser.class).put("lastDirectory", fchooser.getCurrentDirectory().getAbsolutePath());
 
-        final File localFile = fchooser.getSelectedFile();
         final MGXFileI targetDir = Utilities.actionsGlobalContext().lookup(MGXFileI.class);
-        
-        final UploadBaseI uploader;
-        try {
-            uploader = targetDir.getMaster().File().createUploader(localFile, targetDir, localFile.getName());
-            final MGXTask upTask = new MGXTask("Upload " + fchooser.getSelectedFile().getName()) {
-                @Override
-                public boolean process() {
-                    uploader.addPropertyChangeListener(this);
-                    boolean ret = uploader.upload();
 
-                    if (!ret) {
-                        setStatus(uploader.getErrorMessage());
-                    }
-                    return ret;
-                }
+        // sequential upload
+        final Semaphore rateLimit = new Semaphore(1);
 
-                @Override
-                public void finished() {
-                    super.finished();
-                    uploader.removePropertyChangeListener(this);
-//                    parent.refreshChildren();
-                    targetDir.modified();
-                }
+        for (final File localFile : fchooser.getSelectedFiles()) {
 
-                @Override
-                public void failed(String reason) {
-                    super.failed(reason);
-                    uploader.removePropertyChangeListener(this);
-//                    parent.refreshChildren();
-                    targetDir.modified();
-                }
+            // skip over directories
+            if (localFile.isFile()) {
 
-                @Override
-                public void propertyChange(PropertyChangeEvent pce) {
-                    switch (pce.getPropertyName()) {
-                        case TransferBaseI.NUM_ELEMENTS_TRANSFERRED:
-                            setStatus(String.format("%1$d bytes sent", pce.getNewValue()));
-                            break;
-                        case TransferBaseI.TRANSFER_FAILED:
-                            failed(pce.getNewValue().toString());
-                            break;
-                        default:
-                            super.propertyChange(pce);
-                            break;
-                    }
-                }
+                final UploadBaseI uploader;
+                try {
+                    uploader = targetDir.getMaster().File().createUploader(localFile, targetDir, localFile.getName());
+                    final MGXTask upTask = new MGXTask("Upload " + localFile.getName()) {
+                        @Override
+                        public boolean process() {
+                            rateLimit.acquireUninterruptibly();
+                            uploader.addPropertyChangeListener(this);
+                            boolean ret = uploader.upload();
+                            rateLimit.release();
 
-                @Override
-                public boolean isDeterminate() {
-                    return true;
-                }
+                            if (!ret) {
+                                setStatus(uploader.getErrorMessage());
+                            }
+                            return ret;
+                        }
 
-                @Override
-                public int getProgress() {
-                    float complete = 1.0f * uploader.getNumElementsSent() / localFile.length();
-                    return Math.round(100 * complete);
-                }
-            };
-            //uploader.addPropertyChangeListener(upTask);
+                        @Override
+                        public void finished() {
+                            super.finished();
+                            uploader.removePropertyChangeListener(this);
+                            targetDir.childChanged();
+                        }
 
-            NonEDT.invoke(new Runnable() {
-                @Override
-                public void run() {
-                    TaskManager.getInstance().addTask(upTask);
+                        @Override
+                        public void failed(String reason) {
+                            super.failed(reason);
+                            uploader.removePropertyChangeListener(this);
+                            targetDir.childChanged();
+                        }
+
+                        @Override
+                        public void propertyChange(PropertyChangeEvent pce) {
+                            switch (pce.getPropertyName()) {
+                                case TransferBaseI.NUM_ELEMENTS_TRANSFERRED:
+                                    setStatus(NumberFormat.getInstance(Locale.US).format(pce.getNewValue()) + " bytes sent");
+                                    break;
+                                case TransferBaseI.TRANSFER_FAILED:
+                                    failed(pce.getNewValue().toString());
+                                    break;
+                                default:
+                                    super.propertyChange(pce);
+                                    break;
+                            }
+                        }
+
+                        @Override
+                        public boolean isDeterminate() {
+                            return true;
+                        }
+
+                        @Override
+                        public int getProgress() {
+                            float complete = 1.0f * uploader.getNumElementsSent() / localFile.length();
+                            return Math.round(100 * complete);
+                        }
+                    };
+
+                    NonEDT.invoke(new Runnable() {
+                        @Override
+                        public void run() {
+                            TaskManager.getInstance().addTask(upTask);
+                        }
+                    });
+                } catch (MGXException ex) {
+                    Exceptions.printStackTrace(ex);
                 }
-            });
-        } catch (MGXException ex) {
-            Exceptions.printStackTrace(ex);
+            }
         }
-
     }
 
     @Override
