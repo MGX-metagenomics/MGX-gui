@@ -94,6 +94,15 @@ public final class SeqRunVisualPanel1 extends JPanel implements DocumentListener
     public void runDefaultTools(boolean run) {
         runDefaultTools.setSelected(run);
     }
+    
+    public void disableRunDefaultTools(boolean disable) {
+        if (disable) {
+            runDefaultTools.setSelected(false);
+            runDefaultTools.setEnabled(false);
+        } else {
+            runDefaultTools.setEnabled(true);
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
