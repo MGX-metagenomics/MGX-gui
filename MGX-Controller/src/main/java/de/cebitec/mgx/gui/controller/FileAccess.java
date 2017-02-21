@@ -110,6 +110,9 @@ public class FileAccess implements FileAccessI {
     @Override
     public UploadBaseI createUploader(File localFile, MGXFileI targetDir, String targetName) throws MGXException {
 
+        if (localFile.isDirectory()) {
+            throw new MGXException(localFile.getName() + " is a directory, cannot upload.");
+        }
         if (!targetDir.isDirectory()) {
             throw new MGXException("Selected parent " + targetDir.getName() + " is not a directory.");
         }
