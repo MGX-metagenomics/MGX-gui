@@ -12,7 +12,6 @@ import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.DNAExtractI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.controller.RBAC;
-import de.cebitec.mgx.gui.nodefactory.MGXNodeFactoryBase;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
 import de.cebitec.mgx.gui.wizard.seqrun.SeqRunWizardDescriptor;
@@ -24,7 +23,6 @@ import java.awt.Dialog;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
@@ -43,10 +41,7 @@ import org.openide.util.Utilities;
  */
 public class AddSeqRun extends AbstractAction {
 
-    private final MGXNodeFactoryBase parent;
-
-    public AddSeqRun(final MGXNodeFactoryBase snf) {
-        this.parent = snf;
+    public AddSeqRun() {
         super.putValue(NAME, "Add sequencing run");
     }
 
@@ -73,9 +68,8 @@ public class AddSeqRun extends AbstractAction {
                         reader = SeqReaderFactory.<DNASequenceI>getReader(canonicalPath);
                     } catch (IOException | SeqStoreException ex) {
                         m.SeqRun().delete(seqrun);
-                        parent.refreshChildren();
-                        extract.modified();
                         publish(ex);
+                        extract.childChanged();
                         return null;
                     }
                     final UploadBaseI uploader = m.Sequence().createUploader(seqrun, reader);
@@ -92,9 +86,7 @@ public class AddSeqRun extends AbstractAction {
                         @Override
                         public void finished() {
                             super.finished();
-                            parent.refreshChildren();
-                            extract.modified();
-                            //seqrun.modified();
+                            extract.childChanged();
 
                             if (wd.runDefaultTools()) {
                                 // FIXME
@@ -109,8 +101,7 @@ public class AddSeqRun extends AbstractAction {
                             } catch (MGXException ex) {
                                 Exceptions.printStackTrace(ex);
                             }
-                            parent.refreshChildren();
-                            extract.modified();
+                            extract.childChanged();
                             super.failed(reason);
                         }
 
