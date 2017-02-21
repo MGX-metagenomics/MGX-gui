@@ -51,6 +51,7 @@ public class SeqRunAccess extends AccessBase<SeqRunI> implements SeqRunAccessI {
                 .setSequencingMethod(seqMethod)
                 .setSequencingTechnology(seqTechnology)
                 .setSubmittedToINSDC(submittedINSDC)
+                .setNumSequences(-1L)
                 .setAccession(submittedINSDC ? accession : null);
         SeqRunDTO dto = SeqRunDTOFactory.getInstance().toDTO(obj);
         long id = Identifiable.INVALID_IDENTIFIER;
