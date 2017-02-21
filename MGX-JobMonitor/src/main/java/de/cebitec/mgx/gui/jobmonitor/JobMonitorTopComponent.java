@@ -6,8 +6,6 @@ import de.cebitec.mgx.api.model.ModelBaseI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.nodes.JobNode;
 import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
@@ -17,7 +15,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 import javax.swing.ActionMap;
 import javax.swing.JPopupMenu;
-import javax.swing.Timer;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.explorer.ExplorerManager;
@@ -64,8 +61,6 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
     private final static int SEQRUN_MODE = 2;
     private int currentMode = MASTER_MODE;
     private ProjectRootNode currentRoot = null;
-    //
-    private final Timer timer;
 
     private JobMonitorTopComponent() {
         initComponents();
@@ -96,16 +91,6 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
         resultJobs = Utilities.actionsGlobalContext().lookupResult(JobI.class);
 
         update();
-
-        timer = new Timer(1000 * 10, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (currentRoot != null) {
-                    currentRoot.refresh();
-                }
-            }
-        });
-        timer.start();
     }
 
     private static JobMonitorTopComponent instance = null;
@@ -141,7 +126,6 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
         resultSeqRun.addLookupListener(this);
         resultJobs.addLookupListener(this);
         update();
-        timer.start();
     }
 
     @Override
@@ -157,7 +141,6 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
             }
             currentRoot = null;
         }
-        timer.stop();
     }
 
     void writeProperties(java.util.Properties p) {
