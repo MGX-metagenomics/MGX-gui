@@ -21,11 +21,8 @@ import org.openide.util.Utilities;
  */
 public class CreateDirectory extends AbstractAction {
 
-    //private final MGXNodeFactoryBase parent;
-
-    public CreateDirectory() { //MGXNodeFactoryBase nf) {
-        putValue(NAME, "Create directory");
-        //parent = nf;
+    public CreateDirectory() {
+        super.putValue(NAME, "Create directory");
     }
 
     @Override
