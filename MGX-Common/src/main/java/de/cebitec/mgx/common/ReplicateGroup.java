@@ -190,6 +190,14 @@ public class ReplicateGroup implements ReplicateGroupI {
     }
 
     @Override
+    public final void childChanged() {
+        if (managedState.equals(OBJECT_DELETED)) {
+            throw new RuntimeException("Invalid object state for " + getClass().getSimpleName() + ", cannot modify deleted object.");
+        }
+        firePropertyChange(CHILD_CHANGE, 1, 2);
+    }
+
+    @Override
     public void deleted() {
         if (managedState.equals(OBJECT_DELETED)) {
             throw new RuntimeException("Invalid object state, cannot delete deleted object.");
@@ -251,8 +259,8 @@ public class ReplicateGroup implements ReplicateGroupI {
         firePropertyChange(evt);
     }
 
-    @Override
-    public final void firePropertyChange(PropertyChangeEvent event) {
+//    @Override
+    protected final void firePropertyChange(PropertyChangeEvent event) {
         pcs.firePropertyChange(event);
     }
 
