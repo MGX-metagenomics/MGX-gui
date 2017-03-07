@@ -575,6 +575,7 @@
         <module>MGX-MappingViewer</module>
         <module>MGX-Nodes</module>
         <module>MGX-PCA</module>
+        <module>MGX-Pool</module>
         <module>MGX-QCMonitor</module>
         <module>MGX-Rarefaction</module>
         <module>MGX-Search</module>
