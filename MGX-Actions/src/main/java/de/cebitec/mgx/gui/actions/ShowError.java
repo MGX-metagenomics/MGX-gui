@@ -9,28 +9,29 @@ import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.JobState;
 import de.cebitec.mgx.gui.controller.RBAC;
-import java.awt.event.ActionEvent;
+import java.util.Collection;
 import java.util.concurrent.ExecutionException;
-import javax.swing.AbstractAction;
 import javax.swing.JTextArea;
 import javax.swing.SwingWorker;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
+import org.openide.awt.ActionID;
+import org.openide.awt.ActionRegistration;
+import org.openide.nodes.Node;
 import org.openide.util.Exceptions;
+import org.openide.util.HelpCtx;
+import org.openide.util.NbBundle.Messages;
 import org.openide.util.Utilities;
+import org.openide.util.actions.NodeAction;
 
-/**
- *
- * @author sjaenick
- */
-public class GetError extends AbstractAction {
-
-    public GetError() {
-        super.putValue(NAME, "Show error");
-    }
+@ActionID(category = "Edit", id = "de.cebitec.mgx.gui.actions.ShowError")
+@ActionRegistration(displayName = "Show error", lazy = false)
+@Messages("CTL_ShowError=ShowError")
+public final class ShowError extends NodeAction {
 
     @Override
-    public void actionPerformed(ActionEvent e) {
+    protected void performAction(Node[] activatedNodes) {
+
         final JobI job = Utilities.actionsGlobalContext().lookup(JobI.class);
         final MGXMasterI m = job.getMaster();
         SwingWorker<String, Void> sw = new SwingWorker<String, Void>() {
@@ -56,9 +57,36 @@ public class GetError extends AbstractAction {
     }
 
     @Override
-    public boolean isEnabled() {
-        final JobI job = Utilities.actionsGlobalContext().lookup(JobI.class);
-        return super.isEnabled() && RBAC.isUser() && job != null && job.getStatus().equals(JobState.FAILED);
+    protected boolean enable(Node[] activatedNodes) {
+        if (!(RBAC.isUser() || RBAC.isAdmin())) {
+            return false;
+        }
+        if (activatedNodes.length != 1) {
+            return false;
+        }
+
+        Collection<? extends JobI> jobs = Utilities.actionsGlobalContext().lookupAll(JobI.class);
+        for (JobI j : jobs) {
+            JobState state = j.getStatus();
+            if (state.equals(JobState.FAILED)) {
+                return true;
+            }
+        }
+        return false;
     }
-    
+
+    @Override
+    public String getName() {
+        return "Show error";
+    }
+
+    @Override
+    public HelpCtx getHelpCtx() {
+        return HelpCtx.DEFAULT_HELP;
+    }
+
+    @Override
+    protected boolean asynchronous() {
+        return false;
+    }
 }
