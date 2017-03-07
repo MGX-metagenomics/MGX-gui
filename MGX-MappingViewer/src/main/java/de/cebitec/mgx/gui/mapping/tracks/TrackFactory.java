@@ -6,6 +6,7 @@
 package de.cebitec.mgx.gui.mapping.tracks;
 
 import de.cebitec.mgx.api.model.MappedSequenceI;
+import de.cebitec.mgx.gui.pool.MGXPool;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -14,8 +15,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -27,7 +26,10 @@ import org.openide.util.Exceptions;
  */
 public class TrackFactory {
 
-    private final static ExecutorService pool = Executors.newCachedThreadPool();
+    private static MGXPool pool = null;
+
+    private TrackFactory() {
+    }
 
     public static synchronized Track addTrack(Collection<Track> tracks, MappedSequenceI ms) {
         Track t = new Track(1);
@@ -88,6 +90,9 @@ public class TrackFactory {
             }
         });
         TrackHandler handler = new TrackHandler(1, pool);
+        if (pool == null) {
+            pool = MGXPool.getInstance();
+        }
         pool.execute(handler);
 //        for (int i =0; i<5;i++) {
 //            System.err.println(all.get(i).getMin());
@@ -235,6 +240,9 @@ public class TrackFactory {
                 int mid = len / 2;
                 FindTrack left = new FindTrack(0, mid, tracks, ms);
                 //left.fork();
+                if (pool == null) {
+                    pool = MGXPool.getInstance();
+                }
                 pool.submit(left);
 
                 FindTrack right = new FindTrack(mid, len, tracks, ms);
