@@ -660,6 +660,14 @@ public class VisualizationGroup implements VisualizationGroupI {
     }
 
     @Override
+    public final void childChanged() {
+        if (managedState.equals(OBJECT_DELETED)) {
+            throw new RuntimeException("Invalid object state for " + getClass().getSimpleName() + ", cannot modify deleted object.");
+        }
+        firePropertyChange(CHILD_CHANGE, 1, 2);
+    }
+
+    @Override
     public final synchronized void deleted() {
         if (managedState.equals(OBJECT_DELETED)) {
             throw new RuntimeException("Invalid object state, cannot delete deleted object.");
@@ -709,24 +717,24 @@ public class VisualizationGroup implements VisualizationGroupI {
     @Override
     public final void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
         PropertyChangeEvent evt = new PropertyChangeEvent(this, propertyName, oldValue, newValue);
-        firePropertyChange(evt);
+        pcs.firePropertyChange(evt);
     }
 
     @Override
     public final void firePropertyChange(String propertyName, int oldValue, int newValue) {
         PropertyChangeEvent evt = new PropertyChangeEvent(this, propertyName, oldValue, newValue);
-        firePropertyChange(evt);
+        pcs.firePropertyChange(evt);
         //pcs.firePropertyChange(propertyName, oldValue, newValue);
     }
 
     @Override
     public final void firePropertyChange(String propertyName, boolean oldValue, boolean newValue) {
         PropertyChangeEvent evt = new PropertyChangeEvent(this, propertyName, oldValue, newValue);
-        firePropertyChange(evt);
+        pcs.firePropertyChange(evt);
     }
 
-    @Override
-    public final void firePropertyChange(PropertyChangeEvent event) {
+//    @Override
+    protected final void firePropertyChange(PropertyChangeEvent event) {
         pcs.firePropertyChange(event);
     }
 
