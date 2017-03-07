@@ -14,6 +14,7 @@ import de.cebitec.mgx.api.model.ModelBaseI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.tree.TreeI;
 import de.cebitec.mgx.api.visualization.ConflictResolver;
+import de.cebitec.mgx.gui.pool.MGXPool;
 import de.cebitec.mgx.pevents.ParallelPropertyChangeSupport;
 import java.awt.Color;
 import java.beans.PropertyChangeEvent;
@@ -25,8 +26,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 /**
@@ -62,7 +61,6 @@ public class VGroupManager implements VGroupManagerI {
     private int vizGroupCount = 1;
     private int replicateGroupCount = 1;
     private final ParallelPropertyChangeSupport pcs;
-    private final ExecutorService pool;
 
     private final Map<AttributeRank, String> currentAttributeType = new HashMap<>();
     private ConflictResolver resolver = null;
@@ -72,10 +70,6 @@ public class VGroupManager implements VGroupManagerI {
 
     private VGroupManager() {
         pcs = new ParallelPropertyChangeSupport(this);
-        //
-        // limit pool size to 20
-        //
-        pool = Executors.newFixedThreadPool(Math.min(20, Runtime.getRuntime().availableProcessors() + 3));
     }
 
     public synchronized static VGroupManagerI getInstance() {
@@ -424,7 +418,7 @@ public class VGroupManager implements VGroupManagerI {
 
     @Override
     public <T> Future<T> submit(Fetcher<T> f) {
-        return pool.submit(f);
+        return MGXPool.getInstance().submit(f);
     }
 
     @Override
