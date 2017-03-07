@@ -6,11 +6,11 @@
 package de.cebitec.mgx.gui.mapping.tracks;
 
 import de.cebitec.mgx.api.model.MappedSequenceI;
+import de.cebitec.mgx.gui.pool.MGXPool;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedTransferQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TransferQueue;
@@ -22,7 +22,7 @@ import org.openide.util.Exceptions;
  */
 public class TrackHandler implements Runnable {
 
-    private final ExecutorService pool;
+    private final MGXPool pool;
     private final TransferQueue<MappedSequenceI> seqs = new LinkedTransferQueue<>();
     private volatile boolean mayFinish = false;
     private final CountDownLatch allDone = new CountDownLatch(1);
@@ -31,9 +31,9 @@ public class TrackHandler implements Runnable {
     private boolean placeSuccess = false;
     private final static int MAX_TRACKS = 100;
     private final int id;
-    private int numSeqs = 0;
+//    private int numSeqs = 0;
 
-    public TrackHandler(int id, ExecutorService pool) {
+    public TrackHandler(int id, MGXPool pool) {
         this.pool = pool;
         this.id = id;
     }
@@ -62,7 +62,7 @@ public class TrackHandler implements Runnable {
                     if (last.getMax() < ms.getMin()) {
                         t.add(ms);
                         placeSuccess = true;
-                        numSeqs++;
+//                        numSeqs++;
                         break;
                     }
                 }
@@ -73,7 +73,7 @@ public class TrackHandler implements Runnable {
                         Track newTrack = new Track(1);
                         tracks.add(newTrack);
                         newTrack.add(ms);
-                        numSeqs++;
+//                        numSeqs++;
                     } else {
                         if (nextHandler == null) {
                             // this handler has reached the track limit, start a new one
