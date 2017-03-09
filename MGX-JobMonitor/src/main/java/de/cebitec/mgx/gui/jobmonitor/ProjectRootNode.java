@@ -20,7 +20,7 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sjaenick
  */
-public class ProjectRootNode extends AbstractNode implements PropertyChangeListener {
+class ProjectRootNode extends AbstractNode implements PropertyChangeListener {
 
     private Collection<SeqRunI> runs = new HashSet<>();
     private JobNodeFactory jnf;
@@ -52,11 +52,11 @@ public class ProjectRootNode extends AbstractNode implements PropertyChangeListe
         jnf = null;
     }
 
-    void refresh() {
-        if (jnf != null) {
-            jnf.refreshChildren();
-        }
-    }
+//    void refresh() {
+//        if (jnf != null) {
+//            jnf.refresh();
+//        }
+//    }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
@@ -79,6 +79,11 @@ public class ProjectRootNode extends AbstractNode implements PropertyChangeListe
                 fireNodeDestroyed();
             }
         }
+    }
+
+    @Override
+    public boolean canDestroy() {
+        return true;
     }
 
     @Override
