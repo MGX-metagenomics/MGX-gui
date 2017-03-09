@@ -21,6 +21,7 @@ public interface ModelBaseI<T extends ModelBaseI<T>> extends Transferable, Compa
     public final static String OBJECT_MANAGED = "objectManaged";
     public final static String OBJECT_DELETED = "objectDeleted";
     public final static String OBJECT_MODIFIED = "objectModified";
+    public final static String CHILD_CHANGE = "childAddedOrRemoved";
     
     @Override
     public DataFlavor[] getTransferDataFlavors();
@@ -31,6 +32,8 @@ public interface ModelBaseI<T extends ModelBaseI<T>> extends Transferable, Compa
     @Override
     public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException;
 
+    public void childChanged();
+    
     public void modified();
 
     public void deleted();
@@ -47,6 +50,6 @@ public interface ModelBaseI<T extends ModelBaseI<T>> extends Transferable, Compa
 
     public void firePropertyChange(String propertyName, boolean oldValue, boolean newValue);
 
-    public void firePropertyChange(PropertyChangeEvent event);
+//    public void firePropertyChange(PropertyChangeEvent event);
 
 }
