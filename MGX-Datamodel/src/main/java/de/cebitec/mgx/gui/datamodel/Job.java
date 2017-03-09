@@ -50,6 +50,7 @@ public class Job extends JobI {
     @Override
     public Job setTool(ToolI t) {
         assert t != null;
+        assert this.tool == null;
         this.tool = t;
         return this;
     }
@@ -95,6 +96,7 @@ public class Job extends JobI {
     @Override
     public JobI setSeqrun(SeqRunI run) {
         assert run != null;
+        assert this.seqrun == null;
         this.seqrun = run;
         return this;
     }
