@@ -36,7 +36,7 @@ public class MGXMaster extends MGXMasterI implements PropertyChangeListener {
     private final String projectName;
     private static final Logger logger = Logger.getLogger("MGX");
     //
-    
+
     public MGXMaster(RESTMasterI restMaster) {
         this(new MGXDTOMaster(restMaster));
     }
@@ -61,7 +61,7 @@ public class MGXMaster extends MGXMasterI implements PropertyChangeListener {
 
     @Override
     public boolean isDeleted() {
-        return super.isDeleted() || dtomaster.isClosed(); 
+        return super.isDeleted() || dtomaster.isClosed();
     }
 
     @Override
@@ -177,10 +177,12 @@ public class MGXMaster extends MGXMasterI implements PropertyChangeListener {
                 deleted();
                 break;
             case MGXDTOMaster.PROP_LOGGEDIN:
-                Boolean isLoggedIn = (Boolean) evt.getNewValue();
-                if (!isDeleted() && !isLoggedIn) {
-                    dtomaster.removePropertyChangeListener(this);
-                    deleted();
+                if (evt.getSource() == dtomaster && evt.getNewValue() instanceof Boolean) {
+                    Boolean isLoggedIn = (Boolean) evt.getNewValue();
+                    if (!isDeleted() && !isLoggedIn) {
+                        dtomaster.removePropertyChangeListener(this);
+                        deleted();
+                    }
                 }
                 break;
             default:
@@ -212,6 +214,5 @@ public class MGXMaster extends MGXMasterI implements PropertyChangeListener {
         }
         return true;
     }
-    
-    
+
 }
