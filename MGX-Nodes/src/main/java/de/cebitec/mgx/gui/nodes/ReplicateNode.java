@@ -28,7 +28,7 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sjaenick
  */
-public class ReplicateNode extends AbstractNodeBase<VisualizationGroupI> {
+public class ReplicateNode extends MGXNodeBase<VisualizationGroupI> {
 
     public ReplicateNode(ReplicateI replicate) {
         super(new GroupedSeqRunNodeFactory(replicate), Lookups.singleton(replicate), replicate);

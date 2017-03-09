@@ -5,15 +5,11 @@ import de.cebitec.mgx.api.exception.MGXLoggedoutException;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.ModelBaseI;
 import de.cebitec.mgx.api.model.SeqRunI;
-import de.cebitec.mgx.api.model.ToolI;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.logging.Level;
 import org.openide.util.Exceptions;
 
 /**
@@ -46,54 +42,25 @@ public class JobBySeqRunNodeFactory extends JobNodeFactory {
             }
 
         };
-        synchronized (content) {
-            this.content.addAll(runs);
-            for (final SeqRunI run : content) {
-                run.addPropertyChangeListener(stateListener);
-            }
+        this.content.addAll(runs);
+        for (final SeqRunI run : content) {
+            run.addPropertyChangeListener(stateListener);
         }
     }
 
     @Override
     protected boolean addKeys(List<JobI> toPopulate) {
-        Collection<JobI> tmp = new HashSet<>();
+        Collection<JobI> jobs = null;
         try {
-            SeqRunI[] toArray;
-            synchronized (content) {
-               toArray = content.toArray(new SeqRunI[]{});
-            }
-            for (SeqRunI run : toArray) {
-                for (JobI j : run.getMaster().Job().BySeqRun(run)) {
-                    if (Thread.interrupted()) {
-                        run.getMaster().log(Level.INFO, "interrupted in NF");
-                        return true;
-                    }
-
-                    ToolI t = null;
-                    try {
-                        t = run.getMaster().Tool().ByJob(j);
-                    } catch (MGXException ex) {
-                        // if a refresh is triggered while a job is being deleted,
-                        // this might fail when the job is already gone. silently
-                        // ignore this case..
-                    }
-
-                    if (t != null) {
-                        j.setTool(t);
-                        if (!run.isDeleted()) {
-                            tmp.add(j);
-                        }
-                    }
-                }
-            }
-            toPopulate.addAll(tmp);
-            Collections.sort(toPopulate);
+            jobs = processRuns(content);
         } catch (MGXLoggedoutException ex) {
             toPopulate.clear();
             return true;
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);
         }
+
+        toPopulate.addAll(jobs);
         return true;
     }
 

@@ -15,8 +15,6 @@ import org.openide.util.lookup.Lookups;
  */
 public class MGXDirectoryNode extends MGXNodeBase<MGXFileI> {
 
-    private FileNodeFactory nf = null;
-
     public MGXDirectoryNode(MGXFileI f) {
         this(f, new FileNodeFactory(f));
     }
@@ -26,18 +24,12 @@ public class MGXDirectoryNode extends MGXNodeBase<MGXFileI> {
         super.setDisplayName(f.getName());
         super.setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/Directory.png");
         super.setShortDescription(f.getName());
-        this.nf = fnf;
-    }
-
-    @Override
-    public boolean canDestroy() {
-        return true;
     }
 
     @Override
     public Action[] getActions(boolean context) {
         Action delAction = FileUtil.getConfigObject("Actions/Edit/de-cebitec-mgx-gui-actions-DeleteFileOrDirectory.instance", Action.class);
-        return new Action[]{new CreateDirectory(), delAction, new UploadFile(nf)};
+        return new Action[]{new CreateDirectory(), delAction, new UploadFile()};
     }
 
     @Override

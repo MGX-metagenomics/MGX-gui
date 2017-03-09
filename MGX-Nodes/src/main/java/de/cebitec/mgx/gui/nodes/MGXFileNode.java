@@ -23,11 +23,6 @@ public class MGXFileNode extends MGXNodeBase<MGXFileI> {
     }
 
     @Override
-    public boolean canDestroy() {
-        return true;
-    }
-
-    @Override
     public Action[] getActions(boolean context) {
         Action delAction = FileUtil.getConfigObject("Actions/Edit/de-cebitec-mgx-gui-actions-DeleteFileOrDirectory.instance", Action.class);
         if (getContent().isDirectory()) {
