@@ -25,7 +25,7 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sjaenick
  */
-public class VizGroupNode extends AbstractNodeBase<VisualizationGroupI> {
+public class VizGroupNode extends MGXNodeBase<VisualizationGroupI> {
 
     public VizGroupNode(VisualizationGroupI vGroup) {
         this(new GroupedSeqRunNodeFactory(vGroup), vGroup);

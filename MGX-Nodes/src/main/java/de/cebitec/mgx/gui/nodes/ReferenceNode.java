@@ -29,11 +29,6 @@ public class ReferenceNode extends MGXNodeBase<MGXReferenceI> {
     }
 
     @Override
-    public boolean canDestroy() {
-        return true;
-    }
-
-    @Override
     public Action[] getActions(boolean context) {
         return new Action[]{new OpenMappingByReference(), new DeleteReference()};
     }

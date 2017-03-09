@@ -2,45 +2,35 @@ package de.cebitec.mgx.gui.nodefactory;
 
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.MGXFileI;
-import de.cebitec.mgx.api.model.ModelBaseI;
 import de.cebitec.mgx.gui.nodes.MGXDirectoryNode;
 import de.cebitec.mgx.gui.nodes.MGXFileNode;
-import java.beans.PropertyChangeEvent;
-import java.util.Collections;
+import de.cebitec.mgx.gui.nodes.MGXNodeBase;
 import java.util.Iterator;
 import java.util.List;
-import org.openide.nodes.Node;
-import org.openide.nodes.NodeEvent;
-import org.openide.nodes.NodeMemberEvent;
 import org.openide.util.Exceptions;
 
 /**
  *
  * @author sj
  */
-public class FileNodeFactory extends MGXNodeFactoryBase<MGXFileI> {
-
-    private final MGXFileI curDirectory;
+public class FileNodeFactory extends MGXNodeFactoryBase<MGXFileI, MGXFileI> {
 
     public FileNodeFactory(MGXFileI curDir) {
-        super(curDir.getMaster());
-        curDirectory = curDir;
-        curDirectory.addPropertyChangeListener(this);
+        super(curDir);
     }
 
     @Override
     protected boolean addKeys(List<MGXFileI> toPopulate) {
         try {
-            Iterator<MGXFileI> iter = curDirectory.getMaster().File().fetchall(curDirectory);
+            Iterator<MGXFileI> iter = getContent().getMaster().File().fetchall(getContent());
             while (iter.hasNext()) {
                 toPopulate.add(iter.next());
             }
-            Collections.sort(toPopulate);
             return true;
         } catch (MGXException ex) {
             // a refresh might occur while the directory is being deleted
             // on another thread
-            if (curDirectory.isDeleted()) {
+            if (getContent().isDeleted()) {
                 toPopulate.clear();
                 return true;
             }
@@ -50,54 +40,11 @@ public class FileNodeFactory extends MGXNodeFactoryBase<MGXFileI> {
     }
 
     @Override
-    protected Node createNodeFor(MGXFileI file) {
-        Node node;
+    protected MGXNodeBase<MGXFileI> createNodeFor(MGXFileI file) {
         if (!file.isDirectory()) {
-            node = new MGXFileNode(file);
+            return new MGXFileNode(file);
         } else {
-            node = new MGXDirectoryNode(file);
+            return new MGXDirectoryNode(file);
         }
-        return node;
-    }
-
-    @Override
-    public void childrenAdded(NodeMemberEvent ev) {
-    }
-
-    @Override
-    public void childrenRemoved(NodeMemberEvent ev) {
-    }
-
-    @Override
-    public void nodeDestroyed(NodeEvent ev) {
-        // this is ugly, and unnecessary everywhere else. however, here
-        // it triggers a stack overflow otherwise: refresh() makes the
-        // childfactory remove (and re-add) all nodes, which triggers a 
-        // nodeDestroyed() call for each removed node.
-        //
-        // I have no idea....
-        if (!refreshing) {
-            refreshing = true;
-            refresh(true);
-            refreshing = false;
-        }
-    }
-
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-        //refresh(true);
-        if (evt.getPropertyName().equals(Node.PROP_PARENT_NODE)) {
-            return;
-        }
-        if ((evt.getPropertyName().equals(ModelBaseI.OBJECT_DELETED)) && evt.getSource().equals(curDirectory)) {
-            curDirectory.removePropertyChangeListener(this);
-            return;
-        }
-        if ((evt.getPropertyName().equals(ModelBaseI.OBJECT_MODIFIED)) && evt.getSource().equals(curDirectory)) {
-            //System.err.println("refreshing for " + curDirectory.getFullPath());
-            refreshChildren();
-            return;
-        }
-        System.err.println("FNF: " + evt.toString() + " in " + getClass().getName());
     }
 }
