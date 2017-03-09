@@ -25,11 +25,6 @@ public class ProjectNode extends MGXNodeBase<MGXMasterI> {
     }
 
     @Override
-    public boolean canDestroy() {
-        return true;
-    }
-
-    @Override
     public Action[] getActions(boolean popup) {
         return new Action[]{new DownloadPluginDump()};
     }

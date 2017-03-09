@@ -4,17 +4,15 @@ import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.gui.nodes.ReferenceNode;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import org.openide.nodes.Node;
 import org.openide.util.Exceptions;
 
 /**
  *
  * @author sj
  */
-public class ReferenceNodeFactory extends MGXNodeFactoryBase<MGXReferenceI> {
+public class ReferenceNodeFactory extends MGXNodeFactoryBase<MGXMasterI, MGXReferenceI> {
 
     public ReferenceNodeFactory(MGXMasterI master) {
         super(master);
@@ -27,7 +25,6 @@ public class ReferenceNodeFactory extends MGXNodeFactoryBase<MGXReferenceI> {
             while (iter.hasNext()) {
                 toPopulate.add(iter.next());
             }
-            Collections.sort(toPopulate);
             return true;
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);
@@ -36,7 +33,7 @@ public class ReferenceNodeFactory extends MGXNodeFactoryBase<MGXReferenceI> {
     }
 
     @Override
-    protected Node createNodeFor(MGXReferenceI ref) {
+    protected ReferenceNode createNodeFor(MGXReferenceI ref) {
         return new ReferenceNode(ref);
     }
 }

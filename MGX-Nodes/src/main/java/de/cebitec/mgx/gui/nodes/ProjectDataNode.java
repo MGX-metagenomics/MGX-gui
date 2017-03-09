@@ -24,15 +24,12 @@ import org.openide.util.lookup.Lookups;
  */
 public class ProjectDataNode extends MGXNodeBase<MGXMasterI> {
 
-    private HabitatNodeFactory hnf = null;
-
     public ProjectDataNode(MGXMasterI m) {
         this(m, new HabitatNodeFactory(m));
     }
 
     private ProjectDataNode(MGXMasterI m, HabitatNodeFactory hnf) {
         super(Children.create(hnf, true), Lookups.fixed(m), m);
-        this.hnf = hnf;
         super.setDisplayName("Project Data");
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/ProjectData.png");
     }
@@ -44,7 +41,7 @@ public class ProjectDataNode extends MGXNodeBase<MGXMasterI> {
 
     @Override
     public Action[] getActions(boolean context) {
-        return new Action[]{new AddHabitat(), new Refresh()};
+        return new Action[]{new AddHabitat()}; //, new Refresh()};
     }
 
     @Override
@@ -66,10 +63,13 @@ public class ProjectDataNode extends MGXNodeBase<MGXMasterI> {
             dialog.toFront();
             boolean cancelled = hwd.getValue() != WizardDescriptor.FINISH_OPTION;
             if (!cancelled) {
+                
+                final MGXMasterI m = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
+                
                 SwingWorker<HabitatI, Void> worker = new SwingWorker<HabitatI, Void>() {
                     @Override
                     protected HabitatI doInBackground() throws Exception {
-                        MGXMasterI m = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
+                        
                         return m.Habitat().create(hwd.getHabitatName(), hwd.getHabitatLatitude(), hwd.getHabitatLongitude(), hwd.getHabitatAltitude(), hwd.getHabitatBiome(), hwd.getHabitatDescription());
                     }
 
@@ -82,7 +82,8 @@ public class ProjectDataNode extends MGXNodeBase<MGXMasterI> {
                             Exceptions.printStackTrace(ex);
                         }
                         if (h != null) {
-                            hnf.refreshChildren();
+                            m.childChanged();
+//                            hnf.refreshChildren();
                         }
                         super.done();
                     }
@@ -97,15 +98,15 @@ public class ProjectDataNode extends MGXNodeBase<MGXMasterI> {
         }
     }
 
-    private class Refresh extends AbstractAction {
-
-        public Refresh() {
-            putValue(NAME, "Refresh");
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            hnf.refreshChildren();
-        }
-    }
+//    private class Refresh extends AbstractAction {
+//
+//        public Refresh() {
+//            putValue(NAME, "Refresh");
+//        }
+//
+//        @Override
+//        public void actionPerformed(ActionEvent e) {
+//            hnf.refreshChildren();
+//        }
+//    }
 }

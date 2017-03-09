@@ -56,11 +56,6 @@ public class SampleNode extends MGXNodeBase<SampleI> {
     }
 
     @Override
-    public boolean canDestroy() {
-        return true;
-    }
-
-    @Override
     public Action[] getActions(boolean context) {
         return new Action[]{new EditSample(), new DeleteSample(), new AddExtract()};
     }
@@ -209,7 +204,8 @@ public class SampleNode extends MGXNodeBase<SampleI> {
                         } catch (InterruptedException | ExecutionException ex) {
                             Exceptions.printStackTrace(ex);
                         }
-                        nf.refreshChildren();
+                        s.childChanged();
+//                        nf.refreshChildren();
                         super.done();
                     }
                 };
