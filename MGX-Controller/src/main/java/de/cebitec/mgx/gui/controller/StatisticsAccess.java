@@ -60,7 +60,7 @@ public class StatisticsAccess implements StatisticsAccessI {
                 }
             };
         } catch (MGXDTOException ex) {
-            throw new MGXException(ex);
+            throw new MGXException(ex.getMessage());
         }
     }
 
@@ -79,7 +79,7 @@ public class StatisticsAccess implements StatisticsAccessI {
             //NodeI newickRoot = NewickParser.parse(nwk);
             return nwk;
         } catch (MGXDTOException ex) {
-            throw new MGXException(ex);
+            throw new MGXException(ex.getMessage());
         }
     }
 
@@ -103,7 +103,7 @@ public class StatisticsAccess implements StatisticsAccessI {
             }
             return pca;
         } catch (MGXDTOException ex) {
-            throw new MGXException(ex);
+            throw new MGXException(ex.getMessage());
         }
     }
 
@@ -129,7 +129,7 @@ public class StatisticsAccess implements StatisticsAccessI {
             }
             return pcoa;
         } catch (MGXDTOException ex) {
-            throw new MGXException(ex);
+            throw new MGXException(ex.getMessage());
         }
     }
 
