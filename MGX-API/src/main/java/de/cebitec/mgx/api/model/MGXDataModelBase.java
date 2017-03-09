@@ -18,12 +18,12 @@ import java.io.IOException;
  * @author sjaenick
  * @param <T>
  */
-public abstract class MGXDataModelBase<T extends MGXDataModelBaseI<T>> implements MGXDataModelBaseI<T> {
+public abstract class MGXDataModelBase<T extends MGXDataModelBaseI<T>> implements MGXDataModelBaseI<T>, PropertyChangeListener {
 
     private final MGXMasterI master;
     private final DataFlavor dataflavor;
     private ParallelPropertyChangeSupport pcs;
-    private final StateListener stateListener;
+//    private final StateListener stateListener;
     //
     private String managedState = OBJECT_MANAGED;
 
@@ -31,10 +31,17 @@ public abstract class MGXDataModelBase<T extends MGXDataModelBaseI<T>> implement
         this.master = master;
         this.dataflavor = dataFlavor;
 
-        stateListener = master == null ? null : new StateListener();
-
+//        stateListener = master == null ? null : new StateListener();
         if (master != null) {
-            master.addPropertyChangeListener(stateListener);
+            master.addPropertyChangeListener(this);
+//            master.addPropertyChangeListener(stateListener);
+        }
+    }
+
+    @Override
+    public final void propertyChange(PropertyChangeEvent evt) {
+        if (OBJECT_DELETED.equals(evt.getPropertyName())) {
+            deleted();
         }
     }
 
@@ -71,12 +78,21 @@ public abstract class MGXDataModelBase<T extends MGXDataModelBaseI<T>> implement
     }
 
     @Override
+    public final void childChanged() {
+        if (managedState.equals(OBJECT_DELETED)) {
+            throw new RuntimeException("Invalid object state for " + getClass().getSimpleName() + ", cannot modify deleted object.");
+        }
+        firePropertyChange(CHILD_CHANGE, 1, 2);
+    }
+
+    @Override
     public final void deleted() {
         if (managedState.equals(OBJECT_DELETED)) {
             throw new RuntimeException("Invalid object state for " + getClass().getSimpleName() + ", cannot delete deleted object.");
         }
         if (master != null) {
-            master.removePropertyChangeListener(stateListener);
+            master.removePropertyChangeListener(this);
+//            master.removePropertyChangeListener(stateListener);
         }
         firePropertyChange(OBJECT_DELETED, 0, 1);
         managedState = OBJECT_DELETED;
@@ -117,7 +133,7 @@ public abstract class MGXDataModelBase<T extends MGXDataModelBaseI<T>> implement
     public void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
         if (pcs != null) {
             PropertyChangeEvent evt = new PropertyChangeEvent(this, propertyName, oldValue, newValue);
-            firePropertyChange(evt);
+            pcs.firePropertyChange(evt);
         }
     }
 
@@ -125,7 +141,7 @@ public abstract class MGXDataModelBase<T extends MGXDataModelBaseI<T>> implement
     public void firePropertyChange(String propertyName, int oldValue, int newValue) {
         if (pcs != null) {
             PropertyChangeEvent evt = new PropertyChangeEvent(this, propertyName, oldValue, newValue);
-            firePropertyChange(evt);
+            pcs.firePropertyChange(evt);
         }
         //pcs.firePropertyChange(propertyName, oldValue, newValue);
     }
@@ -134,25 +150,25 @@ public abstract class MGXDataModelBase<T extends MGXDataModelBaseI<T>> implement
     public void firePropertyChange(String propertyName, boolean oldValue, boolean newValue) {
         if (pcs != null) {
             PropertyChangeEvent evt = new PropertyChangeEvent(this, propertyName, oldValue, newValue);
-            firePropertyChange(evt);
+            pcs.firePropertyChange(evt);
         }
     }
 
-    @Override
-    public void firePropertyChange(PropertyChangeEvent event) {
+//    @Override
+    protected void firePropertyChange(PropertyChangeEvent event) {
         if (pcs != null) {
             pcs.firePropertyChange(event);
         }
     }
 
-    private class StateListener implements PropertyChangeListener {
-
-        @Override
-        public final void propertyChange(PropertyChangeEvent evt) {
-            if (OBJECT_DELETED.equals(evt.getPropertyName())) {
-                deleted();
-            }
-        }
-    }
+//    private class StateListener implements PropertyChangeListener {
+//
+//        @Override
+//        public final void propertyChange(PropertyChangeEvent evt) {
+//            if (OBJECT_DELETED.equals(evt.getPropertyName())) {
+//                deleted();
+//            }
+//        }
+//    }
 
 }
