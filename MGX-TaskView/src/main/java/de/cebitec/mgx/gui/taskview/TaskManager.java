@@ -1,16 +1,11 @@
 package de.cebitec.mgx.gui.taskview;
 
-import de.cebitec.mgx.pevents.ParallelPropertyChangeSupport;
 import java.awt.EventQueue;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import org.openide.util.Exceptions;
-import org.openide.util.Lookup;
 import org.openide.util.RequestProcessor;
 import org.openide.util.RequestProcessor.Task;
 import org.openide.util.TaskListener;
@@ -21,22 +16,22 @@ import org.openide.windows.WindowManager;
  *
  * @author sjaenick
  */
-public class TaskManager implements TaskListener, PropertyChangeListener {
+public class TaskManager implements TaskListener { //, PropertyChangeListener {
 
-    public static final String TASK_ADDED = "TaskManager_TaskAdded";
-    public static final String TASK_COMPLETED = "TaskManager_TaskCompleted";
+//    public static final String TASK_ADDED = "TaskManager_TaskAdded";
+//    public static final String TASK_COMPLETED = "TaskManager_TaskCompleted";
     private static TaskManager instance;
     private final RequestProcessor reqProcessor;
     private final Map<org.openide.util.Task, MGXTask> currentTasks = new HashMap<>();
-    private TaskViewTopComponent taskViewer;
-    private final PropertyChangeSupport pcs;
+    private volatile TaskViewTopComponent taskViewerUI;
+//    private final PropertyChangeSupport pcs;
 
     private TaskManager() {
-        pcs = new ParallelPropertyChangeSupport(this);
+//        pcs = new ParallelPropertyChangeSupport(this);
         reqProcessor = new RequestProcessor("Tasks", Runtime.getRuntime().availableProcessors() + 5, true);
     }
 
-    public static TaskManager getInstance() {
+    public static synchronized TaskManager getInstance() {
         if (instance == null) {
             instance = new TaskManager();
         }
@@ -49,20 +44,23 @@ public class TaskManager implements TaskListener, PropertyChangeListener {
 
     public void addTask(final MGXTask mgxtask) {
 
+        //
+        // open UI, if necessary
+        //
         try {
             EventQueue.invokeAndWait(new Runnable() {
                 @Override
                 public void run() {
                     // make sure the task viewer topcomponent is visible
-                    if (taskViewer == null) {
-                        taskViewer = getTaskViewer();
+                    if (taskViewerUI == null) {
+                        taskViewerUI = getTaskViewer();
                     }
-                    if (!taskViewer.isOpened()) {
+                    if (!taskViewerUI.isOpened()) {
                         Mode mode = WindowManager.getDefault().findMode("right");
                         if (mode != null) {
-                            mode.dockInto(taskViewer);
+                            mode.dockInto(taskViewerUI);
                         }
-                        taskViewer.open();
+                        taskViewerUI.open();
                     }
                 }
             });
@@ -71,38 +69,45 @@ public class TaskManager implements TaskListener, PropertyChangeListener {
         }
 
         //mgxtask.addPropertyChangeListener(this);
+        taskViewerUI.addTask(mgxtask);
+
         Task task = reqProcessor.post(mgxtask);
-        currentTasks.put(task, mgxtask);
         task.addTaskListener(this);
-
-        pcs.firePropertyChange(TASK_ADDED, 0, mgxtask);
-    }
-
-    public void addPropertyChangeListener(PropertyChangeListener p) {
-        pcs.addPropertyChangeListener(p);
-    }
-
-    public void removePropertyChangeListener(PropertyChangeListener p) {
-        pcs.removePropertyChangeListener(p);
-    }
-
-    private TaskViewTopComponent getTaskViewer() {
-        TaskViewTopComponent t = (TaskViewTopComponent) WindowManager.getDefault().findTopComponent("TaskViewTopComponent");
-
-        if (t == null) {
-            t = Lookup.getDefault().lookup(TaskViewTopComponent.class);
+        synchronized (currentTasks) {
+            currentTasks.put(task, mgxtask);
         }
-        return t;
+
+        //pcs.firePropertyChange(TASK_ADDED, 0, mgxtask);
     }
 
     @Override
     public void taskFinished(org.openide.util.Task task) {
-        MGXTask completedTask = currentTasks.remove(task);
-        pcs.firePropertyChange(TASK_COMPLETED, 0, completedTask);
+        MGXTask completedTask = null;
+        synchronized (currentTasks) {
+            completedTask = currentTasks.remove(task);
+        }
+        taskViewerUI.completeTask(completedTask);
+//        pcs.firePropertyChange(TASK_COMPLETED, 0, completedTask);
     }
 
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-        pcs.firePropertyChange(evt);
+    private TaskViewTopComponent getTaskViewer() {
+        TaskViewTopComponent t = (TaskViewTopComponent) WindowManager.getDefault().findTopComponent("TaskViewTopComponent");
+        if (t == null) {
+            t = new TaskViewTopComponent();
+        }
+        return t;
     }
+
+//    @Override
+//    public void propertyChange(PropertyChangeEvent evt) {
+//        pcs.firePropertyChange(evt);
+//    }
+//
+//    public void addPropertyChangeListener(PropertyChangeListener p) {
+//        pcs.addPropertyChangeListener(p);
+//    }
+//
+//    public void removePropertyChangeListener(PropertyChangeListener p) {
+//        pcs.removePropertyChangeListener(p);
+//    }
 }

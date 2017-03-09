@@ -15,23 +15,22 @@ import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.util.NbBundle;
-import org.openide.util.lookup.ServiceProvider;
 import org.openide.windows.TopComponent;
 
 /**
  * Top component which displays something.
  */
 @ConvertAsProperties(dtd = "-//de.cebitec.mgx.gui.taskview//TaskView//EN",
-autostore = false)
+        autostore = false)
 @TopComponent.Description(preferredID = "TaskViewTopComponent",
-//iconBase="SET/PATH/TO/ICON/HERE", 
-persistenceType = TopComponent.PERSISTENCE_NEVER)
+        //iconBase="SET/PATH/TO/ICON/HERE", 
+        persistenceType = TopComponent.PERSISTENCE_NEVER)
 @TopComponent.Registration(mode = "right", openAtStartup = false)
 @ActionID(category = "Window", id = "de.cebitec.mgx.gui.taskview.TaskViewTopComponent")
 @ActionReference(path = "Menu/Window", position = 370)
 @TopComponent.OpenActionRegistration(displayName = "#CTL_TaskViewAction",
-preferredID = "TaskViewTopComponent")
-@ServiceProvider(service = TaskViewTopComponent.class)
+        preferredID = "TaskViewTopComponent")
+//@ServiceProvider(service = TaskViewTopComponent.class)
 public final class TaskViewTopComponent extends TopComponent implements PropertyChangeListener {
 
     public TaskViewTopComponent() {
@@ -54,7 +53,6 @@ public final class TaskViewTopComponent extends TopComponent implements Property
             public void actionPerformed(ActionEvent e) {
                 synchronized (completedTasks) {
                     for (TaskListEntry tle : completedTasks) {
-                        assert tle != null;
                         tasklistpanel.remove(tle);
                         tle.dispose();
                     }
@@ -104,12 +102,12 @@ public final class TaskViewTopComponent extends TopComponent implements Property
     @Override
     public void componentOpened() {
         createList();
-        TaskManager.getInstance().addPropertyChangeListener(this);
+//        TaskManager.getInstance().addPropertyChangeListener(this);
     }
 
     @Override
     public void componentClosed() {
-        TaskManager.getInstance().removePropertyChangeListener(this);
+//        TaskManager.getInstance().removePropertyChangeListener(this);
     }
 
     void writeProperties(java.util.Properties p) {
@@ -119,21 +117,26 @@ public final class TaskViewTopComponent extends TopComponent implements Property
     void readProperties(java.util.Properties p) {
         String version = p.getProperty("version");
     }
-    private Map<MGXTask, TaskListEntry> currentTasks = new HashMap<>();
+    private final Map<MGXTask, TaskListEntry> activeTasks = new HashMap<>();
     private final Collection<TaskListEntry> completedTasks = new ArrayList<>();
 
     @Override
     public synchronized void propertyChange(PropertyChangeEvent evt) {
         MGXTask task;
         switch (evt.getPropertyName()) {
-            case TaskManager.TASK_ADDED:
-                task = (MGXTask) evt.getNewValue();
-                addTask(task);
-                break;
-            case TaskManager.TASK_COMPLETED:
-                task = (MGXTask) evt.getNewValue();
-                removeTask(task);
-                break;
+//            case TaskManager.TASK_ADDED:
+//                task = (MGXTask) evt.getNewValue();
+//                addTask(task);
+//                repaint();
+//                break;
+//            case TaskManager.TASK_COMPLETED:
+//                task = (MGXTask) evt.getNewValue();
+//                if (task != null && activeTasks.containsKey(task)) {
+//                    TaskListEntry tle = activeTasks.remove(task);
+//                    completedTasks.add(tle);
+//                }
+//                removeTask(task);
+//                break;
             default:
                 System.err.println("TaskViewTopComponent received PCE " + evt.getPropertyName());
                 break;
@@ -151,17 +154,22 @@ public final class TaskViewTopComponent extends TopComponent implements Property
         }
     }
 
-    private void addTask(MGXTask t) {
+    void addTask(MGXTask t) {
         TaskListEntry tle = new TaskListEntry(t);
-        currentTasks.put(t, tle);
+        activeTasks.put(t, tle);
         tasklistpanel.add(tle);
+        repaint();
     }
 
-    private void removeTask(MGXTask t) {
-        assert t != null;
-        TaskListEntry tle = currentTasks.remove(t);
-        assert tle != null;
-        synchronized (completedTasks) {
+//    private void removeTask(MGXTask t) {
+//        TaskListEntry tle = activeTasks.remove(t);
+//        synchronized (completedTasks) {
+//            completedTasks.add(tle);
+//        }
+//    }
+    void completeTask(MGXTask completedTask) {
+        if (completedTask != null && activeTasks.containsKey(completedTask)) {
+            TaskListEntry tle = activeTasks.remove(completedTask);
             completedTasks.add(tle);
         }
     }
