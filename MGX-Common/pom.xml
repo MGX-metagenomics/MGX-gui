@@ -39,6 +39,7 @@
                             de.cebitec.mgx.api.groups,
                             de.cebitec.mgx.api.misc,
                             de.cebitec.mgx.api.model,
+                            de.cebitec.mgx.api.access,
                             de.cebitec.mgx.api.visualization,
                             de.cebitec.mgx.pevents,
                             de.cebitec.mgx.gui.datamodel.tree,
