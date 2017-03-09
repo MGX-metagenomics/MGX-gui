@@ -31,7 +31,7 @@ import java.util.logging.Level;
  *
  * @author sjaenick
  */
-public abstract class MGXMasterI implements ModelBaseI<MGXMasterI> {
+public abstract class MGXMasterI implements MGXDataModelBaseI<MGXMasterI> {
 
     public static final DataFlavor DATA_FLAVOR = new DataFlavor(MGXMasterI.class, "MGXMasterI");
     //
@@ -40,6 +40,11 @@ public abstract class MGXMasterI implements ModelBaseI<MGXMasterI> {
 
     public MGXMasterI() {
         //super(null, dataflavor);
+    }
+
+    @Override
+    public MGXMasterI getMaster() {
+        return this;
     }
 
     public abstract String getServerName();
@@ -96,10 +101,22 @@ public abstract class MGXMasterI implements ModelBaseI<MGXMasterI> {
     }
 
     @Override
+    public final void childChanged() {
+        if (managedState.equals(OBJECT_DELETED)) {
+            throw new RuntimeException("Invalid object state for " + getClass().getSimpleName() + ", cannot modify deleted object.");
+        }
+        firePropertyChange(CHILD_CHANGE, 1, 2);
+    }
+
+    @Override
     public final synchronized void deleted() {
         if (managedState.equals(OBJECT_DELETED)) {
             throw new RuntimeException("Invalid object state, cannot delete deleted object.");
         }
+//        System.err.println("sending deleted event to " + pcs.getPropertyChangeListeners().length + " listeners");
+//        for (PropertyChangeListener pcl : pcs.getPropertyChangeListeners()) {
+//            System.err.println("    target: " + pcl);
+//        }
         firePropertyChange(ModelBaseI.OBJECT_DELETED, 0, 1);
         managedState = OBJECT_DELETED;
         pcs.close();
@@ -139,7 +156,7 @@ public abstract class MGXMasterI implements ModelBaseI<MGXMasterI> {
         pcs.firePropertyChange(evt);
     }
 
-    @Override
+//    @Override
     public final void firePropertyChange(PropertyChangeEvent event) {
         pcs.firePropertyChange(event);
     }
@@ -168,4 +185,5 @@ public abstract class MGXMasterI implements ModelBaseI<MGXMasterI> {
 
     @Override
     public abstract boolean equals(Object o);
+
 }
