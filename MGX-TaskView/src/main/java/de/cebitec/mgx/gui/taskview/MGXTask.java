@@ -26,7 +26,7 @@ public abstract class MGXTask implements Runnable, PropertyChangeListener {
     public MGXTask(String name) {
         taskName = name;
         pcs = new ParallelPropertyChangeSupport(this);
-        setStatus("Preparing..");
+        setStatus("Queued..");
     }
 
     @Override
