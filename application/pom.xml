@@ -15,7 +15,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <netbeans.run.params.ide>-J-Xmx1024m</netbeans.run.params.ide>
+        <netbeans.run.params.ide>-J-Xms6g -J-Xmx8g</netbeans.run.params.ide>
         <netbeans.run.params>${netbeans.run.params.ide}</netbeans.run.params>
 <!--        <all.clusters>${project.build.directory}/${brandingToken}</all.clusters> -->
     </properties>
