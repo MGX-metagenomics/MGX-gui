@@ -18,6 +18,8 @@ public interface TrackI {
     int getId();
 
     int getMax();
+    
+    public boolean tryAdd(MappedSequenceI ms);
 
     void add(MappedSequenceI ms);
 

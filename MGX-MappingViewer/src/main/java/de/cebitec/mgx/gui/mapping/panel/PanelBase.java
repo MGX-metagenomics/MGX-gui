@@ -7,6 +7,7 @@ package de.cebitec.mgx.gui.mapping.panel;
 
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.gui.mapping.ViewController;
+import de.cebitec.mgx.gui.pool.MGXPool;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -24,7 +25,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Arrays;
 import javax.swing.JComponent;
-import javax.swing.SwingWorker;
 import org.apache.commons.math3.util.FastMath;
 import org.openide.util.Exceptions;
 
@@ -35,7 +35,7 @@ import org.openide.util.Exceptions;
 public abstract class PanelBase extends JComponent implements PropertyChangeListener, MouseWheelListener {
 
     protected final ViewController vc;
-    protected int[] bounds;
+    protected volatile int[] bounds;
     private int maxCoverage = 0;
     private int refLength;
     private float scale;
@@ -68,23 +68,21 @@ public abstract class PanelBase extends JComponent implements PropertyChangeList
                 scale = 1f / (1f * vc.getIntervalLength() / getWidth());
                 createVolatileImage(Transparency.OPAQUE);
 
-                SwingWorker<Void, Void> sw = new SwingWorker<Void, Void>() {
-
+                Runnable updater = new Runnable() {
                     @Override
-                    protected Void doInBackground() throws Exception {
+                    public void run() {
                         if (update()) {
                             repaint();
                         }
-                        return null;
                     }
-
                 };
-                sw.execute();
+                MGXPool.getInstance().submit(updater);
+
                 super.componentResized(e);
             }
         });
         super.addMouseWheelListener(this);
-        
+
         try {
             refLength = vc.getReference().getLength();
         } catch (MGXException ex) {
@@ -113,7 +111,6 @@ public abstract class PanelBase extends JComponent implements PropertyChangeList
         }
 
 //        long now = System.currentTimeMillis();
-
         // draw to back buffer image
         do {
             int valid = vimage.validate(gc);
@@ -159,7 +156,7 @@ public abstract class PanelBase extends JComponent implements PropertyChangeList
     public abstract boolean update();
 
     @Override
-    public void propertyChange(PropertyChangeEvent evt) {
+    public void propertyChange(final PropertyChangeEvent evt) {
         if (!isEnabled()) {
             return;
         }
@@ -173,8 +170,13 @@ public abstract class PanelBase extends JComponent implements PropertyChangeList
                 bounds = (int[]) evt.getNewValue();
                 scale = 1f / (1f * vc.getIntervalLength() / getWidth());
                 if (getHeight() > 0) {
+                    int[] myBounds = (int[]) evt.getNewValue();
                     if (update()) {
-                        repaint();
+                        if (bounds[0] == myBounds[0] && bounds[1] == myBounds[1]) {
+                            repaint();
+                        } else {
+                            System.err.println("bounds changed during update");
+                        }
                     }
                 }
                 break;
@@ -201,7 +203,7 @@ public abstract class PanelBase extends JComponent implements PropertyChangeList
     protected int getMaxCoverage() {
         return maxCoverage;
     }
-    
+
     protected int getReferenceLength() {
         return refLength;
     }

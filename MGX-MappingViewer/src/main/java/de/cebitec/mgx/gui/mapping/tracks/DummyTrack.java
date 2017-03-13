@@ -37,6 +37,11 @@ public class DummyTrack implements TrackI {
     }
 
     @Override
+    public boolean tryAdd(MappedSequenceI ms) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
     public final int hashCode() {
         return max;
     }

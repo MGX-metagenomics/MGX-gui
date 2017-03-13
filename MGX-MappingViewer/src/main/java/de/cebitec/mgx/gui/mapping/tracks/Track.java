@@ -45,6 +45,7 @@ public class Track implements Comparable<TrackI>, TrackI {
         return getLast().getMax();
     }
 
+    @Override
     public synchronized boolean tryAdd(MappedSequenceI ms) {
         boolean ovl1 = overlaps(last, ms, padding);
         if (ovl1) {

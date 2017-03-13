@@ -31,51 +31,42 @@ public class TrackFactory {
     private TrackFactory() {
     }
 
-    public static synchronized Track addTrack(Collection<Track> tracks, MappedSequenceI ms) {
+    public static Track addTrack(Collection<Track> tracks, MappedSequenceI ms) {
         Track t = new Track(1);
         tracks.add(t);
-        System.out.println("numTracks now " + tracks.size());
         t.add(ms);
         return t;
     }
 
-    private final static LayouterI layouter = new Layouter();
+//    private final static LayouterI layouter = new Layouter();
+    private final static int MAX_TRACK_NUM = 200;
 
-    public static synchronized void createTracks(Iterator<MappedSequenceI> mappings, Collection<TrackI> tracks) {
-        List<MappedSequenceI> all = new ArrayList<>();
-        while (mappings != null && mappings.hasNext()) {
-            all.add(mappings.next());
-        }
-        // sort by min position, ascending
-        Collections.sort(all, new Comparator<MappedSequenceI>() {
-            @Override
-            public int compare(MappedSequenceI o1, MappedSequenceI o2) {
-                return Integer.compare(o1.getMin(), o2.getMin());
-            }
-        });
-
-        int trackCnt = 0;
-        tracks.clear();
-        layouter.clear();
-
-        for (MappedSequenceI ms : all) {
-
-            TrackI curTrack = layouter.getTrack(ms.getMin() - 1);
-
-            if (curTrack != null) {
-                layouter.remove(curTrack);
-                curTrack.add(ms);
-                layouter.add(curTrack);
-            } else {
-                Track t = new Track(++trackCnt);
-                t.add(ms);
-                layouter.add(t);
-                tracks.add(t);
-            }
-        }
-        all.clear();
-    }
-
+//    public static synchronized boolean createTracks(List<MappedSequenceI> sortedMappings, Collection<TrackI> tracks) {
+//        int trackCnt = 0;
+//        tracks.clear();
+//        layouter.clear();
+//        boolean allPlaced = true;
+//        for (MappedSequenceI ms : sortedMappings) {
+//
+//            TrackI curTrack = layouter.getTrack(ms.getMin() - 1);
+//
+//            if (curTrack != null) {
+//                layouter.remove(curTrack);
+//                curTrack.add(ms);
+//                layouter.add(curTrack);
+//            } else {
+//                if (trackCnt <= MAX_TRACK_NUM) {
+//                    Track t = new Track(++trackCnt);
+//                    t.add(ms);
+//                    layouter.add(t);
+//                    tracks.add(t);
+//                } else {
+//                    allPlaced = false;
+//                }
+//            }
+//        }
+//        return allPlaced;
+//    }
     public static void createTracksMultiThreaded(Iterator<MappedSequenceI> mappings, Collection<Track> tracks) {
         tracks.clear();
         List<MappedSequenceI> all = new ArrayList<>();
@@ -106,17 +97,15 @@ public class TrackFactory {
         System.err.println("Solution has " + tracks.size() + " tracks for " + all.size() + " mappings");
     }
 
-    public static void createTracksOrig(Iterator<MappedSequenceI> mappings, Collection<Track> tracks) {
+    public static boolean createTracks(List<MappedSequenceI> mappings, Collection<TrackI> tracks) {
         tracks.clear();
+        int trackCnt = 0;
         boolean placed;
-        Track last = null;
-        while (mappings != null && mappings.hasNext()) {
-            MappedSequenceI ms = mappings.next();
+        for (MappedSequenceI ms : mappings) {
             placed = false;
             // check last track first as a quick check;
             // major speedup, but suboptimal layout
-            //if (last != null && last.canAdd(ms)) {
-            for (Track t : tracks) {
+            for (TrackI t : tracks) {
                 if (!placed) {
                     placed = t.tryAdd(ms);
                     if (placed) {
@@ -124,11 +113,14 @@ public class TrackFactory {
                     }
                 }
             }
-            //}
-            if (!placed) {
-                last = addTrack(tracks, ms);
+            if (!placed && trackCnt < MAX_TRACK_NUM) {
+                Track t = new Track(++trackCnt);
+                tracks.add(t);
+                t.add(ms);
             }
         }
+        
+        return true;
     }
 
 //    public static void createTracks2(Iterable<MappedSequenceI> mappings, final List<Track> tracks) {

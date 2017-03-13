@@ -97,7 +97,7 @@ public class RecruitmentPanel extends PanelBase {
 
     @Override
     public boolean update() {
-        Iterator<MappedSequenceI> mappings;
+        List<MappedSequenceI> mappings;
         try {
             mappings = vc.getMappings();
         } catch (MGXException ex) {
@@ -118,8 +118,7 @@ public class RecruitmentPanel extends PanelBase {
 
         List<Rectangle2D.Float> newShapes = new ArrayList<>();
 
-        while (mappings.hasNext()) {
-            MappedSequenceI ms = mappings.next();
+        for (MappedSequenceI ms : mappings) {
             float pos0 = bp2px(ms.getMin());
             float pos1 = bp2px(ms.getMax());
             if (pos1 - pos0 < MIN_MAPPING_WIDTH) {

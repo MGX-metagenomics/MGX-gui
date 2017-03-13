@@ -77,6 +77,8 @@ public class MappingPanel extends PanelBase {
                     scrollOffset = scrollBar.getValue();
                     update();
                     repaint();
+                } else {
+                    scrollOffset = 0;
                 }
             }
         });
@@ -146,11 +148,10 @@ public class MappingPanel extends PanelBase {
 
     @Override
     public boolean update() {
-        long now = System.currentTimeMillis();
-
-        Iterator<MappedSequenceI> mappings = null;
+        
+        List<MappedSequenceI> sortedMappings = null;
         try {
-            mappings = vc.getMappings();
+            sortedMappings = vc.getMappings();
         } catch (MGXTimeoutException mte) {
             if (vc.isClosed()) {
                 return false;
@@ -167,26 +168,28 @@ public class MappingPanel extends PanelBase {
             return true;
         }
 
-        long timeGetMappings = System.currentTimeMillis() - now;
-
-        TrackFactory.createTracks(mappings, tracks);
-
-        long timeCreateLayout = System.currentTimeMillis() - timeGetMappings - now;
+        boolean allPlaced = TrackFactory.createTracks(sortedMappings, tracks);
 
         final float spaceing = TRACKHEIGHT * 0.1f;
         final float mappingHeight = 0.75f * TRACKHEIGHT;
 
         int height = getHeight();
+        int requiredHeight = TRACKHEIGHT * tracks.size();
         int maxVisibleTracks = height / TRACKHEIGHT;
-        if (maxVisibleTracks < tracks.size()) {
+        
+        System.err.println(tracks.size() + " tracks");
+        
+        if (requiredHeight > height) {
             scrollBar.setEnabled(true);
             scrollBar.setMinimum(0);
-            scrollBar.setMaximum(tracks.size() - maxVisibleTracks + 5);
+            scrollBar.setValue(scrollOffset);
+            scrollBar.setMaximum(tracks.size() + 5);
             scrollBar.setVisibleAmount(maxVisibleTracks);
         } else {
+            System.err.println(tracks.size() + " tracks, no scrollbar needed");
             scrollBar.setEnabled(false);
         }
-
+        
         SortedSet<MappedRead2D> ret = new TreeSet<>();
         int vOffset = TRACK_VOFFSET;
 
@@ -211,18 +214,11 @@ public class MappingPanel extends PanelBase {
             }
         }
 
-        long timeCreateShapes = System.currentTimeMillis() - timeCreateLayout - timeGetMappings - now;
-
         synchronized (coverage) {
             coverage.clear();
             coverage.addAll(ret);
         }
 
-//        now = System.currentTimeMillis() - now;
-//        if (now > 30) {
-//            System.err.println("update() for " + getClass().getSimpleName() + " took " + now + " ms");
-//            System.err.println(String.format("  getMappings: %d createLayout: %d createShapes: %d", timeGetMappings, timeCreateLayout, timeCreateShapes));
-//        }
         return true;
     }
 
