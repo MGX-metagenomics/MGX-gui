@@ -113,10 +113,10 @@ public abstract class MGXMasterI implements MGXDataModelBaseI<MGXMasterI> {
         if (managedState.equals(OBJECT_DELETED)) {
             throw new RuntimeException("Invalid object state, cannot delete deleted object.");
         }
-//        System.err.println("sending deleted event to " + pcs.getPropertyChangeListeners().length + " listeners");
-//        for (PropertyChangeListener pcl : pcs.getPropertyChangeListeners()) {
-//            System.err.println("    target: " + pcl);
-//        }
+        System.err.println("sending deleted event to " + pcs.getPropertyChangeListeners().length + " listeners");
+        for (PropertyChangeListener pcl : pcs.getPropertyChangeListeners()) {
+            System.err.println("    target: " + pcl);
+        }
         firePropertyChange(ModelBaseI.OBJECT_DELETED, 0, 1);
         managedState = OBJECT_DELETED;
         pcs.close();
