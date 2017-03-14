@@ -151,6 +151,7 @@ public class SeqRunAccess extends AccessBase<SeqRunI> implements SeqRunAccessI {
             throw new MGXException(ex);
         }
         SeqRunI ret = SeqRunDTOFactory.getInstance().toModel(getMaster(), dto);
+        job.setSeqrun(ret);
         return ret;
     }
 

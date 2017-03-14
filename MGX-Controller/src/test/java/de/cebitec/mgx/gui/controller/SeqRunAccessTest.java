@@ -47,6 +47,25 @@ public class SeqRunAccessTest {
     }
 
     @Test
+    public void testByJob() {
+        System.out.println("testByJob");
+        MGXMasterI m = TestMaster.getRO();
+        SeqRunI run = null;
+        JobI job = null;
+        try {
+            job = m.Job().fetch(7);
+            run = m.SeqRun().ByJob(job);
+        } catch (MGXException ex) {
+            fail(ex.getMessage());
+        }
+        assertNotNull(job);
+        assertNotNull(run);
+        assertEquals(2, run.getId());
+        assertEquals("dataset2", run.getName());
+        assertNotNull(job.getSeqrun());
+    }
+
+    @Test
     public void testgetJobsAndAttributeTypes() throws MGXException {
         System.out.println("getJobsAndAttributeTypes");
         MGXMasterI m = TestMaster.getRO();
