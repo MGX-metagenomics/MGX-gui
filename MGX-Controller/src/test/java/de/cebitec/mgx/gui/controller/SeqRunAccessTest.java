@@ -138,7 +138,7 @@ public class SeqRunAccessTest {
         }
 
         assertNotNull(newRun);
-        assertEquals(0, newRun.getNumSequences());
+        assertEquals(-1, newRun.getNumSequences());
 
         SeqReaderI<? extends DNASequenceI> reader = null;
         try {
