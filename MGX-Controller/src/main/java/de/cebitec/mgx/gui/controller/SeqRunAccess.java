@@ -143,6 +143,18 @@ public class SeqRunAccess extends AccessBase<SeqRunI> implements SeqRunAccessI {
     }
 
     @Override
+    public SeqRunI ByJob(final JobI job) throws MGXException {
+        SeqRunDTO dto = null;
+        try {
+            dto = getDTOmaster().SeqRun().byJob(job.getId());
+        } catch (MGXDTOException ex) {
+            throw new MGXException(ex);
+        }
+        SeqRunI ret = SeqRunDTOFactory.getInstance().toModel(getMaster(), dto);
+        return ret;
+    }
+
+    @Override
     public Map<JobI, Set<AttributeTypeI>> getJobsAndAttributeTypes(SeqRunI run) throws MGXException {
         Map<JobI, Set<AttributeTypeI>> ret = new HashMap<>();
         try {

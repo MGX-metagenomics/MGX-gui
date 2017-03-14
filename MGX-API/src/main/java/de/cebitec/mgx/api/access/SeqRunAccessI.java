@@ -31,5 +31,7 @@ public interface SeqRunAccessI extends AccessBaseI<SeqRunI> {
     public Iterator<SeqRunI> ByExtract(DNAExtractI extract) throws MGXException;
     
     public List<QCResultI> getQC(SeqRunI run) throws MGXException;
+
+    public SeqRunI ByJob(JobI job) throws MGXException;
     
 }
