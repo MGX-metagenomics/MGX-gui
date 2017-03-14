@@ -42,13 +42,15 @@ public class DownloadTest {
     public void testDownloadSequencesForAttribute() throws MGXException {
         System.out.println("testDownloadSequencesForAttribute");
         MGXMasterI master = TestMaster.getRO();
+        
+        // GC, 50.8 
         AttributeI attr = master.Attribute().fetch(1);
         assertNotNull(attr);
         Set<AttributeI> set = new HashSet<>();
         set.add(attr);
 
         final Holder<Integer> cnt = new Holder<>();
-        cnt.set(new Integer(0));
+        cnt.set(0);
         final Holder<Boolean> closed = new Holder<>();
         closed.set(Boolean.FALSE);
         
