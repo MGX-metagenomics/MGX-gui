@@ -21,26 +21,26 @@ import static org.junit.Assert.*;
  * @author sj
  */
 public class HabitatAccessTest {
-    
+
     public HabitatAccessTest() {
     }
-    
+
     @BeforeClass
     public static void setUpClass() {
     }
-    
+
     @AfterClass
     public static void tearDownClass() {
     }
-    
+
     @Before
     public void setUp() {
     }
-    
+
     @After
     public void tearDown() {
     }
-    
+
     @Test
     public void testFetch() throws Exception {
         System.out.println("fetch");
@@ -48,7 +48,7 @@ public class HabitatAccessTest {
         HabitatI h = master.Habitat().fetch(1);
         assertNotNull(h);
     }
-    
+
     @Test
     public void testFetchall() throws Exception {
         System.out.println("fetchall");
@@ -62,5 +62,17 @@ public class HabitatAccessTest {
         }
         assertEquals(2, cnt);
     }
-    
+
+    @Test
+    public void testEquals() throws Exception {
+        System.out.println("testEquals");
+        MGXMasterI master = TestMaster.getRO();
+        HabitatI h1 = master.Habitat().fetch(1);
+        HabitatI h2 = master.Habitat().fetch(1);
+        assertNotNull(h1);
+        assertNotNull(h2);
+        assertNotSame(h1, h2);
+        assertEquals(h1, h2);
+    }
+
 }

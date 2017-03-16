@@ -327,7 +327,7 @@ public class AttributeAccessTest {
 
         JobI job = master.Job().fetch(3);
         assertNotNull(job);
-        SeqRunI run = job.getSeqrun();
+        SeqRunI run = master.SeqRun().ByJob(job);
         assertNotNull(run);
         DistributionI<Long> dist = master.Attribute().getDistribution(master.AttributeType().fetch(6), job);
         assertNotNull(dist);

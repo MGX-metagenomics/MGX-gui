@@ -11,11 +11,9 @@ import de.cebitec.mgx.api.model.RegionI;
 import de.cebitec.mgx.gui.cache.internal.MappedSequenceCache;
 import de.cebitec.mgx.gui.cache.internal.RegionCache;
 import de.cebitec.mgx.gui.cache.internal.SequenceCache;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import org.apache.commons.math3.util.FastMath;
@@ -69,11 +67,11 @@ public class CacheFactory {
             @Override
             public Set<MappedSequenceI> load(Interval k) throws MGXException {
                 Iterator<MappedSequenceI> iter = master.Mapping().byReferenceInterval(uuid, k.getFrom(), FastMath.min(k.getTo(), refLength));
-                TreeSet<MappedSequenceI> ret = new TreeSet<>();
+                Set<MappedSequenceI> ret = new HashSet<>();
                 while (iter.hasNext()) {
                     ret.add(iter.next());
                 }
-                return Collections.unmodifiableSet(ret);
+                return ret;
             }
         };
 

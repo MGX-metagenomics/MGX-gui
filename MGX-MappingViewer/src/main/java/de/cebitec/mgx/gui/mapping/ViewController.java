@@ -20,6 +20,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import org.apache.commons.math3.util.FastMath;
 import org.openide.util.Exceptions;
@@ -118,7 +119,9 @@ public class ViewController implements PropertyChangeListener {
             curBounds[0] = newBounds[0];
             curBounds[1] = newBounds[1];
             intervalLen = curBounds[1] - curBounds[0] + 1;
-            pcs.firePropertyChange(BOUNDS_CHANGE, 0, curBounds);
+//            System.err.println("NEW BOUNDS fire " + newBounds[0] + "-" + newBounds[1]);
+            pcs.firePropertyChange(BOUNDS_CHANGE, 0, getBounds());
+//            System.err.println("NEW BOUNDS fire done ");
         }
     }
 
@@ -158,21 +161,21 @@ public class ViewController implements PropertyChangeListener {
         return ctx.getRegions(from, to);
     }
 
-    public final Iterator<MappedSequenceI> getMappings() throws MGXException {
+    public final List<MappedSequenceI> getMappings() throws MGXException {
         if (isClosed()) {
             throw new MGXLoggedoutException("ViewController is closed");
         }
         return ctx.getMappings(curBounds[0], curBounds[1], minIdentity);
     }
 
-    public final Iterator<MappedSequenceI> getMappings(int from, int to) throws MGXException {
+    public final List<MappedSequenceI> getMappings(int from, int to) throws MGXException {
         if (isClosed()) {
             throw new MGXLoggedoutException("ViewController is closed");
         }
         return ctx.getMappings(from, to, minIdentity);
     }
 
-    public final Iterator<MappedSequenceI> getMappings(int from, int to, int minIdent) throws MGXException {
+    public final List<MappedSequenceI> getMappings(int from, int to, int minIdent) throws MGXException {
         if (isClosed()) {
             throw new MGXLoggedoutException("ViewController is closed");
         }

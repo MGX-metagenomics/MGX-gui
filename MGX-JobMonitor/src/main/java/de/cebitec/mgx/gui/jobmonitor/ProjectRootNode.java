@@ -9,6 +9,7 @@ import java.awt.EventQueue;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import org.openide.nodes.AbstractNode;
@@ -19,10 +20,10 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sjaenick
  */
-public class ProjectRootNode extends AbstractNode implements PropertyChangeListener {
+class ProjectRootNode extends AbstractNode implements PropertyChangeListener {
 
-    private final Set<SeqRunI> runs = new HashSet<>();
-    private final JobNodeFactory jnf;
+    private Collection<SeqRunI> runs = new HashSet<>();
+    private JobNodeFactory jnf;
 
     public ProjectRootNode(MGXMasterI master) {
         this(master, null, new JobNodeFactory(master));
@@ -32,10 +33,10 @@ public class ProjectRootNode extends AbstractNode implements PropertyChangeListe
         this(null, runs, new JobBySeqRunNodeFactory(runs));
     }
 
-    private ProjectRootNode(MGXMasterI master, Set<SeqRunI> seqruns, JobNodeFactory jnf) {
+    private ProjectRootNode(MGXMasterI master, Set<SeqRunI> seqruns, final JobNodeFactory jnf) {
         super(Children.create(jnf, true), Lookups.fixed(master != null ? master : seqruns));
         String displayName = master != null ? master.getProject() : null;
-        setDisplayName(displayName);
+        super.setDisplayName(displayName);
         this.jnf = jnf;
         if (seqruns != null) {
             for (SeqRunI sr : seqruns) {
@@ -47,9 +48,15 @@ public class ProjectRootNode extends AbstractNode implements PropertyChangeListe
 
     ProjectRootNode(String no_project_selected) {
         super(Children.LEAF);
-        setDisplayName(no_project_selected);
+        super.setDisplayName(no_project_selected);
         jnf = null;
     }
+
+//    void refresh() {
+//        if (jnf != null) {
+//            jnf.refresh();
+//        }
+//    }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
@@ -75,16 +82,23 @@ public class ProjectRootNode extends AbstractNode implements PropertyChangeListe
     }
 
     @Override
+    public boolean canDestroy() {
+        return true;
+    }
+
+    @Override
     public void destroy() throws IOException {
         super.destroy();
         if (jnf != null) {
             jnf.destroy();
+            jnf = null;
         }
         if (runs != null) {
             for (SeqRunI run : runs) {
                 run.removePropertyChangeListener(this);
             }
             runs.clear();
+            runs = null;
         }
     }
 

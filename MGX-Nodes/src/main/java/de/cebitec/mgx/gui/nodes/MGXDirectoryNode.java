@@ -2,10 +2,10 @@ package de.cebitec.mgx.gui.nodes;
 
 import de.cebitec.mgx.api.model.MGXFileI;
 import de.cebitec.mgx.gui.nodeactions.CreateDirectory;
-import de.cebitec.mgx.gui.actions.DeleteFileOrDirectory;
 import de.cebitec.mgx.gui.nodeactions.UploadFile;
 import de.cebitec.mgx.gui.nodefactory.FileNodeFactory;
 import javax.swing.Action;
+import org.openide.filesystems.FileUtil;
 import org.openide.nodes.Children;
 import org.openide.util.lookup.Lookups;
 
@@ -14,8 +14,6 @@ import org.openide.util.lookup.Lookups;
  * @author sj
  */
 public class MGXDirectoryNode extends MGXNodeBase<MGXFileI> {
-
-    private FileNodeFactory nf = null;
 
     public MGXDirectoryNode(MGXFileI f) {
         this(f, new FileNodeFactory(f));
@@ -26,17 +24,12 @@ public class MGXDirectoryNode extends MGXNodeBase<MGXFileI> {
         super.setDisplayName(f.getName());
         super.setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/Directory.png");
         super.setShortDescription(f.getName());
-        this.nf = fnf;
-    }
-
-    @Override
-    public boolean canDestroy() {
-        return true;
     }
 
     @Override
     public Action[] getActions(boolean context) {
-        return new Action[]{new CreateDirectory(), new DeleteFileOrDirectory(), new UploadFile(nf)};
+        Action delAction = FileUtil.getConfigObject("Actions/Edit/de-cebitec-mgx-gui-actions-DeleteFileOrDirectory.instance", Action.class);
+        return new Action[]{new CreateDirectory(), delAction, new UploadFile()};
     }
 
     @Override

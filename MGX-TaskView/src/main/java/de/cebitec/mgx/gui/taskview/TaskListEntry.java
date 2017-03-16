@@ -73,7 +73,7 @@ public class TaskListEntry extends javax.swing.JPanel implements PropertyChangeL
             setDetailText(reason);
             task.removePropertyChangeListener(this);
             jProgressBar1.setIndeterminate(false);
-            jProgressBar1.setValue(jProgressBar1.getMinimum());
+            jProgressBar1.setValue(jProgressBar1.getMaximum());
             imagepanel.add(ip, BorderLayout.CENTER);
             ip.setImage("de/cebitec/mgx/gui/taskview/fail.png");
             revalidate();

@@ -26,7 +26,7 @@ import org.openide.util.Utilities;
 public class DeleteDNAExtract extends AbstractAction {
 
     public DeleteDNAExtract() {
-        putValue(NAME, "Delete");
+        super.putValue(NAME, "Delete");
     }
 
     @Override

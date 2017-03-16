@@ -18,7 +18,7 @@ import org.openide.util.Utilities;
 public class RemoveReplicateAction extends AbstractAction {
 
     public RemoveReplicateAction() {
-        putValue(NAME, "Remove replicate");
+        super.putValue(NAME, "Remove replicate");
     }
 
     @Override

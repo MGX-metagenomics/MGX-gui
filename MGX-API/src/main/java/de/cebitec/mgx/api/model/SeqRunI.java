@@ -48,6 +48,6 @@ public abstract class SeqRunI extends Identifiable<SeqRunI> {
 
     public abstract long getNumSequences();
 
-    public abstract void setNumSequences(long numSequences);
+    public abstract SeqRunI setNumSequences(long numSequences);
 
 }

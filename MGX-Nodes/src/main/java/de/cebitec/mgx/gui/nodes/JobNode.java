@@ -1,6 +1,5 @@
 package de.cebitec.mgx.gui.nodes;
 
-import de.cebitec.mgx.gui.actions.GetError;
 import de.cebitec.mgx.gui.actions.CancelJob;
 import de.cebitec.mgx.gui.actions.SaveToolXML;
 import de.cebitec.mgx.api.exception.MGXException;
@@ -12,6 +11,7 @@ import static de.cebitec.mgx.api.model.JobState.FINISHED;
 import static de.cebitec.mgx.api.model.JobState.RUNNING;
 import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.api.model.ToolI;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -59,6 +59,12 @@ public class JobNode extends MGXNodeBase<JobI> {
                 .toString();
         super.setShortDescription(shortDesc);
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/AnalysisTasks.png");
+    }
+    
+    @Override
+    public void destroy() throws IOException {
+//        System.err.println("JobNode#destroy");
+        super.destroy();
     }
 
     private String getProcessingTime(JobI job) {
@@ -113,9 +119,10 @@ public class JobNode extends MGXNodeBase<JobI> {
 
     @Override
     public Action[] getActions(boolean context) {
-        Action delJob2 = FileUtil.getConfigObject("Actions/Edit/de-cebitec-mgx-gui-actions-DeleteJobNodeAction.instance", Action.class);
+        Action deleteJob = FileUtil.getConfigObject("Actions/Edit/de-cebitec-mgx-gui-actions-DeleteJobNodeAction.instance", Action.class);
+        Action getError = FileUtil.getConfigObject("Actions/Edit/de-cebitec-mgx-gui-actions-ShowError.instance", Action.class);
         Action restartJob = FileUtil.getConfigObject("Actions/Edit/de-cebitec-mgx-gui-actions-RestartJobAction.instance", Action.class);
-        return new Action[]{delJob2, new GetError(), restartJob, new CancelJob(), new SaveToolXML()};
+        return new Action[]{deleteJob, getError, restartJob, new CancelJob(), new SaveToolXML()};
     }
 
     @Override
@@ -182,7 +189,6 @@ public class JobNode extends MGXNodeBase<JobI> {
 
     @Override
     public void updateModified() {
-        setDisplayName(getContent().getTool().getName());
         ToolI tool = getContent().getTool();
         String shortDesc = new StringBuilder("<html><b>")
                 .append(tool.getName()).append("</b>")

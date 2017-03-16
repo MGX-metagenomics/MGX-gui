@@ -33,7 +33,7 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sjaenick
  */
-public class ReplicateGroupNode extends AbstractNodeBase<ReplicateGroupI> {
+public class ReplicateGroupNode extends MGXNodeBase<ReplicateGroupI> {
 
     public ReplicateGroupNode(ReplicateGroupI rGroup) {
         this(new ReplicateNodeFactory(rGroup), rGroup);

@@ -6,13 +6,15 @@
 package de.cebitec.mgx.gui.mapping.tracks;
 
 import de.cebitec.mgx.api.model.MappedSequenceI;
+import de.cebitec.mgx.gui.pool.MGXPool;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -24,26 +26,86 @@ import org.openide.util.Exceptions;
  */
 public class TrackFactory {
 
-    private final static ExecutorService pool = Executors.newCachedThreadPool();
+    private static MGXPool pool = null;
 
-    public static synchronized Track addTrack(Collection<Track> tracks, MappedSequenceI ms) {
-        Track t = new Track();
+    private TrackFactory() {
+    }
+
+    public static Track addTrack(Collection<Track> tracks, MappedSequenceI ms) {
+        Track t = new Track(1);
         tracks.add(t);
         t.add(ms);
         return t;
     }
 
-    public static void createTracks(Iterator<MappedSequenceI> mappings, Collection<Track> tracks) {
+//    private final static LayouterI layouter = new Layouter();
+    private final static int MAX_TRACK_NUM = 200;
+
+//    public static synchronized boolean createTracks(List<MappedSequenceI> sortedMappings, Collection<TrackI> tracks) {
+//        int trackCnt = 0;
+//        tracks.clear();
+//        layouter.clear();
+//        boolean allPlaced = true;
+//        for (MappedSequenceI ms : sortedMappings) {
+//
+//            TrackI curTrack = layouter.getTrack(ms.getMin() - 1);
+//
+//            if (curTrack != null) {
+//                layouter.remove(curTrack);
+//                curTrack.add(ms);
+//                layouter.add(curTrack);
+//            } else {
+//                if (trackCnt <= MAX_TRACK_NUM) {
+//                    Track t = new Track(++trackCnt);
+//                    t.add(ms);
+//                    layouter.add(t);
+//                    tracks.add(t);
+//                } else {
+//                    allPlaced = false;
+//                }
+//            }
+//        }
+//        return allPlaced;
+//    }
+    public static void createTracksMultiThreaded(Iterator<MappedSequenceI> mappings, Collection<Track> tracks) {
         tracks.clear();
-        boolean placed;
-        Track last = null;
+        List<MappedSequenceI> all = new ArrayList<>();
         while (mappings != null && mappings.hasNext()) {
-            MappedSequenceI ms = mappings.next();
+            all.add(mappings.next());
+        }
+        // sort by min position, ascending
+        Collections.sort(all, new Comparator<MappedSequenceI>() {
+            @Override
+            public int compare(MappedSequenceI o1, MappedSequenceI o2) {
+                return Integer.compare(o1.getMin(), o2.getMin());
+            }
+        });
+        TrackHandler handler = new TrackHandler(1, pool);
+        if (pool == null) {
+            pool = MGXPool.getInstance();
+        }
+        pool.execute(handler);
+//        for (int i =0; i<5;i++) {
+//            System.err.println(all.get(i).getMin());
+//        }
+        for (MappedSequenceI ms : all) {
+            handler.add(ms);
+        }
+//        handler.finish();
+
+        handler.getTracks(tracks);
+        System.err.println("Solution has " + tracks.size() + " tracks for " + all.size() + " mappings");
+    }
+
+    public static boolean createTracks(List<MappedSequenceI> mappings, Collection<TrackI> tracks) {
+        tracks.clear();
+        int trackCnt = 0;
+        boolean placed;
+        for (MappedSequenceI ms : mappings) {
             placed = false;
-                // check last track first as a quick check;
+            // check last track first as a quick check;
             // major speedup, but suboptimal layout
-            //if (last != null && last.canAdd(ms)) {
-            for (Track t : tracks) {
+            for (TrackI t : tracks) {
                 if (!placed) {
                     placed = t.tryAdd(ms);
                     if (placed) {
@@ -51,37 +113,39 @@ public class TrackFactory {
                     }
                 }
             }
-            //}
-            if (!placed) {
-                last = addTrack(tracks, ms);
-            }
-        }
-    }
-
-    public static void createTracks2(Iterable<MappedSequenceI> mappings, final List<Track> tracks) {
-        tracks.clear();
-        for (MappedSequenceI ms : mappings) {
-            //System.err.println("numTracks "+ tracks.size());
-            FindTrack ft = new FindTrack(0, tracks.size(), tracks.toArray(new Track[]{}), ms);
-            pool.submit(ft);
-
-            Track t = null;
-            try {
-                t = ft.get();
-            } catch (InterruptedException | ExecutionException ex) {
-                Exceptions.printStackTrace(ex);
-            }
-            //Track t = pool.invoke(ft);
-            if (t != null) {
-                t.add(ms);
-            } else {
-                t = new Track();
+            if (!placed && trackCnt < MAX_TRACK_NUM) {
+                Track t = new Track(++trackCnt);
                 tracks.add(t);
                 t.add(ms);
             }
         }
+        
+        return true;
     }
 
+//    public static void createTracks2(Iterable<MappedSequenceI> mappings, final List<Track> tracks) {
+//        tracks.clear();
+//        for (MappedSequenceI ms : mappings) {
+//            //System.err.println("numTracks "+ tracks.size());
+//            FindTrack ft = new FindTrack(0, tracks.size(), tracks.toArray(new Track[]{}), ms);
+//            pool.submit(ft);
+//
+//            Track t = null;
+//            try {
+//                t = ft.get();
+//            } catch (InterruptedException | ExecutionException ex) {
+//                Exceptions.printStackTrace(ex);
+//            }
+//            //Track t = pool.invoke(ft);
+//            if (t != null) {
+//                t.add(ms);
+//            } else {
+//                t = new Track();
+//                tracks.add(t);
+//                t.add(ms);
+//            }
+//        }
+//    }
     private static abstract class Find<T> implements Runnable, Future<T> {
 
         private T result = null;
@@ -168,6 +232,9 @@ public class TrackFactory {
                 int mid = len / 2;
                 FindTrack left = new FindTrack(0, mid, tracks, ms);
                 //left.fork();
+                if (pool == null) {
+                    pool = MGXPool.getInstance();
+                }
                 pool.submit(left);
 
                 FindTrack right = new FindTrack(mid, len, tracks, ms);

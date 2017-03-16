@@ -1,9 +1,11 @@
 package de.cebitec.mgx.gui.nodes;
 
 import de.cebitec.mgx.api.model.MGXFileI;
-import de.cebitec.mgx.gui.actions.DeleteFileOrDirectory;
 import de.cebitec.mgx.gui.actions.DownloadFile;
+import java.text.NumberFormat;
+import java.util.Locale;
 import javax.swing.Action;
+import org.openide.filesystems.FileUtil;
 import org.openide.nodes.Children;
 import org.openide.util.lookup.Lookups;
 
@@ -17,20 +19,16 @@ public class MGXFileNode extends MGXNodeBase<MGXFileI> {
         super(Children.LEAF, Lookups.fixed(f.getMaster(), f), f);
         super.setDisplayName(f.getName());
         super.setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/File.png");
-        super.setShortDescription(f.getName() + " (" + f.getSize() + " bytes)");
-    }
-
-    @Override
-    public boolean canDestroy() {
-        return true;
+        super.setShortDescription(f.getName() + " (" + NumberFormat.getInstance(Locale.US).format(f.getSize()) + " bytes)");
     }
 
     @Override
     public Action[] getActions(boolean context) {
+        Action delAction = FileUtil.getConfigObject("Actions/Edit/de-cebitec-mgx-gui-actions-DeleteFileOrDirectory.instance", Action.class);
         if (getContent().isDirectory()) {
-            return new Action[]{new DeleteFileOrDirectory()};
+            return new Action[]{delAction};
         } else {
-            return new Action[]{new DownloadFile(), new DeleteFileOrDirectory()};
+            return new Action[]{new DownloadFile(), delAction};
         }
     }
 

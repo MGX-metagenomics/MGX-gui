@@ -6,6 +6,7 @@
 package de.cebitec.mgx.gui.mapping.tracks;
 
 import de.cebitec.mgx.api.model.MappedSequenceI;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -15,8 +16,10 @@ import java.util.concurrent.RecursiveTask;
  *
  * @author sj
  */
-public class Track {
+public class Track implements Comparable<TrackI>, TrackI {
 
+    static int COUNT = 0;
+    private final int id;
     private final List<MappedSequenceI> content = new LinkedList<>();
     private MappedSequenceI last = null;
     private final int padding = 25; // bp, should be px
@@ -24,7 +27,25 @@ public class Track {
 //    Track(ExecutorService pool) {
 //        this.pool = pool;
 //    }
+    public Track(int id) {
+        this.id = id;
+    }
 
+    @Override
+    public final int getId() {
+        return id;
+    }
+
+    public final MappedSequenceI getLast() {
+        return last;
+    }
+    
+    @Override
+    public final int getMax() {
+        return getLast().getMax();
+    }
+
+    @Override
     public synchronized boolean tryAdd(MappedSequenceI ms) {
         boolean ovl1 = overlaps(last, ms, padding);
         if (ovl1) {
@@ -35,6 +56,7 @@ public class Track {
         return true;
     }
 
+    @Override
     public synchronized void add(MappedSequenceI ms) {
         content.add(ms);
         last = ms;
@@ -48,11 +70,17 @@ public class Track {
         return true;
     }
 
+    @Override
     public Iterator<MappedSequenceI> getSequences() {
         return content.iterator();
     }
+    
+    @Override
+    public final Collection<MappedSequenceI> sequences() {
+        return content;
+    }
 
-    public int size() {
+    public final int size() {
         return content.size();
     }
 
@@ -92,6 +120,11 @@ public class Track {
     private static boolean within(int pos, int from, int to) {
         return pos >= from && pos <= to;
 
+    }
+
+    @Override
+    public final int compareTo(TrackI o) {
+        return Integer.compare(id, o.getId());
     }
 
     public class CheckOverlap extends RecursiveTask<Boolean> {
@@ -148,4 +181,28 @@ public class Track {
         }
 
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 67 * hash + this.id;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Track other = (Track) obj;
+        return this.id == other.id;
+    }
+    
+    
 }

@@ -54,11 +54,6 @@ public class HabitatNode extends MGXNodeBase<HabitatI> {
     }
 
     @Override
-    public boolean canDestroy() {
-        return true;
-    }
-
-    @Override
     public Action[] getActions(boolean context) {
         return new Action[]{new EditHabitat(), new DeleteHabitat(), new AddSample()};
     }
@@ -101,7 +96,8 @@ public class HabitatNode extends MGXNodeBase<HabitatI> {
                         } catch (InterruptedException | ExecutionException ex) {
                             Exceptions.printStackTrace(ex);
                         }
-                        snf.refreshChildren();
+                        m.childChanged();
+//                        snf.refreshChildren();
                         super.done();
                     }
                 };

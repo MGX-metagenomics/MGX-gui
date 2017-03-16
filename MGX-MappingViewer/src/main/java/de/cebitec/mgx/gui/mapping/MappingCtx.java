@@ -17,7 +17,11 @@ import de.cebitec.mgx.gui.cache.IntIterator;
 import de.cebitec.mgx.pevents.ParallelPropertyChangeSupport;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import org.openide.util.Exceptions;
@@ -31,7 +35,6 @@ public class MappingCtx implements PropertyChangeListener, AutoCloseable {
     private final MappingI mapping;
     private final MGXReferenceI ref;
     private final JobI job;
-    private final SeqRunI run;
     private Cache<String> seqCache = null;
     private Cache<Set<RegionI>> regCache = null;
     private CoverageInfoCache<Set<MappedSequenceI>> mapCache = null;
@@ -42,15 +45,14 @@ public class MappingCtx implements PropertyChangeListener, AutoCloseable {
     private volatile boolean isClosed = false;
     public static final String MAPPING_CLOSED = "MappingClosed";
 
-    public MappingCtx(MappingI m, MGXReferenceI ref, JobI job, SeqRunI run) throws MGXException {
+    public MappingCtx(MappingI m, MGXReferenceI ref, JobI job) throws MGXException {
         this.mapping = m;
         this.ref = ref;
         this.job = job;
-        this.run = run;
         this.refLength = ref.getLength();
         MGXMasterI master = m.getMaster();
 
-        if (m.getJobID() != job.getId() || m.getReferenceID() != ref.getId() || m.getSeqrunID() != run.getId()) {
+        if (m.getJobID() != job.getId() || m.getReferenceID() != ref.getId() || m.getSeqrunID() != job.getSeqrun().getId()) {
             throw new IllegalArgumentException("Inconsistent data, cannot create mapping context.");
         }
 
@@ -58,7 +60,7 @@ public class MappingCtx implements PropertyChangeListener, AutoCloseable {
         m.addPropertyChangeListener(this);
         ref.addPropertyChangeListener(this);
         job.addPropertyChangeListener(this);
-        run.addPropertyChangeListener(this);
+        job.getSeqrun().addPropertyChangeListener(this);
 
         sessionUUID = master.Mapping().openMapping(m.getId());
 
@@ -83,7 +85,7 @@ public class MappingCtx implements PropertyChangeListener, AutoCloseable {
     }
 
     public final SeqRunI getRun() {
-        return run;
+        return job.getSeqrun();
     }
 
     public final ToolI getTool() {
@@ -115,42 +117,34 @@ public class MappingCtx implements PropertyChangeListener, AutoCloseable {
         return regCache.get(from, to);
     }
 
-    public final Iterator<MappedSequenceI> getMappings(final int from, final int to, final int minIdentity) throws MGXException {
+    public final List<MappedSequenceI> getMappings(final int from, final int to, final int minIdentity) throws MGXException {
+
         if (isClosed()) {
             throw new MGXException("Mapping context is closed.");
         }
         final Iterator<MappedSequenceI> iterator = mapCache.get(from, to).iterator();
-        return new Iterator<MappedSequenceI>() {
-
-            private MappedSequenceI cur = null;
-
+        List<MappedSequenceI> sortedMappings = new ArrayList<>();
+        while (iterator.hasNext()) {
+            MappedSequenceI candidate = iterator.next();
+            if (candidate.getIdentity() >= minIdentity) {
+                sortedMappings.add(candidate);
+            }
+        }
+        
+        //
+        // sort by identity (highest first) and by min position, ascending
+        //
+        Collections.sort(sortedMappings, new Comparator<MappedSequenceI>() {
             @Override
-            public boolean hasNext() {
-                if (cur != null) {
-                    return true;
+            public int compare(MappedSequenceI o1, MappedSequenceI o2) {
+                int ret = Float.compare(o2.getIdentity(), o1.getIdentity());
+                if (ret != 0) {
+                    return ret;
                 }
-                while (iterator.hasNext()) {
-                    MappedSequenceI candidate = iterator.next();
-                    if (candidate.getIdentity() >= minIdentity) {
-                        cur = candidate;
-                        return true;
-                    }
-                }
-                return false;
+                return Integer.compare(o1.getMin(), o2.getMin());
             }
-
-            @Override
-            public MappedSequenceI next() {
-                MappedSequenceI ms = cur;
-                cur = null;
-                return ms;
-            }
-
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException("Not supported.");
-            }
-        };
+        });
+        return sortedMappings;
     }
 
     public final void getCoverage(final int from, final int to, final int[] dest) throws MGXException {
@@ -235,7 +229,7 @@ public class MappingCtx implements PropertyChangeListener, AutoCloseable {
             }
             mapping.removePropertyChangeListener(this);
             ref.removePropertyChangeListener(this);
-            run.removePropertyChangeListener(this);
+            job.getSeqrun().removePropertyChangeListener(this);
             job.removePropertyChangeListener(this);
 
             pcs.firePropertyChange(MAPPING_CLOSED, false, true);

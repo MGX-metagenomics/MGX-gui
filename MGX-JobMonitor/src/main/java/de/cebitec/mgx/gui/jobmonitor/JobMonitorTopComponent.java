@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
+import javax.swing.ActionMap;
 import javax.swing.JPopupMenu;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
@@ -65,7 +66,9 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
         initComponents();
         setName(Bundle.CTL_JobMonitorTopComponent());
         setToolTipText(Bundle.HINT_JobMonitorTopComponent());
-        associateLookup(ExplorerUtils.createLookup(explorerManager, getActionMap()));
+        ActionMap map = getActionMap();
+        //map.put("delete", ExplorerUtils.actionDelete(explorerManager, true));
+        associateLookup(ExplorerUtils.createLookup(explorerManager, map));
         explorerManager.setRootContext(new ProjectRootNode("No project selected"));
 
         view.setPropertyColumns(//JobNode.TOOL_PROPERTY, "Tool",
@@ -180,7 +183,7 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
             for (SeqRunI run : toRemove) {
                 currentSeqRuns.remove(run);
             }
-            
+
             // and add all those that are new
             for (SeqRunI run : runs) {
                 if (!currentSeqRuns.contains(run)) {

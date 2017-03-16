@@ -48,6 +48,18 @@ public class SampleAccessTest {
     }
 
     @Test
+    public void testEquals() throws MGXException {
+        System.out.println("testEquals");
+        MGXMasterI master = TestMaster.getRO();
+        SampleI s1 = master.Sample().fetch(1);
+        SampleI s2 = master.Sample().fetch(1);
+        assertNotNull(s1);
+        assertNotNull(s2);
+        assertNotSame(s1, s2);
+        assertEquals(s1, s2);
+    }
+
+    @Test
     public void testByHabitat() throws MGXException {
         System.out.println("ByHabitat");
         MGXMasterI master = TestMaster.getRO();

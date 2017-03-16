@@ -30,20 +30,25 @@
 
                 <configuration>
                     <instructions>
-                        <Export-Package>de.cebitec.mgx.common,de.cebitec.mgx.common.visualization</Export-Package>
+                        <Export-Package>
+                            de.cebitec.mgx.common,
+                            de.cebitec.mgx.common.visualization
+                        </Export-Package>
+                        <Import-Package>
+                            de.cebitec.mgx.api,
+                            de.cebitec.mgx.api.groups,
+                            de.cebitec.mgx.api.misc,
+                            de.cebitec.mgx.api.model,
+                            de.cebitec.mgx.api.access,
+                            de.cebitec.mgx.api.visualization,
+                            de.cebitec.mgx.pevents,
+                            de.cebitec.mgx.gui.datamodel.tree,
+                            de.cebitec.mgx.gui.datamodel.misc,
+                            de.cebitec.mgx.gui.pool,
+                            org.apache.commons.math3.util
+                        </Import-Package>
                         <Private-Package></Private-Package>
                     </instructions>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>nbm-maven-plugin</artifactId>
-                <extensions>true</extensions>
-                <configuration>
-                    <publicPackages>
-                        <publicPackage>de.cebitec.mgx.common</publicPackage>
-                        <publicPackage>de.cebitec.mgx.common.visualization</publicPackage>
-                    </publicPackages>
                 </configuration>
             </plugin>
             <plugin>
@@ -91,6 +96,11 @@
         <dependency>
             <groupId>de.cebitec.mgx.gui</groupId>
             <artifactId>MGX-Datamodel</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.cebitec.mgx.gui</groupId>
+            <artifactId>MGX-Pool</artifactId>
+            <version>1.0</version>
         </dependency>
     </dependencies>
     <properties>

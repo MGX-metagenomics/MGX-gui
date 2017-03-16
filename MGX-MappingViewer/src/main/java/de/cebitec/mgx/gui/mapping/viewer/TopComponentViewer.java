@@ -6,7 +6,6 @@ package de.cebitec.mgx.gui.mapping.viewer;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.datatransfer.DownloadBaseI;
-import de.cebitec.mgx.api.access.datatransfer.TransferBaseI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.groups.FileType;
 import de.cebitec.mgx.api.groups.ImageExporterI;
@@ -19,7 +18,6 @@ import de.cebitec.mgx.gui.mapping.panel.NavigationPanel;
 import de.cebitec.mgx.gui.mapping.panel.RecruitmentIdentityPanel;
 import de.cebitec.mgx.gui.mapping.panel.RecruitmentPanel;
 import de.cebitec.mgx.gui.swingutils.NonEDT;
-import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -31,7 +29,6 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -204,58 +201,13 @@ public final class TopComponentViewer extends TopComponent implements PropertyCh
             final OutputStream writer = new FileOutputStream(target);
             MGXMasterI master = vc.getMaster();
             final DownloadBaseI downloader = master.Mapping().createDownloader(vc.getMapping(), writer);
+            final BAMDownloader bamDownloader = new BAMDownloader(downloader, target, writer, "Save to " + fchooser.getSelectedFile().getName());
 
-            final MGXTask run = new MGXTask("Save to " + fchooser.getSelectedFile().getName()) {
-                @Override
-                public boolean process() {
-                    downloader.addPropertyChangeListener(this);
-                    boolean ret = downloader.download();
-                    downloader.removePropertyChangeListener(this);
-                    if (!ret) {
-                        setStatus(downloader.getErrorMessage());
-                    }
-                    return ret;
-                }
-
-                @Override
-                public void finished() {
-                    try {
-                        writer.close();
-                        super.finished();
-                    } catch (IOException ex) {
-                        setStatus(ex.getMessage());
-                        failed(ex.getMessage());
-                    }
-                }
-
-                @Override
-                public void failed(String reason) {
-                    if (target.exists()) {
-                        target.delete();
-                    }
-                    super.failed(reason);
-                }
-
-                @Override
-                public void propertyChange(PropertyChangeEvent pce) {
-                    switch (pce.getPropertyName()) {
-                        case TransferBaseI.NUM_ELEMENTS_TRANSFERRED:
-                            setStatus(String.format("%1$d bytes received", pce.getNewValue()));
-                            break;
-                        case TransferBaseI.TRANSFER_FAILED:
-                            failed(pce.getNewValue().toString());
-                            break;
-                        default:
-                            super.propertyChange(pce);
-                            break;
-                    }
-                }
-            };
 
             NonEDT.invoke(new Runnable() {
                 @Override
                 public void run() {
-                    TaskManager.getInstance().addTask(run);
+                    TaskManager.getInstance().addTask(bamDownloader);
                 }
             });
         } catch (MGXException | FileNotFoundException ex) {

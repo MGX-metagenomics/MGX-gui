@@ -27,8 +27,6 @@ import org.openide.util.lookup.Lookups;
  */
 public class ProjectReferencesNode extends MGXNodeBase<MGXMasterI> {
 
-    private ReferenceNodeFactory nf;
-
     public ProjectReferencesNode(final MGXMasterI m) {
         this(new ReferenceNodeFactory(m), m);
         super.setDisplayName("Reference sequences");
@@ -37,7 +35,6 @@ public class ProjectReferencesNode extends MGXNodeBase<MGXMasterI> {
 
     private ProjectReferencesNode(ReferenceNodeFactory rnf, MGXMasterI m) {
         super(Children.create(rnf, true), Lookups.fixed(m), m);
-        nf = rnf;
     }
 
     @Override
@@ -47,7 +44,7 @@ public class ProjectReferencesNode extends MGXNodeBase<MGXMasterI> {
 
     @Override
     public Action[] getActions(boolean ctx) {
-        return new Action[]{new AddGlobalReference(), new UploadReference(nf)};
+        return new Action[]{new AddGlobalReference(), new UploadReference()};
     }
 
     @Override
@@ -55,10 +52,10 @@ public class ProjectReferencesNode extends MGXNodeBase<MGXMasterI> {
         //
     }
 
-    private class AddGlobalReference extends AbstractAction {
+    private static class AddGlobalReference extends AbstractAction {
 
         public AddGlobalReference() {
-            putValue(NAME, "Add reference");
+            super.putValue(NAME, "Add reference");
         }
 
         @Override
@@ -102,14 +99,14 @@ public class ProjectReferencesNode extends MGXNodeBase<MGXMasterI> {
                     @Override
                     public void finished() {
                         super.finished();
-                        nf.refreshChildren();
+                        master.childChanged();
                     }
 
                     @Override
                     public void failed(String reason) {
                         setStatus(err);
                         super.failed(reason);
-                        nf.refreshChildren();
+                        master.childChanged();
                     }
                 };
 

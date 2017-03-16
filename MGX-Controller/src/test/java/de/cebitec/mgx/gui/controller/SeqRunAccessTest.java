@@ -1,25 +1,35 @@
 package de.cebitec.mgx.gui.controller;
 
 import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.access.TermAccessI;
 import de.cebitec.mgx.api.access.datatransfer.DownloadBaseI;
 import de.cebitec.mgx.api.access.datatransfer.TransferBaseI;
+import de.cebitec.mgx.api.access.datatransfer.UploadBaseI;
 import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
+import de.cebitec.mgx.api.model.DNAExtractI;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.JobParameterI;
 import de.cebitec.mgx.api.model.SeqRunI;
+import de.cebitec.mgx.api.model.TermI;
 import de.cebitec.mgx.gui.util.TestMaster;
 import de.cebitec.mgx.seqstorage.FastaWriter;
 import de.cebitec.mgx.sequence.DNASequenceI;
+import de.cebitec.mgx.sequence.SeqReaderFactory;
+import de.cebitec.mgx.sequence.SeqReaderI;
 import de.cebitec.mgx.sequence.SeqStoreException;
 import de.cebitec.mgx.sequence.SeqWriterI;
+import de.cebitec.mgx.testutils.TestInput;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.junit.Assume.assumeNotNull;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -34,6 +44,25 @@ public class SeqRunAccessTest {
         SeqRunI sr1 = m.SeqRun().fetch(1);
         assertNotNull(sr1);
         assertNotNull(sr1.getMaster());
+    }
+
+    @Test
+    public void testByJob() {
+        System.out.println("testByJob");
+        MGXMasterI m = TestMaster.getRO();
+        SeqRunI run = null;
+        JobI job = null;
+        try {
+            job = m.Job().fetch(7);
+            run = m.SeqRun().ByJob(job);
+        } catch (MGXException ex) {
+            fail(ex.getMessage());
+        }
+        assertNotNull(job);
+        assertNotNull(run);
+        assertEquals(2, run.getId());
+        assertEquals("dataset2", run.getName());
+        assertNotNull(job.getSeqrun());
     }
 
     @Test
@@ -65,6 +94,7 @@ public class SeqRunAccessTest {
         SeqRunI sr2 = m.SeqRun().fetch(1);
         assertNotNull(sr1);
         assertNotNull(sr2);
+        assertNotSame(sr1, sr2);
         assertEquals(sr1, sr2);
     }
 
@@ -107,5 +137,69 @@ public class SeqRunAccessTest {
         } finally {
             tmpFile.delete();
         }
+    }
+
+    @Test
+    public void testSeqRunUpload() {
+        System.out.println("testSeqRunUpload");
+
+        MGXMasterI m = TestMaster.getRW();
+        SeqRunI newRun = null;
+
+        try {
+            List<TermI> methods = m.Term().byCategory(TermAccessI.SEQ_METHODS);
+            List<TermI> platforms = m.Term().byCategory(TermAccessI.SEQ_PLATFORMS);
+            DNAExtractI ex = m.DNAExtract().fetch(1);
+            newRun = m.SeqRun().create(ex, "sample data", methods.get(0), platforms.get(0), false, "");
+
+        } catch (MGXException ex) {
+            fail(ex.getMessage());
+        }
+
+        assertNotNull(newRun);
+        assertEquals(-1, newRun.getNumSequences());
+
+        SeqReaderI<? extends DNASequenceI> reader = null;
+        try {
+            File testFasta = TestInput.copyTestResource(getClass(), "de/cebitec/mgx/gui/controller/sample.fas");
+            reader = SeqReaderFactory.getReader(testFasta.getAbsolutePath());
+        } catch (SeqStoreException | IOException ex) {
+            fail(ex.getMessage());
+        }
+
+        assertNotNull(reader);
+        boolean success = false;
+        try {
+            UploadBaseI uploader = m.Sequence().createUploader(newRun, reader);
+            success = uploader.upload();
+        } catch (MGXException ex) {
+            fail(ex.getMessage());
+        }
+        assertTrue(success);
+
+        // check number of sequences uploaded for local SeqRunI instance
+        long numSeqs = newRun.getNumSequences();
+        long numSeqs2 = -1;
+
+        try {
+            SeqRunI newRunCopy = m.SeqRun().fetch(newRun.getId());
+            assertNotNull(newRunCopy);
+            numSeqs2 = newRunCopy.getNumSequences();
+        } catch (MGXException ex) {
+            fail(ex.getMessage());
+        }
+
+        // cleanup
+        try {
+            TaskI<SeqRunI> delTask = m.SeqRun().delete(newRun);
+            while (!delTask.done()) {
+                m.<SeqRunI>Task().refresh(delTask);
+            }
+        } catch (MGXException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+
+        assertEquals(2, numSeqs);
+        assertEquals(2, numSeqs2);
     }
 }

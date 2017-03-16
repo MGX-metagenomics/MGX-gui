@@ -1,87 +1,149 @@
+package de.cebitec.mgx.gui.mapping.tracks;
+
+import de.cebitec.mgx.api.model.MappedSequenceI;
+import de.cebitec.mgx.gui.datamodel.MappedSequence;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import static org.junit.Assert.*;
+import org.junit.Test;
+
+/**
+ *
+ * @author sjaenick
+ */
+public class TrackFactoryTest {
+
+    @Test
+    public void testNoMappings() {
+        System.out.println("testNoMappings");
+        @SuppressWarnings("unchecked")
+        List<MappedSequenceI> mappings = Collections.EMPTY_LIST;
+        List<TrackI> result = new ArrayList<>();
+        TrackFactory.createTracks(mappings, result);
+        assertEquals(0, result.size());
+    }
+
+    @Test
+    public void testCreateOneTrack() {
+        System.out.println("testCreateOneTrack");
+        List<MappedSequenceI> mappings = new ArrayList<>();
+
+        MappedSequence ms1 = new MappedSequence(1, 5, 20, 0);
+        MappedSequence ms2 = new MappedSequence(1, 25, 35, 0);
+
+        mappings.add(ms1);
+        mappings.add(ms2);
+
+        List<TrackI> result = new ArrayList<>();
+        TrackFactory.createTracks(mappings, result);
+
+        //    ---------   ---------
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    public void testCreateTwoTracks() {
+        System.out.println("testCreateTwoTracks");
+        List<MappedSequenceI> mappings = new ArrayList<>();
+
+        MappedSequence ms1 = new MappedSequence(1, 5, 20, 0);
+        MappedSequence ms2 = new MappedSequence(1, 15, 25, 0);
+
+        mappings.add(ms1);
+        mappings.add(ms2);
+
+        List<TrackI> result = new ArrayList<>();
+        TrackFactory.createTracks(mappings, result);
+
+        //    ---------
+        //         -----------
+        assertEquals(2, result.size());
+        assertTrue(result.get(0).sequences().contains(ms1));
+        assertTrue(result.get(1).sequences().contains(ms2));
+    }
+
+    @Test
+    public void testCreateTracks2() {
+        System.out.println("createTracks2");
+        List<MappedSequenceI> mappings = new ArrayList<>();
+
+        MappedSequence ms1 = new MappedSequence(1, 5, 20, 0);
+        MappedSequence ms2 = new MappedSequence(1, 15, 25, 0);
+        MappedSequence ms3 = new MappedSequence(1, 22, 35, 0);
+
+        mappings.add(ms1);
+        mappings.add(ms2);
+        mappings.add(ms3);
+
+        List<TrackI> result = new ArrayList<>();
+        TrackFactory.createTracks(mappings, result);
+
+        //    ---------   ---------
+        //         -----------
+        assertEquals(2, result.size());
+        assertTrue(result.get(0).sequences().contains(ms1));
+        assertTrue(result.get(0).sequences().contains(ms3));
+        assertTrue(result.get(1).sequences().contains(ms2));
+    }
+
+//    @Test
+//    public void testTiming() {
+//        System.out.println("testTiming");
 //
-//package de.cebitec.mgx.gui.mapping.tracks;
+//        int numIter = 100;
+//        long duration = 0;
+//        
+//        for (int i = 0; i < numIter; i++) {
+//            Iterator<MappedSequenceI> iter = new Iterator<MappedSequenceI>() {
 //
-//import de.cebitec.mgx.api.MGXMasterI;
-//import de.cebitec.mgx.api.exception.MGXException;
-//import de.cebitec.mgx.api.model.JobI;
-//import de.cebitec.mgx.api.model.MGXReferenceI;
-//import de.cebitec.mgx.api.model.MappedSequenceI;
-//import de.cebitec.mgx.api.model.MappingI;
-//import de.cebitec.mgx.gui.datamodel.MappedSequence;
-//import de.cebitec.mgx.gui.mapping.MappingCtx;
-//import de.cebitec.mgx.gui.mapping.TestMaster;
-//import de.cebitec.mgx.gui.mapping.ViewController;
-//import java.util.ArrayList;
-//import java.util.Iterator;
-//import java.util.List;
-//import java.util.SortedSet;
-//import java.util.TreeSet;
-//import org.apache.commons.math3.util.FastMath;
-//import org.junit.After;
-//import org.junit.AfterClass;
-//import static org.junit.Assert.*;
-//import org.junit.Before;
-//import org.junit.BeforeClass;
-//import org.junit.Test;
+//                int num = 0;
 //
-///**
-// *
-// * @author sjaenick
-// */
-//public class TrackFactoryTest {
+//                @Override
+//                public boolean hasNext() {
+//                    return num < 500_000;
+//                }
 //
-//    public TrackFactoryTest() {
+//                @Override
+//                public MappedSequenceI next() {
+//                    num++;
+//                    return new MappedSequence(42, num, num + 40, 99.5f);
+//                }
+//            };
+//
+//            Collection<TrackI> result = new ArrayList<>();
+//            long start = System.currentTimeMillis();
+//            TrackFactory.createTracks(iter, result);
+//            start = System.currentTimeMillis() - start;
+//            duration += start;
+//            
+//            assertEquals(41, result.size());
+//        }
+//        
+//        duration /= numIter;
+//        System.err.println("layout took " + duration + "ms");
+//
 //    }
+
 //
-//    @BeforeClass
-//    public static void setUpClass() {
+//    @Test
+//    public void testCreateTracks2() {
+//        System.out.println("createTracks2");
+//        SortedSet<MappedSequence> mappings = new TreeSet<>();
+//
+//        MappedSequence ms1 = new MappedSequence(1, 5, 20, 0);
+//        MappedSequence ms2 = new MappedSequence(1, 25, 45, 0);
+//
+//        mappings.add(ms1);
+//        mappings.add(ms2);
+//
+//        List<Track> result = new ArrayList<>();
+//        TrackFactory.createTracks(mappings, result);
+//
+//        assertEquals(2, result.size());
 //    }
-//
-//    @AfterClass
-//    public static void tearDownClass() {
-//    }
-//
-//    @Before
-//    public void setUp() {
-//    }
-//
-//    @After
-//    public void tearDown() {
-//    }
-//
-////    @Test
-////    public void testCreateTracks() {
-////        System.out.println("createTracks");
-////        SortedSet<MappedSequence> mappings = new TreeSet<>();
-////
-////        MappedSequence ms1 = new MappedSequence(1, 5, 20, 0);
-////        MappedSequence ms2 = new MappedSequence(1, 15, 25, 0);
-////
-////        mappings.add(ms1);
-////        mappings.add(ms2);
-////
-////        List<Track> result = new ArrayList<>();
-////        TrackFactory.createTracks(mappings, result);
-////
-////        assertEquals(2, result.size());
-////    }
-////
-////    @Test
-////    public void testCreateTracks2() {
-////        System.out.println("createTracks2");
-////        SortedSet<MappedSequence> mappings = new TreeSet<>();
-////
-////        MappedSequence ms1 = new MappedSequence(1, 5, 20, 0);
-////        MappedSequence ms2 = new MappedSequence(1, 25, 45, 0);
-////
-////        mappings.add(ms1);
-////        mappings.add(ms2);
-////
-////        List<Track> result = new ArrayList<>();
-////        TrackFactory.createTracks(mappings, result);
-////
-////        assertEquals(2, result.size());
-////    }
 //    @Test
 //    public void testTiming() throws MGXException {
 //        System.out.println("testTiming");
@@ -104,7 +166,6 @@
 //        List<Track> tracks = new ArrayList<>();
 //
 //        int numTracks1, numTracks2;
-//
 //        long start = System.currentTimeMillis();
 //        for (int i = 0; i < 500; i++) {
 //            tracks.clear();
@@ -137,7 +198,6 @@
 //
 //        assertEquals(numTracks1, numTracks2);
 //    }
-//
 //    @Test
 //    public void testTiming2() {
 //        System.out.println("testTiming2 - worst case, all reads in same area");
@@ -158,4 +218,4 @@
 //        
 //        assertEquals(2000, tracks.size());
 //    }
-//}
+}

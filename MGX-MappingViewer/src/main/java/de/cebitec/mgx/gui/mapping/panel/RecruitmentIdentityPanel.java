@@ -17,7 +17,6 @@ import java.awt.Graphics2D;
 import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import org.apache.commons.math3.util.FastMath;
 import org.openide.util.Exceptions;
@@ -125,9 +124,9 @@ public class RecruitmentIdentityPanel extends PanelBase {
                 binnedIdentity[0] = 0;
                 binnedIdentity[1] = 0;
                 binnedIdentity[2] = 0;
-                Iterator<MappedSequenceI> mappings = vc.getMappings(from, FastMath.min(to, getReferenceLength() - 1));
-                while (mappings.hasNext()) {
-                    float mSeqIdentity = mappings.next().getIdentity();
+                List<MappedSequenceI> mappings = vc.getMappings(from, FastMath.min(to, getReferenceLength() - 1));
+                for (MappedSequenceI mSeq : mappings) {
+                    float mSeqIdentity = mSeq.getIdentity();
                     if (mSeqIdentity >= HI_BIN_THRESHOLD) {
                         binnedIdentity[2]++;
                     } else if (mSeqIdentity >= MID_BIN_THRESHOLD) {

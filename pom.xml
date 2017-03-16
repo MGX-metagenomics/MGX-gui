@@ -277,7 +277,7 @@
             <dependency>
                 <groupId>de.cebitec.mgx</groupId>
                 <artifactId>MGX-restgpms</artifactId>
-                <version>1.0</version>
+                <version>1.1</version>
             </dependency>
             <dependency>
                 <groupId>de.cebitec.mgx</groupId>
@@ -575,6 +575,7 @@
         <module>MGX-MappingViewer</module>
         <module>MGX-Nodes</module>
         <module>MGX-PCA</module>
+        <module>MGX-Pool</module>
         <module>MGX-QCMonitor</module>
         <module>MGX-Rarefaction</module>
         <module>MGX-Search</module>

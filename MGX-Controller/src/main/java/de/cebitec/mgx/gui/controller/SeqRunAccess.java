@@ -51,6 +51,7 @@ public class SeqRunAccess extends AccessBase<SeqRunI> implements SeqRunAccessI {
                 .setSequencingMethod(seqMethod)
                 .setSequencingTechnology(seqTechnology)
                 .setSubmittedToINSDC(submittedINSDC)
+                .setNumSequences(-1L)
                 .setAccession(submittedINSDC ? accession : null);
         SeqRunDTO dto = SeqRunDTOFactory.getInstance().toDTO(obj);
         long id = Identifiable.INVALID_IDENTIFIER;
@@ -139,6 +140,19 @@ public class SeqRunAccess extends AccessBase<SeqRunI> implements SeqRunAccessI {
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
+    }
+
+    @Override
+    public SeqRunI ByJob(final JobI job) throws MGXException {
+        SeqRunDTO dto = null;
+        try {
+            dto = getDTOmaster().SeqRun().byJob(job.getId());
+        } catch (MGXDTOException ex) {
+            throw new MGXException(ex);
+        }
+        SeqRunI ret = SeqRunDTOFactory.getInstance().toModel(getMaster(), dto);
+        job.setSeqrun(ret);
+        return ret;
     }
 
     @Override

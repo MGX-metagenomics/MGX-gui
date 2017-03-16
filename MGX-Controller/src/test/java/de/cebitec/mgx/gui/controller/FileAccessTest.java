@@ -299,6 +299,34 @@ public class FileAccessTest {
     }
 
     @Test
+    public void testEquality() throws MGXException {
+        System.out.println("testEquality");
+        MGXMasterI master = TestMaster.getRO();
+
+        MGXFileI file1 = null;
+        Iterator<MGXFileI> iter = master.File().fetchall();
+        while (iter.hasNext()) {
+            MGXFileI f = iter.next();
+            if (f.getName().equals("test1")) {
+                file1 = f;
+            }
+        }
+
+        MGXFileI file2 = null;
+        iter = master.File().fetchall();
+        while (iter.hasNext()) {
+            MGXFileI f = iter.next();
+            if (f.getName().equals("test1")) {
+                file2 = f;
+            }
+        }
+
+        assertNotNull(file1);
+        assertNotNull(file2);
+        assertEquals(file1, file2);
+    }
+
+    @Test
     public void testListRecursive() throws MGXException {
         System.out.println("testListRecursive");
         MGXMasterI master = TestMaster.getRO();
