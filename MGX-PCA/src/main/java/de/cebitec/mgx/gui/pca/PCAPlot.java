@@ -138,13 +138,14 @@ public class PCAPlot extends ViewerI<DistributionI<Long>> {
         String pc2rel = String.format("%2.2f%n", variances[comps.getSecond().getValue() - 1] * 100 / varSum);
 
         XYSeriesCollection dataset = new XYSeriesCollection();
-        XYSeries series = new XYSeries("");
+
         for (Point p : pca.getDatapoints()) {
+            XYSeries series = new XYSeries(p.getName());
             XYDataItem item = new XYDataItem(p.getX(), p.getY());
             series.add(item);
             toolTips.put(item, p.getName());
+            dataset.addSeries(series);
         }
-        dataset.addSeries(series);
 
         // second dataseries with loadings
         XYSeriesCollection loadingset = new XYSeriesCollection();
@@ -163,7 +164,6 @@ public class PCAPlot extends ViewerI<DistributionI<Long>> {
         // renderer for data points
         final XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
         renderer.setBaseLinesVisible(false);
-        renderer.setSeriesShape(0, new Ellipse2D.Double(0, 0, 5, 5));
         XYItemLabelGenerator labelGen = new XYItemLabelGenerator() {
 
             @Override
@@ -173,8 +173,17 @@ public class PCAPlot extends ViewerI<DistributionI<Long>> {
                 return toolTips.get(dataItem);
             }
         };
-        renderer.setSeriesItemLabelGenerator(0, labelGen);
-        renderer.setSeriesItemLabelsVisible(0, Boolean.TRUE);
+
+        int i = 0;
+        for (Point p : pca.getDatapoints()) {
+            renderer.setSeriesShape(i, new Ellipse2D.Double(0, 0, 7, 7));
+            renderer.setSeriesItemLabelGenerator(i, labelGen);
+            renderer.setSeriesItemLabelsVisible(i, Boolean.TRUE);
+            VisualizationGroupI vGrp = VGroupManager.getInstance().getVisualizationGroup(p.getName());
+            renderer.setSeriesPaint(i, vGrp != null ? vGrp.getColor() : Color.BLACK);
+            i++;
+        }
+
         plot.setRenderer(0, renderer);
 
         // add loadings

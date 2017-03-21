@@ -10,6 +10,7 @@ import de.cebitec.mgx.api.misc.Point;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.visualization.filter.VisFilterI;
+import de.cebitec.mgx.common.VGroupManager;
 import de.cebitec.mgx.common.visualization.ViewerI;
 import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
 import de.cebitec.mgx.gui.vizfilter.LongToDouble;
@@ -121,13 +122,13 @@ public class PCoAPlot extends ViewerI<DistributionI<Long>> {
         final Map<XYDataItem, String> toolTips = new HashMap<>();
 
         XYSeriesCollection dataset = new XYSeriesCollection();
-        XYSeries series = new XYSeries("");
         for (Point p : pcoa) {
+            XYSeries series = new XYSeries(p.getName());
             XYDataItem item = new XYDataItem(p.getX(), p.getY());
             series.add(item);
             toolTips.put(item, p.getName());
+            dataset.addSeries(series);
         }
-        dataset.addSeries(series);
 
         chart = ChartFactory.createScatterPlot(getTitle(), "C1", "C2", dataset, PlotOrientation.VERTICAL, false, true, false);
         chart.setBorderPaint(Color.WHITE);
@@ -140,7 +141,6 @@ public class PCoAPlot extends ViewerI<DistributionI<Long>> {
         // renderer for data points
         final XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
         renderer.setBaseLinesVisible(false);
-        renderer.setSeriesShape(0, new Ellipse2D.Double(0, 0, 5, 5));
         XYItemLabelGenerator labelGen = new XYItemLabelGenerator() {
 
             @Override
@@ -150,8 +150,16 @@ public class PCoAPlot extends ViewerI<DistributionI<Long>> {
                 return toolTips.get(dataItem);
             }
         };
-        renderer.setSeriesItemLabelGenerator(0, labelGen);
-        renderer.setSeriesItemLabelsVisible(0, Boolean.TRUE);
+
+        int i = 0;
+        for (Point p : pcoa) {
+            renderer.setSeriesShape(i, new Ellipse2D.Double(0, 0, 7, 7));
+            renderer.setSeriesItemLabelGenerator(i, labelGen);
+            renderer.setSeriesItemLabelsVisible(i, Boolean.TRUE);
+            VisualizationGroupI vGrp = VGroupManager.getInstance().getVisualizationGroup(p.getName());
+            renderer.setSeriesPaint(i, vGrp != null ? vGrp.getColor() : Color.BLACK);
+            i++;
+        }
         plot.setRenderer(0, renderer);
     }
 
