@@ -79,4 +79,6 @@ public interface VGroupManagerI extends PropertyChangeListener {
 
     public ReplicateGroupI getSelectedReplicateGroup();
 
+    public VisualizationGroupI getVisualizationGroup(String displayName);
+
 }

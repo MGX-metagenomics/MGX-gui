@@ -408,6 +408,16 @@ public class VGroupManager implements VGroupManagerI {
     }
 
     @Override
+    public VisualizationGroupI getVisualizationGroup(String displayName) {
+        for (VisualizationGroupI vGrp : vizGroups) {
+            if (displayName.equals(vGrp.getDisplayName())) {
+                return vGrp;
+            }
+        }
+        return null;
+    }
+    
+    @Override
     public Collection<ReplicateGroupI> getReplicateGroups() {
         List<ReplicateGroupI> ret = new ArrayList<>(replicateGroups.size());
         synchronized (replicateGroups) {
