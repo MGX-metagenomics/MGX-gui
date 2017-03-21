@@ -96,7 +96,7 @@ public class StatisticsAccess implements StatisticsAccessI {
             for (Point p : pca.getDatapoints()) {
                 for (Pair<VisualizationGroupI, DistributionI<Double>> pair : groups) {
                     if (pair.getFirst().getUUID().toString().equals(p.getName())) {
-                        p.setName(pair.getFirst().getName());
+                        p.setName(pair.getFirst().getDisplayName());
                         break;
                     }
                 }
@@ -121,7 +121,7 @@ public class StatisticsAccess implements StatisticsAccessI {
                 // replace group uuids by group names
                 for (Pair<VisualizationGroupI, DistributionI<Double>> pair : groups) {
                     if (pair.getFirst().getUUID().toString().equals(p.getName())) {
-                        p.setName(pair.getFirst().getName());
+                        p.setName(pair.getFirst().getDisplayName());
                         break;
                     }
                 }
