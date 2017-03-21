@@ -118,6 +118,44 @@
 
     <build>
         <plugins>
+             <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>manifest</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <instructions>
+                        <Export-Package>
+                            de.cebitec.mgx.gui.controller,
+                            de.cebitec.mgx.gui.util
+                        </Export-Package>
+                        <Import-Package>
+                            de.cebitec.gpms.rest,
+                            de.cebitec.mgx.dto,
+                            de.cebitec.mgx.client,
+                            de.cebitec.mgx.client.access.rest,
+                            de.cebitec.mgx.client.access.rest.util,
+                            de.cebitec.mgx.client.datatransfer,
+                            de.cebitec.mgx.client.exception,
+                            de.cebitec.mgx.api,
+                            de.cebitec.mgx.api.access,
+                            de.cebitec.mgx.api.exception,
+                            de.cebitec.mgx.api.model,
+                            de.cebitec.mgx.api.misc,
+                            de.cebitec.mgx.sequence,
+                            gnu.trove.map,
+                            gnu.trove.map.hash
+                        </Import-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
+            
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>nbm-maven-plugin</artifactId>
