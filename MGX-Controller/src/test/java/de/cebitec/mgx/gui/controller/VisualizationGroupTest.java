@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.cebitec.mgx.gui.groups;
+package de.cebitec.mgx.gui.controller;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
