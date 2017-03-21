@@ -5,7 +5,7 @@ import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.model.DNAExtractI;
 import de.cebitec.mgx.api.model.SampleI;
-import de.cebitec.mgx.gui.controller.RBAC;
+import de.cebitec.mgx.gui.rbac.RBAC;
 import de.cebitec.mgx.gui.nodefactory.DNAExtractNodeFactory;
 import de.cebitec.mgx.gui.swingutils.NonEDT;
 import de.cebitec.mgx.gui.taskview.MGXTask;

@@ -5,7 +5,7 @@ import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.gui.nodeactions.UploadReference;
-import de.cebitec.mgx.gui.controller.RBAC;
+import de.cebitec.mgx.gui.rbac.RBAC;
 import de.cebitec.mgx.gui.nodefactory.ReferenceNodeFactory;
 import de.cebitec.mgx.gui.swingutils.NonEDT;
 import de.cebitec.mgx.gui.taskview.MGXTask;
@@ -17,6 +17,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import org.openide.DialogDisplayer;
 import org.openide.WizardDescriptor;
+import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.util.Utilities;
 import org.openide.util.lookup.Lookups;
@@ -25,7 +26,7 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sj
  */
-public class ProjectReferencesNode extends MGXNodeBase<MGXMasterI> {
+public class ProjectReferencesNode extends AbstractNode {
 
     public ProjectReferencesNode(final MGXMasterI m) {
         this(new ReferenceNodeFactory(m), m);
@@ -34,7 +35,7 @@ public class ProjectReferencesNode extends MGXNodeBase<MGXMasterI> {
     }
 
     private ProjectReferencesNode(ReferenceNodeFactory rnf, MGXMasterI m) {
-        super(Children.create(rnf, true), Lookups.fixed(m), m);
+        super(Children.create(rnf, true), Lookups.fixed(m));
     }
 
     @Override
@@ -47,10 +48,10 @@ public class ProjectReferencesNode extends MGXNodeBase<MGXMasterI> {
         return new Action[]{new AddGlobalReference(), new UploadReference()};
     }
 
-    @Override
-    public void updateModified() {
-        //
-    }
+//    @Override
+//    public void updateModified() {
+//        //
+//    }
 
     private static class AddGlobalReference extends AbstractAction {
 

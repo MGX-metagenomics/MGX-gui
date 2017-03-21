@@ -10,7 +10,7 @@
     <groupId>de.cebitec.mgx.gui</groupId>
     <artifactId>MGX-Controller</artifactId>
     <version>1.0</version>
-    <packaging>nbm</packaging>
+    <packaging>bundle</packaging>
 
     <name>MGX-Controller</name>
 
@@ -118,7 +118,7 @@
 
     <build>
         <plugins>
-             <plugin>
+            <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <extensions>true</extensions>
@@ -136,6 +136,7 @@
                             de.cebitec.mgx.gui.util
                         </Export-Package>
                         <Import-Package>
+                            de.cebitec.gpms.core,
                             de.cebitec.gpms.rest,
                             de.cebitec.mgx.dto,
                             de.cebitec.mgx.client,
@@ -145,9 +146,13 @@
                             de.cebitec.mgx.client.exception,
                             de.cebitec.mgx.api,
                             de.cebitec.mgx.api.access,
+                            de.cebitec.mgx.api.access.datatransfer,
                             de.cebitec.mgx.api.exception,
                             de.cebitec.mgx.api.model,
+                            de.cebitec.mgx.api.groups,
                             de.cebitec.mgx.api.misc,
+                            de.cebitec.mgx.gui.datamodel,
+                            de.cebitec.mgx.gui.datamodel.misc,
                             de.cebitec.mgx.sequence,
                             gnu.trove.map,
                             gnu.trove.map.hash
@@ -156,19 +161,6 @@
                 </configuration>
             </plugin>
             
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>nbm-maven-plugin</artifactId>
-                <extensions>true</extensions>
-                <configuration>
-                    <useOSGiDependencies>true</useOSGiDependencies>
-                    <publicPackages>
-                        <publicPackage>de.cebitec.mgx.gui.controller</publicPackage>
-                        <publicPackage>de.cebitec.mgx.gui.util</publicPackage>
-                    </publicPackages>
-                </configuration>
-            </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -187,7 +179,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.17</version>
                 <configuration>
-                   <!-- <parallel>classes</parallel>
+                    <!-- <parallel>classes</parallel>
                     <threadCount>3</threadCount> -->
                 </configuration>
             </plugin>

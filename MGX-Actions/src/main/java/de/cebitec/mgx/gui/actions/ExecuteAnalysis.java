@@ -14,7 +14,7 @@ import de.cebitec.mgx.api.model.JobParameterI;
 import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.ToolI;
-import de.cebitec.mgx.gui.controller.RBAC;
+import de.cebitec.mgx.gui.rbac.RBAC;
 import de.cebitec.mgx.gui.swingutils.NonEDT;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;

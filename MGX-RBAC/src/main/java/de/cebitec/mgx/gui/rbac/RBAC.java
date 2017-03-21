@@ -1,4 +1,4 @@
-package de.cebitec.mgx.gui.controller;
+package de.cebitec.mgx.gui.rbac;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import org.openide.util.Utilities;

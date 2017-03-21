@@ -8,7 +8,7 @@ package de.cebitec.mgx.gui.actions;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.JobState;
-import de.cebitec.mgx.gui.controller.RBAC;
+import de.cebitec.mgx.gui.rbac.RBAC;
 import java.util.Collection;
 import java.util.concurrent.ExecutionException;
 import javax.swing.JTextArea;

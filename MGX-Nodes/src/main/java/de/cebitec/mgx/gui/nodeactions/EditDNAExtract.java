@@ -7,7 +7,7 @@ package de.cebitec.mgx.gui.nodeactions;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.DNAExtractI;
-import de.cebitec.mgx.gui.controller.RBAC;
+import de.cebitec.mgx.gui.rbac.RBAC;
 import de.cebitec.mgx.gui.wizard.extract.DNAExtractWizardDescriptor;
 import java.awt.Dialog;
 import java.awt.event.ActionEvent;

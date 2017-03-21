@@ -5,7 +5,7 @@ import de.cebitec.mgx.gui.actions.EditHabitat;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.HabitatI;
 import de.cebitec.mgx.api.model.SampleI;
-import de.cebitec.mgx.gui.controller.RBAC;
+import de.cebitec.mgx.gui.rbac.RBAC;
 import de.cebitec.mgx.gui.nodefactory.SampleNodeFactory;
 import de.cebitec.mgx.gui.wizard.sample.SampleWizardDescriptor;
 import java.awt.Dialog;

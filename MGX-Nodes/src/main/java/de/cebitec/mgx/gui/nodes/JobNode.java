@@ -63,7 +63,7 @@ public class JobNode extends MGXNodeBase<JobI> {
     
     @Override
     public void destroy() throws IOException {
-//        System.err.println("JobNode#destroy");
+        System.err.println("JobNode#destroy");
         super.destroy();
     }
 

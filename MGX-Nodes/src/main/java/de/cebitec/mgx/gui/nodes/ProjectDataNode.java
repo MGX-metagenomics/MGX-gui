@@ -2,7 +2,7 @@ package de.cebitec.mgx.gui.nodes;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.HabitatI;
-import de.cebitec.mgx.gui.controller.RBAC;
+import de.cebitec.mgx.gui.rbac.RBAC;
 import de.cebitec.mgx.gui.nodefactory.HabitatNodeFactory;
 import de.cebitec.mgx.gui.wizard.habitat.HabitatWizardDescriptor;
 import java.awt.Dialog;
@@ -13,6 +13,7 @@ import javax.swing.Action;
 import javax.swing.SwingWorker;
 import org.openide.DialogDisplayer;
 import org.openide.WizardDescriptor;
+import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.util.Exceptions;
 import org.openide.util.Utilities;
@@ -22,14 +23,14 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sj
  */
-public class ProjectDataNode extends MGXNodeBase<MGXMasterI> {
+public class ProjectDataNode extends AbstractNode { //MGXNodeBase<MGXMasterI> {
 
     public ProjectDataNode(MGXMasterI m) {
         this(m, new HabitatNodeFactory(m));
     }
 
     private ProjectDataNode(MGXMasterI m, HabitatNodeFactory hnf) {
-        super(Children.create(hnf, true), Lookups.fixed(m), m);
+        super(Children.create(hnf, true), Lookups.fixed(m));
         super.setDisplayName("Project Data");
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/ProjectData.png");
     }
@@ -44,15 +45,15 @@ public class ProjectDataNode extends MGXNodeBase<MGXMasterI> {
         return new Action[]{new AddHabitat()}; //, new Refresh()};
     }
 
-    @Override
-    public void updateModified() {
-        //
-    }
+//    @Override
+//    public void updateModified() {
+//        //
+//    }
 
-    private class AddHabitat extends AbstractAction {
+    private static class AddHabitat extends AbstractAction {
 
         public AddHabitat() {
-            putValue(NAME, "Add habitat");
+            super.putValue(NAME, "Add habitat");
         }
 
         @Override

@@ -7,7 +7,7 @@ package de.cebitec.mgx.gui.actions;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.HabitatI;
-import de.cebitec.mgx.gui.controller.RBAC;
+import de.cebitec.mgx.gui.rbac.RBAC;
 import de.cebitec.mgx.gui.wizard.habitat.HabitatWizardDescriptor;
 import java.awt.Dialog;
 import java.awt.event.ActionEvent;

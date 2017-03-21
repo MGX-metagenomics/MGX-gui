@@ -3,7 +3,7 @@ package de.cebitec.mgx.gui.nodeactions;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.MGXFileI;
-import de.cebitec.mgx.gui.controller.RBAC;
+import de.cebitec.mgx.gui.rbac.RBAC;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.util.List;

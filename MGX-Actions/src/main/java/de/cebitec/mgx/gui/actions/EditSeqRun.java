@@ -7,7 +7,7 @@ package de.cebitec.mgx.gui.actions;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.SeqRunI;
-import de.cebitec.mgx.gui.controller.RBAC;
+import de.cebitec.mgx.gui.rbac.RBAC;
 import de.cebitec.mgx.gui.wizard.seqrun.SeqRunWizardDescriptor;
 import java.awt.Dialog;
 import java.awt.event.ActionEvent;

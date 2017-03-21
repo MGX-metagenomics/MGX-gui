@@ -6,6 +6,7 @@ import de.cebitec.mgx.gui.nodeactions.CreateDirectory;
 import de.cebitec.mgx.gui.nodeactions.UploadFile;
 import de.cebitec.mgx.gui.nodefactory.FileNodeFactory;
 import javax.swing.Action;
+import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.util.lookup.Lookups;
 
@@ -13,7 +14,7 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sj
  */
-public class ProjectFilesNode extends MGXNodeBase<MGXFileI> {
+public class ProjectFilesNode extends AbstractNode { //MGXNodeBase<MGXFileI> {
 
 //    private final FileNodeFactory nf;
 
@@ -28,7 +29,7 @@ public class ProjectFilesNode extends MGXNodeBase<MGXFileI> {
     }
 
     private ProjectFilesNode(FileNodeFactory fnf, MGXFileI root) {
-        super(Children.create(fnf, true), Lookups.fixed(root.getMaster(), root), root);
+        super(Children.create(fnf, true), Lookups.fixed(root.getMaster(), root));
 //        nf = fnf;
     }
 
@@ -42,8 +43,8 @@ public class ProjectFilesNode extends MGXNodeBase<MGXFileI> {
         return new Action[]{new CreateDirectory(), new UploadFile()};
     }
 
-    @Override
-    public void updateModified() {
-        //
-    }
+//    @Override
+//    public void updateModified() {
+//        //
+//    }
 }

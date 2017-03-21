@@ -128,6 +128,11 @@
             <groupId>de.cebitec.gpms</groupId>
             <artifactId>GPMS-rest-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>MGX-RBAC</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
