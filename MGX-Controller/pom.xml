@@ -153,6 +153,7 @@
                             de.cebitec.mgx.api.misc,
                             de.cebitec.mgx.gui.datamodel,
                             de.cebitec.mgx.gui.datamodel.misc,
+                            de.cebitec.mgx.common,
                             de.cebitec.mgx.sequence,
                             gnu.trove.map,
                             gnu.trove.map.hash
