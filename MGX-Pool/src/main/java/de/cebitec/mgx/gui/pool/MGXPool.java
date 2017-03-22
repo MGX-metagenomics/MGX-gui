@@ -48,11 +48,11 @@ public class MGXPool {
         return numTasks;
     }
 
-    public void shutdown() {
+    void shutdown() {
         pool.shutdown();
     }
 
-    public List<Runnable> shutdownNow() {
+    List<Runnable> shutdownNow() {
         return pool.shutdownNow();
     }
 
@@ -64,7 +64,7 @@ public class MGXPool {
         return pool.isTerminated();
     }
 
-    public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
+    boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
         return pool.awaitTermination(timeout, unit);
     }
 
