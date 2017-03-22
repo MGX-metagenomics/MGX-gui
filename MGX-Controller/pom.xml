@@ -149,6 +149,7 @@
                             de.cebitec.mgx.api.access.datatransfer,
                             de.cebitec.mgx.api.exception,
                             de.cebitec.mgx.api.model,
+                            de.cebitec.mgx.api.model.qc,
                             de.cebitec.mgx.api.groups,
                             de.cebitec.mgx.api.misc,
                             de.cebitec.mgx.gui.datamodel,
