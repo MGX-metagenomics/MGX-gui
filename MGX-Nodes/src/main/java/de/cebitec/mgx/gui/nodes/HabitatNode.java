@@ -1,24 +1,12 @@
 package de.cebitec.mgx.gui.nodes;
 
+import de.cebitec.mgx.gui.nodeactions.AddSample;
 import de.cebitec.mgx.gui.actions.DeleteHabitat;
 import de.cebitec.mgx.gui.actions.EditHabitat;
-import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.HabitatI;
-import de.cebitec.mgx.api.model.SampleI;
-import de.cebitec.mgx.gui.rbac.RBAC;
 import de.cebitec.mgx.gui.nodefactory.SampleNodeFactory;
-import de.cebitec.mgx.gui.wizard.sample.SampleWizardDescriptor;
-import java.awt.Dialog;
-import java.awt.event.ActionEvent;
-import java.util.concurrent.ExecutionException;
-import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.SwingWorker;
-import org.openide.DialogDisplayer;
-import org.openide.WizardDescriptor;
 import org.openide.nodes.Children;
-import org.openide.util.Exceptions;
-import org.openide.util.Utilities;
 import org.openide.util.lookup.Lookups;
 
 /**
@@ -26,8 +14,6 @@ import org.openide.util.lookup.Lookups;
  * @author sj
  */
 public class HabitatNode extends MGXNodeBase<HabitatI> {
-
-    private SampleNodeFactory snf = null;
 
     public HabitatNode(HabitatI h) {
         this(h, new SampleNodeFactory(h));
@@ -38,7 +24,6 @@ public class HabitatNode extends MGXNodeBase<HabitatI> {
         super.setDisplayName(h.getName());
         super.setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/Habitat.png");
         super.setShortDescription(getToolTipText(h));
-        this.snf = snf;
     }
 
     private String getToolTipText(HabitatI h) {
@@ -63,50 +48,5 @@ public class HabitatNode extends MGXNodeBase<HabitatI> {
         setDisplayName(getContent().getName());
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/Habitat.png");
         setShortDescription(getToolTipText(getContent()));
-    }
-
-
-
-    private class AddSample extends AbstractAction {
-
-        public AddSample() {
-            super.putValue(NAME, "Add sample");
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            final MGXMasterI m = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
-            final SampleWizardDescriptor wd = new SampleWizardDescriptor(m);
-            Dialog dialog = DialogDisplayer.getDefault().createDialog(wd);
-            dialog.setVisible(true);
-            dialog.toFront();
-            boolean cancelled = wd.getValue() != WizardDescriptor.FINISH_OPTION;
-            if (!cancelled) {
-                final HabitatI hab = Utilities.actionsGlobalContext().lookup(HabitatI.class);
-                SwingWorker<SampleI, Void> worker = new SwingWorker<SampleI, Void>() {
-                    @Override
-                    protected SampleI doInBackground() throws Exception {
-                        return m.Sample().create(hab, wd.getCollectionDate(), wd.getSampleMaterial(), wd.getTemperature(), wd.getVolume(), wd.getVolumeUnit());
-                    }
-
-                    @Override
-                    protected void done() {
-                        try {
-                            get();
-                        } catch (InterruptedException | ExecutionException ex) {
-                            Exceptions.printStackTrace(ex);
-                        }
-                        hab.childChanged();
-                        super.done();
-                    }
-                };
-                worker.execute();
-            }
-        }
-
-        @Override
-        public boolean isEnabled() {
-            return (super.isEnabled() && RBAC.isUser());
-        }
     }
 }

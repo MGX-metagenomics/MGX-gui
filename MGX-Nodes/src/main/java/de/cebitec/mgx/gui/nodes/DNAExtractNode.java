@@ -45,6 +45,4 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtractI> {
         super.setShortDescription(getToolTipText(getContent()));
         super.setDisplayName(getContent().getName());
     }
-
-
 }

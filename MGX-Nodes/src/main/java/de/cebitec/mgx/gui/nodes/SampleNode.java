@@ -1,30 +1,13 @@
 package de.cebitec.mgx.gui.nodes;
 
-import de.cebitec.mgx.api.MGXMasterI;
-import de.cebitec.mgx.api.exception.MGXException;
-import de.cebitec.mgx.api.misc.TaskI;
-import de.cebitec.mgx.api.model.DNAExtractI;
+import de.cebitec.mgx.gui.nodeactions.AddExtract;
+import de.cebitec.mgx.gui.nodeactions.EditSample;
+import de.cebitec.mgx.gui.nodeactions.DeleteSample;
 import de.cebitec.mgx.api.model.SampleI;
-import de.cebitec.mgx.gui.rbac.RBAC;
 import de.cebitec.mgx.gui.nodefactory.DNAExtractNodeFactory;
-import de.cebitec.mgx.gui.swingutils.NonEDT;
-import de.cebitec.mgx.gui.taskview.MGXTask;
-import de.cebitec.mgx.gui.taskview.TaskManager;
-import de.cebitec.mgx.gui.wizard.extract.DNAExtractWizardDescriptor;
-import de.cebitec.mgx.gui.wizard.sample.SampleWizardDescriptor;
-import java.awt.Dialog;
-import java.awt.event.ActionEvent;
 import java.text.DateFormat;
-import java.util.concurrent.ExecutionException;
-import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.SwingWorker;
-import org.openide.DialogDisplayer;
-import org.openide.NotifyDescriptor;
-import org.openide.WizardDescriptor;
 import org.openide.nodes.Children;
-import org.openide.util.Exceptions;
-import org.openide.util.Utilities;
 import org.openide.util.lookup.Lookups;
 
 /**
@@ -32,8 +15,6 @@ import org.openide.util.lookup.Lookups;
  * @author sj
  */
 public class SampleNode extends MGXNodeBase<SampleI> {
-
-    private DNAExtractNodeFactory nf = null;
 
     public SampleNode(SampleI s) {
         this(s, new DNAExtractNodeFactory(s));
@@ -44,7 +25,6 @@ public class SampleNode extends MGXNodeBase<SampleI> {
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/Sample.png");
         super.setShortDescription(getToolTipText(s));
         super.setDisplayName(s.getMaterial());
-        this.nf = snf;
     }
 
     private String getToolTipText(SampleI s) {
@@ -65,157 +45,5 @@ public class SampleNode extends MGXNodeBase<SampleI> {
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/Sample.png");
         setShortDescription(getToolTipText(getContent()));
         setDisplayName(getContent().getMaterial());
-    }
-
-    private class EditSample extends AbstractAction {
-
-        public EditSample() {
-            putValue(NAME, "Edit");
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            SampleI sample = Utilities.actionsGlobalContext().lookup(SampleI.class);
-            final MGXMasterI m = sample.getMaster();
-
-            SampleWizardDescriptor swd = new SampleWizardDescriptor(m, sample);
-            Dialog dialog = DialogDisplayer.getDefault().createDialog(swd);
-            dialog.setVisible(true);
-            dialog.toFront();
-            boolean cancelled = swd.getValue() != WizardDescriptor.FINISH_OPTION;
-            if (!cancelled) {
-                final String oldDisplayName = sample.getMaterial();
-                final SampleI s = swd.getSample();
-                SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
-                    @Override
-                    protected Void doInBackground() throws Exception {
-                        m.Sample().update(s);
-                        return null;
-                    }
-
-                    @Override
-                    protected void done() {
-                        try {
-                            get();
-                        } catch (InterruptedException | ExecutionException ex) {
-                            Exceptions.printStackTrace(ex);
-                        }
-//                        setShortDescription(getToolTipText(s));
-//                        setDisplayName(s.getMaterial());
-//                        fireDisplayNameChange(oldDisplayName, s.getMaterial());
-                        super.done();
-                    }
-                };
-                worker.execute();
-            }
-        }
-
-        @Override
-        public boolean isEnabled() {
-            return (super.isEnabled() && RBAC.isUser());
-        }
-    }
-
-    private class DeleteSample extends AbstractAction {
-
-        public DeleteSample() {
-            putValue(NAME, "Delete");
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            final SampleI sample = Utilities.actionsGlobalContext().lookup(SampleI.class);
-            final MGXMasterI m = sample.getMaster();
-            
-            NotifyDescriptor d = new NotifyDescriptor("Really delete sample " + sample.getMaterial() + "?",
-                    "Delete sample",
-                    NotifyDescriptor.YES_NO_OPTION,
-                    NotifyDescriptor.QUESTION_MESSAGE,
-                    null,
-                    null);
-            Object ret = DialogDisplayer.getDefault().notify(d);
-            if (NotifyDescriptor.YES_OPTION.equals(ret)) {
-                final MGXTask deleteTask = new MGXTask("Delete " + sample.getMaterial()) {
-                    @Override
-                    public boolean process() {
-                        try {
-                            setStatus("Deleting..");
-                            TaskI<SampleI> task = m.Sample().delete(sample);
-                            while (task != null && !task.done()) {
-                                setStatus(task.getStatusMessage());
-                                m.<SampleI>Task().refresh(task);
-                                sleep();
-                            }
-//                            if (task != null) {
-//                                task.finish();
-//                            }
-                            return task != null && task.getState() == TaskI.State.FINISHED;
-                        } catch (MGXException ex) {
-                            setStatus(ex.getMessage());
-                            failed(ex.getMessage());
-                            return false;
-                        }
-                    }
-                };
-
-                NonEDT.invoke(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        TaskManager.getInstance().addTask(deleteTask);
-                    }
-                });
-            }
-        }
-
-        @Override
-        public boolean isEnabled() {
-            return (super.isEnabled() && RBAC.isUser());
-        }
-    }
-
-    private class AddExtract extends AbstractAction {
-
-        public AddExtract() {
-            putValue(NAME, "Add DNA extract");
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            final MGXMasterI m = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
-            final DNAExtractWizardDescriptor wd = new DNAExtractWizardDescriptor(m);
-            Dialog dialog = DialogDisplayer.getDefault().createDialog(wd);
-            dialog.setVisible(true);
-            dialog.toFront();
-            boolean cancelled = wd.getValue() != WizardDescriptor.FINISH_OPTION;
-            if (!cancelled) {
-                final SampleI s = getLookup().lookup(SampleI.class);
-                SwingWorker<DNAExtractI, Void> worker = new SwingWorker<DNAExtractI, Void>() {
-                    @Override
-                    protected DNAExtractI doInBackground() throws Exception {
-                        return m.DNAExtract().create(s, wd.getExtractName(), wd.getMethod(),
-                                wd.getProtocol(), wd.getFivePrimer(), wd.getThreePrimer(), wd.getTargetGene(), wd.getTargetFragment(), wd.getDescription());
-                    }
-
-                    @Override
-                    protected void done() {
-                        try {
-                            get();
-                        } catch (InterruptedException | ExecutionException ex) {
-                            Exceptions.printStackTrace(ex);
-                        }
-                        s.childChanged();
-//                        nf.refreshChildren();
-                        super.done();
-                    }
-                };
-                worker.execute();
-            }
-        }
-
-        @Override
-        public boolean isEnabled() {
-            return (super.isEnabled() && RBAC.isUser());
-        }
     }
 }
