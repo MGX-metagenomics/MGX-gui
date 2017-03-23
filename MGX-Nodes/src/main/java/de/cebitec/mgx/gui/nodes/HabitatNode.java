@@ -96,8 +96,7 @@ public class HabitatNode extends MGXNodeBase<HabitatI> {
                         } catch (InterruptedException | ExecutionException ex) {
                             Exceptions.printStackTrace(ex);
                         }
-                        m.childChanged();
-//                        snf.refreshChildren();
+                        hab.childChanged();
                         super.done();
                     }
                 };
