@@ -6,8 +6,8 @@ import de.cebitec.mgx.api.model.JobParameterI;
 import de.cebitec.mgx.api.model.JobState;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.ToolI;
-import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 /**
  *
@@ -24,7 +24,7 @@ public class Job extends JobI {
     //
     protected Date finishDate = null;
     //
-    protected Collection<JobParameterI> parameters = null;
+    protected List<JobParameterI> parameters = null;
     private int jobstate = JobState.CREATED.getValue();
 
     public Job(MGXMasterI m) {
@@ -56,12 +56,12 @@ public class Job extends JobI {
     }
 
     @Override
-    public Collection<JobParameterI> getParameters() {
+    public List<JobParameterI> getParameters() {
         return parameters;
     }
 
     @Override
-    public Job setParameters(Collection<JobParameterI> parameters) {
+    public Job setParameters(List<JobParameterI> parameters) {
         this.parameters = parameters;
         return this;
     }

@@ -6,7 +6,10 @@ import de.cebitec.mgx.api.model.JobParameterI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import java.awt.Component;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -46,7 +49,7 @@ public final class ConflictResolverVisualPanel1 extends JPanel implements ListSe
         }
     }
 
-    public void setJobs(Collection<JobI> jobs) { 
+    public void setJobs(Collection<JobI> jobs) {
         jobList.setListData(jobs.toArray(new JobI[]{}));
     }
 
@@ -70,7 +73,8 @@ public final class ConflictResolverVisualPanel1 extends JPanel implements ListSe
         return vg == null ? super.getName() : vg.getDisplayName() + " " + run.getName();
     }
 
-    protected static String joinParameters(Iterable<JobParameterI> pColl, String separator) {
+    protected static String joinParameters(List<JobParameterI> pColl, String separator) {
+        Collections.sort(pColl, new SortByNodeID());
         Iterator<JobParameterI> oIter;
         if (pColl == null || (!(oIter = pColl.iterator()).hasNext())) {
             return "";
@@ -83,9 +87,8 @@ public final class ConflictResolverVisualPanel1 extends JPanel implements ListSe
     }
 
     private static String toParameterString(JobParameterI jp) {
-        return new StringBuilder(Long.toString(jp.getNodeId()))
-                .append(".")
-                .append(jp.getParameterName())
+        return new StringBuilder()
+                .append(jp.getUserName())
                 .append("=")
                 .append(jp.getParameterValue())
                 .toString();
@@ -159,4 +162,13 @@ public final class ConflictResolverVisualPanel1 extends JPanel implements ListSe
     private javax.swing.JList<JobI> jobList;
     private javax.swing.JLabel seqRunLabel;
     // End of variables declaration//GEN-END:variables
+
+    private static class SortByNodeID implements Comparator<JobParameterI> {
+
+        @Override
+        public int compare(JobParameterI o1, JobParameterI o2) {
+            return Long.compare(o1.getNodeId(), o2.getNodeId());
+        }
+        
+    }
 }

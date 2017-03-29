@@ -12,7 +12,6 @@ import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.JobParameterI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.ToolI;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -22,7 +21,7 @@ import java.util.List;
  */
 public interface JobAccessI  {
 
-    public JobI create(ToolI tool, SeqRunI seqrun, Collection<JobParameterI> params) throws MGXException;
+    public JobI create(ToolI tool, SeqRunI seqrun, List<JobParameterI> params) throws MGXException;
 
     public JobI fetch(long id) throws MGXException;
 

@@ -215,11 +215,11 @@ public class ExecuteAnalysis extends NodeAction implements LookupListener {
         private long toolId;
         private final SeqRunI run;
         private final ToolType tooltype;
-        private final Collection<JobParameterI> params;
+        private final List<JobParameterI> params;
         private final CountDownLatch toolCreated;
         private final Semaphore rateLimit;
 
-        public SubmitTask(long toolId, String toolName, ToolType tooltype, SeqRunI run, Collection<JobParameterI> params, CountDownLatch toolCreated, Semaphore rateLimit) {
+        public SubmitTask(long toolId, String toolName, ToolType tooltype, SeqRunI run, List<JobParameterI> params, CountDownLatch toolCreated, Semaphore rateLimit) {
             super("Submit " + run.getName() + " / " + toolName);
             if (toolName == null) {
                 throw new RuntimeException("No tool name supplied.");
@@ -251,7 +251,7 @@ public class ExecuteAnalysis extends NodeAction implements LookupListener {
         private final String toolXML;
         private final float toolVersion;
 
-        public SubmitTask(String toolName, String toolDesc, String toolAuthor, String toolUri, float toolVersion, String toolXML, SeqRunI run, Collection<JobParameterI> params, CountDownLatch toolCreated, Semaphore rateLimit) {
+        public SubmitTask(String toolName, String toolDesc, String toolAuthor, String toolUri, float toolVersion, String toolXML, SeqRunI run, List<JobParameterI> params, CountDownLatch toolCreated, Semaphore rateLimit) {
             super("Submit " + run.getName() + " / " + toolName);
             this.toolId = Identifiable.INVALID_IDENTIFIER;
             this.tooltype = ToolType.USER_PROVIDED;

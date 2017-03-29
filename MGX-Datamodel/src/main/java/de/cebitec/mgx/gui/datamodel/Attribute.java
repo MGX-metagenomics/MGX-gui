@@ -21,7 +21,6 @@ public class Attribute extends AttributeI {
         super(m);
     }
 
-
     @Override
     public long getParentID() {
         return parent_id;
@@ -39,6 +38,8 @@ public class Attribute extends AttributeI {
 
     @Override
     public Attribute setAttributeType(AttributeTypeI atype) {
+        assert atype != null;
+        assert this.atype == null;
         this.atype = atype;
         return this;
     }
@@ -92,7 +93,7 @@ public class Attribute extends AttributeI {
         if (!Objects.equals(this.value, other.getValue())) {
             return false;
         }
-        
+
         // parent ids can only be compared if they are from the same project
         if (this.getMaster() == other.getMaster()) {
             if (this.job_id == other.getJobId() && this.parent_id != other.getParentID()) {

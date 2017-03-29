@@ -8,8 +8,8 @@ package de.cebitec.mgx.api.model;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import java.awt.datatransfer.DataFlavor;
-import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 /**
  *
@@ -31,9 +31,9 @@ public abstract class JobI extends Identifiable<JobI> {
 
     public abstract JobI setTool(ToolI t);
 
-    public abstract Collection<JobParameterI> getParameters();
+    public abstract List<JobParameterI> getParameters();
 
-    public abstract JobI setParameters(Collection<JobParameterI> parameters);
+    public abstract JobI setParameters(List<JobParameterI> parameters);
 
     public abstract Date getFinishDate();
 

@@ -1,21 +1,18 @@
 package de.cebitec.mgx.gui.attributevisualization.conflictwizard;
 
-import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.AttributeRank;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.misc.Triple;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.SeqRunI;
-import de.cebitec.mgx.api.model.ToolI;
 import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
 import javax.swing.JComponent;
-import javax.swing.SwingWorker;
 import javax.swing.event.ChangeListener;
 import org.openide.WizardDescriptor;
 import org.openide.WizardDescriptor.Panel;
@@ -69,30 +66,18 @@ public final class ConflictResolverWizardIterator implements WizardDescriptor.It
                 // the job objects don't have the corresponding tool instance set
                 // here, so we need to fetch them separately
                 //
-
                 for (final Triple<AttributeRank, SeqRunI, Set<JobI>> e : vg.getConflicts()) {
-
-                    SwingWorker<Void, Void> fetchTool = new SwingWorker<Void, Void>() {
-                        @Override
-                        protected Void doInBackground() throws Exception {
-                            for (final JobI job : e.getThird()) {
-                                if (job.getTool() == null) {
-                                    MGXMasterI master = job.getMaster();
-                                    ToolI tool = master.Tool().ByJob(job);
-                                    job.setTool(tool);
-                                }
-                            }
-                            return null;
-                        }
-                    };
-                    fetchTool.execute();
+                    final Set<JobI> jobs = e.getThird();
                     try {
-                        fetchTool.get();
-                    } catch (InterruptedException | ExecutionException ex) {
+                        for (final JobI job : jobs) {
+                            if (job.getTool() == null) {
+                                // trigger tool fetch
+                                job.getMaster().Tool().ByJob(job);
+                            }
+                        }
+                    } catch (MGXException ex) {
                         Exceptions.printStackTrace(ex);
                     }
-
-
                     WizardDescriptor.Panel panel = new ConflictResolverWizardPanel1(vg, e.getFirst(), e.getSecond(), e.getThird());
                     panels.add(panel);
                 }

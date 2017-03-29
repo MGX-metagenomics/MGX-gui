@@ -21,7 +21,6 @@ import de.cebitec.mgx.gui.datamodel.Job;
 import de.cebitec.mgx.gui.dtoconversion.JobDTOFactory;
 import de.cebitec.mgx.gui.util.BaseIterator;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
@@ -112,7 +111,7 @@ public class JobAccess implements JobAccessI {
     }
 
     @Override
-    public JobI create(ToolI tool, SeqRunI seqrun, Collection<JobParameterI> params) throws MGXException {
+    public JobI create(ToolI tool, SeqRunI seqrun, List<JobParameterI> params) throws MGXException {
 
         JobI job = new Job(tool.getMaster());
         job.setCreator(tool.getMaster().getLogin());
