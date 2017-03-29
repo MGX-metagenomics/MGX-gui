@@ -497,6 +497,11 @@
                 <artifactId>MGX-UpdateCenter</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>de.cebitec.mgx.gui</groupId>
+                <artifactId>MGX-Pool</artifactId>
+                <version>1.0</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
