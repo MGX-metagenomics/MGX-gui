@@ -6,7 +6,7 @@ import de.cebitec.mgx.api.exception.MGXLoggedoutException;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.nodes.JobNode;
-import de.cebitec.mgx.gui.swingutils.NonEDT;
+import de.cebitec.mgx.gui.pool.MGXPool;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -73,7 +73,7 @@ public class JobNodeFactory extends MGXNodeFactoryBase<MGXMasterI, JobI> {
         List<JobI> jobs = new ArrayList<>();
         CountDownLatch allDone = new CountDownLatch(seqruns.size());
         for (SeqRunI run : seqruns) {
-            NonEDT.invoke(new FillSeqRun(run, jobs, allDone));
+            MGXPool.getInstance().submit(new FillSeqRun(run, jobs, allDone));
         }
         try {
             allDone.await();
