@@ -56,7 +56,7 @@ public class TreeTableView extends ViewerI<TreeI<Long>> {
 
         // convert data to KRONA style
         TreeI<Long> kronaTree = TreeFactory.createKRONATree(tree);
-        kronaTree = TreeFactory.filter(kronaTree, getCustomizer().getFilterEntries());
+        kronaTree = TreeFactory.filter(kronaTree, getCust().getFilterEntries());
 
         /*
          *  handle unaligned trees, where equal depth does not mean equal
@@ -109,7 +109,11 @@ public class TreeTableView extends ViewerI<TreeI<Long>> {
     }
 
     @Override
-    public TableViewCustomizer getCustomizer() {
+    public JComponent getCustomizer() {
+        return getCust();
+    }
+
+    private TableViewCustomizer getCust() {
         if (cust == null) {
             cust = new TableViewCustomizer();
             cust.kronaMode();
