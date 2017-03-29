@@ -65,7 +65,10 @@ public class SelectJobsWizardPanel1 implements WizardDescriptor.Panel<WizardDesc
         List<JobI> allJobs = seqrun.getMaster().Job().BySeqRun(seqrun);
         jobs = new HashMap<>(allJobs.size());
         for (JobI job : allJobs) {
-            job.setTool(seqrun.getMaster().Tool().ByJob(job));
+            // trigger tool fetch
+            if (job.getTool() == null) {
+                seqrun.getMaster().Tool().ByJob(job);
+            }
             if (job.getStatus() == JobState.FINISHED) {
                 jobs.put(job, null);
             }
