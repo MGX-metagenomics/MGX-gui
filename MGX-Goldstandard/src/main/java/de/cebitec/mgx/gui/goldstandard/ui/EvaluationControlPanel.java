@@ -10,6 +10,7 @@ import de.cebitec.mgx.gui.goldstandard.ui.charts.EvaluationViewerI;
 import de.cebitec.mgx.gui.goldstandard.ui.charts.gscomparison.GSComparisonI;
 import de.cebitec.mgx.gui.goldstandard.ui.charts.pipelinecomparison.PipelineComparisonI;
 import de.cebitec.mgx.gui.goldstandard.util.EvalExceptions;
+import de.cebitec.mgx.gui.pool.MGXPool;
 import de.cebitec.mgx.gui.swingutils.BaseModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -204,8 +205,9 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Action
             topComponent.setVisualization(null);
         } else {
             topComponent.setVisualization(null);
+            assert currentSeqrun != null;
             currentViewer.selectJobs(currentSeqrun);
-            EvaluationTopComponent.getExecutorService().submit(new Runnable() {
+            MGXPool.getInstance().submit(new Runnable() {
                 @Override
                 public void run() {
                     try {

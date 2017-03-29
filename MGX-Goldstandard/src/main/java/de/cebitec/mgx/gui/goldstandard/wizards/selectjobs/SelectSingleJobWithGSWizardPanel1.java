@@ -69,7 +69,10 @@ public class SelectSingleJobWithGSWizardPanel1 implements WizardDescriptor.Panel
 //        allJobs.remove(goldstandard);
         for (JobI job : allJobs) {
             if (job.getStatus() == JobState.FINISHED) {
-                job.setTool(seqrun.getMaster().Tool().ByJob(job));
+                if (job.getTool() == null) {
+                    // trigger seqrun fetch
+                    seqrun.getMaster().Tool().ByJob(job);
+                }
                 jobs.put(job, null);
             }
         }
@@ -85,9 +88,9 @@ public class SelectSingleJobWithGSWizardPanel1 implements WizardDescriptor.Panel
             component = new SelectSingleJobWithGSVisualPanel1(jobs, atLabel);
             component.addListSelectionListener(this);
             component.addGSComboBoxSelectionListener(this);
-            if (maxSelected == 1){
+            if (maxSelected == 1) {
                 component.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-            }            
+            }
             updateJobList();
         }
         return component;

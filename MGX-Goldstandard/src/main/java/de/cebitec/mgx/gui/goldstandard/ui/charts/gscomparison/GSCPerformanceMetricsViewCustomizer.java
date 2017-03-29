@@ -1,6 +1,6 @@
 package de.cebitec.mgx.gui.goldstandard.ui.charts.gscomparison;
 
-import de.cebitec.mgx.gui.goldstandard.ui.EvaluationTopComponent;
+import de.cebitec.mgx.gui.pool.MGXPool;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.BufferedWriter;
@@ -83,7 +83,7 @@ public class GSCPerformanceMetricsViewCustomizer extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void exportTSVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportTSVActionPerformed
-        EvaluationTopComponent.getExecutorService().submit(new Runnable() {
+        MGXPool.getInstance().submit(new Runnable() {
             @Override
             public void run() {
                 ProgressHandle p = ProgressHandle.createHandle("export table view");

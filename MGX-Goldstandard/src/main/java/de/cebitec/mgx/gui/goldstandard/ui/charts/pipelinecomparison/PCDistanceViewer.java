@@ -199,6 +199,7 @@ public class PCDistanceViewer extends EvaluationViewerI implements PipelineCompa
     @Override
     public void selectJobs(SeqRunI seqrun) {
         try {
+            assert seqrun != null;
             SelectJobsWizardDescriptor jobWizard = new SelectJobsWizardDescriptor(seqrun, false);
             Dialog dialog = DialogDisplayer.getDefault().createDialog(jobWizard);
             dialog.setVisible(true);

@@ -67,61 +67,61 @@ public class GSCVennChartViewer extends EvaluationViewerI implements PipelineCom
     @Override
     public void evaluate() {
         try {
-            if (dists.size() == 2) {
-                DistributionI<Long> distA = dists.get(0);
-                DistributionI<Long> distB = dists.get(1);
-
-                String jobAName = JobUtils.jobToString(currentJobs.get(0));
-                String jobBName = JobUtils.jobToString(currentJobs.get(1));
-
-                List<Collection<AttributeI>> vennCollections = calcVenn2Collections(distA, distB);
-                int onlyA = vennCollections.get(2).size();
-                int onlyB = vennCollections.get(1).size();
-                int ab = vennCollections.get(3).size();
-
-                venn = VennChart.get2Venn(onlyA, onlyB, ab, jobAName, jobBName);
-
-            } else if (dists.size() == 3) {
-                DistributionI<Long> distA = dists.get(0);
-                DistributionI<Long> distB = dists.get(1);
-                DistributionI<Long> distC = dists.get(2);
-
-                String jobAName = JobUtils.jobToString(currentJobs.get(0));
-                String jobBName = JobUtils.jobToString(currentJobs.get(1));
-                String jobCName = JobUtils.jobToString(currentJobs.get(2));
-
-                List<Collection<AttributeI>> vennCollections = calcVenn3Collections(distA, distB, distC);
-                int onlyA = vennCollections.get(4).size();
-                int onlyB = vennCollections.get(2).size();
-                int onlyC = vennCollections.get(1).size();
-                int ab = vennCollections.get(6).size();
-                int bc = vennCollections.get(3).size();
-                int ac = vennCollections.get(5).size();
-                int abc = vennCollections.get(7).size();
-
-                venn = VennChart.get3Venn(onlyA, onlyB, onlyC, ab, ac, bc, abc, jobAName, jobBName, jobCName);
-
-            } else if (dists.size() == 4) {
-                DistributionI<Long> distA = dists.get(0);
-                DistributionI<Long> distB = dists.get(1);
-                DistributionI<Long> distC = dists.get(2);
-                DistributionI<Long> distD = dists.get(3);
-
-                String jobAName = JobUtils.jobToString(currentJobs.get(0));
-                String jobBName = JobUtils.jobToString(currentJobs.get(1));
-                String jobCName = JobUtils.jobToString(currentJobs.get(2));
-                String jobDName = JobUtils.jobToString(currentJobs.get(3));
-
-                List<Collection<AttributeI>> collections = calcVenn4Collections(distA, distB, distC, distD);
-                List<Long> vennValues = new ArrayList<>(collections.size());
-                for (Collection<AttributeI> col : collections){
-                    if (col != null)
-                        vennValues.add(new Long(col.size()));
-                    else
-                        vennValues.add(null);
-                }
-
-                venn = VennChart.get4Venn(vennValues, jobAName, jobBName, jobCName, jobDName);
+            switch (dists.size()) {
+                case 2:
+                    {
+                        DistributionI<Long> distA = dists.get(0);
+                        DistributionI<Long> distB = dists.get(1);
+                        String jobAName = JobUtils.jobToString(currentJobs.get(0));
+                        String jobBName = JobUtils.jobToString(currentJobs.get(1));
+                        List<Collection<AttributeI>> vennCollections = calcVenn2Collections(distA, distB);
+                        int onlyA = vennCollections.get(2).size();
+                        int onlyB = vennCollections.get(1).size();
+                        int ab = vennCollections.get(3).size();
+                        venn = VennChart.get2Venn(onlyA, onlyB, ab, jobAName, jobBName);
+                        break;
+                    }
+                case 3:
+                    {
+                        DistributionI<Long> distA = dists.get(0);
+                        DistributionI<Long> distB = dists.get(1);
+                        DistributionI<Long> distC = dists.get(2);
+                        String jobAName = JobUtils.jobToString(currentJobs.get(0));
+                        String jobBName = JobUtils.jobToString(currentJobs.get(1));
+                        String jobCName = JobUtils.jobToString(currentJobs.get(2));
+                        List<Collection<AttributeI>> vennCollections = calcVenn3Collections(distA, distB, distC);
+                        int onlyA = vennCollections.get(4).size();
+                        int onlyB = vennCollections.get(2).size();
+                        int onlyC = vennCollections.get(1).size();
+                        int ab = vennCollections.get(6).size();
+                        int bc = vennCollections.get(3).size();
+                        int ac = vennCollections.get(5).size();
+                        int abc = vennCollections.get(7).size();
+                        venn = VennChart.get3Venn(onlyA, onlyB, onlyC, ab, ac, bc, abc, jobAName, jobBName, jobCName);
+                        break;
+                    }
+                case 4:
+                    {
+                        DistributionI<Long> distA = dists.get(0);
+                        DistributionI<Long> distB = dists.get(1);
+                        DistributionI<Long> distC = dists.get(2);
+                        DistributionI<Long> distD = dists.get(3);
+                        String jobAName = JobUtils.jobToString(currentJobs.get(0));
+                        String jobBName = JobUtils.jobToString(currentJobs.get(1));
+                        String jobCName = JobUtils.jobToString(currentJobs.get(2));
+                        String jobDName = JobUtils.jobToString(currentJobs.get(3));
+                        List<Collection<AttributeI>> collections = calcVenn4Collections(distA, distB, distC, distD);
+                        List<Long> vennValues = new ArrayList<>(collections.size());
+                        for (Collection<AttributeI> col : collections){
+                            if (col != null)
+                                vennValues.add(new Long(col.size()));
+                            else
+                                vennValues.add(null);
+                        }       venn = VennChart.get4Venn(vennValues, jobAName, jobBName, jobCName, jobDName);
+                        break;
+                    }
+                default:
+                    break;
             }
         } catch (IOException ex) {
             EvalExceptions.printStackTrace(ex);

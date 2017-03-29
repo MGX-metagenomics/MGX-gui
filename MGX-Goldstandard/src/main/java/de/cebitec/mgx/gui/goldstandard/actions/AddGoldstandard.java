@@ -12,20 +12,16 @@ import de.cebitec.mgx.gui.goldstandard.util.MGSAttribute;
 import de.cebitec.mgx.gui.goldstandard.util.MGSEntry;
 import de.cebitec.mgx.gui.goldstandard.util.MGSReader;
 import de.cebitec.mgx.gui.goldstandard.wizards.addgoldstandard.AddGoldstandardWizardDescriptor;
+import de.cebitec.mgx.gui.pool.MGXPool;
 import de.cebitec.mgx.gui.rbac.RBAC;
 import java.awt.Dialog;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.RejectedExecutionHandler;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import static javax.swing.Action.NAME;
 import org.netbeans.api.progress.ProgressHandle;
 import org.openide.DialogDisplayer;
@@ -47,7 +43,7 @@ public final class AddGoldstandard extends NodeAction implements LookupListener 
 
     private final Lookup context;
     private Lookup.Result<SeqRunI> lkpInfo;
-    private ExecutorService pool;
+//    private ExecutorService pool;
 
     public final static String TOOL_NAME = "Goldstandard";
     public final static String TOOL_AUTHOR = "Patrick Blumenkamp";
@@ -118,27 +114,27 @@ public final class AddGoldstandard extends NodeAction implements LookupListener 
         boolean cancelled = wd.getValue() != WizardDescriptor.FINISH_OPTION;
         if (!cancelled) {
             for (final SeqRunI seqrun : seqruns) {
-                JobI job = null;
+                JobI job;
                 try {
-                    ToolI tool = getTool(master, TOOL_NAME, TOOL_LONG_DESCRIPTION, TOOL_AUTHOR, TOOL_WEBSITE, TOOL_VERSION, TOOL_XML);
-                    Collection<JobParameterI> params = new ArrayList<>(1);
+                    ToolI tool = getToolByName(master, TOOL_NAME, TOOL_LONG_DESCRIPTION, TOOL_AUTHOR, TOOL_WEBSITE, TOOL_VERSION, TOOL_XML);
+                    List<JobParameterI> params = new ArrayList<>(1);
                     job = master.Job().create(tool, seqrun, params);
                     job.setStatus(JobState.RUNNING);
                     master.Job().update(job);
                     ProgressHandle p = ProgressHandle.createHandle("AddGoldstandard");
                     p.start((int) seqrun.getNumSequences());
 
-                    if (pool == null) {
-                        int threads = Math.min(20, Runtime.getRuntime().availableProcessors() + 3);
-                        RejectedExecutionHandler executionHandler = new ThreadPoolExecutor.CallerRunsPolicy();
-                        pool = new ThreadPoolExecutor(threads, threads, 2, TimeUnit.MINUTES, new ArrayBlockingQueue<Runnable>(100, true), executionHandler);
-                    }
-
+//                    if (pool == null) {
+//                        int threads = Math.min(20, Runtime.getRuntime().availableProcessors() + 3);
+//                        RejectedExecutionHandler executionHandler = new ThreadPoolExecutor.CallerRunsPolicy();
+//                        pool = new ThreadPoolExecutor(threads, threads, 2, TimeUnit.MINUTES, new ArrayBlockingQueue<Runnable>(100, true), executionHandler);
+//                    }
                     MGSReader reader = new MGSReader(wd.getGoldstandardFile().getAbsolutePath(), master, job);
                     int i = 0;
                     int numChunks = 0;
-                    List<BulkObservation> bol = new LinkedList<>();
-
+                    List<BulkObservation> bol = new ArrayList<>();
+                    final AtomicInteger numRunnables = new AtomicInteger(0);
+                    
                     while (reader.hasNext()) {
                         if (hasError.get()) {
                             break;
@@ -153,7 +149,8 @@ public final class AddGoldstandard extends NodeAction implements LookupListener 
                         numChunks++;
                         if (numChunks == CHUNKSIZE) {
                             final List<BulkObservation> submitBol = bol;
-                            pool.submit(new Runnable() {
+                            numRunnables.incrementAndGet();
+                            MGXPool.getInstance().submit(new Runnable() {
                                 @Override
                                 public void run() {
                                     try {
@@ -164,15 +161,17 @@ public final class AddGoldstandard extends NodeAction implements LookupListener 
                                         Exceptions.printStackTrace(ex);
                                         hasError.set(true);
                                     }
+                                    numRunnables.decrementAndGet();
                                 }
                             });
-                            bol = new LinkedList<>();
+                            bol = new ArrayList<>();
                             numChunks = 0;
                         }
                     }
                     if (!hasError.get() && numChunks > 0) {
                         final List<BulkObservation> submitBol = bol;
-                        pool.submit(new Runnable() {
+                        numRunnables.incrementAndGet();
+                        MGXPool.getInstance().submit(new Runnable() {
                             @Override
                             public void run() {
                                 try {
@@ -183,12 +182,17 @@ public final class AddGoldstandard extends NodeAction implements LookupListener 
                                     Exceptions.printStackTrace(ex);
                                     hasError.set(true);
                                 }
+                                numRunnables.decrementAndGet();
                             }
                         }
                         );
                     }
-                    pool.shutdown();
-                    pool.awaitTermination(1L, TimeUnit.HOURS);
+
+                    while (numRunnables.get() != 0) {
+                        Thread.yield();
+                        // wait
+                    }
+
                     p.finish();
                     if (hasError.get()) {
                         master.Job().delete(job);
@@ -196,7 +200,7 @@ public final class AddGoldstandard extends NodeAction implements LookupListener 
                         job.setStatus(JobState.FINISHED);
                         master.Job().update(job);
                     }
-                } catch (MGXException | IOException | InterruptedException ex) {
+                } catch (MGXException | IOException ex) {
                     Exceptions.printStackTrace(ex);
                 }
             }
@@ -215,7 +219,7 @@ public final class AddGoldstandard extends NodeAction implements LookupListener 
         return super.isEnabled() && RBAC.isUser() && numSeqs > 0 && seqruns.size() == 1;
     }
 
-    private static ToolI getTool(MGXMasterI master, String name, String desc, String author, String web, float version, String xml) throws MGXException {
+    private static ToolI getToolByName(MGXMasterI master, String name, String desc, String author, String web, float version, String xml) throws MGXException {
         Iterator<ToolI> iter = master.Tool().fetchall();
         while (iter.hasNext()) {
             ToolI tool = iter.next();

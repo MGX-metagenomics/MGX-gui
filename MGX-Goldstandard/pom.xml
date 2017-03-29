@@ -164,6 +164,10 @@
             <artifactId>MGX-RBAC</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>de.cebitec.mgx.gui</groupId>
+            <artifactId>MGX-Pool</artifactId>
+        </dependency>
     </dependencies>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

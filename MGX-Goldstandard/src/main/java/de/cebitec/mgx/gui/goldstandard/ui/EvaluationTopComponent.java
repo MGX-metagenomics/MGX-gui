@@ -24,7 +24,7 @@ import org.openide.util.lookup.InstanceContent;
 @TopComponent.Description(
         preferredID = "EvaluationTopComponent",
         iconBase = "de/cebitec/mgx/gui/goldstandard/ui/icon.png",
-        persistenceType = TopComponent.PERSISTENCE_ALWAYS
+        persistenceType = TopComponent.PERSISTENCE_NEVER
 )
 @TopComponent.Registration(mode = "editor", openAtStartup = false)
 @ActionID(category = "Window", id = "de.cebitec.mgx.gui.goldstandard.ui.EvaluationTopComponent")
@@ -67,14 +67,14 @@ public final class EvaluationTopComponent extends TopComponent {
         chartpane.getVerticalScrollBar().setUnitIncrement(16);
     }
     
-    public static ExecutorService getExecutorService() {
-        if (executor == null) {
-            int threads = Math.min(Runtime.getRuntime().availableProcessors(), 20);
-            executor = Executors.newFixedThreadPool(threads);
-        }
-        
-        return executor;
-    }
+//    public static ExecutorService getExecutorService() {
+//        if (executor == null) {
+//            int threads = Math.min(Runtime.getRuntime().availableProcessors(), 20);
+//            executor = Executors.newFixedThreadPool(threads);
+//        }
+//        
+//        return executor;
+//    }
 
     /**
      * This method is called from within the constructor to initialize the form.

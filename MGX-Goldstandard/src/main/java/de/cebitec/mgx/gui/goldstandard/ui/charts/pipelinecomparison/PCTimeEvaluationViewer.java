@@ -38,18 +38,17 @@ import org.openide.util.lookup.ServiceProvider;
  * @author pblumenk
  */
 @ServiceProvider(service = PipelineComparisonI.class)
-public class PCTimeEvaluationViewer extends EvaluationViewerI implements PipelineComparisonI{
+public class PCTimeEvaluationViewer extends EvaluationViewerI implements PipelineComparisonI {
 
     public enum StepSize {
         HOURS, MINUTES, SECONDS;
-        
-        @Override        
+
+        @Override
         public String toString() {
             return super.toString().toLowerCase();
         }
     }
 
-    private SeqRunI currentSeqrun;
     private ChartPanel cPanel = null;
     private List<JobI> jobs;
     private PCTimeEvaluationViewCustomizer cust = null;
@@ -60,17 +59,15 @@ public class PCTimeEvaluationViewer extends EvaluationViewerI implements Pipelin
         //deactivate glossy effect
         ChartFactory.setChartTheme(StandardChartTheme.createLegacyTheme());
         BarRenderer.setDefaultShadowsVisible(false);
-        XYBarRenderer.setDefaultShadowsVisible(false);    
+        XYBarRenderer.setDefaultShadowsVisible(false);
     }
 
-    
-    
     @Override
     public JComponent getComponent() {
-        if (jobs == null){
+        if (jobs == null) {
             return null;
         }
-        if (cPanel == null){
+        if (cPanel == null) {
             evaluate();
         }
         return cPanel;
@@ -110,11 +107,11 @@ public class PCTimeEvaluationViewer extends EvaluationViewerI implements Pipelin
                 yAxisLabel = "seconds";
         }
         for (JobI job : jobs) {
-            double runtime = (job.getFinishDate().getTime() - job.getStartDate().getTime()) / (double)stepSize;
+            double runtime = (job.getFinishDate().getTime() - job.getStartDate().getTime()) / (double) stepSize;
             data.addValue(runtime, "Time evaluation", job.getTool().getName());
         }
         dataset = data;
-        
+
         String xAxisLabel = "";
 
         chart = ChartFactory.createBarChart(getTitle(), xAxisLabel, yAxisLabel, dataset, PlotOrientation.HORIZONTAL, true, true, false);
@@ -174,7 +171,7 @@ public class PCTimeEvaluationViewer extends EvaluationViewerI implements Pipelin
     @Override
     public JComponent getCustomizer() {
         if (cust == null) {
-            cust = new PCTimeEvaluationViewCustomizer();            
+            cust = new PCTimeEvaluationViewCustomizer();
         }
         return cust;
     }

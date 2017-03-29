@@ -3,7 +3,7 @@ package de.cebitec.mgx.gui.goldstandard.ui.charts.pipelinecomparison;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.SequenceI;
-import de.cebitec.mgx.gui.goldstandard.ui.EvaluationTopComponent;
+import de.cebitec.mgx.gui.pool.MGXPool;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.BufferedWriter;
@@ -96,7 +96,7 @@ public class GSCTableViewCustomizer extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void exportTSVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportTSVActionPerformed
-        EvaluationTopComponent.getExecutorService().submit(new Runnable() {
+        MGXPool.getInstance().submit(new Runnable() {
             @Override
             public void run() {
                 ProgressHandle p = ProgressHandle.createHandle("export table view");
@@ -130,52 +130,48 @@ public class GSCTableViewCustomizer extends javax.swing.JPanel {
                         if (f.exists()) {
                             throw new IOException(f.getName() + " already exists.");
                         }
-                        BufferedWriter w = new BufferedWriter(new FileWriter(f));
-
-                        if (includeHeaders()) {
-                            for (int col = 0; col < model.getColumnCount() - 1; col++) {
-                                w.write(model.getColumnName(col));
-                                w.write("\t");
-                            }
-                            w.write(model.getColumnName(model.getColumnCount() - 1));
-                            w.write(System.lineSeparator());
-                            w.write(System.lineSeparator());
-                        }
-
-                        // export data
-                        long[] keys = model.getData().keys();
-                        p.start(keys.length);
-                        int progress = 0;
-                        for (int offset = 0; offset * CHUNKSIZE < model.getRealRowCount(); offset++) {
-                            String[] header = updateHeader(keys, offset);
-                            int size = model.getRealRowCount() - (offset * CHUNKSIZE);
-                            if (size > CHUNKSIZE) {
-                                size = CHUNKSIZE;
-                            }
-                            for (int row = 0; row < size; row++) {
-                                for (int col = 0; col <= model.getColumnCount() - 1; col++) {
-                                    Object val;
-                                    if (col == 0) {
-                                        val = header[row];
-                                    } else {
-                                        val = model.getRealValueAt(row + (offset * CHUNKSIZE), col);
-                                    }
-                                    if (val != null) {
-                                        w.write(val.toString());
-                                    }
-                                    if (col <= model.getColumnCount() - 2 && model.getRealValueAt(row, col + 1) != null) {
-                                        w.write("\t");
-                                    }
+                        try (BufferedWriter w = new BufferedWriter(new FileWriter(f))) {
+                            if (includeHeaders()) {
+                                for (int col = 0; col < model.getColumnCount() - 1; col++) {
+                                    w.write(model.getColumnName(col));
+                                    w.write("\t");
                                 }
-//                    Object val = model.getValueAt(row, model.getColumnCount() - 1);
-//                    val = val != null ? val : "";
-                                //                  w.write(val.toString());
+                                w.write(model.getColumnName(model.getColumnCount() - 1));
                                 w.write(System.lineSeparator());
-                                p.progress(progress++);
+                                w.write(System.lineSeparator());
                             }
+
+                            // export data
+                            long[] keys = model.getData().keys();
+                            p.start(keys.length);
+                            int progress = 0;
+                            for (int offset = 0; offset * CHUNKSIZE < model.getRealRowCount(); offset++) {
+                                String[] header = updateHeader(keys, offset);
+                                int size = model.getRealRowCount() - (offset * CHUNKSIZE);
+                                if (size > CHUNKSIZE) {
+                                    size = CHUNKSIZE;
+                                }
+                                for (int row = 0; row < size; row++) {
+                                    for (int col = 0; col <= model.getColumnCount() - 1; col++) {
+                                        Object val;
+                                        if (col == 0) {
+                                            val = header[row];
+                                        } else {
+                                            val = model.getRealValueAt(row + (offset * CHUNKSIZE), col);
+                                        }
+                                        if (val != null) {
+                                            w.write(val.toString());
+                                        }
+                                        if (col <= model.getColumnCount() - 2 && model.getRealValueAt(row, col + 1) != null) {
+                                            w.write("\t");
+                                        }
+                                    }
+                                    w.newLine();
+                                    p.progress(progress++);
+                                }
+                            }
+                            w.flush();
                         }
-                        w.flush();
-                        w.close();
 
                         // report success
                         NotifyDescriptor nd = new NotifyDescriptor.Message("Data exported to " + f.getName());
@@ -219,8 +215,8 @@ public class GSCTableViewCustomizer extends javax.swing.JPanel {
 
         return header;
     }
-    
-    public void dispose(){
+
+    public void dispose() {
         model = null;
     }
 }
