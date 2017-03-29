@@ -11,11 +11,8 @@ import de.cebitec.mgx.common.VGroupManager;
 import de.cebitec.mgx.common.visualization.ViewerI;
 import java.util.List;
 import javax.swing.JComponent;
-import javax.swing.RowFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
-import javax.swing.table.TableModel;
-import javax.swing.table.TableRowSorter;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.decorator.Highlighter;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
@@ -108,21 +105,7 @@ public class TreeTableView extends ViewerI<TreeI<Long>> {
             }
         }
         table.setHighlighters(new Highlighter[]{HighlighterFactory.createAlternateStriping()});
-
-        // sorter
-        TableRowSorter<TableModel> sorter = new TableRowSorter<>();
-        table.setRowSorter(sorter);
-        sorter.setModel(model);
-
-        String matchText = getCustomizer().getMatchText();
-        if (!matchText.isEmpty()) {
-
-            int[] includeColumns = new int[longestPath.length];
-            for (i = 1; i <= longestPath.length; i++) {
-                includeColumns[i-1] = i;
-            }
-            sorter.setRowFilter(RowFilter.regexFilter(".*" + matchText + ".*", includeColumns));
-        }
+        table.setSortable(false);
     }
 
     @Override
