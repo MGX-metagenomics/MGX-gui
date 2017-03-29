@@ -7,6 +7,10 @@ import de.cebitec.mgx.api.model.Identifiable;
 import de.cebitec.mgx.api.model.tree.NodeI;
 import de.cebitec.mgx.api.model.tree.TreeI;
 import de.cebitec.mgx.gui.datamodel.tree.Tree;
+import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.TObjectLongMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
+import gnu.trove.map.hash.TObjectLongHashMap;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -39,7 +43,8 @@ public class TreeFactory {
     public static <T> TreeI<T> createTree(final Map<AttributeI, T> map) {
 
         //Checker.sanityCheck(map.keySet());
-        Map<Long, NodeI<T>> idmap = new HashMap<>(map.size()); // attr id to node
+        TLongObjectMap<NodeI<T>> idMap = new TLongObjectHashMap<>(map.size());
+        //Map<Long, NodeI<T>> idmap = new HashMap<>(map.size()); // attr id to node
         Map<AttributeI, T> disconnected = new HashMap<>();
 
         TreeI<T> tree = new Tree<>();
@@ -47,11 +52,11 @@ public class TreeFactory {
             AttributeI attr = entry.getKey();
             if (attr.getParentID() == Identifiable.INVALID_IDENTIFIER) {
                 NodeI<T> root = tree.createRootNode(attr, entry.getValue());
-                idmap.put(attr.getId(), root);
-            } else if (idmap.containsKey(attr.getParentID())) {
-                NodeI<T> parent = idmap.get(attr.getParentID());
+                idMap.put(attr.getId(), root);
+            } else if (idMap.containsKey(attr.getParentID())) {
+                NodeI<T> parent = idMap.get(attr.getParentID());
                 NodeI<T> child = parent.addChild(attr, entry.getValue());
-                idmap.put(child.getAttribute().getId(), child);
+                idMap.put(child.getAttribute().getId(), child);
             } else {
                 disconnected.put(attr, entry.getValue());
             }
@@ -62,19 +67,19 @@ public class TreeFactory {
             while (it.hasNext()) {
                 Entry<AttributeI, T> next = it.next();
                 AttributeI attr = next.getKey();
-                if (idmap.containsKey(attr.getParentID())) {
-                    NodeI<T> parent = idmap.get(attr.getParentID());
+                if (idMap.containsKey(attr.getParentID())) {
+                    NodeI<T> parent = idMap.get(attr.getParentID());
                     NodeI<T> child = parent.addChild(attr, disconnected.get(attr));
                     it.remove();
-                    idmap.put(attr.getId(), child);
+                    idMap.put(attr.getId(), child);
                 }
             }
         }
 
-        assert map.keySet().size() == idmap.size();
+        assert map.keySet().size() == idMap.size();
         assert tree.size() == map.size();
 
-        Checker.checkTree(tree);
+        //Checker.checkTree(tree);
         return tree;
     }
 
@@ -105,7 +110,8 @@ public class TreeFactory {
         // reads assigned to a more specific entry.
         // Thus, we iterate over all nodes and subtract the sum of reads assigned
         // to the immediate child nodes.
-        Map<AttributeI, Long> newContent = new HashMap<>(tree.getNodes().size());
+        TObjectLongMap<AttributeI> newContent = new TObjectLongHashMap<>(tree.size());
+        //Map<AttributeI, Long> newContent = new HashMap<>(tree.getNodes().size());
         for (NodeI<Long> node : tree.getNodes()) {
             Long numPathsEndingHere = node.getContent();
             if (!node.isLeaf()) {

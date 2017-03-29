@@ -46,7 +46,9 @@
                             de.cebitec.mgx.gui.datamodel.tree,
                             de.cebitec.mgx.gui.datamodel.misc,
                             de.cebitec.mgx.gui.pool,
-                            org.apache.commons.math3.util
+                            org.apache.commons.math3.util,
+                            gnu.trove.map,
+                            gnu.trove.map.hash
                         </Import-Package>
                         <Private-Package></Private-Package>
                     </instructions>
@@ -101,7 +103,10 @@
         <dependency>
             <groupId>de.cebitec.mgx.gui</groupId>
             <artifactId>MGX-Pool</artifactId>
-            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>de.cebitec.mgx</groupId>
+            <artifactId>Trove-OSGi</artifactId>
         </dependency>
     </dependencies>
     <properties>
