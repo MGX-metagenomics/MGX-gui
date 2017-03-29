@@ -468,7 +468,7 @@ public class VisualizationGroup implements VisualizationGroupI {
             // start worker to fetch distribution
             //
             if (selectedJob != null && currentAttributeType != null) {
-                HierarchyFetcher fetcher = new HierarchyFetcher(currentAttributeType, selectedJob);
+                HierarchyFetcher fetcher = new HierarchyFetcher(run, currentAttributeType, selectedJob);
                 Future<TreeI<Long>> f = vgmgr.submit(fetcher);
                 results.add(f);
             }

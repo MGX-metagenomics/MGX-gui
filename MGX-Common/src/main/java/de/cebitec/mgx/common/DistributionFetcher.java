@@ -34,7 +34,7 @@ public class DistributionFetcher extends Fetcher<Pair<SeqRunI, DistributionI<Lon
 
     @Override
     protected Pair<SeqRunI, DistributionI<Long>> doInBackground() throws Exception {
-        MGXMasterI master = attrType.getMaster();
+        MGXMasterI master = run.getMaster();
         if (attrType.getStructure() == AttributeTypeI.STRUCTURE_HIERARCHICAL) {
             TreeI<Long> tree = master.Attribute().getHierarchy(attrType, job);
             return new Pair<>(run, DistributionFactory.fromTree(tree, attrType));

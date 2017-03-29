@@ -9,6 +9,7 @@ import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.misc.Fetcher;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.JobI;
+import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.tree.TreeI;
 
 /**
@@ -19,15 +20,17 @@ public final class HierarchyFetcher extends Fetcher<TreeI<Long>> {
 
     protected final AttributeTypeI attrType;
     protected final JobI job;
+    protected final SeqRunI run;
 
-    public HierarchyFetcher(final AttributeTypeI attrType, final JobI job) {
+    public HierarchyFetcher(SeqRunI run, final AttributeTypeI attrType, final JobI job) {
         this.attrType = attrType;
         this.job = job;
+        this.run = run;
     }
 
     @Override
     protected TreeI<Long> doInBackground() throws Exception {
-        MGXMasterI master = attrType.getMaster();
+        MGXMasterI master = run.getMaster();
         return master.Attribute().getHierarchy(attrType, job);
     }
 
