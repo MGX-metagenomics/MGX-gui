@@ -63,7 +63,7 @@ public class TableViewer extends ViewerI<DistributionI<Long>> {
         // check whether assigned reads should be displayed as counts or fractions
         //
         List<Pair<VisualizationGroupI, DistributionI<Double>>> data = null;
-        if (getCustomizer().useFractions()) {
+        if (getCust().useFractions()) {
             VisFilterI<DistributionI<Long>, DistributionI<Double>> fracFilter = new ToFractionFilter();
             data = fracFilter.filter(in);
         } else {
@@ -73,7 +73,7 @@ public class TableViewer extends ViewerI<DistributionI<Long>> {
         //
         // exclude filter must be applied _AFTER_ converting to fractions
         //
-        data = getCustomizer().filter(data);
+        data = getCust().filter(data);
 
         Set<AttributeI> allAttrs = new HashSet<>();
         int numColumns = data.size() + 1;
@@ -88,7 +88,7 @@ public class TableViewer extends ViewerI<DistributionI<Long>> {
         SortOrder<Double> order = new SortOrder<>(getAttributeType(), SortOrder.DESCENDING);
         data = order.filter(data);
 
-        final boolean useFractions = getCustomizer().useFractions();
+        final boolean useFractions = getCust().useFractions();
 
         DefaultTableModel model = new DefaultTableModel(columns, 0) {
 
@@ -115,7 +115,7 @@ public class TableViewer extends ViewerI<DistributionI<Long>> {
             for (Pair<VisualizationGroupI, DistributionI<Double>> p : data) {
                 DistributionI<Double> d = p.getSecond();
                 rowData[col++] = d.containsKey(a)
-                        ? getCustomizer().useFractions() ? d.get(a) : d.get(a).longValue()
+                        ? getCust().useFractions() ? d.get(a) : d.get(a).longValue()
                         : 0;
             }
             model.addRow(rowData);
@@ -140,14 +140,18 @@ public class TableViewer extends ViewerI<DistributionI<Long>> {
         table.setRowSorter(sorter);
         sorter.setModel(model);
 
-        String matchText = getCustomizer().getMatchText();
+        String matchText = getCust().getMatchText();
         if (!matchText.isEmpty()) {
             sorter.setRowFilter(RowFilter.regexFilter(".*" + matchText + ".*", 0));
         }
     }
 
     @Override
-    public TableViewCustomizer getCustomizer() {
+    public JComponent getCustomizer() {
+        return getCust();
+    }
+
+    private TableViewCustomizer getCust() {
         if (cust == null) {
             cust = new TableViewCustomizer();
         }
