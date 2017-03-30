@@ -35,6 +35,19 @@ class TableViewCustomizer extends javax.swing.JPanel implements VisFilterI<Distr
         initComponents();
     }
 
+    @Override
+    public void setEnabled(boolean enabled) {
+        System.err.println("enabling customizer: " + enabled);
+        if (enabled != super.isEnabled()) {
+            super.setEnabled(enabled);
+            includeHeaders.setEnabled(enabled);
+            fractions.setEnabled(enabled);
+            treeFilter1.setEnabled(enabled);
+            filterField.setEnabled(enabled);
+            export.setEnabled(enabled);
+        }
+    }
+
     private AttributeTypeI at;
     private AbstractTableModel model = null;
 
