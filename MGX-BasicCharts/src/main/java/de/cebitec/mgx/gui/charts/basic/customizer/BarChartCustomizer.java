@@ -34,6 +34,21 @@ public class BarChartCustomizer extends javax.swing.JPanel implements VisFilterI
     public BarChartCustomizer() {
         initComponents();
     }
+    
+    @Override
+    public void setEnabled(boolean enabled) {
+        if (enabled != super.isEnabled()) {
+            super.setEnabled(enabled);
+            sortAscending.setEnabled(enabled);
+            sortDescending.setEnabled(enabled);
+            useFractions.setEnabled(enabled);
+            useLogY.setEnabled(enabled);
+            limit.setEnabled(enabled);
+            treeFilter.setEnabled(enabled);
+            itemMargin.setEnabled(enabled);
+            categoryMargin.setEnabled(enabled);
+        }
+    }
 
     public void setAttributeType(final AttributeTypeI aType) {
         if (aType.equals(at)) {

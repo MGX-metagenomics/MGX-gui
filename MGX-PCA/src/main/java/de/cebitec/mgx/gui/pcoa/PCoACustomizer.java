@@ -18,6 +18,14 @@ public class PCoACustomizer extends javax.swing.JPanel {
         initComponents();
     }
 
+    @Override
+    public void setEnabled(boolean enabled) {
+        if (enabled != super.isEnabled()) {
+            super.setEnabled(enabled);
+            fractions.setEnabled(enabled);
+        }
+    }
+
     public boolean useFractions() {
         return fractions.isSelected();
     }

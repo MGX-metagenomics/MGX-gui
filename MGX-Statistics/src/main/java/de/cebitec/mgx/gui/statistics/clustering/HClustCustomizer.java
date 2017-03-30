@@ -25,6 +25,7 @@ public class HClustCustomizer extends javax.swing.JPanel {
     private static final String[] AGGLO = new String[]{"ward", "single", "complete", "average", "mcquitty", "median", "centroid"};
     private static final String[] DIST = new String[]{"euclidean", "maximum", "manhattan", "canberra", "binary", "minkowski"};
     private String newickString = null;
+
     /**
      * Creates new form HClustCustomizer
      */
@@ -39,7 +40,17 @@ public class HClustCustomizer extends javax.swing.JPanel {
         }
         distance.setSelectedIndex(0);
     }
-    
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        if (enabled != super.isEnabled()) {
+            super.setEnabled(enabled);
+            agglomeration.setEnabled(enabled);
+            distance.setEnabled(enabled);
+            saveNwk.setEnabled(enabled);
+        }
+    }
+
     public void setNewickString(String newickString) {
         this.newickString = newickString;
         saveNwk.setEnabled(newickString != null);

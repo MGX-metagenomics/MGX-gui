@@ -35,6 +35,16 @@ public class PCACustomizer extends javax.swing.JPanel {
         pcSel.setSelectedIndex(0);
     }
 
+    @Override
+    public void setEnabled(boolean enabled) {
+        if (enabled != super.isEnabled()) {
+            super.setEnabled(enabled);
+            pcSel.setEnabled(enabled);
+            fractions.setEnabled(enabled);
+            numLoadings.setEnabled(enabled);
+        }
+    }
+
     public void setLoadings(PCAResultI pca, Map<XYDataItem, String> toolTips) {
         this.pca = pca;
         this.toolTips = toolTips;

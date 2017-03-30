@@ -25,6 +25,18 @@ public class XYPlotCustomizer extends javax.swing.JPanel implements VisFilterI<D
         initComponents();
     }
 
+    @Override
+    public void setEnabled(boolean enabled) {
+        if (enabled != super.isEnabled()) {
+            super.setEnabled(enabled);
+            useFractions.setEnabled(enabled);
+            sortAscending.setEnabled(enabled);
+            sortDescending.setEnabled(enabled);
+            logX.setEnabled(enabled);
+            logY.setEnabled(enabled);
+        }
+    }
+
     public void setAttributeType(AttributeTypeI aType) {
         at = aType;
     }
@@ -145,7 +157,7 @@ public class XYPlotCustomizer extends javax.swing.JPanel implements VisFilterI<D
     @Override
     public List<Pair<VisualizationGroupI, DistributionI<Double>>> filter(List<Pair<VisualizationGroupI, DistributionI<Long>>> dists) {
 
-        List<Pair<VisualizationGroupI, DistributionI<Double>>> ret = null;
+        List<Pair<VisualizationGroupI, DistributionI<Double>>> ret;
         if (useFractions()) {
             VisFilterI<DistributionI<Long>, DistributionI<Double>> fracFilter = new ToFractionFilter();
             ret = fracFilter.filter(dists);

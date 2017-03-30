@@ -25,6 +25,14 @@ public class SpiderWebChartCustomizer extends javax.swing.JPanel implements VisF
         initComponents();
     }
 
+    @Override
+    public void setEnabled(boolean enabled) {
+        if (enabled != super.isEnabled()) {
+            super.setEnabled(enabled);
+            useFractions.setEnabled(enabled);
+        }
+    }
+
     public void setAttributeType(final AttributeTypeI aType) {
         if (aType.equals(at)) {
             return;
@@ -73,7 +81,7 @@ public class SpiderWebChartCustomizer extends javax.swing.JPanel implements VisF
     @Override
     public List<Pair<VisualizationGroupI, DistributionI<Double>>> filter(List<Pair<VisualizationGroupI, DistributionI<Long>>> dists) {
 
-        List<Pair<VisualizationGroupI, DistributionI<Double>>> ret = null;
+        List<Pair<VisualizationGroupI, DistributionI<Double>>> ret;
         if (useFractions()) {
             VisFilterI<DistributionI<Long>, DistributionI<Double>> fracFilter = new ToFractionFilter();
             ret = fracFilter.filter(dists);

@@ -4,7 +4,7 @@ package de.cebitec.mgx.gui.charts.basic.customizer;
  *
  * @author sjaenick
  */
-public class VolcanoPlotCustomizer extends javax.swing.JPanel {    
+public class VolcanoPlotCustomizer extends javax.swing.JPanel {
 
     /**
      * Creates new form XYPlotCustomizer
@@ -13,13 +13,23 @@ public class VolcanoPlotCustomizer extends javax.swing.JPanel {
         initComponents();
     }
 
-    public double getFoldChangeThreshold(){
-        return (Double)thresholdFoldChangeSpinner.getModel().getValue();
+    @Override
+    public void setEnabled(boolean enabled) {
+        if (enabled != super.isEnabled()) {
+            super.setEnabled(enabled);
+            thresholdFoldChangeSpinner.setEnabled(enabled);
+            pValueSpinner.setEnabled(enabled);
+        }
     }
-    
-    public double getPValue(){
-        return (Double)pValueSpinner.getModel().getValue();
+
+    public double getFoldChangeThreshold() {
+        return (Double) thresholdFoldChangeSpinner.getModel().getValue();
     }
+
+    public double getPValue() {
+        return (Double) pValueSpinner.getModel().getValue();
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -35,12 +45,16 @@ public class VolcanoPlotCustomizer extends javax.swing.JPanel {
         jLabel2 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
 
+        pValueSpinner.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         pValueSpinner.setModel(new javax.swing.SpinnerNumberModel(0.05d, 0.0d, 1.0d, 0.01d));
 
+        thresholdFoldChangeSpinner.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         thresholdFoldChangeSpinner.setModel(new javax.swing.SpinnerNumberModel(1.0d, 0.0d, null, 1.0d));
 
+        jLabel2.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         jLabel2.setText(org.openide.util.NbBundle.getMessage(VolcanoPlotCustomizer.class, "VolcanoPlotCustomizer.jLabel2.text")); // NOI18N
 
+        jLabel1.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         jLabel1.setText(org.openide.util.NbBundle.getMessage(VolcanoPlotCustomizer.class, "VolcanoPlotCustomizer.jLabel1.text")); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -51,13 +65,10 @@ public class VolcanoPlotCustomizer extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(pValueSpinner, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 92, Short.MAX_VALUE)
-                    .addComponent(thresholdFoldChangeSpinner, javax.swing.GroupLayout.Alignment.TRAILING)))
+                    .addComponent(jLabel1)
+                    .addComponent(thresholdFoldChangeSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(pValueSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(30, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -66,11 +77,11 @@ public class VolcanoPlotCustomizer extends javax.swing.JPanel {
                 .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(thresholdFoldChangeSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(pValueSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(166, Short.MAX_VALUE))
+                .addContainerGap(176, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -81,5 +92,5 @@ public class VolcanoPlotCustomizer extends javax.swing.JPanel {
     private javax.swing.JSpinner pValueSpinner;
     private javax.swing.JSpinner thresholdFoldChangeSpinner;
     // End of variables declaration//GEN-END:variables
-    
+
 }

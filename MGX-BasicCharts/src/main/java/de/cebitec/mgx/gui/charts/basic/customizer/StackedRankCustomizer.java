@@ -21,15 +21,25 @@ public class StackedRankCustomizer extends javax.swing.JPanel {
         buttonGroup1.add(normAllRanks);
         normDisabled.setSelected(true);
     }
-    
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        if (enabled != super.isEnabled()) {
+            super.setEnabled(enabled);
+            normDisabled.setEnabled(enabled);
+            normToRoot.setEnabled(enabled);
+            normAllRanks.setEnabled(enabled);
+        }
+    }
+
     public boolean normDisabled() {
         return normDisabled.isSelected();
     }
-    
+
     public boolean normToRoot() {
         return normToRoot.isSelected();
     }
-    
+
     public boolean normAll() {
         return normAllRanks.isSelected();
     }

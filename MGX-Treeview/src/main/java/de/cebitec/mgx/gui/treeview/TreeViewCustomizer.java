@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package de.cebitec.mgx.gui.treeview;
 
 /**
@@ -18,11 +17,20 @@ public class TreeViewCustomizer extends javax.swing.JPanel {
     public TreeViewCustomizer() {
         initComponents();
     }
-    
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        if (enabled != super.isEnabled()) {
+            super.setEnabled(enabled);
+            showUnclassified.setEnabled(enabled);
+            hideTitle.setEnabled(enabled);
+        }
+    }
+
     boolean includeUnclassified() {
         return showUnclassified.isSelected();
     }
-    
+
     boolean hideTitle() {
         return hideTitle.isSelected();
     }
