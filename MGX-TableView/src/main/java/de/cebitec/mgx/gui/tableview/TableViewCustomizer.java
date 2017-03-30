@@ -37,7 +37,6 @@ class TableViewCustomizer extends javax.swing.JPanel implements VisFilterI<Distr
 
     @Override
     public void setEnabled(boolean enabled) {
-        System.err.println("enabling customizer: " + enabled);
         if (enabled != super.isEnabled()) {
             super.setEnabled(enabled);
             includeHeaders.setEnabled(enabled);
@@ -221,8 +220,8 @@ class TableViewCustomizer extends javax.swing.JPanel implements VisFilterI<Distr
                         w.write("\t");
                     }
                     w.write(model.getColumnName(model.getColumnCount() - 1));
-                    w.write(System.lineSeparator());
-                    w.write(System.lineSeparator());
+                    w.newLine();
+                    w.newLine();
                 }
 
                 DecimalFormat FMT = new DecimalFormat("#.######");
