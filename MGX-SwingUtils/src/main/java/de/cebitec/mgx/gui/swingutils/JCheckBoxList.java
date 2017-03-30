@@ -28,24 +28,33 @@ public class JCheckBoxList<T> extends JList<T> {
     private Map<T, Boolean> selections = new HashMap<>();
     private DefaultListModel<T> model = new DefaultListModel<>();
     public static final String selectionChange = "SELECTION_CHANGED";
+    private final CellRenderer cellRenderer = new CellRenderer();
 
     public JCheckBoxList() {
         setModel(model);
-        setCellRenderer(new CellRenderer());
+        setCellRenderer(cellRenderer);
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                int index = locationToIndex(e.getPoint());
-                if (index != -1) {
-                    T elem = model.getElementAt(index);
-                    boolean oldVal = selections.get(elem);
-                    selections.put(elem, !oldVal);
-                    firePropertyChange(selectionChange, elem, !oldVal);
-                    repaint();
+                if (isEnabled()) {
+                    int index = locationToIndex(e.getPoint());
+                    if (index != -1) {
+                        T elem = model.getElementAt(index);
+                        boolean oldVal = selections.get(elem);
+                        selections.put(elem, !oldVal);
+                        firePropertyChange(selectionChange, elem, !oldVal);
+                        repaint();
+                    }
                 }
             }
         });
         setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        cellRenderer.setEnabled(enabled);
     }
 
     public void clear() {
@@ -58,7 +67,7 @@ public class JCheckBoxList<T> extends JList<T> {
     }
 
     public void addElement(T elem, boolean selected) {
-        selections.put(elem, Boolean.valueOf(selected));
+        selections.put(elem, selected);
         model.addElement(elem);
     }
 
@@ -111,7 +120,7 @@ public class JCheckBoxList<T> extends JList<T> {
 
             Boolean selected = selections.get(value);
             if (selected != null) {
-                box.setSelected(selected.booleanValue());
+                box.setSelected(selected);
             }
             box.setText(value.toString());
 
@@ -125,6 +134,10 @@ public class JCheckBoxList<T> extends JList<T> {
                 box.setBackground(UIManager.getColor("List.background"));
             }
             return box;
+        }
+
+        private void setEnabled(boolean enabled) {
+            box.setEnabled(enabled);
         }
     }
 }

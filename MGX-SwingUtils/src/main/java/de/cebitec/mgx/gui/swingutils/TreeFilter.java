@@ -49,6 +49,15 @@ public class TreeFilter extends javax.swing.JPanel implements ItemListener, Prop
     private final Set<AttributeI> blackList = new HashSet<>();
     private AttributeTypeI curAttrType = null;
 
+    @Override
+    public void setEnabled(boolean enabled) {
+        if (enabled != super.isEnabled()) {
+            super.setEnabled(enabled);
+            attrTypes.setEnabled(enabled);
+            attrList.setEnabled(enabled);
+        }
+    }
+
     public void setAttributeType(AttributeTypeI at) {
         if (at == null || at.equals(curAttrType)) {
             return;
