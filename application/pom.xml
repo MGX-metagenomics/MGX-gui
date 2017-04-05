@@ -8,10 +8,9 @@
         <version>1.0</version>
     </parent>
 
-    <artifactId>application</artifactId>
+    <artifactId>MGX</artifactId>
     <packaging>nbm-application</packaging>
-
-    <name>MGX-gui - NB App</name>
+    <name>MGX</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -142,28 +141,6 @@
             <artifactId>MGX-QCMonitor</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!--
-        <dependency>
-            <groupId>org.netbeans.api</groupId>
-            <artifactId>org-openide-compat</artifactId>
-        </dependency>
-        -->
-        <!--
-        <dependency>
-            <groupId>org.apache.aries.spifly</groupId>
-            <artifactId>org.apache.aries.spifly.dynamic.bundle</artifactId>
-            <version>1.0.8</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>osgi-over-slf4j</artifactId>
-            <version>1.7.14</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-jdk14</artifactId>
-            <version>1.7.14</version>
-        </dependency> -->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>MGX-Goldstandard</artifactId>
@@ -173,37 +150,13 @@
 
     <build>
         <plugins>
-<!--            <plugin>
-                <groupId>org.ops4j</groupId>
-                <artifactId>maven-pax-plugin</artifactId>
-                <version>1.4</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <version>2.4.0</version>
-                <extensions>true</extensions>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>bundle</goal>
-                        </goals>
-                    </execution>
-                </executions>
-
-                <configuration>
-                    <instructions>
-                        <Export-Package></Export-Package>
-                        <Private-Package></Private-Package>
-                    </instructions>
-                </configuration>
-            </plugin>-->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>nbm-maven-plugin</artifactId>
                 <configuration>
                     <useOSGiDependencies>true</useOSGiDependencies>
                     <etcConfFile>src/main/resources/mgxgui.conf</etcConfFile>
+                    <installerOsSolaris>false</installerOsSolaris>
                 </configuration>
             </plugin>
             <plugin>
@@ -223,33 +176,6 @@
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
-            <!-- To run NbModuleSuite in integration-test phase:
-<plugin>
-    <groupId>org.apache.maven.plugins</groupId>
-    <artifactId>maven-surefire-plugin</artifactId>
-    <version>2.7.1</version>
-    <configuration>
-        <systemProperties>
-            <property>
-                <name>cluster.path.final</name>
-                <value>${project.build.directory}/${brandingToken}/${brandingToken}:${project.build.directory}/${brandingToken}/platform</value>
-            </property>
-        </systemProperties>
-    </configuration>
-</plugin>
-<plugin> 
-    <groupId>org.apache.maven.plugins</groupId> 
-    <artifactId>maven-surefire-plugin</artifactId> 
-    <version>2.12.2</version> 
-    <configuration> 
-        <systemPropertyVariables> 
-            <all.clusters>${all.clusters}</all.clusters> 
-            <branding.token>${brandingToken}</branding.token> 
-        </systemPropertyVariables> 
-    </configuration> 
-</plugin> 
-            -->
-
         </plugins>
     </build>
 
