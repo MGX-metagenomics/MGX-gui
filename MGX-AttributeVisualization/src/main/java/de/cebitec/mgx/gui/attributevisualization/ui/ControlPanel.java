@@ -33,11 +33,14 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.SortedSet;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ExecutionException;
+import javax.swing.JComponent;
 import javax.swing.SwingWorker;
 import org.openide.DialogDisplayer;
 import org.openide.WizardDescriptor;
@@ -48,19 +51,20 @@ import org.openide.util.Lookup;
  *
  * @author sjaenick
  */
-public class ControlPanel extends javax.swing.JPanel implements PropertyChangeListener, ActionListener {
+public class ControlPanel extends javax.swing.JPanel implements PropertyChangeListener {
 
     private final VGroupManagerI vgmgr;
     private AttributeVisualizationTopComponent topComponent;
     //
-    private List<Pair<VisualizationGroupI, DistributionI<Long>>> currentDistributions = new ArrayList<>();
-    private List<Pair<VisualizationGroupI, TreeI<Long>>> currentHierarchies = new ArrayList<>();
+    private final List<Pair<VisualizationGroupI, DistributionI<Long>>> currentDistributions = new ArrayList<>();
+    private final List<Pair<VisualizationGroupI, TreeI<Long>>> currentHierarchies = new ArrayList<>();
     //
-    private AttributeTypeListModel attrListModel = new AttributeTypeListModel();
-    private VisualizationTypeListModel vizListModel = new VisualizationTypeListModel();
+    private final AttributeTypeListModel attrListModel = new AttributeTypeListModel();
+    private final VisualizationTypeListModel vizListModel = new VisualizationTypeListModel();
     //
     private AttributeTypeI currentAttributeType;
     private ViewerI currentViewer;
+    private JComponent currentCustomizer = null;
 
     /**
      * Creates new form ControlPanel
@@ -70,7 +74,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
         initComponents();
         attributeTypeList.addItemListener(attrListModel);
         visualizationTypeList.addItemListener(vizListModel);
-        updateButton.addActionListener(this);
+        updateButton.addActionListener(new UpdateButtonHandler());
 
         vgmgr.addPropertyChangeListener(this);
 
@@ -240,12 +244,15 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
             clear();
             attributeTypeList.setEnabled(false);
             visualizationTypeList.setEnabled(false);
+            if (currentCustomizer != null) {
+                currentCustomizer.setEnabled(false);
+            }
             updateButton.setEnabled(false);
 
-            SwingWorker<SortedSet<AttributeTypeI>, Void> worker = new SwingWorker<SortedSet<AttributeTypeI>, Void>() {
+            SwingWorker<Collection<AttributeTypeI>, Void> worker = new SwingWorker<Collection<AttributeTypeI>, Void>() {
                 @Override
-                protected SortedSet<AttributeTypeI> doInBackground() throws Exception {
-                    SortedSet<AttributeTypeI> types = new TreeSet<>();
+                protected Collection<AttributeTypeI> doInBackground() throws Exception {
+                    Set<AttributeTypeI> types = new TreeSet<>();
                     for (VisualizationGroupI vg : vgmgr.getActiveVisualizationGroups()) {
                         Iterator<AttributeTypeI> atIter = vg.getAttributeTypes();
                         while (atIter.hasNext()) {
@@ -257,7 +264,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
 
                 @Override
                 protected void done() {
-                    SortedSet<AttributeTypeI> types = null;
+                    Collection<AttributeTypeI> types = null;
                     try {
                         types = get();
                     } catch (InterruptedException | ExecutionException ex) {
@@ -265,14 +272,13 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
                     }
                     content.addAll(types);
 
+                    //
+                    // re-enable attribute type list and try to restore previous
+                    // selection if it's still available
+                    //
                     if (attrListModel.getSize() > 0) {
-                        // if previously selected attribute type still exists, restore selection
                         if (currentAttributeType != null && content.contains(currentAttributeType)) {
                             setSelectedItem(currentAttributeType);
-//                            AttributeTypeListModel.this.itemStateChanged(new ItemEvent(attributeTypeList,
-//                                    ItemEvent.ITEM_STATE_CHANGED,
-//                                    getSelectedItem(),
-//                                    ItemEvent.SELECTED));
                         } else {
                             attributeTypeList.setSelectedIndex(0);
                         }
@@ -293,8 +299,6 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
             if (e.getStateChange() != ItemEvent.SELECTED) {
                 return;
             }
-//            System.err.println("itemStateChange from " + currentAttributeType + " to "
-//                    + getSelectedItem());
 
             currentAttributeType = getSelectedItem();
             if (currentAttributeType == null) {
@@ -303,13 +307,14 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
 
             if (currentViewer != null) {
                 currentViewer.setAttributeType(currentAttributeType);
+                if (currentCustomizer != null) {
+                    currentCustomizer.setEnabled(false);
+                }
             }
 
             // disable all downstream elements, excluding self
             visualizationTypeList.setEnabled(false);
             updateButton.setEnabled(false);
-
-//            System.err.println("Selecting " + currentAttributeType.getName());
 
             if (vgmgr.selectAttributeType(currentAttributeType.getName())) {
                 // fetch distribution (and hierarchy) in background
@@ -332,12 +337,13 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
             visualizationTypeList.setEnabled(false);
             updateButton.setEnabled(false);
 
-            SortedSet<ViewerI<Visualizable>> viewers = new TreeSet<>();
+            List<ViewerI<Visualizable>> viewers = new ArrayList<>();
             for (ViewerI viewer : Lookup.getDefault().<ViewerI>lookupAll(ViewerI.class)) {
                 if (viewer.canHandle(currentAttributeType)) {
                     viewers.add(viewer);
                 }
             }
+            Collections.sort(viewers);
 
             content.addAll(viewers);
 
@@ -345,6 +351,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
                 // if previously selected element still exists, restore selection
                 if (currentViewer != null && content.contains(currentViewer)) {
                     setSelectedItem(currentViewer);
+                    currentCustomizer = currentViewer.getCustomizer();
                     itemStateChanged(new ItemEvent(visualizationTypeList,
                             ItemEvent.ITEM_STATE_CHANGED,
                             getSelectedItem(),
@@ -354,6 +361,9 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
                 }
 
                 visualizationTypeList.setEnabled(true);
+                if (currentCustomizer != null) {
+                    currentCustomizer.setEnabled(true);
+                }
                 updateButton.setEnabled(true);
             }
             if (!content.isEmpty()) {
@@ -369,30 +379,19 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
 
             if (currentViewer != null) {
                 currentViewer.dispose();
+                currentCustomizer = null;
             }
 
             currentViewer = vizListModel.getSelectedItem();
             currentViewer.setAttributeType(currentAttributeType);
 
-            customPane.setViewportView(currentViewer.getCustomizer());
-            customPane.getVerticalScrollBar().setUnitIncrement(16);
-        }
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public void actionPerformed(ActionEvent e) {
-        try {
-            setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-            if (currentViewer.getInputType().equals(DistributionI.class)) {
-                currentViewer.show(currentDistributions);
-            } else {
-                currentViewer.show(currentHierarchies);
+            // display customizer
+            currentCustomizer = currentViewer.getCustomizer();
+            if (currentCustomizer != null) {
+                currentCustomizer.setEnabled(true);
             }
-            topComponent.updateLookup(currentDistributions);
-            topComponent.setVisualization(currentViewer);
-        } finally {
-            setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            customPane.setViewportView(currentCustomizer);
+            customPane.getVerticalScrollBar().setUnitIncrement(16);
         }
     }
 
@@ -401,5 +400,25 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
             currentViewer.dispose();
         }
         vgmgr.removePropertyChangeListener(this);
+    }
+
+    private final class UpdateButtonHandler implements ActionListener {
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public void actionPerformed(ActionEvent e) {
+            try {
+                ControlPanel.this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+                if (currentViewer.getInputType().equals(DistributionI.class)) {
+                    currentViewer.show(currentDistributions);
+                } else {
+                    currentViewer.show(currentHierarchies);
+                }
+                topComponent.updateLookup(currentDistributions);
+                topComponent.setVisualization(currentViewer);
+            } finally {
+                ControlPanel.this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            }
+        }
     }
 }
