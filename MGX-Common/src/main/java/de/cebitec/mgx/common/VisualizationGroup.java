@@ -278,8 +278,6 @@ public class VisualizationGroup implements VisualizationGroupI {
         if (needsResolval.get(rank).isEmpty()) {
             selectedAttributeType = attributeType;
         }
-//            fireVGroupChanged(VISGROUP_ATTRTYPE_CHANGED);
-//        }
     }
 
     @Override
@@ -495,7 +493,6 @@ public class VisualizationGroup implements VisualizationGroupI {
         if (selectedAttributeType == null) {
             throw new RuntimeException("VGroup " + getDisplayName() + ": attribute type is null");
         }
-        //assert needsResolval.get(AttributeRank.PRIMARY).isEmpty();
         if (!needsResolval.get(AttributeRank.PRIMARY).isEmpty()) {
             throw new ConflictingJobsException(this, needsResolval.get(AttributeRank.PRIMARY));
         }
@@ -524,7 +521,6 @@ public class VisualizationGroup implements VisualizationGroupI {
                 DistributionFetcher distFetcher = new DistributionFetcher(run, currentAttributeType, selectedJob); // currentDistributions);
                 Future<Pair<SeqRunI, DistributionI<Long>>> f = vgmgr.submit(distFetcher);
                 results.add(f);
-//              distFetcher.execute();
             }
         }
 
@@ -542,7 +538,6 @@ public class VisualizationGroup implements VisualizationGroupI {
         assert ret != null;
         distCache.put(selectedAttributeType, ret);
         fireVGroupChanged(VISGROUP_HAS_DIST);
-
         return ret;
     }
 
@@ -623,16 +618,6 @@ public class VisualizationGroup implements VisualizationGroupI {
         pcs.firePropertyChange(name, 0, getName());
     }
 
-//    private int getNumberOfAttributeTypes() {
-//        // get current number of attribute types
-//        int curAttrTypeCnt = 0;
-//        Iterator<AttributeTypeI> it = getAttributeTypes();
-//        while (it.hasNext()) {
-//            it.next();
-//            curAttrTypeCnt++;
-//        }
-//        return curAttrTypeCnt;
-//    }
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {
@@ -681,10 +666,6 @@ public class VisualizationGroup implements VisualizationGroupI {
         return managedState.equals(OBJECT_DELETED);
     }
 
-//    @Override
-//    public int compareTo(VisualizationGroupI o) {
-//        return Integer.compare(getId(), o.getId());
-//    }
     @Override
     public DataFlavor[] getTransferDataFlavors() {
         return new DataFlavor[]{VisualizationGroupI.VISGROUP_DATA_FLAVOR};
@@ -724,7 +705,6 @@ public class VisualizationGroup implements VisualizationGroupI {
     public final void firePropertyChange(String propertyName, int oldValue, int newValue) {
         PropertyChangeEvent evt = new PropertyChangeEvent(this, propertyName, oldValue, newValue);
         pcs.firePropertyChange(evt);
-        //pcs.firePropertyChange(propertyName, oldValue, newValue);
     }
 
     @Override
@@ -733,7 +713,6 @@ public class VisualizationGroup implements VisualizationGroupI {
         pcs.firePropertyChange(evt);
     }
 
-//    @Override
     protected final void firePropertyChange(PropertyChangeEvent event) {
         pcs.firePropertyChange(event);
     }
