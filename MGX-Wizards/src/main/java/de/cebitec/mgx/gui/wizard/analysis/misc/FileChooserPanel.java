@@ -70,7 +70,8 @@ public class FileChooserPanel extends ValueHolderI {
             return;
         } else {
             final File target = chooser.getSelectedFile();
-            fileName = target.getPath();
+            fileName = target.getPath().replace(File.separator, MGXFileI.separator);
+            fileName = fileName.replace(MGXFileI.separator + MGXFileI.separator, MGXFileI.separator);
             String displayName = fileName;
             if (displayName.startsWith(MGXFileI.ROOT_PATH + MGXFileI.separator)) {
                 displayName = displayName.substring(2);
