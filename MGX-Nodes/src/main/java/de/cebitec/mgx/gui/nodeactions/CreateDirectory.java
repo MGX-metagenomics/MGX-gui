@@ -68,8 +68,7 @@ public class CreateDirectory extends AbstractAction {
                     protected void done() {
                         try {
                             if (get()) {
-                                currentDir.modified();
-                                //parent.refreshChildren();
+                                currentDir.childChanged();
                             }
                         } catch (InterruptedException | ExecutionException ex) {
                             Exceptions.printStackTrace(ex);
