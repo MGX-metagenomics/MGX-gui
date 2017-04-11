@@ -16,8 +16,10 @@ import de.cebitec.mgx.sequence.SeqWriterI;
 import java.beans.PropertyChangeEvent;
 import java.io.File;
 import java.text.MessageFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -171,7 +173,7 @@ public final class SeqExporter implements SequenceExporterI {
             switch (pce.getPropertyName()) {
                 case TransferBaseI.NUM_ELEMENTS_TRANSFERRED:
                     numSeqs = (long) pce.getNewValue();
-                    setStatus(String.format("%1$d sequences received", numSeqsTotal + numSeqs));
+                    setStatus(NumberFormat.getInstance(Locale.US).format(numSeqsTotal + numSeqs) + " sequences received");
                     break;
                 case TransferBaseI.TRANSFER_FAILED:
                     failed(pce.getNewValue().toString());
