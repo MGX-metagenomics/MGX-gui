@@ -13,63 +13,116 @@ import de.cebitec.mgx.gui.rbac.RBAC;
 import de.cebitec.mgx.gui.swingutils.NonEDT;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
-import java.awt.event.ActionEvent;
-import javax.swing.AbstractAction;
+import java.util.Collection;
+import static javax.swing.Action.NAME;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
+import org.openide.awt.ActionID;
+import org.openide.awt.ActionRegistration;
+import org.openide.nodes.Node;
+import org.openide.util.HelpCtx;
+import org.openide.util.Lookup;
+import org.openide.util.LookupEvent;
+import org.openide.util.LookupListener;
 import org.openide.util.Utilities;
+import org.openide.util.actions.NodeAction;
 
 /**
  *
  * @author sjaenick
  */
-public class DeleteSeqRun extends AbstractAction {
+@ActionID(category = "Edit", id = "de.cebitec.mgx.gui.actions.DeleteSeqRun")
+@ActionRegistration(displayName = "Delete", lazy = true)
+public class DeleteSeqRun extends NodeAction implements LookupListener {
+
+    private final Lookup context;
+    private Lookup.Result<SeqRunI> lkpInfo;
 
     public DeleteSeqRun() {
+        this(Utilities.actionsGlobalContext());
+    }
+
+    private DeleteSeqRun(Lookup context) {
         putValue(NAME, "Delete");
+        this.context = context;
+        init();
+    }
+
+    private void init() {
+        if (lkpInfo != null) {
+            return;
+        }
+        lkpInfo = context.lookupResult(SeqRunI.class);
+        lkpInfo.addLookupListener(this);
+        resultChanged(null);
     }
 
     @Override
-    public void actionPerformed(ActionEvent e) {
-        final SeqRunI sr = Utilities.actionsGlobalContext().lookup(SeqRunI.class);
-        NotifyDescriptor d = new NotifyDescriptor("Really delete sequencing run " + sr.getName() + "?", "Delete sequencing run", NotifyDescriptor.YES_NO_OPTION, NotifyDescriptor.QUESTION_MESSAGE, null, null);
-        Object ret = DialogDisplayer.getDefault().notify(d);
-        if (NotifyDescriptor.YES_OPTION.equals(ret)) {
-            final MGXTask deleteTask = new MGXTask("Delete " + sr.getName()) {
-                @Override
-                public boolean process() {
-                    try {
-                        setStatus("Deleting..");
-                        MGXMasterI m = sr.getMaster();
-                        TaskI<SeqRunI> task = m.SeqRun().delete(sr);
-                        while (task != null && !task.done()) {
-                            setStatus(task.getStatusMessage());
-                            m.<SeqRunI>Task().refresh(task);
-                            sleep();
+    public void resultChanged(LookupEvent ev) {
+        setEnabled(!lkpInfo.allInstances().isEmpty());
+    }
+
+    @Override
+    protected boolean asynchronous() {
+        return true;
+    }
+
+    @Override
+    protected boolean enable(Node[] activatedNodes) {
+        return true;
+    }
+
+    @Override
+    public String getName() {
+        return "Analyze";
+    }
+
+    @Override
+    public HelpCtx getHelpCtx() {
+        return HelpCtx.DEFAULT_HELP;
+    }
+
+    @Override
+    protected void performAction(Node[] activatedNodes) {
+        Collection<? extends SeqRunI> seqruns = lkpInfo.allInstances();
+
+        for (final SeqRunI sr : seqruns) {
+            NotifyDescriptor d = new NotifyDescriptor("Really delete sequencing run " + sr.getName() + "?", "Delete sequencing run", NotifyDescriptor.YES_NO_OPTION, NotifyDescriptor.QUESTION_MESSAGE, null, null);
+            Object ret = DialogDisplayer.getDefault().notify(d);
+            if (NotifyDescriptor.YES_OPTION.equals(ret)) {
+                final MGXTask deleteTask = new MGXTask("Delete " + sr.getName()) {
+                    @Override
+                    public boolean process() {
+                        try {
+                            setStatus("Deleting..");
+                            MGXMasterI m = sr.getMaster();
+                            TaskI<SeqRunI> task = m.SeqRun().delete(sr);
+                            while (task != null && !task.done()) {
+                                setStatus(task.getStatusMessage());
+                                m.<SeqRunI>Task().refresh(task);
+                                sleep();
+                            }
+                            return task != null && task.getState() == TaskI.State.FINISHED;
+                        } catch (MGXException ex) {
+                            setStatus(ex.getMessage());
+                            failed(ex.getMessage());
+                            return false;
                         }
-//                        if (task != null) {
-//                            task.finish();
-//                        }
-                        return task != null && task.getState() == TaskI.State.FINISHED;
-                    } catch (MGXException ex) {
-                        setStatus(ex.getMessage());
-                        failed(ex.getMessage());
-                        return false;
                     }
-                }
-            };
-            NonEDT.invoke(new Runnable() {
-                @Override
-                public void run() {
-                    TaskManager.getInstance().addTask(deleteTask);
-                }
-            });
+                };
+                NonEDT.invoke(new Runnable() {
+                    @Override
+                    public void run() {
+                        TaskManager.getInstance().addTask(deleteTask);
+                    }
+                });
+            }
         }
     }
 
     @Override
     public boolean isEnabled() {
+        init();
         return super.isEnabled() && RBAC.isUser();
     }
-    
 }

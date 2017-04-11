@@ -1,6 +1,5 @@
 package de.cebitec.mgx.gui.nodes;
 
-import de.cebitec.mgx.gui.actions.DeleteSeqRun;
 import de.cebitec.mgx.gui.actions.EditSeqRun;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.actions.DownloadSeqRun;
@@ -30,7 +29,7 @@ public class SeqRunNode extends MGXNodeBase<SeqRunI> {
     private String getToolTipText(SeqRunI run) {
         DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.US);
         String numSeqs = formatter.format(run.getNumSequences());
-        
+
         return new StringBuilder("<html><b>Sequencing run: </b>").append(run.getName())
                 .append("<br><hr><br>")
                 .append(run.getSequencingTechnology().getName()).append(" ")
@@ -43,11 +42,13 @@ public class SeqRunNode extends MGXNodeBase<SeqRunI> {
     @Override
     public Action[] getActions(boolean context) {
         Action analyze = FileUtil.getConfigObject("Actions/Edit/de-cebitec-mgx-gui-actions-ExecuteAnalysis.instance", Action.class);
+        Action delete = FileUtil.getConfigObject("Actions/Edit/de-cebitec-mgx-gui-actions-DeleteSeqRun.instance", Action.class);
         Action goldstandard = FileUtil.getConfigObject("Actions/Edit/de-cebitec-mgx-gui-goldstandard-actions-AddGoldstandard.instance", Action.class);
-        if (goldstandard != null)
-            return new Action[]{analyze, goldstandard, new OpenMappingBySeqRun(), new EditSeqRun(), new DeleteSeqRun(), new DownloadSeqRun()};
-        else
-            return new Action[]{analyze, new OpenMappingBySeqRun(), new EditSeqRun(), new DeleteSeqRun(), new DownloadSeqRun()};
+        if (goldstandard != null) {
+            return new Action[]{analyze, goldstandard, new OpenMappingBySeqRun(), new EditSeqRun(), delete, new DownloadSeqRun()};
+        } else {
+            return new Action[]{analyze, new OpenMappingBySeqRun(), new EditSeqRun(), delete, new DownloadSeqRun()};
+        }
     }
 
     @Override
