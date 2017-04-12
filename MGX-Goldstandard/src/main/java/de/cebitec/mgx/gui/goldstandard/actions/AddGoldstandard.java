@@ -43,7 +43,6 @@ public final class AddGoldstandard extends NodeAction implements LookupListener 
 
     private final Lookup context;
     private Lookup.Result<SeqRunI> lkpInfo;
-//    private ExecutorService pool;
 
     public final static String TOOL_NAME = "Goldstandard";
     public final static String TOOL_AUTHOR = "Patrick Blumenkamp";
@@ -124,11 +123,6 @@ public final class AddGoldstandard extends NodeAction implements LookupListener 
                     ProgressHandle p = ProgressHandle.createHandle("AddGoldstandard");
                     p.start((int) seqrun.getNumSequences());
 
-//                    if (pool == null) {
-//                        int threads = Math.min(20, Runtime.getRuntime().availableProcessors() + 3);
-//                        RejectedExecutionHandler executionHandler = new ThreadPoolExecutor.CallerRunsPolicy();
-//                        pool = new ThreadPoolExecutor(threads, threads, 2, TimeUnit.MINUTES, new ArrayBlockingQueue<Runnable>(100, true), executionHandler);
-//                    }
                     MGSReader reader = new MGSReader(wd.getGoldstandardFile().getAbsolutePath(), master, job);
                     int i = 0;
                     int numChunks = 0;

@@ -8,10 +8,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author pblumenk
  */
 @ServiceProvider(service = ComparisonTypeI.class)
-public class GSComparison implements ComparisonTypeI, Comparable<ComparisonTypeI> {
-
-    public GSComparison() {
-    }
+public class GSComparison implements ComparisonTypeI {
 
     @Override
     public final Class getChartInterface() {

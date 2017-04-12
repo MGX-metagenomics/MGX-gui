@@ -2,8 +2,6 @@ package de.cebitec.mgx.gui.goldstandard.ui;
 
 import de.cebitec.mgx.api.groups.ImageExporterI;
 import de.cebitec.mgx.gui.goldstandard.ui.charts.EvaluationViewerI;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -49,8 +47,6 @@ public final class EvaluationTopComponent extends TopComponent {
     
     private ImageExporterI exporter;    
     
-    private static ExecutorService executor = null;
-    
     public EvaluationTopComponent() {
         initComponents();
         setName(Bundle.CTL_EvaluationTopComponent());
@@ -62,20 +58,11 @@ public final class EvaluationTopComponent extends TopComponent {
         associateLookup(lookup);
         controlPanel1.setTopComponent(this);
         jSplitPane1.setRightComponent(controlPanel1);
-        controlPanel1.updateViewerList();
+//        controlPanel1.updateViewerList();
         //
         chartpane.getVerticalScrollBar().setUnitIncrement(16);
     }
     
-//    public static ExecutorService getExecutorService() {
-//        if (executor == null) {
-//            int threads = Math.min(Runtime.getRuntime().availableProcessors(), 20);
-//            executor = Executors.newFixedThreadPool(threads);
-//        }
-//        
-//        return executor;
-//    }
-
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -97,9 +84,7 @@ public final class EvaluationTopComponent extends TopComponent {
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 844, Short.MAX_VALUE)
-                .addGap(0, 0, 0))
+            .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 844, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

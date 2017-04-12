@@ -25,7 +25,7 @@ import org.apache.commons.collections4.CollectionUtils;
  */
 public class VennChart extends JPanel {
 
-    private BufferedImage image;
+    private final BufferedImage image;
 
     //Sorted by binary numbering. E.g. ABC = 111 == 7, AC = 101 == 5
     private static final Point[] VALUE_COORDINATES_2 = new Point[]{null, new Point(1060, 420), new Point(340, 420), new Point(700, 420)};

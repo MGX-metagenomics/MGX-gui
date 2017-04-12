@@ -14,25 +14,11 @@ import javax.swing.ListCellRenderer;
 public class JobRenderer extends JLabel implements ListCellRenderer<JobI> {
 
     public JobRenderer() {
-        setOpaque(true);
+        super.setOpaque(true);
     }
 
     @Override
     public Component getListCellRendererComponent(JList<? extends JobI> list, JobI value, int index, boolean isSelected, boolean cellHasFocus) {
-//        StringBuilder code = new StringBuilder(value.getTool().getName());
-//        if (!value.getParameters().isEmpty()) {
-//            code.append(" - ");
-//            for (JobParameterI parameter : value.getParameters()) {
-//                code.append(parameter.getParameterName());
-//                code.append(": ");
-//                code.append(parameter.getParameterValue());
-//                code.append(", ");
-//            }
-//            code.deleteCharAt(code.length() - 1);
-//            code.deleteCharAt(code.length() - 1);
-//        }
-//        setText(code.toString());
-
         setText(JobUtils.jobToString(value));
 
         if (isSelected) {

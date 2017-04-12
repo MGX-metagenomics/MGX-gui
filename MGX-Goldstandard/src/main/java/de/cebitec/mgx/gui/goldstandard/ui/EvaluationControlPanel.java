@@ -2,12 +2,14 @@ package de.cebitec.mgx.gui.goldstandard.ui;
 
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.JobI;
+import de.cebitec.mgx.api.model.JobState;
 import de.cebitec.mgx.api.model.SeqRunI;
-import de.cebitec.mgx.api.model.ToolI;
 import de.cebitec.mgx.gui.goldstandard.actions.AddGoldstandard;
 import de.cebitec.mgx.gui.goldstandard.ui.charts.ComparisonTypeI;
 import de.cebitec.mgx.gui.goldstandard.ui.charts.EvaluationViewerI;
+import de.cebitec.mgx.gui.goldstandard.ui.charts.gscomparison.GSComparison;
 import de.cebitec.mgx.gui.goldstandard.ui.charts.gscomparison.GSComparisonI;
+import de.cebitec.mgx.gui.goldstandard.ui.charts.pipelinecomparison.PipelineComparison;
 import de.cebitec.mgx.gui.goldstandard.ui.charts.pipelinecomparison.PipelineComparisonI;
 import de.cebitec.mgx.gui.goldstandard.util.EvalExceptions;
 import de.cebitec.mgx.gui.pool.MGXPool;
@@ -16,6 +18,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Collection;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -30,7 +34,7 @@ import org.openide.util.Utilities;
  *
  * @author plumenk
  */
-public class EvaluationControlPanel extends javax.swing.JPanel implements ActionListener, LookupListener {
+public class EvaluationControlPanel extends javax.swing.JPanel implements ActionListener, LookupListener, PropertyChangeListener {
 
     private EvaluationTopComponent topComponent;
     //
@@ -40,11 +44,11 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Action
     private final ComparisonTypeListModel compListModel = new ComparisonTypeListModel();
     private final VisualizationTypeListModel visListModel = new VisualizationTypeListModel();
     //
-    private final Lookup lkp;
     private final Lookup.Result<SeqRunI> res;
     //
-    private SeqRunI currentSeqrun;
-    private List<JobI> currentJobs;
+    private SeqRunI currentSeqrun = null;
+    private boolean haveGoldStandard = false;
+    private int numFinishedJobs = 0;
 
     //
     /**
@@ -52,23 +56,25 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Action
      */
     public EvaluationControlPanel() {
         initComponents();
-        lkp = Utilities.actionsGlobalContext();
-        res = lkp.lookupResult(SeqRunI.class);
+        res = Utilities.actionsGlobalContext().lookupResult(SeqRunI.class);
         res.addLookupListener(this);
         updateButton.addActionListener(this);
+
         comparisonTypeList.addActionListener(this);
+        compListModel.update(); // initial fill 
+
         visualizationTypeList.addActionListener(this);
+
+        update();
     }
 
     public final void setTopComponent(EvaluationTopComponent tc) {
         this.topComponent = tc;
     }
 
-    public final synchronized void updateViewerList() {
-        compListModel.update();
-//        controlSplitPane.setBottomComponent(currentViewer.getCustomizer());
-    }
-
+//    public final synchronized void updateViewerList() {
+//        compListModel.update();
+//    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -166,7 +172,7 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Action
                 .addGap(12, 12, 12))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(updateButton, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(updateButton)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -201,9 +207,11 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Action
                 currentViewer.dispose();
             }
             currentViewer = visListModel.getSelectedItem();
-            controlSplitPane.setBottomComponent(currentViewer.getCustomizer());
+            if (currentViewer != null) {
+                controlSplitPane.setBottomComponent(currentViewer.getCustomizer());
+            }
             topComponent.setVisualization(null);
-        } else {
+        } else if (e.getSource() == updateButton) {
             topComponent.setVisualization(null);
             assert currentSeqrun != null;
             currentViewer.selectJobs(currentSeqrun);
@@ -213,10 +221,12 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Action
                     try {
                         topComponent.setVisualization(currentViewer);
                     } catch (Exception ex) {
-                        EvalExceptions.printStackTrace(ex);                        
+                        EvalExceptions.printStackTrace(ex);
                     }
                 }
             });
+        } else {
+            assert false;
         }
     }
 
@@ -230,26 +240,60 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Action
         visualizationTypeList.removeActionListener(this);
     }
 
-    @Override
-    public void resultChanged(LookupEvent ev) {
+    private void update() {
         Collection<? extends SeqRunI> seqruns = res.allInstances();
-        if (seqruns == null || seqruns.isEmpty()) {
+
+        // we're only interested in single-selection
+        if (seqruns == null || seqruns.size() != 1) {
             return;
         }
-        currentSeqrun = seqruns.iterator().next();
+
+        SeqRunI newRun = seqruns.iterator().next();
+        if (newRun != currentSeqrun) {
+            if (currentSeqrun != null) {
+                currentSeqrun.removePropertyChangeListener(this);
+            }
+            currentSeqrun = newRun;
+            currentSeqrun.addPropertyChangeListener(this);
+        }
+
+        updateButton.setEnabled(false);
+        haveGoldStandard = false;
+
+        numFinishedJobs = 0;
         try {
-            currentJobs = currentSeqrun.getMaster().Job().BySeqRun(currentSeqrun);
+            List<JobI> currentJobs = currentSeqrun.getMaster().Job().BySeqRun(currentSeqrun);
             for (JobI job : currentJobs) {
-                ToolI tool = currentSeqrun.getMaster().Tool().ByJob(job);
-                if (tool.getName().equals(AddGoldstandard.TOOL_NAME)) {
-                    updateButton.setEnabled(true);
-                    return;
+                // we only need tool info for finished jobs
+                if (job.getStatus().equals(JobState.FINISHED)) {
+                    // fetch tool
+                    currentSeqrun.getMaster().Tool().ByJob(job);
+                    if (job.getTool().getName().equals(AddGoldstandard.TOOL_NAME)) {
+                        haveGoldStandard = true;
+                    }
+                    numFinishedJobs++;
                 }
             }
-            updateButton.setEnabled(false);
+
+            compListModel.update();
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);
-            updateButton.setEnabled(false);
+        }
+    }
+
+    @Override
+    public void resultChanged(LookupEvent ev) {
+        update();
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (currentSeqrun != null && currentSeqrun == evt.getSource()) {
+            if (SeqRunI.OBJECT_DELETED.equals(evt.getPropertyName())) {
+                currentSeqrun.removePropertyChangeListener(this);
+                currentSeqrun = null;
+                update();
+            }
         }
     }
 
@@ -260,32 +304,32 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Action
         public synchronized void update() {
             // disable all downstream elements
             content.clear();
+            fireContentsChanged();
             comparisonTypeList.setEnabled(false);
             updateButton.setEnabled(false);
 
-            SortedSet<ComparisonTypeI> viewers = new TreeSet<>();
-            for (ComparisonTypeI viewer : Lookup.getDefault().<ComparisonTypeI>lookupAll(ComparisonTypeI.class)) {
-                viewers.add(viewer);
+            if (currentSeqrun != null && numFinishedJobs > 1) {
+                content.add(new PipelineComparison());
+                if (haveGoldStandard) {
+                    content.add(new GSComparison());
+                }
             }
 
-            content.addAll(viewers);
-
-            if (compListModel.getSize() > 0) {
-                // if previously selected element still exists, restore selection
-                if (currentComparisonType != null && content.contains(currentComparisonType)) {
-                    setSelectedItem(currentComparisonType);
-                    itemStateChanged(new ItemEvent(comparisonTypeList,
-                            ItemEvent.ITEM_STATE_CHANGED,
-                            getSelectedItem(),
-                            ItemEvent.SELECTED));
-                } else {
+            if (currentComparisonType != null && content.contains(currentComparisonType)) {
+                setSelectedItem(currentComparisonType);
+                itemStateChanged(new ItemEvent(comparisonTypeList,
+                        ItemEvent.ITEM_STATE_CHANGED,
+                        getSelectedItem(),
+                        ItemEvent.SELECTED));
+            } else {
+                if (!content.isEmpty()) {
                     setSelectedItem(content.get(0));
                 }
-
-                comparisonTypeList.setEnabled(true);
-                updateButton.setEnabled(true);
             }
+
+            comparisonTypeList.setEnabled(!content.isEmpty());
             fireContentsChanged();
+            visListModel.update();
         }
 
         @Override
@@ -312,26 +356,29 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Action
             // disable all downstream elements
             content.clear();
             visualizationTypeList.setEnabled(false);
+            fireContentsChanged();
             updateButton.setEnabled(false);
 
-            Class chartInterface = currentComparisonType.getChartInterface();
+            if (currentComparisonType != null) {
 
-            SortedSet<EvaluationViewerI> viewers = new TreeSet<>();
-            if (chartInterface == GSComparisonI.class) {
-                for (GSComparisonI viewer : Lookup.getDefault().<GSComparisonI>lookupAll(GSComparisonI.class)) {
-                    if (viewer instanceof EvaluationViewerI) {
-                        viewers.add((EvaluationViewerI) viewer);
+                Class chartInterface = currentComparisonType.getChartInterface();
+
+                SortedSet<EvaluationViewerI> viewers = new TreeSet<>();
+                if (chartInterface == GSComparisonI.class) {
+                    for (GSComparisonI viewer : Lookup.getDefault().<GSComparisonI>lookupAll(GSComparisonI.class)) {
+                        if (viewer instanceof EvaluationViewerI) {
+                            viewers.add((EvaluationViewerI) viewer);
+                        }
+                    }
+                } else if (chartInterface == PipelineComparisonI.class) {
+                    for (PipelineComparisonI viewer : Lookup.getDefault().<PipelineComparisonI>lookupAll(PipelineComparisonI.class)) {
+                        if (viewer instanceof EvaluationViewerI) {
+                            viewers.add((EvaluationViewerI) viewer);
+                        }
                     }
                 }
-            } else if (chartInterface == PipelineComparisonI.class) {
-                for (PipelineComparisonI viewer : Lookup.getDefault().<PipelineComparisonI>lookupAll(PipelineComparisonI.class)) {
-                    if (viewer instanceof EvaluationViewerI) {
-                        viewers.add((EvaluationViewerI) viewer);
-                    }
-                }
+                content.addAll(viewers);
             }
-
-            content.addAll(viewers);
 
             if (visListModel.getSize() > 0) {
                 // if previously selected element still exists, restore selection
@@ -345,9 +392,9 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Action
                     setSelectedItem(content.get(0));
                 }
 
-                visualizationTypeList.setEnabled(true);
-                updateButton.setEnabled(true);
             }
+            visualizationTypeList.setEnabled(!content.isEmpty());
+            updateButton.setEnabled(!content.isEmpty());
             fireContentsChanged();
         }
 

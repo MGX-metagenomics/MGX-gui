@@ -23,11 +23,9 @@ public final class SelectSingleJobWithGSVisualPanel1 extends JPanel {
     /**
      * Creates new form SelectSingleJobVisualPanel1
      */
-    public SelectSingleJobWithGSVisualPanel1(Map<JobI, Collection<AttributeTypeI>> jobs, String attrTypeLabel) {
+    public SelectSingleJobWithGSVisualPanel1(Map<JobI, Collection<AttributeTypeI>> jobs) {
         initComponents();
         this.jobs = jobs.keySet();
-
-        attributeLabel.setText(attrTypeLabel);
 
         jobModel = new DefaultListModel<>();
         jobList.setModel(jobModel);
@@ -142,12 +140,15 @@ public final class SelectSingleJobWithGSVisualPanel1 extends JPanel {
 
         attributeTypeBox.setEnabled(false);
 
+        jLabel1.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(SelectSingleJobWithGSVisualPanel1.class, "SelectSingleJobVisualPanel1.jLabel1.text")); // NOI18N
 
         gsAttributeBox.setEnabled(false);
 
+        jLabel2.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(jLabel2, org.openide.util.NbBundle.getMessage(SelectSingleJobWithGSVisualPanel1.class, "SelectSingleJobWithGSVisualPanel1.jLabel2.text")); // NOI18N
 
+        attributeLabel.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(attributeLabel, org.openide.util.NbBundle.getMessage(SelectSingleJobWithGSVisualPanel1.class, "SelectSingleJobWithGSVisualPanel1.attributeLabel.text")); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);

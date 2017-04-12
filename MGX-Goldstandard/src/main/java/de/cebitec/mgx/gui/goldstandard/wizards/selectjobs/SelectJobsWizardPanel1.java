@@ -5,11 +5,11 @@ import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.JobState;
 import de.cebitec.mgx.api.model.SeqRunI;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -36,7 +36,7 @@ public class SelectJobsWizardPanel1 implements WizardDescriptor.Panel<WizardDesc
     private final SeqRunI seqrun;
     private final int maxSelected;
     private final boolean exactlySelected;
-    private final String atLabel;
+//    private final String atLabel;
     private final String selectJobsLabel;
 
     private boolean isValid = false;
@@ -45,12 +45,6 @@ public class SelectJobsWizardPanel1 implements WizardDescriptor.Panel<WizardDesc
         this.seqrun = seqrun;
         this.maxSelected = maxSelected;
         this.exactlySelected = exactlySelected;
-        
-        if (hierarchicAT){
-            atLabel = "Select attribute type from wanted tree:";
-        } else {
-            atLabel = "Select wanted attribute type:";
-        }
         
         if (maxSelected == 1){
             selectJobsLabel = "Select one job:";
@@ -65,11 +59,8 @@ public class SelectJobsWizardPanel1 implements WizardDescriptor.Panel<WizardDesc
         List<JobI> allJobs = seqrun.getMaster().Job().BySeqRun(seqrun);
         jobs = new HashMap<>(allJobs.size());
         for (JobI job : allJobs) {
-            // trigger tool fetch
-            if (job.getTool() == null) {
-                seqrun.getMaster().Tool().ByJob(job);
-            }
             if (job.getStatus() == JobState.FINISHED) {
+                seqrun.getMaster().Tool().ByJob(job);
                 jobs.put(job, null);
             }
         }
@@ -82,23 +73,19 @@ public class SelectJobsWizardPanel1 implements WizardDescriptor.Panel<WizardDesc
     @Override
     public SelectJobsVisualPanel1 getComponent() {
         if (component == null) {
-            component = new SelectJobsVisualPanel1(jobs, atLabel, selectJobsLabel);
+            component = new SelectJobsVisualPanel1(jobs.keySet(), selectJobsLabel);
             component.addListSelectionListener(this);
-
         }
         return component;
     }
 
     @Override
     public HelpCtx getHelp() {
-        // Show no Help button for this panel:
         return HelpCtx.DEFAULT_HELP;
-        // If you have context help:
-        // return new HelpCtx("help.key.here");
     }
 
     public String getName() {
-        return component.getName();
+        return getComponent().getName();
     }
 
     @Override
@@ -120,8 +107,7 @@ public class SelectJobsWizardPanel1 implements WizardDescriptor.Panel<WizardDesc
         if (oldState != newState) {
             ChangeEvent ev = new ChangeEvent(source);
 
-            for (ChangeListener listener
-                    : listeners.getListeners(ChangeListener.class)) {
+            for (ChangeListener listener : listeners.getListeners(ChangeListener.class)) {
                 listener.stateChanged(ev);
             }
         }
@@ -140,7 +126,6 @@ public class SelectJobsWizardPanel1 implements WizardDescriptor.Panel<WizardDesc
 
     @Override
     public void valueChanged(ListSelectionEvent e) {
-//        ListSelectionModel lsm = (ListSelectionModel) e.getSource();
         if (!e.getValueIsAdjusting()) {
             try {
                 List<JobI> jobList = component.getSelectedJobs();
@@ -150,10 +135,9 @@ public class SelectJobsWizardPanel1 implements WizardDescriptor.Panel<WizardDesc
                     if (atList == null) {
 
                         Iterator<AttributeTypeI> it = seqrun.getMaster().AttributeType().byJob(job);
-                        atList = new LinkedList<>();
+                        atList = new ArrayList<>();
                         while (it.hasNext()) {
-                            AttributeTypeI at = it.next();
-                            atList.add(at);
+                            atList.add(it.next());
                         }
                         jobs.put(job, atList);
                     }

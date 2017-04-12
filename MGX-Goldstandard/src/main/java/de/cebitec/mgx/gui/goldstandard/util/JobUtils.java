@@ -13,19 +13,19 @@ public class JobUtils {
     }
     
     public static String jobToString (JobI job){
-        StringBuilder string = new StringBuilder(job.getTool().getName());
+        StringBuilder sb = new StringBuilder(job.getTool().getName());
         if (!job.getParameters().isEmpty()) {
-            string.append(" - ");
+            sb.append(" - ");
             for (JobParameterI parameter : job.getParameters()) {
-                string.append(parameter.getParameterName());
-                string.append(": ");
-                string.append(parameter.getParameterValue());
-                string.append(", ");
+                sb.append(parameter.getParameterName());
+                sb.append(": ");
+                sb.append(parameter.getParameterValue());
+                sb.append(", ");
             }
-            string.deleteCharAt(string.length() - 1);
-            string.deleteCharAt(string.length() - 1);
+            sb.deleteCharAt(sb.length() - 1);
+            sb.deleteCharAt(sb.length() - 1);
         }
         
-        return string.toString();
+        return sb.toString();
     }
 }

@@ -41,7 +41,8 @@ public class TimeEvalJobWizardPanel1 implements WizardDescriptor.Panel<WizardDes
         List<JobI> allJobs = seqrun.getMaster().Job().BySeqRun(seqrun);
         jobs = new HashMap<>(allJobs.size());
         for (JobI job : allJobs) {
-            job.setTool(seqrun.getMaster().Tool().ByJob(job));
+            // fetch tool
+            seqrun.getMaster().Tool().ByJob(job);
             if (job.getTool().getName().equals(AddGoldstandard.TOOL_NAME)) {
                 goldstandard = job;
                 gsAttributeTypes = new HashSet<>();
@@ -87,12 +88,7 @@ public class TimeEvalJobWizardPanel1 implements WizardDescriptor.Panel<WizardDes
 
     @Override
     public boolean isValid() {
-        // If it is always OK to press Next or Finish, then:
         return isValid;
-        // If it depends on some condition (form filled out...) and
-        // this condition changes (last form field filled in...) then
-        // use ChangeSupport to implement add/removeChangeListener below.
-        // WizardDescriptor.ERROR/WARNING/INFORMATION_MESSAGE will also be useful.
     }
 
     @Override
@@ -109,8 +105,7 @@ public class TimeEvalJobWizardPanel1 implements WizardDescriptor.Panel<WizardDes
         if (oldState != newState) {
             ChangeEvent ev = new ChangeEvent(source);
 
-            for (ChangeListener listener
-                    : listeners.getListeners(ChangeListener.class)) {
+            for (ChangeListener listener : listeners.getListeners(ChangeListener.class)) {
                 listener.stateChanged(ev);
             }
         }
@@ -128,7 +123,6 @@ public class TimeEvalJobWizardPanel1 implements WizardDescriptor.Panel<WizardDes
 
     @Override
     public void valueChanged(ListSelectionEvent e) {
-//        ListSelectionModel lsm = (ListSelectionModel) e.getSource();
         if (!e.getValueIsAdjusting()) {
             boolean oldState = isValid;
             isValid = checkValidity();

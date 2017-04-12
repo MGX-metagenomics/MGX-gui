@@ -4,7 +4,7 @@ package de.cebitec.mgx.gui.goldstandard.ui.charts;
  *
  * @author pblumenk
  */
-public interface ComparisonTypeI {
+public interface ComparisonTypeI extends Comparable<ComparisonTypeI> {
     
     /**
      *

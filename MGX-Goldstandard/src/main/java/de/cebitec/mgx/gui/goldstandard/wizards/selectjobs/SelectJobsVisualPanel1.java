@@ -4,7 +4,7 @@ import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.JobI;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 import javax.swing.DefaultListModel;
 import javax.swing.JPanel;
 import javax.swing.event.ListSelectionListener;
@@ -17,14 +17,13 @@ public final class SelectJobsVisualPanel1 extends JPanel {
     /**
      * Creates new form SelectSingleJobVisualPanel1
      */
-    public SelectJobsVisualPanel1(Map<JobI, Collection<AttributeTypeI>> jobs, String attrTypeLabel, String selectJobString) {
+    public SelectJobsVisualPanel1(Set<JobI> jobs, String selectJobString) {
         initComponents();
         
-        atLabel.setText(attrTypeLabel);
         selectJobLabel.setText(selectJobString);
         
         DefaultListModel<JobI> jobModel = new DefaultListModel<>();
-        for (JobI job : jobs.keySet()) {
+        for (JobI job : jobs) {
             jobModel.addElement(job);
         }
         jobList.setModel(jobModel);
@@ -73,7 +72,7 @@ public final class SelectJobsVisualPanel1 extends JPanel {
 
     @Override
     public String getName() {
-        return "Step #1";
+        return "Job selection";
     }
 
     /**
@@ -94,8 +93,10 @@ public final class SelectJobsVisualPanel1 extends JPanel {
 
         attributeTypeBox.setEnabled(false);
 
+        selectJobLabel.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(selectJobLabel, org.openide.util.NbBundle.getMessage(SelectJobsVisualPanel1.class, "SelectJobsVisualPanel1.selectJobLabel.text")); // NOI18N
 
+        atLabel.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(atLabel, org.openide.util.NbBundle.getMessage(SelectJobsVisualPanel1.class, "SelectJobsVisualPanel1.atLabel.text")); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -121,7 +122,7 @@ public final class SelectJobsVisualPanel1 extends JPanel {
                 .addGap(17, 17, 17)
                 .addComponent(selectJobLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 218, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 220, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(attributeTypeBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)

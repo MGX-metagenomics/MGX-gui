@@ -28,8 +28,6 @@ public final class AddGoldstandardVisualPanel1 extends JPanel {
         }
 
         fchooser.addChoosableFileFilter(new SuffixFilter(FileType.MGS));
-        
-
         fchooser.addPropertyChangeListener(new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {

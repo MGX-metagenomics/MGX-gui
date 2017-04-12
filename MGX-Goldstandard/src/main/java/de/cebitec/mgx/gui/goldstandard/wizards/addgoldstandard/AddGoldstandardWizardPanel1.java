@@ -68,15 +68,13 @@ public class AddGoldstandardWizardPanel1 implements WizardDescriptor.Panel<Wizar
     @Override
     public void readSettings(WizardDescriptor settings) {
         model = settings;
-        AddGoldstandardVisualPanel1 c = getComponent();
-        c.addPropertyChangeListener(this);
+        getComponent().addPropertyChangeListener(this);
     }
 
     @Override
     public void storeSettings(WizardDescriptor settings) {
         model = settings;
-        AddGoldstandardVisualPanel1 c = getComponent();
-        model.putProperty(AddGoldstandardVisualPanel1.PROP_MGSFILE, c.getSelectedFile());
+        model.putProperty(AddGoldstandardVisualPanel1.PROP_MGSFILE, getComponent().getSelectedFile());
     }
 
     @Override
@@ -87,13 +85,8 @@ public class AddGoldstandardWizardPanel1 implements WizardDescriptor.Panel<Wizar
     }
 
     private boolean checkValidity() {
-        isValid = true;
-        AddGoldstandardVisualPanel1 c = getComponent();
-        File test = c.getSelectedFile();
-        if (test == null || test.isDirectory() || !test.exists()) {
-            isValid = false;
-        }
-
+        File file = getComponent().getSelectedFile();
+        isValid = file != null && file.exists() && file.isFile() && file.canRead();
         return isValid;
     }
 }
