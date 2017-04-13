@@ -74,11 +74,6 @@ public class GSCTableViewer extends EvaluationViewerI implements PipelineCompari
     }
 
     @Override
-    public boolean canHandle(AttributeTypeI valueType) {
-        return true;
-    }
-
-    @Override
     public void evaluate() {
         if (treeList.size() != 2) {
             return;

@@ -36,13 +36,6 @@ public abstract class EvaluationViewerI implements Comparable<EvaluationViewerI>
 
     /**
      *
-     * @param valueType
-     * @return true if this viewer can display the attribute type
-     */
-    public abstract boolean canHandle(AttributeTypeI valueType);
-
-    /**
-     *
      * calculates everything needed for painting the panel
      */
     public abstract void evaluate();
@@ -82,12 +75,12 @@ public abstract class EvaluationViewerI implements Comparable<EvaluationViewerI>
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return getName();
     }
 
     @Override
-    public int compareTo(EvaluationViewerI t) {
+    public final int compareTo(EvaluationViewerI t) {
         return getName().compareTo(t.getName());
     }
 }

@@ -73,11 +73,6 @@ public class GSCQuantificationAccuracyViewer extends EvaluationViewerI implement
     }
 
     @Override
-    public boolean canHandle(AttributeTypeI valueType) {
-        return true;
-    }
-
-    @Override
     public void evaluate() {
         double[][] values = new double[2][];
         double correlation = 0;
@@ -105,7 +100,6 @@ public class GSCQuantificationAccuracyViewer extends EvaluationViewerI implement
         XYDataset collection1 = new XYSeriesCollection(series1);
         XYItemRenderer renderer1 = new XYLineAndShapeRenderer(false, true);   // Shapes only
         renderer1.setSeriesShape(0, new Rectangle(2, 2));
-//        renderer1.setSeriesPaint(0, Color.BLUE);
         ValueAxis domain1 = new NumberAxis(JobUtils.jobToString(currentJobs.get(0)));
         ValueAxis range1 = new NumberAxis(JobUtils.jobToString(gsJob));
 
@@ -123,7 +117,6 @@ public class GSCQuantificationAccuracyViewer extends EvaluationViewerI implement
         series2.add(val, val);
         XYDataset collection2 = new XYSeriesCollection(series2);
         XYItemRenderer renderer2 = new XYLineAndShapeRenderer(true, false);   // Lines only
-//        renderer2.setSeriesPaint(1, Color.RED);
 
         plot.setDataset(1, collection2);
         plot.setRenderer(1, renderer2);

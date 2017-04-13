@@ -84,11 +84,6 @@ public class PCTimeEvaluationViewer extends EvaluationViewerI implements Pipelin
     }
 
     @Override
-    public boolean canHandle(AttributeTypeI valueType) {
-        return true;
-    }
-
-    @Override
     public void evaluate() {
         DefaultCategoryDataset data = new DefaultCategoryDataset();
         int stepSize = 1;

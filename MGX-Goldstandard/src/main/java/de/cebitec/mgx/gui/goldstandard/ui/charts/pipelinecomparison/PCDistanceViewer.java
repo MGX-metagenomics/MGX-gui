@@ -84,11 +84,6 @@ public class PCDistanceViewer extends EvaluationViewerI implements PipelineCompa
     }
 
     @Override
-    public boolean canHandle(AttributeTypeI valueType) {
-        return true;
-    }
-
-    @Override
     public void evaluate() {
         Vector[] vectors;
         try {

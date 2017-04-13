@@ -58,11 +58,6 @@ public class GSCVennChartViewer extends EvaluationViewerI implements PipelineCom
         return "Venn chart";
     }
 
-    @Override
-    public boolean canHandle(AttributeTypeI valueType) {
-        return true;
-    }
-
     @SuppressWarnings("unchecked")
     @Override
     public void evaluate() {

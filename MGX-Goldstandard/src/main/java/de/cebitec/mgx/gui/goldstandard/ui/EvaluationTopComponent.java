@@ -41,7 +41,6 @@ import org.openide.util.lookup.InstanceContent;
 })
 public final class EvaluationTopComponent extends TopComponent {
     
-    private final EvaluationControlPanel controlPanel1 = new EvaluationControlPanel();
     private final Lookup lookup;
     private final InstanceContent content = new InstanceContent();
     
@@ -56,10 +55,7 @@ public final class EvaluationTopComponent extends TopComponent {
         jSplitPane1.setDividerLocation(width - 50);
         lookup = new AbstractLookup(content);
         associateLookup(lookup);
-        controlPanel1.setTopComponent(this);
-        jSplitPane1.setRightComponent(controlPanel1);
-//        controlPanel1.updateViewerList();
-        //
+        jSplitPane1.setRightComponent(new EvaluationControlPanel(this));
         chartpane.getVerticalScrollBar().setUnitIncrement(16);
     }
     

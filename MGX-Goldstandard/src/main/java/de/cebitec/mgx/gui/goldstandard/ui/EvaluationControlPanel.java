@@ -54,8 +54,9 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Action
     /**
      * Creates new form ControlPanel
      */
-    public EvaluationControlPanel() {
+    public EvaluationControlPanel(EvaluationTopComponent etc) {
         initComponents();
+        topComponent = etc;
         res = Utilities.actionsGlobalContext().lookupResult(SeqRunI.class);
         res.addLookupListener(this);
         updateButton.addActionListener(this);
@@ -68,9 +69,9 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Action
         update();
     }
 
-    public final void setTopComponent(EvaluationTopComponent tc) {
-        this.topComponent = tc;
-    }
+//    public final void setTopComponent(EvaluationTopComponent tc) {
+//        this.topComponent = tc;
+//    }
 
 //    public final synchronized void updateViewerList() {
 //        compListModel.update();

@@ -80,11 +80,6 @@ public class PCAssignedReadsViewer extends EvaluationViewerI implements Pipeline
     }
 
     @Override
-    public boolean canHandle(AttributeTypeI valueType) {
-        return true;
-    }
-
-    @Override
     public void evaluate() {
         DefaultCategoryDataset data = new DefaultCategoryDataset();
         String yAxisLabel = "assigned reads";
