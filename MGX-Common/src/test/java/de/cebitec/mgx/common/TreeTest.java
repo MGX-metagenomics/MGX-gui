@@ -6,6 +6,7 @@ import de.cebitec.mgx.api.model.tree.NodeI;
 import de.cebitec.mgx.api.model.tree.TreeI;
 import de.cebitec.mgx.gui.datamodel.Attribute;
 import de.cebitec.mgx.gui.datamodel.AttributeType;
+import de.cebitec.mgx.gui.datamodel.tree.Tree;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -44,6 +45,23 @@ public class TreeTest {
 
     @After
     public void tearDown() {
+    }
+
+    @Test
+    public void testNorm() {
+        System.out.println("testNorm");
+        TreeI<Long> t = new Tree<>();
+        NodeI<Long> root = t.createRootNode(null, 5l);
+        root.addChild(null, 10l);
+        root.addChild(null, 10l);
+        root.addChild(null, 10l);
+        TreeI<Double> normalized = TreeFactory.normalize(t);
+        assertNotNull(normalized);
+        assertEquals(1d, normalized.getRoot().getContent(), 0.0000001d);
+        assertEquals(3, normalized.getLeaves().size());
+        for (NodeI<Double> n : normalized.getLeaves()) {
+            assertEquals(0.33333333d, n.getContent(), 0.00000001d);
+        }
     }
 
     @Test
@@ -94,26 +112,25 @@ public class TreeTest {
         TreeI<Long> tree2 = TreeFactory.createTree(data2);
         assertEquals(Long.valueOf(3), tree2.getRoot().getContent());
 
-
         Collection<Future<TreeI<Long>>> c = new ArrayList<>();
         c.add(new NoFuture<>(tree));
         c.add(new NoFuture<>(tree2));
         assertEquals(2, c.size());
-        
+
         TreeI<Long> merged = null;
         try {
             merged = TreeFactory.mergeTrees(c);
         } catch (InterruptedException | ExecutionException ex) {
             fail(ex.getMessage());
         }
-        
+
         assertNotNull(merged);
         assertEquals("a1", merged.getRoot().getAttribute().getValue());
         assertEquals(3, merged.getNodes().size());
-        
+
         assertEquals(Long.valueOf(4), merged.getRoot().getContent());
         assertEquals(0, merged.getRoot().getDepth());
-        
+
         NodeI<Long> n = null;
         for (NodeI<Long> tmp : merged.getNodes()) {
             if (tmp.getAttribute().getValue().equals("a3")) {
@@ -122,8 +139,7 @@ public class TreeTest {
             }
         }
         assertNotNull(n);
-        
-        
+
         NodeI<Long>[] path = n.getPath();
         assertEquals(2, path.length);
         for (NodeI<Long> x : path) {
@@ -131,5 +147,5 @@ public class TreeTest {
         }
 
     }
-    
+
 }

@@ -32,7 +32,7 @@ public class TreeFactory {
         for (int i = 0; i < offset; i++) {
             System.err.print("TreeFactory#dump:  ");
         }
-        System.err.println("TreeFactory#dump: "+node.getAttribute().toString());
+        System.err.println("TreeFactory#dump: " + node.getAttribute().toString());
         if (node.hasChildren()) {
             for (NodeI<? extends T> n : node.getChildren()) {
                 dumpNode(n, offset + 5);
@@ -101,6 +101,43 @@ public class TreeFactory {
         return consensus;
     }
 
+    @SuppressWarnings("unchecked")
+    public static TreeI<double[]> mergeTrees(final TreeI<Double>... trees) {
+        TreeI<double[]> consensus = new Tree<>();
+
+        int idx = 0;
+        for (TreeI<Double> t : trees) {
+            final int i = idx;
+            DataMerger<double[], Double> toArray = new DataMerger<double[], Double>() {
+                @Override
+                public double[] merge(double[] first, Double second) {
+                    first[i] = second;
+                    return first;
+                }
+
+                @Override
+                public double[] getDefault() {
+                    return new double[trees.length];
+                }
+            };
+
+            NodeI<double[]> root = consensus.getRoot();
+            if (root == null) {
+                double[] content = toArray.getDefault();
+                content = toArray.merge(content, t.getRoot().getContent());
+                root = consensus.createRootNode(t.getRoot().getAttribute(), content);
+            } else {
+                root.setContent(toArray.merge(root.getContent(), t.getRoot().getContent()));
+            }
+
+            ContentAccessor<Double, Double> cac = new NodeAccess<>();
+            addChildren(root, t.getRoot().getChildren(), cac, toArray);
+
+            idx++;
+        }
+        return consensus;
+    }
+
     public static TreeI<Long> createKRONATree(TreeI<Long> tree) {
 
         tree = TreeFactory.clone(tree);
@@ -142,15 +179,29 @@ public class TreeFactory {
         return clone;
     }
 
-    private static <T> void filterChildren(NodeI<T> parent, Set<NodeI<T>> children, ContentCloner<T> cloner, Set<AttributeI> exclude) {
+    private static <T> void filterChildren(NodeI<T> parent, Set<NodeI<T>> children, ContentConverter<T, T> cloner, Set<AttributeI> exclude) {
         for (NodeI<T> child : children) {
             if (!exclude.contains(child.getAttribute())) {
-                NodeI<T> clonedChild = parent.addChild(child.getAttribute(), cloner.cloneContent(child.getContent()));
+                NodeI<T> clonedChild = parent.addChild(child.getAttribute(), cloner.convertContent(child.getContent()));
                 if (!child.isLeaf()) {
                     filterChildren(clonedChild, child.getChildren(), cloner, exclude);
                 }
             }
         }
+    }
+
+    public static TreeI<Double> convert(TreeI<Long> tree) {
+        TreeI<Double> clone = new Tree<>();
+        LongToDoubleConverter converter = new LongToDoubleConverter();
+
+        // clone root node
+        long rootContent = tree.getRoot().getContent();
+        NodeI<Double> cloneRoot = clone.createRootNode(tree.getRoot().getAttribute(), converter.convertContent(rootContent));
+
+        // converts children recursively
+        convertChildren(cloneRoot, tree.getRoot().getChildren(), converter);
+
+        return clone;
     }
 
     public static TreeI<Long> clone(TreeI<Long> tree) {
@@ -166,11 +217,47 @@ public class TreeFactory {
         return clone;
     }
 
-    private static <T> void cloneChildren(NodeI<T> parent, Set<NodeI<T>> children, ContentCloner<T> cloner) {
+    public static TreeI<Double> normalize(TreeI<Long> tree) {
+        TreeI<Double> clone = new Tree<>();
+
+        // root node
+        NodeI<Double> normRoot = clone.createRootNode(tree.getRoot().getAttribute(), 1d);
+
+        // normalize children recursively
+        normChildren(normRoot, tree.getRoot().getChildren());
+
+        return clone;
+    }
+
+    private static <T> void normChildren(NodeI<Double> parent, Set<NodeI<Long>> children) {
+        long levelSum = 0;
+        for (NodeI<Long> child : children) {
+            levelSum += child.getContent();
+        }
+
+        for (NodeI<Long> child : children) {
+            double content = 1d * child.getContent() / levelSum;
+            NodeI<Double> normChild = parent.addChild(child.getAttribute(), content);
+            if (!child.isLeaf()) {
+                normChildren(normChild, child.getChildren());
+            }
+        }
+    }
+
+    private static <T> void cloneChildren(NodeI<T> parent, Set<NodeI<T>> children, ContentConverter<T, T> cloner) {
         for (NodeI<T> child : children) {
-            NodeI<T> clonedChild = parent.addChild(child.getAttribute(), cloner.cloneContent(child.getContent()));
+            NodeI<T> clonedChild = parent.addChild(child.getAttribute(), cloner.convertContent(child.getContent()));
             if (!child.isLeaf()) {
                 cloneChildren(clonedChild, child.getChildren(), cloner);
+            }
+        }
+    }
+
+    private static <T, U> void convertChildren(NodeI<U> parent, Set<NodeI<T>> children, ContentConverter<T, U> converter) {
+        for (NodeI<T> child : children) {
+            NodeI<U> clonedChild = parent.addChild(child.getAttribute(), converter.convertContent(child.getContent()));
+            if (!child.isLeaf()) {
+                convertChildren(clonedChild, child.getChildren(), converter);
             }
         }
     }
@@ -293,9 +380,9 @@ public class TreeFactory {
         return ret;
     }
 
-    private interface ContentCloner<T> {
+    private interface ContentConverter<T, U> {
 
-        T cloneContent(T content);
+        U convertContent(T content);
     }
 
     private interface DataMerger<T, U> {
@@ -310,11 +397,19 @@ public class TreeFactory {
         T getContent(NodeI<U> in);
     }
 
-    private static class LongCloner implements ContentCloner<Long> {
+    private static class LongCloner implements ContentConverter<Long, Long> {
 
         @Override
-        public Long cloneContent(Long content) {
+        public Long convertContent(Long content) {
             return content;
+        }
+    }
+
+    private static class LongToDoubleConverter implements ContentConverter<Long, Double> {
+
+        @Override
+        public Double convertContent(Long content) {
+            return 1d * content;
         }
     }
 
