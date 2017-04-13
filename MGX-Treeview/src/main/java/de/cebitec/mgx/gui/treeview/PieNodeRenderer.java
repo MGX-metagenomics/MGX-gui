@@ -65,7 +65,7 @@ public class PieNodeRenderer extends LabelRenderer {
 
             // "angle overflow" - split into two separate parts
             if (startAngle + arcAngle > 360) {
-                int tmp = 360 - startAngle;
+                int tmp = 360 - startAngle + 1;
                 g2.fillArc(area.x, area.y, area.width, area.height, startAngle, tmp);
                 arcAngle = arcAngle - tmp;
                 startAngle = 0;
@@ -74,7 +74,7 @@ public class PieNodeRenderer extends LabelRenderer {
             if (i != 0) {
                 g2.fillArc(area.x, area.y, area.width, area.height, startAngle, arcAngle);
             } else {
-                g2.fillArc(area.x, area.y, area.width, area.height, startAngle, 90 - startAngle);
+                g2.fillArc(area.x, area.y, area.width, area.height, startAngle, 90 - startAngle + 1);
             }
 
             startAngle += arcAngle;
