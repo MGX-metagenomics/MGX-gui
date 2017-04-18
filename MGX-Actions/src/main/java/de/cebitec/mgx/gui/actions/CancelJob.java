@@ -57,6 +57,9 @@ public class CancelJob extends AbstractAction {
     @Override
     public boolean isEnabled() {
         final JobI job = Utilities.actionsGlobalContext().lookup(JobI.class);
+        if (job == null) {
+            return false;
+        }
         JobState state = job.getStatus();
         return super.isEnabled() && RBAC.isUser() && !(state.equals(JobState.FINISHED) || state.equals(JobState.FAILED) || state.equals(JobState.IN_DELETION) || state.equals(JobState.ABORTED));
     }
