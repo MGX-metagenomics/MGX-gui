@@ -83,6 +83,8 @@ public class GSCQuantificationAccuracyViewer extends EvaluationViewerI implement
             jobs.add(currentJobs.get(0));
 
             Vector[] vectors = PCDistanceViewer.calcAttributeVectors(jobs, attrType, false);
+            values[0] = vectors[0].asArray();
+            values[1] = vectors[1].asArray();
 
             correlation = new PearsonsCorrelation().correlation(vectors[1].asArray(), vectors[0].asArray());
         } catch (MGXException ex) {
