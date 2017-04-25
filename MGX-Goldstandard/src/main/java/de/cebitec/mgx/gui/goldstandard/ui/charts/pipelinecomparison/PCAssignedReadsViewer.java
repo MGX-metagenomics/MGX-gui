@@ -98,7 +98,7 @@ public class PCAssignedReadsViewer extends EvaluationViewerI implements Pipeline
 
         String xAxisLabel = "";
 
-        chart = ChartFactory.createBarChart(getTitle(), xAxisLabel, yAxisLabel, dataset, PlotOrientation.HORIZONTAL, true, true, false);
+        chart = ChartFactory.createBarChart(null, xAxisLabel, yAxisLabel, dataset, PlotOrientation.HORIZONTAL, true, true, false);
 
         chart.removeLegend();
         chart.setBorderPaint(Color.WHITE);
@@ -107,17 +107,14 @@ public class PCAssignedReadsViewer extends EvaluationViewerI implements Pipeline
         cPanel = new ChartPanel(chart);
         CategoryPlot plot = chart.getCategoryPlot();
 
-//        plot.setFixedLegendItems(JFreeChartUtil.createLegend(data));
         plot.setBackgroundPaint(Color.WHITE);
 
         BarRenderer br = (BarRenderer) plot.getRenderer();
-//        br.setItemMargin(customizer.getItemMargin());
         br.setBaseToolTipGenerator(new StandardCategoryToolTipGenerator("<html>Group: {0} <br> Attribute: {1} <br> " + yAxisLabel + ": {2}</html>", NumberFormat.getInstance()));
         br.setMaximumBarWidth(.1); // set maximum width to 10% of chart
 
         // x axis
         CategoryAxis domainAxis = plot.getDomainAxis();
-        //      domainAxis.setCategoryMargin(customizer.getCategoryMargin());
         domainAxis.setCategoryLabelPositions(CategoryLabelPositions.createUpRotationLabelPositions(FastMath.PI / 6));
 
         // y axis
@@ -127,30 +124,16 @@ public class PCAssignedReadsViewer extends EvaluationViewerI implements Pipeline
             rangeAxis = new LogarithmicAxis("log(" + yAxisLabel + ")");
             ((LogarithmicAxis) rangeAxis).setStrictValuesFlag(false);
             ((LogarithmicAxis) rangeAxis).setTickUnit(new NumberTickUnit(1_000));
-//            tus = LogAxis.createLogTickUnits(Locale.getDefault());
         } else {
             rangeAxis = (NumberAxis) plot.getRangeAxis();
-//            if (getCustomizer().useFractions()) {
-//                tus = NumberAxis.createStandardTickUnits();
-//            } else {
             tus = NumberAxis.createIntegerTickUnits();
             rangeAxis.setStandardTickUnits(tus);
-//            }
         }
 
-//        if (dataset instanceof SlidingCategoryDataset) {
-//            SlidingCategoryDataset scd = (SlidingCategoryDataset) dataset;
-//            rangeAxis.setAutoRange(false);
-//            rangeAxis.setRange(0, scd.getMaxY());
-//        }
         plot.setRangeAxis(rangeAxis);
 
         // colors
-//        int i = 0;
         plot.getRenderer().setSeriesPaint(0, Color.decode("#1d72aa"));
-//        for (Pair<VisualizationGroupI, DistributionI<Double>> groupDistribution : data) {
-//            renderer.setSeriesPaint(i++, groupDistribution.getFirst().getColor());
-//        }
     }
 
     @Override

@@ -1,7 +1,6 @@
 package de.cebitec.mgx.gui.goldstandard.ui.charts;
 
 import de.cebitec.mgx.api.groups.ImageExporterI;
-import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import javax.swing.JComponent;
 
@@ -10,8 +9,6 @@ import javax.swing.JComponent;
  * @author sjaenick
  */
 public abstract class EvaluationViewerI implements Comparable<EvaluationViewerI> { //, VisFilterI<T>  {
-
-    private String chartTitle;
 
     public EvaluationViewerI() {
     }
@@ -56,22 +53,6 @@ public abstract class EvaluationViewerI implements Comparable<EvaluationViewerI>
      *
      */
     public void dispose() {
-    }
-
-    /**
-     *
-     * @param title
-     */
-    public void setTitle(String title) {
-        chartTitle = title;
-    }
-
-    /**
-     *
-     * @return
-     */
-    protected String getTitle() {
-        return chartTitle;
     }
 
     @Override

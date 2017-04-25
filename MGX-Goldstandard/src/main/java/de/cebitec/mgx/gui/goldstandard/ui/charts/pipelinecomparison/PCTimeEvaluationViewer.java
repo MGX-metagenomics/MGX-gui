@@ -2,7 +2,6 @@ package de.cebitec.mgx.gui.goldstandard.ui.charts.pipelinecomparison;
 
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.groups.ImageExporterI;
-import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.goldstandard.ui.charts.EvaluationViewerI;
@@ -109,7 +108,7 @@ public class PCTimeEvaluationViewer extends EvaluationViewerI implements Pipelin
 
         String xAxisLabel = "";
 
-        chart = ChartFactory.createBarChart(getTitle(), xAxisLabel, yAxisLabel, dataset, PlotOrientation.HORIZONTAL, true, true, false);
+        chart = ChartFactory.createBarChart(null, xAxisLabel, yAxisLabel, dataset, PlotOrientation.HORIZONTAL, true, true, false);
 
         chart.removeLegend();
         chart.setBorderPaint(Color.WHITE);
@@ -118,49 +117,26 @@ public class PCTimeEvaluationViewer extends EvaluationViewerI implements Pipelin
         cPanel = new ChartPanel(chart);
         CategoryPlot plot = chart.getCategoryPlot();
 
-//        plot.setFixedLegendItems(JFreeChartUtil.createLegend(data));
         plot.setBackgroundPaint(Color.WHITE);
 
         BarRenderer br = (BarRenderer) plot.getRenderer();
-//        br.setItemMargin(customizer.getItemMargin());
         br.setBaseToolTipGenerator(new StandardCategoryToolTipGenerator("<html>Group: {0} <br> Attribute: {1} <br> " + yAxisLabel + ": {2}</html>", NumberFormat.getInstance()));
         br.setMaximumBarWidth(.1); // set maximum width to 10% of chart
 
         // x axis
         CategoryAxis domainAxis = plot.getDomainAxis();
-        //      domainAxis.setCategoryMargin(customizer.getCategoryMargin());
         domainAxis.setCategoryLabelPositions(CategoryLabelPositions.createUpRotationLabelPositions(FastMath.PI / 6));
 
         // y axis
         final NumberAxis rangeAxis;
         final TickUnitSource tus;
-//        if (getCustomizer().logY()) {
-//            rangeAxis = new LogarithmicAxis("log(" + yAxisLabel + ")");
-//            ((LogarithmicAxis) rangeAxis).setStrictValuesFlag(false);
-//            tus = LogAxis.createLogTickUnits(Locale.getDefault());
-//
-//        } else {
         rangeAxis = (NumberAxis) plot.getRangeAxis();
-//            if (getCustomizer().useFractions()) {
-//                tus = NumberAxis.createStandardTickUnits();
-//            } else {
         tus = NumberAxis.createIntegerTickUnits();
-//            }
-//        }
         rangeAxis.setStandardTickUnits(tus);
-//        if (dataset instanceof SlidingCategoryDataset) {
-//            SlidingCategoryDataset scd = (SlidingCategoryDataset) dataset;
-//            rangeAxis.setAutoRange(false);
-//            rangeAxis.setRange(0, scd.getMaxY());
-//        }
         plot.setRangeAxis(rangeAxis);
 
         // colors
-//        int i = 0;
         plot.getRenderer().setSeriesPaint(0, Color.decode("#1d72aa"));
-//        for (Pair<VisualizationGroupI, DistributionI<Double>> groupDistribution : data) {
-//            renderer.setSeriesPaint(i++, groupDistribution.getFirst().getColor());
-//        }
     }
 
     @Override
