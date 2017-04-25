@@ -14,6 +14,9 @@ import de.cebitec.mgx.gui.goldstandard.wizards.selectjobs.SelectSingleJobWithGSW
 import de.cebitec.mgx.gui.pool.MGXPool;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
+import gnu.trove.procedure.TLongProcedure;
+import gnu.trove.set.TLongSet;
+import gnu.trove.set.hash.TLongHashSet;
 import java.awt.Dialog;
 import java.util.Iterator;
 import java.util.List;
@@ -143,7 +146,7 @@ public class GSCPerformanceMetricsViewer extends EvaluationViewerI implements GS
 
         DistributionI<Long> gsDist = gsJob.getMaster().Attribute().getDistribution(attributeType, gsJob);
 
-        // seqId to attribute
+        // seqId to attribute value
         final TLongObjectMap<String> goldstandard = new TLongObjectHashMap<>(jobs.size());
         for (AttributeI attr : gsDist.keySet()) {
             Iterator<Long> it = gsDist.getMaster().Sequence().fetchSequenceIDs(attr);
@@ -191,27 +194,53 @@ public class GSCPerformanceMetricsViewer extends EvaluationViewerI implements GS
         return new GSCPerformanceMetricsTableModel(columns, performanceMetrics);
     }
 
-    private static void computeMetric(JobI job, PerformanceMetrics pm, AttributeTypeI attrType, TLongObjectMap<String> goldstandard, long totalSeqCount) throws MGXException {
+    private static void computeMetric(JobI job, final PerformanceMetrics pm, AttributeTypeI attrType, final TLongObjectMap<String> goldstandard, long totalSeqCount) throws MGXException {
+        
+        
         DistributionI<Long> dist = job.getMaster().Attribute().getDistribution(attrType, job);
-        int usedGsIds = 0;
+        final TLongObjectMap<String> jobAttr = new TLongObjectHashMap<>(); //seqid to attr value
         for (Map.Entry<AttributeI, Long> entry : dist.entrySet()) {
+            String jobAssignment = entry.getKey().getValue();
             Iterator<Long> it = dist.getMaster().Sequence().fetchSequenceIDs(entry.getKey());
             while (it.hasNext()) {
-                Long id = it.next();
-                if (goldstandard.containsKey(id)) {
-                    String gs = goldstandard.get(id);
-                    usedGsIds++;
-                    if (gs.equals(entry.getKey().getValue())) {
-                        pm.incrementTP();
+                Long seqId = it.next();
+                jobAttr.put(seqId, jobAssignment);
+            }
+        }
+        
+        // collect all seq ids
+        TLongSet allIds = new TLongHashSet();
+        allIds.addAll(goldstandard.keySet());
+        allIds.addAll(jobAttr.keySet());
+        
+        
+        allIds.forEach(new TLongProcedure() {
+            @Override
+            public boolean execute(long seqId) {
+                String gsAssignment = goldstandard.remove(seqId);
+                String jobAssignment = jobAttr.remove(seqId);
+                        
+                
+                if (gsAssignment != null) {
+                    if (jobAssignment != null) {
+                        if (gsAssignment.equals(jobAssignment)) {
+                            // correct assignment
+                            pm.incrementTP();
+                        } else {
+                            // wrong assignment
+                            pm.incrementFP();
+                        }
                     } else {
+                        // not assigned by job, but by GS
                         pm.incrementFN();
                     }
                 } else {
+                    // assigned by job, but not by goldstandard
                     pm.incrementFP();
                 }
+                
+                return true;
             }
-        }
-        pm.add(0, goldstandard.size() - usedGsIds, 0, 0);
-        pm.add(0, 0, 0, totalSeqCount - pm.getFN() - pm.getFP() - pm.getTP());
+        });
     }
 }
