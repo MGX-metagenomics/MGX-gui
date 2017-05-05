@@ -6,21 +6,19 @@ import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
 import de.cebitec.mgx.gui.charts.basic.util.TickedSpiderWebPlot;
 import de.cebitec.mgx.api.groups.ImageExporterI;
-import de.cebitec.mgx.gui.vizfilter.SortOrder;
+import de.cebitec.mgx.api.groups.SequenceExporterI;
 import de.cebitec.mgx.common.visualization.CategoricalViewerI;
 import de.cebitec.mgx.common.visualization.ViewerI;
 import de.cebitec.mgx.gui.charts.basic.customizer.SpiderWebChartCustomizer;
+import de.cebitec.mgx.gui.seqexporter.SeqExporter;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.geom.Rectangle2D;
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JComponent;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.LegendItem;
-import org.jfree.chart.LegendItemCollection;
 import org.jfree.chart.StandardChartTheme;
 import org.jfree.chart.labels.CategoryToolTipGenerator;
 import org.jfree.chart.labels.StandardCategoryToolTipGenerator;
@@ -36,6 +34,7 @@ public class SpiderWebChart extends CategoricalViewerI<Long> {
 
     private ChartPanel cPanel = null;
     private JFreeChart chart = null;
+    List<Pair<VisualizationGroupI, DistributionI<Double>>> dists;
     private final SpiderWebChartCustomizer cust = new SpiderWebChartCustomizer();
 
     @Override
@@ -54,14 +53,13 @@ public class SpiderWebChart extends CategoricalViewerI<Long> {
     }
 
     @Override
-    public void show(List<Pair<VisualizationGroupI, DistributionI<Long>>> dists) {
+    public void show(List<Pair<VisualizationGroupI, DistributionI<Long>>> in) {
 
 //        SortOrder<Long> sorter = new SortOrder<>(getAttributeType(), SortOrder.DESCENDING);
 //        dists = sorter.filter(dists);
-        
-        List<Pair<VisualizationGroupI, DistributionI<Double>>> d = cust.filter(dists);
+        dists = cust.filter(in);
 
-        CategoryDataset dataset = JFreeChartUtil.createCategoryDataset(d);
+        CategoryDataset dataset = JFreeChartUtil.createCategoryDataset(dists);
 
         ChartFactory.setChartTheme(StandardChartTheme.createLegacyTheme());
         TickedSpiderWebPlot plot = new TickedSpiderWebPlot(dataset);
@@ -74,11 +72,11 @@ public class SpiderWebChart extends CategoricalViewerI<Long> {
         plot.setOutlineVisible(false);
         plot.setLabelFont(labelFont);
         plot.setWebFilled(true);
-        plot.setFixedLegendItems(JFreeChartUtil.createLegend(d));
+        plot.setFixedLegendItems(JFreeChartUtil.createLegend(dists));
 
         // colors
         int i = 0;
-        for (Pair<VisualizationGroupI, DistributionI<Double>> groupDistribution : d) {
+        for (Pair<VisualizationGroupI, DistributionI<Double>> groupDistribution : dists) {
             plot.setSeriesPaint(i++, groupDistribution.getFirst().getColor());
         }
 
@@ -103,5 +101,17 @@ public class SpiderWebChart extends CategoricalViewerI<Long> {
     @Override
     public ImageExporterI getImageExporter() {
         return JFreeChartUtil.getImageExporter(chart);
+    }
+
+    @Override
+    public SequenceExporterI[] getSequenceExporters() {
+        List<SequenceExporterI> ret = new ArrayList<>(dists.size());
+        for (Pair<VisualizationGroupI, DistributionI<Double>> p : dists) {
+            if (p.getSecond().getTotalClassifiedElements() > 0) {
+                SequenceExporterI exp = new SeqExporter<>(p.getFirst(), p.getSecond());
+                ret.add(exp);
+            }
+        }
+        return ret.toArray(new SequenceExporterI[]{});
     }
 }

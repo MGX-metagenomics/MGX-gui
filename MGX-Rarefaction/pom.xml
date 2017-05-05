@@ -71,6 +71,12 @@
             <artifactId>MGX-Common</artifactId>
             <groupId>de.cebitec.mgx.gui</groupId>
         </dependency>
+        <dependency>
+            <groupId>de.cebitec.mgx.gui</groupId>
+            <artifactId>MGX-SeqExporter</artifactId>
+            <version>1.0</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
 
     <build>

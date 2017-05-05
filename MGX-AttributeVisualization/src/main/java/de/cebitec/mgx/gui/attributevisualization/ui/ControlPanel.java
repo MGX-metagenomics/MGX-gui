@@ -414,7 +414,6 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
                 } else {
                     currentViewer.show(currentHierarchies);
                 }
-                topComponent.updateLookup(currentDistributions);
                 topComponent.setVisualization(currentViewer);
             } finally {
                 ControlPanel.this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));

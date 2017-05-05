@@ -1,4 +1,4 @@
-package de.cebitec.mgx.gui.attributevisualization.exportwizard;
+package de.cebitec.mgx.gui.seqexporter;
 
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import java.io.File;

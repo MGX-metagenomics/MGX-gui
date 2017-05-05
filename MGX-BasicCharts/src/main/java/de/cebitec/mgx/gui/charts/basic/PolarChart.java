@@ -6,10 +6,13 @@ import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
 import de.cebitec.mgx.api.groups.ImageExporterI;
+import de.cebitec.mgx.api.groups.SequenceExporterI;
 import de.cebitec.mgx.gui.vizfilter.SortOrder;
 import de.cebitec.mgx.common.visualization.NumericalViewerI;
 import de.cebitec.mgx.common.visualization.ViewerI;
+import de.cebitec.mgx.gui.seqexporter.SeqExporter;
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JComponent;
 import org.jfree.chart.ChartFactory;
@@ -29,6 +32,7 @@ public class PolarChart extends NumericalViewerI<Long> {
 
     private ChartPanel cPanel = null;
     private JFreeChart chart = null;
+    private List<Pair<VisualizationGroupI, DistributionI<Long>>> dists;
 
     @Override
     public boolean canHandle(AttributeTypeI valueType) {
@@ -47,10 +51,10 @@ public class PolarChart extends NumericalViewerI<Long> {
     }
 
     @Override
-    public void show(List<Pair<VisualizationGroupI, DistributionI<Long>>> dists) {
+    public void show(List<Pair<VisualizationGroupI, DistributionI<Long>>> in) {
 
         SortOrder<Long> sorter = new SortOrder<>(getAttributeType(), SortOrder.DESCENDING);
-        dists = sorter.filter(dists);
+        dists = sorter.filter(in);
         XYSeriesCollection dataset = JFreeChartUtil.createXYSeries(dists);
 
         chart = ChartFactory.createPolarChart("Polar Chart", dataset, true, true, false);
@@ -83,5 +87,17 @@ public class PolarChart extends NumericalViewerI<Long> {
     @Override
     public ImageExporterI getImageExporter() {
         return JFreeChartUtil.getImageExporter(chart);
+    }
+
+    @Override
+    public SequenceExporterI[] getSequenceExporters() {
+        List<SequenceExporterI> ret = new ArrayList<>(dists.size());
+        for (Pair<VisualizationGroupI, DistributionI<Long>> p : dists) {
+            if (p.getSecond().getTotalClassifiedElements() > 0) {
+                SequenceExporterI exp = new SeqExporter<>(p.getFirst(), p.getSecond());
+                ret.add(exp);
+            }
+        }
+        return ret.toArray(new SequenceExporterI[]{});
     }
 }

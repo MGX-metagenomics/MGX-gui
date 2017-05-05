@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.radialtree;
 
 import de.cebitec.mgx.api.groups.FileType;
 import de.cebitec.mgx.api.groups.ImageExporterI;
+import de.cebitec.mgx.api.groups.SequenceExporterI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.AttributeTypeI;
@@ -399,6 +400,11 @@ public class RadialTree extends HierarchicalViewerI {
                 }
             }
         };
+    }
+
+    @Override
+    public SequenceExporterI[] getSequenceExporters() {
+        return null;
     }
 
     /**

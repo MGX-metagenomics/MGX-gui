@@ -45,7 +45,7 @@ public class StackedAreaChart extends AreaChart {
     public void show(List<Pair<VisualizationGroupI, DistributionI<Long>>> in) {
 
         LegendItemCollection legend = JFreeChartUtil.createLegend(in);
-        List<Pair<VisualizationGroupI, DistributionI<Double>>> data = getCustomizer().filter(in);
+        data = getCustomizer().filter(in);
         TableXYDataset dataset = JFreeChartUtil.createTableXYDataset(data);
 
         String xAxisLabel = "";

@@ -4,6 +4,7 @@ import de.cebitec.mgx.api.groups.FileType;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.groups.ImageExporterI;
+import de.cebitec.mgx.api.groups.SequenceExporterI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
@@ -218,4 +219,8 @@ public class RankAssignmentPlot extends HierarchicalViewerI {
         };
     }
 
+    @Override
+    public SequenceExporterI[] getSequenceExporters() {
+        return null;
+    }
 }

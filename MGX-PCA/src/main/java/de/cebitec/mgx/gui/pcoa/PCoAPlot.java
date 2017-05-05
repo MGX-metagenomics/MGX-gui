@@ -3,6 +3,7 @@ package de.cebitec.mgx.gui.pcoa;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.groups.ConflictingJobsException;
 import de.cebitec.mgx.api.groups.ImageExporterI;
+import de.cebitec.mgx.api.groups.SequenceExporterI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
@@ -13,10 +14,12 @@ import de.cebitec.mgx.api.visualization.filter.VisFilterI;
 import de.cebitec.mgx.common.VGroupManager;
 import de.cebitec.mgx.common.visualization.ViewerI;
 import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
+import de.cebitec.mgx.gui.seqexporter.SeqExporter;
 import de.cebitec.mgx.gui.vizfilter.LongToDouble;
 import de.cebitec.mgx.gui.vizfilter.ToFractionFilter;
 import java.awt.Color;
 import java.awt.geom.Ellipse2D;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -49,6 +52,7 @@ public class PCoAPlot extends ViewerI<DistributionI<Long>> {
     private ChartPanel cPanel = null;
     private JFreeChart chart = null;
     private PCoACustomizer cust = null;
+    private List<Pair<VisualizationGroupI, DistributionI<Double>>> data;
 
     @Override
     public JComponent getComponent() {
@@ -63,6 +67,18 @@ public class PCoAPlot extends ViewerI<DistributionI<Long>> {
     @Override
     public ImageExporterI getImageExporter() {
         return JFreeChartUtil.getImageExporter(chart);
+    }
+
+    @Override
+    public SequenceExporterI[] getSequenceExporters() {
+        List<SequenceExporterI> ret = new ArrayList<>(data.size());
+        for (Pair<VisualizationGroupI, DistributionI<Double>> p : data) {
+            if (p.getSecond().getTotalClassifiedElements() > 0) {
+                SequenceExporterI exp = new SeqExporter<>(p.getFirst(), p.getSecond());
+                ret.add(exp);
+            }
+        }
+        return ret.toArray(new SequenceExporterI[]{});
     }
 
     @Override
@@ -88,7 +104,6 @@ public class PCoAPlot extends ViewerI<DistributionI<Long>> {
     public void show(List<Pair<VisualizationGroupI, DistributionI<Long>>> in) {
         final MGXMasterI master = in.get(0).getSecond().getMaster();
 
-        List<Pair<VisualizationGroupI, DistributionI<Double>>> data;
         if (getCustomizer().useFractions()) {
             VisFilterI<DistributionI<Long>, DistributionI<Double>> fracFilter = new ToFractionFilter();
             data = fracFilter.filter(in);

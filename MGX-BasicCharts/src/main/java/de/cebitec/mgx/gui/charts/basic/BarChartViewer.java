@@ -8,11 +8,14 @@ import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
 import de.cebitec.mgx.gui.charts.basic.util.ScrollableBarChart;
 import de.cebitec.mgx.gui.charts.basic.util.SlidingCategoryDataset;
 import de.cebitec.mgx.api.groups.ImageExporterI;
+import de.cebitec.mgx.api.groups.SequenceExporterI;
 import de.cebitec.mgx.common.visualization.CategoricalViewerI;
 import de.cebitec.mgx.common.visualization.ViewerI;
 import de.cebitec.mgx.gui.charts.basic.util.LogAxis;
+import de.cebitec.mgx.gui.seqexporter.SeqExporter;
 import java.awt.Color;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import javax.swing.JComponent;
@@ -46,6 +49,7 @@ public class BarChartViewer extends CategoricalViewerI<Long> {
     private BarChartCustomizer customizer = null;
     private JFreeChart chart = null;
     private CategoryDataset dataset;
+    private List<Pair<VisualizationGroupI, DistributionI<Double>>> data;
 
     public BarChartViewer() {
         // disable the stupid glossy effect
@@ -70,8 +74,8 @@ public class BarChartViewer extends CategoricalViewerI<Long> {
 
     @Override
     public void show(List<Pair<VisualizationGroupI, DistributionI<Long>>> in) {
-        
-        List<Pair<VisualizationGroupI, DistributionI<Double>>> data = getCustomizer().filter(in);
+
+        data = getCustomizer().filter(in);
 
         dataset = JFreeChartUtil.createCategoryDataset(data);
 
@@ -93,7 +97,7 @@ public class BarChartViewer extends CategoricalViewerI<Long> {
         br.setItemMargin(customizer.getItemMargin());
         br.setBaseToolTipGenerator(new StandardCategoryToolTipGenerator("<html>Group: {0} <br> Attribute: {1} <br> " + yAxisLabel + ": {2}</html>", NumberFormat.getInstance()));
         br.setMaximumBarWidth(.1); // set maximum width to 10% of chart
-        
+
         // x axis
         CategoryAxis domainAxis = plot.getDomainAxis();
         domainAxis.setCategoryMargin(customizer.getCategoryMargin());
@@ -149,4 +153,17 @@ public class BarChartViewer extends CategoricalViewerI<Long> {
     public ImageExporterI getImageExporter() {
         return JFreeChartUtil.getImageExporter(chart);
     }
+
+    @Override
+    public SequenceExporterI[] getSequenceExporters() {
+        List<SequenceExporterI> ret = new ArrayList<>(data.size());
+        for (Pair<VisualizationGroupI, DistributionI<Double>> p : data) {
+            if (p.getSecond().getTotalClassifiedElements() > 0) {
+                SequenceExporterI exp = new SeqExporter<>(p.getFirst(), p.getSecond());
+                ret.add(exp);
+            }
+        }
+        return ret.toArray(new SequenceExporterI[]{});
+    }
+
 }

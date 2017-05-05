@@ -93,6 +93,10 @@
             <artifactId>MGX-Controller</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>de.cebitec.mgx.gui</groupId>
+            <artifactId>MGX-SeqExporter</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

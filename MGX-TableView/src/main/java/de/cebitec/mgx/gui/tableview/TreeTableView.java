@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.tableview;
 
 import de.cebitec.mgx.api.groups.ImageExporterI;
+import de.cebitec.mgx.api.groups.SequenceExporterI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.AttributeTypeI;
@@ -125,6 +126,11 @@ public class TreeTableView extends ViewerI<TreeI<Long>> {
     @Override
     public ImageExporterI getImageExporter() {
         return null; // no image to export here
+    }
+
+    @Override
+    public SequenceExporterI[] getSequenceExporters() {
+        return null;
     }
 
     private void setupRowData(DefaultTableModel model, AttributeTypeI[] aTypes, NodeI<Long> node) {

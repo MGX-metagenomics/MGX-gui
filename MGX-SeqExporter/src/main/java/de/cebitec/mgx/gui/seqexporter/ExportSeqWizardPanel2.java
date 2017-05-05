@@ -1,73 +1,74 @@
-package de.cebitec.mgx.gui.attributevisualization.exportwizard;
+package de.cebitec.mgx.gui.seqexporter;
 
-import de.cebitec.mgx.api.misc.DistributionI;
-import de.cebitec.mgx.api.model.AttributeI;
+import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.Set;
+import java.io.File;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
 import org.openide.WizardDescriptor;
 import org.openide.util.HelpCtx;
 
-public class ExportSeqWizardPanel1 implements WizardDescriptor.Panel<WizardDescriptor>, PropertyChangeListener {
+public class ExportSeqWizardPanel2 implements WizardDescriptor.Panel<WizardDescriptor>, PropertyChangeListener {
 
     /**
      * The visual component that displays this panel. If you need to access the
      * component from this class, just use getComponent().
      */
-    private ExportSeqVisualPanel1 component;
+    private ExportSeqVisualPanel2 component;
 
     // Get the visual component for the panel. In this template, the component
     // is kept separate. This can be more efficient: if the wizard is created
     // but never displayed, or not all panels are displayed, it is better to
     // create only those which really need to be visible.
     @Override
-    public ExportSeqVisualPanel1 getComponent() {
+    public ExportSeqVisualPanel2 getComponent() {
         if (component == null) {
-            component = new ExportSeqVisualPanel1();
-            component.addPropertyChangeListener(this);
+            component = new ExportSeqVisualPanel2();
         }
         return component;
     }
 
+    public void setVisualizationGroup(VisualizationGroupI vg) {
+        getComponent().setVisualizationGroup(vg);
+    }
+
+    public File getSelectedFile() {
+        return getComponent().getSelectedFile();
+    }
+
     @Override
     public HelpCtx getHelp() {
+        // Show no Help button for this panel:
         return HelpCtx.DEFAULT_HELP;
+        // If you have context help:
+        // return new HelpCtx("help.key.here");
     }
 
     @Override
     public boolean isValid() {
-        //return getSelectedAttributes().size() > 0;
-        
-        /*
-         * panel might be used repeatedly when exporting data for several groups;
-         * thus, no selected attributes are valid and indicate this group to
-         * be skipped from the export
-        */
-        return true;
+        return valid; //getSelectedFile() != null;
     }
-
-    public void setDistribution(DistributionI<Long> d) {
-        getComponent().setDistribution(d);
-    }
-
-    public Set<AttributeI> getSelectedAttributes() {
-        return getComponent().getSelectedAttributes();
-    }
+    private boolean valid = false;
 
     @Override
     public void readSettings(WizardDescriptor wiz) {
+        // use wiz.getProperty to retrieve previous panel state
+        ExportSeqVisualPanel2 c = getComponent();
+        c.addPropertyChangeListener(this);
     }
 
     @Override
     public void storeSettings(WizardDescriptor wiz) {
+        // use wiz.putProperty to remember current panel state
     }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        fireChangeEvent(this, !isValid(), isValid());
+        boolean old = valid;
+        valid = getSelectedFile() != null;
+        fireChangeEvent(this, old, valid);
     }
 
     protected final void fireChangeEvent(Object src, boolean old, boolean newState) {

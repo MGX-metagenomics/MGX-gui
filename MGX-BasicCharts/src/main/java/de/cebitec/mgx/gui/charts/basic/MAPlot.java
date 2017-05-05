@@ -8,10 +8,12 @@ import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
 import de.cebitec.mgx.api.groups.ImageExporterI;
+import de.cebitec.mgx.api.groups.SequenceExporterI;
 import de.cebitec.mgx.gui.vizfilter.ToFractionFilter;
 import de.cebitec.mgx.common.VGroupManager;
 import de.cebitec.mgx.common.visualization.NumericalViewerI;
 import de.cebitec.mgx.common.visualization.ViewerI;
+import de.cebitec.mgx.gui.seqexporter.SeqExporter;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
@@ -53,6 +55,7 @@ public class MAPlot extends NumericalViewerI<Long> {
     private ChartPanel cPanel = null;
     private JFreeChart chart = null;
     private final Map<XYDataItem, String> toolTips = new HashMap<>();
+    private List<Pair<VisualizationGroupI, DistributionI<Long>>> firstTwo;
 
     @Override
     public JComponent getComponent() {
@@ -77,7 +80,7 @@ public class MAPlot extends NumericalViewerI<Long> {
             assert false;
         }
 
-        List<Pair<VisualizationGroupI, DistributionI<Long>>> firstTwo = dists.subList(0, 2);
+        firstTwo = dists.subList(0, 2);
         DistributionI<Long> firstNonNormalized = firstTwo.get(0).getSecond();
         DistributionI<Long> secondNonNormalized = firstTwo.get(1).getSecond();
 
@@ -97,7 +100,7 @@ public class MAPlot extends NumericalViewerI<Long> {
         Set<AttributeI> attrs = new HashSet<>(first.size());
         attrs.addAll(first.keySet());
         attrs.addAll(second.keySet());
-        
+
         // a small offset is added to all values to avoid log(0)
         double offset = 0.0001;
         double logOffset = log2(offset);
@@ -214,8 +217,7 @@ public class MAPlot extends NumericalViewerI<Long> {
         rangeAxis2.setAutoRangeIncludesZero(false);
         final XYPlot subplot2 = new XYPlot(negInf, xAxis, rangeAxis2, r);
         subplot2.setRangeAxisLocation(AxisLocation.BOTTOM_OR_LEFT);
-        
-        
+
         // create subplot 3...
         final NumberAxis rangeAxis3 = new NumberAxis() {
             @Override
@@ -228,7 +230,7 @@ public class MAPlot extends NumericalViewerI<Long> {
         rangeAxis3.setAutoRangeIncludesZero(false);
         final XYPlot subplot3 = new XYPlot(posInf, xAxis, rangeAxis3, r);
         subplot2.setRangeAxisLocation(AxisLocation.BOTTOM_OR_LEFT);
-        
+
         // parent plot...
         CombinedDomainXYPlot plot = new CombinedDomainXYPlot(xAxis);
         plot.setGap(0);
@@ -267,6 +269,18 @@ public class MAPlot extends NumericalViewerI<Long> {
     @Override
     public ImageExporterI getImageExporter() {
         return JFreeChartUtil.getImageExporter(chart);
+    }
+
+    @Override
+    public SequenceExporterI[] getSequenceExporters() {
+        List<SequenceExporterI> ret = new ArrayList<>(firstTwo.size());
+        for (Pair<VisualizationGroupI, DistributionI<Long>> p : firstTwo) {
+            if (p.getSecond().getTotalClassifiedElements() > 0) {
+                SequenceExporterI exp = new SeqExporter<>(p.getFirst(), p.getSecond());
+                ret.add(exp);
+            }
+        }
+        return ret.toArray(new SequenceExporterI[]{});
     }
 
     private final static double log2 = FastMath.log(2);

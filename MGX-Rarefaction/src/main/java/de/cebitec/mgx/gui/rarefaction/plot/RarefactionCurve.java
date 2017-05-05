@@ -3,6 +3,7 @@ package de.cebitec.mgx.gui.rarefaction.plot;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.groups.FileType;
 import de.cebitec.mgx.api.groups.ImageExporterI;
+import de.cebitec.mgx.api.groups.SequenceExporterI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
@@ -11,10 +12,12 @@ import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.common.visualization.ViewerI;
 import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
 import de.cebitec.mgx.gui.rarefaction.Rarefaction;
+import de.cebitec.mgx.gui.seqexporter.SeqExporter;
 import de.cebitec.mgx.gui.swingutils.DelayedPlot;
 import de.cebitec.mgx.gui.swingutils.NonEDT;
 import java.awt.Color;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -44,6 +47,7 @@ public class RarefactionCurve extends ViewerI<DistributionI<Long>> {
 
     private DelayedPlot cPanel = null;
     private JFreeChart chart = null;
+    private List<Pair<VisualizationGroupI, DistributionI<Long>>> data;
 
     @Override
     public JComponent getComponent() {
@@ -57,6 +61,8 @@ public class RarefactionCurve extends ViewerI<DistributionI<Long>> {
 
     @Override
     public void show(final List<Pair<VisualizationGroupI, DistributionI<Long>>> dists) {
+
+        data = dists;
 
         cPanel = new DelayedPlot();
 
@@ -175,6 +181,18 @@ public class RarefactionCurve extends ViewerI<DistributionI<Long>> {
                 return Result.SUCCESS;
             }
         };
+    }
+
+    @Override
+    public SequenceExporterI[] getSequenceExporters() {
+        List<SequenceExporterI> ret = new ArrayList<>(data.size());
+        for (Pair<VisualizationGroupI, DistributionI<Long>> p : data) {
+            if (p.getSecond().getTotalClassifiedElements() > 0) {
+                SequenceExporterI exp = new SeqExporter<>(p.getFirst(), p.getSecond());
+                ret.add(exp);
+            }
+        }
+        return ret.toArray(new SequenceExporterI[]{});
     }
 
     @Override

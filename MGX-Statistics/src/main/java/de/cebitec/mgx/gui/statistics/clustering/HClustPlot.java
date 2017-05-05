@@ -4,12 +4,14 @@ import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.groups.ConflictingJobsException;
 import de.cebitec.mgx.api.groups.FileType;
 import de.cebitec.mgx.api.groups.ImageExporterI;
+import de.cebitec.mgx.api.groups.SequenceExporterI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.common.VGroupManager;
 import de.cebitec.mgx.common.visualization.ViewerI;
+import de.cebitec.mgx.gui.seqexporter.SeqExporter;
 import de.cebitec.mgx.gui.statistics.clustering.model.DendrogramBuilder;
 import de.cebitec.mgx.gui.statistics.clustering.model.ITreeBuilder;
 import de.cebitec.mgx.gui.statistics.clustering.view.DendrogramDisplay;
@@ -21,6 +23,7 @@ import de.cebitec.mgx.newick.ParserException;
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import javax.swing.JComponent;
@@ -43,6 +46,7 @@ public class HClustPlot extends ViewerI<DistributionI<Long>> {
     private final HClustCustomizer customizer = new HClustCustomizer();
     private DendrogramDisplay display;
     private String newickString = null;
+    private List<Pair<VisualizationGroupI, DistributionI<Double>>> data;
 
     @Override
     public JComponent getComponent() {
@@ -63,8 +67,8 @@ public class HClustPlot extends ViewerI<DistributionI<Long>> {
             @Override
             protected String doInBackground() throws Exception {
                 MGXMasterI m = dists.get(0).getSecond().getMaster();
-                List<Pair<VisualizationGroupI, DistributionI<Double>>> filter = new LongToDouble().filter(dists);
-                return m.Statistics().Clustering(filter, customizer.getDistanceMethod(), customizer.getAgglomeration());
+                data = new LongToDouble().filter(dists);
+                return m.Statistics().Clustering(data, customizer.getDistanceMethod(), customizer.getAgglomeration());
             }
 
             @Override
@@ -136,6 +140,18 @@ public class HClustPlot extends ViewerI<DistributionI<Long>> {
 
             }
         };
+    }
+
+    @Override
+    public SequenceExporterI[] getSequenceExporters() {
+        List<SequenceExporterI> ret = new ArrayList<>(data.size());
+        for (Pair<VisualizationGroupI, DistributionI<Double>> p : data) {
+            if (p.getSecond().getTotalClassifiedElements() > 0) {
+                SequenceExporterI exp = new SeqExporter<>(p.getFirst(), p.getSecond());
+                ret.add(exp);
+            }
+        }
+        return ret.toArray(new SequenceExporterI[]{});
     }
 
     @Override

@@ -1,4 +1,4 @@
-package de.cebitec.mgx.gui.attributevisualization.exportwizard;
+package de.cebitec.mgx.gui.seqexporter;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.datatransfer.DownloadBaseI;
@@ -30,19 +30,19 @@ import org.openide.NotifyDescriptor;
 import org.openide.WizardDescriptor;
 import org.openide.util.Exceptions;
 
-public final class SeqExporter implements SequenceExporterI {
+public final class SeqExporter<T extends Number> implements SequenceExporterI {
 
     private final VisualizationGroupI vgroup;
-    private final DistributionI<Long> dist;
+    private final DistributionI<T> dist;
 
-    public SeqExporter(VisualizationGroupI vgroup, DistributionI<Long> dist) {
+    public SeqExporter(VisualizationGroupI vgroup, DistributionI<T> dist) {
         this.vgroup = vgroup;
         this.dist = dist;
     }
 
     @Override
     public boolean export() {
-        final ExportSeqWizardIterator iter = new ExportSeqWizardIterator(vgroup, dist);
+        final ExportSeqWizardIterator<T> iter = new ExportSeqWizardIterator<>(vgroup, dist);
         WizardDescriptor wiz = new WizardDescriptor(iter);
         wiz.setTitleFormat(new MessageFormat("{0}"));
         wiz.setTitle("Export sequences for " + vgroup.getDisplayName());

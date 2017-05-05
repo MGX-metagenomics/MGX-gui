@@ -75,6 +75,10 @@
             <groupId>de.cebitec.mgx.gui</groupId>
             <artifactId>MGX-VizFilter</artifactId>
         </dependency>
+        <dependency>
+            <groupId>de.cebitec.mgx.gui</groupId>
+            <artifactId>MGX-SeqExporter</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

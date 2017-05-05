@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.charts.basic;
 
 import de.cebitec.mgx.api.groups.ImageExporterI;
+import de.cebitec.mgx.api.groups.SequenceExporterI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
@@ -9,7 +10,9 @@ import de.cebitec.mgx.common.visualization.ViewerI;
 import de.cebitec.mgx.gui.charts.basic.customizer.XYPlotCustomizer;
 import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
 import de.cebitec.mgx.gui.charts.basic.util.LogAxis;
+import de.cebitec.mgx.gui.seqexporter.SeqExporter;
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import javax.swing.JComponent;
@@ -37,6 +40,7 @@ public class AreaChart extends NumericalViewerI<Long> {
     protected ChartPanel cPanel = null;
     protected XYPlotCustomizer customizer = null;
     protected JFreeChart chart = null;
+    protected List<Pair<VisualizationGroupI, DistributionI<Double>>> data;
 
     @Override
     public JComponent getComponent() {
@@ -50,10 +54,10 @@ public class AreaChart extends NumericalViewerI<Long> {
 
     @Override
     public void show(List<Pair<VisualizationGroupI, DistributionI<Long>>> in) {
-        
+
         LegendItemCollection legend = JFreeChartUtil.createLegend(in);
 
-        List<Pair<VisualizationGroupI, DistributionI<Double>>> data = getCustomizer().filter(in);
+        data = getCustomizer().filter(in);
         XYSeriesCollection dataset = JFreeChartUtil.createXYSeries(data, getCustomizer().logY());
 
         String xAxisLabel = "";
@@ -66,7 +70,7 @@ public class AreaChart extends NumericalViewerI<Long> {
         cPanel = new ChartPanel(chart);
         XYPlot plot = (XYPlot) chart.getPlot();
         plot.setBackgroundPaint(Color.WHITE);
-        
+
         plot.setFixedLegendItems(legend);
 
         // x axis
@@ -84,7 +88,6 @@ public class AreaChart extends NumericalViewerI<Long> {
         valueAxis.setStandardTickUnits(tusX);
         valueAxis.setInverted(!getCustomizer().getSortAscending());
         plot.setDomainAxis(valueAxis);
-
 
         // y axis
         final NumberAxis rangeAxis;
@@ -104,7 +107,6 @@ public class AreaChart extends NumericalViewerI<Long> {
         }
         rangeAxis.setStandardTickUnits(tus);
         plot.setRangeAxis(rangeAxis);
-
 
         // set the colors
         int i = 0;
@@ -132,7 +134,19 @@ public class AreaChart extends NumericalViewerI<Long> {
     public ImageExporterI getImageExporter() {
         return JFreeChartUtil.getImageExporter(chart);
     }
-    
+
+    @Override
+    public SequenceExporterI[] getSequenceExporters() {
+        List<SequenceExporterI> ret = new ArrayList<>(data.size());
+        for (Pair<VisualizationGroupI, DistributionI<Double>> p : data) {
+            if (p.getSecond().getTotalClassifiedElements() > 0) {
+                SequenceExporterI exp = new SeqExporter<>(p.getFirst(), p.getSecond());
+                ret.add(exp);
+            }
+        }
+        return ret.toArray(new SequenceExporterI[]{});
+    }
+
     protected boolean useFractions() {
         return getCustomizer().useFractions();
     }

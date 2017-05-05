@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.treeview;
 
 import de.cebitec.mgx.api.groups.FileType;
 import de.cebitec.mgx.api.groups.ImageExporterI;
+import de.cebitec.mgx.api.groups.SequenceExporterI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.AttributeTypeI;
@@ -121,13 +122,12 @@ public class TreeView extends HierarchicalViewerI {
         TreeI<Map<VisualizationGroupI, Long>> combinedTree = TreeFactory.combineTrees(trees);
         NodeI<Map<VisualizationGroupI, Long>> root = combinedTree.getRoot();
 
-        // create an ordered list of groups
-        int i = 0;
-        VisualizationGroupI[] groupOrder = new VisualizationGroupI[trees.size()];
-        for (Pair<VisualizationGroupI, TreeI<Long>> pair : trees) {
-            groupOrder[i++] = pair.getFirst();
-        }
-
+//        // create an ordered list of groups
+//        int i = 0;
+//        VisualizationGroupI[] groupOrder = new VisualizationGroupI[trees.size()];
+//        for (Pair<VisualizationGroupI, TreeI<Long>> pair : trees) {
+//            groupOrder[i++] = pair.getFirst();
+//        }
         //Map<String, long[]> rankCounts = calculateRankCounts(combinedTree, groupOrder);
         initDisplay();
 
@@ -501,6 +501,11 @@ public class TreeView extends HierarchicalViewerI {
 
             }
         };
+    }
+
+    @Override
+    public SequenceExporterI[] getSequenceExporters() {
+        return null;
     }
 
     public class OrientAction extends AbstractAction {

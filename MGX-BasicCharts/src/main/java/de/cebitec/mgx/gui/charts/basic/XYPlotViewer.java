@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.charts.basic;
 
 import de.cebitec.mgx.api.groups.ImageExporterI;
+import de.cebitec.mgx.api.groups.SequenceExporterI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
@@ -9,7 +10,9 @@ import de.cebitec.mgx.common.visualization.ViewerI;
 import de.cebitec.mgx.gui.charts.basic.customizer.XYPlotCustomizer;
 import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
 import de.cebitec.mgx.gui.charts.basic.util.LogAxis;
+import de.cebitec.mgx.gui.seqexporter.SeqExporter;
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import javax.swing.JComponent;
@@ -36,6 +39,7 @@ public class XYPlotViewer extends NumericalViewerI<Long> {
     private ChartPanel cPanel = null;
     private XYPlotCustomizer customizer = null;
     private JFreeChart chart = null;
+    private List<Pair<VisualizationGroupI, DistributionI<Double>>> data;
 
     @Override
     public JComponent getComponent() {
@@ -50,7 +54,7 @@ public class XYPlotViewer extends NumericalViewerI<Long> {
     @Override
     public void show(List<Pair<VisualizationGroupI, DistributionI<Long>>> in) {
 
-        List<Pair<VisualizationGroupI, DistributionI<Double>>> data = getCustomizer().filter(in);
+        data = getCustomizer().filter(in);
         XYSeriesCollection dataset = JFreeChartUtil.createXYSeries(data);
 
         String xAxisLabel = "";
@@ -63,7 +67,7 @@ public class XYPlotViewer extends NumericalViewerI<Long> {
         XYPlot plot = (XYPlot) chart.getPlot();
         plot.setBackgroundPaint(Color.WHITE);
         plot.setFixedLegendItems(JFreeChartUtil.createLegend(data));
-        
+
         // x axis
         ValueAxis valueAxis;
         final TickUnitSource tusX;
@@ -125,5 +129,17 @@ public class XYPlotViewer extends NumericalViewerI<Long> {
     @Override
     public ImageExporterI getImageExporter() {
         return JFreeChartUtil.getImageExporter(chart);
+    }
+
+    @Override
+    public SequenceExporterI[] getSequenceExporters() {
+        List<SequenceExporterI> ret = new ArrayList<>(data.size());
+        for (Pair<VisualizationGroupI, DistributionI<Double>> p : data) {
+            if (p.getSecond().getTotalClassifiedElements() > 0) {
+                SequenceExporterI exp = new SeqExporter<>(p.getFirst(), p.getSecond());
+                ret.add(exp);
+            }
+        }
+        return ret.toArray(new SequenceExporterI[]{});
     }
 }

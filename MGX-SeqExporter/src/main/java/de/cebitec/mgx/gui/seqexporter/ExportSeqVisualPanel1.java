@@ -1,4 +1,4 @@
-package de.cebitec.mgx.gui.attributevisualization.exportwizard;
+package de.cebitec.mgx.gui.seqexporter;
 
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.model.AttributeI;
@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Set;
 import javax.swing.JPanel;
 
-public final class ExportSeqVisualPanel1 extends JPanel implements PropertyChangeListener {
+public final class ExportSeqVisualPanel1<T extends Number> extends JPanel implements PropertyChangeListener {
 
     private final JCheckBoxList<AttributeI> list = new JCheckBoxList<>();
     private boolean all_selected = true;
@@ -25,7 +25,7 @@ public final class ExportSeqVisualPanel1 extends JPanel implements PropertyChang
         list.addPropertyChangeListener(this);
     }
 
-    public void setDistribution(DistributionI<Long> d) {
+    public void setDistribution(DistributionI<T> d) {
         List<AttributeI> elements = new ArrayList<>();
         elements.addAll(d.keySet());
         Collections.sort(elements);

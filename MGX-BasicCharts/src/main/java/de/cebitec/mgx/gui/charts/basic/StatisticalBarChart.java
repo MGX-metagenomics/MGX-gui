@@ -7,6 +7,7 @@ import de.cebitec.mgx.gui.charts.basic.customizer.BarChartCustomizer;
 import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
 import de.cebitec.mgx.api.groups.ImageExporterI;
 import de.cebitec.mgx.api.groups.ReplicateGroupI;
+import de.cebitec.mgx.api.groups.SequenceExporterI;
 import de.cebitec.mgx.api.misc.Triple;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.common.VGroupManager;
@@ -14,6 +15,7 @@ import de.cebitec.mgx.common.visualization.CategoricalViewerI;
 import de.cebitec.mgx.common.visualization.ViewerI;
 import de.cebitec.mgx.gui.charts.basic.util.LogAxis;
 import de.cebitec.mgx.gui.charts.basic.util.SlidingStatisticalCategoryDataset;
+import de.cebitec.mgx.gui.seqexporter.SeqExporter;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.AdjustmentEvent;
@@ -51,13 +53,14 @@ import org.openide.util.lookup.ServiceProvider;
  * @author pblumenk
  */
 @ServiceProvider(service = ViewerI.class)
-public class StatisticalBarChart extends CategoricalViewerI<Long> implements AdjustmentListener{
+public class StatisticalBarChart extends CategoricalViewerI<Long> implements AdjustmentListener {
 
     private ChartPanel cPanel = null;
     private BarChartCustomizer customizer = null;
     private JFreeChart chart = null;
     private CategoryDataset dataset;
     private JScrollBar scrollBar = null;
+    List<Pair<VisualizationGroupI, DistributionI<Long>>> dists;
 
     public StatisticalBarChart() {
         // disable the stupid glossy effect
@@ -78,7 +81,7 @@ public class StatisticalBarChart extends CategoricalViewerI<Long> implements Adj
             JPanel frame = new JPanel(new BorderLayout());
             frame.add(cPanel);
             JPanel dashboard = new JPanel(new BorderLayout());
-            scrollBar = new JScrollBar(JScrollBar.HORIZONTAL, 0, 1, 0, data.getTotalColumnCount()-data.getColumnCount()+1);
+            scrollBar = new JScrollBar(JScrollBar.HORIZONTAL, 0, 1, 0, data.getTotalColumnCount() - data.getColumnCount() + 1);
             scrollBar.addAdjustmentListener(this);
             dashboard.add(scrollBar);
             frame.add(dashboard, BorderLayout.SOUTH);
@@ -90,10 +93,12 @@ public class StatisticalBarChart extends CategoricalViewerI<Long> implements Adj
 
     @Override
     public void show(List<Pair<VisualizationGroupI, DistributionI<Long>>> in) {
-        
+
+        dists = in;
+
         Collection<ReplicateGroupI> repGroup = VGroupManager.getInstance().getReplicateGroups();
         List<Triple<ReplicateGroupI, DistributionI<Double>, DistributionI<Double>>> replicateGroups = new ArrayList<>();
-        for (ReplicateGroupI rg : repGroup){
+        for (ReplicateGroupI rg : repGroup) {
             replicateGroups.add(new Triple<>(rg, rg.getMeanDistribution(), rg.getStdvDistribution()));
         }
         List<Triple<ReplicateGroupI, DistributionI<Double>, DistributionI<Double>>> filteredRg = getCustomizer().filterRep(replicateGroups);
@@ -107,19 +112,19 @@ public class StatisticalBarChart extends CategoricalViewerI<Long> implements Adj
         plot.setOrientation(PlotOrientation.VERTICAL);
         plot.setFixedLegendItems(JFreeChartUtil.createReplicateLegend(filteredRg));
         plot.setBackgroundPaint(Color.WHITE);
-        
-        chart = new JFreeChart(getTitle(), plot);                
+
+        chart = new JFreeChart(getTitle(), plot);
         chart.setBorderPaint(Color.WHITE);
         chart.setBackgroundPaint(Color.WHITE);
         chart.setAntiAlias(true);
         cPanel = new ChartPanel(chart);
-        
+
         StatisticalBarRenderer br = (StatisticalBarRenderer) plot.getRenderer();
         br.setItemMargin(customizer.getItemMargin());
         br.setBaseToolTipGenerator(new StandardCategoryToolTipGenerator("<html>Group: {0} <br> Attribute: {1} <br> " + yAxisLabel + ": {2}</html>", NumberFormat.getInstance()));
         br.setMaximumBarWidth(.1); // set maximum width to 10% of chart
         br.setErrorIndicatorPaint(Color.BLACK);
-        
+
         // x axis
         CategoryAxis domainAxis = plot.getDomainAxis();
         domainAxis.setCategoryMargin(customizer.getCategoryMargin());
@@ -145,7 +150,7 @@ public class StatisticalBarChart extends CategoricalViewerI<Long> implements Adj
         if (dataset instanceof SlidingStatisticalCategoryDataset) {
             SlidingStatisticalCategoryDataset scd = (SlidingStatisticalCategoryDataset) dataset;
             rangeAxis.setAutoRange(false);
-            rangeAxis.setRange(0, scd.getMaxY()*1.05);
+            rangeAxis.setRange(0, scd.getMaxY() * 1.05);
         }
         plot.setRangeAxis(rangeAxis);
 
@@ -177,6 +182,18 @@ public class StatisticalBarChart extends CategoricalViewerI<Long> implements Adj
     }
 
     @Override
+    public SequenceExporterI[] getSequenceExporters() {
+        List<SequenceExporterI> ret = new ArrayList<>(dists.size());
+        for (Pair<VisualizationGroupI, DistributionI<Long>> p : dists) {
+            if (p.getSecond().getTotalClassifiedElements() > 0) {
+                SequenceExporterI exp = new SeqExporter<>(p.getFirst(), p.getSecond());
+                ret.add(exp);
+            }
+        }
+        return ret.toArray(new SequenceExporterI[]{});
+    }
+
+    @Override
     public void adjustmentValueChanged(AdjustmentEvent ae) {
         SlidingStatisticalCategoryDataset data = (SlidingStatisticalCategoryDataset) dataset;
         data.setOffset(scrollBar.getValue());
@@ -185,13 +202,13 @@ public class StatisticalBarChart extends CategoricalViewerI<Long> implements Adj
     @Override
     public boolean canHandle(AttributeTypeI valueType) {
         long replicatesCount = 0;
-        for (ReplicateGroupI rg : VGroupManager.getInstance().getReplicateGroups())
+        for (ReplicateGroupI rg : VGroupManager.getInstance().getReplicateGroups()) {
             replicatesCount += rg.getReplicates().size();
-        
-        return super.canHandle(valueType) &&
-                VGroupManager.getInstance().getReplicateGroups().size() > 0 &&
-                VGroupManager.getInstance().getAllVisualizationGroups().size() == replicatesCount;
+        }
+
+        return super.canHandle(valueType)
+                && VGroupManager.getInstance().getReplicateGroups().size() > 0
+                && VGroupManager.getInstance().getAllVisualizationGroups().size() == replicatesCount;
     }
-    
-    
+
 }

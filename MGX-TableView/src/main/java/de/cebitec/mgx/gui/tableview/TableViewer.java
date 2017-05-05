@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.tableview;
 
 import de.cebitec.mgx.gui.swingutils.DecimalFormatRenderer;
 import de.cebitec.mgx.api.groups.ImageExporterI;
+import de.cebitec.mgx.api.groups.SequenceExporterI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
@@ -9,9 +10,11 @@ import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.visualization.filter.VisFilterI;
 import de.cebitec.mgx.common.visualization.ViewerI;
+import de.cebitec.mgx.gui.seqexporter.SeqExporter;
 import de.cebitec.mgx.gui.vizfilter.LongToDouble;
 import de.cebitec.mgx.gui.vizfilter.SortOrder;
 import de.cebitec.mgx.gui.vizfilter.ToFractionFilter;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -35,6 +38,7 @@ public class TableViewer extends ViewerI<DistributionI<Long>> {
 
     private JXTable table;
     private TableViewCustomizer cust = null;
+    List<Pair<VisualizationGroupI, DistributionI<Double>>> dists;
 
     @Override
     public JComponent getComponent() {
@@ -62,31 +66,30 @@ public class TableViewer extends ViewerI<DistributionI<Long>> {
         //
         // check whether assigned reads should be displayed as counts or fractions
         //
-        List<Pair<VisualizationGroupI, DistributionI<Double>>> data = null;
         if (getCust().useFractions()) {
             VisFilterI<DistributionI<Long>, DistributionI<Double>> fracFilter = new ToFractionFilter();
-            data = fracFilter.filter(in);
+            dists = fracFilter.filter(in);
         } else {
-            data = new LongToDouble().filter(in);
+            dists = new LongToDouble().filter(in);
         }
 
         //
         // exclude filter must be applied _AFTER_ converting to fractions
         //
-        data = getCust().filter(data);
+        dists = getCust().filter(dists);
 
         Set<AttributeI> allAttrs = new HashSet<>();
-        int numColumns = data.size() + 1;
+        int numColumns = dists.size() + 1;
         String[] columns = new String[numColumns];
         int i = 0;
         columns[i++] = getAttributeType().getName(); // first column
-        for (Pair<VisualizationGroupI, DistributionI<Double>> p : data) {
+        for (Pair<VisualizationGroupI, DistributionI<Double>> p : dists) {
             columns[i++] = p.getFirst().getDisplayName();
             allAttrs.addAll(p.getSecond().keySet());
         }
 
         SortOrder<Double> order = new SortOrder<>(getAttributeType(), SortOrder.DESCENDING);
-        data = order.filter(data);
+        dists = order.filter(dists);
 
         final boolean useFractions = getCust().useFractions();
 
@@ -112,7 +115,7 @@ public class TableViewer extends ViewerI<DistributionI<Long>> {
             Object[] rowData = new Object[numColumns];
             rowData[0] = a.getValue();
             int col = 1;
-            for (Pair<VisualizationGroupI, DistributionI<Double>> p : data) {
+            for (Pair<VisualizationGroupI, DistributionI<Double>> p : dists) {
                 DistributionI<Double> d = p.getSecond();
                 rowData[col++] = d.containsKey(a)
                         ? getCust().useFractions() ? d.get(a) : d.get(a).longValue()
@@ -162,5 +165,17 @@ public class TableViewer extends ViewerI<DistributionI<Long>> {
     @Override
     public ImageExporterI getImageExporter() {
         return null; // no image to export here
+    }
+
+    @Override
+    public SequenceExporterI[] getSequenceExporters() {
+        List<SequenceExporterI> ret = new ArrayList<>(dists.size());
+        for (Pair<VisualizationGroupI, DistributionI<Double>> p : dists) {
+            if (p.getSecond().getTotalClassifiedElements() > 0) {
+                SequenceExporterI exp = new SeqExporter<>(p.getFirst(), p.getSecond());
+                ret.add(exp);
+            }
+        }
+        return ret.toArray(new SequenceExporterI[]{});
     }
 }

@@ -1,14 +1,9 @@
 package de.cebitec.mgx.gui.attributevisualization.ui;
 
 import de.cebitec.mgx.api.groups.ImageExporterI;
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
-import de.cebitec.mgx.api.misc.DistributionI;
-import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.common.visualization.ViewerI;
-import de.cebitec.mgx.gui.attributevisualization.exportwizard.SeqExporter;
 import de.cebitec.mgx.api.groups.SequenceExporterI;
 import java.util.Collections;
-import java.util.List;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -131,9 +126,22 @@ public final class AttributeVisualizationTopComponent extends TopComponent {
 
     public void setVisualization(ViewerI v) {
         chartpane.setViewportView(v.getComponent());
+        
+        // clear lookup
+        content.set(Collections.emptyList(), null);
+        
+        // image exporter
         ImageExporterI exporter = v.getImageExporter();
         if (exporter != null && exporter.getSupportedTypes().length > 0) {
             content.add(exporter);
+        }
+        
+        // sequence exporters
+        SequenceExporterI[] seqExporters = v.getSequenceExporters();
+        if (seqExporters != null) {
+            for (SequenceExporterI seqExp : seqExporters) {
+                content.add(seqExp);
+            }
         }
     }
 
@@ -151,11 +159,4 @@ public final class AttributeVisualizationTopComponent extends TopComponent {
         }
     }
 
-    void updateLookup(List<Pair<VisualizationGroupI, DistributionI<Long>>> currentDistributions) {
-        content.set(Collections.emptyList(), null); // clear content
-        for (Pair<VisualizationGroupI, DistributionI<Long>> p : currentDistributions) {
-            SequenceExporterI exp = new SeqExporter(p.getFirst(), p.getSecond());
-            content.add(exp);
-        }
-    }
 }

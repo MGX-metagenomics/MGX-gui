@@ -1,6 +1,7 @@
 package de.cebitec.mgx.common.visualization;
 
 import de.cebitec.mgx.api.groups.ImageExporterI;
+import de.cebitec.mgx.api.groups.SequenceExporterI;
 import de.cebitec.mgx.api.groups.VGroupManagerI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.Pair;
@@ -15,7 +16,7 @@ import javax.swing.JComponent;
  * @param <T>
  * @author sjaenick
  */
-public abstract class ViewerI<T extends Visualizable> implements Comparable<ViewerI<T>> { //, VisFilterI<T>  {
+public abstract class ViewerI<T extends Visualizable> implements Comparable<ViewerI<T>> {
 
     private AttributeTypeI attrType;
     private String chartTitle;
@@ -43,6 +44,12 @@ public abstract class ViewerI<T extends Visualizable> implements Comparable<View
      * @return exporter instance able to save the visualization
      */
     public abstract ImageExporterI getImageExporter();
+    
+        /**
+     *
+     * @return exporter instances able to export selected sequences
+     */
+    public abstract SequenceExporterI[] getSequenceExporters();
 
     /**
      *
@@ -68,7 +75,7 @@ public abstract class ViewerI<T extends Visualizable> implements Comparable<View
      * @param dists distributions to be displayed
      */
     public abstract void show(List<Pair<VisualizationGroupI, T>> dists);
-
+    
     /**
      *
      * @return customizing component
