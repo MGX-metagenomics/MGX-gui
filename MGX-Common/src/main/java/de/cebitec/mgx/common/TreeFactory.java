@@ -220,26 +220,27 @@ public class TreeFactory {
     public static TreeI<Double> normalize(TreeI<Long> tree) {
         TreeI<Double> clone = new Tree<>();
 
+        long totalAtRoot = tree.getRoot().getContent();
         // root node
         NodeI<Double> normRoot = clone.createRootNode(tree.getRoot().getAttribute(), 1d);
 
         // normalize children recursively
-        normChildren(normRoot, tree.getRoot().getChildren());
+        normChildren(normRoot, tree.getRoot().getChildren(), totalAtRoot);
 
         return clone;
     }
 
-    private static <T> void normChildren(NodeI<Double> parent, Set<NodeI<Long>> children) {
-        long levelSum = 0;
-        for (NodeI<Long> child : children) {
-            levelSum += child.getContent();
-        }
+    private static <T> void normChildren(NodeI<Double> parent, Set<NodeI<Long>> children, long totalRoot) {
+//        long levelSum = 0;
+//        for (NodeI<Long> child : children) {
+//            levelSum += child.getContent();
+//        }
 
         for (NodeI<Long> child : children) {
-            double content = 1d * child.getContent() / levelSum;
+            double content = 1d * child.getContent() / totalRoot;
             NodeI<Double> normChild = parent.addChild(child.getAttribute(), content);
             if (!child.isLeaf()) {
-                normChildren(normChild, child.getChildren());
+                normChildren(normChild, child.getChildren(), totalRoot);
             }
         }
     }

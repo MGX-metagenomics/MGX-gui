@@ -42,17 +42,17 @@ public class UniFrac {
         TreeI<Double> s = TreeFactory.normalize(second);
         TreeI<double[]> merged = TreeFactory.mergeTrees(f, s);
 
-        double a = 0;
-        double b = 0;
+        double u = 0;
+        double D = 0;
         for (NodeI<double[]> node : merged.getNodes()) {
             double[] content = node.getContent();
-            a += Math.abs(content[0] - content[1]) * node.getDepth();
-            b += Math.abs(content[0] + content[1]) * node.getDepth();
+            u += Math.abs(content[0] - content[1]) * (1 + node.getDepth());
+            D += (content[0] + content[1]) * (1 + node.getDepth());
         }
 
-        return a / b;
+        return u / D;
     }
-    
+
     public static double generalized(TreeI<Long> first, TreeI<Long> second) {
         return generalized(first, second, 0.5);
     }
@@ -69,7 +69,7 @@ public class UniFrac {
             double[] content = node.getContent();
             double d = content[0] - content[1];
             double s = content[0] + content[1];
-            a += Math.abs(d/s) * Math.pow(s, alpha) * node.getDepth();
+            a += Math.abs(d / s) * Math.pow(s, alpha) * node.getDepth();
             b += Math.pow(s, alpha) * node.getDepth();
         }
 
