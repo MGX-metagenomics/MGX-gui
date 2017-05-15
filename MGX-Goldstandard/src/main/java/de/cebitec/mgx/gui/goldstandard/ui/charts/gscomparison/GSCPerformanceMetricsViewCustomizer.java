@@ -1,6 +1,8 @@
 package de.cebitec.mgx.gui.goldstandard.ui.charts.gscomparison;
 
+import de.cebitec.mgx.api.groups.FileType;
 import de.cebitec.mgx.gui.pool.MGXPool;
+import de.cebitec.mgx.gui.swingutils.util.FileChooserUtils;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.BufferedWriter;
@@ -8,7 +10,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import javax.swing.JFileChooser;
-import org.netbeans.api.progress.ProgressHandle;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.util.NbPreferences;
@@ -86,78 +87,81 @@ public class GSCPerformanceMetricsViewCustomizer extends javax.swing.JPanel {
         MGXPool.getInstance().submit(new Runnable() {
             @Override
             public void run() {
-                ProgressHandle p = ProgressHandle.createHandle("export table view");
-                final JFileChooser fc = new JFileChooser();
 
-                String last = NbPreferences.forModule(JFileChooser.class).get("lastDirectory", null);
-                if (last != null) {
-                    File f = new File(last);
-                    if (f.exists() && f.isDirectory()) {
-                        fc.setCurrentDirectory(f);
-                    }
+                String fileName = FileChooserUtils.selectNewFilename(new FileType[]{FileType.TSV}, "MGX_export");
+                if (fileName == null) {
+                    return;
                 }
+                File f = new File(fileName);
 
-                File f = new File("MGX_export.tsv");
-                fc.setSelectedFile(f);
-                fc.setVisible(true);
-
-                fc.addPropertyChangeListener(new PropertyChangeListener() {
-                    @Override
-                    public void propertyChange(PropertyChangeEvent evt) {
-                        if ("SelectedFileChangedProperty".equals(evt.getPropertyName())) {
-                            NbPreferences.forModule(JFileChooser.class).put("lastDirectory", fc.getCurrentDirectory().getAbsolutePath());
+//                final JFileChooser fc = new JFileChooser();
+//
+//                String last = NbPreferences.forModule(JFileChooser.class).get("lastDirectory", null);
+//                if (last != null) {
+//                    File f = new File(last);
+//                    if (f.exists() && f.isDirectory()) {
+//                        fc.setCurrentDirectory(f);
+//                    }
+//                }
+//
+//                File f = new File("MGX_export.tsv");
+//                fc.setSelectedFile(f);
+//                fc.setVisible(true);
+//
+//                fc.addPropertyChangeListener(new PropertyChangeListener() {
+//                    @Override
+//                    public void propertyChange(PropertyChangeEvent evt) {
+//                        if ("SelectedFileChangedProperty".equals(evt.getPropertyName())) {
+//                            NbPreferences.forModule(JFileChooser.class).put("lastDirectory", fc.getCurrentDirectory().getAbsolutePath());
+//                        }
+//                    }
+//                });
+//                if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+//                    f = fc.getSelectedFile();
+//                try {
+//                    if (f.exists()) {
+//                        throw new IOException(f.getName() + " already exists.");
+//                    }
+                try (BufferedWriter w = new BufferedWriter(new FileWriter(f))) {
+                    if (includeHeaders()) {
+                        for (int col = 0; col < model.getColumnCount() - 1; col++) {
+                            w.write(model.getColumnName(col));
+                            w.write("\t");
                         }
+                        w.write(model.getColumnName(model.getColumnCount() - 1));
+                        w.newLine();
+                        w.newLine();
                     }
-                });
 
-                if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
-
-                    f = fc.getSelectedFile();
-                    try {
-                        if (f.exists()) {
-                            throw new IOException(f.getName() + " already exists.");
-                        }
-                        BufferedWriter w = new BufferedWriter(new FileWriter(f));
-
-                        if (includeHeaders()) {
-                            for (int col = 0; col < model.getColumnCount() - 1; col++) {
-                                w.write(model.getColumnName(col));
+                    // export data
+                    for (int row = 0; row < model.getRowCount(); row++) {
+                        for (int col = 0; col <= model.getColumnCount() - 1; col++) {
+                            Object value = model.getValueAt(row, col);
+                            if (value != null) {
+                                w.write(value.toString());
+                            }
+                            if (col <= model.getColumnCount() - 2 && model.getValueAt(row, col + 1) != null) {
                                 w.write("\t");
                             }
-                            w.write(model.getColumnName(model.getColumnCount() - 1));
-                            w.write(System.lineSeparator());
-                            w.write(System.lineSeparator());
                         }
-
-                        // export data
-                        for (int row = 0; row < model.getRowCount(); row++) {
-                            for (int col = 0; col <= model.getColumnCount() - 1; col++) {
-                                Object value = model.getValueAt(row, col);
-                                if (value != null) {
-                                    w.write(value.toString());
-                                }
-                                if (col <= model.getColumnCount() - 2 && model.getValueAt(row, col + 1) != null) {
-                                    w.write("\t");
-                                }
-                            }
-                            w.write(System.lineSeparator());
-                        }
-                        w.flush();
-                        w.close();
-
-                        // report success
-                        NotifyDescriptor nd = new NotifyDescriptor.Message("Data exported to " + f.getName());
-                        DialogDisplayer.getDefault().notify(nd);
-                    } catch (IOException ex) {
-                        // some error occured, notify user
-                        NotifyDescriptor nd = new NotifyDescriptor("Export failed: " + ex.getMessage(), "Error",
-                                NotifyDescriptor.DEFAULT_OPTION, NotifyDescriptor.ERROR_MESSAGE, null, null);
-                        DialogDisplayer.getDefault().notify(nd);
-                    } finally {
-                        p.finish();
+                        w.newLine();
                     }
+                    w.flush();
+                } catch (IOException ex) {
+                    // some error occured, notify user
+                    NotifyDescriptor nd = new NotifyDescriptor("Export failed: " + ex.getMessage(), "Error",
+                            NotifyDescriptor.DEFAULT_OPTION, NotifyDescriptor.ERROR_MESSAGE, null, null);
+                    DialogDisplayer.getDefault().notify(nd);
+                    return;
                 }
+
+                // report success
+                NotifyDescriptor nd = new NotifyDescriptor.Message("Data exported to " + f.getName());
+                DialogDisplayer.getDefault().notify(nd);
+
             }
+//            }
+//            }
         });
     }//GEN-LAST:event_exportTSVActionPerformed
 
@@ -167,6 +171,12 @@ public class GSCPerformanceMetricsViewCustomizer extends javax.swing.JPanel {
     // End of variables declaration//GEN-END:variables
 
     public void dispose() {
+        for (StackTraceElement ste : Thread.currentThread().getStackTrace()) {
+            System.err.println(ste);
+        }
+        System.err.println();
+
         model = null;
+        exportTSV.setEnabled(false);
     }
 }

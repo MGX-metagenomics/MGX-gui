@@ -119,10 +119,9 @@ public class GSCTableViewer extends EvaluationViewerI implements PipelineCompari
             table = null;
             return;
         }
-//        }
 
-        jobALeaves = null;
-        jobBLeaves = null;
+//        jobALeaves = null;
+//        jobBLeaves = null;
 
         String[] columns = new String[]{
             "Sequence", "in " + jobAName, "in both", "in " + jobBName};
@@ -141,6 +140,7 @@ public class GSCTableViewer extends EvaluationViewerI implements PipelineCompari
         }
         table.setHighlighters(new Highlighter[]{HighlighterFactory.createAlternateStriping()});
         table.setSortOrder("Sequence", SortOrder.ASCENDING);
+        table.setSortable(false);
         pane = GSCTableViewerPagingModel.createPagingScrollPaneForTable(table);
         p.progress(progress++);
         p.finish();

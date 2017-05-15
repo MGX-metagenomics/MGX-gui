@@ -70,7 +70,8 @@ public final class EvaluationTopComponent extends TopComponent {
         jSplitPane1 = new javax.swing.JSplitPane();
         chartpane = new javax.swing.JScrollPane();
 
-        jSplitPane1.setDividerLocation(800);
+        jSplitPane1.setDividerSize(5);
+        jSplitPane1.setResizeWeight(0.9);
         jSplitPane1.setPreferredSize(new java.awt.Dimension(850, 700));
 
         chartpane.setMinimumSize(new java.awt.Dimension(600, 400));
@@ -103,15 +104,11 @@ public final class EvaluationTopComponent extends TopComponent {
     }
     
     void writeProperties(java.util.Properties p) {
-        // better to version settings since initial version as advocated at
-        // http://wiki.apidesign.org/wiki/PropertyFiles
         p.setProperty("version", "1.0");
-        // TODO store your settings
     }
     
     void readProperties(java.util.Properties p) {
         String version = p.getProperty("version");
-        // TODO read your settings according to their version
     }
     
     public void setVisualization(EvaluationViewerI v) {

@@ -1,6 +1,9 @@
 package de.cebitec.mgx.gui.goldstandard.ui.charts.gscomparison;
 
 import de.cebitec.mgx.gui.goldstandard.util.PerformanceMetrics;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Locale;
 import javax.swing.table.AbstractTableModel;
 
 /**
@@ -76,25 +79,26 @@ public class GSCPerformanceMetricsTableModel extends AbstractTableModel {
 //                    break;
             }
         } else {
+            DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.US);
             String format = "%.4f";
             switch (rowIndex) {
                 case 0:
-                    value = String.valueOf(data[columnIndex - 1].getTP());
+                    value = formatter.format(data[columnIndex - 1].getTP());
                     break;
                 case 1:
-                    value = String.valueOf(data[columnIndex - 1].getFP());
+                    value = formatter.format(data[columnIndex - 1].getFP());
                     break;
                 case 2:
-                    value = String.valueOf(data[columnIndex - 1].getFN());
+                    value = formatter.format(data[columnIndex - 1].getFN());
                     break;
                 case 3:
-                    value = String.valueOf(data[columnIndex - 1].getTN());
+                    value = formatter.format(data[columnIndex - 1].getTN());
                     break;
                 case 4:
                     value = String.format(format, data[columnIndex - 1].getSensitivity());
                     break;
                 case 5:
-                    value = String.format(format, data[columnIndex - 1].getSpecifity());
+                    value = String.format(format, data[columnIndex - 1].getSpecificity());
                     break;
                 case 6:
                     value = String.format(format, data[columnIndex - 1].getPrecision());

@@ -38,7 +38,7 @@ import org.openide.util.Utilities;
 import org.openide.util.actions.NodeAction;
 
 @ActionID(category = "Edit", id = "de.cebitec.mgx.gui.goldstandard.actions.AddGoldstandard")
-@ActionRegistration(displayName = "Add gold standard", lazy = true)
+@ActionRegistration(displayName = "Add reference annotation", lazy = true)
 public final class AddGoldstandard extends NodeAction implements LookupListener {
 
     private final Lookup context;
@@ -114,28 +114,30 @@ public final class AddGoldstandard extends NodeAction implements LookupListener 
         if (!cancelled) {
             for (final SeqRunI seqrun : seqruns) {
                 JobI job;
+                ProgressHandle p = ProgressHandle.createHandle("Importing .mgs file");
                 try {
                     ToolI tool = getToolByName(master, TOOL_NAME, TOOL_LONG_DESCRIPTION, TOOL_AUTHOR, TOOL_WEBSITE, TOOL_VERSION, TOOL_XML);
                     List<JobParameterI> params = new ArrayList<>(1);
                     job = master.Job().create(tool, seqrun, params);
                     job.setStatus(JobState.RUNNING);
+                    p.start((int) seqrun.getNumSequences() + 1);
                     master.Job().update(job);
-                    ProgressHandle p = ProgressHandle.createHandle("AddGoldstandard");
-                    p.start((int) seqrun.getNumSequences());
 
                     MGSReader reader = new MGSReader(wd.getGoldstandardFile().getAbsolutePath(), master, job);
                     int i = 0;
                     int numChunks = 0;
                     List<BulkObservation> bol = new ArrayList<>();
                     final AtomicInteger numRunnables = new AtomicInteger(0);
-                    
+
                     while (reader.hasNext()) {
                         if (hasError.get()) {
                             break;
                         }
                         final MGSEntry entry = reader.next();
                         String seqName = entry.getHeader();
-                        seqName = seqName.substring(0, seqName.indexOf(" "));
+                        if (seqName.contains(" ")) {
+                            seqName = seqName.substring(0, seqName.indexOf(" "));
+                        }
                         for (MGSAttribute t : entry.getAttributes()) {
                             bol.add(new BulkObservation(seqrun.getId(), seqName, t.getAttribute().getId(), t.getStart(), t.getStop()));
                         }
@@ -187,15 +189,18 @@ public final class AddGoldstandard extends NodeAction implements LookupListener 
                         // wait
                     }
 
-                    p.finish();
                     if (hasError.get()) {
                         master.Job().delete(job);
                     } else {
                         job.setStatus(JobState.FINISHED);
                         master.Job().update(job);
                     }
+                    p.progress(i++);
+                    System.err.println("job set to finished");
                 } catch (MGXException | IOException ex) {
                     Exceptions.printStackTrace(ex);
+                } finally {
+                    p.finish();
                 }
             }
         }

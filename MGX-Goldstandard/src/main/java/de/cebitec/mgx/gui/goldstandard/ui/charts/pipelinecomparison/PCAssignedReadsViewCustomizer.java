@@ -28,7 +28,7 @@ public class PCAssignedReadsViewCustomizer extends javax.swing.JPanel{
 
         logScale = new javax.swing.JCheckBox();
 
-        org.openide.awt.Mnemonics.setLocalizedText(logScale, "Y axis in log scale");
+        org.openide.awt.Mnemonics.setLocalizedText(logScale, "X axis in log scale");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -36,7 +36,7 @@ public class PCAssignedReadsViewCustomizer extends javax.swing.JPanel{
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(logScale)
-                .addGap(0, 32, Short.MAX_VALUE))
+                .addGap(0, 31, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

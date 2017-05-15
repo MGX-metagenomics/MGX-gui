@@ -14,14 +14,11 @@ import de.cebitec.mgx.gui.goldstandard.wizards.selectjobs.SelectSingleJobWithGSW
 import de.cebitec.mgx.gui.pool.MGXPool;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
-import gnu.trove.procedure.TLongProcedure;
-import gnu.trove.set.TLongSet;
-import gnu.trove.set.hash.TLongHashSet;
 import java.awt.Dialog;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Semaphore;
 import javax.swing.JComponent;
 import javax.swing.table.TableColumn;
 import org.jdesktop.swingx.JXTable;
@@ -61,7 +58,7 @@ public class GSCPerformanceMetricsViewer extends EvaluationViewerI implements GS
     }
 
     @Override
-    public ImageExporterI getImageExporter() {
+    public final ImageExporterI getImageExporter() {
         return null;
     }
 
@@ -75,8 +72,9 @@ public class GSCPerformanceMetricsViewer extends EvaluationViewerI implements GS
         ProgressHandle p = ProgressHandle.createHandle("Calculating metrics...");
         GSCPerformanceMetricsTableModel model;
         try {
-            model = calcPerformanceMetrics(currentJobs, gsJob, attrType, currentSeqrun.getNumSequences(), p);
+            model = calcPerformanceMetrics(currentJobs, gsJob, attrType, p);
         } catch (MGXException ex) {
+            p.finish();
             Exceptions.printStackTrace(ex);
             tidyUp();
             return;
@@ -84,6 +82,7 @@ public class GSCPerformanceMetricsViewer extends EvaluationViewerI implements GS
         cust.setModel(model);
 
         table = new JXTable(model);
+        table.setSortable(false);
         table.setFillsViewportHeight(true);
         for (TableColumn tc : table.getColumns()) {
             if (0 != tc.getModelIndex()) {
@@ -131,15 +130,17 @@ public class GSCPerformanceMetricsViewer extends EvaluationViewerI implements GS
     }
 
     private void tidyUp() {
-        cust.dispose();
-        cust = null;
+        if (cust != null) {
+            cust.dispose();
+            cust = null;
+        }
         table = null;
         currentJobs = null;
         gsJob = null;
         attrType = null;
     }
 
-    public GSCPerformanceMetricsTableModel calcPerformanceMetrics(List<JobI> jobs, JobI gsJob, final AttributeTypeI attributeType, final long seqrunSequenceCount, ProgressHandle p) throws MGXException {
+    public static GSCPerformanceMetricsTableModel calcPerformanceMetrics(List<JobI> jobs, JobI gsJob, final AttributeTypeI attributeType, final ProgressHandle p) throws MGXException {
         int progress = 0;
         p.start(jobs.size() + 2);
         p.progress(progress++);
@@ -149,29 +150,36 @@ public class GSCPerformanceMetricsViewer extends EvaluationViewerI implements GS
         // seqId to attribute value
         final TLongObjectMap<String> goldstandard = new TLongObjectHashMap<>(jobs.size());
         for (AttributeI attr : gsDist.keySet()) {
+            System.err.println("processing " + attr.getValue());
             Iterator<Long> it = gsDist.getMaster().Sequence().fetchSequenceIDs(attr);
             while (it.hasNext()) {
                 goldstandard.put(it.next(), attr.getValue());
             }
         }
+
         p.progress(progress++);
 
         PerformanceMetrics[] performanceMetrics = new PerformanceMetrics[jobs.size()];
         final CountDownLatch allDone = new CountDownLatch(jobs.size());
+        final Semaphore rateLimit = new Semaphore(2);
         int i = 0;
         for (final JobI job : jobs) {
-            final PerformanceMetrics pm = new PerformanceMetrics();
+            final PerformanceMetrics pm = new PerformanceMetrics(goldstandard);
             performanceMetrics[i++] = pm;
 
             MGXPool.getInstance().submit(new Runnable() {
                 @Override
                 public void run() {
                     try {
-                        computeMetric(job, pm, attributeType, goldstandard, seqrunSequenceCount);
+                        rateLimit.acquireUninterruptibly();
+                        pm.compute(job, attributeType);
                     } catch (MGXException ex) {
+                        p.finish();
                         Exceptions.printStackTrace(ex);
+                    } finally {
+                        rateLimit.release();
+                        allDone.countDown();
                     }
-                    allDone.countDown();
                 }
             });
 
@@ -182,65 +190,16 @@ public class GSCPerformanceMetricsViewer extends EvaluationViewerI implements GS
         try {
             allDone.await();
         } catch (InterruptedException ex) {
+            p.finish();
             Exceptions.printStackTrace(ex);
         }
-
+        // table header
         String[] columns = new String[jobs.size() + 1];
-        columns[0] = "";
+        columns[0] = attributeType.getName(); //"";
         for (i = 1; i < jobs.size() + 1; i++) {
             columns[i] = JobUtils.jobToString(jobs.get(i - 1));
         }
 
         return new GSCPerformanceMetricsTableModel(columns, performanceMetrics);
-    }
-
-    private static void computeMetric(JobI job, final PerformanceMetrics pm, AttributeTypeI attrType, final TLongObjectMap<String> goldstandard, long totalSeqCount) throws MGXException {
-        
-        
-        DistributionI<Long> dist = job.getMaster().Attribute().getDistribution(attrType, job);
-        final TLongObjectMap<String> jobAttr = new TLongObjectHashMap<>(); //seqid to attr value
-        for (Map.Entry<AttributeI, Long> entry : dist.entrySet()) {
-            String jobAssignment = entry.getKey().getValue();
-            Iterator<Long> it = dist.getMaster().Sequence().fetchSequenceIDs(entry.getKey());
-            while (it.hasNext()) {
-                Long seqId = it.next();
-                jobAttr.put(seqId, jobAssignment);
-            }
-        }
-        
-        // collect all seq ids
-        TLongSet allIds = new TLongHashSet();
-        allIds.addAll(goldstandard.keySet());
-        allIds.addAll(jobAttr.keySet());
-        
-        
-        allIds.forEach(new TLongProcedure() {
-            @Override
-            public boolean execute(long seqId) {
-                String gsAssignment = goldstandard.remove(seqId);
-                String jobAssignment = jobAttr.remove(seqId);
-                        
-                
-                if (gsAssignment != null) {
-                    if (jobAssignment != null) {
-                        if (gsAssignment.equals(jobAssignment)) {
-                            // correct assignment
-                            pm.incrementTP();
-                        } else {
-                            // wrong assignment
-                            pm.incrementFP();
-                        }
-                    } else {
-                        // not assigned by job, but by GS
-                        pm.incrementFN();
-                    }
-                } else {
-                    // assigned by job, but not by goldstandard
-                    pm.incrementFP();
-                }
-                
-                return true;
-            }
-        });
     }
 }

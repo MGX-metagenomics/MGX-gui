@@ -1,5 +1,18 @@
 package de.cebitec.mgx.gui.goldstandard.util;
 
+import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.misc.DistributionI;
+import de.cebitec.mgx.api.model.AttributeI;
+import de.cebitec.mgx.api.model.AttributeTypeI;
+import de.cebitec.mgx.api.model.JobI;
+import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
+import gnu.trove.procedure.TLongProcedure;
+import gnu.trove.set.TLongSet;
+import gnu.trove.set.hash.TLongHashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 import org.apache.commons.math3.util.FastMath;
 
 /**
@@ -9,41 +22,75 @@ import org.apache.commons.math3.util.FastMath;
 public class PerformanceMetrics {
 
     private long fp, fn, tp, tn;
+    private final TLongObjectMap<String> goldstandard;
 
-    public PerformanceMetrics() {
-        this(0, 0, 0, 0);
+    public PerformanceMetrics(TLongObjectMap<String> goldstandard) {
+        this.fp = 0;
+        this.fn = 0;
+        this.tp = 0;
+        this.tn = 0;
+        this.goldstandard = goldstandard;
     }
 
-    public PerformanceMetrics(long falsePostive, long falseNegative, long truePositive, long trueNegative) {
-        this.fp = falsePostive;
-        this.fn = falseNegative;
-        this.tp = truePositive;
-        this.tn = trueNegative;
+    public void compute(JobI job, AttributeTypeI attrType) throws MGXException {
+        DistributionI<Long> dist = job.getMaster().Attribute().getDistribution(attrType, job);
+        final TLongObjectMap<String> jobAttr = new TLongObjectHashMap<>(); //seqid to attr value
+        for (Map.Entry<AttributeI, Long> entry : dist.entrySet()) {
+            String jobAssignment = entry.getKey().getValue();
+            Iterator<Long> it = dist.getMaster().Sequence().fetchSequenceIDs(entry.getKey());
+            while (it.hasNext()) {
+                Long seqId = it.next();
+                jobAttr.put(seqId, jobAssignment);
+            }
+        }
+
+        // collect all seq ids
+        TLongSet allIds = new TLongHashSet();
+        allIds.addAll(goldstandard.keySet());
+        allIds.addAll(jobAttr.keySet());
+        
+        final AtomicLong shouldntBeClassified = new AtomicLong(0);
+
+        allIds.forEach(new TLongProcedure() {
+            @Override
+            public boolean execute(long seqId) {
+                // we cannot remove from the gold standard since it's
+                // used for all selected jobs
+                String gsAssignment = goldstandard.get(seqId);
+                String jobAssignment = jobAttr.remove(seqId);
+
+                if (gsAssignment != null) {
+                    if (jobAssignment != null) {
+                        if (gsAssignment.equals(jobAssignment)) {
+                            // correct assignment
+                            tp++;
+                        } else {
+                            // wrong assignment
+                            fp++;
+                        }
+                    } else {
+                        // not assigned by job, but by GS
+                        fn++;
+                    }
+                } else {
+                    // assigned by job, but not by goldstandard
+                    fp++;
+                    shouldntBeClassified.incrementAndGet();
+                }
+
+                return true;
+            }
+        });
+        
+        tn = job.getSeqrun().getNumSequences() - goldstandard.size() - shouldntBeClassified.longValue();
     }
 
-    public void add(long falsePostive, long falseNegative, long truePositive, long trueNegative) {
-        this.fp += falsePostive;
-        this.fn += falseNegative;
-        this.tp += truePositive;
-        this.tn += trueNegative;
-    }
-
-    public void incrementFP() {
-        this.fp++;
-    }
-
-    public void incrementFN() {
-        this.fn++;
-    }
-
-    public void incrementTP() {
-        this.tp++;
-    }
-
-    public void incrementTN() {
-        this.tn++;
-    }
-
+//    public void add(long falsePositive, long falseNegative, long truePositive, long trueNegative) {
+//        this.fp += falsePositive;
+//        this.fn += falseNegative;
+//        this.tp += truePositive;
+//        this.tn += trueNegative;
+//    }
     public long getFP() {
         return fp;
     }
@@ -74,7 +121,7 @@ public class PerformanceMetrics {
      *
      * @return \(\frac{TN}{TN+FP}\)
      */
-    public double getSpecifity() {
+    public double getSpecificity() {
         return (double) tn / (tn + fp);
     }
 
@@ -142,15 +189,14 @@ public class PerformanceMetrics {
     }
 
     /**
-     * Calculating the Matthews correlation coefficient
-     * Buggy!
-     * 
+     * Calculating the Matthews correlation coefficient Buggy!
+     *
      * @return \(\frac{TP*TN-FP*FN}{\sqrt{(TP+FP)(TP+FN)(TN+FP)(TN+FN)}}\)
      */
     public double getMatthewsCorrelationCoefficient() {
         long numerator = tp * tn - fp * fn;
         double denominator = FastMath.sqrt((tp + fp) * (fp + fn) * (tn + fp) * (tn + fn));
-        return numerator/denominator;
+        return numerator / denominator;
     }
 
     /**
@@ -159,7 +205,7 @@ public class PerformanceMetrics {
      * @return \(Sensitivity+Specificity-1\)
      */
     public double getInformedness() {
-        return getSensitivity() + getSpecifity() - 1;
+        return getSensitivity() + getSpecificity() - 1;
     }
 
     /**
@@ -170,5 +216,5 @@ public class PerformanceMetrics {
     public double getMarkedness() {
         return getPrecision() + getNegativePredictiveValue() - 1;
     }
-    
+
 }

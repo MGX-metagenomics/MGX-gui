@@ -11,8 +11,8 @@ import org.apache.commons.math3.util.FastMath;
  */
 public class Vector {
 
-    int pointer;
-    double[] data;
+    private int pointer;
+    private final double[] data;
 
     public Vector(double[] array) {
         data = array.clone();
@@ -21,9 +21,7 @@ public class Vector {
     public Vector(int size) {
         pointer = 0;
         data = new double[size];
-        for (int i = 0; i < size; i++) {
-            data[i] = 0;
-        }
+        Arrays.fill(data, 0);
     }
 
     @Override

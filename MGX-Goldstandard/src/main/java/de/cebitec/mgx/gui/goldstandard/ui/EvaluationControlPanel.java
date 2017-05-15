@@ -14,6 +14,7 @@ import de.cebitec.mgx.gui.goldstandard.ui.charts.pipelinecomparison.PipelineComp
 import de.cebitec.mgx.gui.goldstandard.util.EvalExceptions;
 import de.cebitec.mgx.gui.pool.MGXPool;
 import de.cebitec.mgx.gui.swingutils.BaseModel;
+import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -36,7 +37,7 @@ import org.openide.util.Utilities;
  */
 public class EvaluationControlPanel extends javax.swing.JPanel implements ActionListener, LookupListener, PropertyChangeListener {
 
-    private EvaluationTopComponent topComponent;
+    private final EvaluationTopComponent topComponent;
     //
     private ComparisonTypeI currentComparisonType;
     private EvaluationViewerI currentViewer;
@@ -61,21 +62,38 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Action
         res.addLookupListener(this);
         updateButton.addActionListener(this);
 
-        comparisonTypeList.addActionListener(this);
+//        comparisonTypeList.addActionListener(this);
+        comparisonTypeList.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent event) {
+                if (event.getStateChange() == ItemEvent.SELECTED && comparisonTypeList.isEnabled()) {
+                    currentComparisonType = compListModel.getSelectedItem();
+                    visListModel.update();
+                }
+            }
+        });
         compListModel.update(); // initial fill 
 
-        visualizationTypeList.addActionListener(this);
+//        visualizationTypeList.addActionListener(this);
+        visualizationTypeList.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent event) {
+                if (event.getStateChange() == ItemEvent.SELECTED && visualizationTypeList.isEnabled()) {
+                    if (currentViewer != null) {
+                        currentViewer.dispose();
+                    }
+                    currentViewer = visListModel.getSelectedItem();
+                    if (currentViewer != null) {
+                        controlSplitPane.setBottomComponent(currentViewer.getCustomizer());
+                    }
+                    topComponent.setVisualization(null);
+                }
+            }
+        });
 
         update();
     }
 
-//    public final void setTopComponent(EvaluationTopComponent tc) {
-//        this.topComponent = tc;
-//    }
-
-//    public final synchronized void updateViewerList() {
-//        compListModel.update();
-//    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -94,9 +112,9 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Action
         jPanel2 = new javax.swing.JPanel();
         updateButton = new javax.swing.JButton();
 
-        setMaximumSize(new java.awt.Dimension(150, 32767));
+        setMaximumSize(new java.awt.Dimension(100, 32767));
         setMinimumSize(new java.awt.Dimension(100, 0));
-        setPreferredSize(new java.awt.Dimension(150, 504));
+        setPreferredSize(new java.awt.Dimension(100, 504));
 
         controlSplitPane.setDividerLocation(120);
         controlSplitPane.setDividerSize(1);
@@ -200,47 +218,60 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Action
     @Override
     @SuppressWarnings("unchecked")
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == comparisonTypeList) {
-            currentComparisonType = compListModel.getSelectedItem();
-            visListModel.update();
-        } else if (e.getSource() == visualizationTypeList) {
-            if (currentViewer != null) {
-                currentViewer.dispose();
-            }
-            currentViewer = visListModel.getSelectedItem();
-            if (currentViewer != null) {
-                controlSplitPane.setBottomComponent(currentViewer.getCustomizer());
-            }
-            topComponent.setVisualization(null);
-        } else if (e.getSource() == updateButton) {
-            topComponent.setVisualization(null);
-            assert currentSeqrun != null;
-            currentViewer.selectJobs(currentSeqrun);
-            MGXPool.getInstance().submit(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        topComponent.setVisualization(currentViewer);
-                    } catch (Exception ex) {
-                        EvalExceptions.printStackTrace(ex);
-                    }
+        System.err.println("CMD " + e.getActionCommand());
+//        if (e.getSource() == comparisonTypeList) {
+//            currentComparisonType = compListModel.getSelectedItem();
+//            visListModel.update();
+//        } else if (e.getSource() == visualizationTypeList) {
+//            if (currentViewer != null) {
+//                currentViewer.dispose();
+//            }
+//            currentViewer = visListModel.getSelectedItem();
+//            if (currentViewer != null) {
+//                controlSplitPane.setBottomComponent(currentViewer.getCustomizer());
+//            }
+//            topComponent.setVisualization(null);
+//        } else if (e.getSource() == updateButton) {
+        //disable upstream and self
+        comparisonTypeList.setEnabled(false);
+        visualizationTypeList.setEnabled(false);
+        updateButton.setEnabled(false);
+
+        // busy
+        topComponent.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+
+        topComponent.setVisualization(null);
+        assert currentSeqrun != null;
+        currentViewer.selectJobs(currentSeqrun);
+        MGXPool.getInstance().submit(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    topComponent.setVisualization(currentViewer);
+                } catch (Exception ex) {
+                    EvalExceptions.printStackTrace(ex);
+                } finally {
+                    comparisonTypeList.setEnabled(true);
+                    visualizationTypeList.setEnabled(true);
+                    updateButton.setEnabled(true);
+                    topComponent.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
                 }
-            });
-        } else {
-            assert false;
-        }
+            }
+        });
+//        } else {
+//            assert false;
+//        }
     }
 
-    public final void dispose() {
-        if (currentViewer != null) {
-            currentViewer.dispose();
-        }
-        res.removeLookupListener(this);
-        updateButton.removeActionListener(this);
-        comparisonTypeList.removeActionListener(this);
-        visualizationTypeList.removeActionListener(this);
-    }
-
+//    public final void dispose() {
+//        if (currentViewer != null) {
+//            currentViewer.dispose();
+//        }
+//        res.removeLookupListener(this);
+//        updateButton.removeActionListener(this);
+//        comparisonTypeList.removeActionListener(this);
+//        visualizationTypeList.removeActionListener(this);
+//    }
     private void update() {
         Collection<? extends SeqRunI> seqruns = res.allInstances();
 
@@ -284,7 +315,9 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Action
 
     @Override
     public void resultChanged(LookupEvent ev) {
-        update();
+        if (visualizationTypeList.isEnabled()) {
+            update();
+        }
     }
 
     @Override
@@ -339,10 +372,9 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Action
                 return;
             }
 
-            if (currentViewer != null) {
-                currentViewer.dispose();
-            }
-
+//            if (currentViewer != null) {
+//                currentViewer.dispose();
+//            }
             currentComparisonType = compListModel.getSelectedItem();
 
             controlSplitPane.setBottomComponent(null);
@@ -405,10 +437,9 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Action
                 return;
             }
 
-            if (currentViewer != null) {
-                currentViewer.dispose();
-            }
-
+//            if (currentViewer != null) {
+//                currentViewer.dispose();
+//            }
             currentViewer = visListModel.getSelectedItem();
 
             controlSplitPane.setBottomComponent(currentViewer.getCustomizer());

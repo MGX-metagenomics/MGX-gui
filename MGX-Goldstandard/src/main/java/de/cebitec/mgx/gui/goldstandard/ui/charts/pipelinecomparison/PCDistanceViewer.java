@@ -7,6 +7,8 @@ import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.SeqRunI;
+import de.cebitec.mgx.api.model.tree.TreeI;
+import de.cebitec.mgx.common.UniFrac;
 import de.cebitec.mgx.gui.goldstandard.ui.charts.EvaluationViewerI;
 import de.cebitec.mgx.gui.goldstandard.util.EvalExceptions;
 import de.cebitec.mgx.gui.goldstandard.util.JobUtils;
@@ -46,11 +48,21 @@ public class PCDistanceViewer extends EvaluationViewerI implements PipelineCompa
     private PCDistanceViewCustomizer cust = null;
 
     public enum DistanceMethod {
-        MANHATTAN, EUCLIDEAN, CHEBYSHEV;
+        
+        MANHATTAN("manhattan"), 
+        EUCLIDEAN("euclidean"), 
+        CHEBYSHEV("chebyshev"), 
+        UNIFRAC("UniFrac");
+        
+        private final String name;
+
+        private DistanceMethod(String name) {
+            this.name = name;
+        }
 
         @Override
         public String toString() {
-            return super.toString().toLowerCase();
+            return name;
         }
     }
 
@@ -85,14 +97,6 @@ public class PCDistanceViewer extends EvaluationViewerI implements PipelineCompa
 
     @Override
     public void evaluate() {
-        Vector[] vectors;
-        try {
-            vectors = calcAttributeVectors(jobs, usedAttributeType, ((PCDistanceViewCustomizer)getCustomizer()).normalizeVectors());
-        } catch (MGXException ex) {
-            EvalExceptions.printStackTrace(ex);
-            tidyUp();
-            return;
-        }
 
         String[] columns = new String[jobs.size() + 1];
         columns[0] = "";
@@ -115,7 +119,19 @@ public class PCDistanceViewer extends EvaluationViewerI implements PipelineCompa
         };
 
         double[][] distances = new double[jobs.size()][jobs.size()];
+
         DistanceMethod currentDistanceMethod = cust.getDistanceMethod();
+        Vector[] vectors = null;
+
+        if (currentDistanceMethod != DistanceMethod.UNIFRAC) {
+            try {
+                vectors = calcAttributeVectors(jobs, usedAttributeType, ((PCDistanceViewCustomizer) getCustomizer()).normalizeVectors());
+            } catch (MGXException ex) {
+                EvalExceptions.printStackTrace(ex);
+                tidyUp();
+                return;
+            }
+        }
 
         for (i = 0; i < distances.length - 1; i++) {
             for (int j = i + 1; j < distances.length; j++) {
@@ -129,13 +145,26 @@ public class PCDistanceViewer extends EvaluationViewerI implements PipelineCompa
                     case CHEBYSHEV:
                         distances[i][j] = vectors[i].chebyshevDistance(vectors[j]);
                         break;
+                    case UNIFRAC:
+                        JobI j1 = jobs.get(i);
+                        JobI j2 = jobs.get(j);
+                        try {
+                            TreeI<Long> tree1 = j1.getMaster().Attribute().getHierarchy(usedAttributeType, j1);
+                            TreeI<Long> tree2 = j2.getMaster().Attribute().getHierarchy(usedAttributeType, j2);
+                            distances[i][j] = UniFrac.weighted(tree1, tree2);
+                        } catch (MGXException ex) {
+                            EvalExceptions.printStackTrace(ex);
+                            tidyUp();
+                            return;
+                        }
+                        break;
                 }
                 distances[j][i] = distances[i][j];
             }
         }
 
         String numberFormat;
-        if (((PCDistanceViewCustomizer) getCustomizer()).normalizeVectors()) {
+        if (((PCDistanceViewCustomizer) getCustomizer()).normalizeVectors() || currentDistanceMethod == DistanceMethod.UNIFRAC) {
             numberFormat = "%.5f";
         } else {
             numberFormat = "%.2f";
@@ -159,6 +188,7 @@ public class PCDistanceViewer extends EvaluationViewerI implements PipelineCompa
 //        cust.setModel(model); // for tsv export
         table = new JXTable(model);
         table.setFillsViewportHeight(true);
+        table.setSortable(false);
         for (TableColumn tc : table.getColumns()) {
             if (0 != tc.getModelIndex()) {
                 tc.setMinWidth(20);
@@ -211,32 +241,31 @@ public class PCDistanceViewer extends EvaluationViewerI implements PipelineCompa
         }
     }
 
-    public static Vector[] calcAttributeVectors(List<JobI> usedJobs, AttributeTypeI attrType, boolean normalizeVectors) throws MGXException {
-        if (usedJobs == null || usedJobs.isEmpty())
+    public static Vector[] calcAttributeVectors(List<JobI> jobs, AttributeTypeI attrType, boolean normalizeVectors) throws MGXException {
+        if (jobs == null || jobs.isEmpty()) {
             return new Vector[0];
-        
-        Map<AttributeI, long[]> attributes = null;
-        int i = 0;        
-        for (JobI job : usedJobs) {
+        }
+
+        // attribute to count[]
+        Map<AttributeI, long[]> attributes = new HashMap<>();
+        int i = 0;
+        for (JobI job : jobs) {
             DistributionI<Long> dist = job.getMaster().Attribute().getDistribution(attrType, job);
-            if (attributes == null) {
-                attributes = new HashMap<>((int) (dist.size() * 1.3));
-            }
-            for (Entry<AttributeI, Long> attr : dist.entrySet()) {
-                if (attributes.containsKey(attr.getKey())) {
-                    attributes.get(attr.getKey())[i] = attr.getValue();
+            for (Entry<AttributeI, Long> e : dist.entrySet()) {
+                if (attributes.containsKey(e.getKey())) {
+                    attributes.get(e.getKey())[i] = e.getValue();
                 } else {
-                    long[] array = new long[usedJobs.size()];
+                    long[] array = new long[jobs.size()];
                     Arrays.fill(array, 0);
-                    array[i] = attr.getValue();
-                    attributes.put(attr.getKey(), array);
+                    array[i] = e.getValue();
+                    attributes.put(e.getKey(), array);
                 }
             }
             i++;
         }
 
-        Vector[] vectors = new Vector[usedJobs.size()];
-        for (i = 0; i < usedJobs.size(); i++) {
+        Vector[] vectors = new Vector[jobs.size()];
+        for (i = 0; i < jobs.size(); i++) {
             vectors[i] = new Vector(attributes.size());
         }
         for (AttributeI key : attributes.keySet()) {
@@ -251,7 +280,7 @@ public class PCDistanceViewer extends EvaluationViewerI implements PipelineCompa
                 vectors[i] = vectors[i].normalize();
             }
         }
-        
+
         return vectors;
     }
 }
