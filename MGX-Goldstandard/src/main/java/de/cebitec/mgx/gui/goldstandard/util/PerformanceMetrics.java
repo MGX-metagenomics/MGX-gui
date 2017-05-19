@@ -32,7 +32,7 @@ public class PerformanceMetrics {
         this.goldstandard = goldstandard;
     }
 
-    public void compute(JobI job, AttributeTypeI attrType) throws MGXException {
+    public void compute(final JobI job, AttributeTypeI attrType) throws MGXException {
         DistributionI<Long> dist = job.getMaster().Attribute().getDistribution(attrType, job);
         final TLongObjectMap<String> jobAttr = new TLongObjectHashMap<>(); //seqid to attr value
         for (Map.Entry<AttributeI, Long> entry : dist.entrySet()) {
@@ -44,11 +44,13 @@ public class PerformanceMetrics {
             }
         }
 
+//        final TLongCollection falseNegatives = new TLongArrayList();
+
         // collect all seq ids
         TLongSet allIds = new TLongHashSet();
         allIds.addAll(goldstandard.keySet());
         allIds.addAll(jobAttr.keySet());
-        
+
         final AtomicLong shouldntBeClassified = new AtomicLong(0);
 
         allIds.forEach(new TLongProcedure() {
@@ -71,6 +73,7 @@ public class PerformanceMetrics {
                     } else {
                         // not assigned by job, but by GS
                         fn++;
+//                        falseNegatives.add(seqId);
                     }
                 } else {
                     // assigned by job, but not by goldstandard
@@ -81,8 +84,23 @@ public class PerformanceMetrics {
                 return true;
             }
         });
-        
+
         tn = job.getSeqrun().getNumSequences() - goldstandard.size() - shouldntBeClassified.longValue();
+
+//        try {
+//            final BufferedWriter writer = new BufferedWriter(new FileWriter("/tmp/fn_" + job.getId() + ".fas"));
+//            Iterator<SequenceI> fetchByIds = job.getMaster().Sequence().fetchByIds(falseNegatives.toArray());
+//            while (fetchByIds.hasNext()) {
+//                SequenceI seq = fetchByIds.next();
+//                writer.write(">"+ seq.getName());
+//                writer.newLine();
+//                writer.write(seq.getSequence());
+//                writer.newLine();
+//            }
+//            writer.close();
+//        } catch (IOException ex) {
+//            Exceptions.printStackTrace(ex);
+//        }
     }
 
 //    public void add(long falsePositive, long falseNegative, long truePositive, long trueNegative) {

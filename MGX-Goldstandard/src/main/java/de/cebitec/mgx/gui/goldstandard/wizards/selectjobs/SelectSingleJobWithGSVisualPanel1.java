@@ -23,15 +23,15 @@ public final class SelectSingleJobWithGSVisualPanel1 extends JPanel {
     /**
      * Creates new form SelectSingleJobVisualPanel1
      */
-    public SelectSingleJobWithGSVisualPanel1(Map<JobI, Collection<AttributeTypeI>> jobs) {
+    public SelectSingleJobWithGSVisualPanel1(Map<JobI, Collection<AttributeTypeI>> jobAttrs) {
         initComponents();
-        this.jobs = jobs.keySet();
+        this.jobs = jobAttrs.keySet();
 
         jobModel = new DefaultListModel<>();
         jobList.setModel(jobModel);
         jobList.setCellRenderer(new JobRenderer());
 
-        JobI gsJob = jobs.keySet().iterator().next();
+        JobI gsJob = jobs.iterator().next();
         for (JobI job : this.jobs) {
             gsAttributeBox.addItem(job);
             if (job.getTool().getName().equals(AddGoldstandard.TOOL_NAME)) {
@@ -71,7 +71,7 @@ public final class SelectSingleJobWithGSVisualPanel1 extends JPanel {
             jobModel.addElement(job);
         }
     }
-    
+
     public void setSelectionMode(int selectionMode) {
         jobList.setSelectionMode(selectionMode);
     }
