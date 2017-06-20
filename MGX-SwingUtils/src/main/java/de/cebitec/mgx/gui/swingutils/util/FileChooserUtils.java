@@ -149,7 +149,7 @@ public class FileChooserUtils {
 
     private static File generateSuggestion(File dir, String tmpl, FileType ft) {
         File f = new File(dir, tmpl + "." + ft.getSuffices()[0]);
-        int i = 1;
+        int i = 0;
         while (f.exists()) {
             i++;
             f = new File(dir, tmpl + "(" + i + ")." + ft.getSuffices()[0]);
