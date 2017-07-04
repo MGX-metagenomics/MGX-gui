@@ -6,7 +6,6 @@ import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.nodes.SeqRunFilterNode;
 import de.cebitec.mgx.gui.nodes.SeqRunNode;
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.Collections;
 import org.openide.nodes.Children;
 import org.openide.nodes.FilterNode;
@@ -20,38 +19,14 @@ import org.openide.nodes.NodeReorderEvent;
  *
  * @author patrick
  */
-public class SingleSeqRunNodeFactory extends Children.Keys<SeqRunI> implements NodeListener{
+public class SingleSeqRunNodeFactory extends Children.Keys<SeqRunI> implements NodeListener {
 
     private final VisualizationGroupI vGroup;
 
     public SingleSeqRunNodeFactory(VisualizationGroupI group) {
         super(false);
         this.vGroup = group;
-        vGroup.addPropertyChangeListener(new PropertyChangeListener() {
-
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                switch (evt.getPropertyName()) {
-                    case VisualizationGroupI.VISGROUP_HAS_DIST:
-                    case VisualizationGroupI.VISGROUP_RENAMED:
-                    case VisualizationGroupI.VISGROUP_DEACTIVATED:
-                    case VisualizationGroupI.VISGROUP_ACTIVATED:
-                        return;
-                    case VisualizationGroupI.VISGROUP_CHANGED:
-                        //System.err.println("GroupedSeqRunNodeFactory: vgchanged, updating node view");
-                        refreshChildren();
-                        return;
-                    case ModelBaseI.OBJECT_DELETED:
-                        if (vGroup.equals(evt.getSource())) {
-                            vGroup.removePropertyChangeListener(this);
-                        }
-                        break;
-                    default:
-                        System.err.println(getClass().getName() + " in GroupedSeqRunNodeFactory got PCE " + evt.toString());
-                        refreshChildren();
-                }
-            }
-        });
+        vGroup.addPropertyChangeListener(this);
     }
 
     public void addSeqRun(SeqRunI sr) {
@@ -107,7 +82,28 @@ public class SingleSeqRunNodeFactory extends Children.Keys<SeqRunI> implements N
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        refresh();
+        if (evt.getSource() == vGroup) {
+            switch (evt.getPropertyName()) {
+                case VisualizationGroupI.VISGROUP_HAS_DIST:
+                case VisualizationGroupI.VISGROUP_RENAMED:
+                case VisualizationGroupI.VISGROUP_DEACTIVATED:
+                case VisualizationGroupI.VISGROUP_ACTIVATED:
+                    return;
+                case VisualizationGroupI.VISGROUP_CHANGED:
+                    refreshChildren();
+                    return;
+                case ModelBaseI.OBJECT_DELETED:
+                    if (vGroup.equals(evt.getSource())) {
+                        vGroup.removePropertyChangeListener(this);
+                    }
+                    break;
+                default:
+                    System.err.println(getClass().getName() + " in GroupedSeqRunNodeFactory got PCE " + evt.toString());
+                    refreshChildren();
+            }
+        } else {
+            refresh();
+        }
     }
 
 }
