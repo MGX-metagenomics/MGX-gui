@@ -218,7 +218,6 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Action
     @Override
     @SuppressWarnings("unchecked")
     public void actionPerformed(ActionEvent e) {
-        System.err.println("CMD " + e.getActionCommand());
 //        if (e.getSource() == comparisonTypeList) {
 //            currentComparisonType = compListModel.getSelectedItem();
 //            visListModel.update();
