@@ -25,6 +25,7 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import org.openide.explorer.view.BeanTreeView;
 import org.openide.util.Exceptions;
 
 /**
@@ -109,14 +110,17 @@ public class GroupFrame extends GroupFrameBase<VisualizationGroupI> {
             }
         });
 
-        SeqRunListView view = new SeqRunListView(vGroup);
-        view.setRootVisible(false);
+//        SeqRunListView view = new SeqRunListView(vGroup);
+//        view.setRootVisible(false);
+//        panel.add(view, BorderLayout.CENTER);
 
-        panel.add(view, BorderLayout.CENTER);
+        BeanTreeView btv = new BeanTreeView();
+        btv.setRootVisible(false);
+        panel.add(btv, BorderLayout.CENTER);
 
-        setVisible(true);
+        super.setVisible(true);
         ToolTipManager.sharedInstance().registerComponent(panel);
-        ToolTipManager.sharedInstance().registerComponent(view);
+//        ToolTipManager.sharedInstance().registerComponent(view);
     }
 
     @Override

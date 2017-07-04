@@ -53,32 +53,25 @@ public abstract class GroupFrameBase<T extends ModelBaseI<T>> extends javax.swin
         } catch (PropertyVetoException ex) {
             Exceptions.printStackTrace(ex);
         }
-
-        exmngr.addPropertyChangeListener(new PropertyChangeListener() {
-
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                if (evt.getPropertyName().equals(ExplorerManager.PROP_SELECTED_NODES)) {
-//                    Node[] nodes = (Node[]) evt.getNewValue();
-                    fireNodeSelectionEvent();
-                }
-            }
-        });
+        exmngr.addPropertyChangeListener(this);
     }
 
-    private boolean isUnderRoot(Node node) {
-        while (node != null) {
-            if (node.equals(groupNode)) {
-                return true;
-            }
-            node = node.getParentNode();
-        }
-        return false;
-    }
+//    private boolean isUnderRoot(Node node) {
+//        while (node != null) {
+//            if (node.equals(groupNode)) {
+//                return true;
+//            }
+//            node = node.getParentNode();
+//        }
+//        return false;
+//    }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {
+            case ExplorerManager.PROP_SELECTED_NODES:
+                fireNodeSelectionEvent();
+                break;
             case VisualizationGroupI.VISGROUP_CHANGED:
                 repaint();
                 return;

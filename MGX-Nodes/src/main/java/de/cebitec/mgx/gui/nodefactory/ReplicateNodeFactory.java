@@ -26,45 +26,7 @@ public class ReplicateNodeFactory extends Children.Keys<ReplicateI> implements N
     public ReplicateNodeFactory(final ReplicateGroupI group) {
         super(false);
         this.group = group;
-        group.addPropertyChangeListener(new PropertyChangeListener() {
-
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                //System.err.println("RGNF got PCE " + evt.toString());
-                switch (evt.getPropertyName()) {
-                    case ReplicateGroupI.REPLICATEGROUP_REPLICATE_ADDED:
-                    case ReplicateGroupI.REPLICATEGROUP_REPLICATE_REMOVED:
-                        if (evt.getSource().equals(group)) {
-                            refreshChildren();
-                        }
-                        break;
-                    case ReplicateGroupI.REPLICATEGROUP_ACTIVATED:
-                    case ReplicateGroupI.REPLICATEGROUP_DEACTIVATED:
-                        break;
-                    case VisualizationGroupI.VISGROUP_RENAMED:
-                    case VisualizationGroupI.VISGROUP_DEACTIVATED:
-                    case VisualizationGroupI.VISGROUP_ACTIVATED:
-                    case VisualizationGroupI.VISGROUP_HAS_DIST:
-                        return;
-                    case VisualizationGroupI.VISGROUP_CHANGED:
-                        refreshChildren();
-                        return;
-                    case ModelBaseI.OBJECT_DELETED:
-                        if (group.equals(evt.getSource())) {
-                            group.removePropertyChangeListener(this);
-                        }
-                        break;
-                    case ModelBaseI.OBJECT_MODIFIED:
-                        if (group.equals(evt.getSource())) {
-                            refreshChildren();
-                        }
-                        break;
-                    default:
-                        System.err.println("ReplicateNodeFactory got unhandled PCE " + evt.toString());
-                        refreshChildren();
-                }
-            }
-        });
+        group.addPropertyChangeListener(this);
     }
 
     @Override
@@ -127,6 +89,40 @@ public class ReplicateNodeFactory extends Children.Keys<ReplicateI> implements N
 //    }
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
+        if (evt.getSource() == group) {
+            switch (evt.getPropertyName()) {
+                case ReplicateGroupI.REPLICATEGROUP_REPLICATE_ADDED:
+                case ReplicateGroupI.REPLICATEGROUP_REPLICATE_REMOVED:
+                    if (evt.getSource().equals(group)) {
+                        refreshChildren();
+                    }
+                    break;
+                case ReplicateGroupI.REPLICATEGROUP_ACTIVATED:
+                case ReplicateGroupI.REPLICATEGROUP_DEACTIVATED:
+                    break;
+                case VisualizationGroupI.VISGROUP_RENAMED:
+                case VisualizationGroupI.VISGROUP_DEACTIVATED:
+                case VisualizationGroupI.VISGROUP_ACTIVATED:
+                case VisualizationGroupI.VISGROUP_HAS_DIST:
+                    return;
+                case VisualizationGroupI.VISGROUP_CHANGED:
+                    refreshChildren();
+                    return;
+                case ModelBaseI.OBJECT_DELETED:
+                    if (group.equals(evt.getSource())) {
+                        group.removePropertyChangeListener(this);
+                    }
+                    break;
+                case ModelBaseI.OBJECT_MODIFIED:
+                    if (group.equals(evt.getSource())) {
+                        refreshChildren();
+                    }
+                    break;
+                default:
+                    System.err.println("ReplicateNodeFactory got unhandled PCE " + evt.toString());
+                    refreshChildren();
+            }
+        }
         //refresh(true);
     }
 

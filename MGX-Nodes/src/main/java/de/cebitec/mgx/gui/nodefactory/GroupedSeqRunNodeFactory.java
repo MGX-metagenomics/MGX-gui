@@ -27,31 +27,7 @@ public class GroupedSeqRunNodeFactory extends Children.Keys<SeqRunI> implements 
     public GroupedSeqRunNodeFactory(VisualizationGroupI group) {
         super(false);
         this.vGroup = group;
-        vGroup.addPropertyChangeListener(new PropertyChangeListener() {
-
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                switch (evt.getPropertyName()) {
-                    case VisualizationGroupI.VISGROUP_HAS_DIST:
-                    case VisualizationGroupI.VISGROUP_RENAMED:
-                    case VisualizationGroupI.VISGROUP_DEACTIVATED:
-                    case VisualizationGroupI.VISGROUP_ACTIVATED:
-                        return;
-                    case VisualizationGroupI.VISGROUP_CHANGED:
-                        //System.err.println("GroupedSeqRunNodeFactory: vgchanged, updating node view");
-                        refreshChildren();
-                        return;
-                    case ModelBaseI.OBJECT_DELETED:
-                        if (vGroup.equals(evt.getSource())) {
-                            vGroup.removePropertyChangeListener(this);
-                        }
-                        break;
-                    default:
-                        System.err.println(getClass().getName() + " in GroupedSeqRunNodeFactory got PCE " + evt.toString());
-                        refreshChildren();
-                }
-            }
-        });
+        vGroup.addPropertyChangeListener(this);
     }
 
     public void addSeqRun(SeqRunI sr) {
@@ -107,7 +83,28 @@ public class GroupedSeqRunNodeFactory extends Children.Keys<SeqRunI> implements 
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        refresh();
+        if (evt.getSource() == vGroup) {
+            switch (evt.getPropertyName()) {
+                case VisualizationGroupI.VISGROUP_HAS_DIST:
+                case VisualizationGroupI.VISGROUP_RENAMED:
+                case VisualizationGroupI.VISGROUP_DEACTIVATED:
+                case VisualizationGroupI.VISGROUP_ACTIVATED:
+                    return;
+                case VisualizationGroupI.VISGROUP_CHANGED:
+                    refreshChildren();
+                    return;
+                case ModelBaseI.OBJECT_DELETED:
+                    if (vGroup.equals(evt.getSource())) {
+                        vGroup.removePropertyChangeListener(this);
+                    }
+                    break;
+                default:
+                    System.err.println(getClass().getName() + " in GroupedSeqRunNodeFactory got PCE " + evt.toString());
+                    refreshChildren();
+            }
+        } else {
+            refresh();
+        }
     }
 
 }

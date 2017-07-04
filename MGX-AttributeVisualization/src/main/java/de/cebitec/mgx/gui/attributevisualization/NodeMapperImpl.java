@@ -38,6 +38,7 @@ public class NodeMapperImpl implements NodeMapperI<GroupFrameBase> {
                         if (frame.isSelected()) {
                             //handleFrameSelection(null);
                         }
+                        frame.removePropertyChangeListener(JInternalFrame.IS_SELECTED_PROPERTY, maintainSingleSelection);
                         frame.dispose();
                     }
                 }
@@ -47,11 +48,13 @@ public class NodeMapperImpl implements NodeMapperI<GroupFrameBase> {
             ReplicateGroupI rGrp = n.getLookup().lookup(ReplicateGroupI.class);
             if (rGrp != null) {
                 final ReplicateGroupFrame rgf = new ReplicateGroupFrame(rGrp);
+                rgf.addPropertyChangeListener(JInternalFrame.IS_SELECTED_PROPERTY, maintainSingleSelection);
                 cache.put(n, rgf);
             } else {
                 VisualizationGroupI vGrp = n.getLookup().lookup(VisualizationGroupI.class);
                 if (vGrp != null) {
                     final GroupFrame vgf = new GroupFrame(vGrp);
+                    vgf.addPropertyChangeListener(JInternalFrame.IS_SELECTED_PROPERTY, maintainSingleSelection);
                     cache.put(n, vgf);
                 }
             }
@@ -60,7 +63,7 @@ public class NodeMapperImpl implements NodeMapperI<GroupFrameBase> {
         final GroupFrameBase ret = cache.get(n);
 
         // propertychangelistener to maintain single-selection strategy
-        ret.addPropertyChangeListener(JInternalFrame.IS_SELECTED_PROPERTY, maintainSingleSelection);
+        //ret.addPropertyChangeListener(JInternalFrame.IS_SELECTED_PROPERTY, maintainSingleSelection);
         
         // auto-select first created entry
         if (cache.size() == 1) {

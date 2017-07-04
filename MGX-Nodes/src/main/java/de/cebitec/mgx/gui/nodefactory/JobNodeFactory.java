@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.logging.Level;
 import javax.swing.Timer;
 import org.openide.util.Exceptions;
@@ -71,12 +72,16 @@ public class JobNodeFactory extends MGXNodeFactoryBase<MGXMasterI, JobI> {
         // parallel fetch of missing data
         //
         List<JobI> jobs = new ArrayList<>();
-        CountDownLatch allDone = new CountDownLatch(seqruns.size());
-        for (SeqRunI run : seqruns) {
-            MGXPool.getInstance().submit(new FillSeqRun(run, jobs, allDone));
-        }
         try {
+            CountDownLatch allDone = new CountDownLatch(seqruns.size());
+            for (SeqRunI run : seqruns) {
+                MGXPool.getInstance().submit(new FillSeqRun(run, jobs, allDone));
+            }
             allDone.await();
+        } catch (RejectedExecutionException ree) {
+            // happens when the pool is already shut down during application exit
+            jobs.clear();
+            return jobs;
         } catch (InterruptedException ex) {
             if (ex.getCause() != null && ex.getCause() instanceof MGXException) {
                 throw (MGXException) ex.getCause();

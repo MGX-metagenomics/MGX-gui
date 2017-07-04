@@ -53,19 +53,19 @@ public class VGroupFrame extends javax.swing.JPanel implements ExplorerManager.P
         initComponents();
         vGroup = group;
         vGroup.addPropertyChangeListener(this);
-        //
+//
         // set initial properties
-        //
+//
         setTitle(vGroup.getDisplayName() + " (" + vGroup.getNumSequences() + " sequences)");
         displayName.setText(vGroup.getDisplayName());
         color.setBackground(vGroup.getColor());
-        //
+//
         // add listeners _after_ setting initial values
-        //
+//
         displayName.getDocument().addDocumentListener(this);
         color.addActionListener(this);
         active.addItemListener(this);
-        //
+//
         vgnf = new GroupedSeqRunNodeFactory(vGroup);
 
         final Node invisibleRoot = new AbstractNode(vgnf);
