@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JComponent;
 import javax.swing.table.TableColumn;
 import org.jdesktop.swingx.JXTable;
@@ -79,20 +80,22 @@ public class GSCPerformanceMetricsViewer extends EvaluationViewerI implements GS
             tidyUp();
             return;
         }
-        cust.setModel(model);
+        if (model != null) {
+            cust.setModel(model);
 
-        table = new JXTable(model);
-        table.setSortable(false);
-        table.setFillsViewportHeight(true);
-        for (TableColumn tc : table.getColumns()) {
-            if (0 != tc.getModelIndex()) {
-                tc.setMinWidth(20);
-                tc.setPreferredWidth(40);
-                tc.setWidth(40);
+            table = new JXTable(model);
+            table.setSortable(false);
+            table.setFillsViewportHeight(true);
+            for (TableColumn tc : table.getColumns()) {
+                if (0 != tc.getModelIndex()) {
+                    tc.setMinWidth(20);
+                    tc.setPreferredWidth(40);
+                    tc.setWidth(40);
+                }
             }
+            table.setHighlighters(new Highlighter[]{HighlighterFactory.createAlternateStriping()});
+            p.finish();
         }
-        table.setHighlighters(new Highlighter[]{HighlighterFactory.createAlternateStriping()});
-        p.finish();
     }
 
     @Override
@@ -160,6 +163,7 @@ public class GSCPerformanceMetricsViewer extends EvaluationViewerI implements GS
         p.progress(progress++);
 
         PerformanceMetrics[] performanceMetrics = new PerformanceMetrics[jobs.size()];
+        final AtomicBoolean hasError = new AtomicBoolean(false);
         final CountDownLatch allDone = new CountDownLatch(jobs.size());
         final Semaphore rateLimit = new Semaphore(2);
         int i = 0;
@@ -175,6 +179,7 @@ public class GSCPerformanceMetricsViewer extends EvaluationViewerI implements GS
                         pm.compute(job, attributeType);
                     } catch (MGXException ex) {
                         p.finish();
+                        hasError.set(true);
                         Exceptions.printStackTrace(ex);
                     } finally {
                         rateLimit.release();
@@ -192,6 +197,10 @@ public class GSCPerformanceMetricsViewer extends EvaluationViewerI implements GS
         } catch (InterruptedException ex) {
             p.finish();
             Exceptions.printStackTrace(ex);
+        }
+
+        if (hasError.get()) {
+            return null;
         }
         // table header
         String[] columns = new String[jobs.size() + 1];
