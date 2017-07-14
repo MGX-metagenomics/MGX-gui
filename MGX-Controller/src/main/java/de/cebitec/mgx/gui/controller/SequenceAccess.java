@@ -6,6 +6,7 @@ import de.cebitec.mgx.api.access.datatransfer.DownloadBaseI;
 import de.cebitec.mgx.api.access.datatransfer.UploadBaseI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.exception.MGXLoggedoutException;
+import de.cebitec.mgx.api.exception.MGXTimeoutException;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.SequenceI;
@@ -14,6 +15,7 @@ import de.cebitec.mgx.client.datatransfer.SeqByAttributeDownloader;
 import de.cebitec.mgx.client.datatransfer.SeqDownloader;
 import de.cebitec.mgx.client.datatransfer.SeqUploader;
 import de.cebitec.mgx.client.exception.MGXDTOException;
+import de.cebitec.mgx.client.exception.MGXDTOTimeoutException;
 import de.cebitec.mgx.dto.dto.AttributeDTOList;
 import de.cebitec.mgx.dto.dto.AttributeDTOList.Builder;
 import de.cebitec.mgx.dto.dto.SequenceDTO;
@@ -62,6 +64,8 @@ public class SequenceAccess implements SequenceAccessI { //extends AccessBase<Se
         try {
             Iterator<Long> ret = getDTOmaster().Sequence().fetchSequenceIDs(attr.getId());
             return ret;
+        } catch (MGXDTOTimeoutException tex) {
+            throw new MGXTimeoutException(tex.getMessage());
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
