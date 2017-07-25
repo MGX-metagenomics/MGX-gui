@@ -19,7 +19,7 @@ import java.util.List;
  *
  * @author sj
  */
-public interface JobAccessI  {
+public interface JobAccessI {
 
     public JobI create(ToolI tool, SeqRunI seqrun, List<JobParameterI> params) throws MGXException;
 
@@ -44,5 +44,7 @@ public interface JobAccessI  {
     public boolean verify(JobI job) throws MGXException;
 
     public boolean execute(JobI job) throws MGXException;
+
+    public void runDefaultTools(SeqRunI seqrun) throws MGXException;
 
 }

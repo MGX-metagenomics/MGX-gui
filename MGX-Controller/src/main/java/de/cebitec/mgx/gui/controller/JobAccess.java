@@ -225,4 +225,13 @@ public class JobAccess implements JobAccessI {
         }
     }
 
+    @Override
+    public void runDefaultTools(SeqRunI seqrun) throws MGXException {
+        try {
+            getDTOmaster().Job().runDefaultTools(seqrun.getId());
+        } catch (MGXDTOException ex) {
+            throw new MGXException(ex.getMessage());
+        }
+    }
+
 }
