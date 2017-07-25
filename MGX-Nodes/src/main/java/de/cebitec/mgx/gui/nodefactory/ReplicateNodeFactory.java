@@ -6,7 +6,6 @@ import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.model.ModelBaseI;
 import de.cebitec.mgx.gui.nodes.ReplicateNode;
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.Collections;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
