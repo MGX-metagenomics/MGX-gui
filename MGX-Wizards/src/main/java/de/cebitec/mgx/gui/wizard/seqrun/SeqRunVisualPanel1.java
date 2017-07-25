@@ -114,8 +114,8 @@ public final class SeqRunVisualPanel1 extends JPanel implements DocumentListener
 
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        platform = new javax.swing.JComboBox<TermI>();
-        method = new javax.swing.JComboBox<TermI>();
+        platform = new javax.swing.JComboBox<>();
+        method = new javax.swing.JComboBox<>();
         submitted = new javax.swing.JCheckBox();
         accession = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
