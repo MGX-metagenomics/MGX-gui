@@ -89,7 +89,11 @@ public class AddSeqRun extends AbstractAction {
                             extract.childChanged();
 
                             if (wd.runDefaultTools()) {
-                                // FIXME
+                                try {
+                                    m.Job().runDefaultTools(seqrun);
+                                } catch (MGXException ex) {
+                                    publish(ex);
+                                }
                             }
                         }
 
