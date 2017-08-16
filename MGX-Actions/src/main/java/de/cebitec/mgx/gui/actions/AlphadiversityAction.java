@@ -54,5 +54,6 @@ public final class AlphadiversityAction implements ActionListener {
             tc.setVisible(true);
         }
         tc.toFront();
+        tc.requestActive();
     }
 }
