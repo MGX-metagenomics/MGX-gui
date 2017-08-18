@@ -1,15 +1,23 @@
 package de.cebitec.mgx.gui.attributevisualization.ui;
 
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.common.VGroupManager;
 import de.cebitec.mgx.gui.attributevisualization.view.GroupExplorerView;
 import de.cebitec.mgx.gui.attributevisualization.NodeMapperImpl;
 import de.cebitec.mgx.gui.nodes.VgMgrNode;
 import java.awt.BorderLayout;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetAdapter;
+import java.awt.dnd.DropTargetDragEvent;
+import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyVetoException;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import javax.swing.ActionMap;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.actions.DeleteAction;
@@ -18,6 +26,7 @@ import org.openide.awt.ActionReference;
 import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.ExplorerUtils;
 import org.openide.nodes.Node;
+import org.openide.nodes.NodeTransfer;
 import org.openide.util.Exceptions;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.actions.SystemAction;
@@ -76,7 +85,7 @@ public final class VisualizationGroupTopComponent extends TopComponent implement
         //getActionMap().put("delete", ExplorerUtils.actionDelete(exmngr, true));
         // combined lookup
         //associateLookup(ExplorerUtils.createLookup(exmngr, getActionMap()));
-                // init actions
+        // init actions
         ActionMap map = getActionMap();
         map.put(SystemAction.get(DeleteAction.class).getActionMapKey(), SystemAction.get(DeleteAction.class));
         //
@@ -93,6 +102,65 @@ public final class VisualizationGroupTopComponent extends TopComponent implement
         if (VGroupManager.getInstance().getAllVisualizationGroups().isEmpty()) {
             VGroupManager.getInstance().createVisualizationGroup();
         }
+
+        // set the panel as a drop target for one or multiple sequencing runs
+        setDropTarget();
+    }
+
+    private void setDropTarget() {
+        DropTarget dt = new DropTarget(panel, new DropTargetAdapter() {
+            @Override
+            public void dragEnter(DropTargetDragEvent dtde) {
+
+                Set<String> allGroupNames = new HashSet<>();
+                for (VisualizationGroupI vg : VGroupManager.getInstance().getAllVisualizationGroups()) {
+                    allGroupNames.add(vg.getName());
+                }
+
+                Node[] nodes = NodeTransfer.nodes(dtde.getTransferable(), DnDConstants.ACTION_COPY);
+                for (Node n : nodes) {
+                    SeqRunI run = n.getLookup().lookup(SeqRunI.class);
+                    if (run != null) {
+                        if (allGroupNames.contains(run.getName())) {
+                            dtde.rejectDrag();
+                            return;
+                        }
+                    }
+                }
+                dtde.acceptDrag(DnDConstants.ACTION_COPY);
+            }
+
+            @Override
+            public void drop(DropTargetDropEvent dtde) {
+
+                Set<String> allGroupNames = new HashSet<>();
+                for (VisualizationGroupI vg : VGroupManager.getInstance().getAllVisualizationGroups()) {
+                    allGroupNames.add(vg.getName());
+                }
+
+                Node[] nodes = NodeTransfer.nodes(dtde.getTransferable(), DnDConstants.ACTION_COPY);
+                for (Node n : nodes) {
+                    SeqRunI run = n.getLookup().lookup(SeqRunI.class);
+                    if (run != null) {
+                        if (allGroupNames.contains(run.getName())) {
+                            dtde.rejectDrop();
+                            return;
+                        }
+                    }
+                }
+
+                for (Node n : nodes) {
+                    SeqRunI run = n.getLookup().lookup(SeqRunI.class);
+                    if (run != null) {
+                        VisualizationGroupI newGrp = VGroupManager.getInstance().createVisualizationGroup();
+                        newGrp.setName(run.getName());
+                        newGrp.addSeqRun(run);
+                    }
+                }
+                dtde.dropComplete(true);
+            }
+        });
+        panel.setDropTarget(dt);
     }
 
     /**
