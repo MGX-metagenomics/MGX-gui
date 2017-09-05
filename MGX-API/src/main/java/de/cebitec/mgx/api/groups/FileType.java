@@ -17,6 +17,7 @@ public enum FileType {
     EMBLGENBANK("GenBank/EMBL format (.embl, .gbk)", "embl", "gbk"),
     XML("Conveyor graph definition", "xml"),
     TSV("tab-separated values", "tsv"),
+    NWK("Newick tree", "nwk"),
     MGS("MGX gold standard (.mgs)", "mgs");
     private final String[] suffices;
     private final String description;
