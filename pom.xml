@@ -598,6 +598,7 @@
         <module>MGX-JSCharts</module>
         <module>MGX-RBAC</module>
         <module>MGX-SeqExporter</module>
+        <module>MGX-NewickWriter</module>
     </modules>
     
     <properties>
