@@ -93,11 +93,14 @@ public class RadialTree extends HierarchicalViewerI {
     private Visualization visualization;
     private JFastLabel title;
     private prefuse.data.Tree pTree = null;
+    private RadialTreeCustomizer cust = null;
 
     @Override
     public void show(List<Pair<VisualizationGroupI, TreeI<Long>>> dists) {
         Pair<VisualizationGroupI, TreeI<Long>> p = dists.get(0);
         TreeI<Long> mgxTree = p.getSecond();
+        
+        getCustomizer().setTree(mgxTree);
 
         initDisplay();
 
@@ -349,8 +352,11 @@ public class RadialTree extends HierarchicalViewerI {
     }
 
     @Override
-    public JComponent getCustomizer() {
-        return null;
+    public RadialTreeCustomizer getCustomizer() {
+        if (cust == null) {
+            cust = new RadialTreeCustomizer();
+        }
+        return cust;
     }
 
     @Override

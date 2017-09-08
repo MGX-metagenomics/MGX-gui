@@ -67,6 +67,15 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-math3</artifactId>
         </dependency>
+        <dependency>
+            <groupId>de.cebitec.mgx.gui</groupId>
+            <artifactId>MGX-SwingUtils</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.cebitec.mgx.gui</groupId>
+            <artifactId>MGX-NewickWriter</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
 
     <build>
