@@ -6,13 +6,10 @@
 package de.cebitec.mgx.gui.vizfilter;
 
 import de.cebitec.mgx.api.groups.ReplicateGroupI;
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
-import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.misc.Triple;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.gui.datamodel.Attribute;
-import de.cebitec.mgx.gui.datamodel.misc.Distribution;
 import de.cebitec.mgx.gui.datamodel.misc.NormalizedDistribution;
 import de.cebitec.mgx.gui.vizfilter.ReplicateLimitFilter.LIMITS;
 import java.util.ArrayList;
@@ -34,10 +31,10 @@ public class ReplicateLimitFilterTest {
         System.out.println("filter");
 
         Map<AttributeI, Double> mean = new HashMap<>();
-        AttributeI a1 = new Attribute(null);
+        AttributeI a1 = new Attribute();
         a1.setValue("FOO");
         mean.put(a1, 3.0);
-        AttributeI a2 = new Attribute(null);
+        AttributeI a2 = new Attribute();
         a2.setValue("BAR");
         mean.put(a2, 3.5);
         DistributionI<Double> meanDist = new NormalizedDistribution(null, mean, 2);
@@ -65,7 +62,7 @@ public class ReplicateLimitFilterTest {
         Map<AttributeI, Double> mean = new HashMap<>();
         Map<AttributeI, Double> stdv = new HashMap<>();
         for (long i = 1; i <= 11; i++) {
-            AttributeI a1 = new Attribute(null);
+            AttributeI a1 = new Attribute();
             a1.setValue(UUID.randomUUID().toString());
             mean.put(a1, 10.0 * i);
             stdv.put(a1, 0.1 * i);

@@ -71,13 +71,13 @@ public class TreeTest {
         AttributeTypeI at = new AttributeType(null, 1, "at1", 'x', 'y');
         AttributeTypeI at2 = new AttributeType(null, 2, "at2", 'x', 'y');
 
-        AttributeI a1 = new Attribute(null);
+        AttributeI a1 = new Attribute();
         a1.setAttributeType(at);
         a1.setId(7);
         a1.setValue("a1");
         a1.setParentID(-1);
 
-        AttributeI a2 = new Attribute(null);
+        AttributeI a2 = new Attribute();
         a2.setAttributeType(at2);
         a2.setId(8);
         a2.setValue("a2");
@@ -93,13 +93,13 @@ public class TreeTest {
         assertEquals(1, tree.getRoot().getChildren().size());
         assertEquals(Long.valueOf(1), tree.getRoot().getContent());
 
-        AttributeI a3 = new Attribute(null);
+        AttributeI a3 = new Attribute();
         a3.setAttributeType(at);
         a3.setId(99);
         a3.setValue("a1");
         a3.setParentID(-1);
 
-        AttributeI a4 = new Attribute(null);
+        AttributeI a4 = new Attribute();
         a4.setAttributeType(at2);
         a4.setId(89);
         a4.setValue("a3");

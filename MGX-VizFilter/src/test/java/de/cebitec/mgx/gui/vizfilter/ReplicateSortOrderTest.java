@@ -1,15 +1,12 @@
 package de.cebitec.mgx.gui.vizfilter;
 
 import de.cebitec.mgx.api.groups.ReplicateGroupI;
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
-import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.misc.Triple;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.gui.datamodel.Attribute;
 import de.cebitec.mgx.gui.datamodel.AttributeType;
-import de.cebitec.mgx.gui.datamodel.misc.Distribution;
 import de.cebitec.mgx.gui.datamodel.misc.NormalizedDistribution;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,10 +44,10 @@ public class ReplicateSortOrderTest {
 
         // two distributions which share only FOO
         Map<AttributeI, Double> mean1 = new HashMap<>();
-        AttributeI a1 = new Attribute(null);
+        AttributeI a1 = new Attribute();
         a1.setValue("FOO");
         mean1.put(a1, 3.0);
-        AttributeI a2 = new Attribute(null);
+        AttributeI a2 = new Attribute();
         a2.setValue("BAR");
         mean1.put(a2, 3.5);
         DistributionI<Double> meanDist1 = new NormalizedDistribution(null, mean1, 2);
@@ -60,10 +57,10 @@ public class ReplicateSortOrderTest {
         DistributionI<Double> stdvDist1 = new NormalizedDistribution(null, stdv1, 2);
         
         Map<AttributeI, Double> mean2 = new HashMap<>();
-        AttributeI a3 = new Attribute(null);
+        AttributeI a3 = new Attribute();
         a3.setValue("FOO");
         mean2.put(a3, 5.0);
-        AttributeI a4 = new Attribute(null);
+        AttributeI a4 = new Attribute();
         a4.setValue("BAZ");
         mean2.put(a4, 2.0);
         DistributionI<Double> meanDist2 = new NormalizedDistribution(null, mean2, 2);

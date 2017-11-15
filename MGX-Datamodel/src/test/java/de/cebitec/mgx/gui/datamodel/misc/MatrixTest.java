@@ -45,11 +45,11 @@ public class MatrixTest {
          *   rattr2     5
          * 
          */
-        Attribute rowAttr = new Attribute(null);
+        Attribute rowAttr = new Attribute();
         rowAttr.setValue("rattr1");
-        Attribute rowAttr2 = new Attribute(null);
+        Attribute rowAttr2 = new Attribute();
         rowAttr2.setValue("rattr2");
-        Attribute colAttr = new Attribute(null);
+        Attribute colAttr = new Attribute();
         colAttr.setValue("cattr1");
         Matrix<Attribute, Attribute> instance = new Matrix<>();
         instance.addData(rowAttr, colAttr, 1);

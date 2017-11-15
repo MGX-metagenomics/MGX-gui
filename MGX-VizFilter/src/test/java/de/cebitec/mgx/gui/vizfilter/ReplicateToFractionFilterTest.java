@@ -36,10 +36,10 @@ public class ReplicateToFractionFilterTest {
         System.out.println("testTotal");
 
         Map<AttributeI, Double> mean = new HashMap<>();
-        AttributeI a1 = new Attribute(null);
+        AttributeI a1 = new Attribute();
         a1.setValue("FOO");
         mean.put(a1, 2.5);
-        AttributeI a2 = new Attribute(null);
+        AttributeI a2 = new Attribute();
         a2.setValue("BAR");
         mean.put(a2, 2.5);
         DistributionI<Double> meanDist = new NormalizedDistribution(null, mean, 10);

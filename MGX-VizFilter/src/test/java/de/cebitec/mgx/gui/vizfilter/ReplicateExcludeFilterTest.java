@@ -8,7 +8,6 @@ package de.cebitec.mgx.gui.vizfilter;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.gui.datamodel.Attribute;
-import de.cebitec.mgx.gui.datamodel.misc.Distribution;
 import de.cebitec.mgx.gui.datamodel.misc.NormalizedDistribution;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,10 +27,10 @@ public class ReplicateExcludeFilterTest {
         System.out.println("filterDist");
 
         Map<AttributeI, Double> mean = new HashMap<>();
-        AttributeI a1 = new Attribute(null);
+        AttributeI a1 = new Attribute();
         a1.setValue("FOO");
         mean.put(a1, 3.0);
-        AttributeI a2 = new Attribute(null);
+        AttributeI a2 = new Attribute();
         a2.setValue("BAR");
         mean.put(a2, 3.5);
         DistributionI<Double> meanDist = new NormalizedDistribution(null, mean, 2);

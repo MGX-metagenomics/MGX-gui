@@ -49,19 +49,19 @@ public class SortOrderTest {
 
         // two distributions which share only FOO
         Map<AttributeI, Long> map = new HashMap<>();
-        AttributeI a1 = new Attribute(null);
+        AttributeI a1 = new Attribute();
         a1.setValue("FOO");
         map.put(a1, Long.valueOf(2));
-        AttributeI a2 = new Attribute(null);
+        AttributeI a2 = new Attribute();
         a2.setValue("BAR");
         map.put(a2, Long.valueOf(4));
         DistributionI<Long> dist1 = new Distribution(null, map);
 
         Map<AttributeI, Long> map2 = new HashMap<>();
-        AttributeI a3 = new Attribute(null);
+        AttributeI a3 = new Attribute();
         a3.setValue("FOO");
         map2.put(a3, Long.valueOf(3));
-        AttributeI a4 = new Attribute(null);
+        AttributeI a4 = new Attribute();
         a4.setValue("BAZ");
         map2.put(a4, Long.valueOf(2));
         DistributionI<Long> dist2 = new Distribution(null, map2);

@@ -31,10 +31,10 @@ public class LimitFilterTest {
         System.out.println("filter");
 
         Map<AttributeI, Long> map = new HashMap<>();
-        AttributeI a1 = new Attribute(null);
+        AttributeI a1 = new Attribute();
         a1.setValue("FOO");
         map.put(a1, Long.valueOf(5));
-        AttributeI a2 = new Attribute(null);
+        AttributeI a2 = new Attribute();
         a2.setValue("BAR");
         map.put(a2, Long.valueOf(5));
         DistributionI<Long> dist = new Distribution(null, map);
@@ -56,7 +56,7 @@ public class LimitFilterTest {
 
         Map<AttributeI, Long> map = new HashMap<>();
         for (long i = 1; i <= 11; i++) {
-            AttributeI a1 = new Attribute(null);
+            AttributeI a1 = new Attribute();
             a1.setValue(UUID.randomUUID().toString());
             map.put(a1, 10 * i);
         }

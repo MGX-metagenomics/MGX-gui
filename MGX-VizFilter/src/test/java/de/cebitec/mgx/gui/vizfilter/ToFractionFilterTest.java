@@ -40,10 +40,10 @@ public class ToFractionFilterTest {
         System.out.println("testTotal");
 
         Map<AttributeI, Long> map = new HashMap<>();
-        AttributeI a1 = new Attribute(null);
+        AttributeI a1 = new Attribute();
         a1.setValue("FOO");
         map.put(a1, Long.valueOf(5));
-        AttributeI a2 = new Attribute(null);
+        AttributeI a2 = new Attribute();
         a2.setValue("BAR");
         map.put(a2, Long.valueOf(5));
         DistributionI<Long> dist = new Distribution(null, map, 10);
