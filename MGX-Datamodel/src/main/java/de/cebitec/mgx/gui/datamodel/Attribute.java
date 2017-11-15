@@ -1,6 +1,5 @@
 package de.cebitec.mgx.gui.datamodel;
 
-import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.Identifiable;
@@ -17,8 +16,9 @@ public class Attribute extends AttributeI {
     protected long job_id;
     private long parent_id = Identifiable.INVALID_IDENTIFIER;
 
-    public Attribute(MGXMasterI m) {
-        super(m);
+    public Attribute() { //MGXMasterI m) {
+        super(null);
+        //super(m);
     }
 
     @Override
