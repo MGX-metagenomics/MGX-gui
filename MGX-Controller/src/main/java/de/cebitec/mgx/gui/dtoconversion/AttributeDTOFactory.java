@@ -41,7 +41,7 @@ public class AttributeDTOFactory extends DTOConversionBase<AttributeI, Attribute
 
     @Override
     public final AttributeI toModel(MGXMasterI m, AttributeDTO dto) {
-        AttributeI a = new Attribute(m)
+        AttributeI a = new Attribute()
                 .setJobId(dto.getJobid())
                 .setValue(dto.getValue());
         if (dto.hasParentId()) {

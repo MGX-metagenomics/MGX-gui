@@ -33,6 +33,8 @@ import de.cebitec.mgx.gui.dtoconversion.MatrixDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.SearchRequestDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.SequenceDTOFactory;
 import de.cebitec.mgx.gui.util.BaseIterator;
+import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -101,7 +103,8 @@ public class AttributeAccess implements AttributeAccessI {
             res = new HashMap<>(distribution.getAttributeCountsCount());
 
             // convert and save types first
-            Map<Long, AttributeTypeI> types = new HashMap<>(distribution.getAttributeTypeCount());
+            TLongObjectMap<AttributeTypeI> types = new TLongObjectHashMap<>(distribution.getAttributeTypeCount());
+            //Map<Long, AttributeTypeI> types = new HashMap<>(distribution.getAttributeTypeCount());
             for (AttributeTypeDTO at : distribution.getAttributeTypeList()) {
                 types.put(at.getId(), AttributeTypeDTOFactory.getInstance().toModel(master, at));
             }
@@ -130,7 +133,7 @@ public class AttributeAccess implements AttributeAccessI {
             throw new MGXException("MGX master instances need to be equal.");
         }
 
-        AttributeI attr = new Attribute(getMaster());
+        AttributeI attr = new Attribute();
         attr.setAttributeType(attrType);
         attr.setJobId(job.getId());
         attr.setValue(attrValue);
@@ -162,28 +165,12 @@ public class AttributeAccess implements AttributeAccessI {
         }
         return ret;
     }
-    
-    
+
     @Override
     public TaskI<AttributeI> delete(AttributeI attr) throws MGXException {
         throw new MGXException("Attribute deletion is not supported. Delete the corresponding job instead.");
     }
 
-//    @Override
-//    public Iterator<AttributeI> fetchall() {
-//        throw new UnsupportedOperationException("Not supported.");
-//    }
-//
-//    @Override
-//    public void update(AttributeI obj) {
-//        throw new UnsupportedOperationException("Not supported.");
-//    }
-//
-//    @Override
-//    public TaskI<AttributeI> delete(AttributeI obj) {
-//        throw new UnsupportedOperationException("Not supported.");
-//    }
-    
     public Matrix getCorrelation(AttributeTypeI attributeType1, JobI job1, AttributeTypeI attributeType2, JobI job2) throws MGXException {
         try {
             AttributeCorrelation corr = dtomaster.Attribute().getCorrelation(attributeType1.getId(), job1.getId(), attributeType2.getId(), job2.getId());
@@ -198,10 +185,12 @@ public class AttributeAccess implements AttributeAccessI {
         Map<AttributeI, Long> res;
         try {
             AttributeDistribution distribution = dtomaster.Attribute().getHierarchy(attrType.getId(), job.getId());
+
             res = new HashMap<>(distribution.getAttributeTypeCount());
 
             // convert and save types first
-            Map<Long, AttributeTypeI> types = new HashMap<>();
+            TLongObjectMap<AttributeTypeI> types = new TLongObjectHashMap<>(distribution.getAttributeTypeCount());
+            //Map<Long, AttributeTypeI> types = new HashMap<>();
             for (AttributeTypeDTO at : distribution.getAttributeTypeList()) {
                 types.put(at.getId(), AttributeTypeDTOFactory.getInstance().toModel(master, at));
             }
@@ -210,7 +199,7 @@ public class AttributeAccess implements AttributeAccessI {
             for (AttributeCount ac : distribution.getAttributeCountsList()) {
                 AttributeI attr = AttributeDTOFactory.getInstance().toModel(master, ac.getAttribute());
                 attr.setAttributeType(types.get(ac.getAttribute().getAttributeTypeId()));
-                assert !res.containsKey(attr); // no duplicates allowed
+                //assert !res.containsKey(attr); // no duplicates allowed
                 res.put(attr, ac.getCount());
             }
 
@@ -325,5 +314,4 @@ public class AttributeAccess implements AttributeAccessI {
 //            }
 //        }
 //    }
-
 }
