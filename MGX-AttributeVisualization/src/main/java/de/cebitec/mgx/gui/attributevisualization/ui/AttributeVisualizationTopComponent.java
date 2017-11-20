@@ -4,6 +4,7 @@ import de.cebitec.mgx.api.groups.ImageExporterI;
 import de.cebitec.mgx.common.visualization.ViewerI;
 import de.cebitec.mgx.api.groups.SequenceExporterI;
 import java.util.Collections;
+import javax.swing.JComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -125,17 +126,19 @@ public final class AttributeVisualizationTopComponent extends TopComponent {
     }
 
     public void setVisualization(ViewerI v) {
-        chartpane.setViewportView(v.getComponent());
-        
+        JComponent c = v.getComponent();
+        c.setPreferredSize(chartpane.getViewport().getSize());
+        chartpane.setViewportView(c);
+
         // clear lookup
         content.set(Collections.emptyList(), null);
-        
+
         // image exporter
         ImageExporterI exporter = v.getImageExporter();
         if (exporter != null && exporter.getSupportedTypes().length > 0) {
             content.add(exporter);
         }
-        
+
         // sequence exporters
         SequenceExporterI[] seqExporters = v.getSequenceExporters();
         if (seqExporters != null) {
@@ -149,7 +152,7 @@ public final class AttributeVisualizationTopComponent extends TopComponent {
         if (!vgtc.isVisible()) {
             vgtc.setVisible(true);
         }
-        
+
         Mode m = WindowManager.getDefault().findMode("output");
         if (m != null) {
             m.dockInto(vgtc);
