@@ -37,7 +37,6 @@ import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.labels.XYItemLabelGenerator;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYDataItem;
 import org.jfree.data.xy.XYDataset;
@@ -132,7 +131,7 @@ public class PCAPlot extends ViewerI<DistributionI<Long>> {
         };
         sw.execute();
 
-        PCAResultI pca = null;
+        PCAResultI pca;
         try {
             pca = sw.get();
         } catch (InterruptedException | ExecutionException ex) {
@@ -181,7 +180,7 @@ public class PCAPlot extends ViewerI<DistributionI<Long>> {
 
         // renderer for data points
         final XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
-        renderer.setBaseLinesVisible(false);
+        renderer.setDefaultLinesVisible(false);
         XYItemLabelGenerator labelGen = new XYItemLabelGenerator() {
 
             @Override
@@ -209,12 +208,13 @@ public class PCAPlot extends ViewerI<DistributionI<Long>> {
         NumberAxis axis = new NumberAxis("loadings");
         plot.setRangeAxis(1, axis);
         plot.setRangeAxisLocation(1, AxisLocation.BOTTOM_OR_RIGHT);
-        XYItemRenderer arrowRenderer = new ArrowRenderer();
+        ArrowRenderer arrowRenderer = new ArrowRenderer();
         arrowRenderer.setSeriesItemLabelGenerator(0, labelGen);
         arrowRenderer.setSeriesItemLabelsVisible(0, Boolean.TRUE);
         arrowRenderer.setSeriesItemLabelGenerator(1, labelGen);
         arrowRenderer.setSeriesItemLabelsVisible(1, Boolean.TRUE);
         plot.setRenderer(1, arrowRenderer);
+        arrowRenderer.setDataSetIndex(1);
         plot.mapDatasetToRangeAxis(1, 1);
     }
 

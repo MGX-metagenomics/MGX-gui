@@ -155,7 +155,7 @@ public class PCoAPlot extends ViewerI<DistributionI<Long>> {
 
         // renderer for data points
         final XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
-        renderer.setBaseLinesVisible(false);
+        renderer.setDefaultLinesVisible(false);
         XYItemLabelGenerator labelGen = new XYItemLabelGenerator() {
 
             @Override

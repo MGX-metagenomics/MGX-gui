@@ -13,10 +13,10 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYItemRendererState;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
-import org.jfree.chart.util.LineUtilities;
+import org.jfree.chart.ui.RectangleEdge;
+import org.jfree.chart.util.LineUtils;
+import org.jfree.chart.util.ShapeUtils;
 import org.jfree.data.xy.XYDataset;
-import org.jfree.ui.RectangleEdge;
-import org.jfree.util.ShapeUtilities;
 
 /**
  *
@@ -31,7 +31,7 @@ public class ArrowRenderer extends XYLineAndShapeRenderer {
         s.lineTo(0, -6);
         s.lineTo(4, 0);
         s.lineTo(-4, 0);
-        setBaseShape(s);
+        setDefaultShape(s);
         setSeriesShape(0, s);
         setSeriesShape(1, s);
         //setDrawOutlines(true);
@@ -69,7 +69,7 @@ public class ArrowRenderer extends XYLineAndShapeRenderer {
         } else if (orientation == PlotOrientation.VERTICAL) {
             state.workingLine.setLine(transX0, transY0, transX1, transY1);
         }
-        visible = LineUtilities.clipLine(state.workingLine, dataArea);
+        visible = LineUtils.clipLine(state.workingLine, dataArea);
         if (visible) {
             drawFirstPassShape(g2, pass, series, item, state.workingLine);
         }
@@ -80,7 +80,7 @@ public class ArrowRenderer extends XYLineAndShapeRenderer {
             XYDataset dataset, int pass, int series, int item,
             ValueAxis domainAxis, Rectangle2D dataArea, ValueAxis rangeAxis,
             CrosshairState crosshairState, EntityCollection entities) {
-        
+
         Shape entityArea = null;
 
         // get the data point...
@@ -114,10 +114,10 @@ public class ArrowRenderer extends XYLineAndShapeRenderer {
             }
 
             if (orientation == PlotOrientation.HORIZONTAL) {
-                shape = ShapeUtilities.createTranslatedShape(shape, transY1,
+                shape = ShapeUtils.createTranslatedShape(shape, transY1,
                         transX1);
             } else if (orientation == PlotOrientation.VERTICAL) {
-                shape = ShapeUtilities.createTranslatedShape(shape, transX1,
+                shape = ShapeUtils.createTranslatedShape(shape, transX1,
                         transY1);
             }
 
@@ -138,8 +138,8 @@ public class ArrowRenderer extends XYLineAndShapeRenderer {
                         g2.setPaint(getItemPaint(series, item));
                     }
                     g2.setStroke(getItemOutlineStroke(series, item));
-                    g2.draw(shape); 
-                   // g2.drawString(String.valueOf(angle), (float)transX1 + 5, (float)transY1 + 5);
+                    g2.draw(shape);
+                    // g2.drawString(String.valueOf(angle), (float)transX1 + 5, (float)transY1 + 5);
                 }
             }
         }
@@ -157,16 +157,24 @@ public class ArrowRenderer extends XYLineAndShapeRenderer {
                     (y1 < 0.0));
         }
 
-        int domainAxisIndex = plot.getDomainAxisIndex(domainAxis);
-        int rangeAxisIndex = plot.getRangeAxisIndex(rangeAxis);
-        updateCrosshairValues(crosshairState, x1, y1, domainAxisIndex,
-                rangeAxisIndex, transX1, transY1, orientation);
+//        int domainAxisIndex = plot.getDomainAxisIndex(domainAxis);
+//        int rangeAxisIndex = plot.getRangeAxisIndex(rangeAxis);
 
+//        updateCrosshairValues(crosshairState, x1, y1, domainAxisIndex,
+//                rangeAxisIndex, transX1, transY1, orientation);
+        updateCrosshairValues(crosshairState, x1, y1, datasetIndex,
+                transX1, transY1, orientation);
         // add an entity for the item, but only if it falls within the data
         // area...
-        if (entities != null && isPointInRect(dataArea, xx, yy)) {
+        if (entities != null && ShapeUtils.isPointInRect(dataArea, xx, yy)) {
             addEntity(entities, entityArea, dataset, series, item, xx, yy);
         }
+    }
+
+    int datasetIndex = -1;
+
+    void setDataSetIndex(int i) {
+        datasetIndex = i;
     }
 
 }

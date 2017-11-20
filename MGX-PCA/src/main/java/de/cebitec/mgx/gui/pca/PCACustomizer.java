@@ -4,6 +4,7 @@ import de.cebitec.mgx.api.misc.PrincipalComponent;
 import de.cebitec.mgx.api.misc.PCAResultI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.misc.Point;
+import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -52,15 +53,17 @@ public class PCACustomizer extends javax.swing.JPanel {
         numLoadings.setMinimum(0);
         List<Point> loadings = pca.getLoadings();
         if (loadings != null) {
-            numLoadings.setMaximum(loadings.size());
+            int max = loadings.size();
+            numLoadings.setMinimum(0);
+            numLoadings.setMaximum(max);
             //numLoadings.setValue(loadings.size());
             numLoadings.setMajorTickSpacing(loadings.size() / 2);
             numLoadings.setMinorTickSpacing(loadings.size() / 10);
 
-            Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
-            labelTable.put(new Integer(0), new JLabel("0"));
-            labelTable.put(new Integer(loadings.size() / 2), new JLabel(String.valueOf(loadings.size() / 2)));
-            labelTable.put(new Integer(loadings.size()), new JLabel(String.valueOf(loadings.size())));
+            Dictionary<Integer, JLabel> labelTable = new Hashtable<>();
+            labelTable.put(0, new JLabel("0"));
+            //labelTable.put(max / 2, new JLabel(String.valueOf(loadings.size() / 2)));
+            labelTable.put(max, new JLabel(String.valueOf(loadings.size())));
             numLoadings.setLabelTable(labelTable);
 
             numLoadings.setPaintLabels(true);
@@ -152,9 +155,12 @@ public class PCACustomizer extends javax.swing.JPanel {
         if (series == null || pca == null) {
             return;
         }
-        numLoadings.setToolTipText("Show " + numLoadings.getValue() + " of " + numLoadings.getMaximum() + " loadings");
+        int val = numLoadings.getValue();
+        System.err.println(val);
+
+        numLoadings.setToolTipText("Show " + val + " of " + numLoadings.getMaximum() + " loadings");
         series.clear();
-        int numToShow = numLoadings.getValue();
+        int numToShow = val;
         if (numToShow == 0) {
             return;
         }
