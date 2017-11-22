@@ -23,18 +23,14 @@ public abstract class MGXDataModelBase<T extends MGXDataModelBaseI<T>> implement
     private final MGXMasterI master;
     private final DataFlavor dataflavor;
     private ParallelPropertyChangeSupport pcs;
-//    private final StateListener stateListener;
-    //
     private String managedState = OBJECT_MANAGED;
 
     public MGXDataModelBase(MGXMasterI master, DataFlavor dataFlavor) {
         this.master = master;
         this.dataflavor = dataFlavor;
 
-//        stateListener = master == null ? null : new StateListener();
         if (master != null) {
             master.addPropertyChangeListener(this);
-//            master.addPropertyChangeListener(stateListener);
         }
     }
 
