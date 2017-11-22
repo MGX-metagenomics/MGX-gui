@@ -129,7 +129,7 @@ public class AttributeAccess implements AttributeAccessI {
         if (!master.equals(job.getMaster()) || !master.equals(attrType.getMaster())) {
             throw new MGXException("MGX master instances need to be equal.");
         }
-        if (parent != null && !master.equals(parent.getMaster())) {
+        if (parent != null && !master.equals(parent.getAttributeType().getMaster())) {
             throw new MGXException("MGX master instances need to be equal.");
         }
 
