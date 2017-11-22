@@ -50,11 +50,24 @@ public class TreeTest {
     @Test
     public void testNorm() {
         System.out.println("testNorm");
+
+        AttributeTypeI aTypeRoot = new AttributeType(null, 0, "rank_root", AttributeTypeI.VALUE_DISCRETE, AttributeTypeI.STRUCTURE_HIERARCHICAL);
+        AttributeI attr_root = new Attribute();
+        attr_root.setAttributeType(aTypeRoot);
+
+        AttributeTypeI aType = new AttributeType(null, 0, "rank1", AttributeTypeI.VALUE_DISCRETE, AttributeTypeI.STRUCTURE_HIERARCHICAL);
+        AttributeI attr1 = new Attribute();
+        attr1.setAttributeType(aType);
+        AttributeI attr2 = new Attribute();
+        attr2.setAttributeType(aType);
+        AttributeI attr3 = new Attribute();
+        attr3.setAttributeType(aType);
+
         TreeI<Long> t = new Tree<>();
-        NodeI<Long> root = t.createRootNode(null, 5l);
-        root.addChild(null, 10l);
-        root.addChild(null, 10l);
-        root.addChild(null, 10l);
+        NodeI<Long> root = t.createRootNode(attr_root, 5l);
+        root.addChild(attr1, 10l);
+        root.addChild(attr2, 10l);
+        root.addChild(attr3, 10l);
         TreeI<Double> normalized = TreeFactory.normalize(t);
         assertNotNull(normalized);
         assertEquals(1d, normalized.getRoot().getContent(), 0.0000001d);

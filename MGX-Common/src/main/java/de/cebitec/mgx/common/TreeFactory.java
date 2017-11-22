@@ -219,28 +219,30 @@ public class TreeFactory {
 
     public static TreeI<Double> normalize(TreeI<Long> tree) {
         TreeI<Double> clone = new Tree<>();
+        
+        // sum amounts for each rank 
+        TObjectLongMap<AttributeTypeI> rankSums = new TObjectLongHashMap<>();
+        for (NodeI<Long> n : tree.getNodes()) {
+            AttributeTypeI attrType = n.getAttribute().getAttributeType();
+            rankSums.adjustOrPutValue(attrType, n.getContent(), n.getContent());
+        }
 
-        long totalAtRoot = tree.getRoot().getContent();
-        // root node
+        // root node at 100%
         NodeI<Double> normRoot = clone.createRootNode(tree.getRoot().getAttribute(), 1d);
 
         // normalize children recursively
-        normChildren(normRoot, tree.getRoot().getChildren(), totalAtRoot);
+        normChildren(normRoot, tree.getRoot().getChildren(), rankSums);
 
         return clone;
     }
 
-    private static <T> void normChildren(NodeI<Double> parent, Set<NodeI<Long>> children, long totalRoot) {
-//        long levelSum = 0;
-//        for (NodeI<Long> child : children) {
-//            levelSum += child.getContent();
-//        }
+    private static <T> void normChildren(NodeI<Double> parent, Set<NodeI<Long>> children, TObjectLongMap<AttributeTypeI> rankSums) {
 
         for (NodeI<Long> child : children) {
-            double content = 1d * child.getContent() / totalRoot;
+            double content = 1d * child.getContent() / rankSums.get(child.getAttribute().getAttributeType());
             NodeI<Double> normChild = parent.addChild(child.getAttribute(), content);
             if (!child.isLeaf()) {
-                normChildren(normChild, child.getChildren(), totalRoot);
+                normChildren(normChild, child.getChildren(), rankSums);
             }
         }
     }
