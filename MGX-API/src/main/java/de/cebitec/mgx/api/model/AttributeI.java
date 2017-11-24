@@ -3,22 +3,28 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package de.cebitec.mgx.api.model;
-
-import de.cebitec.mgx.api.MGXMasterI;
-import java.awt.datatransfer.DataFlavor;
 
 /**
  *
  * @author sj
  */
-public abstract class AttributeI extends Identifiable<AttributeI> {
-    //
-    public static final DataFlavor DATA_FLAVOR = new DataFlavor(AttributeI.class, "AttributeI");
+public abstract class AttributeI implements Comparable<AttributeI> { //extends MGXDataModelBase<AttributeI> {
 
-    public AttributeI(MGXMasterI m) {
-        super(m, DATA_FLAVOR);
+    //
+    //public static final DataFlavor DATA_FLAVOR = new DataFlavor(AttributeI.class, "AttributeI");
+    protected long id = Identifiable.INVALID_IDENTIFIER;
+
+    public AttributeI() { //MGXMasterI m) {
+        //super(null, null);
+    }
+
+    public final void setId(long id) {
+        this.id = id;
+    }
+
+    public final long getId() {
+        return id;
     }
 
     public abstract long getParentID();
@@ -48,5 +54,5 @@ public abstract class AttributeI extends Identifiable<AttributeI> {
 
     @Override
     public abstract int compareTo(AttributeI o);
-    
+
 }

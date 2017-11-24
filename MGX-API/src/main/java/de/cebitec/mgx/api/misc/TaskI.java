@@ -12,7 +12,7 @@ import java.util.UUID;
  *
  * @author sj
  */
-public abstract class TaskI<T extends MGXDataModelBaseI<T>> {
+public abstract class TaskI<T> { // extends MGXDataModelBaseI<T>> {
 
     public enum TaskType {
 

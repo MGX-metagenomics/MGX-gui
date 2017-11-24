@@ -17,7 +17,7 @@ public class Attribute extends AttributeI {
     private long parent_id = Identifiable.INVALID_IDENTIFIER;
 
     public Attribute() { //MGXMasterI m) {
-        super(null);
+        super();
         //super(m);
     }
 
@@ -95,9 +95,11 @@ public class Attribute extends AttributeI {
         }
 
         // parent ids can only be compared if they are from the same project
-        if (this.getMaster() == other.getMaster()) {
-            if (this.job_id == other.getJobId() && this.parent_id != other.getParentID()) {
-                return false;
+        if (this.getAttributeType() != null && other.getAttributeType() != null) {
+            if (this.getAttributeType().getMaster() == other.getAttributeType().getMaster()) {
+                if (this.job_id == other.getJobId() && this.parent_id != other.getParentID()) {
+                    return false;
+                }
             }
         }
         /*
