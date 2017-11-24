@@ -12,7 +12,6 @@ import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.SeqRunI;
-import de.cebitec.mgx.api.model.tree.TreeI;
 
 /**
  *
@@ -35,12 +34,12 @@ public class DistributionFetcher extends Fetcher<Pair<SeqRunI, DistributionI<Lon
     @Override
     protected Pair<SeqRunI, DistributionI<Long>> doInBackground() throws Exception {
         MGXMasterI master = run.getMaster();
-        if (attrType.getStructure() == AttributeTypeI.STRUCTURE_HIERARCHICAL) {
-            TreeI<Long> tree = master.Attribute().getHierarchy(attrType, job);
-            return new Pair<>(run, DistributionFactory.fromTree(tree, attrType));
-        } else {
+//        if (attrType.getStructure() == AttributeTypeI.STRUCTURE_HIERARCHICAL) {
+//            TreeI<Long> tree = master.Attribute().getHierarchy(attrType, job);
+//            return new Pair<>(run, DistributionFactory.fromTree(tree, attrType));
+//        } else {
             return new Pair<>(run, master.Attribute().getDistribution(attrType, job));
-        }
+//        }
     }
 
 //    @Override
