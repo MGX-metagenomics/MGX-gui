@@ -12,8 +12,10 @@ import de.cebitec.mgx.gui.goldstandard.util.EvalExceptions;
 import de.cebitec.mgx.gui.goldstandard.util.JobUtils;
 import de.cebitec.mgx.gui.goldstandard.util.NodeUtils;
 import de.cebitec.mgx.gui.goldstandard.wizards.selectjobs.SelectJobsWizardDescriptor;
+import gnu.trove.list.TLongList;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
+import gnu.trove.procedure.TLongProcedure;
 import java.awt.Dialog;
 import java.util.ArrayList;
 import java.util.List;
@@ -90,24 +92,35 @@ public class GSCTableViewer extends EvaluationViewerI implements PipelineCompari
 
         try {
             for (NodeI<Long> node : jobALeaves) {
-                List<Long> ids = NodeUtils.getSeqIDs(node);
-                String attr = node.getAttribute().getValue();
-                for (long id : ids) {
-                    seqToAttribute.put(id, new String[]{attr, ""});
-                }
+                TLongList ids = NodeUtils.getSeqIDs(currentSeqrun.getMaster(), node);
+                final String attr = node.getAttribute().getValue();
+                ids.forEach(new TLongProcedure() {
+                    @Override
+                    public boolean execute(long id) {
+                        seqToAttribute.put(id, new String[]{attr, ""});
+                        return true;
+                    }
+                    
+                });
+
                 p.progress(progress++);
             }
 
             for (NodeI<Long> node : jobBLeaves) {
-                List<Long> ids = NodeUtils.getSeqIDs(node);
-                String attr = node.getAttribute().getValue();
-                for (long id : ids) {
-                    if (seqToAttribute.containsKey(id)) {
-                        seqToAttribute.get(id)[1] = attr;
-                    } else {
-                        seqToAttribute.put(id, new String[]{"", attr});
+                TLongList ids = NodeUtils.getSeqIDs(currentSeqrun.getMaster(), node);
+                final String attr = node.getAttribute().getValue();
+                ids.forEach(new TLongProcedure() {
+                    @Override
+                    public boolean execute(long id) {
+                        if (seqToAttribute.containsKey(id)) {
+                            seqToAttribute.get(id)[1] = attr;
+                        } else {
+                            seqToAttribute.put(id, new String[]{"", attr});
+                        }
+                        return true;
                     }
-                }
+                });
+               
                 p.progress(progress++);
             }
 
@@ -122,7 +135,6 @@ public class GSCTableViewer extends EvaluationViewerI implements PipelineCompari
 
 //        jobALeaves = null;
 //        jobBLeaves = null;
-
         String[] columns = new String[]{
             "Sequence", "in " + jobAName, "in both", "in " + jobBName};
 
