@@ -356,7 +356,7 @@ public class VGroupManager implements VGroupManagerI {
 
     @Override
     public ReplicateGroupI createReplicateGroup() {
-        ReplicateGroupI replGroup = null;
+        ReplicateGroupI replGroup;
 
         synchronized (replicateGroups) {
             String newName = "Replicate Group " + replicateGroupCount;
@@ -416,7 +416,7 @@ public class VGroupManager implements VGroupManagerI {
         }
         return null;
     }
-    
+
     @Override
     public Collection<ReplicateGroupI> getReplicateGroups() {
         List<ReplicateGroupI> ret = new ArrayList<>(replicateGroups.size());
