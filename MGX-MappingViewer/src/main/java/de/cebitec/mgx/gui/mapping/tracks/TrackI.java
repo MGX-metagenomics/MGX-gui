@@ -15,10 +15,12 @@ import java.util.Iterator;
  */
 public interface TrackI {
 
+    public final static int DEFAULT_PADDING = 25; // bp, should be px
+
     int getId();
 
     int getMax();
-    
+
     public boolean tryAdd(MappedSequenceI ms);
 
     void add(MappedSequenceI ms);

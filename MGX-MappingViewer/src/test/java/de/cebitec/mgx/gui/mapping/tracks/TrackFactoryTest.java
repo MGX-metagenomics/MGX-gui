@@ -32,7 +32,7 @@ public class TrackFactoryTest {
         List<MappedSequenceI> mappings = new ArrayList<>();
 
         MappedSequence ms1 = new MappedSequence(1, 5, 20, 0);
-        MappedSequence ms2 = new MappedSequence(1, 25, 35, 0);
+        MappedSequence ms2 = new MappedSequence(1, 250, 270, 0);
 
         mappings.add(ms1);
         mappings.add(ms2);
@@ -79,7 +79,7 @@ public class TrackFactoryTest {
         mappings.add(ms3);
 
         List<TrackI> result = new ArrayList<>();
-        TrackFactory.createTracks(mappings, result);
+        TrackFactory.createTracks(mappings, result, 1);
 
         //    ---------   ---------
         //         -----------

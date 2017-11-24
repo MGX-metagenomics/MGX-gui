@@ -96,8 +96,12 @@ public class TrackFactory {
         handler.getTracks(tracks);
         System.err.println("Solution has " + tracks.size() + " tracks for " + all.size() + " mappings");
     }
-
+    
     public static boolean createTracks(List<MappedSequenceI> mappings, Collection<TrackI> tracks) {
+        return createTracks(mappings, tracks, TrackI.DEFAULT_PADDING);
+    }
+
+    public static boolean createTracks(List<MappedSequenceI> mappings, Collection<TrackI> tracks, int trackPadding) {
         tracks.clear();
         int trackCnt = 0;
         boolean placed;
@@ -114,7 +118,7 @@ public class TrackFactory {
                 }
             }
             if (!placed && trackCnt < MAX_TRACK_NUM) {
-                Track t = new Track(++trackCnt);
+                Track t = new Track(++trackCnt, trackPadding);
                 tracks.add(t);
                 t.add(ms);
             }

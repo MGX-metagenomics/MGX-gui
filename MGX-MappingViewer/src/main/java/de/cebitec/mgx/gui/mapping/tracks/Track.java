@@ -22,13 +22,15 @@ public class Track implements Comparable<TrackI>, TrackI {
     private final int id;
     private final List<MappedSequenceI> content = new LinkedList<>();
     private MappedSequenceI last = null;
-    private final int padding = 25; // bp, should be px
+    private final int padding; // bp, should be px
 
-//    Track(ExecutorService pool) {
-//        this.pool = pool;
-//    }
     public Track(int id) {
+        this(id, DEFAULT_PADDING);
+    }
+
+    public Track(int id, int pad) {
         this.id = id;
+        this.padding = pad;
     }
 
     @Override
