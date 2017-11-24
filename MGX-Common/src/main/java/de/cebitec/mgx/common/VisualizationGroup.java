@@ -31,6 +31,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
@@ -53,7 +54,7 @@ public class VisualizationGroup implements VisualizationGroupI {
     private String secondaryAttributeType; // 2nd attr type for correlation matrices
     private final Map<AttributeRank, Map<SeqRunI, JobI>> uniqueJobs = new ConcurrentHashMap<>();
     private final Map<AttributeRank, Map<SeqRunI, Set<JobI>>> needsResolval = new ConcurrentHashMap<>();
-    private final Map<SeqRunI, Map<JobI, Set<AttributeTypeI>>> attributeTypes;
+    private final ConcurrentMap<SeqRunI, Map<JobI, Set<AttributeTypeI>>> attributeTypes;
     private final Map<SeqRunI, DistributionI<Long>> currentDistributions;
     //
     private final Map<String, DistributionI<Long>> distCache = new ConcurrentHashMap<>();
