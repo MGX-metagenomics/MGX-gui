@@ -92,6 +92,9 @@ public abstract class GroupFrameBase<T extends ModelBaseI<T>> extends javax.swin
                     Exceptions.printStackTrace(ex);
                 }
                 break;
+            case ExplorerManager.PROP_NODE_CHANGE:
+                // ignore
+                break;
             default:
                 System.err.println("In " + getClass().getName() + " received unhandled event " + evt);
                 assert false;
