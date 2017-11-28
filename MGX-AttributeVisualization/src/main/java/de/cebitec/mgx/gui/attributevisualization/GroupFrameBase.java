@@ -97,7 +97,7 @@ public abstract class GroupFrameBase<T extends ModelBaseI<T>> extends javax.swin
                 break;
             default:
                 System.err.println("In " + getClass().getName() + " received unhandled event " + evt);
-                assert false;
+                //assert false;
         }
     }
 
