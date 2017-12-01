@@ -15,8 +15,11 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Rectangle2D;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  *
@@ -101,7 +104,8 @@ public class StackedBar {
             if (a.getBounds().contains(loc)) {
                 AttributeI attr = a.getData();
                 Long cnt = dist.get(attr);
-                return attr.getValue() + ": " + cnt;
+                DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.US);
+                return attr.getValue() + ": " + formatter.format(cnt);
             }
         }
         if (textBounds != null && textBounds.contains(loc)) {
