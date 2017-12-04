@@ -6,9 +6,14 @@
 package de.cebitec.mgx.gui.controller;
 
 import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.model.JobI;
+import de.cebitec.mgx.api.model.JobParameterI;
 import de.cebitec.mgx.api.model.SeqRunI;
+import de.cebitec.mgx.api.model.ToolI;
 import de.cebitec.mgx.gui.util.TestMaster;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -31,8 +36,6 @@ public class JobAccessTest {
         assertEquals("Thu Jun 20 15:19:18 CEST 2013", job.getStartDate().toString());
         assertEquals("Thu Jun 20 15:20:01 CEST 2013", job.getFinishDate().toString());
     }
-    
-    
 
     @Test
     public void testBySeqRun() throws Exception {
@@ -42,6 +45,31 @@ public class JobAccessTest {
         SeqRunI run = master.SeqRun().fetch(1);
         List<JobI> jobs = master.Job().BySeqRun(run);
         assertEquals(10, jobs.size());
+    }
+
+    @Test
+    public void testDeletion() throws Exception {
+        System.out.println("deletion");
+        MGXMasterI master = TestMaster.getRW();
+        ToolI tool = master.Tool().fetch(1);
+        SeqRunI run = master.SeqRun().fetch(1);
+
+        JobI job = master.Job().create(tool, run, new ArrayList<JobParameterI>());
+        assertNotNull(job);
+        
+        PropCounter pc = new PropCounter();
+        
+        job.addPropertyChangeListener(pc);
+
+        TaskI<JobI> delTask = master.Job().delete(job);
+        while (!delTask.done()) {
+            master.<JobI>Task().refresh(delTask);
+        }
+        assertTrue(delTask.done());
+        assertTrue(job.isDeleted());
+        
+        assertEquals(1, pc.getCount());
+        assertEquals(JobI.OBJECT_DELETED, pc.getLastEvent().getPropertyName());
     }
 
     @Test
