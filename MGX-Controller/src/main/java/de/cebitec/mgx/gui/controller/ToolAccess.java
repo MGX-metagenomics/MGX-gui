@@ -168,6 +168,9 @@ public class ToolAccess implements ToolAccessI {
 
     @Override
     public ToolI ByJob(JobI job) throws MGXException {
+        if(job.getTool() != null) {
+            return job.getTool();
+        }
         ToolI t = null;
         try {
             ToolDTO dto = getDTOmaster().Tool().byJob(job.getId());
