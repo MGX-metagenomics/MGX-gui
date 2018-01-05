@@ -217,7 +217,7 @@ public class VGroupManager implements VGroupManagerI {
             for (VisualizationGroupI vg : vizGroups) {
                 if (vg.isActive()) {
                     DistributionI<Long> dist = vg.getDistribution();
-                    if (!dist.isEmpty()) {
+                    if (dist != null && !dist.isEmpty()) {
                         ret.add(new Pair<>(vg, dist));
                     }
                 }
