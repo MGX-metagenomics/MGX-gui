@@ -114,6 +114,10 @@
             <artifactId>MGX-TestUtils</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
     </dependencies> 
 
     <build>
@@ -159,7 +163,8 @@
                             de.cebitec.mgx.common,
                             de.cebitec.mgx.sequence,
                             gnu.trove.map,
-                            gnu.trove.map.hash
+                            gnu.trove.map.hash,
+                            com.google.common.cache
                         </Import-Package>
                     </instructions>
                 </configuration>

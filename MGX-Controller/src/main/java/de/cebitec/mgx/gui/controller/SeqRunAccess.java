@@ -151,7 +151,9 @@ public class SeqRunAccess extends AccessBase<SeqRunI> implements SeqRunAccessI {
             throw new MGXException(ex);
         }
         SeqRunI ret = SeqRunDTOFactory.getInstance().toModel(getMaster(), dto);
-        job.setSeqrun(ret);
+        if (job.getSeqrun() == null) {
+            job.setSeqrun(ret);
+        }
         return ret;
     }
 
@@ -161,7 +163,9 @@ public class SeqRunAccess extends AccessBase<SeqRunI> implements SeqRunAccessI {
         try {
             for (JobAndAttributeTypes jat : getDTOmaster().SeqRun().getJobsAndAttributeTypes(run.getId())) {
                 JobI job = JobDTOFactory.getInstance().toModel(getMaster(), jat.getJob());
-                job.setSeqrun(run);
+                if (job.getSeqrun() == null) {
+                    job.setSeqrun(run);
+                }
 
                 Set<AttributeTypeI> all = new HashSet<>();
                 for (AttributeTypeDTO atDTO : jat.getAttributeTypes().getAttributeTypeList()) {

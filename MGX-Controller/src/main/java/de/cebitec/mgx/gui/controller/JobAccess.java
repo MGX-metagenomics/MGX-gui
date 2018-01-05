@@ -189,7 +189,9 @@ public class JobAccess implements JobAccessI {
         try {
             for (JobDTO dto : getDTOmaster().Job().byAttributeTypeAndSeqRun(atype.getId(), run.getId())) {
                 JobI j = JobDTOFactory.getInstance().toModel(getMaster(), dto);
-                j.setSeqrun(run);
+                if (j.getSeqrun() == null) {
+                    j.setSeqrun(run);
+                }
                 all.add(j);
             }
         } catch (MGXDTOException ex) {
@@ -202,10 +204,13 @@ public class JobAccess implements JobAccessI {
     public List<JobI> BySeqRun(SeqRunI run) throws MGXException {
         List<JobI> all = new ArrayList<>();
         try {
+            JobDTOFactory instance = JobDTOFactory.getInstance();
             for (JobDTO dto : getDTOmaster().Job().bySeqRun(run.getId())) {
                 JobI j = JobDTOFactory.getInstance().toModel(getMaster(), dto);
                 if (j != null) {
-                    j.setSeqrun(run);
+                    if (j.getSeqrun() == null) {
+                        j.setSeqrun(run);
+                    }
                     all.add(j);
                 }
             }

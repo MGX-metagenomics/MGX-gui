@@ -23,6 +23,7 @@ import de.cebitec.mgx.sequence.SeqWriterI;
 import de.cebitec.mgx.testutils.TestInput;
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -36,7 +37,7 @@ import org.openide.util.Exceptions;
  * @author sjaenick
  */
 public class SeqRunAccessTest {
-
+    
     @Test
     public void testFetch() throws MGXException {
         System.out.println("fetch");
@@ -45,7 +46,22 @@ public class SeqRunAccessTest {
         assertNotNull(sr1);
         assertNotNull(sr1.getMaster());
     }
-
+    
+    @Test
+    public void testFetchall() throws MGXException {
+        System.out.println("fetchall");
+        MGXMasterI m = TestMaster.getRO();
+        Iterator<SeqRunI> iter = m.SeqRun().fetchall();
+        assertNotNull(iter);
+        int cnt = 0;
+        while (iter.hasNext()) {
+            SeqRunI next = iter.next();
+            assertNotNull(next);
+            cnt++;
+        }
+        assertEquals(5, cnt);
+    }
+    
     @Test
     public void testByJob() {
         System.out.println("testByJob");
@@ -64,7 +80,7 @@ public class SeqRunAccessTest {
         assertEquals("dataset2", run.getName());
         assertNotNull(job.getSeqrun());
     }
-
+    
     @Test
     public void testgetJobsAndAttributeTypes() throws MGXException {
         System.out.println("getJobsAndAttributeTypes");
@@ -73,9 +89,9 @@ public class SeqRunAccessTest {
         Map<JobI, Set<AttributeTypeI>> data = m.SeqRun().getJobsAndAttributeTypes(sr1);
         assertNotNull(data);
         assertEquals(10, data.size());
-
+        
         int paramCnt = 0;
-
+        
         for (JobI j : data.keySet()) {
             assertNotNull(j.getSeqrun());
             paramCnt += j.getParameters().size();
@@ -85,7 +101,7 @@ public class SeqRunAccessTest {
         }
         assertEquals(7, paramCnt);
     }
-
+    
     @Test
     public void testEquality() throws MGXException {
         System.out.println("equals");
@@ -94,10 +110,10 @@ public class SeqRunAccessTest {
         SeqRunI sr2 = m.SeqRun().fetch(1);
         assertNotNull(sr1);
         assertNotNull(sr2);
-        assertNotSame(sr1, sr2);
+        //assertNotSame(sr1, sr2);
         assertEquals(sr1, sr2);
     }
-
+    
     @Test
     public void testRegressionEquality() throws MGXException {
         System.out.println("testRegressionEquality");
@@ -113,22 +129,22 @@ public class SeqRunAccessTest {
         assertNotEquals(run1.getMaster(), run2.getMaster());
         assertNotEquals("runs from different projects should not be equal", run1, run2);
     }
-
+    
     @Test
     public void testDownload() throws IOException {
         System.out.println("testDownload");
         File tmpFile = File.createTempFile("down", "xx");
-
+        
         try {
             final SeqWriterI<DNASequenceI> writer = new FastaWriter(tmpFile.getAbsolutePath());
-
+            
             MGXMasterI m = TestMaster.getRO();
             SeqRunI sr1 = m.SeqRun().fetch(1);
             PropCounter pc = new PropCounter();
             final DownloadBaseI downloader = m.Sequence().createDownloader(sr1, writer, true);
             downloader.addPropertyChangeListener(pc);
             boolean success = downloader.download();
-
+            
             assertTrue(success);
             assertNotNull(pc.getLastEvent());
             assertEquals(TransferBaseI.TRANSFER_COMPLETED, pc.getLastEvent().getPropertyName());
@@ -138,27 +154,27 @@ public class SeqRunAccessTest {
             tmpFile.delete();
         }
     }
-
+    
     @Test
     public void testSeqRunUpload() {
         System.out.println("testSeqRunUpload");
-
+        
         MGXMasterI m = TestMaster.getRW();
         SeqRunI newRun = null;
-
+        
         try {
             List<TermI> methods = m.Term().byCategory(TermAccessI.SEQ_METHODS);
             List<TermI> platforms = m.Term().byCategory(TermAccessI.SEQ_PLATFORMS);
             DNAExtractI ex = m.DNAExtract().fetch(1);
             newRun = m.SeqRun().create(ex, "sample data", methods.get(0), platforms.get(0), false, "");
-
+            
         } catch (MGXException ex) {
             fail(ex.getMessage());
         }
-
+        
         assertNotNull(newRun);
         assertEquals(-1, newRun.getNumSequences());
-
+        
         SeqReaderI<? extends DNASequenceI> reader = null;
         try {
             File testFasta = TestInput.copyTestResource(getClass(), "de/cebitec/mgx/gui/controller/sample.fas");
@@ -166,7 +182,7 @@ public class SeqRunAccessTest {
         } catch (SeqStoreException | IOException ex) {
             fail(ex.getMessage());
         }
-
+        
         assertNotNull(reader);
         boolean success = false;
         try {
@@ -180,7 +196,7 @@ public class SeqRunAccessTest {
         // check number of sequences uploaded for local SeqRunI instance
         long numSeqs = newRun.getNumSequences();
         long numSeqs2 = -1;
-
+        
         try {
             SeqRunI newRunCopy = m.SeqRun().fetch(newRun.getId());
             assertNotNull(newRunCopy);
@@ -198,7 +214,7 @@ public class SeqRunAccessTest {
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);
         }
-
+        
         assertEquals(2, numSeqs);
         assertEquals(2, numSeqs2);
     }

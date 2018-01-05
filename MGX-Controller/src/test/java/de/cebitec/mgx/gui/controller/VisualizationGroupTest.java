@@ -189,7 +189,7 @@ public class VisualizationGroupTest {
         while (iter.hasNext()) {
             vg.addSeqRun(iter.next());
         }
-        assertEquals(4, vg.getSeqRuns().size());
+        assertEquals(5, vg.getSeqRuns().size());
 
         int atCount = 0;
         Iterator<AttributeTypeI> atIter = vg.getAttributeTypes();
