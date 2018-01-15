@@ -11,6 +11,7 @@ import de.cebitec.mgx.api.misc.Point;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.common.visualization.ViewerI;
 import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
+import de.cebitec.mgx.gui.rarefaction.LocalRarefaction;
 import de.cebitec.mgx.gui.rarefaction.Rarefaction;
 import de.cebitec.mgx.gui.seqexporter.SeqExporter;
 import de.cebitec.mgx.gui.swingutils.DelayedPlot;
@@ -20,7 +21,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JComponent;
 import javax.swing.SwingWorker;
 import org.jfree.chart.ChartFactory;
@@ -72,6 +75,10 @@ public class RarefactionCurve extends ViewerI<DistributionI<Long>> {
             protected JComponent doInBackground() throws Exception {
                 JComponent ret;
                 XYSeriesCollection dataset = createXYSeries(dists);
+
+                if (dataset == null) {
+                    return null;
+                }
 
                 String xAxisLabel = "Size";
                 String yAxisLabel = "Richness";
@@ -130,30 +137,53 @@ public class RarefactionCurve extends ViewerI<DistributionI<Long>> {
 
     private static XYSeriesCollection createXYSeries(List<Pair<VisualizationGroupI, DistributionI<Long>>> in) {
         final XYSeriesCollection dataset = new XYSeriesCollection();
+        final AtomicBoolean error = new AtomicBoolean(false);
+
+        final CountDownLatch allDone = new CountDownLatch(in.size());
 
         for (final Pair<VisualizationGroupI, DistributionI<Long>> groupDistribution : in) {
 
-            NonEDT.invokeAndWait(new Runnable() {
+            NonEDT.invoke(new Runnable() {
 
                 @Override
                 public void run() {
-                    XYSeries series = new XYSeries(groupDistribution.getFirst().getDisplayName());
-                    DistributionI<Long> dist = groupDistribution.getSecond();
+                    final DistributionI<Long> dist = groupDistribution.getSecond();
+                    Iterator<Point> iter = null;
                     try {
-                        Iterator<Point> iter = Rarefaction.rarefy(dist);
-                        while (iter.hasNext()) {
-                            Point p = iter.next();
-                            series.add(p.getX(), p.getY());
-                        }
-                        dataset.addSeries(series);
+                        iter = LocalRarefaction.rarefy(dist);
                     } catch (MGXException ex) {
                         Exceptions.printStackTrace(ex);
+                        //
+                        // local computational failed, retry on mgx server
+                        //
+                        try {
+                            iter = Rarefaction.rarefy(dist);
+                        } catch (MGXException ex1) {
+                            Exceptions.printStackTrace(ex1);
+                            error.set(true);
+                        }
+                    } finally {
+                        if (!error.get()) {
+                            XYSeries series = new XYSeries(groupDistribution.getFirst().getDisplayName());
+                            while (iter != null && iter.hasNext()) {
+                                Point p = iter.next();
+                                series.add(p.getX(), p.getY());
+                            }
+                            dataset.addSeries(series);
+                        }
+                        allDone.countDown();
                     }
                 }
             });
 
         }
-        return dataset;
+
+        try {
+            allDone.await();
+        } catch (InterruptedException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+        return error.get() ? null : dataset;
     }
 
     @Override
