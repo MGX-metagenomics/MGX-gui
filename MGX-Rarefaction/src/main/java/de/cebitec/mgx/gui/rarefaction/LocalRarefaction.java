@@ -26,7 +26,7 @@ import org.openide.util.Exceptions;
 public class LocalRarefaction {
 
     public static Iterator<Point> rarefy(DistributionI<Long> dist) throws MGXException {
-        if (dist.size() > Math.pow(2, Short.SIZE)) {
+        if (dist.size() > Math.pow(2, Character.SIZE)) {
             throw new MGXException("Distribution too large."); 
         }
         
