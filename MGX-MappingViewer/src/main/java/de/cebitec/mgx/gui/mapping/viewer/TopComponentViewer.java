@@ -84,7 +84,7 @@ public final class TopComponentViewer extends TopComponent implements PropertyCh
         associateLookup(lookup);
         content.add(new SaveView());
         vc = new ViewController(ctx);
-        setName(Bundle.CTL_TopComponentViewer());
+        setName(ctx.getRun().getName() + " vs. "+ ctx.getReference().getName());
         createView();
     }
 
