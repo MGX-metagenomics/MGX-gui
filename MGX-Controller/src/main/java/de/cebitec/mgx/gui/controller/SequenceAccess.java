@@ -91,7 +91,7 @@ public class SequenceAccess implements SequenceAccessI { //extends AccessBase<Se
     }
 
     @Override
-    public DownloadBaseI createDownloader(SeqRunI seqrun, SeqWriterI<DNASequenceI> writer, boolean closeWriter) throws MGXException {
+    public DownloadBaseI createDownloader(SeqRunI seqrun, SeqWriterI<? extends DNASequenceI> writer, boolean closeWriter) throws MGXException {
         try {
             final SeqDownloader sd = getDTOmaster().Sequence().createDownloader(seqrun.getId(), writer, closeWriter);
             ServerSeqRunDownloader ret = new ServerSeqRunDownloader(sd);

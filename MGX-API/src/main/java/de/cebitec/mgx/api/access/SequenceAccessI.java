@@ -41,5 +41,5 @@ public interface SequenceAccessI { //extends AccessBaseI<SequenceI> {
 
     public UploadBaseI createUploader(SeqRunI seqrun, SeqReaderI<? extends DNASequenceI> reader) throws MGXException;
 
-    public DownloadBaseI createDownloader(SeqRunI seqrun, SeqWriterI<DNASequenceI> writer, boolean closeWriter) throws MGXException;
+    public DownloadBaseI createDownloader(SeqRunI seqrun, SeqWriterI<? extends DNASequenceI> writer, boolean closeWriter) throws MGXException;
 }

@@ -196,4 +196,13 @@ public class SeqRunAccess extends AccessBase<SeqRunI> implements SeqRunAccessI {
         return ret;
     }
 
+    @Override
+    public boolean hasQuality(SeqRunI run) throws MGXException {
+        try {
+            return getDTOmaster().SeqRun().hasQuality(run.getId());
+        } catch (MGXDTOException ex) {
+            throw new MGXException(ex);
+        }
+    }
+
 }
