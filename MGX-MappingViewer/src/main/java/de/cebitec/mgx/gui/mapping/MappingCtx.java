@@ -221,7 +221,7 @@ public class MappingCtx implements PropertyChangeListener, AutoCloseable {
 
             try {
                 MGXMasterI master = ref.getMaster();
-                if (!master.isDeleted()) {
+                if (!master.isDeleted() && !mapping.isDeleted()) {
                     master.Mapping().closeMapping(sessionUUID);
                 }
             } catch (MGXException ex) {
