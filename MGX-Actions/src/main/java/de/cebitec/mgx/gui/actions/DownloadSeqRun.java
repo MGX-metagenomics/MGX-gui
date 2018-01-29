@@ -10,7 +10,9 @@ import de.cebitec.mgx.gui.swingutils.NonEDT;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
 import de.cebitec.mgx.gui.swingutils.util.SuffixFilter;
+import de.cebitec.mgx.seqstorage.FASTQWriter;
 import de.cebitec.mgx.seqstorage.FastaWriter;
+import de.cebitec.mgx.seqstorage.QualityEncoding;
 import de.cebitec.mgx.sequence.DNASequenceI;
 import de.cebitec.mgx.sequence.SeqStoreException;
 import de.cebitec.mgx.sequence.SeqWriterI;
@@ -35,7 +37,7 @@ import org.openide.util.Utilities;
 public class DownloadSeqRun extends AbstractAction {
 
     public DownloadSeqRun() {
-        super.putValue(NAME, "Download FASTA");
+        super.putValue(NAME, "Download FASTA/FASTQ");
     }
 
     @Override
@@ -54,19 +56,29 @@ public class DownloadSeqRun extends AbstractAction {
             }
         }
 
+        boolean hasQuality;
+        try {
+            hasQuality = seqrun.getMaster().SeqRun().hasQuality(seqrun);
+        } catch (MGXException ex) {
+            Exceptions.printStackTrace(ex);
+            return;
+        }
+
         // suggest a file name
-        File suggestedName = new File(fchooser.getCurrentDirectory(), cleanupName(seqrun.getName()) + ".fas");
+        String suffix = hasQuality ? ".fastq" : ".fas";
+        File suggestedName = new File(fchooser.getCurrentDirectory(), cleanupName(seqrun.getName()) + suffix);
         int cnt = 1;
         while (suggestedName.exists()) {
             String newName = new StringBuilder(cleanupName(seqrun.getName()))
                     .append(" (")
                     .append(cnt++)
-                    .append(").fas")
+                    .append(")")
+                    .append(suffix)
                     .toString();
             suggestedName = new File(fchooser.getCurrentDirectory(), newName);
         }
         fchooser.setSelectedFile(suggestedName);
-        FileFilter ff = new SuffixFilter(FileType.FAS);
+        FileFilter ff = hasQuality ? new SuffixFilter(FileType.FASTQ) : new SuffixFilter(FileType.FAS);
         fchooser.addChoosableFileFilter(ff);
         fchooser.setFileFilter(ff);
 
@@ -96,7 +108,9 @@ public class DownloadSeqRun extends AbstractAction {
         }
 
         try {
-            final SeqWriterI<DNASequenceI> writer = new FastaWriter(target.getAbsolutePath());
+            final SeqWriterI<? extends DNASequenceI> writer = hasQuality
+                    ? new FASTQWriter(target.getAbsolutePath(), QualityEncoding.Sanger)
+                    : new FastaWriter(target.getAbsolutePath());
 
             MGXMasterI master = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
             final DownloadBaseI downloader = master.Sequence().createDownloader(seqrun, writer, false);
