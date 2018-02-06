@@ -121,7 +121,7 @@ public class StatisticalBarChart extends CategoricalViewerI<Long> implements Adj
 
         StatisticalBarRenderer br = (StatisticalBarRenderer) plot.getRenderer();
         br.setItemMargin(customizer.getItemMargin());
-        br.setDefaultToolTipGenerator(new StandardCategoryToolTipGenerator("<html>Group: {0} <br> Attribute: {1} <br> " + yAxisLabel + ": {2}</html>", NumberFormat.getInstance()));
+        br.setBaseToolTipGenerator(new StandardCategoryToolTipGenerator("<html>Group: {0} <br> Attribute: {1} <br> " + yAxisLabel + ": {2}</html>", NumberFormat.getInstance()));
         br.setMaximumBarWidth(.1); // set maximum width to 10% of chart
         br.setErrorIndicatorPaint(Color.BLACK);
 

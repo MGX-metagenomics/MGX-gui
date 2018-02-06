@@ -37,12 +37,12 @@ import org.jfree.chart.plot.CombinedDomainXYPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
-import org.jfree.chart.ui.RectangleEdge;
-import org.jfree.chart.ui.TextAnchor;
 import org.jfree.data.xy.XYDataItem;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
+import org.jfree.ui.RectangleEdge;
+import org.jfree.ui.TextAnchor;
 //import org.jfree.ui.RectangleEdge;
 //import org.jfree.ui.TextAnchor;
 import org.openide.util.lookup.ServiceProvider;
@@ -192,9 +192,9 @@ public class MAPlot extends NumericalViewerI<Long> {
             XYSeriesCollection posInf, XYSeriesCollection negInf, String xAxisLabel, String yAxisLabel, XYToolTipGenerator toolTip) {
 
         final XYLineAndShapeRenderer r = new XYLineAndShapeRenderer();
-        r.setDefaultLinesVisible(false);
+        r.setBaseLinesVisible(false);
         r.setSeriesShape(0, new Ellipse2D.Double(0, 0, 5, 5));
-        r.setDefaultToolTipGenerator(toolTip);
+        r.setBaseToolTipGenerator(toolTip);
 
         NumberAxis xAxis = new NumberAxis(xAxisLabel);
         xAxis.setInverted(false);
@@ -228,6 +228,8 @@ public class MAPlot extends NumericalViewerI<Long> {
                 myTicks.add(new NumberTick(0, "Inf", TextAnchor.CENTER_RIGHT, TextAnchor.CENTER_RIGHT, 0.0));
                 return myTicks;
             }
+            
+            
         };
         rangeAxis3.setAutoRangeIncludesZero(false);
         final XYPlot subplot3 = new XYPlot(posInf, xAxis, rangeAxis3, r);

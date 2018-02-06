@@ -230,7 +230,7 @@ public class VolcanoPlot extends CategoricalViewerI<Long> {
         domainAxisString.addAttribute(TextAttribute.SUPERSCRIPT, TextAttribute.SUPERSCRIPT_SUB, 1, 5);
 
         AttributeToolTipGenerator tooltipGen = new AttributeToolTipGenerator(attributes);
-        plot.getRenderer().setDefaultToolTipGenerator(tooltipGen);
+        plot.getRenderer().setBaseToolTipGenerator(tooltipGen);
     }
 
     @Override
