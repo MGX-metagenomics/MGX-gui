@@ -112,8 +112,7 @@ public class DownloadSeqRun extends AbstractAction {
                     ? new FASTQWriter(target.getAbsolutePath(), QualityEncoding.Sanger)
                     : new FastaWriter(target.getAbsolutePath());
 
-            MGXMasterI master = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
-            final DownloadBaseI downloader = master.Sequence().createDownloader(seqrun, writer, false);
+            final DownloadBaseI downloader = seqrun.getMaster().Sequence().createDownloader(seqrun, writer, false);
 
             final MGXTask run = new MGXTask("Export to " + fchooser.getSelectedFile().getName()) {
                 @Override
