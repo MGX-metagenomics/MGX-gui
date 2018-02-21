@@ -90,7 +90,7 @@ class TableViewCustomizer extends javax.swing.JPanel implements VisFilterI<Distr
             return dists;
         }
 
-        ExcludeFilter ef = new ExcludeFilter(filterEntries);
+        ExcludeFilter<Double> ef = new ExcludeFilter<>(filterEntries);
         dists = ef.filter(dists);
 
         return dists;
@@ -113,7 +113,7 @@ class TableViewCustomizer extends javax.swing.JPanel implements VisFilterI<Distr
         includeHeaders = new javax.swing.JCheckBox();
         jLabel4 = new javax.swing.JLabel();
         fractions = new javax.swing.JCheckBox();
-        treeFilter1 = new de.cebitec.mgx.gui.swingutils.TreeFilter();
+        treeFilter1 = new de.cebitec.mgx.gui.swingutils.TreeFilterUI();
         filterField = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
 
@@ -263,7 +263,7 @@ class TableViewCustomizer extends javax.swing.JPanel implements VisFilterI<Distr
     private javax.swing.JCheckBox includeHeaders;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel4;
-    private de.cebitec.mgx.gui.swingutils.TreeFilter treeFilter1;
+    private de.cebitec.mgx.gui.swingutils.TreeFilterUI treeFilter1;
     // End of variables declaration//GEN-END:variables
 
 }

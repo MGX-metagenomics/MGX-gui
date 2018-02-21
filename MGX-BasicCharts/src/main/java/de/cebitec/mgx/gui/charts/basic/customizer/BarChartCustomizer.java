@@ -99,7 +99,7 @@ public class BarChartCustomizer extends javax.swing.JPanel implements VisFilterI
         itemMargin = new javax.swing.JSlider();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        treeFilter = new de.cebitec.mgx.gui.swingutils.TreeFilter();
+        treeFilter = new de.cebitec.mgx.gui.swingutils.TreeFilterUI();
 
         jLabel1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         jLabel1.setText(org.openide.util.NbBundle.getMessage(BarChartCustomizer.class, "BarChartCustomizer.jLabel1.text")); // NOI18N
@@ -205,7 +205,7 @@ public class BarChartCustomizer extends javax.swing.JPanel implements VisFilterI
     private javax.swing.JRadioButton sortAscending;
     private javax.swing.JRadioButton sortDescending;
     private javax.swing.ButtonGroup sortOrderGroup;
-    private de.cebitec.mgx.gui.swingutils.TreeFilter treeFilter;
+    private de.cebitec.mgx.gui.swingutils.TreeFilterUI treeFilter;
     private javax.swing.JCheckBox useFractions;
     private javax.swing.JCheckBox useLogY;
     // End of variables declaration//GEN-END:variables

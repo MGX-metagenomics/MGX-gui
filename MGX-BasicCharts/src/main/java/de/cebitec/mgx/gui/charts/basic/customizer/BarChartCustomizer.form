@@ -201,7 +201,7 @@
         </Property>
       </Properties>
     </Component>
-    <Component class="de.cebitec.mgx.gui.swingutils.TreeFilter" name="treeFilter">
+    <Component class="de.cebitec.mgx.gui.swingutils.TreeFilterUI" name="treeFilter">
     </Component>
   </SubComponents>
 </Form>

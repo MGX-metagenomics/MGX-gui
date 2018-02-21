@@ -103,7 +103,7 @@
         </Property>
       </Properties>
     </Component>
-    <Component class="de.cebitec.mgx.gui.swingutils.TreeFilter" name="treeFilter1">
+    <Component class="de.cebitec.mgx.gui.swingutils.TreeFilterUI" name="treeFilter1">
     </Component>
     <Component class="javax.swing.JTextField" name="filterField">
       <Properties>
