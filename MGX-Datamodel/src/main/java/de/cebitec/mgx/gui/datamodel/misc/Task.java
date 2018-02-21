@@ -12,7 +12,7 @@ import java.util.UUID;
 public class Task<T extends MGXDataModelBaseI<T>> extends TaskI<T> {
 
     private String statusMessage = "";
-    private State state;
+    private volatile State state;
     //
     private final T obj;
     private final UUID uuid;
