@@ -43,7 +43,7 @@ public class ExcludeFilterTest {
         Set<AttributeI> blacklist = new HashSet<>();
         blacklist.add(a2);
 
-        ExcludeFilter ef = new ExcludeFilter(blacklist);
+        ExcludeFilter<Long> ef = new ExcludeFilter<>(blacklist);
         assertNotNull(ef);
 
         List<Pair<VisualizationGroupI, DistributionI<Long>>> xx = new ArrayList<>();
@@ -52,7 +52,8 @@ public class ExcludeFilterTest {
 
         List<Pair<VisualizationGroupI, DistributionI<Double>>> yy = new LongToDouble().filter(xx);
         
-        DistributionI<Double> filtered = ef.filterDist(yy.get(0).getSecond());
+        ExcludeFilter<Double> ef2 = new ExcludeFilter<>(blacklist);
+        DistributionI<Double> filtered = ef2.filterDist(yy.get(0).getSecond());
         assertEquals(1, filtered.size());
 
         assertNotSame(filtered, dist);
