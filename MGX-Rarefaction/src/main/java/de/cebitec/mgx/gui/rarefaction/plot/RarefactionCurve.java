@@ -28,7 +28,7 @@ import javax.swing.JComponent;
 import javax.swing.SwingWorker;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
-import org.jfree.chart.ChartUtils;
+import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.TickUnitSource;
@@ -207,7 +207,7 @@ public class RarefactionCurve extends ViewerI<DistributionI<Long>> {
 
             @Override
             public Result export(FileType type, String fName) throws Exception {
-                ChartUtils.saveChartAsPNG(new File(fName), chart, 1280, 1024);
+                ChartUtilities.saveChartAsPNG(new File(fName), chart, 1280, 1024);
                 return Result.SUCCESS;
             }
         };
