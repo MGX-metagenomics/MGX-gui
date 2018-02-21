@@ -317,7 +317,7 @@ public class TreeFactory {
             addChildren(root, t.getRoot().getChildren(), cac, merger);
         }
 
-        Checker.checkTree(combined);
+        //Checker.checkTree(combined);
         return combined;
     }
 
@@ -345,7 +345,7 @@ public class TreeFactory {
     }
 
     private static long nodeSum(Set<NodeI<Long>> nodes) {
-        int sum = 0;
+        long sum = 0;
         for (NodeI<Long> n : nodes) {
             sum += n.getContent();
         }
