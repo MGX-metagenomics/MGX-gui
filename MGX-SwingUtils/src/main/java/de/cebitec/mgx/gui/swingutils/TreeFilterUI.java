@@ -31,12 +31,12 @@ import org.openide.util.Exceptions;
  *
  * @author sjaenick
  */
-public class TreeFilter extends javax.swing.JPanel implements ItemListener, PropertyChangeListener {
+public class TreeFilterUI extends javax.swing.JPanel implements ItemListener, PropertyChangeListener {
 
     /**
      * Creates new form TreeFilter
      */
-    public TreeFilter() {
+    public TreeFilterUI() {
         initComponents();
         attrTypes.setModel(atModel);
         attrTypes.addItemListener(this);
