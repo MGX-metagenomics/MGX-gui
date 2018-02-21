@@ -5,6 +5,7 @@ import de.cebitec.mgx.api.groups.ImageExporterI;
 import de.cebitec.mgx.api.groups.SequenceExporterI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.Pair;
+import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.tree.NodeI;
 import de.cebitec.mgx.api.model.tree.TreeI;
@@ -25,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
@@ -117,6 +119,7 @@ public class TreeView extends HierarchicalViewerI {
         dispose();
 
         showUnclassifieds = getCustomizer().includeUnclassified();
+        Set<AttributeI> blacklist = getCustomizer().getBlackList();
 
         // merge hierarchies into consensus tree
         TreeI<Map<VisualizationGroupI, Long>> combinedTree = TreeFactory.combineTrees(trees);
@@ -136,43 +139,44 @@ public class TreeView extends HierarchicalViewerI {
         pTree.getNodeTable().addColumn(nodeTotalElements, long.class); //number of total seqs assigned to this node
         pTree.getNodeTable().addColumn(nodeContent, Map.class);  // map<vgroup, long>
 
-        prefuse.data.Node rootNode = pTree.addRoot();
-        long numSeqsAssigned = calculateNodeCount(root.getContent());
-        rootNode.set(nodeLabel, root.getAttribute().getValue());
-        rootNode.set(nodeContent, root.getContent());
-        rootNode.set(nodeTotalElements, numSeqsAssigned);
+        if (!blacklist.contains(root.getAttribute())) {
+            prefuse.data.Node rootNode = pTree.addRoot();
+            long numSeqsAssigned = calculateNodeCount(root.getContent());
+            rootNode.set(nodeLabel, root.getAttribute().getValue());
+            rootNode.set(nodeContent, root.getContent());
+            rootNode.set(nodeTotalElements, numSeqsAssigned);
 
-        if (showUnclassifieds) {
-            long numAssignedBelow = 0;
-            Map<VisualizationGroupI, Long> content = new HashMap<>();
-            // copy content of parent
-            for (Entry<VisualizationGroupI, Long> e : root.getContent().entrySet()) {
-                content.put(e.getKey(), e.getValue());
+            if (showUnclassifieds) {
+                long numAssignedBelow = 0;
+                Map<VisualizationGroupI, Long> content = new HashMap<>();
+                // copy content of parent
+                for (Entry<VisualizationGroupI, Long> e : root.getContent().entrySet()) {
+                    content.put(e.getKey(), e.getValue());
+                }
+
+                for (NodeI<Map<VisualizationGroupI, Long>> n : root.getChildren()) {
+                    Map<VisualizationGroupI, Long> childContent = n.getContent();
+                    for (Long l : childContent.values()) {
+                        numAssignedBelow += l;
+                    }
+                    for (Entry<VisualizationGroupI, Long> e : childContent.entrySet()) {
+                        Long l = content.get(e.getKey());
+                        content.put(e.getKey(), l - e.getValue());
+                    }
+                }
+
+                if (numSeqsAssigned - numAssignedBelow > 0) {
+                    prefuse.data.Node unclassifiedNode = pTree.addChild(rootNode);
+                    unclassifiedNode.set(nodeLabel, "Unclassified");
+                    unclassifiedNode.set(nodeContent, content);
+                    unclassifiedNode.set(nodeTotalElements, calculateNodeCount(content));
+                }
             }
 
-            for (NodeI<Map<VisualizationGroupI, Long>> n : root.getChildren()) {
-                Map<VisualizationGroupI, Long> childContent = n.getContent();
-                for (Long l : childContent.values()) {
-                    numAssignedBelow += l.longValue();
-                }
-                for (Entry<VisualizationGroupI, Long> e : childContent.entrySet()) {
-                    Long l = content.get(e.getKey());
-                    content.put(e.getKey(), l - e.getValue());
-                }
-            }
-
-            if (numSeqsAssigned - numAssignedBelow > 0) {
-                prefuse.data.Node unclassifiedNode = pTree.addChild(rootNode);
-                unclassifiedNode.set(nodeLabel, "Unclassified");
-                unclassifiedNode.set(nodeContent, content);
-                unclassifiedNode.set(nodeTotalElements, calculateNodeCount(content));
+            for (NodeI<Map<VisualizationGroupI, Long>> child : root.getChildren()) {
+                addWithChildren(blacklist, rootNode, child);
             }
         }
-
-        for (NodeI<Map<VisualizationGroupI, Long>> child : root.getChildren()) {
-            addWithChildren(rootNode, child);
-        }
-
         visualization.reset();
         visualization.add(tree, pTree);
 
@@ -192,7 +196,11 @@ public class TreeView extends HierarchicalViewerI {
         super.dispose();
     }
 
-    private void addWithChildren(prefuse.data.Node parent, NodeI<Map<VisualizationGroupI, Long>> node) {
+    private void addWithChildren(Set<AttributeI> blacklist, prefuse.data.Node parent, NodeI<Map<VisualizationGroupI, Long>> node) {
+
+        if (blacklist.contains(node.getAttribute())) {
+            return;
+        }
 
         prefuse.data.Node self = pTree.addChild(parent);
 
@@ -203,7 +211,7 @@ public class TreeView extends HierarchicalViewerI {
 
         if (node.hasChildren()) {
             for (NodeI<Map<VisualizationGroupI, Long>> child : node.getChildren()) {
-                addWithChildren(self, child);
+                addWithChildren(blacklist, self, child);
             }
         }
 
@@ -218,7 +226,7 @@ public class TreeView extends HierarchicalViewerI {
             for (NodeI<Map<VisualizationGroupI, Long>> n : node.getChildren()) {
                 Map<VisualizationGroupI, Long> childContent = n.getContent();
                 for (Long l : childContent.values()) {
-                    numAssignedBelow += l.longValue();
+                    numAssignedBelow += l;
                 }
                 for (Entry<VisualizationGroupI, Long> e : childContent.entrySet()) {
                     Long l = content.get(e.getKey());
@@ -383,7 +391,7 @@ public class TreeView extends HierarchicalViewerI {
     private static long calculateNodeCount(Map<VisualizationGroupI, Long> content) {
         long total = 0;
         for (Long l : content.values()) {
-            total += l.longValue();
+            total += l;
         }
         return total;
     }
@@ -404,7 +412,7 @@ public class TreeView extends HierarchicalViewerI {
             for (VisualizationGroupI vg : groupOrder) {
                 //for (Entry<VisualizationGroup, Long> e : node.getContent().entrySet()) {
                 if (node.getContent().containsKey(vg)) {
-                    current[i] += node.getContent().get(vg).longValue();
+                    current[i] += node.getContent().get(vg);
                 }
                 i++;
                 //current[i++] += e.getValue().longValue();
@@ -463,6 +471,7 @@ public class TreeView extends HierarchicalViewerI {
         if (cust == null) {
             cust = new TreeViewCustomizer();
         }
+        cust.setAttributeType(getAttributeType());
         return cust;
     }
 
