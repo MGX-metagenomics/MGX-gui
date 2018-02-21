@@ -130,7 +130,7 @@ public class JobNodeFactory extends MGXNodeFactoryBase<MGXMasterI, JobI> {
                 // deletion of one of the objects is in progress
             }
 
-            if (!run.isDeleted()) {
+            if (!tmp.isEmpty() && !run.isDeleted()) {
                 synchronized (jobs) {
                     jobs.addAll(tmp);
                 }
