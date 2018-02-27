@@ -55,7 +55,7 @@ public final class SaveImageAction implements ActionListener {
                 NotifyDescriptor nd = new NotifyDescriptor.Message("Chart saved to " + fname, NotifyDescriptor.INFORMATION_MESSAGE);
                 DialogDisplayer.getDefault().notify(nd);
             } else if (success == Result.ERROR) {
-                NotifyDescriptor nd = new NotifyDescriptor.Message("Could not save chart", NotifyDescriptor.ERROR_MESSAGE);
+                NotifyDescriptor nd = new NotifyDescriptor.Message("Could not save chart.", NotifyDescriptor.ERROR_MESSAGE);
                 DialogDisplayer.getDefault().notify(nd);
             }
         } else {
