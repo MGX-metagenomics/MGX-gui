@@ -16,7 +16,6 @@ import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import javax.swing.ToolTipManager;
 import javax.swing.event.ChangeEvent;
@@ -70,7 +69,7 @@ public class RecruitmentPanel extends PanelBase {
     }
 
     @Override
-    void draw(Graphics2D g2) {
+    public void draw(Graphics2D g2) {
 
         g2.setColor(Color.DARK_GRAY);
         g2.drawLine(0, topBorder, getWidth(), topBorder); // separation to top

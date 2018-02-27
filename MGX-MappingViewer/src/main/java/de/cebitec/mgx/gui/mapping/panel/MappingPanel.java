@@ -95,7 +95,10 @@ public class MappingPanel extends PanelBase {
     }
 
     @Override
-    void draw(Graphics2D g2) {
+    public void draw(Graphics2D g2) {
+        // clear image
+        g2.setColor(getBackground());
+        g2.fillRect(0, 0, getWidth(), getHeight());
 
         Color col = Color.BLACK;
         synchronized (coverage) {
@@ -148,7 +151,7 @@ public class MappingPanel extends PanelBase {
 
     @Override
     public boolean update() {
-        
+
         List<MappedSequenceI> sortedMappings = null;
         try {
             sortedMappings = vc.getMappings();
@@ -176,9 +179,9 @@ public class MappingPanel extends PanelBase {
         int height = getHeight();
         int requiredHeight = TRACKHEIGHT * tracks.size();
         int maxVisibleTracks = height / TRACKHEIGHT;
-        
+
         System.err.println(tracks.size() + " tracks");
-        
+
         if (requiredHeight > height) {
             scrollBar.setEnabled(true);
             scrollBar.setMinimum(0);
@@ -189,7 +192,7 @@ public class MappingPanel extends PanelBase {
             System.err.println(tracks.size() + " tracks, no scrollbar needed");
             scrollBar.setEnabled(false);
         }
-        
+
         SortedSet<MappedRead2D> ret = new TreeSet<>();
         int vOffset = TRACK_VOFFSET;
 

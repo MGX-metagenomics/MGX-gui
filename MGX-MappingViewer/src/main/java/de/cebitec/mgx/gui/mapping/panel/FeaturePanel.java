@@ -72,7 +72,11 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
     }
 
     @Override
-    void draw(Graphics2D g2) {
+    public void draw(Graphics2D g2) {
+        // clear image
+        g2.setColor(getBackground());
+        g2.fillRect(0, 0, getWidth(), getHeight());
+
         int midY = getHeight() / 2;
 
         g2.setColor(Color.DARK_GRAY);
@@ -139,7 +143,9 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
 
             // draw arrows (and borders)
             Color curColor = Color.RED;
-            //g2.setColor(Color.GREEN);
+            g2.setColor(curColor);
+            
+            // draw the region shapes
             for (ShapeBase r : regs) {
                 if (!curColor.equals(r.getColor())) {
                     g2.setColor(r.getColor());
@@ -147,6 +153,8 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
                 }
                 g2.fill(r);
             }
+            
+            // draw region borders
             g2.setColor(Color.DARK_GRAY);
             for (ShapeBase r : regs) {
                 g2.draw(r);
@@ -154,19 +162,6 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
         }
     }
 
-//    private void drawCoverage(Graphics2D g2) {
-//        if (getMaxCoverage() == 0 || coverage == null) {
-//            return;
-//        }
-//        Composite oldcomp = g2.getComposite();
-//        AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f);
-//        g2.setComposite(ac);
-//        g2.setColor(Color.red);
-//        for (Area l : coverage) {
-//            g2.fill(l);
-//        }
-//        g2.setComposite(oldcomp);
-//    }
     @Override
     public boolean update() {
         // fetch features
@@ -183,7 +178,6 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
             }
             Exceptions.printStackTrace(ex);
         }
-        
 
         synchronized (regs) {
             regs.clear();

@@ -35,7 +35,7 @@ public class SeqPropertyPanel extends PanelBase {
     }
 
     @Override
-    void draw(Graphics2D g2) {
+    public void draw(Graphics2D g2) {
         float height = getHeight();
         float heightScale = height / 100f;
         boolean isFirst = true;

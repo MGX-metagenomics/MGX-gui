@@ -45,7 +45,7 @@ public class RecruitmentIdentityPanel extends PanelBase {
     }
 
     @Override
-    void draw(Graphics2D g2) {
+    public void draw(Graphics2D g2) {
         g2.setColor(Color.DARK_GRAY);
         g2.drawLine(5, getHeight() - 5, getWidth() - 5, getHeight() - 5); // bottom line
 

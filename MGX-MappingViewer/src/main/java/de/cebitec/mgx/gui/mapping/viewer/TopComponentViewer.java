@@ -15,11 +15,13 @@ import de.cebitec.mgx.gui.mapping.ViewController;
 import de.cebitec.mgx.gui.mapping.panel.FeaturePanel;
 import de.cebitec.mgx.gui.mapping.panel.MappingPanel;
 import de.cebitec.mgx.gui.mapping.panel.NavigationPanel;
+import de.cebitec.mgx.gui.mapping.panel.PanelBase;
 import de.cebitec.mgx.gui.mapping.panel.RecruitmentIdentityPanel;
 import de.cebitec.mgx.gui.mapping.panel.RecruitmentPanel;
 import de.cebitec.mgx.gui.swingutils.NonEDT;
 import de.cebitec.mgx.gui.taskview.TaskManager;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Graphics2D;
@@ -29,15 +31,17 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.JCheckBox;
-import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import org.apache.commons.math3.util.FastMath;
+import org.jfree.graphics2d.svg.SVGGraphics2D;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
@@ -84,7 +88,7 @@ public final class TopComponentViewer extends TopComponent implements PropertyCh
         associateLookup(lookup);
         content.add(new SaveView());
         vc = new ViewController(ctx);
-        setName(ctx.getRun().getName() + " vs. "+ ctx.getReference().getName());
+        setName(ctx.getRun().getName() + " vs. " + ctx.getReference().getName());
         createView();
     }
 
@@ -203,7 +207,6 @@ public final class TopComponentViewer extends TopComponent implements PropertyCh
             final DownloadBaseI downloader = master.Mapping().createDownloader(vc.getMapping(), writer);
             final BAMDownloader bamDownloader = new BAMDownloader(downloader, target, writer, "Save to " + fchooser.getSelectedFile().getName());
 
-
             NonEDT.invoke(new Runnable() {
                 @Override
                 public void run() {
@@ -287,7 +290,7 @@ public final class TopComponentViewer extends TopComponent implements PropertyCh
 
         @Override
         public FileType[] getSupportedTypes() {
-            return new FileType[]{FileType.PNG, FileType.JPEG};
+            return new FileType[]{FileType.PNG, FileType.JPEG, FileType.SVG};
         }
 
         @Override
@@ -324,7 +327,7 @@ public final class TopComponentViewer extends TopComponent implements PropertyCh
                 return Result.ABORT;
             }
 
-            List<JComponent> useComponents = new ArrayList<>();
+            List<PanelBase> useComponents = new ArrayList<>();
             if (useFeatures.isSelected()) {
                 useComponents.add(fp);
             }
@@ -351,23 +354,63 @@ public final class TopComponentViewer extends TopComponent implements PropertyCh
 
             int width = 0;
             int height = 0;
-            for (JComponent jc : useComponents) {
+            for (PanelBase jc : useComponents) {
                 height += jc.getHeight();
                 width = FastMath.max(width, jc.getWidth());
             }
+            height += useComponents.size() - 1; // separator lines between components
 
-            BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-            int curY = 0;
-            for (JComponent jc : useComponents) {
-                BufferedImage subimage = bi.getSubimage(0, curY, jc.getWidth(), jc.getHeight());
-                Graphics2D g2 = subimage.createGraphics();
-                jc.paint(g2);
-                g2.dispose();
-                curY += jc.getHeight();
+            Graphics2D g2;
+            BufferedImage bi = null;
+            Iterator<PanelBase> it = useComponents.iterator();
+
+            switch (type) {
+                case PNG:
+                case JPEG:
+                    bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+                    g2 = bi.createGraphics();
+                    break;
+                case SVG:
+                    g2 = new SVGGraphics2D(width, height);
+                    break;
+                default:
+                    return Result.ERROR;
             }
-            ImageIO.write(bi, type.getSuffices()[0], new File(fName));
 
-            return Result.SUCCESS;
+            // paint individual panels, separated by a horizontal line
+            while (it.hasNext()) {
+                PanelBase jc = it.next();
+                jc.draw(g2);
+                g2.translate(0, jc.getHeight());
+
+                if (it.hasNext()) {
+                    // separator line
+                    g2.setColor(Color.BLACK);
+                    g2.drawLine(0, 0, width, 0);
+                    g2.translate(0, 1);
+                }
+            }
+            g2.dispose();
+
+            
+            switch (type) {
+                case PNG:
+                case JPEG:
+                    boolean success = ImageIO.write(bi, type.getSuffices()[0], new File(fName));
+                    if (success) {
+                        return Result.SUCCESS;
+                    } else {
+                        return Result.ERROR;
+                    }
+                case SVG:
+                    try (FileWriter fw = new FileWriter(fName)) {
+                        fw.write(((SVGGraphics2D) g2).getSVGDocument());
+                    }
+                    return Result.SUCCESS;
+                default:
+                    return Result.ERROR;
+            }
+
         }
 
     }

@@ -145,13 +145,9 @@ public abstract class PanelBase extends JComponent implements PropertyChangeList
         super.paintComponent(g);
         super.paintChildren(g);
         g.dispose();
-//        now = System.currentTimeMillis() - now;
-//        if (now > 1) {
-//            System.err.println("paint for " + getClass().getSimpleName() + " took " + now + " ms");
-//        }
     }
 
-    abstract void draw(Graphics2D g2);
+    public abstract void draw(Graphics2D g2);
 
     public abstract boolean update();
 

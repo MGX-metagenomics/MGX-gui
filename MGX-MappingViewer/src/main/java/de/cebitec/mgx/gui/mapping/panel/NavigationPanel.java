@@ -101,7 +101,7 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
     }
 
     @Override
-    void draw(Graphics2D g2) {
+    public void draw(Graphics2D g2) {
 
         if (scaledImage != null) {
             g2.drawImage(scaledImage, 0, 0, this);
