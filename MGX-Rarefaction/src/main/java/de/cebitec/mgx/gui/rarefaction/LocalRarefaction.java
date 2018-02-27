@@ -24,8 +24,14 @@ import org.openide.util.Exceptions;
  * @author sj
  */
 public class LocalRarefaction {
-
+    
+    private final static int DEFAULT_REPETITIONS = 55;
+    
     public static Iterator<Point> rarefy(DistributionI<Long> dist) throws MGXException {
+        return rarefy(dist, DEFAULT_REPETITIONS);
+    }
+
+    public static Iterator<Point> rarefy(DistributionI<Long> dist, int numRepetitions) throws MGXException {
         if (dist.size() > Math.pow(2, Character.SIZE)) {
             throw new MGXException("Distribution too large."); 
         }
@@ -52,7 +58,7 @@ public class LocalRarefaction {
         }
 
         int depths[] = seq(1, frame.length, 50);
-        double[] divs = rarefy(depths, 55, frame, numFeatures);
+        double[] divs = rarefy(depths, numRepetitions, frame, numFeatures);
         List<Point> ret = new ArrayList<>(depths.length);
         for (int i = 0; i < depths.length; i++) {
             ret.add(new Point(depths[i], divs[i]));

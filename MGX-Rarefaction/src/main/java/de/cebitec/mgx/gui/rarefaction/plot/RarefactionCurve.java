@@ -48,6 +48,7 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = ViewerI.class)
 public class RarefactionCurve extends ViewerI<DistributionI<Long>> {
 
+    private RarefactionCustomizer cust = null;
     private DelayedPlot cPanel = null;
     private JFreeChart chart = null;
     private List<Pair<VisualizationGroupI, DistributionI<Long>>> data;
@@ -135,7 +136,9 @@ public class RarefactionCurve extends ViewerI<DistributionI<Long>> {
 
     }
 
-    private static XYSeriesCollection createXYSeries(List<Pair<VisualizationGroupI, DistributionI<Long>>> in) {
+    private XYSeriesCollection createXYSeries(List<Pair<VisualizationGroupI, DistributionI<Long>>> in) {
+        
+        final int numRepetitions = getCustomizer().getNumberRepetitions();
         final XYSeriesCollection dataset = new XYSeriesCollection();
         final AtomicBoolean error = new AtomicBoolean(false);
 
@@ -150,7 +153,7 @@ public class RarefactionCurve extends ViewerI<DistributionI<Long>> {
                     final DistributionI<Long> dist = groupDistribution.getSecond();
                     Iterator<Point> iter = null;
                     try {
-                        iter = LocalRarefaction.rarefy(dist);
+                        iter = LocalRarefaction.rarefy(dist, numRepetitions);
                     } catch (MGXException ex) {
                         Exceptions.printStackTrace(ex);
                         //
@@ -187,8 +190,11 @@ public class RarefactionCurve extends ViewerI<DistributionI<Long>> {
     }
 
     @Override
-    public JComponent getCustomizer() {
-        return null;
+    public RarefactionCustomizer getCustomizer() {
+        if (cust == null) {
+            cust = new RarefactionCustomizer();
+        }
+        return cust;
     }
 
     @Override
