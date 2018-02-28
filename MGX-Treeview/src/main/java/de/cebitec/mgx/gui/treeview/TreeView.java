@@ -16,7 +16,9 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseWheelEvent;
 import java.awt.geom.Point2D;
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
@@ -49,9 +51,9 @@ import prefuse.action.filter.FisheyeTreeFilter;
 import prefuse.action.layout.CollapsedSubtreeLayout;
 import prefuse.action.layout.graph.NodeLinkTreeLayout;
 import prefuse.activity.SlowInSlowOutPacer;
+import prefuse.controls.AbstractZoomControl;
 import prefuse.controls.FocusControl;
 import prefuse.controls.PanControl;
-import prefuse.controls.ZoomControl;
 import prefuse.controls.ZoomToFitControl;
 import prefuse.data.Tuple;
 import prefuse.data.event.TupleSetListener;
@@ -352,7 +354,7 @@ public class TreeView extends HierarchicalViewerI {
         display.setSize(700, 600);
         display.setItemSorter(new TreeDepthItemSorter());
         display.addControlListener(new ZoomToFitControl());
-        display.addControlListener(new ZoomControl());
+        display.addControlListener(new MyWheelZoomControl(true, true));
         display.addControlListener(new PanControl());
         display.addControlListener(new FocusControl(1, "filter"));
 
@@ -515,6 +517,68 @@ public class TreeView extends HierarchicalViewerI {
     @Override
     public SequenceExporterI[] getSequenceExporters() {
         return null;
+    }
+
+    public class MyWheelZoomControl extends AbstractZoomControl {
+
+        private Point m_point = new Point();
+        private final boolean inverted;
+        private final boolean atPointer;
+
+        /**
+         * Creates a new <tt>WheelZoomControl</tt>. If <tt>inverted</tt> is
+         * true, scrolling the mouse wheel toward you will make the graph appear
+         * smaller. If <tt>atPointer</tt> is true, zooming will be centered on
+         * the mouse pointer instead of the center of the display.
+         *
+         * @param inverted true if the scroll direction should be inverted
+         * @param atPointer true if zooming should be centered on the mouse
+         * pointer
+         */
+        public MyWheelZoomControl(boolean inverted, boolean atPointer) {
+            this.inverted = inverted;
+            this.atPointer = atPointer;
+        }
+
+        /**
+         * Creates a new <tt>WheelZoomControl</tt> with the default zoom
+         * direction and zooming on the center of the display.
+         */
+        public MyWheelZoomControl() {
+            this(false, false);
+        }
+
+        /**
+         * @see
+         * prefuse.controls.Control#itemWheelMoved(prefuse.visual.VisualItem,
+         * java.awt.event.MouseWheelEvent)
+         */
+        @Override
+        public void itemWheelMoved(VisualItem item, MouseWheelEvent e) {
+            if (m_zoomOverItem) {
+                mouseWheelMoved(e);
+            }
+        }
+
+        /**
+         * @see
+         * java.awt.event.MouseWheelListener#mouseWheelMoved(java.awt.event.MouseWheelEvent)
+         */
+        public void mouseWheelMoved(MouseWheelEvent e) {
+            Display display = (Display) e.getComponent();
+            if (atPointer) {
+                m_point = e.getPoint();
+            } else {
+                m_point.x = display.getWidth() / 2;
+                m_point.y = display.getHeight() / 2;
+            }
+            if (inverted) {
+                zoom(display, m_point, 1 - 0.1f * e.getWheelRotation(), false);
+            } else {
+                zoom(display, m_point, 1 + 0.1f * e.getWheelRotation(), false);
+            }
+        }
+
     }
 
     public class OrientAction extends AbstractAction {
