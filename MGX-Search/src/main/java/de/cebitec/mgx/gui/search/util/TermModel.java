@@ -35,7 +35,7 @@ public class TermModel extends BaseModel<String> {
 
     public void setTerm(String t) {
         prevTerm = term;
-        term = t;
+        term = t.toLowerCase();
     }
 
     @Override
@@ -57,8 +57,9 @@ public class TermModel extends BaseModel<String> {
             List<String> oldTerms = new ArrayList<>(content.size());
             oldTerms.addAll(content);
             content.clear();
+            // case-insensitive comparison
             for (String s : oldTerms) {
-                if (s.contains(term)) {
+                if (s.toLowerCase().contains(term)) {
                     content.add(s);
                 }
             }
