@@ -14,6 +14,7 @@ import de.cebitec.mgx.gui.swingutils.NonEDT;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
 import java.util.Collection;
+import javax.swing.Action;
 import static javax.swing.Action.NAME;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
@@ -32,7 +33,7 @@ import org.openide.util.actions.NodeAction;
  * @author sjaenick
  */
 @ActionID(category = "Edit", id = "de.cebitec.mgx.gui.actions.DeleteSeqRun")
-@ActionRegistration(displayName = "Delete", lazy = true)
+@ActionRegistration(displayName = "Delete", lazy = false)
 public class DeleteSeqRun extends NodeAction implements LookupListener {
 
     private final Lookup context;
@@ -58,8 +59,13 @@ public class DeleteSeqRun extends NodeAction implements LookupListener {
     }
 
     @Override
+    public Action createContextAwareInstance(Lookup lkp) {
+        return this;
+    }
+
+    @Override
     public void resultChanged(LookupEvent ev) {
-        setEnabled(!lkpInfo.allInstances().isEmpty());
+        setEnabled(RBAC.isUser() && !lkpInfo.allInstances().isEmpty());
     }
 
     @Override

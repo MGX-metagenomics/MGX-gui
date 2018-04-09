@@ -27,6 +27,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Semaphore;
+import javax.swing.Action;
 import static javax.swing.Action.NAME;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
@@ -47,7 +48,7 @@ import org.openide.util.actions.NodeAction;
  * @author sjaenick
  */
 @ActionID(category = "Edit", id = "de.cebitec.mgx.gui.actions.ExecuteAnalysis")
-@ActionRegistration(displayName = "Analyze", lazy = true)
+@ActionRegistration(displayName = "Analyze", lazy = false)
 public class ExecuteAnalysis extends NodeAction implements LookupListener {
 
     private final Lookup context;
@@ -70,6 +71,11 @@ public class ExecuteAnalysis extends NodeAction implements LookupListener {
         lkpInfo = context.lookupResult(SeqRunI.class);
         lkpInfo.addLookupListener(this);
         resultChanged(null);
+    }
+
+    @Override
+    public Action createContextAwareInstance(Lookup lkp) {
+        return this;
     }
 
     @Override
