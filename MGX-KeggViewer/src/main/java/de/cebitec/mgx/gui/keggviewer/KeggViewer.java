@@ -19,8 +19,10 @@ import de.cebitec.mgx.kegg.pathways.api.PathwayI;
 import de.cebitec.mgx.kegg.pathways.model.ECNumberFactory;
 import de.cebitec.mgx.kegg.pathways.paint.KEGGPanel;
 import java.io.File;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -123,7 +125,7 @@ public class KeggViewer extends CategoricalViewerI<Long> {
                     if (matcher.find()) {
                         ECNumberI ec = ECNumberFactory.fromString(e.getKey().getValue().substring(matcher.start(), matcher.end()));
                         String description = "<html><b>" + e.getKey().getValue() + "</b><br><hr>"
-                                + group.getDisplayName() + ": " + e.getValue().toString() + " hits</html>";
+                                + group.getDisplayName() + ": " + NumberFormat.getInstance(Locale.US).format(e.getValue()) + " hits</html>";
                         panel.addData(idx, ec, group.getColor(), description);
                     }
                 }
