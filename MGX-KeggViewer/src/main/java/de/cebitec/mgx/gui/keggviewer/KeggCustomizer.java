@@ -34,6 +34,12 @@ public class KeggCustomizer extends javax.swing.JPanel {
     public KeggCustomizer() {
         initComponents();
     }
+    
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        pathwayList.setEnabled(enabled);
+    }
 
     synchronized void restrictPathways(Set<PathwayI> pathways) {
         pathwayList.setEnabled(false);

@@ -29,6 +29,12 @@ public class BiodiversityCustomizer extends javax.swing.JPanel {
         initComponents();
     }
 
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        includeHeaders.setEnabled(enabled);
+    }
+
     private boolean includeHeaders() {
         return includeHeaders.isSelected();
     }

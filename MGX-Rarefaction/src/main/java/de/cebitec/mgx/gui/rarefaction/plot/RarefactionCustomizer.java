@@ -17,6 +17,12 @@ public class RarefactionCustomizer extends javax.swing.JPanel {
     public RarefactionCustomizer() {
         initComponents();
     }
+    
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        numIterations.setEnabled(enabled);
+    }
 
     int getNumberRepetitions() {
         int ret = numIterations.getValue();
