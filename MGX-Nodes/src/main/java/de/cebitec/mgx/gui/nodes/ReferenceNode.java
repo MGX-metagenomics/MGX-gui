@@ -3,6 +3,8 @@ package de.cebitec.mgx.gui.nodes;
 import de.cebitec.mgx.gui.actions.DeleteReference;
 import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.gui.actions.OpenMappingByReference;
+import java.text.NumberFormat;
+import java.util.Locale;
 import javax.swing.Action;
 import org.openide.nodes.Children;
 import org.openide.util.lookup.Lookups;
@@ -24,7 +26,7 @@ public class ReferenceNode extends MGXNodeBase<MGXReferenceI> {
         return new StringBuilder("<html>").append("<b>Reference: </b>")
                 .append(ref.getName())
                 .append("<br><hr><br>")
-                .append(ref.getLength()).append(" bp<br>")
+                .append(NumberFormat.getInstance(Locale.US).format(ref.getLength())).append(" bp<br>")
                 .append("</html>").toString();
     }
 
