@@ -177,6 +177,18 @@ public class MappingAccess extends MappingAccessI {
     }
 
     @Override
+    public long getGenomicCoverage(UUID uuid) throws MGXException {
+        try {
+            return dtomaster.Mapping().getGenomicCoverage(uuid);
+        } catch (MGXDTOException ex) {
+            if (ex.getMessage().contains("No mapping session for")) {
+                throw new MGXTimeoutException(ex);
+            }
+            throw new MGXException(ex);
+        }
+    }
+
+    @Override
     public Iterator<MappedSequenceI> byReferenceInterval(UUID uuid, int from, int to) throws MGXException {
         try {
             Iterator<MappedSequenceDTO> mapped = dtomaster.Mapping().byReferenceInterval(uuid, from, to);
