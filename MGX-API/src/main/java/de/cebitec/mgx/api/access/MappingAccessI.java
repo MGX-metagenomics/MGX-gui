@@ -35,6 +35,9 @@ public abstract class MappingAccessI implements AccessBaseI<MappingI> {
     public abstract Iterator<MappingI> ByJob(JobI job) throws MGXException;
 
     public abstract long getMaxCoverage(UUID sessionUUID) throws MGXException;
-    
+
     public abstract DownloadBaseI createDownloader(MappingI mapping, OutputStream writer) throws MGXException;
+
+    public abstract long getGenomicCoverage(UUID sessionUUID) throws MGXException;
+
 }
