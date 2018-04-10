@@ -25,6 +25,8 @@ import java.awt.geom.Area;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.text.NumberFormat;
+import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 import javax.swing.SwingWorker;
 import javax.swing.ToolTipManager;
@@ -390,7 +392,7 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
             IntIterator covIter = vc.getCoverageIterator();
             while (covIter.hasNext()) {
                 int cov = covIter.next();
-                
+
                 // ViewController might change to 'closed' state e.g. if the
                 // topcomponent is closed with the swingworker still busy.
                 if (vc.isClosed()) {
@@ -422,11 +424,11 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
                         lastPoint[0] = drawPos;
                         lastPoint[1] = baseY;
                     } else // add a new point if distance >= 3px
-                     if (FastMath.abs(lastPoint[0] - drawPos) > 3 || FastMath.abs(lastPoint[1] - covPos) > 3) {
-                            gp.lineTo(drawPos, covPos);
-                            lastPoint[0] = drawPos;
-                            lastPoint[1] = covPos;
-                        }
+                    if (FastMath.abs(lastPoint[0] - drawPos) > 3 || FastMath.abs(lastPoint[1] - covPos) > 3) {
+                        gp.lineTo(drawPos, covPos);
+                        lastPoint[0] = drawPos;
+                        lastPoint[1] = covPos;
+                    }
                 }
 
                 ph.progress(pos);
@@ -456,9 +458,17 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
             buf = null;
         }
         String tmp = buf != null ? String.valueOf(buf[0]) : "unknown";
+        
+        NumberFormat nf = NumberFormat.getInstance(Locale.US);
+
         try {
-            return "<html>" + vc.getReference().getName() + "<br>Position: " + bpPos + "<br>Coverage: "
-                    + tmp + "</html>";
+            long genomicCoverage = vc.getGenomicCoverage();
+            double refCoveragePct = 100d * genomicCoverage / vc.getReference().getLength();
+            
+            return "<html>" + vc.getReference().getName() + "<br>Position: " + nf.format(bpPos) + "<br>Coverage: "
+                    + nf.format(Long.valueOf(tmp)) + "<br>Reference coverage: " + nf.format(vc.getGenomicCoverage()) + " bp ("
+                    +  String.format( "%.2f", refCoveragePct)
+                    +"%)</html>";
         } catch (MGXException ex) {
             return null;
         }

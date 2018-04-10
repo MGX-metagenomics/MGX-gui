@@ -93,6 +93,14 @@ public class ViewController implements PropertyChangeListener {
         return ctx.getMaxCoverage();
     }
 
+    // number of bp covered of the reference sequenc e
+    public long getGenomicCoverage() throws MGXException {
+        if (isClosed()) {
+            throw new MGXLoggedoutException("ViewController is closed");
+        }
+        return ctx.getGenomicCoverage();
+    }
+
     public int[] getBounds() {
         return Arrays.copyOf(curBounds, 2);
     }

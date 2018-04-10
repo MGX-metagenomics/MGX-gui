@@ -7,6 +7,8 @@ package de.cebitec.mgx.gui.mapping.shapes;
 import de.cebitec.mgx.api.model.MappedSequenceI;
 import java.awt.Color;
 import java.awt.geom.Rectangle2D;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 /**
  *
@@ -58,6 +60,10 @@ public class MappedRead2D extends Rectangle2D.Float implements Comparable<Mapped
     }
 
     public String getToolTipText() {
-        return "<html>Start: " + ms.getStart() + "<br>Stop: " + ms.getStop() + "<br>" + String.valueOf(ms.getIdentity()) + "% identity</html>";
+        NumberFormat nf = NumberFormat.getInstance(Locale.US);
+        return "<html>Start: " + nf.format(ms.getStart()) 
+                + "<br>Stop: " + nf.format(ms.getStop()) 
+                + "<br>" + String.format("%.2f", ms.getIdentity()) 
+                + "% identity</html>";
     }
 }

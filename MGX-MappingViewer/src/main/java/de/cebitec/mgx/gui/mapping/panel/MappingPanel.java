@@ -22,9 +22,11 @@ import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import javax.swing.ToolTipManager;
@@ -140,10 +142,17 @@ public class MappingPanel extends PanelBase {
             buf = null;
         }
 
+        NumberFormat nf = NumberFormat.getInstance(Locale.US);
+
         String tmp = buf != null ? String.valueOf(buf[0]) : "unknown";
         try {
-            return "<html>" + mappingName + "<br>Mapped with: " + vc.getTool().getName() + "<br>Position: " + bpPos + "<br>Coverage: "
-                    + tmp + "</html>";
+            long genomicCoverage = vc.getGenomicCoverage();
+            double refCoveragePct = 100d * genomicCoverage / vc.getReference().getLength();
+
+            return "<html>" + mappingName + "<br>Mapped with: " + vc.getTool().getName() + "<br>Position: " + nf.format(bpPos) + "<br>Coverage: "
+                    + nf.format(Long.valueOf(tmp)) + "<br>Reference coverage: " + nf.format(vc.getGenomicCoverage()) + " bp ("
+                    + String.format("%.2f", refCoveragePct)
+                    + "%)</html>";
         } catch (MGXException ex) {
             return null;
         }

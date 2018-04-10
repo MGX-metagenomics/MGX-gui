@@ -14,6 +14,8 @@ import java.awt.geom.GeneralPath;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 /**
  *
@@ -169,8 +171,11 @@ public final class Arrow implements ShapeBase {
                 ? region.getType() + ": "
                 : "";
         String framePrefix = region.getFrame() > 0 ? "+" : "";
+
+        NumberFormat nf = NumberFormat.getInstance(Locale.US);
         return "<html><b>" + type + region.getName() + "</b><hr>"
-                + "Location: " + region.getStart() + "-" + region.getStop() + "<br>"
+                + "Location: " + nf.format(region.getStart()) + "-"
+                + nf.format(region.getStop()) + "<br>"
                 + "Frame: " + framePrefix + region.getFrame() + "<br><br>"
                 + region.getDescription() + "</html>";
     }

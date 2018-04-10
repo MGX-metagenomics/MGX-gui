@@ -40,6 +40,7 @@ public class MappingCtx implements PropertyChangeListener, AutoCloseable {
     private CoverageInfoCache<Set<MappedSequenceI>> mapCache = null;
     private UUID sessionUUID = null;
     private long maxCoverage = -1;
+    private long genomicCoverage = -1;
     private final int refLength;
     private final ParallelPropertyChangeSupport pcs = new ParallelPropertyChangeSupport(this);
     private volatile boolean isClosed = false;
@@ -130,7 +131,7 @@ public class MappingCtx implements PropertyChangeListener, AutoCloseable {
                 sortedMappings.add(candidate);
             }
         }
-        
+
         //
         // sort by identity (highest first) and by min position, ascending
         //
@@ -180,6 +181,18 @@ public class MappingCtx implements PropertyChangeListener, AutoCloseable {
             }
         }
         return maxCoverage;
+    }
+
+    public final long getGenomicCoverage() throws MGXException {
+        if (genomicCoverage == -1) {
+            synchronized (this) {
+                if (genomicCoverage == -1) {
+                    final MGXMasterI master = ref.getMaster();
+                    genomicCoverage = master.Mapping().getGenomicCoverage(sessionUUID);
+                }
+            }
+        }
+        return genomicCoverage;
     }
 
     public final void addPropertyChangeListener(PropertyChangeListener listener) {
