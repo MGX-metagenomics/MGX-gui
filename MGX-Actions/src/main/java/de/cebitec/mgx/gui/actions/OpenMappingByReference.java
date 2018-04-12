@@ -12,13 +12,13 @@ import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.api.model.MappingI;
 import de.cebitec.mgx.gui.mapping.MappingCtx;
 import de.cebitec.mgx.gui.mapping.viewer.TopComponentViewer;
+import de.cebitec.mgx.gui.pool.MGXPool;
 import de.cebitec.mgx.gui.wizard.mapping.MappingWizardWizardAction;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import javax.swing.SwingWorker;
+import java.util.concurrent.CountDownLatch;
 import org.openide.util.Exceptions;
 import org.openide.util.Utilities;
 
@@ -52,59 +52,76 @@ public class OpenMappingByReference extends OpenMappingBase {
 
         final MGXReferenceI ref = Utilities.actionsGlobalContext().lookup(MGXReferenceI.class);
 
-        SwingWorker<List<MappingCtx>, Void> worker = new SwingWorker<List<MappingCtx>, Void>() {
+        final MGXMasterI master = ref.getMaster();
+        Iterator<MappingI> iter;
+        try {
+            iter = master.Mapping().ByReference(ref);
+        } catch (MGXException ex) {
+            Exceptions.printStackTrace(ex);
+            return;
+        }
 
-            @Override
-            protected List<MappingCtx> doInBackground() throws Exception {
-                List<MappingCtx> ctxs = new ArrayList<>();
-                MGXMasterI master = ref.getMaster();
-                Iterator<MappingI> mappings = master.Mapping().ByReference(ref);
-                while (mappings.hasNext()) {
-                    MappingI m = mappings.next();
+        List<MappingI> mappings = new ArrayList<>();
+        while (iter.hasNext()) {
+            final MappingI m = iter.next();
+            mappings.add(m);
+        }
 
-                    JobI job = master.Job().fetch(m.getJobID());
-                    if (job.getSeqrun() == null) {
-                        job.setSeqrun(master.SeqRun().fetch(m.getSeqrunID()));
+        final CountDownLatch done = new CountDownLatch(mappings.size());
+        final List<MappingCtx> ctxs = new ArrayList<>(mappings.size());
+
+        for (final MappingI m : mappings) {
+
+            MGXPool.getInstance().execute(new Runnable() {
+                @Override
+                public void run() {
+                    JobI job = null;
+                    try {
+                        job = master.Job().fetch(m.getJobID());
+                        if (job.getSeqrun() == null) {
+                            job.setSeqrun(master.SeqRun().fetch(m.getSeqrunID()));
+                        }
+                        if (job.getTool() == null) {
+                            master.Tool().ByJob(job); // trigger tool fetch
+                        }
+                        synchronized (ctxs) {
+                            ctxs.add(new MappingCtx(m, ref, job));
+                        }
+                    } catch (MGXException ex) {
+                        Exceptions.printStackTrace(ex);
+                    } finally {
+                        done.countDown();
                     }
-                    if (job.getTool() == null) {
-                        master.Tool().ByJob(job); // trigger tool fetch
-                    }
-                    ctxs.add(new MappingCtx(m, ref, job));
                 }
-                return ctxs;
-            }
+            });
 
-            @Override
-            protected void done() {
-                List<MappingCtx> ctxs = null;
-                try {
-                    ctxs = get();
-                } catch (InterruptedException | ExecutionException ex) {
-                    Exceptions.printStackTrace(ex);
-                    return;
-                }
-                MappingCtx selectedMapping = null;
+        }
 
-                if (ctxs != null && ctxs.size() == 1) {
-                    // only one mapping exists, show it..
-                    selectedMapping = ctxs.get(0);
-                } else if (ctxs != null && ctxs.size() > 1) {
-                    // let user choose
-                    selectedMapping = MappingWizardWizardAction.selectMapping(ctxs);
-                } else {
-                    // should not happen
-                    assert false;
-                }
+        try {
+            done.await();
+        } catch (InterruptedException ex) {
+            Exceptions.printStackTrace(ex);
+            return;
+        }
 
-                if (selectedMapping != null) {
-                    TopComponentViewer component = new TopComponentViewer(selectedMapping);
-                    component.open();
-                }
-                super.done();
-            }
+        MappingCtx selectedMapping = null;
 
-        };
-        worker.execute();
+        if (ctxs.size() == 1) {
+            // only one mapping exists, show it..
+            selectedMapping = ctxs.get(0);
+        } else if (ctxs.size() > 1) {
+            // let user choose
+            selectedMapping = MappingWizardWizardAction.selectMapping(ctxs);
+        } else {
+            // should not happen
+            assert false;
+        }
+
+        if (selectedMapping != null) {
+            TopComponentViewer component = new TopComponentViewer(selectedMapping);
+            component.open();
+        }
+
     }
 
     @Override
