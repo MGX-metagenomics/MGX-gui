@@ -18,10 +18,12 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import javax.swing.JComponent;
@@ -143,9 +145,9 @@ public class MAPlot extends NumericalViewerI<Long> {
                     .append(a.getValue())
                     .append("<br><br>")
                     .append(cur.get(0).getFirst().getDisplayName())
-                    .append(": ").append(numAssigned1).append(" sequences").append("<br>")
+                    .append(": ").append(NumberFormat.getInstance(Locale.US).format(numAssigned1)).append(" sequences").append("<br>")
                     .append(cur.get(1).getFirst().getDisplayName())
-                    .append(": ").append(numAssigned2).append(" sequences")
+                    .append(": ").append(NumberFormat.getInstance(Locale.US).format(numAssigned2)).append(" sequences")
                     .append("</html>")
                     .toString();
             toolTips.put(item, toolTipText);
