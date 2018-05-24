@@ -118,6 +118,9 @@ public final class VisualizationGroupTopComponent extends TopComponent implement
                 }
 
                 Node[] nodes = NodeTransfer.nodes(dtde.getTransferable(), DnDConstants.ACTION_COPY);
+                if (nodes == null || nodes.length == 0) {
+                    return;
+                }
                 for (Node n : nodes) {
                     SeqRunI run = n.getLookup().lookup(SeqRunI.class);
                     if (run != null) {
