@@ -6,6 +6,7 @@ import de.cebitec.mgx.gui.actions.OpenMappingByReference;
 import java.text.NumberFormat;
 import java.util.Locale;
 import javax.swing.Action;
+import static org.apache.commons.text.StringEscapeUtils.escapeHtml4;
 import org.openide.nodes.Children;
 import org.openide.util.lookup.Lookups;
 
@@ -24,7 +25,7 @@ public class ReferenceNode extends MGXNodeBase<MGXReferenceI> {
 
     private String getToolTipText(MGXReferenceI ref) {
         return new StringBuilder("<html>").append("<b>Reference: </b>")
-                .append(ref.getName())
+                .append(escapeHtml4(ref.getName()))
                 .append("<br><hr><br>")
                 .append(NumberFormat.getInstance(Locale.US).format(ref.getLength())).append(" bp<br>")
                 .append("</html>").toString();

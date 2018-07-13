@@ -8,6 +8,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
 import javax.swing.Action;
+import static org.apache.commons.text.StringEscapeUtils.escapeHtml4;
 import org.openide.filesystems.FileUtil;
 import org.openide.nodes.Children;
 import org.openide.util.lookup.Lookups;
@@ -30,7 +31,7 @@ public class SeqRunNode extends MGXNodeBase<SeqRunI> {
         DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.US);
         String numSeqs = formatter.format(run.getNumSequences());
 
-        return new StringBuilder("<html><b>Sequencing run: </b>").append(run.getName())
+        return new StringBuilder("<html><b>Sequencing run: </b>").append(escapeHtml4(run.getName()))
                 .append("<br><hr><br>")
                 .append(run.getSequencingTechnology().getName()).append(" ")
                 .append(run.getSequencingMethod().getName())

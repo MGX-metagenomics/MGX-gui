@@ -6,8 +6,10 @@ import de.cebitec.mgx.gui.nodeactions.AddSeqRun;
 import de.cebitec.mgx.api.model.DNAExtractI;
 import de.cebitec.mgx.gui.nodefactory.SeqRunNodeFactory;
 import javax.swing.Action;
+import static org.apache.commons.text.StringEscapeUtils.escapeHtml4;
 import org.openide.nodes.Children;
 import org.openide.util.lookup.Lookups;
+
 
 /**
  *
@@ -28,10 +30,10 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtractI> {
 
     private String getToolTipText(DNAExtractI d) {
         return new StringBuilder("<html><b>DNA extract: </b>")
-                .append(d.getName())
+                .append(escapeHtml4(d.getName()))
                 .append("<br><hr><br>")
-                .append("type: ").append(d.getMethod()).append("<br>")
-                .append("protocol: ").append(d.getProtocol() != null ? d.getProtocol() : "")
+                .append("type: ").append(escapeHtml4(d.getMethod())).append("<br>")
+                .append("protocol: ").append(d.getProtocol() != null ? escapeHtml4(d.getProtocol()) : "")
                 .append("</html>").toString();
     }
 

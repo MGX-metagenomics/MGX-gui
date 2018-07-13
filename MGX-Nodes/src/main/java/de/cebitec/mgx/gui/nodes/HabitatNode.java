@@ -6,6 +6,7 @@ import de.cebitec.mgx.gui.actions.EditHabitat;
 import de.cebitec.mgx.api.model.HabitatI;
 import de.cebitec.mgx.gui.nodefactory.SampleNodeFactory;
 import javax.swing.Action;
+import static org.apache.commons.text.StringEscapeUtils.escapeHtml4;
 import org.openide.nodes.Children;
 import org.openide.util.lookup.Lookups;
 
@@ -28,9 +29,9 @@ public class HabitatNode extends MGXNodeBase<HabitatI> {
 
     private String getToolTipText(HabitatI h) {
         return new StringBuilder("<html>").append("<b>Habitat: </b>")
-                .append(h.getName())
+                .append(escapeHtml4(h.getName()))
                 .append("<br><hr><br>")
-                .append("biome: ").append(h.getBiome()).append("<br>")
+                .append("biome: ").append(escapeHtml4(h.getBiome())).append("<br>")
                 .append("location: ").append(Double.toString(h.getLatitude()))
                 .append(" / ").append(Double.toString(h.getLongitude()))
                 .append("<br>")

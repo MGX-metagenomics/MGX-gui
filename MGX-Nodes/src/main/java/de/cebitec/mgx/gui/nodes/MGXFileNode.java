@@ -5,6 +5,7 @@ import de.cebitec.mgx.gui.actions.DownloadFile;
 import java.text.NumberFormat;
 import java.util.Locale;
 import javax.swing.Action;
+import static org.apache.commons.text.StringEscapeUtils.escapeHtml4;
 import org.openide.filesystems.FileUtil;
 import org.openide.nodes.Children;
 import org.openide.util.lookup.Lookups;
@@ -19,7 +20,7 @@ public class MGXFileNode extends MGXNodeBase<MGXFileI> {
         super(Children.LEAF, Lookups.fixed(f.getMaster(), f), f);
         super.setDisplayName(f.getName());
         super.setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/File.png");
-        super.setShortDescription(f.getName() + " (" + NumberFormat.getInstance(Locale.US).format(f.getSize()) + " bytes)");
+        super.setShortDescription(escapeHtml4(f.getName()) + " (" + NumberFormat.getInstance(Locale.US).format(f.getSize()) + " bytes)");
     }
 
     @Override

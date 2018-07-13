@@ -5,6 +5,7 @@ import de.cebitec.mgx.gui.nodeactions.CreateDirectory;
 import de.cebitec.mgx.gui.nodeactions.UploadFile;
 import de.cebitec.mgx.gui.nodefactory.FileNodeFactory;
 import javax.swing.Action;
+import static org.apache.commons.text.StringEscapeUtils.escapeHtml4;
 import org.openide.filesystems.FileUtil;
 import org.openide.nodes.Children;
 import org.openide.util.lookup.Lookups;
@@ -23,7 +24,7 @@ public class MGXDirectoryNode extends MGXNodeBase<MGXFileI> {
         super(Children.create(fnf, true), Lookups.fixed(f.getMaster(), f), f);
         super.setDisplayName(f.getName());
         super.setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/Directory.png");
-        super.setShortDescription(f.getName());
+        super.setShortDescription(escapeHtml4(f.getName()));
     }
 
     @Override

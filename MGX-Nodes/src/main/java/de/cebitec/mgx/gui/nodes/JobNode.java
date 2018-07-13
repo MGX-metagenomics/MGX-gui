@@ -40,6 +40,8 @@ public class JobNode extends MGXNodeBase<JobI> {
         super.setDisplayName(tool.getName());
         String shortDesc = new StringBuilder("<html><b>")
                 .append(tool.getName()).append("</b>")
+                .append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;")
+                .append(job.getId())
                 .append("<br><hr><br>")
                 .append("Tool version: ")
                 .append(tool.getVersion())
@@ -54,6 +56,7 @@ public class JobNode extends MGXNodeBase<JobI> {
                 .append(job.getStatus() == JobState.FINISHED ? job.getFinishDate() : "n/a")
                 .append("<br>")
                 .append(getProcessingTime(job))
+                .append("<br>")
                 .append(getParameterToolTip(job))
                 .append("</html>")
                 .toString();

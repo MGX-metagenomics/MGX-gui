@@ -7,8 +7,10 @@ import de.cebitec.mgx.api.model.SampleI;
 import de.cebitec.mgx.gui.nodefactory.DNAExtractNodeFactory;
 import java.text.DateFormat;
 import javax.swing.Action;
+import static org.apache.commons.text.StringEscapeUtils.escapeHtml4;
 import org.openide.nodes.Children;
 import org.openide.util.lookup.Lookups;
+
 
 /**
  *
@@ -29,7 +31,7 @@ public class SampleNode extends MGXNodeBase<SampleI> {
 
     private String getToolTipText(SampleI s) {
         String date = DateFormat.getDateInstance(DateFormat.MEDIUM).format(s.getCollectionDate());
-        return new StringBuilder("<html><b>Sample: </b>").append(s.getMaterial())
+        return new StringBuilder("<html><b>Sample: </b>").append(escapeHtml4(s.getMaterial()))
                 .append("<br><hr><br>")
                 .append("Collection date: ").append(date).append("<br>")
                 .append("</html>").toString();
