@@ -63,7 +63,7 @@ public class JobNode extends MGXNodeBase<JobI> {
         super.setShortDescription(shortDesc);
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/AnalysisTasks.png");
     }
-    
+
     @Override
     public void destroy() throws IOException {
         System.err.println("JobNode#destroy");
@@ -106,8 +106,12 @@ public class JobNode extends MGXNodeBase<JobI> {
                     MGXReferenceI reference = job.getMaster().Reference().fetch(Long.parseLong(jp.getParameterValue()));
                     paramValue = reference.getName();
                 } catch (MGXException ex) {
-                    Exceptions.printStackTrace(ex);
-                    paramValue = jp.getParameterValue();
+                    if (ex.getMessage().contains("No object of type Reference for ID")) {
+                        paramValue = "(deleted)";
+                    } else {
+                        Exceptions.printStackTrace(ex);
+                        paramValue = jp.getParameterValue();
+                    }
                 } catch (NumberFormatException nfe) {
                     paramValue = jp.getParameterValue();
                 }
