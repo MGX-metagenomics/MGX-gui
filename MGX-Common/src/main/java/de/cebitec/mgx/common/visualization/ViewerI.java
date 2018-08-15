@@ -1,132 +1,84 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package de.cebitec.mgx.common.visualization;
 
 import de.cebitec.mgx.api.groups.ImageExporterI;
 import de.cebitec.mgx.api.groups.SequenceExporterI;
-import de.cebitec.mgx.api.groups.VGroupManagerI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.misc.Visualizable;
 import de.cebitec.mgx.api.model.AttributeTypeI;
-import de.cebitec.mgx.common.VGroupManager;
 import java.util.List;
 import javax.swing.JComponent;
 
 /**
  *
- * @param <T>
- * @author sjaenick
+ * @author sj
  */
-public abstract class ViewerI<T extends Visualizable> implements Comparable<ViewerI<T>> {
-
-    private AttributeTypeI attrType;
-    private String chartTitle;
-    private VGroupManagerI mgr;
-
-    public ViewerI() {
-    }
-
-    public VGroupManagerI getVGroupManager() {
-        return mgr != null ? mgr : VGroupManager.getInstance();
-    }
-
-    public void setVGroupManager(VGroupManagerI mgr) {
-        this.mgr = mgr;
-    }
-
-    /**
-     *
-     * @return main component representing the visualization
-     */
-    public abstract JComponent getComponent();
-
-    /**
-     *
-     * @return exporter instance able to save the visualization
-     */
-    public abstract ImageExporterI getImageExporter();
-    
-        /**
-     *
-     * @return exporter instances able to export selected sequences
-     */
-    public abstract SequenceExporterI[] getSequenceExporters();
+public interface ViewerI<T extends Visualizable> extends Comparable<ViewerI<T>> {
 
     /**
      *
      * @return display name of the viewer
      */
-    public abstract String getName();
+    public String getName();
 
     /**
      *
-     * @param valueType
+     * @param attrType attribute type selected within UI
      * @return true if this viewer can display the attribute type
      */
-    public abstract boolean canHandle(AttributeTypeI valueType);
+    public boolean canHandle(AttributeTypeI attrType);
 
     /**
      *
-     * @return the expected class of data to be displayed
+     * @param attrType indicates the attribute type to be displayed
      */
-    public abstract Class getInputType();
+    public void setAttributeType(AttributeTypeI attrType);
 
     /**
      *
-     * @param dists distributions to be displayed
      */
-    public abstract void show(List<Pair<VisualizationGroupI, T>> dists);
-    
+    public void dispose();
+
+    /**
+     *
+     * @return main component representing the visualization
+     */
+    public JComponent getComponent();
+
     /**
      *
      * @return customizing component
      */
-    public abstract JComponent getCustomizer();
+    public JComponent getCustomizer();
 
     /**
      *
+     * @return exporter instance able to save the visualization
      */
-    public void dispose() {
-    }
+    public ImageExporterI getImageExporter();
 
     /**
      *
-     * @param aType indicates the attribute type to be displayed
+     * @return exporter instances able to export (sub)sequences from the chart
      */
-    public void setAttributeType(AttributeTypeI aType) {
-        this.attrType = aType;
-    }
+    public SequenceExporterI[] getSequenceExporters();
 
     /**
      *
-     * @return
+     * @return the expected class of data to be displayed; either
+     *         DistributionI.class or TreeI.class
      */
-    protected AttributeTypeI getAttributeType() {
-        return attrType;
-    }
+    public Class getInputType();
 
     /**
      *
-     * @param title
+     * @param distributions distributions to be displayed
      */
-    public void setTitle(String title) {
-        chartTitle = title;
-    }
+    public void show(List<Pair<VisualizationGroupI, T>> distributions);
 
-    /**
-     *
-     * @return
-     */
-    protected String getTitle() {
-        return chartTitle;
-    }
-
-    @Override
-    public String toString() {
-        return getName();
-    }
-
-    @Override
-    public int compareTo(ViewerI<T> t) {
-        return getName().compareTo(t.getName());
-    }
 }

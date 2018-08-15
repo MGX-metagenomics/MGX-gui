@@ -7,7 +7,7 @@ import de.cebitec.mgx.api.model.AttributeTypeI;
  *
  * @author sj
  */
-public abstract class CategoricalViewerI<T extends Number> extends ViewerI<DistributionI<T>> {
+public abstract class CategoricalViewerI<T extends Number> extends AbstractViewer<DistributionI<T>> {
 
     @Override
     public boolean canHandle(AttributeTypeI valueType) {

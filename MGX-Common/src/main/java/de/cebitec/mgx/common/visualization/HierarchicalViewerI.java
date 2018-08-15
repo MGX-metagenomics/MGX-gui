@@ -7,7 +7,7 @@ import de.cebitec.mgx.api.model.tree.TreeI;
  *
  * @author sjaenick
  */
-public abstract class HierarchicalViewerI extends ViewerI<TreeI<Long>> {
+public abstract class HierarchicalViewerI extends AbstractViewer<TreeI<Long>> {
 
     @Override
     public boolean canHandle(AttributeTypeI valueType) {
