@@ -283,7 +283,7 @@ public class VisualizationGroup implements VisualizationGroupI {
 
     @Override
     public final void addSeqRuns(final SeqRunI... runs) {
-        if (runs.length == 0) {
+        if (!isActive() || runs.length == 0) {
             return;
         }
 
@@ -304,6 +304,10 @@ public class VisualizationGroup implements VisualizationGroupI {
             for (Map.Entry<SeqRunI, Map<JobI, Set<AttributeTypeI>>> entry : get.entrySet()) {
                 SeqRunI run = entry.getKey();
                 Map<JobI, Set<AttributeTypeI>> jobData = entry.getValue();
+
+                for (JobI job : jobData.keySet()) {
+                    job.addPropertyChangeListener(this);
+                }
 
                 attributeTypes.put(run, jobData);
 
@@ -354,7 +358,7 @@ public class VisualizationGroup implements VisualizationGroupI {
 
     @Override
     public final void addSeqRun(final SeqRunI sr) {
-        if (sr == null || attributeTypes.containsKey(sr)) {
+        if (isDeleted() || sr == null || attributeTypes.containsKey(sr)) {
             return;
         }
         if (sr.isDeleted()) {
@@ -368,6 +372,10 @@ public class VisualizationGroup implements VisualizationGroupI {
 
         try {
             Map<JobI, Set<AttributeTypeI>> get = f.get();
+
+            for (JobI job : get.keySet()) {
+                job.addPropertyChangeListener(this);
+            }
 
             attributeTypes.put(sr, get);
 
@@ -422,7 +430,9 @@ public class VisualizationGroup implements VisualizationGroupI {
         currentDistributions.remove(sr);
 
         // remove cached data for modified attribute types
-        for (Set<AttributeTypeI> s : remove.values()) {
+        for (Map.Entry<JobI, Set<AttributeTypeI>> me : remove.entrySet()) {
+            me.getKey().removePropertyChangeListener(this);
+            Set<AttributeTypeI> s = me.getValue();
             for (AttributeTypeI at : s) {
                 distCache.remove(at.getName());
                 hierarchyCache.remove(at.getName());
@@ -435,16 +445,24 @@ public class VisualizationGroup implements VisualizationGroupI {
 
     @Override
     public final TreeI<Long> getHierarchy() throws ConflictingJobsException {
-        if (selectedAttributeType == null) {
-            throw new RuntimeException("VGroup" + getDisplayName() + ": attribute type is null");
+
+        assert isActive();
+
+        // create a local copy of the attribute type in case the attribute type
+        // selection is changed on another thread
+        String copyOfSelectedAttributeType = selectedAttributeType;
+
+        if (copyOfSelectedAttributeType == null) {
+            System.err.println("VGroup " + getDisplayName() + ": attribute type is null");
+            return null;
         }
 
         if (!needsResolval.get(AttributeRank.PRIMARY).isEmpty()) {
             throw new ConflictingJobsException(this, needsResolval.get(AttributeRank.PRIMARY));
         }
 
-        if (hierarchyCache.containsKey(selectedAttributeType)) {
-            return hierarchyCache.get(selectedAttributeType);
+        if (hierarchyCache.containsKey(copyOfSelectedAttributeType)) {
+            return hierarchyCache.get(copyOfSelectedAttributeType);
         }
 
         // start distribution retrieval workers
@@ -461,12 +479,13 @@ public class VisualizationGroup implements VisualizationGroupI {
             // there should only be one valid attribute type left that matches the
             // request attribute type name; however, we better check..
             //
-            AttributeTypeI currentAttributeType = selectAttributeType(run, selectedJob, selectedAttributeType);
+            AttributeTypeI currentAttributeType = selectAttributeType(run, selectedJob, copyOfSelectedAttributeType);
 
             // 
             // start worker to fetch distribution
             //
             if (selectedJob != null && currentAttributeType != null) {
+                assert !selectedJob.isDeleted();
                 HierarchyFetcher fetcher = new HierarchyFetcher(run, currentAttributeType, selectedJob);
                 Future<TreeI<Long>> f = vgmgr.submit(fetcher);
                 results.add(f);
@@ -484,22 +503,29 @@ public class VisualizationGroup implements VisualizationGroupI {
             return null;
         }
 
-        hierarchyCache.put(selectedAttributeType, ret);
+        hierarchyCache.put(copyOfSelectedAttributeType, ret);
         return ret;
     }
 
     @Override
     public final DistributionI<Long> getDistribution() throws ConflictingJobsException {
 
-        if (selectedAttributeType == null) {
-            throw new RuntimeException("VGroup " + getDisplayName() + ": attribute type is null");
+        assert isActive();
+
+        // create a local copy of the attribute type in case the attribute type
+        // selection is changed on another thread
+        String copyOfSelectedAttributeType = selectedAttributeType;
+
+        if (copyOfSelectedAttributeType == null) {
+            System.err.println("VGroup " + getDisplayName() + ": attribute type is null");
+            return null;
         }
         if (!needsResolval.get(AttributeRank.PRIMARY).isEmpty()) {
             throw new ConflictingJobsException(this, needsResolval.get(AttributeRank.PRIMARY));
         }
 
-        if (distCache.containsKey(selectedAttributeType)) {
-            return distCache.get(selectedAttributeType);
+        if (distCache.containsKey(copyOfSelectedAttributeType)) {
+            return distCache.get(copyOfSelectedAttributeType);
         }
 
         List<Future<Pair<SeqRunI, DistributionI<Long>>>> results = new ArrayList<>();
@@ -513,7 +539,7 @@ public class VisualizationGroup implements VisualizationGroupI {
             // there should only be one valid attribute type left that matches the
             // request attribute type name; however, we better check..
             //
-            AttributeTypeI currentAttributeType = selectAttributeType(run, selectedJob, selectedAttributeType);
+            AttributeTypeI currentAttributeType = selectAttributeType(run, selectedJob, copyOfSelectedAttributeType);
 
             // 
             // start background worker to fetch distribution
@@ -537,7 +563,7 @@ public class VisualizationGroup implements VisualizationGroupI {
             return null;
         }
         assert ret != null;
-        distCache.put(selectedAttributeType, ret);
+        distCache.put(copyOfSelectedAttributeType, ret);
         fireVGroupChanged(VISGROUP_HAS_DIST);
         return ret;
     }
@@ -555,6 +581,8 @@ public class VisualizationGroup implements VisualizationGroupI {
     }
 
     private Set<JobI> getJobsProvidingAttributeType(SeqRunI run, final String attrTypeName) {
+
+        assert !isDeleted();
         //
         // process all jobs for a seqrun and keep only those
         // which provide the requested attribute type
@@ -625,6 +653,14 @@ public class VisualizationGroup implements VisualizationGroupI {
             case OBJECT_DELETED:
                 if (evt.getSource() instanceof SeqRunI) {
                     removeSeqRun((SeqRunI) evt.getSource());
+                }
+                if (evt.getSource() instanceof JobI) {
+                    JobI job = (JobI) evt.getSource();
+                    SeqRunI seqrun = job.getSeqrun();
+
+                    // refresh data for this run
+                    removeSeqRun(seqrun);
+                    addSeqRun(seqrun);
                 }
                 //pcs.firePropertyChange(evt);
                 break;
