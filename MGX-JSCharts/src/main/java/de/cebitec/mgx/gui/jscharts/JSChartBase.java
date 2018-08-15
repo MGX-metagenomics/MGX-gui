@@ -6,7 +6,7 @@
 package de.cebitec.mgx.gui.jscharts;
 
 import de.cebitec.mgx.api.misc.Visualizable;
-import de.cebitec.mgx.common.visualization.ViewerI;
+import de.cebitec.mgx.common.visualization.AbstractViewer;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -26,7 +26,7 @@ import org.openide.util.Exceptions;
  *
  * @author sj
  */
-public abstract class JSChartBase<T extends Visualizable> extends ViewerI<T> {
+public abstract class JSChartBase<T extends Visualizable> extends AbstractViewer<T> {
 
     private final JSPanel panel = new JSPanel();
 

@@ -9,6 +9,7 @@ import de.cebitec.mgx.api.model.tree.NodeI;
 import de.cebitec.mgx.api.model.tree.TreeI;
 import de.cebitec.mgx.common.TreeFactory;
 import de.cebitec.mgx.common.VGroupManager;
+import de.cebitec.mgx.common.visualization.AbstractViewer;
 import de.cebitec.mgx.common.visualization.ViewerI;
 import java.util.List;
 import javax.swing.JComponent;
@@ -24,7 +25,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author sj
  */
 @ServiceProvider(service = ViewerI.class)
-public class TreeTableView extends ViewerI<TreeI<Long>> {
+public class TreeTableView extends AbstractViewer<TreeI<Long>> {
 
     private JXTable table;
     private TableViewCustomizer cust = null;

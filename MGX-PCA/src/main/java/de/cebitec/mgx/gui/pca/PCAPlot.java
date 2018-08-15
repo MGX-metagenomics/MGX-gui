@@ -13,6 +13,7 @@ import de.cebitec.mgx.api.misc.Point;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.common.VGroupManager;
+import de.cebitec.mgx.common.visualization.AbstractViewer;
 import de.cebitec.mgx.common.visualization.ViewerI;
 import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
 import de.cebitec.mgx.gui.seqexporter.SeqExporter;
@@ -52,7 +53,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author sj
  */
 @ServiceProvider(service = ViewerI.class)
-public class PCAPlot extends ViewerI<DistributionI<Long>> {
+public class PCAPlot extends AbstractViewer<DistributionI<Long>> {
 
     private ChartPanel cPanel = null;
     private JFreeChart chart = null;
@@ -180,7 +181,7 @@ public class PCAPlot extends ViewerI<DistributionI<Long>> {
 
         // renderer for data points
         final XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
-        renderer.setDefaultLinesVisible(false);
+        renderer.setBaseLinesVisible(false);
         XYItemLabelGenerator labelGen = new XYItemLabelGenerator() {
 
             @Override

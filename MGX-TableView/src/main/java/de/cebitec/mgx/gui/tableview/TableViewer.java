@@ -9,6 +9,7 @@ import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.visualization.filter.VisFilterI;
+import de.cebitec.mgx.common.visualization.AbstractViewer;
 import de.cebitec.mgx.common.visualization.ViewerI;
 import de.cebitec.mgx.gui.seqexporter.SeqExporter;
 import de.cebitec.mgx.gui.vizfilter.LongToDouble;
@@ -34,7 +35,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author sj
  */
 @ServiceProvider(service = ViewerI.class)
-public class TableViewer extends ViewerI<DistributionI<Long>> {
+public class TableViewer extends AbstractViewer<DistributionI<Long>> {
 
     private JXTable table;
     private TableViewCustomizer cust = null;
