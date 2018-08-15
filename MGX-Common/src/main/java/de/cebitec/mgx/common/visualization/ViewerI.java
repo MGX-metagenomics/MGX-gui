@@ -40,7 +40,7 @@ public interface ViewerI<T extends Visualizable> extends Comparable<ViewerI<T>> 
     public void setAttributeType(AttributeTypeI attrType);
 
     /**
-     *
+     * release internal resources
      */
     public void dispose();
 
