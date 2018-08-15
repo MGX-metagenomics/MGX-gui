@@ -64,7 +64,8 @@ public interface ViewerI<T extends Visualizable> extends Comparable<ViewerI<T>> 
 
     /**
      *
-     * @return exporter instances able to export (sub)sequences from the chart
+     * @return exporter instances able to export (sub)sequences
+     *         from the chart
      */
     public SequenceExporterI[] getSequenceExporters();
 

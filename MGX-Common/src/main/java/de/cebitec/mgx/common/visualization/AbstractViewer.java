@@ -3,12 +3,9 @@ package de.cebitec.mgx.common.visualization;
 import de.cebitec.mgx.api.groups.ImageExporterI;
 import de.cebitec.mgx.api.groups.SequenceExporterI;
 import de.cebitec.mgx.api.groups.VGroupManagerI;
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
-import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.misc.Visualizable;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.common.VGroupManager;
-import java.util.List;
 import javax.swing.JComponent;
 
 /**
