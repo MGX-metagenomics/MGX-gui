@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package de.cebitec.mgx.common.visualization;
 
 import de.cebitec.mgx.api.groups.ImageExporterI;
@@ -64,15 +59,14 @@ public interface ViewerI<T extends Visualizable> extends Comparable<ViewerI<T>> 
 
     /**
      *
-     * @return exporter instances able to export (sub)sequences
-     *         from the chart
+     * @return exporter instances able to export (sub)sequences from the chart
      */
     public SequenceExporterI[] getSequenceExporters();
 
     /**
      *
      * @return the expected class of data to be displayed; either
-     *         DistributionI.class or TreeI.class
+     * DistributionI.class or TreeI.class
      */
     public Class getInputType();
 
