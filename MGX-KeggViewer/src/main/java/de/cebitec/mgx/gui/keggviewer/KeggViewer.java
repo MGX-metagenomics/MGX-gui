@@ -70,13 +70,23 @@ public class KeggViewer extends CategoricalViewerI<Long> {
 
             @Override
             public FileType[] getSupportedTypes() {
-                return new FileType[]{FileType.PNG};
+                return new FileType[]{FileType.PNG, FileType.JPEG, FileType.SVG};
             }
 
             @Override
             public Result export(FileType type, String fName) throws Exception {
-                panel.save(new File(fName));
-                return Result.SUCCESS;
+                switch (type) {
+                    case PNG:
+                        panel.savePNG(new File(fName));
+                        return Result.SUCCESS;
+                    case JPEG:
+                        panel.saveJPEG(new File(fName));
+                        return Result.SUCCESS;
+                    case SVG:
+                        panel.saveSVG(new File(fName));
+                        return Result.SUCCESS;
+                }
+                return Result.ERROR;
             }
         };
     }
