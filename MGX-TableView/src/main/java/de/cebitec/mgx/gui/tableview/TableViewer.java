@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.tableview;
 
+import de.cebitec.mgx.api.groups.FileType;
 import de.cebitec.mgx.gui.swingutils.DecimalFormatRenderer;
 import de.cebitec.mgx.api.groups.ImageExporterI;
 import de.cebitec.mgx.api.groups.SequenceExporterI;
@@ -15,19 +16,27 @@ import de.cebitec.mgx.gui.seqexporter.SeqExporter;
 import de.cebitec.mgx.gui.vizfilter.LongToDouble;
 import de.cebitec.mgx.gui.vizfilter.SortOrder;
 import de.cebitec.mgx.gui.vizfilter.ToFractionFilter;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 import javax.swing.RowFilter;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.decorator.Highlighter;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
+import org.jfree.graphics2d.svg.SVGGraphics2D;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -165,7 +174,49 @@ public class TableViewer extends AbstractViewer<DistributionI<Long>> {
 
     @Override
     public ImageExporterI getImageExporter() {
-        return null; // no image to export here
+        return new ImageExporterI() {
+
+            @Override
+            public FileType[] getSupportedTypes() {
+                return new FileType[]{FileType.PNG, FileType.JPEG, FileType.SVG};
+            }
+
+            @Override
+            public ImageExporterI.Result export(FileType type, String fName) throws Exception {
+                JTableHeader hdr = table.getTableHeader();
+
+                switch (type) {
+                    case PNG:
+                        BufferedImage tableImage = new BufferedImage(1280, 1024, BufferedImage.TYPE_INT_ARGB);
+                        Graphics2D g2 = tableImage.createGraphics();
+                        hdr.printAll(g2);
+                        g2.translate(0, hdr.getHeight());
+                        table.printAll(g2);
+                        ImageIO.write(tableImage, "png", new File(fName));
+                        return ImageExporterI.Result.SUCCESS;
+                    case JPEG:
+                        BufferedImage bi = new BufferedImage(1280, 1024, BufferedImage.TYPE_INT_ARGB);
+                        Graphics2D g2d = bi.createGraphics();
+                        hdr.printAll(g2d);
+                        g2d.translate(0, hdr.getHeight());
+                        table.printAll(g2d);
+                        ImageIO.write(bi, "jpg", new File(fName));
+                        return ImageExporterI.Result.SUCCESS;
+                    case SVG:
+                        SVGGraphics2D svg = new SVGGraphics2D(1280, 1024);
+                        hdr.printAll(svg);
+                        svg.translate(0, hdr.getHeight());
+                        table.printAll(svg);
+                        String svgElement = svg.getSVGElement();
+                        try (BufferedWriter bw = new BufferedWriter(new FileWriter(fName))) {
+                            bw.write(svgElement);
+                        }
+                        return Result.SUCCESS;
+                    default:
+                        return Result.ERROR;
+                }
+            }
+        };
     }
 
     @Override
