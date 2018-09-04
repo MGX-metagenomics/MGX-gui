@@ -106,7 +106,7 @@ public class PieNodeRenderer extends LabelRenderer {
         return img;
     }
 
-    private class PieSlice {
+    private static class PieSlice {
 
         final double value;
         final Color color;

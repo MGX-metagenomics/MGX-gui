@@ -519,7 +519,7 @@ public class TreeView extends HierarchicalViewerI {
         return null;
     }
 
-    public class MyWheelZoomControl extends AbstractZoomControl {
+    public static class MyWheelZoomControl extends AbstractZoomControl {
 
         private Point m_point = new Point();
         private final boolean inverted;
@@ -564,6 +564,7 @@ public class TreeView extends HierarchicalViewerI {
          * @see
          * java.awt.event.MouseWheelListener#mouseWheelMoved(java.awt.event.MouseWheelEvent)
          */
+        @Override
         public void mouseWheelMoved(MouseWheelEvent e) {
             Display display = (Display) e.getComponent();
             if (atPointer) {
