@@ -9,7 +9,6 @@ import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
-import de.cebitec.mgx.common.VGroupManager;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -44,8 +43,8 @@ public class PlotPanel extends JPanel {
         this.maxAssignedByGroup = maxAssignedByGroup;
         ToolTipManager.sharedInstance().registerComponent(this);
         ToolTipManager.sharedInstance().setDismissDelay(5000);
-        setBackground(Color.WHITE);
-        setMinimumSize(new Dimension(100, 100));
+        super.setBackground(Color.WHITE);
+        super.setMinimumSize(new Dimension(100, 100));
     }
 
     private final int PAD_TOP = 10;
