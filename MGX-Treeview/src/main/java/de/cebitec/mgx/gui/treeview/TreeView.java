@@ -272,7 +272,7 @@ public class TreeView extends HierarchicalViewerI {
         m_nodeRenderer = new PieNodeRenderer();
         m_nodeRenderer.setRenderType(ShapeRenderer.RENDER_TYPE_FILL);
         m_nodeRenderer.setHorizontalAlignment(Constants.CENTER); // was: left
-        m_nodeRenderer.setRoundedCorner(8, 8);
+        //m_nodeRenderer.setRoundedCorner(8, 8);
         m_edgeRenderer = new EdgeRenderer(Constants.EDGE_TYPE_CURVE);
 
         DefaultRendererFactory rf = new DefaultRendererFactory(m_nodeRenderer);
