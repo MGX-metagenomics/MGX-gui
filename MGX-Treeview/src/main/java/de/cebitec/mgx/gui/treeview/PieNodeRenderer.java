@@ -5,10 +5,11 @@ import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
+import java.awt.geom.Arc2D;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.RectangularShape;
 import java.awt.image.BufferedImage;
 import java.util.Map;
@@ -23,7 +24,7 @@ import prefuse.visual.VisualItem;
  */
 public class PieNodeRenderer extends LabelRenderer {
 
-    private final static int MIN_CIRCLE_SIZE = 30;
+    private final static float MIN_CIRCLE_SIZE = 30f;
 
     public PieNodeRenderer() {
         setImagePosition(Constants.TOP);
@@ -35,54 +36,49 @@ public class PieNodeRenderer extends LabelRenderer {
     public void render(Graphics2D g2, VisualItem item) {
 
         long totalCount = item.getLong(TreeView.nodeTotalElements);
-        int size = MIN_CIRCLE_SIZE + 10 * (int) FastMath.log(FastMath.round(2 * totalCount));
-        int radius = size / 2;
+        float size = MIN_CIRCLE_SIZE + 10 * (float) FastMath.log(FastMath.round(2 * totalCount));
+        float radius = size / 2;
 
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         RectangularShape shape = (RectangularShape) getShape(item);
-        
-        // bounding box for the pie chart
-        Rectangle area = new Rectangle((int) shape.getCenterX() - radius, (int) shape.getMinY(), size, size);
+
+        // top left of the bounding box for the pie chart
+        float areaX = (float) (shape.getCenterX() - radius);
+        float areaY = (float) shape.getMinY();
 
         Map<VisualizationGroupI, Long> content = (Map<VisualizationGroupI, Long>) item.get(TreeView.nodeContent);
-        PieSlice[] slices = new PieSlice[content.size()];
-        int i = 0;
         // FIXME - use fraction of total classified items for pie slice size
+
+        // array of pie slices filled backwards since painting of items is 
+        // counter-clockwise
+        int i = content.size() - 1;
+        PieSlice[] slices = new PieSlice[content.size()];
         for (Map.Entry<VisualizationGroupI, Long> e : content.entrySet()) {
-            slices[i++] = new PieSlice(e.getValue(), e.getKey().getColor());
+            slices[i--] = new PieSlice(e.getValue(), e.getKey().getColor());
         }
 
-        // draw the slices, starting at 12 o'clock
-        int startAngle = 90;
-        for (i = slices.length - 1; i >= 0; i--) {
-            // Compute the start and offset angles
-            int arcAngle = (int) (slices[i].value * 360 / totalCount);
+        float startAngle = 90;
+        for (i = 0; i < slices.length; i++) {
+            PieSlice ps = slices[i];
+            float arcExtent = (float) (ps.value * 360f / totalCount);
 
-            // Set the color and draw a filled arc
-            g2.setColor(slices[i].color);
-            startAngle = startAngle % 360;
-
-            // "angle overflow" - split into two separate parts
-            if (startAngle + arcAngle > 360) {
-                int tmp = 360 - startAngle + 1;
-                g2.fillArc(area.x, area.y, area.width, area.height, startAngle, tmp);
-                arcAngle = arcAngle - tmp;
-                startAngle = 0;
+            // for the last slice, make sure circle is fully closed
+            if (i == (slices.length - 1)) {
+                arcExtent = 360 - startAngle + 90 + 0.1f;
             }
 
-            if (i != 0) {
-                g2.fillArc(area.x, area.y, area.width, area.height, startAngle, arcAngle);
-            } else {
-                g2.fillArc(area.x, area.y, area.width, area.height, startAngle, 90 - startAngle + 1);
-            }
+            Arc2D.Float arc = new Arc2D.Float(areaX, areaY, size, size, startAngle, arcExtent, Arc2D.PIE);
 
-            startAngle += arcAngle;
+            g2.setColor(ps.color);
+            g2.fill(arc);
+
+            startAngle += arcExtent;
         }
 
         // pie chart border
         g2.setColor(Color.LIGHT_GRAY);
-        g2.drawOval(area.x, area.y, size, size);
+        g2.draw(new Ellipse2D.Float(areaX, areaY, size, size));
 
         // centered label with total count 
         FontRenderContext frc = g2.getFontRenderContext();
@@ -90,7 +86,7 @@ public class PieNodeRenderer extends LabelRenderer {
         int height = fontMetrics.getHeight();
         int width = fontMetrics.stringWidth(String.valueOf(totalCount));
         TextLayout textlayout = new TextLayout(String.valueOf(totalCount), g2.getFont(), frc);
-        textlayout.draw(g2, area.x + (size / 2 - width / 2), area.y - 1 + (size / 2 + height / 2 - 1));
+        textlayout.draw(g2, areaX + (size / 2 - width / 2), areaY - 1 + (size / 2 + height / 2 - 1));
 
         super.render(g2, item); // add the label itself
     }
@@ -100,8 +96,8 @@ public class PieNodeRenderer extends LabelRenderer {
 
         long totalCount = item.getLong(TreeView.nodeTotalElements);
 
-        // create image and g2d object
-        int size = MIN_CIRCLE_SIZE + 10 * (int) FastMath.log(FastMath.round(2 * totalCount));
+        // create image
+        int size = (int) (MIN_CIRCLE_SIZE + 10 * FastMath.log(FastMath.round(2 * totalCount)));
         BufferedImage img = new BufferedImage(size + 1, size + 1, BufferedImage.TYPE_INT_ARGB);
         return img;
     }
