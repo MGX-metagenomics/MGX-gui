@@ -63,8 +63,8 @@ public interface ViewerI<T extends Visualizable> extends Comparable<ViewerI<T>> 
     public Class getInputType();
 
     /**
-     * @param distributions distributions to be displayed
+     * @param dists distributions to be displayed
      */
-    public void show(List<Pair<VisualizationGroupI, T>> distributions);
+    public void show(List<Pair<VisualizationGroupI, T>> dists);
 
 }
