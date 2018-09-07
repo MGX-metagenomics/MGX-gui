@@ -32,11 +32,6 @@ public interface ViewerI<T extends Visualizable> extends Comparable<ViewerI<T>> 
     public void setAttributeType(AttributeTypeI attrType);
 
     /**
-     * release internal resources
-     */
-    public void dispose();
-
-    /**
      * @return main component representing the visualization
      */
     public JComponent getComponent();
@@ -45,6 +40,17 @@ public interface ViewerI<T extends Visualizable> extends Comparable<ViewerI<T>> 
      * @return customizing component
      */
     public JComponent getCustomizer();
+
+    /**
+     * @return the expected class of data to be displayed; either
+     * DistributionI.class or TreeI.class
+     */
+    public Class getInputType();
+
+    /**
+     * @param dists distributions to be displayed
+     */
+    public void show(List<Pair<VisualizationGroupI, T>> dists);
 
     /**
      * @return exporter instance able to save the visualization
@@ -57,14 +63,8 @@ public interface ViewerI<T extends Visualizable> extends Comparable<ViewerI<T>> 
     public SequenceExporterI[] getSequenceExporters();
 
     /**
-     * @return the expected class of data to be displayed; either
-     * DistributionI.class or TreeI.class
+     * release internal resources
      */
-    public Class getInputType();
-
-    /**
-     * @param dists distributions to be displayed
-     */
-    public void show(List<Pair<VisualizationGroupI, T>> dists);
+    public void dispose();
 
 }
