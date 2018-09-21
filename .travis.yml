@@ -1,0 +1,35 @@
+notifications:
+  email:
+    recipients:
+      - sebastian@jaenicke.org
+
+language: java
+
+dist: trusty
+
+sudo: required
+
+jdk: oraclejdk8
+
+branches:
+  only:
+    - master
+
+cache:
+  directories:
+  - $HOME/.m2
+
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get install -qq protobuf-compiler
+  - git clone https://github.com/MGX-metagenomics/utilities.git
+  - cd utilities && mvn clean install -DskipTests=true && cd .. && rm -rf utilities
+  - git clone https://github.com/MGX-metagenomics/GPMS.git
+  - cd GPMS && mvn clean install -DskipTests=true && cd .. && rm -rf GPMS
+  - git clone https://github.com/MGX-metagenomics/MGX-client.git
+  - cd MGX-client && mvn clean install -DskipTests=true && cd .. && rm -rf MGX-client
+
+install: true
+
+script:
+  - mvn clean install
