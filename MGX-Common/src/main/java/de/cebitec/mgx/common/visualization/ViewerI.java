@@ -34,11 +34,6 @@ public interface ViewerI<T extends Visualizable> extends Comparable<ViewerI<T>> 
      */
     public JComponent getComponent();
 
-//    /**
-//     * @return customizing component
-//     */
-//    public JComponent getCustomizer();
-
     /**
      * @return the expected class of data to be displayed; either
      * DistributionI.class or TreeI.class
