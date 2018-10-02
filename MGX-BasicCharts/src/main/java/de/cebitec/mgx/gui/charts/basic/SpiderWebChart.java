@@ -30,7 +30,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author sj
  */
 @ServiceProvider(service = ViewerI.class)
-public class SpiderWebChart extends CategoricalViewerI<Long> {
+public class SpiderWebChart extends CategoricalViewerI<Long> implements ImageExporterI.Provider, SequenceExporterI.Provider {
 
     private ChartPanel cPanel = null;
     private JFreeChart chart = null;
@@ -64,7 +64,7 @@ public class SpiderWebChart extends CategoricalViewerI<Long> {
         ChartFactory.setChartTheme(StandardChartTheme.createLegacyTheme());
         TickedSpiderWebPlot plot = new TickedSpiderWebPlot(dataset);
 
-        Font labelFont = new Font("Arial", Font.BOLD, 10);
+        Font labelFont = new Font("SansSerif", Font.BOLD, 10);
 
         CategoryToolTipGenerator tooltipGenerator = new StandardCategoryToolTipGenerator();
         tooltipGenerator.generateToolTip(dataset, 0, 0);

@@ -28,7 +28,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author sj
  */
 @ServiceProvider(service = ViewerI.class)
-public class PolarChart extends NumericalViewerI<Long> {
+public class PolarChart extends NumericalViewerI<Long> implements ImageExporterI.Provider, SequenceExporterI.Provider {
 
     private ChartPanel cPanel = null;
     private JFreeChart chart = null;

@@ -54,7 +54,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author sjaenick
  */
 @ServiceProvider(service = ViewerI.class)
-public class MAPlot extends NumericalViewerI<Long> {
+public class MAPlot extends NumericalViewerI<Long> implements ImageExporterI.Provider, SequenceExporterI.Provider {
 
     private ChartPanel cPanel = null;
     private JFreeChart chart = null;

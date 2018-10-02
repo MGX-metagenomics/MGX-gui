@@ -2,7 +2,6 @@ package de.cebitec.mgx.gui.radialtree;
 
 import de.cebitec.mgx.api.groups.FileType;
 import de.cebitec.mgx.api.groups.ImageExporterI;
-import de.cebitec.mgx.api.groups.SequenceExporterI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.AttributeTypeI;
@@ -75,7 +74,7 @@ import prefuse.visual.sort.TreeDepthItemSorter;
  * @author sj
  */
 @ServiceProvider(service = ViewerI.class)
-public class RadialTree extends HierarchicalViewerI {
+public class RadialTree extends HierarchicalViewerI implements ImageExporterI.Provider {
 
     public static final String nodeLabel = "label";
     public static final String nodeContent = "content";
@@ -406,11 +405,6 @@ public class RadialTree extends HierarchicalViewerI {
                 }
             }
         };
-    }
-
-    @Override
-    public SequenceExporterI[] getSequenceExporters() {
-        return null;
     }
 
     /**

@@ -44,7 +44,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author sj
  */
 @ServiceProvider(service = ViewerI.class)
-public class TableViewer extends AbstractViewer<DistributionI<Long>> {
+public class TableViewer extends AbstractViewer<DistributionI<Long>> implements ImageExporterI.Provider, SequenceExporterI.Provider {
 
     private JXTable table;
     private TableViewCustomizer cust = null;

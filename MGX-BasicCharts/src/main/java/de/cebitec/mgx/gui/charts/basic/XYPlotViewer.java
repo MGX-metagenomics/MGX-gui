@@ -34,7 +34,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author sj
  */
 @ServiceProvider(service = ViewerI.class)
-public class XYPlotViewer extends NumericalViewerI<Long> {
+public class XYPlotViewer extends NumericalViewerI<Long> implements ImageExporterI.Provider, SequenceExporterI.Provider {
 
     private ChartPanel cPanel = null;
     private XYPlotCustomizer customizer = null;

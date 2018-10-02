@@ -47,7 +47,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author sj
  */
 @ServiceProvider(service = ViewerI.class)
-public class RarefactionCurve extends AbstractViewer<DistributionI<Long>> {
+public class RarefactionCurve extends AbstractViewer<DistributionI<Long>> implements ImageExporterI.Provider, SequenceExporterI.Provider {
 
     private RarefactionCustomizer cust = null;
     private DelayedPlot cPanel = null;

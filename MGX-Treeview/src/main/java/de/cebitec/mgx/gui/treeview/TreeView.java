@@ -2,7 +2,6 @@ package de.cebitec.mgx.gui.treeview;
 
 import de.cebitec.mgx.api.groups.FileType;
 import de.cebitec.mgx.api.groups.ImageExporterI;
-import de.cebitec.mgx.api.groups.SequenceExporterI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.AttributeI;
@@ -76,7 +75,7 @@ import prefuse.visual.sort.TreeDepthItemSorter;
  * @author sjaenick
  */
 @ServiceProvider(service = ViewerI.class)
-public class TreeView extends HierarchicalViewerI {
+public class TreeView extends HierarchicalViewerI implements ImageExporterI.Provider {
 
     private static final String tree = "tree";
     private static final String treeNodes = "tree.nodes";
@@ -512,11 +511,6 @@ public class TreeView extends HierarchicalViewerI {
 
             }
         };
-    }
-
-    @Override
-    public SequenceExporterI[] getSequenceExporters() {
-        return null;
     }
 
     public static class MyWheelZoomControl extends AbstractZoomControl {

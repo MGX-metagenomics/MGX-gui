@@ -40,7 +40,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author sj
  */
 @ServiceProvider(service = ViewerI.class)
-public class KeggViewer extends CategoricalViewerI<Long> {
+public class KeggViewer extends CategoricalViewerI<Long> implements ImageExporterI.Provider, SequenceExporterI.Provider {
 
     private KEGGPanel panel;
     private KEGGMaster master;

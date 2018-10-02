@@ -53,7 +53,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author pblumenk
  */
 @ServiceProvider(service = ViewerI.class)
-public class StatisticalBarChart extends CategoricalViewerI<Long> implements AdjustmentListener {
+public class StatisticalBarChart extends CategoricalViewerI<Long> implements AdjustmentListener, ImageExporterI.Provider, SequenceExporterI.Provider {
 
     private ChartPanel cPanel = null;
     private BarChartCustomizer customizer = null;

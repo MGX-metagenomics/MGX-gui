@@ -5,8 +5,6 @@
  */
 package de.cebitec.mgx.gui.jscharts;
 
-import de.cebitec.mgx.api.groups.ImageExporterI;
-import de.cebitec.mgx.api.groups.SequenceExporterI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.AttributeTypeI;
@@ -22,16 +20,6 @@ import org.openide.util.lookup.ServiceProvider;
  */
 @ServiceProvider(service = ViewerI.class)
 public class D3Demo extends JSChartBase<TreeI<Long>> {
-
-    @Override
-    public ImageExporterI getImageExporter() {
-        return null;
-    }
-
-    @Override
-    public SequenceExporterI[] getSequenceExporters() {
-        return null;
-    }
 
     @Override
     public String getName() {

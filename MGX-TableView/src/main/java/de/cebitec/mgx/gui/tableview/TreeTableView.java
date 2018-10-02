@@ -2,7 +2,6 @@ package de.cebitec.mgx.gui.tableview;
 
 import de.cebitec.mgx.api.groups.FileType;
 import de.cebitec.mgx.api.groups.ImageExporterI;
-import de.cebitec.mgx.api.groups.SequenceExporterI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.AttributeTypeI;
@@ -34,7 +33,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author sj
  */
 @ServiceProvider(service = ViewerI.class)
-public class TreeTableView extends AbstractViewer<TreeI<Long>> {
+public class TreeTableView extends AbstractViewer<TreeI<Long>> implements ImageExporterI.Provider {
 
     private JXTable table;
     private TableViewCustomizer cust = null;
@@ -178,11 +177,6 @@ public class TreeTableView extends AbstractViewer<TreeI<Long>> {
                 }
             }
         };
-    }
-
-    @Override
-    public SequenceExporterI[] getSequenceExporters() {
-        return null;
     }
 
     private void setupRowData(DefaultTableModel model, AttributeTypeI[] aTypes, NodeI<Long> node) {

@@ -5,8 +5,6 @@
  */
 package de.cebitec.mgx.gui.biodiversity;
 
-import de.cebitec.mgx.api.groups.ImageExporterI;
-import de.cebitec.mgx.api.groups.SequenceExporterI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
@@ -56,16 +54,6 @@ public class BiodiversityViewer extends CategoricalViewerI<Long> {
     @Override
     public Class getInputType() {
         return DistributionI.class;
-    }
-
-    @Override
-    public ImageExporterI getImageExporter() {
-        return null;
-    }
-
-    @Override
-    public SequenceExporterI[] getSequenceExporters() {
-        return null;
     }
 
     @Override

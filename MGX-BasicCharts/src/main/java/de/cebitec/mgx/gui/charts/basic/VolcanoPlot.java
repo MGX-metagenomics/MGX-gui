@@ -49,7 +49,7 @@ import org.openide.util.Exceptions;
  * @author pblumenk
  */
 @ServiceProvider(service = ViewerI.class)
-public class VolcanoPlot extends CategoricalViewerI<Long> {
+public class VolcanoPlot extends CategoricalViewerI<Long> implements ImageExporterI.Provider, SequenceExporterI.Provider {
 
     private ChartPanel cPanel = null;
     private VolcanoPlotCustomizer customizer = null;

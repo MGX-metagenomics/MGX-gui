@@ -4,7 +4,6 @@ import de.cebitec.mgx.api.groups.FileType;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.groups.ImageExporterI;
-import de.cebitec.mgx.api.groups.SequenceExporterI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
@@ -42,7 +41,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author sjaenick
  */
 @ServiceProvider(service = ViewerI.class)
-public class RankAssignmentPlot extends HierarchicalViewerI {
+public class RankAssignmentPlot extends HierarchicalViewerI implements ImageExporterI.Provider {
 
     private StackedRankCustomizer customizer = null;
 
@@ -217,10 +216,5 @@ public class RankAssignmentPlot extends HierarchicalViewerI {
                 }
             }
         };
-    }
-
-    @Override
-    public SequenceExporterI[] getSequenceExporters() {
-        return null;
     }
 }

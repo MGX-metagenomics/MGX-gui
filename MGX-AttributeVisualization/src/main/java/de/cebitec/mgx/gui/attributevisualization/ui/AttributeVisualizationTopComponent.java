@@ -28,7 +28,8 @@ import org.openide.windows.WindowManager;
 @TopComponent.Registration(mode = "editor", openAtStartup = false)
 @ActionID(category = "Window", id = "de.cebitec.mgx.gui.attributevisualization.ui.AttributeVisualizationTopComponent")
 @ActionReferences({
-    @ActionReference(path = "Menu/Window", position = 333),
+    @ActionReference(path = "Menu/Window", position = 333)
+    ,
     @ActionReference(path = "Toolbars/UndoRedo", position = 510)
 })
 @TopComponent.OpenActionRegistration(displayName = "#CTL_AttributeVisualizationAction",
@@ -125,25 +126,29 @@ public final class AttributeVisualizationTopComponent extends TopComponent {
         String version = p.getProperty("version");
     }
 
-    public void setVisualization(ViewerI v) {
-        JComponent c = v.getComponent();
-        c.setPreferredSize(chartpane.getViewport().getSize());
+    public void setVisualization(ViewerI viewer) {
+        JComponent c = viewer.getComponent();
+        //c.setPreferredSize(chartpane.getViewport().getSize());
         chartpane.setViewportView(c);
 
         // clear lookup
         content.set(Collections.emptyList(), null);
 
         // image exporter
-        ImageExporterI exporter = v.getImageExporter();
-        if (exporter != null && exporter.getSupportedTypes().length > 0) {
-            content.add(exporter);
+        if (viewer instanceof ImageExporterI.Provider) {
+            ImageExporterI exporter = ((ImageExporterI.Provider) viewer).getImageExporter();
+            if (exporter != null && exporter.getSupportedTypes().length > 0) {
+                content.add(exporter);
+            }
         }
 
         // sequence exporters
-        SequenceExporterI[] seqExporters = v.getSequenceExporters();
-        if (seqExporters != null) {
-            for (SequenceExporterI seqExp : seqExporters) {
-                content.add(seqExp);
+        if (viewer instanceof SequenceExporterI.Provider) {
+            SequenceExporterI[] seqExporters = ((SequenceExporterI.Provider)viewer).getSequenceExporters();
+            if (seqExporters != null) {
+                for (SequenceExporterI seqExp : seqExporters) {
+                    content.add(seqExp);
+                }
             }
         }
     }

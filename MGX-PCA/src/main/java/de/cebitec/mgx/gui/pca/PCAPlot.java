@@ -53,7 +53,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author sj
  */
 @ServiceProvider(service = ViewerI.class)
-public class PCAPlot extends AbstractViewer<DistributionI<Long>> {
+public class PCAPlot extends AbstractViewer<DistributionI<Long>> implements SequenceExporterI.Provider, ImageExporterI.Provider {
 
     private ChartPanel cPanel = null;
     private JFreeChart chart = null;

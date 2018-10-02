@@ -43,7 +43,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author sjaenick
  */
 @ServiceProvider(service = ViewerI.class)
-public class BarChartViewer extends CategoricalViewerI<Long> {
+public class BarChartViewer extends CategoricalViewerI<Long> implements ImageExporterI.Provider, SequenceExporterI.Provider {
 
     private ChartPanel cPanel = null;
     private BarChartCustomizer customizer = null;
