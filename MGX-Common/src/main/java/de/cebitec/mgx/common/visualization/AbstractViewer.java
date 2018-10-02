@@ -1,7 +1,5 @@
 package de.cebitec.mgx.common.visualization;
 
-import de.cebitec.mgx.api.groups.ImageExporterI;
-import de.cebitec.mgx.api.groups.SequenceExporterI;
 import de.cebitec.mgx.api.groups.VGroupManagerI;
 import de.cebitec.mgx.api.misc.Visualizable;
 import de.cebitec.mgx.api.model.AttributeTypeI;
@@ -30,19 +28,6 @@ public abstract class AbstractViewer<T extends Visualizable> implements ViewerI<
         this.mgr = mgr;
     }
 
-
-    /**
-     *
-     * @return exporter instance able to save the visualization
-     */
-    public abstract ImageExporterI getImageExporter();
-    
-        /**
-     *
-     * @return exporter instances able to export selected sequences
-     */
-    public abstract SequenceExporterI[] getSequenceExporters();
-
     /**
      *
      * @return display name of the viewer
@@ -55,6 +40,7 @@ public abstract class AbstractViewer<T extends Visualizable> implements ViewerI<
      *
      * @return customizing component
      */
+    @Override
     public abstract JComponent getCustomizer();
 
     /**
@@ -68,6 +54,7 @@ public abstract class AbstractViewer<T extends Visualizable> implements ViewerI<
      *
      * @param aType indicates the attribute type to be displayed
      */
+    @Override
     public void setAttributeType(AttributeTypeI aType) {
         this.attrType = aType;
     }

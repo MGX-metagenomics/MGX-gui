@@ -1,7 +1,5 @@
 package de.cebitec.mgx.common.visualization;
 
-import de.cebitec.mgx.api.groups.ImageExporterI;
-import de.cebitec.mgx.api.groups.SequenceExporterI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.misc.Visualizable;
@@ -51,16 +49,6 @@ public interface ViewerI<T extends Visualizable> extends Comparable<ViewerI<T>> 
      * @param dists distributions to be displayed
      */
     public void show(List<Pair<VisualizationGroupI, T>> dists);
-
-    /**
-     * @return exporter instance able to save the visualization
-     */
-    public ImageExporterI getImageExporter();
-
-    /**
-     * @return exporter instances able to export (sub)sequences from the chart
-     */
-    public SequenceExporterI[] getSequenceExporters();
 
     /**
      * release internal resources
