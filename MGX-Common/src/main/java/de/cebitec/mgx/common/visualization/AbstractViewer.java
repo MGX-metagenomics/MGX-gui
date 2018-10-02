@@ -4,7 +4,6 @@ import de.cebitec.mgx.api.groups.VGroupManagerI;
 import de.cebitec.mgx.api.misc.Visualizable;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.common.VGroupManager;
-import javax.swing.JComponent;
 
 /**
  *
@@ -36,13 +35,6 @@ public abstract class AbstractViewer<T extends Visualizable> implements ViewerI<
     public abstract String getName();
 
     
-    /**
-     *
-     * @return customizing component
-     */
-    @Override
-    public abstract JComponent getCustomizer();
-
     /**
      *
      */

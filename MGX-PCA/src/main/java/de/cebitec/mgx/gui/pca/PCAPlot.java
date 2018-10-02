@@ -14,6 +14,7 @@ import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.common.VGroupManager;
 import de.cebitec.mgx.common.visualization.AbstractViewer;
+import de.cebitec.mgx.common.visualization.CustomizableI;
 import de.cebitec.mgx.common.visualization.ViewerI;
 import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
 import de.cebitec.mgx.gui.seqexporter.SeqExporter;
@@ -53,7 +54,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author sj
  */
 @ServiceProvider(service = ViewerI.class)
-public class PCAPlot extends AbstractViewer<DistributionI<Long>> implements SequenceExporterI.Provider, ImageExporterI.Provider {
+public class PCAPlot extends AbstractViewer<DistributionI<Long>> implements CustomizableI, SequenceExporterI.Provider, ImageExporterI.Provider {
 
     private ChartPanel cPanel = null;
     private JFreeChart chart = null;

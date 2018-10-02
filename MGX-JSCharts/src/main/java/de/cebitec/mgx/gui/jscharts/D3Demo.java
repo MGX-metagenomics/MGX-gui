@@ -11,7 +11,6 @@ import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.tree.TreeI;
 import de.cebitec.mgx.common.visualization.ViewerI;
 import java.util.List;
-import javax.swing.JComponent;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -45,11 +44,6 @@ public class D3Demo extends JSChartBase<TreeI<Long>> {
         String html = loadResourceFile("de/cebitec/mgx/gui/jscharts/d3demo.html");
         html = html.replace("MGXCONTENT", data);
         setHTML(html);
-    }
-
-    @Override
-    public JComponent getCustomizer() {
-        return null;
     }
 
 }

@@ -11,6 +11,7 @@ import de.cebitec.mgx.api.model.tree.TreeI;
 import de.cebitec.mgx.common.visualization.HierarchicalViewerI;
 import de.cebitec.mgx.common.visualization.ViewerI;
 import de.cebitec.mgx.common.TreeFactory;
+import de.cebitec.mgx.common.visualization.CustomizableI;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -75,7 +76,7 @@ import prefuse.visual.sort.TreeDepthItemSorter;
  * @author sjaenick
  */
 @ServiceProvider(service = ViewerI.class)
-public class TreeView extends HierarchicalViewerI implements ImageExporterI.Provider {
+public class TreeView extends HierarchicalViewerI implements ImageExporterI.Provider, CustomizableI {
 
     private static final String tree = "tree";
     private static final String treeNodes = "tree.nodes";

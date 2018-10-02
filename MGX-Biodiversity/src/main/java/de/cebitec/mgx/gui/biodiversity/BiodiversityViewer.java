@@ -9,6 +9,7 @@ import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.common.visualization.CategoricalViewerI;
+import de.cebitec.mgx.common.visualization.CustomizableI;
 import de.cebitec.mgx.common.visualization.ViewerI;
 import de.cebitec.mgx.gui.biodiversity.statistic.Statistic;
 import de.cebitec.mgx.gui.biodiversity.statistic.impl.ACE;
@@ -32,7 +33,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author sj
  */
 @ServiceProvider(service = ViewerI.class)
-public class BiodiversityViewer extends CategoricalViewerI<Long> {
+public class BiodiversityViewer extends CategoricalViewerI<Long> implements CustomizableI {
 
     private JXTable table;
     private DefaultTableModel model;

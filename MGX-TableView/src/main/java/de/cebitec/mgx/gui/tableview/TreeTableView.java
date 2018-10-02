@@ -10,6 +10,7 @@ import de.cebitec.mgx.api.model.tree.TreeI;
 import de.cebitec.mgx.common.TreeFactory;
 import de.cebitec.mgx.common.VGroupManager;
 import de.cebitec.mgx.common.visualization.AbstractViewer;
+import de.cebitec.mgx.common.visualization.CustomizableI;
 import de.cebitec.mgx.common.visualization.ViewerI;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -33,7 +34,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author sj
  */
 @ServiceProvider(service = ViewerI.class)
-public class TreeTableView extends AbstractViewer<TreeI<Long>> implements ImageExporterI.Provider {
+public class TreeTableView extends AbstractViewer<TreeI<Long>> implements ImageExporterI.Provider, CustomizableI {
 
     private JXTable table;
     private TableViewCustomizer cust = null;

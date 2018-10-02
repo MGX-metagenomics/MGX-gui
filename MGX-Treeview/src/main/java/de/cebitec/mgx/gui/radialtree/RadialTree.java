@@ -7,6 +7,7 @@ import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.tree.NodeI;
 import de.cebitec.mgx.api.model.tree.TreeI;
+import de.cebitec.mgx.common.visualization.CustomizableI;
 import de.cebitec.mgx.common.visualization.HierarchicalViewerI;
 import de.cebitec.mgx.common.visualization.ViewerI;
 import de.cebitec.mgx.gui.radialtree.internal.ArcLabelRenderer;
@@ -74,7 +75,7 @@ import prefuse.visual.sort.TreeDepthItemSorter;
  * @author sj
  */
 @ServiceProvider(service = ViewerI.class)
-public class RadialTree extends HierarchicalViewerI implements ImageExporterI.Provider {
+public class RadialTree extends HierarchicalViewerI implements ImageExporterI.Provider, CustomizableI {
 
     public static final String nodeLabel = "label";
     public static final String nodeContent = "content";

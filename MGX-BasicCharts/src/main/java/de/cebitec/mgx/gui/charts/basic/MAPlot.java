@@ -251,11 +251,6 @@ public class MAPlot extends NumericalViewerI<Long> implements ImageExporterI.Pro
     }
 
     @Override
-    public JComponent getCustomizer() {
-        return null;
-    }
-
-    @Override
     public boolean canHandle(AttributeTypeI valueType) {
         try {
             return valueType.getValueType() == AttributeTypeI.VALUE_DISCRETE

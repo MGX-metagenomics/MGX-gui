@@ -12,6 +12,7 @@ import de.cebitec.mgx.api.misc.Triple;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.common.VGroupManager;
 import de.cebitec.mgx.common.visualization.CategoricalViewerI;
+import de.cebitec.mgx.common.visualization.CustomizableI;
 import de.cebitec.mgx.common.visualization.ViewerI;
 import de.cebitec.mgx.gui.charts.basic.util.LogAxis;
 import de.cebitec.mgx.gui.charts.basic.util.SlidingStatisticalCategoryDataset;
@@ -53,7 +54,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author pblumenk
  */
 @ServiceProvider(service = ViewerI.class)
-public class StatisticalBarChart extends CategoricalViewerI<Long> implements AdjustmentListener, ImageExporterI.Provider, SequenceExporterI.Provider {
+public class StatisticalBarChart extends CategoricalViewerI<Long> implements AdjustmentListener, CustomizableI, ImageExporterI.Provider, SequenceExporterI.Provider {
 
     private ChartPanel cPanel = null;
     private BarChartCustomizer customizer = null;

@@ -20,6 +20,7 @@ import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.tree.TreeI;
 import de.cebitec.mgx.api.visualization.ConflictResolver;
 import de.cebitec.mgx.common.VGroupManager;
+import de.cebitec.mgx.common.visualization.CustomizableI;
 import de.cebitec.mgx.common.visualization.ViewerI;
 import de.cebitec.mgx.gui.attributevisualization.conflictwizard.ConflictResolverWizardIterator;
 import de.cebitec.mgx.gui.attributevisualization.util.ResultCollector;
@@ -349,9 +350,9 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
 
             if (vizListModel.getSize() > 0) {
                 // if previously selected element still exists, restore selection
-                if (currentViewer != null && content.contains(currentViewer)) {
+                if (currentViewer != null && currentViewer instanceof CustomizableI && content.contains(currentViewer)) {
                     setSelectedItem(currentViewer);
-                    currentCustomizer = currentViewer.getCustomizer();
+                    currentCustomizer = ((CustomizableI) currentViewer).getCustomizer();
                     itemStateChanged(new ItemEvent(visualizationTypeList,
                             ItemEvent.ITEM_STATE_CHANGED,
                             getSelectedItem(),
@@ -386,10 +387,13 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
             currentViewer.setAttributeType(currentAttributeType);
 
             // display customizer
-            currentCustomizer = currentViewer.getCustomizer();
-            if (currentCustomizer != null) {
+            if (currentViewer instanceof CustomizableI) {
+                currentCustomizer = ((CustomizableI) currentViewer).getCustomizer();
                 currentCustomizer.setEnabled(true);
+            } else {
+                currentCustomizer = null;
             }
+            
             customPane.setViewportView(currentCustomizer);
             customPane.getVerticalScrollBar().setUnitIncrement(16);
         }

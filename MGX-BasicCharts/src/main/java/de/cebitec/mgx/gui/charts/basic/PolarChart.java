@@ -75,11 +75,6 @@ public class PolarChart extends NumericalViewerI<Long> implements ImageExporterI
     }
 
     @Override
-    public JComponent getCustomizer() {
-        return null;
-    }
-
-    @Override
     public Class getInputType() {
         return DistributionI.class;
     }

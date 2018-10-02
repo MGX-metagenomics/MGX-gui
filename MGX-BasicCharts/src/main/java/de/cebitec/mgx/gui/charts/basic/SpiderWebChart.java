@@ -8,6 +8,7 @@ import de.cebitec.mgx.gui.charts.basic.util.TickedSpiderWebPlot;
 import de.cebitec.mgx.api.groups.ImageExporterI;
 import de.cebitec.mgx.api.groups.SequenceExporterI;
 import de.cebitec.mgx.common.visualization.CategoricalViewerI;
+import de.cebitec.mgx.common.visualization.CustomizableI;
 import de.cebitec.mgx.common.visualization.ViewerI;
 import de.cebitec.mgx.gui.charts.basic.customizer.SpiderWebChartCustomizer;
 import de.cebitec.mgx.gui.seqexporter.SeqExporter;
@@ -30,7 +31,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author sj
  */
 @ServiceProvider(service = ViewerI.class)
-public class SpiderWebChart extends CategoricalViewerI<Long> implements ImageExporterI.Provider, SequenceExporterI.Provider {
+public class SpiderWebChart extends CategoricalViewerI<Long> implements CustomizableI, ImageExporterI.Provider, SequenceExporterI.Provider {
 
     private ChartPanel cPanel = null;
     private JFreeChart chart = null;

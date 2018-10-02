@@ -12,6 +12,7 @@ import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.common.VGroupManager;
 import de.cebitec.mgx.common.visualization.CategoricalViewerI;
+import de.cebitec.mgx.common.visualization.CustomizableI;
 import de.cebitec.mgx.common.visualization.ViewerI;
 import de.cebitec.mgx.gui.charts.basic.customizer.VolcanoPlotCustomizer;
 import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
@@ -49,7 +50,7 @@ import org.openide.util.Exceptions;
  * @author pblumenk
  */
 @ServiceProvider(service = ViewerI.class)
-public class VolcanoPlot extends CategoricalViewerI<Long> implements ImageExporterI.Provider, SequenceExporterI.Provider {
+public class VolcanoPlot extends CategoricalViewerI<Long> implements CustomizableI, ImageExporterI.Provider, SequenceExporterI.Provider {
 
     private ChartPanel cPanel = null;
     private VolcanoPlotCustomizer customizer = null;

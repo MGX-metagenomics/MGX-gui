@@ -10,6 +10,7 @@ import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.misc.Point;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.common.visualization.AbstractViewer;
+import de.cebitec.mgx.common.visualization.CustomizableI;
 import de.cebitec.mgx.common.visualization.ViewerI;
 import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
 import de.cebitec.mgx.gui.rarefaction.LocalRarefaction;
@@ -47,7 +48,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author sj
  */
 @ServiceProvider(service = ViewerI.class)
-public class RarefactionCurve extends AbstractViewer<DistributionI<Long>> implements ImageExporterI.Provider, SequenceExporterI.Provider {
+public class RarefactionCurve extends AbstractViewer<DistributionI<Long>> implements CustomizableI, ImageExporterI.Provider, SequenceExporterI.Provider {
 
     private RarefactionCustomizer cust = null;
     private DelayedPlot cPanel = null;

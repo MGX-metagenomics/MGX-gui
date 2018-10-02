@@ -10,6 +10,8 @@ import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.common.VGroupManager;
+import de.cebitec.mgx.common.visualization.AbstractViewer;
+import de.cebitec.mgx.common.visualization.CustomizableI;
 import de.cebitec.mgx.common.visualization.ViewerI;
 import de.cebitec.mgx.gui.seqexporter.SeqExporter;
 import de.cebitec.mgx.gui.statistics.clustering.model.DendrogramBuilder;
@@ -38,7 +40,7 @@ import prefuse.svg.SVGDisplaySaver;
  * @author sjaenick
  */
 @ServiceProvider(service = ViewerI.class)
-public class HClustPlot extends ViewerI<DistributionI<Long>> {
+public class HClustPlot extends AbstractViewer<DistributionI<Long>> implements CustomizableI, ImageExporterI.Provider, SequenceExporterI.Provider {
 
     private final static String NODE_NAME_KEY = "nodeName";
     private final static String X_COORD = "x";
@@ -62,12 +64,12 @@ public class HClustPlot extends ViewerI<DistributionI<Long>> {
     public void show(final List<Pair<VisualizationGroupI, DistributionI<Long>>> dists) {
 
         cPanel = new DelayedPlot();
+        data = new LongToDouble().filter(dists);
 
         SwingWorker<String, Void> worker = new SwingWorker<String, Void>() {
             @Override
             protected String doInBackground() throws Exception {
                 MGXMasterI m = dists.get(0).getSecond().getMaster();
-                data = new LongToDouble().filter(dists);
                 return m.Statistics().Clustering(data, customizer.getDistanceMethod(), customizer.getAgglomeration());
             }
 

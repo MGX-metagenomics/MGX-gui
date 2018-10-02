@@ -10,6 +10,7 @@ import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.tree.TreeI;
 import de.cebitec.mgx.common.DistributionFactory;
 import de.cebitec.mgx.common.TreeFactory;
+import de.cebitec.mgx.common.visualization.CustomizableI;
 import de.cebitec.mgx.common.visualization.HierarchicalViewerI;
 import de.cebitec.mgx.common.visualization.ViewerI;
 import de.cebitec.mgx.gui.charts.basic.customizer.StackedRankCustomizer;
@@ -41,7 +42,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author sjaenick
  */
 @ServiceProvider(service = ViewerI.class)
-public class RankAssignmentPlot extends HierarchicalViewerI implements ImageExporterI.Provider {
+public class RankAssignmentPlot extends HierarchicalViewerI implements ImageExporterI.Provider, CustomizableI {
 
     private StackedRankCustomizer customizer = null;
 

@@ -10,6 +10,7 @@ import de.cebitec.mgx.gui.charts.basic.util.SlidingCategoryDataset;
 import de.cebitec.mgx.api.groups.ImageExporterI;
 import de.cebitec.mgx.api.groups.SequenceExporterI;
 import de.cebitec.mgx.common.visualization.CategoricalViewerI;
+import de.cebitec.mgx.common.visualization.CustomizableI;
 import de.cebitec.mgx.common.visualization.ViewerI;
 import de.cebitec.mgx.gui.charts.basic.util.LogAxis;
 import de.cebitec.mgx.gui.seqexporter.SeqExporter;
@@ -43,7 +44,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author sjaenick
  */
 @ServiceProvider(service = ViewerI.class)
-public class BarChartViewer extends CategoricalViewerI<Long> implements ImageExporterI.Provider, SequenceExporterI.Provider {
+public class BarChartViewer extends CategoricalViewerI<Long> implements ImageExporterI.Provider, SequenceExporterI.Provider, CustomizableI {
 
     private ChartPanel cPanel = null;
     private BarChartCustomizer customizer = null;
