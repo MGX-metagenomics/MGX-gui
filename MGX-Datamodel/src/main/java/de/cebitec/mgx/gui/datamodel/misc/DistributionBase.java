@@ -11,7 +11,6 @@ import de.cebitec.mgx.api.model.AttributeI;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -58,7 +57,7 @@ public abstract class DistributionBase<T extends Number> implements Distribution
     public final T get(Object key) {
         if (key instanceof AttributeI) {
             AttributeI a = (AttributeI) key;
-            if (keySet().contains(a)) {
+            if (keys.contains(a)) {
                 return _data.get(a);
             }
         }
@@ -67,8 +66,8 @@ public abstract class DistributionBase<T extends Number> implements Distribution
 
     @Override
     public final Collection<T> values() {
-        Collection<T> ret = new ArrayList<>();
-        for (AttributeI attr : keySet()) {
+        Collection<T> ret = new ArrayList<>(keys.size());
+        for (AttributeI attr : keys) {
             ret.add(_data.get(attr));
         }
         return ret;
@@ -76,14 +75,14 @@ public abstract class DistributionBase<T extends Number> implements Distribution
 
     @Override
     public final boolean containsKey(Object key) {
-        return key instanceof AttributeI && keySet().contains((AttributeI) key);
+        return key instanceof AttributeI && keys.contains((AttributeI) key);
     }
 
     @Override
     public final boolean containsValue(Object value) {
         for (Entry<AttributeI, T> e : _data.entrySet()) {
             if (e.getValue().equals(value)) {
-                return keySet().contains(e.getKey());
+                return keys.contains(e.getKey());
             }
         }
         return false;
@@ -91,13 +90,14 @@ public abstract class DistributionBase<T extends Number> implements Distribution
 
     @Override
     public final Set<AttributeI> keySet() {
-        return Collections.unmodifiableSet(keys);
+        return keys;
+        //return Collections.unmodifiableSet(keys);
     }
 
     @Override
     public final Set<Entry<AttributeI, T>> entrySet() {
         Set<Entry<AttributeI, T>> ret = new LinkedHashSet<>();
-        for (AttributeI attr : keySet()) {
+        for (AttributeI attr : keys) {
             Map.Entry<AttributeI, T> e = new AbstractMap.SimpleImmutableEntry<>(attr, _data.get(attr));
             ret.add(e);
         }
@@ -106,12 +106,12 @@ public abstract class DistributionBase<T extends Number> implements Distribution
 
     @Override
     public final int size() {
-        return keySet().size();
+        return keys.size();
     }
 
     @Override
     public final boolean isEmpty() {
-        return keySet().isEmpty();
+        return keys.isEmpty();
     }
 
     @Override
