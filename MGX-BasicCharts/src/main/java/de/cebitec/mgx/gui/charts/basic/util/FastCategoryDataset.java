@@ -547,6 +547,7 @@ public class FastCategoryDataset extends AbstractDataset
          * @see #getColumnIndex(Comparable)
          */
         @Override
+        @SuppressWarnings("unchecked")
         public int getRowIndex(Comparable key) {
             ParamChecks.nullNotPermitted(key, "key");
             if (this.sortRowKeys) {
@@ -940,6 +941,7 @@ public class FastCategoryDataset extends AbstractDataset
          * exception, but subclasses (if any) might.
          */
         @Override
+        @SuppressWarnings("unchecked")
         public Object clone() throws CloneNotSupportedException {
             FastKeyedValues2D clone = (FastKeyedValues2D) super.clone();
             // for the keys, a shallow copy should be fine because keys

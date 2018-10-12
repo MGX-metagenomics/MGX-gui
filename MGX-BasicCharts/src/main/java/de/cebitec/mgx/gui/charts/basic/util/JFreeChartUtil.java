@@ -22,7 +22,6 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.LegendItem;
 import org.jfree.chart.LegendItemCollection;
 import org.jfree.data.category.CategoryDataset;
-import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultKeyedValues2DDataset;
 import org.jfree.data.general.KeyedValues2DDataset;
 import org.jfree.data.statistics.DefaultStatisticalCategoryDataset;
@@ -32,7 +31,6 @@ import org.jfree.data.xy.TableXYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.graphics2d.svg.SVGGraphics2D;
-
 
 /**
  *
@@ -51,7 +49,7 @@ public class JFreeChartUtil {
         }
         return ret;
     }
-    
+
     public static LegendItemCollection createReplicateLegend(List<Triple<ReplicateGroupI, DistributionI<Double>, DistributionI<Double>>> in) {
         LegendItemCollection ret = new LegendItemCollection();
         DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.US);
@@ -65,12 +63,14 @@ public class JFreeChartUtil {
     }
 
     public static <T extends Number> CategoryDataset createCategoryDataset(List<Pair<VisualizationGroupI, DistributionI<T>>> in) {
-        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+        FastCategoryDataset dataset = new FastCategoryDataset();
+        dataset.setNotify(false);
         for (Pair<VisualizationGroupI, DistributionI<T>> groupDistribution : in) {
-            DistributionI<T> d = groupDistribution.getSecond();
+            final String displayName = groupDistribution.getFirst().getDisplayName();
+            final DistributionI<T> d = groupDistribution.getSecond();
 
             for (Map.Entry<AttributeI, T> entry : d.entrySet()) {
-                dataset.addValue(entry.getValue(), groupDistribution.getFirst().getDisplayName(), entry.getKey().getValue());
+                dataset.addValue(entry.getValue(), displayName, entry.getKey().getValue());
             }
         }
         if (dataset.getColumnCount() > 25) {
@@ -79,18 +79,20 @@ public class JFreeChartUtil {
             return dataset;
         }
     }
-    
-    public static StatisticalCategoryDataset createStatisticalCategoryDataset(List<Triple<ReplicateGroupI, DistributionI<Double>, DistributionI<Double>>> groups){
+
+    public static StatisticalCategoryDataset createStatisticalCategoryDataset(List<Triple<ReplicateGroupI, DistributionI<Double>, DistributionI<Double>>> groups) {
         DefaultStatisticalCategoryDataset dataset = new DefaultStatisticalCategoryDataset();
-        for (Triple<ReplicateGroupI, DistributionI<Double>, DistributionI<Double>> group : groups){
+        dataset.setNotify(false);
+
+        for (Triple<ReplicateGroupI, DistributionI<Double>, DistributionI<Double>> group : groups) {
             DistributionI<Double> mean = group.getSecond();
             DistributionI<Double> stdv = group.getThird();
-                        
-            for (Map.Entry<AttributeI, Double> entry : mean.entrySet()){
+
+            for (Map.Entry<AttributeI, Double> entry : mean.entrySet()) {
                 dataset.add(entry.getValue(), stdv.get(entry.getKey()), group.getFirst().getName(), entry.getKey().getValue());
-            }            
+            }
         }
-        
+
         if (dataset.getColumnCount() > 25) {
             return new SlidingStatisticalCategoryDataset(dataset, 25);
         } else {
@@ -115,6 +117,7 @@ public class JFreeChartUtil {
 
     public static <T extends Number> XYSeriesCollection createXYSeries(List<Pair<VisualizationGroupI, DistributionI<T>>> in, boolean createBounds) {
         XYSeriesCollection dataset = new XYSeriesCollection();
+        dataset.setNotify(false);
 
         for (Pair<VisualizationGroupI, DistributionI<T>> groupDistribution : in) {
             XYSeries series = new XYSeries(groupDistribution.getFirst().getDisplayName());
@@ -155,6 +158,7 @@ public class JFreeChartUtil {
 
     public static <T extends Number> TableXYDataset createTableXYDataset(List<Pair<VisualizationGroupI, DistributionI<T>>> in) {
         DefaultTableXYDataset dataset = new DefaultTableXYDataset();
+        dataset.setNotify(false);
 
         for (Pair<VisualizationGroupI, DistributionI<T>> groupDistribution : in) {
             XYSeries series = new XYSeries(groupDistribution.getFirst().getDisplayName(), true, false);
@@ -171,6 +175,8 @@ public class JFreeChartUtil {
 
     public static <T extends Number> KeyedValues2DDataset createKeyedValues2DDataset(List<Pair<VisualizationGroupI, DistributionI<T>>> in) {
         DefaultKeyedValues2DDataset dataset = new DefaultKeyedValues2DDataset();
+        dataset.setNotify(false);
+
         for (Pair<VisualizationGroupI, DistributionI<T>> groupDistribution : in) {
             DistributionI<T> d = groupDistribution.getSecond();
 
