@@ -219,7 +219,6 @@ public class FileAccessTest {
             }
             long fileSize = f.length();
             assertEquals(fileSize, pc.getLastEvent().getNewValue());
-            assertTrue(200 < pc.getCount());
             assertEquals(TransferBaseI.TRANSFER_COMPLETED, pc.getLastEvent().getPropertyName());
 
             // find uploaded remote file
