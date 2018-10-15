@@ -232,7 +232,7 @@
             <dependency>
                 <groupId>com.h2database</groupId>
                 <artifactId>h2</artifactId>
-                <version>1.4.196</version>
+                <version>1.4.197</version>
             </dependency>
             <dependency>
                 <groupId>org.jdesktop.swingx</groupId>
@@ -599,6 +599,7 @@
         <module>MGX-RBAC</module>
         <module>MGX-SeqExporter</module>
         <module>MGX-NewickWriter</module>
+        <module>MGX-EDTWatcher</module>
     </modules>
     
     <properties>
