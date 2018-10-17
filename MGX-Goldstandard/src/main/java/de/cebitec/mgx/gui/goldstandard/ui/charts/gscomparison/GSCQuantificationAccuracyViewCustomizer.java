@@ -1,18 +1,5 @@
 package de.cebitec.mgx.gui.goldstandard.ui.charts.gscomparison;
 
-import de.cebitec.mgx.gui.goldstandard.ui.EvaluationTopComponent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import javax.swing.JFileChooser;
-import org.netbeans.api.progress.ProgressHandle;
-import org.openide.DialogDisplayer;
-import org.openide.NotifyDescriptor;
-import org.openide.util.NbPreferences;
-
 /**
  *
  * @author pblumenk
