@@ -167,11 +167,6 @@ public class GSCPerformanceMetricsViewCustomizer extends javax.swing.JPanel {
     // End of variables declaration//GEN-END:variables
 
     public void dispose() {
-        for (StackTraceElement ste : Thread.currentThread().getStackTrace()) {
-            System.err.println(ste);
-        }
-        System.err.println();
-
         model = null;
         exportTSV.setEnabled(false);
     }
