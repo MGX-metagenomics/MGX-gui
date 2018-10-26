@@ -599,7 +599,7 @@
         <module>MGX-RBAC</module>
         <module>MGX-SeqExporter</module>
         <module>MGX-NewickWriter</module>
-        <module>MGX-EDTWatcher</module>
+        <module>MGX-devel</module>
     </modules>
     
     <properties>
