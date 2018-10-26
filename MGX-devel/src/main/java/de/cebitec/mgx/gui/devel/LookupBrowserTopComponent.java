@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.cebitec.mgx.gui.attributevisualization.ui;
+package de.cebitec.mgx.gui.devel;
 
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
@@ -19,7 +19,7 @@ import org.openide.util.Utilities;
  * Top component which displays something.
  */
 @ConvertAsProperties(
-        dtd = "-//de.cebitec.mgx.gui.attributevisualization.ui//LookupBrowser//EN",
+        dtd = "-//de.cebitec.mgx.gui.devel//LookupBrowser//EN",
         autostore = false
 )
 @TopComponent.Description(
@@ -28,7 +28,7 @@ import org.openide.util.Utilities;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(mode = "satellite", openAtStartup = false)
-@ActionID(category = "Window", id = "de.cebitec.mgx.gui.attributevisualization.ui.LookupBrowserTopComponent")
+@ActionID(category = "Window", id = "de.cebitec.mgx.gui.devel.LookupBrowserTopComponent")
 @ActionReference(path = "Menu/Window", position = 555)
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_LookupBrowserAction",
