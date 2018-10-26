@@ -65,7 +65,6 @@ public abstract class GroupFrameBase<T extends ModelBaseI<T>> extends javax.swin
 //        }
 //        return false;
 //    }
-
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {
@@ -97,7 +96,7 @@ public abstract class GroupFrameBase<T extends ModelBaseI<T>> extends javax.swin
                 break;
             default:
                 System.err.println("In " + getClass().getName() + " received unhandled event " + evt);
-                //assert false;
+            //assert false;
         }
     }
 
@@ -121,7 +120,9 @@ public abstract class GroupFrameBase<T extends ModelBaseI<T>> extends javax.swin
 
     @Override
     public final void removeNodeSelectionListener(NodeSelectionListener nsl) {
-        nodeListeners.remove(nsl);
+        if (nsl != null && nodeListeners != null) {
+            nodeListeners.remove(nsl);
+        }
     }
 
     private void fireNodeSelectionEvent() {
