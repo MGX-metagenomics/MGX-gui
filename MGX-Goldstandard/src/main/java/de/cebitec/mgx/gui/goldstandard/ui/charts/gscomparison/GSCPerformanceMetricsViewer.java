@@ -153,7 +153,7 @@ public class GSCPerformanceMetricsViewer extends EvaluationViewerI implements GS
         // seqId to attribute value
         final TLongObjectMap<String> goldstandard = new TLongObjectHashMap<>(jobs.size());
         for (AttributeI attr : gsDist.keySet()) {
-            System.err.println("processing " + attr.getValue());
+            p.progress("Processing " + attr.getValue());
             Iterator<Long> it = gsDist.getMaster().Sequence().fetchSequenceIDs(attr);
             while (it.hasNext()) {
                 goldstandard.put(it.next(), attr.getValue());
