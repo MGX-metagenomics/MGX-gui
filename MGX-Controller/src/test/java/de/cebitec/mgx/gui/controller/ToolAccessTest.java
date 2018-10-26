@@ -137,8 +137,12 @@ public class ToolAccessTest {
         try {
             tool2 = master.Tool().create("Tool Name", "Tool description", "Tool author", "http://", 1.0f, "<xml>");
         } catch (MGXException ex) {
-            // expected exception
-            System.err.println(ex.getMessage());
+            if (ex.getMessage() != null && ex.getMessage().contains("duplicate")) {
+                // expected exception
+                System.err.println(ex.getMessage());
+            } else {
+                fail(ex.getMessage());
+            }
         }
         boolean tool2Created = tool2 != null;
 
