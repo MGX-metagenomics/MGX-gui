@@ -5,6 +5,7 @@ import de.cebitec.mgx.api.groups.ImageExporterI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.SeqRunI;
+import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
 import de.cebitec.mgx.gui.goldstandard.ui.charts.EvaluationViewerI;
 import de.cebitec.mgx.gui.goldstandard.ui.charts.pipelinecomparison.PCDistanceViewer;
 import de.cebitec.mgx.gui.goldstandard.util.JobUtils;
@@ -64,7 +65,7 @@ public class GSCQuantificationAccuracyViewer extends EvaluationViewerI implement
 
     @Override
     public ImageExporterI getImageExporter() {
-        return null;
+       return JFreeChartUtil.getImageExporter(chart);
     }
 
     @Override
@@ -78,7 +79,7 @@ public class GSCQuantificationAccuracyViewer extends EvaluationViewerI implement
         double correlation = 0;
 
         try {
-            List<JobI> jobs = new ArrayList<>();
+            List<JobI> jobs = new ArrayList<>(2);
             jobs.add(gsJob);
             jobs.add(currentJobs.get(0));
 
@@ -127,6 +128,7 @@ public class GSCQuantificationAccuracyViewer extends EvaluationViewerI implement
         plot.mapDatasetToRangeAxis(1, 0);
 
         final XYTextAnnotation r = new XYTextAnnotation(String.format("R: %1$.5f", correlation), series1.getMaxX() * 0.10, series1.getMaxY() - 20);
+        r.setToolTipText(String.format("R: %1$.5f", correlation));
         r.setFont(new Font("SansSerif", Font.PLAIN, 12));
         plot.addAnnotation(r);
 
