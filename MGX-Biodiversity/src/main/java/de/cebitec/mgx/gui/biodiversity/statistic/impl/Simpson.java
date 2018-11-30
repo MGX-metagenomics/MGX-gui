@@ -9,7 +9,7 @@ import java.util.Map;
  *
  * @author sjaenick
  */
-public class Simpson implements Statistic<DistributionI<Long>> {
+public class Simpson implements Statistic {
 
     @Override
     public String measure(DistributionI<Long> data) {

@@ -10,7 +10,7 @@ import org.apache.commons.math3.util.FastMath;
  *
  * @author sjaenick
  */
-public class Chao1 implements Statistic<DistributionI<Long>> {
+public class Chao1 implements Statistic {
 
     @Override
     public String measure(DistributionI<Long> data) {

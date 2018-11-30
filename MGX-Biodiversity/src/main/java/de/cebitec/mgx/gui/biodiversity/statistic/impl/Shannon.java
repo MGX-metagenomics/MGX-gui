@@ -11,7 +11,7 @@ import org.apache.commons.math3.util.FastMath;
  *
  * @author sjaenick
  */
-public class Shannon implements Statistic<DistributionI<Long>> {
+public class Shannon implements Statistic {
 
     @Override
     public String measure(DistributionI<Long> data) {

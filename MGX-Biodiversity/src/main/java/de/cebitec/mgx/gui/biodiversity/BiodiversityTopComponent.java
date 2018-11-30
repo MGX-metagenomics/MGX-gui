@@ -58,7 +58,7 @@ public final class BiodiversityTopComponent extends TopComponent implements Look
     private final Lookup.Result<VisualizationGroupI> result;
     private VisualizationGroupI curGroup = null;
     private final TableModel model;
-    private final Statistic<DistributionI<Long>>[] stats;
+    private final Statistic[] stats;
     //
     private final static String NOT_AVAILABLE = "N/A";
 
