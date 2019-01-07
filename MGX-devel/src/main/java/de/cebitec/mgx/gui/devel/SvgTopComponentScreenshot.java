@@ -15,8 +15,6 @@
  */
 package de.cebitec.mgx.gui.devel;
 
-import java.awt.KeyboardFocusManager;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import static java.awt.geom.AffineTransform.getTranslateInstance;
@@ -40,69 +38,73 @@ import org.openide.util.Exceptions;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.NbPreferences;
 import org.openide.util.RequestProcessor;
+import org.openide.windows.TopComponent;
+import org.openide.windows.WindowManager;
 
 @ActionID(
         category = "Window",
-        id = "net.nilshoffmann.svg.actions.SvgScreenshot"
+        id = "net.nilshoffmann.svg.actions.SvgTopComponentScreenshot"
 )
 @ActionRegistration(
-        displayName = "#CTL_SvgScreenshot"
+        displayName = "#CTL_SvgTopComponentScreenshot"
 )
 @ActionReferences({
     //only register this action with a keyboard shortcut
-    @ActionReference(path = "Shortcuts", name = "D-F10")
+    @ActionReference(path = "Shortcuts", name = "D-F11")
 })
-@Messages("CTL_SvgScreenshot=Svg Screenshot")
-public final class SvgScreenshot implements ActionListener {
+@Messages("CTL_SvgTopComponentScreenshot=SVG TopComponent Screenshot")
+public final class SvgTopComponentScreenshot implements ActionListener {
 
     public static final String PREF_PAINTMODE = "SvgScreenshot.paintMode";
     public static final String PREF_OUTPUTDIRECTORY = "SvgScreenshot.outputDirectory";
     public static final String DEFAULT_OUTPUTDIRECTORY = "NetBeansScreenshots";
 
-    public static enum PaintMode {
-
-        PAINT, PRINT
-    };
-
     @Override
     public void actionPerformed(ActionEvent e) {
-        final PaintMode paintMode = PaintMode.valueOf(
-                NbPreferences.forModule(SvgScreenshot.class).get(
-                        PREF_PAINTMODE, PaintMode.PAINT.name()
-                )
+
+        final PaintMode paintMode = PaintMode.valueOf(NbPreferences.forModule(SvgTopComponentScreenshot.class).get(
+                PREF_PAINTMODE, PaintMode.PAINT.name()
+        )
         );
         final File outputDir = new File(
-                NbPreferences.forModule(SvgScreenshot.class).get(
+                NbPreferences.forModule(SvgTopComponentScreenshot.class).get(
                         PREF_OUTPUTDIRECTORY,
                         new File(getProperty("user.home"), DEFAULT_OUTPUTDIRECTORY).getAbsolutePath()
                 )
         );
 
-        SwingWorker<Window, Void> w = new SwingWorker<Window, Void>() {
+        SwingWorker<Void, Void> w = new SwingWorker<Void, Void>() {
             @Override
-            protected Window doInBackground() throws Exception {
+            protected Void doInBackground() throws Exception {
                 Thread.sleep(3000);
-
-                //retrieve the active window component
-                KeyboardFocusManager kfm = KeyboardFocusManager.getCurrentKeyboardFocusManager();
-                Window window = kfm.getActiveWindow();
-
-                SVGGraphics2D g2d = new SVGGraphics2D(window.getWidth(), window.getHeight());
-
-                g2d.setTransform(getTranslateInstance(0, 0));
-                //make sure everything is up to date
-                window.invalidate();
-                window.revalidate();
-                switch (paintMode) {
-                    case PRINT:
-                        window.print(g2d);
-                        break;
-                    default:
-                        window.paint(g2d);
-                }
-                RequestProcessor.getDefault().post(new FileWriter(outputDir, g2d));
-                return window;
+                return null;
             }
+
+            @Override
+            protected void done() {
+                //retrieve the active topcomponent
+                TopComponent topComp = WindowManager.getDefault().getRegistry().getActivated();
+                if (topComp != null) {
+
+                    // subtract inset top to ignore window manager decorations
+                    SVGGraphics2D g2d = new SVGGraphics2D(topComp.getWidth(), topComp.getHeight() - topComp.getInsets().top);
+                    g2d.setTransform(getTranslateInstance(0, -topComp.getInsets().top));
+
+                    //make sure everything is up to date
+                    topComp.invalidate();
+                    topComp.revalidate();
+                    switch (paintMode) {
+                        case PRINT:
+                            topComp.print(g2d);
+                            break;
+                        default:
+                            topComp.paint(g2d);
+                    }
+                    RequestProcessor.getDefault().post(new FileWriter(outputDir, g2d));
+
+                }
+            }
+
         };
         w.execute();
 
@@ -127,7 +129,7 @@ public final class SvgScreenshot implements ActionListener {
                 ph.start();
                 ph.progress("Writing SVG screenshot file...");
 
-                File f = saveGraphics(g2d, outputDirectory, "shot_");
+                File f = saveGraphics(g2d, outputDirectory, "shot_TC_");
                 i++;
                 ph.progress("Done!");
                 StatusDisplayer.getDefault().setStatusText("Wrote SVG screenshot to " + f.getAbsolutePath());
@@ -144,7 +146,7 @@ public final class SvgScreenshot implements ActionListener {
                 i++;
                 file = new File(outputDirectory, fileNamePrefix + i + ".svg");
             }
-            Logger.getLogger(SvgScreenshot.class.getName()).log(Level.INFO, "Saving screenshot to {0}", file);
+            Logger.getLogger(SvgTopComponentScreenshot.class.getName()).log(Level.INFO, "Saving screenshot to {0}", file);
             try (Writer out = new OutputStreamWriter(new FileOutputStream(file))) {
                 out.write(g2d.getSVGElement());
                 g2d.dispose();
