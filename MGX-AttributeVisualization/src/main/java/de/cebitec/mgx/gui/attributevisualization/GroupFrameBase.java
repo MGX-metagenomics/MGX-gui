@@ -13,6 +13,7 @@ import de.cebitec.mgx.gui.attributevisualization.view.NodeProviderI;
 import de.cebitec.mgx.gui.attributevisualization.view.NodeSelectionEvent;
 import de.cebitec.mgx.gui.attributevisualization.view.NodeSelectionListener;
 import de.cebitec.mgx.gui.attributevisualization.view.NodeSelectionProvider;
+import java.awt.Graphics;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
@@ -183,4 +184,16 @@ public abstract class GroupFrameBase<T extends ModelBaseI<T>> extends javax.swin
 
     protected final static DecimalFormat decFormat = new DecimalFormat(",###");
 
+    @Override
+    public void print(Graphics g) {
+        // the Metal LaF decoration of the MetalInternalFrameTitlePane
+        // causes an IllegalArgumentException in the SVG screenshot
+        // export if the frame is selected; thus, disable temporarily
+        // before printing and restore original value afterwards
+        boolean selected = isSelected();
+        isSelected = false;
+        super.print(g);
+        isSelected = selected;
+    }
+    
 }
