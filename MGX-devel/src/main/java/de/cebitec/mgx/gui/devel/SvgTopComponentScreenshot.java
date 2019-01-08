@@ -15,6 +15,7 @@
  */
 package de.cebitec.mgx.gui.devel;
 
+import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import static java.awt.geom.AffineTransform.getTranslateInstance;
@@ -62,10 +63,6 @@ public final class SvgTopComponentScreenshot implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
 
-        final PaintMode paintMode = PaintMode.valueOf(NbPreferences.forModule(SvgTopComponentScreenshot.class).get(
-                PREF_PAINTMODE, PaintMode.PAINT.name()
-        )
-        );
         final File outputDir = new File(
                 NbPreferences.forModule(SvgTopComponentScreenshot.class).get(
                         PREF_OUTPUTDIRECTORY,
@@ -76,7 +73,7 @@ public final class SvgTopComponentScreenshot implements ActionListener {
         SwingWorker<Void, Void> w = new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
-                Thread.sleep(3000);
+                Thread.sleep(8000);
                 return null;
             }
 
@@ -86,22 +83,20 @@ public final class SvgTopComponentScreenshot implements ActionListener {
                 TopComponent topComp = WindowManager.getDefault().getRegistry().getActivated();
                 if (topComp != null) {
 
-                    // subtract inset top to ignore window manager decorations
-                    SVGGraphics2D g2d = new SVGGraphics2D(topComp.getWidth(), topComp.getHeight() - topComp.getInsets().top);
-                    g2d.setTransform(getTranslateInstance(0, -topComp.getInsets().top));
-
-                    //make sure everything is up to date
-                    topComp.invalidate();
-                    topComp.revalidate();
-                    switch (paintMode) {
-                        case PRINT:
-                            topComp.print(g2d);
-                            break;
-                        default:
-                            topComp.paint(g2d);
+                    // ascend swing container hierarchy until we encounter the ModePanel
+                    // instance that holds the topcomponent
+                    Container c = topComp;
+                    while (c != null && !(c.getClass().getName().contains("ModePanel"))) {
+                        c = c.getParent();
                     }
-                    RequestProcessor.getDefault().post(new FileWriter(outputDir, g2d));
+                    
+                    SVGGraphics2D g2d = new SVGGraphics2D(c.getWidth(), c.getHeight() );
+                    g2d.setTransform(getTranslateInstance(0, 0));
+                    c.invalidate();
+                    c.revalidate();
+                    c.print(g2d);
 
+                    RequestProcessor.getDefault().post(new FileWriter(outputDir, g2d));
                 }
             }
 
