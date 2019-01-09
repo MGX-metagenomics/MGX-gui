@@ -5,18 +5,23 @@
  */
 package de.cebitec.mgx.gui.qcmon;
 
+import de.cebitec.mgx.api.groups.ImageExporterI;
 import de.cebitec.mgx.api.model.ModelBaseI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.qc.DataRowI;
 import de.cebitec.mgx.api.model.qc.QCResultI;
+import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Component;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import javax.swing.SwingWorker;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -38,6 +43,8 @@ import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
 import org.openide.windows.TopComponent;
 import org.openide.util.Utilities;
+import org.openide.util.lookup.AbstractLookup;
+import org.openide.util.lookup.InstanceContent;
 
 /**
  * Top component which displays something.
@@ -63,12 +70,34 @@ public final class QCTopComponent extends TopComponent implements LookupListener
     private final Lookup.Result<SeqRunI> resultSeqRun;
     private SeqRunI currentSeqRun = null;
 
+    private final InstanceContent content = new InstanceContent();
+    private final Lookup lookup;
+    private int tabIdx = -1;
+
     private QCTopComponent() {
         initComponents();
         super.setName("Quality Control");
         super.setToolTipText("Quality Control");
+        lookup = new AbstractLookup(content);
+        associateLookup(lookup);
         resultSeqRun = Utilities.actionsGlobalContext().lookupResult(SeqRunI.class);
         update();
+        tabbedPane.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                int newIdx = tabbedPane.getSelectedIndex();
+                if (newIdx != tabIdx) {
+                    content.set(Collections.emptyList(), null); // clear lookup
+                    Component comp = tabbedPane.getSelectedComponent();
+                    if (comp != null && comp instanceof ChartPanel) {
+                        ChartPanel cp = (ChartPanel) comp;
+                        ImageExporterI exporter = JFreeChartUtil.getImageExporter(cp.getChart());
+                        content.add(exporter);
+                    }
+                    tabIdx = newIdx;
+                }
+            }
+        });
     }
 
     private static QCTopComponent instance = null;
@@ -170,7 +199,7 @@ public final class QCTopComponent extends TopComponent implements LookupListener
                     tabbedPane.removeAll();
                     int cnt = 0;
                     for (QCResultI qcr : qc) {
-                        Component chart = createChart(qcr);
+                        ChartPanel chart = createChart(qcr);
                         tabbedPane.add(qcr.getName(), chart);
                         tabbedPane.setToolTipTextAt(cnt++, qcr.getDescription());
                     }
@@ -197,7 +226,7 @@ public final class QCTopComponent extends TopComponent implements LookupListener
         }
     }
 
-    private static Component createChart(QCResultI qcr) {
+    private static ChartPanel createChart(QCResultI qcr) {
         if ("Sequence quality".equals(qcr.getName())) {
             YIntervalSeriesCollection qualityDataset = new YIntervalSeriesCollection();
             DataRowI[] data = qcr.getData();
@@ -240,6 +269,7 @@ public final class QCTopComponent extends TopComponent implements LookupListener
             chart.setBorderPaint(Color.WHITE);
             chart.setBackgroundPaint(Color.WHITE);
             ChartPanel cPanel = new ChartPanel(chart);
+            cPanel.setPopupMenu(null);
             plot.setBackgroundPaint(Color.WHITE);
             return cPanel;
         } else {
@@ -268,6 +298,7 @@ public final class QCTopComponent extends TopComponent implements LookupListener
             chart.setBorderPaint(Color.WHITE);
             chart.setBackgroundPaint(Color.WHITE);
             ChartPanel cPanel = new ChartPanel(chart);
+            cPanel.setPopupMenu(null);
             XYPlot plot = (XYPlot) chart.getPlot();
             plot.setBackgroundPaint(Color.WHITE);
 
