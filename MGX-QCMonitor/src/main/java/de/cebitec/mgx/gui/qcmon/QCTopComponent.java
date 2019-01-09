@@ -11,6 +11,7 @@ import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.qc.DataRowI;
 import de.cebitec.mgx.api.model.qc.QCResultI;
 import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
+import de.cebitec.mgx.gui.charts.basic.util.SVGChartPanel;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Component;
@@ -23,7 +24,6 @@ import javax.swing.SwingWorker;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.IntervalMarker;
 import org.jfree.chart.plot.PlotOrientation;
@@ -89,8 +89,8 @@ public final class QCTopComponent extends TopComponent implements LookupListener
                 if (newIdx != tabIdx) {
                     content.set(Collections.emptyList(), null); // clear lookup
                     Component comp = tabbedPane.getSelectedComponent();
-                    if (comp != null && comp instanceof ChartPanel) {
-                        ChartPanel cp = (ChartPanel) comp;
+                    if (comp != null && comp instanceof SVGChartPanel) {
+                        SVGChartPanel cp = (SVGChartPanel) comp;
                         ImageExporterI exporter = JFreeChartUtil.getImageExporter(cp.getChart());
                         content.add(exporter);
                     }
@@ -199,7 +199,7 @@ public final class QCTopComponent extends TopComponent implements LookupListener
                     tabbedPane.removeAll();
                     int cnt = 0;
                     for (QCResultI qcr : qc) {
-                        ChartPanel chart = createChart(qcr);
+                        SVGChartPanel chart = createChart(qcr);
                         tabbedPane.add(qcr.getName(), chart);
                         tabbedPane.setToolTipTextAt(cnt++, qcr.getDescription());
                     }
@@ -226,7 +226,7 @@ public final class QCTopComponent extends TopComponent implements LookupListener
         }
     }
 
-    private static ChartPanel createChart(QCResultI qcr) {
+    private static SVGChartPanel createChart(QCResultI qcr) {
         if ("Sequence quality".equals(qcr.getName())) {
             YIntervalSeriesCollection qualityDataset = new YIntervalSeriesCollection();
             DataRowI[] data = qcr.getData();
@@ -242,7 +242,7 @@ public final class QCTopComponent extends TopComponent implements LookupListener
             qualityDataset.addSeries(qualitySeries);
 
             boolean showLegend = false;
-            JFreeChart chart = ChartFactory.createXYLineChart(null, null, null, qualityDataset, PlotOrientation.VERTICAL, showLegend, true, false);
+            final JFreeChart chart = ChartFactory.createXYLineChart(null, null, null, qualityDataset, PlotOrientation.VERTICAL, showLegend, true, false);
             XYPlot plot = (XYPlot) chart.getPlot();
 
             plot.addRangeMarker(new IntervalMarker(0, 20, Color.RED, new BasicStroke(0.5f), null, null, 0.3f));
@@ -268,9 +268,10 @@ public final class QCTopComponent extends TopComponent implements LookupListener
 
             chart.setBorderPaint(Color.WHITE);
             chart.setBackgroundPaint(Color.WHITE);
-            ChartPanel cPanel = new ChartPanel(chart);
+            SVGChartPanel cPanel = new SVGChartPanel(chart);
             cPanel.setPopupMenu(null);
             plot.setBackgroundPaint(Color.WHITE);
+
             return cPanel;
         } else {
             DefaultTableXYDataset dataset = new DefaultTableXYDataset();
@@ -297,7 +298,7 @@ public final class QCTopComponent extends TopComponent implements LookupListener
 
             chart.setBorderPaint(Color.WHITE);
             chart.setBackgroundPaint(Color.WHITE);
-            ChartPanel cPanel = new ChartPanel(chart);
+            SVGChartPanel cPanel = new SVGChartPanel(chart);
             cPanel.setPopupMenu(null);
             XYPlot plot = (XYPlot) chart.getPlot();
             plot.setBackgroundPaint(Color.WHITE);
