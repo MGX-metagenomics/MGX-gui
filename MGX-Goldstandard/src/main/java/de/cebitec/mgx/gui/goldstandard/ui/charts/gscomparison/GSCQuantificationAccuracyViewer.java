@@ -6,6 +6,7 @@ import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
+import de.cebitec.mgx.gui.charts.basic.util.SVGChartPanel;
 import de.cebitec.mgx.gui.goldstandard.ui.charts.EvaluationViewerI;
 import de.cebitec.mgx.gui.goldstandard.ui.charts.pipelinecomparison.PCDistanceViewer;
 import de.cebitec.mgx.gui.goldstandard.util.JobUtils;
@@ -13,14 +14,14 @@ import de.cebitec.mgx.gui.goldstandard.util.Vector;
 import de.cebitec.mgx.gui.goldstandard.wizards.selectjobs.SelectSingleJobWithGSWizardDescriptor;
 import java.awt.Dialog;
 import java.awt.Font;
-import java.awt.Rectangle;
+import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JComponent;
 import org.apache.commons.math3.stat.correlation.PearsonsCorrelation;
-import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.annotations.XYTextAnnotation;
+import org.jfree.chart.axis.LogarithmicAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.XYPlot;
@@ -44,9 +45,9 @@ public class GSCQuantificationAccuracyViewer extends EvaluationViewerI implement
     private List<JobI> currentJobs;
 
     private JFreeChart chart = null;
-    private ChartPanel cPanel = null;
+    private SVGChartPanel cPanel = null;
 
-    private GSCQuantificationAccuracyViewCustomizer cust = null;
+    private final GSCQuantificationAccuracyViewCustomizer cust = new GSCQuantificationAccuracyViewCustomizer();
 
     private JobI gsJob;
     private AttributeTypeI attrType;
@@ -65,7 +66,7 @@ public class GSCQuantificationAccuracyViewer extends EvaluationViewerI implement
 
     @Override
     public ImageExporterI getImageExporter() {
-       return JFreeChartUtil.getImageExporter(chart);
+        return JFreeChartUtil.getImageExporter(chart);
     }
 
     @Override
@@ -98,13 +99,34 @@ public class GSCQuantificationAccuracyViewer extends EvaluationViewerI implement
 
         XYSeries series1 = new XYSeries("Points");
         for (int i = 0; i < values[0].length; i++) {
-            series1.add(values[1][i], values[0][i]);
+            if (cust.useLogAxis()) {
+                // skip zero values
+                if (values[1][i] != 0 && values[0][i] != 0) {
+                    series1.add(values[1][i], values[0][i]);
+                }
+
+            } else {
+                series1.add(values[1][i], values[0][i]);
+            }
         }
         XYDataset collection1 = new XYSeriesCollection(series1);
         XYItemRenderer renderer1 = new XYLineAndShapeRenderer(false, true);   // Shapes only
-        renderer1.setSeriesShape(0, new Rectangle(2, 2));
-        ValueAxis domain1 = new NumberAxis(JobUtils.jobToString(currentJobs.get(0)));
-        ValueAxis range1 = new NumberAxis(JobUtils.jobToString(gsJob));
+        
+        //renderer1.setSeriesShape(0, new Rectangle(2, 2));
+        Ellipse2D.Float circle = new java.awt.geom.Ellipse2D.Float();
+        circle.height = 3;
+        circle.width = 3;
+        renderer1.setSeriesShape(0, circle);
+
+        ValueAxis domain1;
+        ValueAxis range1;
+        if (!cust.useLogAxis()) {
+            domain1 = new NumberAxis(JobUtils.jobToString(currentJobs.get(0)));
+            range1 = new NumberAxis(JobUtils.jobToString(gsJob));
+        } else {
+            domain1 = new LogarithmicAxis(JobUtils.jobToString(currentJobs.get(0)));
+            range1 = new LogarithmicAxis(JobUtils.jobToString(gsJob));
+        }
 
         plot.setDataset(0, collection1);
         plot.setRenderer(0, renderer1);
@@ -115,7 +137,7 @@ public class GSCQuantificationAccuracyViewer extends EvaluationViewerI implement
         plot.mapDatasetToRangeAxis(0, 0);
 
         XYSeries series2 = new XYSeries("Line");
-        series2.add(0, 0);
+        series2.add(1, 1);
         double val = Math.max(series1.getMaxX(), series1.getMaxY());
         series2.add(val, val);
         XYDataset collection2 = new XYSeriesCollection(series2);
@@ -129,21 +151,17 @@ public class GSCQuantificationAccuracyViewer extends EvaluationViewerI implement
 
         final XYTextAnnotation r = new XYTextAnnotation(String.format("R: %1$.5f", correlation), series1.getMaxX() * 0.10, series1.getMaxY() - 20);
         r.setToolTipText(String.format("R: %1$.5f", correlation));
-        r.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        r.setFont(new Font("SansSerif", Font.PLAIN, 20));
         plot.addAnnotation(r);
 
         chart = new JFreeChart(plot);
         chart.removeLegend();
-        cPanel = new ChartPanel(chart);
+        cPanel = new SVGChartPanel(chart);
 
     }
 
     @Override
     public JComponent getCustomizer() {
-        if (cust == null) {
-            cust = new GSCQuantificationAccuracyViewCustomizer();
-        }
-
         return cust;
     }
 
@@ -172,7 +190,6 @@ public class GSCQuantificationAccuracyViewer extends EvaluationViewerI implement
     public void dispose() {
         super.dispose();
         cust.dispose();
-        cust = null;
         tidyUp();
     }
 

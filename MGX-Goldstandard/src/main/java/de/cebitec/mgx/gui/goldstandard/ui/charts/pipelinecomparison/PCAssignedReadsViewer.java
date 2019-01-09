@@ -6,6 +6,7 @@ import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.SeqRunI;
+import de.cebitec.mgx.gui.charts.basic.util.SVGChartPanel;
 import de.cebitec.mgx.gui.goldstandard.ui.charts.EvaluationViewerI;
 import de.cebitec.mgx.gui.goldstandard.wizards.selectjobs.SelectJobsWizardDescriptor;
 import java.awt.Color;
@@ -15,7 +16,6 @@ import java.util.Collection;
 import javax.swing.JComponent;
 import org.apache.commons.math3.util.FastMath;
 import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.StandardChartTheme;
 import org.jfree.chart.axis.CategoryAxis;
@@ -44,7 +44,7 @@ import org.openide.util.lookup.ServiceProvider;
 public class PCAssignedReadsViewer extends EvaluationViewerI implements PipelineComparisonI {
 
     private AttributeTypeI usedAttributeType;
-    private ChartPanel cPanel = null;
+    private SVGChartPanel cPanel = null;
     private Collection<JobI> jobs;
     private PCAssignedReadsViewCustomizer cust = null;
     private JFreeChart chart = null;
@@ -104,7 +104,7 @@ public class PCAssignedReadsViewer extends EvaluationViewerI implements Pipeline
         chart.setBorderPaint(Color.WHITE);
         chart.setBackgroundPaint(Color.WHITE);
         chart.setAntiAlias(true);
-        cPanel = new ChartPanel(chart);
+        cPanel = new SVGChartPanel(chart);
         CategoryPlot plot = chart.getCategoryPlot();
 
         plot.setBackgroundPaint(Color.WHITE);

@@ -271,7 +271,7 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Action
 //        comparisonTypeList.removeActionListener(this);
 //        visualizationTypeList.removeActionListener(this);
 //    }
-    private void update() {
+    private synchronized void update() {
         Collection<? extends SeqRunI> seqruns = res.allInstances();
 
         // we're only interested in single-selection

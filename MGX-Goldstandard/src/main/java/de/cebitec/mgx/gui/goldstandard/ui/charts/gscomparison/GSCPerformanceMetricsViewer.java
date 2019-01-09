@@ -165,7 +165,7 @@ public class GSCPerformanceMetricsViewer extends EvaluationViewerI implements GS
         PerformanceMetrics[] performanceMetrics = new PerformanceMetrics[jobs.size()];
         final AtomicBoolean hasError = new AtomicBoolean(false);
         final CountDownLatch allDone = new CountDownLatch(jobs.size());
-        final Semaphore rateLimit = new Semaphore(2);
+        final Semaphore rateLimit = new Semaphore(3);
         int i = 0;
         for (final JobI job : jobs) {
             final PerformanceMetrics pm = new PerformanceMetrics(goldstandard);
