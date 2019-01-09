@@ -17,6 +17,7 @@ import de.cebitec.mgx.common.visualization.AbstractViewer;
 import de.cebitec.mgx.common.visualization.CustomizableI;
 import de.cebitec.mgx.common.visualization.ViewerI;
 import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
+import de.cebitec.mgx.gui.charts.basic.util.SVGChartPanel;
 import de.cebitec.mgx.gui.seqexporter.SeqExporter;
 import de.cebitec.mgx.gui.vizfilter.LongToDouble;
 import de.cebitec.mgx.gui.vizfilter.ToFractionFilter;
@@ -32,7 +33,6 @@ import java.util.concurrent.ExecutionException;
 import javax.swing.JComponent;
 import javax.swing.SwingWorker;
 import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.NumberAxis;
@@ -56,7 +56,7 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = ViewerI.class)
 public class PCAPlot extends AbstractViewer<DistributionI<Long>> implements CustomizableI, SequenceExporterI.Provider, ImageExporterI.Provider {
 
-    private ChartPanel cPanel = null;
+    private SVGChartPanel cPanel = null;
     private JFreeChart chart = null;
     private PCACustomizer cust = null;
     private List<Pair<VisualizationGroupI, DistributionI<Long>>> data;
@@ -175,7 +175,7 @@ public class PCAPlot extends AbstractViewer<DistributionI<Long>> implements Cust
                 + " (" + pc1rel + "%)", comps.getSecond().toString() + " (" + pc2rel + "%)", dataset, PlotOrientation.VERTICAL, false, true, false);
         chart.setBorderPaint(Color.WHITE);
         chart.setBackgroundPaint(Color.WHITE);
-        cPanel = new ChartPanel(chart);
+        cPanel = new SVGChartPanel(chart);
         cPanel.setDisplayToolTips(true);
         XYPlot plot = (XYPlot) chart.getPlot();
         plot.setBackgroundPaint(Color.WHITE);
