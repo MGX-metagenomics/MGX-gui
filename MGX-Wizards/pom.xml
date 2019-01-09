@@ -102,7 +102,6 @@
                         <publicPackage>de.cebitec.mgx.gui.wizard.analysis</publicPackage>
                         <publicPackage>de.cebitec.mgx.gui.wizard.configurations.action</publicPackage>
                         <publicPackage>de.cebitec.mgx.gui.wizard.configurations.data.impl</publicPackage>
-                        <publicPackage>de.cebitec.mgx.gui.wizard.configurations.data.util</publicPackage>
                         <publicPackage>de.cebitec.mgx.gui.wizard.extract</publicPackage>
                         <publicPackage>de.cebitec.mgx.gui.wizard.habitat</publicPackage>
                         <publicPackage>de.cebitec.mgx.gui.wizard.job</publicPackage>
