@@ -13,6 +13,7 @@ import de.cebitec.mgx.gui.vizfilter.ToFractionFilter;
 import de.cebitec.mgx.common.VGroupManager;
 import de.cebitec.mgx.common.visualization.NumericalViewerI;
 import de.cebitec.mgx.common.visualization.ViewerI;
+import de.cebitec.mgx.gui.charts.basic.util.SVGChartPanel;
 import de.cebitec.mgx.gui.seqexporter.SeqExporter;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -28,7 +29,6 @@ import java.util.Map;
 import java.util.Set;
 import javax.swing.JComponent;
 import org.apache.commons.math3.util.FastMath;
-import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.AxisState;
@@ -56,7 +56,7 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = ViewerI.class)
 public class MAPlot extends NumericalViewerI<Long> implements ImageExporterI.Provider, SequenceExporterI.Provider {
 
-    private ChartPanel cPanel = null;
+    private SVGChartPanel cPanel = null;
     private JFreeChart chart = null;
     private final Map<XYDataItem, String> toolTips = new HashMap<>();
     private List<Pair<VisualizationGroupI, DistributionI<Long>>> firstTwo;
@@ -174,7 +174,7 @@ public class MAPlot extends NumericalViewerI<Long> implements ImageExporterI.Pro
 
         chart = createCombinedChart(normal, posInf, negInf, xAxisLabel, yAxisLabel, tooltipGenerator);
         chart.removeLegend();
-        cPanel = new ChartPanel(chart, true, false, true, true, true);
+        cPanel = new SVGChartPanel(chart, true, false, true, true, true);
         cPanel.setInitialDelay(0);
         cPanel.setMaximumDrawHeight(1080);
         cPanel.setMaximumDrawWidth(1920);

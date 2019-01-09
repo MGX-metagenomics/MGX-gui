@@ -13,6 +13,7 @@ import de.cebitec.mgx.common.visualization.CategoricalViewerI;
 import de.cebitec.mgx.common.visualization.CustomizableI;
 import de.cebitec.mgx.common.visualization.ViewerI;
 import de.cebitec.mgx.gui.charts.basic.util.LogAxis;
+import de.cebitec.mgx.gui.charts.basic.util.SVGChartPanel;
 import de.cebitec.mgx.gui.seqexporter.SeqExporter;
 import java.awt.Color;
 import java.text.NumberFormat;
@@ -22,7 +23,6 @@ import java.util.Locale;
 import javax.swing.JComponent;
 import org.apache.commons.math3.util.FastMath;
 import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.StandardChartTheme;
 import org.jfree.chart.axis.CategoryAxis;
@@ -46,7 +46,7 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = ViewerI.class)
 public class BarChartViewer extends CategoricalViewerI<Long> implements ImageExporterI.Provider, SequenceExporterI.Provider, CustomizableI {
 
-    private ChartPanel cPanel = null;
+    private SVGChartPanel cPanel = null;
     private BarChartCustomizer customizer = null;
     private JFreeChart chart = null;
     private CategoryDataset dataset;
@@ -89,7 +89,7 @@ public class BarChartViewer extends CategoricalViewerI<Long> implements ImageExp
         chart.setBackgroundPaint(Color.WHITE);
         chart.setAntiAlias(true);
         //chart.setTextAntiAlias(RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
-        cPanel = new ChartPanel(chart);
+        cPanel = new SVGChartPanel(chart);
         CategoryPlot plot = chart.getCategoryPlot();
 
         plot.setFixedLegendItems(JFreeChartUtil.createLegend(data));

@@ -10,13 +10,13 @@ import de.cebitec.mgx.api.groups.SequenceExporterI;
 import de.cebitec.mgx.gui.vizfilter.SortOrder;
 import de.cebitec.mgx.common.visualization.NumericalViewerI;
 import de.cebitec.mgx.common.visualization.ViewerI;
+import de.cebitec.mgx.gui.charts.basic.util.SVGChartPanel;
 import de.cebitec.mgx.gui.seqexporter.SeqExporter;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JComponent;
 import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PolarPlot;
 import org.jfree.chart.renderer.DefaultPolarItemRenderer;
@@ -30,7 +30,7 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = ViewerI.class)
 public class PolarChart extends NumericalViewerI<Long> implements ImageExporterI.Provider, SequenceExporterI.Provider {
 
-    private ChartPanel cPanel = null;
+    private SVGChartPanel cPanel = null;
     private JFreeChart chart = null;
     private List<Pair<VisualizationGroupI, DistributionI<Long>>> dists;
 
@@ -61,7 +61,7 @@ public class PolarChart extends NumericalViewerI<Long> implements ImageExporterI
         chart.setBorderPaint(Color.WHITE);
         chart.setBackgroundPaint(Color.WHITE);
 
-        cPanel = new ChartPanel(chart);
+        cPanel = new SVGChartPanel(chart);
         PolarPlot plot = (PolarPlot) chart.getPlot();
         plot.setBackgroundPaint(Color.WHITE);
 

@@ -5,7 +5,6 @@ import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
-import org.jfree.chart.ChartPanel;
 
 /**
  *
@@ -13,7 +12,7 @@ import org.jfree.chart.ChartPanel;
  */
 public class ScrollableBarChart extends JPanel {
     
-    public ScrollableBarChart(ChartPanel cPanel, final SlidingCategoryDataset data) {
+    public ScrollableBarChart(SVGChartPanel cPanel, final SlidingCategoryDataset data) {
         super();
         setLayout(new BorderLayout());
         this.add(cPanel, BorderLayout.CENTER);

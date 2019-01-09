@@ -16,6 +16,7 @@ import de.cebitec.mgx.common.visualization.CustomizableI;
 import de.cebitec.mgx.common.visualization.ViewerI;
 import de.cebitec.mgx.gui.charts.basic.customizer.VolcanoPlotCustomizer;
 import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
+import de.cebitec.mgx.gui.charts.basic.util.SVGChartPanel;
 import de.cebitec.mgx.gui.seqexporter.SeqExporter;
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -29,7 +30,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import javax.swing.JComponent;
-import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.openide.util.lookup.ServiceProvider;
 import org.apache.commons.math3.stat.inference.MannWhitneyUTest;
@@ -52,7 +52,7 @@ import org.openide.util.Exceptions;
 @ServiceProvider(service = ViewerI.class)
 public class VolcanoPlot extends CategoricalViewerI<Long> implements CustomizableI, ImageExporterI.Provider, SequenceExporterI.Provider {
 
-    private ChartPanel cPanel = null;
+    private SVGChartPanel cPanel = null;
     private VolcanoPlotCustomizer customizer = null;
     private JFreeChart chart = null;
     List<Pair<VisualizationGroupI, DistributionI<Long>>> data;
@@ -207,7 +207,7 @@ public class VolcanoPlot extends CategoricalViewerI<Long> implements Customizabl
         chart.setBorderPaint(Color.WHITE);
         chart.setBackgroundPaint(Color.WHITE);
         chart.removeLegend();
-        cPanel = new ChartPanel(chart);
+        cPanel = new SVGChartPanel(chart);
         XYPlot plot = (XYPlot) chart.getPlot();
         plot.setBackgroundPaint(Color.WHITE);
 

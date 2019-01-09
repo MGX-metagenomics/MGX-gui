@@ -8,11 +8,11 @@ import de.cebitec.mgx.common.VGroupManager;
 import de.cebitec.mgx.common.visualization.ViewerI;
 import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
 import de.cebitec.mgx.gui.charts.basic.util.LogAxis;
+import de.cebitec.mgx.gui.charts.basic.util.SVGChartPanel;
 import java.awt.Color;
 import java.util.List;
 import java.util.Locale;
 import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartPanel;
 import org.jfree.chart.LegendItemCollection;
 import org.jfree.chart.axis.LogarithmicAxis;
 import org.jfree.chart.axis.NumberAxis;
@@ -55,7 +55,7 @@ public class StackedAreaChart extends AreaChart {
 
         chart.setBorderPaint(Color.WHITE);
         chart.setBackgroundPaint(Color.WHITE);
-        cPanel = new ChartPanel(chart);
+        cPanel = new SVGChartPanel(chart);
         XYPlot plot = (XYPlot) chart.getPlot();
         plot.setBackgroundPaint(Color.WHITE);
 

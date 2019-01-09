@@ -11,6 +11,7 @@ import de.cebitec.mgx.common.visualization.ViewerI;
 import de.cebitec.mgx.gui.charts.basic.customizer.XYPlotCustomizer;
 import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
 import de.cebitec.mgx.gui.charts.basic.util.LogAxis;
+import de.cebitec.mgx.gui.charts.basic.util.SVGChartPanel;
 import de.cebitec.mgx.gui.seqexporter.SeqExporter;
 import java.awt.Color;
 import java.util.ArrayList;
@@ -18,7 +19,6 @@ import java.util.List;
 import java.util.Locale;
 import javax.swing.JComponent;
 import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.LegendItemCollection;
 import org.jfree.chart.axis.LogarithmicAxis;
@@ -38,7 +38,7 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = ViewerI.class)
 public class AreaChart extends NumericalViewerI<Long> implements CustomizableI, ImageExporterI.Provider, SequenceExporterI.Provider {
 
-    protected ChartPanel cPanel = null;
+    protected SVGChartPanel cPanel = null;
     protected XYPlotCustomizer customizer = null;
     protected JFreeChart chart = null;
     protected List<Pair<VisualizationGroupI, DistributionI<Double>>> data;
@@ -68,7 +68,7 @@ public class AreaChart extends NumericalViewerI<Long> implements CustomizableI, 
 
         chart.setBorderPaint(Color.WHITE);
         chart.setBackgroundPaint(Color.WHITE);
-        cPanel = new ChartPanel(chart);
+        cPanel = new SVGChartPanel(chart);
         XYPlot plot = (XYPlot) chart.getPlot();
         plot.setBackgroundPaint(Color.WHITE);
 

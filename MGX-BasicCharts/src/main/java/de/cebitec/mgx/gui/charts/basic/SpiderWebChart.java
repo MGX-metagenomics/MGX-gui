@@ -11,6 +11,7 @@ import de.cebitec.mgx.common.visualization.CategoricalViewerI;
 import de.cebitec.mgx.common.visualization.CustomizableI;
 import de.cebitec.mgx.common.visualization.ViewerI;
 import de.cebitec.mgx.gui.charts.basic.customizer.SpiderWebChartCustomizer;
+import de.cebitec.mgx.gui.charts.basic.util.SVGChartPanel;
 import de.cebitec.mgx.gui.seqexporter.SeqExporter;
 import java.awt.Color;
 import java.awt.Font;
@@ -18,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JComponent;
 import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.StandardChartTheme;
 import org.jfree.chart.labels.CategoryToolTipGenerator;
@@ -33,7 +33,7 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = ViewerI.class)
 public class SpiderWebChart extends CategoricalViewerI<Long> implements CustomizableI, ImageExporterI.Provider, SequenceExporterI.Provider {
 
-    private ChartPanel cPanel = null;
+    private SVGChartPanel cPanel = null;
     private JFreeChart chart = null;
     List<Pair<VisualizationGroupI, DistributionI<Double>>> dists;
     private final SpiderWebChartCustomizer cust = new SpiderWebChartCustomizer();
@@ -90,7 +90,7 @@ public class SpiderWebChart extends CategoricalViewerI<Long> implements Customiz
 //        legendtitle.setPosition(RectangleEdge.RIGHT);
 //        legendtitle.setFrame(new BlockBorder(1.0D, 1.0D, 1.0D, 1.0D));
 //        chart.addSubtitle(legendtitle);
-        cPanel = new ChartPanel(chart);
+        cPanel = new SVGChartPanel(chart);
     }
 
     @Override

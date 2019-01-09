@@ -15,6 +15,7 @@ import de.cebitec.mgx.common.visualization.CategoricalViewerI;
 import de.cebitec.mgx.common.visualization.CustomizableI;
 import de.cebitec.mgx.common.visualization.ViewerI;
 import de.cebitec.mgx.gui.charts.basic.util.LogAxis;
+import de.cebitec.mgx.gui.charts.basic.util.SVGChartPanel;
 import de.cebitec.mgx.gui.charts.basic.util.SlidingStatisticalCategoryDataset;
 import de.cebitec.mgx.gui.seqexporter.SeqExporter;
 import java.awt.BorderLayout;
@@ -31,7 +32,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import org.apache.commons.math3.util.FastMath;
 import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.StandardChartTheme;
 import org.jfree.chart.axis.CategoryAxis;
@@ -56,7 +56,7 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = ViewerI.class)
 public class StatisticalBarChart extends CategoricalViewerI<Long> implements AdjustmentListener, CustomizableI, ImageExporterI.Provider, SequenceExporterI.Provider {
 
-    private ChartPanel cPanel = null;
+    private SVGChartPanel cPanel = null;
     private BarChartCustomizer customizer = null;
     private JFreeChart chart = null;
     private CategoryDataset dataset;
@@ -118,7 +118,7 @@ public class StatisticalBarChart extends CategoricalViewerI<Long> implements Adj
         chart.setBorderPaint(Color.WHITE);
         chart.setBackgroundPaint(Color.WHITE);
         chart.setAntiAlias(true);
-        cPanel = new ChartPanel(chart);
+        cPanel = new SVGChartPanel(chart);
 
         StatisticalBarRenderer br = (StatisticalBarRenderer) plot.getRenderer();
         br.setItemMargin(customizer.getItemMargin());
