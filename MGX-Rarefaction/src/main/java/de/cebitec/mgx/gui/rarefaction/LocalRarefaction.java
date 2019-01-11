@@ -24,23 +24,27 @@ import org.openide.util.Exceptions;
  * @author sj
  */
 public class LocalRarefaction {
-    
+
     private final static int DEFAULT_REPETITIONS = 55;
-    
+    private final static int DEFAULT_NUMSTEPS = 50;
+
     public static Iterator<Point> rarefy(DistributionI<Long> dist) throws MGXException {
         return rarefy(dist, DEFAULT_REPETITIONS);
     }
 
     public static Iterator<Point> rarefy(DistributionI<Long> dist, int numRepetitions) throws MGXException {
+        return rarefy(dist, numRepetitions, DEFAULT_NUMSTEPS);
+    }
+
+    public static Iterator<Point> rarefy(DistributionI<Long> dist, int numRepetitions, int numSteps) throws MGXException {
         if (dist.size() > Math.pow(2, Character.SIZE)) {
-            throw new MGXException("Distribution too large."); 
+            throw new MGXException("Distribution too large.");
         }
-        
+
         if (dist.getTotalClassifiedElements() > Integer.MAX_VALUE) {
             throw new MGXException("Too many classified sequences.");
         }
 
-        
         int numFeatures = 0;
         // use char as uint16t
         char[] frame = new char[(int) dist.getTotalClassifiedElements()];
@@ -57,7 +61,7 @@ public class LocalRarefaction {
             numFeatures++;
         }
 
-        int depths[] = seq(1, frame.length, 50);
+        int depths[] = seq(1, frame.length, numSteps);
         double[] divs = rarefy(depths, numRepetitions, frame, numFeatures);
         List<Point> ret = new ArrayList<>(depths.length);
         for (int i = 0; i < depths.length; i++) {
@@ -148,15 +152,15 @@ public class LocalRarefaction {
         array[j] = temp;
     }
 
-    private static int[] seq(int from, int to, int len) {
-        int[] ret = new int[len];
+    private static int[] seq(int from, int to, int numSteps) {
+        int[] ret = new int[numSteps];
         ret[0] = from;
-        ret[len - 1] = to;
+        ret[numSteps - 1] = to;
 
         float interval = to - from + 1;
-        interval /= len;
+        interval /= numSteps;
 
-        for (int i = 1; i < len - 1; i++) {
+        for (int i = 1; i < numSteps - 1; i++) {
             ret[i] = from + Math.round(interval * (i));
         }
         return ret;
@@ -170,7 +174,6 @@ public class LocalRarefaction {
 //        }
 //        System.out.println(Arrays.toString(xx));
 //    }
-
     private static class XorShift64Star {
 
         private long state;

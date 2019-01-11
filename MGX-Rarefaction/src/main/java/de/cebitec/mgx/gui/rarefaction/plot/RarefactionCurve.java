@@ -20,7 +20,6 @@ import de.cebitec.mgx.gui.seqexporter.SeqExporter;
 import de.cebitec.mgx.gui.swingutils.DelayedPlot;
 import de.cebitec.mgx.gui.swingutils.NonEDT;
 import java.awt.Color;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -30,7 +29,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JComponent;
 import javax.swing.SwingWorker;
 import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.TickUnitSource;
@@ -86,7 +84,8 @@ public class RarefactionCurve extends AbstractViewer<DistributionI<Long>> implem
                 String xAxisLabel = "Size";
                 String yAxisLabel = "Richness";
 
-                chart = ChartFactory.createXYLineChart(getTitle(), xAxisLabel, yAxisLabel, dataset, PlotOrientation.VERTICAL, true, true, false);
+                String title = getCustomizer().hideTitle() ? null : getTitle();
+                chart = ChartFactory.createXYLineChart(title, xAxisLabel, yAxisLabel, dataset, PlotOrientation.VERTICAL, true, true, false);
                 chart.setBorderPaint(Color.WHITE);
                 chart.setBackgroundPaint(Color.WHITE);
                 ret = new SVGChartPanel(chart);
@@ -126,7 +125,7 @@ public class RarefactionCurve extends AbstractViewer<DistributionI<Long>> implem
             protected void done() {
                 try {
                     DelayedPlot wp = RarefactionCurve.this.cPanel;
-                    wp.setTarget(get());
+                    wp.setTarget(get(), JFreeChartUtil.getImageExporter(chart));
                 } catch (InterruptedException | ExecutionException ex) {
                     Exceptions.printStackTrace(ex);
                 }
@@ -139,8 +138,9 @@ public class RarefactionCurve extends AbstractViewer<DistributionI<Long>> implem
     }
 
     private XYSeriesCollection createXYSeries(List<Pair<VisualizationGroupI, DistributionI<Long>>> in) {
-        
+
         final int numRepetitions = getCustomizer().getNumberRepetitions();
+        final int numDataPoints = getCustomizer().getNumberOfPoints();
         final XYSeriesCollection dataset = new XYSeriesCollection();
         final AtomicBoolean error = new AtomicBoolean(false);
 
@@ -155,7 +155,7 @@ public class RarefactionCurve extends AbstractViewer<DistributionI<Long>> implem
                     final DistributionI<Long> dist = groupDistribution.getSecond();
                     Iterator<Point> iter = null;
                     try {
-                        iter = LocalRarefaction.rarefy(dist, numRepetitions);
+                        iter = LocalRarefaction.rarefy(dist, numRepetitions, numDataPoints);
                     } catch (MGXException ex) {
                         Exceptions.printStackTrace(ex);
                         //
@@ -207,16 +207,18 @@ public class RarefactionCurve extends AbstractViewer<DistributionI<Long>> implem
     @Override
     public ImageExporterI getImageExporter() {
         return new ImageExporterI() {
-
             @Override
             public FileType[] getSupportedTypes() {
-                return new FileType[]{FileType.PNG};
+                return new FileType[]{FileType.PNG, FileType.JPEG, FileType.SVG};
             }
 
             @Override
-            public Result export(FileType type, String fName) throws Exception {
-                ChartUtilities.saveChartAsPNG(new File(fName), chart, 1280, 1024);
-                return Result.SUCCESS;
+            public ImageExporterI.Result export(FileType type, String fName) throws Exception {
+                ImageExporterI exp = cPanel.getImageExporter();
+                if (exp == null) {
+                    return Result.ERROR;
+                }
+                return exp.export(type, fName);
             }
         };
     }

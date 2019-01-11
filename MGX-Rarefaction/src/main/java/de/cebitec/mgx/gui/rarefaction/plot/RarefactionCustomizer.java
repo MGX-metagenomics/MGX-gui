@@ -17,16 +17,26 @@ public class RarefactionCustomizer extends javax.swing.JPanel {
     public RarefactionCustomizer() {
         initComponents();
     }
-    
+
     @Override
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
+        numPoints.setEnabled(enabled);
         numIterations.setEnabled(enabled);
+        hideTitle.setEnabled(enabled);
     }
 
     int getNumberRepetitions() {
         int ret = numIterations.getValue();
         return ret == 0 ? 1 : ret; //at least one round required
+    }
+
+    int getNumberOfPoints() {
+        return numPoints.getValue();
+    }
+
+    boolean hideTitle() {
+        return hideTitle.isSelected();
     }
 
     /**
@@ -38,8 +48,28 @@ public class RarefactionCustomizer extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        numIterations = new javax.swing.JSlider();
+        numPoints = new javax.swing.JSlider();
         jLabel1 = new javax.swing.JLabel();
+        hideTitle = new javax.swing.JCheckBox();
+        jLabel2 = new javax.swing.JLabel();
+        numIterations = new javax.swing.JSlider();
+
+        numPoints.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
+        numPoints.setMajorTickSpacing(50);
+        numPoints.setMaximum(250);
+        numPoints.setMinorTickSpacing(5);
+        numPoints.setPaintLabels(true);
+        numPoints.setPaintTicks(true);
+        numPoints.setSnapToTicks(true);
+
+        jLabel1.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(RarefactionCustomizer.class, "RarefactionCustomizer.jLabel1.text")); // NOI18N
+
+        hideTitle.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(hideTitle, org.openide.util.NbBundle.getMessage(RarefactionCustomizer.class, "RarefactionCustomizer.hideTitle.text")); // NOI18N
+
+        jLabel2.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(jLabel2, org.openide.util.NbBundle.getMessage(RarefactionCustomizer.class, "RarefactionCustomizer.jLabel2.text")); // NOI18N
 
         numIterations.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         numIterations.setMajorTickSpacing(50);
@@ -49,33 +79,53 @@ public class RarefactionCustomizer extends javax.swing.JPanel {
         numIterations.setPaintTicks(true);
         numIterations.setSnapToTicks(true);
 
-        jLabel1.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(RarefactionCustomizer.class, "RarefactionCustomizer.jLabel1.text")); // NOI18N
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(numIterations, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1)
-                .addContainerGap(57, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(hideTitle)
+                            .addComponent(jLabel1)
+                            .addComponent(jLabel2))
+                        .addGap(0, 45, Short.MAX_VALUE))
+                    .addComponent(numPoints, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                .addContainerGap())
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(numIterations, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addContainerGap()))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(29, 29, 29)
+                .addContainerGap()
+                .addComponent(jLabel2)
+                .addGap(4, 4, 4)
+                .addComponent(numPoints, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(numIterations, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(212, Short.MAX_VALUE))
+                .addGap(52, 52, 52)
+                .addComponent(hideTitle)
+                .addContainerGap(127, Short.MAX_VALUE))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(104, 104, 104)
+                    .addComponent(numIterations, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(156, Short.MAX_VALUE)))
         );
     }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JCheckBox hideTitle;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JSlider numIterations;
+    private javax.swing.JSlider numPoints;
     // End of variables declaration//GEN-END:variables
 }
