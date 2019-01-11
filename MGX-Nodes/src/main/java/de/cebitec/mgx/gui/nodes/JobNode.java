@@ -217,6 +217,8 @@ public class JobNode extends MGXNodeBase<JobI> {
                 .append("</html>")
                 .toString();
         super.setShortDescription(shortDesc);
+        // job state might have changed
+        fireIconChange();
     }
 
 }
