@@ -16,6 +16,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseWheelEvent;
@@ -33,6 +35,7 @@ import javax.swing.AbstractAction;
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
+import org.jfree.graphics2d.svg.SVGGraphics2D;
 import org.openide.util.lookup.ServiceProvider;
 import prefuse.Constants;
 import prefuse.Display;
@@ -247,7 +250,29 @@ public class TreeView extends HierarchicalViewerI implements ImageExporterI.Prov
 
     private void initDisplay() {
         visualization = new Visualization();
-        display = new Display(visualization);
+        display = new Display(visualization) {
+
+            @Override
+            public void print(Graphics g) {
+                if (g instanceof SVGGraphics2D) {
+                    Graphics2D g2 = (Graphics2D) g;
+                    g2.setBackground(Color.WHITE);
+                    super.print(g2);
+                    
+                    setSize(getSize()); // clears offscreen img
+                    setDamageRedraw(false);
+                    
+                    paintDisplay(g2, getSize());
+                    
+                    setDamageRedraw(true);
+                    g2.dispose();
+                    
+                } else {
+                    super.print(g);
+                }
+            }
+
+        };
         display.setBackground(Color.WHITE);
         display.setForeground(Color.BLACK);
         display.setHighQuality(true);
