@@ -1,6 +1,8 @@
 package de.cebitec.mgx.gui.swingutils;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import javax.swing.AbstractListModel;
 import javax.swing.ComboBoxModel;
@@ -12,16 +14,21 @@ import javax.swing.event.ListDataEvent;
  */
 public abstract class BaseModel<T> extends AbstractListModel<T> implements ComboBoxModel<T> {
 
-    protected List<T> content = new ArrayList<>();
+    private final List<T> content = new ArrayList<>();
     // index of selected entry
     int index = -1;
 
+    public boolean contains(T o) {
+        synchronized (content) {
+            return content.contains(o);
+        }
+    }
+
     @Override
     public void setSelectedItem(Object anItem) {
-        for (int i = 0; i < content.size(); i++) {
-            if (content.get(i) == anItem) {
-                index = i;
-                break;
+        if (anItem != null) {
+            synchronized (content) {
+                index = content.indexOf(anItem);
             }
         }
     }
@@ -35,14 +42,50 @@ public abstract class BaseModel<T> extends AbstractListModel<T> implements Combo
         }
     }
 
+    public void addAll(Collection<T> items) {
+        if (items != null && !items.isEmpty()) {
+            synchronized (content) {
+                for (T t : items) {
+                    if (!content.contains(t)) {
+                        content.add(t);
+                    }
+                }
+            }
+            fireContentsChanged();
+        }
+    }
+
+    public void add(T e) {
+        synchronized (content) {
+            if (e != null && !content.contains(e)) {
+                content.add(e);
+                fireContentsChanged();
+            }
+        }
+    }
+
     @Override
     public int getSize() {
-        return content.size();
+        synchronized (content) {
+            return content.size();
+        }
+    }
+
+    public boolean isEmpty() {
+        synchronized (content) {
+            return content.isEmpty();
+        }
     }
 
     @Override
     public T getElementAt(int index) {
-        return content.size() > index ? content.get(index) : null;
+        synchronized (content) {
+            return content.size() > index ? content.get(index) : null;
+        }
+    }
+
+    public Collection<T> getAll() {
+        return Collections.unmodifiableCollection(content);
     }
 
     protected void fireContentsChanged() {
@@ -51,9 +94,11 @@ public abstract class BaseModel<T> extends AbstractListModel<T> implements Combo
     }
 
     public final void clear() {
-        if (!content.isEmpty()) {
-            content.clear();
-            fireContentsChanged();
+        synchronized (content) {
+            if (!content.isEmpty()) {
+                content.clear();
+                fireContentsChanged();
+            }
         }
     }
 
