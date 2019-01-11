@@ -3,23 +3,31 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package de.cebitec.mgx.api.model;
 
-import de.cebitec.mgx.api.MGXMasterI;
-import java.awt.datatransfer.DataFlavor;
 import java.util.Map;
 
 /**
  *
  * @author sj
  */
-public abstract class JobParameterI extends Identifiable<JobParameterI> {
-    //
-    public static final DataFlavor DATA_FLAVOR = new DataFlavor(JobParameterI.class, "JobParameterI");
+public abstract class JobParameterI implements Comparable<JobParameterI> {
 
-    public JobParameterI(MGXMasterI m) {
-        super(m, DATA_FLAVOR);
+    //
+    //public static final DataFlavor DATA_FLAVOR = new DataFlavor(JobParameterI.class, "JobParameterI");
+    protected long id = Identifiable.INVALID_IDENTIFIER;
+
+    public JobParameterI() { //MGXMasterI m) {
+        //super(m, DATA_FLAVOR);
+        super();
+    }
+
+    public final void setId(long id) {
+        this.id = id;
+    }
+
+    public final long getId() {
+        return id;
     }
 
     public abstract void setDisplayName(String lDisplayName);
@@ -68,5 +76,5 @@ public abstract class JobParameterI extends Identifiable<JobParameterI> {
 
     @Override
     public abstract int compareTo(JobParameterI o);
-    
+
 }

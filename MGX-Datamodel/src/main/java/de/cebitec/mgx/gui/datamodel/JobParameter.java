@@ -1,6 +1,5 @@
 package de.cebitec.mgx.gui.datamodel;
 
-import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.JobParameterI;
 import java.util.Map;
 
@@ -22,8 +21,8 @@ public class JobParameter extends JobParameterI {
     private boolean optional;
     private String default_value = "";
 
-    public JobParameter(MGXMasterI m) {
-        super(m);
+    public JobParameter() { //MGXMasterI m) {
+        super();
     }
 
     @Override
