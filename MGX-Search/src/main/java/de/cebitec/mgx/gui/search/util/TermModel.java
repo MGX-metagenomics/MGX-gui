@@ -9,11 +9,10 @@ import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.swingutils.BaseModel;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import javax.swing.SwingWorker;
 import org.openide.util.Exceptions;
@@ -41,8 +40,8 @@ public class TermModel extends BaseModel<String> {
     @Override
     public synchronized void update() {
         if (run == null || term == null || term.isEmpty()) {
-            if (!content.isEmpty()) {
-                content.clear();
+            if (!isEmpty()) {
+                clear();
                 fireContentsChanged();
             }
             return;
@@ -54,27 +53,27 @@ public class TermModel extends BaseModel<String> {
         // narrow down the current data instead of contacting the
         // server
         if (prevTerm != null && !prevTerm.isEmpty() && term.startsWith(prevTerm)) {
-            List<String> oldTerms = new ArrayList<>(content.size());
-            oldTerms.addAll(content);
-            content.clear();
+            List<String> oldTerms = new ArrayList<>(getSize());
+            oldTerms.addAll(getAll());
+            clear();
             // case-insensitive comparison
             for (String s : oldTerms) {
                 if (s.toLowerCase().contains(term)) {
-                    content.add(s);
+                    add(s);
                 }
             }
             fireContentsChanged();
-            if (content.contains(prevSelection)) {
+            if (contains(prevSelection)) {
                 setSelectedItem(prevSelection);
             }
             return;
         }
 
-        SwingWorker<Iterator<String>, Void> sw = new SwingWorker<Iterator<String>, Void>() {
+        SwingWorker<List<String>, Void> sw = new SwingWorker<List<String>, Void>() {
 
             @Override
-            protected Iterator<String> doInBackground() throws Exception {
-                Set<String> terms = new HashSet<>();
+            protected List<String> doInBackground() throws Exception {
+                List<String> terms = new ArrayList<>();
                 MGXMasterI master = run.getMaster();
                 if (!master.isDeleted()) {
                     Iterator<String> iter = master.Attribute().find(term, run);
@@ -82,27 +81,22 @@ public class TermModel extends BaseModel<String> {
                         terms.add(iter.next());
                     }
                 }
-                return terms.iterator();
+                Collections.sort(terms);
+                return terms;
             }
         };
         sw.execute();
-        Iterator<String> iter;
+        Collection<String> set;
         try {
-            iter = sw.get();
+            set = sw.get();
         } catch (InterruptedException | ExecutionException ex) {
             Exceptions.printStackTrace(ex);
             return;
         }
-        content.clear();
-        while (iter != null && iter.hasNext()) {
-            String term1 = iter.next();
-            if (!content.contains(term1)) {
-                content.add(term1);
-            }
-        }
-        Collections.sort(content);
+        clear();
+        addAll(set);
 
-        if (prevSelection != null && content.contains(prevSelection)) {
+        if (prevSelection != null && contains(prevSelection)) {
             setSelectedItem(prevSelection);
         }
         fireContentsChanged();

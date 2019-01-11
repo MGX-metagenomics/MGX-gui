@@ -10,6 +10,7 @@ import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.SequenceI;
 import de.cebitec.mgx.gui.swingutils.BaseModel;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -38,9 +39,9 @@ public class ReadModel extends BaseModel<SequenceI> {
             clear();
             return;
         }
-
         clear();
 
+        List<SequenceI> tmp  = new ArrayList<>();
         MGXMasterI master = run.getMaster();
         if (!master.isDeleted()) {
             Iterator<SequenceI> iter = null;
@@ -50,11 +51,12 @@ public class ReadModel extends BaseModel<SequenceI> {
                 Exceptions.printStackTrace(ex);
             }
             while (iter != null && iter.hasNext()) {
-                content.add(iter.next());
+                tmp.add(iter.next());
             }
         }
 
-        Collections.sort(content);
+        Collections.sort(tmp);
+        addAll(tmp);
         fireContentsChanged();
     }
 }
