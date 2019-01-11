@@ -43,7 +43,7 @@ public class RarefactionCustomizer extends javax.swing.JPanel {
 
         numIterations.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         numIterations.setMajorTickSpacing(50);
-        numIterations.setMaximum(150);
+        numIterations.setMaximum(250);
         numIterations.setMinorTickSpacing(5);
         numIterations.setPaintLabels(true);
         numIterations.setPaintTicks(true);
