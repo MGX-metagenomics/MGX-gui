@@ -204,6 +204,10 @@ public class JFreeChartUtil {
 //        }
 //    }
     public static ImageExporterI getImageExporter(final JFreeChart chart) {
+        if (chart == null) {
+            return null;
+        }
+        
         return new ImageExporterI() {
 
             @Override
