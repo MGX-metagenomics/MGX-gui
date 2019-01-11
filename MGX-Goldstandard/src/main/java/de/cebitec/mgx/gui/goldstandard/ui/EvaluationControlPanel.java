@@ -336,31 +336,31 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Action
         @SuppressWarnings("unchecked")
         public synchronized void update() {
             // disable all downstream elements
-            content.clear();
+            clear();
             fireContentsChanged();
             comparisonTypeList.setEnabled(false);
             updateButton.setEnabled(false);
 
             if (currentSeqrun != null && numFinishedJobs > 1) {
-                content.add(new PipelineComparison());
+                add(new PipelineComparison());
                 if (haveGoldStandard) {
-                    content.add(new GSComparison());
+                    add(new GSComparison());
                 }
             }
 
-            if (currentComparisonType != null && content.contains(currentComparisonType)) {
+            if (currentComparisonType != null && contains(currentComparisonType)) {
                 setSelectedItem(currentComparisonType);
                 itemStateChanged(new ItemEvent(comparisonTypeList,
                         ItemEvent.ITEM_STATE_CHANGED,
                         getSelectedItem(),
                         ItemEvent.SELECTED));
             } else {
-                if (!content.isEmpty()) {
-                    setSelectedItem(content.get(0));
+                if (!isEmpty()) {
+                    setSelectedItem(getElementAt(0));
                 }
             }
 
-            comparisonTypeList.setEnabled(!content.isEmpty());
+            comparisonTypeList.setEnabled(!isEmpty());
             fireContentsChanged();
             visListModel.update();
         }
@@ -386,7 +386,7 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Action
         @SuppressWarnings("unchecked")
         public synchronized void update() {
             // disable all downstream elements
-            content.clear();
+            clear();
             visualizationTypeList.setEnabled(false);
             fireContentsChanged();
             updateButton.setEnabled(false);
@@ -409,24 +409,24 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Action
                         }
                     }
                 }
-                content.addAll(viewers);
+                addAll(viewers);
             }
 
             if (visListModel.getSize() > 0) {
                 // if previously selected element still exists, restore selection
-                if (currentViewer != null && content.contains(currentViewer)) {
+                if (currentViewer != null && contains(currentViewer)) {
                     setSelectedItem(currentViewer);
                     itemStateChanged(new ItemEvent(visualizationTypeList,
                             ItemEvent.ITEM_STATE_CHANGED,
                             getSelectedItem(),
                             ItemEvent.SELECTED));
                 } else {
-                    setSelectedItem(content.get(0));
+                    setSelectedItem(getElementAt(0));
                 }
 
             }
-            visualizationTypeList.setEnabled(!content.isEmpty());
-            updateButton.setEnabled(!content.isEmpty());
+            visualizationTypeList.setEnabled(!isEmpty());
+            updateButton.setEnabled(!isEmpty());
             fireContentsChanged();
         }
 
