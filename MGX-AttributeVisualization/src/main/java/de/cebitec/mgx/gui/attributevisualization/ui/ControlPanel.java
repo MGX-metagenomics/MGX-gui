@@ -271,14 +271,14 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
                     } catch (InterruptedException | ExecutionException ex) {
                         Exceptions.printStackTrace(ex);
                     }
-                    content.addAll(types);
+                    addAll(types);
 
                     //
                     // re-enable attribute type list and try to restore previous
                     // selection if it's still available
                     //
                     if (attrListModel.getSize() > 0) {
-                        if (currentAttributeType != null && content.contains(currentAttributeType)) {
+                        if (currentAttributeType != null && contains(currentAttributeType)) {
                             setSelectedItem(currentAttributeType);
                         } else {
                             attributeTypeList.setSelectedIndex(0);
@@ -286,7 +286,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
 
                         attributeTypeList.setEnabled(true);
                     }
-                    if (!content.isEmpty()) {
+                    if (!isEmpty()) {
                         fireContentsChanged();
                     }
                     super.done();
@@ -333,29 +333,34 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
         @Override
         @SuppressWarnings("unchecked")
         public synchronized void update() {
+            
+            final ViewerI<Visualizable> lastViewer = getSelectedItem();
             // disable all downstream elements
             clear();
-            visualizationTypeList.setEnabled(false);
+            setEnabled(false);
             updateButton.setEnabled(false);
 
             List<ViewerI<Visualizable>> viewers = new ArrayList<>();
             for (ViewerI viewer : Lookup.getDefault().<ViewerI>lookupAll(ViewerI.class)) {
+                long duration = System.currentTimeMillis();
                 if (viewer.canHandle(currentAttributeType)) {
                     viewers.add(viewer);
                 }
+                if (System.currentTimeMillis() - duration > 50) {
+                    System.err.println("Slow ViewerI#canHandle for " + viewer.getName() + ": " + duration + "ms");
+                }
             }
             Collections.sort(viewers);
+            addAll(viewers);
 
-            content.addAll(viewers);
-
-            if (vizListModel.getSize() > 0) {
+            if (getSize() > 0) {
                 // if previously selected element still exists, restore selection
-                if (currentViewer != null && currentViewer instanceof CustomizableI && content.contains(currentViewer)) {
-                    setSelectedItem(currentViewer);
-                    currentCustomizer = ((CustomizableI) currentViewer).getCustomizer();
+                if (lastViewer != null && lastViewer instanceof CustomizableI && contains(lastViewer)) {
+                    setSelectedItem(lastViewer);
+                    currentCustomizer = ((CustomizableI) lastViewer).getCustomizer();
                     itemStateChanged(new ItemEvent(visualizationTypeList,
                             ItemEvent.ITEM_STATE_CHANGED,
-                            getSelectedItem(),
+                            lastViewer,
                             ItemEvent.SELECTED));
                 } else {
                     visualizationTypeList.setSelectedIndex(0);
@@ -367,7 +372,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
                 }
                 updateButton.setEnabled(true);
             }
-            if (!content.isEmpty()) {
+            if (!isEmpty()) {
                 fireContentsChanged();
             }
         }
@@ -393,7 +398,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
             } else {
                 currentCustomizer = null;
             }
-            
+
             customPane.setViewportView(currentCustomizer);
             customPane.getVerticalScrollBar().setUnitIncrement(16);
         }
