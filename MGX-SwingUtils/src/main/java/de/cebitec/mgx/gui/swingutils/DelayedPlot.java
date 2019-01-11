@@ -5,8 +5,10 @@
  */
 package de.cebitec.mgx.gui.swingutils;
 
+import de.cebitec.mgx.api.groups.ImageExporterI;
 import java.awt.BorderLayout;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 
 /**
  *
@@ -14,6 +16,7 @@ import javax.swing.JComponent;
  */
 public class DelayedPlot extends javax.swing.JPanel {
 
+    private ImageExporterI exporter = null;
     /**
      * Creates new form DelayedPlot
      */
@@ -21,13 +24,20 @@ public class DelayedPlot extends javax.swing.JPanel {
         initComponents();
     }
 
-    public void setTarget(JComponent target) {
+    public void setTarget(JComponent target, ImageExporterI exporter) {
+        this.exporter = exporter;
         removeAll();
         setLayout(new BorderLayout());
         if (target != null) {
             add(target, BorderLayout.CENTER);
+        } else {
+            add(new JLabel("An error occurred."), BorderLayout.NORTH);
         }
         revalidate();
+    }
+    
+    public ImageExporterI getImageExporter() {
+        return exporter;
     }
 
     /**

@@ -82,10 +82,10 @@ public class HClustPlot extends AbstractViewer<DistributionI<Long>> implements C
 
                     ITreeBuilder builder = new DendrogramBuilder(NODE_NAME_KEY, X_COORD, root);
                     display = new DendrogramDisplay(builder);
-                    wp.setTarget(display);
+                    wp.setTarget(display, null);
                     customizer.setNewickString(newickString);
                 } catch (InterruptedException | ExecutionException | ParserException ex) {
-                    HClustPlot.this.cPanel.setTarget(null);
+                    HClustPlot.this.cPanel.setTarget(null, null);
                     String message = ex.getMessage();
                     if (message.contains(":")) {
                         message = message.substring(message.lastIndexOf(":") + 1);
