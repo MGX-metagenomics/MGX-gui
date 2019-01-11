@@ -56,7 +56,6 @@ import org.openide.windows.WindowManager;
 @Messages("CTL_SvgTopComponentScreenshot=SVG TopComponent Screenshot")
 public final class SvgTopComponentScreenshot implements ActionListener {
 
-    public static final String PREF_PAINTMODE = "SvgScreenshot.paintMode";
     public static final String PREF_OUTPUTDIRECTORY = "SvgScreenshot.outputDirectory";
     public static final String DEFAULT_OUTPUTDIRECTORY = "NetBeansScreenshots";
 

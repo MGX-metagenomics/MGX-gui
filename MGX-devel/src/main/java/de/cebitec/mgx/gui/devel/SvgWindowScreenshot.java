@@ -62,10 +62,6 @@ public final class SvgWindowScreenshot implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
 
-        final PaintMode paintMode = PaintMode.valueOf(NbPreferences.forModule(SvgWindowScreenshot.class).get(
-                PREF_PAINTMODE, PaintMode.PAINT.name()
-        )
-        );
         final File outputDir = new File(
                 NbPreferences.forModule(SvgWindowScreenshot.class).get(
                         PREF_OUTPUTDIRECTORY,
@@ -88,19 +84,13 @@ public final class SvgWindowScreenshot implements ActionListener {
 
                 if (window != null) {
                     // subtract inset top to ignore window manager decorations
-                    SVGGraphics2D g2d = new SVGGraphics2D(window.getWidth(), window.getHeight() - window.getInsets().top);
-                    g2d.setTransform(getTranslateInstance(0, -window.getInsets().top));
+                    SVGGraphics2D g2d = new SVGGraphics2D(window.getWidth(), window.getHeight() - window.getInsets().top + 1);
+                    g2d.setTransform(getTranslateInstance(0, -window.getInsets().top + 1));
 
                     //make sure everything is up to date
                     window.invalidate();
                     window.revalidate();
-                    switch (paintMode) {
-                        case PRINT:
-                            window.print(g2d);
-                            break;
-                        default:
-                            window.paint(g2d);
-                    }
+                    window.print(g2d);
                     RequestProcessor.getDefault().post(new FileWriter(outputDir, g2d));
 
                 }
