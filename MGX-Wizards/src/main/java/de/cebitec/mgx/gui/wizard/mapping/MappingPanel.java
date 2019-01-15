@@ -3,10 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package de.cebitec.mgx.gui.wizard.mapping;
 
+import de.cebitec.mgx.api.model.JobParameterI;
 import de.cebitec.mgx.gui.mapping.MappingCtx;
+import java.util.List;
 
 /**
  *
@@ -20,11 +21,27 @@ public class MappingPanel extends javax.swing.JPanel {
     public MappingPanel() {
         initComponents();
     }
-    
+
     public void setMapping(MappingCtx ctx) {
         ref.setText(ctx.getReference().getName());
         run.setText(ctx.getRun().getName());
         tool.setText(ctx.getTool().getName());
+
+        List<JobParameterI> parameters = ctx.getJob().getParameters();
+        if (parameters != null && !parameters.isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+            for (JobParameterI jp : parameters) {
+                if (!jp.getClassName().contains("GetMGXReference")) {
+                    sb.append(jp.getUserName());
+                    sb.append(": ");
+                    sb.append(jp.getParameterValue());
+                    sb.append(System.lineSeparator());
+                }
+            }
+            params.setText(sb.toString());
+        } else {
+            params.setText("");
+        }
     }
 
     /**
@@ -42,6 +59,9 @@ public class MappingPanel extends javax.swing.JPanel {
         tool = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         ref = new javax.swing.JTextField();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        params = new javax.swing.JTextArea();
+        jLabel4 = new javax.swing.JLabel();
 
         jLabel1.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(MappingPanel.class, "MappingPanel.jLabel1.text")); // NOI18N
@@ -61,6 +81,16 @@ public class MappingPanel extends javax.swing.JPanel {
         ref.setEditable(false);
         ref.setText(org.openide.util.NbBundle.getMessage(MappingPanel.class, "MappingPanel.ref.text")); // NOI18N
 
+        params.setEditable(false);
+        params.setBackground(new java.awt.Color(238, 238, 238));
+        params.setColumns(20);
+        params.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
+        params.setRows(5);
+        jScrollPane1.setViewportView(params);
+
+        jLabel4.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(jLabel4, org.openide.util.NbBundle.getMessage(MappingPanel.class, "MappingPanel.jLabel4.text")); // NOI18N
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -68,18 +98,16 @@ public class MappingPanel extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel2)
-                        .addGap(33, 33, 33)
-                        .addComponent(run, javax.swing.GroupLayout.DEFAULT_SIZE, 321, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addGap(2, 2, 2)
-                        .addComponent(ref))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel3)
-                        .addGap(33, 33, 33)
-                        .addComponent(tool)))
+                    .addComponent(jLabel3)
+                    .addComponent(jLabel4)
+                    .addComponent(jLabel2)
+                    .addComponent(jLabel1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(ref)
+                    .addComponent(run)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 307, Short.MAX_VALUE)
+                    .addComponent(tool))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -97,7 +125,14 @@ public class MappingPanel extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
                     .addComponent(tool, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(62, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel4)
+                        .addGap(77, 100, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane1)
+                        .addContainerGap())))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -106,6 +141,9 @@ public class MappingPanel extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTextArea params;
     private javax.swing.JTextField ref;
     private javax.swing.JTextField run;
     private javax.swing.JTextField tool;

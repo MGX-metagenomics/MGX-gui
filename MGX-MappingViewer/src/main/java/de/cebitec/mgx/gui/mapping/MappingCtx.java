@@ -92,6 +92,10 @@ public class MappingCtx implements PropertyChangeListener, AutoCloseable {
     public final ToolI getTool() {
         return job.getTool();
     }
+    
+    public final JobI getJob() {
+        return job;
+    }
 
     public final String getSequence(int from, int to) throws MGXException {
         if (seqCache == null) {
