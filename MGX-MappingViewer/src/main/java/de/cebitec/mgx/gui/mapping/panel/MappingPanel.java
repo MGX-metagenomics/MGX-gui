@@ -9,6 +9,7 @@ import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.exception.MGXTimeoutException;
 import de.cebitec.mgx.api.model.MappedSequenceI;
 import de.cebitec.mgx.gui.mapping.ViewController;
+import static de.cebitec.mgx.gui.mapping.panel.PanelBase.antiAlias;
 import de.cebitec.mgx.gui.mapping.shapes.MappedRead2D;
 import de.cebitec.mgx.gui.mapping.tracks.TrackFactory;
 import de.cebitec.mgx.gui.mapping.tracks.TrackI;
@@ -16,6 +17,8 @@ import de.cebitec.mgx.gui.mapping.viewer.SwitchModeBase;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.event.AdjustmentEvent;
@@ -99,8 +102,8 @@ public class MappingPanel extends PanelBase {
     @Override
     public void draw(Graphics2D g2) {
         // clear image
-        g2.setColor(getBackground());
-        g2.fillRect(0, 0, getWidth(), getHeight());
+//        g2.setColor(getBackground());
+//        g2.fillRect(0, 0, getWidth(), getHeight());
 
         Color col = Color.BLACK;
         synchronized (coverage) {
@@ -118,6 +121,33 @@ public class MappingPanel extends PanelBase {
                 }
             }
         }
+    }
+
+    @Override
+    public void print(Graphics g) {
+        Graphics2D g2 = (Graphics2D) g;
+        g2.setBackground(Color.WHITE);
+        g2.clearRect(0, 0, getWidth(), getHeight());
+        super.paintBorder(g);
+
+        if (getHeight() > 0) {
+            if (useAntialiasing) {
+                g2.setRenderingHints(antiAlias);
+            }
+            if (defaultFont == null) {
+                defaultFont = new Font(g2.getFont().getFontName(), Font.PLAIN, 10);
+            }
+            g2.setFont(defaultFont);
+
+            draw(g2);
+
+        }
+
+        
+        g2.dispose();
+        //super.paintComponent(g);
+        //super.paintChildren(g);
+
     }
 
     private final static int TRACKHEIGHT = 5;

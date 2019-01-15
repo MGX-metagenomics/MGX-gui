@@ -24,6 +24,7 @@ import java.awt.image.VolatileImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Arrays;
+import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import org.apache.commons.math3.util.FastMath;
 import org.openide.util.Exceptions;
@@ -48,6 +49,7 @@ public abstract class PanelBase extends JComponent implements PropertyChangeList
 
     public PanelBase(final ViewController vc, boolean antiAlias) {
         super();
+        super.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
         //super.setDoubleBuffered(true);
         this.useAntialiasing = antiAlias;
         this.vc = vc;
@@ -120,8 +122,8 @@ public abstract class PanelBase extends JComponent implements PropertyChangeList
             Graphics2D g2 = vimage.createGraphics();
 
             // clear image
-            g2.setColor(getBackground());
-            g2.fillRect(0, 0, vimage.getWidth(), vimage.getHeight());
+            g2.setBackground(getBackground());
+            g2.clearRect(0, 0, vimage.getWidth(), vimage.getHeight());
 
             if (getHeight() > 0) {
                 if (useAntialiasing) {
@@ -145,6 +147,31 @@ public abstract class PanelBase extends JComponent implements PropertyChangeList
         super.paintComponent(g);
         super.paintChildren(g);
         g.dispose();
+    }
+
+    @Override
+    public void print(Graphics g) {
+        Graphics2D g2 = (Graphics2D) g;
+        g2.setBackground(Color.WHITE);
+        g2.clearRect(0, 0, getWidth(), getHeight());
+        super.paintBorder(g);
+        
+        if (getHeight() > 0) {
+            if (useAntialiasing) {
+                g2.setRenderingHints(antiAlias);
+            }
+            if (defaultFont == null) {
+                defaultFont = new Font(g2.getFont().getFontName(), Font.PLAIN, 10);
+            }
+            g2.setFont(defaultFont);
+
+            draw(g2);
+
+        }
+
+        g2.dispose();
+//        super.paintComponent(g);
+//        super.paintChildren(g);
     }
 
     public abstract void draw(Graphics2D g2);
