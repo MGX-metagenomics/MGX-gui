@@ -7,6 +7,7 @@ import de.cebitec.mgx.gui.biodiversity.statistic.Statistic;
 import de.cebitec.mgx.gui.biodiversity.statistic.impl.ACE;
 import de.cebitec.mgx.gui.biodiversity.statistic.impl.Chao1;
 import de.cebitec.mgx.gui.biodiversity.statistic.impl.Shannon;
+import de.cebitec.mgx.gui.biodiversity.statistic.impl.ShannonEvenness;
 import de.cebitec.mgx.gui.biodiversity.statistic.impl.Simpson;
 import java.awt.Cursor;
 import java.beans.PropertyChangeEvent;
@@ -64,7 +65,7 @@ public final class BiodiversityTopComponent extends TopComponent implements Look
 
     @SuppressWarnings("unchecked")
     private BiodiversityTopComponent() {
-        this.stats = new Statistic[]{new ACE(), new Chao1(), new Shannon(), new Simpson()};
+        this.stats = new Statistic[]{new ACE(), new Chao1(), new Shannon(), new ShannonEvenness(), new Simpson()};
 
         model = new DefaultTableModel(new String[]{"Index", "Value"}, stats.length) {
 
