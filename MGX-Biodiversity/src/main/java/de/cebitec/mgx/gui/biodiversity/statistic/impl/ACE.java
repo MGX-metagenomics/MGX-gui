@@ -3,6 +3,8 @@ package de.cebitec.mgx.gui.biodiversity.statistic.impl;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.gui.biodiversity.statistic.Statistic;
+import java.text.NumberFormat;
+import java.util.Locale;
 import java.util.Map;
 import org.apache.commons.math3.util.FastMath;
 
@@ -33,7 +35,8 @@ public class ACE implements Statistic {
         double gamma = getGamma(data);
 
         ret = Sabundant + (Srare / Cace) + (F1 / Cace) * FastMath.pow(gamma, 2);
-        return String.format("%.2f", ret);
+        return NumberFormat.getInstance(Locale.US).format(ret);
+//        return String.format("%.2f", ret);
     }
 
     @Override

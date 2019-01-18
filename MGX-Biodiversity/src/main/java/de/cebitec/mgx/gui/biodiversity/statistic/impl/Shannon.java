@@ -4,6 +4,8 @@ package de.cebitec.mgx.gui.biodiversity.statistic.impl;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.gui.biodiversity.statistic.Statistic;
+import java.text.NumberFormat;
+import java.util.Locale;
 import java.util.Map.Entry;
 import org.apache.commons.math3.util.FastMath;
 
@@ -22,7 +24,7 @@ public class Shannon implements Statistic {
             ret += relAbun * FastMath.log(relAbun);
         }
         ret = -1 * ret;
-        return Double.isNaN(ret) ? "N/A" : String.format("%.2f", ret);
+        return Double.isNaN(ret) ? "N/A" : NumberFormat.getInstance(Locale.US).format(ret);
     }
 
     @Override
