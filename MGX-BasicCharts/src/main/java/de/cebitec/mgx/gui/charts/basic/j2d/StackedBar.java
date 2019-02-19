@@ -26,7 +26,7 @@ import java.util.Locale;
  * @author sjaenick
  */
 public class StackedBar {
-
+    
     private final PlotPanel plotPanel;
     private final VisualizationGroupI vGrp;
     private final AttributeTypeI attrType;
@@ -35,7 +35,7 @@ public class StackedBar {
     private final List<AttributeI> attrs;
     private final int height = 25;
     private Rectangle textBounds;
-
+    
     StackedBar(PlotPanel pp, VisualizationGroupI vGrp, AttributeTypeI attrType, List<AttributeI> sortOrder, DistributionI<Long> dist) {
         this.plotPanel = pp;
         this.vGrp = vGrp;
@@ -43,24 +43,24 @@ public class StackedBar {
         this.dist = dist;
         this.rects = new ArrayList<>();
         this.attrs = new ArrayList<>();
-
+        
         for (AttributeI attr : sortOrder) {
             if (dist.containsKey(attr)) {
                 attrs.add(attr);
             }
         }
     }
-
+    
     public String getLabel() {
         return vGrp.getDisplayName() + " / " + attrType.getName();
     }
-
+    
     int drawOn(Graphics2D g2, int x, int y) {
         int textHeight = g2.getFontMetrics(g2.getFont()).getHeight();
         int maxTextWidth = plotPanel.getMaxTextWidth();
-
+        
         float maxBarWidth = plotPanel.getWidth() - maxTextWidth - 20;
-
+        
         float scaleX = 0;
         switch (plotPanel.getNormalizationType()) {
             case DISABLED:
@@ -73,7 +73,7 @@ public class StackedBar {
                 scaleX = maxBarWidth / (1f * dist.getTotalClassifiedElements());
                 break;
         }
-
+        
         float xOffset = x;
         float yy = y;
 
@@ -81,9 +81,9 @@ public class StackedBar {
         g2.setColor(Color.BLACK);
         g2.drawString(getLabel(), x, yy + ((height + textHeight) / 2) - 2);
         textBounds = new Rectangle2D.Float(x, y + ((height / 2) - 6), maxTextWidth, textHeight).getBounds();
-
+        
         rects.clear();
-
+        
         xOffset += maxTextWidth;
         for (AttributeI attr : attrs) {
             g2.setColor(plotPanel.getColor(attr));
@@ -94,10 +94,10 @@ public class StackedBar {
             rects.add(segment);
             xOffset += delta;
         }
-
+        
         return height;
     }
-
+    
     String getToolTipText(MouseEvent m) {
         Point loc = m.getPoint();
         for (BarSegment<AttributeI> a : rects) {
@@ -109,20 +109,23 @@ public class StackedBar {
             }
         }
         if (textBounds != null && textBounds.contains(loc)) {
-            return getLabel() + ": " + dist.getTotalClassifiedElements() + " hits";
+            long totalClassifiedElements = dist.getTotalClassifiedElements();
+            return totalClassifiedElements == 1
+                    ? getLabel() + ": 1 hit"
+                    : getLabel() + ": " + NumberFormat.getInstance(Locale.US).format(totalClassifiedElements) + " hits";
         }
         return null;
     }
-
+    
     private static class BarSegment<T> extends Rectangle2D.Float {
-
+        
         private final T data;
-
+        
         public BarSegment(T data, float x, float y, float w, float h) {
             super(x, y, w, h);
             this.data = data;
         }
-
+        
         public T getData() {
             return data;
         }
