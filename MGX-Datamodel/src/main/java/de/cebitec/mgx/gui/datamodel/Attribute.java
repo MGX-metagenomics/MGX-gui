@@ -50,9 +50,8 @@ public class Attribute extends AttributeI {
     }
 
     @Override
-    public Attribute setValue(String value) {
+    public void setValue(String value) {
         this.value = value;
-        return this;
     }
 
     @Override

@@ -37,7 +37,7 @@ public abstract class AttributeI implements Comparable<AttributeI> { //extends M
 
     public abstract String getValue();
 
-    public abstract AttributeI setValue(String value);
+    public abstract void setValue(String value);
 
     public abstract long getJobId();
 
