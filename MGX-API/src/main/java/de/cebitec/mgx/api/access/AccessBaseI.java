@@ -11,7 +11,8 @@ import java.util.Iterator;
  */
 public interface AccessBaseI<T extends MGXDataModelBaseI<T>> {
 
-    public T create(T obj) throws MGXException;
+//    @Deprecated
+//    public T create(T obj) throws MGXException;
 
     public T fetch(long id) throws MGXException;
 
