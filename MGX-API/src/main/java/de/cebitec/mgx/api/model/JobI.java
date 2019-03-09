@@ -7,6 +7,7 @@
 package de.cebitec.mgx.api.model;
 
 import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.common.JobState;
 import java.awt.datatransfer.DataFlavor;
 import java.util.Date;
 import java.util.List;
