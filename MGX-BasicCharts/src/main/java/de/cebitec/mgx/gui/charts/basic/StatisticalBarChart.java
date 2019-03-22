@@ -100,7 +100,7 @@ public class StatisticalBarChart extends CategoricalViewerI<Long> implements Adj
         Collection<ReplicateGroupI> repGroup = VGroupManager.getInstance().getReplicateGroups();
         List<Triple<ReplicateGroupI, DistributionI<Double>, DistributionI<Double>>> replicateGroups = new ArrayList<>();
         for (ReplicateGroupI rg : repGroup) {
-            replicateGroups.add(new Triple<>(rg, rg.getMeanDistribution(), rg.getStdvDistribution()));
+            replicateGroups.add(new Triple<>(rg, rg.getMeanDistribution(), rg.getStdDevDistribution()));
         }
         List<Triple<ReplicateGroupI, DistributionI<Double>, DistributionI<Double>>> filteredRg = getCustomizer().filterRep(replicateGroups);
 
