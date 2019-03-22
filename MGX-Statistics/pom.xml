@@ -89,6 +89,11 @@
             <version>1.0</version>
             <type>jar</type>
         </dependency>
+        <dependency>
+            <groupId>de.cebitec.mgx</groupId>
+            <artifactId>JFreeSVG-OSGi</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
 
     <build>
