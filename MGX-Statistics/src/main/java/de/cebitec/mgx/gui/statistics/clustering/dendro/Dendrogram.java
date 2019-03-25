@@ -10,8 +10,10 @@ import de.cebitec.mgx.newick.NodeI;
 import de.cebitec.mgx.newick.ParserException;
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.util.List;
 import javax.swing.JComponent;
@@ -21,23 +23,23 @@ import javax.swing.JFrame;
  *
  * @author sj
  */
-public class Dendrogram extends JComponent {
+public class Dendrogram extends JComponent  {
 
     private SubTreeI tree = null;
 
+    public Dendrogram() {
+    }
+    
     public void showTree(NodeI root, final double xOffset) {
+        
         tree = createNode(null, root, xOffset);
         tree.layout();
-        System.err.println("width: "+ tree.getWidth()+" height: "+tree.getHeight());
         repaint();
     }
 
     private SubTreeI createNode(SubTree parent, NodeI node, final double xOffset) {
 
         double xOff = xOffset;
-//        if (parent != null) {
-//            xOff += parent.getX();
-//        }
 
         if (node.isLeaf()) {
             return new Leaf(parent, node.getName(), node.getWeight(), xOff);
@@ -55,7 +57,7 @@ public class Dendrogram extends JComponent {
 
     @Override
     public int getHeight() {
-        return tree.getHeight();
+        return (int) tree.getBounds().getHeight();
     }
 
     @Override
@@ -64,39 +66,41 @@ public class Dendrogram extends JComponent {
     }
 
     @Override
+    public Dimension getSize() {
+        return new Dimension(getWidth(), getHeight());
+    }
+
+    @Override
+    public Dimension getPreferredSize() {
+        return getSize();
+    }
+
+    @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-
         BufferedImage bi = new BufferedImage(getSize().width, getSize().height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2 = bi.createGraphics();
+        RenderingHints antiAlias = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setRenderingHints(antiAlias);
         g2.setBackground(Color.WHITE);
-        g2.fillRect(0, 0, bi.getWidth(), bi.getHeight());
+        g2.clearRect(0, 0, getSize().width, getSize().height);
         g2.setColor(Color.BLACK);
-        g2.setStroke(new BasicStroke(3));
+        g2.setStroke(new BasicStroke(SubTreeI.LINE_THICKNESS));
         if (tree != null) {
-//            System.err.println(tree.getWidth());
-//            System.err.println(tree.getHeight());
-            //tree.plotBounds(g2);
             tree.plot(g2);
         }
-        //g2.drawString("bbbbbbb", 33, 33);
-
         g.drawImage(bi, 0, 0, null);
         g2.dispose();
     }
 
     @Override
     public void print(Graphics g) {
-
         Graphics2D g2 = (Graphics2D) g;
-//        g2.setBackground(Color.WHITE);
-//        g2.fillRect(0, 0, getWidth(), getHeight());
+        g2.setBackground(Color.WHITE);
+        g2.clearRect(0, 0, getSize().width, getSize().height);
         g2.setColor(Color.BLACK);
-        g2.setStroke(new BasicStroke(3));
+        g2.setStroke(new BasicStroke(SubTreeI.LINE_THICKNESS));
         if (tree != null) {
-//            System.err.println(tree.getWidth());
-//            System.err.println(tree.getHeight());
-            //tree.plotBounds(g2);
             tree.plot(g2);
         }
 

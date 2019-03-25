@@ -72,7 +72,7 @@ public class Leaf implements SubTreeI {
 
     @Override
     public double getWidth() {
-        return distance * SCALE_FACTOR;
+        return textwidth + 4 + (distance * SCALE_FACTOR);
     }
 
     @Override
@@ -97,11 +97,11 @@ public class Leaf implements SubTreeI {
         double mid = getHeight() / 2d;
         g.setColor(Color.BLACK);
         Line2D.Double hLine = new Line2D.Double(getConnectPoint(),
-                new Point2D.Double(x + getWidth(), y + mid));
+                new Point2D.Double(x + (distance * SCALE_FACTOR), y + mid));
         g.draw(hLine);
 
         g.setFont(new Font("Tahoma", Font.BOLD, 16));
-        g.drawString(name, (float) (x + getWidth() + 4), (float) (y + mid + 5));
+        g.drawString(name, (float) (x + (distance * SCALE_FACTOR) + 4), (float) (y + mid + 5));
 
         //System.err.println("plot leaf " + name + " at " + x + "," + y + "-" + (x+getWidth()) + "," + y);
     }

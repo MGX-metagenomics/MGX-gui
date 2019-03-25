@@ -17,7 +17,7 @@ public interface SubTreeI {
 
     public final static int SCALE_FACTOR = 60;
     public final static int VSPACE = 10;
-    public final static int LINE_THICKNESS = 2;
+    public final static int LINE_THICKNESS = 3;
 
     public void layout();
 

@@ -20,22 +20,22 @@ import de.cebitec.mgx.gui.vizfilter.LongToDouble;
 import de.cebitec.mgx.newick.NewickParser;
 import de.cebitec.mgx.newick.NodeI;
 import de.cebitec.mgx.newick.ParserException;
-import java.awt.Rectangle;
-import java.io.BufferedOutputStream;
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
-import java.io.FileOutputStream;
+import java.io.File;
 import java.io.FileWriter;
-import java.io.OutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 import javax.swing.SwingWorker;
 import org.jfree.graphics2d.svg.SVGGraphics2D;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.util.lookup.ServiceProvider;
-import prefuse.svg.SVGDisplaySaver;
 
 /**
  *
@@ -44,8 +44,6 @@ import prefuse.svg.SVGDisplaySaver;
 @ServiceProvider(service = ViewerI.class)
 public class HClustPlot2 extends AbstractViewer<DistributionI<Long>> implements CustomizableI, ImageExporterI.Provider, SequenceExporterI.Provider {
 
-    private final static String NODE_NAME_KEY = "nodeName";
-    private final static String X_COORD = "x";
     private DelayedPlot cPanel = null;
     private final HClustCustomizer customizer = new HClustCustomizer();
     private Dendrogram display;
@@ -59,7 +57,7 @@ public class HClustPlot2 extends AbstractViewer<DistributionI<Long>> implements 
 
     @Override
     public String getName() {
-        return "Clustering 2";
+        return "Clustering";
     }
 
     @Override
@@ -83,9 +81,6 @@ public class HClustPlot2 extends AbstractViewer<DistributionI<Long>> implements 
                     NodeI root = NewickParser.parse(newickString);
                     display = new Dendrogram();
                     display.showTree(root, 20);
-
-//                    ITreeBuilder builder = new DendrogramBuilder(NODE_NAME_KEY, X_COORD, root);
-//                    display = new DendrogramDisplay(builder);
                     wp.setTarget(display, getImageExporter());
                     wp.repaint();
                     customizer.setNewickString(newickString);
@@ -127,17 +122,32 @@ public class HClustPlot2 extends AbstractViewer<DistributionI<Long>> implements 
             public Result export(FileType type, String fName) throws Exception {
                 switch (type) {
                     case PNG:
-                    case JPEG:
-                        try (OutputStream os = new BufferedOutputStream(new FileOutputStream(fName))) {
-//                            if (display.saveImage(os, type.getSuffices()[0].toUpperCase(), 2)) {
-//                                return Result.SUCCESS;
-//                            }
+                        BufferedImage bi = new BufferedImage(display.getSize().width, display.getSize().height, BufferedImage.TYPE_INT_ARGB);
+                        Graphics g = bi.createGraphics();
+                        display.print(g);
+                        g.dispose();
+                        try {
+                            ImageIO.write(bi, "png", new File(fName));
+                        } catch (IOException e) {
                             return Result.ERROR;
                         }
-                    case SVG:
-                        SVGGraphics2D g2 = new SVGGraphics2D(display.getWidth(), display.getHeight()+200);
+                        return Result.SUCCESS;
+
+                    case JPEG:
+                        BufferedImage bi2 = new BufferedImage(display.getSize().width, display.getSize().height, BufferedImage.TYPE_INT_ARGB);
+                        Graphics g2 = bi2.createGraphics();
                         display.print(g2);
-                        String svgElement = g2.getSVGElement();
+                        g2.dispose();
+                        try {
+                            ImageIO.write(bi2, "jpg", new File(fName));
+                        } catch (IOException e) {
+                            return Result.ERROR;
+                        }
+                        return Result.SUCCESS;
+                    case SVG:
+                        SVGGraphics2D svg = new SVGGraphics2D(display.getWidth(), display.getHeight());
+                        display.print(svg);
+                        String svgElement = svg.getSVGElement();
                         try (BufferedWriter bw = new BufferedWriter(new FileWriter(fName))) {
                             bw.write(svgElement);
                         }
