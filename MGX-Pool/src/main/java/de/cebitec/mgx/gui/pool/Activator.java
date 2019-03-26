@@ -5,6 +5,8 @@
  */
 package de.cebitec.mgx.gui.pool;
 
+import java.text.NumberFormat;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.osgi.framework.BundleActivator;
@@ -28,7 +30,8 @@ public class Activator implements BundleActivator {
     public void stop(BundleContext context) throws Exception {
         if (MGXPool.isUpAndRunning()) {
             MGXPool.getInstance().shutdown();
-            Logger.getLogger(MGXPool.class.getPackage().getName()).log(Level.INFO, "MGX processing pool shut down, {0} tasks completed.", MGXPool.completedTaskNum());
+            Logger.getLogger(MGXPool.class.getPackage().getName()).log(Level.INFO, "MGX processing pool shut down, {0} tasks completed.",
+                    NumberFormat.getInstance(Locale.US).format(MGXPool.completedTaskNum()));
         }
     }
 
