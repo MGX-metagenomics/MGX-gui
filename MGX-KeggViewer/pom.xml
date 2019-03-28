@@ -97,6 +97,10 @@
             <groupId>de.cebitec.mgx.gui</groupId>
             <artifactId>MGX-SeqExporter</artifactId>
         </dependency>
+        <dependency>
+            <groupId>de.cebitec.mgx.gui</groupId>
+            <artifactId>MGX-Pool</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
