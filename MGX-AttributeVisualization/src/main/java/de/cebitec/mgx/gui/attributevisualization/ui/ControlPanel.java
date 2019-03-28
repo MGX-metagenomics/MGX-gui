@@ -36,10 +36,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.concurrent.ExecutionException;
 import javax.swing.JComponent;
 import javax.swing.SwingWorker;
@@ -253,13 +250,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
             SwingWorker<Collection<AttributeTypeI>, Void> worker = new SwingWorker<Collection<AttributeTypeI>, Void>() {
                 @Override
                 protected Collection<AttributeTypeI> doInBackground() throws Exception {
-                    Set<AttributeTypeI> types = new TreeSet<>();
-                    for (VisualizationGroupI vg : vgmgr.getActiveVisualizationGroups()) {
-                        Iterator<AttributeTypeI> atIter = vg.getAttributeTypes();
-                        while (atIter.hasNext()) {
-                            types.add(atIter.next());
-                        }
-                    }
+                    Collection<AttributeTypeI> types = vgmgr.getAttributeTypes();
                     return types;
                 }
 

@@ -44,7 +44,7 @@ public interface ReplicateGroupI extends ModelBaseI<ReplicateGroupI>, PropertyCh
     
     DistributionI<Double> getMeanDistribution();
     
-    DistributionI<Double> getStdvDistribution();
+    DistributionI<Double> getStdDevDistribution();
     
     long getNumSequences();
     

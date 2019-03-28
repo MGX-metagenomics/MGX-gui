@@ -9,6 +9,7 @@ import de.cebitec.mgx.api.misc.AttributeRank;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Fetcher;
 import de.cebitec.mgx.api.misc.Pair;
+import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.tree.TreeI;
 import de.cebitec.mgx.api.visualization.ConflictResolver;
 import java.beans.PropertyChangeListener;
@@ -60,6 +61,8 @@ public interface VGroupManagerI extends PropertyChangeListener {
     boolean selectAttributeType(String aType);
     
     String getSelectedAttributeType();
+    
+    Collection<AttributeTypeI> getAttributeTypes();
 
     <T> Future<T> submit(Fetcher<T> f);
 

@@ -9,6 +9,7 @@ import de.cebitec.mgx.api.misc.AttributeRank;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Fetcher;
 import de.cebitec.mgx.api.misc.Pair;
+import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.ModelBaseI;
 import de.cebitec.mgx.api.model.SeqRunI;
@@ -22,6 +23,8 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -140,6 +143,20 @@ public class VGroupManager implements VGroupManagerI {
     @Override
     public String getSelectedAttributeType() {
         return currentAttributeType.get(AttributeRank.PRIMARY);
+    }
+
+    @Override
+    public Collection<AttributeTypeI> getAttributeTypes() {
+        Collection<AttributeTypeI> ret = new HashSet<>();
+        synchronized (vizGroups) {
+            for (VisualizationGroupI vg : vizGroups) {
+                Iterator<AttributeTypeI> it = vg.getAttributeTypes();
+                while (it.hasNext()) {
+                    ret.add(it.next());
+                }
+            }
+        }
+        return ret;
     }
 
     @Override
