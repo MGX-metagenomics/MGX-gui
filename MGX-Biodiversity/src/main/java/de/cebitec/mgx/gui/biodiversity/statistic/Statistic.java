@@ -8,8 +8,17 @@ import de.cebitec.mgx.api.misc.DistributionI;
  */
 public interface Statistic {
 
-    public String measure(DistributionI<Long> data);
 
+    /**
+     * @return name of the implemented statistic
+     */
     public String getName();
+    
+    /**
+     * 
+     * @param distribution attribute distribution for selected group
+     * @return pre-formatted String with computed value
+     */
+    public String measure(DistributionI<Long> distribution);
 
 }
