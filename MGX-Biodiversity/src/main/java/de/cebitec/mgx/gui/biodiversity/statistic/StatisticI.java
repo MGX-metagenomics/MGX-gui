@@ -6,8 +6,7 @@ import de.cebitec.mgx.api.misc.DistributionI;
  *
  * @author sjaenick
  */
-public interface Statistic {
-
+public interface StatisticI {
 
     /**
      * @return name of the implemented statistic
