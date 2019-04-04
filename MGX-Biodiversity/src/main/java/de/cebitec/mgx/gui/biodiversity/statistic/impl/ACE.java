@@ -35,6 +35,9 @@ public class ACE implements StatisticI {
         double gamma = getGamma(data);
 
         ret = Sabundant + (Srare / Cace) + (F1 / Cace) * FastMath.pow(gamma, 2);
+        if (Double.isNaN(ret)) {
+            return "N/A";
+        }
         return NumberFormat.getInstance(Locale.US).format(ret);
 //        return String.format("%.2f", ret);
     }
