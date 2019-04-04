@@ -26,7 +26,7 @@ public interface StatisticsAccessI {
 
     public PCAResultI PCA(Collection<Pair<VisualizationGroupI, DistributionI<Double>>> groups, PrincipalComponent pc1, PrincipalComponent pc2) throws MGXException;
 
-    public List<Point> PCoA(Collection<Pair<VisualizationGroupI, DistributionI<Double>>> groups) throws MGXException;
+    public Collection<Point> NMDS(Collection<Pair<VisualizationGroupI, DistributionI<Double>>> groups) throws MGXException;
 
     public String Clustering(Collection<Pair<VisualizationGroupI, DistributionI<Double>>> dists, String distanceMethod, String agglomeration) throws MGXException;
 

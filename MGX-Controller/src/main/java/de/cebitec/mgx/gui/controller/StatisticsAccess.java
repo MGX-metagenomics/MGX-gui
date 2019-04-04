@@ -108,13 +108,13 @@ public class StatisticsAccess implements StatisticsAccessI {
     }
 
     @Override
-    public List<Point> PCoA(Collection<Pair<VisualizationGroupI, DistributionI<Double>>> groups) throws MGXException {
+    public Collection<Point> NMDS(Collection<Pair<VisualizationGroupI, DistributionI<Double>>> groups) throws MGXException {
 
         MGXMatrixDTO matrix = buildMatrix(groups, true);
 
         List<Point> pcoa = new LinkedList<>();
         try {
-            PointDTOList ret = dtomaster.Statistics().PCoA(matrix);
+            PointDTOList ret = dtomaster.Statistics().NMDS(matrix);
             for (PointDTO pdto : ret.getPointList()) {
                 Point p = PointDTOFactory.getInstance().toModel(master, pdto);
 
