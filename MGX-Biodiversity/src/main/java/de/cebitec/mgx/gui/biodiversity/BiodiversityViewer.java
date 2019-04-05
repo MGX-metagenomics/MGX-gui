@@ -1,4 +1,3 @@
-
 package de.cebitec.mgx.gui.biodiversity;
 
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
@@ -10,6 +9,7 @@ import de.cebitec.mgx.common.visualization.ViewerI;
 import de.cebitec.mgx.gui.biodiversity.statistic.impl.ACE;
 import de.cebitec.mgx.gui.biodiversity.statistic.impl.Chao1;
 import de.cebitec.mgx.gui.biodiversity.statistic.impl.Shannon;
+import de.cebitec.mgx.gui.biodiversity.statistic.impl.ShannonEvenness;
 import de.cebitec.mgx.gui.biodiversity.statistic.impl.Simpson;
 import de.cebitec.mgx.gui.swingutils.DecimalFormatRenderer;
 import java.util.List;
@@ -37,7 +37,7 @@ public class BiodiversityViewer extends CategoricalViewerI<Long> implements Cust
     private BiodiversityCustomizer cust = null;
 
     public BiodiversityViewer() {
-        this.stats = new StatisticI[]{new ACE(), new Chao1(), new Shannon(), new Simpson()};
+        this.stats = new StatisticI[]{new ACE(), new Chao1(), new Shannon(), new ShannonEvenness(), new Simpson()};
     }
 
     @Override
