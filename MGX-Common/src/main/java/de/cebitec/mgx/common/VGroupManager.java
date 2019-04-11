@@ -22,8 +22,9 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -147,15 +148,24 @@ public class VGroupManager implements VGroupManagerI {
 
     @Override
     public Collection<AttributeTypeI> getAttributeTypes() {
-        Collection<AttributeTypeI> ret = new HashSet<>();
+        List<AttributeTypeI> ret = new ArrayList<>();
         synchronized (vizGroups) {
             for (VisualizationGroupI vg : vizGroups) {
                 Iterator<AttributeTypeI> it = vg.getAttributeTypes();
                 while (it.hasNext()) {
-                    ret.add(it.next());
+                    AttributeTypeI at = it.next();
+                    if (!ret.contains(at)) {
+                        ret.add(at);
+                    }
                 }
             }
         }
+        Collections.sort(ret, new Comparator<AttributeTypeI>() {
+            @Override
+            public int compare(AttributeTypeI o1, AttributeTypeI o2) {
+                return o1.getName().compareTo(o2.getName());
+            }
+        });
         return ret;
     }
 
