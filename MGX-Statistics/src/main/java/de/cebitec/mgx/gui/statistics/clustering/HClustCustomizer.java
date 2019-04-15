@@ -23,7 +23,7 @@ import org.openide.util.NbPreferences;
 public class HClustCustomizer extends javax.swing.JPanel {
 
     private static final String[] AGGLO = new String[]{"ward", "single", "complete", "average", "mcquitty", "median", "centroid"};
-    private static final String[] DIST = new String[]{"euclidean", "maximum", "manhattan", "canberra", "binary", "minkowski"};
+    private static final String[] DIST = new String[]{"aitchison", "euclidean", "maximum", "manhattan", "canberra", "binary", "minkowski"};
     private String newickString = null;
 
     /**
