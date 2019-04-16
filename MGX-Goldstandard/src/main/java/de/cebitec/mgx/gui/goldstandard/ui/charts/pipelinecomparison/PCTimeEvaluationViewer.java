@@ -4,6 +4,7 @@ import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.groups.ImageExporterI;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.SeqRunI;
+import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
 import de.cebitec.mgx.gui.charts.basic.util.SVGChartPanel;
 import de.cebitec.mgx.gui.goldstandard.ui.charts.EvaluationViewerI;
 import de.cebitec.mgx.gui.goldstandard.wizards.selectjobs.TimeEvalJobWizardDescriptor;
@@ -76,12 +77,12 @@ public class PCTimeEvaluationViewer extends EvaluationViewerI implements Pipelin
 
     @Override
     public ImageExporterI getImageExporter() {
-        return null;
+        return JFreeChartUtil.getImageExporter(chart);
     }
 
     @Override
     public String getName() {
-        return "Time evaluation";
+        return "Runtime comparison";
     }
 
     @Override
@@ -102,7 +103,7 @@ public class PCTimeEvaluationViewer extends EvaluationViewerI implements Pipelin
                 stepSize = 1_000;
                 yAxisLabel = "seconds";
         }
-        
+
         //
         // sort by runtime, descending
         //
@@ -115,7 +116,7 @@ public class PCTimeEvaluationViewer extends EvaluationViewerI implements Pipelin
                 return ret != 0 ? ret : o1.getTool().getName().compareTo(o2.getTool().getName());
             }
         });
-        
+
         for (JobI job : jobs) {
             double runtime = (job.getFinishDate().getTime() - job.getStartDate().getTime()) / (double) stepSize;
             data.addValue(runtime, "Time evaluation", job.getTool().getName());
@@ -124,7 +125,7 @@ public class PCTimeEvaluationViewer extends EvaluationViewerI implements Pipelin
 
         String xAxisLabel = "";
 
-        chart = ChartFactory.createBarChart(null, xAxisLabel, yAxisLabel, dataset, PlotOrientation.HORIZONTAL, true, true, false);
+        chart = ChartFactory.createBarChart(getName(), xAxisLabel, yAxisLabel, dataset, PlotOrientation.HORIZONTAL, true, true, false);
 
         chart.removeLegend();
         chart.setBorderPaint(Color.WHITE);
