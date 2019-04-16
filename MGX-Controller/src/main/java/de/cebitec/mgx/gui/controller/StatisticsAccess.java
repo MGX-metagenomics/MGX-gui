@@ -44,7 +44,7 @@ public class StatisticsAccess implements StatisticsAccessI {
     public StatisticsAccess(MGXMasterI master, MGXDTOMaster dtomaster) throws MGXException {
         this.master = master;
         this.dtomaster = dtomaster;
-          if (master.isDeleted()) {
+        if (master.isDeleted()) {
             throw new MGXLoggedoutException("You are disconnected.");
         }
     }
@@ -133,6 +133,15 @@ public class StatisticsAccess implements StatisticsAccessI {
         }
     }
 
+    @Override
+    public double[] toCLR(double[] counts) throws MGXException {
+        try {
+            return dtomaster.Statistics().toCLR(counts);
+        } catch (MGXDTOException ex) {
+            throw new MGXException(ex.getMessage());
+        }
+    }
+
     private static <T extends Number> MGXMatrixDTO buildMatrix(Collection<Pair<VisualizationGroupI, DistributionI<T>>> groups, boolean includeColNames) {
         MGXMatrixDTO.Builder b = MGXMatrixDTO.newBuilder();
 
@@ -187,5 +196,4 @@ public class StatisticsAccess implements StatisticsAccessI {
 //        }
 //        return sb.toString();
 //    }
-
 }
