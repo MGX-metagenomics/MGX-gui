@@ -1,14 +1,18 @@
 package de.cebitec.mgx.gui.goldstandard.ui;
 
 import de.cebitec.mgx.api.groups.ImageExporterI;
+import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.goldstandard.ui.charts.EvaluationViewerI;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.util.Lookup;
+import org.openide.util.LookupEvent;
+import org.openide.util.LookupListener;
 import org.openide.windows.TopComponent;
 import org.openide.util.NbBundle.Messages;
+import org.openide.util.Utilities;
 import org.openide.util.lookup.AbstractLookup;
 import org.openide.util.lookup.InstanceContent;
 
@@ -39,10 +43,12 @@ import org.openide.util.lookup.InstanceContent;
     "CTL_EvaluationTopComponent=Evaluate pipelines",
     "HINT_EvaluationTopComponent=Tool for a fast evaluation of pipelines"
 })
-public final class EvaluationTopComponent extends TopComponent {
+public final class EvaluationTopComponent extends TopComponent implements LookupListener {
     
     private final Lookup lookup;
     private final InstanceContent content = new InstanceContent();
+    private final EvaluationControlPanel ecp;
+    private Lookup.Result<SeqRunI> lookupResult;
     
     private ImageExporterI exporter;    
     
@@ -55,8 +61,11 @@ public final class EvaluationTopComponent extends TopComponent {
         jSplitPane1.setDividerLocation(width - 50);
         lookup = new AbstractLookup(content);
         associateLookup(lookup);
-        jSplitPane1.setRightComponent(new EvaluationControlPanel(this));
+        ecp = new EvaluationControlPanel(this);
+        jSplitPane1.setRightComponent(ecp);
         chartpane.getVerticalScrollBar().setUnitIncrement(16);
+        lookupResult = Utilities.actionsGlobalContext().lookupResult(SeqRunI.class);
+        lookupResult.addLookupListener(this);
     }
     
     /**
@@ -95,12 +104,18 @@ public final class EvaluationTopComponent extends TopComponent {
     // End of variables declaration//GEN-END:variables
     @Override
     public void componentOpened() {
-        // TODO add custom code on component opening
+        lookupResult.addLookupListener(this);
+        resultChanged(null);
     }
     
     @Override
     public void componentClosed() {
-        // TODO add custom code on component closing
+        lookupResult.removeLookupListener(this);
+    }
+
+    @Override
+    public void resultChanged(LookupEvent ev) {
+        ecp.update();
     }
     
     void writeProperties(java.util.Properties p) {
