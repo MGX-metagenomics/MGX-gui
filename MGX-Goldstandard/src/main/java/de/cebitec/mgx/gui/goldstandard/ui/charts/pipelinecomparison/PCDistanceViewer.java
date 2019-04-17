@@ -140,7 +140,6 @@ public class PCDistanceViewer extends EvaluationViewerI implements PipelineCompa
                 switch (currentDistanceMethod) {
                     case AITCHISON:
                         MGXMasterI m = jobs.get(i).getMaster();
-                        vectors[i].asArray();
                         try {
                             distances[i][j] = m.Statistics().aitchisonDistance(vectors[i].asArray(), vectors[j].asArray());
                         } catch (MGXException ex) {
