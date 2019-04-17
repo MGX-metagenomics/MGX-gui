@@ -27,6 +27,9 @@
                 <configuration>
                     <instructions>
                         <Import-Package>
+                            de.cebitec.mgx.api,
+                            de.cebitec.mgx.api.access,
+                            de.cebitec.mgx.api.exception,
                             de.cebitec.mgx.api.model,
                             de.cebitec.mgx.api.visualization.filter,
                             de.cebitec.mgx.api.misc,
