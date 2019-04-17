@@ -142,6 +142,15 @@ public class StatisticsAccess implements StatisticsAccessI {
         }
     }
 
+    @Override
+    public double aitchisonDistance(double[] d1, double[] d2) throws MGXException {
+         try {
+            return dtomaster.Statistics().aitchisonDistance(d1, d2);
+        } catch (MGXDTOException ex) {
+            throw new MGXException(ex.getMessage());
+        }
+    }
+
     private static <T extends Number> MGXMatrixDTO buildMatrix(Collection<Pair<VisualizationGroupI, DistributionI<T>>> groups, boolean includeColNames) {
         MGXMatrixDTO.Builder b = MGXMatrixDTO.newBuilder();
 

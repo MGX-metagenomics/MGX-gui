@@ -32,4 +32,6 @@ public interface StatisticsAccessI {
     // transform to centered log-ratios
     public double[] toCLR(double[] counts) throws MGXException;
 
+    public double aitchisonDistance(double[] d1, double[] d2) throws MGXException;
+
 }
