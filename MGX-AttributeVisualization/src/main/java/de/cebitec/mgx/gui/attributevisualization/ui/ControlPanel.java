@@ -98,7 +98,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
         this.topComponent = tc;
     }
 
-    public final synchronized void updateAttributeTypeList() {
+    private synchronized void updateAttributeTypeList() {
         attrListModel.update();
     }
 
@@ -324,7 +324,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
         @Override
         @SuppressWarnings("unchecked")
         public synchronized void update() {
-            
+
             final ViewerI<Visualizable> lastViewer = getSelectedItem();
             // disable all downstream elements
             clear();
@@ -346,9 +346,13 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
 
             if (getSize() > 0) {
                 // if previously selected element still exists, restore selection
-                if (lastViewer != null && lastViewer instanceof CustomizableI && contains(lastViewer)) {
+                if (lastViewer != null && contains(lastViewer)) {
                     setSelectedItem(lastViewer);
-                    currentCustomizer = ((CustomizableI) lastViewer).getCustomizer();
+                    if (lastViewer instanceof CustomizableI) {
+                        currentCustomizer = ((CustomizableI) lastViewer).getCustomizer();
+                    } else {
+                        currentCustomizer = null;
+                    }
                     itemStateChanged(new ItemEvent(visualizationTypeList,
                             ItemEvent.ITEM_STATE_CHANGED,
                             lastViewer,
