@@ -52,17 +52,17 @@ public final class ExportSeqVisualPanel2 extends JPanel implements DocumentListe
     private JTextField fileNameField;
 
     public void setVisualizationGroup(VisualizationGroupI vg) {
-        boolean hasQual = true;
+        hasQuality = true;
         for (SeqRunI run : vg.getSeqRuns()) {
             try {
-                hasQual = hasQual & run.getMaster().SeqRun().hasQuality(run);
+                hasQuality = hasQuality & run.getMaster().SeqRun().hasQuality(run);
             } catch (MGXException ex) {
-                hasQual = false;
+                hasQuality = false;
             }
         }
-        
+
         // suggest a file name
-        String suffix = hasQual ? ".fastq" : ".fas";
+        String suffix = hasQuality ? ".fastq" : ".fas";
         File suggestedName = new File(jFileChooser1.getCurrentDirectory(), cleanupName(vg.getDisplayName()) + suffix);
         int cnt = 1;
         while (suggestedName.exists()) {
@@ -76,6 +76,12 @@ public final class ExportSeqVisualPanel2 extends JPanel implements DocumentListe
         }
         jFileChooser1.setSelectedFile(suggestedName);
         fileNameField.setText(suggestedName.getName());
+    }
+
+    private boolean hasQuality = false;
+
+    public boolean hasQuality() {
+        return hasQuality;
     }
 
     public File getSelectedFile() {
