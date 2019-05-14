@@ -1,6 +1,8 @@
 package de.cebitec.mgx.gui.seqexporter;
 
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.model.SeqRunI;
 import java.io.File;
 import java.lang.reflect.Field;
 import javax.swing.JFileChooser;
@@ -50,14 +52,25 @@ public final class ExportSeqVisualPanel2 extends JPanel implements DocumentListe
     private JTextField fileNameField;
 
     public void setVisualizationGroup(VisualizationGroupI vg) {
+        boolean hasQual = true;
+        for (SeqRunI run : vg.getSeqRuns()) {
+            try {
+                hasQual = hasQual & run.getMaster().SeqRun().hasQuality(run);
+            } catch (MGXException ex) {
+                hasQual = false;
+            }
+        }
+        
         // suggest a file name
-        File suggestedName = new File(jFileChooser1.getCurrentDirectory(), cleanupName(vg.getDisplayName()) + ".fas");
+        String suffix = hasQual ? ".fastq" : ".fas";
+        File suggestedName = new File(jFileChooser1.getCurrentDirectory(), cleanupName(vg.getDisplayName()) + suffix);
         int cnt = 1;
         while (suggestedName.exists()) {
             String newName = new StringBuilder(cleanupName(vg.getDisplayName()))
                     .append(" (")
                     .append(cnt++)
-                    .append(").fas")
+                    .append(")")
+                    .append(suffix)
                     .toString();
             suggestedName = new File(jFileChooser1.getCurrentDirectory(), newName);
         }
