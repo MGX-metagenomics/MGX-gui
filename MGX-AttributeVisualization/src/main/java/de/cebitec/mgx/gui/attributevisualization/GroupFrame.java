@@ -39,7 +39,7 @@ public class GroupFrame extends GroupFrameBase<VisualizationGroupI> {
         initComponents();
         // set initial properties
         //
-        super.setTitle(vGroup.getDisplayName() + " (" + vGroup.getNumSequences() + " sequences)");
+        super.setTitle(vGroup.getDisplayName() + " (" +  decFormat.format(vGroup.getNumSequences()) + " sequences)");
         displayName.setText(vGroup.getDisplayName());
         color.setBackground(vGroup.getColor());
         color.setForeground(vGroup.getColor());
