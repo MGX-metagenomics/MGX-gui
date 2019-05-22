@@ -7,9 +7,9 @@ package de.cebitec.mgx.gui.attributevisualization.ui;
 
 import de.cebitec.mgx.api.groups.VGroupManagerI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
-import de.cebitec.mgx.common.VGroupManager;
 import de.cebitec.mgx.gui.nodes.VgMgrNode;
 import de.cebitec.mgx.gui.nodes.VizGroupNode;
+import de.cebitec.mgx.gui.visgroups.VGroupManager;
 import java.awt.GraphicsEnvironment;
 import org.junit.Test;
 import static org.junit.Assert.*;

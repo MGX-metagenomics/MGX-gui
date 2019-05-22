@@ -42,18 +42,18 @@ public class ReferenceAccess implements ReferenceAccessI {
         }
     }
 
-    @Override
-    public MGXReferenceI create(MGXReferenceI obj) throws MGXException {
-        ReferenceDTO dto = ReferenceDTOFactory.getInstance().toDTO(obj);
-        long id = Identifiable.INVALID_IDENTIFIER;
-        try {
-            id = dtomaster.Reference().create(dto);
-        } catch (MGXDTOException ex) {
-            throw new MGXException(ex);
-        }
-        obj.setId(id);
-        return obj;
-    }
+//    @Override
+//    public MGXReferenceI create(MGXReferenceI obj) throws MGXException {
+//        ReferenceDTO dto = ReferenceDTOFactory.getInstance().toDTO(obj);
+//        long id = Identifiable.INVALID_IDENTIFIER;
+//        try {
+//            id = dtomaster.Reference().create(dto);
+//        } catch (MGXDTOException ex) {
+//            throw new MGXException(ex);
+//        }
+//        obj.setId(id);
+//        return obj;
+//    }
 
     @Override
     public MGXReferenceI fetch(long id) throws MGXException {

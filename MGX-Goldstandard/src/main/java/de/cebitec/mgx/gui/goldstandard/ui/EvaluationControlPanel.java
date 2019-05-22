@@ -2,8 +2,8 @@ package de.cebitec.mgx.gui.goldstandard.ui;
 
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.JobI;
-import de.cebitec.mgx.api.model.JobState;
 import de.cebitec.mgx.api.model.SeqRunI;
+import de.cebitec.mgx.common.JobState;
 import de.cebitec.mgx.gui.goldstandard.actions.AddGoldstandard;
 import de.cebitec.mgx.gui.goldstandard.ui.charts.ComparisonTypeI;
 import de.cebitec.mgx.gui.goldstandard.ui.charts.EvaluationViewerI;

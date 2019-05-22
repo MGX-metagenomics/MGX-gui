@@ -11,13 +11,13 @@ import de.cebitec.mgx.api.misc.Point;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.visualization.filter.VisFilterI;
-import de.cebitec.mgx.common.VGroupManager;
-import de.cebitec.mgx.common.visualization.AbstractViewer;
-import de.cebitec.mgx.common.visualization.CustomizableI;
-import de.cebitec.mgx.common.visualization.ViewerI;
 import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
 import de.cebitec.mgx.gui.charts.basic.util.SVGChartPanel;
 import de.cebitec.mgx.gui.seqexporter.SeqExporter;
+import de.cebitec.mgx.gui.viewer.api.AbstractViewer;
+import de.cebitec.mgx.gui.viewer.api.CustomizableI;
+import de.cebitec.mgx.gui.viewer.api.ViewerI;
+import de.cebitec.mgx.gui.visgroups.VGroupManager;
 import de.cebitec.mgx.gui.vizfilter.LongToDouble;
 import de.cebitec.mgx.gui.vizfilter.ToFractionFilter;
 import java.awt.Color;
@@ -88,7 +88,7 @@ public class PCoAPlot extends AbstractViewer<DistributionI<Long>> implements Cus
         Set<AttributeI> attrs = new HashSet<>();
         int distCnt = 0;
         try {
-            for (Pair<VisualizationGroupI, DistributionI<Long>> p : getVGroupManager().getDistributions()) {
+            for (Pair<VisualizationGroupI, DistributionI<Long>> p : VGroupManager.getInstance().getDistributions()) {
                 attrs.addAll(p.getSecond().keySet());
                 distCnt++;
             }

@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+   
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <artifactId>MGX-gui</artifactId>
         <groupId>de.cebitec.mgx.gui</groupId>
-        <version>1.0</version>
+        <version>2.0</version>
     </parent>
 
     <groupId>de.cebitec.mgx.gui</groupId>
     <artifactId>MGX-Datamodel</artifactId>
-    <version>1.0</version>
+    <version>2.0</version>
     <packaging>bundle</packaging>
 
     <name>MGX-Datamodel</name>
@@ -44,6 +46,11 @@
             <groupId>de.cebitec.mgx.gui</groupId>
             <artifactId>MGX-API</artifactId>
         </dependency>
+        <dependency>
+            <groupId>de.cebitec.mgx</groupId>
+            <artifactId>MGX-common</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -62,7 +69,13 @@
 
                 <configuration>
                     <instructions>
-                        <Export-Package>de.cebitec.mgx.gui.datamodel,de.cebitec.mgx.gui.datamodel.misc,de.cebitec.mgx.gui.datamodel.qc,de.cebitec.mgx.gui.datamodel.tree</Export-Package>
+                        <Export-Package>
+                            de.cebitec.mgx.gui.datamodel,
+                            de.cebitec.mgx.gui.datamodel.assembly,
+                            de.cebitec.mgx.gui.datamodel.misc,
+                            de.cebitec.mgx.gui.datamodel.qc,
+                            de.cebitec.mgx.gui.datamodel.tree
+                        </Export-Package>
                         <Private-Package></Private-Package>
                     </instructions>
                 </configuration>
@@ -71,6 +84,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${java.src.version}</source>
+                    <target>${java.target.version}</target>
+                </configuration>
             </plugin>
 
             <plugin>

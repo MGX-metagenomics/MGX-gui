@@ -1,7 +1,5 @@
 package de.cebitec.mgx.api.misc;
 
-import org.apache.commons.math3.util.FastMath;
-
 /**
  *
  * @author sj
@@ -39,7 +37,7 @@ public class Point implements Comparable<Point> {
     }
     
     public double getLength() {
-        return FastMath.sqrt(FastMath.pow(x, 2) + Math.pow(y, 2));
+        return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
     }
 
     @Override

@@ -212,7 +212,7 @@ public class FastCategoryDataset extends AbstractDataset
      */
     public void addValue(double value, Comparable rowKey,
             Comparable columnKey) {
-        addValue(new Double(value), rowKey, columnKey);
+        addValue(Double.valueOf(value), rowKey, columnKey);
     }
 
     /**
@@ -243,7 +243,7 @@ public class FastCategoryDataset extends AbstractDataset
      */
     public void setValue(double value, Comparable rowKey,
             Comparable columnKey) {
-        setValue(new Double(value), rowKey, columnKey);
+        setValue(Double.valueOf(value), rowKey, columnKey);
     }
 
     /**

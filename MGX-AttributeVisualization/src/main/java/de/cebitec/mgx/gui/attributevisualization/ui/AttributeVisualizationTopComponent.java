@@ -1,8 +1,8 @@
 package de.cebitec.mgx.gui.attributevisualization.ui;
 
 import de.cebitec.mgx.api.groups.ImageExporterI;
-import de.cebitec.mgx.common.visualization.ViewerI;
 import de.cebitec.mgx.api.groups.SequenceExporterI;
+import de.cebitec.mgx.gui.viewer.api.ViewerI;
 import java.util.Collections;
 import javax.swing.JComponent;
 import org.netbeans.api.settings.ConvertAsProperties;

@@ -17,6 +17,7 @@ public class SeqRun extends SeqRunI {
     protected String database_accession;
     protected long extract_id;
     protected long numSequences = 0;
+    protected String filename1, filename2;
 
     public SeqRun(MGXMasterI m) {
         super(m);
@@ -98,6 +99,24 @@ public class SeqRun extends SeqRunI {
         this.numSequences = numSequences;
         return this;
     }
+
+    public String getFirstFilename() {
+        return filename1;
+    }
+
+    public void setFirstFilename(String filename1) {
+        this.filename1 = filename1;
+    }
+
+    public String getSecondFilename() {
+        return filename2;
+    }
+
+    public void setSecondFilename(String filename2) {
+        this.filename2 = filename2;
+    }
+    
+    
 
 //    @Override
 //    public String toString() {

@@ -9,10 +9,11 @@ import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
-import de.cebitec.mgx.common.visualization.CategoricalViewerI;
-import de.cebitec.mgx.common.visualization.CustomizableI;
-import de.cebitec.mgx.common.visualization.ViewerI;
 import de.cebitec.mgx.gui.seqexporter.SeqExporter;
+import de.cebitec.mgx.gui.viewer.api.CategoricalViewerI;
+import de.cebitec.mgx.gui.viewer.api.CustomizableI;
+import de.cebitec.mgx.gui.viewer.api.ViewerI;
+import de.cebitec.mgx.gui.visgroups.VGroupManager;
 import de.cebitec.mgx.kegg.pathways.KEGGException;
 import de.cebitec.mgx.kegg.pathways.KEGGMaster;
 import de.cebitec.mgx.kegg.pathways.api.ECNumberI;
@@ -150,7 +151,7 @@ public class KeggViewer extends CategoricalViewerI<Long> implements Customizable
     private final static RequestProcessor reqProcessor = new RequestProcessor("KEGG-Viewer", 35, true);
 
     public Set<PathwayI> selectPathways() throws ConflictingJobsException, KEGGException {
-        return customizer.selectPathways(master, getVGroupManager(), reqProcessor);
+        return customizer.selectPathways(master, VGroupManager.getInstance(), reqProcessor);
     }
 //        final Set<ECNumberI> ecNumbers = new HashSet<>();
 //        for (Pair<VisualizationGroupI, DistributionI> p : VGroupManager.getInstance().getDistributions()) {
@@ -187,7 +188,7 @@ public class KeggViewer extends CategoricalViewerI<Long> implements Customizable
         SwingWorker<Set<PathwayI>, Void> sw = new SwingWorker<Set<PathwayI>, Void>() {
             @Override
             protected Set<PathwayI> doInBackground() throws Exception {
-                return customizer.selectPathways(master, getVGroupManager(), reqProcessor);
+                return customizer.selectPathways(master, VGroupManager.getInstance(), reqProcessor);
             }
 
             @Override

@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.controller;
 
 import de.cebitec.gpms.rest.RESTMasterI;
+import de.cebitec.mgx.api.MGXAssemblyMasterI;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.AttributeAccessI;
 import de.cebitec.mgx.api.access.AttributeTypeAccessI;
@@ -19,6 +20,7 @@ import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.MGXDataModelBaseI;
 import de.cebitec.mgx.api.model.ModelBaseI;
 import de.cebitec.mgx.client.MGXDTOMaster;
+import de.cebitec.mgx.gui.controller.assembly.MGXAssemblyMaster;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Objects;
@@ -160,13 +162,13 @@ public class MGXMaster extends MGXMasterI implements PropertyChangeListener {
     }
 
     @Override
-    public void log(Level lvl, String msg) {
-        logger.log(lvl, msg);
+    public MGXAssemblyMasterI getAssemblyMasterI() {
+        return new MGXAssemblyMaster(this, dtomaster);
     }
 
     @Override
-    public int compareTo(MGXMasterI o) {
-        return getProject().compareTo(o.getProject());
+    public void log(Level lvl, String msg) {
+        logger.log(lvl, msg);
     }
 
     @Override
@@ -188,6 +190,11 @@ public class MGXMaster extends MGXMasterI implements PropertyChangeListener {
             default:
                 System.err.println("MGXMaster received event " + evt);
         }
+    }
+
+    @Override
+    public int compareTo(MGXMasterI o) {
+        return getProject().compareTo(o.getProject());
     }
 
     @Override

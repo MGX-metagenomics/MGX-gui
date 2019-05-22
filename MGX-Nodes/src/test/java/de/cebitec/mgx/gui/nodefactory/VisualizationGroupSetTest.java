@@ -6,9 +6,9 @@
 package de.cebitec.mgx.gui.nodefactory;
 
 import de.cebitec.mgx.api.groups.VGroupManagerI;
-import de.cebitec.mgx.common.VGroupManager;
 import de.cebitec.mgx.gui.nodes.VgMgrNode;
 import de.cebitec.mgx.gui.nodes.VizGroupNode;
+import de.cebitec.mgx.gui.visgroups.VGroupManager;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import org.openide.nodes.Node;
@@ -22,7 +22,7 @@ public class VisualizationGroupSetTest {
     @Test
     public void testParentNode() {
         System.out.println("testParentNode");
-        VGroupManagerI vgmgr = VGroupManager.getInstance();
+        VGroupManagerI vgmgr = VGroupManager.getTestInstance();
         VgMgrNode mgrNode = new VgMgrNode(vgmgr);
         //
         // add group

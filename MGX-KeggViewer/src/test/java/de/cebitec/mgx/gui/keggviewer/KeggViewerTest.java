@@ -8,7 +8,7 @@ import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.AttributeRank;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.visualization.ConflictResolver;
-import de.cebitec.mgx.common.VGroupManager;
+import de.cebitec.mgx.gui.visgroups.VGroupManager;
 import de.cebitec.mgx.kegg.pathways.KEGGException;
 import java.util.Iterator;
 import java.util.List;
@@ -82,11 +82,8 @@ public class KeggViewerTest {
         assertEquals("EC_number", attrType);
 
         KeggViewer kv = new KeggViewer();
-        kv.setVGroupManager(mgr);
         kv.getCustomizer();
         
-        assertTrue(mgr == kv.getVGroupManager());
-
         // add second run
         iter = master.SeqRun().fetchall();
         while (iter.hasNext()) {

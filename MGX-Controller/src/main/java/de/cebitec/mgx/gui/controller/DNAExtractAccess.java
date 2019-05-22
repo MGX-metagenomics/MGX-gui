@@ -49,18 +49,18 @@ public class DNAExtractAccess extends AccessBase<DNAExtractI> implements DNAExtr
         return obj;
     }
 
-    @Override
-    public DNAExtractI create(DNAExtractI obj) throws MGXException {
-        DNAExtractDTO dto = DNAExtractDTOFactory.getInstance().toDTO(obj);
-        long id = Identifiable.INVALID_IDENTIFIER;
-        try {
-            id = getDTOmaster().DNAExtract().create(dto);
-        } catch (MGXDTOException ex) {
-            throw new MGXException(ex);
-        }
-        obj.setId(id);
-        return obj;
-    }
+//    @Override
+//    public DNAExtractI create(DNAExtractI obj) throws MGXException {
+//        DNAExtractDTO dto = DNAExtractDTOFactory.getInstance().toDTO(obj);
+//        long id = Identifiable.INVALID_IDENTIFIER;
+//        try {
+//            id = getDTOmaster().DNAExtract().create(dto);
+//        } catch (MGXDTOException ex) {
+//            throw new MGXException(ex);
+//        }
+//        obj.setId(id);
+//        return obj;
+//    }
 
     @Override
     public DNAExtractI fetch(long id) throws MGXException {

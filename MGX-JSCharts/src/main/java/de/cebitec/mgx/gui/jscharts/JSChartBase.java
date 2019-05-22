@@ -6,7 +6,7 @@
 package de.cebitec.mgx.gui.jscharts;
 
 import de.cebitec.mgx.api.misc.Visualizable;
-import de.cebitec.mgx.common.visualization.AbstractViewer;
+import de.cebitec.mgx.gui.viewer.api.AbstractViewer;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;

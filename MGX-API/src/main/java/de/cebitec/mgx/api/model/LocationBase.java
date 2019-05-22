@@ -5,8 +5,6 @@
  */
 package de.cebitec.mgx.api.model;
 
-import org.apache.commons.math3.util.FastMath;
-
 /**
  *
  * @author sjaenick
@@ -22,8 +20,8 @@ public abstract class LocationBase<T extends LocationBase<T>> implements Locatio
         //super(m, df);
         this.start = start;
         this.stop = stop;
-        this.min = FastMath.min(start, stop);
-        this.max = FastMath.max(start, stop);
+        this.min = min(start, stop);
+        this.max = max(start, stop);
     }
 
     @Override
@@ -44,5 +42,13 @@ public abstract class LocationBase<T extends LocationBase<T>> implements Locatio
     @Override
     public final int getMin() {
         return min;
+    }
+
+    private static int min(final int a, final int b) {
+        return (a <= b) ? a : b;
+    }
+
+    private static int max(final int a, final int b) {
+        return (a <= b) ? b : a;
     }
 }

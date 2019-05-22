@@ -9,7 +9,6 @@ public class Interval {
     // lower bound is always segment-aligned, 
     // upper bound isn't (but might be, if not last segment)
     private final int from;
-    private final int to;
     private final int segmentSize;
 
 //    public Interval(Cache<T> cache, int from) {
@@ -22,7 +21,6 @@ public class Interval {
     public Interval(int segmentSize, int from) {
         this.segmentSize = segmentSize;
         this.from = from;
-        this.to = from + segmentSize - 1;
     }
 
     public final int getFrom() {
@@ -30,7 +28,7 @@ public class Interval {
     }
 
     public final int getTo() {
-        return to;
+        return from + segmentSize - 1;
     }
 
     public final int length() {

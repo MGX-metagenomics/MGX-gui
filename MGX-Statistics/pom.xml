@@ -4,12 +4,11 @@
     <parent>
         <artifactId>MGX-gui</artifactId>
         <groupId>de.cebitec.mgx.gui</groupId>
-        <version>1.0</version>
+        <version>2.0</version>
     </parent>
 
     <groupId>de.cebitec.mgx.gui</groupId>
     <artifactId>MGX-Statistics</artifactId>
-    <version>1.0</version>
     <packaging>nbm</packaging>
 
     <name>MGX-Statistics</name>
@@ -56,10 +55,6 @@
             <groupId>de.cebitec.mgx</groupId>
         </dependency>
         <dependency>
-            <groupId>de.cebitec.mgx.gui</groupId>
-            <artifactId>MGX-Common</artifactId>
-        </dependency>
-        <dependency>
             <artifactId>MGX-SwingUtils</artifactId>
             <groupId>de.cebitec.mgx.gui</groupId>
         </dependency>
@@ -86,8 +81,17 @@
         <dependency>
             <groupId>de.cebitec.mgx.gui</groupId>
             <artifactId>MGX-SeqExporter</artifactId>
-            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>de.cebitec.mgx.gui</groupId>
+            <artifactId>MGX-Viewer-API</artifactId>
+            <version>2.0</version>
             <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>de.cebitec.mgx.gui</groupId>
+            <artifactId>MGX-VisualizationGroups</artifactId>
+            <version>2.0</version>
         </dependency>
     </dependencies>
 

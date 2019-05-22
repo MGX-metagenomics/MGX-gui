@@ -7,14 +7,15 @@ import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.tree.NodeI;
 import de.cebitec.mgx.api.model.tree.TreeI;
-import de.cebitec.mgx.common.visualization.CustomizableI;
-import de.cebitec.mgx.common.visualization.HierarchicalViewerI;
-import de.cebitec.mgx.common.visualization.ViewerI;
 import de.cebitec.mgx.gui.radialtree.internal.ArcLabelRenderer;
 import de.cebitec.mgx.gui.radialtree.internal.DecoratorLabelRenderer;
 import de.cebitec.mgx.gui.radialtree.internal.MouseWheelControl;
 import de.cebitec.mgx.gui.radialtree.internal.SectorRenderer;
 import de.cebitec.mgx.gui.radialtree.internal.StarburstLayout;
+import de.cebitec.mgx.gui.viewer.api.CustomizableI;
+import de.cebitec.mgx.gui.viewer.api.HierarchicalViewerI;
+import de.cebitec.mgx.gui.viewer.api.ViewerI;
+import de.cebitec.mgx.gui.visgroups.VGroupManager;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -371,7 +372,7 @@ public class RadialTree extends HierarchicalViewerI implements ImageExporterI.Pr
 
     @Override
     public boolean canHandle(AttributeTypeI valueType) {
-        return super.canHandle(valueType) && getVGroupManager().getActiveVisualizationGroups().size() == 1;
+        return super.canHandle(valueType) && VGroupManager.getInstance().getActiveVisualizationGroups().size() == 1;
     }
 
     @Override

@@ -2,10 +2,10 @@ package de.cebitec.mgx.gui.attributevisualization.ui;
 
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.model.SeqRunI;
-import de.cebitec.mgx.common.VGroupManager;
 import de.cebitec.mgx.gui.attributevisualization.view.GroupExplorerView;
 import de.cebitec.mgx.gui.attributevisualization.NodeMapperImpl;
 import de.cebitec.mgx.gui.nodes.VgMgrNode;
+import de.cebitec.mgx.gui.visgroups.VGroupManager;
 import java.awt.BorderLayout;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;

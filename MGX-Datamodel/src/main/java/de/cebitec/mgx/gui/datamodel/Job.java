@@ -3,9 +3,9 @@ package de.cebitec.mgx.gui.datamodel;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.JobParameterI;
-import de.cebitec.mgx.api.model.JobState;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.ToolI;
+import de.cebitec.mgx.common.JobState;
 import java.util.Date;
 import java.util.List;
 

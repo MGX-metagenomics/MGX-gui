@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <artifactId>MGX-gui</artifactId>
         <groupId>de.cebitec.mgx.gui</groupId>
-        <version>1.0</version>
+        <version>2.0</version>
     </parent>
 
     <groupId>de.cebitec.mgx.gui</groupId>
     <artifactId>MGX-SwingUtils</artifactId>
-    <version>1.0</version>
     <packaging>nbm</packaging>
 
     <name>MGX-SwingUtils</name>
@@ -48,10 +49,6 @@
             <artifactId>MGX-API</artifactId>
         </dependency>
         <dependency>
-            <groupId>de.cebitec.mgx.gui</groupId>
-            <artifactId>MGX-Common</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-awt</artifactId>
         </dependency>
@@ -62,8 +59,16 @@
         <dependency>
             <groupId>de.cebitec.mgx.gui</groupId>
             <artifactId>MGX-Pool</artifactId>
-            <version>1.0</version>
-            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>de.cebitec.mgx.gui</groupId>
+            <artifactId>MGX-VisualizationGroups</artifactId>
+            <version>2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>de.cebitec.mgx.gui</groupId>
+            <artifactId>MGX-DataFactories</artifactId>
+            <version>2.0</version>
         </dependency>
     </dependencies>
 
@@ -84,7 +89,7 @@
 
                 <configuration>
                     <instructions>
-                        <Import-Package>org.openide.util,org.openide.awt,javax.swing,javax.swing.filechooser,javax.swing.event,de.cebitec.mgx.api.model,de.cebitec.mgx.api.misc,de.cebitec.mgx.api.groups,de.cebitec.mgx.api.model.tree,de.cebitec.mgx.common</Import-Package>
+                        <Import-Package>org.openide.util,org.openide.awt,javax.swing,javax.swing.filechooser,javax.swing.event,de.cebitec.mgx.api.model,de.cebitec.mgx.api.misc,de.cebitec.mgx.api.groups,de.cebitec.mgx.api.model.tree</Import-Package>
                         <Export-Package>de.cebitec.mgx.gui.swingutils,de.cebitec.mgx.gui.swingutils.util</Export-Package>
                         <Private-Package></Private-Package>
                     </instructions>

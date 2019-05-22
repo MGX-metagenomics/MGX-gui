@@ -109,7 +109,7 @@ public class GSCVennChartViewer extends EvaluationViewerI implements PipelineCom
                         List<Long> vennValues = new ArrayList<>(collections.size());
                         for (Collection<AttributeI> col : collections){
                             if (col != null)
-                                vennValues.add(new Long(col.size()));
+                                vennValues.add(Long.valueOf(col.size()));
                             else
                                 vennValues.add(null);
                         }       venn = VennChart.get4Venn(vennValues, jobAName, jobBName, jobCName, jobDName);

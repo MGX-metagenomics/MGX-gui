@@ -252,7 +252,8 @@ public abstract class PanelBase extends JComponent implements PropertyChangeList
         int notches = e.getWheelRotation();
         int[] newBounds = Arrays.copyOf(bounds, 2);
         int len = vc.getIntervalLength();
-        int adjust = len / 25;
+        int adjust = FastMath.max(5, len / 25);
+        System.err.println("adjust "+ adjust);
 
         if (notches < 0) {
             newBounds[0] += adjust;

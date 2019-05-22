@@ -9,7 +9,7 @@ import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.tree.TreeI;
-import de.cebitec.mgx.common.visualization.ViewerI;
+import de.cebitec.mgx.gui.viewer.api.ViewerI;
 import java.util.List;
 import org.openide.util.lookup.ServiceProvider;
 

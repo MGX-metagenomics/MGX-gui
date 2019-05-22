@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>de.cebitec.mgx.gui</groupId>
     <artifactId>MGX-gui</artifactId>
-    <version>1.0</version>
+    <version>2.0</version>
     <packaging>pom</packaging>
 
     <name>MGX-gui - NB App Parent</name>
@@ -177,7 +178,7 @@
             <dependency>
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
-                <version>1.11</version>
+                <version>1.12</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
@@ -197,42 +198,42 @@
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>23.4-jre</version>
+                <version>27.1-jre</version>
             </dependency>
             <dependency>
-                <groupId>com.sun.jersey</groupId>
-                <artifactId>jersey-core</artifactId>
-                <version>1.18.2</version>
-            </dependency>
-            <dependency>
-                <groupId>com.sun.jersey</groupId>
+                <groupId>org.glassfish.jersey.core</groupId>
                 <artifactId>jersey-client</artifactId>
-                <version>1.18.2</version>
+                <version>2.28</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jersey.inject</groupId>
+                <artifactId>jersey-hk2</artifactId>
+                <version>2.28</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.xmlgraphics</groupId>
                 <artifactId>batik-rasterizer</artifactId>
-                <version>1.9.1</version>
+                <version>1.11</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.xmlgraphics</groupId>
                 <artifactId>batik-svggen</artifactId>
-                <version>1.9.1</version>
+                <version>1.11</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.xmlgraphics</groupId>
                 <artifactId>batik-swing</artifactId>
-                <version>1.9.1</version>
+                <version>1.11</version>
             </dependency>
             <dependency>
                 <groupId>com.google.protobuf</groupId>
                 <artifactId>protobuf-java</artifactId>
-                <version>2.6.1</version>
+                <version>3.7.0</version>
             </dependency>
             <dependency>
                 <groupId>com.h2database</groupId>
                 <artifactId>h2</artifactId>
-                <version>1.4.197</version>
+                <version>1.4.199</version>
             </dependency>
             <dependency>
                 <groupId>org.jdesktop.swingx</groupId>
@@ -247,34 +248,34 @@
             <dependency>
                 <groupId>de.cebitec.gpms</groupId>
                 <artifactId>GPMS-core-api</artifactId>
-                <version>1.1</version>
+                <version>2.0</version>
             </dependency>
             <dependency>
                 <groupId>de.cebitec.gpms</groupId>
                 <artifactId>GPMS-rest-api</artifactId>
-                <version>1.1</version>
+                <version>2.0</version>
             </dependency>
             <dependency>
                 <groupId>de.cebitec.gpms</groupId>
                 <artifactId>GPMS-DTO</artifactId>
-                <version>1.1</version>
+                <version>2.0</version>
             </dependency>
             <dependency>
                 <groupId>de.cebitec.gpms</groupId>
                 <artifactId>GPMS-Server</artifactId>
-                <version>1.1</version>
+                <version>2.0</version>
             </dependency>
             <dependency>
                 <groupId>de.cebitec.gpms</groupId>
                 <artifactId>GPMS-Nodesupport</artifactId>
-                <version>1.0</version>
+                <version>2.0</version>
             </dependency>
             
             <!-- MGX -->
             <dependency>
                 <groupId>de.cebitec.mgx</groupId>
                 <artifactId>MGX-restgpms</artifactId>
-                <version>1.1</version>
+                <version>2.0</version>
             </dependency>
             <dependency>
                 <groupId>de.cebitec.mgx</groupId>
@@ -294,12 +295,12 @@
             <dependency>
                 <groupId>de.cebitec.mgx.gui</groupId>
                 <artifactId>MGX-API</artifactId>
-                <version>1.0</version>
+                <version>2.0</version>
             </dependency>
             <dependency>
                 <groupId>de.cebitec.mgx.client</groupId>
-                <artifactId>MGX-client-api</artifactId>
-                <version>1.0</version>
+                <artifactId>MGX-client</artifactId>
+                <version>2.0</version>
             </dependency>
             <dependency>
                 <groupId>de.cebitec.mgx</groupId>
@@ -310,17 +311,17 @@
             <dependency>
                 <groupId>de.cebitec.mgx</groupId>
                 <artifactId>ProtoBuf-Serializer</artifactId>
-                <version>1.0</version>
+                <version>2.0</version>
             </dependency>
             <dependency>
                 <groupId>de.cebitec.mgx</groupId>
                 <artifactId>KEGG-Pathways</artifactId>
-                <version>1.0</version>
+                <version>2.0</version>
             </dependency>
             <dependency>
                 <groupId>de.cebitec.mgx</groupId>
                 <artifactId>MGX-DTO</artifactId>
-                <version>1.0</version>
+                <version>2.0</version>
             </dependency>
             <dependency>
                 <groupId>de.cebitec.mgx</groupId>
@@ -337,11 +338,6 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>MGX-Datamodel</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>MGX-Common</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -485,9 +481,9 @@
                 <version>1.0</version>
             </dependency>
             <dependency>
-                <groupId>de.cebitec.mgx</groupId>
+                <groupId>de.cebitec.mgx.gui</groupId>
                 <artifactId>MGX-TestUtils</artifactId>
-                <version>1.0</version>
+                <version>2.0</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
@@ -497,12 +493,12 @@
             <dependency>
                 <groupId>de.cebitec.mgx.gui</groupId>
                 <artifactId>MGX-Pool</artifactId>
-                <version>1.0</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>de.cebitec.mgx.gui</groupId>
                 <artifactId>MGX-SeqExporter</artifactId>
-                <version>1.0</version>
+                <version>${project.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -536,8 +532,8 @@
                     <version>3.7.0</version>
                     <configuration>
                         <compilerArgument>-Xlint:all</compilerArgument>
-                        <source>1.7</source>
-                        <target>1.7</target>
+                        <source>${java.src.version}</source>
+                        <target>${java.target.version}</target>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -557,7 +553,7 @@
                 <plugin>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>maven-bundle-plugin</artifactId>
-                    <version>3.3.0</version>
+                    <version>4.1.0</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -571,7 +567,6 @@
         <module>MGX-AttributeVisualization</module>
         <module>MGX-BasicCharts</module>
         <module>MGX-Biodiversity</module>
-        <module>MGX-Common</module>
         <module>MGX-Controller</module>
         <module>MGX-Datamodel</module>
         <module>MGX-Explorer</module>
@@ -600,10 +595,16 @@
         <module>MGX-SeqExporter</module>
         <module>MGX-NewickWriter</module>
         <module>MGX-devel</module>
+        <module>MGX-Viewer-API</module>
+        <module>MGX-VisualizationGroups</module>
+        <module>MGX-TestUtils</module>
+        <module>MGX-DataFactories</module>
     </modules>
     
     <properties>
         <netbeans.version>RELEASE82</netbeans.version>
+        <java.src.version>1.8</java.src.version>
+        <java.target.version>1.8</java.target.version>
         <brandingToken>mgx_gui</brandingToken>
     </properties>
     

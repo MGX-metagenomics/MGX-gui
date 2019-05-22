@@ -4,12 +4,11 @@
     <parent>
         <artifactId>MGX-gui</artifactId>
         <groupId>de.cebitec.mgx.gui</groupId>
-        <version>1.0</version>
+        <version>2.0</version>
     </parent>
 
     <groupId>de.cebitec.mgx.gui</groupId>
     <artifactId>MGX-KeggViewer</artifactId>
-    <version>1.0</version>
     <packaging>nbm</packaging>
 
     <name>MGX-KeggViewer</name>
@@ -69,24 +68,12 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <artifactId>jersey-client</artifactId>
-            <groupId>com.sun.jersey</groupId>
-        </dependency>
-        <dependency>
-            <artifactId>jersey-core</artifactId>
-            <groupId>com.sun.jersey</groupId>
-        </dependency>
-        <dependency>
             <artifactId>h2</artifactId>
             <groupId>com.h2database</groupId>
         </dependency>
         <dependency>
             <artifactId>MGX-API</artifactId>
             <groupId>de.cebitec.mgx.gui</groupId>
-        </dependency>
-        <dependency>
-            <groupId>de.cebitec.mgx.gui</groupId>
-            <artifactId>MGX-Common</artifactId>
         </dependency>
         <dependency>
             <groupId>de.cebitec.mgx.gui</groupId>
@@ -97,11 +84,21 @@
             <groupId>de.cebitec.mgx.gui</groupId>
             <artifactId>MGX-SeqExporter</artifactId>
         </dependency>
+        <dependency>
+            <groupId>de.cebitec.mgx.gui</groupId>
+            <artifactId>MGX-Viewer-API</artifactId>
+            <version>2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>de.cebitec.mgx.gui</groupId>
+            <artifactId>MGX-VisualizationGroups</artifactId>
+            <version>2.0</version>
+        </dependency>
     </dependencies>
 
     <build>
         <plugins>
-<!--            <plugin>
+            <!--            <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <version>2.4.0</version>
