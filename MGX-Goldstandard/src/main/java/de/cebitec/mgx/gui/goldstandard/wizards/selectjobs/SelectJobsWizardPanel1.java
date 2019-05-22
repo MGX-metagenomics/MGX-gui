@@ -45,17 +45,17 @@ public class SelectJobsWizardPanel1 implements WizardDescriptor.Panel<WizardDesc
         this.seqrun = seqrun;
         this.maxSelected = maxSelected;
         this.exactlySelected = exactlySelected;
-        
-        if (maxSelected == 1){
+
+        if (maxSelected == 1) {
             selectJobsLabel = "Select one job:";
-        } else if (exactlySelected){            
+        } else if (exactlySelected) {
             selectJobsLabel = "Select exactly " + maxSelected + " jobs for comparison:";
         } else if (maxSelected == Integer.MAX_VALUE) {
             selectJobsLabel = "Select jobs for comparison:";
         } else {
             selectJobsLabel = "Select up to " + maxSelected + " jobs for comparison:";
         }
-        
+
         List<JobI> allJobs = seqrun.getMaster().Job().BySeqRun(seqrun);
         jobs = new HashMap<>(allJobs.size());
         for (JobI job : allJobs) {
@@ -89,8 +89,8 @@ public class SelectJobsWizardPanel1 implements WizardDescriptor.Panel<WizardDesc
     }
 
     @Override
-    public boolean isValid() {        
-        return isValid;        
+    public boolean isValid() {
+        return isValid;
     }
 
     @Override
@@ -129,7 +129,7 @@ public class SelectJobsWizardPanel1 implements WizardDescriptor.Panel<WizardDesc
         if (!e.getValueIsAdjusting()) {
             try {
                 List<JobI> jobList = component.getSelectedJobs();
-                Set<AttributeTypeI> sharedATs = null;
+                List<AttributeTypeI> sharedATs = null;
                 for (JobI job : jobList) {
                     Collection<AttributeTypeI> atList = jobs.get(job);
                     if (atList == null) {
@@ -137,12 +137,15 @@ public class SelectJobsWizardPanel1 implements WizardDescriptor.Panel<WizardDesc
                         Iterator<AttributeTypeI> it = seqrun.getMaster().AttributeType().byJob(job);
                         atList = new ArrayList<>();
                         while (it.hasNext()) {
-                            atList.add(it.next());
+                            AttributeTypeI next = it.next();
+                            if (!atList.contains(next)) {
+                                atList.add(next);
+                            }
                         }
                         jobs.put(job, atList);
                     }
                     if (sharedATs == null) {
-                        sharedATs = new HashSet<>();
+                        sharedATs = new ArrayList<>();
                         sharedATs.addAll(atList);
                     } else {
                         sharedATs.retainAll(atList);
@@ -162,12 +165,14 @@ public class SelectJobsWizardPanel1 implements WizardDescriptor.Panel<WizardDesc
     }
 
     private boolean checkValidity() {
-        if (component.getSelectedJobs().size() < 2)
+        if (component.getSelectedJobs().size() < 2) {
             return false;
-        if (exactlySelected)
+        }
+        if (exactlySelected) {
             return component.getAttributeTypeListCount() != 0 && component.getSelectedJobs().size() == maxSelected;
-        else
+        } else {
             return component.getAttributeTypeListCount() != 0 && component.getSelectedJobs().size() <= maxSelected;
+        }
     }
 
 }

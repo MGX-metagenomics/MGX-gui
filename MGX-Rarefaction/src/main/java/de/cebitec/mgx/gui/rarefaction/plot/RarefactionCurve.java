@@ -19,6 +19,7 @@ import de.cebitec.mgx.gui.swingutils.NonEDT;
 import de.cebitec.mgx.gui.viewer.api.AbstractViewer;
 import de.cebitec.mgx.gui.viewer.api.CustomizableI;
 import de.cebitec.mgx.gui.viewer.api.ViewerI;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -85,13 +86,16 @@ public class RarefactionCurve extends AbstractViewer<DistributionI<Long>> implem
                 String yAxisLabel = "Richness";
 
                 String title = getCustomizer().hideTitle() ? null : getTitle();
-                chart = ChartFactory.createXYLineChart(title, xAxisLabel, yAxisLabel, dataset, PlotOrientation.VERTICAL, true, true, false);
+                chart = ChartFactory.createXYLineChart(title, xAxisLabel, yAxisLabel, dataset,
+                        PlotOrientation.VERTICAL, !getCustomizer().hideLegend(), true, false);
                 chart.setBorderPaint(Color.WHITE);
                 chart.setBackgroundPaint(Color.WHITE);
                 ret = new SVGChartPanel(chart);
                 XYPlot plot = (XYPlot) chart.getPlot();
                 plot.setBackgroundPaint(Color.WHITE);
-                plot.setFixedLegendItems(JFreeChartUtil.createLegend(dists));
+                if (!getCustomizer().hideLegend()) {
+                    plot.setFixedLegendItems(JFreeChartUtil.createLegend(dists));
+                }
 
                 // x axis
                 ValueAxis valueAxis;
@@ -116,6 +120,7 @@ public class RarefactionCurve extends AbstractViewer<DistributionI<Long>> implem
                 int i = 0;
                 XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) plot.getRenderer();
                 for (Pair<VisualizationGroupI, DistributionI<Long>> groupDistribution : dists) {
+                    renderer.setSeriesStroke(i, new BasicStroke(getCustomizer().getLineThickness()));
                     renderer.setSeriesPaint(i++, groupDistribution.getFirst().getColor());
                 }
                 return ret;

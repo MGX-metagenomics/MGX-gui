@@ -2,16 +2,16 @@ package de.cebitec.mgx.gui.biodiversity.statistic.impl;
 
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.model.AttributeI;
-import de.cebitec.mgx.gui.biodiversity.statistic.Statistic;
 import java.text.NumberFormat;
 import java.util.Locale;
 import java.util.Map;
+import de.cebitec.mgx.gui.biodiversity.statistic.StatisticI;
 
 /**
  *
  * @author sjaenick
  */
-public class Simpson implements Statistic {
+public class Simpson implements StatisticI {
 
     @Override
     public String measure(DistributionI<Long> data) {

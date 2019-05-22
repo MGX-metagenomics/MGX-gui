@@ -289,7 +289,7 @@ public class ReplicateGroup implements ReplicateGroupI {
     }
 
     @Override
-    public DistributionI<Double> getStdvDistribution() {
+    public DistributionI<Double> getStdDevDistribution() {
 //        if (stdvDist != null)
 //            return stdvDist;
 

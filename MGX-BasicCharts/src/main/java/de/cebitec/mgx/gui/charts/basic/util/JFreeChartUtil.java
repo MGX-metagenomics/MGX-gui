@@ -207,7 +207,31 @@ public class JFreeChartUtil {
         if (chart == null) {
             return null;
         }
-        
+
+//        CategoryPlot cPlot = null;
+//        try {
+//            cPlot = chart.getCategoryPlot();
+//        } catch (ClassCastException x) {
+//        }
+//        if (cPlot != null) {
+//            Font oldLabelFont = cPlot.getDomainAxis().getLabelFont();
+//            Font labelFont = new Font(oldLabelFont.getName(), Font.BOLD, 20);
+//            cPlot.getDomainAxis().setLabelFont(labelFont);
+//            cPlot.getDomainAxis().setTickLabelFont(new Font(oldLabelFont.getName(), Font.PLAIN, 18));
+//
+//            cPlot.getRangeAxis().setLabelFont(labelFont);
+//            cPlot.getRangeAxis().setTickLabelFont(new Font(oldLabelFont.getName(), Font.PLAIN, 18));
+//        } else {
+//            XYPlot xyPlot = chart.getXYPlot();
+//            Font oldLabelFont = xyPlot.getDomainAxis().getLabelFont();
+//            Font labelFont = new Font(oldLabelFont.getName(), Font.BOLD, 20);
+//            xyPlot.getDomainAxis().setLabelFont(labelFont);
+//            xyPlot.getDomainAxis().setTickLabelFont(new Font(oldLabelFont.getName(), Font.PLAIN, 18));
+//
+//            xyPlot.getRangeAxis().setLabelFont(labelFont);
+//            xyPlot.getRangeAxis().setTickLabelFont(new Font(oldLabelFont.getName(), Font.PLAIN, 18));
+//        }
+
         return new ImageExporterI() {
 
             @Override
@@ -225,8 +249,8 @@ public class JFreeChartUtil {
                         ChartUtilities.saveChartAsJPEG(new File(fName), chart, 1280, 1024);
                         return Result.SUCCESS;
                     case SVG:
-                        SVGGraphics2D g2 = new SVGGraphics2D(1280, 1024);
-                        chart.draw(g2, new Rectangle(0, 0, 1280, 1024));
+                        SVGGraphics2D g2 = new SVGGraphics2D(1280, 768);
+                        chart.draw(g2, new Rectangle(0, 0, 1280, 768));
                         String svgElement = g2.getSVGElement();
                         try (BufferedWriter bw = new BufferedWriter(new FileWriter(fName))) {
                             bw.write(svgElement);

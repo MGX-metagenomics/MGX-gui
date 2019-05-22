@@ -21,6 +21,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Assume;
 
 /**
  *
@@ -39,6 +40,7 @@ public class MGSReaderTest {
     @BeforeClass
     public static void setUpClass() throws MGXException {
         master = TestMaster.getPrivate("MGX_EvalModule");
+        Assume.assumeNotNull(master);
         Iterator<ToolI> toolIt = master.Tool().fetchall();
         while (toolIt.hasNext()) {
             ToolI t = toolIt.next();
@@ -63,6 +65,7 @@ public class MGSReaderTest {
 
     @After
     public void tearDown() throws MGXException {
+        Assume.assumeNotNull(master);
         Iterator<AttributeI> it = master.Attribute().ByJob(job);
         int i = 0;
         while (it.hasNext()){
@@ -77,6 +80,7 @@ public class MGSReaderTest {
 
     @Test
     public void testMGSReader() throws MGXException, FileNotFoundException, IOException{
+        Assume.assumeNotNull(master);
         String mgsPath = getClass().getClassLoader().getResource("example.mgs").getPath();
         job = master.Job().create(tool, seqrun, new ArrayList<JobParameterI>(1));
         MGSReader reader = new MGSReader(mgsPath, master, job);

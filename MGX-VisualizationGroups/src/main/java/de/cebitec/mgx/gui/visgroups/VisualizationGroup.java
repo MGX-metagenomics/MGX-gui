@@ -291,7 +291,8 @@ public class VisualizationGroup implements VisualizationGroupI {
 
         for (SeqRunI run : runs) {
             if (run.isDeleted()) {
-                throw new IllegalArgumentException(run.getName() + " is already marked as deleted.");
+                return;
+                //throw new IllegalArgumentException(run.getName() + " is already marked as deleted.");
             }
             run.addPropertyChangeListener(this);
 
@@ -360,12 +361,12 @@ public class VisualizationGroup implements VisualizationGroupI {
 
     @Override
     public final void addSeqRun(final SeqRunI sr) {
-        if (isDeleted() || sr == null || attributeTypes.containsKey(sr)) {
+        if (isDeleted() || sr == null || attributeTypes.containsKey(sr) || sr.isDeleted()) {
             return;
         }
-        if (sr.isDeleted()) {
-            throw new IllegalArgumentException(sr.getName() + " is already marked as deleted.");
-        }
+//        if (sr.isDeleted()) {
+//            throw new IllegalArgumentException(sr.getName() + " is already marked as deleted.");
+//        }
         sr.addPropertyChangeListener(this);
 
         //attributeTypes.put(sr, NO_JOBS);

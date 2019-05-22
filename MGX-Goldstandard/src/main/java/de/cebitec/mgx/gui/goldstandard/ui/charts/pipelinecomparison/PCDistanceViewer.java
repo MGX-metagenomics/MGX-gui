@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.goldstandard.ui.charts.pipelinecomparison;
 
+import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.groups.ImageExporterI;
 import de.cebitec.mgx.api.misc.DistributionI;
@@ -48,12 +49,13 @@ public class PCDistanceViewer extends EvaluationViewerI implements PipelineCompa
     private PCDistanceViewCustomizer cust = null;
 
     public enum DistanceMethod {
-        
-        MANHATTAN("manhattan"), 
-        EUCLIDEAN("euclidean"), 
-        CHEBYSHEV("chebyshev"), 
+
+        AITCHISON("aitchison"),
+        MANHATTAN("manhattan"),
+        EUCLIDEAN("euclidean"),
+        CHEBYSHEV("chebyshev"),
         UNIFRAC("UniFrac");
-        
+
         private final String name;
 
         private DistanceMethod(String name) {
@@ -136,6 +138,16 @@ public class PCDistanceViewer extends EvaluationViewerI implements PipelineCompa
         for (i = 0; i < distances.length - 1; i++) {
             for (int j = i + 1; j < distances.length; j++) {
                 switch (currentDistanceMethod) {
+                    case AITCHISON:
+                        MGXMasterI m = jobs.get(i).getMaster();
+                        try {
+                            distances[i][j] = m.Statistics().aitchisonDistance(vectors[i].asArray(), vectors[j].asArray());
+                        } catch (MGXException ex) {
+                            EvalExceptions.printStackTrace(ex);
+                            tidyUp();
+                            return;
+                        }
+                        break;
                     case EUCLIDEAN:
                         distances[i][j] = vectors[i].euclideanDistance(vectors[j]);
                         break;

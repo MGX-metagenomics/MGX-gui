@@ -7,6 +7,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Composite;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -114,14 +115,21 @@ public class ObservationView extends javax.swing.JPanel {
             float scaleX = paintableX / (1f * seqLen); // internal scale factor
 
             int layerY = height - borderWidth - 17;
+
+            Font f = g2.getFont();
+            Font boldFont = new Font(f.getFontName(), Font.BOLD, f.getSize());
+            Font normalFont = new Font(f.getFontName(), Font.PLAIN, f.getSize());
+            
             for (ObservationI o : obs) {
                 int scaledStart = FastMath.round(o.getStart() * scaleX);
                 int scaledStop = FastMath.round(o.getStop() * scaleX);
 
+                g2.setColor(Color.BLACK);
+
                 if (o.getAttributeName().equals(selectedTerm)) {
-                    g2.setColor(Color.RED);
+                    g2.setFont(boldFont);
                 } else {
-                    g2.setColor(Color.BLACK);
+                    g2.setFont(normalFont);
                 }
 
                 int obsLen;

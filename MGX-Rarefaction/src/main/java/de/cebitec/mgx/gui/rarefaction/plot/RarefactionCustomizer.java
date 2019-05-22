@@ -39,6 +39,14 @@ public class RarefactionCustomizer extends javax.swing.JPanel {
         return hideTitle.isSelected();
     }
 
+    boolean hideLegend() {
+        return hideLegend.isSelected();
+    }
+    
+    int getLineThickness() {
+        return lineThickness.getValue();
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -53,6 +61,9 @@ public class RarefactionCustomizer extends javax.swing.JPanel {
         hideTitle = new javax.swing.JCheckBox();
         jLabel2 = new javax.swing.JLabel();
         numIterations = new javax.swing.JSlider();
+        hideLegend = new javax.swing.JCheckBox();
+        lineThickness = new javax.swing.JSlider();
+        jLabel3 = new javax.swing.JLabel();
 
         numPoints.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         numPoints.setMajorTickSpacing(50);
@@ -72,12 +83,28 @@ public class RarefactionCustomizer extends javax.swing.JPanel {
         org.openide.awt.Mnemonics.setLocalizedText(jLabel2, org.openide.util.NbBundle.getMessage(RarefactionCustomizer.class, "RarefactionCustomizer.jLabel2.text")); // NOI18N
 
         numIterations.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
-        numIterations.setMajorTickSpacing(50);
-        numIterations.setMaximum(250);
-        numIterations.setMinorTickSpacing(5);
+        numIterations.setMajorTickSpacing(100);
+        numIterations.setMaximum(500);
+        numIterations.setMinorTickSpacing(10);
         numIterations.setPaintLabels(true);
         numIterations.setPaintTicks(true);
         numIterations.setSnapToTicks(true);
+
+        hideLegend.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(hideLegend, org.openide.util.NbBundle.getMessage(RarefactionCustomizer.class, "RarefactionCustomizer.hideLegend.text")); // NOI18N
+
+        lineThickness.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
+        lineThickness.setMajorTickSpacing(1);
+        lineThickness.setMaximum(5);
+        lineThickness.setMinimum(1);
+        lineThickness.setPaintLabels(true);
+        lineThickness.setPaintTicks(true);
+        lineThickness.setToolTipText(org.openide.util.NbBundle.getMessage(RarefactionCustomizer.class, "RarefactionCustomizer.toolTipText")); // NOI18N
+        lineThickness.setValue(1);
+        lineThickness.setName(""); // NOI18N
+
+        jLabel3.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(jLabel3, org.openide.util.NbBundle.getMessage(RarefactionCustomizer.class, "RarefactionCustomizer.jLabel3.text")); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -86,18 +113,21 @@ public class RarefactionCustomizer extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(numPoints, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(hideTitle)
                             .addComponent(jLabel1)
-                            .addComponent(jLabel2))
-                        .addGap(0, 45, Short.MAX_VALUE))
-                    .addComponent(numPoints, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                            .addComponent(jLabel2)
+                            .addComponent(hideLegend)
+                            .addComponent(jLabel3))
+                        .addGap(0, 65, Short.MAX_VALUE))
+                    .addComponent(lineThickness, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addContainerGap())
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addContainerGap()
-                    .addComponent(numIterations, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addComponent(numIterations, javax.swing.GroupLayout.DEFAULT_SIZE, 169, Short.MAX_VALUE)
                     .addContainerGap()))
         );
         layout.setVerticalGroup(
@@ -110,21 +140,30 @@ public class RarefactionCustomizer extends javax.swing.JPanel {
                 .addGap(18, 18, 18)
                 .addComponent(jLabel1)
                 .addGap(52, 52, 52)
+                .addComponent(jLabel3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lineThickness, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 75, Short.MAX_VALUE)
                 .addComponent(hideTitle)
-                .addContainerGap(127, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(hideLegend)
+                .addContainerGap())
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addGap(104, 104, 104)
                     .addComponent(numIterations, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(156, Short.MAX_VALUE)))
+                    .addContainerGap(196, Short.MAX_VALUE)))
         );
     }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JCheckBox hideLegend;
     private javax.swing.JCheckBox hideTitle;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JSlider lineThickness;
     private javax.swing.JSlider numIterations;
     private javax.swing.JSlider numPoints;
     // End of variables declaration//GEN-END:variables

@@ -210,5 +210,15 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>development</id>
+            <dependencies>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>MGX-devel</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+            </dependencies>
+        </profile>
     </profiles>
 </project>

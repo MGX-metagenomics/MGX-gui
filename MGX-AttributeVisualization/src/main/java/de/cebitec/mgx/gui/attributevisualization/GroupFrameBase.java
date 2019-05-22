@@ -18,8 +18,10 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Locale;
 import javax.swing.ToolTipManager;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.Node;
@@ -182,7 +184,7 @@ public abstract class GroupFrameBase<T extends ModelBaseI<T>> extends javax.swin
         }
     }
 
-    protected final static DecimalFormat decFormat = new DecimalFormat(",###");
+    protected final static NumberFormat decFormat = NumberFormat.getInstance(Locale.US);
 
     @Override
     public void print(Graphics g) {
