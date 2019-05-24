@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.goldstandard.ui.charts.gscomparison;
 
+import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.groups.ImageExporterI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
@@ -78,6 +79,7 @@ public class GSCQuantificationAccuracyViewer extends EvaluationViewerI implement
     public void evaluate() {
         double[][] values = new double[2][];
         double correlation = 0;
+        double correlation_clr = 0;
 
         try {
             List<JobI> jobs = new ArrayList<>(2);
@@ -88,6 +90,11 @@ public class GSCQuantificationAccuracyViewer extends EvaluationViewerI implement
             values[0] = vectors[0].asArray();
             values[1] = vectors[1].asArray();
 
+            MGXMasterI m = gsJob.getMaster();
+            double[] clr1 = m.Statistics().toCLR(vectors[1].asArray());
+            double[] clr0 = m.Statistics().toCLR(vectors[0].asArray());
+
+            correlation_clr = new PearsonsCorrelation().correlation(clr1, clr0);
             correlation = new PearsonsCorrelation().correlation(vectors[1].asArray(), vectors[0].asArray());
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);
@@ -111,7 +118,7 @@ public class GSCQuantificationAccuracyViewer extends EvaluationViewerI implement
         }
         XYDataset collection1 = new XYSeriesCollection(series1);
         XYItemRenderer renderer1 = new XYLineAndShapeRenderer(false, true);   // Shapes only
-        
+
         //renderer1.setSeriesShape(0, new Rectangle(2, 2));
         Ellipse2D.Float circle = new java.awt.geom.Ellipse2D.Float();
         circle.height = 3;
@@ -153,6 +160,11 @@ public class GSCQuantificationAccuracyViewer extends EvaluationViewerI implement
         r.setToolTipText(String.format("R: %1$.5f", correlation));
         r.setFont(new Font("SansSerif", Font.PLAIN, 20));
         plot.addAnnotation(r);
+
+        final XYTextAnnotation r_clr = new XYTextAnnotation(String.format("R_clr: %1$.5f", correlation_clr), series1.getMaxX() * 0.20, series1.getMaxY() - 50);
+        r_clr.setToolTipText(String.format("R_clr: %1$.5f", correlation_clr));
+        r_clr.setFont(new Font("SansSerif", Font.PLAIN, 20));
+        plot.addAnnotation(r_clr);
 
         chart = new JFreeChart(plot);
         chart.removeLegend();
