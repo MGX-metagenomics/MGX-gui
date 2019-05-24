@@ -101,7 +101,7 @@ public class PCDistanceViewer extends EvaluationViewerI implements PipelineCompa
     public void evaluate() {
 
         String[] columns = new String[jobs.size() + 1];
-        columns[0] = "";
+        columns[0] = cust.getDistanceMethod().toString() + " " + usedAttributeType;
         int i = 1;
         for (JobI job : jobs) {
             columns[i++] = JobUtils.jobToString(job);
