@@ -47,6 +47,7 @@ public class DelayedPlot extends javax.swing.JPanel {
             }
         } else {
             add(new JLabel("An error occurred."), BorderLayout.NORTH);
+            repaint();
         }
         revalidate();
     }
