@@ -155,7 +155,6 @@ public class ToolAccess implements ToolAccessI {
 //    public void update(ToolI obj) {
 //        throw new UnsupportedOperationException("Not supported.");
 //    }
-
     @Override
     public TaskI<ToolI> delete(ToolI obj) throws MGXException {
         try {
@@ -168,14 +167,18 @@ public class ToolAccess implements ToolAccessI {
 
     @Override
     public ToolI ByJob(JobI job) throws MGXException {
-        if(job.getTool() != null) {
+        if (job.getTool() != null) {
             return job.getTool();
         }
         ToolI t = null;
         try {
             ToolDTO dto = getDTOmaster().Tool().byJob(job.getId());
             t = ToolDTOFactory.getInstance().toModel(getMaster(), dto);
-            job.setTool(t);
+            synchronized (job) {
+                if (job.getTool() == null) {
+                    job.setTool(t);
+                }
+            }
         } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }

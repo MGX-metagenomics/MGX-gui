@@ -110,7 +110,7 @@ public class SequenceAccess implements SequenceAccessI { //extends AccessBase<Se
 //        }
 //    }
     @Override
-    public DownloadBaseI createDownloaderByAttributes(Set<AttributeI> attrs, SeqWriterI<DNASequenceI> writer, boolean closeWriter) throws MGXException {
+    public DownloadBaseI createDownloaderByAttributes(Set<AttributeI> attrs, SeqWriterI<? extends DNASequenceI> writer, boolean closeWriter) throws MGXException {
         Builder b = AttributeDTOList.newBuilder();
         for (AttributeI a : attrs) {
             b.addAttribute(AttributeDTOFactory.getInstance().toDTO(a));
@@ -125,7 +125,7 @@ public class SequenceAccess implements SequenceAccessI { //extends AccessBase<Se
     }
 
     @Override
-    public void downloadSequencesForAttributes(Set<AttributeI> attrs, SeqWriterI<DNASequenceI> writer, boolean closeWriter) throws MGXException {
+    public void downloadSequencesForAttributes(Set<AttributeI> attrs, SeqWriterI<? extends DNASequenceI> writer, boolean closeWriter) throws MGXException {
         try {
             Builder b = AttributeDTOList.newBuilder();
             for (AttributeI a : attrs) {
