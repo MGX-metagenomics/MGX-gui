@@ -203,12 +203,12 @@ public class MAPlot extends NumericalViewerI<Long> implements ImageExporterI.Pro
         xAxis.setInverted(false);
         xAxis.setAutoRange(true);
         xAxis.setTickLabelsVisible(false);
-        xAxis.setLabelFont(new Font(xAxis.getLabelFont().getName(), Font.BOLD, 22));
+        xAxis.setLabelFont(new Font(xAxis.getLabelFont().getName(), Font.BOLD, 18));
 
         NumberAxis yAxis = new NumberAxis(yAxisLabel);
-        yAxis.setLabelFont(new Font(yAxis.getLabelFont().getName(), Font.BOLD, 22));
+        yAxis.setLabelFont(new Font(yAxis.getLabelFont().getName(), Font.BOLD, 18));
 
-        yAxis.setTickLabelFont(new Font(yAxis.getTickLabelFont().getName(), Font.BOLD, 20));
+        yAxis.setTickLabelFont(new Font(yAxis.getTickLabelFont().getName(), Font.BOLD, 16));
 
         XYPlot midplot = new XYPlot(normal, xAxis, yAxis, r);
         midplot.setBackgroundPaint(Color.WHITE);
@@ -223,7 +223,7 @@ public class MAPlot extends NumericalViewerI<Long> implements ImageExporterI.Pro
                 return myTicks;
             }
         };
-        rangeAxis2.setTickLabelFont(new Font(rangeAxis2.getTickLabelFont().getName(), Font.BOLD, 20));
+        rangeAxis2.setTickLabelFont(new Font(rangeAxis2.getTickLabelFont().getName(), Font.BOLD, 16));
         rangeAxis2.setAutoRangeIncludesZero(false);
         final XYPlot subplot2 = new XYPlot(negInf, xAxis, rangeAxis2, r);
         subplot2.setRangeAxisLocation(AxisLocation.BOTTOM_OR_LEFT);
@@ -238,7 +238,7 @@ public class MAPlot extends NumericalViewerI<Long> implements ImageExporterI.Pro
             }
 
         };
-        rangeAxis3.setTickLabelFont(new Font(rangeAxis3.getTickLabelFont().getName(), Font.BOLD, 20));
+        rangeAxis3.setTickLabelFont(new Font(rangeAxis3.getTickLabelFont().getName(), Font.BOLD, 16));
         rangeAxis3.setAutoRangeIncludesZero(false);
         final XYPlot subplot3 = new XYPlot(posInf, xAxis, rangeAxis3, r);
         subplot2.setRangeAxisLocation(AxisLocation.BOTTOM_OR_LEFT);
