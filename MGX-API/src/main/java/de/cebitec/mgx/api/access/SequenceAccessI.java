@@ -35,9 +35,9 @@ public interface SequenceAccessI { //extends AccessBaseI<SequenceI> {
 
     public Iterator<Long> fetchSequenceIDs(AttributeI attr) throws MGXException;
 
-    public void downloadSequencesForAttributes(Set<AttributeI> attrs, SeqWriterI<DNASequenceI> writer, boolean closeWriter) throws MGXException;
+    public void downloadSequencesForAttributes(Set<AttributeI> attrs, SeqWriterI<? extends DNASequenceI> writer, boolean closeWriter) throws MGXException;
 
-    public DownloadBaseI createDownloaderByAttributes(Set<AttributeI> value, SeqWriterI<DNASequenceI> writer, boolean closeWriter) throws MGXException;
+    public DownloadBaseI createDownloaderByAttributes(Set<AttributeI> value, SeqWriterI<? extends DNASequenceI> writer, boolean closeWriter) throws MGXException;
 
     public UploadBaseI createUploader(SeqRunI seqrun, SeqReaderI<? extends DNASequenceI> reader) throws MGXException;
 
