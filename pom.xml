@@ -228,7 +228,7 @@
             <dependency>
                 <groupId>com.google.protobuf</groupId>
                 <artifactId>protobuf-java</artifactId>
-                <version>3.7.0</version>
+                <version>3.7.1</version>
             </dependency>
             <dependency>
                 <groupId>com.h2database</groupId>
@@ -267,6 +267,11 @@
             </dependency>
             <dependency>
                 <groupId>de.cebitec.gpms</groupId>
+                <artifactId>GPMS-Nodes</artifactId>
+                <version>2.0</version>
+            </dependency>
+            <dependency>
+                <groupId>de.cebitec.gpms</groupId>
                 <artifactId>GPMS-Nodesupport</artifactId>
                 <version>2.0</version>
             </dependency>
@@ -280,17 +285,17 @@
             <dependency>
                 <groupId>de.cebitec.mgx</groupId>
                 <artifactId>MGX-isequences</artifactId>
-                <version>1.0</version>
+                <version>2.0</version>
             </dependency>
             <dependency>
                 <groupId>de.cebitec.mgx</groupId>
                 <artifactId>MGX-seqstorage</artifactId>
-                <version>1.0</version>
+                <version>2.0</version>
             </dependency>
             <dependency>
                 <groupId>de.cebitec.mgx</groupId>
                 <artifactId>NewickParser</artifactId>
-                <version>1.0</version>
+                <version>2.0</version>
             </dependency>
             <dependency>
                 <groupId>de.cebitec.mgx.gui</groupId>
@@ -305,7 +310,7 @@
             <dependency>
                 <groupId>de.cebitec.mgx</groupId>
                 <artifactId>MGX-parallelPropChange</artifactId>
-                <version>1.0</version>
+                <version>2.0</version>
             </dependency>
 
             <dependency>
@@ -326,12 +331,12 @@
             <dependency>
                 <groupId>de.cebitec.mgx</groupId>
                 <artifactId>BioJava-OSGi</artifactId>
-                <version>1.0</version>
+                <version>2.0</version>
             </dependency>
             <dependency>
                 <groupId>de.cebitec.mgx</groupId>
                 <artifactId>SwingX-OSGi</artifactId>
-                <version>1.0</version>
+                <version>2.0</version>
             </dependency>
             
             <!-- own NBP components -->
@@ -383,17 +388,17 @@
             <dependency>
                 <groupId>de.cebitec.mgx</groupId>
                 <artifactId>JFreeChart-OSGi</artifactId>
-                <version>1.0</version>
+                <version>2.0</version>
             </dependency>
             <dependency>
                 <groupId>de.cebitec.mgx</groupId>
                 <artifactId>JFreeSVG-OSGi</artifactId>
-                <version>1.0</version>
+                <version>2.0</version>
             </dependency>
             <dependency>
                 <groupId>de.cebitec.mgx</groupId>
                 <artifactId>Trove-OSGi</artifactId>
-                <version>1.0</version>
+                <version>2.0</version>
             </dependency>
             <dependency>
                 <groupId>de.cebitec.mgx.gui</groupId>
@@ -428,7 +433,7 @@
             <dependency>
                 <groupId>de.cebitec.mgx</groupId>
                 <artifactId>Prefuse-OSGi</artifactId>
-                <version>1.0</version>
+                <version>2.0</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
@@ -478,7 +483,7 @@
             <dependency>
                 <groupId>de.cebitec.mgx</groupId>
                 <artifactId>MGX-QualityControl</artifactId>
-                <version>1.0</version>
+                <version>2.0</version>
             </dependency>
             <dependency>
                 <groupId>de.cebitec.mgx.gui</groupId>
@@ -602,7 +607,7 @@
     </modules>
     
     <properties>
-        <netbeans.version>RELEASE82</netbeans.version>
+        <netbeans.version>RELEASE110</netbeans.version>
         <java.src.version>1.8</java.src.version>
         <java.target.version>1.8</java.target.version>
         <brandingToken>mgx_gui</brandingToken>

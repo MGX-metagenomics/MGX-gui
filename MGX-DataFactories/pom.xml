@@ -12,7 +12,7 @@
     <version>2.0</version>
     <packaging>bundle</packaging>
 
-    <name>MGX-DataFactories OSGi Bundle</name>
+    <name>MGX-DataFactories</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
