@@ -56,6 +56,7 @@
                             de.cebitec.mgx.gui.datafactories
                         </Export-Package>
                         <Import-Package>
+                            org.osgi.framework,
                             org.apache.commons.math3.util,
                             gnu.trove.map,
                             gnu.trove.map.hash
