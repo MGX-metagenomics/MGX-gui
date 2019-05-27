@@ -65,6 +65,12 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>MGX-Login</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>jakarta.annotation</groupId>
+                    <artifactId>jakarta.annotation-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <artifactId>org-netbeans-modules-queries</artifactId>
