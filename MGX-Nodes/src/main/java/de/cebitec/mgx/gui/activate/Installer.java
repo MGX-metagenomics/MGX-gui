@@ -10,17 +10,20 @@ import de.cebitec.gpms.nodesupport.GPMSProjectSupportI;
 import org.openide.modules.ModuleInstall;
 
 public class Installer extends ModuleInstall {
-    
+
     private final GPMSProjectSupportI supp = new MGXProjectSupport();
-    
+    private final GPMSProjectSupportI supp2 = new MGX2ProjectSupport();
+
     @Override
     public void restored() {
         GPMSNodeSupport.register(supp);
+        GPMSNodeSupport.register(supp2);
     }
-    
+
     @Override
     public void uninstalled() {
         GPMSNodeSupport.unregister(supp);
+        GPMSNodeSupport.unregister(supp2);
     }
-    
+
 }

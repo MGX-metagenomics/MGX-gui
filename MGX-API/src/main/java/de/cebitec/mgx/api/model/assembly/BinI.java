@@ -25,5 +25,11 @@ public abstract class BinI extends Identifiable<BinI> {
 
     public abstract String getName();
 
+    public abstract float getCompleteness();
 
+    public abstract long getN50();
+
+    public abstract String getTaxonomy();
+    
+    public abstract int getPredictedCDS();
 }

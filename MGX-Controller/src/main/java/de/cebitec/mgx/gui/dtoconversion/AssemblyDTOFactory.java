@@ -30,12 +30,14 @@ public class AssemblyDTOFactory extends DTOConversionBase<AssemblyI, AssemblyDTO
         return AssemblyDTO.newBuilder()
                 .setId(a.getId())
                 .setName(a.getName())
-                .setAssemblyJobId(a.getAssemblyJobId())
+                .setReadsAssembled(a.getReadsAssembled())
+                .setN50(a.getN50())
+                .setJobId(a.getAssemblyJobId())
                 .build();
     }
 
     @Override
     public AssemblyI toModel(MGXMasterI m, AssemblyDTO dto) {
-        return new Assembly(m, dto.getId(), dto.getName(), dto.getAssemblyJobId());
+        return new Assembly(m, dto.getId(), dto.getName(), dto.getReadsAssembled(), dto.getN50(), dto.getJobId());
     }
 }

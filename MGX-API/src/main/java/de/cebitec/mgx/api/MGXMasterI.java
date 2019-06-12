@@ -47,8 +47,6 @@ public abstract class MGXMasterI implements MGXDataModelBaseI<MGXMasterI> {
         return this;
     }
     
-    public abstract MGXAssemblyMasterI getAssemblyMasterI();
-
     public abstract String getServerName();
 
     public abstract void close();

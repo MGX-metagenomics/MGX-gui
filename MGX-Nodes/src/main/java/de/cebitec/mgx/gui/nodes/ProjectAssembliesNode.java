@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.nodes;
 
+import de.cebitec.mgx.api.MGX2MasterI;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.MGXFileI;
 import de.cebitec.mgx.gui.nodeactions.CreateDirectory;
@@ -17,7 +18,7 @@ import org.openide.util.lookup.Lookups;
  */
 public class ProjectAssembliesNode extends AbstractNode {
 
-    public ProjectAssembliesNode(MGXMasterI master) {
+    public ProjectAssembliesNode(MGX2MasterI master) {
         this(master, new AssemblyNodeFactory(master));
     }
 

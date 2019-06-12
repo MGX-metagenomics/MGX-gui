@@ -1,8 +1,6 @@
 package de.cebitec.mgx.gui.nodes;
 
-import de.cebitec.mgx.api.model.assembly.BinI;
 import de.cebitec.mgx.api.model.assembly.ContigI;
-import de.cebitec.mgx.gui.nodefactory.BinNodeFactory;
 import javax.swing.Action;
 import static org.apache.commons.text.StringEscapeUtils.escapeHtml4;
 import org.openide.nodes.Children;
@@ -16,15 +14,21 @@ public class ContigNode extends MGXNodeBase<ContigI> {
 
     public ContigNode(ContigI a) {
         super(Children.LEAF, Lookups.fixed(a.getMaster(), a), a);
-        super.setDisplayName(a.getName());
+        super.setDisplayName("contig" + a.getId());
         //super.setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/Habitat.png");
         super.setShortDescription(getToolTipText(a));
     }
 
     private String getToolTipText(ContigI h) {
         return new StringBuilder("<html>").append("<b>Contig: </b>")
-                .append(escapeHtml4(h.getName()))
+                .append(escapeHtml4("contig" + h.getId()))
                 .append("<br><hr><br>")
+                .append("Length: ")
+                .append(h.getLength())
+                .append(" bp<br>")
+                .append("GC: ")
+                .append(h.getGC())
+                .append("%")
                 .append("</html>").toString();
     }
 
@@ -35,7 +39,7 @@ public class ContigNode extends MGXNodeBase<ContigI> {
 
     @Override
     public void updateModified() {
-        setDisplayName(getContent().getName());
+        setDisplayName("contig" + getContent().getId());
         //setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/Habitat.png");
         setShortDescription(getToolTipText(getContent()));
     }

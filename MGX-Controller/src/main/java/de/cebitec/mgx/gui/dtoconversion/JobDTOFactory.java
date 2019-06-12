@@ -8,6 +8,7 @@ import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.JobParameterI;
 import de.cebitec.mgx.common.JobState;
+import de.cebitec.mgx.dto.dto;
 import de.cebitec.mgx.dto.dto.JobDTO;
 import de.cebitec.mgx.dto.dto.JobDTO.Builder;
 import de.cebitec.mgx.dto.dto.JobParameterDTO;
@@ -57,7 +58,7 @@ public class JobDTOFactory extends DTOConversionBase<JobI, JobDTO> {
                 .setSeqrunId(j.getSeqrun().getId())
                 .setToolId(j.getTool().getId())
                 .setCreator(j.getCreator())
-                .setState(JobDTO.JobState.forNumber(j.getStatus().getValue()));
+                .setState(dto.JobState.forNumber(j.getStatus().getValue()));
 
         if (j.getStartDate() != null) {
             b.setStartDate(toUnixTimeStamp(j.getStartDate()));

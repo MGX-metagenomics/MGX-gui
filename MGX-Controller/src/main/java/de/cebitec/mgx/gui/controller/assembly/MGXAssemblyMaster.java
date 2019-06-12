@@ -13,7 +13,7 @@ import de.cebitec.mgx.api.model.assembly.access.AssemblyJobAccessI;
 import de.cebitec.mgx.api.model.assembly.access.BinAccessI;
 import de.cebitec.mgx.api.model.assembly.access.ContigAccessI;
 import de.cebitec.mgx.client.MGXDTOMaster;
-import de.cebitec.mgx.gui.controller.MGXMaster;
+import de.cebitec.mgx.gui.controller.MGX2Master;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
@@ -25,7 +25,7 @@ public class MGXAssemblyMaster extends MGXAssemblyMasterI implements PropertyCha
 
     private final MGXDTOMaster dtomaster;
 
-    public MGXAssemblyMaster(MGXMaster m, MGXDTOMaster dtomaster) {
+    public MGXAssemblyMaster(MGX2Master m, MGXDTOMaster dtomaster) {
         super(m);
         m.addPropertyChangeListener(this);
         this.dtomaster = dtomaster;

@@ -25,4 +25,7 @@ public abstract class AssemblyI extends Identifiable<AssemblyI> {
 
     public abstract String getName();
 
+    public abstract long getReadsAssembled();
+
+    public abstract long getN50();
 }

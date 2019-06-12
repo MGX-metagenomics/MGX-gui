@@ -12,7 +12,7 @@ import org.openide.util.Exceptions;
  *
  * @author sj
  */
-public class ContigNodeFactory extends MGXNodeFactoryBase<BinI, ContigI> {
+public class ContigNodeFactory extends MGX2NodeFactoryBase<BinI, ContigI> {
 
     public ContigNodeFactory(BinI a) {
         super(a);

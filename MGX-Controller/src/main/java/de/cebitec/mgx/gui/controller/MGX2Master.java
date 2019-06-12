@@ -1,6 +1,8 @@
 package de.cebitec.mgx.gui.controller;
 
 import de.cebitec.gpms.rest.RESTMasterI;
+import de.cebitec.mgx.api.MGX2MasterI;
+import de.cebitec.mgx.api.MGXAssemblyMasterI;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.AttributeAccessI;
 import de.cebitec.mgx.api.access.AttributeTypeAccessI;
@@ -19,6 +21,7 @@ import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.MGXDataModelBaseI;
 import de.cebitec.mgx.api.model.ModelBaseI;
 import de.cebitec.mgx.client.MGXDTOMaster;
+import de.cebitec.mgx.gui.controller.assembly.MGXAssemblyMaster;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Objects;
@@ -29,19 +32,19 @@ import java.util.logging.Logger;
  *
  * @author sjaenick
  */
-public class MGXMaster extends MGXMasterI implements PropertyChangeListener {
+public class MGX2Master extends MGX2MasterI implements PropertyChangeListener {
 
     protected final MGXDTOMaster dtomaster;
     private final String serverName;
     private final String projectName;
-    private static final Logger logger = Logger.getLogger("MGX");
+    private static final Logger logger = Logger.getLogger("MGX-2");
     //
 
-    public MGXMaster(RESTMasterI restMaster) {
+    public MGX2Master(RESTMasterI restMaster) {
         this(new MGXDTOMaster(restMaster));
     }
 
-    protected MGXMaster(MGXDTOMaster dtomaster) {
+    protected MGX2Master(MGXDTOMaster dtomaster) {
         super();
         this.serverName = dtomaster.getServerName();
         this.projectName = dtomaster.getProject().getName();
@@ -77,6 +80,11 @@ public class MGXMaster extends MGXMasterI implements PropertyChangeListener {
     @Override
     public String getLogin() {
         return dtomaster.getLogin();
+    }
+
+    @Override
+    public MGXAssemblyMasterI getAssemblyMasterI() {
+        return new MGXAssemblyMaster(this, dtomaster);
     }
 
     @Override
@@ -181,7 +189,7 @@ public class MGXMaster extends MGXMasterI implements PropertyChangeListener {
                 }
                 break;
             default:
-                System.err.println("MGXMaster received event " + evt);
+                System.err.println("MGX2Master received event " + evt);
         }
     }
 
@@ -208,7 +216,7 @@ public class MGXMaster extends MGXMasterI implements PropertyChangeListener {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final MGXMaster other = (MGXMaster) obj;
+        final MGX2Master other = (MGX2Master) obj;
         if (!Objects.equals(this.dtomaster, other.dtomaster)) {
             return false;
         }

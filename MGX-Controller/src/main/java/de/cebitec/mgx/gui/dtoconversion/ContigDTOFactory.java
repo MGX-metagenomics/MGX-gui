@@ -29,13 +29,14 @@ public class ContigDTOFactory extends DTOConversionBase<ContigI, ContigDTO> {
     public ContigDTO toDTO(ContigI a) {
         return ContigDTO.newBuilder()
                 .setId(a.getId())
-                .setName(a.getName())
+                .setGc(a.getGC())
+                .setLengthBp(a.getLength())
                 .setBinId(a.getBinId())
                 .build();
     }
 
     @Override
     public ContigI toModel(MGXMasterI m, ContigDTO dto) {
-        return new Contig(m, dto.getId(), dto.getBinId(), dto.getName());
+        return new Contig(m, dto.getId(), dto.getBinId(), dto.getGc(), dto.getLengthBp());
     }
 }

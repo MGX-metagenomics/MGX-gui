@@ -13,30 +13,37 @@ import de.cebitec.mgx.api.model.assembly.ContigI;
  * @author sj
  */
 public class Contig extends ContigI {
-    
-    private final long binId;
-    private final String name;
 
-    public Contig(MGXMasterI m, long id, long binId, String name) {
+    private final long binId;
+    private final float gc;
+    private final int length_bp;
+
+    public Contig(MGXMasterI m, long id, long binId, float gc, int length) {
         super(m);
         setId(id);
         this.binId = binId;
-        this.name = name;
+        this.gc = gc;
+        this.length_bp = length;
     }
-    
+
     @Override
     public long getBinId() {
         return binId;
     }
 
     @Override
-    public String getName() {
-        return name;
+    public float getGC() {
+        return gc;
+    }
+
+    @Override
+    public int getLength() {
+        return length_bp;
     }
 
     @Override
     public int compareTo(ContigI o) {
-        return this.name.compareTo(o.getName());
+        return Long.compare(id, o.getId());
     }
 
 }

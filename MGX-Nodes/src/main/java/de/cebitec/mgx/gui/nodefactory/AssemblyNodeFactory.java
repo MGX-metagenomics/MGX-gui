@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.nodefactory;
 
+import de.cebitec.mgx.api.MGX2MasterI;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.assembly.AssemblyI;
@@ -12,9 +13,9 @@ import org.openide.util.Exceptions;
  *
  * @author sj
  */
-public class AssemblyNodeFactory extends MGXNodeFactoryBase<MGXMasterI, AssemblyI> {
+public class AssemblyNodeFactory extends MGX2NodeFactoryBase<MGXMasterI, AssemblyI> {
 
-    public AssemblyNodeFactory(MGXMasterI m) {
+    public AssemblyNodeFactory(MGX2MasterI m) {
         super(m);
     }
 

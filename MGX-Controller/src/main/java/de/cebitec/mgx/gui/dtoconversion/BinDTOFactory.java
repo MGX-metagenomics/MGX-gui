@@ -30,12 +30,17 @@ public class BinDTOFactory extends DTOConversionBase<BinI, BinDTO> {
         return BinDTO.newBuilder()
                 .setId(a.getId())
                 .setName(a.getName())
+                .setCompleteness(a.getCompleteness())
+                .setN50(a.getN50())
+                .setTaxonomy(a.getTaxonomy())
+                .setPredictedCds(a.getPredictedCDS())
                 .setAssemblyId(a.getAssemblyId())
                 .build();
     }
 
     @Override
     public BinI toModel(MGXMasterI m, BinDTO dto) {
-        return new Bin(m, dto.getId(), dto.getName(), dto.getAssemblyId());
+        return new Bin(m, dto.getId(), dto.getName(), dto.getCompleteness(), 
+                dto.getN50(), dto.getTaxonomy(), dto.getPredictedCds(), dto.getAssemblyId());
     }
 }

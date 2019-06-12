@@ -16,11 +16,15 @@ public class Assembly extends AssemblyI {
     
     private final String name;
     private final long jobId;
+    private final long reads_assembled;
+    private final long n50;
 
-    public Assembly(MGXMasterI master, long id, String name, long asmjob) {
+    public Assembly(MGXMasterI master, long id, String name, long reads_assembled, long n50, long asmjob) {
         super(master);
         setId(id);
         this.name = name;
+        this.reads_assembled = reads_assembled;
+        this.n50 = n50;
         this.jobId = asmjob;
     }
 
@@ -32,6 +36,16 @@ public class Assembly extends AssemblyI {
     @Override
     public String getName() {
         return name;
+    }
+
+    @Override
+    public long getReadsAssembled() {
+        return reads_assembled;
+    }
+
+    @Override
+    public long getN50() {
+        return n50;
     }
 
     @Override

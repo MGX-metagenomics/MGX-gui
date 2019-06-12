@@ -12,7 +12,7 @@ import org.openide.util.Exceptions;
  *
  * @author sj
  */
-public class BinNodeFactory extends MGXNodeFactoryBase<AssemblyI, BinI> {
+public class BinNodeFactory extends MGX2NodeFactoryBase<AssemblyI, BinI> {
 
     public BinNodeFactory(AssemblyI a) {
         super(a);

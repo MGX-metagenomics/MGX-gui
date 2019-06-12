@@ -15,13 +15,36 @@ import de.cebitec.mgx.api.model.assembly.BinI;
 public class Bin extends BinI {
 
     private final String name;
+    private final float completeness;
+    private final long n50;
+    private final String taxonomy;
+    private final int predicted_cds;
     private final long asmId;
 
-    public Bin(MGXMasterI m, long id, String name, long asmId) {
+    public Bin(MGXMasterI m, long id, String name, float completeness, long n50, String taxonomy, int numPredictedCDS, long asmId) {
         super(m);
         setId(id);
         this.name = name;
+        this.completeness = completeness;
+        this.n50 = n50;
+        this.taxonomy = taxonomy;
+        this.predicted_cds = numPredictedCDS;
         this.asmId = asmId;
+    }
+
+    @Override
+    public float getCompleteness() {
+        return completeness;
+    }
+
+    @Override
+    public long getN50() {
+        return n50;
+    }
+
+    @Override
+    public String getTaxonomy() {
+        return taxonomy;
     }
 
     @Override
@@ -32,6 +55,11 @@ public class Bin extends BinI {
     @Override
     public String getName() {
         return name;
+    }
+
+    @Override
+    public int getPredictedCDS() {
+        return predicted_cds;
     }
 
     @Override
