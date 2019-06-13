@@ -21,9 +21,13 @@ public abstract class ContigI extends Identifiable<ContigI> {
         super(m, DATA_FLAVOR);
     }
     
+    public abstract String getName();
+    
     public abstract long getBinId();
 
     public abstract float getGC();
 
     public abstract int getLength();
+
+    public abstract int getCoverage();
 }

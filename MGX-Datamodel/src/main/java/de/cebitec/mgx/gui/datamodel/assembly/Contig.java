@@ -14,16 +14,25 @@ import de.cebitec.mgx.api.model.assembly.ContigI;
  */
 public class Contig extends ContigI {
 
+    private final String name;
     private final long binId;
     private final float gc;
     private final int length_bp;
+    private final int coverage;
 
-    public Contig(MGXMasterI m, long id, long binId, float gc, int length) {
+    public Contig(MGXMasterI m, long id, String name, long binId, float gc, int length, int coverage) {
         super(m);
         setId(id);
+        this.name = name;
         this.binId = binId;
         this.gc = gc;
         this.length_bp = length;
+        this.coverage = coverage;
+    }
+
+    @Override
+    public String getName() {
+        return name;
     }
 
     @Override
@@ -39,6 +48,11 @@ public class Contig extends ContigI {
     @Override
     public int getLength() {
         return length_bp;
+    }
+
+    @Override
+    public int getCoverage() {
+        return coverage;
     }
 
     @Override
