@@ -607,6 +607,7 @@
         <module>MGX-VisualizationGroups</module>
         <module>MGX-TestUtils</module>
         <module>MGX-DataFactories</module>
+        <module>MGX-Blobogram</module>
     </modules>
     
     <properties>
