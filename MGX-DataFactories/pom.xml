@@ -63,6 +63,7 @@
                             de.cebitec.mgx.api.model,
                             de.cebitec.mgx.api.model.tree,
                             de.cebitec.mgx.api.misc,
+                            de.cebitec.mgx.gui.datamodel.tree,
                             de.cebitec.mgx.gui.datamodel.misc
                         </Import-Package>
                     </instructions>
