@@ -8,6 +8,7 @@ package de.cebitec.mgx.gui.activate;
 import de.cebitec.gpms.core.MembershipI;
 import de.cebitec.gpms.nodesupport.GPMSProjectSupportI;
 import de.cebitec.gpms.rest.RESTMasterI;
+import de.cebitec.mgx.api.MGX2MasterI;
 import de.cebitec.mgx.gui.controller.MGX2Master;
 import de.cebitec.mgx.gui.nodes.ProjectNode;
 import org.openide.nodes.Node;
@@ -25,7 +26,10 @@ public class MGX2ProjectSupport implements GPMSProjectSupportI {
 
     @Override
     public Node createProjectNode(RESTMasterI restMaster) {
-        MGX2Master master = new MGX2Master(restMaster);
-        return new ProjectNode(master);
+        if ("MGX-2".equals(restMaster.getProject().getProjectClass().getName())) {
+            MGX2MasterI master = new MGX2Master(restMaster);
+            return new ProjectNode(master);
+        }
+        return null;
     }
 }

@@ -26,7 +26,10 @@ public class MGXProjectSupport implements GPMSProjectSupportI {
 
     @Override
     public Node createProjectNode(RESTMasterI restMaster) {
-        MGXMasterI master = new MGXMaster(restMaster);
-        return new ProjectNode(master);
+        if ("MGX".equals(restMaster.getProject().getProjectClass().getName())) {
+            MGXMasterI master = new MGXMaster(restMaster);
+            return new ProjectNode(master);
+        }
+        return null;
     }
 }
