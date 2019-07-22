@@ -15,7 +15,7 @@ import java.util.List;
  */
 public class Job extends JobI {
 
-    protected SeqRunI seqrun;
+    protected SeqRunI[] seqruns;
     //
     protected ToolI tool;
     protected String created_by;
@@ -89,15 +89,15 @@ public class Job extends JobI {
     }
 
     @Override
-    public SeqRunI getSeqrun() {
-        return seqrun;
+    public SeqRunI[] getSeqruns() {
+        return seqruns;
     }
 
     @Override
-    public JobI setSeqrun(SeqRunI run) {
-        assert run != null;
-        assert this.seqrun == null;
-        this.seqrun = run;
+    public JobI setSeqruns(SeqRunI[] runs) {
+        assert runs != null;
+        assert this.seqruns == null;
+        this.seqruns = runs;
         return this;
     }
 

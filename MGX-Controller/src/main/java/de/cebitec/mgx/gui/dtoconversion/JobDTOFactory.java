@@ -7,6 +7,7 @@ import com.google.common.cache.RemovalNotification;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.JobParameterI;
+import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.common.JobState;
 import de.cebitec.mgx.dto.dto;
 import de.cebitec.mgx.dto.dto.JobDTO;
@@ -55,10 +56,13 @@ public class JobDTOFactory extends DTOConversionBase<JobI, JobDTO> {
     public final JobDTO toDTO(JobI j) {
         Builder b = JobDTO.newBuilder()
                 .setId(j.getId())
-                .setSeqrunId(j.getSeqrun().getId())
                 .setToolId(j.getTool().getId())
                 .setCreator(j.getCreator())
                 .setState(dto.JobState.forNumber(j.getStatus().getValue()));
+        
+        for (SeqRunI sr : j.getSeqruns()) {
+            b.addSeqrun(sr.getId());
+        }
 
         if (j.getStartDate() != null) {
             b.setStartDate(toUnixTimeStamp(j.getStartDate()));
@@ -90,7 +94,7 @@ public class JobDTOFactory extends DTOConversionBase<JobI, JobDTO> {
                     .setFinishDate(toDate(dto.getFinishDate()));
 
             if (dto.hasParameters()) {
-                job.setParameters(new ArrayList<JobParameterI>(dto.getParameters().getParameterCount()));
+                job.setParameters(new ArrayList<>(dto.getParameters().getParameterCount()));
                 for (JobParameterDTO jpdto : dto.getParameters().getParameterList()) {
                     JobParameterI jp = JobParameterDTOFactory.getInstance().toModel(m, jpdto);
                     job.getParameters().add(jp);

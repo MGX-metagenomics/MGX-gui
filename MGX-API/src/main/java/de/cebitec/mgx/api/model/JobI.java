@@ -44,9 +44,9 @@ public abstract class JobI extends Identifiable<JobI> {
 
     public abstract JobI setStartDate(Date startDate);
 
-    public abstract SeqRunI getSeqrun();
+    public abstract SeqRunI[] getSeqruns();
 
-    public abstract JobI setSeqrun(SeqRunI run);
+    public abstract JobI setSeqruns(SeqRunI[] run);
 
     public abstract String getCreator();
 

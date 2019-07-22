@@ -14,6 +14,7 @@ public class SeqRun extends SeqRunI {
     protected TermI sequencing_method;
     protected String name;
     protected boolean submitted_to_insdc;
+    protected boolean isPaired;
     protected String database_accession;
     protected long extract_id;
     protected long numSequences = 0;
@@ -86,6 +87,18 @@ public class SeqRun extends SeqRunI {
     @Override
     public SeqRun setSubmittedToINSDC(Boolean submitted_to_insdc) {
         this.submitted_to_insdc = submitted_to_insdc;
+        return this;
+    }
+
+    @Override
+    public boolean isPaired() {
+        return isPaired;
+    }
+    
+
+    @Override
+    public SeqRunI setIsPaired(boolean isPaired) {
+        this.isPaired = isPaired;
         return this;
     }
 

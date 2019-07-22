@@ -76,7 +76,7 @@ public class JobAccessTest {
         ToolI tool = master.Tool().fetch(1);
         SeqRunI run = master.SeqRun().fetch(1);
 
-        JobI job = master.Job().create(tool, run, new ArrayList<JobParameterI>());
+        JobI job = master.Job().create(tool, new ArrayList<>(), run);
         assertNotNull(job);
 
         PropCounter pc = new PropCounter();

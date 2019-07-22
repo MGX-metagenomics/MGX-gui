@@ -30,6 +30,7 @@ public class SeqRunDTOFactory extends DTOConversionBase<SeqRunI, SeqRunDTO> {
         Builder b = SeqRunDTO.newBuilder()
                 .setExtractId(s.getExtractId())
                 .setName(s.getName())
+                .setIsPaired(s.isPaired())
                 .setSequencingTechnology(TermDTOFactory.getInstance().toDTO(s.getSequencingTechnology()))
                 .setSequencingMethod(TermDTOFactory.getInstance().toDTO(s.getSequencingMethod()))
                 .setSubmittedToInsdc(s.getSubmittedToINSDC());
@@ -48,9 +49,10 @@ public class SeqRunDTOFactory extends DTOConversionBase<SeqRunI, SeqRunDTO> {
 
     @Override
     public final SeqRunI toModel(MGXMasterI m, SeqRunDTO dto) {
-        SeqRun s = new SeqRun(m)
+        SeqRunI s = new SeqRun(m)
                 .setDNAExtractId(dto.getExtractId())
                 .setName(dto.getName())
+                .setIsPaired(dto.getIsPaired())
                 .setSequencingTechnology(TermDTOFactory.getInstance().toModel(m, dto.getSequencingTechnology()))
                 .setSequencingMethod(TermDTOFactory.getInstance().toModel(m, dto.getSequencingMethod()))
                 .setSubmittedToINSDC(dto.getSubmittedToInsdc());

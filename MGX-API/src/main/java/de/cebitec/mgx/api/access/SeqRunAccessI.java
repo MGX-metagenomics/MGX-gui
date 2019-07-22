@@ -32,7 +32,7 @@ public interface SeqRunAccessI extends AccessBaseI<SeqRunI> {
     
     public List<QCResultI> getQC(SeqRunI run) throws MGXException;
 
-    public SeqRunI ByJob(JobI job) throws MGXException;
+    public Iterator<SeqRunI> ByJob(JobI job) throws MGXException;
 
     public boolean hasQuality(SeqRunI seqrun) throws MGXException;
     

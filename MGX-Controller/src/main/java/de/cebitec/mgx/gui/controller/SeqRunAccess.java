@@ -76,7 +76,6 @@ public class SeqRunAccess extends AccessBase<SeqRunI> implements SeqRunAccessI {
 //        obj.setId(id);
 //        return obj;
 //    }
-
     @Override
     public SeqRunI fetch(long id) throws MGXException {
         SeqRunDTO dto = null;
@@ -143,18 +142,19 @@ public class SeqRunAccess extends AccessBase<SeqRunI> implements SeqRunAccessI {
     }
 
     @Override
-    public SeqRunI ByJob(final JobI job) throws MGXException {
-        SeqRunDTO dto = null;
+    public Iterator<SeqRunI> ByJob(final JobI job) throws MGXException {
         try {
-            dto = getDTOmaster().SeqRun().byJob(job.getId());
+            Iterator<SeqRunDTO> iter = getDTOmaster().SeqRun().byJob(job.getId());
+            return new BaseIterator<SeqRunDTO, SeqRunI>(iter) {
+                @Override
+                public SeqRunI next() {
+                    SeqRunI sr = SeqRunDTOFactory.getInstance().toModel(getMaster(), iter.next());
+                    return sr;
+                }
+            };
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
-        SeqRunI ret = SeqRunDTOFactory.getInstance().toModel(getMaster(), dto);
-        if (job.getSeqrun() == null) {
-            job.setSeqrun(ret);
-        }
-        return ret;
     }
 
     @Override
@@ -163,8 +163,8 @@ public class SeqRunAccess extends AccessBase<SeqRunI> implements SeqRunAccessI {
         try {
             for (JobAndAttributeTypes jat : getDTOmaster().SeqRun().getJobsAndAttributeTypes(run.getId())) {
                 JobI job = JobDTOFactory.getInstance().toModel(getMaster(), jat.getJob());
-                if (job.getSeqrun() == null) {
-                    job.setSeqrun(run);
+                if (job.getSeqruns() == null) {
+                    job.setSeqruns(new SeqRunI[]{run});
                 }
 
                 Set<AttributeTypeI> all = new HashSet<>();

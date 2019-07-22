@@ -45,6 +45,10 @@ public abstract class SeqRunI extends Identifiable<SeqRunI> {
     public abstract boolean getSubmittedToINSDC();
 
     public abstract SeqRunI setSubmittedToINSDC(Boolean submitted_to_insdc);
+    
+    public abstract boolean isPaired();
+    
+    public abstract SeqRunI setIsPaired(boolean isPaired);
 
     public abstract long getNumSequences();
 

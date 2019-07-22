@@ -21,7 +21,7 @@ import java.util.List;
  */
 public interface JobAccessI {
 
-    public JobI create(ToolI tool, SeqRunI seqrun, List<JobParameterI> params) throws MGXException;
+    public JobI create(ToolI tool, List<JobParameterI> params, SeqRunI... seqruns) throws MGXException;
 
     public JobI fetch(long id) throws MGXException;
 
