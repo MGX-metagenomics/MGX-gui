@@ -15,6 +15,8 @@ import de.cebitec.mgx.gui.rbac.RBAC;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
 import de.cebitec.mgx.gui.wizard.seqrun.SeqRunWizardDescriptor;
+import de.cebitec.mgx.sequence.AlternatingQReader;
+import de.cebitec.mgx.sequence.DNAQualitySequenceI;
 import de.cebitec.mgx.sequence.DNASequenceI;
 import de.cebitec.mgx.sequence.SeqReaderFactory;
 import de.cebitec.mgx.sequence.SeqReaderI;
@@ -64,8 +66,16 @@ public class AddSeqRun extends AbstractAction {
                     String canonicalPath;
                     SeqReaderI<? extends DNASequenceI> reader;
                     try {
-                        canonicalPath = wd.getSequenceFile().getCanonicalPath();
-                        reader = SeqReaderFactory.<DNASequenceI>getReader(canonicalPath);
+                        if (seqrun.isPaired()) {
+                            canonicalPath = wd.getSequenceFiles()[0].getCanonicalPath();
+                            SeqReaderI<DNAQualitySequenceI> reader1 = (SeqReaderI<DNAQualitySequenceI>) SeqReaderFactory.<DNAQualitySequenceI>getReader(canonicalPath);
+                            canonicalPath = wd.getSequenceFiles()[1].getCanonicalPath();
+                            SeqReaderI<DNAQualitySequenceI> reader2 = (SeqReaderI<DNAQualitySequenceI>) SeqReaderFactory.<DNAQualitySequenceI>getReader(canonicalPath);
+                            reader = new AlternatingQReader(reader1, reader2);
+                        } else {
+                            canonicalPath = wd.getSequenceFiles()[0].getCanonicalPath();
+                            reader = SeqReaderFactory.<DNASequenceI>getReader(canonicalPath);
+                        }
                     } catch (IOException | SeqStoreException ex) {
                         m.SeqRun().delete(seqrun);
                         publish(ex);
@@ -73,7 +83,7 @@ public class AddSeqRun extends AbstractAction {
                         return null;
                     }
                     final UploadBaseI uploader = m.Sequence().createUploader(seqrun, reader);
-                    MGXTask run = new MGXTask("Upload " + canonicalPath) {
+                    MGXTask run = new MGXTask("Upload " + seqrun.getName()) {
                         @Override
                         public boolean process() {
                             boolean success = uploader.upload();

@@ -130,8 +130,8 @@ public class SeqRunWizardDescriptor extends WizardDescriptor {
         return seqrun;
     }
 
-    public File getSequenceFile() {
-        return (File) getProperty(SeqRunVisualPanel2.PROP_SEQFILE);
+    public File[] getSequenceFiles() {
+        return (File[]) getProperty(SeqRunVisualPanel2.PROP_SEQFILES);
     }
 
     public boolean runDefaultTools() {

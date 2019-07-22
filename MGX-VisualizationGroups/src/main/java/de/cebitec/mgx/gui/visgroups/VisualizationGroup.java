@@ -659,11 +659,12 @@ public class VisualizationGroup implements VisualizationGroupI {
                 }
                 if (evt.getSource() instanceof JobI) {
                     JobI job = (JobI) evt.getSource();
-                    SeqRunI seqrun = job.getSeqrun();
-
-                    // refresh data for this run
-                    removeSeqRun(seqrun);
-                    addSeqRun(seqrun);
+                    SeqRunI[] runs = job.getSeqruns();
+                    for (SeqRunI seqrun : runs) {
+                        // refresh data for this run
+                        removeSeqRun(seqrun);
+                        addSeqRun(seqrun);
+                    }
                 }
                 //pcs.firePropertyChange(evt);
                 break;

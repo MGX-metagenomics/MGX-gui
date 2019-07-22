@@ -88,7 +88,12 @@ public final class TopComponentViewer extends TopComponent implements PropertyCh
         associateLookup(lookup);
         content.add(new SaveView());
         vc = new ViewController(ctx);
-        setName(ctx.getRun().getName() + " vs. " + ctx.getReference().getName());
+        String[] elems = new String[ctx.getRuns().length];
+        for (int i = 0; i < elems.length; i++) {
+            elems[i] = ctx.getRuns()[i].getName();
+        }
+
+        setName(String.join(", ", elems) + " vs. " + ctx.getReference().getName());
         createView();
     }
 
@@ -155,7 +160,13 @@ public final class TopComponentViewer extends TopComponent implements PropertyCh
     void downloadBAM() {
         String bamName = null;
         try {
-            bamName = vc.getSeqRun().getName() + "_vs_" + vc.getReference().getName() + ".bam";
+            String[] elems = new String[vc.getSeqRuns().length];
+            for (int i = 0; i < elems.length; i++) {
+                elems[i] = vc.getSeqRuns()[i].getName();
+            }
+
+            bamName = String.join("_", elems) + "_vs_" + vc.getReference().getName() + ".bam";
+
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);
         }
@@ -392,7 +403,6 @@ public final class TopComponentViewer extends TopComponent implements PropertyCh
             }
             g2.dispose();
 
-            
             switch (type) {
                 case PNG:
                 case JPEG:

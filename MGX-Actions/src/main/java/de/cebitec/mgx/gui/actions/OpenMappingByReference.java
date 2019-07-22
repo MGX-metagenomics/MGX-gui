@@ -10,6 +10,7 @@ import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.api.model.MappingI;
+import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.mapping.MappingCtx;
 import de.cebitec.mgx.gui.mapping.viewer.TopComponentViewer;
 import de.cebitec.mgx.gui.pool.MGXPool;
@@ -78,8 +79,13 @@ public class OpenMappingByReference extends OpenMappingBase {
                     JobI job = null;
                     try {
                         job = master.Job().fetch(m.getJobID());
-                        if (job.getSeqrun() == null) {
-                            job.setSeqrun(master.SeqRun().fetch(m.getSeqrunID()));
+                        if (job.getSeqruns() == null) {
+                            Iterator<SeqRunI> iter = master.SeqRun().ByJob(job);
+                            List<SeqRunI> runs = new ArrayList<>();
+                            while (iter != null && iter.hasNext()) {
+                                runs.add(iter.next());
+                            }
+                            job.setSeqruns(runs.toArray(new SeqRunI[]{}));
                         }
                         if (job.getTool() == null) {
                             master.Tool().ByJob(job); // trigger tool fetch

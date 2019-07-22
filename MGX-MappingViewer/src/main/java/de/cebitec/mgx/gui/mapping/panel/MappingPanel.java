@@ -90,7 +90,12 @@ public class MappingPanel extends PanelBase {
 
         String name = null;
         try {
-            name = vc.getSeqRun().getName() + " vs. " + vc.getReference().getName();
+            String[] elems = new String[vc.getSeqRuns().length];
+            for (int i = 0; i < elems.length; i++) {
+                elems[i] = vc.getSeqRuns()[i].getName();
+            }
+
+            name = String.join(", ", elems) + " vs. " + vc.getReference().getName();
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);
         }
@@ -143,7 +148,6 @@ public class MappingPanel extends PanelBase {
 
         }
 
-        
         g2.dispose();
         //super.paintComponent(g);
         //super.paintChildren(g);

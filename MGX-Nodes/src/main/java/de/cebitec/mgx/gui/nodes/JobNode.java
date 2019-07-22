@@ -147,7 +147,12 @@ public class JobNode extends MGXNodeBase<JobI> {
         Property runProperty = new PropertySupport.ReadWrite<String>(SEQRUN_PROPERTY, String.class, "Run", "Run name") {
             @Override
             public String getValue() throws IllegalAccessException, InvocationTargetException {
-                return getContent().getSeqrun().getName();
+                String[] elems = new String[getContent().getSeqruns().length];
+                for (int i=0;i<elems.length;i++) {
+                    elems[i] = getContent().getSeqruns()[i].getName();
+                }
+                return String.join(", ", elems);
+                //return getContent().getSeqrun().getName();
             }
 
             @Override

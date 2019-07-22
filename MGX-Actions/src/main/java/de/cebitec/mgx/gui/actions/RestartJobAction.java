@@ -52,7 +52,7 @@ public final class RestartJobAction extends NodeAction {
                         continue;
                     }
 
-                    if (job.getSeqrun() == null) {
+                    if (job.getSeqruns() == null || job.getSeqruns().length == 0) {
                         throw new RuntimeException("Internal error: Job has no sequencing run.");
                     }
                     if (job.getTool() == null) {

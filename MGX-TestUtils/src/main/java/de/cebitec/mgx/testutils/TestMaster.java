@@ -138,7 +138,7 @@ public class TestMaster {
         }
         GPMSClientI gpms;
         try {
-            gpms = GPMSClientFactory.createClient("MyServer", serverURI);
+            gpms = GPMSClientFactory.createClient("MyServer", serverURI, true);
             gpms.login(p.getProperty("username"), p.getProperty("password"));
         } catch (GPMSException ex) {
             return null;

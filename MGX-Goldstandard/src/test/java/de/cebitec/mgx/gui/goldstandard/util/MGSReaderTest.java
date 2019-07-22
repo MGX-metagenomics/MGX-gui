@@ -5,7 +5,6 @@ import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.JobI;
-import de.cebitec.mgx.api.model.JobParameterI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.ToolI;
 import de.cebitec.mgx.gui.goldstandard.actions.AddGoldstandard;
@@ -82,7 +81,7 @@ public class MGSReaderTest {
     public void testMGSReader() throws MGXException, FileNotFoundException, IOException{
         Assume.assumeNotNull(master);
         String mgsPath = getClass().getClassLoader().getResource("example.mgs").getPath();
-        job = master.Job().create(tool, seqrun, new ArrayList<JobParameterI>(1));
+        job = master.Job().create(tool, new ArrayList<>(1), seqrun);
         MGSReader reader = new MGSReader(mgsPath, master, job);
         List<MGSEntry> results = new LinkedList<>();
         while (reader.hasNext()){

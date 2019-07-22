@@ -118,7 +118,7 @@ public final class AddGoldstandard extends NodeAction implements LookupListener 
                 try {
                     ToolI tool = getToolByName(master, TOOL_NAME, TOOL_LONG_DESCRIPTION, TOOL_AUTHOR, TOOL_WEBSITE, TOOL_VERSION, TOOL_XML);
                     List<JobParameterI> params = new ArrayList<>(1);
-                    job = master.Job().create(tool, seqrun, params);
+                    job = master.Job().create(tool, params, seqrun);
                     job.setStatus(JobState.RUNNING);
                     p.start((int) seqrun.getNumSequences() + 1);
                     master.Job().update(job);

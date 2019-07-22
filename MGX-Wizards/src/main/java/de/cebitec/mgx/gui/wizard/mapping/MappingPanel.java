@@ -24,7 +24,13 @@ public class MappingPanel extends javax.swing.JPanel {
 
     public void setMapping(MappingCtx ctx) {
         ref.setText(ctx.getReference().getName());
-        run.setText(ctx.getRun().getName());
+
+        String[] elems = new String[ctx.getRuns().length];
+        for (int i = 0; i < elems.length; i++) {
+            elems[i] = ctx.getRuns()[i].getName();
+        }
+        String runNames = String.join(", ", elems);
+        run.setText(runNames);
         tool.setText(ctx.getTool().getName());
 
         List<JobParameterI> parameters = ctx.getJob().getParameters();

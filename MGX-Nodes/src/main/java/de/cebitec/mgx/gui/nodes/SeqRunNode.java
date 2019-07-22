@@ -36,7 +36,8 @@ public class SeqRunNode extends MGXNodeBase<SeqRunI> {
                 .append(run.getSequencingTechnology().getName()).append(" ")
                 .append(run.getSequencingMethod().getName())
                 .append("<br>")
-                .append(numSeqs).append(" reads")
+                .append(numSeqs)
+                .append(run.isPaired() ? " read pairs" : " reads")
                 .append("</html>").toString();
     }
 

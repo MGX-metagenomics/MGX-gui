@@ -53,7 +53,7 @@ public class MappingCtx implements PropertyChangeListener, AutoCloseable {
         this.refLength = ref.getLength();
         MGXMasterI master = m.getMaster();
 
-        if (m.getJobID() != job.getId() || m.getReferenceID() != ref.getId() || m.getSeqrunID() != job.getSeqrun().getId()) {
+        if (m.getJobID() != job.getId() || m.getReferenceID() != ref.getId() || m.getSeqrunID() != job.getSeqruns()[0].getId()) {
             throw new IllegalArgumentException("Inconsistent data, cannot create mapping context.");
         }
 
@@ -61,7 +61,9 @@ public class MappingCtx implements PropertyChangeListener, AutoCloseable {
         m.addPropertyChangeListener(this);
         ref.addPropertyChangeListener(this);
         job.addPropertyChangeListener(this);
-        job.getSeqrun().addPropertyChangeListener(this);
+        for (SeqRunI run : job.getSeqruns()) {
+            run.addPropertyChangeListener(this);
+        }
 
         sessionUUID = master.Mapping().openMapping(m.getId());
 
@@ -85,8 +87,8 @@ public class MappingCtx implements PropertyChangeListener, AutoCloseable {
         return mapping;
     }
 
-    public final SeqRunI getRun() {
-        return job.getSeqrun();
+    public final SeqRunI[] getRuns() {
+        return job.getSeqruns();
     }
 
     public final ToolI getTool() {
@@ -246,7 +248,9 @@ public class MappingCtx implements PropertyChangeListener, AutoCloseable {
             }
             mapping.removePropertyChangeListener(this);
             ref.removePropertyChangeListener(this);
-            job.getSeqrun().removePropertyChangeListener(this);
+            for (SeqRunI run : job.getSeqruns()) {
+                run.removePropertyChangeListener(this);
+            }
             job.removePropertyChangeListener(this);
 
             pcs.firePropertyChange(MAPPING_CLOSED, false, true);

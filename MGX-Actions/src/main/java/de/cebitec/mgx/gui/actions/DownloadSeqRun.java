@@ -1,6 +1,5 @@
 package de.cebitec.mgx.gui.actions;
 
-import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.datatransfer.DownloadBaseI;
 import de.cebitec.mgx.api.access.datatransfer.TransferBaseI;
 import de.cebitec.mgx.api.exception.MGXException;
@@ -12,6 +11,7 @@ import de.cebitec.mgx.gui.taskview.TaskManager;
 import de.cebitec.mgx.gui.swingutils.util.SuffixFilter;
 import de.cebitec.mgx.seqstorage.FASTQWriter;
 import de.cebitec.mgx.seqstorage.FastaWriter;
+import de.cebitec.mgx.seqstorage.PairedEndFASTQWriter;
 import de.cebitec.mgx.seqstorage.QualityEncoding;
 import de.cebitec.mgx.sequence.DNASequenceI;
 import de.cebitec.mgx.sequence.SeqStoreException;
@@ -109,7 +109,8 @@ public class DownloadSeqRun extends AbstractAction {
 
         try {
             final SeqWriterI<? extends DNASequenceI> writer = hasQuality
-                    ? new FASTQWriter(target.getAbsolutePath(), QualityEncoding.Sanger)
+                    ? seqrun.isPaired() ? new PairedEndFASTQWriter(target.getAbsolutePath(), QualityEncoding.Sanger)
+                    : new FASTQWriter(target.getAbsolutePath(), QualityEncoding.Sanger)
                     : new FastaWriter(target.getAbsolutePath());
 
             final DownloadBaseI downloader = seqrun.getMaster().Sequence().createDownloader(seqrun, writer, false);

@@ -16,6 +16,8 @@ import de.cebitec.mgx.gui.pool.MGXPool;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.RenderingHints;
+import java.awt.Shape;
+import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -61,7 +63,7 @@ import org.openide.util.lookup.InstanceContent;
 )
 @TopComponent.Registration(mode = "navigator", openAtStartup = false)
 @ActionID(category = "Window", id = "de.cebitec.mgx.gui.blobogram.BlobogramTopComponent")
-@ActionReference(path = "Menu/Window" /*, position = 333 */)
+@ActionReference(path = "Menu/Window" , position = 339 )
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_BlobogramAction",
         preferredID = "BlobogramTopComponent"
@@ -104,7 +106,7 @@ public final class BlobogramTopComponent extends TopComponent implements LookupL
 
         Collection<? extends AssemblyI> assemblies = resultAssembly.allInstances();
         Collection<BinI> bins = new ArrayList<>();
-        
+
         if (!assemblies.isEmpty()) {
             AssemblyI assembly = assemblies.toArray(new AssemblyI[]{})[0];
             Iterator<BinI> asmIter = null;
@@ -135,6 +137,7 @@ public final class BlobogramTopComponent extends TopComponent implements LookupL
             allProcessed.await();
         } catch (InterruptedException ex) {
             Exceptions.printStackTrace(ex);
+            return;
         }
 
         dataset.addSeries(series);
@@ -161,7 +164,23 @@ public final class BlobogramTopComponent extends TopComponent implements LookupL
         chart.setBorderPaint(Color.WHITE);
         chart.setBackgroundPaint(Color.WHITE);
 
-        XYItemRenderer renderer = new XYLineAndShapeRenderer(false, true);
+        XYItemRenderer renderer = new XYLineAndShapeRenderer(false, true) {
+
+            private final Ellipse2D.Float circle = new Ellipse2D.Float();
+
+            @Override
+            public Shape getItemShape(int row, int column) {
+                ContigItem item = (ContigItem) series.getDataItem(column);
+                int length_bp = item.getContig().getLength();
+                float size = (float) (1 + Math.log(length_bp));
+                circle.height = size;
+                circle.width = size;
+                circle.x = - size/2;
+                circle.y = - size/2;
+                return circle;
+            }
+
+        };
         renderer.setBaseToolTipGenerator(tooltipGenerator);
         //renderer.setSeriesShape(0, shape);
 
@@ -260,10 +279,16 @@ public final class BlobogramTopComponent extends TopComponent implements LookupL
     private static class ContigItem extends XYDataItem {
 
         private final String taxonomy;
+        private final ContigI contig;
 
         public ContigItem(ContigI ctg, String taxonomy) {
             super(ctg.getGC(), ctg.getCoverage());
+            this.contig = ctg;
             this.taxonomy = taxonomy;
+        }
+
+        public final ContigI getContig() {
+            return contig;
         }
 
         public final String getTooltip() {

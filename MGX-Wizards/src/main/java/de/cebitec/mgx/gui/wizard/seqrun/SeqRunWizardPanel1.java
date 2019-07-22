@@ -88,6 +88,11 @@ public class SeqRunWizardPanel1 implements WizardDescriptor.Panel<WizardDescript
         model.putProperty(SeqRunVisualPanel1.PROP_SUBMITTED, c.getSubmittedState());
         model.putProperty(SeqRunVisualPanel1.PROP_ACCESSION, c.getAccession());
         model.putProperty(SeqRunVisualPanel1.PROP_RUNTOOLS, c.runDefaultTools());
+        if (!c.getMethod().getName().equals("Whole-Genome Shotgun")) {
+            model.putProperty(SeqRunVisualPanel1.PROP_ISPAIRED, Boolean.TRUE);
+        } else {
+            model.putProperty(SeqRunVisualPanel1.PROP_ISPAIRED, Boolean.FALSE);
+        }
     }
 
     public void setProperties(WizardDescriptor settings) {

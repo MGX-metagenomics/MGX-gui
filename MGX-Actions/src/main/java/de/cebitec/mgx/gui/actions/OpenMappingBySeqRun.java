@@ -64,8 +64,13 @@ public class OpenMappingBySeqRun extends OpenMappingBase {
                     MappingI m = mappings.next();
 
                     JobI job = master.Job().fetch(m.getJobID());
-                    if (job.getSeqrun() == null) {
-                        job.setSeqrun(run);
+                    if (job.getSeqruns() == null || job.getSeqruns().length == 0) {
+                        Iterator<SeqRunI> iter = master.SeqRun().ByJob(job);
+                        List<SeqRunI> runs = new ArrayList<>();
+                        while (iter != null && iter.hasNext()) {
+                            runs.add(iter.next());
+                        }
+                        job.setSeqruns(runs.toArray(new SeqRunI[]{}));
                     }
                     if (job.getTool() == null) {
                         job.setTool(master.Tool().ByJob(job));

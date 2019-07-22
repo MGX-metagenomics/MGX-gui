@@ -47,7 +47,7 @@ public final class DeleteJobNodeAction extends NodeAction {
                 continue;
             }
 
-            String jobName = job.getTool().getName() + " / " + job.getSeqrun().getName();
+            String jobName = job.getTool().getName() + " / " + job.getSeqruns()[0].getName();
             NotifyDescriptor d = new NotifyDescriptor("Really delete job " + jobName + "?", "Delete job(s)", NotifyDescriptor.YES_NO_OPTION, NotifyDescriptor.QUESTION_MESSAGE, null, null);
             Object ret = DialogDisplayer.getDefault().notify(d);
             if (NotifyDescriptor.YES_OPTION.equals(ret)) {

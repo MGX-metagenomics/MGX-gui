@@ -4,6 +4,7 @@ import java.awt.Component;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.util.Objects;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
@@ -71,13 +72,19 @@ public class SeqRunWizardPanel2 implements WizardDescriptor.Panel<WizardDescript
         model = settings;
         SeqRunVisualPanel2 c = getComponent();
         c.addPropertyChangeListener(this);
+        if (Objects.equals((Boolean) model.getProperty(SeqRunVisualPanel1.PROP_ISPAIRED), Boolean.TRUE)) {
+            c.setPaired(true);
+        } else {
+            c.setPaired(false);
+        }
     }
 
     @Override
     public void storeSettings(WizardDescriptor settings) {
         model = settings;
         SeqRunVisualPanel2 c = getComponent();
-        model.putProperty(SeqRunVisualPanel2.PROP_SEQFILE, c.getSelectedFile());
+        File[] selectedFiles = c.getSelectedFiles();
+        model.putProperty(SeqRunVisualPanel2.PROP_SEQFILES, selectedFiles);
     }
 
     @Override
@@ -90,9 +97,16 @@ public class SeqRunWizardPanel2 implements WizardDescriptor.Panel<WizardDescript
     private boolean checkValidity() {
         isValid = true;
         SeqRunVisualPanel2 c = getComponent();
-        File test = c.getSelectedFile();
-        if (test == null || test.isDirectory() || !test.exists()) {
+        File[] test = c.getSelectedFiles();
+        if (test[0] == null || test[0].isDirectory() || !test[0].exists()) {
             isValid = false;
+            return isValid;
+        }
+        Boolean isPaired = (Boolean) model.getProperty(SeqRunVisualPanel1.PROP_ISPAIRED);
+        if (isPaired) {
+            if (test[1] == null || test[1].isDirectory() || !test[1].exists()) {
+                isValid = false;
+            }
         }
 
         return isValid;

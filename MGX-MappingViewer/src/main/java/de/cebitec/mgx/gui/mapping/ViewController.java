@@ -19,7 +19,6 @@ import de.cebitec.mgx.pevents.ParallelPropertyChangeSupport;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import org.apache.commons.math3.util.FastMath;
@@ -72,11 +71,11 @@ public class ViewController implements PropertyChangeListener {
         return ctx.getReference();
     }
 
-    public SeqRunI getSeqRun() throws MGXException {
+    public SeqRunI[] getSeqRuns() throws MGXException {
         if (isClosed()) {
             throw new MGXLoggedoutException("ViewController is closed");
         }
-        return ctx.getRun();
+        return ctx.getRuns();
     }
 
     public ToolI getTool() throws MGXException {

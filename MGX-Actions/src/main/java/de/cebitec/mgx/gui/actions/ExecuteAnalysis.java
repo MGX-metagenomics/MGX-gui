@@ -306,7 +306,7 @@ public class ExecuteAnalysis extends NodeAction implements LookupListener {
                 toolCreated.countDown();
 
                 setStatus("Creating job..");
-                JobI job = master.Job().create(selectedTool, run, params);
+                JobI job = master.Job().create(selectedTool, params, run);
                 setStatus("Validating configuration..");
                 boolean verified = master.Job().verify(job);
                 if (!verified) {
