@@ -14,6 +14,7 @@ import de.cebitec.mgx.api.model.JobParameterI;
 import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.ToolI;
+import de.cebitec.mgx.common.ToolScope;
 import de.cebitec.mgx.gui.rbac.RBAC;
 import de.cebitec.mgx.gui.swingutils.NonEDT;
 import de.cebitec.mgx.gui.taskview.MGXTask;
@@ -125,13 +126,19 @@ public class ExecuteAnalysis extends NodeAction implements LookupListener {
 
             Iterator<ToolI> pTools = master.Tool().fetchall();
             while (pTools.hasNext()) {
-                projectTools.add(pTools.next());
+                ToolI t = pTools.next();
+                if (t.getScope() == ToolScope.READ) {
+                    projectTools.add(t);
+                }
             }
             Collections.sort(projectTools);
 
             Iterator<ToolI> repoTools = master.Tool().listGlobalTools();
             while (repoTools.hasNext()) {
-                repositoryTools.add(repoTools.next());
+                ToolI t = repoTools.next();
+                if (t.getScope() == ToolScope.READ) {
+                    repositoryTools.add(t);
+                }
             }
             Collections.sort(repositoryTools);
         } catch (MGXException ex) {
