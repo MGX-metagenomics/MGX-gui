@@ -2,7 +2,6 @@ package de.cebitec.mgx.gui.controller;
 
 import de.cebitec.gpms.rest.RESTMasterI;
 import de.cebitec.mgx.api.MGX2MasterI;
-import de.cebitec.mgx.api.MGXAssemblyMasterI;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.AttributeAccessI;
 import de.cebitec.mgx.api.access.AttributeTypeAccessI;
@@ -20,8 +19,13 @@ import de.cebitec.mgx.api.access.ToolAccessI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.MGXDataModelBaseI;
 import de.cebitec.mgx.api.model.ModelBaseI;
+import de.cebitec.mgx.api.model.assembly.access.AssemblyAccessI;
+import de.cebitec.mgx.api.model.assembly.access.BinAccessI;
+import de.cebitec.mgx.api.model.assembly.access.ContigAccessI;
 import de.cebitec.mgx.client.MGXDTOMaster;
-import de.cebitec.mgx.gui.controller.assembly.MGXAssemblyMaster;
+import de.cebitec.mgx.gui.controller.assembly.AssemblyAccess;
+import de.cebitec.mgx.gui.controller.assembly.BinAccess;
+import de.cebitec.mgx.gui.controller.assembly.ContigAccess;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Objects;
@@ -83,8 +87,18 @@ public class MGX2Master extends MGX2MasterI implements PropertyChangeListener {
     }
 
     @Override
-    public MGXAssemblyMasterI getAssemblyMasterI() {
-        return new MGXAssemblyMaster(this, dtomaster);
+    public AssemblyAccessI Assembly() throws MGXException {
+        return new AssemblyAccess(getMaster(), dtomaster);
+    }
+
+    @Override
+    public BinAccessI Bin() throws MGXException {
+        return new BinAccess(getMaster(), dtomaster);
+    }
+
+    @Override
+    public ContigAccessI Contig() throws MGXException {
+        return new ContigAccess(getMaster(), dtomaster);
     }
 
     @Override

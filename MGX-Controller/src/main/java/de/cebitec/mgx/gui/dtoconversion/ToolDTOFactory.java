@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.dtoconversion;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.ToolI;
+import de.cebitec.mgx.common.ToolScope;
 import de.cebitec.mgx.dto.dto.ToolDTO;
 import de.cebitec.mgx.gui.datamodel.Tool;
 
@@ -33,6 +34,7 @@ public class ToolDTOFactory extends DTOConversionBase<ToolI, ToolDTO> {
                 .setAuthor(s.getAuthor())
                 .setUrl(s.getUrl())
                 .setXml(s.getXML())
+                .setScope(ToolDTO.ToolScope.forNumber(s.getScope().getValue()))
                 .build();
     }
 
@@ -42,6 +44,7 @@ public class ToolDTOFactory extends DTOConversionBase<ToolI, ToolDTO> {
                 .setDescription(dto.getDescription())
                 .setVersion(dto.getVersion())
                 .setAuthor(dto.getAuthor())
+                .setScope(ToolScope.values()[dto.getScope().ordinal()])
                 .setUrl(dto.getUrl());
 
         // XML data might not be present in the tools received from the
