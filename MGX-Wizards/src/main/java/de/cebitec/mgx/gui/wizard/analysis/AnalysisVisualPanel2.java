@@ -1,22 +1,17 @@
 package de.cebitec.mgx.gui.wizard.analysis;
 
-import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.gui.wizard.analysis.misc.ValueHolderI;
 import java.awt.BorderLayout;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.List;
 import javax.swing.JPanel;
 
 public final class AnalysisVisualPanel2 extends JPanel implements PropertyChangeListener {
 
-     private final List<MGXReferenceI> references;
-     
     /**
      * Creates new form AnalysisVisualPanel2
      */
-    public AnalysisVisualPanel2(List<MGXReferenceI> refs) {
-        references = refs;
+    public AnalysisVisualPanel2() {
         initComponents();
     }
 

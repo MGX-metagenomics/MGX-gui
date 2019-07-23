@@ -170,10 +170,10 @@ public final class AnalysisVisualPanel1 extends JPanel implements ListSelectionL
         }
     }
 
-    public String getToolXML() {
+    public String getToolDefinition() {
         switch (getToolType()) {
             case USER_PROVIDED:
-                return newTool.getToolXML();
+                return newTool.getToolDefinition();
             default:
                 assert false;
                 return null;

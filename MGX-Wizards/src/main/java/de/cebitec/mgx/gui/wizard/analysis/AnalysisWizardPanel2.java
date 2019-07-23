@@ -53,7 +53,7 @@ public class AnalysisWizardPanel2 implements WizardDescriptor.Panel<WizardDescri
     public AnalysisWizardPanel2(MGXMasterI master, List<MGXReferenceI> references) {
         this.master = master;
         this.references = references;
-        component = new AnalysisVisualPanel2(references);
+        component = new AnalysisVisualPanel2();
     }
 
     @Override
@@ -101,7 +101,7 @@ public class AnalysisWizardPanel2 implements WizardDescriptor.Panel<WizardDescri
     @Override
     public void storeSettings(WizardDescriptor settings) {
         model = settings;
-        String storeVal = validator.getValue() == null ? null : validator.getValue().toString();
+        String storeVal = validator.getValue() == null ? null : validator.getValue();
         parameter.setParameterValue(storeVal); //getComponent().getValue());
     }
 
@@ -196,8 +196,10 @@ public class AnalysisWizardPanel2 implements WizardDescriptor.Panel<WizardDescri
             case "ConfigMGXReference":
                 isValid = !references.isEmpty();
                 Collection<String> tmp = new ArrayList<>();
-                for (MGXReferenceI r : references) {
-                    tmp.add(r.getName());
+                if (references != null) {
+                    for (MGXReferenceI r : references) {
+                        tmp.add(r.getName());
+                    }
                 }
                 return new Pair<>(new ComboBoxPanel(jp, tmp), new MultipleChoiceValidator<>(jp, references));
             default:

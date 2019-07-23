@@ -20,7 +20,7 @@ public final class AnalysisWizardIterator implements WizardDescriptor.Iterator<W
     public static final String PROP_TOOLAUTHOR = "toolAuthor";
     public static final String PROP_TOOL_URL = "toolUrl";
     public static final String PROP_TOOLVERSION = "toolVersion";
-    public static final String PROP_TOOL_XML = "toolXML";
+    public static final String PROP_TOOL_DEFINITION = "toolDefinition";
     public static final String PROP_TOOLTYPE = "tooltype";
     public static final String PROP_PARAMETERS = "toolParameters";
     //

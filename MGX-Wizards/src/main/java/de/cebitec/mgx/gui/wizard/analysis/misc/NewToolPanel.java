@@ -119,7 +119,7 @@ public class NewToolPanel extends javax.swing.JPanel implements DocumentListener
                                 .addComponent(xml, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(jButton1)))
-                        .addGap(0, 6, Short.MAX_VALUE))
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel6)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -258,7 +258,7 @@ public class NewToolPanel extends javax.swing.JPanel implements DocumentListener
         return uriField.getText().trim();
     }
 
-    public String getToolXML() {
+    public String getToolDefinition() {
         if (Empty(toolName) || Empty(author) || Empty(description) || Empty(xml)) {
             return null;
         }

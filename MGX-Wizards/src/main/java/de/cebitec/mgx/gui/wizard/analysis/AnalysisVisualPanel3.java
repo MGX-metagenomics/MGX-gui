@@ -107,20 +107,22 @@ public final class AnalysisVisualPanel3 extends JPanel {
             // different handling for reference genomes..
             if (jp.getType().equals("ConfigMGXReference")) {
                 MGXReferenceI r = null;
-                for (MGXReferenceI ref : references) {
-                    if (String.valueOf(ref.getId()).equals(jp.getParameterValue())) {
-                        r = ref;
-                        break;
+                if (references != null) {
+                    for (MGXReferenceI ref : references) {
+                        if (String.valueOf(ref.getId()).equals(jp.getParameterValue())) {
+                            r = ref;
+                            break;
+                        }
                     }
                 }
                 assert r != null;
                 panel.setValue(r.getName());
             }
-            
+
             if (jp.getType().equals("ConfigFile")) {
                 String displayName = jp.getParameterValue();
                 if (displayName.startsWith(MGXFileI.ROOT_PATH + MGXFileI.separator)) {
-                    displayName  = displayName.substring(2);
+                    displayName = displayName.substring(2);
                 }
                 displayName = displayName.replace(MGXFileI.separator, File.separator);
                 panel.setValue(displayName);

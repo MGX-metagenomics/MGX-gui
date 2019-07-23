@@ -34,13 +34,11 @@ public class AnalysisWizardPanel1 implements WizardDescriptor.Panel<WizardDescri
     private final MGXMasterI master;
     //
     private final List<ToolI> projTools;
-    private final List<ToolI> serverTools;
     private String currentToolName = null;
     private List<JobParameterI> currentParams = null;
 
     public AnalysisWizardPanel1(MGXMasterI master, List<ToolI> projectTools, List<ToolI> serverTools) {
         this.projTools = projectTools;
-        this.serverTools = serverTools;
         this.master = master;
         component = new AnalysisVisualPanel1(master);
         component.addPropertyChangeListener(this);
@@ -113,7 +111,7 @@ public class AnalysisWizardPanel1 implements WizardDescriptor.Panel<WizardDescri
                 model.putProperty(AnalysisWizardIterator.PROP_TOOLDESC, c.getToolDescription());
                 model.putProperty(AnalysisWizardIterator.PROP_TOOLAUTHOR, c.getToolAuthor());
                 model.putProperty(AnalysisWizardIterator.PROP_TOOL_URL, c.getToolWebsite());
-                model.putProperty(AnalysisWizardIterator.PROP_TOOL_XML, c.getToolXML());
+                model.putProperty(AnalysisWizardIterator.PROP_TOOL_DEFINITION, c.getToolDefinition());
                 model.putProperty(AnalysisWizardIterator.PROP_TOOLVERSION, c.getToolVersion());
                 break;
         }
@@ -144,7 +142,7 @@ public class AnalysisWizardPanel1 implements WizardDescriptor.Panel<WizardDescri
                     currentParams = fetchParameters(getComponent().getToolId());
                     break;
                 case USER_PROVIDED:
-                    currentParams = fetchParameters(getComponent().getToolXML());
+                    currentParams = fetchParameters(getComponent().getToolDefinition());
                     break;
             }
         }
@@ -180,7 +178,7 @@ public class AnalysisWizardPanel1 implements WizardDescriptor.Panel<WizardDescri
                 return true;
             case USER_PROVIDED:
                 AnalysisVisualPanel1 c = getComponent();
-                if (c.getToolName() == null || c.getToolDescription() == null || c.getToolAuthor() == null || c.getToolXML() == null) {
+                if (c.getToolName() == null || c.getToolDescription() == null || c.getToolAuthor() == null || c.getToolDefinition() == null) {
                     return false;
                 }
 
@@ -204,7 +202,7 @@ public class AnalysisWizardPanel1 implements WizardDescriptor.Panel<WizardDescri
                     }
                 }
 
-                String xmlData = getComponent().getToolXML();
+                String xmlData = getComponent().getToolDefinition();
                 // TODO: validate content
 
                 return true;
