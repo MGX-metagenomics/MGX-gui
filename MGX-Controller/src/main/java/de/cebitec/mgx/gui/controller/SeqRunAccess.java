@@ -11,6 +11,8 @@ import de.cebitec.mgx.api.model.Identifiable;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.TermI;
+import de.cebitec.mgx.api.model.assembly.AssembledSeqRunI;
+import de.cebitec.mgx.api.model.assembly.AssemblyI;
 import de.cebitec.mgx.api.model.qc.QCResultI;
 import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.client.exception.MGXDTOException;
@@ -19,6 +21,7 @@ import de.cebitec.mgx.dto.dto.JobAndAttributeTypes;
 import de.cebitec.mgx.dto.dto.QCResultDTO;
 import de.cebitec.mgx.dto.dto.SeqRunDTO;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
+import de.cebitec.mgx.gui.datamodel.assembly.AssembledSeqRun;
 import de.cebitec.mgx.gui.dtoconversion.AttributeTypeDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.JobDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.QCResultDTOFactory;
@@ -150,6 +153,22 @@ public class SeqRunAccess extends AccessBase<SeqRunI> implements SeqRunAccessI {
                 public SeqRunI next() {
                     SeqRunI sr = SeqRunDTOFactory.getInstance().toModel(getMaster(), iter.next());
                     return sr;
+                }
+            };
+        } catch (MGXDTOException ex) {
+            throw new MGXException(ex);
+        }
+    }
+
+    @Override
+    public Iterator<AssembledSeqRunI> ByAssembly(final AssemblyI assembly) throws MGXException {
+        try {
+            Iterator<SeqRunDTO> iter = getDTOmaster().SeqRun().byAssembly(assembly.getId());
+            return new BaseIterator<SeqRunDTO, AssembledSeqRunI>(iter) {
+                @Override
+                public AssembledSeqRunI next() {
+                    SeqRunI sr = SeqRunDTOFactory.getInstance().toModel(getMaster(), iter.next());
+                    return new AssembledSeqRun(getMaster(), assembly, sr);
                 }
             };
         } catch (MGXDTOException ex) {
