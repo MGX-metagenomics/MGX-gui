@@ -111,7 +111,7 @@ public final class BlobogramTopComponent extends TopComponent implements LookupL
             AssemblyI assembly = assemblies.toArray(new AssemblyI[]{})[0];
             Iterator<BinI> asmIter = null;
             try {
-                asmIter = master2.getAssemblyMasterI().Bin().ByAssembly(assembly);
+                asmIter = master2.Bin().ByAssembly(assembly);
             } catch (MGXException ex) {
                 Exceptions.printStackTrace(ex);
             }
@@ -260,7 +260,7 @@ public final class BlobogramTopComponent extends TopComponent implements LookupL
             String taxonomy = bin.getTaxonomy();
             Iterator<ContigI> contigIter = null;
             try {
-                contigIter = master.getAssemblyMasterI().Contig().ByBin(bin);
+                contigIter = master.Contig().ByBin(bin);
             } catch (MGXException ex) {
                 Exceptions.printStackTrace(ex);
             }

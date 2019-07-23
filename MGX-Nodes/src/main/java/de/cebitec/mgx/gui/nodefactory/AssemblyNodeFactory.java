@@ -22,7 +22,7 @@ public class AssemblyNodeFactory extends MGX2NodeFactoryBase<MGXMasterI, Assembl
     @Override
     protected boolean addKeys(List<AssemblyI> toPopulate) {
         try {
-            Iterator<AssemblyI> iter = getMaster().getAssemblyMasterI().Assembly().fetchall();
+            Iterator<AssemblyI> iter = getMaster().Assembly().fetchall();
             while (iter.hasNext()) {
                 toPopulate.add(iter.next());
             }

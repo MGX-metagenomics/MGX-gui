@@ -5,12 +5,26 @@
  */
 package de.cebitec.mgx.api;
 
+import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.model.assembly.access.AssemblyAccessI;
+import de.cebitec.mgx.api.model.assembly.access.BinAccessI;
+import de.cebitec.mgx.api.model.assembly.access.ContigAccessI;
+
 /**
  *
  * @author sj
  */
 public abstract class MGX2MasterI extends MGXMasterI {
 
-    public abstract MGXAssemblyMasterI getAssemblyMasterI();
+    @Override
+    public final MGX2MasterI getMaster() {
+        return this;
+    }
+
+    public abstract AssemblyAccessI Assembly() throws MGXException;
+
+    public abstract BinAccessI Bin() throws MGXException;
+
+    public abstract ContigAccessI Contig() throws MGXException;
 
 }

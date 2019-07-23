@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.datamodel;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.ToolI;
+import de.cebitec.mgx.common.ToolScope;
 
 /**
  *
@@ -15,9 +16,21 @@ public class Tool extends ToolI {
     protected String author;
     protected String url;
     protected String xml;
+    protected ToolScope scope;
 
     public Tool(MGXMasterI m) {
         super(m);
+    }
+
+    @Override
+    public ToolScope getScope() {
+        return scope;
+    }
+
+    @Override
+    public ToolI setScope(ToolScope scope) {
+        this.scope = scope;
+        return this;
     }
 
     @Override
@@ -76,13 +89,13 @@ public class Tool extends ToolI {
     }
 
     @Override
-    public String getXML() { 
+    public String getDefinition() {
         return xml;
     }
 
     @Override
-    public Tool setXML(String xmlData) {
-        this.xml = xmlData;
+    public Tool setDefinition(String workflowContent) {
+        this.xml = workflowContent;
         return this;
     }
 

@@ -21,7 +21,7 @@ public class ContigNodeFactory extends MGX2NodeFactoryBase<BinI, ContigI> {
     @Override
     protected boolean addKeys(List<ContigI> toPopulate) {
         try {
-            Iterator<ContigI> iter = getMaster().getAssemblyMasterI().Contig().ByBin(getContent());
+            Iterator<ContigI> iter = getMaster().Contig().ByBin(getContent());
             while (iter.hasNext()) {
                 toPopulate.add(iter.next());
             }

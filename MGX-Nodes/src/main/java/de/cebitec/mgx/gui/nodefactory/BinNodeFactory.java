@@ -21,7 +21,7 @@ public class BinNodeFactory extends MGX2NodeFactoryBase<AssemblyI, BinI> {
     @Override
     protected boolean addKeys(List<BinI> toPopulate) {
         try {
-            Iterator<BinI> iter = getMaster().getAssemblyMasterI().Bin().ByAssembly(getContent());
+            Iterator<BinI> iter = getMaster().Bin().ByAssembly(getContent());
             while (iter.hasNext()) {
                 toPopulate.add(iter.next());
             }

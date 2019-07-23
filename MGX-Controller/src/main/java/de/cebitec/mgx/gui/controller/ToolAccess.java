@@ -111,7 +111,7 @@ public class ToolAccess implements ToolAccessI {
         obj.setAuthor(author);
         obj.setUrl(webSite);
         obj.setVersion(version);
-        obj.setXML(xmlData);
+        obj.setDefinition(xmlData);
         ToolDTO dto = ToolDTOFactory.getInstance().toDTO(obj);
         long id = Identifiable.INVALID_IDENTIFIER;
         try {
@@ -184,8 +184,8 @@ public class ToolAccess implements ToolAccessI {
 
     @Override
     public String getXMLDefinition(ToolI tool) throws MGXException {
-        if (tool.getXML() != null && !"".equals(tool.getXML())) {
-            return tool.getXML();
+        if (tool.getDefinition() != null && !"".equals(tool.getDefinition())) {
+            return tool.getDefinition();
         }
         String xmlData;
         try {
@@ -193,7 +193,7 @@ public class ToolAccess implements ToolAccessI {
         } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }
-        tool.setXML(xmlData);
+        tool.setDefinition(xmlData);
         return xmlData;
     }
 }

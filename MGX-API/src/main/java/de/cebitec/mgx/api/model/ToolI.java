@@ -7,6 +7,7 @@
 package de.cebitec.mgx.api.model;
 
 import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.common.ToolScope;
 import java.awt.datatransfer.DataFlavor;
 
 /**
@@ -20,6 +21,10 @@ public abstract class ToolI extends Identifiable<ToolI> {
     public ToolI(MGXMasterI m) {
         super(m, DATA_FLAVOR);
     }
+    
+    public abstract ToolScope getScope();
+    
+    public abstract ToolI setScope(ToolScope scope);
 
     public abstract String getAuthor();
 
@@ -41,9 +46,9 @@ public abstract class ToolI extends Identifiable<ToolI> {
 
     public abstract ToolI setVersion(Float version);
 
-    public abstract String getXML();
+    public abstract String getDefinition();
 
-    public abstract ToolI setXML(String xmlData);
+    public abstract ToolI setDefinition(String workflowContent);
 
     @Override
     public int compareTo(ToolI o) {
