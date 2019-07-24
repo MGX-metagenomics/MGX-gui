@@ -64,10 +64,11 @@ public class SeqRunWizardDescriptor extends WizardDescriptor {
         putProperty(SeqRunVisualPanel1.PROP_PLATFORM, d.getSequencingTechnology());
         putProperty(SeqRunVisualPanel1.PROP_SUBMITTED, d.getSubmittedToINSDC());
         putProperty(SeqRunVisualPanel1.PROP_ACCESSION, d.getAccession());
-        
+        putProperty(SeqRunVisualPanel1.PROP_ISPAIRED, d.isPaired());
+
         // in 'edit mode', do not run default tools
         putProperty(SeqRunVisualPanel1.PROP_RUNTOOLS, false);
-        
+
         putProperty(SeqRunWizardDescriptor.INVOCATION_MODE, EDIT_MODE);
         p1.setProperties(this);
     }
@@ -110,6 +111,10 @@ public class SeqRunWizardDescriptor extends WizardDescriptor {
 
     public Boolean getSubmittedToINSDC() {
         return (Boolean) getProperty(SeqRunVisualPanel1.PROP_SUBMITTED);
+    }
+
+    public Boolean getIsPaired() {
+        return (Boolean) getProperty(SeqRunVisualPanel1.PROP_ISPAIRED);
     }
 
     public String getAccession() {

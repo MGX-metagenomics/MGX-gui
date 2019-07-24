@@ -17,7 +17,7 @@ public abstract class MGXTask implements Runnable, PropertyChangeListener {
     public static final String TASK_FINISHED = "MGXTask_Finished";
     public static final int PROGRESS_UNKNOWN = -1;
     private final ParallelPropertyChangeSupport pcs;
-    private final String taskName;
+    private String taskName;
     private volatile String statusMessage = null;
     private String state = TASK_CHANGED;
     private final UUID uuid = UUID.randomUUID();
@@ -27,6 +27,10 @@ public abstract class MGXTask implements Runnable, PropertyChangeListener {
         taskName = name;
         pcs = new ParallelPropertyChangeSupport(this);
         setStatus("Queued..");
+    }
+    
+    public void setTaskName(String name) {
+        this.taskName = name;
     }
 
     @Override

@@ -25,7 +25,7 @@ import java.util.Set;
  */
 public interface SeqRunAccessI extends AccessBaseI<SeqRunI> {
 
-    public SeqRunI create(DNAExtractI extract, String name, TermI seqMethod, TermI seqTechnology, boolean submittedINSDC, String accession) throws MGXException;
+    public SeqRunI create(DNAExtractI extract, String name, TermI seqMethod, TermI seqTechnology, boolean submittedINSDC, boolean isPaired, String accession) throws MGXException;
 
     public Map<JobI, Set<AttributeTypeI>> getJobsAndAttributeTypes(SeqRunI run) throws MGXException;
 

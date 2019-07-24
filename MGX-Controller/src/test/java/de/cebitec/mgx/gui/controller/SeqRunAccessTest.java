@@ -170,7 +170,7 @@ public class SeqRunAccessTest {
             List<TermI> methods = m.Term().byCategory(TermAccessI.SEQ_METHODS);
             List<TermI> platforms = m.Term().byCategory(TermAccessI.SEQ_PLATFORMS);
             DNAExtractI ex = m.DNAExtract().fetch(1);
-            newRun = m.SeqRun().create(ex, "sample data", methods.get(0), platforms.get(0), false, "");
+            newRun = m.SeqRun().create(ex, "sample data", methods.get(0), platforms.get(0), false, false, "");
 
         } catch (MGXException ex) {
             fail(ex.getMessage());

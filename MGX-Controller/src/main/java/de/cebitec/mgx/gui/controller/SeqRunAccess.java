@@ -47,13 +47,14 @@ public class SeqRunAccess extends AccessBase<SeqRunI> implements SeqRunAccessI {
     }
 
     @Override
-    public SeqRunI create(DNAExtractI extract, String name, TermI seqMethod, TermI seqTechnology, boolean submittedINSDC, String accession) throws MGXException {
-        SeqRun obj = new SeqRun(getMaster())
+    public SeqRunI create(DNAExtractI extract, String name, TermI seqMethod, TermI seqTechnology, boolean submittedINSDC, boolean isPaired, String accession) throws MGXException {
+        SeqRunI obj = new SeqRun(getMaster())
                 .setDNAExtractId(extract.getId())
                 .setName(name)
                 .setSequencingMethod(seqMethod)
                 .setSequencingTechnology(seqTechnology)
                 .setSubmittedToINSDC(submittedINSDC)
+                .setIsPaired(isPaired)
                 .setNumSequences(-1L)
                 .setAccession(submittedINSDC ? accession : null);
         SeqRunDTO dto = SeqRunDTOFactory.getInstance().toDTO(obj);
