@@ -24,11 +24,14 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import javax.swing.Action;
 import static javax.swing.Action.NAME;
 import org.openide.DialogDisplayer;
+import org.openide.NotifyDescriptor;
 import org.openide.WizardDescriptor;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionRegistration;
@@ -111,6 +114,16 @@ public class AssembleRuns extends NodeAction implements LookupListener {
         
         List<SeqRunI> runs = new ArrayList<>(seqruns.size());
         runs.addAll(seqruns);
+        
+        Set<String> projNames = new HashSet<>();
+        for (SeqRunI run : runs) {
+            projNames.add(run.getMaster().getProject());
+        }
+        if (projNames.size() > 1) {
+            NotifyDescriptor d = new NotifyDescriptor("Cannot assemble sequence data contained in different projects.", "Error", NotifyDescriptor.OK_CANCEL_OPTION, NotifyDescriptor.ERROR_MESSAGE, null, null);
+            DialogDisplayer.getDefault().notify(d);
+            return;
+        }
 
         final List<ToolI> projectTools = new ArrayList<>();
         final List<ToolI> repositoryTools = new ArrayList<>();
