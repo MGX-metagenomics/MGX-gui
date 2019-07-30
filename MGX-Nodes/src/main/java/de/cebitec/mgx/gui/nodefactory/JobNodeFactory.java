@@ -11,8 +11,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.logging.Level;
@@ -71,7 +73,7 @@ public class JobNodeFactory extends MGXNodeFactoryBase<MGXMasterI, JobI> {
         //
         // parallel fetch of missing data
         //
-        List<JobI> jobs = new ArrayList<>();
+        Set<JobI> jobs = new HashSet<>();
         try {
             CountDownLatch allDone = new CountDownLatch(seqruns.size());
             for (SeqRunI run : seqruns) {
@@ -102,10 +104,10 @@ public class JobNodeFactory extends MGXNodeFactoryBase<MGXMasterI, JobI> {
     private final static class FillSeqRun implements Runnable {
 
         private final SeqRunI run;
-        private final List<JobI> jobs;
+        private final Set<JobI> jobs;
         private final CountDownLatch done;
 
-        public FillSeqRun(SeqRunI run, List<JobI> jobs, CountDownLatch done) {
+        public FillSeqRun(SeqRunI run, Set<JobI> jobs, CountDownLatch done) {
             this.run = run;
             this.jobs = jobs;
             this.done = done;
@@ -113,18 +115,21 @@ public class JobNodeFactory extends MGXNodeFactoryBase<MGXMasterI, JobI> {
 
         @Override
         public void run() {
-            List<JobI> tmp = new ArrayList<>();
+            Set<JobI> tmp = new HashSet<>();
             try {
                 for (JobI j : run.getMaster().Job().BySeqRun(run)) {
-                    if (j.getTool() == null) {
-                        // trigger fetch of tool
-                        run.getMaster().Tool().ByJob(j);
+                    if (!tmp.contains(j)) {
+                        if (j.getTool() == null) {
+                            // trigger fetch of tool
+                            run.getMaster().Tool().ByJob(j);
+                        }
+                        tmp.add(j);
                     }
-                    tmp.add(j);
                 }
 
             } catch (MGXException ex) {
                 tmp.clear();
+                Exceptions.printStackTrace(ex);
                 // silently ignore exception here, since it might
                 // be cause by an intermediate refresh while a 
                 // deletion of one of the objects is in progress
