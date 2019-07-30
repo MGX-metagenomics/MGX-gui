@@ -15,7 +15,6 @@ import de.cebitec.mgx.api.model.ToolI;
 import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.client.exception.MGXDTOException;
 import de.cebitec.mgx.common.JobState;
-import de.cebitec.mgx.dto.dto;
 import de.cebitec.mgx.dto.dto.JobDTO;
 import de.cebitec.mgx.dto.dto.MGXString;
 import de.cebitec.mgx.dto.dto.SeqRunDTO;
@@ -119,7 +118,7 @@ public class JobAccess implements JobAccessI {
         if (seqruns == null || seqruns.length == 0) {
             throw new MGXException("Cannot create job for zero sequencing runs.");
         }
-        
+
         JobI job = new Job(tool.getMaster());
         job.setCreator(tool.getMaster().getLogin());
         job.setTool(tool);
@@ -206,7 +205,7 @@ public class JobAccess implements JobAccessI {
                         SeqRunI s = SeqRunDTOFactory.getInstance().toModel(master, sr);
                         tmp.add(s);
                     }
-                    
+
                 }
                 j.setSeqruns(tmp.toArray(new SeqRunI[]{}));
                 all.add(j);
@@ -221,7 +220,6 @@ public class JobAccess implements JobAccessI {
     public List<JobI> BySeqRun(SeqRunI run) throws MGXException {
         List<JobI> all = new ArrayList<>();
         try {
-            JobDTOFactory instance = JobDTOFactory.getInstance();
             for (JobDTO dto : getDTOmaster().Job().bySeqRun(run.getId())) {
                 JobI j = JobDTOFactory.getInstance().toModel(getMaster(), dto);
                 Iterator<SeqRunDTO> runs = getDTOmaster().SeqRun().byJob(j.getId());
@@ -234,9 +232,10 @@ public class JobAccess implements JobAccessI {
                         SeqRunI s = SeqRunDTOFactory.getInstance().toModel(master, sr);
                         tmp.add(s);
                     }
-                    
+
                 }
                 j.setSeqruns(tmp.toArray(new SeqRunI[]{}));
+                all.add(j);
             }
         } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
