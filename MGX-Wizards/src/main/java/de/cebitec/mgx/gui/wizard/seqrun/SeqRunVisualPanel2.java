@@ -44,9 +44,11 @@ public final class SeqRunVisualPanel2 extends JPanel {
                 }
 
                 if (fchooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
-                    file1 = fchooser.getSelectedFile();
-                    first.setText(file1.getAbsolutePath());
-                    firePropertyChange(PROP_SEQFILES, 0, 1);
+                    if (!fchooser.getSelectedFile().equals(file2)) {
+                        file1 = fchooser.getSelectedFile();
+                        first.setText(file1.getAbsolutePath());
+                        firePropertyChange(PROP_SEQFILES, 0, 1);
+                    }
                 }
 
                 NbPreferences.forModule(JFileChooser.class).put("lastDirectory", fchooser.getCurrentDirectory().getAbsolutePath());
@@ -65,9 +67,11 @@ public final class SeqRunVisualPanel2 extends JPanel {
                 }
 
                 if (fchooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
-                    file2 = fchooser.getSelectedFile();
-                    second.setText(file2.getAbsolutePath());
-                    firePropertyChange(PROP_SEQFILES, 0, 1);
+                    if (!fchooser.getSelectedFile().equals(file1)) {
+                        file2 = fchooser.getSelectedFile();
+                        second.setText(file2.getAbsolutePath());
+                        firePropertyChange(PROP_SEQFILES, 0, 1);
+                    }
                 }
 
                 NbPreferences.forModule(JFileChooser.class).put("lastDirectory", fchooser.getCurrentDirectory().getAbsolutePath());
@@ -85,8 +89,8 @@ public final class SeqRunVisualPanel2 extends JPanel {
     public String getName() {
         return "Select sequence data";
     }
-    
-    public  void setPaired(boolean paired) {
+
+    public void setPaired(boolean paired) {
         isPaired = paired;
         if (!isPaired) {
             second.setText("");

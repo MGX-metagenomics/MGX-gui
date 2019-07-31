@@ -95,8 +95,6 @@ public class Job extends JobI {
 
     @Override
     public JobI setSeqruns(SeqRunI[] runs) {
-        assert runs != null;
-        assert this.seqruns == null;
         this.seqruns = runs;
         return this;
     }
