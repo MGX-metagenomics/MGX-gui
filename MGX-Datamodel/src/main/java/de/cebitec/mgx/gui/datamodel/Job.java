@@ -49,8 +49,6 @@ public class Job extends JobI {
 
     @Override
     public Job setTool(ToolI t) {
-        assert t != null;
-        assert this.tool == null;
         this.tool = t;
         return this;
     }
