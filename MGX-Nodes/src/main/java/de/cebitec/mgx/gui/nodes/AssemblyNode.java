@@ -1,11 +1,8 @@
 package de.cebitec.mgx.gui.nodes;
 
-import de.cebitec.mgx.gui.nodeactions.AddSample;
-import de.cebitec.mgx.gui.actions.DeleteHabitat;
-import de.cebitec.mgx.gui.actions.EditHabitat;
-import de.cebitec.mgx.api.model.HabitatI;
+import de.cebitec.mgx.api.MGX2MasterI;
 import de.cebitec.mgx.api.model.assembly.AssemblyI;
-import de.cebitec.mgx.gui.nodefactory.BinNodeFactory;
+import de.cebitec.mgx.gui.nodefactory.AssemblyStructureNodeFactory;
 import javax.swing.Action;
 import static org.apache.commons.text.StringEscapeUtils.escapeHtml4;
 import org.openide.nodes.Children;
@@ -17,11 +14,11 @@ import org.openide.util.lookup.Lookups;
  */
 public class AssemblyNode extends MGXNodeBase<AssemblyI> {
 
-    public AssemblyNode(AssemblyI a) {
-        this(a, new BinNodeFactory(a));
+    public AssemblyNode(MGX2MasterI m, AssemblyI a) {
+        this(a, new AssemblyStructureNodeFactory(m, a));
     }
 
-    private AssemblyNode(AssemblyI a, BinNodeFactory snf) {
+    private AssemblyNode(AssemblyI a, AssemblyStructureNodeFactory snf) {
         super(Children.create(snf, true), Lookups.fixed(a.getMaster(), a), a);
         super.setDisplayName(a.getName());
         //super.setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/Habitat.png");

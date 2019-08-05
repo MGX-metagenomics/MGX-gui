@@ -28,7 +28,9 @@ public class ContigNode extends MGXNodeBase<ContigI> {
                 .append(" bp<br>")
                 .append("GC: ")
                 .append(h.getGC())
-                .append("%")
+                .append("%<br>Coverage: ")
+                .append(h.getCoverage())
+                .append(h.getPredictedCDS())
                 .append("</html>").toString();
     }
 

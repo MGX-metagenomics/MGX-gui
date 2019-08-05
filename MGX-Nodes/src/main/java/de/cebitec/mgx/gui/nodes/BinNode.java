@@ -25,9 +25,19 @@ public class BinNode extends MGXNodeBase<BinI> {
     }
 
     private String getToolTipText(BinI h) {
-        return new StringBuilder("<html>").append("<b>Assembly: </b>")
+        return new StringBuilder("<html>").append("<b>Bin: </b>")
                 .append(escapeHtml4(h.getName()))
                 .append("<br><hr><br>")
+                .append("Completeness: ")
+                .append(h.getCompleteness())
+                .append("<br>Contamination: ")
+                .append(h.getContamination())
+                .append("<br>Size: ")
+                .append(h.getTotalSize())
+                .append(" bp<br>N50: ")
+                .append(h.getN50())
+                .append(" bp<br>Taxonomy: ")
+                .append(h.getTaxonomy())
                 .append("</html>").toString();
     }
 

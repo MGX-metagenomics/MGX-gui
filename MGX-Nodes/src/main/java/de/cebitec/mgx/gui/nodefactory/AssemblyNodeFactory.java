@@ -35,6 +35,6 @@ public class AssemblyNodeFactory extends MGX2NodeFactoryBase<MGXMasterI, Assembl
 
     @Override
     protected AssemblyNode createNodeFor(AssemblyI key) {
-        return new AssemblyNode(key);
+        return new AssemblyNode(getMaster(), key);
     }
 }
