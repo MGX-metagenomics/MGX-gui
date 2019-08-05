@@ -608,6 +608,7 @@
         <module>MGX-TestUtils</module>
         <module>MGX-DataFactories</module>
         <module>MGX-Blobogram</module>
+        <module>MGX-BinExplorer</module>
     </modules>
     
     <properties>
