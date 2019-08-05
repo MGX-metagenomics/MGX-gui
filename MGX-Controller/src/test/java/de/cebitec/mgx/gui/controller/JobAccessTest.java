@@ -9,7 +9,6 @@ import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.model.JobI;
-import de.cebitec.mgx.api.model.JobParameterI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.ToolI;
 import de.cebitec.mgx.gui.util.TestMaster;
@@ -67,6 +66,17 @@ public class JobAccessTest {
         SeqRunI run = master.SeqRun().fetch(1);
         List<JobI> jobs = master.Job().BySeqRun(run);
         assertEquals(10, jobs.size());
+    }
+
+    @Test
+    public void testBySeqRun_mgx2() throws Exception {
+        System.out.println("BySeqRun");
+        MGXMasterI master = TestMaster.getPrivate("MGX2_devel");
+        assertNotNull(master);
+        SeqRunI run = master.SeqRun().fetch(1);
+        assertNotNull(run);
+        List<JobI> jobs = master.Job().BySeqRun(run);
+        assertEquals(2, jobs.size());
     }
 
     @Test

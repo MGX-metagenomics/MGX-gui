@@ -5,6 +5,7 @@ import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.JobI;
+import de.cebitec.mgx.api.model.SeqRunI;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.procedure.TLongProcedure;
@@ -45,7 +46,6 @@ public class PerformanceMetrics {
         }
 
 //        final TLongCollection falseNegatives = new TLongArrayList();
-
         // collect all seq ids
         TLongSet allIds = new TLongHashSet();
         allIds.addAll(goldstandard.keySet());
@@ -85,7 +85,11 @@ public class PerformanceMetrics {
             }
         });
 
-        tn = job.getSeqrun().getNumSequences() - goldstandard.size() - shouldntBeClassified.longValue();
+        long numSeqs = 0;
+        for (SeqRunI run : job.getSeqruns()) {
+            numSeqs += run.getNumSequences();
+        }
+        tn = numSeqs - goldstandard.size() - shouldntBeClassified.longValue();
 
 //        try {
 //            final BufferedWriter writer = new BufferedWriter(new FileWriter("/tmp/fn_" + job.getId() + ".fas"));

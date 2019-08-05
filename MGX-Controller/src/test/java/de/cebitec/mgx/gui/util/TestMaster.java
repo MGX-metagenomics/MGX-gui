@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.util;
 
 import de.cebitec.gpms.core.GPMSException;
 import de.cebitec.gpms.core.MembershipI;
+import de.cebitec.gpms.rest.GPMSClientFactory;
 import de.cebitec.gpms.rest.GPMSClientI;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.gui.controller.MGXMaster;
@@ -133,8 +134,9 @@ public class TestMaster {
                 System.out.println(ex.getMessage());
             }
         }
-        GPMSClientI gpms = new GPMSClient("MyServer", serverURI);
+        GPMSClientI gpms;
         try {
+            gpms = GPMSClientFactory.createClient("MyServer", serverURI, false);
             gpms.login(p.getProperty("username"), p.getProperty("password"));
         } catch (GPMSException ex) {
             return null;
@@ -150,7 +152,7 @@ public class TestMaster {
 
         while (mbr.hasNext()) {
             MembershipI m = mbr.next();
-            if ("MGX".equals(m.getProject().getProjectClass().getName()) && (targetProject.equals(m.getProject().getName()))) {
+            if (targetProject.equals(m.getProject().getName())) {
                 try {
                     master = new MGXMaster(gpms.createMaster(m));
                 } catch (GPMSException ex) {

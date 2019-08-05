@@ -18,9 +18,10 @@ public class Contig extends ContigI {
     private final long binId;
     private final float gc;
     private final int length_bp;
+    private final int numCDS;
     private final int coverage;
 
-    public Contig(MGXMasterI m, long id, String name, long binId, float gc, int length, int coverage) {
+    public Contig(MGXMasterI m, long id, String name, long binId, float gc, int length, int coverage, int numCDS) {
         super(m);
         setId(id);
         this.name = name;
@@ -28,6 +29,7 @@ public class Contig extends ContigI {
         this.gc = gc;
         this.length_bp = length;
         this.coverage = coverage;
+        this.numCDS = numCDS;
     }
 
     @Override
@@ -53,6 +55,11 @@ public class Contig extends ContigI {
     @Override
     public int getCoverage() {
         return coverage;
+    }
+
+    @Override
+    public int getPredictedCDS() {
+        return numCDS;
     }
 
     @Override

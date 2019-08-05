@@ -20,9 +20,9 @@ public abstract class ContigI extends Identifiable<ContigI> {
     public ContigI(MGXMasterI m) {
         super(m, DATA_FLAVOR);
     }
-    
+
     public abstract String getName();
-    
+
     public abstract long getBinId();
 
     public abstract float getGC();
@@ -30,4 +30,6 @@ public abstract class ContigI extends Identifiable<ContigI> {
     public abstract int getLength();
 
     public abstract int getCoverage();
+
+    public abstract int getPredictedCDS();
 }

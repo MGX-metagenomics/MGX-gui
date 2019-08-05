@@ -42,6 +42,6 @@ public class BinDTOFactory extends DTOConversionBase<BinI, BinDTO> {
     @Override
     public BinI toModel(MGXMasterI m, BinDTO dto) {
         return new Bin(m, dto.getId(), dto.getName(), dto.getCompleteness(), dto.getContamination(),
-                dto.getN50(), dto.getTaxonomy(), dto.getPredictedCds(), dto.getAssemblyId());
+                dto.getN50(), dto.getTotalBp(), dto.getTaxonomy(), dto.getPredictedCds(), dto.getAssemblyId());
     }
 }

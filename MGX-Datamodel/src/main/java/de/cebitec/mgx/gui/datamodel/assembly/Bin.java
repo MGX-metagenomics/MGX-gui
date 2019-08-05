@@ -17,17 +17,19 @@ public class Bin extends BinI {
     private final String name;
     private final float completeness, contamination;
     private final long n50;
+    private final long totalBp;
     private final String taxonomy;
     private final int predicted_cds;
     private final long asmId;
 
-    public Bin(MGXMasterI m, long id, String name, float completeness, float contamination, long n50, String taxonomy, int numPredictedCDS, long asmId) {
+    public Bin(MGXMasterI m, long id, String name, float completeness, float contamination, long n50, long totalBp, String taxonomy, int numPredictedCDS, long asmId) {
         super(m);
         setId(id);
         this.name = name;
         this.completeness = completeness;
         this.contamination  = contamination;
         this.n50 = n50;
+        this.totalBp = totalBp;
         this.taxonomy = taxonomy;
         this.predicted_cds = numPredictedCDS;
         this.asmId = asmId;
@@ -66,6 +68,11 @@ public class Bin extends BinI {
     @Override
     public int getPredictedCDS() {
         return predicted_cds;
+    }
+
+    @Override
+    public long getTotalSize() {
+        return totalBp;
     }
 
     @Override

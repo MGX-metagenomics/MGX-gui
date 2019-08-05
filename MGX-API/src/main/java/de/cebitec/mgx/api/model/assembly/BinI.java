@@ -28,10 +28,12 @@ public abstract class BinI extends Identifiable<BinI> {
     public abstract float getCompleteness();
 
     public abstract float getContamination();
+    
+    public abstract long getTotalSize();
 
     public abstract long getN50();
 
     public abstract String getTaxonomy();
-
+    
     public abstract int getPredictedCDS();
 }

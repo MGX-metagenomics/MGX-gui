@@ -38,6 +38,6 @@ public class ContigDTOFactory extends DTOConversionBase<ContigI, ContigDTO> {
 
     @Override
     public ContigI toModel(MGXMasterI m, ContigDTO dto) {
-        return new Contig(m, dto.getId(), dto.getName(), dto.getBinId(), dto.getGc(), dto.getLengthBp(), dto.getCoverage());
+        return new Contig(m, dto.getId(), dto.getName(), dto.getBinId(), dto.getGc(), dto.getLengthBp(), dto.getCoverage(), dto.getNumberCDS());
     }
 }
