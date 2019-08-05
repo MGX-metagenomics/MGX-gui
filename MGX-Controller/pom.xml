@@ -168,6 +168,7 @@
                             de.cebitec.mgx.gui.datamodel.qc,
                             de.cebitec.mgx.gui.datamodel.tree,
                             de.cebitec.mgx.gui.datamodel.misc,
+                            de.cebitec.mgx.gui.datamodel.assembly,
                             de.cebitec.mgx.api.model.assembly,
                             de.cebitec.mgx.api.model.assembly.access,
                             de.cebitec.mgx.common,
