@@ -181,7 +181,7 @@ public class MappingPanel extends PanelBase {
         String tmp = buf != null ? String.valueOf(buf[0]) : "unknown";
         try {
             long genomicCoverage = vc.getGenomicCoverage();
-            double refCoveragePct = 100d * genomicCoverage / vc.getReference().getLength();
+            double refCoveragePct = 100d * genomicCoverage / vc.getReferenceLength();
 
             return "<html>" + mappingName + "<br>Mapped with: " + vc.getTool().getName() + "<br>Position: " + nf.format(bpPos) + "<br>Coverage: "
                     + nf.format(Long.valueOf(tmp)) + "<br>Reference coverage: " + nf.format(vc.getGenomicCoverage()) + " bp ("

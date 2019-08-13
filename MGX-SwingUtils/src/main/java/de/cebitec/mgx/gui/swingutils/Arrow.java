@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.cebitec.mgx.gui.mapping.shapes;
+package de.cebitec.mgx.gui.swingutils;
 
-import de.cebitec.mgx.api.model.RegionI;
+import de.cebitec.mgx.api.model.LocationI;
 import java.awt.Color;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
@@ -14,8 +14,6 @@ import java.awt.geom.GeneralPath;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.text.NumberFormat;
-import java.util.Locale;
 
 /**
  *
@@ -47,16 +45,16 @@ public final class Arrow implements ShapeBase {
      *
      */
     private final Shape shape;
-    private final RegionI region;
+    private final String toolTip;
     private final static int TRIANGLE_WIDTH = 8;
     private final static int TRIANGLE_HEIGHT = 12;
     private final static int RECT_HEIGHT = 6;
     public final static int HEIGHT = TRIANGLE_HEIGHT;
     public final static float HALF_HEIGHT = HEIGHT / 2;
 
-    public Arrow(final RegionI r, float x, float y, float length) {
+    public Arrow(final LocationI r, String toolTip, float x, float y, float length) {
 
-        region = r;
+        this.toolTip = toolTip;
 
         //float height = 14;
         float mid = y + HALF_HEIGHT;
@@ -111,11 +109,6 @@ public final class Arrow implements ShapeBase {
     }
 
     @Override
-    public final RegionI getRegion() {
-        return region;
-    }
-
-    @Override
     public java.awt.Rectangle getBounds() {
         return shape.getBounds();
     }
@@ -167,17 +160,7 @@ public final class Arrow implements ShapeBase {
 
     @Override
     public String getToolTipText() {
-        String type = region.getType() != null
-                ? region.getType() + ": "
-                : "";
-        String framePrefix = region.getFrame() > 0 ? "+" : "";
-
-        NumberFormat nf = NumberFormat.getInstance(Locale.US);
-        return "<html><b>" + type + region.getName() + "</b><hr>"
-                + "Location: " + nf.format(region.getStart()) + "-"
-                + nf.format(region.getStop()) + "<br>"
-                + "Frame: " + framePrefix + region.getFrame() + "<br><br>"
-                + region.getDescription() + "</html>";
+        return toolTip;
     }
 
     @Override

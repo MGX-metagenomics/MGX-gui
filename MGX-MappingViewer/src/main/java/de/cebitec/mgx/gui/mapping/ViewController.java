@@ -28,7 +28,7 @@ import org.openide.util.Exceptions;
  *
  * @author sjaenick
  */
-public class ViewController implements PropertyChangeListener {
+public class ViewController implements ViewControllerI {
 
     private MappingCtx ctx;
     private final int[] curBounds;
@@ -37,9 +37,6 @@ public class ViewController implements PropertyChangeListener {
     private final int[] newBounds;
     private final ParallelPropertyChangeSupport pcs;
     private int minIdentity = 0;
-    //
-    public static final String VIEWCONTROLLER_CLOSED = "viewControllerClosed";
-    public static final String BOUNDS_CHANGE = "boundsChange";
     public static final String MAX_COV_CHANGE = "maxCoverageChange";
     public static final String PREVIEWBOUNDS_CHANGE = "previewBoundsChange";
     public static final String MIN_IDENTITY_CHANGE = "minIdentityChange";
@@ -53,6 +50,7 @@ public class ViewController implements PropertyChangeListener {
         pcs = new ParallelPropertyChangeSupport(this, true);
     }
 
+    @Override
     public final MGXMasterI getMaster() {
         return ctx.getMaster();
     }
@@ -71,6 +69,16 @@ public class ViewController implements PropertyChangeListener {
         return ctx.getReference();
     }
 
+    @Override
+    public String getReferenceName() {
+        return ctx.getReference().getName();
+    }
+
+    @Override
+    public int getReferenceLength() {
+        return ctx.getReference().getLength();
+    }
+   
     public SeqRunI[] getSeqRuns() throws MGXException {
         if (isClosed()) {
             throw new MGXLoggedoutException("ViewController is closed");
@@ -100,10 +108,12 @@ public class ViewController implements PropertyChangeListener {
         return ctx.getGenomicCoverage();
     }
 
+    @Override
     public int[] getBounds() {
         return Arrays.copyOf(curBounds, 2);
     }
 
+    @Override
     public final int getIntervalLength() {
         return intervalLen;
     }
@@ -112,6 +122,7 @@ public class ViewController implements PropertyChangeListener {
         return Arrays.copyOf(previewBounds, 2);
     }
 
+    @Override
     public void setBounds(int i, int j) {
         newBounds[0] = FastMath.max(0, i);
         try {
@@ -147,11 +158,14 @@ public class ViewController implements PropertyChangeListener {
         pcs.firePropertyChange(PREVIEWBOUNDS_CHANGE, 0, previewBounds);
     }
 
-    public String getSequence(int from, int to) throws MGXException {
-        if (isClosed()) {
-            throw new MGXLoggedoutException("ViewController is closed");
+    @Override
+    public String getSequence(int from, int to) {
+        try {
+            return ctx.getSequence(from, to);
+        } catch (MGXException ex) {
+            Exceptions.printStackTrace(ex);
+            return "";
         }
-        return ctx.getSequence(from, to);
     }
 
     public Set<RegionI> getRegions() throws MGXException {
@@ -203,11 +217,13 @@ public class ViewController implements PropertyChangeListener {
         return ctx.getCoverageIterator(0, ctx.getReference().getLength() - 1);
     }
 
+    @Override
     public final void addPropertyChangeListener(PropertyChangeListener listener) {
         listener.propertyChange(new PropertyChangeEvent(this, BOUNDS_CHANGE, 0, curBounds));
         pcs.addPropertyChangeListener(listener);
     }
 
+    @Override
     public final void removePropertyChangeListener(PropertyChangeListener listener) {
         pcs.removePropertyChangeListener(listener);
     }
@@ -226,10 +242,12 @@ public class ViewController implements PropertyChangeListener {
         }
     }
 
+    @Override
     public final boolean isClosed() {
         return ctx == null || ctx.isClosed();
     }
 
+    @Override
     public synchronized void close() {
         ctx.close();
         pcs.close();

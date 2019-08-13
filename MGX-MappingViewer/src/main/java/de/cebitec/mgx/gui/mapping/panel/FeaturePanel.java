@@ -9,9 +9,9 @@ import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.MappedSequenceI;
 import de.cebitec.mgx.api.model.RegionI;
 import de.cebitec.mgx.gui.mapping.ViewController;
-import de.cebitec.mgx.gui.mapping.shapes.Arrow;
-import de.cebitec.mgx.gui.mapping.shapes.Rectangle;
-import de.cebitec.mgx.gui.mapping.shapes.ShapeBase;
+import de.cebitec.mgx.gui.swingutils.Arrow;
+import de.cebitec.mgx.gui.swingutils.Rectangle;
+import de.cebitec.mgx.gui.swingutils.ShapeBase;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Composite;
@@ -143,7 +143,7 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
             // draw arrows (and borders)
             Color curColor = Color.RED;
             g2.setColor(curColor);
-            
+
             // draw the region shapes
             for (ShapeBase r : regs) {
                 if (!curColor.equals(r.getColor())) {
@@ -152,7 +152,7 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
                 }
                 g2.fill(r);
             }
-            
+
             // draw region borders
             g2.setColor(Color.DARK_GRAY);
             for (ShapeBase r : regs) {
@@ -191,33 +191,49 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
         //int midY = getHeight() / 2;
         float pos0 = bp2px(r.getStart() - 1);
         float pos1 = bp2px(r.getStop() - 1);
+        
+        
+        String type = r.getType() != null
+                ? r.getType() + ": "
+                : "";
+        String framePrefix = r.getFrame() > 0 ? "+" : "";
+        NumberFormat nf = NumberFormat.getInstance(Locale.US);
+        String toolTip = "<html><b>" + type + r.getName() + "</b><hr>"
+                + "Location: " + nf.format(r.getStart()) + "-"
+                + nf.format(r.getStop()) + "<br>"
+                + "Frame: " + framePrefix + r.getFrame() + "<br><br>"
+                + r.getDescription() + "</html>";
 
         switch (r.getType()) {
             case "CDS":
                 if (r.getFrame() < 0) {
                     int frameOffset = frameOffsets[r.getFrame() + 3];
-                    return new Arrow(r, pos1, midY + frameOffset - Arrow.HALF_HEIGHT, pos0 - pos1);
+                    return new Arrow(r, toolTip, pos1, midY + frameOffset - Arrow.HALF_HEIGHT, pos0 - pos1);
                 } else {
                     int frameOffset = frameOffsets[r.getFrame() + 2];
-                    return new Arrow(r, pos0, midY + frameOffset - Arrow.HALF_HEIGHT, pos1 - pos0);
+                    return new Arrow(r, toolTip, pos0, midY + frameOffset - Arrow.HALF_HEIGHT, pos1 - pos0);
                 }
             case "rRNA":
             case "tRNA":
                 if (r.getFrame() < 0) {
                     int frameOffset = frameOffsets[r.getFrame() + 3];
-                    return new Rectangle(r, pos1, midY + frameOffset - Rectangle.HALF_HEIGHT, pos0 - pos1);
+                    Rectangle rect = new Rectangle(toolTip, pos1, midY + frameOffset - Rectangle.HALF_HEIGHT, pos0 - pos1);
+                    return rect;
                 } else {
                     int frameOffset = frameOffsets[r.getFrame() + 2];
-                    return new Rectangle(r, pos0, midY + frameOffset - Rectangle.HALF_HEIGHT, pos1 - pos0);
+                    Rectangle rect =  new Rectangle(toolTip, pos0, midY + frameOffset - Rectangle.HALF_HEIGHT, pos1 - pos0);
+                    return rect;
                 }
             default:
                 System.err.println("Unhandled region type " + r.getType() + ", using default shape");
                 if (r.getFrame() < 0) {
                     int frameOffset = frameOffsets[r.getFrame() + 3];
-                    return new Rectangle(r, pos1, midY + frameOffset - Rectangle.HALF_HEIGHT, pos0 - pos1);
+                    Rectangle rect = new Rectangle(toolTip, pos1, midY + frameOffset - Rectangle.HALF_HEIGHT, pos0 - pos1);
+                    return rect;
                 } else {
                     int frameOffset = frameOffsets[r.getFrame() + 2];
-                    return new Rectangle(r, pos0, midY + frameOffset - Rectangle.HALF_HEIGHT, pos1 - pos0);
+                    Rectangle rect = new Rectangle(toolTip, pos0, midY + frameOffset - Rectangle.HALF_HEIGHT, pos1 - pos0);
+                    return rect;
                 }
         }
     }
@@ -234,13 +250,10 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
         }
         DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.US);
         String seqLen;
-        try {
-            seqLen = formatter.format(getReferenceLength());
-            return "<html><b>" + vc.getReference().getName() + "</b><hr>"
-                    + seqLen + " bp</html>";
-        } catch (MGXException ex) {
-            return null;
-        }
+        seqLen = formatter.format(getReferenceLength());
+        return "<html><b>" + vc.getReferenceName() + "</b><hr>"
+                + seqLen + " bp</html>";
+
     }
 
     private boolean inDrag = false;
@@ -297,7 +310,6 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
 //        }
 //        maxCoverage = vc.getMaxCoverage();
 //    }
-
     public void process(SortedSet<MappedSequenceI> mapped) {
         // fetch features
         Set<ShapeBase> newData = new HashSet<>();

@@ -5,7 +5,6 @@
  */
 package de.cebitec.mgx.gui.mapping.panel;
 
-import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.misc.Point;
 import de.cebitec.mgx.gui.cache.Interval;
 import de.cebitec.mgx.gui.cache.IntervalFactory;
@@ -19,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import org.apache.commons.math3.util.FastMath;
-import org.openide.util.Exceptions;
 
 /**
  *
@@ -74,17 +72,12 @@ public class SeqPropertyPanel extends PanelBase {
         List<Point> newPoints = new ArrayList<>();
 
         Iterator<Interval> slidingWindow = IntervalFactory.slidingWindow(lowBound, hiBound, window, shift);
-        try {
-            while (slidingWindow.hasNext()) {
-                Interval i = slidingWindow.next();
-                seq = vc.getSequence(i.getFrom(), i.getTo());
-                float midPos = i.getFrom() + (i.length() / 2);
-                float gc = gc(seq);
-                newPoints.add(new Point(midPos, gc));
-            }
-        } catch (MGXException ex) {
-            Exceptions.printStackTrace(ex);
-            newPoints.clear();
+        while (slidingWindow.hasNext()) {
+            Interval i = slidingWindow.next();
+            seq = vc.getSequence(i.getFrom(), i.getTo());
+            float midPos = i.getFrom() + (i.length() / 2);
+            float gc = gc(seq);
+            newPoints.add(new Point(midPos, gc));
         }
 
         synchronized (points) {

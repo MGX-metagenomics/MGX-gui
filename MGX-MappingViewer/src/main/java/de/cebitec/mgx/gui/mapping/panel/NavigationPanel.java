@@ -536,9 +536,9 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
 
         try {
             long genomicCoverage = vc.getGenomicCoverage();
-            double refCoveragePct = 100d * genomicCoverage / vc.getReference().getLength();
+            double refCoveragePct = 100d * genomicCoverage / vc.getReferenceLength();
 
-            return "<html>" + vc.getReference().getName() + "<br>Position: " + nf.format(bpPos) + "<br>Coverage: "
+            return "<html>" + vc.getReferenceName() + "<br>Position: " + nf.format(bpPos) + "<br>Coverage: "
                     + nf.format(Long.valueOf(tmp)) + "<br>Reference coverage: " + nf.format(vc.getGenomicCoverage()) + " bp ("
                     + String.format("%.2f", refCoveragePct)
                     + "%)</html>";

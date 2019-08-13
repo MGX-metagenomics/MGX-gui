@@ -5,8 +5,8 @@
  */
 package de.cebitec.mgx.gui.mapping.panel;
 
-import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.gui.mapping.ViewController;
+import de.cebitec.mgx.gui.mapping.ViewControllerI;
 import de.cebitec.mgx.gui.pool.MGXPool;
 import java.awt.Color;
 import java.awt.Font;
@@ -27,7 +27,6 @@ import java.util.Arrays;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import org.apache.commons.math3.util.FastMath;
-import org.openide.util.Exceptions;
 
 /**
  *
@@ -85,11 +84,8 @@ public abstract class PanelBase extends JComponent implements PropertyChangeList
         });
         super.addMouseWheelListener(this);
 
-        try {
-            refLength = vc.getReference().getLength();
-        } catch (MGXException ex) {
-            Exceptions.printStackTrace(ex);
-        }
+        refLength = vc.getReferenceLength();
+
     }
 
     private VolatileImage vimage = null;
@@ -155,7 +151,7 @@ public abstract class PanelBase extends JComponent implements PropertyChangeList
         g2.setBackground(Color.WHITE);
         g2.clearRect(0, 0, getWidth(), getHeight());
         super.paintBorder(g);
-        
+
         if (getHeight() > 0) {
             if (useAntialiasing) {
                 g2.setRenderingHints(antiAlias);
@@ -185,11 +181,11 @@ public abstract class PanelBase extends JComponent implements PropertyChangeList
         }
 
         switch (evt.getPropertyName()) {
-            case ViewController.VIEWCONTROLLER_CLOSED:
+            case ViewControllerI.VIEWCONTROLLER_CLOSED:
                 vc.removePropertyChangeListener(this);
                 removeAll();
                 break;
-            case ViewController.BOUNDS_CHANGE:
+            case ViewControllerI.BOUNDS_CHANGE:
                 bounds = (int[]) evt.getNewValue();
                 scale = 1f / (1f * vc.getIntervalLength() / getWidth());
                 if (getHeight() > 0) {
@@ -253,7 +249,7 @@ public abstract class PanelBase extends JComponent implements PropertyChangeList
         int[] newBounds = Arrays.copyOf(bounds, 2);
         int len = vc.getIntervalLength();
         int adjust = FastMath.max(5, len / 25);
-        System.err.println("adjust "+ adjust);
+        System.err.println("adjust " + adjust);
 
         if (notches < 0) {
             newBounds[0] += adjust;
