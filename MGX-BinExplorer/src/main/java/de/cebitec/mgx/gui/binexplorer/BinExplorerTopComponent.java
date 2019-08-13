@@ -8,9 +8,12 @@ package de.cebitec.mgx.gui.binexplorer;
 import de.cebitec.mgx.api.model.ModelBaseI;
 import de.cebitec.mgx.api.model.assembly.BinI;
 import de.cebitec.mgx.api.model.assembly.ContigI;
+import de.cebitec.mgx.gui.binexplorer.internal.ContigViewController;
 import de.cebitec.mgx.gui.binexplorer.util.ContigModel;
 import de.cebitec.mgx.gui.binexplorer.util.ContigRenderer;
 import java.awt.Cursor;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import org.netbeans.api.settings.ConvertAsProperties;
@@ -47,7 +50,7 @@ import org.openide.util.Utilities;
     "CTL_BinExplorerTopComponent=BinExplorer Window",
     "HINT_BinExplorerTopComponent=This is a BinExplorer window"
 })
-public final class BinExplorerTopComponent extends TopComponent implements LookupListener, PropertyChangeListener {
+public final class BinExplorerTopComponent extends TopComponent implements LookupListener, PropertyChangeListener, ItemListener {
 
     private final Lookup.Result<BinI> result;
     private final ContigModel contigModel = new ContigModel();
@@ -61,6 +64,7 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
         result = Utilities.actionsGlobalContext().lookupResult(BinI.class);
         contigList.setModel(contigModel);
         contigList.setRenderer(new ContigRenderer());
+        contigList.addItemListener(this);
     }
 
     /**
@@ -75,6 +79,7 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
         contigList = new javax.swing.JComboBox<>();
         jLabel2 = new javax.swing.JLabel();
         binName = new javax.swing.JLabel();
+        contentPanel = new javax.swing.JPanel();
 
         jLabel1.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(BinExplorerTopComponent.class, "BinExplorerTopComponent.jLabel1.text")); // NOI18N
@@ -85,6 +90,17 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
         org.openide.awt.Mnemonics.setLocalizedText(jLabel2, org.openide.util.NbBundle.getMessage(BinExplorerTopComponent.class, "BinExplorerTopComponent.jLabel2.text")); // NOI18N
 
         org.openide.awt.Mnemonics.setLocalizedText(binName, org.openide.util.NbBundle.getMessage(BinExplorerTopComponent.class, "BinExplorerTopComponent.binName.text")); // NOI18N
+
+        javax.swing.GroupLayout contentPanelLayout = new javax.swing.GroupLayout(contentPanel);
+        contentPanel.setLayout(contentPanelLayout);
+        contentPanelLayout.setHorizontalGroup(
+            contentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+        contentPanelLayout.setVerticalGroup(
+            contentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 247, Short.MAX_VALUE)
+        );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -100,6 +116,7 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(binName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap(510, Short.MAX_VALUE))
+            .addComponent(contentPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -112,12 +129,15 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(contigList, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(564, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(contentPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(299, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel binName;
+    private javax.swing.JPanel contentPanel;
     private javax.swing.JComboBox<ContigI> contigList;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -144,6 +164,17 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
         super.componentActivated();
         isActivated = true;
     }
+    
+    @Override
+    public void itemStateChanged(ItemEvent event) {
+       if (event.getStateChange() == ItemEvent.SELECTED) {
+          Object item = event.getItem();
+          if (item instanceof ContigI) {
+              ContigI contig = (ContigI) item;
+              ContigViewController vc = new ContigViewController(contig);
+          }
+       }
+    } 
 
     @Override
     public void resultChanged(LookupEvent le) {

@@ -1,6 +1,6 @@
 package de.cebitec.mgx.gui.nodes;
 
-import de.cebitec.mgx.api.MGX2MasterI;
+import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.gui.nodefactory.AssemblyNodeFactory;
 import javax.swing.Action;
 import org.openide.nodes.AbstractNode;
@@ -13,11 +13,11 @@ import org.openide.util.lookup.Lookups;
  */
 public class ProjectAssembliesNode extends AbstractNode {
 
-    public ProjectAssembliesNode(MGX2MasterI master) {
+    public ProjectAssembliesNode(MGXMasterI master) {
         this(master, new AssemblyNodeFactory(master));
     }
 
-    private ProjectAssembliesNode(MGX2MasterI m, AssemblyNodeFactory anf) {
+    private ProjectAssembliesNode(MGXMasterI m, AssemblyNodeFactory anf) {
         super(Children.create(anf, true), Lookups.fixed(m));
         super.setDisplayName("Assemblies");
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/ProjectFiles.png");

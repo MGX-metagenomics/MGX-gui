@@ -90,7 +90,9 @@ public class JobAccess implements JobAccessI {
         try {
             UUID uuid = getDTOmaster().Job().restart(job.getId());
             ret = getMaster().<JobI>Task().get(job, uuid, TaskType.MODIFY);
-            job.modified();
+            if (!job.isDeleted()) {
+                job.modified();
+            }
         } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }

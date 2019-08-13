@@ -28,6 +28,26 @@ public class MappedSequence extends MappedSequenceI {
     }
 
     @Override
+    public boolean isFwdStrand() {
+        return getStop() > getStart();
+    }
+    
+    /**
+     * @return 1, 2, 3, -1, -2, -3 depending on the reading frame of the feature
+     */
+    @Override
+    public int getFrame() {
+        int frame;
+
+        if (getStop() > getStart()) { // forward strand
+            frame = (getStart() - 1) % 3 + 1;
+        } else {
+            frame = (getStop() - 1) % 3 - 3;
+        }
+        return frame;
+    }
+
+    @Override
     public boolean equals(Object obj) {
         if (obj == null) {
             return false;
@@ -57,7 +77,7 @@ public class MappedSequence extends MappedSequenceI {
         hash = 11 * hash + (int) (this.seq_id ^ (this.seq_id >>> 32));
         hash = 11 * hash + this.getStart();
         hash = 11 * hash + this.getStop();
-        hash = 11 * hash + (int )this.identity;
+        hash = 11 * hash + (int) this.identity;
         return hash;
     }
 

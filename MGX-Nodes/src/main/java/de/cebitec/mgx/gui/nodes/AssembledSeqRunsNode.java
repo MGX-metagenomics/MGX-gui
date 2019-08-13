@@ -1,6 +1,6 @@
 package de.cebitec.mgx.gui.nodes;
 
-import de.cebitec.mgx.api.MGX2MasterI;
+import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.assembly.AssemblyI;
 import de.cebitec.mgx.gui.nodefactory.AssembledSeqrunsNodeFactory;
 import javax.swing.Action;
@@ -14,11 +14,11 @@ import org.openide.util.lookup.Lookups;
  */
 public class AssembledSeqRunsNode extends AbstractNode {
 
-    public AssembledSeqRunsNode(MGX2MasterI m, AssemblyI assembly) {
+    public AssembledSeqRunsNode(MGXMasterI m, AssemblyI assembly) {
         this(m, new AssembledSeqrunsNodeFactory(assembly));
     }
 
-    private AssembledSeqRunsNode(MGX2MasterI m, AssembledSeqrunsNodeFactory anf) {
+    private AssembledSeqRunsNode(MGXMasterI m, AssembledSeqrunsNodeFactory anf) {
         super(Children.create(anf, true), Lookups.fixed(m));
         super.setDisplayName("Sequencing runs");
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/ProjectData.png");

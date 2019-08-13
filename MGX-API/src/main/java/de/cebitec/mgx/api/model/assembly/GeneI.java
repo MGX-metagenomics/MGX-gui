@@ -7,13 +7,14 @@ package de.cebitec.mgx.api.model.assembly;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.Identifiable;
+import de.cebitec.mgx.api.model.LocationI;
 import java.awt.datatransfer.DataFlavor;
 
 /**
  *
  * @author sj
  */
-public abstract class GeneI extends Identifiable<GeneI> {
+public abstract class GeneI extends Identifiable<GeneI> implements LocationI {
 
     public static final DataFlavor DATA_FLAVOR = new DataFlavor(GeneI.class, "GeneI");
 
@@ -22,12 +23,8 @@ public abstract class GeneI extends Identifiable<GeneI> {
     }
 
     public abstract long getContigId();
-    
+
     public abstract int getCoverage();
-
-    public abstract int getStart();
-
-    public abstract int getStop();
 
     public final int getAALength() {
         int nuclLen;

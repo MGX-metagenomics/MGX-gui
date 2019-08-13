@@ -5,7 +5,6 @@
  */
 package de.cebitec.mgx.api.model;
 
-import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.comparator.MappedSequenceComparator;
 import java.awt.datatransfer.DataFlavor;
 
@@ -14,8 +13,6 @@ import java.awt.datatransfer.DataFlavor;
  * @author sj
  */
 public abstract class MappedSequenceI extends LocationBase<MappedSequenceI> implements Comparable<MappedSequenceI> {
-
-    //
 
     public static final DataFlavor DATA_FLAVOR = new DataFlavor(MappedSequenceI.class, "MappedSequenceI");
 

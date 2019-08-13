@@ -19,6 +19,10 @@ import de.cebitec.mgx.api.access.ToolAccessI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.MGXDataModelBaseI;
 import de.cebitec.mgx.api.model.ModelBaseI;
+import de.cebitec.mgx.api.model.assembly.access.AssemblyAccessI;
+import de.cebitec.mgx.api.model.assembly.access.BinAccessI;
+import de.cebitec.mgx.api.model.assembly.access.ContigAccessI;
+import de.cebitec.mgx.api.model.assembly.access.GeneAccessI;
 import de.cebitec.mgx.pevents.ParallelPropertyChangeSupport;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -46,7 +50,7 @@ public abstract class MGXMasterI implements MGXDataModelBaseI<MGXMasterI> {
     public MGXMasterI getMaster() {
         return this;
     }
-    
+
     public abstract String getServerName();
 
     public abstract void close();
@@ -91,6 +95,14 @@ public abstract class MGXMasterI implements MGXDataModelBaseI<MGXMasterI> {
     public abstract StatisticsAccessI Statistics() throws MGXException;
 
     public abstract <T extends MGXDataModelBaseI<T>> TaskAccessI<T> Task() throws MGXException;
+
+    public abstract AssemblyAccessI Assembly() throws MGXException;
+
+    public abstract BinAccessI Bin() throws MGXException;
+
+    public abstract ContigAccessI Contig() throws MGXException;
+
+    public abstract GeneAccessI Gene() throws MGXException;
 
     @Override
     public final synchronized void modified() {

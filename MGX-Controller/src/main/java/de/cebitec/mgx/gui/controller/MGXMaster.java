@@ -18,7 +18,15 @@ import de.cebitec.mgx.api.access.ToolAccessI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.MGXDataModelBaseI;
 import de.cebitec.mgx.api.model.ModelBaseI;
+import de.cebitec.mgx.api.model.assembly.access.AssemblyAccessI;
+import de.cebitec.mgx.api.model.assembly.access.BinAccessI;
+import de.cebitec.mgx.api.model.assembly.access.ContigAccessI;
+import de.cebitec.mgx.api.model.assembly.access.GeneAccessI;
 import de.cebitec.mgx.client.MGXDTOMaster;
+import de.cebitec.mgx.gui.controller.assembly.AssemblyAccess;
+import de.cebitec.mgx.gui.controller.assembly.BinAccess;
+import de.cebitec.mgx.gui.controller.assembly.ContigAccess;
+import de.cebitec.mgx.gui.controller.assembly.GeneAccess;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Objects;
@@ -157,6 +165,26 @@ public class MGXMaster extends MGXMasterI implements PropertyChangeListener {
     @Override
     public StatisticsAccess Statistics() throws MGXException {
         return new StatisticsAccess(this, dtomaster);
+    }
+
+    @Override
+    public AssemblyAccessI Assembly() throws MGXException {
+        return new AssemblyAccess(getMaster(), dtomaster);
+    }
+
+    @Override
+    public BinAccessI Bin() throws MGXException {
+        return new BinAccess(getMaster(), dtomaster);
+    }
+
+    @Override
+    public ContigAccessI Contig() throws MGXException {
+        return new ContigAccess(getMaster(), dtomaster);
+    }
+
+    @Override
+    public GeneAccessI Gene() throws MGXException {
+        return new GeneAccess(getMaster(), dtomaster);
     }
 
     @Override

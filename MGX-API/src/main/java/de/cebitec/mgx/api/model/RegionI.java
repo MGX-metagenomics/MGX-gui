@@ -37,8 +37,6 @@ public abstract class RegionI extends LocationBase<RegionI> {
 
     public abstract int getLength();
 
-    public abstract boolean isFwdStrand();
-
     /**
      * @return 1, 2, 3, -1, -2, -3 depending on the reading frame of the feature
      */

@@ -1,6 +1,5 @@
 package de.cebitec.mgx.gui.nodefactory;
 
-import de.cebitec.mgx.api.MGX2MasterI;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.gui.nodes.ProjectAssembliesNode;
 import de.cebitec.mgx.gui.nodes.ProjectDataNode;
@@ -31,11 +30,7 @@ public class ProjectStructureNodeFactory extends ChildFactory<Node> {
         files = new ProjectFilesNode(master);
         refs = new ProjectReferencesNode(master);
         data = new ProjectDataNode(master);
-        if (master instanceof MGX2MasterI) {
-            asms = new ProjectAssembliesNode((MGX2MasterI) master);
-        } else {
-            asms = null;
-        }
+        asms = new ProjectAssembliesNode(master);
     }
 
     @Override
@@ -44,9 +39,7 @@ public class ProjectStructureNodeFactory extends ChildFactory<Node> {
             toPopulate.add(files);
             toPopulate.add(refs);
             toPopulate.add(data);
-            if (asms != null) {
-                toPopulate.add(asms);
-            }
+            toPopulate.add(asms);
             // don't sort here
         }
         return true;

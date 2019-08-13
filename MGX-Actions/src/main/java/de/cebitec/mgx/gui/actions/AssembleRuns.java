@@ -5,7 +5,6 @@
  */
 package de.cebitec.mgx.gui.actions;
 
-import de.cebitec.mgx.api.MGX2MasterI;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.misc.ToolType;
@@ -106,7 +105,7 @@ public class AssembleRuns extends NodeAction implements LookupListener {
 
     @Override
     protected void performAction(Node[] activatedNodes) {
-        final MGX2MasterI master = context.lookup(MGX2MasterI.class);
+        final MGXMasterI master = context.lookup(MGXMasterI.class);
         Collection<? extends SeqRunI> seqruns = lkpInfo.allInstances();
         if (seqruns.isEmpty()) {
             return;

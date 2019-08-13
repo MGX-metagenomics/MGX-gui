@@ -5,7 +5,7 @@
  */
 package de.cebitec.mgx.gui.blobogram;
 
-import de.cebitec.mgx.api.MGX2MasterI;
+import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.assembly.AssemblyI;
 import de.cebitec.mgx.api.model.assembly.BinI;
@@ -94,8 +94,8 @@ public final class BlobogramTopComponent extends TopComponent implements LookupL
     }
 
     private void update() {
-        MGX2MasterI master2 = Utilities.actionsGlobalContext().lookup(MGX2MasterI.class);
-        if (master2 == null) {
+        MGXMasterI master = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
+        if (master == null) {
             if (currentPanel != null) {
                 content.set(Collections.emptyList(), null);
                 remove(currentPanel);
@@ -111,7 +111,7 @@ public final class BlobogramTopComponent extends TopComponent implements LookupL
             AssemblyI assembly = assemblies.toArray(new AssemblyI[]{})[0];
             Iterator<BinI> asmIter = null;
             try {
-                asmIter = master2.Bin().ByAssembly(assembly);
+                asmIter = master.Bin().ByAssembly(assembly);
             } catch (MGXException ex) {
                 Exceptions.printStackTrace(ex);
             }
@@ -130,7 +130,7 @@ public final class BlobogramTopComponent extends TopComponent implements LookupL
         CountDownLatch allProcessed = new CountDownLatch(bins.size());
 
         for (BinI b : bins) {
-            MGXPool.getInstance().submit(new ContigFetcher(master2, b, series, allProcessed));
+            MGXPool.getInstance().submit(new ContigFetcher(master, b, series, allProcessed));
         }
 
         try {
@@ -243,12 +243,12 @@ public final class BlobogramTopComponent extends TopComponent implements LookupL
 
     private static class ContigFetcher implements Runnable {
 
-        private final MGX2MasterI master;
+        private final MGXMasterI master;
         private final BinI bin;
         private final XYSeries series;
         private final CountDownLatch done;
 
-        public ContigFetcher(MGX2MasterI master, BinI bin, XYSeries series, CountDownLatch cdl) {
+        public ContigFetcher(MGXMasterI master, BinI bin, XYSeries series, CountDownLatch cdl) {
             this.master = master;
             this.bin = bin;
             this.series = series;

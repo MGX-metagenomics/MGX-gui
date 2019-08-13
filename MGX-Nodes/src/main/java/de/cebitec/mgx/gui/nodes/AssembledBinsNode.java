@@ -1,6 +1,6 @@
 package de.cebitec.mgx.gui.nodes;
 
-import de.cebitec.mgx.api.MGX2MasterI;
+import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.assembly.AssemblyI;
 import de.cebitec.mgx.gui.nodefactory.BinNodeFactory;
 import javax.swing.Action;
@@ -14,11 +14,11 @@ import org.openide.util.lookup.Lookups;
  */
 public class AssembledBinsNode extends AbstractNode { //MGXNodeBase<MGXMasterI> {
 
-    public AssembledBinsNode(MGX2MasterI m, AssemblyI asm) {
+    public AssembledBinsNode(MGXMasterI m, AssemblyI asm) {
         this(m, new BinNodeFactory(asm));
     }
 
-    private AssembledBinsNode(MGX2MasterI m, BinNodeFactory bnf) {
+    private AssembledBinsNode(MGXMasterI m, BinNodeFactory bnf) {
         super(Children.create(bnf, true), Lookups.fixed(m));
         super.setDisplayName("Bins");
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/ProjectData.png");

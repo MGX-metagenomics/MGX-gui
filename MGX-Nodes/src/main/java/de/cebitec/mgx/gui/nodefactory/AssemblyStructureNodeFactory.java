@@ -1,6 +1,6 @@
 package de.cebitec.mgx.gui.nodefactory;
 
-import de.cebitec.mgx.api.MGX2MasterI;
+import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.assembly.AssemblyI;
 import de.cebitec.mgx.gui.nodes.AssembledBinsNode;
 import de.cebitec.mgx.gui.nodes.AssembledSeqRunsNode;
@@ -16,9 +16,9 @@ public class AssemblyStructureNodeFactory extends ChildFactory<Node> {
 
     private final AssembledSeqRunsNode runs;
     private final AssembledBinsNode bins;
-    private final MGX2MasterI master;
+    private final MGXMasterI master;
 
-    public AssemblyStructureNodeFactory(MGX2MasterI master, AssemblyI assembly) {
+    public AssemblyStructureNodeFactory(MGXMasterI master, AssemblyI assembly) {
         this.master = master;
         // all these nodes have to provide an MGXMaster instance via lookup, 
         // since creation of the "top-level" data objects require a master

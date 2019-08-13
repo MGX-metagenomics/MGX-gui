@@ -1,6 +1,6 @@
 package de.cebitec.mgx.gui.nodefactory;
 
-import de.cebitec.mgx.api.MGX2MasterI;
+import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.MGXDataModelBaseI;
 import de.cebitec.mgx.api.model.ModelBaseI;
 import de.cebitec.mgx.gui.nodes.MGXNodeBase;
@@ -33,8 +33,8 @@ public abstract class MGX2NodeFactoryBase<T extends MGXDataModelBaseI<T>, U exte
         return myObj;
     }
 
-    protected final MGX2MasterI getMaster() {
-        return myObj != null ? (MGX2MasterI)myObj.getMaster() : null;
+    protected final MGXMasterI getMaster() {
+        return myObj != null ? myObj.getMaster() : null;
     }
 
     @Override

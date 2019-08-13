@@ -154,7 +154,9 @@ public final class RestartJobAction extends NodeAction {
                 sleep();
             }
             if (task != null) {
-                job.modified();
+                if (!job.isDeleted()) {
+                    job.modified();
+                }
                 done.countDown();
                 return task.getState() == TaskI.State.FINISHED;
             }

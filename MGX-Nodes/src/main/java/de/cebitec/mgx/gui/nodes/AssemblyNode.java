@@ -1,6 +1,6 @@
 package de.cebitec.mgx.gui.nodes;
 
-import de.cebitec.mgx.api.MGX2MasterI;
+import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.assembly.AssemblyI;
 import de.cebitec.mgx.gui.nodefactory.AssemblyStructureNodeFactory;
 import javax.swing.Action;
@@ -14,7 +14,7 @@ import org.openide.util.lookup.Lookups;
  */
 public class AssemblyNode extends MGXNodeBase<AssemblyI> {
 
-    public AssemblyNode(MGX2MasterI m, AssemblyI a) {
+    public AssemblyNode(MGXMasterI m, AssemblyI a) {
         this(a, new AssemblyStructureNodeFactory(m, a));
     }
 

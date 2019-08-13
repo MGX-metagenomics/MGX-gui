@@ -18,5 +18,12 @@ public interface LocationI {
     int getStart();
 
     int getStop();
-    
+
+    public boolean isFwdStrand();
+
+    /**
+     * @return 1, 2, 3, -1, -2, -3 depending on the reading frame of the feature
+     */
+    public int getFrame();
+
 }

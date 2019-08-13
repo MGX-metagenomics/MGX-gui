@@ -5,7 +5,7 @@
  */
 package de.cebitec.mgx.gui.binexplorer.util;
 
-import de.cebitec.mgx.api.MGX2MasterI;
+import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.assembly.BinI;
 import de.cebitec.mgx.api.model.assembly.ContigI;
@@ -23,13 +23,13 @@ import org.openide.util.Exceptions;
 public class ContigModel extends BaseModel<ContigI> {
 
     private BinI bin;
-    private MGX2MasterI master;
+    private MGXMasterI master;
 
     public void setBin(BinI bin) {
         this.bin = bin;
     }
     
-    public void setMaster(MGX2MasterI master) {
+    public void setMaster(MGXMasterI master) {
         this.master = master;
     }
 
