@@ -21,7 +21,7 @@ public class ContigNode extends MGXNodeBase<ContigI> {
 
     private String getToolTipText(ContigI h) {
         return new StringBuilder("<html>").append("<b>Contig: </b>")
-                .append(escapeHtml4("contig" + h.getId()))
+                .append(h.getName())
                 .append("<br><hr><br>")
                 .append("Length: ")
                 .append(h.getLength())
