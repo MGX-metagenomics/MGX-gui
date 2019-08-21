@@ -73,6 +73,15 @@ public class GeneAccess extends AccessBase<GeneI> implements GeneAccessI {
     }
 
     @Override
+    public String[] getSequence(GeneI gene) throws MGXException {
+         try {
+            return getDTOmaster().Gene().getSequence(gene.getId());
+        } catch (MGXDTOException ex) {
+            throw new MGXException(ex);
+        }
+    }
+
+    @Override
     public void update(GeneI obj) throws MGXException {
         throw new UnsupportedOperationException("Not supported.");
     }
