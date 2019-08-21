@@ -32,7 +32,9 @@ public class ContigRenderer extends JLabel implements ListCellRenderer<ContigI> 
     public Component getListCellRendererComponent(JList<? extends ContigI> list, ContigI contig,
             int index, boolean isSelected, boolean cellHasFocus) {
 
-        this.setText(contig.getName() + " (" + formatter.format(contig.getLength()) + ")");
+        if (contig != null) {
+            this.setText(contig.getName() + " (" + formatter.format(contig.getLength()) + " bp)");
+        }
 
         if (isSelected) {
             this.setForeground(UIManager.getColor("List.selectionForeground"));
