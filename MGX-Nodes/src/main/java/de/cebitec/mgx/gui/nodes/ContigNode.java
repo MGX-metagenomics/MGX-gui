@@ -2,7 +2,6 @@ package de.cebitec.mgx.gui.nodes;
 
 import de.cebitec.mgx.api.model.assembly.ContigI;
 import javax.swing.Action;
-import static org.apache.commons.text.StringEscapeUtils.escapeHtml4;
 import org.openide.nodes.Children;
 import org.openide.util.lookup.Lookups;
 
@@ -14,7 +13,7 @@ public class ContigNode extends MGXNodeBase<ContigI> {
 
     public ContigNode(ContigI a) {
         super(Children.LEAF, Lookups.fixed(a.getMaster(), a), a);
-        super.setDisplayName("contig" + a.getId());
+        super.setDisplayName(a.getName());
         //super.setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/Habitat.png");
         super.setShortDescription(getToolTipText(a));
     }
