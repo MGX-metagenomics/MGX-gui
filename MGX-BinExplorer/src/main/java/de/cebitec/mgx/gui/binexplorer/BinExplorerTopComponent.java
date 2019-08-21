@@ -164,22 +164,22 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
         super.componentActivated();
         isActivated = true;
     }
-    
+
     @Override
     public void itemStateChanged(ItemEvent event) {
-       if (event.getStateChange() == ItemEvent.SELECTED) {
-          Object item = event.getItem();
-          if (item instanceof ContigI) {
-              ContigI contig = (ContigI) item;
-              ContigViewController vc = new ContigViewController(contig);
-          }
-       }
-    } 
+        if (event.getStateChange() == ItemEvent.SELECTED) {
+            Object item = event.getItem();
+            if (item instanceof ContigI) {
+                ContigI contig = (ContigI) item;
+                ContigViewController vc = new ContigViewController(contig);
+            }
+        }
+    }
 
     @Override
     public void resultChanged(LookupEvent le) {
         // avoid update when component is activated
-        if (isActivated) {
+        if (isActivated && currentBin != null) {
             return;
         }
 
@@ -187,8 +187,10 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
         for (BinI bin : result.allInstances()) {
             newBin = bin;
         }
-        if (currentBin != null && newBin != null && !currentBin.equals(newBin)) {
-            currentBin.removePropertyChangeListener(this);
+        if (newBin != null && !newBin.equals(currentBin)) {
+            if (currentBin != null) {
+                currentBin.removePropertyChangeListener(this);
+            }
             currentBin = newBin;
             currentBin.addPropertyChangeListener(this);
             binName.setText(currentBin.getName());

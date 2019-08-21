@@ -5,7 +5,6 @@
  */
 package de.cebitec.mgx.gui.binexplorer.util;
 
-import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.assembly.BinI;
 import de.cebitec.mgx.api.model.assembly.ContigI;
@@ -23,14 +22,9 @@ import org.openide.util.Exceptions;
 public class ContigModel extends BaseModel<ContigI> {
 
     private BinI bin;
-    private MGXMasterI master;
 
     public void setBin(BinI bin) {
         this.bin = bin;
-    }
-    
-    public void setMaster(MGXMasterI master) {
-        this.master = master;
     }
 
     @Override
@@ -41,11 +35,11 @@ public class ContigModel extends BaseModel<ContigI> {
         }
         clear();
 
-        List<ContigI> tmp  = new ArrayList<>();
-        if (master != null && !master.isDeleted()) {
+        List<ContigI> tmp = new ArrayList<>();
+        if (!bin.isDeleted()) {
             Iterator<ContigI> iter = null;
             try {
-                iter = master.Contig().ByBin(bin);
+                iter = bin.getMaster().Contig().ByBin(bin);
             } catch (MGXException ex) {
                 Exceptions.printStackTrace(ex);
             }
@@ -56,6 +50,9 @@ public class ContigModel extends BaseModel<ContigI> {
 
         Collections.sort(tmp);
         addAll(tmp);
+        if (!tmp.isEmpty()) {
+            setSelectedItem(tmp.get(0));
+        }
         fireContentsChanged();
     }
 }
