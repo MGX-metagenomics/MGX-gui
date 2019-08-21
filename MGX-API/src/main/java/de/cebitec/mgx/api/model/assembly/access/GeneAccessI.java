@@ -18,4 +18,7 @@ public interface GeneAccessI {
 
     public Iterator<GeneI> ByContig(ContigI a) throws MGXException;
 
+    // return dna and aa sequence
+    public String[] getSequence(GeneI selectedFeature) throws MGXException;
+
 }
