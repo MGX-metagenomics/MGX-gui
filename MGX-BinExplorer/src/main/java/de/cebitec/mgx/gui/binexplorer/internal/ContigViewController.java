@@ -5,7 +5,6 @@
  */
 package de.cebitec.mgx.gui.binexplorer.internal;
 
-import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.assembly.ContigI;
 import de.cebitec.mgx.api.model.assembly.GeneI;
@@ -13,7 +12,6 @@ import de.cebitec.mgx.pevents.ParallelPropertyChangeSupport;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import org.apache.commons.math3.util.FastMath;
@@ -26,10 +24,12 @@ import org.openide.util.Exceptions;
 public class ContigViewController implements PropertyChangeListener {
 
     public final static String BOUNDS_CHANGE = "boundsChange";
+    public final static String FEATURE_SELECTED = "featureSelected";
     public final static String VIEWCONTROLLER_CLOSED = "viewControllerClosed";
     //
     private final ParallelPropertyChangeSupport pcs;
     private final ContigI contig;
+    private final List<GeneI> genes = new ArrayList<>();
     private final int[] curBounds;
     private final int[] newBounds;
     private int intervalLen;
@@ -45,7 +45,7 @@ public class ContigViewController implements PropertyChangeListener {
     }
 
     public int[] getBounds() {
-        return Arrays.copyOf(curBounds, 2);
+        return curBounds; //Arrays.copyOf(curBounds, 2);
     }
 
     public int getIntervalLength() {
@@ -90,16 +90,17 @@ public class ContigViewController implements PropertyChangeListener {
     }
 
     Iterable<GeneI> getRegions() {
-        List<GeneI> genes = new ArrayList<>();
-        Iterator<GeneI> iter;
-        try {
-            iter = contig.getMaster().Gene().ByContig(contig);
-            while (iter != null && iter.hasNext()) {
-                genes.add(iter.next());
+        if (genes.isEmpty()) {
+            Iterator<GeneI> iter;
+            try {
+                iter = contig.getMaster().Gene().ByContig(contig);
+                while (iter != null && iter.hasNext()) {
+                    genes.add(iter.next());
+                }
+            } catch (MGXException ex) {
+                Exceptions.printStackTrace(ex);
+                genes.clear();
             }
-        } catch (MGXException ex) {
-            Exceptions.printStackTrace(ex);
-            genes.clear();
         }
 
         return genes;
@@ -110,8 +111,17 @@ public class ContigViewController implements PropertyChangeListener {
         return contig.getName();
     }
 
+    public void close() {
+        contig.removePropertyChangeListener(this);
+        pcs.firePropertyChange(VIEWCONTROLLER_CLOSED, false, true);
+    }
+
     public boolean isClosed() {
         return contig.isDeleted();
+    }
+
+    void selectGene(GeneI selectedGene) {
+         pcs.firePropertyChange(FEATURE_SELECTED, null, selectedGene);
     }
 
 }

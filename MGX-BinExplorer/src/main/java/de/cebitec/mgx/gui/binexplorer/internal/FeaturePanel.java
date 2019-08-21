@@ -43,8 +43,9 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
         -1 * FRAME_VOFFSET * 1,
         -1 * FRAME_VOFFSET * 2,
         -1 * FRAME_VOFFSET * 3};
-    private final List<ShapeBase> regs = new ArrayList<>();
+    private final List<Arrow> regs = new ArrayList<>();
     private final static Color lighterGray = new Color(210, 210, 210);
+    private GeneI selectedGene = null;
 
     /**
      * Creates new form FeaturePanel
@@ -106,10 +107,9 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
             //}
         }
 
-        if (regs.isEmpty()) {
-            return;
-        }
-
+//        if (regs.isEmpty()) {
+//            return;
+//        }
         synchronized (regs) {
 
             /*
@@ -155,7 +155,7 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
     @Override
     public boolean update() {
         // fetch features
-        List<ShapeBase> newData = new ArrayList<>();
+        List<Arrow> newData = new ArrayList<>();
         int midY = getHeight() / 2;
         for (GeneI r : vc.getRegions()) {
             newData.add(r2a(r, midY));
@@ -170,7 +170,7 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
         return true;
     }
 
-    private ShapeBase r2a(final GeneI r, int midY) {
+    private Arrow r2a(final GeneI r, int midY) {
         float pos0 = bp2px(r.getStart() - 1);
         float pos1 = bp2px(r.getStop() - 1);
 
@@ -216,6 +216,15 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
 
     @Override
     public void mouseClicked(MouseEvent e) {
+        Point loc = e.getPoint();
+        if (regs != null) {
+            for (Arrow a : regs) {
+                if (a.getBounds().contains(loc)) {
+                    selectedGene = (GeneI) a.getObject();
+                    vc.selectGene(selectedGene);
+                }
+            }
+        }
     }
 
     @Override
@@ -273,5 +282,4 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
 //        }
 //        repaint();
 //    }
-
 }

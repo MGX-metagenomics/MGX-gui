@@ -5,12 +5,17 @@
  */
 package de.cebitec.mgx.gui.binexplorer;
 
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.ModelBaseI;
 import de.cebitec.mgx.api.model.assembly.BinI;
 import de.cebitec.mgx.api.model.assembly.ContigI;
+import de.cebitec.mgx.api.model.assembly.GeneI;
 import de.cebitec.mgx.gui.binexplorer.internal.ContigViewController;
+import de.cebitec.mgx.gui.binexplorer.internal.FeaturePanel;
 import de.cebitec.mgx.gui.binexplorer.util.ContigModel;
 import de.cebitec.mgx.gui.binexplorer.util.ContigRenderer;
+import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -19,6 +24,7 @@ import java.beans.PropertyChangeListener;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
@@ -51,12 +57,13 @@ import org.openide.util.Utilities;
     "HINT_BinExplorerTopComponent=This is a BinExplorer window"
 })
 public final class BinExplorerTopComponent extends TopComponent implements LookupListener, PropertyChangeListener, ItemListener {
-
+    
     private final Lookup.Result<BinI> result;
     private final ContigModel contigModel = new ContigModel();
     private BinI currentBin = null;
     private boolean isActivated = false;
-
+    private ContigViewController vc = null;
+    
     public BinExplorerTopComponent() {
         initComponents();
         setName(Bundle.CTL_BinExplorerTopComponent());
@@ -80,6 +87,12 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
         jLabel2 = new javax.swing.JLabel();
         binName = new javax.swing.JLabel();
         contentPanel = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        dnaSeq = new javax.swing.JTextArea();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        aaSeq = new javax.swing.JTextArea();
 
         jLabel1.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(BinExplorerTopComponent.class, "BinExplorerTopComponent.jLabel1.text")); // NOI18N
@@ -91,32 +104,44 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
 
         org.openide.awt.Mnemonics.setLocalizedText(binName, org.openide.util.NbBundle.getMessage(BinExplorerTopComponent.class, "BinExplorerTopComponent.binName.text")); // NOI18N
 
-        javax.swing.GroupLayout contentPanelLayout = new javax.swing.GroupLayout(contentPanel);
-        contentPanel.setLayout(contentPanelLayout);
-        contentPanelLayout.setHorizontalGroup(
-            contentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
-        contentPanelLayout.setVerticalGroup(
-            contentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 247, Short.MAX_VALUE)
-        );
+        contentPanel.setLayout(new java.awt.BorderLayout());
+
+        dnaSeq.setEditable(false);
+        dnaSeq.setColumns(20);
+        dnaSeq.setRows(5);
+        jScrollPane1.setViewportView(dnaSeq);
+
+        jLabel3.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(jLabel3, org.openide.util.NbBundle.getMessage(BinExplorerTopComponent.class, "BinExplorerTopComponent.jLabel3.text")); // NOI18N
+
+        jLabel4.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(jLabel4, org.openide.util.NbBundle.getMessage(BinExplorerTopComponent.class, "BinExplorerTopComponent.jLabel4.text")); // NOI18N
+
+        aaSeq.setEditable(false);
+        aaSeq.setColumns(20);
+        aaSeq.setRows(5);
+        jScrollPane2.setViewportView(aaSeq);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(contentPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(contigList, javax.swing.GroupLayout.PREFERRED_SIZE, 484, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(binName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(contigList, javax.swing.GroupLayout.PREFERRED_SIZE, 484, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel1)
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(jLabel2)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(binName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 380, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 380, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3)
+                    .addComponent(jLabel4))
                 .addContainerGap(510, Short.MAX_VALUE))
-            .addComponent(contentPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -130,59 +155,82 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(contigList, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(contentPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(299, Short.MAX_VALUE))
+                .addComponent(contentPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 221, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel4)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 169, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextArea aaSeq;
     private javax.swing.JLabel binName;
     private javax.swing.JPanel contentPanel;
     private javax.swing.JComboBox<ContigI> contigList;
+    private javax.swing.JTextArea dnaSeq;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     // End of variables declaration//GEN-END:variables
     @Override
     public void componentOpened() {
         result.addLookupListener(this);
         resultChanged(null);
     }
-
+    
     @Override
     public void componentClosed() {
         result.removeLookupListener(this);
     }
-
+    
     @Override
     protected void componentDeactivated() {
         super.componentDeactivated();
         isActivated = false;
     }
-
+    
     @Override
     protected void componentActivated() {
         super.componentActivated();
         isActivated = true;
     }
-
+    
     @Override
     public void itemStateChanged(ItemEvent event) {
         if (event.getStateChange() == ItemEvent.SELECTED) {
             Object item = event.getItem();
             if (item instanceof ContigI) {
                 ContigI contig = (ContigI) item;
-                ContigViewController vc = new ContigViewController(contig);
+                if (vc != null) {
+                    vc.close();
+                    vc.removePropertyChangeListener(this);
+                }
+                vc = new ContigViewController(contig);
+                vc.addPropertyChangeListener(this);
+                FeaturePanel fp = new FeaturePanel(vc);
+                contentPanel.removeAll();
+                contentPanel.setLayout(new BorderLayout());
+                contentPanel.add(fp, BorderLayout.CENTER);
+                
             }
         }
     }
-
+    
     @Override
     public void resultChanged(LookupEvent le) {
         // avoid update when component is activated
         if (isActivated && currentBin != null) {
             return;
         }
-
+        
         BinI newBin = null;
         for (BinI bin : result.allInstances()) {
             newBin = bin;
@@ -197,12 +245,12 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
             contigModel.setBin(currentBin);
             contigModel.update();
         }
-
+        
         if (currentBin == null) {
             contigModel.clear();
         }
     }
-
+    
     @Override
     public synchronized void propertyChange(PropertyChangeEvent evt) {
         if (evt.getSource() instanceof BinI && evt.getPropertyName().equals(ModelBaseI.OBJECT_DELETED)) {
@@ -212,24 +260,36 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
                 currentBin = null;
                 contigModel.clear();
                 binName.setText("");
+                return;
+            }
+        }
+        if (evt.getSource() instanceof ContigViewController && evt.getPropertyName().equals(ContigViewController.FEATURE_SELECTED)) {
+            GeneI selectedFeature = (GeneI) evt.getNewValue();
+            MGXMasterI master = selectedFeature.getMaster();
+            try {
+                String[] seq = master.Gene().getSequence(selectedFeature);
+                dnaSeq.setText(seq[0]);
+                aaSeq.setText(seq[1]);
+            } catch (MGXException ex) {
+                Exceptions.printStackTrace(ex);
             }
         }
     }
-
+    
     private void updateContigList() {
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         contigModel.setBin(currentBin);
         contigModel.update();
         setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
     }
-
+    
     void writeProperties(java.util.Properties p) {
         // better to version settings since initial version as advocated at
         // http://wiki.apidesign.org/wiki/PropertyFiles
         p.setProperty("version", "1.0");
         // TODO store your settings
     }
-
+    
     void readProperties(java.util.Properties p) {
         String version = p.getProperty("version");
         // TODO read your settings according to their version
