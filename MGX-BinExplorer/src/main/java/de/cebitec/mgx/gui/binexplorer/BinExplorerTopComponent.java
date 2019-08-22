@@ -8,6 +8,7 @@ package de.cebitec.mgx.gui.binexplorer;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.ModelBaseI;
+import de.cebitec.mgx.api.model.SequenceI;
 import de.cebitec.mgx.api.model.assembly.BinI;
 import de.cebitec.mgx.api.model.assembly.ContigI;
 import de.cebitec.mgx.api.model.assembly.GeneI;
@@ -57,13 +58,13 @@ import org.openide.util.Utilities;
     "HINT_BinExplorerTopComponent=This is a BinExplorer window"
 })
 public final class BinExplorerTopComponent extends TopComponent implements LookupListener, PropertyChangeListener, ItemListener {
-    
+
     private final Lookup.Result<BinI> result;
     private final ContigModel contigModel = new ContigModel();
     private BinI currentBin = null;
     private boolean isActivated = false;
     private ContigViewController vc = null;
-    
+
     public BinExplorerTopComponent() {
         initComponents();
         setName(Bundle.CTL_BinExplorerTopComponent());
@@ -108,6 +109,7 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
 
         dnaSeq.setEditable(false);
         dnaSeq.setColumns(20);
+        dnaSeq.setLineWrap(true);
         dnaSeq.setRows(5);
         jScrollPane1.setViewportView(dnaSeq);
 
@@ -119,6 +121,7 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
 
         aaSeq.setEditable(false);
         aaSeq.setColumns(20);
+        aaSeq.setLineWrap(true);
         aaSeq.setRows(5);
         jScrollPane2.setViewportView(aaSeq);
 
@@ -185,24 +188,24 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
         result.addLookupListener(this);
         resultChanged(null);
     }
-    
+
     @Override
     public void componentClosed() {
         result.removeLookupListener(this);
     }
-    
+
     @Override
     protected void componentDeactivated() {
         super.componentDeactivated();
         isActivated = false;
     }
-    
+
     @Override
     protected void componentActivated() {
         super.componentActivated();
         isActivated = true;
     }
-    
+
     @Override
     public void itemStateChanged(ItemEvent event) {
         if (event.getStateChange() == ItemEvent.SELECTED) {
@@ -213,24 +216,26 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
                     vc.close();
                     vc.removePropertyChangeListener(this);
                 }
+                dnaSeq.setText("");
+                aaSeq.setText("");
                 vc = new ContigViewController(contig);
                 vc.addPropertyChangeListener(this);
                 FeaturePanel fp = new FeaturePanel(vc);
                 contentPanel.removeAll();
                 contentPanel.setLayout(new BorderLayout());
                 contentPanel.add(fp, BorderLayout.CENTER);
-                
+
             }
         }
     }
-    
+
     @Override
     public void resultChanged(LookupEvent le) {
         // avoid update when component is activated
         if (isActivated && currentBin != null) {
             return;
         }
-        
+
         BinI newBin = null;
         for (BinI bin : result.allInstances()) {
             newBin = bin;
@@ -242,15 +247,17 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
             currentBin = newBin;
             currentBin.addPropertyChangeListener(this);
             binName.setText(currentBin.getName());
+            dnaSeq.setText("");
+            aaSeq.setText("");
             contigModel.setBin(currentBin);
             contigModel.update();
         }
-        
+
         if (currentBin == null) {
             contigModel.clear();
         }
     }
-    
+
     @Override
     public synchronized void propertyChange(PropertyChangeEvent evt) {
         if (evt.getSource() instanceof BinI && evt.getPropertyName().equals(ModelBaseI.OBJECT_DELETED)) {
@@ -260,36 +267,41 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
                 currentBin = null;
                 contigModel.clear();
                 binName.setText("");
+                dnaSeq.setText("");
+                aaSeq.setText("");
                 return;
             }
         }
         if (evt.getSource() instanceof ContigViewController && evt.getPropertyName().equals(ContigViewController.FEATURE_SELECTED)) {
+            dnaSeq.setText("");
+            aaSeq.setText("");
             GeneI selectedFeature = (GeneI) evt.getNewValue();
             MGXMasterI master = selectedFeature.getMaster();
             try {
-                String[] seq = master.Gene().getSequence(selectedFeature);
-                dnaSeq.setText(seq[0]);
-                aaSeq.setText(seq[1]);
+
+                SequenceI seq = master.Gene().getDNASequence(selectedFeature);
+                dnaSeq.setText(seq.getSequence());
+                aaSeq.setText(seq.getSequence());
             } catch (MGXException ex) {
                 Exceptions.printStackTrace(ex);
             }
         }
     }
-    
+
     private void updateContigList() {
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         contigModel.setBin(currentBin);
         contigModel.update();
         setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
     }
-    
+
     void writeProperties(java.util.Properties p) {
         // better to version settings since initial version as advocated at
         // http://wiki.apidesign.org/wiki/PropertyFiles
         p.setProperty("version", "1.0");
         // TODO store your settings
     }
-    
+
     void readProperties(java.util.Properties p) {
         String version = p.getProperty("version");
         // TODO read your settings according to their version

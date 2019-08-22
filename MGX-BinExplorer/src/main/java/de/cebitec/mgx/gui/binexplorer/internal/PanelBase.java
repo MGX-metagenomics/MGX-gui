@@ -35,7 +35,7 @@ public abstract class PanelBase extends JComponent implements PropertyChangeList
     protected final ContigViewController vc;
     protected volatile int[] bounds;
     private int maxCoverage = 0;
-    private int refLength;
+    private final int refLength;
     private float scale;
     //
     protected static final RenderingHints antiAlias = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -179,6 +179,9 @@ public abstract class PanelBase extends JComponent implements PropertyChangeList
         }
 
         switch (evt.getPropertyName()) {
+            case ContigViewController.FEATURE_SELECTED:
+                // ignore
+                break;
             case ContigViewController.VIEWCONTROLLER_CLOSED:
                 vc.removePropertyChangeListener(this);
                 removeAll();
