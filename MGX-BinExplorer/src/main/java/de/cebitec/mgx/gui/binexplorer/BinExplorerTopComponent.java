@@ -12,6 +12,7 @@ import de.cebitec.mgx.api.model.SequenceI;
 import de.cebitec.mgx.api.model.assembly.BinI;
 import de.cebitec.mgx.api.model.assembly.ContigI;
 import de.cebitec.mgx.api.model.assembly.GeneI;
+import de.cebitec.mgx.dnautils.DNAUtils;
 import de.cebitec.mgx.gui.binexplorer.internal.ContigViewController;
 import de.cebitec.mgx.gui.binexplorer.internal.FeaturePanel;
 import de.cebitec.mgx.gui.binexplorer.util.ContigModel;
@@ -43,19 +44,19 @@ import org.openide.util.Utilities;
 @TopComponent.Description(
         preferredID = "BinExplorerTopComponent",
         //iconBase="SET/PATH/TO/ICON/HERE",
-        persistenceType = TopComponent.PERSISTENCE_ALWAYS
+        persistenceType = TopComponent.PERSISTENCE_NEVER
 )
 @TopComponent.Registration(mode = "editor", openAtStartup = false)
 @ActionID(category = "Window", id = "de.cebitec.mgx.gui.binexplorer.BinExplorerTopComponent")
-@ActionReference(path = "Menu/Window", position = 339)
+@ActionReference(path = "Menu/Window", position = 340)
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_BinExplorerAction",
         preferredID = "BinExplorerTopComponent"
 )
 @Messages({
-    "CTL_BinExplorerAction=BinExplorer",
-    "CTL_BinExplorerTopComponent=BinExplorer Window",
-    "HINT_BinExplorerTopComponent=This is a BinExplorer window"
+    "CTL_BinExplorerAction=Bin Explorer",
+    "CTL_BinExplorerTopComponent=Bin Explorer Window",
+    "HINT_BinExplorerTopComponent=Bin Explorer"
 })
 public final class BinExplorerTopComponent extends TopComponent implements LookupListener, PropertyChangeListener, ItemListener {
 
@@ -211,6 +212,7 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
         if (event.getStateChange() == ItemEvent.SELECTED) {
             Object item = event.getItem();
             if (item instanceof ContigI) {
+                setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                 ContigI contig = (ContigI) item;
                 if (vc != null) {
                     vc.close();
@@ -224,7 +226,7 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
                 contentPanel.removeAll();
                 contentPanel.setLayout(new BorderLayout());
                 contentPanel.add(fp, BorderLayout.CENTER);
-
+                setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             }
         }
     }
@@ -281,7 +283,7 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
 
                 SequenceI seq = master.Gene().getDNASequence(selectedFeature);
                 dnaSeq.setText(seq.getSequence());
-                aaSeq.setText(seq.getSequence());
+                aaSeq.setText(DNAUtils.translate(seq.getSequence()));
             } catch (MGXException ex) {
                 Exceptions.printStackTrace(ex);
             }
