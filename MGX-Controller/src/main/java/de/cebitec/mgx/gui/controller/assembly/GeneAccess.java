@@ -8,14 +8,17 @@ package de.cebitec.mgx.gui.controller.assembly;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.misc.TaskI;
+import de.cebitec.mgx.api.model.SequenceI;
 import de.cebitec.mgx.api.model.assembly.ContigI;
 import de.cebitec.mgx.api.model.assembly.GeneI;
 import de.cebitec.mgx.api.model.assembly.access.GeneAccessI;
 import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.client.exception.MGXDTOException;
 import de.cebitec.mgx.dto.dto.GeneDTO;
+import de.cebitec.mgx.dto.dto.SequenceDTO;
 import de.cebitec.mgx.gui.controller.AccessBase;
 import de.cebitec.mgx.gui.dtoconversion.GeneDTOFactory;
+import de.cebitec.mgx.gui.dtoconversion.SequenceDTOFactory;
 import de.cebitec.mgx.gui.util.BaseIterator;
 import java.util.Iterator;
 
@@ -73,9 +76,10 @@ public class GeneAccess extends AccessBase<GeneI> implements GeneAccessI {
     }
 
     @Override
-    public String[] getSequence(GeneI gene) throws MGXException {
-         try {
-            return getDTOmaster().Gene().getSequence(gene.getId());
+    public SequenceI getDNASequence(GeneI gene) throws MGXException {
+        try {
+            SequenceDTO dto = getDTOmaster().Gene().getDNASequence(gene.getId());
+            return SequenceDTOFactory.getInstance().toModel(getMaster(), dto);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }

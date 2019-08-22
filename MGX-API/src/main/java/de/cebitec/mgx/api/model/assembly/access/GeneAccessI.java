@@ -6,6 +6,7 @@
 package de.cebitec.mgx.api.model.assembly.access;
 
 import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.model.SequenceI;
 import de.cebitec.mgx.api.model.assembly.ContigI;
 import de.cebitec.mgx.api.model.assembly.GeneI;
 import java.util.Iterator;
@@ -18,7 +19,6 @@ public interface GeneAccessI {
 
     public Iterator<GeneI> ByContig(ContigI a) throws MGXException;
 
-    // return dna and aa sequence
-    public String[] getSequence(GeneI selectedFeature) throws MGXException;
+    public SequenceI getDNASequence(GeneI gene) throws MGXException;
 
 }

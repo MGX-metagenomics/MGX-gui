@@ -46,6 +46,7 @@ public final class Arrow implements ShapeBase {
      */
     private final Shape shape;
     private final String toolTip;
+    private final LocationI obj;
     private final static int TRIANGLE_WIDTH = 8;
     private final static int TRIANGLE_HEIGHT = 12;
     private final static int RECT_HEIGHT = 6;
@@ -54,6 +55,7 @@ public final class Arrow implements ShapeBase {
 
     public Arrow(final LocationI r, String toolTip, float x, float y, float length) {
 
+        this.obj = r;
         this.toolTip = toolTip;
 
         //float height = 14;
@@ -101,6 +103,10 @@ public final class Arrow implements ShapeBase {
             shape = new Area(triangle);
         }
 
+    }
+    
+    public LocationI getObject() {
+        return obj;
     }
 
     @Override
