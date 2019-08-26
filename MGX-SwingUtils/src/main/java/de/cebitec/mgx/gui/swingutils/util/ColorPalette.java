@@ -17,9 +17,6 @@ public class ColorPalette {
 
     public static List<Color> pick(int num) {
         List<Color> colors = new ArrayList<>();
-        if (num < 2) {
-            return colors;
-        }
         float dx = 1.0f / (float) (num - 1);
         for (int i = 0; i < num; i++) {
             colors.add(get(i * dx));
@@ -57,6 +54,6 @@ public class ColorPalette {
             g = 0.0f;
             b = x;
         }
-        return new Color(r, g, b);
+        return new Color(r, g, b, 0.6f);
     }
 }
