@@ -86,6 +86,7 @@ public final class BlobogramTopComponent extends TopComponent implements LookupL
     public BlobogramTopComponent() {
         initComponents();
         setName(Bundle.CTL_BlobogramTopComponent());
+        super.setToolTipText("Blobogram");
         lookup = new AbstractLookup(content);
         associateLookup(lookup);
         resultAssembly = Utilities.actionsGlobalContext().lookupResult(AssemblyI.class);
@@ -95,14 +96,6 @@ public final class BlobogramTopComponent extends TopComponent implements LookupL
 
     private void update() {
         MGXMasterI master = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
-        if (master == null) {
-            if (currentPanel != null) {
-                content.set(Collections.emptyList(), null);
-                remove(currentPanel);
-                currentPanel = null;
-            }
-            return;
-        }
 
         Collection<? extends AssemblyI> assemblies = resultAssembly.allInstances();
         Collection<BinI> bins = new ArrayList<>();
@@ -120,6 +113,10 @@ public final class BlobogramTopComponent extends TopComponent implements LookupL
             }
         } else if (!resultBin.allInstances().isEmpty()) {
             bins.addAll(resultBin.allInstances());
+        }
+        
+        if (bins.isEmpty()) {
+            return;
         }
 
         XYSeriesCollection dataset = new XYSeriesCollection();
@@ -279,7 +276,7 @@ public final class BlobogramTopComponent extends TopComponent implements LookupL
         private final BinI bin;
 
         public ContigItem(BinI bin, ContigI ctg) {
-            super(ctg.getGC(), ctg.getCoverage()/(ctg.getLength()/1000));
+            super(ctg.getGC(), ctg.getCoverage() / (ctg.getLength() / 1000));
             this.contig = ctg;
             this.bin = bin;
         }
@@ -289,7 +286,7 @@ public final class BlobogramTopComponent extends TopComponent implements LookupL
         }
 
         public final String getTooltip() {
-            return "<html><b>" + contig.getName() + "</b><br>"
+            return "<html><b>Contig: " + contig.getName() + "</b><br><hr><br>"
                     + "Bin: " + bin.getName() + "<br>"
                     + "Length: " + nf.format(contig.getLength()) + " bp<br>"
                     + "Taxonomy: " + bin.getTaxonomy() + "</html>";
