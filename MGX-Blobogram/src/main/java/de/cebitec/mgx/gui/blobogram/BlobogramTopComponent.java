@@ -29,8 +29,6 @@ import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.LogarithmicAxis;
-import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.labels.XYToolTipGenerator;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
@@ -143,11 +141,6 @@ public final class BlobogramTopComponent extends TopComponent implements LookupL
         }
 
         dataset.setNotify(true);
-
-        final NumberAxis domainAxis = new NumberAxis("GC");
-        domainAxis.setAutoRangeIncludesZero(false);
-        final NumberAxis rangeAxis = new LogarithmicAxis("Coverage");
-        rangeAxis.setAutoRangeIncludesZero(false);
 
         XYToolTipGenerator tooltipGenerator = new XYToolTipGenerator() {
 
