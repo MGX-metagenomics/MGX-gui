@@ -65,9 +65,9 @@ public class Gene extends GeneI {
         int frame;
 
         if (getStart() < getStop()) { // forward strand
-            frame = (getStart() - 1) % 3 + 1;
+            frame = (getStart()) % 3 + 1;
         } else {
-            frame = (getStop() - 1) % 3 - 3;
+            frame = (getStop()) % 3 - 3;
         }
         return frame;
     }
