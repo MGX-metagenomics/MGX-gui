@@ -17,6 +17,7 @@ import de.cebitec.mgx.gui.binexplorer.internal.ContigViewController;
 import de.cebitec.mgx.gui.binexplorer.internal.FeaturePanel;
 import de.cebitec.mgx.gui.binexplorer.util.ContigModel;
 import de.cebitec.mgx.gui.binexplorer.util.ContigRenderer;
+import de.cebitec.mgx.gui.pool.MGXPool;
 import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.event.ItemEvent;
@@ -215,8 +216,8 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
                 setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                 ContigI contig = (ContigI) item;
                 if (vc != null) {
-                    vc.close();
                     vc.removePropertyChangeListener(this);
+                    vc.close();
                 }
                 dnaSeq.setText("");
                 aaSeq.setText("");
@@ -277,16 +278,21 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
         if (evt.getSource() instanceof ContigViewController && evt.getPropertyName().equals(ContigViewController.FEATURE_SELECTED)) {
             dnaSeq.setText("");
             aaSeq.setText("");
-            GeneI selectedFeature = (GeneI) evt.getNewValue();
-            MGXMasterI master = selectedFeature.getMaster();
-            try {
+            final GeneI selectedFeature = (GeneI) evt.getNewValue();
+            final MGXMasterI master = selectedFeature.getMaster();
+            MGXPool.getInstance().submit(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        final SequenceI seq = master.Gene().getDNASequence(selectedFeature);
+                        dnaSeq.setText(seq.getSequence());
+                        aaSeq.setText(DNAUtils.translate(seq.getSequence()));
+                    } catch (MGXException ex) {
+                        Exceptions.printStackTrace(ex);
+                    }
+                }
+            });
 
-                SequenceI seq = master.Gene().getDNASequence(selectedFeature);
-                dnaSeq.setText(seq.getSequence());
-                aaSeq.setText(DNAUtils.translate(seq.getSequence()));
-            } catch (MGXException ex) {
-                Exceptions.printStackTrace(ex);
-            }
         }
     }
 
