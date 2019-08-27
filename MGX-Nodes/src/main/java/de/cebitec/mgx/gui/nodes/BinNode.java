@@ -2,6 +2,8 @@ package de.cebitec.mgx.gui.nodes;
 
 import de.cebitec.mgx.api.model.assembly.BinI;
 import de.cebitec.mgx.gui.nodefactory.ContigNodeFactory;
+import java.text.NumberFormat;
+import java.util.Locale;
 import javax.swing.Action;
 import static org.apache.commons.text.StringEscapeUtils.escapeHtml4;
 import org.openide.nodes.Children;
@@ -33,9 +35,9 @@ public class BinNode extends MGXNodeBase<BinI> {
                 .append("<br>Contamination: ")
                 .append(h.getContamination())
                 .append("<br>Size: ")
-                .append(h.getTotalSize())
+                .append(NumberFormat.getInstance(Locale.US).format(h.getTotalSize()))
                 .append(" bp<br>N50: ")
-                .append(h.getN50())
+                .append(NumberFormat.getInstance(Locale.US).format(h.getN50()))
                 .append(" bp<br>Taxonomy: ")
                 .append(h.getTaxonomy())
                 .append("</html>").toString();
