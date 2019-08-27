@@ -24,6 +24,7 @@ public class LimitFilter<T extends Number> implements VisFilterI<DistributionI<T
     public enum LIMITS {
 
         ALL("All", -1),
+        TOP5("Top 5", 5),
         TOP10("Top 10", 10),
         TOP25("Top 25", 25),
         TOP50("Top 50", 50),
