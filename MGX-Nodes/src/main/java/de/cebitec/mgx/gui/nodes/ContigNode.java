@@ -1,6 +1,8 @@
 package de.cebitec.mgx.gui.nodes;
 
 import de.cebitec.mgx.api.model.assembly.ContigI;
+import java.text.NumberFormat;
+import java.util.Locale;
 import javax.swing.Action;
 import org.openide.nodes.Children;
 import org.openide.util.lookup.Lookups;
@@ -23,12 +25,12 @@ public class ContigNode extends MGXNodeBase<ContigI> {
                 .append(h.getName())
                 .append("<br><hr><br>")
                 .append("Length: ")
-                .append(h.getLength())
+                .append(NumberFormat.getInstance(Locale.US).format(h.getLength()))
                 .append(" bp<br>")
                 .append("GC: ")
-                .append(h.getGC())
+                .append(String.format(Locale.US, "%.2f", h.getGC()))
                 .append("%<br>Coverage: ")
-                .append(h.getCoverage())
+                .append(NumberFormat.getInstance(Locale.US).format(h.getCoverage()))
                 .append(h.getPredictedCDS())
                 .append("</html>").toString();
     }

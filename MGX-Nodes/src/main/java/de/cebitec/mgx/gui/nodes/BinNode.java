@@ -38,7 +38,10 @@ public class BinNode extends MGXNodeBase<BinI> {
                 .append(NumberFormat.getInstance(Locale.US).format(h.getTotalSize()))
                 .append(" bp<br>N50: ")
                 .append(NumberFormat.getInstance(Locale.US).format(h.getN50()))
-                .append(" bp<br>Taxonomy: ")
+                .append(" bp<br>")
+                .append("CDS: ")
+                .append(NumberFormat.getInstance(Locale.US).format(h.getPredictedCDS()))
+                .append("<br>Taxonomy: ")
                 .append(h.getTaxonomy())
                 .append("</html>").toString();
     }
