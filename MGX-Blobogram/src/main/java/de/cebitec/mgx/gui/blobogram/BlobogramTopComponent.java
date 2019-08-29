@@ -276,7 +276,7 @@ public final class BlobogramTopComponent extends TopComponent implements LookupL
         private final BinI bin;
 
         public ContigItem(BinI bin, ContigI ctg) {
-            super(ctg.getGC(), ctg.getCoverage() / (ctg.getLength() / 1000));
+            super(ctg.getGC(), 1d * ctg.getCoverage() / (1d * ctg.getLength() / 1000));
             this.contig = ctg;
             this.bin = bin;
         }
