@@ -29,7 +29,8 @@ public class SeqRunNode extends MGXNodeBase<SeqRunI> {
 
     private String getToolTipText(SeqRunI run) {
         DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.US);
-        String numSeqs = formatter.format(run.getNumSequences());
+        String numSeqs = formatter.format(run.isPaired() ? run.getNumSequences() / 2
+                : run.getNumSequences());
 
         return new StringBuilder("<html><b>Sequencing run: </b>").append(escapeHtml4(run.getName()))
                 .append("<br><hr><br>")
