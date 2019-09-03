@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.search.ui;
 
+import de.cebitec.mgx.gui.swingutils.SeqPanel;
 import de.cebitec.mgx.api.model.ModelBaseI;
 import de.cebitec.mgx.api.model.ObservationI;
 import de.cebitec.mgx.api.model.SeqRunI;

@@ -22,11 +22,13 @@ import de.cebitec.mgx.api.model.assembly.access.AssemblyAccessI;
 import de.cebitec.mgx.api.model.assembly.access.BinAccessI;
 import de.cebitec.mgx.api.model.assembly.access.ContigAccessI;
 import de.cebitec.mgx.api.model.assembly.access.GeneAccessI;
+import de.cebitec.mgx.api.model.assembly.access.GeneCoverageAccessI;
 import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.gui.controller.assembly.AssemblyAccess;
 import de.cebitec.mgx.gui.controller.assembly.BinAccess;
 import de.cebitec.mgx.gui.controller.assembly.ContigAccess;
 import de.cebitec.mgx.gui.controller.assembly.GeneAccess;
+import de.cebitec.mgx.gui.controller.assembly.GeneCoverageAccess;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Objects;
@@ -185,6 +187,11 @@ public class MGXMaster extends MGXMasterI implements PropertyChangeListener {
     @Override
     public GeneAccessI Gene() throws MGXException {
         return new GeneAccess(getMaster(), dtomaster);
+    }
+
+    @Override
+    public GeneCoverageAccessI GeneCoverage() throws MGXException {
+        return new GeneCoverageAccess(getMaster(), dtomaster);
     }
 
     @Override

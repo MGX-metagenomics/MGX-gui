@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.cebitec.mgx.gui.search.ui;
+package de.cebitec.mgx.gui.swingutils;
 
 import de.cebitec.mgx.api.model.SequenceI;
 

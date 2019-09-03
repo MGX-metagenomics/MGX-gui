@@ -84,6 +84,22 @@
             <version>2.0</version>
             <type>jar</type>
         </dependency>
+        <dependency>
+            <groupId>de.cebitec.mgx.gui</groupId>
+            <artifactId>MGX-BasicCharts</artifactId>
+            <version>2.0</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>de.cebitec.mgx</groupId>
+            <artifactId>JFreeChart-OSGi</artifactId>
+            <version>2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-dialogs</artifactId>
+            <version>RELEASE110</version>
+        </dependency>
     </dependencies>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

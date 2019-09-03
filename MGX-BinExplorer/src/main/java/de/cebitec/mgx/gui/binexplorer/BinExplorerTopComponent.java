@@ -8,23 +8,59 @@ package de.cebitec.mgx.gui.binexplorer;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.ModelBaseI;
+import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.SequenceI;
 import de.cebitec.mgx.api.model.assembly.BinI;
 import de.cebitec.mgx.api.model.assembly.ContigI;
+import de.cebitec.mgx.api.model.assembly.GeneCoverageI;
 import de.cebitec.mgx.api.model.assembly.GeneI;
 import de.cebitec.mgx.dnautils.DNAUtils;
 import de.cebitec.mgx.gui.binexplorer.internal.ContigViewController;
 import de.cebitec.mgx.gui.binexplorer.internal.FeaturePanel;
 import de.cebitec.mgx.gui.binexplorer.util.ContigModel;
 import de.cebitec.mgx.gui.binexplorer.util.ContigRenderer;
+import de.cebitec.mgx.gui.charts.basic.util.FastCategoryDataset;
+import de.cebitec.mgx.gui.charts.basic.util.SVGChartPanel;
 import de.cebitec.mgx.gui.pool.MGXPool;
+import de.cebitec.mgx.gui.swingutils.SeqPanel;
+import de.cebitec.mgx.gui.swingutils.util.ColorPalette;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import javax.swing.SwingWorker;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.StandardChartTheme;
+import org.jfree.chart.axis.CategoryAxis;
+import org.jfree.chart.axis.CategoryLabelPositions;
+import org.jfree.chart.labels.ItemLabelAnchor;
+import org.jfree.chart.labels.ItemLabelPosition;
+import org.jfree.chart.labels.StandardCategoryItemLabelGenerator;
+import org.jfree.chart.labels.StandardCategoryToolTipGenerator;
+import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.renderer.category.BarRenderer;
+import org.jfree.chart.renderer.category.CategoryItemRenderer;
+import org.jfree.chart.renderer.xy.XYBarRenderer;
+import org.jfree.ui.TextAnchor;
 import org.netbeans.api.settings.ConvertAsProperties;
+import org.openide.DialogDisplayer;
+import org.openide.NotifyDescriptor;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.util.Exceptions;
@@ -66,6 +102,7 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
     private BinI currentBin = null;
     private boolean isActivated = false;
     private ContigViewController vc = null;
+    private GeneI selectedFeature = null;
 
     public BinExplorerTopComponent() {
         initComponents();
@@ -75,6 +112,102 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
         contigList.setModel(contigModel);
         contigList.setRenderer(new ContigRenderer());
         contigList.addItemListener(this);
+
+        ChartFactory.setChartTheme(StandardChartTheme.createLegacyTheme());
+        BarRenderer.setDefaultShadowsVisible(false);
+        XYBarRenderer.setDefaultShadowsVisible(false);
+
+        dnaseq.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                SwingWorker<SequenceI, Void> sw = new SwingWorker<SequenceI, Void>() {
+
+                    @Override
+                    protected SequenceI doInBackground() throws Exception {
+                        final MGXMasterI master = selectedFeature.getMaster();
+                        return master.Gene().getDNASequence(selectedFeature);
+                    }
+
+                    @Override
+                    protected void done() {
+                        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                        try {
+                            SequenceI seq = get();
+                            if (seq != null) {
+                                String[] opts = new String[]{"Close"};
+                                NotifyDescriptor d = new NotifyDescriptor(
+                                        "Text",
+                                        "DNA sequence for " + seq.getName(),
+                                        NotifyDescriptor.DEFAULT_OPTION,
+                                        NotifyDescriptor.PLAIN_MESSAGE,
+                                        opts,
+                                        opts[0]
+                                );
+                                SeqPanel sp = new SeqPanel();
+                                sp.show(seq);
+                                d.setMessage(sp);
+                                DialogDisplayer.getDefault().notify(d);
+                            }
+                        } catch (InterruptedException | ExecutionException ex) {
+                            Exceptions.printStackTrace(ex);
+                        }
+                        super.done();
+                    }
+
+                };
+                setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+                sw.execute();
+            }
+        });
+        
+          aaseq.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                SwingWorker<SequenceI, Void> sw = new SwingWorker<SequenceI, Void>() {
+
+                    @Override
+                    protected SequenceI doInBackground() throws Exception {
+                        final MGXMasterI master = selectedFeature.getMaster();
+                        return master.Gene().getDNASequence(selectedFeature);
+                    }
+
+                    @Override
+                    protected void done() {
+                        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                        try {
+                            SequenceI seq = get();
+                            if (seq != null) {
+                                String[] opts = new String[]{"Close"};
+                                NotifyDescriptor d = new NotifyDescriptor(
+                                        "Text",
+                                        "AA sequence for " + seq.getName(),
+                                        NotifyDescriptor.DEFAULT_OPTION,
+                                        NotifyDescriptor.PLAIN_MESSAGE,
+                                        opts,
+                                        opts[0]
+                                );
+                                SeqPanel sp = new SeqPanel();
+                                String translation = DNAUtils.translate(seq.getSequence());
+                                seq.setSequence(translation);
+                                sp.show(seq);
+                                d.setMessage(sp);
+                                DialogDisplayer.getDefault().notify(d);
+                            }
+                        } catch (InterruptedException | ExecutionException ex) {
+                            Exceptions.printStackTrace(ex);
+                        }
+                        super.done();
+                    }
+
+                };
+                setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+                sw.execute();
+            }
+        });
     }
 
     /**
@@ -90,12 +223,9 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
         jLabel2 = new javax.swing.JLabel();
         binName = new javax.swing.JLabel();
         contentPanel = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        dnaSeq = new javax.swing.JTextArea();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        aaSeq = new javax.swing.JTextArea();
+        geneCovPanel = new javax.swing.JPanel();
+        dnaseq = new javax.swing.JButton();
+        aaseq = new javax.swing.JButton();
 
         jLabel1.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(BinExplorerTopComponent.class, "BinExplorerTopComponent.jLabel1.text")); // NOI18N
@@ -109,23 +239,24 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
 
         contentPanel.setLayout(new java.awt.BorderLayout());
 
-        dnaSeq.setEditable(false);
-        dnaSeq.setColumns(20);
-        dnaSeq.setLineWrap(true);
-        dnaSeq.setRows(5);
-        jScrollPane1.setViewportView(dnaSeq);
+        javax.swing.GroupLayout geneCovPanelLayout = new javax.swing.GroupLayout(geneCovPanel);
+        geneCovPanel.setLayout(geneCovPanelLayout);
+        geneCovPanelLayout.setHorizontalGroup(
+            geneCovPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 413, Short.MAX_VALUE)
+        );
+        geneCovPanelLayout.setVerticalGroup(
+            geneCovPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 161, Short.MAX_VALUE)
+        );
 
-        jLabel3.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel3, org.openide.util.NbBundle.getMessage(BinExplorerTopComponent.class, "BinExplorerTopComponent.jLabel3.text")); // NOI18N
+        dnaseq.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(dnaseq, org.openide.util.NbBundle.getMessage(BinExplorerTopComponent.class, "BinExplorerTopComponent.dnaseq.text")); // NOI18N
+        dnaseq.setEnabled(false);
 
-        jLabel4.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel4, org.openide.util.NbBundle.getMessage(BinExplorerTopComponent.class, "BinExplorerTopComponent.jLabel4.text")); // NOI18N
-
-        aaSeq.setEditable(false);
-        aaSeq.setColumns(20);
-        aaSeq.setLineWrap(true);
-        aaSeq.setRows(5);
-        jScrollPane2.setViewportView(aaSeq);
+        aaseq.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(aaseq, org.openide.util.NbBundle.getMessage(BinExplorerTopComponent.class, "BinExplorerTopComponent.aaseq.text")); // NOI18N
+        aaseq.setEnabled(false);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -135,18 +266,20 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(contigList, javax.swing.GroupLayout.PREFERRED_SIZE, 484, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel1)
-                        .addGroup(layout.createSequentialGroup()
-                            .addComponent(jLabel2)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(binName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 380, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 380, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3)
-                    .addComponent(jLabel4))
+                    .addComponent(contigList, javax.swing.GroupLayout.PREFERRED_SIZE, 484, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(binName, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(dnaseq)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(aaseq)))
                 .addContainerGap(510, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(geneCovPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -155,35 +288,31 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(binName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(contigList, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(contentPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 221, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel3)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel4)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 169, Short.MAX_VALUE))
+                .addComponent(contentPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 221, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 186, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(dnaseq)
+                    .addComponent(aaseq))
+                .addGap(18, 18, 18)
+                .addComponent(geneCovPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(6, 6, 6))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextArea aaSeq;
+    private javax.swing.JButton aaseq;
     private javax.swing.JLabel binName;
     private javax.swing.JPanel contentPanel;
     private javax.swing.JComboBox<ContigI> contigList;
-    private javax.swing.JTextArea dnaSeq;
+    private javax.swing.JButton dnaseq;
+    private javax.swing.JPanel geneCovPanel;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
     // End of variables declaration//GEN-END:variables
     @Override
     public void componentOpened() {
@@ -219,8 +348,8 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
                     vc.removePropertyChangeListener(this);
                     vc.close();
                 }
-                dnaSeq.setText("");
-                aaSeq.setText("");
+                dnaseq.setEnabled(false);
+                aaseq.setEnabled(false);
                 vc = new ContigViewController(contig);
                 vc.addPropertyChangeListener(this);
                 FeaturePanel fp = new FeaturePanel(vc);
@@ -250,8 +379,8 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
             currentBin = newBin;
             currentBin.addPropertyChangeListener(this);
             binName.setText(currentBin.getName());
-            dnaSeq.setText("");
-            aaSeq.setText("");
+            dnaseq.setEnabled(false);
+            aaseq.setEnabled(false);
             contigModel.setBin(currentBin);
             contigModel.update();
         }
@@ -270,37 +399,86 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
                 currentBin = null;
                 contigModel.clear();
                 binName.setText("");
-                dnaSeq.setText("");
-                aaSeq.setText("");
+                dnaseq.setEnabled(false);
+                aaseq.setEnabled(false);
+                selectedFeature = null;
+                repaint();
                 return;
             }
         }
         if (evt.getSource() instanceof ContigViewController && evt.getPropertyName().equals(ContigViewController.FEATURE_SELECTED)) {
-            dnaSeq.setText("");
-            aaSeq.setText("");
-            final GeneI selectedFeature = (GeneI) evt.getNewValue();
+            dnaseq.setEnabled(true);
+            aaseq.setEnabled(true);
+
+            selectedFeature = (GeneI) evt.getNewValue();
             final MGXMasterI master = selectedFeature.getMaster();
+            
             MGXPool.getInstance().submit(new Runnable() {
                 @Override
                 public void run() {
                     try {
-                        final SequenceI seq = master.Gene().getDNASequence(selectedFeature);
-                        dnaSeq.setText(seq.getSequence());
-                        aaSeq.setText(DNAUtils.translate(seq.getSequence()));
+                        List<GeneCoverageI> all = new ArrayList<>();
+                        Iterator<GeneCoverageI> iter = master.GeneCoverage().ByGene(selectedFeature);
+                        while (iter != null && iter.hasNext()) {
+                            all.add(iter.next());
+                        }
+                        Collections.sort(all);
+
+                        Map<Long, String> runNames = new HashMap<>();
+
+                        FastCategoryDataset dataset = new FastCategoryDataset();
+                        dataset.setNotify(false);
+                        for (GeneCoverageI gc : all) {
+                            if (!runNames.containsKey(gc.getRunId())) {
+                                SeqRunI run = master.SeqRun().fetch(gc.getRunId());
+                                runNames.put(gc.getRunId(), run.getName());
+                                run.deleted();
+                            }
+                            dataset.addValue(gc.getCoverage(), "", runNames.get(gc.getRunId()));
+                        }
+                        dataset.setNotify(true);
+
+                        JFreeChart chart = ChartFactory.createBarChart("", "Sequencing run", "Read count", dataset, PlotOrientation.HORIZONTAL, false, true, false);
+
+                        chart.setBorderPaint(Color.WHITE);
+                        chart.setBackgroundPaint(Color.WHITE);
+                        chart.setAntiAlias(true);
+
+                        CategoryPlot plot = chart.getCategoryPlot();
+                        CategoryAxis domainAxis = plot.getDomainAxis();
+                        domainAxis.setCategoryMargin(0);
+                        domainAxis.setCategoryLabelPositions(CategoryLabelPositions.STANDARD);
+
+                        CategoryItemRenderer renderer = plot.getRenderer();
+                        renderer.setBaseItemLabelGenerator(new StandardCategoryItemLabelGenerator());
+                        renderer.setBaseItemLabelsVisible(true);
+                        ItemLabelPosition position = new ItemLabelPosition(ItemLabelAnchor.INSIDE10,
+                                TextAnchor.TOP_CENTER);
+                        renderer.setBasePositiveItemLabelPosition(position);
+
+                        BarRenderer br = (BarRenderer) plot.getRenderer();
+
+                        br.setBaseToolTipGenerator(new StandardCategoryToolTipGenerator("<html>Sequencing run: {1}<br>Mapped reads: {2}</html>", NumberFormat.getInstance(Locale.US)));
+                        br.setItemMargin(0);
+                        br.setMaximumBarWidth(.2); // set maximum width to 20% of chart
+
+                        // colors
+                        List<Color> colors = ColorPalette.pick(all.size());
+                        for (int i = 0; i < all.size(); i++) {
+                            renderer.setSeriesPaint(i, colors.get(i));
+                        }
+                        SVGChartPanel svgChartPanel = new SVGChartPanel(chart);
+                        geneCovPanel.removeAll();
+                        geneCovPanel.setLayout(new BorderLayout());
+                        geneCovPanel.add(svgChartPanel, BorderLayout.CENTER);
+                        geneCovPanel.repaint();
+
                     } catch (MGXException ex) {
                         Exceptions.printStackTrace(ex);
                     }
                 }
             });
-
         }
-    }
-
-    private void updateContigList() {
-        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-        contigModel.setBin(currentBin);
-        contigModel.update();
-        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
     }
 
     void writeProperties(java.util.Properties p) {
