@@ -24,6 +24,7 @@ import de.cebitec.mgx.api.model.assembly.access.BinAccessI;
 import de.cebitec.mgx.api.model.assembly.access.ContigAccessI;
 import de.cebitec.mgx.api.model.assembly.access.GeneAccessI;
 import de.cebitec.mgx.api.model.assembly.access.GeneCoverageAccessI;
+import de.cebitec.mgx.api.model.assembly.access.GeneObservationAccessI;
 import de.cebitec.mgx.pevents.ParallelPropertyChangeSupport;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -106,6 +107,8 @@ public abstract class MGXMasterI implements MGXDataModelBaseI<MGXMasterI> {
     public abstract GeneAccessI Gene() throws MGXException;
 
     public abstract GeneCoverageAccessI GeneCoverage() throws MGXException;
+    
+    public abstract GeneObservationAccessI GeneObservation() throws MGXException;
 
     @Override
     public final synchronized void modified() {
@@ -200,5 +203,7 @@ public abstract class MGXMasterI implements MGXDataModelBaseI<MGXMasterI> {
 
     @Override
     public abstract boolean equals(Object o);
+
+
 
 }
