@@ -34,14 +34,12 @@ public class AttributeTableModel extends DefaultTableModel {
         }
         MGXMasterI master = gene.getMaster();
         try {
-            int i = 0;
             Iterator<GeneObservationI> iter = master.GeneObservation().ByGene(gene);
             while (iter != null && iter.hasNext()) {
                 GeneObservationI gobs = iter.next();
                 gobsList.add(gobs);
-                i++;
             }
-            super.setRowCount(i);
+            super.setRowCount(gobsList.size());
 
         } catch (MGXException ex) {
             super.setRowCount(0);
