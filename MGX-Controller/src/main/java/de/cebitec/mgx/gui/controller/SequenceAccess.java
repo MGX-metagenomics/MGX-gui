@@ -207,10 +207,10 @@ public class SequenceAccess implements SequenceAccessI { //extends AccessBase<Se
                 SequenceI s = idx.get(sdto.getId());
 
                 s.setName(sdto.getName());
-                if (sdto.hasLength()) {
+                if (sdto.getLength() > 0) {
                     s.setLength(sdto.getLength());
                 }
-                if (sdto.hasSequence()) {
+                if (!sdto.getSequence().isEmpty()) {
                     s.setSequence(sdto.getSequence());
                 }
             }

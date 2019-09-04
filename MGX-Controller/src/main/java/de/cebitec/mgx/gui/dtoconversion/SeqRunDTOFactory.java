@@ -61,7 +61,7 @@ public class SeqRunDTOFactory extends DTOConversionBase<SeqRunI, SeqRunDTO> {
             s.setAccession(dto.getAccession());
         }
 
-        if (dto.hasNumSequences()) {
+        if (dto.getNumSequences() != 0) {
             s.setNumSequences(dto.getNumSequences());
         }
 

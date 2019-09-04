@@ -34,7 +34,7 @@ public class PointDTOFactory extends DTOConversionBase<Point, PointDTO> {
 
     @Override
     public Point toModel(MGXMasterI m, PointDTO dto) {
-        if (dto.hasName()) {
+        if (!dto.getName().isEmpty()) {
             return new Point(dto.getX(), dto.getY(), dto.getName());
         } else {
             return new Point(dto.getX(), dto.getY());

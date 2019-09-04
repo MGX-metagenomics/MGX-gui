@@ -47,7 +47,7 @@ public class HabitatDTOFactory extends DTOConversionBase<HabitatI, HabitatDTO> {
                 .setAltitude(dto.getAltitude())
                 .setBiome(dto.getBiome());
 
-        if (dto.hasDescription()) {
+        if (!dto.getDescription().isEmpty()) {
             h.setDescription(dto.getDescription());
         }
 

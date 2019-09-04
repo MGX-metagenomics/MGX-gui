@@ -44,13 +44,13 @@ public class SequenceDTOFactory extends DTOConversionBase<SequenceI, SequenceDTO
     public SequenceI toModel(MGXMasterI m, SequenceDTO dto) {
         SequenceI s = new Sequence();
         s.setName(dto.getName());
-        if (dto.hasId()) {
+        if (dto.getId() != 0) {
             s.setId(dto.getId());
         }
-        if (dto.hasLength()) {
+        if (dto.getLength() != 0) {
             s.setLength(dto.getLength());
         }
-        if (dto.hasSequence()) {
+        if (!dto.getSequence().isEmpty()) {
             s.setSequence(dto.getSequence());
         }
 

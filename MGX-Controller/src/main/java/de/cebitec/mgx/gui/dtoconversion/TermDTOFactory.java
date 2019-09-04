@@ -44,10 +44,10 @@ public class TermDTOFactory extends DTOConversionBase<TermI, TermDTO> {
         TermI t = new Term();
         t.setId(dto.getId());
         t.setName(dto.getName());
-        if (dto.hasParentId()) {
+        if (dto.getParentId() != 0) {
             t.setParentId(dto.getParentId());
         }
-        if (dto.hasDescription()) {
+        if (!dto.getDescription().isEmpty()) {
             t.setDescription(dto.getDescription());
         }
         return t;

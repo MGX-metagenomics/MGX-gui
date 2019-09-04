@@ -49,11 +49,11 @@ public class ToolDTOFactory extends DTOConversionBase<ToolI, ToolDTO> {
 
         // XML data might not be present in the tools received from the
         // server
-        if (dto.hasContent()&& !"".equals(dto.getContent())) {
+        if (!dto.getContent().isEmpty()) {
             t.setDefinition(dto.getContent());
         }
 
-        if (copyID && dto.hasId()) {
+        if (copyID && dto.getId() != 0) {
             t.setId(dto.getId());
         }
         return t;
