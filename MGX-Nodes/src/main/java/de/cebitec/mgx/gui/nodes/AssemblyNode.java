@@ -5,6 +5,7 @@ import de.cebitec.mgx.api.model.assembly.AssemblyI;
 import de.cebitec.mgx.gui.nodefactory.AssemblyStructureNodeFactory;
 import javax.swing.Action;
 import static org.apache.commons.text.StringEscapeUtils.escapeHtml4;
+import org.openide.filesystems.FileUtil;
 import org.openide.nodes.Children;
 import org.openide.util.lookup.Lookups;
 
@@ -34,7 +35,8 @@ public class AssemblyNode extends MGXNodeBase<AssemblyI> {
 
     @Override
     public Action[] getActions(boolean context) {
-        return new Action[]{};
+        Action annotate = FileUtil.getConfigObject("Actions/Edit/de-cebitec-mgx-gui-actions-AnnotateAssembly.instance", Action.class);
+        return new Action[]{annotate};
     }
 
     @Override

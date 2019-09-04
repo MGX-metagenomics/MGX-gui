@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package de.cebitec.mgx.api.model;
 
 import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.assembly.AssemblyI;
 import de.cebitec.mgx.common.JobState;
 import java.awt.datatransfer.DataFlavor;
 import java.util.Date;
@@ -17,6 +17,7 @@ import java.util.List;
  * @author sj
  */
 public abstract class JobI extends Identifiable<JobI> {
+
     //
     public static final DataFlavor DATA_FLAVOR = new DataFlavor(JobI.class, "JobI");
 
@@ -48,6 +49,10 @@ public abstract class JobI extends Identifiable<JobI> {
 
     public abstract JobI setSeqruns(SeqRunI[] run);
 
+    public abstract AssemblyI getAssembly();
+    
+    public abstract JobI setAssembly(AssemblyI asm);
+
     public abstract String getCreator();
 
     public abstract JobI setCreator(String created_by);
@@ -57,5 +62,5 @@ public abstract class JobI extends Identifiable<JobI> {
 
     @Override
     public abstract int compareTo(JobI o);
-    
+
 }

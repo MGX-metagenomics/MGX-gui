@@ -59,9 +59,15 @@ public class JobDTOFactory extends DTOConversionBase<JobI, JobDTO> {
                 .setToolId(j.getTool().getId())
                 .setCreator(j.getCreator())
                 .setState(dto.JobState.forNumber(j.getStatus().getValue()));
+
         
-        for (SeqRunI sr : j.getSeqruns()) {
-            b.addSeqrun(sr.getId());
+        // either assembly or seqruns, but not both
+        if (j.getAssembly() != null) {
+            b.setAssemblyId(j.getAssembly().getId());
+        } else {
+            for (SeqRunI sr : j.getSeqruns()) {
+                b.addSeqrun(sr.getId());
+            }
         }
 
         if (j.getStartDate() != null) {
@@ -79,7 +85,7 @@ public class JobDTOFactory extends DTOConversionBase<JobI, JobDTO> {
 
     @Override
     public final JobI toModel(MGXMasterI m, JobDTO dto) {
-        
+
         JobI job = instanceCache.getIfPresent(new CacheKey(dto.getId(), m));
 
         if (job != null) {
@@ -106,8 +112,9 @@ public class JobDTOFactory extends DTOConversionBase<JobI, JobDTO> {
 
         return job;
     }
-    
+
     private final static class CacheKey {
+
         private final long jobId;
         private final MGXMasterI master;
 
@@ -144,7 +151,6 @@ public class JobDTOFactory extends DTOConversionBase<JobI, JobDTO> {
             }
             return true;
         }
-        
-        
+
     }
 }

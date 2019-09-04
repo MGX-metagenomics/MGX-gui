@@ -5,6 +5,7 @@ import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.JobParameterI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.ToolI;
+import de.cebitec.mgx.api.model.assembly.AssemblyI;
 import de.cebitec.mgx.common.JobState;
 import java.util.Date;
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.List;
 public class Job extends JobI {
 
     protected SeqRunI[] seqruns;
+    protected AssemblyI assembly;
     //
     protected ToolI tool;
     protected String created_by;
@@ -94,6 +96,17 @@ public class Job extends JobI {
     @Override
     public JobI setSeqruns(SeqRunI[] runs) {
         this.seqruns = runs;
+        return this;
+    }
+
+    @Override
+    public AssemblyI getAssembly() {
+        return assembly;
+    }
+
+    @Override
+    public JobI setAssembly(AssemblyI asm) {
+        this.assembly = asm;
         return this;
     }
 

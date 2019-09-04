@@ -12,6 +12,7 @@ import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.JobParameterI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.ToolI;
+import de.cebitec.mgx.api.model.assembly.AssemblyI;
 import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.client.exception.MGXDTOException;
 import de.cebitec.mgx.common.JobState;
@@ -125,7 +126,36 @@ public class JobAccess implements JobAccessI {
         job.setCreator(tool.getMaster().getLogin());
         job.setTool(tool);
         job.setStatus(JobState.CREATED);
+        job.setAssembly(null);
         job.setSeqruns(seqruns);
+        job.setParameters(params);
+
+        JobDTO dto = JobDTOFactory.getInstance().toDTO(job);
+        long id;
+        try {
+            id = getDTOmaster().Job().create(dto);
+            job.setId(id);
+            job.modified();
+        } catch (MGXDTOException ex) {
+            throw new MGXException(ex.getMessage());
+        }
+
+        return job;
+    }
+
+    @Override
+    public JobI create(ToolI tool, List<JobParameterI> params, AssemblyI assembly) throws MGXException {
+
+        if (assembly == null) {
+            throw new MGXException("Cannot create job for no assembly.");
+        }
+
+        JobI job = new Job(tool.getMaster());
+        job.setCreator(tool.getMaster().getLogin());
+        job.setTool(tool);
+        job.setStatus(JobState.CREATED);
+        job.setAssembly(assembly);
+        job.setSeqruns(null);
         job.setParameters(params);
 
         JobDTO dto = JobDTOFactory.getInstance().toDTO(job);
