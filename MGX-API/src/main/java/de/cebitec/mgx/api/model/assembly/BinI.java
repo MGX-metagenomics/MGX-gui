@@ -30,6 +30,8 @@ public abstract class BinI extends Identifiable<BinI> {
     public abstract float getContamination();
     
     public abstract long getTotalSize();
+    
+    public abstract int getNumContigs();
 
     public abstract long getN50();
 
