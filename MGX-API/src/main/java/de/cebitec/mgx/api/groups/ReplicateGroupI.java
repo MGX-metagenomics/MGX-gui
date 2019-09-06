@@ -11,13 +11,12 @@ import java.awt.Color;
 import java.awt.datatransfer.DataFlavor;
 import java.beans.PropertyChangeListener;
 import java.util.Collection;
-import java.util.List;
 
 /**
  *
  * @author sjaenick
  */
-public interface ReplicateGroupI extends ModelBaseI<ReplicateGroupI>, PropertyChangeListener {
+public interface ReplicateGroupI extends GroupI<ReplicateGroupI>, PropertyChangeListener {
 
     public static final DataFlavor DATA_FLAVOR = new DataFlavor(ReplicateGroupI.class, "ReplicateGroupI");
 
@@ -30,9 +29,7 @@ public interface ReplicateGroupI extends ModelBaseI<ReplicateGroupI>, PropertyCh
     String REPLICATEGROUP_REPLICATE_ADDED = "replicateGroup_replicate_added";
     String REPLICATEGROUP_REPLICATE_REMOVED = "replicateGroup_replicate_removed";
 
-    public VGroupManagerI getManager(); 
-    
-    String getName();
+    public VGroupManagerI getManager();
 
     void setName(String name);
 
@@ -50,8 +47,6 @@ public interface ReplicateGroupI extends ModelBaseI<ReplicateGroupI>, PropertyCh
     
     int getNextReplicateNum();
 
-    boolean isActive();
-
     void setActive(boolean is_active);
     
     void add(ReplicateI rGroup);
@@ -61,11 +56,5 @@ public interface ReplicateGroupI extends ModelBaseI<ReplicateGroupI>, PropertyCh
     boolean isEmpty();
 
     void close();
-
-    @Override
-    void addPropertyChangeListener(PropertyChangeListener p);
-
-    @Override
-    void removePropertyChangeListener(PropertyChangeListener p);
 
 }

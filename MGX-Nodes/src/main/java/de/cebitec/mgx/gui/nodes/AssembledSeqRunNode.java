@@ -12,25 +12,19 @@ import org.openide.util.lookup.Lookups;
  */
 public class AssembledSeqRunNode extends MGXNodeBase<AssembledSeqRunI> {
 
-    //
-    public AssembledSeqRunNode(AssembledSeqRunI s) {
-        super(Children.LEAF, Lookups.fixed(s.getMaster(), s), s);
+    public AssembledSeqRunNode(AssembledSeqRunI data) {
+        this(data, Children.LEAF);
+    }
+
+    public AssembledSeqRunNode(AssembledSeqRunI s, Children children) {
+        super(children, Lookups.fixed(s.getMaster(), s), s);
         setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/SeqRun.png");
         super.setShortDescription(getToolTipText(s));
         super.setDisplayName(s.getName());
     }
 
     private String getToolTipText(AssembledSeqRunI run) {
-        //DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.US);
-        //String numSeqs = formatter.format(run.getNumSequences());
-
         return new StringBuilder("<html><b>Sequencing run: </b>").append(escapeHtml4(run.getName()))
-//                .append("<br><hr><br>")
-//                .append(run.getSequencingTechnology().getName()).append(" ")
-//                .append(run.getSequencingMethod().getName())
-//                .append("<br>")
-//                .append(numSeqs)
-//                .append(run.isPaired() ? " read pairs" : " reads")
                 .append("</html>").toString();
     }
 

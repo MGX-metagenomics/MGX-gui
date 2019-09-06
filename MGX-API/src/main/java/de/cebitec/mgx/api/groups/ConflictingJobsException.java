@@ -11,15 +11,15 @@ import java.util.Set;
  */
 public class ConflictingJobsException extends Exception {
 
-    private final VisualizationGroupI group;
+    private final GroupI group;
     private final Map<SeqRunI, Set<JobI>> conflicts;
 
-    public ConflictingJobsException(VisualizationGroupI group, Map<SeqRunI, Set<JobI>> data) {
+    public ConflictingJobsException(GroupI group, Map<SeqRunI, Set<JobI>> data) {
         this.group = group;
         this.conflicts = data;
     }
 
-    public VisualizationGroupI getGroup() {
+    public GroupI getGroup() {
         return group;
     }
 

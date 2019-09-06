@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.cebitec.mgx.gui.visgroups;
+package de.cebitec.mgx.gui.visgroups.workers;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.misc.DistributionI;
@@ -41,17 +41,5 @@ public class DistributionFetcher extends Fetcher<Pair<SeqRunI, DistributionI<Lon
             return new Pair<>(run, master.Attribute().getDistribution(attrType, job));
 //        }
     }
-
-//    @Override
-//    protected void done() {
-//        DistributionI dist;
-//        try {
-//            dist = get();
-//            result.put(run, dist);
-//        } catch (InterruptedException | ExecutionException ex) {
-//            Exceptions.printStackTrace(ex);
-//        }
-//        latch.countDown();
-//    }
 
 }

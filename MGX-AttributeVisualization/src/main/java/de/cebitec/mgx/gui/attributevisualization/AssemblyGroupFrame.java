@@ -10,7 +10,7 @@ import de.cebitec.mgx.api.groups.ReplicateGroupI;
 import de.cebitec.mgx.api.groups.VGroupManagerI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.model.ModelBaseI;
-import de.cebitec.mgx.gui.nodes.VizGroupNode;
+import de.cebitec.mgx.gui.nodes.AssemblyGroupNode;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
@@ -34,10 +34,10 @@ import org.openide.util.Exceptions;
  *
  * @author sj
  */
-public class GroupFrame extends GroupFrameBase<VisualizationGroupI> {
+public class AssemblyGroupFrame extends GroupFrameBase<AssemblyGroupI> {
 
-    public GroupFrame(final VisualizationGroupI vGroup) {
-        super(vGroup.getManager(), vGroup, new VizGroupNode(vGroup));
+    public AssemblyGroupFrame(final AssemblyGroupI vGroup) {
+        super(vGroup.getManager(), vGroup, new AssemblyGroupNode(vGroup));
         initComponents();
         // set initial properties
         //
@@ -125,6 +125,16 @@ public class GroupFrame extends GroupFrameBase<VisualizationGroupI> {
         return getContent().getDisplayName();
     }
 
+//    @Override
+//    public void dispose() {
+//        VGroupManager.getInstance().removeVisualizationGroup(getContent());
+//        super.dispose();
+//    }
+//    @Override
+//    public void dispose() {
+//        getContent().getManager().removeVisualizationGroup(getContent());
+//        super.dispose();
+//    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -209,7 +219,6 @@ public class GroupFrame extends GroupFrameBase<VisualizationGroupI> {
             case ReplicateGroupI.REPLICATEGROUP_ACTIVATED:
             case ReplicateGroupI.REPLICATEGROUP_DEACTIVATED:
             case VGroupManagerI.REPLICATEGROUP_SELECTION_CHANGED:
-            case VGroupManagerI.ASMGROUP_SELECTION_CHANGED:
                 // ignore
                 break;
             default:

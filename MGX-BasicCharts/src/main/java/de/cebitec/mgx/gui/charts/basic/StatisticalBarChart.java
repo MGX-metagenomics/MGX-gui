@@ -209,7 +209,7 @@ public class StatisticalBarChart extends CategoricalViewerI<Long> implements Adj
 
         return super.canHandle(valueType)
                 && VGroupManager.getInstance().getReplicateGroups().size() > 0
-                && VGroupManager.getInstance().getAllVisualizationGroups().size() == replicatesCount;
+                && VGroupManager.getInstance().getAllGroups().size() == replicatesCount;
     }
 
 }

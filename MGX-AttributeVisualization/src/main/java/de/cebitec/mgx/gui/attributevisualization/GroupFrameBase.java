@@ -17,7 +17,6 @@ import java.awt.Graphics;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -84,6 +83,7 @@ public abstract class GroupFrameBase<T extends ModelBaseI<T>> extends javax.swin
                 }
             case VGroupManagerI.VISGROUP_ADDED:
             case VGroupManagerI.REPLGROUP_ADDED:
+            case VGroupManagerI.ASMGROUP_ADDED:
             case VisualizationGroupI.VISGROUP_HAS_DIST:
                 return;
             case VGroupManagerI.REPLICATEGROUP_SELECTION_CHANGED:

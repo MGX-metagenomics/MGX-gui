@@ -239,7 +239,7 @@ public class VisualizationGroupTest {
         VisualizationGroupI vg = vgmgr.createVisualizationGroup();
         //vgmgr.removeVisualizationGroup(vg);
         vg.close();
-        assertEquals(0, vgmgr.getAllVisualizationGroups().size());
+        assertEquals(0, vgmgr.getAllGroups().size());
 
         ReplicateGroupI rg1 = vgmgr.createReplicateGroup();
         ReplicateGroupI rg2 = vgmgr.createReplicateGroup();

@@ -33,13 +33,13 @@ public class VGroupManagerTest {
     public void testAddRemove() {
         System.out.println("testAddRemove");
         VGroupManagerI vgmgr = VGroupManager.getTestInstance();
-        assertEquals(0, vgmgr.getAllVisualizationGroups().size());
+        assertEquals(0, vgmgr.getAllGroups().size());
         VisualizationGroupI vg = vgmgr.createVisualizationGroup();
         assertNotNull(vg);
-        assertEquals(1, vgmgr.getAllVisualizationGroups().size());
+        assertEquals(1, vgmgr.getAllGroups().size());
         //vgmgr.removeVisualizationGroup(vg);
         vg.close();
-        assertEquals(0, vgmgr.getAllVisualizationGroups().size());
+        assertEquals(0, vgmgr.getAllGroups().size());
     }
 
     @Test
@@ -47,19 +47,19 @@ public class VGroupManagerTest {
         System.out.println("createVGroup");
         VGroupManagerI mgr = VGroupManager.getTestInstance();
         assertTrue(mgr.getReplicateGroups().isEmpty());
-        assertTrue(mgr.getAllVisualizationGroups().isEmpty());
+        assertTrue(mgr.getAllGroups().isEmpty());
 
         // create vGrp
         VisualizationGroupI vGrp = mgr.createVisualizationGroup();
         assertNotNull(vGrp);
-        assertEquals(1, mgr.getAllVisualizationGroups().size());
+        assertEquals(1, mgr.getAllGroups().size());
         assertTrue(mgr.getReplicateGroups().isEmpty());
 
         // removal of vGrp
         //mgr.removeVisualizationGroup(vGrp);
         vGrp.close();
         assertTrue(mgr.getReplicateGroups().isEmpty());
-        assertTrue(mgr.getAllVisualizationGroups().isEmpty());
+        assertTrue(mgr.getAllGroups().isEmpty());
     }
 
     @Test
@@ -86,7 +86,7 @@ public class VGroupManagerTest {
         assertEquals(1, rGroup.getReplicates().size());
         assertTrue(rGroup.getReplicates().contains(replicate));
 //        assertFalse("Empty replicate should not be active", replicate.isActive());
-        assertTrue(mgr.getAllVisualizationGroups().contains(replicate)); // replicate is a Vizgroup, as well
+        assertTrue(mgr.getAllGroups().contains(replicate)); // replicate is a Vizgroup, as well
 
         // remove replicategroup it again
         //mgr.removeReplicateGroup(rGroup);
@@ -127,8 +127,8 @@ public class VGroupManagerTest {
         ReplicateI r2 = mgr.createReplicate(rGroup);
         assertEquals(2, rGroup.getReplicates().size());
         //
-        assertTrue(mgr.getAllVisualizationGroups().contains(r1));
-        assertTrue(mgr.getAllVisualizationGroups().contains(r2));
+        assertTrue(mgr.getAllGroups().contains(r1));
+        assertTrue(mgr.getAllGroups().contains(r2));
         //
         //mgr.removeReplicateGroup(rGroup);
         rGroup.close();
@@ -136,8 +136,8 @@ public class VGroupManagerTest {
         //
         //
         // removing a replicate group should also remove all replicates contained in it 
-        assertFalse(mgr.getAllVisualizationGroups().contains(r1));
-        assertFalse(mgr.getAllVisualizationGroups().contains(r2));
+        assertFalse(mgr.getAllGroups().contains(r1));
+        assertFalse(mgr.getAllGroups().contains(r2));
     }
 
     @Test

@@ -1,7 +1,10 @@
 package de.cebitec.mgx.gui.attributevisualization.ui;
 
+import de.cebitec.mgx.api.groups.AssemblyGroupI;
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.model.SeqRunI;
+import de.cebitec.mgx.api.model.assembly.AssembledSeqRunI;
 import de.cebitec.mgx.gui.attributevisualization.view.GroupExplorerView;
 import de.cebitec.mgx.gui.attributevisualization.NodeMapperImpl;
 import de.cebitec.mgx.gui.nodes.VgMgrNode;
@@ -76,6 +79,14 @@ public final class VisualizationGroupTopComponent extends TopComponent implement
             }
         });
 
+        addAsmGroup.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                VGroupManager.getInstance().createAssemblyGroup();
+            }
+        });
+
         //groupmgr.addPropertyChangeListener(this);
         setName(Bundle.CTL_VisualizationGroupTopComponent());
         setToolTipText(Bundle.HINT_VisualizationGroupTopComponent());
@@ -99,7 +110,7 @@ public final class VisualizationGroupTopComponent extends TopComponent implement
         }
 
         // create initial group, if necessary
-        if (VGroupManager.getInstance().getAllVisualizationGroups().isEmpty()) {
+        if (VGroupManager.getInstance().getAllGroups().isEmpty()) {
             VGroupManager.getInstance().createVisualizationGroup();
         }
 
@@ -113,7 +124,7 @@ public final class VisualizationGroupTopComponent extends TopComponent implement
             public void dragEnter(DropTargetDragEvent dtde) {
 
                 Set<String> allGroupNames = new HashSet<>();
-                for (VisualizationGroupI vg : VGroupManager.getInstance().getAllVisualizationGroups()) {
+                for (GroupI vg : VGroupManager.getInstance().getAllGroups()) {
                     allGroupNames.add(vg.getName());
                 }
 
@@ -129,6 +140,13 @@ public final class VisualizationGroupTopComponent extends TopComponent implement
                             return;
                         }
                     }
+                    AssembledSeqRunI arun = n.getLookup().lookup(AssembledSeqRunI.class);
+                    if (arun != null) {
+                        if (allGroupNames.contains(arun.getName())) {
+                            dtde.rejectDrag();
+                            return;
+                        }
+                    }
                 }
                 dtde.acceptDrag(DnDConstants.ACTION_COPY);
             }
@@ -137,7 +155,7 @@ public final class VisualizationGroupTopComponent extends TopComponent implement
             public void drop(DropTargetDropEvent dtde) {
 
                 Set<String> allGroupNames = new HashSet<>();
-                for (VisualizationGroupI vg : VGroupManager.getInstance().getAllVisualizationGroups()) {
+                for (GroupI vg : VGroupManager.getInstance().getAllGroups()) {
                     allGroupNames.add(vg.getName());
                 }
 
@@ -150,6 +168,13 @@ public final class VisualizationGroupTopComponent extends TopComponent implement
                             return;
                         }
                     }
+                    AssembledSeqRunI arun = n.getLookup().lookup(AssembledSeqRunI.class);
+                    if (arun != null) {
+                        if (allGroupNames.contains(arun.getName())) {
+                            dtde.rejectDrop();
+                            return;
+                        }
+                    }
                 }
 
                 for (Node n : nodes) {
@@ -158,6 +183,13 @@ public final class VisualizationGroupTopComponent extends TopComponent implement
                         VisualizationGroupI newGrp = VGroupManager.getInstance().createVisualizationGroup();
                         newGrp.setName(run.getName());
                         newGrp.addSeqRun(run);
+                        continue;
+                    }
+                    AssembledSeqRunI arun = n.getLookup().lookup(AssembledSeqRunI.class);
+                    if (arun != null) {
+                        AssemblyGroupI newGrp = VGroupManager.getInstance().createAssemblyGroup();
+                        newGrp.setName(arun.getName());
+                        newGrp.addSeqRun(arun);
                     }
                 }
                 dtde.dropComplete(true);
@@ -177,6 +209,7 @@ public final class VisualizationGroupTopComponent extends TopComponent implement
         jToolBar1 = new javax.swing.JToolBar();
         addGroupButton = new javax.swing.JButton();
         addReplGroupButton = new javax.swing.JButton();
+        addAsmGroup = new javax.swing.JButton();
         panel = new javax.swing.JPanel();
 
         setMinimumSize(new java.awt.Dimension(400, 200));
@@ -202,6 +235,13 @@ public final class VisualizationGroupTopComponent extends TopComponent implement
         addReplGroupButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jToolBar1.add(addReplGroupButton);
 
+        addAsmGroup.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(addAsmGroup, org.openide.util.NbBundle.getMessage(VisualizationGroupTopComponent.class, "VisualizationGroupTopComponent.addAsmGroup.text")); // NOI18N
+        addAsmGroup.setFocusable(false);
+        addAsmGroup.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        addAsmGroup.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(addAsmGroup);
+
         add(jToolBar1, java.awt.BorderLayout.NORTH);
 
         panel.setMinimumSize(new java.awt.Dimension(200, 100));
@@ -209,6 +249,7 @@ public final class VisualizationGroupTopComponent extends TopComponent implement
         add(panel, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton addAsmGroup;
     private javax.swing.JButton addGroupButton;
     private javax.swing.JButton addReplGroupButton;
     private javax.swing.JToolBar jToolBar1;
@@ -229,10 +270,10 @@ public final class VisualizationGroupTopComponent extends TopComponent implement
         // better to version settings since initial version as advocated at
         // http://wiki.apidesign.org/wiki/PropertyFiles
         p.setProperty("version", "1.0");
-        Collection<VisualizationGroupI> groups = VGroupManager.getInstance().getAllVisualizationGroups();
+        Collection<GroupI> groups = VGroupManager.getInstance().getAllGroups();
         p.setProperty("numGroups", String.valueOf(groups.size()));
         int num = 0;
-        for (VisualizationGroupI vg : groups) {
+        for (GroupI vg : groups) {
             p.setProperty("vGroup" + num + "_active", String.valueOf(vg.isActive()));
         }
     }

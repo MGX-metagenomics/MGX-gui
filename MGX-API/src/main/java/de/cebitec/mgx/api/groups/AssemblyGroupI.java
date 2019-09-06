@@ -12,6 +12,7 @@ import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.SeqRunI;
+import de.cebitec.mgx.api.model.assembly.AssembledSeqRunI;
 import de.cebitec.mgx.api.model.tree.TreeI;
 import java.awt.Color;
 import java.awt.datatransfer.DataFlavor;
@@ -27,23 +28,23 @@ import java.util.UUID;
  *
  * @author sj
  */
-public interface VisualizationGroupI extends GroupI<VisualizationGroupI>, PropertyChangeListener {
+public interface AssemblyGroupI extends GroupI<AssemblyGroupI>, PropertyChangeListener {
 
-    public static final DataFlavor VISGROUP_DATA_FLAVOR = new DataFlavor(VisualizationGroupI.class, "VisualizationGroupI");
+    public static final DataFlavor VISGROUP_DATA_FLAVOR = new DataFlavor(AssemblyGroupI.class, "VisualizationGroupI");
     //private String managedState = OBJECT_MANAGED;
     //
-    public static final String VISGROUP_ACTIVATED = "visgroup_activated";
-    public static final String VISGROUP_ATTRTYPE_CHANGED = "vgAttrTypeChange";
-    public static final String VISGROUP_CHANGED = "visgroup_changed";
-    public static final String VISGROUP_DEACTIVATED = "visgroup_deactivated";
-    public static final String VISGROUP_HAS_DIST = "vgroup_HasDist";
-    public static final String VISGROUP_RENAMED = "vgroup_renamed";
+    public static final String ASMGROUP_ACTIVATED = "asmgroup_activated";
+    public static final String ASMGROUP_ATTRTYPE_CHANGED = "asmgAttrTypeChange";
+    public static final String ASMGROUP_CHANGED = "asmgroup_changed";
+    public static final String ASMGROUP_DEACTIVATED = "asmgroup_deactivated";
+    public static final String ASMGROUP_HAS_DIST = "asmgroup_HasDist";
+    public static final String ASMGROUP_RENAMED = "asmgroup_renamed";
     
     public VGroupManagerI getManager();
 
-    public void addSeqRun(final SeqRunI sr);
+    public void addSeqRun(final AssembledSeqRunI sr);
 
-    public void addSeqRuns(final SeqRunI... runs);
+    public void addSeqRuns(final AssembledSeqRunI... runs);
 
     public Iterator<AttributeTypeI> getAttributeTypes();
 
@@ -69,13 +70,13 @@ public interface VisualizationGroupI extends GroupI<VisualizationGroupI>, Proper
 
     public String getSelectedAttributeType();
 
-    public Set<SeqRunI> getSeqRuns();
+    public Set<AssembledSeqRunI> getSeqRuns();
 
     @Override
     public void propertyChange(PropertyChangeEvent evt);
 
 //    void removePropertyChangeListener(PropertyChangeListener p);
-    public void removeSeqRun(final SeqRunI sr);
+    public void removeSeqRun(final AssembledSeqRunI sr);
 
     public void resolveConflict(AttributeRank rank, String attributeType, SeqRunI sr, JobI j);
 

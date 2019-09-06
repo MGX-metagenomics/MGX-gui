@@ -1,6 +1,8 @@
 package de.cebitec.mgx.gui.visgroups;
 
+import de.cebitec.mgx.api.groups.AssemblyGroupI;
 import de.cebitec.mgx.api.groups.ConflictingJobsException;
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.groups.ReplicateGroupI;
 import de.cebitec.mgx.api.groups.ReplicateI;
 import de.cebitec.mgx.api.groups.VGroupManagerI;
@@ -62,8 +64,10 @@ public class VGroupManager implements VGroupManagerI {
     // LinkedHashSet keeps the order elements are added
     private final Collection<VisualizationGroupI> vizGroups = new LinkedHashSet<>();
     private final Collection<ReplicateGroupI> replicateGroups = new LinkedHashSet<>();
+    private final Collection<AssemblyGroupI> assemblyGroups = new LinkedHashSet<>();
     private int vizGroupCount = 1;
     private int replicateGroupCount = 1;
+    private int assemblyGroupCount = 1;
     private final ParallelPropertyChangeSupport pcs;
 
     private final Map<AttributeRank, String> currentAttributeType = new HashMap<>();
@@ -367,6 +371,7 @@ public class VGroupManager implements VGroupManagerI {
 //    }
     private VisualizationGroupI selectedGroup = null;
     private ReplicateGroupI selectedReplicateGroup = null;
+    private AssemblyGroupI selectedAssemblyGroup = null;
 
     @Override
     public final void setSelectedVisualizationGroup(VisualizationGroupI group) {
@@ -406,6 +411,46 @@ public class VGroupManager implements VGroupManagerI {
         return replGroup;
     }
 
+    @Override
+    public AssemblyGroupI createAssemblyGroup() {
+        AssemblyGroupI group;
+
+        synchronized (vizGroups) {
+            String newName = "Group " + assemblyGroupCount;
+            while (hasVizGroup(newName)) {
+                newName = "Group " + ++assemblyGroupCount;
+            }
+            Color groupColor = groupColors[(assemblyGroupCount - 1) % groupColors.length];
+            group = new AssemblyGroup(this, assemblyGroupCount, newName, groupColor);
+            try {
+                group.selectAttributeType(AttributeRank.PRIMARY, currentAttributeType.get(AttributeRank.PRIMARY));
+                group.selectAttributeType(AttributeRank.SECONDARY, currentAttributeType.get(AttributeRank.SECONDARY));
+            } catch (ConflictingJobsException ex) {
+                // unreachable since group is empty
+            }
+            group.addPropertyChangeListener(this);
+            assemblyGroups.add(group);
+            assemblyGroupCount++;
+        }
+
+        firePropertyChange(ASMGROUP_ADDED, 0, group);
+
+        // auto-select initial group
+        if (vizGroups.size() == 1) {
+            setSelectedAssemblyGroup(group);
+        }
+
+        return group;
+    }
+
+    @Override
+    public final void setSelectedAssemblyGroup(AssemblyGroupI group) {
+        if (group != null && selectedAssemblyGroup != group && !group.isDeleted()) {
+            selectedAssemblyGroup = group;
+            firePropertyChange(ASMGROUP_SELECTION_CHANGED, null, selectedGroup);
+        }
+    }
+
 //    @Override
 //    public void removeReplicateGroup(ReplicateGroupI rg) {
 //        if (rg != null && replicateGroups.contains(rg)) {
@@ -426,10 +471,13 @@ public class VGroupManager implements VGroupManagerI {
     }
 
     @Override
-    public Collection<VisualizationGroupI> getAllVisualizationGroups() {
-        List<VisualizationGroupI> ret = new ArrayList<>(vizGroups.size());
+    public Collection<GroupI> getAllGroups() {
+        List<GroupI> ret = new ArrayList<>(vizGroups.size());
         synchronized (vizGroups) {
             ret.addAll(vizGroups);
+        }
+        synchronized (assemblyGroups) {
+            ret.addAll(assemblyGroups);
         }
         return ret;
     }

@@ -111,7 +111,7 @@ public abstract class MGXDataModelBase<T extends MGXDataModelBaseI<T>> implement
         if (pcs == null) {
             synchronized (this) {
                 if (pcs == null) {
-                    pcs = new ParallelPropertyChangeSupport(this, true);
+                    pcs = new ParallelPropertyChangeSupport(this, false);
                 }
             }
         }

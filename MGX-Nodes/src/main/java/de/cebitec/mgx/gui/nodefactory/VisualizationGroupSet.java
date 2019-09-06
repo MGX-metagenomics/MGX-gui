@@ -5,10 +5,13 @@
  */
 package de.cebitec.mgx.gui.nodefactory;
 
+import de.cebitec.mgx.api.groups.AssemblyGroupI;
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.groups.ReplicateGroupI;
 import de.cebitec.mgx.api.groups.VGroupManagerI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.model.ModelBaseI;
+import de.cebitec.mgx.gui.nodes.AssemblyGroupNode;
 import de.cebitec.mgx.gui.nodes.ReplicateGroupNode;
 import de.cebitec.mgx.gui.nodes.VizGroupNode;
 import java.beans.PropertyChangeEvent;
@@ -26,30 +29,30 @@ import org.openide.nodes.NodeReorderEvent;
  *
  * @author sjaenick
  */
-public class VisualizationGroupSet extends ChildFactory<ModelBaseI> implements NodeListener {
+public class VisualizationGroupSet extends ChildFactory<GroupI> implements NodeListener {
 
-    private final Set<ModelBaseI> data = new LinkedHashSet<>();
+    private final Set<GroupI> data = new LinkedHashSet<>();
     private final VGroupManagerI vgmgr;
 
     public VisualizationGroupSet(VGroupManagerI vgmgr) {
         this.vgmgr = vgmgr;
 
         // restore state
-        data.addAll(vgmgr.getAllVisualizationGroups());
+        data.addAll(vgmgr.getAllGroups());
         data.addAll(vgmgr.getReplicateGroups());
 
         // listen for changes
         vgmgr.addPropertyChangeListener(this);
     }
 
-    private void add(ModelBaseI obj) {
+    private void add(GroupI obj) {
         if (!data.contains(obj)) {
             data.add(obj);
             obj.addPropertyChangeListener(this);
         }
     }
 
-    private void remove(ModelBaseI obj) {
+    private void remove(GroupI obj) {
         if (data.contains(obj)) {
             data.remove(obj);
             obj.removePropertyChangeListener(this);
@@ -57,7 +60,7 @@ public class VisualizationGroupSet extends ChildFactory<ModelBaseI> implements N
     }
 
     @Override
-    protected boolean createKeys(List<ModelBaseI> toPopulate) {
+    protected boolean createKeys(List<GroupI> toPopulate) {
         toPopulate.addAll(data);
         return true;
     }
@@ -97,6 +100,10 @@ public class VisualizationGroupSet extends ChildFactory<ModelBaseI> implements N
                     add((ReplicateGroupI) evt.getNewValue());
                     refresh(true);
                     break;
+                case VGroupManagerI.ASMGROUP_ADDED:
+                    add((AssemblyGroupI) evt.getNewValue());
+                    refresh(true);
+                    break;
             }
         } else {
             switch (evt.getPropertyName()) {
@@ -116,10 +123,14 @@ public class VisualizationGroupSet extends ChildFactory<ModelBaseI> implements N
                 case ReplicateGroupI.REPLICATEGROUP_DEACTIVATED:
                 case ReplicateGroupI.REPLICATEGROUP_REPLICATE_ADDED:
                 case ReplicateGroupI.REPLICATEGROUP_REPLICATE_REMOVED:
+                case AssemblyGroupI.ASMGROUP_CHANGED:
+                case AssemblyGroupI.ASMGROUP_ACTIVATED:
+                case AssemblyGroupI.ASMGROUP_DEACTIVATED:
+                case AssemblyGroupI.ASMGROUP_RENAMED:
                     // ignore
                     break;
                 case ModelBaseI.OBJECT_DELETED:
-                    remove((ModelBaseI) evt.getSource());
+                    remove((GroupI) evt.getSource());
                     break;
                 case ModelBaseI.OBJECT_MODIFIED:
                     // ignore
@@ -131,7 +142,7 @@ public class VisualizationGroupSet extends ChildFactory<ModelBaseI> implements N
     }
 
     @Override
-    protected Node createNodeForKey(ModelBaseI key) {
+    protected Node createNodeForKey(GroupI key) {
         Node node = null;
         if (key instanceof VisualizationGroupI) {
             VisualizationGroupI vg = (VisualizationGroupI) key;
@@ -139,6 +150,9 @@ public class VisualizationGroupSet extends ChildFactory<ModelBaseI> implements N
         } else if (key instanceof ReplicateGroupI) {
             ReplicateGroupI rg = (ReplicateGroupI) key;
             node = new ReplicateGroupNode(rg);
+        } else if (key instanceof AssemblyGroupI) {
+            AssemblyGroupI ag = (AssemblyGroupI) key;
+            node = new AssemblyGroupNode(ag);
         } else {
             assert false;
         }

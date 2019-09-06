@@ -14,6 +14,7 @@ import de.cebitec.mgx.api.model.TermI;
 import de.cebitec.mgx.api.model.assembly.AssembledSeqRunI;
 import de.cebitec.mgx.api.model.assembly.AssemblyI;
 import de.cebitec.mgx.api.model.qc.QCResultI;
+import de.cebitec.mgx.common.ToolScope;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +28,7 @@ public interface SeqRunAccessI extends AccessBaseI<SeqRunI> {
 
     public SeqRunI create(DNAExtractI extract, String name, TermI seqMethod, TermI seqTechnology, boolean submittedINSDC, boolean isPaired, String accession) throws MGXException;
 
-    public Map<JobI, Set<AttributeTypeI>> getJobsAndAttributeTypes(SeqRunI run) throws MGXException;
+    public Map<JobI, Set<AttributeTypeI>> getJobsAndAttributeTypes(SeqRunI run, ToolScope scope) throws MGXException;
 
     public Iterator<SeqRunI> ByExtract(DNAExtractI extract) throws MGXException;
 

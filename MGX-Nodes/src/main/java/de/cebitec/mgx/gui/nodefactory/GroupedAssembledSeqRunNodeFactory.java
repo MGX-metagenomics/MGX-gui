@@ -1,10 +1,11 @@
 package de.cebitec.mgx.gui.nodefactory;
 
+import de.cebitec.mgx.api.groups.AssemblyGroupI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.model.ModelBaseI;
-import de.cebitec.mgx.api.model.SeqRunI;
-import de.cebitec.mgx.gui.nodes.SeqRunFilterNode;
-import de.cebitec.mgx.gui.nodes.SeqRunNode;
+import de.cebitec.mgx.api.model.assembly.AssembledSeqRunI;
+import de.cebitec.mgx.gui.nodes.AssembledSeqRunFilterNode;
+import de.cebitec.mgx.gui.nodes.AssembledSeqRunNode;
 import java.beans.PropertyChangeEvent;
 import java.util.Collections;
 import org.openide.nodes.Children;
@@ -19,27 +20,27 @@ import org.openide.nodes.NodeReorderEvent;
  *
  * @author sjaenick
  */
-public class GroupedSeqRunNodeFactory extends Children.Keys<SeqRunI> implements NodeListener {
+public class GroupedAssembledSeqRunNodeFactory extends Children.Keys<AssembledSeqRunI> implements NodeListener {
 
-    private final VisualizationGroupI vGroup;
+    private final AssemblyGroupI asmGroup;
 
-    public GroupedSeqRunNodeFactory(VisualizationGroupI group) {
+    public GroupedAssembledSeqRunNodeFactory(AssemblyGroupI group) {
         super(false);
-        this.vGroup = group;
-        vGroup.addPropertyChangeListener(this);
+        this.asmGroup = group;
+        asmGroup.addPropertyChangeListener(this);
     }
 
-    public void addSeqRun(SeqRunI sr) {
-        vGroup.addSeqRun(sr);
+    public void addSeqRun(AssembledSeqRunI sr) {
+        asmGroup.addSeqRun(sr);
     }
 
-    public void addSeqRuns(SeqRunI... newRuns) {
-        vGroup.addSeqRuns(newRuns);
+    public void addSeqRuns(AssembledSeqRunI... newRuns) {
+        asmGroup.addSeqRuns(newRuns);
     }
 
     @Override
-    protected Node[] createNodes(SeqRunI sr) {
-        FilterNode node = new SeqRunFilterNode(new SeqRunNode(sr, Children.LEAF), vGroup);
+    protected Node[] createNodes(AssembledSeqRunI sr) {
+        FilterNode node = new AssembledSeqRunFilterNode(new AssembledSeqRunNode(sr, Children.LEAF), asmGroup);
         node.addNodeListener(this);
         return new Node[]{node};
     }
@@ -47,17 +48,17 @@ public class GroupedSeqRunNodeFactory extends Children.Keys<SeqRunI> implements 
     @Override
     protected void addNotify() {
         super.addNotify();
-        setKeys(vGroup.getSeqRuns());
+        setKeys(asmGroup.getSeqRuns());
     }
 
     @Override
     protected void removeNotify() {
         super.removeNotify();
-        setKeys(Collections.<SeqRunI>emptySet());
+        setKeys(Collections.<AssembledSeqRunI>emptySet());
     }
 
     public final void refreshChildren() {
-        setKeys(vGroup.getSeqRuns());
+        setKeys(asmGroup.getSeqRuns());
         refresh();
     }
 
@@ -82,23 +83,25 @@ public class GroupedSeqRunNodeFactory extends Children.Keys<SeqRunI> implements 
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getSource() == vGroup) {
+        if (evt.getSource() == asmGroup) {
             switch (evt.getPropertyName()) {
                 case VisualizationGroupI.VISGROUP_HAS_DIST:
                 case VisualizationGroupI.VISGROUP_RENAMED:
                 case VisualizationGroupI.VISGROUP_DEACTIVATED:
                 case VisualizationGroupI.VISGROUP_ACTIVATED:
+                case AssemblyGroupI.ASMGROUP_RENAMED:
                     return;
                 case VisualizationGroupI.VISGROUP_CHANGED:
+                case AssemblyGroupI.ASMGROUP_CHANGED:
                     refreshChildren();
                     return;
                 case ModelBaseI.OBJECT_DELETED:
-                    if (vGroup.equals(evt.getSource())) {
-                        vGroup.removePropertyChangeListener(this);
+                    if (asmGroup.equals(evt.getSource())) {
+                        asmGroup.removePropertyChangeListener(this);
                     }
                     break;
                 default:
-                    System.err.println(getClass().getName() + " in GroupedSeqRunNodeFactory got PCE " + evt.toString());
+                    System.err.println(getClass().getName() + " in GroupedAssembledSeqRunNodeFactory got PCE " + evt.toString());
                     refreshChildren();
             }
         } else {

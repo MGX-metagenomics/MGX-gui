@@ -29,8 +29,10 @@ public interface VGroupManagerI extends PropertyChangeListener {
     String VISGROUP_ADDED = "vgmgr_visgroup_added";
     //String VISGROUP_REMOVED = "vgmgr_visgroup_removed";
     String REPLGROUP_ADDED = "vgmgr_replgroup_added";
+    String ASMGROUP_ADDED = "vgmgr_assemblygroup_added";
     //String REPLGROUP_REMOVED = "vgmgr_replgroup_removed";
     String VISGROUP_SELECTION_CHANGED = "vgSelectionChanged";
+    String ASMGROUP_SELECTION_CHANGED = "asmGroupSelectionChanged";
 
     void addPropertyChangeListener(PropertyChangeListener p);
 
@@ -38,8 +40,8 @@ public interface VGroupManagerI extends PropertyChangeListener {
 
     List<VisualizationGroupI> getActiveVisualizationGroups();
 
-    Collection<VisualizationGroupI> getAllVisualizationGroups();
-    
+    Collection<GroupI> getAllGroups();
+
     List<Pair<VisualizationGroupI, DistributionI<Long>>> getDistributions() throws ConflictingJobsException;
 
     List<Pair<VisualizationGroupI, TreeI<Long>>> getHierarchies() throws ConflictingJobsException;
@@ -49,19 +51,18 @@ public interface VGroupManagerI extends PropertyChangeListener {
     VisualizationGroupI getSelectedVisualizationGroup();
 
     void registerResolver(ConflictResolver cr);
-    
+
     ConflictResolver getResolver();
 
     //void removeVisualizationGroup(VisualizationGroupI vg);
-
     void removePropertyChangeListener(PropertyChangeListener p);
 
     boolean selectAttributeType(AttributeRank rank, String aType);
 
     boolean selectAttributeType(String aType);
-    
+
     String getSelectedAttributeType();
-    
+
     Collection<AttributeTypeI> getAttributeTypes();
 
     <T> Future<T> submit(Fetcher<T> f);
@@ -75,13 +76,14 @@ public interface VGroupManagerI extends PropertyChangeListener {
 
     ReplicateI createReplicate(ReplicateGroupI rGroup);
 
-    //void removeReplicateGroup(ReplicateGroupI vg);
-
-    //boolean hasReplicateGroup(String name);
     public void setSelectedReplicateGroup(ReplicateGroupI replicateGroup);
 
     public ReplicateGroupI getSelectedReplicateGroup();
 
     public VisualizationGroupI getVisualizationGroup(String displayName);
+
+    public AssemblyGroupI createAssemblyGroup();
+
+    public void setSelectedAssemblyGroup(AssemblyGroupI group);
 
 }

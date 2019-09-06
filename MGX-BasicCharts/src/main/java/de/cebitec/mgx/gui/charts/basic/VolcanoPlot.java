@@ -252,7 +252,7 @@ public class VolcanoPlot extends CategoricalViewerI<Long> implements Customizabl
 
         return super.canHandle(valueType)
                 && VGroupManager.getInstance().getReplicateGroups().size() == 2
-                && VGroupManager.getInstance().getAllVisualizationGroups().size() == replicatesCount;
+                && VGroupManager.getInstance().getAllGroups().size() == replicatesCount;
     }
 
     @Override

@@ -1,6 +1,6 @@
-
 package de.cebitec.mgx.gui.attributevisualization;
 
+import de.cebitec.mgx.api.groups.AssemblyGroupI;
 import de.cebitec.mgx.gui.attributevisualization.view.NodeMapperI;
 import de.cebitec.mgx.api.groups.ReplicateGroupI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
@@ -46,17 +46,20 @@ public class NodeMapperImpl implements NodeMapperI<GroupFrameBase> {
             });
 
             ReplicateGroupI rGrp = n.getLookup().lookup(ReplicateGroupI.class);
+            VisualizationGroupI vGrp = n.getLookup().lookup(VisualizationGroupI.class);
+            AssemblyGroupI asmGrp = n.getLookup().lookup(AssemblyGroupI.class);
             if (rGrp != null) {
                 final ReplicateGroupFrame rgf = new ReplicateGroupFrame(rGrp);
                 rgf.addPropertyChangeListener(JInternalFrame.IS_SELECTED_PROPERTY, maintainSingleSelection);
                 cache.put(n, rgf);
-            } else {
-                VisualizationGroupI vGrp = n.getLookup().lookup(VisualizationGroupI.class);
-                if (vGrp != null) {
-                    final GroupFrame vgf = new GroupFrame(vGrp);
-                    vgf.addPropertyChangeListener(JInternalFrame.IS_SELECTED_PROPERTY, maintainSingleSelection);
-                    cache.put(n, vgf);
-                }
+            } else if (vGrp != null) {
+                final GroupFrame vgf = new GroupFrame(vGrp);
+                vgf.addPropertyChangeListener(JInternalFrame.IS_SELECTED_PROPERTY, maintainSingleSelection);
+                cache.put(n, vgf);
+            } else if (asmGrp != null) {
+                final AssemblyGroupFrame agf = new AssemblyGroupFrame(asmGrp);
+                agf.addPropertyChangeListener(JInternalFrame.IS_SELECTED_PROPERTY, maintainSingleSelection);
+                cache.put(n, agf);
             }
         }
 
@@ -64,7 +67,6 @@ public class NodeMapperImpl implements NodeMapperI<GroupFrameBase> {
 
         // propertychangelistener to maintain single-selection strategy
         //ret.addPropertyChangeListener(JInternalFrame.IS_SELECTED_PROPERTY, maintainSingleSelection);
-        
         // auto-select first created entry
         if (cache.size() == 1) {
             try {
@@ -113,7 +115,7 @@ public class NodeMapperImpl implements NodeMapperI<GroupFrameBase> {
         public void propertyChange(PropertyChangeEvent evt) {
             boolean selected = (boolean) evt.getNewValue();
             if (selected) {
-                handleFrameSelection((GroupFrameBase)evt.getSource());
+                handleFrameSelection((GroupFrameBase) evt.getSource());
             }
         }
     };

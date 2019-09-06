@@ -106,6 +106,11 @@ public class ReplicateGroup implements ReplicateGroupI {
     }
 
     @Override
+    public String getDisplayName() {
+        return getName();
+    }
+
+    @Override
     public Color getColor() {
         return color;
     }

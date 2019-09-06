@@ -8,6 +8,7 @@ package de.cebitec.mgx.api.model.assembly;
 import de.cebitec.mgx.api.model.*;
 import de.cebitec.mgx.api.MGXMasterI;
 import java.awt.datatransfer.DataFlavor;
+import java.util.Objects;
 
 /**
  *
@@ -16,7 +17,7 @@ import java.awt.datatransfer.DataFlavor;
 public abstract class AssembledSeqRunI extends Identifiable<AssembledSeqRunI> {
 
     public static final DataFlavor DATA_FLAVOR = new DataFlavor(AssembledSeqRunI.class, "AssembledSeqRunI");
-    
+
     protected final AssemblyI assembly;
     protected final SeqRunI run;
 
@@ -29,5 +30,36 @@ public abstract class AssembledSeqRunI extends Identifiable<AssembledSeqRunI> {
     }
 
     public abstract String getName();
+
+    public abstract SeqRunI getSeqRun();
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 67 * hash + Objects.hashCode(this.assembly);
+        hash = 67 * hash + Objects.hashCode(this.run);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final AssembledSeqRunI other = (AssembledSeqRunI) obj;
+        if (!Objects.equals(this.assembly, other.assembly)) {
+            return false;
+        }
+        if (!Objects.equals(this.run, other.run)) {
+            return false;
+        }
+        return true;
+    }
 
 }

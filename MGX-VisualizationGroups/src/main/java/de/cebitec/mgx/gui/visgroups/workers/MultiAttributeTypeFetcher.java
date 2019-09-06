@@ -3,13 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.cebitec.mgx.gui.visgroups;
+package de.cebitec.mgx.gui.visgroups.workers;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.misc.Fetcher;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.SeqRunI;
+import de.cebitec.mgx.common.ToolScope;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -31,7 +32,7 @@ public final class MultiAttributeTypeFetcher extends Fetcher<Map<SeqRunI, Map<Jo
         Map<SeqRunI, Map<JobI, Set<AttributeTypeI>>> ret = new HashMap<>();
         for (SeqRunI run : runs) {
             MGXMasterI master = run.getMaster();
-            Map<JobI, Set<AttributeTypeI>> data = master.SeqRun().getJobsAndAttributeTypes(run);
+            Map<JobI, Set<AttributeTypeI>> data = master.SeqRun().getJobsAndAttributeTypes(run, ToolScope.READ);
             ret.put(run, data);
         }
         return ret;

@@ -5,6 +5,7 @@
  */
 package de.cebitec.mgx.gui.attributevisualization.ui;
 
+import de.cebitec.mgx.api.groups.AssemblyGroupI;
 import de.cebitec.mgx.api.groups.ReplicateGroupI;
 import de.cebitec.mgx.api.groups.VGroupManagerI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
@@ -193,18 +194,21 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
 
         switch (evt.getPropertyName()) {
             case VisualizationGroupI.VISGROUP_CHANGED:
+            case AssemblyGroupI.ASMGROUP_CHANGED:
                 updateAttributeTypeList();
                 break;
             case VGroupManagerI.VISGROUP_ADDED:
+            case VGroupManagerI.ASMGROUP_ADDED:
+            case ReplicateGroupI.REPLICATEGROUP_REPLICATE_ADDED:
             case ModelBaseI.OBJECT_DELETED:
                 updateAttributeTypeList();
                 break;
             case VisualizationGroupI.VISGROUP_ACTIVATED:
             case ReplicateGroupI.REPLICATEGROUP_ACTIVATED:
-                updateAttributeTypeList();
-                break;
+            case AssemblyGroupI.ASMGROUP_ACTIVATED:
             case VisualizationGroupI.VISGROUP_DEACTIVATED:
             case ReplicateGroupI.REPLICATEGROUP_DEACTIVATED:
+            case AssemblyGroupI.ASMGROUP_DEACTIVATED:
                 updateAttributeTypeList();
                 break;
             case VisualizationGroupI.VISGROUP_ATTRTYPE_CHANGED:
@@ -212,20 +216,21 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
             case ModelBaseI.OBJECT_MODIFIED:
                 break;
             case VGroupManagerI.VISGROUP_SELECTION_CHANGED:
+            case VGroupManagerI.REPLICATEGROUP_SELECTION_CHANGED:
+            case VGroupManagerI.ASMGROUP_SELECTION_CHANGED:
                 // ignore
                 break;
             case VisualizationGroupI.VISGROUP_HAS_DIST:
                 // ignore
                 break;
             case VisualizationGroupI.VISGROUP_RENAMED:
+            case AssemblyGroupI.ASMGROUP_RENAMED:
                 // ignore
                 break;
-            case VGroupManagerI.REPLICATEGROUP_SELECTION_CHANGED:
             case VGroupManagerI.REPLGROUP_ADDED:
                 // ignore
                 break;
-            case ReplicateGroupI.REPLICATEGROUP_REPLICATE_ADDED:
-                break;
+
             case ReplicateGroupI.REPLICATEGROUP_REPLICATE_REMOVED:
                 updateAttributeTypeList();
                 break;
