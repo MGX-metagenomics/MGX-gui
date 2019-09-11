@@ -25,6 +25,8 @@ import de.cebitec.mgx.gui.charts.basic.util.SVGChartPanel;
 import de.cebitec.mgx.gui.pool.MGXPool;
 import de.cebitec.mgx.gui.swingutils.SeqPanel;
 import de.cebitec.mgx.gui.swingutils.util.ColorPalette;
+import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
@@ -37,11 +39,9 @@ import java.beans.PropertyChangeListener;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import javax.swing.SwingWorker;
 import org.jdesktop.swingx.decorator.Highlighter;
@@ -118,6 +118,8 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
         contigList.addItemListener(this);
 
         jXTable1.setHighlighters(new Highlighter[]{HighlighterFactory.createAlternateStriping()});
+        jXTable1.getColumn(2).setMaxWidth(50);
+        jXTable1.getColumn(3).setMaxWidth(50);
 
         ChartFactory.setChartTheme(StandardChartTheme.createLegacyTheme());
         BarRenderer.setDefaultShadowsVisible(false);
@@ -132,8 +134,11 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
 
                     @Override
                     protected SequenceI doInBackground() throws Exception {
-                        final MGXMasterI master = selectedFeature.getMaster();
-                        return master.Gene().getDNASequence(selectedFeature);
+                        if (selectedFeature != null) {
+                            final MGXMasterI master = selectedFeature.getMaster();
+                            return master.Gene().getDNASequence(selectedFeature);
+                        }
+                        return null;
                     }
 
                     @Override
@@ -513,7 +518,11 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
             geneName.setText(contigModel.getSelectedItem().getName() + "_" + selectedFeature.getId());
             geneStart.setText(NumberFormat.getInstance(Locale.US).format(selectedFeature.getStart()));
             geneStop.setText(NumberFormat.getInstance(Locale.US).format(selectedFeature.getStop()));
-            frame.setText(selectedFeature.getFrame() > 0 ? "+" : "" + String.valueOf(selectedFeature.getFrame()));
+            if (selectedFeature.getFrame() > 0) {
+                frame.setText("+" + String.valueOf(selectedFeature.getFrame()));
+            } else {
+                frame.setText(String.valueOf(selectedFeature.getFrame()));
+            }
             geneLength.setText(NumberFormat.getInstance(Locale.US).format(selectedFeature.getAALength()) + " aa");
 
             MGXPool.getInstance().submit(new Runnable() {
@@ -534,7 +543,7 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
                         }
                         Collections.sort(all);
 
-                        Map<Long, String> runNames = new HashMap<>();
+                        TLongObjectMap<String> runNames = new TLongObjectHashMap<>();
 
                         FastCategoryDataset dataset = new FastCategoryDataset();
                         dataset.setNotify(false);
