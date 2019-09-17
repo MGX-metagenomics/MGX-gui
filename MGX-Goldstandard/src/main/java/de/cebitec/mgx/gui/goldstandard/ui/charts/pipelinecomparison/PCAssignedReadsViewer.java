@@ -46,6 +46,7 @@ public class PCAssignedReadsViewer extends EvaluationViewerI implements Pipeline
     private AttributeTypeI usedAttributeType;
     private SVGChartPanel cPanel = null;
     private Collection<JobI> jobs;
+    private SeqRunI currentSeqrun;
     private PCAssignedReadsViewCustomizer cust = null;
     private JFreeChart chart = null;
     private CategoryDataset dataset;    
@@ -59,7 +60,7 @@ public class PCAssignedReadsViewer extends EvaluationViewerI implements Pipeline
     
     @Override
     public JComponent getComponent() {
-        if (jobs == null || usedAttributeType == null) {
+        if (jobs == null || usedAttributeType == null || currentSeqrun == null) {
             return null;
         }
         if (cPanel == null) {
@@ -85,7 +86,7 @@ public class PCAssignedReadsViewer extends EvaluationViewerI implements Pipeline
         String yAxisLabel = "assigned reads";
         for (JobI job : jobs) {
             try {
-                DistributionI<Long> dist = job.getMaster().Attribute().getDistribution(usedAttributeType, job);
+                DistributionI<Long> dist = job.getMaster().Attribute().getDistribution(usedAttributeType, job, currentSeqrun);
                 long assignedReads = 0;
                 assignedReads += dist.getTotalClassifiedElements();
                 data.addValue(assignedReads, "Assigned reads", job.getTool().getName());
@@ -147,7 +148,6 @@ public class PCAssignedReadsViewer extends EvaluationViewerI implements Pipeline
     @Override
     public void selectJobs(SeqRunI seqrun) {
         try {
-            assert seqrun != null;
             SelectJobsWizardDescriptor jobWizard = new SelectJobsWizardDescriptor(seqrun, false);
             Dialog dialog = DialogDisplayer.getDefault().createDialog(jobWizard);
             dialog.setVisible(true);
@@ -156,7 +156,10 @@ public class PCAssignedReadsViewer extends EvaluationViewerI implements Pipeline
             if (!cancelled) {
                 cPanel = null;
                 jobs = jobWizard.getJobs();
+                currentSeqrun = seqrun;
                 usedAttributeType = jobWizard.getAttributeType();
+            } else {
+                currentSeqrun = null;
             }
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);

@@ -33,8 +33,8 @@ public class PerformanceMetrics {
         this.goldstandard = goldstandard;
     }
 
-    public void compute(final JobI job, AttributeTypeI attrType) throws MGXException {
-        DistributionI<Long> dist = job.getMaster().Attribute().getDistribution(attrType, job);
+    public void compute(final JobI job, AttributeTypeI attrType, SeqRunI run) throws MGXException {
+        DistributionI<Long> dist = job.getMaster().Attribute().getDistribution(attrType, job, run);
         final TLongObjectMap<String> jobAttr = new TLongObjectHashMap<>(); //seqid to attr value
         for (Map.Entry<AttributeI, Long> entry : dist.entrySet()) {
             String jobAssignment = entry.getKey().getValue();
@@ -86,9 +86,7 @@ public class PerformanceMetrics {
         });
 
         long numSeqs = 0;
-        for (SeqRunI run : job.getSeqruns()) {
-            numSeqs += run.getNumSequences();
-        }
+        numSeqs += run.getNumSequences();
         tn = numSeqs - goldstandard.size() - shouldntBeClassified.longValue();
 
 //        try {

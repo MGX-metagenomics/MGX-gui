@@ -38,7 +38,7 @@ public class DistributionFetcher extends Fetcher<Pair<SeqRunI, DistributionI<Lon
 //            TreeI<Long> tree = master.Attribute().getHierarchy(attrType, job);
 //            return new Pair<>(run, DistributionFactory.fromTree(tree, attrType));
 //        } else {
-            return new Pair<>(run, master.Attribute().getDistribution(attrType, job));
+            return new Pair<>(run, master.Attribute().getDistribution(attrType, job, run));
 //        }
     }
 

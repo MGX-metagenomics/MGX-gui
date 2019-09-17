@@ -202,6 +202,11 @@ public class JobAccess implements JobAccessI {
 
     @Override
     public void update(JobI obj) throws MGXException {
+        
+        if (obj.getSeqruns() == null && obj.getAssembly() == null) {
+             throw new MGXException("Job refers to neither sequencing runs nor assemblies.");
+        }
+        
         JobDTO dto = JobDTOFactory.getInstance().toDTO(obj);
         try {
             getDTOmaster().Job().update(dto);

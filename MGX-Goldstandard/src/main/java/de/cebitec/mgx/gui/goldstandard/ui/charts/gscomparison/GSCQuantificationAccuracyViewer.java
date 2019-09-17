@@ -84,7 +84,7 @@ public class GSCQuantificationAccuracyViewer extends EvaluationViewerI implement
             jobs.add(gsJob);
             jobs.add(currentJobs.get(0));
 
-            Vector[] vectors = PCDistanceViewer.calcAttributeVectors(jobs, attrType, false);
+            Vector[] vectors = PCDistanceViewer.calcAttributeVectors(jobs, currentSeqrun, attrType, false);
             values[0] = vectors[0].asArray();
             values[1] = vectors[1].asArray();
 
@@ -111,7 +111,7 @@ public class GSCQuantificationAccuracyViewer extends EvaluationViewerI implement
         }
         XYDataset collection1 = new XYSeriesCollection(series1);
         XYItemRenderer renderer1 = new XYLineAndShapeRenderer(false, true);   // Shapes only
-        
+
         //renderer1.setSeriesShape(0, new Rectangle(2, 2));
         Ellipse2D.Float circle = new java.awt.geom.Ellipse2D.Float();
         circle.height = 3;
@@ -168,7 +168,7 @@ public class GSCQuantificationAccuracyViewer extends EvaluationViewerI implement
     @Override
     public void selectJobs(final SeqRunI seqrun) {
         tidyUp();
-        currentSeqrun = seqrun;
+
         try {
             final SelectSingleJobWithGSWizardDescriptor jobWizard = new SelectSingleJobWithGSWizardDescriptor(seqrun, false, 1);
             Dialog dialog = DialogDisplayer.getDefault().createDialog(jobWizard);
@@ -177,8 +177,14 @@ public class GSCQuantificationAccuracyViewer extends EvaluationViewerI implement
             boolean cancelled = jobWizard.getValue() != WizardDescriptor.FINISH_OPTION;
             if (!cancelled) {
                 currentJobs = jobWizard.getJobs();
+                currentSeqrun = seqrun;
                 gsJob = jobWizard.getGoldstandard();
                 attrType = jobWizard.getAttributeType();
+            } else {
+                currentJobs = null;
+                currentSeqrun = null;
+                gsJob = null;
+                attrType = null;
             }
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);
@@ -195,6 +201,7 @@ public class GSCQuantificationAccuracyViewer extends EvaluationViewerI implement
 
     private void tidyUp() {
         currentJobs = null;
+        currentSeqrun = null;
         gsJob = null;
         attrType = null;
         cPanel = null;

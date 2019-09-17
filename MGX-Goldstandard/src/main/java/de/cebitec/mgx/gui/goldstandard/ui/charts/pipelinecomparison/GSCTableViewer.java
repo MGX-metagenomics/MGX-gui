@@ -55,7 +55,7 @@ public class GSCTableViewer extends EvaluationViewerI implements PipelineCompari
 
     @Override
     public JComponent getComponent() {
-        if (treeList == null) {
+        if (treeList == null || currentSeqrun == null) {
             return null;
         }
         if (pane == null) {
@@ -183,8 +183,10 @@ public class GSCTableViewer extends EvaluationViewerI implements PipelineCompari
                 jobAName = JobUtils.jobToString(currentJobs.get(0));
                 jobBName = JobUtils.jobToString(currentJobs.get(1));
                 treeList = new ArrayList<>();
-                treeList.add(seqrun.getMaster().Attribute().getHierarchy(attrType, currentJobs.get(0)));
-                treeList.add(seqrun.getMaster().Attribute().getHierarchy(attrType, currentJobs.get(1)));
+                treeList.add(seqrun.getMaster().Attribute().getHierarchy(attrType, currentJobs.get(0), seqrun));
+                treeList.add(seqrun.getMaster().Attribute().getHierarchy(attrType, currentJobs.get(1), seqrun));
+            } else {
+                currentSeqrun = null;
             }
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);

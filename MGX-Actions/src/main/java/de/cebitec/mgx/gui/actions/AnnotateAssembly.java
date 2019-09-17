@@ -110,7 +110,6 @@ public class AnnotateAssembly extends NodeAction implements LookupListener {
             return;
         }
 
-        // TODO: check if invoked on EDT
         // fetch required data
         final List<MGXReferenceI> references = new ArrayList<>();
         final List<ToolI> projectTools = new ArrayList<>();

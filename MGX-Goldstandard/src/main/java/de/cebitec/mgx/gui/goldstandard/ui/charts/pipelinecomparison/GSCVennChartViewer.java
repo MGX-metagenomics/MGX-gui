@@ -162,7 +162,7 @@ public class GSCVennChartViewer extends EvaluationViewerI implements PipelineCom
                 AttributeTypeI attrType = jobWizard.getAttributeType();
                 dists = new ArrayList<>();
                 for (JobI job : currentJobs) {
-                    dists.add(seqrun.getMaster().Attribute().getDistribution(attrType, job));
+                    dists.add(seqrun.getMaster().Attribute().getDistribution(attrType, job, seqrun));
                 }
             }
         } catch (MGXException ex) {

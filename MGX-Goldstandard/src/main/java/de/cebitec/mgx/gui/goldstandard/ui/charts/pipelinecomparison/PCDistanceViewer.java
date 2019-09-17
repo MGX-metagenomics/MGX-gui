@@ -44,6 +44,7 @@ import org.openide.util.lookup.ServiceProvider;
 public class PCDistanceViewer extends EvaluationViewerI implements PipelineComparisonI {
 
     private AttributeTypeI usedAttributeType;
+    private SeqRunI currentSeqrun;
     private JXTable table;
     private List<JobI> jobs;
     private PCDistanceViewCustomizer cust = null;
@@ -77,7 +78,7 @@ public class PCDistanceViewer extends EvaluationViewerI implements PipelineCompa
 
     @Override
     public JComponent getComponent() {
-        if (usedAttributeType == null || jobs == null) {
+        if (usedAttributeType == null || jobs == null || currentSeqrun == null) {
             return null;
         }
         if (table == null) {
@@ -127,7 +128,7 @@ public class PCDistanceViewer extends EvaluationViewerI implements PipelineCompa
 
         if (currentDistanceMethod != DistanceMethod.UNIFRAC) {
             try {
-                vectors = calcAttributeVectors(jobs, usedAttributeType, ((PCDistanceViewCustomizer) getCustomizer()).normalizeVectors());
+                vectors = calcAttributeVectors(jobs, currentSeqrun, usedAttributeType, ((PCDistanceViewCustomizer) getCustomizer()).normalizeVectors());
             } catch (MGXException ex) {
                 EvalExceptions.printStackTrace(ex);
                 tidyUp();
@@ -161,8 +162,8 @@ public class PCDistanceViewer extends EvaluationViewerI implements PipelineCompa
                         JobI j1 = jobs.get(i);
                         JobI j2 = jobs.get(j);
                         try {
-                            TreeI<Long> tree1 = j1.getMaster().Attribute().getHierarchy(usedAttributeType, j1);
-                            TreeI<Long> tree2 = j2.getMaster().Attribute().getHierarchy(usedAttributeType, j2);
+                            TreeI<Long> tree1 = j1.getMaster().Attribute().getHierarchy(usedAttributeType, j1, currentSeqrun);
+                            TreeI<Long> tree2 = j2.getMaster().Attribute().getHierarchy(usedAttributeType, j2, currentSeqrun);
                             distances[i][j] = UniFrac.weighted(tree1, tree2);
                         } catch (MGXException ex) {
                             EvalExceptions.printStackTrace(ex);
@@ -229,6 +230,7 @@ public class PCDistanceViewer extends EvaluationViewerI implements PipelineCompa
 
     private void tidyUp() {
         usedAttributeType = null;
+        currentSeqrun = null;
         table = null;
         jobs = null;
     }
@@ -246,6 +248,7 @@ public class PCDistanceViewer extends EvaluationViewerI implements PipelineCompa
                 table = null;
                 jobs = jobWizard.getJobs();
                 usedAttributeType = jobWizard.getAttributeType();
+                currentSeqrun = seqrun;
             }
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);
@@ -253,7 +256,7 @@ public class PCDistanceViewer extends EvaluationViewerI implements PipelineCompa
         }
     }
 
-    public static Vector[] calcAttributeVectors(List<JobI> jobs, AttributeTypeI attrType, boolean normalizeVectors) throws MGXException {
+    public static Vector[] calcAttributeVectors(List<JobI> jobs, SeqRunI run, AttributeTypeI attrType, boolean normalizeVectors) throws MGXException {
         if (jobs == null || jobs.isEmpty()) {
             return new Vector[0];
         }
@@ -262,7 +265,7 @@ public class PCDistanceViewer extends EvaluationViewerI implements PipelineCompa
         Map<AttributeI, long[]> attributes = new HashMap<>();
         int i = 0;
         for (JobI job : jobs) {
-            DistributionI<Long> dist = job.getMaster().Attribute().getDistribution(attrType, job);
+            DistributionI<Long> dist = job.getMaster().Attribute().getDistribution(attrType, job, run);
             for (Entry<AttributeI, Long> e : dist.entrySet()) {
                 if (attributes.containsKey(e.getKey())) {
                     attributes.get(e.getKey())[i] = e.getValue();

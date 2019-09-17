@@ -32,9 +32,9 @@ public interface AttributeAccessI {
 
     public Iterator<AttributeI> BySeqRun(final SeqRunI seqrun) throws MGXException;
 
-    public DistributionI<Long> getDistribution(AttributeTypeI attrType, JobI job) throws MGXException;
+    public DistributionI<Long> getDistribution(AttributeTypeI attrType, JobI job, SeqRunI run) throws MGXException;
 
-    public TreeI<Long> getHierarchy(AttributeTypeI attrType, JobI job) throws MGXException;
+    public TreeI<Long> getHierarchy(AttributeTypeI attrType, JobI job, SeqRunI run) throws MGXException;
 
     //public Iterator<SequenceI> search(String term, boolean exact, SeqRunI[] targets) throws MGXException;
     public Iterator<String> find(String term, SeqRunI run) throws MGXException;

@@ -73,7 +73,7 @@ public class GSCPerformanceMetricsViewer extends EvaluationViewerI implements GS
         ProgressHandle p = ProgressHandle.createHandle("Calculating metrics...");
         GSCPerformanceMetricsTableModel model;
         try {
-            model = calcPerformanceMetrics(currentJobs, gsJob, attrType, p);
+            model = calcPerformanceMetrics(currentJobs, gsJob, currentSeqrun, attrType, p);
         } catch (MGXException ex) {
             p.finish();
             Exceptions.printStackTrace(ex);
@@ -143,12 +143,12 @@ public class GSCPerformanceMetricsViewer extends EvaluationViewerI implements GS
         attrType = null;
     }
 
-    public static GSCPerformanceMetricsTableModel calcPerformanceMetrics(List<JobI> jobs, JobI gsJob, final AttributeTypeI attributeType, final ProgressHandle p) throws MGXException {
+    public static GSCPerformanceMetricsTableModel calcPerformanceMetrics(List<JobI> jobs, JobI gsJob, SeqRunI run, final AttributeTypeI attributeType, final ProgressHandle p) throws MGXException {
         int progress = 0;
         p.start(jobs.size() + 2);
         p.progress(progress++);
 
-        DistributionI<Long> gsDist = gsJob.getMaster().Attribute().getDistribution(attributeType, gsJob);
+        DistributionI<Long> gsDist = gsJob.getMaster().Attribute().getDistribution(attributeType, gsJob, run);
 
         // seqId to attribute value
         final TLongObjectMap<String> goldstandard = new TLongObjectHashMap<>(jobs.size());
@@ -176,7 +176,7 @@ public class GSCPerformanceMetricsViewer extends EvaluationViewerI implements GS
                 public void run() {
                     try {
                         rateLimit.acquireUninterruptibly();
-                        pm.compute(job, attributeType);
+                        pm.compute(job, attributeType, run);
                     } catch (MGXException ex) {
                         p.finish();
                         hasError.set(true);

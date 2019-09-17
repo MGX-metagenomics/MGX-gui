@@ -95,11 +95,11 @@ public class AttributeAccess implements AttributeAccessI {
     }
 
     @Override
-    public DistributionI<Long> getDistribution(AttributeTypeI attrType, JobI job) throws MGXException {
+    public DistributionI<Long> getDistribution(AttributeTypeI attrType, JobI job, SeqRunI run) throws MGXException {
         Map<AttributeI, Long> res;
         long total = 0;
         try {
-            AttributeDistribution distribution = dtomaster.Attribute().getDistribution(attrType.getId(), job.getId());
+            AttributeDistribution distribution = dtomaster.Attribute().getDistribution(attrType.getId(), job.getId(), run.getId());
             res = new HashMap<>(distribution.getAttributeCountsCount());
 
             // convert and save types first
@@ -181,10 +181,10 @@ public class AttributeAccess implements AttributeAccessI {
     }
 
     @Override
-    public TreeI<Long> getHierarchy(AttributeTypeI attrType, JobI job) throws MGXException {
+    public TreeI<Long> getHierarchy(AttributeTypeI attrType, JobI job, SeqRunI run) throws MGXException {
         Map<AttributeI, Long> res;
         try {
-            AttributeDistribution distribution = dtomaster.Attribute().getHierarchy(attrType.getId(), job.getId());
+            AttributeDistribution distribution = dtomaster.Attribute().getHierarchy(attrType.getId(), job.getId(), run.getId());
 
             res = new HashMap<>(distribution.getAttributeTypeCount());
 

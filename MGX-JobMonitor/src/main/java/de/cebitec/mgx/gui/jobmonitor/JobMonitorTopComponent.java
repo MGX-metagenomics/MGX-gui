@@ -72,7 +72,7 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
         explorerManager.setRootContext(new ProjectRootNode("No project selected"));
 
         view.setPropertyColumns(//JobNode.TOOL_PROPERTY, "Tool",
-                JobNode.SEQRUN_PROPERTY, "Run(s)",
+                JobNode.SEQRUN_PROPERTY, "Run(s) / Assemblies",
                 JobNode.STATE_PROPERTY, "State");
         view.getOutline().setRootVisible(false);
 

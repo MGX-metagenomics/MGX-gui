@@ -31,7 +31,7 @@ public final class HierarchyFetcher extends Fetcher<TreeI<Long>> {
     @Override
     protected TreeI<Long> doInBackground() throws Exception {
         MGXMasterI master = run.getMaster();
-        return master.Attribute().getHierarchy(attrType, job);
+        return master.Attribute().getHierarchy(attrType, job, run);
     }
 
 //    @Override
