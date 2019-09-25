@@ -3,6 +3,8 @@ package de.cebitec.mgx.gui.jobmonitor;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.ModelBaseI;
 import de.cebitec.mgx.api.model.SeqRunI;
+import de.cebitec.mgx.api.model.assembly.AssemblyI;
+import de.cebitec.mgx.gui.nodefactory.JobByAssemblyNodeFactory;
 import de.cebitec.mgx.gui.nodefactory.JobBySeqRunNodeFactory;
 import de.cebitec.mgx.gui.nodefactory.JobNodeFactory;
 import java.awt.EventQueue;
@@ -11,6 +13,7 @@ import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
@@ -23,18 +26,25 @@ import org.openide.util.lookup.Lookups;
 class ProjectRootNode extends AbstractNode implements PropertyChangeListener {
 
     private Collection<SeqRunI> runs = new HashSet<>();
+    private Collection<AssemblyI> assemblies = new HashSet<>();
     private JobNodeFactory jnf;
 
     public ProjectRootNode(MGXMasterI master) {
-        this(master, null, new JobNodeFactory(master));
+        this(master, null, null, new JobNodeFactory(master));
     }
 
     public ProjectRootNode(Set<SeqRunI> runs) {
-        this(null, runs, new JobBySeqRunNodeFactory(runs));
+        this(null, runs, null, new JobBySeqRunNodeFactory(runs));
     }
 
-    private ProjectRootNode(MGXMasterI master, Set<SeqRunI> seqruns, final JobNodeFactory jnf) {
-        super(Children.create(jnf, true), Lookups.fixed(master != null ? master : seqruns));
+    ProjectRootNode(List<AssemblyI> assemblies) {
+        this(null, null, assemblies, new JobByAssemblyNodeFactory(assemblies));
+    }
+
+    private ProjectRootNode(MGXMasterI master, Set<SeqRunI> seqruns, Collection<AssemblyI> assemb, final JobNodeFactory jnf) {
+        super(Children.create(jnf, true),
+                Lookups.fixed(master != null ? master
+                        : seqruns != null ? seqruns : assemb));
         String displayName = master != null ? master.getProject() : null;
         super.setDisplayName(displayName);
         this.jnf = jnf;
@@ -42,6 +52,12 @@ class ProjectRootNode extends AbstractNode implements PropertyChangeListener {
             for (SeqRunI sr : seqruns) {
                 sr.addPropertyChangeListener(this);
                 runs.add(sr);
+            }
+        }
+        if (assemb != null) {
+            for (AssemblyI ass : assemb) {
+                ass.addPropertyChangeListener(this);
+                assemblies.add(ass);
             }
         }
     }
@@ -57,7 +73,6 @@ class ProjectRootNode extends AbstractNode implements PropertyChangeListener {
 //            jnf.refresh();
 //        }
 //    }
-
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals(ModelBaseI.OBJECT_DELETED)) {
@@ -66,6 +81,13 @@ class ProjectRootNode extends AbstractNode implements PropertyChangeListener {
                 if (runs != null && runs.contains(run)) {
                     run.removePropertyChangeListener(this);
                     runs.remove(run);
+                }
+            }
+            if (evt.getSource() instanceof AssemblyI) {
+                AssemblyI ass = (AssemblyI) evt.getSource();
+                if (assemblies != null && assemblies.contains(ass)) {
+                    ass.removePropertyChangeListener(this);
+                    assemblies.remove(ass);
                 }
             }
             if (!EventQueue.isDispatchThread()) {

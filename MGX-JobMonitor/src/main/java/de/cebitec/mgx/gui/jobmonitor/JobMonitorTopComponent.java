@@ -4,6 +4,7 @@ import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.ModelBaseI;
 import de.cebitec.mgx.api.model.SeqRunI;
+import de.cebitec.mgx.api.model.assembly.AssemblyI;
 import de.cebitec.mgx.gui.nodes.JobNode;
 import java.awt.Component;
 import java.beans.PropertyChangeEvent;
@@ -11,6 +12,7 @@ import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 import javax.swing.ActionMap;
@@ -51,15 +53,21 @@ import org.openide.windows.TopComponent;
 })
 public final class JobMonitorTopComponent extends TopComponent implements LookupListener, ExplorerManager.Provider, PropertyChangeListener {
 
+    private static enum MODE {
+        MASTER,
+        SEQRUN,
+        ASSEMBLY
+    };
+
     private final Lookup.Result<MGXMasterI> resultMaster;
     private final Lookup.Result<SeqRunI> resultSeqRun;
+    private final Lookup.Result<AssemblyI> resultAssembly;
     private final Lookup.Result<JobI> resultJobs;
     private MGXMasterI currentMaster = null;
     private Set<SeqRunI> currentSeqRuns = new ConcurrentSkipListSet<>();
+    private List<AssemblyI> currentAssemblies = new ArrayList<>();
     private transient ExplorerManager explorerManager = new ExplorerManager();
-    private final static int MASTER_MODE = 1;
-    private final static int SEQRUN_MODE = 2;
-    private int currentMode = MASTER_MODE;
+    private MODE currentMode = MODE.MASTER;
     private ProjectRootNode currentRoot = null;
 
     private JobMonitorTopComponent() {
@@ -71,8 +79,8 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
         associateLookup(ExplorerUtils.createLookup(explorerManager, map));
         explorerManager.setRootContext(new ProjectRootNode("No project selected"));
 
-        view.setPropertyColumns(//JobNode.TOOL_PROPERTY, "Tool",
-                JobNode.SEQRUN_PROPERTY, "Run(s) / Assemblies",
+        view.setPropertyColumns(
+                JobNode.SEQRUN_OR_ASSEMBLY_PROPERTY, "Run(s) / Assemblies",
                 JobNode.STATE_PROPERTY, "State");
         view.getOutline().setRootVisible(false);
 
@@ -88,6 +96,7 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
         view.setNodePopupFactory(npf);
         resultMaster = Utilities.actionsGlobalContext().lookupResult(MGXMasterI.class);
         resultSeqRun = Utilities.actionsGlobalContext().lookupResult(SeqRunI.class);
+        resultAssembly = Utilities.actionsGlobalContext().lookupResult(AssemblyI.class);
         resultJobs = Utilities.actionsGlobalContext().lookupResult(JobI.class);
 
         update();
@@ -124,6 +133,7 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
         super.componentOpened();
         resultMaster.addLookupListener(this);
         resultSeqRun.addLookupListener(this);
+        resultAssembly.addLookupListener(this);
         resultJobs.addLookupListener(this);
         update();
     }
@@ -133,6 +143,7 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
         super.componentClosed();
         resultMaster.removeLookupListener(this);
         resultSeqRun.removeLookupListener(this);
+        resultAssembly.removeLookupListener(this);
         resultJobs.removeLookupListener(this);
         if (currentRoot != null) {
             try {
@@ -157,64 +168,55 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
     }
 
     private void update() {
-        boolean needUpdate = false;
 
         Collection<? extends SeqRunI> runs = resultSeqRun.allInstances();
-        Collection<? extends MGXMasterI> m = resultMaster.allInstances();
+        Collection<? extends AssemblyI> assemblies = resultAssembly.allInstances();
+        Collection<? extends MGXMasterI> masters = resultMaster.allInstances();
         Collection<? extends JobI> jobs = resultJobs.allInstances();
 
         if (!jobs.isEmpty()) {
             return; // selection within own topcomponent, no update
         }
+         
+        // remove propertychangelisteners from previous runs and assemblies
+        for (SeqRunI run : currentSeqRuns) {
+            run.removePropertyChangeListener(this);
+        }
+        currentSeqRuns.clear();
+        for (AssemblyI ass : currentAssemblies) {
+            ass.removePropertyChangeListener(this);
+        }
+        currentAssemblies.clear();
 
         if (runs.size() > 0) {
-            currentMode = SEQRUN_MODE;
+            currentMode = MODE.SEQRUN;
             currentMaster = null;
+            currentSeqRuns.addAll(runs);
+        } else if (assemblies.size() > 0) {
+            currentMode = MODE.ASSEMBLY;
+            currentMaster = null;
+            currentAssemblies.addAll(assemblies);
+        } else if (masters.size() > 0) {
+            currentMode = MODE.MASTER;
 
-            // remove all runs that are no longer on lookup
-            Collection<SeqRunI> toRemove = new ArrayList<>();
-            for (SeqRunI run : currentSeqRuns) {
-                if (!runs.contains(run)) {
-                    run.removePropertyChangeListener(this);
-                    toRemove.add(run);
-                    needUpdate = true;
-                }
-            }
-            for (SeqRunI run : toRemove) {
-                currentSeqRuns.remove(run);
-            }
-
-            // and add all those that are new
-            for (SeqRunI run : runs) {
-                if (!currentSeqRuns.contains(run)) {
-                    needUpdate = true;
-                    run.addPropertyChangeListener(this);
-                    currentSeqRuns.add(run);
-                }
-            }
-
-        } else if (m.size() > 0) {
-            currentMode = MASTER_MODE;
-
-            for (MGXMasterI newMaster : m) {
+            for (MGXMasterI newMaster : masters) {
                 if (currentMaster == null || !newMaster.equals(currentMaster)) {
                     currentMaster = newMaster;
-
-                    // clear runs
-                    if (!currentSeqRuns.isEmpty()) {
-                        for (SeqRunI run : currentSeqRuns) {
-                            run.removePropertyChangeListener(this);
-                        }
-                        currentSeqRuns.clear();
-                    }
-                    needUpdate = true;
                 }
             }
+
         }
 
-        if (needUpdate) {
-            updateJobs();
+        // add propertychangelisteners to new objects
+        for (SeqRunI run : currentSeqRuns) {
+            run.addPropertyChangeListener(this);
         }
+        for (AssemblyI ass : currentAssemblies) {
+            ass.addPropertyChangeListener(this);
+        }
+
+        System.err.println("mode is " + currentMode);
+        updateJobs();
     }
 
     private synchronized void updateJobs() {
@@ -224,9 +226,11 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
             } catch (IOException ex) {
             }
         }
-        if (currentMode == MASTER_MODE && currentMaster != null) {
+        if (currentMode == MODE.MASTER && currentMaster != null) {
             currentRoot = new ProjectRootNode(currentMaster);
-        } else if (currentMode == SEQRUN_MODE && !currentSeqRuns.isEmpty()) {
+        } else if (currentMode == MODE.ASSEMBLY) {
+            currentRoot = new ProjectRootNode(currentAssemblies);
+        } else if (currentMode == MODE.SEQRUN && !currentSeqRuns.isEmpty()) {
             currentRoot = new ProjectRootNode(currentSeqRuns);
         }
         if (currentRoot != null) {
@@ -248,6 +252,12 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
                 run.removePropertyChangeListener(this);
                 if (currentSeqRuns.contains(run)) {
                     currentSeqRuns.remove(run);
+                }
+            } else if (evt.getSource() instanceof AssemblyI) {
+                AssemblyI ass = (AssemblyI) evt.getSource();
+                ass.removePropertyChangeListener(this);
+                if (currentAssemblies.contains(ass)) {
+                    currentAssemblies.remove(ass);
                 }
             }
         }
