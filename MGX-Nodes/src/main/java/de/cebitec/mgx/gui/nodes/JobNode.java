@@ -28,7 +28,7 @@ import org.openide.util.lookup.Lookups;
 public class JobNode extends MGXNodeBase<JobI> {
 
     public static String TOOL_PROPERTY = "tool";
-    public static String SEQRUN_PROPERTY = "seqrun";
+    public static String SEQRUN_OR_ASSEMBLY_PROPERTY = "seqrunOrAssembly";
     public static String STATE_PROPERTY = "state";
 
     public JobNode(JobI job) {
@@ -144,15 +144,20 @@ public class JobNode extends MGXNodeBase<JobI> {
         toolProperty.setValue("suppressCustomEditor", Boolean.TRUE);
         set.put(toolProperty);
 
-        Property runProperty = new PropertySupport.ReadWrite<String>(SEQRUN_PROPERTY, String.class, "Run", "Run name") {
+        Property runProperty = new PropertySupport.ReadWrite<String>(SEQRUN_OR_ASSEMBLY_PROPERTY, String.class, "Run", "Run name") {
             @Override
             public String getValue() throws IllegalAccessException, InvocationTargetException {
-                String[] elems = new String[getContent().getSeqruns().length];
-                for (int i=0;i<elems.length;i++) {
-                    elems[i] = getContent().getSeqruns()[i].getName();
+                if (getContent().getSeqruns() != null && getContent().getSeqruns().length > 0) {
+                    String[] elems = new String[getContent().getSeqruns().length];
+                    for (int i = 0; i < elems.length; i++) {
+                        elems[i] = getContent().getSeqruns()[i].getName();
+                    }
+                    return String.join(", ", elems);
+                } else if (getContent().getAssembly() != null) {
+                    return getContent().getAssembly().getName();
+                } else {
+                    return "";
                 }
-                return String.join(", ", elems);
-                //return getContent().getSeqrun().getName();
             }
 
             @Override
