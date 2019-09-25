@@ -14,17 +14,18 @@ import de.cebitec.mgx.api.model.assembly.BinI;
 import de.cebitec.mgx.api.model.assembly.ContigI;
 import de.cebitec.mgx.api.model.assembly.GeneCoverageI;
 import de.cebitec.mgx.api.model.assembly.GeneI;
+import de.cebitec.mgx.api.model.assembly.GeneObservationI;
 import de.cebitec.mgx.dnautils.DNAUtils;
 import de.cebitec.mgx.gui.binexplorer.internal.ContigViewController;
 import de.cebitec.mgx.gui.binexplorer.internal.FeaturePanel;
 import de.cebitec.mgx.gui.binexplorer.util.AttributeTableModel;
 import de.cebitec.mgx.gui.binexplorer.util.ContigModel;
 import de.cebitec.mgx.gui.binexplorer.util.ContigRenderer;
+import de.cebitec.mgx.gui.binexplorer.util.ObservationCellRenderer;
 import de.cebitec.mgx.gui.charts.basic.util.FastCategoryDataset;
 import de.cebitec.mgx.gui.charts.basic.util.SVGChartPanel;
 import de.cebitec.mgx.gui.pool.MGXPool;
 import de.cebitec.mgx.gui.swingutils.SeqPanel;
-import de.cebitec.mgx.gui.swingutils.util.ColorPalette;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import java.awt.BorderLayout;
@@ -120,6 +121,7 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
         jXTable1.setHighlighters(new Highlighter[]{HighlighterFactory.createAlternateStriping()});
         jXTable1.getColumn(2).setMaxWidth(50);
         jXTable1.getColumn(3).setMaxWidth(50);
+        jXTable1.setDefaultRenderer(GeneObservationI.class, new ObservationCellRenderer(this));
 
         ChartFactory.setChartTheme(StandardChartTheme.createLegacyTheme());
         BarRenderer.setDefaultShadowsVisible(false);
@@ -512,7 +514,12 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
             dnaseq.setEnabled(true);
             aaseq.setEnabled(true);
 
+            if (evt.getNewValue() == selectedFeature) {
+                return;
+            }
+            tableModel.update(null);
             selectedFeature = (GeneI) evt.getNewValue();
+
             final MGXMasterI master = selectedFeature.getMaster();
 
             geneName.setText(contigModel.getSelectedItem().getName() + "_" + selectedFeature.getId());
@@ -582,9 +589,8 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
                         br.setMaximumBarWidth(.2); // set maximum width to 20% of chart
 
                         // colors
-                        List<Color> colors = ColorPalette.pick(all.size());
                         for (int i = 0; i < all.size(); i++) {
-                            renderer.setSeriesPaint(i, colors.get(i));
+                            renderer.setSeriesPaint(i, Color.BLUE);
                         }
                         SVGChartPanel svgChartPanel = new SVGChartPanel(chart);
                         geneCovPanel.removeAll();
@@ -598,6 +604,10 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
                 }
             });
         }
+    }
+
+    public GeneI getSelectedFeature() {
+        return selectedFeature;
     }
 
     void writeProperties(java.util.Properties p) {

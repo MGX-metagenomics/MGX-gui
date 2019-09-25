@@ -42,6 +42,7 @@ public class AttributeTableModel extends DefaultTableModel {
             super.setRowCount(gobsList.size());
 
         } catch (MGXException ex) {
+            gobsList.clear();
             super.setRowCount(0);
             Exceptions.printStackTrace(ex);
         }
@@ -59,6 +60,8 @@ public class AttributeTableModel extends DefaultTableModel {
                 return gobs.getStart();
             case 3:
                 return gobs.getStop();
+            case 4: 
+                return gobs;
         }
         return null;
     }
@@ -74,17 +77,29 @@ public class AttributeTableModel extends DefaultTableModel {
                 return "Start";
             case 3:
                 return "Stop";
+            case 4:
+                return "";
         }
         return ""; // not reached
     }
 
     @Override
     public int getColumnCount() {
-        return 4;
+        return 5;
     }
 
     @Override
     public boolean isCellEditable(int row, int column) {
         return false;
     }
+
+    @Override
+    public Class<?> getColumnClass(int columnIndex) {
+        if (columnIndex == 4) {
+            return GeneObservationI.class;
+        }
+        return super.getColumnClass(columnIndex); 
+    }
+    
+    
 }
