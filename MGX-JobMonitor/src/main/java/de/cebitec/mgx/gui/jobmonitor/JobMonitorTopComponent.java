@@ -52,13 +52,13 @@ import org.openide.windows.TopComponent;
     "HINT_JobMonitorTopComponent=Job Monitor"
 })
 public final class JobMonitorTopComponent extends TopComponent implements LookupListener, ExplorerManager.Provider, PropertyChangeListener {
-
+    
     private static enum MODE {
         MASTER,
         SEQRUN,
         ASSEMBLY
     };
-
+    
     private final Lookup.Result<MGXMasterI> resultMaster;
     private final Lookup.Result<SeqRunI> resultSeqRun;
     private final Lookup.Result<AssemblyI> resultAssembly;
@@ -69,7 +69,7 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
     private transient ExplorerManager explorerManager = new ExplorerManager();
     private MODE currentMode = MODE.MASTER;
     private ProjectRootNode currentRoot = null;
-
+    
     private JobMonitorTopComponent() {
         initComponents();
         setName(Bundle.CTL_JobMonitorTopComponent());
@@ -78,14 +78,14 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
         //map.put("delete", ExplorerUtils.actionDelete(explorerManager, true));
         associateLookup(ExplorerUtils.createLookup(explorerManager, map));
         explorerManager.setRootContext(new ProjectRootNode("No project selected"));
-
+        
         view.setPropertyColumns(
                 JobNode.SEQRUN_OR_ASSEMBLY_PROPERTY, "Run(s) / Assemblies",
                 JobNode.STATE_PROPERTY, "State");
         view.getOutline().setRootVisible(false);
-
+        
         final NodePopupFactory origNpf = view.getNodePopupFactory();
-
+        
         NodePopupFactory npf = new NodePopupFactory() {
             @Override
             public JPopupMenu createPopupMenu(int row, int column, Node[] selectedNodes, Component component) {
@@ -98,12 +98,12 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
         resultSeqRun = Utilities.actionsGlobalContext().lookupResult(SeqRunI.class);
         resultAssembly = Utilities.actionsGlobalContext().lookupResult(AssemblyI.class);
         resultJobs = Utilities.actionsGlobalContext().lookupResult(JobI.class);
-
+        
         update();
     }
-
+    
     private static JobMonitorTopComponent instance = null;
-
+    
     public static JobMonitorTopComponent getDefault() {
         if (instance == null) {
             instance = new JobMonitorTopComponent();
@@ -137,7 +137,7 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
         resultJobs.addLookupListener(this);
         update();
     }
-
+    
     @Override
     public void componentClosed() {
         super.componentClosed();
@@ -153,32 +153,43 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
             currentRoot = null;
         }
     }
-
+    
     void writeProperties(java.util.Properties p) {
         p.setProperty("version", "1.0");
     }
-
+    
     void readProperties(java.util.Properties p) {
         String version = p.getProperty("version");
     }
-
+    
+    private int i = 0;
+    
     @Override
     public void resultChanged(LookupEvent le) {
-        update();
+        if (i % 2 == 0) {
+            update();
+        } else {
+            System.err.println("ignoring event");
+        }
+        i++;
     }
-
+    
     private void update() {
-
+        
         Collection<? extends SeqRunI> runs = resultSeqRun.allInstances();
         Collection<? extends AssemblyI> assemblies = resultAssembly.allInstances();
         Collection<? extends MGXMasterI> masters = resultMaster.allInstances();
         Collection<? extends JobI> jobs = resultJobs.allInstances();
-
+        
         if (!jobs.isEmpty()) {
             return; // selection within own topcomponent, no update
         }
-         
+
         // remove propertychangelisteners from previous runs and assemblies
+        if (currentMaster != null) {
+            currentMaster.removePropertyChangeListener(this);
+            currentMaster = null;
+        }
         for (SeqRunI run : currentSeqRuns) {
             run.removePropertyChangeListener(this);
         }
@@ -187,38 +198,41 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
             ass.removePropertyChangeListener(this);
         }
         currentAssemblies.clear();
-
+        
         if (runs.size() > 0) {
             currentMode = MODE.SEQRUN;
-            currentMaster = null;
             currentSeqRuns.addAll(runs);
         } else if (assemblies.size() > 0) {
             currentMode = MODE.ASSEMBLY;
-            currentMaster = null;
             currentAssemblies.addAll(assemblies);
         } else if (masters.size() > 0) {
             currentMode = MODE.MASTER;
-
+            
             for (MGXMasterI newMaster : masters) {
-                if (currentMaster == null || !newMaster.equals(currentMaster)) {
+                if (!newMaster.equals(currentMaster)) {
                     currentMaster = newMaster;
                 }
             }
-
+            
+        } else {
+            return;
         }
 
         // add propertychangelisteners to new objects
+        if (currentMaster != null) {
+            currentMaster.addPropertyChangeListener(this);
+        }
         for (SeqRunI run : currentSeqRuns) {
             run.addPropertyChangeListener(this);
         }
         for (AssemblyI ass : currentAssemblies) {
             ass.addPropertyChangeListener(this);
         }
-
+        
         System.err.println("mode is " + currentMode);
         updateJobs();
     }
-
+    
     private synchronized void updateJobs() {
         if (currentRoot != null) {
             try {
@@ -236,14 +250,14 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
         if (currentRoot != null) {
             explorerManager.setRootContext(currentRoot);
         }
-
+        
     }
-
+    
     @Override
     public ExplorerManager getExplorerManager() {
         return explorerManager;
     }
-
+    
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals(ModelBaseI.OBJECT_DELETED)) {
@@ -258,6 +272,12 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
                 ass.removePropertyChangeListener(this);
                 if (currentAssemblies.contains(ass)) {
                     currentAssemblies.remove(ass);
+                }
+            } else if (evt.getSource() instanceof MGXMasterI) {
+                MGXMasterI master = (MGXMasterI) evt.getSource();
+                master.removePropertyChangeListener(this);
+                if (master == currentMaster) {
+                    currentMaster = null;
                 }
             }
         }
