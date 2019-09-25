@@ -202,11 +202,11 @@ public class JobAccess implements JobAccessI {
 
     @Override
     public void update(JobI obj) throws MGXException {
-        
+
         if (obj.getSeqruns() == null && obj.getAssembly() == null) {
-             throw new MGXException("Job refers to neither sequencing runs nor assemblies.");
+            throw new MGXException("Job refers to neither sequencing runs nor assemblies.");
         }
-        
+
         JobDTO dto = JobDTOFactory.getInstance().toDTO(obj);
         try {
             getDTOmaster().Job().update(dto);
@@ -272,6 +272,23 @@ public class JobAccess implements JobAccessI {
 
                 }
                 j.setSeqruns(tmp.toArray(new SeqRunI[]{}));
+                j.setAssembly(null);
+                all.add(j);
+            }
+        } catch (MGXDTOException ex) {
+            throw new MGXException(ex.getMessage());
+        }
+        return all;
+    }
+
+    @Override
+    public List<JobI> ByAssembly(AssemblyI ass) throws MGXException {
+        List<JobI> all = new ArrayList<>();
+        try {
+            for (JobDTO dto : getDTOmaster().Job().byAssembly(ass.getId())) {
+                JobI j = JobDTOFactory.getInstance().toModel(getMaster(), dto);
+                j.setAssembly(ass);
+                j.setSeqruns(null);
                 all.add(j);
             }
         } catch (MGXDTOException ex) {

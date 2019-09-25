@@ -36,6 +36,8 @@ public interface JobAccessI {
 
     public List<JobI> BySeqRun(SeqRunI run) throws MGXException;
 
+    public List<JobI> ByAssembly(AssemblyI ass) throws MGXException;
+
     public List<JobI> ByAttributeTypeAndSeqRun(AttributeTypeI attrType, SeqRunI run) throws MGXException;
 
     public String getErrorMessage(JobI job) throws MGXException;
