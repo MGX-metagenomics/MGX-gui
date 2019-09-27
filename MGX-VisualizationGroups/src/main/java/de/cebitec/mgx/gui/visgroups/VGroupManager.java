@@ -164,6 +164,18 @@ public class VGroupManager implements VGroupManagerI {
                 }
             }
         }
+
+        synchronized (assemblyGroups) {
+            for (AssemblyGroupI ag : assemblyGroups) {
+                Iterator<AttributeTypeI> it = ag.getAttributeTypes();
+                while (it.hasNext()) {
+                    AttributeTypeI at = it.next();
+                    if (!ret.contains(at)) {
+                        ret.add(at);
+                    }
+                }
+            }
+        }
         Collections.sort(ret, new Comparator<AttributeTypeI>() {
             @Override
             public int compare(AttributeTypeI o1, AttributeTypeI o2) {

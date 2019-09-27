@@ -229,7 +229,6 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
             ass.addPropertyChangeListener(this);
         }
         
-        System.err.println("mode is " + currentMode);
         updateJobs();
     }
     
@@ -237,6 +236,7 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
         if (currentRoot != null) {
             try {
                 currentRoot.destroy();
+                currentRoot = null;
             } catch (IOException ex) {
             }
         }

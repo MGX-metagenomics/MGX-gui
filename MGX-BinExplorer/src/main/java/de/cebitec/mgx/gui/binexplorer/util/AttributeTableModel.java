@@ -9,9 +9,11 @@ import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.assembly.GeneI;
 import de.cebitec.mgx.api.model.assembly.GeneObservationI;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import javax.swing.table.DefaultTableModel;
 import org.openide.util.Exceptions;
 
@@ -57,10 +59,10 @@ public class AttributeTableModel extends DefaultTableModel {
             case 1:
                 return gobs.getAttributeName();
             case 2:
-                return gobs.getStart();
+                return NumberFormat.getInstance(Locale.US).format(gobs.getStart());
             case 3:
-                return gobs.getStop();
-            case 4: 
+                return NumberFormat.getInstance(Locale.US).format(gobs.getStop());
+            case 4:
                 return gobs;
         }
         return null;
@@ -98,8 +100,7 @@ public class AttributeTableModel extends DefaultTableModel {
         if (columnIndex == 4) {
             return GeneObservationI.class;
         }
-        return super.getColumnClass(columnIndex); 
+        return super.getColumnClass(columnIndex);
     }
-    
-    
+
 }

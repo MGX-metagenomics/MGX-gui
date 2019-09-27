@@ -40,7 +40,7 @@ public final class RestartJobAction extends NodeAction {
     protected void performAction(Node[] activatedNodes) {
 
         final Collection<? extends JobI> jobs = Utilities.actionsGlobalContext().lookupAll(JobI.class);
-
+        
         // leave EDT
         NonEDT.invoke(new Runnable() {
             @Override
@@ -52,9 +52,6 @@ public final class RestartJobAction extends NodeAction {
                         continue;
                     }
 
-                    if (job.getSeqruns() == null || job.getSeqruns().length == 0) {
-                        throw new RuntimeException("Internal error: Job has no sequencing run.");
-                    }
                     if (job.getTool() == null) {
                         throw new RuntimeException("Internal error: Job has no tool.");
                     }
@@ -100,7 +97,7 @@ public final class RestartJobAction extends NodeAction {
                 return false;
             }
         }
-        return true;
+        return !jobs.isEmpty();
     }
 
     @Override
