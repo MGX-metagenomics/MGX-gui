@@ -82,9 +82,14 @@ public class JobAccess implements JobAccessI {
     @Override
     public TaskI<JobI> restart(JobI job) throws MGXException {
         TaskI<JobI> ret = null;
+        boolean noRuns = false;
         if (job.getSeqruns() == null || job.getSeqruns().length == 0) {
-            throw new MGXException("Internal error: Job has no sequencing run.");
+            noRuns = true;
         }
+        if (job.getAssembly() == null && noRuns) {
+            throw new MGXException("Internal error: Job has neither seqrun nor assembly.");
+        }
+
         if (job.getTool() == null) {
             throw new MGXException("Internal error: Job has no tool.");
         }
