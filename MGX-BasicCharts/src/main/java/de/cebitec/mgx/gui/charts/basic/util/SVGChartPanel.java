@@ -110,7 +110,7 @@ public class SVGChartPanel extends ChartPanel {
             Field f;
             try {
                 f = getClass().getDeclaredField("overlays");
-                if (f != null && !f.isAccessible()) {
+                if (f != null) {
                     f.setAccessible(true);
                     ovl = (List<Overlay>) f.get(this);
                 }
