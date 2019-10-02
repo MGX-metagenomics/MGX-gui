@@ -156,7 +156,6 @@ public class PCACustomizer extends javax.swing.JPanel {
             return;
         }
         int val = numLoadings.getValue();
-        System.err.println(val);
 
         numLoadings.setToolTipText("Show " + val + " of " + numLoadings.getMaximum() + " loadings");
         series.clear();
