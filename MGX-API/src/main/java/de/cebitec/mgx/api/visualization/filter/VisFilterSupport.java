@@ -1,6 +1,6 @@
 package de.cebitec.mgx.api.visualization.filter;
 
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.misc.Pair;
 import java.util.List;
 
@@ -28,7 +28,7 @@ public final class VisFilterSupport {
     }
 
     @Override
-    public List<Pair<VisualizationGroupI, V>> filter(List<Pair<VisualizationGroupI, T>> dists) {
+    public List<Pair<GroupI, V>> filter(List<Pair<GroupI, T>> dists) {
         return second.filter(first.filter(dists));
     }
 }

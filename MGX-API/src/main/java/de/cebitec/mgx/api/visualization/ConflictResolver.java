@@ -5,7 +5,7 @@
  */
 package de.cebitec.mgx.api.visualization;
 
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.groups.GroupI;
 import java.util.List;
 
 /**
@@ -14,5 +14,5 @@ import java.util.List;
  */
 public interface ConflictResolver {
 
-    public void resolve(String attributeType, List<VisualizationGroupI> vg);
+    public void resolve(String attributeType, List<GroupI> vg);
 }

@@ -6,17 +6,14 @@
 package de.cebitec.mgx.api.groups;
 
 import de.cebitec.mgx.api.misc.DistributionI;
-import de.cebitec.mgx.api.model.ModelBaseI;
-import java.awt.Color;
 import java.awt.datatransfer.DataFlavor;
-import java.beans.PropertyChangeListener;
 import java.util.Collection;
 
 /**
  *
  * @author sjaenick
  */
-public interface ReplicateGroupI extends GroupI<ReplicateGroupI>, PropertyChangeListener {
+public interface ReplicateGroupI extends GroupI<ReplicateI> {
 
     public static final DataFlavor DATA_FLAVOR = new DataFlavor(ReplicateGroupI.class, "ReplicateGroupI");
 
@@ -29,32 +26,14 @@ public interface ReplicateGroupI extends GroupI<ReplicateGroupI>, PropertyChange
     String REPLICATEGROUP_REPLICATE_ADDED = "replicateGroup_replicate_added";
     String REPLICATEGROUP_REPLICATE_REMOVED = "replicateGroup_replicate_removed";
 
-    public VGroupManagerI getManager();
-
-    void setName(String name);
-
-    Color getColor();
-
-    void setColor(Color color);
-
     Collection<ReplicateI> getReplicates();
-    
+
     DistributionI<Double> getMeanDistribution();
-    
+
     DistributionI<Double> getStdDevDistribution();
-    
-    long getNumSequences();
-    
+
     int getNextReplicateNum();
 
-    void setActive(boolean is_active);
-    
-    void add(ReplicateI rGroup);
-
-    void remove(ReplicateI rGroup);
-
     boolean isEmpty();
-
-    void close();
 
 }

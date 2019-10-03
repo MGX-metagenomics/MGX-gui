@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.nodes;
 
+import de.cebitec.mgx.api.model.Identifiable;
 import de.cebitec.mgx.api.model.ModelBaseI;
 import java.awt.EventQueue;
 import java.awt.datatransfer.Transferable;
@@ -18,7 +19,7 @@ import org.openide.util.datatransfer.PasteType;
  * @author sjaenick
  * @param <T> object
  */
-public abstract class AbstractNodeBase<T extends ModelBaseI<T>> extends AbstractNode implements Comparable<AbstractNodeBase<? extends T>>, PropertyChangeListener {
+public abstract class AbstractNodeBase<T extends Identifiable<T>> extends AbstractNode implements Comparable<AbstractNodeBase<? extends T>>, PropertyChangeListener {
 
     private final T content;
 

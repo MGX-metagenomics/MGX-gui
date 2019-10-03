@@ -1,8 +1,8 @@
 package de.cebitec.mgx.gui.nodefactory;
 
 import de.cebitec.mgx.api.groups.AssemblyGroupI;
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
-import de.cebitec.mgx.api.model.ModelBaseI;
 import de.cebitec.mgx.api.model.assembly.AssembledSeqRunI;
 import de.cebitec.mgx.gui.nodes.AssembledSeqRunFilterNode;
 import de.cebitec.mgx.gui.nodes.AssembledSeqRunNode;
@@ -31,11 +31,11 @@ public class GroupedAssembledSeqRunNodeFactory extends Children.Keys<AssembledSe
     }
 
     public void addSeqRun(AssembledSeqRunI sr) {
-        asmGroup.addSeqRun(sr);
+        asmGroup.add(sr);
     }
 
     public void addSeqRuns(AssembledSeqRunI... newRuns) {
-        asmGroup.addSeqRuns(newRuns);
+        asmGroup.add(newRuns);
     }
 
     @Override
@@ -48,7 +48,7 @@ public class GroupedAssembledSeqRunNodeFactory extends Children.Keys<AssembledSe
     @Override
     protected void addNotify() {
         super.addNotify();
-        setKeys(asmGroup.getSeqRuns());
+        setKeys(asmGroup.getContent());
     }
 
     @Override
@@ -58,7 +58,7 @@ public class GroupedAssembledSeqRunNodeFactory extends Children.Keys<AssembledSe
     }
 
     public final void refreshChildren() {
-        setKeys(asmGroup.getSeqRuns());
+        setKeys(asmGroup.getContent());
         refresh();
     }
 
@@ -90,12 +90,13 @@ public class GroupedAssembledSeqRunNodeFactory extends Children.Keys<AssembledSe
                 case VisualizationGroupI.VISGROUP_DEACTIVATED:
                 case VisualizationGroupI.VISGROUP_ACTIVATED:
                 case AssemblyGroupI.ASMGROUP_RENAMED:
+                case AssemblyGroupI.ASMGROUP_HAS_DIST:
                     return;
                 case VisualizationGroupI.VISGROUP_CHANGED:
                 case AssemblyGroupI.ASMGROUP_CHANGED:
                     refreshChildren();
                     return;
-                case ModelBaseI.OBJECT_DELETED:
+                case GroupI.OBJECT_DELETED:
                     if (asmGroup.equals(evt.getSource())) {
                         asmGroup.removePropertyChangeListener(this);
                     }

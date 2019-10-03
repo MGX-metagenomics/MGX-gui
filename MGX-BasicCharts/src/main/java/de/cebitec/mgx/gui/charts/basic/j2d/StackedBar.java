@@ -5,6 +5,7 @@
  */
 package de.cebitec.mgx.gui.charts.basic.j2d;
 
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.model.AttributeI;
@@ -28,7 +29,7 @@ import java.util.Locale;
 public class StackedBar {
     
     private final PlotPanel plotPanel;
-    private final VisualizationGroupI vGrp;
+    private final GroupI vGrp;
     private final AttributeTypeI attrType;
     private final DistributionI<Long> dist;
     private final List<BarSegment<AttributeI>> rects;
@@ -36,7 +37,7 @@ public class StackedBar {
     private final int height = 25;
     private Rectangle textBounds;
     
-    StackedBar(PlotPanel pp, VisualizationGroupI vGrp, AttributeTypeI attrType, List<AttributeI> sortOrder, DistributionI<Long> dist) {
+    StackedBar(PlotPanel pp, GroupI vGrp, AttributeTypeI attrType, List<AttributeI> sortOrder, DistributionI<Long> dist) {
         this.plotPanel = pp;
         this.vGrp = vGrp;
         this.attrType = attrType;

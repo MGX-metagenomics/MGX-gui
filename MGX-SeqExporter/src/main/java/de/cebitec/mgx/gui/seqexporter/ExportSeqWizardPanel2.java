@@ -1,6 +1,6 @@
 package de.cebitec.mgx.gui.seqexporter;
 
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.groups.GroupI;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -10,7 +10,7 @@ import javax.swing.event.EventListenerList;
 import org.openide.WizardDescriptor;
 import org.openide.util.HelpCtx;
 
-public class ExportSeqWizardPanel2 implements WizardDescriptor.Panel<WizardDescriptor>, PropertyChangeListener {
+public class ExportSeqWizardPanel2<U> implements WizardDescriptor.Panel<WizardDescriptor>, PropertyChangeListener {
 
     /**
      * The visual component that displays this panel. If you need to access the
@@ -30,7 +30,7 @@ public class ExportSeqWizardPanel2 implements WizardDescriptor.Panel<WizardDescr
         return component;
     }
 
-    public void setVisualizationGroup(VisualizationGroupI vg) {
+    public void setGroup(GroupI<U> vg) {
         getComponent().setVisualizationGroup(vg);
     }
 

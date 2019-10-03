@@ -20,8 +20,5 @@ public interface DistributionI<T extends Number> extends Map<AttributeI, T> , Vi
     public long getTotalClassifiedElements();
     
     public Class<T> getEntryType();
-
-//    public void setOrder(List<AttributeI> o);
-//
-//    public void reset();
+    
 }

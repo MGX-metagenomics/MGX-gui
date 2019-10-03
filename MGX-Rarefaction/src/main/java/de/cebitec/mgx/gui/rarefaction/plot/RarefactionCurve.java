@@ -2,13 +2,14 @@ package de.cebitec.mgx.gui.rarefaction.plot;
 
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.groups.FileType;
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.groups.ImageExporterI;
 import de.cebitec.mgx.api.groups.SequenceExporterI;
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.misc.Point;
 import de.cebitec.mgx.api.model.AttributeTypeI;
+import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
 import de.cebitec.mgx.gui.charts.basic.util.SVGChartPanel;
 import de.cebitec.mgx.gui.rarefaction.LocalRarefaction;
@@ -52,7 +53,7 @@ public class RarefactionCurve extends AbstractViewer<DistributionI<Long>> implem
     private RarefactionCustomizer cust = null;
     private DelayedPlot cPanel = null;
     private JFreeChart chart = null;
-    private List<Pair<VisualizationGroupI, DistributionI<Long>>> data;
+    private List<Pair<GroupI, DistributionI<Long>>> data;
 
     @Override
     public JComponent getComponent() {
@@ -65,7 +66,7 @@ public class RarefactionCurve extends AbstractViewer<DistributionI<Long>> implem
     }
 
     @Override
-    public void show(final List<Pair<VisualizationGroupI, DistributionI<Long>>> dists) {
+    public void show(final List<Pair<GroupI, DistributionI<Long>>> dists) {
 
         data = dists;
 
@@ -119,7 +120,7 @@ public class RarefactionCurve extends AbstractViewer<DistributionI<Long>> implem
                 // set the colors
                 int i = 0;
                 XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) plot.getRenderer();
-                for (Pair<VisualizationGroupI, DistributionI<Long>> groupDistribution : dists) {
+                for (Pair<GroupI, DistributionI<Long>> groupDistribution : dists) {
                     renderer.setSeriesStroke(i, new BasicStroke(getCustomizer().getLineThickness()));
                     renderer.setSeriesPaint(i++, groupDistribution.getFirst().getColor());
                 }
@@ -142,7 +143,7 @@ public class RarefactionCurve extends AbstractViewer<DistributionI<Long>> implem
 
     }
 
-    private XYSeriesCollection createXYSeries(List<Pair<VisualizationGroupI, DistributionI<Long>>> in) {
+    private XYSeriesCollection createXYSeries(List<Pair<GroupI, DistributionI<Long>>> in) {
 
         final int numRepetitions = getCustomizer().getNumberRepetitions();
         final int numDataPoints = getCustomizer().getNumberOfPoints();
@@ -151,7 +152,7 @@ public class RarefactionCurve extends AbstractViewer<DistributionI<Long>> implem
 
         final CountDownLatch allDone = new CountDownLatch(in.size());
 
-        for (final Pair<VisualizationGroupI, DistributionI<Long>> groupDistribution : in) {
+        for (final Pair<GroupI, DistributionI<Long>> groupDistribution : in) {
 
             NonEDT.invoke(new Runnable() {
 
@@ -231,10 +232,12 @@ public class RarefactionCurve extends AbstractViewer<DistributionI<Long>> implem
     @Override
     public SequenceExporterI[] getSequenceExporters() {
         List<SequenceExporterI> ret = new ArrayList<>(data.size());
-        for (Pair<VisualizationGroupI, DistributionI<Long>> p : data) {
+        for (Pair<GroupI, DistributionI<Long>> p : data) {
             if (p.getSecond().getTotalClassifiedElements() > 0) {
-                SequenceExporterI exp = new SeqExporter<>(p.getFirst(), p.getSecond());
-                ret.add(exp);
+                if (p.getFirst().getContentClass().equals(SeqRunI.class)) {
+                    SequenceExporterI exp = new SeqExporter<>((GroupI<SeqRunI>)p.getFirst(), p.getSecond());
+                    ret.add(exp);
+                }
             }
         }
         return ret.toArray(new SequenceExporterI[]{});

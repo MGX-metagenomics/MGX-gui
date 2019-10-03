@@ -1,8 +1,9 @@
 package de.cebitec.mgx.gui.seqexporter;
 
 import de.cebitec.mgx.api.exception.MGXException;
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.model.SeqRunI;
+import de.cebitec.mgx.api.model.assembly.AssembledSeqRunI;
 import java.io.File;
 import java.lang.reflect.Field;
 import javax.swing.JFileChooser;
@@ -14,7 +15,7 @@ import javax.swing.plaf.FileChooserUI;
 import org.openide.util.Exceptions;
 import org.openide.util.NbPreferences;
 
-public final class ExportSeqVisualPanel2 extends JPanel implements DocumentListener {
+public final class ExportSeqVisualPanel2<U> extends JPanel implements DocumentListener {
 
     /**
      * Creates new form ExportSeqVisualPanel2
@@ -51,12 +52,17 @@ public final class ExportSeqVisualPanel2 extends JPanel implements DocumentListe
     }
     private JTextField fileNameField;
 
-    public void setVisualizationGroup(VisualizationGroupI vg) {
+    public void setVisualizationGroup(GroupI<U> vg) {
         hasQuality = true;
-        for (SeqRunI run : vg.getSeqRuns()) {
-            try {
-                hasQuality = hasQuality & run.getMaster().SeqRun().hasQuality(run);
-            } catch (MGXException ex) {
+        for (U u : vg.getContent()) {
+            if (u instanceof SeqRunI) {
+                SeqRunI run = (SeqRunI) u;
+                try {
+                    hasQuality = hasQuality & run.getMaster().SeqRun().hasQuality(run);
+                } catch (MGXException ex) {
+                    hasQuality = false;
+                }
+            } else if (u instanceof AssembledSeqRunI) {
                 hasQuality = false;
             }
         }

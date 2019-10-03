@@ -10,7 +10,6 @@ import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.groups.ReplicateGroupI;
 import de.cebitec.mgx.api.groups.VGroupManagerI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
-import de.cebitec.mgx.api.model.ModelBaseI;
 import de.cebitec.mgx.gui.nodes.AssemblyGroupNode;
 import de.cebitec.mgx.gui.nodes.ReplicateGroupNode;
 import de.cebitec.mgx.gui.nodes.VizGroupNode;
@@ -113,6 +112,7 @@ public class VisualizationGroupSet extends ChildFactory<GroupI> implements NodeL
                     // ignore
                     break;
                 case VisualizationGroupI.VISGROUP_HAS_DIST:
+                case AssemblyGroupI.ASMGROUP_HAS_DIST:
                     // ignore
                     break;
                 case VisualizationGroupI.VISGROUP_CHANGED:
@@ -129,10 +129,10 @@ public class VisualizationGroupSet extends ChildFactory<GroupI> implements NodeL
                 case AssemblyGroupI.ASMGROUP_RENAMED:
                     // ignore
                     break;
-                case ModelBaseI.OBJECT_DELETED:
+                case GroupI.OBJECT_DELETED:
                     remove((GroupI) evt.getSource());
                     break;
-                case ModelBaseI.OBJECT_MODIFIED:
+                case GroupI.OBJECT_MODIFIED:
                     // ignore
                     break;
                 default:

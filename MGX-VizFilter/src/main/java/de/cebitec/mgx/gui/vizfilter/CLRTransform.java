@@ -7,7 +7,7 @@ package de.cebitec.mgx.gui.vizfilter;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.AttributeI;
@@ -27,9 +27,9 @@ import java.util.logging.Logger;
 public class CLRTransform implements VisFilterI<DistributionI<Double>, DistributionI<Double>> {
 
     @Override
-    public List<Pair<VisualizationGroupI, DistributionI<Double>>> filter(List<Pair<VisualizationGroupI, DistributionI<Double>>> dists) {
-        List<Pair<VisualizationGroupI, DistributionI<Double>>> ret = new ArrayList<>(dists.size());
-        for (Pair<VisualizationGroupI, DistributionI<Double>> pair : dists) {
+    public List<Pair<GroupI, DistributionI<Double>>> filter(List<Pair<GroupI, DistributionI<Double>>> dists) {
+        List<Pair<GroupI, DistributionI<Double>>> ret = new ArrayList<>(dists.size());
+        for (Pair<GroupI, DistributionI<Double>> pair : dists) {
             ret.add(new Pair<>(pair.getFirst(), transformCLR(pair.getSecond())));
         }
         return ret;

@@ -60,6 +60,7 @@ public class AddSeqRun extends AbstractAction {
 
             SwingWorker<SeqRunI, Exception> sw = new SwingWorker<SeqRunI, Exception>() {
                 @Override
+                @SuppressWarnings("unchecked")
                 protected SeqRunI doInBackground() throws MGXException {
                     final SeqRunI seqrun = m.SeqRun().create(extract, wd.getSeqRunName(), wd.getSequencingMethod(), wd.getSequencingTechnology(), wd.getSubmittedToINSDC(), wd.getIsPaired(), wd.getAccession());
                     // create a sequence reader

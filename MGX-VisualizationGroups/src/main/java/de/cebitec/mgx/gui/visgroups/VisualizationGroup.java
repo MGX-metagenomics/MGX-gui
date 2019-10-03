@@ -5,6 +5,8 @@ import de.cebitec.mgx.gui.visgroups.workers.MultiAttributeTypeFetcher;
 import de.cebitec.mgx.gui.visgroups.workers.HierarchyFetcher;
 import de.cebitec.mgx.gui.visgroups.workers.DistributionFetcher;
 import de.cebitec.mgx.api.groups.ConflictingJobsException;
+import de.cebitec.mgx.api.groups.ConflictingJobsForSeqRunException;
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.groups.VGroupManagerI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.AttributeRank;
@@ -14,7 +16,6 @@ import de.cebitec.mgx.api.misc.Triple;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.JobI;
-import de.cebitec.mgx.api.model.ModelBaseI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.tree.TreeI;
 import de.cebitec.mgx.gui.datafactories.DistributionFactory;
@@ -71,7 +72,7 @@ public class VisualizationGroup implements VisualizationGroupI {
     private final UUID uuid = UUID.randomUUID();
     private final ParallelPropertyChangeSupport pcs = new ParallelPropertyChangeSupport(this);
     //
-    private String managedState = ModelBaseI.OBJECT_MANAGED;
+    private String managedState = OBJECT_MANAGED;
 
     VisualizationGroup(VGroupManagerI vgmgr, int id, String groupName, Color color) {
         this.id = id;
@@ -108,6 +109,11 @@ public class VisualizationGroup implements VisualizationGroupI {
         pcs.close();
     }
 
+    @Override
+    public Class<SeqRunI> getContentClass() {
+        return SeqRunI.class;
+    }
+    
     @Override
     public final int getId() {
         return id;
@@ -168,14 +174,14 @@ public class VisualizationGroup implements VisualizationGroupI {
     @Override
     public final long getNumSequences() {
         long ret = 0;
-        for (SeqRunI sr : getSeqRuns()) {
+        for (SeqRunI sr : getContent()) {
             ret += sr.getNumSequences();
         }
         return ret;
     }
 
     @Override
-    public final Set<SeqRunI> getSeqRuns() {
+    public final Set<SeqRunI> getContent() {
         return Collections.unmodifiableSet(attributeTypes.keySet());
     }
 
@@ -227,7 +233,7 @@ public class VisualizationGroup implements VisualizationGroupI {
             hierarchyCache.remove(selectedAttributeType);
         }
 
-        for (SeqRunI run : getSeqRuns()) {
+        for (SeqRunI run : getContent()) {
 
             Set<JobI> validJobs = getJobsProvidingAttributeType(run, selectedAttributeType);
             //
@@ -251,7 +257,7 @@ public class VisualizationGroup implements VisualizationGroupI {
 
         if (!needsResolval.get(rank).isEmpty()) {
             selectedAttributeType = null;
-            throw new ConflictingJobsException(this, needsResolval.get(rank));
+            throw new ConflictingJobsForSeqRunException(this, needsResolval.get(rank));
         }
     }
 
@@ -288,7 +294,8 @@ public class VisualizationGroup implements VisualizationGroupI {
     }
 
     @Override
-    public final void addSeqRuns(final SeqRunI... runs) {
+    @SafeVarargs
+    public final void add(final SeqRunI... runs) {
         if (!isActive() || runs.length == 0) {
             return;
         }
@@ -364,7 +371,7 @@ public class VisualizationGroup implements VisualizationGroupI {
     }
 
     @Override
-    public final void addSeqRun(final SeqRunI sr) {
+    public final void add(final SeqRunI sr) {
         if (isDeleted() || sr == null || attributeTypes.containsKey(sr) || sr.isDeleted()) {
             return;
         }
@@ -428,7 +435,7 @@ public class VisualizationGroup implements VisualizationGroupI {
     }
 
     @Override
-    public final void removeSeqRun(final SeqRunI sr) {
+    public final void remove(final SeqRunI sr) {
         if (!attributeTypes.containsKey(sr)) {
             return;
         }
@@ -465,7 +472,7 @@ public class VisualizationGroup implements VisualizationGroupI {
         }
 
         if (!needsResolval.get(AttributeRank.PRIMARY).isEmpty()) {
-            throw new ConflictingJobsException(this, needsResolval.get(AttributeRank.PRIMARY));
+            throw new ConflictingJobsForSeqRunException(this, needsResolval.get(AttributeRank.PRIMARY));
         }
 
         if (hierarchyCache.containsKey(copyOfSelectedAttributeType)) {
@@ -476,7 +483,7 @@ public class VisualizationGroup implements VisualizationGroupI {
         //
         List<Future<TreeI<Long>>> results = new ArrayList<>();
 
-        for (SeqRunI run : getSeqRuns()) {
+        for (SeqRunI run : getContent()) {
             //
             // select the job to use - either we can automatically determine
             // the correct job or we have to ask the user
@@ -528,7 +535,7 @@ public class VisualizationGroup implements VisualizationGroupI {
             return null;
         }
         if (!needsResolval.get(AttributeRank.PRIMARY).isEmpty()) {
-            throw new ConflictingJobsException(this, needsResolval.get(AttributeRank.PRIMARY));
+            throw new ConflictingJobsForSeqRunException(this, needsResolval.get(AttributeRank.PRIMARY));
         }
 
         if (distCache.containsKey(copyOfSelectedAttributeType)) {
@@ -539,7 +546,7 @@ public class VisualizationGroup implements VisualizationGroupI {
 
         // start distribution retrieval workers in background
         //
-        for (SeqRunI run : getSeqRuns()) {
+        for (SeqRunI run : getContent()) {
 
             JobI selectedJob = uniqueJobs.get(AttributeRank.PRIMARY).get(run);
             //
@@ -659,15 +666,15 @@ public class VisualizationGroup implements VisualizationGroupI {
         switch (evt.getPropertyName()) {
             case OBJECT_DELETED:
                 if (evt.getSource() instanceof SeqRunI) {
-                    removeSeqRun((SeqRunI) evt.getSource());
+                    remove((SeqRunI) evt.getSource());
                 }
                 if (evt.getSource() instanceof JobI) {
                     JobI job = (JobI) evt.getSource();
                     SeqRunI[] runs = job.getSeqruns();
                     for (SeqRunI seqrun : runs) {
                         // refresh data for this run
-                        removeSeqRun(seqrun);
-                        addSeqRun(seqrun);
+                        remove(seqrun);
+                        add(seqrun);
                     }
                 }
                 //pcs.firePropertyChange(evt);
@@ -763,7 +770,7 @@ public class VisualizationGroup implements VisualizationGroupI {
     }
 
     @Override
-    public int compareTo(VisualizationGroupI o) {
+    public int compareTo(GroupI<SeqRunI> o) {
         return Integer.compare(getId(), o.getId());
     }
 }

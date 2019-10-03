@@ -1,6 +1,6 @@
 package de.cebitec.mgx.gui.viewer.api;
 
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.misc.Visualizable;
 import de.cebitec.mgx.api.model.AttributeTypeI;
@@ -43,7 +43,7 @@ public interface ViewerI<T extends Visualizable> extends Comparable<ViewerI<T>> 
     /**
      * @param dists distributions to be displayed
      */
-    public void show(List<Pair<VisualizationGroupI, T>> dists);
+    public void show(List<Pair<GroupI, T>> dists);
 
     /**
      * release internal resources

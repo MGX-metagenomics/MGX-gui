@@ -1,7 +1,7 @@
 package de.cebitec.mgx.gui.charts.basic;
 
 import de.cebitec.mgx.api.groups.FileType;
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.groups.ImageExporterI;
 import de.cebitec.mgx.api.misc.DistributionI;
@@ -61,13 +61,13 @@ public class RankAssignmentPlot extends HierarchicalViewerI implements ImageExpo
         return jcomp;
     }
 
-    Map<VisualizationGroupI, Long> maxAssignedByGroup = new HashMap<>();
+    Map<GroupI, Long> maxAssignedByGroup = new HashMap<>();
 
     @Override
-    public void show(List<Pair<VisualizationGroupI, TreeI<Long>>> data) {
+    public void show(List<Pair<GroupI, TreeI<Long>>> data) {
 
         // get longest path in tree to determine ordering of attribute types
-        TreeI<Map<VisualizationGroupI, Long>> combinedTree = TreeFactory.combineTrees(data);
+        TreeI<Map<GroupI, Long>> combinedTree = TreeFactory.combineTrees(data);
         AttributeTypeI[] longestPath = TreeFactory.getLongestPath(combinedTree);
 
         maxAssignedByGroup.clear();
@@ -76,7 +76,7 @@ public class RankAssignmentPlot extends HierarchicalViewerI implements ImageExpo
         Map<AttributeTypeI, List<DistributionI<Long>>> byRank = new HashMap<>();
         for (AttributeTypeI attrType : longestPath) {
             List<DistributionI<Long>> dists = new ArrayList<>(data.size());
-            for (Pair<VisualizationGroupI, TreeI<Long>> p : data) {
+            for (Pair<GroupI, TreeI<Long>> p : data) {
                 DistributionI<Long> fromTree = DistributionFactory.fromTree(p.getSecond(), attrType);
                 dists.add(fromTree);
 
@@ -130,7 +130,7 @@ public class RankAssignmentPlot extends HierarchicalViewerI implements ImageExpo
         for (AttributeTypeI attrType : longestPath) {
             int i = 0;
             for (DistributionI<Long> dist : byRank.get(attrType)) {
-                VisualizationGroupI vGrp = data.get(i).getFirst();
+                GroupI vGrp = data.get(i).getFirst();
                 plotPanel.createBar(vGrp, attrType, sortedAttrsByAbundance.get(attrType), dist);
                 i++;
             }

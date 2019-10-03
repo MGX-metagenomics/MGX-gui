@@ -1,10 +1,11 @@
 package de.cebitec.mgx.gui.charts.basic;
 
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.groups.ImageExporterI;
 import de.cebitec.mgx.api.groups.SequenceExporterI;
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
+import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.charts.basic.customizer.XYPlotCustomizer;
 import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
 import de.cebitec.mgx.gui.charts.basic.util.LogAxis;
@@ -40,7 +41,7 @@ public class XYPlotViewer extends NumericalViewerI<Long> implements ImageExporte
     private SVGChartPanel cPanel = null;
     private XYPlotCustomizer customizer = null;
     private JFreeChart chart = null;
-    private List<Pair<VisualizationGroupI, DistributionI<Double>>> data;
+    private List<Pair<GroupI, DistributionI<Double>>> data;
 
     @Override
     public JComponent getComponent() {
@@ -53,7 +54,7 @@ public class XYPlotViewer extends NumericalViewerI<Long> implements ImageExporte
     }
 
     @Override
-    public void show(List<Pair<VisualizationGroupI, DistributionI<Long>>> in) {
+    public void show(List<Pair<GroupI, DistributionI<Long>>> in) {
 
         data = getCustomizer().filter(in);
         XYSeriesCollection dataset = JFreeChartUtil.createXYSeries(data);
@@ -107,7 +108,7 @@ public class XYPlotViewer extends NumericalViewerI<Long> implements ImageExporte
         // set the colors
         int i = 0;
         XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) plot.getRenderer();
-        for (Pair<VisualizationGroupI, DistributionI<Double>> groupDistribution : data) {
+        for (Pair<GroupI, DistributionI<Double>> groupDistribution : data) {
             renderer.setSeriesPaint(i++, groupDistribution.getFirst().getColor());
         }
 
@@ -135,10 +136,12 @@ public class XYPlotViewer extends NumericalViewerI<Long> implements ImageExporte
     @Override
     public SequenceExporterI[] getSequenceExporters() {
         List<SequenceExporterI> ret = new ArrayList<>(data.size());
-        for (Pair<VisualizationGroupI, DistributionI<Double>> p : data) {
+        for (Pair<GroupI, DistributionI<Double>> p : data) {
             if (p.getSecond().getTotalClassifiedElements() > 0) {
-                SequenceExporterI exp = new SeqExporter<>(p.getFirst(), p.getSecond());
-                ret.add(exp);
+                if (p.getFirst().getContentClass().equals(SeqRunI.class)) {
+                    SequenceExporterI exp = new SeqExporter<>((GroupI<SeqRunI>)p.getFirst(), p.getSecond());
+                    ret.add(exp);
+                }
             }
         }
         return ret.toArray(new SequenceExporterI[]{});

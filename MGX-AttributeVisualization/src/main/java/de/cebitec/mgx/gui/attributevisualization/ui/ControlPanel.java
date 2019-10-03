@@ -6,6 +6,7 @@
 package de.cebitec.mgx.gui.attributevisualization.ui;
 
 import de.cebitec.mgx.api.groups.AssemblyGroupI;
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.groups.ReplicateGroupI;
 import de.cebitec.mgx.api.groups.VGroupManagerI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
@@ -17,7 +18,6 @@ import de.cebitec.mgx.api.misc.Visualizable;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.ModelBaseI;
-import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.tree.TreeI;
 import de.cebitec.mgx.api.visualization.ConflictResolver;
 import de.cebitec.mgx.gui.attributevisualization.conflictwizard.ConflictResolverWizardIterator;
@@ -55,8 +55,8 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
     private final VGroupManagerI vgmgr;
     private AttributeVisualizationTopComponent topComponent;
     //
-    private final List<Pair<VisualizationGroupI, DistributionI<Long>>> currentDistributions = new ArrayList<>();
-    private final List<Pair<VisualizationGroupI, TreeI<Long>>> currentHierarchies = new ArrayList<>();
+    private final List<Pair<GroupI, DistributionI<Long>>> currentDistributions = new ArrayList<>();
+    private final List<Pair<GroupI, TreeI<Long>>> currentHierarchies = new ArrayList<>();
     //
     private final AttributeTypeListModel attrListModel = new AttributeTypeListModel();
     private final VisualizationTypeListModel vizListModel = new VisualizationTypeListModel();
@@ -79,14 +79,14 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
 
         vgmgr.registerResolver(new ConflictResolver() {
             @Override
-            public void resolve(String attrType, List<VisualizationGroupI> groups) {
-                ConflictResolverWizardIterator iter = new ConflictResolverWizardIterator(groups);
+            public void resolve(String attrType, List<GroupI> groups) {
+                ConflictResolverWizardIterator iter  = new ConflictResolverWizardIterator(groups);
                 WizardDescriptor wiz = new WizardDescriptor(iter);
                 wiz.setTitleFormat(new MessageFormat("{0}"));
                 wiz.setTitle("Job selection");
                 if (DialogDisplayer.getDefault().notify(wiz) == WizardDescriptor.FINISH_OPTION) {
-                    for (Pair<VisualizationGroupI, Triple<AttributeRank, SeqRunI, JobI>> p : iter.getSelection()) {
-                        VisualizationGroupI vg = p.getFirst();
+                    for (Pair<GroupI, Triple<AttributeRank, Object, JobI>> p : iter.getSelection()) {
+                        GroupI vg = p.getFirst();
                         vg.resolveConflict(p.getSecond().getFirst(), attrType, p.getSecond().getSecond(), p.getSecond().getThird());
                         groups.remove(vg);
                     }
@@ -195,6 +195,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
         switch (evt.getPropertyName()) {
             case VisualizationGroupI.VISGROUP_CHANGED:
             case AssemblyGroupI.ASMGROUP_CHANGED:
+            case ReplicateGroupI.REPLICATEGROUP_CHANGED:
                 updateAttributeTypeList();
                 break;
             case VGroupManagerI.VISGROUP_ADDED:
@@ -221,6 +222,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
                 // ignore
                 break;
             case VisualizationGroupI.VISGROUP_HAS_DIST:
+            case AssemblyGroupI.ASMGROUP_HAS_DIST:
                 // ignore
                 break;
             case VisualizationGroupI.VISGROUP_RENAMED:

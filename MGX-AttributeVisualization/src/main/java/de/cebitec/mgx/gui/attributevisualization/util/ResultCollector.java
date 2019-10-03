@@ -1,10 +1,11 @@
 package de.cebitec.mgx.gui.attributevisualization.util;
 
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.groups.VGroupManagerI;
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.AttributeTypeI;
+import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.tree.TreeI;
 import de.cebitec.mgx.gui.attributevisualization.ui.ControlPanel;
 import java.util.List;
@@ -16,15 +17,15 @@ import org.openide.util.Exceptions;
  *
  * @author sjaenick
  */
-public class ResultCollector extends SwingWorker<Pair<List<Pair<VisualizationGroupI, DistributionI<Long>>>, List<Pair<VisualizationGroupI, TreeI<Long>>>>, Void> {
+public class ResultCollector extends SwingWorker<Pair<List<Pair<GroupI, DistributionI<Long>>>, List<Pair<GroupI, TreeI<Long>>>>, Void> {
 
     private final AttributeTypeI aType;
-    private final List<Pair<VisualizationGroupI, DistributionI<Long>>> distHolder;
-    private final List<Pair<VisualizationGroupI, TreeI<Long>>> hierarchyHolder;
+    private final List<Pair<GroupI, DistributionI<Long>>> distHolder;
+    private final List<Pair<GroupI, TreeI<Long>>> hierarchyHolder;
     private final ControlPanel ctl;
     private final VGroupManagerI mgr;
 
-    public ResultCollector(VGroupManagerI mgr, AttributeTypeI aType, List<Pair<VisualizationGroupI, DistributionI<Long>>> distHolder, List<Pair<VisualizationGroupI, TreeI<Long>>> hierarchyHolder, ControlPanel ctl) {
+    public ResultCollector(VGroupManagerI mgr, AttributeTypeI aType, List<Pair<GroupI, DistributionI<Long>>> distHolder, List<Pair<GroupI, TreeI<Long>>> hierarchyHolder, ControlPanel ctl) {
         this.mgr = mgr;
         this.aType = aType;
         this.distHolder = distHolder;
@@ -33,11 +34,11 @@ public class ResultCollector extends SwingWorker<Pair<List<Pair<VisualizationGro
     }
 
     @Override
-    protected Pair<List<Pair<VisualizationGroupI, DistributionI<Long>>>, List<Pair<VisualizationGroupI, TreeI<Long>>>> doInBackground() throws Exception {
+    protected Pair<List<Pair<GroupI, DistributionI<Long>>>, List<Pair<GroupI, TreeI<Long>>>> doInBackground() throws Exception {
 
-        List<Pair<VisualizationGroupI, DistributionI<Long>>> distributions = mgr.getDistributions();
+        List<Pair<GroupI,DistributionI<Long>>> distributions = mgr.getDistributions();
         assert distributions != null;
-        List<Pair<VisualizationGroupI, TreeI<Long>>> hierarchies = null;
+        List<Pair<GroupI, TreeI<Long>>> hierarchies = null;
 
         if (aType.getStructure() == AttributeTypeI.STRUCTURE_HIERARCHICAL) {
             hierarchies = mgr.getHierarchies();
@@ -49,7 +50,7 @@ public class ResultCollector extends SwingWorker<Pair<List<Pair<VisualizationGro
 
     @Override
     protected void done() {
-        Pair<List<Pair<VisualizationGroupI, DistributionI<Long>>>, List<Pair<VisualizationGroupI, TreeI<Long>>>> p = null;
+        Pair<List<Pair<GroupI, DistributionI<Long>>>, List<Pair<GroupI, TreeI<Long>>>> p = null;
         try {
             p = get();
         } catch (InterruptedException | ExecutionException ex) {

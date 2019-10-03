@@ -1,6 +1,6 @@
 package de.cebitec.mgx.gui.vizfilter;
 
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.AttributeI;
@@ -31,9 +31,9 @@ public class ExcludeFilter<T extends Number> implements VisFilterI<DistributionI
     }
 
     @Override
-    public List<Pair<VisualizationGroupI, DistributionI<T>>> filter(List<Pair<VisualizationGroupI, DistributionI<T>>> in) {
-        List<Pair<VisualizationGroupI, DistributionI<T>>> ret = new ArrayList<>(in.size());
-        for (Pair<VisualizationGroupI, DistributionI<T>> p : in) {
+    public List<Pair<GroupI, DistributionI<T>>> filter(List<Pair<GroupI, DistributionI<T>>> in) {
+        List<Pair<GroupI, DistributionI<T>>> ret = new ArrayList<>(in.size());
+        for (Pair<GroupI, DistributionI<T>> p : in) {
             DistributionI<T> filteredDist = filterDist(p.getSecond());
             ret.add(new Pair<>(p.getFirst(), filteredDist));
         }

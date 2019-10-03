@@ -6,10 +6,12 @@
 package de.cebitec.mgx.gui.attributevisualization;
 
 import de.cebitec.mgx.api.groups.AssemblyGroupI;
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.groups.ReplicateGroupI;
 import de.cebitec.mgx.api.groups.VGroupManagerI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.model.ModelBaseI;
+import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.nodes.VizGroupNode;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -34,7 +36,7 @@ import org.openide.util.Exceptions;
  *
  * @author sj
  */
-public class GroupFrame extends GroupFrameBase<VisualizationGroupI> {
+public class GroupFrame extends GroupFrameBase<VisualizationGroupI, SeqRunI> {
 
     public GroupFrame(final VisualizationGroupI vGroup) {
         super(vGroup.getManager(), vGroup, new VizGroupNode(vGroup));

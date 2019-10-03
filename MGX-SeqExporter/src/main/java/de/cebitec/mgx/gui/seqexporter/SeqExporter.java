@@ -3,11 +3,12 @@ package de.cebitec.mgx.gui.seqexporter;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.datatransfer.DownloadBaseI;
 import de.cebitec.mgx.api.access.datatransfer.TransferBaseI;
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.groups.SequenceExporterI;
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.SeqRunI;
+import de.cebitec.mgx.api.model.assembly.AssembledSeqRunI;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
 import de.cebitec.mgx.seqstorage.FASTQWriter;
@@ -31,19 +32,19 @@ import org.openide.NotifyDescriptor;
 import org.openide.WizardDescriptor;
 import org.openide.util.Exceptions;
 
-public final class SeqExporter<T extends Number> implements SequenceExporterI {
+public final class SeqExporter<T extends Number, U> implements SequenceExporterI {
 
-    private final VisualizationGroupI vgroup;
+    private final GroupI<U> vgroup;
     private final DistributionI<T> dist;
 
-    public SeqExporter(VisualizationGroupI vgroup, DistributionI<T> dist) {
+    public SeqExporter(GroupI<U> vgroup, DistributionI<T> dist) {
         this.vgroup = vgroup;
         this.dist = dist;
     }
 
     @Override
     public boolean export() {
-        final ExportSeqWizardIterator<T> iter = new ExportSeqWizardIterator<>(vgroup, dist);
+        final ExportSeqWizardIterator<T, U> iter = new ExportSeqWizardIterator<>(vgroup, dist);
         WizardDescriptor wiz = new WizardDescriptor(iter);
         wiz.setTitleFormat(new MessageFormat("{0}"));
         wiz.setTitle("Export sequences for " + vgroup.getDisplayName());
@@ -94,14 +95,20 @@ public final class SeqExporter<T extends Number> implements SequenceExporterI {
                         attrs.add(a.getValue());
                     }
 
-                    Map<SeqRunI, Set<AttributeI>> saveSet = vgroup.getSaveSet(attrs);
+                    Map<U, Set<AttributeI>> saveSet = vgroup.getSaveSet(attrs);
                     CountDownLatch latch = new CountDownLatch(1);
 
                     List<DownloadBaseI> downloaders = new ArrayList<>();
 
-                    for (Entry<SeqRunI, Set<AttributeI>> e : saveSet.entrySet()) {
-                        MGXMasterI m = e.getKey().getMaster();
-                        DownloadBaseI downloader = m.Sequence().createDownloaderByAttributes(e.getValue(), writer, false);
+                    for (Entry<U, Set<AttributeI>> e : saveSet.entrySet()) {
+                        U key = e.getKey();
+                        MGXMasterI master = null;
+                        if (key instanceof SeqRunI) {
+                            master = ((SeqRunI) key).getMaster();
+                        } else if (key instanceof AssembledSeqRunI) {
+                            master = ((AssembledSeqRunI) key).getMaster();
+                        }
+                        DownloadBaseI downloader = master.Sequence().createDownloaderByAttributes(e.getValue(), writer, false);
                         downloaders.add(downloader);
                     }
 

@@ -6,14 +6,20 @@
 package de.cebitec.mgx.gui.visgroups;
 
 import de.cebitec.mgx.api.groups.ConflictingJobsException;
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.groups.ReplicateGroupI;
 import de.cebitec.mgx.api.groups.ReplicateI;
 import de.cebitec.mgx.api.groups.VGroupManagerI;
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.misc.AttributeRank;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
+import de.cebitec.mgx.api.misc.Triple;
+import de.cebitec.mgx.api.model.AttributeI;
+import de.cebitec.mgx.api.model.AttributeTypeI;
+import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.ModelBaseI;
-import static de.cebitec.mgx.api.model.ModelBaseI.OBJECT_DELETED;
+import de.cebitec.mgx.api.model.SeqRunI;
+import de.cebitec.mgx.api.model.tree.TreeI;
 import de.cebitec.mgx.api.visualization.ConflictResolver;
 import de.cebitec.mgx.gui.datafactories.DistributionFactory;
 import de.cebitec.mgx.pevents.ParallelPropertyChangeSupport;
@@ -27,8 +33,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -42,10 +52,10 @@ public class ReplicateGroup implements ReplicateGroupI {
     private final VGroupManagerI vgmgr;
     private String name;
     private Color color;
-    private final Collection<ReplicateI> groups = new ArrayList<>();
+    private final Set<ReplicateI> groups = new TreeSet<>();
     private boolean is_active = true;
     //
-    private String managedState = OBJECT_MANAGED;
+    private String managedState = ModelBaseI.OBJECT_MANAGED;
     //
     private final ParallelPropertyChangeSupport pcs = new ParallelPropertyChangeSupport(this, true);
     //
@@ -57,6 +67,11 @@ public class ReplicateGroup implements ReplicateGroupI {
     ReplicateGroup(VGroupManagerI vgmgr, String name) {
         this.vgmgr = vgmgr;
         this.name = name;
+    }
+
+    @Override
+    public Class<ReplicateI> getContentClass() {
+        return ReplicateI.class;
     }
 
     @Override
@@ -77,6 +92,13 @@ public class ReplicateGroup implements ReplicateGroupI {
     }
 
     @Override
+    public void add(ReplicateI... replicates) {
+        for (ReplicateI r : replicates) {
+            add(r);
+        }
+    }
+
+    @Override
     public void remove(ReplicateI replicate) {
         if (replicate != null && groups.contains(replicate)) {
             replicate.removePropertyChangeListener(this);
@@ -87,6 +109,11 @@ public class ReplicateGroup implements ReplicateGroupI {
             pcs.firePropertyChange(REPLICATEGROUP_REPLICATE_REMOVED, null, replicate);
             modified();
         }
+    }
+
+    @Override
+    public Set<ReplicateI> getContent() {
+        return Collections.unmodifiableSet(groups);
     }
 
     @Override
@@ -200,7 +227,7 @@ public class ReplicateGroup implements ReplicateGroupI {
         if (managedState.equals(OBJECT_DELETED)) {
             throw new RuntimeException("Invalid object state for " + getClass().getSimpleName() + ", cannot modify deleted object.");
         }
-        firePropertyChange(CHILD_CHANGE, 1, 2);
+        firePropertyChange(ModelBaseI.CHILD_CHANGE, 1, 2);
     }
 
     @Override
@@ -271,7 +298,7 @@ public class ReplicateGroup implements ReplicateGroupI {
     }
 
     @Override
-    public int compareTo(ReplicateGroupI o) {
+    public int compareTo(GroupI<ReplicateI> o) {
         return getName().compareTo(o.getName());
     }
 
@@ -317,7 +344,7 @@ public class ReplicateGroup implements ReplicateGroupI {
         assert resolver != null;
 
         Set<DistributionI<Long>> dists = new HashSet<>();
-        List<VisualizationGroupI> conflicts = new ArrayList<>();
+        List<GroupI> conflicts = new ArrayList<>();
         for (ReplicateI rep : getReplicates()) {
             try {
                 dists.add(rep.getDistribution());
@@ -338,6 +365,61 @@ public class ReplicateGroup implements ReplicateGroupI {
         int ret = nextReplicateNum;
         nextReplicateNum++;
         return ret;
+    }
+
+    @Override
+    public int getId() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public UUID getUUID() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Iterator<AttributeTypeI> getAttributeTypes() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void selectAttributeType(AttributeRank rank, String attrType) throws ConflictingJobsException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getSelectedAttributeType() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public DistributionI<Long> getDistribution() throws ConflictingJobsException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public TreeI<Long> getHierarchy() throws ConflictingJobsException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public List<Triple<AttributeRank, ReplicateI, Set<JobI>>> getConflicts() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Map<ReplicateI, Set<JobI>> getConflicts(AttributeRank rank) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Map<ReplicateI, Set<AttributeI>> getSaveSet(List<String> requestedAttrs) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void resolveConflict(AttributeRank rank, String attributeType, ReplicateI sr, JobI j) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

@@ -34,4 +34,10 @@ public class AssembledSeqRun extends AssembledSeqRunI {
     public int compareTo(AssembledSeqRunI t) {
         return this.getName().compareTo(t.getName());
     }
+
+    @Override
+    public String toString() {
+        return getName();
+    }
+
 }

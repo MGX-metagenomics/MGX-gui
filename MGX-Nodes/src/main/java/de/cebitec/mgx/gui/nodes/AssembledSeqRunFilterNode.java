@@ -41,7 +41,7 @@ public class AssembledSeqRunFilterNode extends FilterNode implements NodeListene
 
     @Override
     public void destroy() throws IOException {
-        vGroup.removeSeqRun(n.getContent());
+        vGroup.remove(n.getContent());
         fireNodeDestroyed();
     }
 
@@ -74,7 +74,7 @@ public class AssembledSeqRunFilterNode extends FilterNode implements NodeListene
 
     @Override
     public Action[] getActions(boolean context) {
-        Action a = FileUtil.getConfigObject("Actions/Edit/de-cebitec-mgx-gui-actions-RemoveSeqRunFromGroupAction.instance", Action.class);
+        Action a = FileUtil.getConfigObject("Actions/Edit/de-cebitec-mgx-gui-actions-RemoveAssembledSeqRunFromGroupAction.instance", Action.class);
         return new Action[]{a};
     }
 

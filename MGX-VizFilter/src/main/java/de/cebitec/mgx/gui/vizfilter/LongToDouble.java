@@ -5,6 +5,7 @@
  */
 package de.cebitec.mgx.gui.vizfilter;
 
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
@@ -23,10 +24,10 @@ import java.util.Map;
 public class LongToDouble implements VisFilterI<DistributionI<Long>, DistributionI<Double>> {
 
     @Override
-    public List<Pair<VisualizationGroupI, DistributionI<Double>>> filter(List<Pair<VisualizationGroupI, DistributionI<Long>>> in) {
-        List<Pair<VisualizationGroupI, DistributionI<Double>>> ret = new ArrayList<>();
-        for (Pair<VisualizationGroupI, DistributionI<Long>> p : in) {
-            VisualizationGroupI vg = p.getFirst();
+    public List<Pair<GroupI, DistributionI<Double>>> filter(List<Pair<GroupI, DistributionI<Long>>> in) {
+        List<Pair<GroupI, DistributionI<Double>>> ret = new ArrayList<>();
+        for (Pair<GroupI, DistributionI<Long>> p : in) {
+            GroupI vg = p.getFirst();
             DistributionI<Long> d = p.getSecond();
             Map<AttributeI, Double> tmp = new HashMap<>();
             for (Map.Entry<AttributeI, Long> e : d.entrySet()) {

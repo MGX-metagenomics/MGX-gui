@@ -1,14 +1,15 @@
 package de.cebitec.mgx.gui.tableview;
 
 import de.cebitec.mgx.api.groups.FileType;
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.gui.swingutils.DecimalFormatRenderer;
 import de.cebitec.mgx.api.groups.ImageExporterI;
 import de.cebitec.mgx.api.groups.SequenceExporterI;
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
+import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.visualization.filter.VisFilterI;
 import de.cebitec.mgx.gui.seqexporter.SeqExporter;
 import de.cebitec.mgx.gui.viewer.api.AbstractViewer;
@@ -49,7 +50,7 @@ public class TableViewer extends AbstractViewer<DistributionI<Long>> implements 
 
     private JXTable table;
     private TableViewCustomizer cust = null;
-    List<Pair<VisualizationGroupI, DistributionI<Double>>> dists;
+    List<Pair<GroupI, DistributionI<Double>>> dists;
 
     @Override
     public JComponent getComponent() {
@@ -72,7 +73,7 @@ public class TableViewer extends AbstractViewer<DistributionI<Long>> implements 
     }
 
     @Override
-    public void show(final List<Pair<VisualizationGroupI, DistributionI<Long>>> in) {
+    public void show(final List<Pair<GroupI, DistributionI<Long>>> in) {
 
         //
         // check whether assigned reads should be displayed as counts or fractions
@@ -94,7 +95,7 @@ public class TableViewer extends AbstractViewer<DistributionI<Long>> implements 
         String[] columns = new String[numColumns];
         int i = 0;
         columns[i++] = getAttributeType().getName(); // first column
-        for (Pair<VisualizationGroupI, DistributionI<Double>> p : dists) {
+        for (Pair<GroupI, DistributionI<Double>> p : dists) {
             columns[i++] = p.getFirst().getDisplayName();
             allAttrs.addAll(p.getSecond().keySet());
         }
@@ -126,7 +127,7 @@ public class TableViewer extends AbstractViewer<DistributionI<Long>> implements 
             Object[] rowData = new Object[numColumns];
             rowData[0] = a.getValue();
             int col = 1;
-            for (Pair<VisualizationGroupI, DistributionI<Double>> p : dists) {
+            for (Pair<GroupI, DistributionI<Double>> p : dists) {
                 DistributionI<Double> d = p.getSecond();
                 rowData[col++] = d.containsKey(a)
                         ? getCust().useFractions() ? d.get(a) : d.get(a).longValue()
@@ -223,10 +224,12 @@ public class TableViewer extends AbstractViewer<DistributionI<Long>> implements 
     @Override
     public SequenceExporterI[] getSequenceExporters() {
         List<SequenceExporterI> ret = new ArrayList<>(dists.size());
-        for (Pair<VisualizationGroupI, DistributionI<Double>> p : dists) {
+        for (Pair<GroupI, DistributionI<Double>> p : dists) {
             if (p.getSecond().getTotalClassifiedElements() > 0) {
-                SequenceExporterI exp = new SeqExporter<>(p.getFirst(), p.getSecond());
-                ret.add(exp);
+                if (p.getFirst().getContentClass().equals(SeqRunI.class)) {
+                    SequenceExporterI exp = new SeqExporter<>((GroupI<SeqRunI>)p.getFirst(), p.getSecond());
+                    ret.add(exp);
+                }
             }
         }
         return ret.toArray(new SequenceExporterI[]{});

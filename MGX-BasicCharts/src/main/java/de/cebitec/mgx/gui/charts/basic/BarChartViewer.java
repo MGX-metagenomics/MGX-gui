@@ -1,6 +1,6 @@
 package de.cebitec.mgx.gui.charts.basic;
 
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.gui.charts.basic.customizer.BarChartCustomizer;
@@ -9,6 +9,7 @@ import de.cebitec.mgx.gui.charts.basic.util.ScrollableBarChart;
 import de.cebitec.mgx.gui.charts.basic.util.SlidingCategoryDataset;
 import de.cebitec.mgx.api.groups.ImageExporterI;
 import de.cebitec.mgx.api.groups.SequenceExporterI;
+import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.charts.basic.util.LogAxis;
 import de.cebitec.mgx.gui.charts.basic.util.SVGChartPanel;
 import de.cebitec.mgx.gui.seqexporter.SeqExporter;
@@ -37,6 +38,7 @@ import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.CategoryItemRenderer;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.data.category.CategoryDataset;
+import org.jfree.util.SortOrder;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -50,7 +52,7 @@ public class BarChartViewer extends CategoricalViewerI<Long> implements ImageExp
     private BarChartCustomizer customizer = null;
     private JFreeChart chart = null;
     private CategoryDataset dataset;
-    private List<Pair<VisualizationGroupI, DistributionI<Double>>> data;
+    private List<Pair<GroupI, DistributionI<Double>>> data;
 
     public BarChartViewer() {
         // disable the stupid glossy effect
@@ -74,11 +76,11 @@ public class BarChartViewer extends CategoricalViewerI<Long> implements ImageExp
     }
 
     @Override
-    public void show(List<Pair<VisualizationGroupI, DistributionI<Long>>> in) {
+    public void show(List<Pair<GroupI, DistributionI<Long>>> in) {
 
         data = getCustomizer().filter(in);
 
-        dataset = JFreeChartUtil.createCategoryDataset(data);
+        dataset = JFreeChartUtil.createCategoryDataset(data, getCustomizer().getSortAscending());
 
         String xAxisLabel = "";
         String yAxisLabel = getCustomizer().useFractions() ? "Fraction" : "Count";
@@ -132,7 +134,7 @@ public class BarChartViewer extends CategoricalViewerI<Long> implements ImageExp
         // colors
         int i = 0;
         CategoryItemRenderer renderer = plot.getRenderer();
-        for (Pair<VisualizationGroupI, DistributionI<Double>> groupDistribution : data) {
+        for (Pair<GroupI, DistributionI<Double>> groupDistribution : data) {
             renderer.setSeriesPaint(i++, groupDistribution.getFirst().getColor());
         }
     }
@@ -159,10 +161,12 @@ public class BarChartViewer extends CategoricalViewerI<Long> implements ImageExp
     @Override
     public SequenceExporterI[] getSequenceExporters() {
         List<SequenceExporterI> ret = new ArrayList<>(data.size());
-        for (Pair<VisualizationGroupI, DistributionI<Double>> p : data) {
+        for (Pair<GroupI, DistributionI<Double>> p : data) {
             if (p.getSecond().getTotalClassifiedElements() > 0) {
-                SequenceExporterI exp = new SeqExporter<>(p.getFirst(), p.getSecond());
-                ret.add(exp);
+                if (p.getFirst().getContentClass().equals(SeqRunI.class)) {
+                    SequenceExporterI exp = new SeqExporter<>((GroupI<SeqRunI>) p.getFirst(), p.getSecond());
+                    ret.add(exp);
+                }
             }
         }
         return ret.toArray(new SequenceExporterI[]{});

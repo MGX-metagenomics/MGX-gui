@@ -79,7 +79,7 @@ public class VGroupManagerTest {
 
         // add a replicate
         assertTrue(rGroup.getReplicates().isEmpty());
-        assertTrue(mgr.getActiveVisualizationGroups().isEmpty());
+        assertTrue(mgr.getActiveGroups().isEmpty());
         ReplicateI replicate = mgr.createReplicate(rGroup);
         assertNotNull(replicate);
         assertEquals(replicate.getReplicateGroup(), rGroup);

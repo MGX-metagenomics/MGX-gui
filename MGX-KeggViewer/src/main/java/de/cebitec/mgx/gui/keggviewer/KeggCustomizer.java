@@ -1,8 +1,8 @@
 package de.cebitec.mgx.gui.keggviewer;
 
 import de.cebitec.mgx.api.groups.ConflictingJobsException;
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.groups.VGroupManagerI;
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.AttributeI;
@@ -79,7 +79,7 @@ public class KeggCustomizer extends javax.swing.JPanel {
     public Set<PathwayI> selectPathways(final KEGGMaster master, final VGroupManagerI vgmgr, RequestProcessor RP) throws ConflictingJobsException, KEGGException {
         final Set<ECNumberI> ecNumbers = new HashSet<>();
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-        for (Pair<VisualizationGroupI, DistributionI<Long>> p : vgmgr.getDistributions()) {
+        for (Pair<GroupI, DistributionI<Long>> p : vgmgr.getDistributions()) {
             DistributionI<Long> dist = p.getSecond();
             for (Map.Entry<AttributeI, Long> e : dist.entrySet()) {
                 Matcher matcher = ECNUMBER_PATTERN.matcher(e.getKey().getValue());

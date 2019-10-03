@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.charts.basic;
 
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
@@ -38,11 +39,11 @@ public class StackedAreaChart extends AreaChart {
 
     @Override
     public boolean canHandle(AttributeTypeI valueType) {
-        return super.canHandle(valueType) && VGroupManager.getInstance().getActiveVisualizationGroups().size() > 1;
+        return super.canHandle(valueType) && VGroupManager.getInstance().getActiveGroups().size() > 1;
     }
 
     @Override
-    public void show(List<Pair<VisualizationGroupI, DistributionI<Long>>> in) {
+    public void show(List<Pair<GroupI, DistributionI<Long>>> in) {
 
         LegendItemCollection legend = JFreeChartUtil.createLegend(in);
         data = getCustomizer().filter(in);
@@ -99,7 +100,7 @@ public class StackedAreaChart extends AreaChart {
         // set the colors
         int i = 0;
         StackedXYAreaRenderer2 renderer = (StackedXYAreaRenderer2) plot.getRenderer();
-        for (Pair<VisualizationGroupI, DistributionI<Double>> groupDistribution : data) {
+        for (Pair<GroupI, DistributionI<Double>> groupDistribution : data) {
             renderer.setSeriesPaint(i++, groupDistribution.getFirst().getColor());
         }
     }

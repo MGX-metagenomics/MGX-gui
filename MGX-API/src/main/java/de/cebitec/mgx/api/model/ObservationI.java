@@ -13,7 +13,7 @@ import java.awt.datatransfer.DataFlavor;
  *
  * @author sjaenick
  */
-public abstract class ObservationI extends MGXDataModelBase<ObservationI> {
+public abstract class ObservationI extends MGXDataModelBase<ObservationI> implements Comparable<ObservationI> {
     //
     public static final DataFlavor DATA_FLAVOR = new DataFlavor(ObservationI.class, "ObservationI");
 

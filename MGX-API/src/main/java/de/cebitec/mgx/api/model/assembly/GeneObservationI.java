@@ -13,7 +13,7 @@ import java.awt.datatransfer.DataFlavor;
  *
  * @author sj
  */
-public abstract class GeneObservationI extends MGXDataModelBase<GeneObservationI> {
+public abstract class GeneObservationI extends MGXDataModelBase<GeneObservationI> implements Comparable<GeneObservationI> {
 
     public static final DataFlavor DATA_FLAVOR = new DataFlavor(GeneObservationI.class, "GeneObservationI");
 

@@ -94,7 +94,6 @@ public class SeqRun extends SeqRunI {
     public boolean isPaired() {
         return isPaired;
     }
-    
 
     @Override
     public SeqRunI setIsPaired(boolean isPaired) {
@@ -128,13 +127,12 @@ public class SeqRun extends SeqRunI {
     public void setSecondFilename(String filename2) {
         this.filename2 = filename2;
     }
-    
-    
 
-//    @Override
-//    public String toString() {
-//        return name;
-//    }
+    @Override
+    public String toString() {
+        return name;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;

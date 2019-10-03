@@ -1,6 +1,6 @@
 package de.cebitec.mgx.gui.vizfilter;
 
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.AttributeI;
@@ -19,9 +19,9 @@ import java.util.Map.Entry;
 public class ToFractionFilter implements VisFilterI<DistributionI<Long>, DistributionI<Double>> {
 
     @Override
-    public List<Pair<VisualizationGroupI, DistributionI<Double>>> filter(List<Pair<VisualizationGroupI, DistributionI<Long>>> dists) {
-        List<Pair<VisualizationGroupI, DistributionI<Double>>> ret = new ArrayList<>(dists.size());
-        for (Pair<VisualizationGroupI, DistributionI<Long>> pair : dists) {
+    public List<Pair<GroupI, DistributionI<Double>>> filter(List<Pair<GroupI, DistributionI<Long>>> dists) {
+        List<Pair<GroupI, DistributionI<Double>>> ret = new ArrayList<>(dists.size());
+        for (Pair<GroupI, DistributionI<Long>> pair : dists) {
             ret.add(new Pair<>(pair.getFirst(), filterDist(pair.getSecond())));
         }
         return ret;

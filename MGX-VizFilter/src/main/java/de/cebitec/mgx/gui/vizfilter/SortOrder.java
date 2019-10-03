@@ -1,6 +1,6 @@
 package de.cebitec.mgx.gui.vizfilter;
 
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.AttributeI;
@@ -8,10 +8,11 @@ import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.visualization.filter.VisFilterI;
 import de.cebitec.mgx.gui.datamodel.misc.Distribution;
 import de.cebitec.mgx.gui.datamodel.misc.NormalizedDistribution;
+import gnu.trove.map.TObjectDoubleMap;
+import gnu.trove.map.hash.TObjectDoubleHashMap;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -35,8 +36,6 @@ public class SortOrder<T extends Number> implements VisFilterI<DistributionI<T>,
     private final int currentCriteria;
     private final Order order;
 
-    private final List<AttributeI> sortList = new ArrayList<>();
-
     public SortOrder(AttributeTypeI aType, Order order) {
         if (aType == null) {
             throw new IllegalArgumentException("null AttributeTypeI supplied, but value is required");
@@ -48,13 +47,13 @@ public class SortOrder<T extends Number> implements VisFilterI<DistributionI<T>,
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<Pair<VisualizationGroupI, DistributionI<T>>> filter(List<Pair<VisualizationGroupI, DistributionI<T>>> dists) {
+    public List<Pair<GroupI, DistributionI<T>>> filter(List<Pair<GroupI, DistributionI<T>>> dists) {
 
-        List<Pair<VisualizationGroupI, DistributionI<T>>> ret = new ArrayList<>();
+        List<Pair<GroupI, DistributionI<T>>> ret = new ArrayList<>();
 
         // summary distribution over all groups
-        Map<AttributeI, Double> summary = new HashMap<>();
-        for (Pair<VisualizationGroupI, DistributionI<T>> pair : dists) {
+        TObjectDoubleMap<AttributeI> summary = new TObjectDoubleHashMap<>();
+        for (Pair<GroupI, DistributionI<T>> pair : dists) {
             DistributionI<T> dist = pair.getSecond();
             for (Entry<AttributeI, T> p : dist.entrySet()) {
                 if (summary.containsKey(p.getKey())) {
@@ -66,7 +65,8 @@ public class SortOrder<T extends Number> implements VisFilterI<DistributionI<T>,
             }
         }
 
-        sortList.clear();
+        List<AttributeI> sortList = new ArrayList<>();
+
         // sort by selected criteria
         switch (currentCriteria) {
             case BY_VALUE:
@@ -88,7 +88,7 @@ public class SortOrder<T extends Number> implements VisFilterI<DistributionI<T>,
             Collections.reverse(sortList);
         }
 
-        for (Pair<VisualizationGroupI, DistributionI<T>> p : dists) {
+        for (Pair<GroupI, DistributionI<T>> p : dists) {
             DistributionI<T> d = p.getSecond();
 
             DistributionI<T> sortedDist = null;
@@ -108,7 +108,7 @@ public class SortOrder<T extends Number> implements VisFilterI<DistributionI<T>,
 
     @SuppressWarnings("unchecked")
     public DistributionI<T> filterDist(DistributionI<T> d) {
-        Map<AttributeI, Double> summary = new HashMap<>();
+        TObjectDoubleMap<AttributeI> summary = new TObjectDoubleHashMap<>();
         for (Entry<AttributeI, T> p : d.entrySet()) {
             if (summary.containsKey(p.getKey())) {
                 Double old = summary.get(p.getKey());
@@ -118,7 +118,7 @@ public class SortOrder<T extends Number> implements VisFilterI<DistributionI<T>,
             }
         }
 
-        sortList.clear();
+        List<AttributeI> sortList = new ArrayList<>();
         // sort by selected criteria
         switch (currentCriteria) {
             case BY_VALUE:
@@ -151,10 +151,6 @@ public class SortOrder<T extends Number> implements VisFilterI<DistributionI<T>,
         return sortedDist;
     }
 
-    public List<AttributeI> getOrder() {
-        return sortList;
-    }
-
     public final static class SortNumerically implements Comparator<AttributeI> {
 
         @Override
@@ -167,9 +163,9 @@ public class SortOrder<T extends Number> implements VisFilterI<DistributionI<T>,
 
     public final static class SortByValue implements Comparator<AttributeI> {
 
-        private final Map<AttributeI, Double> base;
+        private final TObjectDoubleMap<AttributeI> base;
 
-        public SortByValue(Map<AttributeI, Double> base) {
+        public SortByValue(TObjectDoubleMap<AttributeI> base) {
             this.base = base;
         }
 

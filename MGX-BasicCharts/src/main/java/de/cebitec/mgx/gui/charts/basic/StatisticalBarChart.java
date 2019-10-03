@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.charts.basic;
 
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
@@ -10,6 +11,7 @@ import de.cebitec.mgx.api.groups.ReplicateGroupI;
 import de.cebitec.mgx.api.groups.SequenceExporterI;
 import de.cebitec.mgx.api.misc.Triple;
 import de.cebitec.mgx.api.model.AttributeTypeI;
+import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.charts.basic.util.LogAxis;
 import de.cebitec.mgx.gui.charts.basic.util.SVGChartPanel;
 import de.cebitec.mgx.gui.charts.basic.util.SlidingStatisticalCategoryDataset;
@@ -61,7 +63,7 @@ public class StatisticalBarChart extends CategoricalViewerI<Long> implements Adj
     private JFreeChart chart = null;
     private CategoryDataset dataset;
     private JScrollBar scrollBar = null;
-    List<Pair<VisualizationGroupI, DistributionI<Long>>> dists;
+    List<Pair<GroupI, DistributionI<Long>>> dists;
 
     public StatisticalBarChart() {
         // disable the stupid glossy effect
@@ -93,7 +95,7 @@ public class StatisticalBarChart extends CategoricalViewerI<Long> implements Adj
     }
 
     @Override
-    public void show(List<Pair<VisualizationGroupI, DistributionI<Long>>> in) {
+    public void show(List<Pair<GroupI, DistributionI<Long>>> in) {
 
         dists = in;
 
@@ -185,10 +187,12 @@ public class StatisticalBarChart extends CategoricalViewerI<Long> implements Adj
     @Override
     public SequenceExporterI[] getSequenceExporters() {
         List<SequenceExporterI> ret = new ArrayList<>(dists.size());
-        for (Pair<VisualizationGroupI, DistributionI<Long>> p : dists) {
+        for (Pair<GroupI, DistributionI<Long>> p : dists) {
             if (p.getSecond().getTotalClassifiedElements() > 0) {
-                SequenceExporterI exp = new SeqExporter<>(p.getFirst(), p.getSecond());
-                ret.add(exp);
+                if (p.getFirst().getContentClass().equals(SeqRunI.class)) {
+                    SequenceExporterI exp = new SeqExporter<>((GroupI<SeqRunI>)p.getFirst(), p.getSecond());
+                    ret.add(exp);
+                }
             }
         }
         return ret.toArray(new SequenceExporterI[]{});

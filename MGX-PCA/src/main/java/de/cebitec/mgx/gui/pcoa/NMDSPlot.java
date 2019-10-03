@@ -2,14 +2,15 @@ package de.cebitec.mgx.gui.pcoa;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.groups.ConflictingJobsException;
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.groups.ImageExporterI;
 import de.cebitec.mgx.api.groups.SequenceExporterI;
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.misc.Point;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
+import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.visualization.filter.VisFilterI;
 import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
 import de.cebitec.mgx.gui.charts.basic.util.SVGChartPanel;
@@ -55,7 +56,7 @@ public class NMDSPlot extends AbstractViewer<DistributionI<Long>> implements Cus
     private SVGChartPanel cPanel = null;
     private JFreeChart chart = null;
     private PCoACustomizer cust = null;
-    private List<Pair<VisualizationGroupI, DistributionI<Double>>> data;
+    private List<Pair<GroupI, DistributionI<Double>>> data;
 
     @Override
     public JComponent getComponent() {
@@ -75,10 +76,12 @@ public class NMDSPlot extends AbstractViewer<DistributionI<Long>> implements Cus
     @Override
     public SequenceExporterI[] getSequenceExporters() {
         List<SequenceExporterI> ret = new ArrayList<>(data.size());
-        for (Pair<VisualizationGroupI, DistributionI<Double>> p : data) {
+        for (Pair<GroupI, DistributionI<Double>> p : data) {
             if (p.getSecond().getTotalClassifiedElements() > 0) {
-                SequenceExporterI exp = new SeqExporter<>(p.getFirst(), p.getSecond());
-                ret.add(exp);
+                if (p.getFirst().getContentClass().equals(SeqRunI.class)) {
+                    SequenceExporterI exp = new SeqExporter<>((GroupI<SeqRunI>)p.getFirst(), p.getSecond());
+                    ret.add(exp);
+                }
             }
         }
         return ret.toArray(new SequenceExporterI[]{});
@@ -89,7 +92,7 @@ public class NMDSPlot extends AbstractViewer<DistributionI<Long>> implements Cus
         Set<AttributeI> attrs = new HashSet<>();
         int distCnt = 0;
         try {
-            for (Pair<VisualizationGroupI, DistributionI<Long>> p : VGroupManager.getInstance().getDistributions()) {
+            for (Pair<GroupI, DistributionI<Long>> p : VGroupManager.getInstance().getDistributions()) {
                 attrs.addAll(p.getSecond().keySet());
                 distCnt++;
             }
@@ -104,7 +107,7 @@ public class NMDSPlot extends AbstractViewer<DistributionI<Long>> implements Cus
     }
 
     @Override
-    public void show(List<Pair<VisualizationGroupI, DistributionI<Long>>> in) {
+    public void show(List<Pair<GroupI, DistributionI<Long>>> in) {
         final MGXMasterI master = in.get(0).getSecond().getMaster();
 
         if (getCustomizer().useFractions()) {
@@ -114,7 +117,7 @@ public class NMDSPlot extends AbstractViewer<DistributionI<Long>> implements Cus
             data = new LongToDouble().filter(in);
         }
 
-        final List<Pair<VisualizationGroupI, DistributionI<Double>>> xdata = data;
+        final List<Pair<GroupI, DistributionI<Double>>> xdata = data;
 
         SwingWorker<Collection<Point>, Void> sw = new SwingWorker<Collection<Point>, Void>() {
 
@@ -174,7 +177,7 @@ public class NMDSPlot extends AbstractViewer<DistributionI<Long>> implements Cus
             renderer.setSeriesShape(i, new Ellipse2D.Double(0, 0, 7, 7));
             renderer.setSeriesItemLabelGenerator(i, labelGen);
             renderer.setSeriesItemLabelsVisible(i, Boolean.TRUE);
-            VisualizationGroupI vGrp = VGroupManager.getInstance().getVisualizationGroup(p.getName());
+            GroupI vGrp = VGroupManager.getInstance().getGroup(p.getName());
             renderer.setSeriesPaint(i, vGrp != null ? vGrp.getColor() : Color.BLACK);
             i++;
         }

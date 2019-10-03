@@ -1,8 +1,8 @@
 package de.cebitec.mgx.gui.tableview;
 
 import de.cebitec.mgx.api.groups.FileType;
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.groups.ImageExporterI;
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.tree.NodeI;
@@ -52,7 +52,7 @@ public class TreeTableView extends AbstractViewer<TreeI<Long>> implements ImageE
     @Override
     public boolean canHandle(AttributeTypeI valueType) {
         return valueType.getStructure() == AttributeTypeI.STRUCTURE_HIERARCHICAL
-                && VGroupManager.getInstance().getActiveVisualizationGroups().size() == 1;
+                && VGroupManager.getInstance().getActiveGroups().size() == 1;
     }
 
     @Override
@@ -61,7 +61,7 @@ public class TreeTableView extends AbstractViewer<TreeI<Long>> implements ImageE
     }
 
     @Override
-    public void show(List<Pair<VisualizationGroupI, TreeI<Long>>> dists) {
+    public void show(List<Pair<GroupI, TreeI<Long>>> dists) {
 
         final TreeI<Long> tree = dists.get(0).getSecond();
 

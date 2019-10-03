@@ -114,6 +114,9 @@ public class AttributeAccess implements AttributeAccessI {
                 AttributeI attr = AttributeDTOFactory.getInstance().toModel(master, ac.getAttribute());
                 attr.setAttributeType(types.get(ac.getAttribute().getAttributeTypeId()));
                 total += ac.getCount();
+                if (res.containsKey(attr)) {
+                    throw new MGXException("Duplicate key: "+ attr.getValue());
+                }
                 res.put(attr, ac.getCount());
             }
         } catch (MGXDTOException ex) {

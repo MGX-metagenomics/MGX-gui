@@ -1,6 +1,6 @@
 package de.cebitec.mgx.gui.nodes;
 
-import de.cebitec.mgx.api.model.Identifiable;
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.model.ModelBaseI;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DnDConstants;
@@ -19,11 +19,11 @@ import org.openide.util.datatransfer.PasteType;
  * @author sjaenick
  * @param <T> object
  */
-public abstract class MGXNodeBase<T extends ModelBaseI<T>> extends AbstractNode implements Comparable<MGXNodeBase<? extends T>>, PropertyChangeListener {
+public abstract class MGXGroupNodeBase<T extends GroupI> extends AbstractNode implements Comparable<MGXGroupNodeBase<? extends T>>, PropertyChangeListener {
 
     private final T content;
 
-    protected MGXNodeBase(Children children, Lookup lookup, T data) {
+    protected MGXGroupNodeBase(Children children, Lookup lookup, T data) {
         super(children, lookup);
         content = data;
         content.addPropertyChangeListener(this);
@@ -123,7 +123,7 @@ public abstract class MGXNodeBase<T extends ModelBaseI<T>> extends AbstractNode 
     public abstract void updateModified();
 
     @Override
-    public final int compareTo(MGXNodeBase<? extends T> o) {
+    public final int compareTo(MGXGroupNodeBase<? extends T> o) {
         return content.compareTo(o.getContent());
     }
 }

@@ -5,7 +5,6 @@ import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
-import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.tree.NodeI;
 import de.cebitec.mgx.api.model.tree.TreeI;
 import de.cebitec.mgx.gui.datamodel.misc.Distribution;
@@ -24,13 +23,13 @@ import org.apache.commons.math3.util.FastMath;
  */
 public class DistributionFactory {
 
-    public static DistributionI<Long> merge(final Iterable<Future<Pair<SeqRunI, DistributionI<Long>>>> dists, Map<SeqRunI, DistributionI<Long>> cache) throws InterruptedException, ExecutionException {
+    public static <T> DistributionI<Long> merge(final Iterable<Future<Pair<T, DistributionI<Long>>>> dists, Map<T, DistributionI<Long>> cache) throws InterruptedException, ExecutionException {
         Map<AttributeI, Long> summary = new HashMap<>();
         long total = 0;
         MGXMasterI anyMaster = null;
 
-        for (Future<Pair<SeqRunI, DistributionI<Long>>> f : dists) {
-            Pair<SeqRunI, DistributionI<Long>> p = f.get();
+        for (Future<Pair<T, DistributionI<Long>>> f : dists) {
+            Pair<T, DistributionI<Long>> p = f.get();
             cache.put(p.getFirst(), p.getSecond());
             DistributionI<Long> d = p.getSecond();
 

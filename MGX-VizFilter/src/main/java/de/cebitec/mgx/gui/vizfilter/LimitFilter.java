@@ -1,15 +1,16 @@
 package de.cebitec.mgx.gui.vizfilter;
 
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.visualization.filter.VisFilterI;
 import de.cebitec.mgx.gui.datamodel.misc.Distribution;
 import de.cebitec.mgx.gui.datamodel.misc.NormalizedDistribution;
+import gnu.trove.map.TObjectDoubleMap;
+import gnu.trove.map.hash.TObjectDoubleHashMap;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -54,16 +55,16 @@ public class LimitFilter<T extends Number> implements VisFilterI<DistributionI<T
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<Pair<VisualizationGroupI, DistributionI<T>>> filter(List<Pair<VisualizationGroupI, DistributionI<T>>> dists) {
+    public List<Pair<GroupI, DistributionI<T>>> filter(List<Pair<GroupI, DistributionI<T>>> dists) {
 
-        List<Pair<VisualizationGroupI, DistributionI<T>>> ret = new ArrayList<>();
+        List<Pair<GroupI, DistributionI<T>>> ret = new ArrayList<>();
 
 //        if (limit == LIMITS.ALL) {
 //            return dists;
 //        }
         // merge distributions
-        Map<AttributeI, Double> summary = new HashMap<>();
-        for (Pair<VisualizationGroupI, DistributionI<T>> pair : dists) {
+        TObjectDoubleMap<AttributeI> summary = new TObjectDoubleHashMap<>();
+        for (Pair<GroupI, DistributionI<T>> pair : dists) {
             for (Map.Entry<AttributeI, T> e : pair.getSecond().entrySet()) {
                 if (summary.containsKey(e.getKey())) {
                     Double old = summary.get(e.getKey());
@@ -88,7 +89,7 @@ public class LimitFilter<T extends Number> implements VisFilterI<DistributionI<T
                     : sortList;
         }
 
-        for (Pair<VisualizationGroupI, DistributionI<T>> p : dists) {
+        for (Pair<GroupI, DistributionI<T>> p : dists) {
             DistributionI<T> dist = p.getSecond();
 
             DistributionI<T> filteredDist = null;

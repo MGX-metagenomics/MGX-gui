@@ -1,6 +1,6 @@
 package de.cebitec.mgx.gui.biodiversity;
 
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.gui.biodiversity.statistic.impl.ACE;
@@ -52,12 +52,12 @@ public class BiodiversityViewer extends CategoricalViewerI<Long> implements Cust
 
     @Override
     @SuppressWarnings("unchecked")
-    public void show(List<Pair<VisualizationGroupI, DistributionI<Long>>> dists) {
+    public void show(List<Pair<GroupI, DistributionI<Long>>> dists) {
 
         String[] headers = new String[dists.size() + 1];
         int i = 0;
         headers[i++] = "Index";
-        for (Pair<VisualizationGroupI, DistributionI<Long>> p : dists) {
+        for (Pair<GroupI, DistributionI<Long>> p : dists) {
             headers[i++] = p.getFirst().getDisplayName();
         }
 
@@ -85,7 +85,7 @@ public class BiodiversityViewer extends CategoricalViewerI<Long> implements Cust
         }
 
         int col = 1;
-        for (Pair<VisualizationGroupI, DistributionI<Long>> p : dists) {
+        for (Pair<GroupI, DistributionI<Long>> p : dists) {
             for (i = 0; i < stats.length; i++) {
                 model.setValueAt(stats[i].measure(p.getSecond()), i, col);
             }

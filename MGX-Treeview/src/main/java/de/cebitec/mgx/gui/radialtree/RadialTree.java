@@ -1,8 +1,8 @@
 package de.cebitec.mgx.gui.radialtree;
 
 import de.cebitec.mgx.api.groups.FileType;
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.groups.ImageExporterI;
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.tree.NodeI;
@@ -97,8 +97,8 @@ public class RadialTree extends HierarchicalViewerI implements ImageExporterI.Pr
     private RadialTreeCustomizer cust = null;
 
     @Override
-    public void show(List<Pair<VisualizationGroupI, TreeI<Long>>> dists) {
-        Pair<VisualizationGroupI, TreeI<Long>> p = dists.get(0);
+    public void show(List<Pair<GroupI, TreeI<Long>>> dists) {
+        Pair<GroupI, TreeI<Long>> p = dists.get(0);
         TreeI<Long> mgxTree = p.getSecond();
         
         getCustomizer().setTree(mgxTree);
@@ -372,7 +372,7 @@ public class RadialTree extends HierarchicalViewerI implements ImageExporterI.Pr
 
     @Override
     public boolean canHandle(AttributeTypeI valueType) {
-        return super.canHandle(valueType) && VGroupManager.getInstance().getActiveVisualizationGroups().size() == 1;
+        return super.canHandle(valueType) && VGroupManager.getInstance().getActiveGroups().size() == 1;
     }
 
     @Override

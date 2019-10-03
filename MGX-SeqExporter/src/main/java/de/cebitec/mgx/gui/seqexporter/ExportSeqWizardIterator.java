@@ -1,6 +1,6 @@
 package de.cebitec.mgx.gui.seqexporter;
 
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.model.AttributeI;
 import java.awt.Component;
@@ -13,19 +13,19 @@ import javax.swing.JComponent;
 import javax.swing.event.ChangeListener;
 import org.openide.WizardDescriptor;
 
-public final class ExportSeqWizardIterator<T extends Number> implements WizardDescriptor.Iterator<WizardDescriptor> {
+public final class ExportSeqWizardIterator<T extends Number, U> implements WizardDescriptor.Iterator<WizardDescriptor> {
 
     private int index = 0;
     private final List<WizardDescriptor.Panel<WizardDescriptor>> panels = new ArrayList<>();
     private final ExportSeqWizardPanel1<T> p1;
-    private final ExportSeqWizardPanel2 p2;
+    private final ExportSeqWizardPanel2<U> p2;
 
-    public ExportSeqWizardIterator(VisualizationGroupI vgroup, DistributionI<T> dist) {
+    public ExportSeqWizardIterator(GroupI<U> vgroup, DistributionI<T> dist) {
         p1 = new ExportSeqWizardPanel1<>();
         p1.setDistribution(dist);
         panels.add(p1);
-        p2 = new ExportSeqWizardPanel2();
-        p2.setVisualizationGroup(vgroup);
+        p2 = new ExportSeqWizardPanel2<>();
+        p2.setGroup(vgroup);
         panels.add(p2);
 
         String[] steps = new String[panels.size()];

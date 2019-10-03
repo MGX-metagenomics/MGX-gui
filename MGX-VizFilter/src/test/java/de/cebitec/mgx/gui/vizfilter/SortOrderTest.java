@@ -5,6 +5,7 @@
  */
 package de.cebitec.mgx.gui.vizfilter;
 
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
@@ -35,8 +36,8 @@ public class SortOrderTest {
         AttributeTypeI at = new AttributeType(null, 42, "TestAttrType", AttributeTypeI.VALUE_DISCRETE, AttributeTypeI.STRUCTURE_BASIC);
         SortOrder<Long> filter = new SortOrder<>(at, SortOrder.DESCENDING);
 
-        List<Pair<VisualizationGroupI, DistributionI<Long>>> dists = new ArrayList<>();
-        List<Pair<VisualizationGroupI, DistributionI<Long>>> result = filter.filter(dists);
+        List<Pair<GroupI, DistributionI<Long>>> dists = new ArrayList<>();
+        List<Pair<GroupI, DistributionI<Long>>> result = filter.filter(dists);
         assertNotNull(result);
         assertEquals(dists.size(), result.size());
         // all filters have to return a new list and MUST NOT modify the input
@@ -66,7 +67,7 @@ public class SortOrderTest {
         map2.put(a4, Long.valueOf(2));
         DistributionI<Long> dist2 = new Distribution(null, map2);
 
-        List<Pair<VisualizationGroupI, DistributionI<Long>>> in = new ArrayList<>();
+        List<Pair<GroupI, DistributionI<Long>>> in = new ArrayList<>();
         VisualizationGroupI dummyVG = null;
         in.add(new Pair<>(dummyVG, dist1));
         in.add(new Pair<>(dummyVG, dist2));
@@ -74,7 +75,7 @@ public class SortOrderTest {
         AttributeTypeI at = new AttributeType(null, 42, "TestAttrType", AttributeTypeI.VALUE_DISCRETE, AttributeTypeI.STRUCTURE_BASIC);
         SortOrder<Long> so = new SortOrder<>(at, SortOrder.DESCENDING);
 
-        List<Pair<VisualizationGroupI, DistributionI<Long>>> result = so.filter(in);
+        List<Pair<GroupI, DistributionI<Long>>> result = so.filter(in);
         assertNotNull(result);
         assertEquals(2, result.size());
         

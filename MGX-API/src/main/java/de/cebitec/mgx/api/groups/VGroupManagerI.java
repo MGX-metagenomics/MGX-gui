@@ -10,6 +10,7 @@ import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Fetcher;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.AttributeTypeI;
+import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.tree.TreeI;
 import de.cebitec.mgx.api.visualization.ConflictResolver;
 import java.beans.PropertyChangeListener;
@@ -38,14 +39,14 @@ public interface VGroupManagerI extends PropertyChangeListener {
 
     VisualizationGroupI createVisualizationGroup();
 
-    List<VisualizationGroupI> getActiveVisualizationGroups();
+    List<GroupI> getActiveGroups();
 
     Collection<GroupI> getAllGroups();
 
-    List<Pair<VisualizationGroupI, DistributionI<Long>>> getDistributions() throws ConflictingJobsException;
+    List<Pair<GroupI, DistributionI<Long>>> getDistributions() throws ConflictingJobsException;
 
-    List<Pair<VisualizationGroupI, TreeI<Long>>> getHierarchies() throws ConflictingJobsException;
-
+    List<Pair<GroupI, TreeI<Long>>> getHierarchies() throws ConflictingJobsException;
+    
     void setSelectedVisualizationGroup(VisualizationGroupI group);
 
     VisualizationGroupI getSelectedVisualizationGroup();
@@ -80,7 +81,7 @@ public interface VGroupManagerI extends PropertyChangeListener {
 
     public ReplicateGroupI getSelectedReplicateGroup();
 
-    public VisualizationGroupI getVisualizationGroup(String displayName);
+    public GroupI getGroup(String displayName);
 
     public AssemblyGroupI createAssemblyGroup();
 

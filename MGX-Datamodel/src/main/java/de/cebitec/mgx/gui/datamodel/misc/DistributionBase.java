@@ -91,7 +91,6 @@ public abstract class DistributionBase<T extends Number> implements Distribution
     @Override
     public final Set<AttributeI> keySet() {
         return keys;
-        //return Collections.unmodifiableSet(keys);
     }
 
     @Override
@@ -101,7 +100,7 @@ public abstract class DistributionBase<T extends Number> implements Distribution
             Map.Entry<AttributeI, T> e = new AbstractMap.SimpleImmutableEntry<>(attr, _data.get(attr));
             ret.add(e);
         }
-        return ret;
+        return ret; 
     }
 
     @Override

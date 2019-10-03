@@ -1,9 +1,10 @@
 package de.cebitec.mgx.gui.attributevisualization.conflictwizard;
 
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.JobParameterI;
 import de.cebitec.mgx.api.model.SeqRunI;
+import de.cebitec.mgx.api.model.assembly.AssembledSeqRunI;
 import java.awt.Component;
 import java.util.Collection;
 import java.util.Collections;
@@ -18,8 +19,8 @@ import javax.swing.event.ListSelectionListener;
 
 public final class ConflictResolverVisualPanel1 extends JPanel implements ListSelectionListener {
 
-    private VisualizationGroupI vg;
-    private SeqRunI run;
+    private GroupI vg;
+    private Object run;
 
     /**
      * Creates new form ConflictResolverVisualPanel1
@@ -53,15 +54,22 @@ public final class ConflictResolverVisualPanel1 extends JPanel implements ListSe
         jobList.setListData(jobs.toArray(new JobI[]{}));
     }
 
-    public void setSeqRun(SeqRunI run) {
+    public void setData(GroupI group, Object run) {
         this.run = run;
-        String projName = (run.getMaster()).getProject();
-        seqRunLabel.setText(projName + ": " + run.getName());
-    }
-
-    public void setVisualizationGroup(VisualizationGroupI vg) {
-        this.vg = vg;
+        this.vg = group;
         groupLabel.setText(vg.getDisplayName());
+        String projName;
+        if (group.getContentClass().equals(SeqRunI.class)) {
+            SeqRunI sr = (SeqRunI) run;
+            projName = (sr.getMaster()).getProject();
+            seqRunLabel.setText(projName + ": " + run.toString());
+        } else if (group.getContentClass().equals(AssembledSeqRunI.class)) {
+            AssembledSeqRunI asr = (AssembledSeqRunI) run;
+            projName = (asr.getMaster()).getProject();
+            seqRunLabel.setText(projName + ": " + run.toString());
+        } else {
+            throw new RuntimeException("Unhandled: " + run.getClass());
+        }
     }
 
     public JobI getSelectedJob() {
@@ -70,7 +78,7 @@ public final class ConflictResolverVisualPanel1 extends JPanel implements ListSe
 
     @Override
     public String getName() {
-        return vg == null ? super.getName() : vg.getDisplayName() + " " + run.getName();
+        return vg == null ? super.getName() : vg.getDisplayName() + " " + run.toString();
     }
 
     protected static String joinParameters(List<JobParameterI> pColl, String separator) {
@@ -169,6 +177,6 @@ public final class ConflictResolverVisualPanel1 extends JPanel implements ListSe
         public int compare(JobParameterI o1, JobParameterI o2) {
             return Long.compare(o1.getNodeId(), o2.getNodeId());
         }
-        
+
     }
 }

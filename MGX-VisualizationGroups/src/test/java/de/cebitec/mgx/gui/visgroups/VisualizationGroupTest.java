@@ -8,6 +8,7 @@ package de.cebitec.mgx.gui.visgroups;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.groups.ConflictingJobsException;
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.groups.ReplicateGroupI;
 import de.cebitec.mgx.api.groups.ReplicateI;
 import de.cebitec.mgx.api.groups.VGroupManagerI;
@@ -63,7 +64,7 @@ public class VisualizationGroupTest {
             long cnt = 0;
             while (iter.hasNext()) {
                 SeqRunI sr = iter.next();
-                vg.addSeqRun(sr);
+                vg.add(sr);
                 cnt += sr.getNumSequences();
             }
             assertEquals(cnt, vg.getNumSequences());
@@ -81,10 +82,10 @@ public class VisualizationGroupTest {
             Iterator<SeqRunI> iter = master.SeqRun().fetchall();
             while (iter.hasNext()) {
                 SeqRunI sr = iter.next();
-                vg.addSeqRun(sr);
+                vg.add(sr);
                 runs.add(sr);
             }
-            assertEquals(runs, vg.getSeqRuns());
+            assertEquals(runs, vg.getContent());
         }
     }
 
@@ -97,7 +98,7 @@ public class VisualizationGroupTest {
             MGXMasterI master = TestMaster.getRO();
             Iterator<SeqRunI> iter = master.SeqRun().fetchall();
             while (iter.hasNext()) {
-                vg.addSeqRun(iter.next());
+                vg.add(iter.next());
             }
             Iterator<AttributeTypeI> atIter = vg.getAttributeTypes();
             assertNotNull(atIter);
@@ -126,7 +127,7 @@ public class VisualizationGroupTest {
                 break;
             }
         }
-        vg.addSeqRun(run);
+        vg.add(run);
         Iterator<AttributeTypeI> atIter = vg.getAttributeTypes();
         assertNotNull(atIter);
         int cnt = 0;
@@ -137,7 +138,7 @@ public class VisualizationGroupTest {
         assertEquals(15, cnt);
 
         // remove run again
-        vg.removeSeqRun(run);
+        vg.remove(run);
         Iterator<AttributeTypeI> atIter2 = vg.getAttributeTypes();
         assertNotNull(atIter);
         int cnt2 = 0;
@@ -157,8 +158,8 @@ public class VisualizationGroupTest {
         MGXMasterI master = TestMaster.getRO();
         SeqRunI run = master.SeqRun().fetch(1);
         assertEquals("dataset1", run.getName());
-        vg.addSeqRun(run);
-        assertEquals(1, vg.getSeqRuns().size());
+        vg.add(run);
+        assertEquals(1, vg.getContent().size());
         Iterator<AttributeTypeI> atIter = vg.getAttributeTypes();
         assertNotNull(atIter);
 
@@ -185,9 +186,9 @@ public class VisualizationGroupTest {
         MGXMasterI master = TestMaster.getRO();
         Iterator<SeqRunI> iter = master.SeqRun().fetchall();
         while (iter.hasNext()) {
-            vg.addSeqRun(iter.next());
+            vg.add(iter.next());
         }
-        assertEquals(5, vg.getSeqRuns().size());
+        assertEquals(5, vg.getContent().size());
 
         int atCount = 0;
         Iterator<AttributeTypeI> atIter = vg.getAttributeTypes();
@@ -217,7 +218,7 @@ public class VisualizationGroupTest {
         SeqRunI dataset1 = master.SeqRun().fetch(1);
         assertEquals("dataset1", dataset1.getName());
         VisualizationGroupI vGrp = mgr.createVisualizationGroup();
-        vGrp.addSeqRun(dataset1);
+        vGrp.add(dataset1);
 
         boolean haveException = false;
         try {
@@ -247,8 +248,8 @@ public class VisualizationGroupTest {
         ReplicateI rg1r1 = vgmgr.createReplicate(rg1);
         ReplicateI rg2r1 = vgmgr.createReplicate(rg2);
 
-        rg1r1.addSeqRun(seqrun);
-        rg2r1.addSeqRun(seqrun);
+        rg1r1.add(seqrun);
+        rg2r1.add(seqrun);
 
         vgmgr.registerResolver(new DummyResolver());
 
@@ -258,8 +259,8 @@ public class VisualizationGroupTest {
         assertNotNull(rg1r1.getSelectedAttributeType());
         assertNotNull(rg2r1.getSelectedAttributeType());
 
-        List<Pair<VisualizationGroupI, DistributionI<Long>>> dists = vgmgr.getDistributions();
-        List<Pair<VisualizationGroupI, TreeI<Long>>> trees = vgmgr.getHierarchies();
+        List<Pair<GroupI, DistributionI<Long>>> dists = vgmgr.getDistributions();
+        List<Pair<GroupI, TreeI<Long>>> trees = vgmgr.getHierarchies();
         assertEquals(2, dists.size());
         assertEquals(2, trees.size());
 
@@ -280,7 +281,7 @@ public class VisualizationGroupTest {
 
         mgr.registerResolver(new ConflictResolver() {
             @Override
-            public void resolve(String attrType, List<VisualizationGroupI> vg) {
+            public void resolve(String attrType, List<GroupI> vg) {
                 System.err.println("Resolving for " + vg.size() + " groups.");
             }
         });
@@ -288,7 +289,7 @@ public class VisualizationGroupTest {
         SeqRunI dataset1 = master.SeqRun().fetch(1);
         assertEquals("dataset1", dataset1.getName());
         VisualizationGroupI vGrp = mgr.createVisualizationGroup();
-        vGrp.addSeqRun(dataset1);
+        vGrp.add(dataset1);
 
         boolean haveException = false;
         try {
@@ -315,7 +316,7 @@ public class VisualizationGroupTest {
 
         mgr.registerResolver(new ConflictResolver() {
             @Override
-            public void resolve(String attrType, List<VisualizationGroupI> vg) {
+            public void resolve(String attrType, List<GroupI> vg) {
                 System.err.println("Resolving for " + vg.size() + " groups.");
             }
         });
@@ -324,7 +325,7 @@ public class VisualizationGroupTest {
         assertEquals("dataset1", dataset1.getName());
         VisualizationGroupI vGrp = mgr.createVisualizationGroup();
         //
-        vGrp.addSeqRun(dataset1);
+        vGrp.add(dataset1);
 
 //        boolean mayContinue = mgr.selectAttributeType("COG");
 //        assertTrue(mayContinue);
@@ -341,8 +342,8 @@ public class VisualizationGroupTest {
     private final class DummyResolver implements ConflictResolver {
 
         @Override
-        public void resolve(String attributeType, List<VisualizationGroupI> vgroups) {
-            for (VisualizationGroupI vg : vgroups) {
+        public void resolve(String attributeType, List<GroupI> vgroups) {
+            for (GroupI vg : vgroups) {
                 System.err.println("Resolving group " + vg.getName());
                 List<Triple<AttributeRank, SeqRunI, Set<JobI>>> conflicts = vg.getConflicts();
                 for (Triple<AttributeRank, SeqRunI, Set<JobI>> t : conflicts) {

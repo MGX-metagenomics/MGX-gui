@@ -5,7 +5,7 @@
  */
 package de.cebitec.mgx.gui.attributevisualization;
 
-import de.cebitec.mgx.api.groups.ReplicateGroupI;
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.groups.VGroupManagerI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.model.ModelBaseI;
@@ -30,7 +30,7 @@ import org.openide.util.Exceptions;
  *
  * @author sjaenick
  */
-public abstract class GroupFrameBase<T extends ModelBaseI<T>> extends javax.swing.JInternalFrame implements ExplorerManager.Provider, NodeProviderI, NodeSelectionProvider, PropertyChangeListener {
+public abstract class GroupFrameBase<T extends GroupI<U>, U> extends javax.swing.JInternalFrame implements ExplorerManager.Provider, NodeProviderI, NodeSelectionProvider, PropertyChangeListener {
 
     private final transient ExplorerManager exmngr = new ExplorerManager();
     private final T group;
@@ -173,12 +173,9 @@ public abstract class GroupFrameBase<T extends ModelBaseI<T>> extends javax.swin
             nodeListeners.clear();
             vgmgr.removePropertyChangeListener(this);
             group.removePropertyChangeListener(this);
-            if (group instanceof VisualizationGroupI) {
-                VisualizationGroupI vgrp = (VisualizationGroupI) group;
+            if (group instanceof GroupI) {
+                GroupI vgrp = (GroupI) group;
                 vgrp.close();
-            } else if (group instanceof ReplicateGroupI) {
-                ReplicateGroupI rgrp = (ReplicateGroupI) group;
-                rgrp.close();
             }
             super.dispose();
         }
@@ -197,5 +194,5 @@ public abstract class GroupFrameBase<T extends ModelBaseI<T>> extends javax.swin
         super.print(g);
         isSelected = selected;
     }
-    
+
 }

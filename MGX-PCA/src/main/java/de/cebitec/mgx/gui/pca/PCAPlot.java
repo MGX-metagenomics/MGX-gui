@@ -3,15 +3,16 @@ package de.cebitec.mgx.gui.pca;
 import de.cebitec.mgx.api.misc.PrincipalComponent;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.groups.ConflictingJobsException;
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.groups.ImageExporterI;
 import de.cebitec.mgx.api.groups.SequenceExporterI;
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.PCAResultI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.misc.Point;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
+import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
 import de.cebitec.mgx.gui.charts.basic.util.SVGChartPanel;
 import de.cebitec.mgx.gui.seqexporter.SeqExporter;
@@ -61,7 +62,7 @@ public class PCAPlot extends AbstractViewer<DistributionI<Long>> implements Cust
     private SVGChartPanel cPanel = null;
     private JFreeChart chart = null;
     private PCACustomizer cust = null;
-    private List<Pair<VisualizationGroupI, DistributionI<Long>>> data;
+    private List<Pair<GroupI, DistributionI<Long>>> data;
 
     @Override
     public JComponent getComponent() {
@@ -81,10 +82,12 @@ public class PCAPlot extends AbstractViewer<DistributionI<Long>> implements Cust
     @Override
     public SequenceExporterI[] getSequenceExporters() {
         List<SequenceExporterI> ret = new ArrayList<>(data.size());
-        for (Pair<VisualizationGroupI, DistributionI<Long>> p : data) {
+        for (Pair<GroupI, DistributionI<Long>> p : data) {
             if (p.getSecond().getTotalClassifiedElements() > 0) {
-                SequenceExporterI exp = new SeqExporter<>(p.getFirst(), p.getSecond());
-                ret.add(exp);
+                if (p.getFirst().getContentClass().equals(SeqRunI.class)) {
+                    SequenceExporterI exp = new SeqExporter<>((GroupI<SeqRunI>)p.getFirst(), p.getSecond());
+                    ret.add(exp);
+                }
             }
         }
         return ret.toArray(new SequenceExporterI[]{});
@@ -95,7 +98,7 @@ public class PCAPlot extends AbstractViewer<DistributionI<Long>> implements Cust
         Set<AttributeI> attrs = new HashSet<>();
         int distCnt = 0;
         try {
-            for (Pair<VisualizationGroupI, DistributionI<Long>> p : VGroupManager.getInstance().getDistributions()) {
+            for (Pair<GroupI, DistributionI<Long>> p : VGroupManager.getInstance().getDistributions()) {
                 attrs.addAll(p.getSecond().keySet());
                 distCnt++;
             }
@@ -110,7 +113,7 @@ public class PCAPlot extends AbstractViewer<DistributionI<Long>> implements Cust
     }
 
     @Override
-    public void show(final List<Pair<VisualizationGroupI, DistributionI<Long>>> in) {
+    public void show(final List<Pair<GroupI, DistributionI<Long>>> in) {
 
         data = in;
 
@@ -122,7 +125,7 @@ public class PCAPlot extends AbstractViewer<DistributionI<Long>> implements Cust
             protected PCAResultI doInBackground() throws Exception {
                 final MGXMasterI master = in.get(0).getSecond().getMaster();
 
-                List<Pair<VisualizationGroupI, DistributionI<Double>>> data;
+                List<Pair<GroupI, DistributionI<Double>>> data;
 
                 if (getCustomizer().useFractions()) {
                     ToFractionFilter fracFilter = new ToFractionFilter();
@@ -208,7 +211,7 @@ public class PCAPlot extends AbstractViewer<DistributionI<Long>> implements Cust
             renderer.setSeriesItemLabelGenerator(i, labelGen);
             renderer.setSeriesItemLabelsVisible(i, Boolean.TRUE);
             renderer.setSeriesItemLabelFont(i, new Font(plot.getNoDataMessageFont().getName(), Font.PLAIN, 14));
-            VisualizationGroupI vGrp = VGroupManager.getInstance().getVisualizationGroup(p.getName());
+            GroupI vGrp = VGroupManager.getInstance().getGroup(p.getName());
             renderer.setSeriesPaint(i, vGrp != null ? vGrp.getColor() : Color.BLACK);
             i++;
         }

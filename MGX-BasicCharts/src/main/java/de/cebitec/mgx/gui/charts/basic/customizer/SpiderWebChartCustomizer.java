@@ -1,6 +1,6 @@
 package de.cebitec.mgx.gui.charts.basic.customizer;
 
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.AttributeTypeI;
@@ -79,9 +79,9 @@ public class SpiderWebChartCustomizer extends javax.swing.JPanel implements VisF
     // End of variables declaration//GEN-END:variables
 
     @Override
-    public List<Pair<VisualizationGroupI, DistributionI<Double>>> filter(List<Pair<VisualizationGroupI, DistributionI<Long>>> dists) {
+    public List<Pair<GroupI, DistributionI<Double>>> filter(List<Pair<GroupI, DistributionI<Long>>> dists) {
 
-        List<Pair<VisualizationGroupI, DistributionI<Double>>> ret;
+        List<Pair<GroupI, DistributionI<Double>>> ret;
         if (useFractions()) {
             VisFilterI<DistributionI<Long>, DistributionI<Double>> fracFilter = new ToFractionFilter();
             ret = fracFilter.filter(dists);

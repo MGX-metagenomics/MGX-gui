@@ -30,11 +30,11 @@ public class SingleSeqRunNodeFactory extends Children.Keys<SeqRunI> implements N
     }
 
     public void addSeqRun(SeqRunI sr) {
-        vGroup.addSeqRun(sr);
+        vGroup.add(sr);
     }
 
     public void addSeqRuns(SeqRunI... newRuns) {
-        vGroup.addSeqRuns(newRuns);
+        vGroup.add(newRuns);
     }
 
     @Override
@@ -47,7 +47,7 @@ public class SingleSeqRunNodeFactory extends Children.Keys<SeqRunI> implements N
     @Override
     protected void addNotify() {
         super.addNotify();
-        setKeys(vGroup.getSeqRuns());
+        setKeys(vGroup.getContent());
     }
 
     @Override
@@ -57,7 +57,7 @@ public class SingleSeqRunNodeFactory extends Children.Keys<SeqRunI> implements N
     }
 
     public final void refreshChildren() {
-        setKeys(vGroup.getSeqRuns());
+        setKeys(vGroup.getContent());
         refresh();
     }
 

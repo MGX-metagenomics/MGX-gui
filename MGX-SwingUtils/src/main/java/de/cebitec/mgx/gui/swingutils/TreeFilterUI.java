@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.swingutils;
 
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.AttributeI;
@@ -134,12 +135,12 @@ public class TreeFilterUI extends javax.swing.JPanel implements ItemListener, Pr
 
             @Override
             protected TreeI<Long> doInBackground() throws Exception {
-                List<Pair<VisualizationGroupI, TreeI<Long>>> trees = VGroupManager.getInstance().getHierarchies();
+                List<Pair<GroupI, TreeI<Long>>> trees = VGroupManager.getInstance().getHierarchies();
                 if (trees == null) { // conflicts remain
                     return null;
                 }
                 List<Future<TreeI<Long>>> tmp = new ArrayList<>(trees.size());
-                for (Pair<VisualizationGroupI, TreeI<Long>> p : trees) {
+                for (Pair<GroupI, TreeI<Long>> p : trees) {
                     tmp.add(new NoFuture<>(p.getSecond()));
                 }
                 TreeI<Long> merged = TreeFactory.mergeTrees(tmp);

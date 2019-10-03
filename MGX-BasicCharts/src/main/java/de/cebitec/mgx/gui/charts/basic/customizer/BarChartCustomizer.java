@@ -1,7 +1,7 @@
 package de.cebitec.mgx.gui.charts.basic.customizer;
 
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.groups.ReplicateGroupI;
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.misc.Triple;
@@ -9,7 +9,6 @@ import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.gui.vizfilter.ExcludeFilter;
 import de.cebitec.mgx.gui.vizfilter.LimitFilter;
-import de.cebitec.mgx.gui.vizfilter.SortOrder;
 import de.cebitec.mgx.gui.vizfilter.ToFractionFilter;
 import de.cebitec.mgx.api.visualization.filter.VisFilterI;
 import de.cebitec.mgx.gui.vizfilter.LongToDouble;
@@ -211,9 +210,9 @@ public class BarChartCustomizer extends javax.swing.JPanel implements VisFilterI
     // End of variables declaration//GEN-END:variables
 
     @Override
-    public List<Pair<VisualizationGroupI, DistributionI<Double>>> filter(List<Pair<VisualizationGroupI, DistributionI<Long>>> dists) {
+    public List<Pair<GroupI, DistributionI<Double>>> filter(List<Pair<GroupI, DistributionI<Long>>> dists) {
 
-        List<Pair<VisualizationGroupI, DistributionI<Double>>> ret = null;
+        List<Pair<GroupI, DistributionI<Double>>> ret = null;
         if (useFractions()) {
             VisFilterI<DistributionI<Long>, DistributionI<Double>> fracFilter = new ToFractionFilter();
             ret = fracFilter.filter(dists);
@@ -232,8 +231,8 @@ public class BarChartCustomizer extends javax.swing.JPanel implements VisFilterI
         LimitFilter<Double> lf = new LimitFilter<>(LimitFilter.LIMITS.values()[limit.getSelectedIndex()]);
         ret = lf.filter(ret);
 
-        SortOrder<Double> sorter = new SortOrder<>(at, sortAscending.isSelected() ? SortOrder.ASCENDING : SortOrder.DESCENDING);
-        ret = sorter.filter(ret);
+//        SortOrder<Double> sorter = new SortOrder<>(at, sortAscending.isSelected() ? SortOrder.ASCENDING : SortOrder.DESCENDING);
+//        ret = sorter.filter(ret);
 
         return ret;
     }

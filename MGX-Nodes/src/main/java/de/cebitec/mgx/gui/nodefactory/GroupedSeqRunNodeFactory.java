@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.nodefactory;
 
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.model.ModelBaseI;
 import de.cebitec.mgx.api.model.SeqRunI;
@@ -21,20 +22,20 @@ import org.openide.nodes.NodeReorderEvent;
  */
 public class GroupedSeqRunNodeFactory extends Children.Keys<SeqRunI> implements NodeListener {
 
-    private final VisualizationGroupI vGroup;
+    private final GroupI<SeqRunI> vGroup;
 
-    public GroupedSeqRunNodeFactory(VisualizationGroupI group) {
+    public GroupedSeqRunNodeFactory(GroupI<SeqRunI> group) {
         super(false);
         this.vGroup = group;
         vGroup.addPropertyChangeListener(this);
     }
 
     public void addSeqRun(SeqRunI sr) {
-        vGroup.addSeqRun(sr);
+        vGroup.add(sr);
     }
 
     public void addSeqRuns(SeqRunI... newRuns) {
-        vGroup.addSeqRuns(newRuns);
+        vGroup.add(newRuns);
     }
 
     @Override
@@ -47,7 +48,7 @@ public class GroupedSeqRunNodeFactory extends Children.Keys<SeqRunI> implements 
     @Override
     protected void addNotify() {
         super.addNotify();
-        setKeys(vGroup.getSeqRuns());
+        setKeys(vGroup.getContent());
     }
 
     @Override
@@ -57,7 +58,7 @@ public class GroupedSeqRunNodeFactory extends Children.Keys<SeqRunI> implements 
     }
 
     public final void refreshChildren() {
-        setKeys(vGroup.getSeqRuns());
+        setKeys(vGroup.getContent());
         refresh();
     }
 

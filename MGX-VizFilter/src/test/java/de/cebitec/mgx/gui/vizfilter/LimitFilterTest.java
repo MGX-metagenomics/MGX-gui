@@ -5,6 +5,7 @@
  */
 package de.cebitec.mgx.gui.vizfilter;
 
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
@@ -38,14 +39,14 @@ public class LimitFilterTest {
         a2.setValue("BAR");
         map.put(a2, Long.valueOf(5));
         DistributionI<Long> dist = new Distribution(null, map);
-        List<Pair<VisualizationGroupI, DistributionI<Long>>> list = new ArrayList<>();
+        List<Pair<GroupI, DistributionI<Long>>> list = new ArrayList<>();
         VisualizationGroupI vg = null;
         list.add(new Pair<>(vg, dist));
 
         LimitFilter<Long> filter = new LimitFilter<>(LIMITS.ALL);
         assertNotNull(filter);
 
-        List<Pair<VisualizationGroupI, DistributionI<Long>>> filtered = filter.filter(list);
+        List<Pair<GroupI, DistributionI<Long>>> filtered = filter.filter(list);
         assertEquals(1, filtered.size());
         assertNotSame(filtered, list);
     }
@@ -62,7 +63,7 @@ public class LimitFilterTest {
         }
 
         DistributionI<Long> dist = new Distribution(null, map);
-        List<Pair<VisualizationGroupI, DistributionI<Long>>> list = new ArrayList<>();
+        List<Pair<GroupI, DistributionI<Long>>> list = new ArrayList<>();
         VisualizationGroupI vg = null;
         list.add(new Pair<>(vg, dist));
 
@@ -71,7 +72,7 @@ public class LimitFilterTest {
 
         LimitFilter<Long> filter = new LimitFilter<>(LIMITS.TOP10);
 
-        List<Pair<VisualizationGroupI, DistributionI<Long>>> filtered = filter.filter(list);
+        List<Pair<GroupI, DistributionI<Long>>> filtered = filter.filter(list);
 
         DistributionI<Long> d = filtered.get(0).getSecond();
         assertNotNull(d);

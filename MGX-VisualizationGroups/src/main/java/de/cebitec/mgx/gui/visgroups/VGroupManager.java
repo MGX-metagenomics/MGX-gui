@@ -15,6 +15,7 @@ import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.ModelBaseI;
 import de.cebitec.mgx.api.model.SeqRunI;
+import de.cebitec.mgx.api.model.assembly.AssembledSeqRunI;
 import de.cebitec.mgx.api.model.tree.TreeI;
 import de.cebitec.mgx.api.visualization.ConflictResolver;
 import de.cebitec.mgx.gui.pool.MGXPool;
@@ -62,9 +63,9 @@ public class VGroupManager implements VGroupManagerI {
     private static VGroupManagerI instance = null;
 
     // LinkedHashSet keeps the order elements are added
-    private final Collection<VisualizationGroupI> vizGroups = new LinkedHashSet<>();
+    private final Collection<GroupI<SeqRunI>> vizGroups = new LinkedHashSet<>();
+    private final Collection<GroupI<AssembledSeqRunI>> assemblyGroups = new LinkedHashSet<>();
     private final Collection<ReplicateGroupI> replicateGroups = new LinkedHashSet<>();
-    private final Collection<AssemblyGroupI> assemblyGroups = new LinkedHashSet<>();
     private int vizGroupCount = 1;
     private int replicateGroupCount = 1;
     private int assemblyGroupCount = 1;
@@ -107,7 +108,18 @@ public class VGroupManager implements VGroupManagerI {
 
     private boolean hasVizGroup(String name) {
         synchronized (vizGroups) {
-            for (VisualizationGroupI vg : vizGroups) {
+            for (GroupI vg : vizGroups) {
+                if (name.equals(vg.getDisplayName()) || name.equals(vg.getName())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean hasAssemblyGroup(String name) {
+        synchronized (assemblyGroups) {
+            for (GroupI vg : assemblyGroups) {
                 if (name.equals(vg.getDisplayName()) || name.equals(vg.getName())) {
                     return true;
                 }
@@ -128,15 +140,23 @@ public class VGroupManager implements VGroupManagerI {
     }
 
     @Override
-    public List<VisualizationGroupI> getActiveVisualizationGroups() {
-        List<VisualizationGroupI> ret = new ArrayList<>(vizGroups.size());
+    public List<GroupI> getActiveGroups() {
+        List<GroupI> ret = new ArrayList<>(vizGroups.size() + assemblyGroups.size());
         synchronized (vizGroups) {
-            for (VisualizationGroupI g : vizGroups) {
+            for (GroupI<SeqRunI> g : vizGroups) {
                 if (g.isActive()) {
                     ret.add(g);
                 }
             }
         }
+        synchronized (assemblyGroups) {
+            for (GroupI<AssembledSeqRunI> g : assemblyGroups) {
+                if (g.isActive()) {
+                    ret.add(g);
+                }
+            }
+        }
+
         return ret;
     }
 
@@ -154,7 +174,7 @@ public class VGroupManager implements VGroupManagerI {
     public Collection<AttributeTypeI> getAttributeTypes() {
         List<AttributeTypeI> ret = new ArrayList<>();
         synchronized (vizGroups) {
-            for (VisualizationGroupI vg : vizGroups) {
+            for (GroupI<SeqRunI> vg : vizGroups) {
                 Iterator<AttributeTypeI> it = vg.getAttributeTypes();
                 while (it.hasNext()) {
                     AttributeTypeI at = it.next();
@@ -166,8 +186,8 @@ public class VGroupManager implements VGroupManagerI {
         }
 
         synchronized (assemblyGroups) {
-            for (AssemblyGroupI ag : assemblyGroups) {
-                Iterator<AttributeTypeI> it = ag.getAttributeTypes();
+            for (GroupI<AssembledSeqRunI> vg : assemblyGroups) {
+                Iterator<AttributeTypeI> it = vg.getAttributeTypes();
                 while (it.hasNext()) {
                     AttributeTypeI at = it.next();
                     if (!ret.contains(at)) {
@@ -176,6 +196,7 @@ public class VGroupManager implements VGroupManagerI {
                 }
             }
         }
+
         Collections.sort(ret, new Comparator<AttributeTypeI>() {
             @Override
             public int compare(AttributeTypeI o1, AttributeTypeI o2) {
@@ -199,9 +220,9 @@ public class VGroupManager implements VGroupManagerI {
 //                return true;
 //            }
 //        }
-        List<VisualizationGroupI> conflicts = null;
+        List<GroupI> conflicts = null;
         synchronized (vizGroups) {
-            for (VisualizationGroupI vg : vizGroups) {
+            for (GroupI<SeqRunI> vg : vizGroups) {
                 if (vg.isActive()) {
                     try {
                         vg.selectAttributeType(rank, aType);
@@ -211,8 +232,21 @@ public class VGroupManager implements VGroupManagerI {
                         }
                         conflicts.add(vg);
                     }
-                } else {
-                    //System.err.println(vg.getName() + " is not active");
+                }
+            }
+        }
+
+        synchronized (assemblyGroups) {
+            for (GroupI<AssembledSeqRunI> vg : assemblyGroups) {
+                if (vg.isActive()) {
+                    try {
+                        vg.selectAttributeType(rank, aType);
+                    } catch (ConflictingJobsException ex) {
+                        if (conflicts == null) {
+                            conflicts = new ArrayList<>();
+                        }
+                        conflicts.add(vg);
+                    }
                 }
             }
         }
@@ -233,7 +267,7 @@ public class VGroupManager implements VGroupManagerI {
     }
 
     @Override
-    public List<Pair<VisualizationGroupI, DistributionI<Long>>> getDistributions() throws ConflictingJobsException {
+    public List<Pair<GroupI, DistributionI<Long>>> getDistributions() throws ConflictingJobsException {
 
         if (currentAttributeType.get(AttributeRank.PRIMARY) == null) {
             throw new RuntimeException("VGMGR: primary attribute type is null");
@@ -242,7 +276,7 @@ public class VGroupManager implements VGroupManagerI {
         int numActiveGroups = 0;
         // make sure there are no unresolved ambiguities left
         synchronized (vizGroups) {
-            for (VisualizationGroupI vg : vizGroups) {
+            for (GroupI<SeqRunI> vg : vizGroups) {
                 if (vg.isActive()) {
                     numActiveGroups++;
                     Map<SeqRunI, Set<JobI>> conflicts = vg.getConflicts(AttributeRank.PRIMARY);
@@ -255,9 +289,34 @@ public class VGroupManager implements VGroupManagerI {
             }
         }
 
-        List<Pair<VisualizationGroupI, DistributionI<Long>>> ret = new ArrayList<>(numActiveGroups);
+        synchronized (assemblyGroups) {
+            for (GroupI<AssembledSeqRunI> vg : assemblyGroups) {
+                if (vg.isActive()) {
+                    numActiveGroups++;
+                    Map<AssembledSeqRunI, Set<JobI>> conflicts = vg.getConflicts(AttributeRank.PRIMARY);
+                    if (!conflicts.isEmpty()) {
+//                        System.err.println("CONFLICT for " + vg.getName());
+                        assert false;
+                        return null;
+                    }
+                }
+            }
+        }
+
+        List<Pair<GroupI, DistributionI<Long>>> ret = new ArrayList<>(numActiveGroups);
         synchronized (vizGroups) {
-            for (VisualizationGroupI vg : vizGroups) {
+            for (GroupI<SeqRunI> vg : vizGroups) {
+                if (vg.isActive()) {
+                    DistributionI<Long> dist = vg.getDistribution();
+                    if (dist != null && !dist.isEmpty()) {
+                        ret.add(new Pair<>(vg, dist));
+                    }
+                }
+            }
+        }
+
+        synchronized (assemblyGroups) {
+            for (GroupI<AssembledSeqRunI> vg : assemblyGroups) {
                 if (vg.isActive()) {
                     DistributionI<Long> dist = vg.getDistribution();
                     if (dist != null && !dist.isEmpty()) {
@@ -271,7 +330,7 @@ public class VGroupManager implements VGroupManagerI {
     }
 
     @Override
-    public List<Pair<VisualizationGroupI, TreeI<Long>>> getHierarchies() throws ConflictingJobsException {
+    public List<Pair<GroupI, TreeI<Long>>> getHierarchies() throws ConflictingJobsException {
 
         if (currentAttributeType.get(AttributeRank.PRIMARY) == null) {
             throw new RuntimeException("VGMGR: primary attribute type is null");
@@ -280,7 +339,7 @@ public class VGroupManager implements VGroupManagerI {
         int numActiveGroups = 0;
         // make sure there are no unresolved ambiguities left
         synchronized (vizGroups) {
-            for (VisualizationGroupI vg : vizGroups) {
+            for (GroupI<SeqRunI> vg : vizGroups) {
                 if (vg.isActive()) {
                     numActiveGroups++;
                     Map<SeqRunI, Set<JobI>> conflicts = vg.getConflicts(AttributeRank.PRIMARY);
@@ -292,9 +351,33 @@ public class VGroupManager implements VGroupManagerI {
             }
         }
 
-        List<Pair<VisualizationGroupI, TreeI<Long>>> ret = new ArrayList<>(numActiveGroups);
+        synchronized (assemblyGroups) {
+            for (GroupI<AssembledSeqRunI> vg : assemblyGroups) {
+                if (vg.isActive()) {
+                    numActiveGroups++;
+                    Map<AssembledSeqRunI, Set<JobI>> conflicts = vg.getConflicts(AttributeRank.PRIMARY);
+                    if (!conflicts.isEmpty()) {
+                        assert false;
+                        return null;
+                    }
+                }
+            }
+        }
+
+        List<Pair<GroupI, TreeI<Long>>> ret = new ArrayList<>(numActiveGroups);
         synchronized (vizGroups) {
-            for (VisualizationGroupI vg : vizGroups) {
+            for (GroupI<SeqRunI> vg : vizGroups) {
+                if (vg.isActive()) {
+                    TreeI<Long> tree = vg.getHierarchy();
+                    if (tree != null && !tree.isEmpty()) {
+                        ret.add(new Pair<>(vg, tree));
+                    }
+                }
+            }
+        }
+
+        synchronized (assemblyGroups) {
+            for (GroupI<AssembledSeqRunI> vg : assemblyGroups) {
                 if (vg.isActive()) {
                     TreeI<Long> tree = vg.getHierarchy();
                     if (tree != null && !tree.isEmpty()) {
@@ -427,10 +510,10 @@ public class VGroupManager implements VGroupManagerI {
     public AssemblyGroupI createAssemblyGroup() {
         AssemblyGroupI group;
 
-        synchronized (vizGroups) {
-            String newName = "Group " + assemblyGroupCount;
-            while (hasVizGroup(newName)) {
-                newName = "Group " + ++assemblyGroupCount;
+        synchronized (assemblyGroups) {
+            String newName = "Assemblygroup " + assemblyGroupCount;
+            while (hasAssemblyGroup(newName)) {
+                newName = "Assemblygroup " + ++assemblyGroupCount;
             }
             Color groupColor = groupColors[(assemblyGroupCount - 1) % groupColors.length];
             group = new AssemblyGroup(this, assemblyGroupCount, newName, groupColor);
@@ -448,7 +531,7 @@ public class VGroupManager implements VGroupManagerI {
         firePropertyChange(ASMGROUP_ADDED, 0, group);
 
         // auto-select initial group
-        if (vizGroups.size() == 1) {
+        if (assemblyGroups.size() == 1) {
             setSelectedAssemblyGroup(group);
         }
 
@@ -488,15 +571,12 @@ public class VGroupManager implements VGroupManagerI {
         synchronized (vizGroups) {
             ret.addAll(vizGroups);
         }
-        synchronized (assemblyGroups) {
-            ret.addAll(assemblyGroups);
-        }
         return ret;
     }
 
     @Override
-    public VisualizationGroupI getVisualizationGroup(String displayName) {
-        for (VisualizationGroupI vGrp : vizGroups) {
+    public GroupI getGroup(String displayName) {
+        for (GroupI vGrp : vizGroups) {
             if (displayName.equals(vGrp.getDisplayName())) {
                 return vGrp;
             }
@@ -549,21 +629,22 @@ public class VGroupManager implements VGroupManagerI {
                         selectedReplicateGroup = null;
                         firePropertyChange(REPLICATEGROUP_SELECTION_CHANGED, rg, null);
                     }
-                    //rg.deleted();
+                } else if (pce.getSource() instanceof AssemblyGroupI) {
+                    AssemblyGroupI vg = (AssemblyGroupI) pce.getSource();
+
+                    synchronized (vizGroups) {
+                        if (vizGroups.contains(vg)) {
+                            vizGroups.remove(vg);
+                            vg.removePropertyChangeListener(this);
+                        }
+                    }
+                    if (vg.equals(selectedAssemblyGroup)) {
+                        selectedAssemblyGroup = null;
+                        firePropertyChange(ASMGROUP_SELECTION_CHANGED, vg, null);
+                    }
                 }
                 break;
         }
-//        if (VisualizationGroupI.VISGROUP_RUN_ADDED.equals(pce.getPropertyName()) && pce.getSource() instanceof VisualizationGroupI) {
-//            VisualizationGroupI vGrp = (VisualizationGroupI) pce.getSource();
-//            try {
-//                vGrp.selectAttributeType(AttributeRank.PRIMARY, currentAttributeType.get(AttributeRank.PRIMARY));
-//            } catch (ConflictingJobsException ex) {
-//                List<VisualizationGroupI> tmp = new ArrayList<>(1);
-//                tmp.add(vGrp);
-//                resolver.resolve(tmp);
-//            }
-//            
-//        }
         pcs.firePropertyChange(pce);
     }
 

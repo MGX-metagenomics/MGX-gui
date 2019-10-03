@@ -33,7 +33,7 @@ import org.openide.util.Exceptions;
  *
  * @author sj
  */
-public class ReplicateGroupFrame extends GroupFrameBase<ReplicateGroupI> {
+public class ReplicateGroupFrame extends GroupFrameBase<ReplicateGroupI, ReplicateI> {
 
     public ReplicateGroupFrame(final ReplicateGroupI rgroup) {
         super(rgroup.getManager(), rgroup, new ReplicateGroupNode(rgroup));

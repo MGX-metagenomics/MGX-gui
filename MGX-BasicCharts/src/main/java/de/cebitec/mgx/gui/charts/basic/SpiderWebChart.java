@@ -1,12 +1,13 @@
 package de.cebitec.mgx.gui.charts.basic;
 
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
 import de.cebitec.mgx.gui.charts.basic.util.TickedSpiderWebPlot;
 import de.cebitec.mgx.api.groups.ImageExporterI;
 import de.cebitec.mgx.api.groups.SequenceExporterI;
+import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.charts.basic.customizer.SpiderWebChartCustomizer;
 import de.cebitec.mgx.gui.charts.basic.util.SVGChartPanel;
 import de.cebitec.mgx.gui.seqexporter.SeqExporter;
@@ -35,7 +36,7 @@ public class SpiderWebChart extends CategoricalViewerI<Long> implements Customiz
 
     private SVGChartPanel cPanel = null;
     private JFreeChart chart = null;
-    List<Pair<VisualizationGroupI, DistributionI<Double>>> dists;
+    List<Pair<GroupI, DistributionI<Double>>> dists;
     private final SpiderWebChartCustomizer cust = new SpiderWebChartCustomizer();
 
     @Override
@@ -54,7 +55,7 @@ public class SpiderWebChart extends CategoricalViewerI<Long> implements Customiz
     }
 
     @Override
-    public void show(List<Pair<VisualizationGroupI, DistributionI<Long>>> in) {
+    public void show(List<Pair<GroupI, DistributionI<Long>>> in) {
 
 //        SortOrder<Long> sorter = new SortOrder<>(getAttributeType(), SortOrder.DESCENDING);
 //        dists = sorter.filter(dists);
@@ -77,7 +78,7 @@ public class SpiderWebChart extends CategoricalViewerI<Long> implements Customiz
 
         // colors
         int i = 0;
-        for (Pair<VisualizationGroupI, DistributionI<Double>> groupDistribution : dists) {
+        for (Pair<GroupI, DistributionI<Double>> groupDistribution : dists) {
             plot.setSeriesPaint(i++, groupDistribution.getFirst().getColor());
         }
 
@@ -107,10 +108,12 @@ public class SpiderWebChart extends CategoricalViewerI<Long> implements Customiz
     @Override
     public SequenceExporterI[] getSequenceExporters() {
         List<SequenceExporterI> ret = new ArrayList<>(dists.size());
-        for (Pair<VisualizationGroupI, DistributionI<Double>> p : dists) {
+        for (Pair<GroupI, DistributionI<Double>> p : dists) {
             if (p.getSecond().getTotalClassifiedElements() > 0) {
-                SequenceExporterI exp = new SeqExporter<>(p.getFirst(), p.getSecond());
-                ret.add(exp);
+                if (p.getFirst().getContentClass().equals(SeqRunI.class)) {
+                    SequenceExporterI exp = new SeqExporter<>((GroupI<SeqRunI>)p.getFirst(), p.getSecond());
+                    ret.add(exp);
+                }
             }
         }
         return ret.toArray(new SequenceExporterI[]{});

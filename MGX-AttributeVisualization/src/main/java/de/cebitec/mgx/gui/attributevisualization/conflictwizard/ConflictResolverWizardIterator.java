@@ -1,12 +1,11 @@
 package de.cebitec.mgx.gui.attributevisualization.conflictwizard;
 
 import de.cebitec.mgx.api.exception.MGXException;
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.misc.AttributeRank;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.misc.Triple;
 import de.cebitec.mgx.api.model.JobI;
-import de.cebitec.mgx.api.model.SeqRunI;
 import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,14 +39,14 @@ public final class ConflictResolverWizardIterator implements WizardDescriptor.It
     // }
     private int index;
     private List<WizardDescriptor.Panel<WizardDescriptor>> panels;
-    private final List<VisualizationGroupI> groups;
+    private final List<GroupI> groups;
 
-    public ConflictResolverWizardIterator(List<VisualizationGroupI> groups) {
+    public ConflictResolverWizardIterator(List<GroupI> groups) {
         this.groups = groups;
     }
 
-    public List<Pair<VisualizationGroupI, Triple<AttributeRank, SeqRunI, JobI>>> getSelection() {
-        List<Pair<VisualizationGroupI, Triple<AttributeRank, SeqRunI, JobI>>> l = new ArrayList<>();
+    public List<Pair<GroupI, Triple<AttributeRank, Object, JobI>>> getSelection() {
+        List<Pair<GroupI, Triple<AttributeRank, Object, JobI>>> l = new ArrayList<>();
         for (Panel<WizardDescriptor> p : panels) {
             ConflictResolverWizardPanel1 tmp = (ConflictResolverWizardPanel1) p;
             l.add(tmp.getSelection());
@@ -60,13 +59,13 @@ public final class ConflictResolverWizardIterator implements WizardDescriptor.It
         if (panels == null) {
             panels = new ArrayList<>();
 
-            for (final VisualizationGroupI vg : groups) {
-
+            for (final GroupI vg : groups) {
+                
                 //
                 // the job objects don't have the corresponding tool instance set
                 // here, so we need to fetch them separately
                 //
-                for (final Triple<AttributeRank, SeqRunI, Set<JobI>> e : vg.getConflicts()) {
+                for (final Triple<AttributeRank, Object, Set<JobI>> e : (List<Triple<AttributeRank, Object, Set<JobI>>>)vg.getConflicts()) {
                     final Set<JobI> jobs = e.getThird();
                     try {
                         for (final JobI job : jobs) {

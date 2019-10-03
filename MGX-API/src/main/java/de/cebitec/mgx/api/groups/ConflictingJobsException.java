@@ -9,31 +9,21 @@ import java.util.Set;
  *
  * @author sjaenick
  */
-public class ConflictingJobsException extends Exception {
+public abstract class ConflictingJobsException extends Exception {
 
     private final GroupI group;
-    private final Map<SeqRunI, Set<JobI>> conflicts;
 
-    public ConflictingJobsException(GroupI group, Map<SeqRunI, Set<JobI>> data) {
+    public ConflictingJobsException(GroupI group) {
         this.group = group;
-        this.conflicts = data;
     }
 
-    public GroupI getGroup() {
+    public final GroupI getGroup() {
         return group;
     }
 
     @Override
-    public String getMessage() {
-        StringBuilder sb = new StringBuilder("Conflicts remain for group " + group.getDisplayName()+ ": \n");
-        for (Map.Entry<SeqRunI, Set<JobI>> e : conflicts.entrySet()) {
-            sb.append(e.getKey().getName()).append(": ");
-            for (JobI j : e.getValue()) {
-                sb.append(j.getId()).append(" ");
-            }
-            sb.append(System.lineSeparator());
-        }
-        return sb.toString();
-    }
+    public abstract String getMessage();
+    
+    public abstract Class getSourceClass();
 
 }

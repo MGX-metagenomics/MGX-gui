@@ -53,5 +53,8 @@ public abstract class SeqRunI extends Identifiable<SeqRunI> {
     public abstract long getNumSequences();
 
     public abstract SeqRunI setNumSequences(long numSequences);
+    
+    @Override
+    public abstract String toString();
 
 }

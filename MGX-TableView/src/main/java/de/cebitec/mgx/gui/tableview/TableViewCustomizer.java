@@ -1,6 +1,6 @@
 package de.cebitec.mgx.gui.tableview;
 
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.AttributeI;
@@ -82,7 +82,7 @@ class TableViewCustomizer extends javax.swing.JPanel implements VisFilterI<Distr
     }
 
     @Override
-    public List<Pair<VisualizationGroupI, DistributionI<Double>>> filter(List<Pair<VisualizationGroupI, DistributionI<Double>>> dists) {
+    public List<Pair<GroupI, DistributionI<Double>>> filter(List<Pair<GroupI, DistributionI<Double>>> dists) {
 
         Set<AttributeI> filterEntries = treeFilter1.getBlackList();
 

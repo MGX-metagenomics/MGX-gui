@@ -182,14 +182,14 @@ public final class VisualizationGroupTopComponent extends TopComponent implement
                     if (run != null) {
                         VisualizationGroupI newGrp = VGroupManager.getInstance().createVisualizationGroup();
                         newGrp.setName(run.getName());
-                        newGrp.addSeqRun(run);
+                        newGrp.add(run);
                         continue;
                     }
                     AssembledSeqRunI arun = n.getLookup().lookup(AssembledSeqRunI.class);
                     if (arun != null) {
                         AssemblyGroupI newGrp = VGroupManager.getInstance().createAssemblyGroup();
                         newGrp.setName(arun.getName());
-                        newGrp.addSeqRun(arun);
+                        newGrp.add(arun);
                     }
                 }
                 dtde.dropComplete(true);

@@ -3,12 +3,13 @@ package de.cebitec.mgx.gui.statistics.clustering;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.groups.ConflictingJobsException;
 import de.cebitec.mgx.api.groups.FileType;
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.groups.ImageExporterI;
 import de.cebitec.mgx.api.groups.SequenceExporterI;
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.AttributeTypeI;
+import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.seqexporter.SeqExporter;
 import de.cebitec.mgx.gui.statistics.clustering.dendro.Dendrogram;
 import de.cebitec.mgx.gui.swingutils.DelayedPlot;
@@ -48,7 +49,7 @@ public class HClustPlot2 extends AbstractViewer<DistributionI<Long>> implements 
     private final HClustCustomizer customizer = new HClustCustomizer();
     private Dendrogram display;
     private String newickString = null;
-    private List<Pair<VisualizationGroupI, DistributionI<Double>>> data;
+    private List<Pair<GroupI, DistributionI<Double>>> data;
 
     @Override
     public JComponent getComponent() {
@@ -61,7 +62,7 @@ public class HClustPlot2 extends AbstractViewer<DistributionI<Long>> implements 
     }
 
     @Override
-    public void show(final List<Pair<VisualizationGroupI, DistributionI<Long>>> dists) {
+    public void show(final List<Pair<GroupI, DistributionI<Long>>> dists) {
 
         cPanel = new DelayedPlot();
         data = new LongToDouble().filter(dists);
@@ -163,10 +164,12 @@ public class HClustPlot2 extends AbstractViewer<DistributionI<Long>> implements 
     @Override
     public SequenceExporterI[] getSequenceExporters() {
         List<SequenceExporterI> ret = new ArrayList<>(data.size());
-        for (Pair<VisualizationGroupI, DistributionI<Double>> p : data) {
+        for (Pair<GroupI, DistributionI<Double>> p : data) {
             if (p.getSecond().getTotalClassifiedElements() > 0) {
-                SequenceExporterI exp = new SeqExporter<>(p.getFirst(), p.getSecond());
-                ret.add(exp);
+                if (p.getFirst().getContentClass().equals(SeqRunI.class)) {
+                    SequenceExporterI exp = new SeqExporter<>((GroupI<SeqRunI>)p.getFirst(), p.getSecond());
+                    ret.add(exp);
+                }
             }
         }
         return ret.toArray(new SequenceExporterI[]{});
@@ -176,7 +179,7 @@ public class HClustPlot2 extends AbstractViewer<DistributionI<Long>> implements 
     public boolean canHandle(AttributeTypeI valueType) {
         try {
             return valueType.getValueType() == AttributeTypeI.VALUE_DISCRETE
-                    && VGroupManager.getInstance().getActiveVisualizationGroups().size() > 1
+                    && VGroupManager.getInstance().getActiveGroups().size() > 1
                     && VGroupManager.getInstance().getDistributions().size() > 1;
         } catch (ConflictingJobsException ex) {
             return false;

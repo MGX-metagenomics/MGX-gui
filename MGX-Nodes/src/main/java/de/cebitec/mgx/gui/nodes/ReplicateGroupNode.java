@@ -33,7 +33,7 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sjaenick
  */
-public class ReplicateGroupNode extends MGXNodeBase<ReplicateGroupI> {
+public class ReplicateGroupNode extends MGXGroupNodeBase<ReplicateGroupI> {
 
     public ReplicateGroupNode(ReplicateGroupI rGroup) {
         this(new ReplicateNodeFactory(rGroup), rGroup);
@@ -124,7 +124,7 @@ public class ReplicateGroupNode extends MGXNodeBase<ReplicateGroupI> {
                             }
                             while (iter != null && iter.hasNext()) {
                                 ReplicateI newReplicate = VGroupManager.getInstance().createReplicate(replGroup);
-                                newReplicate.addSeqRun(iter.next());
+                                newReplicate.add(iter.next());
                             }
                         }
                         return null;

@@ -4,7 +4,7 @@ import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.StatisticsAccessI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.exception.MGXLoggedoutException;
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.PrincipalComponent;
 import de.cebitec.mgx.api.misc.PCAResultI;
@@ -65,14 +65,14 @@ public class StatisticsAccess implements StatisticsAccessI {
     }
 
     @Override
-    public String Clustering(Collection<Pair<VisualizationGroupI, DistributionI<Double>>> dists, String distanceMethod, String agglomeration) throws MGXException {
+    public String Clustering(Collection<Pair<GroupI, DistributionI<Double>>> dists, String distanceMethod, String agglomeration) throws MGXException {
         MGXMatrixDTO matrix = buildMatrix(dists, false);
 
         try {
             String nwk = dtomaster.Statistics().Clustering(matrix, distanceMethod, agglomeration);
 
-            for (Pair<VisualizationGroupI, DistributionI<Double>> pair : dists) {
-                VisualizationGroupI vGrp = pair.getFirst();
+            for (Pair<GroupI, DistributionI<Double>> pair : dists) {
+                GroupI vGrp = pair.getFirst();
                 nwk = nwk.replaceFirst(vGrp.getUUID().toString(), vGrp.getName());
             }
 
@@ -84,7 +84,7 @@ public class StatisticsAccess implements StatisticsAccessI {
     }
 
     @Override
-    public PCAResultI PCA(Collection<Pair<VisualizationGroupI, DistributionI<Double>>> groups, PrincipalComponent pc1, PrincipalComponent pc2) throws MGXException {
+    public PCAResultI PCA(Collection<Pair<GroupI, DistributionI<Double>>> groups, PrincipalComponent pc1, PrincipalComponent pc2) throws MGXException {
 
         MGXMatrixDTO matrix = buildMatrix(groups, true);
 
@@ -94,7 +94,7 @@ public class StatisticsAccess implements StatisticsAccessI {
 
             // replace group uuids by group names
             for (Point p : pca.getDatapoints()) {
-                for (Pair<VisualizationGroupI, DistributionI<Double>> pair : groups) {
+                for (Pair<GroupI, DistributionI<Double>> pair : groups) {
                     if (pair.getFirst().getUUID().toString().equals(p.getName())) {
                         p.setName(pair.getFirst().getDisplayName());
                         break;
@@ -108,7 +108,7 @@ public class StatisticsAccess implements StatisticsAccessI {
     }
 
     @Override
-    public Collection<Point> NMDS(Collection<Pair<VisualizationGroupI, DistributionI<Double>>> groups) throws MGXException {
+    public Collection<Point> NMDS(Collection<Pair<GroupI, DistributionI<Double>>> groups) throws MGXException {
 
         MGXMatrixDTO matrix = buildMatrix(groups, true);
 
@@ -119,7 +119,7 @@ public class StatisticsAccess implements StatisticsAccessI {
                 Point p = PointDTOFactory.getInstance().toModel(master, pdto);
 
                 // replace group uuids by group names
-                for (Pair<VisualizationGroupI, DistributionI<Double>> pair : groups) {
+                for (Pair<GroupI, DistributionI<Double>> pair : groups) {
                     if (pair.getFirst().getUUID().toString().equals(p.getName())) {
                         p.setName(pair.getFirst().getDisplayName());
                         break;
@@ -151,12 +151,12 @@ public class StatisticsAccess implements StatisticsAccessI {
         }
     }
 
-    private static <T extends Number> MGXMatrixDTO buildMatrix(Collection<Pair<VisualizationGroupI, DistributionI<T>>> groups, boolean includeColNames) {
+    private static <T extends Number> MGXMatrixDTO buildMatrix(Collection<Pair<GroupI, DistributionI<T>>> groups, boolean includeColNames) {
         MGXMatrixDTO.Builder b = MGXMatrixDTO.newBuilder();
 
         // collect all attributes first
         Set<AttributeI> attrs = new HashSet<>();
-        for (Pair<VisualizationGroupI, DistributionI<T>> dataset : groups) {
+        for (Pair<GroupI, DistributionI<T>> dataset : groups) {
             attrs.addAll(dataset.getSecond().keySet());
         }
         AttributeI[] ordered = attrs.toArray(new AttributeI[]{});
@@ -170,7 +170,7 @@ public class StatisticsAccess implements StatisticsAccessI {
             b.setColNames(sb.build());
         }
 
-        for (Pair<VisualizationGroupI, DistributionI<T>> dataset : groups) {
+        for (Pair<GroupI, DistributionI<T>> dataset : groups) {
             UUID grpUUID = dataset.getFirst().getUUID();
             ProfileDTO prof = ProfileDTO.newBuilder()
                     .setName(grpUUID.toString())

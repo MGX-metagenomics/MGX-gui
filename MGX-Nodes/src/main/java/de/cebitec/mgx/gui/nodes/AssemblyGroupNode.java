@@ -25,7 +25,7 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sjaenick
  */
-public class AssemblyGroupNode extends MGXNodeBase<AssemblyGroupI> {
+public class AssemblyGroupNode extends MGXGroupNodeBase<AssemblyGroupI> {
 
     public AssemblyGroupNode(AssemblyGroupI vGroup) {
         this(new GroupedAssembledSeqRunNodeFactory(vGroup), vGroup);
@@ -46,7 +46,7 @@ public class AssemblyGroupNode extends MGXNodeBase<AssemblyGroupI> {
             final Collection<? extends AssembledSeqRunI> seqruns = dropNode.getLookup().lookupAll(AssembledSeqRunI.class);
 
             // reject, if any run is already present
-            Set<AssembledSeqRunI> oldRuns = vg.getSeqRuns();
+            Set<AssembledSeqRunI> oldRuns = vg.getContent();
             for (AssembledSeqRunI newRun : seqruns) {
                 for (AssembledSeqRunI oldRun : oldRuns) {
                     if (oldRun.equals(newRun)) {
@@ -61,7 +61,7 @@ public class AssemblyGroupNode extends MGXNodeBase<AssemblyGroupI> {
 
                     @Override
                     public Transferable paste() throws IOException {
-                        vg.addSeqRuns(seqruns.toArray(new AssembledSeqRunI[]{}));
+                        vg.add(seqruns.toArray(new AssembledSeqRunI[]{}));
                         return null;
                     }
                 };

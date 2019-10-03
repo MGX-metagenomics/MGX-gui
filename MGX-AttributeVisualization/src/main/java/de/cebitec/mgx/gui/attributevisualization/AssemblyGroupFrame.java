@@ -10,6 +10,7 @@ import de.cebitec.mgx.api.groups.ReplicateGroupI;
 import de.cebitec.mgx.api.groups.VGroupManagerI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.model.ModelBaseI;
+import de.cebitec.mgx.api.model.assembly.AssembledSeqRunI;
 import de.cebitec.mgx.gui.nodes.AssemblyGroupNode;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -34,7 +35,7 @@ import org.openide.util.Exceptions;
  *
  * @author sj
  */
-public class AssemblyGroupFrame extends GroupFrameBase<AssemblyGroupI> {
+public class AssemblyGroupFrame extends GroupFrameBase<AssemblyGroupI, AssembledSeqRunI> {
 
     public AssemblyGroupFrame(final AssemblyGroupI vGroup) {
         super(vGroup.getManager(), vGroup, new AssemblyGroupNode(vGroup));

@@ -5,6 +5,7 @@
  */
 package de.cebitec.mgx.gui.attributevisualization.ui;
 
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.groups.VGroupManagerI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.gui.nodes.VgMgrNode;
@@ -41,7 +42,7 @@ public class VisualizationGroupTopComponentTest {
         System.out.println("testExplorerManagerContent");
         Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         VGroupManagerI vgmgr = VGroupManager.getInstance();
-        for (VisualizationGroupI vGrp : vgmgr.getActiveVisualizationGroups()) {
+        for (GroupI vGrp : vgmgr.getActiveGroups()) {
             //vgmgr.removeVisualizationGroup(vGrp);
             vGrp.close();
         }

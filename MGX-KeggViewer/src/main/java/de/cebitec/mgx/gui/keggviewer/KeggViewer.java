@@ -2,13 +2,14 @@ package de.cebitec.mgx.gui.keggviewer;
 
 import de.cebitec.mgx.api.groups.ConflictingJobsException;
 import de.cebitec.mgx.api.groups.FileType;
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.groups.ImageExporterI;
 import de.cebitec.mgx.api.groups.SequenceExporterI;
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
+import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.seqexporter.SeqExporter;
 import de.cebitec.mgx.gui.viewer.api.CategoricalViewerI;
 import de.cebitec.mgx.gui.viewer.api.CustomizableI;
@@ -47,7 +48,7 @@ public class KeggViewer extends CategoricalViewerI<Long> implements Customizable
     private KEGGPanel panel;
     private KEGGMaster master;
     private KeggCustomizer customizer;
-    private List<Pair<VisualizationGroupI, DistributionI<Long>>> data;
+    private List<Pair<GroupI, DistributionI<Long>>> data;
 
     public KeggViewer() {
         File userDir = Places.getUserDirectory() != null ? Places.getUserDirectory() : new File(System.getProperty("java.io.tmpdir"));
@@ -96,10 +97,12 @@ public class KeggViewer extends CategoricalViewerI<Long> implements Customizable
     @Override
     public SequenceExporterI[] getSequenceExporters() {
         List<SequenceExporterI> ret = new ArrayList<>(data.size());
-        for (Pair<VisualizationGroupI, DistributionI<Long>> p : data) {
+        for (Pair<GroupI, DistributionI<Long>> p : data) {
             if (p.getSecond().getTotalClassifiedElements() > 0) {
-                SequenceExporterI exp = new SeqExporter<>(p.getFirst(), p.getSecond());
-                ret.add(exp);
+                if (p.getFirst().getContentClass().equals(SeqRunI.class)) {
+                    SequenceExporterI exp = new SeqExporter<>((GroupI<SeqRunI>)p.getFirst(), p.getSecond());
+                    ret.add(exp);
+                }
             }
         }
         return ret.toArray(new SequenceExporterI[]{});
@@ -118,7 +121,7 @@ public class KeggViewer extends CategoricalViewerI<Long> implements Customizable
     private final static Pattern ecNumber = Pattern.compile("\\d+[.](-|\\d+)[.](-|\\d+)[.](-|\\d+)");
 
     @Override
-    public void show(List<Pair<VisualizationGroupI, DistributionI<Long>>> in) {
+    public void show(List<Pair<GroupI, DistributionI<Long>>> in) {
 
         data = in;
 
@@ -129,8 +132,8 @@ public class KeggViewer extends CategoricalViewerI<Long> implements Customizable
             panel.setPathway(customizer.getSelectedPathway(), data.size());
 
             int idx = 0;
-            for (Pair<VisualizationGroupI, DistributionI<Long>> p : data) {
-                VisualizationGroupI group = p.getFirst();
+            for (Pair<GroupI, DistributionI<Long>> p : data) {
+                GroupI group = p.getFirst();
                 DistributionI<Long> dist = p.getSecond();
                 for (Entry<AttributeI, Long> e : dist.entrySet()) {
                     Matcher matcher = ecNumber.matcher(e.getKey().getValue());

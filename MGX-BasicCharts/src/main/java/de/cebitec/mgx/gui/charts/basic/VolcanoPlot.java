@@ -1,15 +1,16 @@
 package de.cebitec.mgx.gui.charts.basic;
 
 import de.cebitec.mgx.api.groups.ConflictingJobsException;
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.groups.ImageExporterI;
 import de.cebitec.mgx.api.groups.ReplicateGroupI;
 import de.cebitec.mgx.api.groups.ReplicateI;
 import de.cebitec.mgx.api.groups.SequenceExporterI;
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
+import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.charts.basic.customizer.VolcanoPlotCustomizer;
 import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
 import de.cebitec.mgx.gui.charts.basic.util.SVGChartPanel;
@@ -55,7 +56,7 @@ public class VolcanoPlot extends CategoricalViewerI<Long> implements Customizabl
     private SVGChartPanel cPanel = null;
     private VolcanoPlotCustomizer customizer = null;
     private JFreeChart chart = null;
-    List<Pair<VisualizationGroupI, DistributionI<Long>>> data;
+    List<Pair<GroupI, DistributionI<Long>>> data;
 
     private final MannWhitneyUTest mwuTest = new MannWhitneyUTest();
     private final Log10 logBase10 = new Log10();
@@ -82,7 +83,7 @@ public class VolcanoPlot extends CategoricalViewerI<Long> implements Customizabl
     }
 
     @Override
-    public void show(List<Pair<VisualizationGroupI, DistributionI<Long>>> in) {
+    public void show(List<Pair<GroupI, DistributionI<Long>>> in) {
 
         data = in;
 
@@ -258,10 +259,12 @@ public class VolcanoPlot extends CategoricalViewerI<Long> implements Customizabl
     @Override
     public SequenceExporterI[] getSequenceExporters() {
         List<SequenceExporterI> ret = new ArrayList<>(data.size());
-        for (Pair<VisualizationGroupI, DistributionI<Long>> p : data) {
+        for (Pair<GroupI, DistributionI<Long>> p : data) {
             if (p.getSecond().getTotalClassifiedElements() > 0) {
-                SequenceExporterI exp = new SeqExporter<>(p.getFirst(), p.getSecond());
-                ret.add(exp);
+                if (p.getFirst().getContentClass().equals(SeqRunI.class)) {
+                    SequenceExporterI exp = new SeqExporter<>((GroupI<SeqRunI>)p.getFirst(), p.getSecond());
+                    ret.add(exp);
+                }
             }
         }
         return ret.toArray(new SequenceExporterI[]{});

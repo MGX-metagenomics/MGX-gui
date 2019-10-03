@@ -5,6 +5,7 @@
  */
 package de.cebitec.mgx.gui.nodes;
 
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.groups.ReplicateI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.model.SeqRunI;
@@ -28,7 +29,7 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sjaenick
  */
-public class ReplicateNode extends MGXNodeBase<VisualizationGroupI> {
+public class ReplicateNode extends MGXGroupNodeBase<GroupI<SeqRunI>> {
 
     public ReplicateNode(ReplicateI replicate) {
         super(new GroupedSeqRunNodeFactory(replicate), Lookups.singleton(replicate), replicate);
@@ -50,7 +51,7 @@ public class ReplicateNode extends MGXNodeBase<VisualizationGroupI> {
             final Collection<? extends SeqRunI> seqruns = dropNode.getLookup().lookupAll(SeqRunI.class);
 
             // reject, if any run is already present
-            Set<SeqRunI> oldRuns = replicate.getSeqRuns();
+            Set<SeqRunI> oldRuns = replicate.getContent();
             for (SeqRunI newRun : seqruns) {
                 if (oldRuns.contains(newRun)) {
                     return MGXPasteTypes.REJECT;
@@ -62,7 +63,7 @@ public class ReplicateNode extends MGXNodeBase<VisualizationGroupI> {
 
                     @Override
                     public Transferable paste() throws IOException {
-                        replicate.addSeqRuns(seqruns.toArray(new SeqRunI[]{}));
+                        replicate.add(seqruns.toArray(new SeqRunI[]{}));
                         return null;
                     }
                 };

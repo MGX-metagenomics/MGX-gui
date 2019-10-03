@@ -25,7 +25,7 @@ import org.openide.util.lookup.Lookups;
  *
  * @author sjaenick
  */
-public class VizGroupNode extends MGXNodeBase<VisualizationGroupI> {
+public class VizGroupNode extends MGXGroupNodeBase<VisualizationGroupI> {
 
     public VizGroupNode(VisualizationGroupI vGroup) {
         this(new GroupedSeqRunNodeFactory(vGroup), vGroup);
@@ -46,7 +46,7 @@ public class VizGroupNode extends MGXNodeBase<VisualizationGroupI> {
             final Collection<? extends SeqRunI> seqruns = dropNode.getLookup().lookupAll(SeqRunI.class);
 
             // reject, if any run is already present
-            Set<SeqRunI> oldRuns = vg.getSeqRuns();
+            Set<SeqRunI> oldRuns = vg.getContent();
             for (SeqRunI newRun : seqruns) {
                 for (SeqRunI oldRun : oldRuns) {
                     if (oldRun.equals(newRun)) {
@@ -65,7 +65,7 @@ public class VizGroupNode extends MGXNodeBase<VisualizationGroupI> {
 
                     @Override
                     public Transferable paste() throws IOException {
-                        vg.addSeqRuns(seqruns.toArray(new SeqRunI[]{}));
+                        vg.add(seqruns.toArray(new SeqRunI[]{}));
                         return null;
                     }
                 };

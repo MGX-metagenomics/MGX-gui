@@ -5,8 +5,8 @@
  */
 package de.cebitec.mgx.gui.actions;
 
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
-import de.cebitec.mgx.api.model.SeqRunI;
+import de.cebitec.mgx.api.groups.AssemblyGroupI;
+import de.cebitec.mgx.api.model.assembly.AssembledSeqRunI;
 import java.util.Collection;
 import static javax.swing.Action.NAME;
 import org.openide.awt.ActionID;
@@ -26,24 +26,24 @@ import org.openide.util.actions.NodeAction;
  */
 @ActionID(
         category = "Edit",
-        id = "de.cebitec.mgx.gui.actions.RemoveSeqRunFromGroupAction"
+        id = "de.cebitec.mgx.gui.actions.RemoveAssembledSeqRunFromGroupAction"
 )
 @ActionRegistration(
-        displayName = "#CTL_RemoveSeqRunFromGroupAction", 
+        displayName = "#CTL_RemoveAssembledSeqRunFromGroupAction",
         lazy = false,
         asynchronous = false
 )
-@NbBundle.Messages("CTL_RemoveSeqRunFromGroupAction=RemoveSeqRunFromGroupAction")
-public class RemoveSeqRunFromGroupAction extends NodeAction implements LookupListener {
+@NbBundle.Messages("CTL_RemoveAssembledSeqRunFromGroupAction=RemoveAssembledSeqRunFromGroupAction")
+public class RemoveAssembledSeqRunFromGroupAction extends NodeAction implements LookupListener {
 
     private final Lookup context;
-    private Lookup.Result<SeqRunI> lkpInfo;
+    private Lookup.Result<AssembledSeqRunI> lkpInfo;
 
-    public RemoveSeqRunFromGroupAction() {
+    public RemoveAssembledSeqRunFromGroupAction() {
         this(Utilities.actionsGlobalContext());
     }
 
-    private RemoveSeqRunFromGroupAction(Lookup context) {
+    private RemoveAssembledSeqRunFromGroupAction(Lookup context) {
         putValue(NAME, "Remove run");
         this.context = context;
         init();
@@ -53,7 +53,7 @@ public class RemoveSeqRunFromGroupAction extends NodeAction implements LookupLis
         if (lkpInfo != null) {
             return;
         }
-        lkpInfo = context.lookupResult(SeqRunI.class);
+        lkpInfo = context.lookupResult(AssembledSeqRunI.class);
         lkpInfo.addLookupListener(this);
         resultChanged(null);
     }
@@ -67,8 +67,8 @@ public class RemoveSeqRunFromGroupAction extends NodeAction implements LookupLis
     protected void performAction(Node[] activatedNodes) {
         for (Node node : activatedNodes) {
             Lookup nLookup = node.getLookup();
-            SeqRunI run = nLookup.lookup(SeqRunI.class);
-            VisualizationGroupI vGroup = nLookup.lookup(VisualizationGroupI.class);
+            AssembledSeqRunI run = nLookup.lookup(AssembledSeqRunI.class);
+            AssemblyGroupI vGroup = nLookup.lookup(AssemblyGroupI.class);
             if (run != null && vGroup != null && vGroup.getContent().contains(run)) {
                 vGroup.remove(run);
             }
@@ -77,8 +77,8 @@ public class RemoveSeqRunFromGroupAction extends NodeAction implements LookupLis
 
     @Override
     protected boolean enable(Node[] activatedNodes) {
-        Collection<? extends SeqRunI> toRemove = Utilities.actionsGlobalContext().lookupAll(SeqRunI.class);
-        VisualizationGroupI vGroup = Utilities.actionsGlobalContext().lookup(VisualizationGroupI.class);
+        Collection<? extends AssembledSeqRunI> toRemove = Utilities.actionsGlobalContext().lookupAll(AssembledSeqRunI.class);
+        AssemblyGroupI vGroup = Utilities.actionsGlobalContext().lookup(AssemblyGroupI.class);
         return vGroup != null && !toRemove.isEmpty();
     }
 
@@ -91,7 +91,7 @@ public class RemoveSeqRunFromGroupAction extends NodeAction implements LookupLis
     protected boolean asynchronous() {
         return false;
     }
-    
+
     @Override
     public HelpCtx getHelpCtx() {
         return HelpCtx.DEFAULT_HELP;

@@ -3,6 +3,7 @@ package de.cebitec.mgx.gui.keggviewer;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.groups.ConflictingJobsException;
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.groups.VGroupManagerI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.AttributeRank;
@@ -58,13 +59,13 @@ public class KeggViewerTest {
         while (iter.hasNext()) {
             SeqRunI sr = iter.next();
             if (sr.getName().equals("dataset1")) {
-                vg.addSeqRun(sr);
+                vg.add(sr);
             }
         }
 
         mgr.registerResolver(new ConflictResolver() {
             @Override
-            public void resolve(String attrType, List<VisualizationGroupI> data) {
+            public void resolve(String attrType, List<GroupI> data) {
                 data.clear();
             }
         });
@@ -89,7 +90,7 @@ public class KeggViewerTest {
         while (iter.hasNext()) {
             SeqRunI sr = iter.next();
             if (sr.getName().equals("dataset2")) {
-                vg.addSeqRun(sr);
+                vg.add(sr);
             }
         }
 

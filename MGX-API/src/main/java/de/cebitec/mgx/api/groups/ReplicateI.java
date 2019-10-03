@@ -5,13 +5,14 @@
  */
 package de.cebitec.mgx.api.groups;
 
+import de.cebitec.mgx.api.model.SeqRunI;
 import java.awt.datatransfer.DataFlavor;
 
 /**
  *
  * @author sjaenick
  */
-public interface ReplicateI extends VisualizationGroupI {
+public interface ReplicateI extends GroupI<SeqRunI> {
 
     public static final DataFlavor REPLICATE_DATA_FLAVOR = new DataFlavor(ReplicateI.class, "ReplicateI");
 

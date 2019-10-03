@@ -1,8 +1,8 @@
 package de.cebitec.mgx.gui.treeview;
 
 import de.cebitec.mgx.api.groups.FileType;
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.groups.ImageExporterI;
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
@@ -120,15 +120,15 @@ public class TreeView extends HierarchicalViewerI implements ImageExporterI.Prov
     private boolean showUnclassifieds = true;
 
     @Override
-    public void show(List<Pair<VisualizationGroupI, TreeI<Long>>> trees) {
+    public void show(List<Pair<GroupI, TreeI<Long>>> trees) {
         dispose();
 
         showUnclassifieds = getCustomizer().includeUnclassified();
         Set<AttributeI> blacklist = getCustomizer().getBlackList();
 
         // merge hierarchies into consensus tree
-        TreeI<Map<VisualizationGroupI, Long>> combinedTree = TreeFactory.combineTrees(trees);
-        NodeI<Map<VisualizationGroupI, Long>> root = combinedTree.getRoot();
+        TreeI<Map<GroupI, Long>> combinedTree = TreeFactory.combineTrees(trees);
+        NodeI<Map<GroupI, Long>> root = combinedTree.getRoot();
 
 //        // create an ordered list of groups
 //        int i = 0;
@@ -153,18 +153,18 @@ public class TreeView extends HierarchicalViewerI implements ImageExporterI.Prov
 
             if (showUnclassifieds) {
                 long numAssignedBelow = 0;
-                Map<VisualizationGroupI, Long> content = new HashMap<>();
+                Map<GroupI, Long> content = new HashMap<>();
                 // copy content of parent
-                for (Entry<VisualizationGroupI, Long> e : root.getContent().entrySet()) {
+                for (Entry<GroupI, Long> e : root.getContent().entrySet()) {
                     content.put(e.getKey(), e.getValue());
                 }
 
-                for (NodeI<Map<VisualizationGroupI, Long>> n : root.getChildren()) {
-                    Map<VisualizationGroupI, Long> childContent = n.getContent();
+                for (NodeI<Map<GroupI, Long>> n : root.getChildren()) {
+                    Map<GroupI, Long> childContent = n.getContent();
                     for (Long l : childContent.values()) {
                         numAssignedBelow += l;
                     }
-                    for (Entry<VisualizationGroupI, Long> e : childContent.entrySet()) {
+                    for (Entry<GroupI, Long> e : childContent.entrySet()) {
                         Long l = content.get(e.getKey());
                         content.put(e.getKey(), l - e.getValue());
                     }
@@ -178,7 +178,7 @@ public class TreeView extends HierarchicalViewerI implements ImageExporterI.Prov
                 }
             }
 
-            for (NodeI<Map<VisualizationGroupI, Long>> child : root.getChildren()) {
+            for (NodeI<Map<GroupI, Long>> child : root.getChildren()) {
                 addWithChildren(blacklist, rootNode, child);
             }
         }
@@ -201,7 +201,7 @@ public class TreeView extends HierarchicalViewerI implements ImageExporterI.Prov
         super.dispose();
     }
 
-    private void addWithChildren(Set<AttributeI> blacklist, prefuse.data.Node parent, NodeI<Map<VisualizationGroupI, Long>> node) {
+    private void addWithChildren(Set<AttributeI> blacklist, prefuse.data.Node parent, NodeI<Map<GroupI, Long>> node) {
 
         if (blacklist.contains(node.getAttribute())) {
             return;
@@ -215,25 +215,25 @@ public class TreeView extends HierarchicalViewerI implements ImageExporterI.Prov
         self.set(nodeTotalElements, numSeqsAssigned);
 
         if (node.hasChildren()) {
-            for (NodeI<Map<VisualizationGroupI, Long>> child : node.getChildren()) {
+            for (NodeI<Map<GroupI, Long>> child : node.getChildren()) {
                 addWithChildren(blacklist, self, child);
             }
         }
 
         if (showUnclassifieds && node.hasChildren()) {
             long numAssignedBelow = 0;
-            Map<VisualizationGroupI, Long> content = new HashMap<>();
+            Map<GroupI, Long> content = new HashMap<>();
             // copy content of parent
-            for (Entry<VisualizationGroupI, Long> e : node.getContent().entrySet()) {
+            for (Entry<GroupI, Long> e : node.getContent().entrySet()) {
                 content.put(e.getKey(), e.getValue());
             }
 
-            for (NodeI<Map<VisualizationGroupI, Long>> n : node.getChildren()) {
-                Map<VisualizationGroupI, Long> childContent = n.getContent();
+            for (NodeI<Map<GroupI, Long>> n : node.getChildren()) {
+                Map<GroupI, Long> childContent = n.getContent();
                 for (Long l : childContent.values()) {
                     numAssignedBelow += l;
                 }
-                for (Entry<VisualizationGroupI, Long> e : childContent.entrySet()) {
+                for (Entry<GroupI, Long> e : childContent.entrySet()) {
                     Long l = content.get(e.getKey());
                     content.put(e.getKey(), l - e.getValue());
                 }
@@ -415,7 +415,7 @@ public class TreeView extends HierarchicalViewerI implements ImageExporterI.Prov
         });
     }
 
-    private static long calculateNodeCount(Map<VisualizationGroupI, Long> content) {
+    private static long calculateNodeCount(Map<GroupI, Long> content) {
         long total = 0;
         for (Long l : content.values()) {
             total += l;
@@ -423,10 +423,10 @@ public class TreeView extends HierarchicalViewerI implements ImageExporterI.Prov
         return total;
     }
 
-    private static Map<String, long[]> calculateRankCounts(TreeI<Map<VisualizationGroupI, Long>> tree, VisualizationGroupI[] groupOrder) {
+    private static Map<String, long[]> calculateRankCounts(TreeI<Map<GroupI, Long>> tree, GroupI[] groupOrder) {
         Map<String, long[]> ret = new HashMap<>();
 
-        for (NodeI<Map<VisualizationGroupI, Long>> node : tree.getNodes()) {
+        for (NodeI<Map<GroupI, Long>> node : tree.getNodes()) {
             String rankName = node.getAttribute().getAttributeType().getName();
             if (!ret.containsKey(rankName)) {
                 long[] current = new long[groupOrder.length];
@@ -436,7 +436,7 @@ public class TreeView extends HierarchicalViewerI implements ImageExporterI.Prov
             long[] current = ret.get(rankName);
 
             int i = 0;
-            for (VisualizationGroupI vg : groupOrder) {
+            for (GroupI vg : groupOrder) {
                 //for (Entry<VisualizationGroup, Long> e : node.getContent().entrySet()) {
                 if (node.getContent().containsKey(vg)) {
                     current[i] += node.getContent().get(vg);

@@ -32,6 +32,9 @@ public abstract class AssembledSeqRunI extends Identifiable<AssembledSeqRunI> {
     public abstract String getName();
 
     public abstract SeqRunI getSeqRun();
+    
+    @Override
+    public abstract String toString();
 
     @Override
     public int hashCode() {

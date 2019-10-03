@@ -6,6 +6,7 @@
 package de.cebitec.mgx.gui.nodes;
 
 import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import java.awt.EventQueue;
@@ -30,9 +31,9 @@ import org.openide.util.lookup.Lookups;
 public class SeqRunFilterNode extends FilterNode implements NodeListener {
 
     private final SeqRunNode n;
-    private final VisualizationGroupI vGroup;
+    private final GroupI<SeqRunI> vGroup;
 
-    public SeqRunFilterNode(SeqRunNode node, VisualizationGroupI vGroup) {
+    public SeqRunFilterNode(SeqRunNode node, GroupI<SeqRunI> vGroup) {
         super(node, Children.LEAF, Lookups.fixed(node, node.getContent(), vGroup));
         disableDelegation(DELEGATE_SET_DISPLAY_NAME + DELEGATE_GET_ACTIONS);
         n = node;
@@ -43,7 +44,7 @@ public class SeqRunFilterNode extends FilterNode implements NodeListener {
 
     @Override
     public void destroy() throws IOException {
-        vGroup.removeSeqRun(n.getContent());
+        vGroup.remove(n.getContent());
         fireNodeDestroyed();
     }
 

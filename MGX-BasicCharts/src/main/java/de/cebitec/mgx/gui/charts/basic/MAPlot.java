@@ -1,7 +1,7 @@
 package de.cebitec.mgx.gui.charts.basic;
 
 import de.cebitec.mgx.api.groups.ConflictingJobsException;
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.AttributeI;
@@ -9,6 +9,7 @@ import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
 import de.cebitec.mgx.api.groups.ImageExporterI;
 import de.cebitec.mgx.api.groups.SequenceExporterI;
+import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.vizfilter.ToFractionFilter;
 import de.cebitec.mgx.gui.charts.basic.util.SVGChartPanel;
 import de.cebitec.mgx.gui.seqexporter.SeqExporter;
@@ -18,8 +19,10 @@ import de.cebitec.mgx.gui.visgroups.VGroupManager;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.font.TextAttribute;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
+import java.text.AttributedString;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,6 +38,7 @@ import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.AxisState;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.NumberTick;
+import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.labels.XYToolTipGenerator;
 import org.jfree.chart.plot.CombinedDomainXYPlot;
 import org.jfree.chart.plot.PlotOrientation;
@@ -46,8 +50,6 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.TextAnchor;
-//import org.jfree.ui.RectangleEdge;
-//import org.jfree.ui.TextAnchor;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -60,7 +62,7 @@ public class MAPlot extends NumericalViewerI<Long> implements ImageExporterI.Pro
     private SVGChartPanel cPanel = null;
     private JFreeChart chart = null;
     private final Map<XYDataItem, String> toolTips = new HashMap<>();
-    private List<Pair<VisualizationGroupI, DistributionI<Long>>> firstTwo;
+    private List<Pair<GroupI, DistributionI<Long>>> firstTwo;
 
     @Override
     public JComponent getComponent() {
@@ -78,12 +80,7 @@ public class MAPlot extends NumericalViewerI<Long> implements ImageExporterI.Pro
     }
 
     @Override
-    public void show(List<Pair<VisualizationGroupI, DistributionI<Long>>> dists) {
-
-        if (dists.size() != 2) {
-            // should not happen, see canHandle() implementation
-            assert false;
-        }
+    public void show(List<Pair<GroupI, DistributionI<Long>>> dists) {
 
         firstTwo = dists.subList(0, 2);
         DistributionI<Long> firstNonNormalized = firstTwo.get(0).getSecond();
@@ -91,7 +88,7 @@ public class MAPlot extends NumericalViewerI<Long> implements ImageExporterI.Pro
 
         // normalize to fractions
         ToFractionFilter tof = new ToFractionFilter();
-        List<Pair<VisualizationGroupI, DistributionI<Double>>> cur = tof.filter(firstTwo);
+        List<Pair<GroupI, DistributionI<Double>>> cur = tof.filter(firstTwo);
         DistributionI<Double> first = cur.get(0).getSecond();
         DistributionI<Double> second = cur.get(1).getSecond();
 
@@ -107,7 +104,7 @@ public class MAPlot extends NumericalViewerI<Long> implements ImageExporterI.Pro
         attrs.addAll(second.keySet());
 
         // a small offset is added to all values to avoid log(0)
-        double offset = 0.0001;
+        double offset = 0.00001;
         double logOffset = log2(offset);
 
         for (AttributeI a : attrs) {
@@ -158,8 +155,8 @@ public class MAPlot extends NumericalViewerI<Long> implements ImageExporterI.Pro
         posInf.addSeries(pos);
         negInf.addSeries(neg);
 
-        String xAxisLabel = "log2(" + cur.get(0).getFirst().getDisplayName() + ") + "
-                + "log2(" + cur.get(1).getFirst().getDisplayName() + ") / 2";
+        String xAxisLabel = "(log2(" + cur.get(0).getFirst().getDisplayName() + ") + "
+                + "log2(" + cur.get(1).getFirst().getDisplayName() + ")) / 2";
         String yAxisLabel = "log2(" + cur.get(0).getFirst().getDisplayName() + "/"
                 + cur.get(1).getFirst().getDisplayName() + ")";
 
@@ -203,12 +200,12 @@ public class MAPlot extends NumericalViewerI<Long> implements ImageExporterI.Pro
         xAxis.setInverted(false);
         xAxis.setAutoRange(true);
         xAxis.setTickLabelsVisible(false);
-        xAxis.setLabelFont(new Font(xAxis.getLabelFont().getName(), Font.BOLD, 22));
+        xAxis.setLabelFont(new Font(xAxis.getLabelFont().getName(), Font.PLAIN, 18));
 
         NumberAxis yAxis = new NumberAxis(yAxisLabel);
-        yAxis.setLabelFont(new Font(yAxis.getLabelFont().getName(), Font.BOLD, 22));
+        yAxis.setLabelFont(new Font(yAxis.getLabelFont().getName(), Font.PLAIN, 18));
 
-        yAxis.setTickLabelFont(new Font(yAxis.getTickLabelFont().getName(), Font.BOLD, 20));
+        yAxis.setTickLabelFont(new Font(yAxis.getTickLabelFont().getName(), Font.PLAIN, 18));
 
         XYPlot midplot = new XYPlot(normal, xAxis, yAxis, r);
         midplot.setBackgroundPaint(Color.WHITE);
@@ -223,7 +220,7 @@ public class MAPlot extends NumericalViewerI<Long> implements ImageExporterI.Pro
                 return myTicks;
             }
         };
-        rangeAxis2.setTickLabelFont(new Font(rangeAxis2.getTickLabelFont().getName(), Font.BOLD, 20));
+        rangeAxis2.setTickLabelFont(new Font(rangeAxis2.getTickLabelFont().getName(), Font.PLAIN, 18));
         rangeAxis2.setAutoRangeIncludesZero(false);
         final XYPlot subplot2 = new XYPlot(negInf, xAxis, rangeAxis2, r);
         subplot2.setRangeAxisLocation(AxisLocation.BOTTOM_OR_LEFT);
@@ -238,7 +235,7 @@ public class MAPlot extends NumericalViewerI<Long> implements ImageExporterI.Pro
             }
 
         };
-        rangeAxis3.setTickLabelFont(new Font(rangeAxis3.getTickLabelFont().getName(), Font.BOLD, 20));
+        rangeAxis3.setTickLabelFont(new Font(rangeAxis3.getTickLabelFont().getName(), Font.PLAIN, 18));
         rangeAxis3.setAutoRangeIncludesZero(false);
         final XYPlot subplot3 = new XYPlot(posInf, xAxis, rangeAxis3, r);
         subplot2.setRangeAxisLocation(AxisLocation.BOTTOM_OR_LEFT);
@@ -252,6 +249,21 @@ public class MAPlot extends NumericalViewerI<Long> implements ImageExporterI.Pro
         plot.setOrientation(PlotOrientation.VERTICAL);
         plot.setBackgroundPaint(Color.WHITE);
 
+        ValueAxis domainAxis = plot.getDomainAxis();
+        AttributedString domainAxisString = new AttributedString(xAxisLabel);
+        int pos1 = xAxisLabel.indexOf("log2");
+        domainAxisString.addAttribute(TextAttribute.SUPERSCRIPT, TextAttribute.SUPERSCRIPT_SUB, pos1 + 3, pos1 + 4);
+        int pos2 = xAxisLabel.lastIndexOf("log2");
+        domainAxisString.addAttribute(TextAttribute.SUPERSCRIPT, TextAttribute.SUPERSCRIPT_SUB, pos2 + 3, pos2 + 4);
+        domainAxisString.addAttribute(TextAttribute.SIZE, 18);
+        domainAxis.setAttributedLabel(domainAxisString);
+
+        AttributedString rangeAxisString = new AttributedString(yAxisLabel);
+        int pos3 = yAxisLabel.indexOf("log2");
+        rangeAxisString.addAttribute(TextAttribute.SUPERSCRIPT, TextAttribute.SUPERSCRIPT_SUB, pos3 + 3, pos3 + 4);
+        rangeAxisString.addAttribute(TextAttribute.SIZE, 18);
+        yAxis.setAttributedLabel(rangeAxisString);
+
         return new JFreeChart(plot);
 
     }
@@ -260,7 +272,7 @@ public class MAPlot extends NumericalViewerI<Long> implements ImageExporterI.Pro
     public boolean canHandle(AttributeTypeI valueType) {
         try {
             return valueType.getValueType() == AttributeTypeI.VALUE_DISCRETE
-                    && VGroupManager.getInstance().getActiveVisualizationGroups().size() == 2
+                    && VGroupManager.getInstance().getActiveGroups().size() == 2
                     && VGroupManager.getInstance().getDistributions().size() == 2;
         } catch (ConflictingJobsException ex) {
             return false;
@@ -281,10 +293,12 @@ public class MAPlot extends NumericalViewerI<Long> implements ImageExporterI.Pro
     @Override
     public SequenceExporterI[] getSequenceExporters() {
         List<SequenceExporterI> ret = new ArrayList<>(firstTwo.size());
-        for (Pair<VisualizationGroupI, DistributionI<Long>> p : firstTwo) {
+        for (Pair<GroupI, DistributionI<Long>> p : firstTwo) {
             if (p.getSecond().getTotalClassifiedElements() > 0) {
-                SequenceExporterI exp = new SeqExporter<>(p.getFirst(), p.getSecond());
-                ret.add(exp);
+                if (p.getFirst().getContentClass().equals(SeqRunI.class)) {
+                    SequenceExporterI exp = new SeqExporter<>((GroupI<SeqRunI>) p.getFirst(), p.getSecond());
+                    ret.add(exp);
+                }
             }
         }
         return ret.toArray(new SequenceExporterI[]{});

@@ -5,6 +5,7 @@
  */
 package de.cebitec.mgx.gui.vizfilter;
 
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
@@ -46,11 +47,11 @@ public class ExcludeFilterTest {
         ExcludeFilter<Long> ef = new ExcludeFilter<>(blacklist);
         assertNotNull(ef);
 
-        List<Pair<VisualizationGroupI, DistributionI<Long>>> xx = new ArrayList<>();
+        List<Pair<GroupI, DistributionI<Long>>> xx = new ArrayList<>();
         VisualizationGroupI vg = null;
         xx.add(new Pair<>(vg, dist));
 
-        List<Pair<VisualizationGroupI, DistributionI<Double>>> yy = new LongToDouble().filter(xx);
+        List<Pair<GroupI, DistributionI<Double>>> yy = new LongToDouble().filter(xx);
         
         ExcludeFilter<Double> ef2 = new ExcludeFilter<>(blacklist);
         DistributionI<Double> filtered = ef2.filterDist(yy.get(0).getSecond());

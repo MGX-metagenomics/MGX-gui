@@ -1,11 +1,10 @@
 package de.cebitec.mgx.gui.attributevisualization.conflictwizard;
 
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.misc.AttributeRank;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.misc.Triple;
 import de.cebitec.mgx.api.model.JobI;
-import de.cebitec.mgx.api.model.SeqRunI;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Collection;
@@ -21,13 +20,13 @@ import org.openide.util.HelpCtx;
 
 public class ConflictResolverWizardPanel1 implements WizardDescriptor.Panel<WizardDescriptor>, PropertyChangeListener {
 
-    private final VisualizationGroupI vg;
-    private final SeqRunI run;
+    private final GroupI vg;
+    private final Object run;
     private final AttributeRank rank;
     private final List<JobI> jobs;
     private final EventListenerList listeners = new EventListenerList();
 
-    public ConflictResolverWizardPanel1(VisualizationGroupI vg, AttributeRank rank, SeqRunI run, Collection<JobI> j) {
+    public ConflictResolverWizardPanel1(GroupI vg, AttributeRank rank, Object run, Collection<JobI> j) {
         this.vg = vg;
         this.run = run;
         this.jobs = new LinkedList<>();
@@ -49,8 +48,7 @@ public class ConflictResolverWizardPanel1 implements WizardDescriptor.Panel<Wiza
     public ConflictResolverVisualPanel1 getComponent() {
         if (component == null) {
             component = new ConflictResolverVisualPanel1();
-            component.setVisualizationGroup(vg);
-            component.setSeqRun(run);
+            component.setData(vg, run);
             component.setJobs(jobs);
             component.addPropertyChangeListener(this);
         }
@@ -77,7 +75,7 @@ public class ConflictResolverWizardPanel1 implements WizardDescriptor.Panel<Wiza
 
     }
 
-    public Pair<VisualizationGroupI, Triple<AttributeRank, SeqRunI, JobI>> getSelection() {
+    public Pair<GroupI, Triple<AttributeRank, Object, JobI>> getSelection() {
         return new Pair<>(vg, new Triple<>(rank, run, getComponent().getSelectedJob()));
     }
 

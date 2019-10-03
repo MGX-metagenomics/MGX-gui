@@ -5,7 +5,7 @@
  */
 package de.cebitec.mgx.gui.charts.basic.j2d;
 
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
@@ -31,13 +31,13 @@ import org.jfree.chart.ChartColor;
 public class PlotPanel extends JPanel {
 
     private final Normalization norm;
-    private final Map<VisualizationGroupI, Long> maxAssignedByGroup;
+    private final Map<GroupI, Long> maxAssignedByGroup;
     //
     private final List<StackedBar> bars = new ArrayList<>();
     private final Map<AttributeI, Color> colorMap = new HashMap<>();
     private final int vSpacePx = 10;
 
-    public PlotPanel(Normalization norm, Map<VisualizationGroupI, Long> maxAssignedByGroup) {
+    public PlotPanel(Normalization norm, Map<GroupI, Long> maxAssignedByGroup) {
         super();
         this.norm = norm;
         this.maxAssignedByGroup = maxAssignedByGroup;
@@ -95,7 +95,7 @@ public class PlotPanel extends JPanel {
 
     private long maxNumElements = 0;
 
-    public void createBar(VisualizationGroupI vgrp, AttributeTypeI aType, List<AttributeI> sortOrder, DistributionI<Long> dist) {
+    public void createBar(GroupI vgrp, AttributeTypeI aType, List<AttributeI> sortOrder, DistributionI<Long> dist) {
         if (dist.getTotalClassifiedElements() > maxNumElements) {
             maxNumElements = dist.getTotalClassifiedElements();
         }
@@ -108,7 +108,7 @@ public class PlotPanel extends JPanel {
         return maxNumElements;
     }
     
-    long getMaxNumAssigned(VisualizationGroupI vGrp) {
+    long getMaxNumAssigned(GroupI vGrp) {
         return maxAssignedByGroup.get(vGrp);
     }
 

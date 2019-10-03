@@ -55,7 +55,7 @@ public class SeqRunList extends TreeTableView implements PropertyChangeListener 
                             int elems = mto.getCount();
                             for (int i = 0; i < elems; i++) {
                                 SeqRunI run = (SeqRunI) mto.getTransferData(i, SeqRunI.DATA_FLAVOR);
-                                if (vGroup.getSeqRuns().contains(run)) {
+                                if (vGroup.getContent().contains(run)) {
                                     dtde.rejectDrag();
                                     return;
                                 }
@@ -71,7 +71,7 @@ public class SeqRunList extends TreeTableView implements PropertyChangeListener 
 //                if (dtde.isDataFlavorSupported(new DataFlavor(Node.class, "org.openide.nodes.Node"))) {
                     try {
                         SeqRunI run = (SeqRunI) dtde.getTransferable().getTransferData(SeqRunI.DATA_FLAVOR);
-                        if (run != null && !vGroup.getSeqRuns().contains(run)) {
+                        if (run != null && !vGroup.getContent().contains(run)) {
                             dtde.acceptDrag(DnDConstants.ACTION_COPY);
                             return;
                         }
@@ -92,7 +92,7 @@ public class SeqRunList extends TreeTableView implements PropertyChangeListener 
                             int elems = mto.getCount();
                             for (int i = 0; i < elems; i++) {
                                 SeqRunI run = (SeqRunI) mto.getTransferData(i, SeqRunI.DATA_FLAVOR);
-                                if (vGroup.getSeqRuns().contains(run)) {
+                                if (vGroup.getContent().contains(run)) {
                                     dtde.rejectDrop();
                                     return;
                                 }
@@ -113,7 +113,7 @@ public class SeqRunList extends TreeTableView implements PropertyChangeListener 
                 if (dtde.isDataFlavorSupported(SeqRunI.DATA_FLAVOR)) {
                     try {
                         SeqRunI run = (SeqRunI) dtde.getTransferable().getTransferData(SeqRunI.DATA_FLAVOR);
-                        if (run != null && !vGroup.getSeqRuns().contains(run)) {
+                        if (run != null && !vGroup.getContent().contains(run)) {
                             //SeqRunNode srn = new SeqRunNode(run.getMaster(), run, Children.LEAF);
                             //vgnf.addNode(srn);
                             vgnf.addSeqRun(run);

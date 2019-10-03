@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.nodefactory;
 
 import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.model.Identifiable;
 import de.cebitec.mgx.api.model.MGXDataModelBaseI;
 import de.cebitec.mgx.api.model.ModelBaseI;
 import de.cebitec.mgx.gui.nodes.MGXNodeBase;
@@ -18,7 +19,7 @@ import org.openide.nodes.Node;
  * @param <U> type of object represented by children
  *
  */
-public abstract class MGX2NodeFactoryBase<T extends MGXDataModelBaseI<T>, U extends MGXDataModelBaseI<U>> extends ChildFactory<U> implements PropertyChangeListener {
+public abstract class MGX2NodeFactoryBase<T extends MGXDataModelBaseI<T>, U extends Identifiable<U>> extends ChildFactory<U> implements PropertyChangeListener {
 
     private final T myObj;
 

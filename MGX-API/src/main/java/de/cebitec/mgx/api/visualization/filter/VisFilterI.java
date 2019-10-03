@@ -1,6 +1,6 @@
 package de.cebitec.mgx.api.visualization.filter;
 
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.misc.Pair;
 import java.util.List;
 
@@ -10,6 +10,6 @@ import java.util.List;
  */
 public interface VisFilterI<T, U> {
     
-    public List<Pair<VisualizationGroupI, U>> filter(List<Pair<VisualizationGroupI, T>> in);
+    public List<Pair<GroupI, U>> filter(List<Pair<GroupI, T>> in);
     
 }

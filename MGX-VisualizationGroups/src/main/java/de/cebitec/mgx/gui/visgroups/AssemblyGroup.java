@@ -1,12 +1,12 @@
 package de.cebitec.mgx.gui.visgroups;
 
 import de.cebitec.mgx.gui.visgroups.workers.HierarchyFetcher;
-import de.cebitec.mgx.gui.visgroups.workers.DistributionFetcher;
 import de.cebitec.mgx.gui.visgroups.workers.AssembledRunAttributeTypeFetcher;
 import de.cebitec.mgx.api.groups.AssemblyGroupI;
 import de.cebitec.mgx.api.groups.ConflictingJobsException;
+import de.cebitec.mgx.api.groups.ConflictingJobsForAssembledSeqRunException;
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.groups.VGroupManagerI;
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.AttributeRank;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
@@ -15,15 +15,13 @@ import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.ModelBaseI;
-import static de.cebitec.mgx.api.model.ModelBaseI.CHILD_CHANGE;
-import static de.cebitec.mgx.api.model.ModelBaseI.OBJECT_DELETED;
-import static de.cebitec.mgx.api.model.ModelBaseI.OBJECT_MODIFIED;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.assembly.AssembledSeqRunI;
 import de.cebitec.mgx.api.model.tree.TreeI;
 import de.cebitec.mgx.gui.datafactories.DistributionFactory;
 import de.cebitec.mgx.gui.datafactories.TreeFactory;
 import de.cebitec.mgx.gui.visgroups.workers.AssembledRunMultiAttributeTypeFetcher;
+import de.cebitec.mgx.gui.visgroups.workers.AssemblyDistributionFetcher;
 import de.cebitec.mgx.pevents.ParallelPropertyChangeSupport;
 import java.awt.Color;
 import java.awt.datatransfer.DataFlavor;
@@ -66,7 +64,7 @@ public class AssemblyGroup implements AssemblyGroupI {
     private final Map<AttributeRank, Map<AssembledSeqRunI, JobI>> uniqueJobs = new ConcurrentHashMap<>();
     private final Map<AttributeRank, Map<AssembledSeqRunI, Set<JobI>>> needsResolval = new ConcurrentHashMap<>();
     private final ConcurrentMap<AssembledSeqRunI, Map<JobI, Set<AttributeTypeI>>> attributeTypes;
-    private final Map<SeqRunI, DistributionI<Long>> currentDistributions;
+    private final Map<AssembledSeqRunI, DistributionI<Long>> currentDistributions;
     //
     private final Map<String, DistributionI<Long>> distCache = new ConcurrentHashMap<>();
     private final Map<String, TreeI<Long>> hierarchyCache = new ConcurrentHashMap<>();
@@ -113,6 +111,11 @@ public class AssemblyGroup implements AssemblyGroupI {
         pcs.close();
     }
 
+    @Override
+    public Class<AssembledSeqRunI> getContentClass() {
+        return AssembledSeqRunI.class;
+    }
+    
     @Override
     public final int getId() {
         return id;
@@ -173,14 +176,14 @@ public class AssemblyGroup implements AssemblyGroupI {
     @Override
     public final long getNumSequences() {
         long ret = 0;
-        for (AssembledSeqRunI sr : getSeqRuns()) {
+        for (AssembledSeqRunI sr : getContent()) {
             ret += sr.getSeqRun().getNumSequences();
         }
         return ret;
     }
 
     @Override
-    public final Set<AssembledSeqRunI> getSeqRuns() {
+    public final Set<AssembledSeqRunI> getContent() {
         return Collections.unmodifiableSet(attributeTypes.keySet());
     }
 
@@ -232,7 +235,7 @@ public class AssemblyGroup implements AssemblyGroupI {
             hierarchyCache.remove(selectedAttributeType);
         }
 
-        for (AssembledSeqRunI run : getSeqRuns()) {
+        for (AssembledSeqRunI run : getContent()) {
 
             Set<JobI> validJobs = getJobsProvidingAttributeType(run, selectedAttributeType);
             //
@@ -256,41 +259,41 @@ public class AssemblyGroup implements AssemblyGroupI {
 
         if (!needsResolval.get(rank).isEmpty()) {
             selectedAttributeType = null;
-            Map<SeqRunI, Set<JobI>> ret = new HashMap<>();
+            Map<AssembledSeqRunI, Set<JobI>> ret = new HashMap<>();
             for (Map.Entry<AssembledSeqRunI, Set<JobI>> me : needsResolval.get(rank).entrySet()) {
-                ret.put(me.getKey().getSeqRun(), me.getValue());
+                ret.put(me.getKey(), me.getValue());
             }
-            throw new ConflictingJobsException(this, ret);
+            throw new ConflictingJobsForAssembledSeqRunException(this, ret);
         }
     }
 
     @Override
-    public List<Triple<AttributeRank, SeqRunI, Set<JobI>>> getConflicts() {
-        List<Triple<AttributeRank, SeqRunI, Set<JobI>>> ret = new ArrayList<>();
-        for (Map.Entry<SeqRunI, Set<JobI>> e : getConflicts(AttributeRank.PRIMARY).entrySet()) {
+    public List<Triple<AttributeRank, AssembledSeqRunI, Set<JobI>>> getConflicts() {
+        List<Triple<AttributeRank, AssembledSeqRunI, Set<JobI>>> ret = new ArrayList<>();
+        for (Map.Entry<AssembledSeqRunI, Set<JobI>> e : getConflicts(AttributeRank.PRIMARY).entrySet()) {
             ret.add(new Triple<>(AttributeRank.PRIMARY, e.getKey(), e.getValue()));
         }
-        for (Map.Entry<SeqRunI, Set<JobI>> e : getConflicts(AttributeRank.SECONDARY).entrySet()) {
+        for (Map.Entry<AssembledSeqRunI, Set<JobI>> e : getConflicts(AttributeRank.SECONDARY).entrySet()) {
             ret.add(new Triple<>(AttributeRank.SECONDARY, e.getKey(), e.getValue()));
         }
         return ret;
     }
 
     @Override
-    public Map<SeqRunI, Set<JobI>> getConflicts(AttributeRank rank) {
-        Map<SeqRunI, Set<JobI>> ret = new HashMap<>();
+    public Map<AssembledSeqRunI, Set<JobI>> getConflicts(AttributeRank rank) {
+        Map<AssembledSeqRunI, Set<JobI>> ret = new HashMap<>();
         for (Map.Entry<AssembledSeqRunI, Set<JobI>> me : needsResolval.get(rank).entrySet()) {
-            ret.put(me.getKey().getSeqRun(), me.getValue());
+            ret.put(me.getKey(), me.getValue());
         }
         return ret;
     }
 
     @Override
-    public final void resolveConflict(AttributeRank rank, String attributeType, SeqRunI sr, JobI j) {
+    public final void resolveConflict(AttributeRank rank, String attributeType, AssembledSeqRunI sr, JobI j) {
 
         synchronized (needsResolval) {
-            for (AssembledSeqRunI arun : getSeqRuns()) {
-                if (arun.getSeqRun().equals(sr)) {
+            for (AssembledSeqRunI arun : getContent()) {
+                if (arun.equals(sr)) {
                     Set<JobI> options = needsResolval.get(rank).remove(arun);
                     assert options.contains(j);
                     uniqueJobs.get(rank).put(arun, j);
@@ -304,7 +307,8 @@ public class AssemblyGroup implements AssemblyGroupI {
     }
 
     @Override
-    public final void addSeqRuns(final AssembledSeqRunI... runs) {
+    @SafeVarargs
+    public final void add(final AssembledSeqRunI... runs) {
         if (!isActive() || runs.length == 0) {
             return;
         }
@@ -377,7 +381,7 @@ public class AssemblyGroup implements AssemblyGroupI {
     }
 
     @Override
-    public final void addSeqRun(final AssembledSeqRunI sr) {
+    public final void add(final AssembledSeqRunI sr) {
         if (isDeleted() || sr == null || attributeTypes.containsKey(sr) || sr.isDeleted()) {
             return;
         }
@@ -438,13 +442,13 @@ public class AssemblyGroup implements AssemblyGroupI {
     }
 
     @Override
-    public final void removeSeqRun(final AssembledSeqRunI sr) {
-        if (!attributeTypes.containsKey(sr.getSeqRun())) {
+    public final void remove(final AssembledSeqRunI sr) {
+        if (!attributeTypes.containsKey(sr)) {
             return;
         }
         sr.removePropertyChangeListener(this);
-        Map<JobI, Set<AttributeTypeI>> remove = attributeTypes.remove(sr.getSeqRun());
-        currentDistributions.remove(sr.getSeqRun());
+        Map<JobI, Set<AttributeTypeI>> remove = attributeTypes.remove(sr);
+        currentDistributions.remove(sr);
 
         // remove cached data for modified attribute types
         for (Map.Entry<JobI, Set<AttributeTypeI>> me : remove.entrySet()) {
@@ -475,11 +479,11 @@ public class AssemblyGroup implements AssemblyGroupI {
         }
 
         if (!needsResolval.get(AttributeRank.PRIMARY).isEmpty()) {
-            Map<SeqRunI, Set<JobI>> ret = new HashMap<>();
+            Map<AssembledSeqRunI, Set<JobI>> ret = new HashMap<>();
             for (Map.Entry<AssembledSeqRunI, Set<JobI>> me : needsResolval.get(AttributeRank.PRIMARY).entrySet()) {
-                ret.put(me.getKey().getSeqRun(), me.getValue());
+                ret.put(me.getKey(), me.getValue());
             }
-            throw new ConflictingJobsException(this, ret);
+            throw new ConflictingJobsForAssembledSeqRunException(this, ret);
         }
 
         if (hierarchyCache.containsKey(copyOfSelectedAttributeType)) {
@@ -490,7 +494,7 @@ public class AssemblyGroup implements AssemblyGroupI {
         //
         List<Future<TreeI<Long>>> results = new ArrayList<>();
 
-        for (AssembledSeqRunI run : getSeqRuns()) {
+        for (AssembledSeqRunI run : getContent()) {
             //
             // select the job to use - either we can automatically determine
             // the correct job or we have to ask the user
@@ -541,22 +545,22 @@ public class AssemblyGroup implements AssemblyGroupI {
             return null;
         }
         if (!needsResolval.get(AttributeRank.PRIMARY).isEmpty()) {
-            Map<SeqRunI, Set<JobI>> ret = new HashMap<>();
+            Map<AssembledSeqRunI, Set<JobI>> ret = new HashMap<>();
             for (Map.Entry<AssembledSeqRunI, Set<JobI>> me : needsResolval.get(AttributeRank.PRIMARY).entrySet()) {
-                ret.put(me.getKey().getSeqRun(), me.getValue());
+                ret.put(me.getKey(), me.getValue());
             }
-            throw new ConflictingJobsException(this, ret);
+            throw new ConflictingJobsForAssembledSeqRunException(this, ret);
         }
 
         if (distCache.containsKey(copyOfSelectedAttributeType)) {
             return distCache.get(copyOfSelectedAttributeType);
         }
 
-        List<Future<Pair<SeqRunI, DistributionI<Long>>>> results = new ArrayList<>();
+        List<Future<Pair<AssembledSeqRunI, DistributionI<Long>>>> results = new ArrayList<>();
 
         // start distribution retrieval workers in background
         //
-        for (AssembledSeqRunI run : getSeqRuns()) {
+        for (AssembledSeqRunI run : getContent()) {
 
             JobI selectedJob = uniqueJobs.get(AttributeRank.PRIMARY).get(run);
             //
@@ -569,8 +573,8 @@ public class AssemblyGroup implements AssemblyGroupI {
             // start background worker to fetch distribution
             //
             if (selectedJob != null && currentAttributeType != null) {
-                DistributionFetcher distFetcher = new DistributionFetcher(run.getSeqRun(), currentAttributeType, selectedJob);
-                Future<Pair<SeqRunI, DistributionI<Long>>> f = vgmgr.submit(distFetcher);
+                AssemblyDistributionFetcher distFetcher = new AssemblyDistributionFetcher(run, currentAttributeType, selectedJob);
+                Future<Pair<AssembledSeqRunI, DistributionI<Long>>> f = vgmgr.submit(distFetcher);
                 results.add(f);
             }
         }
@@ -647,10 +651,10 @@ public class AssemblyGroup implements AssemblyGroupI {
     }
 
     @Override
-    public Map<SeqRunI, Set<AttributeI>> getSaveSet(List<String> requestedAttrs) {
+    public Map<AssembledSeqRunI, Set<AttributeI>> getSaveSet(List<String> requestedAttrs) {
         assert needsResolval.get(AttributeRank.PRIMARY).isEmpty();
-        Map<SeqRunI, Set<AttributeI>> filtered = new HashMap<>();
-        for (Entry<SeqRunI, DistributionI<Long>> e : currentDistributions.entrySet()) {
+        Map<AssembledSeqRunI, Set<AttributeI>> filtered = new HashMap<>();
+        for (Entry<AssembledSeqRunI, DistributionI<Long>> e : currentDistributions.entrySet()) {
 
             Set<AttributeI> relevant = new HashSet<>();
             for (AttributeI a : e.getValue().keySet()) {
@@ -675,19 +679,19 @@ public class AssemblyGroup implements AssemblyGroupI {
         switch (evt.getPropertyName()) {
             case OBJECT_DELETED:
                 if (evt.getSource() instanceof AssembledSeqRunI) {
-                    removeSeqRun((AssembledSeqRunI) evt.getSource());
+                    remove((AssembledSeqRunI) evt.getSource());
                 }
                 if (evt.getSource() instanceof JobI) {
                     JobI job = (JobI) evt.getSource();
                     SeqRunI[] runs = job.getSeqruns();
 
-                    Set<AssembledSeqRunI> myRuns = getSeqRuns();
+                    Set<AssembledSeqRunI> myRuns = getContent();
                     for (SeqRunI seqrun : runs) {
                         // refresh data for this run
                         for (AssembledSeqRunI arun : myRuns) {
                             if (arun.getSeqRun().equals(seqrun)) {
-                                removeSeqRun(arun);
-                                addSeqRun(arun);
+                                remove(arun);
+                                add(arun);
                             }
                         }
                     }
@@ -735,12 +739,12 @@ public class AssemblyGroup implements AssemblyGroupI {
 
     @Override
     public DataFlavor[] getTransferDataFlavors() {
-        return new DataFlavor[]{VisualizationGroupI.VISGROUP_DATA_FLAVOR};
+        return new DataFlavor[]{AssemblyGroupI.ASMGROUP_DATA_FLAVOR};
     }
 
     @Override
     public boolean isDataFlavorSupported(DataFlavor flavor) {
-        return flavor != null && flavor.equals(VisualizationGroupI.VISGROUP_DATA_FLAVOR);
+        return flavor != null && flavor.equals(AssemblyGroupI.ASMGROUP_DATA_FLAVOR);
     }
 
     @Override
@@ -785,7 +789,7 @@ public class AssemblyGroup implements AssemblyGroupI {
     }
 
     @Override
-    public int compareTo(AssemblyGroupI o) {
+    public int compareTo(GroupI o) {
         return Integer.compare(getId(), o.getId());
     }
 }
