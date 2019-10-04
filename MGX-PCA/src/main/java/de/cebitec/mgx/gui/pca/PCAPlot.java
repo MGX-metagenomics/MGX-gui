@@ -22,6 +22,7 @@ import de.cebitec.mgx.gui.seqexporter.SeqExporter;
 import de.cebitec.mgx.gui.vizfilter.LongToDouble;
 import de.cebitec.mgx.gui.vizfilter.ToFractionFilter;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,6 +37,7 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.labels.XYItemLabelGenerator;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
@@ -180,6 +182,13 @@ public class PCAPlot extends AbstractViewer<DistributionI<Long>> implements Cust
         XYPlot plot = (XYPlot) chart.getPlot();
         plot.setBackgroundPaint(Color.WHITE);
 
+        ValueAxis rangeAxis = plot.getRangeAxis();
+        rangeAxis.setLabelFont(new Font(rangeAxis.getLabelFont().getName(), Font.BOLD, 22));
+        rangeAxis.setTickLabelFont(new Font(rangeAxis.getTickLabelFont().getName(), Font.PLAIN, 16));
+        ValueAxis domainAxis = plot.getDomainAxis();
+        domainAxis.setLabelFont(new Font(domainAxis.getLabelFont().getName(), Font.BOLD, 22));
+        domainAxis.setTickLabelFont(new Font(domainAxis.getTickLabelFont().getName(), Font.PLAIN, 16));
+
         // renderer for data points
         final XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
         renderer.setBaseLinesVisible(false);
@@ -198,6 +207,7 @@ public class PCAPlot extends AbstractViewer<DistributionI<Long>> implements Cust
             renderer.setSeriesShape(i, new Ellipse2D.Double(0, 0, 7, 7));
             renderer.setSeriesItemLabelGenerator(i, labelGen);
             renderer.setSeriesItemLabelsVisible(i, Boolean.TRUE);
+            renderer.setSeriesItemLabelFont(i, new Font(plot.getNoDataMessageFont().getName(), Font.PLAIN, 14));
             VisualizationGroupI vGrp = VGroupManager.getInstance().getVisualizationGroup(p.getName());
             renderer.setSeriesPaint(i, vGrp != null ? vGrp.getColor() : Color.BLACK);
             i++;
@@ -208,13 +218,17 @@ public class PCAPlot extends AbstractViewer<DistributionI<Long>> implements Cust
         // add loadings
         plot.setDataset(1, loadingset);
         NumberAxis axis = new NumberAxis("loadings");
+        axis.setLabelFont(new Font(axis.getLabelFont().getName(), Font.BOLD, 22));
+        axis.setTickLabelFont(new Font(axis.getTickLabelFont().getName(), Font.PLAIN, 16));
         plot.setRangeAxis(1, axis);
         plot.setRangeAxisLocation(1, AxisLocation.BOTTOM_OR_RIGHT);
         ArrowRenderer arrowRenderer = new ArrowRenderer();
+        arrowRenderer.setSeriesItemLabelFont(0, new Font(plot.getNoDataMessageFont().getName(), Font.PLAIN, 14));
         arrowRenderer.setSeriesItemLabelGenerator(0, labelGen);
         arrowRenderer.setSeriesItemLabelsVisible(0, Boolean.TRUE);
         arrowRenderer.setSeriesItemLabelGenerator(1, labelGen);
         arrowRenderer.setSeriesItemLabelsVisible(1, Boolean.TRUE);
+        arrowRenderer.setSeriesItemLabelFont(1, new Font(plot.getNoDataMessageFont().getName(), Font.PLAIN, 14));
         plot.setRenderer(1, arrowRenderer);
         arrowRenderer.setDataSetIndex(1);
         plot.mapDatasetToRangeAxis(1, 1);

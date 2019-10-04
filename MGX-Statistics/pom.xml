@@ -48,10 +48,6 @@
             <groupId>org.netbeans.api</groupId>
         </dependency>
         <dependency>
-            <groupId>de.cebitec.mgx</groupId>
-            <artifactId>Prefuse-OSGi</artifactId>
-        </dependency>
-        <dependency>
             <artifactId>NewickParser</artifactId>
             <groupId>de.cebitec.mgx</groupId>
         </dependency>
@@ -68,10 +64,6 @@
             <groupId>de.cebitec.mgx.gui</groupId>
         </dependency>
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-math3</artifactId>
-        </dependency>
-        <dependency>
             <groupId>de.cebitec.mgx.gui</groupId>
             <artifactId>MGX-VizFilter</artifactId>
         </dependency>
@@ -86,8 +78,10 @@
         <dependency>
             <groupId>de.cebitec.mgx.gui</groupId>
             <artifactId>MGX-SeqExporter</artifactId>
-            <version>1.0</version>
-            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>de.cebitec.mgx</groupId>
+            <artifactId>JFreeSVG-OSGi</artifactId>
         </dependency>
     </dependencies>
 
@@ -100,7 +94,7 @@
                 <configuration>
                     <useOSGiDependencies>true</useOSGiDependencies>
                     <publicPackages>
-                        <publicPackage>de.cebitec.mgx.gui.statistics.viewer</publicPackage>
+                        <publicPackage>de.cebitec.mgx.gui.statistics.clustering</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>

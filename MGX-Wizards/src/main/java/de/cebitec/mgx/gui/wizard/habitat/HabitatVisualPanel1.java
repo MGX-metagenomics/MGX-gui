@@ -280,13 +280,13 @@ public final class HabitatVisualPanel1 extends JPanel implements DocumentListene
                 "http://tile.openstreetmap.org",//5/15/10.png",
                 "x", "y", "z") {
 
-                    @Override
-                    public String getTileUrl(int x, int y, int zoom) {
-                        zoom = max - zoom;
-                        String url = this.baseURL + "/" + zoom + "/" + x + "/" + y + ".png";
-                        return url;
-                    }
-                };
+            @Override
+            public String getTileUrl(int x, int y, int zoom) {
+                zoom = max - zoom;
+                String url = this.baseURL + "/" + zoom + "/" + x + "/" + y + ".png";
+                return url;
+            }
+        };
         TileFactory tf = new DefaultTileFactory(info);
         kit.setTileFactory(tf);
         kit.getMainMap().setZoom(15);
@@ -385,8 +385,10 @@ public final class HabitatVisualPanel1 extends JPanel implements DocumentListene
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 int index = ((JList) e.getSource()).getSelectedIndex();
-                jXMapKit1.setCenterPosition(foundLocations[index].getGeoLoc());
-                jXMapKit1.setZoom(8);
+                if (index >= 0 && index < foundLocations.length) {
+                    jXMapKit1.setCenterPosition(foundLocations[index].getGeoLoc());
+                    jXMapKit1.setZoom(8);
+                }
             }
         });
     }

@@ -7,8 +7,10 @@ package de.cebitec.mgx.gui.swingutils;
 
 import de.cebitec.mgx.api.groups.ImageExporterI;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JScrollPane;
 
 /**
  *
@@ -17,6 +19,7 @@ import javax.swing.JLabel;
 public class DelayedPlot extends javax.swing.JPanel {
 
     private ImageExporterI exporter = null;
+
     /**
      * Creates new form DelayedPlot
      */
@@ -26,16 +29,29 @@ public class DelayedPlot extends javax.swing.JPanel {
 
     public void setTarget(JComponent target, ImageExporterI exporter) {
         this.exporter = exporter;
+        Dimension mySize = getSize();
         removeAll();
         setLayout(new BorderLayout());
         if (target != null) {
-            add(target, BorderLayout.CENTER);
+            Dimension tSize = target.getSize();
+            if (tSize.getHeight() > mySize.getHeight() || tSize.getWidth() > mySize.getWidth()) {
+                JScrollPane pane = new JScrollPane();
+                pane.setViewportView(target);
+                if (tSize.getHeight() > mySize.getHeight())
+                    pane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+                if (tSize.getWidth() > mySize.getWidth())
+                    pane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+                add(pane, BorderLayout.CENTER);
+            } else {
+                add(target, BorderLayout.CENTER);
+            }
         } else {
             add(new JLabel("An error occurred."), BorderLayout.NORTH);
+            repaint();
         }
         revalidate();
     }
-    
+
     public ImageExporterI getImageExporter() {
         return exporter;
     }

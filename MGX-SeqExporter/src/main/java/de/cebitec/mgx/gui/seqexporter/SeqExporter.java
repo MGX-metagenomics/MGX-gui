@@ -10,8 +10,9 @@ import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
+import de.cebitec.mgx.seqstorage.FASTQWriter;
 import de.cebitec.mgx.seqstorage.FastaWriter;
-import de.cebitec.mgx.sequence.DNASequenceI;
+import de.cebitec.mgx.seqstorage.QualityEncoding;
 import de.cebitec.mgx.sequence.SeqWriterI;
 import java.beans.PropertyChangeEvent;
 import java.io.File;
@@ -46,16 +47,17 @@ public final class SeqExporter<T extends Number> implements SequenceExporterI {
         WizardDescriptor wiz = new WizardDescriptor(iter);
         wiz.setTitleFormat(new MessageFormat("{0}"));
         wiz.setTitle("Export sequences for " + vgroup.getDisplayName());
-        
+
         Object notify = DialogDisplayer.getDefault().notify(wiz);
-        
+
         if (notify == WizardDescriptor.CANCEL_OPTION) {
             return false;
         } else if (notify == WizardDescriptor.FINISH_OPTION) {
 
             final File target = iter.getSelectedFile();
             final Set<AttributeI> selectedAttributes = iter.getSelectedAttributes();
-            
+            final boolean hasQuality = iter.hasQuality();
+
             if (target != null && target.exists()) {
                 // ask if file should be overwritten, else return
                 String msg = new StringBuilder("A file named ")
@@ -75,7 +77,12 @@ public final class SeqExporter<T extends Number> implements SequenceExporterI {
             SwingWorker<SeqWriterI, Void> worker = new SwingWorker<SeqWriterI, Void>() {
                 @Override
                 protected SeqWriterI doInBackground() throws Exception {
-                    SeqWriterI<DNASequenceI> writer = new FastaWriter(target.getAbsolutePath());
+                    SeqWriterI writer;
+                    if (hasQuality) {
+                        writer = new FASTQWriter(target.getAbsolutePath(), QualityEncoding.Sanger);
+                    } else {
+                        writer = new FastaWriter(target.getAbsolutePath());
+                    }
 
                     // no attributes were selected for export
                     if (selectedAttributes.isEmpty()) {
@@ -173,7 +180,11 @@ public final class SeqExporter<T extends Number> implements SequenceExporterI {
             switch (pce.getPropertyName()) {
                 case TransferBaseI.NUM_ELEMENTS_TRANSFERRED:
                     numSeqs = (long) pce.getNewValue();
-                    setStatus(NumberFormat.getInstance(Locale.US).format(numSeqsTotal + numSeqs) + " sequences received");
+                    if (numSeqs == 0) {
+                        setStatus("Awaiting transfer..");
+                    } else {
+                        setStatus(NumberFormat.getInstance(Locale.US).format(numSeqsTotal + numSeqs) + " sequences received");
+                    }
                     break;
                 case TransferBaseI.TRANSFER_FAILED:
                     failed(pce.getNewValue().toString());

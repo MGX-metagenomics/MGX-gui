@@ -5,31 +5,24 @@ import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.gui.charts.basic.customizer.BarChartCustomizer;
 import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
+import de.cebitec.mgx.gui.charts.basic.util.ScrollableBarChart;
+import de.cebitec.mgx.gui.charts.basic.util.SlidingCategoryDataset;
 import de.cebitec.mgx.api.groups.ImageExporterI;
-import de.cebitec.mgx.api.groups.ReplicateGroupI;
 import de.cebitec.mgx.api.groups.SequenceExporterI;
-import de.cebitec.mgx.api.misc.Triple;
-import de.cebitec.mgx.api.model.AttributeTypeI;
-import de.cebitec.mgx.common.VGroupManager;
-import de.cebitec.mgx.common.visualization.CategoricalViewerI;
-import de.cebitec.mgx.common.visualization.CustomizableI;
-import de.cebitec.mgx.common.visualization.ViewerI;
+import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.gui.charts.basic.util.LogAxis;
 import de.cebitec.mgx.gui.charts.basic.util.SVGChartPanel;
-import de.cebitec.mgx.gui.charts.basic.util.SlidingStatisticalCategoryDataset;
 import de.cebitec.mgx.gui.seqexporter.SeqExporter;
-import java.awt.BorderLayout;
+import de.cebitec.mgx.gui.viewer.api.CategoricalViewerI;
+import de.cebitec.mgx.gui.viewer.api.CustomizableI;
+import de.cebitec.mgx.gui.viewer.api.ViewerI;
 import java.awt.Color;
-import java.awt.event.AdjustmentEvent;
-import java.awt.event.AdjustmentListener;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JScrollBar;
 import org.apache.commons.math3.util.FastMath;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
@@ -44,26 +37,24 @@ import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.CategoryItemRenderer;
-import org.jfree.chart.renderer.category.StatisticalBarRenderer;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
-import org.jfree.data.category.CategoryDataset;
+import org.jfree.data.category.DefaultCategoryDataset;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
- * @author pblumenk
+ * @author sjaenick
  */
 @ServiceProvider(service = ViewerI.class)
-public class StatisticalBarChart extends CategoricalViewerI<Long> implements AdjustmentListener, CustomizableI, ImageExporterI.Provider, SequenceExporterI.Provider {
+public class StackedBarChartViewer extends CategoricalViewerI<Long> implements ImageExporterI.Provider, SequenceExporterI.Provider, CustomizableI {
 
     private SVGChartPanel cPanel = null;
     private BarChartCustomizer customizer = null;
     private JFreeChart chart = null;
-    private CategoryDataset dataset;
-    private JScrollBar scrollBar = null;
-    List<Pair<VisualizationGroupI, DistributionI<Long>>> dists;
+    private DefaultCategoryDataset dataset;
+    private List<Pair<VisualizationGroupI, DistributionI<Double>>> data;
 
-    public StatisticalBarChart() {
+    public StackedBarChartViewer() {
         // disable the stupid glossy effect
         ChartFactory.setChartTheme(StandardChartTheme.createLegacyTheme());
         BarRenderer.setDefaultShadowsVisible(false);
@@ -72,21 +63,13 @@ public class StatisticalBarChart extends CategoricalViewerI<Long> implements Adj
 
     @Override
     public String getName() {
-        return "Statistical Bar Chart";
+        return "Stacked Bar Chart";
     }
 
     @Override
     public JComponent getComponent() {
-        if (dataset instanceof SlidingStatisticalCategoryDataset) {
-            SlidingStatisticalCategoryDataset data = (SlidingStatisticalCategoryDataset) dataset;
-            JPanel frame = new JPanel(new BorderLayout());
-            frame.add(cPanel);
-            JPanel dashboard = new JPanel(new BorderLayout());
-            scrollBar = new JScrollBar(JScrollBar.HORIZONTAL, 0, 1, 0, data.getTotalColumnCount() - data.getColumnCount() + 1);
-            scrollBar.addAdjustmentListener(this);
-            dashboard.add(scrollBar);
-            frame.add(dashboard, BorderLayout.SOUTH);
-            return frame;
+        if (dataset instanceof SlidingCategoryDataset) {
+            return new ScrollableBarChart(cPanel, (SlidingCategoryDataset) dataset);
         } else {
             return cPanel;
         }
@@ -95,36 +78,38 @@ public class StatisticalBarChart extends CategoricalViewerI<Long> implements Adj
     @Override
     public void show(List<Pair<VisualizationGroupI, DistributionI<Long>>> in) {
 
-        dists = in;
+        data = getCustomizer().filter(in);
 
-        Collection<ReplicateGroupI> repGroup = VGroupManager.getInstance().getReplicateGroups();
-        List<Triple<ReplicateGroupI, DistributionI<Double>, DistributionI<Double>>> replicateGroups = new ArrayList<>();
-        for (ReplicateGroupI rg : repGroup) {
-            replicateGroups.add(new Triple<>(rg, rg.getMeanDistribution(), rg.getStdDevDistribution()));
+        dataset = new DefaultCategoryDataset();
+
+        for (Pair<VisualizationGroupI, DistributionI<Double>> groupDistribution : data) {
+            final String displayName = groupDistribution.getFirst().getDisplayName();
+            final DistributionI<Double> d = groupDistribution.getSecond();
+
+            for (Map.Entry<AttributeI, Double> entry : d.entrySet()) {
+                dataset.addValue(entry.getValue(), entry.getKey().getValue(), displayName);
+            }
         }
-        List<Triple<ReplicateGroupI, DistributionI<Double>, DistributionI<Double>>> filteredRg = getCustomizer().filterRep(replicateGroups);
-
-        dataset = JFreeChartUtil.createStatisticalCategoryDataset(filteredRg);
 
         String xAxisLabel = "";
         String yAxisLabel = getCustomizer().useFractions() ? "Fraction" : "Count";
 
-        CategoryPlot plot = new CategoryPlot(dataset, new CategoryAxis(xAxisLabel), new NumberAxis(yAxisLabel), new StatisticalBarRenderer());
-        plot.setOrientation(PlotOrientation.VERTICAL);
-        plot.setFixedLegendItems(JFreeChartUtil.createReplicateLegend(filteredRg));
-        plot.setBackgroundPaint(Color.WHITE);
+        chart = ChartFactory.createStackedBarChart(getTitle(), xAxisLabel, yAxisLabel, dataset, PlotOrientation.VERTICAL, true, true, false);
 
-        chart = new JFreeChart(getTitle(), plot);
         chart.setBorderPaint(Color.WHITE);
         chart.setBackgroundPaint(Color.WHITE);
         chart.setAntiAlias(true);
+        //chart.setTextAntiAlias(RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
         cPanel = new SVGChartPanel(chart);
+        CategoryPlot plot = chart.getCategoryPlot();
 
-        StatisticalBarRenderer br = (StatisticalBarRenderer) plot.getRenderer();
+        plot.setFixedLegendItems(JFreeChartUtil.createLegend(data));
+        plot.setBackgroundPaint(Color.WHITE);
+
+        BarRenderer br = (BarRenderer) plot.getRenderer();
         br.setItemMargin(customizer.getItemMargin());
         br.setBaseToolTipGenerator(new StandardCategoryToolTipGenerator("<html>Group: {0} <br> Attribute: {1} <br> " + yAxisLabel + ": {2}</html>", NumberFormat.getInstance()));
         br.setMaximumBarWidth(.1); // set maximum width to 10% of chart
-        br.setErrorIndicatorPaint(Color.BLACK);
 
         // x axis
         CategoryAxis domainAxis = plot.getDomainAxis();
@@ -148,18 +133,18 @@ public class StatisticalBarChart extends CategoricalViewerI<Long> implements Adj
             }
         }
         rangeAxis.setStandardTickUnits(tus);
-        if (dataset instanceof SlidingStatisticalCategoryDataset) {
-            SlidingStatisticalCategoryDataset scd = (SlidingStatisticalCategoryDataset) dataset;
+        if (dataset instanceof SlidingCategoryDataset) {
+            SlidingCategoryDataset scd = (SlidingCategoryDataset) dataset;
             rangeAxis.setAutoRange(false);
-            rangeAxis.setRange(0, scd.getMaxY() * 1.05);
+            rangeAxis.setRange(0, scd.getMaxY());
         }
         plot.setRangeAxis(rangeAxis);
 
         // colors
         int i = 0;
         CategoryItemRenderer renderer = plot.getRenderer();
-        for (Triple<ReplicateGroupI, DistributionI<Double>, DistributionI<Double>> group : filteredRg) {
-            renderer.setSeriesPaint(i++, group.getFirst().getColor());
+        for (Pair<VisualizationGroupI, DistributionI<Double>> groupDistribution : data) {
+            renderer.setSeriesPaint(i++, groupDistribution.getFirst().getColor());
         }
     }
 
@@ -184,32 +169,14 @@ public class StatisticalBarChart extends CategoricalViewerI<Long> implements Adj
 
     @Override
     public SequenceExporterI[] getSequenceExporters() {
-        List<SequenceExporterI> ret = new ArrayList<>(dists.size());
-        for (Pair<VisualizationGroupI, DistributionI<Long>> p : dists) {
+        List<SequenceExporterI> ret = new ArrayList<>(data.size());
+        for (Pair<VisualizationGroupI, DistributionI<Double>> p : data) {
             if (p.getSecond().getTotalClassifiedElements() > 0) {
                 SequenceExporterI exp = new SeqExporter<>(p.getFirst(), p.getSecond());
                 ret.add(exp);
             }
         }
         return ret.toArray(new SequenceExporterI[]{});
-    }
-
-    @Override
-    public void adjustmentValueChanged(AdjustmentEvent ae) {
-        SlidingStatisticalCategoryDataset data = (SlidingStatisticalCategoryDataset) dataset;
-        data.setOffset(scrollBar.getValue());
-    }
-
-    @Override
-    public boolean canHandle(AttributeTypeI valueType) {
-        long replicatesCount = 0;
-        for (ReplicateGroupI rg : VGroupManager.getInstance().getReplicateGroups()) {
-            replicatesCount += rg.getReplicates().size();
-        }
-
-        return super.canHandle(valueType)
-                && VGroupManager.getInstance().getReplicateGroups().size() > 0
-                && VGroupManager.getInstance().getAllVisualizationGroups().size() == replicatesCount;
     }
 
 }

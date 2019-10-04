@@ -27,15 +27,13 @@ import java.util.TreeSet;
 import java.util.List;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
-import org.openide.util.LookupEvent;
-import org.openide.util.LookupListener;
 import org.openide.util.Utilities;
 
 /**
  *
  * @author plumenk
  */
-public class EvaluationControlPanel extends javax.swing.JPanel implements ActionListener, LookupListener, PropertyChangeListener {
+public class EvaluationControlPanel extends javax.swing.JPanel implements ActionListener, PropertyChangeListener {
 
     private final EvaluationTopComponent topComponent;
     //
@@ -44,8 +42,6 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Action
     //
     private final ComparisonTypeListModel compListModel = new ComparisonTypeListModel();
     private final VisualizationTypeListModel visListModel = new VisualizationTypeListModel();
-    //
-    private final Lookup.Result<SeqRunI> res;
     //
     private SeqRunI currentSeqrun = null;
     private boolean haveGoldStandard = false;
@@ -58,8 +54,6 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Action
     public EvaluationControlPanel(EvaluationTopComponent etc) {
         initComponents();
         topComponent = etc;
-        res = Utilities.actionsGlobalContext().lookupResult(SeqRunI.class);
-        res.addLookupListener(this);
         updateButton.addActionListener(this);
 
 //        comparisonTypeList.addActionListener(this);
@@ -91,7 +85,7 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Action
             }
         });
 
-        update();
+        this.update();
     }
 
     /**
@@ -140,12 +134,12 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Action
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(comparisonTypeList, 0, 135, Short.MAX_VALUE)
+                    .addComponent(comparisonTypeList, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel2)
                             .addComponent(jLabel1))
-                        .addGap(0, 22, Short.MAX_VALUE))
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(visualizationTypeList, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -169,7 +163,7 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Action
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 159, Short.MAX_VALUE)
+            .addGap(0, 130, Short.MAX_VALUE)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -199,7 +193,7 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Action
             .addGroup(layout.createSequentialGroup()
                 .addGap(5, 5, 5)
                 .addComponent(controlSplitPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 14, Short.MAX_VALUE)
                 .addComponent(updateButton)
                 .addContainerGap())
         );
@@ -271,8 +265,8 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Action
 //        comparisonTypeList.removeActionListener(this);
 //        visualizationTypeList.removeActionListener(this);
 //    }
-    private synchronized void update() {
-        Collection<? extends SeqRunI> seqruns = res.allInstances();
+    synchronized void update() {
+        Collection<? extends SeqRunI> seqruns = Utilities.actionsGlobalContext().lookupAll(SeqRunI.class);
 
         // we're only interested in single-selection
         if (seqruns == null || seqruns.size() != 1) {
@@ -309,13 +303,6 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Action
             compListModel.update();
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);
-        }
-    }
-
-    @Override
-    public void resultChanged(LookupEvent ev) {
-        if (visualizationTypeList.isEnabled()) {
-            update();
         }
     }
 

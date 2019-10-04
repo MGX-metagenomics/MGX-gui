@@ -23,6 +23,7 @@ import de.cebitec.mgx.gui.vizfilter.ToFractionFilter;
 import java.awt.Color;
 import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -49,7 +50,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author sj
  */
 @ServiceProvider(service = ViewerI.class)
-public class PCoAPlot extends AbstractViewer<DistributionI<Long>> implements CustomizableI, ImageExporterI.Provider, SequenceExporterI.Provider {
+public class NMDSPlot extends AbstractViewer<DistributionI<Long>> implements CustomizableI, ImageExporterI.Provider, SequenceExporterI.Provider {
 
     private SVGChartPanel cPanel = null;
     private JFreeChart chart = null;
@@ -63,7 +64,7 @@ public class PCoAPlot extends AbstractViewer<DistributionI<Long>> implements Cus
 
     @Override
     public String getName() {
-        return "PCoA/MDS Plot";
+        return "NMDS Plot";
     }
 
     @Override
@@ -115,31 +116,31 @@ public class PCoAPlot extends AbstractViewer<DistributionI<Long>> implements Cus
 
         final List<Pair<VisualizationGroupI, DistributionI<Double>>> xdata = data;
 
-        SwingWorker<List<Point>, Void> sw = new SwingWorker<List<Point>, Void>() {
+        SwingWorker<Collection<Point>, Void> sw = new SwingWorker<Collection<Point>, Void>() {
 
             @Override
-            protected List<Point> doInBackground() throws Exception {
-                return master.Statistics().PCoA(xdata);
+            protected Collection<Point> doInBackground() throws Exception {
+                return master.Statistics().NMDS(xdata);
             }
         };
         sw.execute();
 
-        List<Point> pcoa;
+        Collection<Point> nmds;
         try {
-            pcoa = sw.get();
+            nmds = sw.get();
         } catch (InterruptedException | ExecutionException ex) {
             Exceptions.printStackTrace(ex);
             return;
         }
 
-        if (pcoa == null) {
+        if (nmds == null) {
             return;
         }
 
         final Map<XYDataItem, String> toolTips = new HashMap<>();
 
         XYSeriesCollection dataset = new XYSeriesCollection();
-        for (Point p : pcoa) {
+        for (Point p : nmds) {
             XYSeries series = new XYSeries(p.getName());
             XYDataItem item = new XYDataItem(p.getX(), p.getY());
             series.add(item);
@@ -147,7 +148,7 @@ public class PCoAPlot extends AbstractViewer<DistributionI<Long>> implements Cus
             dataset.addSeries(series);
         }
 
-        chart = ChartFactory.createScatterPlot(getTitle(), "C1", "C2", dataset, PlotOrientation.VERTICAL, false, true, false);
+        chart = ChartFactory.createScatterPlot(getTitle(), "MDS 1", "MDS 2", dataset, PlotOrientation.VERTICAL, false, true, false);
         chart.setBorderPaint(Color.WHITE);
         chart.setBackgroundPaint(Color.WHITE);
         cPanel = new SVGChartPanel(chart);
@@ -169,7 +170,7 @@ public class PCoAPlot extends AbstractViewer<DistributionI<Long>> implements Cus
         };
 
         int i = 0;
-        for (Point p : pcoa) {
+        for (Point p : nmds) {
             renderer.setSeriesShape(i, new Ellipse2D.Double(0, 0, 7, 7));
             renderer.setSeriesItemLabelGenerator(i, labelGen);
             renderer.setSeriesItemLabelsVisible(i, Boolean.TRUE);
@@ -190,6 +191,6 @@ public class PCoAPlot extends AbstractViewer<DistributionI<Long>> implements Cus
 
     @Override
     protected String getTitle() {
-        return "PCoA plot for " + getAttributeType().getName();
+        return "NMDS plot for " + getAttributeType().getName();
     }
 }

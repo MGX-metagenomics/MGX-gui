@@ -101,6 +101,10 @@ public final class ExportSeqWizardIterator<T extends Number> implements WizardDe
         return p2.getSelectedFile();
     }
 
+    boolean hasQuality() {
+        return p2.hasQuality();
+    }
+
     Set<AttributeI> getSelectedAttributes() {
         return p1.getSelectedAttributes();
     }

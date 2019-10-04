@@ -30,7 +30,7 @@ public class ProjectReferencesNode extends AbstractNode {
 
     public ProjectReferencesNode(final MGXMasterI m) {
         this(new ReferenceNodeFactory(m), m);
-        super.setDisplayName("Reference sequences");
+        super.setDisplayName("Reference Sequences");
         super.setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/ProjectFiles.png");
     }
 

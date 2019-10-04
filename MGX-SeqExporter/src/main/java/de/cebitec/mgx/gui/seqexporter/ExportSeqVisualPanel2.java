@@ -1,6 +1,8 @@
 package de.cebitec.mgx.gui.seqexporter;
 
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.model.SeqRunI;
 import java.io.File;
 import java.lang.reflect.Field;
 import javax.swing.JFileChooser;
@@ -50,19 +52,36 @@ public final class ExportSeqVisualPanel2 extends JPanel implements DocumentListe
     private JTextField fileNameField;
 
     public void setVisualizationGroup(VisualizationGroupI vg) {
+        hasQuality = true;
+        for (SeqRunI run : vg.getSeqRuns()) {
+            try {
+                hasQuality = hasQuality & run.getMaster().SeqRun().hasQuality(run);
+            } catch (MGXException ex) {
+                hasQuality = false;
+            }
+        }
+
         // suggest a file name
-        File suggestedName = new File(jFileChooser1.getCurrentDirectory(), cleanupName(vg.getDisplayName()) + ".fas");
+        String suffix = hasQuality ? ".fastq" : ".fas";
+        File suggestedName = new File(jFileChooser1.getCurrentDirectory(), cleanupName(vg.getDisplayName()) + suffix);
         int cnt = 1;
         while (suggestedName.exists()) {
             String newName = new StringBuilder(cleanupName(vg.getDisplayName()))
                     .append(" (")
                     .append(cnt++)
-                    .append(").fas")
+                    .append(")")
+                    .append(suffix)
                     .toString();
             suggestedName = new File(jFileChooser1.getCurrentDirectory(), newName);
         }
         jFileChooser1.setSelectedFile(suggestedName);
         fileNameField.setText(suggestedName.getName());
+    }
+
+    private boolean hasQuality = false;
+
+    public boolean hasQuality() {
+        return hasQuality;
     }
 
     public File getSelectedFile() {

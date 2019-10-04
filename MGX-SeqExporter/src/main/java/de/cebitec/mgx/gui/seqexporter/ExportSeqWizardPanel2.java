@@ -38,6 +38,10 @@ public class ExportSeqWizardPanel2 implements WizardDescriptor.Panel<WizardDescr
         return getComponent().getSelectedFile();
     }
 
+    public boolean hasQuality() {
+        return getComponent().hasQuality();
+    }
+
     @Override
     public HelpCtx getHelp() {
         // Show no Help button for this panel:
@@ -90,4 +94,5 @@ public class ExportSeqWizardPanel2 implements WizardDescriptor.Panel<WizardDescr
     public final void removeChangeListener(ChangeListener l) {
         listeners.remove(ChangeListener.class, l);
     }
+
 }

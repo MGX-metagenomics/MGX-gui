@@ -3,7 +3,6 @@ package de.cebitec.mgx.gui.biodiversity;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.model.ModelBaseI;
-import de.cebitec.mgx.gui.biodiversity.statistic.Statistic;
 import de.cebitec.mgx.gui.biodiversity.statistic.impl.ACE;
 import de.cebitec.mgx.gui.biodiversity.statistic.impl.Chao1;
 import de.cebitec.mgx.gui.biodiversity.statistic.impl.Shannon;
@@ -29,6 +28,7 @@ import org.openide.util.LookupListener;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.Utilities;
 import org.openide.windows.TopComponent;
+import de.cebitec.mgx.gui.biodiversity.statistic.StatisticI;
 
 /**
  * Top component which displays something.
@@ -59,13 +59,13 @@ public final class BiodiversityTopComponent extends TopComponent implements Look
     private final Lookup.Result<VisualizationGroupI> result;
     private VisualizationGroupI curGroup = null;
     private final TableModel model;
-    private final Statistic[] stats;
+    private final StatisticI[] stats;
     //
     private final static String NOT_AVAILABLE = "N/A";
 
     @SuppressWarnings("unchecked")
     private BiodiversityTopComponent() {
-        this.stats = new Statistic[]{new ACE(), new Chao1(), new Shannon(), new ShannonEvenness(), new Simpson()};
+        this.stats = new StatisticI[]{new ACE(), new Chao1(), new Shannon(), new ShannonEvenness(), new Simpson()};
 
         model = new DefaultTableModel(new String[]{"Index", "Value"}, stats.length) {
 

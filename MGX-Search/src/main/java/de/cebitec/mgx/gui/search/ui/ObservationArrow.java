@@ -6,7 +6,6 @@
 package de.cebitec.mgx.gui.search.ui;
 
 import de.cebitec.mgx.api.model.ObservationI;
-import de.cebitec.mgx.api.model.RegionI;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
