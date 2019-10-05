@@ -8,15 +8,21 @@ import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.misc.Triple;
 import de.cebitec.mgx.api.model.AttributeI;
+import de.cebitec.mgx.gui.vizfilter.SortOrder.SortByValue;
+import gnu.trove.map.TObjectDoubleMap;
+import gnu.trove.map.hash.TObjectDoubleHashMap;
 import java.awt.Rectangle;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.LegendItem;
@@ -63,16 +69,42 @@ public class JFreeChartUtil {
     }
 
     public static <T extends Number> CategoryDataset createCategoryDataset(List<Pair<VisualizationGroupI, DistributionI<T>>> in) {
-        FastCategoryDataset dataset = new FastCategoryDataset();
-        dataset.setNotify(false);
-        for (Pair<VisualizationGroupI, DistributionI<T>> groupDistribution : in) {
-            final String displayName = groupDistribution.getFirst().getDisplayName();
-            final DistributionI<T> d = groupDistribution.getSecond();
+        return createCategoryDataset(in, false);
+    }
 
-            for (Map.Entry<AttributeI, T> entry : d.entrySet()) {
-                dataset.addValue(entry.getValue(), displayName, entry.getKey().getValue());
+    public static <T extends Number> CategoryDataset createCategoryDataset(List<Pair<VisualizationGroupI, DistributionI<T>>> in, boolean ascending) {
+
+        // summary distribution over all groups
+        TObjectDoubleMap<AttributeI> summary = new TObjectDoubleHashMap<>();
+        for (Pair<VisualizationGroupI, DistributionI<T>> pair : in) {
+            DistributionI<T> dist = pair.getSecond();
+            for (Entry<AttributeI, T> p : dist.entrySet()) {
+                if (summary.containsKey(p.getKey())) {
+                    Double old = summary.get(p.getKey());
+                    summary.put(p.getKey(), old + p.getValue().doubleValue());
+                } else {
+                    summary.put(p.getKey(), p.getValue().doubleValue());
+                }
             }
         }
+        List<AttributeI> sortList = new ArrayList<>();
+        sortList.addAll(summary.keySet());
+        Collections.sort(sortList, new SortByValue(summary));
+        if (ascending) {
+            Collections.reverse(sortList);
+        }
+
+        FastCategoryDataset dataset = new FastCategoryDataset();
+        dataset.setNotify(false);
+
+        for (AttributeI attr : sortList) {
+            for (Pair<VisualizationGroupI, DistributionI<T>> groupDistribution : in) {
+                final String displayName = groupDistribution.getFirst().getDisplayName();
+                final DistributionI<T> d = groupDistribution.getSecond();
+                dataset.addValue(d.get(attr), displayName, attr.getValue());
+            }
+        }
+
         if (dataset.getColumnCount() > 25) {
             return new SlidingCategoryDataset(dataset, 25);
         } else {
@@ -100,17 +132,6 @@ public class JFreeChartUtil {
         }
     }
 
-//    public static DefaultCategoryDataset createCategoryDataset(List<Pair<VisualizationGroup, Distribution>> in) {
-//        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-//        for (Pair<VisualizationGroup, Distribution> groupDistribution : in) {
-//            Distribution d = groupDistribution.getSecond();
-//
-//            for (Map.Entry<Attribute, ? extends Number> entry : d.entrySet()) {
-//                dataset.addValue(entry.getValue(), groupDistribution.getFirst().getName(), entry.getKey().getValue());
-//            }
-//        }
-//        return dataset;
-//    }
     public static <T extends Number> XYSeriesCollection createXYSeries(List<Pair<VisualizationGroupI, DistributionI<T>>> in) {
         return createXYSeries(in, false);
     }
@@ -188,49 +209,10 @@ public class JFreeChartUtil {
         return dataset;
     }
 
-//    public static void saveSVG(JFreeChart chart, File f) {
-//        DOMImplementation domImpl = GenericDOMImplementation.getDOMImplementation();
-//        Document document = domImpl.createDocument(null, "svg", null);
-//        SVGGraphics2D svgGenerator = new SVGGraphics2D(document);
-//        svgGenerator.getGeneratorContext().setPrecision(6);
-//        chart.draw(svgGenerator, new Rectangle2D.Double(0, 0, 800, 600), null);
-//        boolean useCSS = true;
-//        Writer out;
-//        try {
-//            out = new OutputStreamWriter(new FileOutputStream(f), "UTF-8");
-//            svgGenerator.stream(out, useCSS);
-//        } catch (FileNotFoundException | UnsupportedEncodingException | SVGGraphics2DIOException ex) {
-//            Exceptions.printStackTrace(ex);
-//        }
-//    }
     public static ImageExporterI getImageExporter(final JFreeChart chart) {
         if (chart == null) {
             return null;
         }
-
-//        CategoryPlot cPlot = null;
-//        try {
-//            cPlot = chart.getCategoryPlot();
-//        } catch (ClassCastException x) {
-//        }
-//        if (cPlot != null) {
-//            Font oldLabelFont = cPlot.getDomainAxis().getLabelFont();
-//            Font labelFont = new Font(oldLabelFont.getName(), Font.BOLD, 20);
-//            cPlot.getDomainAxis().setLabelFont(labelFont);
-//            cPlot.getDomainAxis().setTickLabelFont(new Font(oldLabelFont.getName(), Font.PLAIN, 18));
-//
-//            cPlot.getRangeAxis().setLabelFont(labelFont);
-//            cPlot.getRangeAxis().setTickLabelFont(new Font(oldLabelFont.getName(), Font.PLAIN, 18));
-//        } else {
-//            XYPlot xyPlot = chart.getXYPlot();
-//            Font oldLabelFont = xyPlot.getDomainAxis().getLabelFont();
-//            Font labelFont = new Font(oldLabelFont.getName(), Font.BOLD, 20);
-//            xyPlot.getDomainAxis().setLabelFont(labelFont);
-//            xyPlot.getDomainAxis().setTickLabelFont(new Font(oldLabelFont.getName(), Font.PLAIN, 18));
-//
-//            xyPlot.getRangeAxis().setLabelFont(labelFont);
-//            xyPlot.getRangeAxis().setTickLabelFont(new Font(oldLabelFont.getName(), Font.PLAIN, 18));
-//        }
 
         return new ImageExporterI() {
 

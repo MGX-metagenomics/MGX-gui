@@ -6,7 +6,7 @@
 package de.cebitec.mgx.gui.nodefactory;
 
 import de.cebitec.mgx.api.groups.VGroupManagerI;
-import de.cebitec.mgx.common.VGroupManager;
+import de.cebitec.mgx.gui.common.VGroupManager;
 import de.cebitec.mgx.gui.nodes.VgMgrNode;
 import de.cebitec.mgx.gui.nodes.VizGroupNode;
 import static org.junit.Assert.*;

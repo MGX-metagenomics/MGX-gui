@@ -45,18 +45,18 @@ public class HabitatAccess extends AccessBase<HabitatI> implements HabitatAccess
         return obj;
     }
 
-    @Override
-    public HabitatI create(HabitatI obj) throws MGXException {
-        HabitatDTO dto = HabitatDTOFactory.getInstance().toDTO(obj);
-        long id = Identifiable.INVALID_IDENTIFIER;
-        try {
-            id = getDTOmaster().Habitat().create(dto);
-        } catch (MGXDTOException ex) {
-            throw new MGXException(ex);
-        }
-        obj.setId(id);
-        return obj;
-    }
+//    @Override
+//    public HabitatI create(HabitatI obj) throws MGXException {
+//        HabitatDTO dto = HabitatDTOFactory.getInstance().toDTO(obj);
+//        long id = Identifiable.INVALID_IDENTIFIER;
+//        try {
+//            id = getDTOmaster().Habitat().create(dto);
+//        } catch (MGXDTOException ex) {
+//            throw new MGXException(ex);
+//        }
+//        obj.setId(id);
+//        return obj;
+//    }
 
     @Override
     public HabitatI fetch(long id) throws MGXException {

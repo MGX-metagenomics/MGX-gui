@@ -1,4 +1,4 @@
-package de.cebitec.mgx.common.visualization;
+package de.cebitec.mgx.gui.common.visualization;
 
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.tree.TreeI;

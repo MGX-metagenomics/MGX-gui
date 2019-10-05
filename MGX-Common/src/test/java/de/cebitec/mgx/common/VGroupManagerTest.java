@@ -5,6 +5,7 @@
  */
 package de.cebitec.mgx.common;
 
+import de.cebitec.mgx.gui.common.VGroupManager;
 import de.cebitec.mgx.api.groups.ReplicateGroupI;
 import de.cebitec.mgx.api.groups.ReplicateI;
 import de.cebitec.mgx.api.groups.VGroupManagerI;

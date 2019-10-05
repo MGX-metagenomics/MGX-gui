@@ -8,7 +8,7 @@ package de.cebitec.mgx.gui.actions;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.groups.FileType;
 import de.cebitec.mgx.api.model.JobI;
-import de.cebitec.mgx.api.model.JobState;
+import de.cebitec.mgx.common.JobState;
 import de.cebitec.mgx.gui.swingutils.util.FileChooserUtils;
 import java.awt.event.ActionEvent;
 import java.io.BufferedWriter;

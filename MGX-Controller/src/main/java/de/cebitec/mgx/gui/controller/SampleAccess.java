@@ -48,18 +48,18 @@ public class SampleAccess extends AccessBase<SampleI> implements SampleAccessI {
         return obj;
     }
 
-    @Override
-    public SampleI create(SampleI obj) throws MGXException {
-        SampleDTO dto = SampleDTOFactory.getInstance().toDTO(obj);
-        long id = Identifiable.INVALID_IDENTIFIER;
-        try {
-            id = getDTOmaster().Sample().create(dto);
-        } catch (MGXDTOException ex) {
-            throw new MGXException(ex);
-        }
-        obj.setId(id);
-        return obj;
-    }
+//    @Override
+//    public SampleI create(SampleI obj) throws MGXException {
+//        SampleDTO dto = SampleDTOFactory.getInstance().toDTO(obj);
+//        long id = Identifiable.INVALID_IDENTIFIER;
+//        try {
+//            id = getDTOmaster().Sample().create(dto);
+//        } catch (MGXDTOException ex) {
+//            throw new MGXException(ex);
+//        }
+//        obj.setId(id);
+//        return obj;
+//    }
 
     @Override
     public SampleI fetch(long id) throws MGXException {

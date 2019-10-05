@@ -7,7 +7,7 @@ import com.google.common.cache.RemovalNotification;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.JobParameterI;
-import de.cebitec.mgx.api.model.JobState;
+import de.cebitec.mgx.common.JobState;
 import de.cebitec.mgx.dto.dto.JobDTO;
 import de.cebitec.mgx.dto.dto.JobDTO.Builder;
 import de.cebitec.mgx.dto.dto.JobParameterDTO;

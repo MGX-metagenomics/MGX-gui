@@ -34,7 +34,9 @@
                             de.cebitec.mgx.api.visualization.filter,
                             de.cebitec.mgx.api.misc,
                             de.cebitec.mgx.api.groups,
-                            de.cebitec.mgx.gui.datamodel.misc
+                            de.cebitec.mgx.gui.datamodel.misc,
+                            gnu.trove.map,
+                            gnu.trove.map.hash
                         </Import-Package>
                         <Export-Package>
                             de.cebitec.mgx.gui.vizfilter
@@ -59,6 +61,10 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>MGX-Datamodel</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.cebitec.mgx</groupId>
+            <artifactId>Trove-OSGi</artifactId>
         </dependency>
     </dependencies>
     

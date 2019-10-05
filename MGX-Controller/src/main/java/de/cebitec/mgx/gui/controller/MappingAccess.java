@@ -45,11 +45,6 @@ public class MappingAccess extends MappingAccessI {
     }
 
     @Override
-    public MappingI create(MappingI obj) {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    @Override
     public MappingI fetch(long id) throws MGXException {
         MappingDTO dto = null;
         try {

@@ -9,7 +9,7 @@ import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.tree.TreeI;
-import de.cebitec.mgx.common.UniFrac;
+import de.cebitec.mgx.gui.common.UniFrac;
 import de.cebitec.mgx.gui.goldstandard.ui.charts.EvaluationViewerI;
 import de.cebitec.mgx.gui.goldstandard.util.EvalExceptions;
 import de.cebitec.mgx.gui.goldstandard.util.JobUtils;

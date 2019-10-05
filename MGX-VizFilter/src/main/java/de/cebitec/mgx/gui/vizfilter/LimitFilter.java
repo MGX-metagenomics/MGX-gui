@@ -7,9 +7,10 @@ import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.visualization.filter.VisFilterI;
 import de.cebitec.mgx.gui.datamodel.misc.Distribution;
 import de.cebitec.mgx.gui.datamodel.misc.NormalizedDistribution;
+import gnu.trove.map.TObjectDoubleMap;
+import gnu.trove.map.hash.TObjectDoubleHashMap;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -61,14 +62,15 @@ public class LimitFilter<T extends Number> implements VisFilterI<DistributionI<T
 //            return dists;
 //        }
         // merge distributions
-        Map<AttributeI, Double> summary = new HashMap<>();
+        TObjectDoubleMap<AttributeI> summary = new TObjectDoubleHashMap<>();
         for (Pair<VisualizationGroupI, DistributionI<T>> pair : dists) {
-            for (Map.Entry<AttributeI, T> e : pair.getSecond().entrySet()) {
-                if (summary.containsKey(e.getKey())) {
-                    Double old = summary.get(e.getKey());
-                    summary.put(e.getKey(), old + e.getValue().doubleValue());
+            DistributionI<T> dist = pair.getSecond();
+            for (Map.Entry<AttributeI, T> p : dist.entrySet()) {
+                if (summary.containsKey(p.getKey())) {
+                    Double old = summary.get(p.getKey());
+                    summary.put(p.getKey(), old + p.getValue().doubleValue());
                 } else {
-                    summary.put(e.getKey(), e.getValue().doubleValue());
+                    summary.put(p.getKey(), p.getValue().doubleValue());
                 }
             }
         }

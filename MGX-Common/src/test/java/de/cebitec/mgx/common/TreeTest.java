@@ -1,5 +1,6 @@
 package de.cebitec.mgx.common;
 
+import de.cebitec.mgx.gui.common.TreeFactory;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.tree.NodeI;

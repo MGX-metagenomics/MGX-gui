@@ -142,6 +142,11 @@
             <artifactId>commons-text</artifactId>
             <version>1.4</version>
         </dependency>
+        <dependency>
+            <groupId>de.cebitec.mgx</groupId>
+            <artifactId>MGX-common</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
 
     <build>

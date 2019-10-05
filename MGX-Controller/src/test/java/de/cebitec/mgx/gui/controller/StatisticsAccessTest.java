@@ -14,7 +14,7 @@ import de.cebitec.mgx.api.misc.Triple;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.visualization.ConflictResolver;
-import de.cebitec.mgx.common.VGroupManager;
+import de.cebitec.mgx.gui.common.VGroupManager;
 import de.cebitec.mgx.gui.util.TestMaster;
 import de.cebitec.mgx.gui.vizfilter.LongToDouble;
 import java.util.List;

@@ -6,7 +6,7 @@
 package de.cebitec.mgx.gui.actions;
 
 import de.cebitec.mgx.api.model.JobI;
-import de.cebitec.mgx.api.model.JobState;
+import de.cebitec.mgx.common.JobState;
 import de.cebitec.mgx.gui.rbac.RBAC;
 import java.awt.event.ActionEvent;
 import java.util.concurrent.ExecutionException;

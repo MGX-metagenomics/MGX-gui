@@ -118,6 +118,11 @@
             <groupId>de.cebitec.mgx.gui</groupId>
             <artifactId>MGX-Pool</artifactId>
         </dependency>
+        <dependency>
+            <groupId>de.cebitec.mgx</groupId>
+            <artifactId>MGX-common</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
 
     <build>

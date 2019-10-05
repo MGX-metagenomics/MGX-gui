@@ -3,9 +3,6 @@ package de.cebitec.mgx.gui.biodiversity;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
-import de.cebitec.mgx.common.visualization.CategoricalViewerI;
-import de.cebitec.mgx.common.visualization.CustomizableI;
-import de.cebitec.mgx.common.visualization.ViewerI;
 import de.cebitec.mgx.gui.biodiversity.statistic.impl.ACE;
 import de.cebitec.mgx.gui.biodiversity.statistic.impl.Chao1;
 import de.cebitec.mgx.gui.biodiversity.statistic.impl.Shannon;
@@ -23,6 +20,9 @@ import org.jdesktop.swingx.decorator.Highlighter;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
 import org.openide.util.lookup.ServiceProvider;
 import de.cebitec.mgx.gui.biodiversity.statistic.StatisticI;
+import de.cebitec.mgx.gui.common.visualization.CategoricalViewerI;
+import de.cebitec.mgx.gui.common.visualization.CustomizableI;
+import de.cebitec.mgx.gui.common.visualization.ViewerI;
 
 /**
  *

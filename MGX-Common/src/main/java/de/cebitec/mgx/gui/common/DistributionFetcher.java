@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.cebitec.mgx.common;
+package de.cebitec.mgx.gui.common;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.misc.DistributionI;

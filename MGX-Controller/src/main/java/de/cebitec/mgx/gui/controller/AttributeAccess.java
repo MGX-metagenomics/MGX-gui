@@ -15,7 +15,7 @@ import de.cebitec.mgx.api.model.SequenceI;
 import de.cebitec.mgx.api.model.tree.TreeI;
 import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.client.exception.MGXDTOException;
-import de.cebitec.mgx.common.TreeFactory;
+import de.cebitec.mgx.gui.common.TreeFactory;
 import de.cebitec.mgx.dto.dto.AttributeCorrelation;
 import de.cebitec.mgx.dto.dto.AttributeCount;
 import de.cebitec.mgx.dto.dto.AttributeDTO;

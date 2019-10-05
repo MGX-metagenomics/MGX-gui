@@ -64,18 +64,18 @@ public class SeqRunAccess extends AccessBase<SeqRunI> implements SeqRunAccessI {
         return obj;
     }
 
-    @Override
-    public SeqRunI create(SeqRunI obj) throws MGXException {
-        SeqRunDTO dto = SeqRunDTOFactory.getInstance().toDTO(obj);
-        long id = Identifiable.INVALID_IDENTIFIER;
-        try {
-            id = getDTOmaster().SeqRun().create(dto);
-        } catch (MGXDTOException ex) {
-            throw new MGXException(ex);
-        }
-        obj.setId(id);
-        return obj;
-    }
+//    @Override
+//    public SeqRunI create(SeqRunI obj) throws MGXException {
+//        SeqRunDTO dto = SeqRunDTOFactory.getInstance().toDTO(obj);
+//        long id = Identifiable.INVALID_IDENTIFIER;
+//        try {
+//            id = getDTOmaster().SeqRun().create(dto);
+//        } catch (MGXDTOException ex) {
+//            throw new MGXException(ex);
+//        }
+//        obj.setId(id);
+//        return obj;
+//    }
 
     @Override
     public SeqRunI fetch(long id) throws MGXException {

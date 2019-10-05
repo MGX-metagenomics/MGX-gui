@@ -162,7 +162,7 @@
                             javax.swing,
                             org.apache.commons.math3.util,
                             de.cebitec.mgx.pevents,
-                            de.cebitec.common,
+                            de.cebitec.mgx.common,
                             de.cebitec.mgx.sequence
                         </Import-Package>
                     </instructions>

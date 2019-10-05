@@ -9,7 +9,7 @@ import de.cebitec.mgx.api.groups.ReplicateGroupI;
 import de.cebitec.mgx.api.groups.ReplicateI;
 import de.cebitec.mgx.api.groups.VGroupManagerI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
-import de.cebitec.mgx.common.VGroupManager;
+import de.cebitec.mgx.gui.common.VGroupManager;
 import de.cebitec.mgx.gui.nodes.ReplicateGroupNode;
 import java.awt.BorderLayout;
 import java.awt.Color;

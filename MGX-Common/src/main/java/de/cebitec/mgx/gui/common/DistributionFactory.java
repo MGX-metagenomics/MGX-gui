@@ -1,4 +1,4 @@
-package de.cebitec.mgx.common;
+package de.cebitec.mgx.gui.common;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.misc.DistributionI;

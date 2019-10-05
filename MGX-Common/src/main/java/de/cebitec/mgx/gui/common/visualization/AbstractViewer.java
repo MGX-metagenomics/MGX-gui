@@ -1,9 +1,9 @@
-package de.cebitec.mgx.common.visualization;
+package de.cebitec.mgx.gui.common.visualization;
 
 import de.cebitec.mgx.api.groups.VGroupManagerI;
 import de.cebitec.mgx.api.misc.Visualizable;
 import de.cebitec.mgx.api.model.AttributeTypeI;
-import de.cebitec.mgx.common.VGroupManager;
+import de.cebitec.mgx.gui.common.VGroupManager;
 
 /**
  *

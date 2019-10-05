@@ -31,8 +31,8 @@
                 <configuration>
                     <instructions>
                         <Export-Package>
-                            de.cebitec.mgx.common,
-                            de.cebitec.mgx.common.visualization
+                            de.cebitec.mgx.gui.common,
+                            de.cebitec.mgx.gui.common.visualization
                         </Export-Package>
                         <Import-Package>
                             de.cebitec.mgx.api,
