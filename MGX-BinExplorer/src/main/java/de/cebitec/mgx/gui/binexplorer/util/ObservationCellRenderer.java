@@ -12,6 +12,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -23,13 +24,11 @@ import javax.swing.table.DefaultTableCellRenderer;
 public class ObservationCellRenderer extends DefaultTableCellRenderer {
 
     private final BinExplorerTopComponent tc;
-    private final AttributeTableModel model;
     private final ObservationDisplay display = new ObservationDisplay();
 
-    public ObservationCellRenderer(BinExplorerTopComponent tc, AttributeTableModel model) {
+    public ObservationCellRenderer(BinExplorerTopComponent tc) {
         super();
         this.tc = tc;
-        this.model = model;
     }
 
     @Override
@@ -44,7 +43,12 @@ public class ObservationCellRenderer extends DefaultTableCellRenderer {
 
             return display;
         }
-        return super.getTableCellRendererComponent(table, obj, isSelected, hasFocus, row, column);
+        Component ret = super.getTableCellRendererComponent(table, obj, isSelected, hasFocus, row, column);
+        if (ret instanceof JLabel) {
+            JLabel lbl = (JLabel) ret;
+            lbl.setToolTipText(lbl.getText());
+        }
+        return ret;
     }
 
     private static class ObservationDisplay extends JPanel {
