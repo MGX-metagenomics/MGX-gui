@@ -1,6 +1,6 @@
 package de.cebitec.mgx.gui.treeview;
 
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.groups.GroupI;
 import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
@@ -47,14 +47,14 @@ public class PieNodeRenderer extends LabelRenderer {
         float areaX = (float) (shape.getCenterX() - radius);
         float areaY = (float) shape.getMinY();
 
-        Map<VisualizationGroupI, Long> content = (Map<VisualizationGroupI, Long>) item.get(TreeView.nodeContent);
+        Map<GroupI, Long> content = (Map<GroupI, Long>) item.get(TreeView.nodeContent);
         // FIXME - use fraction of total classified items for pie slice size
 
         // array of pie slices filled backwards since painting of items is 
         // counter-clockwise
         int i = content.size() - 1;
         PieSlice[] slices = new PieSlice[content.size()];
-        for (Map.Entry<VisualizationGroupI, Long> e : content.entrySet()) {
+        for (Map.Entry<GroupI, Long> e : content.entrySet()) {
             slices[i--] = new PieSlice(e.getValue(), e.getKey().getColor());
         }
 
