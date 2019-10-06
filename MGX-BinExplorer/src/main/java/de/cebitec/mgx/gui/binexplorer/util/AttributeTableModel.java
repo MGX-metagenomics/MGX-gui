@@ -102,5 +102,5 @@ public class AttributeTableModel extends DefaultTableModel {
         }
         return super.getColumnClass(columnIndex);
     }
-
+    
 }

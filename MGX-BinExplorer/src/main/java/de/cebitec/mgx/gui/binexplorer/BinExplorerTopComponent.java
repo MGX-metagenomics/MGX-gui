@@ -119,9 +119,10 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
         contigList.addItemListener(this);
 
         jXTable1.setHighlighters(new Highlighter[]{HighlighterFactory.createAlternateStriping()});
+        jXTable1.getColumn(0).setWidth(130);
         jXTable1.getColumn(2).setMaxWidth(60);
         jXTable1.getColumn(3).setMaxWidth(60);
-        jXTable1.setDefaultRenderer(GeneObservationI.class, new ObservationCellRenderer(this));
+        jXTable1.setDefaultRenderer(GeneObservationI.class, new ObservationCellRenderer(this, tableModel));
 
         ChartFactory.setChartTheme(StandardChartTheme.createLegacyTheme());
         BarRenderer.setDefaultShadowsVisible(false);
