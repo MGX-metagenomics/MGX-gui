@@ -160,6 +160,7 @@
                             de.cebitec.mgx.gui.datamodel.qc,
                             de.cebitec.mgx.gui.datamodel.tree,
                             de.cebitec.mgx.gui.datamodel.misc,
+                            de.cebitec.mgx.gui.common,  
                             de.cebitec.mgx.common,
                             de.cebitec.mgx.sequence,
                             gnu.trove.map,
