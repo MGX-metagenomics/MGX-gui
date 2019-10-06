@@ -23,11 +23,13 @@ import javax.swing.table.DefaultTableCellRenderer;
 public class ObservationCellRenderer extends DefaultTableCellRenderer {
 
     private final BinExplorerTopComponent tc;
+    private final AttributeTableModel model;
     private final ObservationDisplay display = new ObservationDisplay();
 
-    public ObservationCellRenderer(BinExplorerTopComponent tc) {
+    public ObservationCellRenderer(BinExplorerTopComponent tc, AttributeTableModel model) {
         super();
         this.tc = tc;
+        this.model = model;
     }
 
     @Override
@@ -71,26 +73,26 @@ public class ObservationCellRenderer extends DefaultTableCellRenderer {
             int mid = getHeight() / 2;
             g2.setColor(Color.BLACK);
             g2.drawLine(0, mid, getWidth(), mid);
-            int len = getWidth() - border - border;
-            int nuclLen;
+            double plotWidth = getWidth() - border - border;
+            double nuclLen;
             if (gene.getStart() < gene.getStop()) {
                 nuclLen = gene.getStop() - gene.getStart() + 1;
             } else {
                 nuclLen = gene.getStart() - gene.getStop() + 1;
             }
+            double scaleFact = nuclLen / plotWidth;
 
-            int obsLen;
+            double obsLen;
             if (observation.getStart() < observation.getStop()) {
                 obsLen = observation.getStop() - observation.getStart() + 1;
             } else {
                 obsLen = observation.getStart() - observation.getStop() + 1;
             }
 
-            double scaleFact = 1d * nuclLen / len;
             g2.setColor(Color.BLUE);
 
             int minX = Math.min(observation.getStart(), observation.getStop());
-            minX = (int) (border + minX * scaleFact);
+            minX = (int) (border + minX / scaleFact);
 
             int width = (int) (obsLen / scaleFact);
 
