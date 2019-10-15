@@ -33,7 +33,9 @@ public class DeleteDNAExtract extends AbstractAction {
     public void actionPerformed(ActionEvent e) {
         final DNAExtractI dna = Utilities.actionsGlobalContext().lookup(DNAExtractI.class);
         final MGXMasterI m = dna.getMaster();
-        NotifyDescriptor d = new NotifyDescriptor("Really delete DNA extract " + dna.getMethod() + "?", "Delete DNA extract", NotifyDescriptor.YES_NO_OPTION, NotifyDescriptor.QUESTION_MESSAGE, null, null);
+        NotifyDescriptor d = new NotifyDescriptor("Really delete " + dna.getMethod() 
+                + " extract " + dna.getName() + "?", "Delete DNA extract", 
+                NotifyDescriptor.YES_NO_OPTION, NotifyDescriptor.QUESTION_MESSAGE, null, null);
         Object ret = DialogDisplayer.getDefault().notify(d);
         if (NotifyDescriptor.YES_OPTION.equals(ret)) {
             final MGXTask deleteTask = new MGXTask("Delete " + dna.getName()) {
