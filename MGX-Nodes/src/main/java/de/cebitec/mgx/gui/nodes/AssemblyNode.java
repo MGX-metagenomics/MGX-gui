@@ -36,7 +36,8 @@ public class AssemblyNode extends MGXNodeBase<AssemblyI> {
     @Override
     public Action[] getActions(boolean context) {
         Action annotate = FileUtil.getConfigObject("Actions/Edit/de-cebitec-mgx-gui-actions-AnnotateAssembly.instance", Action.class);
-        return new Action[]{annotate};
+        Action delete = FileUtil.getConfigObject("Actions/Edit/de-cebitec-mgx-gui-actions-DeleteAssembly.instance", Action.class);
+        return new Action[]{annotate, delete};
     }
 
     @Override
