@@ -91,6 +91,8 @@ public class GroupedAssembledSeqRunNodeFactory extends Children.Keys<AssembledSe
                 case VisualizationGroupI.VISGROUP_ACTIVATED:
                 case AssemblyGroupI.ASMGROUP_RENAMED:
                 case AssemblyGroupI.ASMGROUP_HAS_DIST:
+                case AssemblyGroupI.ASMGROUP_ACTIVATED:
+                case AssemblyGroupI.ASMGROUP_DEACTIVATED:
                     return;
                 case VisualizationGroupI.VISGROUP_CHANGED:
                 case AssemblyGroupI.ASMGROUP_CHANGED:
