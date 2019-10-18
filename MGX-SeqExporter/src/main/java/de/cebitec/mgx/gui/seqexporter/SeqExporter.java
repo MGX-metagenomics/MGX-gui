@@ -105,11 +105,14 @@ public final class SeqExporter<T extends Number, U> implements SequenceExporterI
                         MGXMasterI master = null;
                         if (key instanceof SeqRunI) {
                             master = ((SeqRunI) key).getMaster();
+                            DownloadBaseI downloader = master.Sequence().createDownloaderByAttributes(e.getValue(), writer, false);
+                            downloaders.add(downloader);
                         } else if (key instanceof AssembledSeqRunI) {
                             master = ((AssembledSeqRunI) key).getMaster();
+                            DownloadBaseI downloader = master.Gene().createDownloaderByAttributes(e.getValue(), writer, false);
+                            downloaders.add(downloader);
                         }
-                        DownloadBaseI downloader = master.Sequence().createDownloaderByAttributes(e.getValue(), writer, false);
-                        downloaders.add(downloader);
+
                     }
 
                     MGXTask task = new DownloadTask("Export to " + target.getName(), downloaders, latch);

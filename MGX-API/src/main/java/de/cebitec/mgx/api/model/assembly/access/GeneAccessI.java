@@ -5,11 +5,16 @@
  */
 package de.cebitec.mgx.api.model.assembly.access;
 
+import de.cebitec.mgx.api.access.datatransfer.DownloadBaseI;
 import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.SequenceI;
 import de.cebitec.mgx.api.model.assembly.ContigI;
 import de.cebitec.mgx.api.model.assembly.GeneI;
+import de.cebitec.mgx.sequence.DNASequenceI;
+import de.cebitec.mgx.sequence.SeqWriterI;
 import java.util.Iterator;
+import java.util.Set;
 
 /**
  *
@@ -20,5 +25,7 @@ public interface GeneAccessI {
     public Iterator<GeneI> ByContig(ContigI a) throws MGXException;
 
     public SequenceI getDNASequence(GeneI gene) throws MGXException;
+
+    public DownloadBaseI createDownloaderByAttributes(Set<AttributeI> value, SeqWriterI<DNASequenceI> writer, boolean closeWriter) throws MGXException;
 
 }

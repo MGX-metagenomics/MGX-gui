@@ -8,6 +8,7 @@ import de.cebitec.mgx.gui.charts.basic.util.TickedSpiderWebPlot;
 import de.cebitec.mgx.api.groups.ImageExporterI;
 import de.cebitec.mgx.api.groups.SequenceExporterI;
 import de.cebitec.mgx.api.model.SeqRunI;
+import de.cebitec.mgx.api.model.assembly.AssembledSeqRunI;
 import de.cebitec.mgx.gui.charts.basic.customizer.SpiderWebChartCustomizer;
 import de.cebitec.mgx.gui.charts.basic.util.SVGChartPanel;
 import de.cebitec.mgx.gui.seqexporter.SeqExporter;
@@ -111,7 +112,10 @@ public class SpiderWebChart extends CategoricalViewerI<Long> implements Customiz
         for (Pair<GroupI, DistributionI<Double>> p : dists) {
             if (p.getSecond().getTotalClassifiedElements() > 0) {
                 if (p.getFirst().getContentClass().equals(SeqRunI.class)) {
-                    SequenceExporterI exp = new SeqExporter<>((GroupI<SeqRunI>)p.getFirst(), p.getSecond());
+                    SequenceExporterI exp = new SeqExporter<>((GroupI<SeqRunI>) p.getFirst(), p.getSecond());
+                    ret.add(exp);
+                } else if (p.getFirst().getContentClass().equals(AssembledSeqRunI.class)) {
+                    SequenceExporterI exp = new SeqExporter<>((GroupI<AssembledSeqRunI>) p.getFirst(), p.getSecond());
                     ret.add(exp);
                 }
             }
