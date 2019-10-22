@@ -632,9 +632,9 @@ public class VGroupManager implements VGroupManagerI {
                 } else if (pce.getSource() instanceof AssemblyGroupI) {
                     AssemblyGroupI vg = (AssemblyGroupI) pce.getSource();
 
-                    synchronized (vizGroups) {
-                        if (vizGroups.contains(vg)) {
-                            vizGroups.remove(vg);
+                    synchronized (assemblyGroups) {
+                        if (assemblyGroups.contains(vg)) {
+                            assemblyGroups.remove(vg);
                             vg.removePropertyChangeListener(this);
                         }
                     }
