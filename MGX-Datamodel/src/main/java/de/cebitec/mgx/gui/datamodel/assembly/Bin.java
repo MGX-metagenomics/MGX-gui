@@ -28,7 +28,7 @@ public class Bin extends BinI {
         setId(id);
         this.name = name;
         this.completeness = completeness;
-        this.contamination  = contamination;
+        this.contamination = contamination;
         this.n50 = n50;
         this.totalBp = totalBp;
         this.taxonomy = taxonomy;
@@ -84,6 +84,11 @@ public class Bin extends BinI {
 
     @Override
     public int compareTo(BinI o) {
-        return this.name.compareTo(o.getName());
+        if (getName().startsWith("Bin ") && o.getName().startsWith("Bin ")) {
+            long myId = Long.parseLong(getName().substring(4));
+            long otherId = Long.parseLong(o.getName().substring(4));
+            return Long.compare(myId, otherId);
+        }
+        return name.compareTo(o.getName());
     }
 }
