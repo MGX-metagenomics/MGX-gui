@@ -1,7 +1,6 @@
 package de.cebitec.mgx.gui.nodes;
 
 import de.cebitec.mgx.api.model.assembly.BinI;
-import de.cebitec.mgx.gui.nodefactory.ContigNodeFactory;
 import java.text.NumberFormat;
 import java.util.Locale;
 import javax.swing.Action;
@@ -16,11 +15,7 @@ import org.openide.util.lookup.Lookups;
 public class BinNode extends MGXNodeBase<BinI> {
 
     public BinNode(BinI a) {
-        this(a, new ContigNodeFactory(a));
-    }
-
-    private BinNode(BinI a, ContigNodeFactory snf) {
-        super(Children.create(snf, true), Lookups.fixed(a.getMaster(), a), a);
+        super(Children.LEAF, Lookups.fixed(a.getMaster(), a), a);
         super.setDisplayName(a.getName());
         //super.setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/Habitat.png");
         super.setShortDescription(getToolTipText(a));
