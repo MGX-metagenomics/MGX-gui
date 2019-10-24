@@ -14,7 +14,6 @@ import de.cebitec.mgx.api.model.assembly.BinI;
 import de.cebitec.mgx.api.model.assembly.ContigI;
 import de.cebitec.mgx.api.model.assembly.GeneCoverageI;
 import de.cebitec.mgx.api.model.assembly.GeneI;
-import de.cebitec.mgx.api.model.assembly.GeneObservationI;
 import de.cebitec.mgx.dnautils.DNAUtils;
 import de.cebitec.mgx.gui.binexplorer.internal.ContigViewController;
 import de.cebitec.mgx.gui.binexplorer.internal.FeaturePanel;

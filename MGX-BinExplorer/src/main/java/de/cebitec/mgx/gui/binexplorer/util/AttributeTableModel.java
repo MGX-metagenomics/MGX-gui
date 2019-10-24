@@ -28,7 +28,7 @@ public class AttributeTableModel extends DefaultTableModel {
     public AttributeTableModel() {
     }
 
-    public void update(GeneI gene) {
+    public synchronized void update(GeneI gene) {
         gobsList.clear();
         if (gene == null) {
             super.setRowCount(0);

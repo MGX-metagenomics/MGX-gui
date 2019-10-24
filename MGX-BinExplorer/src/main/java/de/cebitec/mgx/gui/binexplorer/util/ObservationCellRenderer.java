@@ -72,6 +72,10 @@ public class ObservationCellRenderer extends DefaultTableCellRenderer {
         @Override
         public void paint(Graphics g) {
             super.paint(g);
+            
+            if (gene == null || observation == null) {
+                return;
+            }
 
             Graphics2D g2 = (Graphics2D) g;
             int mid = getHeight() / 2;
