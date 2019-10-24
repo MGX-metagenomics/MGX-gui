@@ -35,7 +35,6 @@
                             de.cebitec.mgx.gui.visgroups.workers
                         </Export-Package>
                         <Import-Package>
-                            de.cebitec.mgx.common,
                             de.cebitec.mgx.api,
                             de.cebitec.mgx.api.groups,
                             de.cebitec.mgx.api.misc,
