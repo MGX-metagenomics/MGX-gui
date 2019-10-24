@@ -126,6 +126,7 @@ public final class BlobogramTopComponent extends TopComponent implements LookupL
 
         for (BinI b : bins) {
             XYSeries series = new XYSeries(b.getName());
+            series.setNotify(false);
             dataset.addSeries(series);
             MGXPool.getInstance().submit(new ContigFetcher(master, b, series, allProcessed));
         }
