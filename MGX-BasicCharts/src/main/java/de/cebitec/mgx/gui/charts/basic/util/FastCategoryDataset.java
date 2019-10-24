@@ -410,7 +410,7 @@ public class FastCategoryDataset extends AbstractDataset
         return clone;
     }
 
-    private class FastKeyedValues2D
+    private static class FastKeyedValues2D
             implements KeyedValues2D, PublicCloneable,
             Cloneable, Serializable {
 
