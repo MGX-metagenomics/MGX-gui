@@ -10,7 +10,6 @@ import de.cebitec.mgx.api.misc.Fetcher;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.assembly.AssembledSeqRunI;
-import de.cebitec.mgx.common.ToolScope;
 import java.util.Map;
 import java.util.Set;
 
@@ -29,7 +28,7 @@ public final class AssembledRunAttributeTypeFetcher extends Fetcher<Map<JobI, Se
     @Override
     protected Map<JobI, Set<AttributeTypeI>> doInBackground() throws Exception {
         MGXMasterI master = run.getMaster();
-        return master.SeqRun().getJobsAndAttributeTypes(run.getSeqRun(), ToolScope.GENE_ANNOTATION);
+        return master.SeqRun().getJobsAndAttributeTypes(run);
     }
 
 }

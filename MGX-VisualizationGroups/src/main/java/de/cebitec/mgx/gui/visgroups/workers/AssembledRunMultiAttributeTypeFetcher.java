@@ -9,9 +9,7 @@ import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.misc.Fetcher;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.JobI;
-import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.assembly.AssembledSeqRunI;
-import de.cebitec.mgx.common.ToolScope;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -33,7 +31,7 @@ public final class AssembledRunMultiAttributeTypeFetcher extends Fetcher<Map<Ass
         Map<AssembledSeqRunI, Map<JobI, Set<AttributeTypeI>>> ret = new HashMap<>();
         for (AssembledSeqRunI run : runs) {
             MGXMasterI master = run.getMaster();
-            Map<JobI, Set<AttributeTypeI>> data = master.SeqRun().getJobsAndAttributeTypes(run.getSeqRun(), ToolScope.GENE_ANNOTATION);
+            Map<JobI, Set<AttributeTypeI>> data = master.SeqRun().getJobsAndAttributeTypes(run);
             ret.put(run, data);
         }
         return ret;
