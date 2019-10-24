@@ -16,7 +16,6 @@ import de.cebitec.mgx.api.model.assembly.AssemblyI;
 import de.cebitec.mgx.api.model.qc.QCResultI;
 import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.client.exception.MGXDTOException;
-import de.cebitec.mgx.common.ToolScope;
 import de.cebitec.mgx.dto.dto.AttributeTypeDTO;
 import de.cebitec.mgx.dto.dto.JobAndAttributeTypes;
 import de.cebitec.mgx.dto.dto.QCResultDTO;
@@ -179,14 +178,39 @@ public class SeqRunAccess extends AccessBase<SeqRunI> implements SeqRunAccessI {
     }
 
     @Override
-    public Map<JobI, Set<AttributeTypeI>> getJobsAndAttributeTypes(SeqRunI run, ToolScope scope) throws MGXException {
+    public Map<JobI, Set<AttributeTypeI>> getJobsAndAttributeTypes(SeqRunI run) throws MGXException {
         Map<JobI, Set<AttributeTypeI>> ret = new HashMap<>();
+
         try {
-            for (JobAndAttributeTypes jat : getDTOmaster().SeqRun().getJobsAndAttributeTypes(run.getId(), scope)) {
+            for (JobAndAttributeTypes jat : getDTOmaster().SeqRun().getJobsAndAttributeTypes(run.getId())) {
                 JobI job = JobDTOFactory.getInstance().toModel(getMaster(), jat.getJob());
                 if (job.getSeqruns() == null) {
                     job.setSeqruns(new SeqRunI[]{run});
                 }
+
+                Set<AttributeTypeI> all = new HashSet<>();
+                for (AttributeTypeDTO atDTO : jat.getAttributeTypes().getAttributeTypeList()) {
+                    AttributeTypeI aType = AttributeTypeDTOFactory.getInstance().toModel(getMaster(), atDTO);
+                    all.add(aType);
+                }
+
+                ret.put(job, all);
+            }
+        } catch (MGXDTOException ex) {
+            throw new MGXException(ex);
+        }
+
+        return ret;
+    }
+
+    @Override
+    public Map<JobI, Set<AttributeTypeI>> getJobsAndAttributeTypes(AssembledSeqRunI run) throws MGXException {
+        Map<JobI, Set<AttributeTypeI>> ret = new HashMap<>();
+
+        try {
+            for (JobAndAttributeTypes jat : getDTOmaster().SeqRun().getJobsAndAttributeTypes(run.getId(), run.getAssembly().getId())) {
+                JobI job = JobDTOFactory.getInstance().toModel(getMaster(), jat.getJob());
+                job.setAssembly(run.getAssembly());
 
                 Set<AttributeTypeI> all = new HashSet<>();
                 for (AttributeTypeDTO atDTO : jat.getAttributeTypes().getAttributeTypeList()) {
