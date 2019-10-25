@@ -6,7 +6,6 @@
 package de.cebitec.mgx.gui.attributevisualization;
 
 import de.cebitec.mgx.api.groups.AssemblyGroupI;
-import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.groups.ReplicateGroupI;
 import de.cebitec.mgx.api.groups.VGroupManagerI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
