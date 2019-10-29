@@ -115,7 +115,7 @@ public class AssemblyGroup implements AssemblyGroupI {
     public Class<AssembledSeqRunI> getContentClass() {
         return AssembledSeqRunI.class;
     }
-    
+
     @Override
     public final int getId() {
         return id;
@@ -685,13 +685,15 @@ public class AssemblyGroup implements AssemblyGroupI {
                     JobI job = (JobI) evt.getSource();
                     SeqRunI[] runs = job.getSeqruns();
 
-                    Set<AssembledSeqRunI> myRuns = getContent();
-                    for (SeqRunI seqrun : runs) {
-                        // refresh data for this run
-                        for (AssembledSeqRunI arun : myRuns) {
-                            if (arun.getSeqRun().equals(seqrun)) {
-                                remove(arun);
-                                add(arun);
+                    if (runs != null) {
+                        Set<AssembledSeqRunI> myRuns = getContent();
+                        for (SeqRunI seqrun : runs) {
+                            // refresh data for this run
+                            for (AssembledSeqRunI arun : myRuns) {
+                                if (arun.getSeqRun().equals(seqrun)) {
+                                    remove(arun);
+                                    add(arun);
+                                }
                             }
                         }
                     }
