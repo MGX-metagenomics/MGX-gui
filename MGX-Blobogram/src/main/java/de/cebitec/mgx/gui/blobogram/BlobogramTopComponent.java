@@ -37,7 +37,11 @@ import org.jfree.data.xy.XYDataItem;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
+import org.netbeans.api.progress.ProgressHandle;
+import org.netbeans.api.progress.ProgressHandleFactory;
 import org.netbeans.api.settings.ConvertAsProperties;
+import org.openide.DialogDisplayer;
+import org.openide.NotifyDescriptor;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.util.Exceptions;
@@ -45,7 +49,6 @@ import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
 import org.openide.windows.TopComponent;
-import org.openide.util.NbBundle.Messages;
 import org.openide.util.Utilities;
 import org.openide.util.lookup.AbstractLookup;
 import org.openide.util.lookup.InstanceContent;
@@ -59,21 +62,16 @@ import org.openide.util.lookup.InstanceContent;
 )
 @TopComponent.Description(
         preferredID = "BlobogramTopComponent",
-        //iconBase="SET/PATH/TO/ICON/HERE",
+        iconBase = "de/cebitec/mgx/gui/blobogram/blobogram.png",
         persistenceType = TopComponent.PERSISTENCE_NEVER
 )
 @TopComponent.Registration(mode = "navigator", openAtStartup = false)
 @ActionID(category = "Window", id = "de.cebitec.mgx.gui.blobogram.BlobogramTopComponent")
 @ActionReference(path = "Menu/Window", position = 339)
 @TopComponent.OpenActionRegistration(
-        displayName = "#CTL_BlobogramAction",
+        displayName = "Blobogram",
         preferredID = "BlobogramTopComponent"
 )
-@Messages({
-    "CTL_BlobogramAction=Blobogram",
-    "CTL_BlobogramTopComponent=Blobogram Window",
-    "HINT_BlobogramTopComponent=This is a Blobogram window"
-})
 public final class BlobogramTopComponent extends TopComponent implements LookupListener {
 
     private final InstanceContent content = new InstanceContent();
@@ -85,7 +83,7 @@ public final class BlobogramTopComponent extends TopComponent implements LookupL
 
     public BlobogramTopComponent() {
         initComponents();
-        setName(Bundle.CTL_BlobogramTopComponent());
+        setName("Blobogram");
         super.setToolTipText("Blobogram");
         lookup = new AbstractLookup(content);
         associateLookup(lookup);
@@ -94,105 +92,144 @@ public final class BlobogramTopComponent extends TopComponent implements LookupL
         update();
     }
 
+    private static BlobogramTopComponent instance = null;
+
+    public static BlobogramTopComponent getDefault() {
+        if (instance == null) {
+            instance = new BlobogramTopComponent();
+        }
+        return instance;
+    }
+
     private void update() {
         MGXMasterI master = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
 
         Collection<? extends AssemblyI> assemblies = resultAssembly.allInstances();
         Collection<BinI> bins = new ArrayList<>();
 
-        if (!assemblies.isEmpty()) {
-            AssemblyI assembly = assemblies.toArray(new AssemblyI[]{})[0];
-            Iterator<BinI> asmIter = null;
-            try {
-                asmIter = master.Bin().ByAssembly(assembly);
-            } catch (MGXException ex) {
-                Exceptions.printStackTrace(ex);
-            }
-            while (asmIter != null && asmIter.hasNext()) {
-                bins.add(asmIter.next());
-            }
-        } else if (!resultBin.allInstances().isEmpty()) {
-            bins.addAll(resultBin.allInstances());
-        }
-        
-        if (bins.isEmpty()) {
-            return;
-        }
-
-        XYSeriesCollection dataset = new XYSeriesCollection();
-        dataset.setNotify(false);
-
-        CountDownLatch allProcessed = new CountDownLatch(bins.size());
-
-        for (BinI b : bins) {
-            XYSeries series = new XYSeries(b.getName());
-            series.setNotify(false);
-            dataset.addSeries(series);
-            MGXPool.getInstance().submit(new ContigFetcher(master, b, series, allProcessed));
-        }
-
-        try {
-            allProcessed.await();
-        } catch (InterruptedException ex) {
-            Exceptions.printStackTrace(ex);
-            return;
-        }
-
-        dataset.setNotify(true);
-
-        XYToolTipGenerator tooltipGenerator = new XYToolTipGenerator() {
-
+        MGXPool.getInstance().submit(new Runnable() {
             @Override
-            public String generateToolTip(XYDataset xyd, int series, int item) {
-                XYSeriesCollection dataset = (XYSeriesCollection) xyd;
-                XYDataItem dataItem = dataset.getSeries(series).getDataItem(item);
-                ContigItem ci = (ContigItem) dataItem;
-                return ci.getTooltip();
+            public void run() {
+                if (!assemblies.isEmpty()) {
+                    AssemblyI assembly = assemblies.toArray(new AssemblyI[]{})[0];
+                    Iterator<BinI> asmIter = null;
+                    try {
+                        asmIter = master.Bin().ByAssembly(assembly);
+                    } catch (MGXException ex) {
+                        Exceptions.printStackTrace(ex);
+                    }
+                    while (asmIter != null && asmIter.hasNext()) {
+                        bins.add(asmIter.next());
+                    }
+                } else if (!resultBin.allInstances().isEmpty()) {
+                    bins.addAll(resultBin.allInstances());
+                }
+
+                if (bins.isEmpty()) {
+                    return;
+                }
+
+                // make sure all bins belong to the same assembly
+                // for this, check assembly id (for different assemblies
+                // within one project) and equality of master instances
+                // (for assemblies with same ids but in different projects)
+                long asmId = -1;
+                MGXMasterI m = null;
+                boolean allBinsBelongToSameAssembly = true;
+                for (BinI b : bins) {
+                    if (asmId == -1) {
+                        asmId = b.getAssemblyId();
+                        m = b.getMaster();
+                    } else {
+                        if (asmId != b.getAssemblyId() || !m.equals(b.getMaster())) {
+                            allBinsBelongToSameAssembly = false;
+                        }
+                    }
+                }
+                if (!allBinsBelongToSameAssembly) {
+                    NotifyDescriptor nd = new NotifyDescriptor("Selected bins belong to different assemblies.", "Error",
+                            NotifyDescriptor.DEFAULT_OPTION, NotifyDescriptor.ERROR_MESSAGE, null, null);
+                    DialogDisplayer.getDefault().notify(nd);
+                    return;
+                }
+                XYSeriesCollection dataset = new XYSeriesCollection();
+                dataset.setNotify(false);
+
+                CountDownLatch allProcessed = new CountDownLatch(bins.size());
+
+                for (BinI b : bins) {
+                    ProgressHandle ph = ProgressHandleFactory.createHandle("Fetching contigs for " + b.getName(), null, null);
+                    XYSeries series = new XYSeries(b.getName());
+                    series.setNotify(false);
+                    dataset.addSeries(series);
+                    MGXPool.getInstance().submit(new ContigFetcher(master, b, series, ph, allProcessed));
+                }
+
+                try {
+                    allProcessed.await();
+                } catch (InterruptedException ex) {
+                    Exceptions.printStackTrace(ex);
+                    return;
+                }
+
+                dataset.setNotify(true);
+
+                XYToolTipGenerator tooltipGenerator = new XYToolTipGenerator() {
+
+                    @Override
+                    public String generateToolTip(XYDataset xyd, int series, int item) {
+                        XYSeriesCollection dataset = (XYSeriesCollection) xyd;
+                        XYDataItem dataItem = dataset.getSeries(series).getDataItem(item);
+                        ContigItem ci = (ContigItem) dataItem;
+                        return ci.getTooltip();
+                    }
+                };
+
+                JFreeChart chart = ChartFactory.createScatterPlot(null, "GC", "RPKM", dataset, PlotOrientation.VERTICAL, false, true, false);
+                chart.setBorderPaint(Color.WHITE);
+                chart.setBackgroundPaint(Color.WHITE);
+
+                XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer(false, true) {
+
+                    private final Ellipse2D.Float circle = new Ellipse2D.Float();
+
+                    @Override
+                    public Shape getItemShape(int row, int column) {
+                        XYSeries series = dataset.getSeries(row);
+                        ContigItem item = (ContigItem) series.getDataItem(column);
+                        int length_bp = item.getContig().getLength();
+                        float size = (float) (Math.log10(length_bp));
+                        circle.height = 0.1f + size * size * size * size * size / 160;
+                        circle.width = circle.height;
+                        return circle;
+                    }
+
+                };
+                renderer.setBaseToolTipGenerator(tooltipGenerator);
+
+                List<Color> palette = ColorPalette.pick(bins.size());
+                for (int i = 0; i < bins.size(); i++) {
+                    renderer.setSeriesPaint(i, palette.get(i));
+                }
+
+                if (currentPanel != null) {
+                    BlobogramTopComponent.this.remove(currentPanel);
+                    content.set(Collections.emptyList(), null);
+                }
+
+                currentPanel = new SVGChartPanel(chart);
+                currentPanel.setDisplayToolTips(true);
+                XYPlot plot = (XYPlot) chart.getPlot();
+                plot.setBackgroundPaint(Color.WHITE);
+                plot.setRenderer(renderer);
+
+                chart.getRenderingHints().put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                BlobogramTopComponent.this.add(currentPanel, BorderLayout.CENTER);
+                content.add(JFreeChartUtil.getImageExporter(chart));
+
             }
-        };
-
-        JFreeChart chart = ChartFactory.createScatterPlot(null, "GC", "RPKM", dataset, PlotOrientation.VERTICAL, false, true, false);
-        chart.setBorderPaint(Color.WHITE);
-        chart.setBackgroundPaint(Color.WHITE);
-
-        XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer(false, true) {
-
-            private final Ellipse2D.Float circle = new Ellipse2D.Float();
-
-            @Override
-            public Shape getItemShape(int row, int column) {
-                XYSeries series = dataset.getSeries(row);
-                ContigItem item = (ContigItem) series.getDataItem(column);
-                int length_bp = item.getContig().getLength();
-                float size = (float) (Math.log10(length_bp));
-                circle.height = 0.1f + size * size * size * size * size / 160;
-                circle.width = circle.height;
-                return circle;
-            }
-
-        };
-        renderer.setBaseToolTipGenerator(tooltipGenerator);
-
-        List<Color> palette = ColorPalette.pick(bins.size());
-        for (int i = 0; i < bins.size(); i++) {
-            renderer.setSeriesPaint(i, palette.get(i));
-        }
-
-        if (currentPanel != null) {
-            this.remove(currentPanel);
-            content.set(Collections.emptyList(), null);
-        }
-
-        currentPanel = new SVGChartPanel(chart);
-        currentPanel.setDisplayToolTips(true);
-        XYPlot plot = (XYPlot) chart.getPlot();
-        plot.setBackgroundPaint(Color.WHITE);
-        plot.setRenderer(renderer);
-
-        chart.getRenderingHints().put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-        this.add(currentPanel, BorderLayout.CENTER);
-        content.add(JFreeChartUtil.getImageExporter(chart));
+        });
 
     }
 
@@ -241,16 +278,20 @@ public final class BlobogramTopComponent extends TopComponent implements LookupL
         private final BinI bin;
         private final XYSeries series;
         private final CountDownLatch done;
+        private final ProgressHandle ph;
 
-        public ContigFetcher(MGXMasterI master, BinI bin, XYSeries series, CountDownLatch cdl) {
+        public ContigFetcher(MGXMasterI master, BinI bin, XYSeries series, ProgressHandle ph, CountDownLatch cdl) {
             this.master = master;
             this.bin = bin;
             this.series = series;
             this.done = cdl;
+            this.ph = ph;
         }
 
         @Override
         public void run() {
+            ph.start();
+            ph.switchToIndeterminate();
             Iterator<ContigI> contigIter = null;
             try {
                 contigIter = master.Contig().ByBin(bin);
@@ -265,6 +306,7 @@ public final class BlobogramTopComponent extends TopComponent implements LookupL
                 }
             }
             done.countDown();
+            ph.finish();
         }
 
     }
