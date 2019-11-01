@@ -62,6 +62,11 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
         super.repaint();
     }
 
+    public void clear() {
+        regs.clear();
+        super.repaint();
+    }
+
     @Override
     public void draw(Graphics2D g2) {
 //        // clear image
@@ -93,13 +98,12 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
         while (vc.getIntervalLength() / separate > 10) {
             separate += 500;
         }
-        //int[] bounds = vc.getBounds();
+
         int firstpos = bounds[0];
         while (firstpos % separate != 0) {
             firstpos++;
         }
         for (int i = firstpos; i < bounds[1]; i += separate) {
-            //if (i % separate == 0) {
             float pos = bp2px(i);
             g2.drawLine((int) pos, midY - 3, (int) pos, midY + 3);
             String text1 = String.valueOf(i);
@@ -107,9 +111,6 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
             //}
         }
 
-//        if (regs.isEmpty()) {
-//            return;
-//        }
         synchronized (regs) {
 
             /*

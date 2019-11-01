@@ -107,6 +107,11 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
     private boolean isActivated = false;
     private ContigViewController vc = null;
     private GeneI selectedFeature = null;
+    private MGXMasterI currentMaster = null;
+    private final FastCategoryDataset dataset = new FastCategoryDataset();
+    private JFreeChart chart = null;
+    private final TLongObjectMap<String> runNames = new TLongObjectHashMap<>();
+    private FeaturePanel fp = null;
 
     public BinExplorerTopComponent() {
         initComponents();
@@ -184,6 +189,15 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
 
         dnaseq.addActionListener(buttonListener);
         aaseq.addActionListener(buttonListener);
+    }
+
+    private static BinExplorerTopComponent instance = null;
+
+    public static BinExplorerTopComponent getDefault() {
+        if (instance == null) {
+            instance = new BinExplorerTopComponent();
+        }
+        return instance;
     }
 
     /**
@@ -439,12 +453,13 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
                 frame.setText("");
                 geneLength.setText("");
                 selectedFeature = null;
-                geneCovPanel.removeAll();
                 tableModel.update(null);
                 vc = new ContigViewController(contig);
                 vc.addPropertyChangeListener(this);
-                FeaturePanel fp = new FeaturePanel(vc);
-                contentPanel.removeAll();
+                if (fp != null) {
+                    contentPanel.remove(fp);
+                }
+                fp = new FeaturePanel(vc);
                 contentPanel.setLayout(new BorderLayout());
                 contentPanel.add(fp, BorderLayout.CENTER);
                 setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
@@ -464,6 +479,15 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
             newBin = bin;
         }
         if (newBin != null && !newBin.equals(currentBin)) {
+            setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+            if (fp != null) {
+                fp.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+                fp.clear();
+            }
+            contigModel.clear();
+            contigList.repaint();
+            tableModel.clear();
+            geneCovPanel.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             if (currentBin != null) {
                 currentBin.removePropertyChangeListener(this);
             }
@@ -478,14 +502,27 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
             frame.setText("");
             geneLength.setText("");
             selectedFeature = null;
-            tableModel.update(null);
-            contigModel.setBin(currentBin);
-            contigModel.update();
+
+            MGXPool.getInstance().submit(new Runnable() {
+                @Override
+                public void run() {
+                    tableModel.update(null);
+                    contigModel.setBin(currentBin);
+                    contigModel.update();
+                    setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                    if (fp != null) {
+                        fp.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                    }
+                    geneCovPanel.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                }
+            });
+
         }
 
         if (currentBin == null) {
             contigModel.clear();
         }
+
     }
 
     @Override
@@ -517,10 +554,22 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
             if (evt.getNewValue() == selectedFeature) {
                 return;
             }
+
+            setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+            fp.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+            geneCovPanel.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+
+            dataset.clear();
+            geneCovPanel.repaint();
+
             tableModel.update(null);
             selectedFeature = (GeneI) evt.getNewValue();
 
-            final MGXMasterI master = selectedFeature.getMaster();
+            MGXMasterI master = selectedFeature.getMaster();
+            if (!master.equals(currentMaster)) {
+                currentMaster = master;
+                runNames.clear();
+            }
 
             geneName.setText(contigModel.getSelectedItem().getName() + "_" + selectedFeature.getId());
             geneStart.setText(NumberFormat.getInstance(Locale.US).format(selectedFeature.getStart()));
@@ -544,19 +593,16 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
                 public void run() {
                     try {
                         List<GeneCoverageI> all = new ArrayList<>();
-                        Iterator<GeneCoverageI> iter = master.GeneCoverage().ByGene(selectedFeature);
+                        Iterator<GeneCoverageI> iter = currentMaster.GeneCoverage().ByGene(selectedFeature);
                         while (iter != null && iter.hasNext()) {
                             all.add(iter.next());
                         }
                         Collections.sort(all);
 
-                        TLongObjectMap<String> runNames = new TLongObjectHashMap<>();
-
-                        FastCategoryDataset dataset = new FastCategoryDataset();
                         dataset.setNotify(false);
                         for (GeneCoverageI gc : all) {
                             if (!runNames.containsKey(gc.getRunId())) {
-                                SeqRunI run = master.SeqRun().fetch(gc.getRunId());
+                                SeqRunI run = currentMaster.SeqRun().fetch(gc.getRunId());
                                 runNames.put(gc.getRunId(), run.getName());
                                 run.deleted();
                             }
@@ -564,39 +610,44 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
                         }
                         dataset.setNotify(true);
 
-                        JFreeChart chart = ChartFactory.createBarChart("", "", "", dataset, PlotOrientation.HORIZONTAL, false, true, false);
+                        if (chart == null) {
+                            chart = ChartFactory.createBarChart("", "", "", dataset, PlotOrientation.HORIZONTAL, false, true, false);
 
-                        chart.setBorderPaint(Color.WHITE);
-                        chart.setBackgroundPaint(Color.WHITE);
-                        chart.setAntiAlias(true);
+                            chart.setBorderPaint(Color.WHITE);
+                            chart.setBackgroundPaint(Color.WHITE);
+                            chart.setAntiAlias(true);
 
-                        CategoryPlot plot = chart.getCategoryPlot();
-                        CategoryAxis domainAxis = plot.getDomainAxis();
-                        domainAxis.setCategoryMargin(0);
-                        domainAxis.setCategoryLabelPositions(CategoryLabelPositions.STANDARD);
+                            CategoryPlot plot = chart.getCategoryPlot();
+                            CategoryAxis domainAxis = plot.getDomainAxis();
+                            domainAxis.setCategoryMargin(0);
+                            domainAxis.setCategoryLabelPositions(CategoryLabelPositions.STANDARD);
 
-                        CategoryItemRenderer renderer = plot.getRenderer();
-                        renderer.setBaseItemLabelGenerator(new StandardCategoryItemLabelGenerator());
-                        renderer.setBaseItemLabelsVisible(true);
-                        ItemLabelPosition position = new ItemLabelPosition(ItemLabelAnchor.INSIDE10,
-                                TextAnchor.TOP_CENTER);
-                        renderer.setBasePositiveItemLabelPosition(position);
+                            CategoryItemRenderer renderer = plot.getRenderer();
+                            renderer.setBaseItemLabelGenerator(new StandardCategoryItemLabelGenerator());
+                            renderer.setBaseItemLabelsVisible(true);
+                            ItemLabelPosition position = new ItemLabelPosition(ItemLabelAnchor.INSIDE10,
+                                    TextAnchor.TOP_CENTER);
+                            renderer.setBasePositiveItemLabelPosition(position);
 
-                        BarRenderer br = (BarRenderer) plot.getRenderer();
+                            BarRenderer br = (BarRenderer) plot.getRenderer();
 
-                        br.setBaseToolTipGenerator(new StandardCategoryToolTipGenerator("<html>Sequencing run: {1}<br>Mapped reads: {2}</html>", NumberFormat.getInstance(Locale.US)));
-                        br.setItemMargin(0);
-                        br.setMaximumBarWidth(.2); // set maximum width to 20% of chart
+                            br.setBaseToolTipGenerator(new StandardCategoryToolTipGenerator("<html>Sequencing run: {1}<br>Mapped reads: {2}</html>", NumberFormat.getInstance(Locale.US)));
+                            br.setItemMargin(0);
+                            br.setMaximumBarWidth(.2); // set maximum width to 20% of chart
 
-                        // colors
-                        for (int i = 0; i < all.size(); i++) {
-                            renderer.setSeriesPaint(i, Color.BLUE);
+                            // colors
+                            for (int i = 0; i < all.size(); i++) {
+                                renderer.setSeriesPaint(i, Color.BLUE);
+                            }
+                            SVGChartPanel svgChartPanel = new SVGChartPanel(chart);
+                            geneCovPanel.removeAll();
+                            geneCovPanel.setLayout(new BorderLayout());
+                            geneCovPanel.add(svgChartPanel, BorderLayout.CENTER);
                         }
-                        SVGChartPanel svgChartPanel = new SVGChartPanel(chart);
-                        geneCovPanel.removeAll();
-                        geneCovPanel.setLayout(new BorderLayout());
-                        geneCovPanel.add(svgChartPanel, BorderLayout.CENTER);
                         geneCovPanel.repaint();
+                        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                        fp.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                        geneCovPanel.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 
                     } catch (MGXException ex) {
                         Exceptions.printStackTrace(ex);
