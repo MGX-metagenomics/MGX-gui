@@ -27,7 +27,7 @@ public class AttributeDTOFactory extends DTOConversionBase<AttributeI, Attribute
         Builder b = AttributeDTO.newBuilder();
         b.setAttributeTypeId(a.getAttributeType().getId())
                 .setValue(a.getValue())
-                .setJobid(a.getJobId());
+                .setJobId(a.getJobId());
 
         if (a.getId() != Identifiable.INVALID_IDENTIFIER) {
             b.setId(a.getId());
@@ -42,7 +42,7 @@ public class AttributeDTOFactory extends DTOConversionBase<AttributeI, Attribute
     @Override
     public final AttributeI toModel(MGXMasterI m, AttributeDTO dto) {
         AttributeI a = new Attribute()
-                .setJobId(dto.getJobid());
+                .setJobId(dto.getJobId());
         a.setValue(dto.getValue());
         if (dto.getParentId() != 0) {
             a.setParentID(dto.getParentId());
