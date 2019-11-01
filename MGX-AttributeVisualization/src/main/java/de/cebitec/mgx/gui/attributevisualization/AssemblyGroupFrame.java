@@ -220,6 +220,7 @@ public class AssemblyGroupFrame extends GroupFrameBase<AssemblyGroupI, Assembled
             case ReplicateGroupI.REPLICATEGROUP_ACTIVATED:
             case ReplicateGroupI.REPLICATEGROUP_DEACTIVATED:
             case VGroupManagerI.REPLICATEGROUP_SELECTION_CHANGED:
+            case VGroupManagerI.ASMGROUP_SELECTION_CHANGED:
                 // ignore
                 break;
             default:
