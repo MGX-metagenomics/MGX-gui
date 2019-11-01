@@ -5,11 +5,12 @@
  */
 package de.cebitec.mgx.gui.charts.basic.util;
 
+import gnu.trove.map.TObjectIntMap;
+import gnu.trove.map.hash.TObjectIntHashMap;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import org.jfree.chart.util.ParamChecks;
 import org.jfree.data.DefaultKeyedValues;
 import org.jfree.data.KeyedValues2D;
@@ -432,12 +433,12 @@ public class FastCategoryDataset extends AbstractDataset
         /**
          * The row key index map
          */
-        private Map<Object, Integer> rowKeyIndexMap;
+        private TObjectIntMap<Object> rowKeyIndexMap;
 
         /**
          * The column key index map
          */
-        private Map<Object, Integer> columnKeyIndexMap;
+        private TObjectIntMap<Object> columnKeyIndexMap;
 
         /**
          * The row data.
@@ -465,8 +466,8 @@ public class FastCategoryDataset extends AbstractDataset
             this.rowKeys = new java.util.ArrayList<>();
             this.columnKeys = new java.util.ArrayList<>();
             this.rows = new java.util.ArrayList<>();
-            this.rowKeyIndexMap = new java.util.HashMap<>();
-            this.columnKeyIndexMap = new java.util.HashMap<>();
+            this.rowKeyIndexMap = new TObjectIntHashMap<>();
+            this.columnKeyIndexMap = new TObjectIntHashMap<>();
             this.sortRowKeys = sortRowKeys;
         }
 
@@ -949,9 +950,9 @@ public class FastCategoryDataset extends AbstractDataset
             clone.columnKeys = new java.util.ArrayList<>(this.columnKeys);
             clone.rowKeys = new java.util.ArrayList<>(this.rowKeys);
             clone.columnKeyIndexMap
-                    = new java.util.HashMap<>(this.columnKeyIndexMap);
+                    = new TObjectIntHashMap<>(this.columnKeyIndexMap);
             clone.rowKeyIndexMap
-                    = new java.util.HashMap<>(this.rowKeyIndexMap);
+                    = new TObjectIntHashMap<>(this.rowKeyIndexMap);
             // but the row data requires a deep copy
             clone.rows = (List) ObjectUtilities.deepClone(this.rows);
             return clone;
