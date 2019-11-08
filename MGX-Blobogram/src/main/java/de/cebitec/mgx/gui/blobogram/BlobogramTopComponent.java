@@ -16,6 +16,7 @@ import de.cebitec.mgx.gui.pool.MGXPool;
 import de.cebitec.mgx.gui.swingutils.util.ColorPalette;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
@@ -44,6 +45,7 @@ import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.util.Cancellable;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
@@ -102,6 +104,11 @@ public final class BlobogramTopComponent extends TopComponent implements LookupL
     }
 
     private void update() {
+
+        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        if (currentPanel != null) {
+            currentPanel.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        }
         MGXMasterI master = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
 
         Collection<? extends AssemblyI> assemblies = resultAssembly.allInstances();
@@ -158,11 +165,14 @@ public final class BlobogramTopComponent extends TopComponent implements LookupL
                 CountDownLatch allProcessed = new CountDownLatch(bins.size());
 
                 for (BinI b : bins) {
-                    ProgressHandle ph = ProgressHandleFactory.createHandle("Fetching contigs for " + b.getName(), null, null);
                     XYSeries series = new XYSeries(b.getName());
                     series.setNotify(false);
                     dataset.addSeries(series);
-                    MGXPool.getInstance().submit(new ContigFetcher(master, b, series, ph, allProcessed));
+                    ContigFetcher fetcher = new ContigFetcher(master, b, series, allProcessed);
+                    ProgressHandle ph = ProgressHandleFactory.createHandle("Fetching contigs for " + b.getName(), fetcher, null);
+                    fetcher.setProgressHandle(ph);
+
+                    MGXPool.getInstance().submit(fetcher);
                 }
 
                 try {
@@ -228,6 +238,11 @@ public final class BlobogramTopComponent extends TopComponent implements LookupL
                 BlobogramTopComponent.this.add(currentPanel, BorderLayout.CENTER);
                 content.add(JFreeChartUtil.getImageExporter(chart));
 
+                if (currentPanel != null) {
+                    currentPanel.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                }
+                setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+
             }
         });
 
@@ -272,19 +287,23 @@ public final class BlobogramTopComponent extends TopComponent implements LookupL
         update();
     }
 
-    private static class ContigFetcher implements Runnable {
+    private static class ContigFetcher implements Runnable, Cancellable {
 
         private final MGXMasterI master;
         private final BinI bin;
         private final XYSeries series;
         private final CountDownLatch done;
-        private final ProgressHandle ph;
+        private ProgressHandle ph;
+        private volatile boolean cancelled = false;
 
-        public ContigFetcher(MGXMasterI master, BinI bin, XYSeries series, ProgressHandle ph, CountDownLatch cdl) {
+        public ContigFetcher(MGXMasterI master, BinI bin, XYSeries series, CountDownLatch cdl) {
             this.master = master;
             this.bin = bin;
             this.series = series;
             this.done = cdl;
+        }
+
+        public void setProgressHandle(ProgressHandle ph) {
             this.ph = ph;
         }
 
@@ -298,15 +317,31 @@ public final class BlobogramTopComponent extends TopComponent implements LookupL
             } catch (MGXException ex) {
                 Exceptions.printStackTrace(ex);
             }
-            while (contigIter != null && contigIter.hasNext()) {
+            while (!cancelled && contigIter != null && contigIter.hasNext()) {
                 ContigI c = contigIter.next();
                 XYDataItem item = new ContigItem(bin, c);
                 synchronized (series) {
                     series.add(item, false);
                 }
             }
+            
+            series.setNotify(true);
+
+            if (cancelled) {
+                series.clear();
+            }
             done.countDown();
             ph.finish();
+        }
+
+        @Override
+        public boolean cancel() {
+            cancelled = true;
+            return true;
+        }
+
+        public boolean isCancelled() {
+            return cancelled;
         }
 
     }
