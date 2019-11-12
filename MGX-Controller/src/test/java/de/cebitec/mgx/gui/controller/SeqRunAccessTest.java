@@ -13,7 +13,6 @@ import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.JobParameterI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.TermI;
-import de.cebitec.mgx.common.ToolScope;
 import de.cebitec.mgx.gui.util.TestInput;
 import de.cebitec.mgx.gui.util.TestMaster;
 import de.cebitec.mgx.seqstorage.FastaWriter;
@@ -90,7 +89,7 @@ public class SeqRunAccessTest {
         System.out.println("getJobsAndAttributeTypes");
         MGXMasterI m = TestMaster.getRO();
         SeqRunI sr1 = m.SeqRun().fetch(1);
-        Map<JobI, Set<AttributeTypeI>> data = m.SeqRun().getJobsAndAttributeTypes(sr1, ToolScope.READ);
+        Map<JobI, Set<AttributeTypeI>> data = m.SeqRun().getJobsAndAttributeTypes(sr1);
         assertNotNull(data);
         assertEquals(10, data.size());
 

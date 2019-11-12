@@ -11,7 +11,6 @@ import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.common.JobState;
-import de.cebitec.mgx.common.ToolScope;
 import de.cebitec.mgx.gui.util.TestMaster;
 import java.util.Map;
 import java.util.Set;
@@ -59,7 +58,7 @@ public class AttributeTypeAccessTest {
         MGXMasterI master = TestMaster.getRO();
         SeqRunI run = master.SeqRun().fetch(1);
         assertEquals("dataset1", run.getName());
-        Map<JobI, Set<AttributeTypeI>> map = master.SeqRun().getJobsAndAttributeTypes(run, ToolScope.READ);
+        Map<JobI, Set<AttributeTypeI>> map = master.SeqRun().getJobsAndAttributeTypes(run);
         assertNotNull(map);
         assertEquals(10, map.size());
 
