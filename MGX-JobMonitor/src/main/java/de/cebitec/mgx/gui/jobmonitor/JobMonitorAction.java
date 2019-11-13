@@ -19,8 +19,8 @@ import org.openide.windows.WindowManager;
         iconBase = "de/cebitec/mgx/gui/jobmonitor/JobMonitor.png",
         displayName = "#CTL_JobMonitorAction1")
 @ActionReferences({
-    //@ActionReference(path = "Menu/File", position = 1725),
-    @ActionReference(path = "Toolbars/UndoRedo", position = 300)
+    @ActionReference(path = "Toolbars/UndoRedo", position = 300),
+    @ActionReference(path = "Shortcuts", name = "D-J")
 })
 @Messages("CTL_JobMonitorAction1=Job Monitor")
 public final class JobMonitorAction implements ActionListener {
