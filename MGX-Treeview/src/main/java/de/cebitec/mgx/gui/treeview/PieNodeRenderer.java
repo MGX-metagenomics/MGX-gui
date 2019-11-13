@@ -12,6 +12,8 @@ import java.awt.geom.Arc2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.RectangularShape;
 import java.awt.image.BufferedImage;
+import java.text.NumberFormat;
+import java.util.Locale;
 import java.util.Map;
 import org.apache.commons.math3.util.FastMath;
 import prefuse.Constants;
@@ -84,8 +86,10 @@ public class PieNodeRenderer extends LabelRenderer {
         FontRenderContext frc = g2.getFontRenderContext();
         FontMetrics fontMetrics = g2.getFontMetrics();
         int height = fontMetrics.getHeight();
-        int width = fontMetrics.stringWidth(String.valueOf(totalCount));
-        TextLayout textlayout = new TextLayout(String.valueOf(totalCount), g2.getFont(), frc);
+        String formattedCount = NumberFormat.getInstance(Locale.US).format(totalCount);
+
+        int width = fontMetrics.stringWidth(formattedCount);
+        TextLayout textlayout = new TextLayout(formattedCount, g2.getFont(), frc);
         textlayout.draw(g2, areaX + (size / 2 - width / 2), areaY - 1 + (size / 2 + height / 2 - 1));
 
         super.render(g2, item); // add the label itself
