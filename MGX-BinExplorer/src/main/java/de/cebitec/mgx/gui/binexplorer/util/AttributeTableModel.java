@@ -85,7 +85,7 @@ public class AttributeTableModel extends DefaultTableModel {
             case 3:
                 return "Stop";
             case 4:
-                return "";
+                return "Query coverage";
         }
         return ""; // not reached
     }
