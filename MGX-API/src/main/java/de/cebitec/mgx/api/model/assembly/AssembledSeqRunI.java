@@ -33,6 +33,8 @@ public abstract class AssembledSeqRunI extends Identifiable<AssembledSeqRunI> {
 
     public abstract SeqRunI getSeqRun();
     
+    public abstract AssemblyI getAssembly();
+    
     @Override
     public abstract String toString();
 

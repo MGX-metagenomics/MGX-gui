@@ -44,7 +44,7 @@ public class SVGChartPanel extends ChartPanel {
     public SVGChartPanel(JFreeChart chart, int width, int height, int minimumDrawWidth, int minimumDrawHeight, int maximumDrawWidth, int maximumDrawHeight, boolean useBuffer, boolean properties, boolean copy, boolean save, boolean print, boolean zoom, boolean tooltips) {
         super(chart, width, height, minimumDrawWidth, minimumDrawHeight, maximumDrawWidth, maximumDrawHeight, useBuffer, properties, copy, save, print, zoom, tooltips);
     }
-
+    
     @Override
     @SuppressWarnings("unchecked")
     public void paintComponent(Graphics g) {

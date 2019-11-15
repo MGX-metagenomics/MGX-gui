@@ -97,6 +97,7 @@ public abstract class BaseModel<T> extends AbstractListModel<T> implements Combo
         synchronized (content) {
             if (!content.isEmpty()) {
                 content.clear();
+                index = -1;
                 fireContentsChanged();
             }
         }
