@@ -11,6 +11,8 @@ import de.cebitec.mgx.api.model.assembly.GeneI;
 import de.cebitec.mgx.api.model.assembly.GeneObservationI;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -27,7 +29,7 @@ public class AttributeTableModel extends DefaultTableModel {
 
     public AttributeTableModel() {
     }
-    
+
     public void clear() {
         gobsList.clear();
         super.setRowCount(0);
@@ -46,6 +48,20 @@ public class AttributeTableModel extends DefaultTableModel {
                 GeneObservationI gobs = iter.next();
                 gobsList.add(gobs);
             }
+
+            Collections.sort(gobsList, new Comparator<GeneObservationI>() {
+                @Override
+                public int compare(GeneObservationI t1, GeneObservationI t2) {
+                    int ret = t1.getAttributeTypeName().compareTo(t2.getAttributeTypeName());
+                    // for equal attribute types, sort by query range
+                    if (ret == 0) {
+                        int min1 = Math.min(t1.getStart(), t1.getStop());
+                        int min2 = Math.min(t2.getStart(), t2.getStop());
+                        ret = Integer.compare(min1, min2);
+                    }
+                    return ret;
+                }
+            });
             super.setRowCount(gobsList.size());
 
         } catch (MGXException ex) {
@@ -107,5 +123,5 @@ public class AttributeTableModel extends DefaultTableModel {
         }
         return super.getColumnClass(columnIndex);
     }
-    
+
 }
