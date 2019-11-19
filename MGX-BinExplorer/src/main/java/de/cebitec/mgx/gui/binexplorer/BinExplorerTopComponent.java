@@ -83,7 +83,7 @@ import org.openide.util.Utilities;
 )
 @TopComponent.Description(
         preferredID = "BinExplorerTopComponent",
-        //iconBase="SET/PATH/TO/ICON/HERE",
+        iconBase="de/cebitec/mgx/gui/binexplorer/binexplorer.png",
         persistenceType = TopComponent.PERSISTENCE_NEVER
 )
 @TopComponent.Registration(mode = "editor", openAtStartup = false)
