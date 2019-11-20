@@ -11,6 +11,7 @@ import de.cebitec.mgx.api.model.assembly.ContigI;
 import de.cebitec.mgx.gui.swingutils.BaseModel;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import org.openide.util.Exceptions;
@@ -47,8 +48,15 @@ public class ContigModel extends BaseModel<ContigI> {
                 tmp.add(iter.next());
             }
         }
+        
+        // sort by contig length, descending
+        Collections.sort(tmp, new Comparator<ContigI>() {
+            @Override
+            public int compare(ContigI t1, ContigI t2) {
+                return Integer.compare(t2.getLength(), t1.getLength());
+            }
 
-        Collections.sort(tmp);
+        });
         addAll(tmp);
         if (!tmp.isEmpty()) {
             setSelectedItem(tmp.get(0));
