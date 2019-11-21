@@ -18,7 +18,6 @@ import org.openide.util.ContextAwareAction;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
-import org.openide.util.NbBundle.Messages;
 import org.openide.util.Utilities;
 import org.openide.util.WeakListeners;
 import org.openide.windows.Mode;
@@ -43,7 +42,7 @@ public final class BlobogramAction extends AbstractAction implements ContextAwar
     }
 
     private BlobogramAction(Lookup lkp) {
-        super("Blobogram");
+        super("Blob Plot");
         result = lkp.lookupResult(BinI.class);
         result.addLookupListener(WeakListeners.create(LookupListener.class, this, result));
         super.putValue("iconBase", "de/cebitec/mgx/gui/blobogram/blobogram.png");

@@ -5,6 +5,8 @@
  */
 package de.cebitec.mgx.gui.blobogram;
 
+import de.cebitec.mgx.gui.blobogram.internal.ContigItem;
+import de.cebitec.mgx.gui.blobogram.internal.ContigFetcher;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.assembly.AssemblyI;
@@ -71,7 +73,7 @@ import org.openide.util.lookup.InstanceContent;
 @ActionID(category = "Window", id = "de.cebitec.mgx.gui.blobogram.BlobogramTopComponent")
 @ActionReference(path = "Menu/Window", position = 339)
 @TopComponent.OpenActionRegistration(
-        displayName = "Blobogram",
+        displayName = "Blob Plot",
         preferredID = "BlobogramTopComponent"
 )
 public final class BlobogramTopComponent extends TopComponent implements LookupListener {
@@ -85,8 +87,8 @@ public final class BlobogramTopComponent extends TopComponent implements LookupL
 
     public BlobogramTopComponent() {
         initComponents();
-        setName("Blobogram");
-        super.setToolTipText("Blobogram");
+        setName("Blob Plot");
+        super.setToolTipText("Blob Plot");
         lookup = new AbstractLookup(content);
         associateLookup(lookup);
         resultAssembly = Utilities.actionsGlobalContext().lookupResult(AssemblyI.class);
@@ -285,89 +287,5 @@ public final class BlobogramTopComponent extends TopComponent implements LookupL
     @Override
     public void resultChanged(LookupEvent le) {
         update();
-    }
-
-    private static class ContigFetcher implements Runnable, Cancellable {
-
-        private final MGXMasterI master;
-        private final BinI bin;
-        private final XYSeries series;
-        private final CountDownLatch done;
-        private ProgressHandle ph;
-        private volatile boolean cancelled = false;
-
-        public ContigFetcher(MGXMasterI master, BinI bin, XYSeries series, CountDownLatch cdl) {
-            this.master = master;
-            this.bin = bin;
-            this.series = series;
-            this.done = cdl;
-        }
-
-        public void setProgressHandle(ProgressHandle ph) {
-            this.ph = ph;
-        }
-
-        @Override
-        public void run() {
-            ph.start();
-            ph.switchToIndeterminate();
-            Iterator<ContigI> contigIter = null;
-            try {
-                contigIter = master.Contig().ByBin(bin);
-            } catch (MGXException ex) {
-                Exceptions.printStackTrace(ex);
-            }
-            while (!cancelled && contigIter != null && contigIter.hasNext()) {
-                ContigI c = contigIter.next();
-                XYDataItem item = new ContigItem(bin, c);
-                synchronized (series) {
-                    series.add(item, false);
-                }
-            }
-            
-            series.setNotify(true);
-
-            if (cancelled) {
-                series.clear();
-            }
-            done.countDown();
-            ph.finish();
-        }
-
-        @Override
-        public boolean cancel() {
-            cancelled = true;
-            return true;
-        }
-
-        public boolean isCancelled() {
-            return cancelled;
-        }
-
-    }
-
-    private static class ContigItem extends XYDataItem {
-
-        private final static NumberFormat nf = NumberFormat.getInstance(Locale.US);
-
-        private final ContigI contig;
-        private final BinI bin;
-
-        public ContigItem(BinI bin, ContigI ctg) {
-            super(ctg.getGC(), 1d * ctg.getCoverage() / (1d * ctg.getLength() / 1000));
-            this.contig = ctg;
-            this.bin = bin;
-        }
-
-        public final ContigI getContig() {
-            return contig;
-        }
-
-        public final String getTooltip() {
-            return "<html><b>Contig: " + contig.getName() + "</b><br><hr><br>"
-                    + "Bin: " + bin.getName() + "<br>"
-                    + "Length: " + nf.format(contig.getLength()) + " bp<br>"
-                    + "Taxonomy: " + bin.getTaxonomy() + "</html>";
-        }
     }
 }
