@@ -29,29 +29,46 @@ public class CancelJob extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         final JobI job = Utilities.actionsGlobalContext().lookup(JobI.class);
-        SwingWorker<Boolean, Void> sw = new SwingWorker<Boolean, Void>() {
-            @Override
-            protected Boolean doInBackground() throws Exception {
-                return job.getMaster().Job().cancel(job);
-            }
 
-            @Override
-            protected void done() {
-                super.done();
-                try {
-                    get();
-                } catch (InterruptedException | ExecutionException ex) {
-                    String msg = ex.getMessage();
-                    if (ex.getCause() != null && ex.getCause().getMessage() != null) {
-                        msg = ex.getCause().getMessage();
-                    }
-                    NotifyDescriptor nd = new NotifyDescriptor("Could not cancel job: " + msg, "Job cancellation failed", NotifyDescriptor.OK_CANCEL_OPTION, NotifyDescriptor.ERROR_MESSAGE, null, null);
-                    DialogDisplayer.getDefault().notifyLater(nd);
+        String jobName;
+        if (job.getAssembly() != null) {
+            jobName = job.getTool().getName() + " / " + job.getAssembly().getName();
+        } else if (job.getSeqruns() != null && job.getSeqruns().length > 0) {
+            jobName = job.getTool().getName() + " / " + job.getSeqruns()[0].getName();
+        } else {
+            // should not occur
+            jobName = job.getTool().getName();
+        }
+
+        NotifyDescriptor d = new NotifyDescriptor("Really cancel job " + jobName + "?", "Cancel job(s)", NotifyDescriptor.YES_NO_OPTION, NotifyDescriptor.QUESTION_MESSAGE, null, null);
+        Object ret = DialogDisplayer.getDefault().notify(d);
+
+        if (NotifyDescriptor.YES_OPTION.equals(ret)) {
+
+            SwingWorker<Boolean, Void> sw = new SwingWorker<Boolean, Void>() {
+                @Override
+                protected Boolean doInBackground() throws Exception {
+                    return job.getMaster().Job().cancel(job);
                 }
-            }
 
-        };
-        sw.execute();
+                @Override
+                protected void done() {
+                    super.done();
+                    try {
+                        get();
+                    } catch (InterruptedException | ExecutionException ex) {
+                        String msg = ex.getMessage();
+                        if (ex.getCause() != null && ex.getCause().getMessage() != null) {
+                            msg = ex.getCause().getMessage();
+                        }
+                        NotifyDescriptor nd = new NotifyDescriptor("Could not cancel job: " + msg, "Job cancellation failed", NotifyDescriptor.OK_CANCEL_OPTION, NotifyDescriptor.ERROR_MESSAGE, null, null);
+                        DialogDisplayer.getDefault().notifyLater(nd);
+                    }
+                }
+
+            };
+            sw.execute();
+        }
     }
 
     @Override
