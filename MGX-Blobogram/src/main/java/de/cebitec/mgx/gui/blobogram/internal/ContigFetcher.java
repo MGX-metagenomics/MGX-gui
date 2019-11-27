@@ -22,7 +22,7 @@ import org.openide.util.Exceptions;
  * @author sj
  */
 public class ContigFetcher implements Runnable, Cancellable {
-    
+
     private final MGXMasterI master;
     private final BinI bin;
     private final XYSeries series;
@@ -54,9 +54,7 @@ public class ContigFetcher implements Runnable, Cancellable {
         while (!cancelled && contigIter != null && contigIter.hasNext()) {
             ContigI c = contigIter.next();
             XYDataItem item = new ContigItem(bin, c);
-            synchronized (series) {
-                series.add(item, false);
-            }
+            series.add(item, false);
         }
         series.setNotify(true);
         if (cancelled) {
@@ -75,5 +73,5 @@ public class ContigFetcher implements Runnable, Cancellable {
     public boolean isCancelled() {
         return cancelled;
     }
-    
+
 }
