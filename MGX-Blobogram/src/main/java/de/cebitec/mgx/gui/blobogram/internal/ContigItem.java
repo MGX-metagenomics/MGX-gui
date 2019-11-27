@@ -16,7 +16,7 @@ import org.jfree.data.xy.XYDataItem;
  * @author sj
  */
 public class ContigItem extends XYDataItem {
-    
+
     private static final NumberFormat nf = NumberFormat.getInstance(Locale.US);
     private final ContigI contig;
     private final BinI bin;
@@ -34,5 +34,10 @@ public class ContigItem extends XYDataItem {
     public final String getTooltip() {
         return "<html><b>Contig: " + contig.getName() + "</b><br><hr><br>" + "Bin: " + bin.getName() + "<br>" + "Length: " + nf.format(contig.getLength()) + " bp<br>" + "Taxonomy: " + bin.getTaxonomy() + "</html>";
     }
-    
+
+    @Override
+    public String toString() {
+        return "ContigItem{" + "contig=" + contig.getName() + ", bin=" + bin.getName() + '}';
+    }
+
 }
