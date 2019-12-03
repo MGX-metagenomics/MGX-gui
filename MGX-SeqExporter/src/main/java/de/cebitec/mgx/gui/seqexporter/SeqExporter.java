@@ -20,6 +20,7 @@ import java.io.File;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -36,10 +37,18 @@ public final class SeqExporter<T extends Number, U> implements SequenceExporterI
 
     private final GroupI<U> vgroup;
     private final DistributionI<T> dist;
+    private final Set<String> seenGeneNames;
 
-    public SeqExporter(GroupI<U> vgroup, DistributionI<T> dist) {
-        this.vgroup = vgroup;
+    public SeqExporter(GroupI<SeqRunI> vgroup, DistributionI<T> dist) {
+        this.vgroup = (GroupI<U>) vgroup;
         this.dist = dist;
+        this.seenGeneNames = null;
+    }
+
+    public SeqExporter(GroupI<AssembledSeqRunI> vgroup, DistributionI<T> dist, Set<String> seenGeneNames) {
+        this.vgroup = (GroupI<U>) vgroup;
+        this.dist = dist;
+        this.seenGeneNames = seenGeneNames;
     }
 
     @Override
@@ -109,7 +118,10 @@ public final class SeqExporter<T extends Number, U> implements SequenceExporterI
                             downloaders.add(downloader);
                         } else if (key instanceof AssembledSeqRunI) {
                             master = ((AssembledSeqRunI) key).getMaster();
-                            DownloadBaseI downloader = master.Gene().createDownloaderByAttributes(e.getValue(), writer, false);
+                            // several assembled runs from the same assembly may refer to a gene 
+                            // multiple times, so we need to filter for duplicates
+
+                            DownloadBaseI downloader = master.Gene().createDownloaderByAttributes(e.getValue(), writer, false, seenGeneNames);
                             downloaders.add(downloader);
                         }
 

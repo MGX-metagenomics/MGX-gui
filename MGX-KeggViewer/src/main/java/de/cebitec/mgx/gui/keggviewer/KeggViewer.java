@@ -25,6 +25,7 @@ import de.cebitec.mgx.kegg.pathways.paint.KEGGPanel;
 import java.io.File;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map.Entry;
@@ -96,15 +97,17 @@ public class KeggViewer extends CategoricalViewerI<Long> implements Customizable
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public SequenceExporterI[] getSequenceExporters() {
         List<SequenceExporterI> ret = new ArrayList<>(data.size());
+        Set<String> seenGeneNames = new HashSet<>();
         for (Pair<GroupI, DistributionI<Long>> p : data) {
             if (p.getSecond().getTotalClassifiedElements() > 0) {
                 if (p.getFirst().getContentClass().equals(SeqRunI.class)) {
                     SequenceExporterI exp = new SeqExporter<>((GroupI<SeqRunI>) p.getFirst(), p.getSecond());
                     ret.add(exp);
                 } else if (p.getFirst().getContentClass().equals(AssembledSeqRunI.class)) {
-                    SequenceExporterI exp = new SeqExporter<>((GroupI<AssembledSeqRunI>) p.getFirst(), p.getSecond());
+                    SequenceExporterI exp = new SeqExporter<>((GroupI<AssembledSeqRunI>) p.getFirst(), p.getSecond(), seenGeneNames);
                     ret.add(exp);
                 }
             }

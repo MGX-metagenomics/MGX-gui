@@ -26,6 +26,6 @@ public interface GeneAccessI {
 
     public SequenceI getDNASequence(GeneI gene) throws MGXException;
 
-    public DownloadBaseI createDownloaderByAttributes(Set<AttributeI> value, SeqWriterI<DNASequenceI> writer, boolean closeWriter) throws MGXException;
+    public DownloadBaseI createDownloaderByAttributes(Set<AttributeI> value, SeqWriterI<DNASequenceI> writer, boolean closeWriter, Set<String> seenGeneNames) throws MGXException;
 
 }

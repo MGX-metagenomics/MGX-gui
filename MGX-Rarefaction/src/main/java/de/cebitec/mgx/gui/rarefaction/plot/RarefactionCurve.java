@@ -24,8 +24,10 @@ import de.cebitec.mgx.gui.viewer.api.ViewerI;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -231,15 +233,17 @@ public class RarefactionCurve extends AbstractViewer<DistributionI<Long>> implem
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public SequenceExporterI[] getSequenceExporters() {
         List<SequenceExporterI> ret = new ArrayList<>(data.size());
+        Set<String> seenGeneNames = new HashSet<>();
         for (Pair<GroupI, DistributionI<Long>> p : data) {
             if (p.getSecond().getTotalClassifiedElements() > 0) {
                 if (p.getFirst().getContentClass().equals(SeqRunI.class)) {
                     SequenceExporterI exp = new SeqExporter<>((GroupI<SeqRunI>) p.getFirst(), p.getSecond());
                     ret.add(exp);
                 } else if (p.getFirst().getContentClass().equals(AssembledSeqRunI.class)) {
-                    SequenceExporterI exp = new SeqExporter<>((GroupI<AssembledSeqRunI>) p.getFirst(), p.getSecond());
+                    SequenceExporterI exp = new SeqExporter<>((GroupI<AssembledSeqRunI>) p.getFirst(), p.getSecond(), seenGeneNames);
                     ret.add(exp);
                 }
             }

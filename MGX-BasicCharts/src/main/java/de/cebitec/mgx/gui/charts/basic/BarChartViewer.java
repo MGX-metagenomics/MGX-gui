@@ -20,8 +20,10 @@ import de.cebitec.mgx.gui.viewer.api.ViewerI;
 import java.awt.Color;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import javax.swing.JComponent;
 import org.apache.commons.math3.util.FastMath;
 import org.jfree.chart.ChartFactory;
@@ -159,15 +161,17 @@ public class BarChartViewer extends CategoricalViewerI<Long> implements ImageExp
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public SequenceExporterI[] getSequenceExporters() {
         List<SequenceExporterI> ret = new ArrayList<>(data.size());
+        Set<String> seenGeneNames = new HashSet<>();
         for (Pair<GroupI, DistributionI<Double>> p : data) {
             if (p.getSecond().getTotalClassifiedElements() > 0) {
                 if (p.getFirst().getContentClass().equals(SeqRunI.class)) {
                     SequenceExporterI exp = new SeqExporter<>((GroupI<SeqRunI>) p.getFirst(), p.getSecond());
                     ret.add(exp);
                 } else if (p.getFirst().getContentClass().equals(AssembledSeqRunI.class)) {
-                    SequenceExporterI exp = new SeqExporter<>((GroupI<AssembledSeqRunI>) p.getFirst(), p.getSecond());
+                    SequenceExporterI exp = new SeqExporter<>((GroupI<AssembledSeqRunI>) p.getFirst(), p.getSecond(), seenGeneNames);
                     ret.add(exp);
                 }
             }

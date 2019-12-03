@@ -99,14 +99,14 @@ public class GeneAccess extends AccessBase<GeneI> implements GeneAccessI {
     }
 
     @Override
-    public DownloadBaseI createDownloaderByAttributes(Set<AttributeI> attrs, SeqWriterI<DNASequenceI> writer, boolean closeWriter) throws MGXException {
+    public DownloadBaseI createDownloaderByAttributes(Set<AttributeI> attrs, SeqWriterI<DNASequenceI> writer, boolean closeWriter, Set<String> seenGeneNames) throws MGXException {
         AttributeDTOList.Builder b = dto.AttributeDTOList.newBuilder();
         for (AttributeI a : attrs) {
             b.addAttribute(AttributeDTOFactory.getInstance().toDTO(a));
         }
         final GeneByAttributeDownloader dl;
         try {
-            dl = getDTOmaster().Gene().createDownloaderByAttributes(b.build(), writer, closeWriter);
+            dl = getDTOmaster().Gene().createDownloaderByAttributes(b.build(), writer, closeWriter, seenGeneNames);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }

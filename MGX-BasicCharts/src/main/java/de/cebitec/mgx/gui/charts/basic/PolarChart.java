@@ -16,7 +16,9 @@ import de.cebitec.mgx.gui.viewer.api.NumericalViewerI;
 import de.cebitec.mgx.gui.viewer.api.ViewerI;
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.swing.JComponent;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
@@ -87,15 +89,17 @@ public class PolarChart extends NumericalViewerI<Long> implements ImageExporterI
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public SequenceExporterI[] getSequenceExporters() {
         List<SequenceExporterI> ret = new ArrayList<>(dists.size());
+        Set<String> seenGeneNames = new HashSet<>();
         for (Pair<GroupI, DistributionI<Long>> p : dists) {
             if (p.getSecond().getTotalClassifiedElements() > 0) {
                 if (p.getFirst().getContentClass().equals(SeqRunI.class)) {
                     SequenceExporterI exp = new SeqExporter<>((GroupI<SeqRunI>) p.getFirst(), p.getSecond());
                     ret.add(exp);
                 } else if (p.getFirst().getContentClass().equals(AssembledSeqRunI.class)) {
-                    SequenceExporterI exp = new SeqExporter<>((GroupI<AssembledSeqRunI>) p.getFirst(), p.getSecond());
+                    SequenceExporterI exp = new SeqExporter<>((GroupI<AssembledSeqRunI>) p.getFirst(), p.getSecond(), seenGeneNames);
                     ret.add(exp);
                 }
             }

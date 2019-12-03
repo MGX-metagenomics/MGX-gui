@@ -75,15 +75,17 @@ public class NMDSPlot extends AbstractViewer<DistributionI<Long>> implements Cus
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public SequenceExporterI[] getSequenceExporters() {
         List<SequenceExporterI> ret = new ArrayList<>(data.size());
+        Set<String> seenGeneNames = new HashSet<>();
         for (Pair<GroupI, DistributionI<Double>> p : data) {
             if (p.getSecond().getTotalClassifiedElements() > 0) {
                 if (p.getFirst().getContentClass().equals(SeqRunI.class)) {
                     SequenceExporterI exp = new SeqExporter<>((GroupI<SeqRunI>) p.getFirst(), p.getSecond());
                     ret.add(exp);
                 } else if (p.getFirst().getContentClass().equals(AssembledSeqRunI.class)) {
-                    SequenceExporterI exp = new SeqExporter<>((GroupI<AssembledSeqRunI>) p.getFirst(), p.getSecond());
+                    SequenceExporterI exp = new SeqExporter<>((GroupI<AssembledSeqRunI>) p.getFirst(), p.getSecond(), seenGeneNames);
                     ret.add(exp);
                 }
             }
