@@ -35,6 +35,19 @@ public class AttributeTableModel extends DefaultTableModel {
         super.setRowCount(0);
     }
 
+    private final static List<String> taxOrder = new ArrayList() {
+        {
+            add("NCBI_NO_RANK");
+            add("NCBI_SUPERKINGDOM");
+            add("NCBI_PHYLUM");
+            add("NCBI_CLASS");
+            add("NCBI_ORDER");
+            add("NCBI_FAMILY");
+            add("NCBI_GENUS");
+            add("NCBI_SPECIES");
+        }
+    };
+
     public synchronized void update(GeneI gene) {
         gobsList.clear();
         if (gene == null) {
@@ -52,13 +65,31 @@ public class AttributeTableModel extends DefaultTableModel {
             Collections.sort(gobsList, new Comparator<GeneObservationI>() {
                 @Override
                 public int compare(GeneObservationI t1, GeneObservationI t2) {
+
+                    if ((t1.getAttributeTypeName().startsWith("NCBI")) && (t2.getAttributeTypeName().startsWith("NCBI"))) {
+                        // sort by rank
+                        int i1 = taxOrder.indexOf(t1.getAttributeTypeName());
+                        int i2 = taxOrder.indexOf(t2.getAttributeTypeName());
+                        return Integer.compare(i1, i2);
+                    }
+
+                    if ((t1.getAttributeTypeName().startsWith("NCBI")) && (!t2.getAttributeTypeName().startsWith("NCBI"))) {
+                        return -1;
+                    }
+
+                    if ((!t1.getAttributeTypeName().startsWith("NCBI")) && (t2.getAttributeTypeName().startsWith("NCBI"))) {
+                        return 1;
+                    }
+
                     int ret = t1.getAttributeTypeName().compareTo(t2.getAttributeTypeName());
+
                     // for equal attribute types, sort by query range
                     if (ret == 0) {
                         int min1 = Math.min(t1.getStart(), t1.getStop());
                         int min2 = Math.min(t2.getStart(), t2.getStop());
-                        ret = Integer.compare(min1, min2);
+                        return Integer.compare(min1, min2);
                     }
+
                     return ret;
                 }
             });
