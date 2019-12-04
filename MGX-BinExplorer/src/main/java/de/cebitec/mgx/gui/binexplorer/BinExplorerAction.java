@@ -6,6 +6,7 @@
 package de.cebitec.mgx.gui.binexplorer;
 
 import de.cebitec.mgx.api.model.assembly.BinI;
+import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.util.Collection;
 import javax.swing.AbstractAction;
@@ -75,6 +76,15 @@ public final class BinExplorerAction extends AbstractAction implements ContextAw
     @Override
     public synchronized void resultChanged(LookupEvent le) {
         Collection<? extends BinI> allBins = result.allInstances();
-        super.setEnabled(!allBins.isEmpty());
+        if (!EventQueue.isDispatchThread()) {
+            EventQueue.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    BinExplorerAction.super.setEnabled(!allBins.isEmpty());
+                }
+            });
+        } else {
+            super.setEnabled(!allBins.isEmpty());
+        }
     }
 }
