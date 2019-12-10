@@ -35,7 +35,7 @@ public class AttributeTableModel extends DefaultTableModel {
         super.setRowCount(0);
     }
 
-    private final static List<String> taxOrder = new ArrayList() {
+    private final static List<String> taxOrder = new ArrayList<String>() {
         {
             add("NCBI_NO_RANK");
             add("NCBI_SUPERKINGDOM");
