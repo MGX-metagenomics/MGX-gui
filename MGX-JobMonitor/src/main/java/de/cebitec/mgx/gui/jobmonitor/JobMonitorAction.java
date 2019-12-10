@@ -47,6 +47,6 @@ public final class JobMonitorAction implements ActionListener {
             tc.setVisible(true);
         }
         tc.toFront();
-        tc.requestActive();
+        //tc.requestActive();
     }
 }
