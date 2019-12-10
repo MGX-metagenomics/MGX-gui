@@ -46,7 +46,7 @@ public class SaveToolXML extends AbstractAction {
         SwingWorker<String, Void> sw = new SwingWorker<String, Void>() {
             @Override
             protected String doInBackground() throws Exception {
-                return m.Tool().getXMLDefinition(job.getTool());
+                return m.Tool().getDefinition(job.getTool());
             }
 
             @Override
