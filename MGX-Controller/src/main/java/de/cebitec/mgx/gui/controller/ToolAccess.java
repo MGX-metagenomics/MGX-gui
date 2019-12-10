@@ -1,5 +1,7 @@
 package de.cebitec.mgx.gui.controller;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.ToolAccessI;
 import de.cebitec.mgx.api.exception.MGXException;
@@ -23,6 +25,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -33,12 +36,19 @@ public class ToolAccess implements ToolAccessI {
     private final MGXMasterI master;
     private final MGXDTOMaster dtomaster;
 
+    private Cache<JobI, ToolI> toolCache = null;
+
     public ToolAccess(MGXMasterI master, MGXDTOMaster dtomaster) throws MGXException {
         this.master = master;
         this.dtomaster = dtomaster;
         if (master.isDeleted()) {
             throw new MGXLoggedoutException("You are disconnected.");
         }
+
+        toolCache = CacheBuilder.newBuilder()
+                .maximumSize(1000)
+                .expireAfterAccess(10, TimeUnit.MINUTES)
+                .build();
     }
 
     protected MGXDTOMaster getDTOmaster() {
@@ -104,14 +114,14 @@ public class ToolAccess implements ToolAccessI {
     }
 
     @Override
-    public ToolI create(String name, String description, String author, String webSite, float version, String xmlData) throws MGXException {
+    public ToolI create(String name, String description, String author, String webSite, float version, String toolDefinition) throws MGXException {
         ToolI obj = new Tool(getMaster());
         obj.setName(name);
         obj.setDescription(description);
         obj.setAuthor(author);
         obj.setUrl(webSite);
         obj.setVersion(version);
-        obj.setDefinition(xmlData);
+        obj.setDefinition(toolDefinition);
         ToolDTO dto = ToolDTOFactory.getInstance().toDTO(obj);
         long id = Identifiable.INVALID_IDENTIFIER;
         try {
@@ -151,11 +161,6 @@ public class ToolAccess implements ToolAccessI {
         }
     }
 
-//    @Override
-//    public void update(ToolI obj) {
-//        throw new UnsupportedOperationException("Not supported.");
-//    }
-
     @Override
     public TaskI<ToolI> delete(ToolI obj) throws MGXException {
         try {
@@ -168,10 +173,14 @@ public class ToolAccess implements ToolAccessI {
 
     @Override
     public ToolI ByJob(JobI job) throws MGXException {
-        if(job.getTool() != null) {
+        if (job.getTool() != null) {
             return job.getTool();
         }
-        ToolI t = null;
+        ToolI t = toolCache.getIfPresent(job);
+        if (t != null) {
+            return t;
+        }
+
         try {
             ToolDTO dto = getDTOmaster().Tool().byJob(job.getId());
             t = ToolDTOFactory.getInstance().toModel(getMaster(), dto);
@@ -179,21 +188,28 @@ public class ToolAccess implements ToolAccessI {
         } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }
+
+        toolCache.put(job, t);
         return t;
     }
 
     @Override
-    public String getXMLDefinition(ToolI tool) throws MGXException {
+    public String getDefinition(ToolI tool) throws MGXException {
         if (tool.getDefinition() != null && !"".equals(tool.getDefinition())) {
             return tool.getDefinition();
         }
-        String xmlData;
+        String toolDefinition;
         try {
-            xmlData = getDTOmaster().Tool().getXMLDefinition(tool.getId());
+            toolDefinition = getDTOmaster().Tool().getDefinition(tool.getId());
         } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }
-        tool.setDefinition(xmlData);
-        return xmlData;
+        tool.setDefinition(toolDefinition);
+        return toolDefinition;
+    }
+
+    @Override
+    public void dispose() {
+        toolCache.cleanUp();
     }
 }

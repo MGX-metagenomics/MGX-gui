@@ -33,7 +33,7 @@ public interface ToolAccessI {
 
     public Collection<JobParameterI> getAvailableParameters(String toolXml) throws MGXException;
 
-    public String getXMLDefinition(ToolI tool) throws MGXException;
+    public String getDefinition(ToolI tool) throws MGXException;
 
     public ToolI fetch(long id) throws MGXException;
 
@@ -42,4 +42,7 @@ public interface ToolAccessI {
 //    public void update(ToolI obj) throws MGXException;
 
     public TaskI<ToolI> delete(ToolI obj) throws MGXException;
+
+    public void dispose();
+
 }
