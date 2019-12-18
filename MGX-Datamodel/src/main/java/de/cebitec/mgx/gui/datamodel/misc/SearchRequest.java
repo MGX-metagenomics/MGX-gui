@@ -11,7 +11,7 @@ public class SearchRequest implements SearchRequestI {
 
     private String term;
     private boolean exact;
-    private SeqRunI[] runs;
+    private SeqRunI run;
 
     @Override
     public boolean isExact() {
@@ -24,13 +24,13 @@ public class SearchRequest implements SearchRequestI {
     }
 
     @Override
-    public SeqRunI[] getRuns() {
-        return runs;
+    public SeqRunI getRun() {
+        return run;
     }
 
     @Override
-    public void setRuns(SeqRunI[] runs) {
-        this.runs = runs;
+    public void setRun(SeqRunI run) {
+        this.run = run;
     }
 
     @Override
