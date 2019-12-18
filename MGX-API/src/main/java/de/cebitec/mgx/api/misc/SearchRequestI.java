@@ -14,7 +14,7 @@ import de.cebitec.mgx.api.model.SeqRunI;
  */
 public interface SearchRequestI {
 
-    SeqRunI[] getRuns();
+    SeqRunI getRun();
 
     String getTerm();
 
@@ -22,7 +22,7 @@ public interface SearchRequestI {
 
     void setExact(boolean exact);
 
-    void setRuns(SeqRunI[] runs);
+    void setRun(SeqRunI run);
 
     void setTerm(String term);
     
