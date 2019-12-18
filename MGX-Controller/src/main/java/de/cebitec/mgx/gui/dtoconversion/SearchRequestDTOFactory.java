@@ -2,7 +2,6 @@ package de.cebitec.mgx.gui.dtoconversion;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.misc.SearchRequestI;
-import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.dto.dto.SearchRequestDTO;
 import de.cebitec.mgx.dto.dto.SearchRequestDTO.Builder;
 import de.cebitec.mgx.gui.datamodel.misc.SearchRequest;
@@ -30,9 +29,7 @@ public class SearchRequestDTOFactory extends DTOConversionBase<SearchRequestI, S
         Builder b = SearchRequestDTO.newBuilder()
                 .setExact(req.isExact())
                 .setTerm(req.getTerm());
-        for (SeqRunI sr : req.getRuns()) {
-            b.addSeqrunId(sr.getId());
-        }
+        b.setSeqrunId(req.getRun().getId());
         return b.build();
     }
 
