@@ -227,7 +227,7 @@ public final class QCTopComponent extends TopComponent implements LookupListener
     }
 
     private static SVGChartPanel createChart(QCResultI qcr) {
-        if ("Sequence quality".equals(qcr.getName())) {
+        if ("Sequence quality".equals(qcr.getName()) || "Forward read quality".equals(qcr.getName()) || "Reverse read quality".equals(qcr.getName())) {
             YIntervalSeriesCollection qualityDataset = new YIntervalSeriesCollection();
             DataRowI[] data = qcr.getData();
             DataRowI quality = data[0];
