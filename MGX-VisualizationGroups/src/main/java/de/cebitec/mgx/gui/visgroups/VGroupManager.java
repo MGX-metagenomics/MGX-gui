@@ -620,9 +620,22 @@ public class VGroupManager implements VGroupManagerI {
                         selectedGroup = null;
                         firePropertyChange(VISGROUP_SELECTION_CHANGED, vg, null);
                     }
+                } else if (pce.getSource() instanceof ReplicateI) {
+                    ReplicateI repl = (ReplicateI) pce.getSource();
+
+                    synchronized (vizGroups) {
+                        if (vizGroups.contains(repl)) {
+                            vizGroups.remove(repl);
+                            repl.removePropertyChangeListener(this);
+                        }
+                    }
+                    if (repl.equals(selectedGroup)) {
+                        selectedGroup = null;
+                        firePropertyChange(VISGROUP_SELECTION_CHANGED, repl, null);
+                    }
                 } else if (pce.getSource() instanceof ReplicateGroupI) {
                     ReplicateGroupI rg = (ReplicateGroupI) pce.getSource();
-                    synchronized(vizGroups) {
+                    synchronized (vizGroups) {
                         for (ReplicateI replicate : rg.getReplicates()) {
                             vizGroups.remove(replicate);
                             replicate.removePropertyChangeListener(this);
