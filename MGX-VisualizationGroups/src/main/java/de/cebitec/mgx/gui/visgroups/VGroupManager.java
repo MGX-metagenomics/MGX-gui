@@ -622,6 +622,14 @@ public class VGroupManager implements VGroupManagerI {
                     }
                 } else if (pce.getSource() instanceof ReplicateGroupI) {
                     ReplicateGroupI rg = (ReplicateGroupI) pce.getSource();
+                    synchronized(vizGroups) {
+                        for (ReplicateI replicate : rg.getReplicates()) {
+                            vizGroups.remove(replicate);
+                            replicate.removePropertyChangeListener(this);
+                            replicate.deleted();
+                            vizGroupCount--;
+                        }
+                    }
 
                     synchronized (replicateGroups) {
                         if (replicateGroups.contains(rg)) {
