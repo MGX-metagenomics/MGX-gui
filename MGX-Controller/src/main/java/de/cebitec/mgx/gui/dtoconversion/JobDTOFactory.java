@@ -2,8 +2,6 @@ package de.cebitec.mgx.gui.dtoconversion;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.RemovalListener;
-import com.google.common.cache.RemovalNotification;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.JobParameterI;
@@ -35,16 +33,6 @@ public class JobDTOFactory extends DTOConversionBase<JobI, JobDTO> {
         instanceCache = CacheBuilder.<CacheKey, JobI>newBuilder()
                 .expireAfterAccess(1, TimeUnit.MINUTES)
                 .concurrencyLevel(10)
-                .removalListener(new RemovalListener<CacheKey, JobI>() {
-                    @Override
-                    public void onRemoval(RemovalNotification<CacheKey, JobI> notification) {
-                        JobI job = notification.getValue();
-                        if (!job.isDeleted()) {
-                            job.deleted();
-                        }
-                    }
-
-                })
                 .build();
     }
 
