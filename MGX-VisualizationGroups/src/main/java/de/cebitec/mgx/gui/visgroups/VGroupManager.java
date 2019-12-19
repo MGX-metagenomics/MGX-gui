@@ -588,7 +588,11 @@ public class VGroupManager implements VGroupManagerI {
     public Collection<ReplicateGroupI> getReplicateGroups() {
         List<ReplicateGroupI> ret = new ArrayList<>(replicateGroups.size());
         synchronized (replicateGroups) {
-            ret.addAll(replicateGroups);
+            for (ReplicateGroupI rg : replicateGroups) {
+                if (rg.isActive()) {
+                    ret.add(rg);
+                }
+            }
         }
         return ret;
     }
