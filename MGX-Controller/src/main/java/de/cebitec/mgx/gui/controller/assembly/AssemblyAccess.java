@@ -8,6 +8,7 @@ package de.cebitec.mgx.gui.controller.assembly;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.misc.TaskI;
+import de.cebitec.mgx.api.misc.TaskI.TaskType;
 import de.cebitec.mgx.api.model.assembly.AssemblyI;
 import de.cebitec.mgx.api.model.assembly.access.AssemblyAccessI;
 import de.cebitec.mgx.client.MGXDTOMaster;
@@ -17,6 +18,7 @@ import de.cebitec.mgx.gui.controller.AccessBase;
 import de.cebitec.mgx.gui.dtoconversion.AssemblyDTOFactory;
 import de.cebitec.mgx.gui.util.BaseIterator;
 import java.util.Iterator;
+import java.util.UUID;
 
 /**
  *
@@ -62,6 +64,13 @@ public class AssemblyAccess extends AccessBase<AssemblyI> implements AssemblyAcc
 
     @Override
     public TaskI<AssemblyI> delete(AssemblyI obj) throws MGXException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        TaskI<AssemblyI> ret = null;
+        try {
+            UUID uuid = getDTOmaster().Assembly().delete(obj.getId());
+            ret = getMaster().<AssemblyI>Task().get(obj, uuid, TaskType.DELETE);
+        } catch (MGXDTOException ex) {
+            throw new MGXException(ex);
+        }
+        return ret;
     }
 }
