@@ -7,7 +7,9 @@ import de.cebitec.mgx.api.model.assembly.AssembledSeqRunI;
 import de.cebitec.mgx.gui.nodes.AssembledSeqRunFilterNode;
 import de.cebitec.mgx.gui.nodes.AssembledSeqRunNode;
 import java.beans.PropertyChangeEvent;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import org.openide.nodes.Children;
 import org.openide.nodes.FilterNode;
 import org.openide.nodes.Node;
@@ -48,7 +50,10 @@ public class GroupedAssembledSeqRunNodeFactory extends Children.Keys<AssembledSe
     @Override
     protected void addNotify() {
         super.addNotify();
-        setKeys(asmGroup.getContent());
+        List<AssembledSeqRunI> runs = new ArrayList<>();
+        runs.addAll(asmGroup.getContent());
+        Collections.sort(runs);
+        setKeys(runs);
     }
 
     @Override
@@ -58,7 +63,10 @@ public class GroupedAssembledSeqRunNodeFactory extends Children.Keys<AssembledSe
     }
 
     public final void refreshChildren() {
-        setKeys(asmGroup.getContent());
+        List<AssembledSeqRunI> runs = new ArrayList<>();
+        runs.addAll(asmGroup.getContent());
+        Collections.sort(runs);
+        setKeys(runs);
         refresh();
     }
 
@@ -94,7 +102,7 @@ public class GroupedAssembledSeqRunNodeFactory extends Children.Keys<AssembledSe
                 case AssemblyGroupI.ASMGROUP_ACTIVATED:
                 case AssemblyGroupI.ASMGROUP_DEACTIVATED:
                     return;
-                case VisualizationGroupI.VISGROUP_CHANGED:
+                //case VisualizationGroupI.VISGROUP_CHANGED:
                 case AssemblyGroupI.ASMGROUP_CHANGED:
                     refreshChildren();
                     return;

@@ -7,7 +7,9 @@ import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.nodes.SeqRunFilterNode;
 import de.cebitec.mgx.gui.nodes.SeqRunNode;
 import java.beans.PropertyChangeEvent;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import org.openide.nodes.Children;
 import org.openide.nodes.FilterNode;
 import org.openide.nodes.Node;
@@ -48,7 +50,10 @@ public class GroupedSeqRunNodeFactory extends Children.Keys<SeqRunI> implements 
     @Override
     protected void addNotify() {
         super.addNotify();
-        setKeys(vGroup.getContent());
+        List<SeqRunI> runs = new ArrayList<>();
+        runs.addAll(vGroup.getContent());
+        Collections.sort(runs);
+        setKeys(runs);
     }
 
     @Override
@@ -58,7 +63,10 @@ public class GroupedSeqRunNodeFactory extends Children.Keys<SeqRunI> implements 
     }
 
     public final void refreshChildren() {
-        setKeys(vGroup.getContent());
+        List<SeqRunI> runs = new ArrayList<>();
+        runs.addAll(vGroup.getContent());
+        Collections.sort(runs);
+        setKeys(runs);
         refresh();
     }
 
