@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.login.dialog;
 
 import de.cebitec.gpms.core.GPMSException;
+import de.cebitec.gpms.core.GPMSMessageI;
 import de.cebitec.gpms.rest.GPMSClientI;
 import de.cebitec.mgx.gui.login.configuration.MGXserverPanel;
 import java.awt.Cursor;
@@ -9,13 +10,18 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.NotificationLineSupport;
 import org.openide.NotifyDescriptor;
 import org.openide.awt.StatusDisplayer;
+import org.openide.modules.Places;
+import org.openide.util.Exceptions;
 import org.openide.util.NbPreferences;
 import org.openide.util.Utilities;
 
@@ -50,7 +56,7 @@ public class LoginHandler implements ActionListener {
         //dialog = new DialogDescriptor(panel, "Login", true, this);
         dialog.setValid(false);
         dialog.setClosingOptions(new Object[]{DialogDescriptor.CANCEL_OPTION, DialogDescriptor.OK_OPTION});
-        
+
         PropertyChangeListener pcl = new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
@@ -76,7 +82,7 @@ public class LoginHandler implements ActionListener {
         }
 
         DialogDisplayer.getDefault().notify(dialog);
-        
+
         dialog.removePropertyChangeListener(pcl);
     }
 
@@ -128,6 +134,32 @@ public class LoginHandler implements ActionListener {
                         @Override
                         public void run() {
                             startPing(gpmsClient);
+                        }
+                    });
+                    EventQueue.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            File cacheDir = new File(Places.getUserDirectory(), "news");
+                            if (!cacheDir.exists()) {
+                                cacheDir.mkdirs();
+                            }
+
+                            Iterator<GPMSMessageI> iter;
+                            try {
+                                iter = gpmsClient.getMessages();
+
+                                while (iter != null && iter.hasNext()) {
+                                    GPMSMessageI msg = iter.next();
+                                    File seenMsg = new File(cacheDir, String.valueOf(msg.getDate().getTime()));
+                                    if (!seenMsg.exists()) {
+                                        NotifyDescriptor nd = new NotifyDescriptor.Message(msg.getText());
+                                        DialogDisplayer.getDefault().notify(nd);
+                                        seenMsg.createNewFile();
+                                    }
+                                }
+                            } catch (GPMSException | IOException ex) {
+                                Exceptions.printStackTrace(ex);
+                            }
                         }
                     });
                 } else {
