@@ -75,6 +75,7 @@ public abstract class MGXNodeFactoryBase<T extends MGXDataModelBaseI<T>, U exten
                 break;
             case ModelBaseI.OBJECT_DELETED:
                 if (src instanceof ModelBaseI) {
+                    System.err.println("MGXNodeFactoryBase: got " + evt.toString() + " in " + getClass().getName() + " from "+ src);
                     ModelBaseI modelObj = (ModelBaseI) src;
                     modelObj.removePropertyChangeListener(this);
 

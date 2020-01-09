@@ -237,7 +237,7 @@ public class AttributeAccess implements AttributeAccessI {
         }
         SearchRequestI sr = new SearchRequest();
         sr.setTerm(term);
-        sr.setRuns(new SeqRunI[]{run});
+        sr.setRun(run);
         try {
             return dtomaster.Attribute().find(SearchRequestDTOFactory.getInstance().toDTO(sr));
         } catch (MGXDTOException ex) {
@@ -250,7 +250,7 @@ public class AttributeAccess implements AttributeAccessI {
         SearchRequestI sr = new SearchRequest();
         sr.setTerm(term);
         sr.setExact(exact);
-        sr.setRuns(new SeqRunI[]{seqrun});
+        sr.setRun(seqrun);
         SearchRequestDTO reqdto = SearchRequestDTOFactory.getInstance().toDTO(sr);
 
         Iterator<SequenceDTO> searchResult = null;

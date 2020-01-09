@@ -132,7 +132,7 @@ public class Job extends JobI {
         }
         return getStatus() == other.getStatus() && getMaster().getProject().equals(other.getMaster().getProject()) ;
     }
-
+    
     @Override
     public int compareTo(JobI o) {
         return this.startDate.compareTo(o.getStartDate());

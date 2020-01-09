@@ -70,7 +70,7 @@ public final class SearchTopComponent extends TopComponent implements LookupList
         super.setToolTipText("Metagenome search");
         obsPanel.add(ov, BorderLayout.CENTER);
         result = Utilities.actionsGlobalContext().lookupResult(SeqRunI.class);
-
+        
         termField.getDocument().addDocumentListener(new DocumentListener() {
 
             @Override

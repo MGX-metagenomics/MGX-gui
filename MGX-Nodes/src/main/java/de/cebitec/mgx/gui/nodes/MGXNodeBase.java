@@ -1,6 +1,5 @@
 package de.cebitec.mgx.gui.nodes;
 
-import de.cebitec.mgx.api.model.Identifiable;
 import de.cebitec.mgx.api.model.ModelBaseI;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DnDConstants;

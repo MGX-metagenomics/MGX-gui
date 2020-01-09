@@ -11,7 +11,6 @@ import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.assembly.AssemblyI;
 import de.cebitec.mgx.api.model.assembly.BinI;
-import de.cebitec.mgx.api.model.assembly.ContigI;
 import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
 import de.cebitec.mgx.gui.charts.basic.util.SVGChartPanel;
 import de.cebitec.mgx.gui.pool.MGXPool;
@@ -22,13 +21,11 @@ import java.awt.Cursor;
 import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
@@ -47,7 +44,6 @@ import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
-import org.openide.util.Cancellable;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
@@ -84,6 +80,7 @@ public final class BlobogramTopComponent extends TopComponent implements LookupL
     private final Lookup.Result<BinI> resultBin;
     //
     private SVGChartPanel currentPanel = null;
+    private final XYSeriesCollection dataset = new XYSeriesCollection();
 
     public BlobogramTopComponent() {
         initComponents();
@@ -161,8 +158,9 @@ public final class BlobogramTopComponent extends TopComponent implements LookupL
                     DialogDisplayer.getDefault().notify(nd);
                     return;
                 }
-                XYSeriesCollection dataset = new XYSeriesCollection();
+
                 dataset.setNotify(false);
+                dataset.removeAllSeries();
 
                 CountDownLatch allProcessed = new CountDownLatch(bins.size());
 

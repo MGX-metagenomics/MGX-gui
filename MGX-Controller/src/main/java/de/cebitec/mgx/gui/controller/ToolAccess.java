@@ -178,6 +178,9 @@ public class ToolAccess implements ToolAccessI {
         }
         ToolI t = toolCache.getIfPresent(job);
         if (t != null) {
+            if (job.getTool() == null) {
+                job.setTool(t);
+            }
             return t;
         }
 
