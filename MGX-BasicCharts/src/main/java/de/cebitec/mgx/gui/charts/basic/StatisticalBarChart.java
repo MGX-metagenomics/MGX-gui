@@ -113,9 +113,14 @@ public class StatisticalBarChart extends CategoricalViewerI<Long> implements Adj
         String xAxisLabel = "";
         String yAxisLabel = getCustomizer().useFractions() ? "Fraction" : "Count";
 
+        boolean showLegend = getCustomizer().showLegend();
+
         CategoryPlot plot = new CategoryPlot(dataset, new CategoryAxis(xAxisLabel), new NumberAxis(yAxisLabel), new StatisticalBarRenderer());
         plot.setOrientation(PlotOrientation.VERTICAL);
-        plot.setFixedLegendItems(JFreeChartUtil.createReplicateLegend(filteredRg));
+
+        if (showLegend) {
+            plot.setFixedLegendItems(JFreeChartUtil.createReplicateLegend(filteredRg));
+        }
         plot.setBackgroundPaint(Color.WHITE);
 
         chart = new JFreeChart(getTitle(), plot);

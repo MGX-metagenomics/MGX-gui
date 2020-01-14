@@ -87,7 +87,9 @@ public class BarChartViewer extends CategoricalViewerI<Long> implements ImageExp
         String xAxisLabel = "";
         String yAxisLabel = getCustomizer().useFractions() ? "Fraction" : "Count";
 
-        chart = ChartFactory.createBarChart(getTitle(), xAxisLabel, yAxisLabel, dataset, PlotOrientation.VERTICAL, true, true, false);
+        boolean showLegend = getCustomizer().showLegend();
+
+        chart = ChartFactory.createBarChart(getTitle(), xAxisLabel, yAxisLabel, dataset, PlotOrientation.VERTICAL, showLegend, true, false);
 
         chart.setBorderPaint(Color.WHITE);
         chart.setBackgroundPaint(Color.WHITE);
@@ -96,7 +98,9 @@ public class BarChartViewer extends CategoricalViewerI<Long> implements ImageExp
         cPanel = new SVGChartPanel(chart);
         CategoryPlot plot = chart.getCategoryPlot();
 
-        plot.setFixedLegendItems(JFreeChartUtil.createLegend(data));
+        if (showLegend) {
+            plot.setFixedLegendItems(JFreeChartUtil.createLegend(data));
+        }
         plot.setBackgroundPaint(Color.WHITE);
 
         BarRenderer br = (BarRenderer) plot.getRenderer();

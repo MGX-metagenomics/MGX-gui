@@ -97,8 +97,10 @@ public class StackedBarChartViewer extends CategoricalViewerI<Long> implements I
 
         String xAxisLabel = "";
         String yAxisLabel = getCustomizer().useFractions() ? "Fraction" : "Count";
+        
+        boolean showLegend = getCustomizer().showLegend();
 
-        chart = ChartFactory.createStackedBarChart(getTitle(), xAxisLabel, yAxisLabel, dataset, PlotOrientation.VERTICAL, true, true, false);
+        chart = ChartFactory.createStackedBarChart(getTitle(), xAxisLabel, yAxisLabel, dataset, PlotOrientation.VERTICAL, showLegend, true, false);
 
         chart.setBorderPaint(Color.WHITE);
         chart.setBackgroundPaint(Color.WHITE);
@@ -107,7 +109,6 @@ public class StackedBarChartViewer extends CategoricalViewerI<Long> implements I
         cPanel = new SVGChartPanel(chart);
         CategoryPlot plot = chart.getCategoryPlot();
 
-        plot.setFixedLegendItems(JFreeChartUtil.createLegend(data));
         plot.setBackgroundPaint(Color.WHITE);
 
         BarRenderer br = (BarRenderer) plot.getRenderer();
