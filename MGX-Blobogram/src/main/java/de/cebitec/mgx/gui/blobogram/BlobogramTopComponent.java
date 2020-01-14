@@ -195,7 +195,7 @@ public final class BlobogramTopComponent extends TopComponent implements LookupL
                     }
                 };
 
-                JFreeChart chart = ChartFactory.createScatterPlot(null, "GC", "RPKM", dataset, PlotOrientation.VERTICAL, false, true, false);
+                JFreeChart chart = ChartFactory.createScatterPlot(null, "GC content", "Coverage", dataset, PlotOrientation.VERTICAL, false, true, false);
                 chart.setBorderPaint(Color.WHITE);
                 chart.setBackgroundPaint(Color.WHITE);
 
