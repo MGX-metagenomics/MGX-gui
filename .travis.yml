@@ -22,6 +22,7 @@ cache:
 before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -qq protobuf-compiler
+  - sudo ln -s /usr/bin/protoc /usr/bin/protoc-3
   - git clone https://github.com/MGX-metagenomics/utilities.git
   - cd utilities && mvn clean install -DskipTests=true && cd .. && rm -rf utilities
   - git clone https://github.com/MGX-metagenomics/GPMS.git
