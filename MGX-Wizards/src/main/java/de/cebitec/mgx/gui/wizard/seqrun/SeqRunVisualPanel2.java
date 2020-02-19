@@ -24,6 +24,8 @@ public final class SeqRunVisualPanel2 extends JPanel {
     public SeqRunVisualPanel2() {
         initComponents();
         fchooser = new JFileChooser();
+        fchooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fchooser.setMultiSelectionEnabled(false);
         String last = NbPreferences.forModule(JFileChooser.class).get("lastDirectory", null);
         if (last != null) {
             File f = new File(last);
@@ -43,7 +45,7 @@ public final class SeqRunVisualPanel2 extends JPanel {
                     }
                 }
 
-                if (fchooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+                if (fchooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
                     if (!fchooser.getSelectedFile().equals(file2)) {
                         file1 = fchooser.getSelectedFile();
                         first.setText(file1.getAbsolutePath());
