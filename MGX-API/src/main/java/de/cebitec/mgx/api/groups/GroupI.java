@@ -88,6 +88,7 @@ public interface GroupI<T> extends Comparable<GroupI<T>>, PropertyChangeListener
 
     public void add(final T sr);
 
+    @SuppressWarnings("unchecked")
     public void add(final T... runs);
 
     public Set<T> getContent();
