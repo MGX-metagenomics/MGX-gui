@@ -42,9 +42,12 @@ public class JobBySeqRunNodeFactory extends JobNodeFactory {
             }
 
         };
-        this.content.addAll(runs);
-        for (final SeqRunI run : content) {
-            run.addPropertyChangeListener(stateListener);
+
+        synchronized (content) {
+            this.content.addAll(runs);
+            for (final SeqRunI run : content) {
+                run.addPropertyChangeListener(stateListener);
+            }
         }
     }
 
