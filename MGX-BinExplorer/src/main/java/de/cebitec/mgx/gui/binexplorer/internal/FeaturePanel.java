@@ -137,10 +137,14 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
             g2.setColor(curColor);
 
             // draw the region shapes
-            for (ShapeBase r : regs) {
-                if (!curColor.equals(r.getColor())) {
-                    g2.setColor(r.getColor());
-                    curColor = r.getColor();
+            for (Arrow r : regs) {
+                Color c = r.getColor();
+                if (r.getObject().equals(selectedGene)) {
+                    c = Color.ORANGE;
+                }
+                if (!curColor.equals(c)) {
+                    g2.setColor(c);
+                    curColor = c;
                 }
                 g2.fill(r);
             }
@@ -223,6 +227,7 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
                 if (a.getBounds().contains(loc)) {
                     selectedGene = (GeneI) a.getObject();
                     vc.selectGene(selectedGene);
+                    repaint();
                 }
             }
         }
