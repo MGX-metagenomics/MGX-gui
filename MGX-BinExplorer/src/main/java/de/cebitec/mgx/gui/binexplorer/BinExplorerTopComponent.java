@@ -83,7 +83,7 @@ import org.openide.util.Utilities;
 )
 @TopComponent.Description(
         preferredID = "BinExplorerTopComponent",
-        iconBase="de/cebitec/mgx/gui/binexplorer/binexplorer.png",
+        iconBase = "de/cebitec/mgx/gui/binexplorer/binexplorer.png",
         persistenceType = TopComponent.PERSISTENCE_NEVER
 )
 @TopComponent.Registration(mode = "editor", openAtStartup = false)
@@ -624,10 +624,11 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
 
                             CategoryItemRenderer renderer = plot.getRenderer();
                             renderer.setBaseItemLabelGenerator(new StandardCategoryItemLabelGenerator());
-                            renderer.setBaseItemLabelsVisible(true);
-                            ItemLabelPosition position = new ItemLabelPosition(ItemLabelAnchor.INSIDE10,
-                                    TextAnchor.TOP_CENTER);
+                            renderer.setBaseItemLabelPaint(Color.WHITE);
+                            ItemLabelPosition position = new ItemLabelPosition(ItemLabelAnchor.CENTER,
+                                    TextAnchor.CENTER_LEFT);
                             renderer.setBasePositiveItemLabelPosition(position);
+                            renderer.setBaseItemLabelsVisible(true);
 
                             BarRenderer br = (BarRenderer) plot.getRenderer();
 
@@ -637,9 +638,10 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
 
                             // colors
                             for (int i = 0; i < all.size(); i++) {
-                                renderer.setSeriesPaint(i, Color.BLUE);
+                                br.setSeriesPaint(i, Color.BLUE);
                             }
                             SVGChartPanel svgChartPanel = new SVGChartPanel(chart);
+                            svgChartPanel.setPopupMenu(null);
                             geneCovPanel.removeAll();
                             geneCovPanel.setLayout(new BorderLayout());
                             geneCovPanel.add(svgChartPanel, BorderLayout.CENTER);
