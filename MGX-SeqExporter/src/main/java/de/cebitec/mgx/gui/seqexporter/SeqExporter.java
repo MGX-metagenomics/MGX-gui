@@ -39,12 +39,14 @@ public final class SeqExporter<T extends Number, U> implements SequenceExporterI
     private final DistributionI<T> dist;
     private final Set<String> seenGeneNames;
 
+    @SuppressWarnings("unchecked")
     public SeqExporter(GroupI<SeqRunI> vgroup, DistributionI<T> dist) {
         this.vgroup = (GroupI<U>) vgroup;
         this.dist = dist;
         this.seenGeneNames = null;
     }
 
+    @SuppressWarnings("unchecked")
     public SeqExporter(GroupI<AssembledSeqRunI> vgroup, DistributionI<T> dist, Set<String> seenGeneNames) {
         this.vgroup = (GroupI<U>) vgroup;
         this.dist = dist;
