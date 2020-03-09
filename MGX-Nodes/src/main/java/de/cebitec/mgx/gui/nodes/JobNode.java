@@ -8,6 +8,7 @@ import de.cebitec.mgx.api.model.JobParameterI;
 import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.api.model.ToolI;
 import de.cebitec.mgx.common.JobState;
+import java.awt.Image;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
@@ -174,17 +175,21 @@ public class JobNode extends MGXNodeBase<JobI> {
                 String icon = null;
                 switch (state) {
                     case FINISHED:
-                        icon = "de/cebitec/mgx/gui/nodes/JobStateOK.png";
+                        icon = "de/cebitec/mgx/gui/nodes/JobStateOK.svg";
                         break;
                     case FAILED:
-                        icon = "de/cebitec/mgx/gui/nodes/JobStateFAILED.png";
+                        icon = "de/cebitec/mgx/gui/nodes/JobStateFAILED.svg";
                         break;
                     case RUNNING:
-                        icon = "de/cebitec/mgx/gui/nodes/JobStatusRunning.png";
+                        icon = "de/cebitec/mgx/gui/nodes/JobStateRUNNING.svg";
                         break;
                 }
                 if (icon != null) {
-                    setValue("valueIcon", ImageUtilities.loadImage(icon, true));
+                    Image image = ImageUtilities.loadImage(icon, true);
+                    Image scaledInstance = image.getScaledInstance(16, 16, Image.SCALE_SMOOTH);
+                    setValue("valueIcon", scaledInstance);
+                } else {
+                    setValue("valueIcon", null);
                 }
                 return state.toString();
             }
