@@ -9,6 +9,7 @@ import de.cebitec.mgx.gui.search.util.ReadModel;
 import de.cebitec.mgx.gui.search.util.TermModel;
 import java.awt.BorderLayout;
 import java.awt.Cursor;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -43,7 +44,7 @@ import org.openide.windows.TopComponent;
         autostore = false)
 @TopComponent.Description(
         preferredID = "SearchTopComponent",
-        iconBase = "de/cebitec/mgx/gui/search/SequenceSearch.png",
+        iconBase = "de/cebitec/mgx/gui/search/SequenceSearch.svg",
         persistenceType = TopComponent.PERSISTENCE_NEVER)
 @TopComponent.Registration(mode = "editor", openAtStartup = false)
 @ActionID(category = "Window", id = "de.cebitec.mgx.gui.search.ui.SearchTopComponent")
@@ -70,7 +71,7 @@ public final class SearchTopComponent extends TopComponent implements LookupList
         super.setToolTipText("Metagenome search");
         obsPanel.add(ov, BorderLayout.CENTER);
         result = Utilities.actionsGlobalContext().lookupResult(SeqRunI.class);
-        
+
         termField.getDocument().addDocumentListener(new DocumentListener() {
 
             @Override
@@ -192,6 +193,13 @@ public final class SearchTopComponent extends TopComponent implements LookupList
             }
         });
 
+    }
+
+    @Override
+    public Image getIcon() {
+        Image image = super.getIcon();
+        Image scaledInstance = image.getScaledInstance(16, 16, Image.SCALE_SMOOTH);
+        return scaledInstance;
     }
 
     /**
@@ -358,11 +366,11 @@ public final class SearchTopComponent extends TopComponent implements LookupList
             currentRun.removePropertyChangeListener(this);
             currentRun = null;
         }
-        
+
         for (SeqRunI run : result.allInstances()) {
             currentRun = run;
         }
-        
+
         if (currentRun == null) {
             runName.setText("None");
             termField.setText("");

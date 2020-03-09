@@ -22,7 +22,7 @@ import org.openide.windows.WindowManager;
         id = "de.cebitec.mgx.gui.qcmon.QCAction"
 )
 @ActionRegistration(
-        iconBase = "de/cebitec/mgx/gui/qcmon/QC.png",
+        iconBase = "de/cebitec/mgx/gui/qcmon/QC.svg",
         displayName = "#CTL_QCAction"
 )
 @ActionReferences({

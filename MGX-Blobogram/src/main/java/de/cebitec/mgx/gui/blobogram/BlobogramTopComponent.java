@@ -18,6 +18,7 @@ import de.cebitec.mgx.gui.swingutils.util.ColorPalette;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
@@ -62,7 +63,7 @@ import org.openide.util.lookup.InstanceContent;
 )
 @TopComponent.Description(
         preferredID = "BlobogramTopComponent",
-        iconBase = "de/cebitec/mgx/gui/blobogram/blobogram.png",
+        iconBase = "de/cebitec/mgx/gui/blobogram/blobogram.svg",
         persistenceType = TopComponent.PERSISTENCE_NEVER
 )
 @TopComponent.Registration(mode = "navigator", openAtStartup = false)
@@ -100,6 +101,13 @@ public final class BlobogramTopComponent extends TopComponent implements LookupL
             instance = new BlobogramTopComponent();
         }
         return instance;
+    }
+
+    @Override
+    public Image getIcon() {
+        Image image = super.getIcon();
+        Image scaledInstance = image.getScaledInstance(16, 16, Image.SCALE_SMOOTH);
+        return scaledInstance;
     }
 
     private void update() {

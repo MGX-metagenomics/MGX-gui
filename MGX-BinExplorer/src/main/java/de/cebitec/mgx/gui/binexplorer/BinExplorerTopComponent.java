@@ -30,6 +30,7 @@ import gnu.trove.map.hash.TLongObjectHashMap;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -83,7 +84,7 @@ import org.openide.util.Utilities;
 )
 @TopComponent.Description(
         preferredID = "BinExplorerTopComponent",
-        iconBase = "de/cebitec/mgx/gui/binexplorer/binexplorer.png",
+        iconBase = "de/cebitec/mgx/gui/binexplorer/binexplorer.svg",
         persistenceType = TopComponent.PERSISTENCE_NEVER
 )
 @TopComponent.Registration(mode = "editor", openAtStartup = false)
@@ -117,6 +118,7 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
         initComponents();
         setName(Bundle.CTL_BinExplorerTopComponent());
         setToolTipText(Bundle.HINT_BinExplorerTopComponent());
+
         result = Utilities.actionsGlobalContext().lookupResult(BinI.class);
         contigList.setModel(contigModel);
         contigList.setRenderer(new ContigRenderer());
@@ -198,6 +200,13 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
             instance = new BinExplorerTopComponent();
         }
         return instance;
+    }
+
+    @Override
+    public Image getIcon() {
+        Image image = super.getIcon();
+        Image scaledInstance = image.getScaledInstance(16, 16, Image.SCALE_SMOOTH);
+        return scaledInstance;
     }
 
     /**

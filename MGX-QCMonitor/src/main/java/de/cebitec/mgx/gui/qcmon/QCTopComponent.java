@@ -15,6 +15,7 @@ import de.cebitec.mgx.gui.charts.basic.util.SVGChartPanel;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Image;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Collections;
@@ -55,7 +56,7 @@ import org.openide.util.lookup.InstanceContent;
 )
 @TopComponent.Description(
         preferredID = "QCTopComponent",
-        iconBase = "de/cebitec/mgx/gui/qcmon/QC.png",
+        iconBase = "de/cebitec/mgx/gui/qcmon/QC.svg",
         persistenceType = TopComponent.PERSISTENCE_NEVER
 )
 @TopComponent.Registration(mode = "satellite", openAtStartup = false)
@@ -107,6 +108,13 @@ public final class QCTopComponent extends TopComponent implements LookupListener
             instance = new QCTopComponent();
         }
         return instance;
+    }
+
+    @Override
+    public Image getIcon() {
+        Image image = super.getIcon();
+        Image scaledInstance = image.getScaledInstance(16, 16, Image.SCALE_SMOOTH);
+        return scaledInstance;
     }
 
     /**
