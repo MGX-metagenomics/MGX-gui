@@ -15,7 +15,7 @@ import org.openide.util.NbBundle.Messages;
     category = "File",
 id = "de.cebitec.mgx.gui.actions.ExportSequencesAction")
 @ActionRegistration(
-    iconBase = "de/cebitec/mgx/gui/actions/SaveFasta.png",
+    iconBase = "de/cebitec/mgx/gui/actions/SaveFasta.svg",
 displayName = "#CTL_ExportSequencesAction")
 @ActionReferences({
     //@ActionReference(path = "Menu/File", position = 1750),

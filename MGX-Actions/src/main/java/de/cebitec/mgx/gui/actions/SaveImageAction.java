@@ -18,7 +18,7 @@ import org.openide.util.NbBundle.Messages;
         category = "File",
         id = "de.cebitec.mgx.gui.actions.SaveImageAction")
 @ActionRegistration(
-        iconBase = "de/cebitec/mgx/gui/actions/SavePicture.png",
+        iconBase = "de/cebitec/mgx/gui/actions/SavePicture.svg",
         displayName = "#CTL_SaveImageAction")
 @ActionReferences({
     //@ActionReference(path = "Menu/File", position = 1760),
