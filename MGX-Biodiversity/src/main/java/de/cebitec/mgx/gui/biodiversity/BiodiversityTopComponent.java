@@ -29,6 +29,7 @@ import org.openide.util.NbBundle.Messages;
 import org.openide.util.Utilities;
 import org.openide.windows.TopComponent;
 import de.cebitec.mgx.gui.biodiversity.statistic.StatisticI;
+import java.awt.Image;
 
 /**
  * Top component which displays something.
@@ -39,7 +40,7 @@ import de.cebitec.mgx.gui.biodiversity.statistic.StatisticI;
 )
 @TopComponent.Description(
         preferredID = "BiodiversityTopComponent",
-        iconBase = "de/cebitec/mgx/gui/biodiversity/AlphaDiversity.png",
+        iconBase = "de/cebitec/mgx/gui/biodiversity/AlphaDiversity.svg",
         persistenceType = TopComponent.PERSISTENCE_NEVER
 )
 @TopComponent.Registration(mode = "satellite", openAtStartup = false)
@@ -111,6 +112,13 @@ public final class BiodiversityTopComponent extends TopComponent implements Look
             instance = new BiodiversityTopComponent();
         }
         return instance;
+    }
+
+    @Override
+    public Image getIcon() {
+        Image image = super.getIcon();
+        Image scaledInstance = image.getScaledInstance(16, 16, Image.SCALE_SMOOTH);
+        return scaledInstance;
     }
 
     /**

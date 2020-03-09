@@ -22,7 +22,7 @@ import org.openide.windows.WindowManager;
         id = "de.cebitec.mgx.gui.biodiversity.AlphadiversityAction"
 )
 @ActionRegistration(
-        iconBase = "de/cebitec/mgx/gui/biodiversity/AlphaDiversity.png",
+        iconBase = "de/cebitec/mgx/gui/biodiversity/AlphaDiversity.svg",
         displayName = "#CTL_AlphadiversityAction"
 )
 @ActionReferences({
