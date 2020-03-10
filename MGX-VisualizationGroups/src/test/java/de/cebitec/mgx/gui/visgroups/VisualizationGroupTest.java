@@ -342,6 +342,7 @@ public class VisualizationGroupTest {
     private final class DummyResolver implements ConflictResolver {
 
         @Override
+        @SuppressWarnings("unchecked")
         public void resolve(String attributeType, List<GroupI> vgroups) {
             for (GroupI vg : vgroups) {
                 System.err.println("Resolving group " + vg.getName());

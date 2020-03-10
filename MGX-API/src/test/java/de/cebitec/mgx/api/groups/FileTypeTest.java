@@ -29,7 +29,7 @@ public class FileTypeTest {
     public static Option[] configuration() {
         return options(
                 junitBundles(),
-                MGXOptions.serviceLoaderBundles(),
+//                MGXOptions.serviceLoaderBundles(),
                 MGXOptions.seqIOBundles(),
                 mavenBundle().groupId("de.cebitec.mgx").artifactId("MGX-parallelPropChange").versionAsInProject(),
                 systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("WARN"),

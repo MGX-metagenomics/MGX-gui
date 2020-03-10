@@ -123,6 +123,7 @@ public abstract class MGXGroupNodeBase<T extends GroupI> extends AbstractNode im
     public abstract void updateModified();
 
     @Override
+    @SuppressWarnings("unchecked")
     public final int compareTo(MGXGroupNodeBase<? extends T> o) {
         return content.compareTo(o.getContent());
     }
