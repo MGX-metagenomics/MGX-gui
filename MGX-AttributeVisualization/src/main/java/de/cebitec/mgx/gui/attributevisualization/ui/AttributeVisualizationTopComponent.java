@@ -3,6 +3,7 @@ package de.cebitec.mgx.gui.attributevisualization.ui;
 import de.cebitec.mgx.api.groups.ImageExporterI;
 import de.cebitec.mgx.api.groups.SequenceExporterI;
 import de.cebitec.mgx.gui.viewer.api.ViewerI;
+import java.awt.Image;
 import java.util.Collections;
 import javax.swing.JComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
@@ -23,13 +24,12 @@ import org.openide.windows.WindowManager;
 @ConvertAsProperties(dtd = "-//de.cebitec.mgx.gui.attributevisualization.ui//AttributeVisualization//EN",
         autostore = false)
 @TopComponent.Description(preferredID = "AttributeVisualizationTopComponent",
-        iconBase = "de/cebitec/mgx/gui/attributevisualization/ui/ShowVisualization.png",
+        iconBase = "de/cebitec/mgx/gui/attributevisualization/ui/ShowVisualization.svg",
         persistenceType = TopComponent.PERSISTENCE_NEVER)
 @TopComponent.Registration(mode = "editor", openAtStartup = false)
 @ActionID(category = "Window", id = "de.cebitec.mgx.gui.attributevisualization.ui.AttributeVisualizationTopComponent")
 @ActionReferences({
-    @ActionReference(path = "Menu/Window", position = 333)
-    ,
+    @ActionReference(path = "Menu/Window", position = 333),
     @ActionReference(path = "Toolbars/UndoRedo", position = 510)
 })
 @TopComponent.OpenActionRegistration(displayName = "#CTL_AttributeVisualizationAction",
@@ -63,6 +63,13 @@ public final class AttributeVisualizationTopComponent extends TopComponent {
         jSplitPane1.setRightComponent(controlPanel1);
         //
         chartpane.getVerticalScrollBar().setUnitIncrement(16);
+    }
+
+    @Override
+    public Image getIcon() {
+        Image image = super.getIcon();
+        Image scaledInstance = image.getScaledInstance(16, 16, Image.SCALE_SMOOTH);
+        return scaledInstance;
     }
 
     /**
@@ -144,7 +151,7 @@ public final class AttributeVisualizationTopComponent extends TopComponent {
 
         // sequence exporters
         if (viewer instanceof SequenceExporterI.Provider) {
-            SequenceExporterI[] seqExporters = ((SequenceExporterI.Provider)viewer).getSequenceExporters();
+            SequenceExporterI[] seqExporters = ((SequenceExporterI.Provider) viewer).getSequenceExporters();
             if (seqExporters != null) {
                 for (SequenceExporterI seqExp : seqExporters) {
                     content.add(seqExp);

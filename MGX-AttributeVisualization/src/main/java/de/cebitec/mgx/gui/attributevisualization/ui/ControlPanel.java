@@ -68,6 +68,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
     /**
      * Creates new form ControlPanel
      */
+    @SuppressWarnings("unchecked")
     public ControlPanel() {
         this.vgmgr = VGroupManager.getInstance();
         initComponents();
@@ -80,7 +81,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
         vgmgr.registerResolver(new ConflictResolver() {
             @Override
             public void resolve(String attrType, List<GroupI> groups) {
-                ConflictResolverWizardIterator iter  = new ConflictResolverWizardIterator(groups);
+                ConflictResolverWizardIterator iter = new ConflictResolverWizardIterator(groups);
                 WizardDescriptor wiz = new WizardDescriptor(iter);
                 wiz.setTitleFormat(new MessageFormat("{0}"));
                 wiz.setTitle("Job selection");
