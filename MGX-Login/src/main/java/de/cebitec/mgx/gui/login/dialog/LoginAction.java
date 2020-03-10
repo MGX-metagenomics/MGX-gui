@@ -48,7 +48,7 @@ public class LoginAction extends AbstractAction implements ContextAwareAction, L
         super("Login");
         result = lkp.lookupResult(GPMSClientI.class);
         result.addLookupListener(WeakListeners.create(LookupListener.class, this, result));
-        super.putValue("iconBase", "de/cebitec/mgx/gui/login/dialog/Login.png");
+        super.putValue("iconBase", "de/cebitec/mgx/gui/login/dialog/Login.svg");
         super.setEnabled(false);
     }
 
