@@ -3,6 +3,7 @@ package de.cebitec.mgx.gui.goldstandard.ui;
 import de.cebitec.mgx.api.groups.ImageExporterI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.goldstandard.ui.charts.EvaluationViewerI;
+import java.awt.Image;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -25,7 +26,7 @@ import org.openide.util.lookup.InstanceContent;
 )
 @TopComponent.Description(
         preferredID = "EvaluationTopComponent",
-        iconBase = "de/cebitec/mgx/gui/goldstandard/ui/icon.png",
+        iconBase = "de/cebitec/mgx/gui/goldstandard/ui/EvalModule.svg",
         persistenceType = TopComponent.PERSISTENCE_NEVER
 )
 @TopComponent.Registration(mode = "editor", openAtStartup = false)
@@ -44,19 +45,19 @@ import org.openide.util.lookup.InstanceContent;
     "HINT_EvaluationTopComponent=Tool for a fast evaluation of pipelines"
 })
 public final class EvaluationTopComponent extends TopComponent implements LookupListener {
-    
+
     private final Lookup lookup;
     private final InstanceContent content = new InstanceContent();
     private final EvaluationControlPanel ecp;
-    private Lookup.Result<SeqRunI> lookupResult;
-    
-    private ImageExporterI exporter;    
-    
+    private final Lookup.Result<SeqRunI> lookupResult;
+
+    private ImageExporterI exporter;
+
     public EvaluationTopComponent() {
         initComponents();
         setName(Bundle.CTL_EvaluationTopComponent());
         setToolTipText(Bundle.HINT_EvaluationTopComponent());
-        
+
         int width = jSplitPane1.getSize().width;
         jSplitPane1.setDividerLocation(width - 50);
         lookup = new AbstractLookup(content);
@@ -67,7 +68,14 @@ public final class EvaluationTopComponent extends TopComponent implements Lookup
         lookupResult = Utilities.actionsGlobalContext().lookupResult(SeqRunI.class);
         lookupResult.addLookupListener(this);
     }
-    
+
+    @Override
+    public Image getIcon() {
+        Image image = super.getIcon();
+        Image scaledInstance = image.getScaledInstance(16, 16, Image.SCALE_SMOOTH);
+        return scaledInstance;
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -107,7 +115,7 @@ public final class EvaluationTopComponent extends TopComponent implements Lookup
         lookupResult.addLookupListener(this);
         resultChanged(null);
     }
-    
+
     @Override
     public void componentClosed() {
         lookupResult.removeLookupListener(this);
@@ -117,15 +125,15 @@ public final class EvaluationTopComponent extends TopComponent implements Lookup
     public void resultChanged(LookupEvent ev) {
         ecp.update();
     }
-    
+
     void writeProperties(java.util.Properties p) {
         p.setProperty("version", "1.0");
     }
-    
+
     void readProperties(java.util.Properties p) {
         String version = p.getProperty("version");
     }
-    
+
     public void setVisualization(EvaluationViewerI v) {
         if (v == null) {
             chartpane.setViewportView(null);
