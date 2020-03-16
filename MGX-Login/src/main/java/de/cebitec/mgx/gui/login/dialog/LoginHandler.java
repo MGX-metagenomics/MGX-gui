@@ -50,9 +50,6 @@ public class LoginHandler implements ActionListener {
     }
 
     public void showDialog(GPMSClientI gpmsClient) {
-        if (!checkVersion()) {
-            return;
-        }
         //dialog = new DialogDescriptor(panel, "Login", true, this);
         dialog.setValid(false);
         dialog.setClosingOptions(new Object[]{DialogDescriptor.CANCEL_OPTION, DialogDescriptor.OK_OPTION});
@@ -89,19 +86,6 @@ public class LoginHandler implements ActionListener {
     void update(boolean valid) {
         dialog.setValid(valid);
 
-    }
-
-    private static boolean checkVersion() {
-        String version = System.getProperty("java.version");
-        float ver = Float.valueOf(version.substring(0, 3));
-        if (ver < 1.7) {
-            String msg = "Your Java runtime version (" + version + ") is too old. MGX requires at least Java 7.";
-            NotifyDescriptor nd = new NotifyDescriptor(msg, "Java too old",
-                    NotifyDescriptor.OK_CANCEL_OPTION, NotifyDescriptor.ERROR_MESSAGE, null, null);
-            DialogDisplayer.getDefault().notify(nd);
-            return false;
-        }
-        return true;
     }
 
     @Override
