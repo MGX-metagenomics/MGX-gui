@@ -36,10 +36,10 @@ public class JobNode extends MGXNodeBase<JobI> {
         super(Children.LEAF, Lookups.fixed(job.getMaster(), job), job);
         ToolI tool = job.getTool();
         super.setDisplayName(tool.getName());
-        String shortDesc = new StringBuilder("<html><b>")
-                .append(tool.getName()).append("</b>")
-                .append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;")
+        String shortDesc = new StringBuilder("<html>[")
                 .append(job.getId())
+                .append("]<b>&nbsp;")
+                .append(tool.getName()).append("</b>")
                 .append("<br><hr><br>")
                 .append("Tool version: ")
                 .append(tool.getVersion())
@@ -188,8 +188,6 @@ public class JobNode extends MGXNodeBase<JobI> {
                     Image image = ImageUtilities.loadImage(icon, true);
                     Image scaledInstance = image.getScaledInstance(16, 16, Image.SCALE_SMOOTH);
                     setValue("valueIcon", scaledInstance);
-                } else {
-                    setValue("valueIcon", null);
                 }
                 return state.toString();
             }
