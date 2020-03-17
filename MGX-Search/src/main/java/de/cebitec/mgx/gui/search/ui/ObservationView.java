@@ -74,6 +74,7 @@ public class ObservationView extends javax.swing.JPanel {
 
         @Override
         protected void paintComponent(Graphics g) {
+            arrows.clear();
             super.paintComponent(g);
             Graphics2D g2 = (Graphics2D) g;
 
@@ -81,6 +82,7 @@ public class ObservationView extends javax.swing.JPanel {
                 g2.dispose();
                 return;
             }
+            
 
             RenderingHints rh = new RenderingHints(RenderingHints.KEY_ANTIALIASING,
                     RenderingHints.VALUE_ANTIALIAS_ON);
@@ -166,7 +168,7 @@ public class ObservationView extends javax.swing.JPanel {
                 g2.draw(shadow);
             }
 
-            g2.setComposite(oldComp);
+            //g2.setComposite(oldComp);
 
             // draw arrows (and borders)
             g2.setColor(Color.GREEN);
@@ -177,7 +179,7 @@ public class ObservationView extends javax.swing.JPanel {
             for (ObservationArrow r : arrows) {
                 g2.draw(r);
             }
-
+            
             g2.dispose();
         }
 
@@ -203,7 +205,7 @@ public class ObservationView extends javax.swing.JPanel {
                 createLayers(obs);
                 setMinimumSize(new Dimension(getWidth(), 2 * borderWidth + 30 + layers.size() * 15));
                 setPreferredSize(new Dimension(getWidth(), 2 * borderWidth + 30 + layers.size() * 15));
-                setMaximumSize(new Dimension(getWidth(), 2 * borderWidth + 30 + layers.size() * 15));
+                setMaximumSize(new Dimension(getWidth(), 2 * borderWidth + 30 + layers.size() * 15));          
             }
             repaint();
         }
@@ -267,6 +269,7 @@ public class ObservationView extends javax.swing.JPanel {
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel drawArea;
     private javax.swing.JLabel readName;
