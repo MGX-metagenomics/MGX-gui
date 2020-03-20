@@ -12,6 +12,8 @@
             <file name="org-openide-actions-RedoAction.shadow_hidden"/>
             <file name="org-openide-actions-UndoAction.shadow_hidden"/>
         </folder>
+        <folder name="Memory_hidden">
+        </folder>
     </folder>
     <folder name="Menu">
         <folder name="File">
