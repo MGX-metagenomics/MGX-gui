@@ -10,12 +10,12 @@
    xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="32px"
-   height="32px"
+   width="32.328903"
+   height="32.198311"
    id="svg2816"
    version="1.1"
    inkscape:version="0.92.3 (2405546, 2018-03-11)"
-   sodipodi:docname="JobStatusOk.svg">
+   sodipodi:docname="JobStateOK.svg">
   <defs
      id="defs2818">
     <linearGradient
@@ -45,7 +45,7 @@
        fx="21.363636"
        fy="17.093689"
        r="8.0625"
-       gradientTransform="matrix(1,0,0,1.3100775,0,-5.1162791)"
+       gradientTransform="matrix(2.0096154,0,0,1.9977595,-23.240385,-14.451403)"
        gradientUnits="userSpaceOnUse"
        spreadMethod="pad" />
   </defs>
@@ -57,8 +57,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="22.395604"
-     inkscape:cx="3.2244097"
-     inkscape:cy="16"
+     inkscape:cx="1.0312902"
+     inkscape:cy="18.610783"
      inkscape:current-layer="layer1"
      showgrid="true"
      inkscape:grid-bbox="true"
@@ -67,10 +67,16 @@
      inkscape:window-height="1058"
      inkscape:window-x="0"
      inkscape:window-y="0"
-     inkscape:window-maximized="0">
+     inkscape:window-maximized="0"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0">
     <inkscape:grid
        type="xygrid"
-       id="grid2836" />
+       id="grid2836"
+       originx="5.2413753"
+       originy="2.6107829" />
   </sodipodi:namedview>
   <metadata
      id="metadata2821">
@@ -87,21 +93,20 @@
   <g
      id="layer1"
      inkscape:label="Layer 1"
-     inkscape:groupmode="layer">
-    <path
-       sodipodi:type="arc"
-       style="opacity:1;fill:url(#radialGradient3618);fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:0.10000000000000001;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+     inkscape:groupmode="layer"
+     transform="translate(5.2413753,-2.4124715)">
+    <ellipse
+       style="opacity:1;fill:url(#radialGradient3618);fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:0.17505704;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="path3610"
-       sodipodi:cx="17"
-       sodipodi:cy="16.5"
-       sodipodi:rx="8"
-       sodipodi:ry="10.5"
-       d="m 25,16.5 a 8,10.5 0 1 1 -16,0 8,10.5 0 1 1 16,0 z"
-       transform="matrix(1.375,0,0,1.2857143,-7.375,-5.214286)" />
+       cx="10.923077"
+       cy="18.511627"
+       rx="16.076923"
+       ry="16.011627" />
     <path
-       style="fill:none;stroke:#ffffff;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;opacity:1"
-       d="M 10.001963,18.041707 14,24 c 1.947357,-6.838235 3.954988,-13.522439 8,-15"
+       style="opacity:1;fill:none;stroke:#ffffff;stroke-width:3.94981933;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 2.1567152,20.933187 8,28 c 2.846137,-8.110465 5.780367,-16.038242 11.692308,-17.790698"
        id="path3620"
-       sodipodi:nodetypes="ccc" />
+       sodipodi:nodetypes="ccc"
+       inkscape:connector-curvature="0" />
   </g>
 </svg>
