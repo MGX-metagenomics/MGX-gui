@@ -23,7 +23,7 @@ public abstract class DTOConversionBase<T, U> {
     }
 
     protected static Date toDate(Long timestamp) {
-        if (timestamp == null) {
+        if (timestamp == null || timestamp == 0) {
             return null;
         }
         return new Date(1000L * timestamp);
