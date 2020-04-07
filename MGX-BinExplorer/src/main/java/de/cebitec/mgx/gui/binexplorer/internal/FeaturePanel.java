@@ -182,7 +182,8 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
         String framePrefix = r.getFrame() > 0 ? "+" : "";
         NumberFormat nf = NumberFormat.getInstance(Locale.US);
         String toolTip = "<html>"
-                + "Location: " + nf.format(r.getStart()) + "-"
+                + "Gene: " + vc.getReferenceName() + "_" + r.getId()
+                + "<br>Location: " + nf.format(r.getStart()) + "-"
                 + nf.format(r.getStop()) + "<br>"
                 + "Frame: " + framePrefix + r.getFrame() + "<br>"
                 + "Length: " + r.getAALength() + " aa<br>"
