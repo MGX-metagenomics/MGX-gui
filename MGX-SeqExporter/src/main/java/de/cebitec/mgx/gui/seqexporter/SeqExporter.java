@@ -20,7 +20,6 @@ import java.io.File;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -88,6 +87,7 @@ public final class SeqExporter<T extends Number, U> implements SequenceExporterI
 
             SwingWorker<SeqWriterI, Void> worker = new SwingWorker<SeqWriterI, Void>() {
                 @Override
+                @SuppressWarnings("unchecked")
                 protected SeqWriterI doInBackground() throws Exception {
                     SeqWriterI writer;
                     if (hasQuality) {
