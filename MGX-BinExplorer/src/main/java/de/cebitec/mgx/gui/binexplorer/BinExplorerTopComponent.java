@@ -17,6 +17,7 @@ import de.cebitec.mgx.api.model.assembly.GeneI;
 import de.cebitec.mgx.dnautils.DNAUtils;
 import de.cebitec.mgx.gui.binexplorer.internal.ContigViewController;
 import de.cebitec.mgx.gui.binexplorer.internal.FeaturePanel;
+import de.cebitec.mgx.gui.binexplorer.internal.SeqPropertyPanel;
 import de.cebitec.mgx.gui.binexplorer.util.AttributeTableModel;
 import de.cebitec.mgx.gui.binexplorer.util.ContigModel;
 import de.cebitec.mgx.gui.binexplorer.util.ContigRenderer;
@@ -29,7 +30,6 @@ import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Cursor;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -102,17 +102,18 @@ import org.openide.util.Utilities;
 public final class BinExplorerTopComponent extends TopComponent implements LookupListener, PropertyChangeListener, ItemListener {
 
     private final Lookup.Result<BinI> result;
-    private final ContigModel contigModel = new ContigModel();
+    private final ContigModel contigListModel = new ContigModel();
     private final AttributeTableModel tableModel = new AttributeTableModel();
     private BinI currentBin = null;
     private boolean isActivated = false;
-    private ContigViewController vc = null;
+    private final ContigViewController vc = new ContigViewController();
     private GeneI selectedFeature = null;
     private MGXMasterI currentMaster = null;
-    private final FastCategoryDataset dataset = new FastCategoryDataset();
-    private JFreeChart chart = null;
+    private final FastCategoryDataset coverageDataset = new FastCategoryDataset();
+    private JFreeChart coverageChart = null;
     private final TLongObjectMap<String> runNames = new TLongObjectHashMap<>();
-    private FeaturePanel fp = null;
+    private FeaturePanel featurePanel = null;
+    private SeqPropertyPanel seqPropPanel = null;
 
     public BinExplorerTopComponent() {
         initComponents();
@@ -120,9 +121,11 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
         setToolTipText(Bundle.HINT_BinExplorerTopComponent());
 
         result = Utilities.actionsGlobalContext().lookupResult(BinI.class);
-        contigList.setModel(contigModel);
+        contigList.setModel(contigListModel);
         contigList.setRenderer(new ContigRenderer());
         contigList.addItemListener(this);
+
+        vc.addPropertyChangeListener(this);
 
         jXTable1.setHighlighters(new Highlighter[]{HighlighterFactory.createAlternateStriping()});
         jXTable1.getColumn(0).setWidth(130);
@@ -130,9 +133,7 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
         jXTable1.getColumn(3).setMaxWidth(60);
         jXTable1.setDefaultRenderer(Object.class, new ObservationCellRenderer(this));
 
-        ChartFactory.setChartTheme(StandardChartTheme.createLegacyTheme());
-        BarRenderer.setDefaultShadowsVisible(false);
-        XYBarRenderer.setDefaultShadowsVisible(false);
+        setupCoverageChart();
 
         ActionListener buttonListener = new ActionListener() {
 
@@ -152,7 +153,6 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
 
                     @Override
                     protected void done() {
-                        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
                         try {
                             SequenceI seq = get();
                             if (seq != null) {
@@ -184,7 +184,6 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
                     }
 
                 };
-                setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                 sw.execute();
             }
         };
@@ -231,12 +230,13 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
-        geneName = new javax.swing.JLabel();
-        geneStart = new javax.swing.JLabel();
-        geneStop = new javax.swing.JLabel();
-        frame = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         geneLength = new javax.swing.JLabel();
+        geneFrame = new javax.swing.JLabel();
+        geneStop = new javax.swing.JLabel();
+        geneStart = new javax.swing.JLabel();
+        geneName = new javax.swing.JLabel();
+        seqpropHolder = new javax.swing.JPanel();
 
         jLabel1.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(BinExplorerTopComponent.class, "BinExplorerTopComponent.jLabel1.text")); // NOI18N
@@ -291,23 +291,21 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
         jLabel6.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(jLabel6, org.openide.util.NbBundle.getMessage(BinExplorerTopComponent.class, "BinExplorerTopComponent.jLabel6.text")); // NOI18N
 
-        geneName.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
-        org.openide.awt.Mnemonics.setLocalizedText(geneName, org.openide.util.NbBundle.getMessage(BinExplorerTopComponent.class, "BinExplorerTopComponent.geneName.text")); // NOI18N
-
-        geneStart.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
-        org.openide.awt.Mnemonics.setLocalizedText(geneStart, org.openide.util.NbBundle.getMessage(BinExplorerTopComponent.class, "BinExplorerTopComponent.geneStart.text")); // NOI18N
-
-        geneStop.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
-        org.openide.awt.Mnemonics.setLocalizedText(geneStop, org.openide.util.NbBundle.getMessage(BinExplorerTopComponent.class, "BinExplorerTopComponent.geneStop.text")); // NOI18N
-
-        frame.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
-        org.openide.awt.Mnemonics.setLocalizedText(frame, org.openide.util.NbBundle.getMessage(BinExplorerTopComponent.class, "BinExplorerTopComponent.frame.text")); // NOI18N
-
         jLabel7.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(jLabel7, org.openide.util.NbBundle.getMessage(BinExplorerTopComponent.class, "BinExplorerTopComponent.jLabel7.text")); // NOI18N
 
-        geneLength.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(geneLength, org.openide.util.NbBundle.getMessage(BinExplorerTopComponent.class, "BinExplorerTopComponent.geneLength.text")); // NOI18N
+
+        org.openide.awt.Mnemonics.setLocalizedText(geneFrame, org.openide.util.NbBundle.getMessage(BinExplorerTopComponent.class, "BinExplorerTopComponent.geneFrame.text")); // NOI18N
+
+        org.openide.awt.Mnemonics.setLocalizedText(geneStop, org.openide.util.NbBundle.getMessage(BinExplorerTopComponent.class, "BinExplorerTopComponent.geneStop.text")); // NOI18N
+
+        org.openide.awt.Mnemonics.setLocalizedText(geneStart, org.openide.util.NbBundle.getMessage(BinExplorerTopComponent.class, "BinExplorerTopComponent.geneStart.text")); // NOI18N
+
+        org.openide.awt.Mnemonics.setLocalizedText(geneName, org.openide.util.NbBundle.getMessage(BinExplorerTopComponent.class, "BinExplorerTopComponent.geneName.text")); // NOI18N
+
+        seqpropHolder.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        seqpropHolder.setLayout(new java.awt.BorderLayout());
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -315,41 +313,45 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(contentPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(geneCovPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(dnaseq)
-                                .addGap(18, 18, 18)
-                                .addComponent(aaseq))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel3)
-                                    .addComponent(jLabel4)
-                                    .addComponent(jLabel5)
-                                    .addComponent(jLabel6)
-                                    .addComponent(jLabel7))
-                                .addGap(91, 91, 91)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(geneLength)
-                                    .addComponent(frame)
-                                    .addComponent(geneStop)
-                                    .addComponent(geneStart)
-                                    .addComponent(geneName))))
-                        .addGap(18, 18, 18)
-                        .addComponent(jScrollPane1))
-                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(contigList, javax.swing.GroupLayout.PREFERRED_SIZE, 484, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel1)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel2)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(binName, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 501, Short.MAX_VALUE)))
+                                .addComponent(binName, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(geneCovPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(dnaseq)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addContainerGap()
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jLabel3)
+                                            .addComponent(jLabel4)
+                                            .addComponent(jLabel5)
+                                            .addComponent(jLabel6)
+                                            .addComponent(jLabel7))))
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(aaseq)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(22, 22, 22)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                            .addComponent(geneName, javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(geneStart, javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(geneStop, javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(geneFrame, javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(geneLength, javax.swing.GroupLayout.Alignment.LEADING))))))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane1)))
                 .addContainerGap())
+            .addComponent(seqpropHolder, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -364,36 +366,39 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
                 .addComponent(contigList, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(contentPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 221, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(seqpropHolder, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(12, 12, 12)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel3)
-                            .addComponent(geneName))
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(geneName)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(jLabel3)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel4)
+                                    .addComponent(geneStart))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel5)
+                                    .addComponent(geneStop))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel6)
+                                    .addComponent(geneFrame))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel7)
+                                    .addComponent(geneLength))))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel4)
-                            .addComponent(geneStart))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel5)
-                            .addComponent(geneStop))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel6)
-                            .addComponent(frame))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel7)
-                            .addComponent(geneLength))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(dnaseq)
                             .addComponent(aaseq))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(geneCovPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 404, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 444, Short.MAX_VALUE))
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -404,8 +409,8 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
     private javax.swing.JPanel contentPanel;
     private javax.swing.JComboBox<ContigI> contigList;
     private javax.swing.JButton dnaseq;
-    private javax.swing.JLabel frame;
     private javax.swing.JPanel geneCovPanel;
+    private javax.swing.JLabel geneFrame;
     private javax.swing.JLabel geneLength;
     private javax.swing.JLabel geneName;
     private javax.swing.JLabel geneStart;
@@ -419,6 +424,7 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
     private javax.swing.JLabel jLabel7;
     private javax.swing.JScrollPane jScrollPane1;
     private org.jdesktop.swingx.JXTable jXTable1;
+    private javax.swing.JPanel seqpropHolder;
     // End of variables declaration//GEN-END:variables
     @Override
     public void componentOpened() {
@@ -448,30 +454,34 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
         if (event.getStateChange() == ItemEvent.SELECTED) {
             Object item = event.getItem();
             if (item instanceof ContigI) {
-                setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                 ContigI contig = (ContigI) item;
-                if (vc != null) {
-                    vc.removePropertyChangeListener(this);
-                    vc.close();
-                }
                 dnaseq.setEnabled(false);
                 aaseq.setEnabled(false);
                 geneName.setText("");
                 geneStart.setText("");
                 geneStop.setText("");
-                frame.setText("");
+                geneFrame.setText("");
                 geneLength.setText("");
                 selectedFeature = null;
                 tableModel.update(null);
-                vc = new ContigViewController(contig);
-                vc.addPropertyChangeListener(this);
-                if (fp != null) {
-                    contentPanel.remove(fp);
+                vc.setContig(contig);
+                if (featurePanel != null) {
+                    contentPanel.remove(featurePanel);
                 }
-                fp = new FeaturePanel(vc);
-                contentPanel.setLayout(new BorderLayout());
-                contentPanel.add(fp, BorderLayout.CENTER);
-                setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                featurePanel = new FeaturePanel(vc);
+                contentPanel.add(featurePanel, BorderLayout.CENTER);
+                contentPanel.doLayout();
+
+                if (seqPropPanel != null) {
+                    seqpropHolder.remove(seqPropPanel);
+                }
+                seqPropPanel = new SeqPropertyPanel(vc);
+                seqpropHolder.add(seqPropPanel, BorderLayout.CENTER);
+                seqpropHolder.doLayout();
+
+                geneCovPanel.removeAll();
+
+                repaint();
             }
         }
     }
@@ -488,15 +498,17 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
             newBin = bin;
         }
         if (newBin != null && !newBin.equals(currentBin)) {
-            setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-            if (fp != null) {
-                fp.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-                fp.clear();
+            if (featurePanel != null) {
+                featurePanel.clear();
             }
-            contigModel.clear();
+            if (seqPropPanel != null) {
+                seqPropPanel.clear();
+            }
+            contigListModel.clear();
             contigList.repaint();
             tableModel.clear();
-            geneCovPanel.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+
+            geneCovPanel.removeAll();
             if (currentBin != null) {
                 currentBin.removePropertyChangeListener(this);
             }
@@ -508,7 +520,7 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
             geneName.setText("");
             geneStart.setText("");
             geneStop.setText("");
-            frame.setText("");
+            geneFrame.setText("");
             geneLength.setText("");
             selectedFeature = null;
 
@@ -516,20 +528,15 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
                 @Override
                 public void run() {
                     tableModel.update(null);
-                    contigModel.setBin(currentBin);
-                    contigModel.update();
-                    setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-                    if (fp != null) {
-                        fp.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-                    }
-                    geneCovPanel.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                    contigListModel.setBin(currentBin);
+                    contigListModel.update();
                 }
             });
 
         }
 
         if (currentBin == null) {
-            contigModel.clear();
+            contigListModel.clear();
         }
 
     }
@@ -541,17 +548,22 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
             if (currentBin.equals(bin)) {
                 currentBin.removePropertyChangeListener(this);
                 currentBin = null;
-                contigModel.clear();
+                contigListModel.clear();
                 binName.setText("");
                 dnaseq.setEnabled(false);
                 aaseq.setEnabled(false);
                 geneName.setText("");
                 geneStart.setText("");
                 geneStop.setText("");
-                frame.setText("");
+                geneFrame.setText("");
                 geneLength.setText("");
                 tableModel.update(null);
                 selectedFeature = null;
+
+                coverageDataset.clear();
+                featurePanel.clear();
+                seqPropPanel.clear();
+
                 repaint();
                 return;
             }
@@ -564,13 +576,6 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
                 return;
             }
 
-            setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-            fp.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-            geneCovPanel.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-
-            dataset.clear();
-            geneCovPanel.repaint();
-
             tableModel.update(null);
             selectedFeature = (GeneI) evt.getNewValue();
 
@@ -580,16 +585,19 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
                 runNames.clear();
             }
 
-            geneName.setText(contigModel.getSelectedItem().getName() + "_" + selectedFeature.getId());
+            geneName.setText(contigListModel.getSelectedItem().getName() + "_" + selectedFeature.getId());
             geneStart.setText(NumberFormat.getInstance(Locale.US).format(selectedFeature.getStart()));
             geneStop.setText(NumberFormat.getInstance(Locale.US).format(selectedFeature.getStop()));
             if (selectedFeature.getFrame() > 0) {
-                frame.setText("+" + String.valueOf(selectedFeature.getFrame()));
+                geneFrame.setText("+" + String.valueOf(selectedFeature.getFrame()));
             } else {
-                frame.setText(String.valueOf(selectedFeature.getFrame()));
+                geneFrame.setText(String.valueOf(selectedFeature.getFrame()));
             }
             geneLength.setText(NumberFormat.getInstance(Locale.US).format(selectedFeature.getAALength()) + " aa");
 
+            //
+            //  update observation display
+            //
             MGXPool.getInstance().submit(new Runnable() {
                 @Override
                 public void run() {
@@ -597,74 +605,43 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
                 }
             });
 
-            MGXPool.getInstance().submit(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        List<GeneCoverageI> all = new ArrayList<>();
-                        Iterator<GeneCoverageI> iter = currentMaster.GeneCoverage().ByGene(selectedFeature);
-                        while (iter != null && iter.hasNext()) {
-                            all.add(iter.next());
-                        }
-                        Collections.sort(all);
-
-                        dataset.setNotify(false);
-                        for (GeneCoverageI gc : all) {
-                            if (!runNames.containsKey(gc.getRunId())) {
-                                SeqRunI run = currentMaster.SeqRun().fetch(gc.getRunId());
-                                runNames.put(gc.getRunId(), run.getName());
-                                run.deleted();
-                            }
-                            dataset.addValue(gc.getCoverage(), "", runNames.get(gc.getRunId()));
-                        }
-                        dataset.setNotify(true);
-
-                        if (chart == null) {
-                            chart = ChartFactory.createBarChart("", "", "", dataset, PlotOrientation.HORIZONTAL, false, true, false);
-
-                            chart.setBorderPaint(Color.WHITE);
-                            chart.setBackgroundPaint(Color.WHITE);
-                            chart.setAntiAlias(true);
-
-                            CategoryPlot plot = chart.getCategoryPlot();
-                            CategoryAxis domainAxis = plot.getDomainAxis();
-                            domainAxis.setCategoryMargin(0);
-                            domainAxis.setCategoryLabelPositions(CategoryLabelPositions.STANDARD);
-
-                            CategoryItemRenderer renderer = plot.getRenderer();
-                            renderer.setBaseItemLabelGenerator(new StandardCategoryItemLabelGenerator());
-                            renderer.setBaseItemLabelPaint(Color.WHITE);
-                            ItemLabelPosition position = new ItemLabelPosition(ItemLabelAnchor.CENTER,
-                                    TextAnchor.CENTER_LEFT);
-                            renderer.setBasePositiveItemLabelPosition(position);
-                            renderer.setBaseItemLabelsVisible(true);
-
-                            BarRenderer br = (BarRenderer) plot.getRenderer();
-
-                            br.setBaseToolTipGenerator(new StandardCategoryToolTipGenerator("<html>Sequencing run: {1}<br>Mapped reads: {2}</html>", NumberFormat.getInstance(Locale.US)));
-                            br.setItemMargin(0);
-                            br.setMaximumBarWidth(.2); // set maximum width to 20% of chart
-
-                            // colors
-                            for (int i = 0; i < all.size(); i++) {
-                                br.setSeriesPaint(i, Color.BLUE);
-                            }
-                            SVGChartPanel svgChartPanel = new SVGChartPanel(chart);
-                            svgChartPanel.setPopupMenu(null);
-                            geneCovPanel.removeAll();
-                            geneCovPanel.setLayout(new BorderLayout());
-                            geneCovPanel.add(svgChartPanel, BorderLayout.CENTER);
-                        }
-                        geneCovPanel.repaint();
-                        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-                        fp.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-                        geneCovPanel.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-
-                    } catch (MGXException ex) {
-                        Exceptions.printStackTrace(ex);
-                    }
+            //
+            // update coverage chart
+            //
+            List<GeneCoverageI> all = new ArrayList<>();
+            try {
+                Iterator<GeneCoverageI> iter = currentMaster.GeneCoverage().ByGene(selectedFeature);
+                while (iter != null && iter.hasNext()) {
+                    all.add(iter.next());
                 }
-            });
+                Collections.sort(all);
+
+                coverageDataset.clear();
+                for (GeneCoverageI geneCov : all) {
+                    if (!runNames.containsKey(geneCov.getRunId())) {
+                        SeqRunI run = currentMaster.SeqRun().fetch(geneCov.getRunId());
+                        runNames.put(geneCov.getRunId(), run.getName());
+                        run.deleted();
+                    }
+                    coverageDataset.addValue(geneCov.getCoverage(), "", runNames.get(geneCov.getRunId()));
+                }
+            } catch (MGXException ex) {
+                Exceptions.printStackTrace(ex);
+                geneCovPanel.removeAll();
+                return;
+            }
+
+            CategoryPlot plot = coverageChart.getCategoryPlot();
+            BarRenderer br = (BarRenderer) plot.getRenderer();
+            for (int i = 0; i < all.size(); i++) {
+                br.setSeriesPaint(i, Color.BLUE);
+            }
+            SVGChartPanel svgChartPanel = new SVGChartPanel(coverageChart);
+            svgChartPanel.setPopupMenu(null);
+
+            geneCovPanel.removeAll();
+            geneCovPanel.setLayout(new BorderLayout());
+            geneCovPanel.add(svgChartPanel, BorderLayout.CENTER);
         }
     }
 
@@ -672,15 +649,44 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
         return selectedFeature;
     }
 
+    private void setupCoverageChart() {
+
+        ChartFactory.setChartTheme(StandardChartTheme.createLegacyTheme());
+        BarRenderer.setDefaultShadowsVisible(false);
+        XYBarRenderer.setDefaultShadowsVisible(false);
+
+        coverageChart = ChartFactory.createBarChart("", "", "", coverageDataset, PlotOrientation.HORIZONTAL, false, true, false);
+
+        coverageChart.setBorderPaint(Color.WHITE);
+        coverageChart.setBackgroundPaint(Color.WHITE);
+        coverageChart.setAntiAlias(true);
+
+        CategoryPlot plot = coverageChart.getCategoryPlot();
+        CategoryAxis domainAxis = plot.getDomainAxis();
+        domainAxis.setCategoryMargin(0);
+        domainAxis.setCategoryLabelPositions(CategoryLabelPositions.STANDARD);
+
+        CategoryItemRenderer renderer = plot.getRenderer();
+        renderer.setBaseItemLabelGenerator(new StandardCategoryItemLabelGenerator());
+        renderer.setBaseItemLabelPaint(Color.WHITE);
+        ItemLabelPosition position = new ItemLabelPosition(ItemLabelAnchor.CENTER,
+                TextAnchor.CENTER_LEFT);
+        renderer.setBasePositiveItemLabelPosition(position);
+        renderer.setBaseItemLabelsVisible(true);
+
+        BarRenderer br = (BarRenderer) plot.getRenderer();
+
+        br.setBaseToolTipGenerator(new StandardCategoryToolTipGenerator("<html>Sequencing run: {1}<br>Mapped reads: {2}</html>", NumberFormat.getInstance(Locale.US)));
+        br.setItemMargin(0);
+        br.setMaximumBarWidth(.2); // set maximum width to 20% of chart
+
+    }
+
     void writeProperties(java.util.Properties p) {
-        // better to version settings since initial version as advocated at
-        // http://wiki.apidesign.org/wiki/PropertyFiles
         p.setProperty("version", "1.0");
-        // TODO store your settings
     }
 
     void readProperties(java.util.Properties p) {
         String version = p.getProperty("version");
-        // TODO read your settings according to their version
     }
 }

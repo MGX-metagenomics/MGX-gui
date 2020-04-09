@@ -264,7 +264,7 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
         //
         if (inDrag && dragStart != -1) {
             int posInRef = px2bp(e.getX());
-            int offset = posInRef - dragStart + 1;
+            int offset = posInRef - dragStart + 10;
             dragStart = posInRef;
             vc.setBounds(FastMath.max(0, bounds[0] - offset), FastMath.min(getReferenceLength() - 1, bounds[1] - offset));
         }

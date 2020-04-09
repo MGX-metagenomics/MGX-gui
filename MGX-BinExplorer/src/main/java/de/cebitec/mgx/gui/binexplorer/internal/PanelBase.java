@@ -55,7 +55,7 @@ public abstract class PanelBase extends JComponent implements PropertyChangeList
         vc.addPropertyChangeListener(this);
         super.setBackground(Color.WHITE);
         super.setForeground(Color.DARK_GRAY);
-
+        
         super.addComponentListener(new ComponentAdapter() {
 
             @Override
@@ -182,8 +182,7 @@ public abstract class PanelBase extends JComponent implements PropertyChangeList
             case ContigViewController.FEATURE_SELECTED:
                 // ignore
                 break;
-            case ContigViewController.VIEWCONTROLLER_CLOSED:
-                vc.removePropertyChangeListener(this);
+            case ContigViewController.CONTIG_CHANGE:
                 removeAll();
                 break;
             case ContigViewController.BOUNDS_CHANGE:
@@ -236,16 +235,21 @@ public abstract class PanelBase extends JComponent implements PropertyChangeList
         int notches = e.getWheelRotation();
         int[] newBounds = Arrays.copyOf(bounds, 2);
         int len = vc.getIntervalLength();
-        int adjust = FastMath.max(5, len / 25);
-
+        int adjust = FastMath.max(50, len / 25);
+        
         if (notches < 0) {
+            // zoom in
             newBounds[0] += adjust;
             newBounds[1] -= adjust;
         } else {
             newBounds[0] -= adjust;
             newBounds[1] += adjust;
         }
-        vc.setBounds(FastMath.max(newBounds[0], 0), FastMath.min(newBounds[1], refLength - 1));
+
+        // limit max zoom level
+        if (newBounds[1] - newBounds[0] + 1 > 100) {
+            vc.setBounds(FastMath.max(newBounds[0], 0), FastMath.min(newBounds[1], refLength - 1));
+        }
         e.consume();
     }
 
