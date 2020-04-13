@@ -7,6 +7,7 @@ package de.cebitec.mgx.gui.binexplorer;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.groups.FileType;
 import de.cebitec.mgx.api.model.ModelBaseI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.SequenceI;
@@ -24,8 +25,10 @@ import de.cebitec.mgx.gui.binexplorer.util.ContigRenderer;
 import de.cebitec.mgx.gui.binexplorer.util.ObservationCellRenderer;
 import de.cebitec.mgx.gui.charts.basic.util.FastCategoryDataset;
 import de.cebitec.mgx.gui.charts.basic.util.SVGChartPanel;
+import de.cebitec.mgx.gui.genbankexporter.GBKExporter;
 import de.cebitec.mgx.gui.pool.MGXPool;
 import de.cebitec.mgx.gui.swingutils.SeqPanel;
+import de.cebitec.mgx.gui.swingutils.util.SuffixFilter;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import java.awt.BorderLayout;
@@ -37,6 +40,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,7 +48,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
+import javax.swing.JFileChooser;
 import javax.swing.SwingWorker;
+import javax.swing.filechooser.FileFilter;
 import org.jdesktop.swingx.decorator.Highlighter;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
 import org.jfree.chart.ChartFactory;
@@ -62,6 +68,7 @@ import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.CategoryItemRenderer;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.ui.TextAnchor;
+import org.netbeans.api.progress.ProgressHandle;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
@@ -73,6 +80,7 @@ import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
 import org.openide.windows.TopComponent;
 import org.openide.util.NbBundle.Messages;
+import org.openide.util.NbPreferences;
 import org.openide.util.Utilities;
 
 /**
@@ -190,6 +198,86 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
 
         dnaseq.addActionListener(buttonListener);
         aaseq.addActionListener(buttonListener);
+
+        exportGBK.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                final ContigI contig = contigListModel.getSelectedItem();
+                final String taxAssignment = currentBin.getTaxonomy();
+                JFileChooser fchooser = new JFileChooser();
+                fchooser.setDialogType(JFileChooser.SAVE_DIALOG);
+
+                // try to restore last directory selection
+                String last = NbPreferences.forModule(JFileChooser.class).get("lastDirectory", null);
+                if (last != null) {
+                    File f = new File(last);
+                    if (f.exists() && f.isDirectory() && f.canWrite()) {
+                        fchooser.setCurrentDirectory(f);
+                    }
+                }
+
+                // suggest a file name
+                String suffix = ".gbk";
+                File suggestedName = new File(fchooser.getCurrentDirectory(), cleanupName(contig.getName()) + suffix);
+                int cnt = 1;
+                while (suggestedName.exists()) {
+                    String newName = new StringBuilder(cleanupName(contig.getName()))
+                            .append(" (")
+                            .append(cnt++)
+                            .append(")")
+                            .append(suffix)
+                            .toString();
+                    suggestedName = new File(fchooser.getCurrentDirectory(), newName);
+                }
+                fchooser.setSelectedFile(suggestedName);
+                FileFilter ff = new SuffixFilter(FileType.EMBLGENBANK);
+                fchooser.addChoosableFileFilter(ff);
+                fchooser.setFileFilter(ff);
+
+                if (fchooser.showSaveDialog(null) != JFileChooser.APPROVE_OPTION) {
+                    return;
+                }
+
+                NbPreferences.forModule(JFileChooser.class).put("lastDirectory", fchooser.getCurrentDirectory().getAbsolutePath());
+
+                final File target = fchooser.getSelectedFile();
+                if (target.exists()) {
+                    // ask if file should be overwritten, else return
+                    String msg = new StringBuilder("A file named ")
+                            .append(target.getName())
+                            .append(" already exists. Should this ")
+                            .append("file be overwritten?")
+                            .toString();
+                    NotifyDescriptor nd = new NotifyDescriptor(msg,
+                            "Overwrite file?",
+                            NotifyDescriptor.OK_CANCEL_OPTION,
+                            NotifyDescriptor.WARNING_MESSAGE,
+                            null, null);
+                    Object ret = DialogDisplayer.getDefault().notify(nd);
+                    if (!NotifyDescriptor.OK_OPTION.equals(ret)) {
+                        return;
+                    }
+                }
+
+                ProgressHandle handle = ProgressHandle.createHandle("Export to " + target.getName());
+                handle.switchToIndeterminate();
+                handle.start();
+
+                MGXPool.getInstance().submit(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            GBKExporter.exportContig(target, contig, taxAssignment);
+                        } catch (Exception ex) {
+                            Exceptions.printStackTrace(ex);
+                        }
+
+                        handle.finish();
+                    }
+                });
+
+            }
+        });
     }
 
     private static BinExplorerTopComponent instance = null;
@@ -237,6 +325,7 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
         geneStart = new javax.swing.JLabel();
         geneName = new javax.swing.JLabel();
         seqpropHolder = new javax.swing.JPanel();
+        exportGBK = new javax.swing.JButton();
 
         jLabel1.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(BinExplorerTopComponent.class, "BinExplorerTopComponent.jLabel1.text")); // NOI18N
@@ -307,6 +396,10 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
         seqpropHolder.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         seqpropHolder.setLayout(new java.awt.BorderLayout());
 
+        exportGBK.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(exportGBK, org.openide.util.NbBundle.getMessage(BinExplorerTopComponent.class, "BinExplorerTopComponent.exportGBK.text")); // NOI18N
+        exportGBK.setEnabled(false);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -317,7 +410,10 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(contigList, javax.swing.GroupLayout.PREFERRED_SIZE, 484, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(contigList, javax.swing.GroupLayout.PREFERRED_SIZE, 484, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(exportGBK))
                             .addComponent(jLabel1)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel2)
@@ -349,7 +445,7 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
                                             .addComponent(geneFrame, javax.swing.GroupLayout.Alignment.LEADING)
                                             .addComponent(geneLength, javax.swing.GroupLayout.Alignment.LEADING))))))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane1)))
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 460, Short.MAX_VALUE)))
                 .addContainerGap())
             .addComponent(seqpropHolder, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
@@ -363,7 +459,9 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(contigList, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(contigList, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(exportGBK))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(contentPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 221, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -398,7 +496,7 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
                             .addComponent(aaseq))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(geneCovPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 444, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 443, Short.MAX_VALUE))
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -409,6 +507,7 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
     private javax.swing.JPanel contentPanel;
     private javax.swing.JComboBox<ContigI> contigList;
     private javax.swing.JButton dnaseq;
+    private javax.swing.JButton exportGBK;
     private javax.swing.JPanel geneCovPanel;
     private javax.swing.JLabel geneFrame;
     private javax.swing.JLabel geneLength;
@@ -457,6 +556,7 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
                 ContigI contig = (ContigI) item;
                 dnaseq.setEnabled(false);
                 aaseq.setEnabled(false);
+                exportGBK.setEnabled(true);
                 geneName.setText("");
                 geneStart.setText("");
                 geneStop.setText("");
@@ -517,6 +617,7 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
             binName.setText(currentBin.getName());
             dnaseq.setEnabled(false);
             aaseq.setEnabled(false);
+            exportGBK.setEnabled(false);
             geneName.setText("");
             geneStart.setText("");
             geneStop.setText("");
@@ -552,6 +653,7 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
                 binName.setText("");
                 dnaseq.setEnabled(false);
                 aaseq.setEnabled(false);
+                exportGBK.setEnabled(false);
                 geneName.setText("");
                 geneStart.setText("");
                 geneStop.setText("");
@@ -680,6 +782,13 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
         br.setItemMargin(0);
         br.setMaximumBarWidth(.2); // set maximum width to 20% of chart
 
+    }
+
+    private String cleanupName(String name) {
+        if (name.contains(File.separator)) {
+            name = name.replace(File.separator, "_");
+        }
+        return name;
     }
 
     void writeProperties(java.util.Properties p) {

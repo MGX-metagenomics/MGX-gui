@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>MGX-gui</artifactId>
+        <groupId>de.cebitec.mgx.gui</groupId>
+        <version>2.0</version>
+    </parent>
+
+    <groupId>de.cebitec.mgx.gui</groupId>
+    <artifactId>MGX-GenBankExporter</artifactId>
+    <version>2.0</version>
+    <packaging>bundle</packaging>
+
+    <name>MGX-GenBankExporter</name>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <version>6.0.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>de.cebitec.mgx.gui</groupId>
+            <artifactId>MGX-API</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.cebitec.mgx</groupId>
+            <artifactId>BioJava5-OSGi</artifactId>
+            <version>2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>de.cebitec.mgx</groupId>
+            <artifactId>DNAUtils</artifactId>
+            <version>2.0</version>
+            <type>jar</type>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Export-Package>
+                            de.cebitec.mgx.gui.genbankexporter
+                        </Export-Package>
+                        <Import-Package>
+                            de.cebitec.mgx.api,
+                            de.cebitec.mgx.api.model,
+                            de.cebitec.mgx.api.model.assembly,
+                            de.cebitec.mgx.api.model.assembly.access,
+                            de.cebitec.mgx.dnautils,
+                            org.biojava.nbio.core.sequence,
+                            org.biojava.nbio.core.sequence.compound,
+                            org.biojava.nbio.core.sequence.features,
+                            org.biojava.nbio.core.sequence.location,
+                            org.biojava.nbio.core.sequence.location.template,
+                            org.biojava.nbio.core.sequence.io,
+                            org.biojava.nbio.core.sequence.io.template,
+                            org.biojava.nbio.core.sequence.template,
+                            org.biojava.nbio.core.util
+                        </Import-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
