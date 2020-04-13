@@ -260,8 +260,8 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
                 }
 
                 ProgressHandle handle = ProgressHandle.createHandle("Export to " + target.getName());
-                handle.switchToIndeterminate();
                 handle.start();
+                handle.switchToIndeterminate();
 
                 MGXPool.getInstance().submit(new Runnable() {
                     @Override
