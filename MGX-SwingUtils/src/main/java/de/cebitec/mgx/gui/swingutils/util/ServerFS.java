@@ -46,7 +46,8 @@ public class ServerFS extends FileSystemView {
     
     @Override
     public String getSystemDisplayName(File f) {
-        return super.getSystemDisplayName(f);
+        String ret = super.getSystemDisplayName(f);
+        return ret != null ? ret : f.getName();
     }
 
     @Override
