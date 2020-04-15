@@ -5,6 +5,7 @@ import java.text.NumberFormat;
 import java.util.Locale;
 import javax.swing.Action;
 import static org.apache.commons.text.StringEscapeUtils.escapeHtml4;
+import org.openide.filesystems.FileUtil;
 import org.openide.nodes.Children;
 import org.openide.util.lookup.Lookups;
 
@@ -44,7 +45,8 @@ public class BinNode extends MGXNodeBase<BinI> {
 
     @Override
     public Action[] getActions(boolean context) {
-        return new Action[]{};
+        Action exportGBK = FileUtil.getConfigObject("Actions/Edit/de-cebitec-mgx-gui-actions-ExportBin.instance", Action.class);
+        return new Action[]{exportGBK};
     }
 
     @Override
