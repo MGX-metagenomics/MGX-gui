@@ -11,6 +11,9 @@ package de.cebitec.mgx.gui.binexplorer.util;
  */
 public class GC {
 
+    private GC() {
+    }
+
     public static float gc(String sequence) {
         int gc = 0;
         for (byte b : sequence.getBytes()) {
