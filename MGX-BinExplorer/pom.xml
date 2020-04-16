@@ -81,7 +81,6 @@
         <dependency>
             <groupId>de.cebitec.mgx</groupId>
             <artifactId>DNAUtils</artifactId>
-            <version>2.0</version>
         </dependency>
         <dependency>
             <groupId>de.cebitec.mgx.gui</groupId>
@@ -96,11 +95,6 @@
             <artifactId>org-openide-dialogs</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.swinglabs.swingx</groupId>
-            <artifactId>swingx-all</artifactId>
-            <version>1.6.5-1</version>
-        </dependency>
-        <dependency>
             <groupId>de.cebitec.mgx</groupId>
             <artifactId>Trove-OSGi</artifactId>
         </dependency>
@@ -111,6 +105,10 @@
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-netbeans-api-progress</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.cebitec.mgx</groupId>
+            <artifactId>SwingX-OSGi</artifactId>
         </dependency>
     </dependencies>
     <properties>
