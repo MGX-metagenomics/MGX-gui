@@ -9,10 +9,12 @@ import de.cebitec.mgx.gui.binexplorer.util.GC;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.awt.event.MouseEvent;
 import java.awt.geom.GeneralPath;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import javax.swing.ToolTipManager;
 import org.apache.commons.math3.util.FastMath;
 
 /**
@@ -28,6 +30,8 @@ public class SeqPropertyPanel extends PanelBase {
         super(vc, true);
         super.setMinimumSize(new Dimension(500, 175));
         super.setPreferredSize(new Dimension(500, 175));
+        ToolTipManager.sharedInstance().registerComponent(this);
+        ToolTipManager.sharedInstance().setDismissDelay(5000);
     }
 
     public void clear() {
@@ -74,7 +78,6 @@ public class SeqPropertyPanel extends PanelBase {
 
         GeneralPath gcSkew = new GeneralPath(GeneralPath.WIND_EVEN_ODD);
         gcSkew.moveTo(0, midY);
-        float prevSkew = 0;
         float minSkew = 1000;
         float maxSkew = -1000;
         List<Float> gcData = new LinkedList<>();
@@ -88,21 +91,20 @@ public class SeqPropertyPanel extends PanelBase {
             float skew = GC.gcSkew(subseq);
             gcData.add(gc);
             skewData.add(skew);
-            prevSkew = skew;
 
             minGC = FastMath.min(minGC, gc);
             maxGC = FastMath.max(maxGC, gc);
             minSkew = FastMath.min(minSkew, skew);
             maxSkew = FastMath.max(maxSkew, skew);
         }
-        
+
         int vertPadding = 5;
         float gcRange = maxGC - minGC;
         float gcScale = (getHeight() - vertPadding - vertPadding) / gcRange;
 
         float skewRange = maxSkew - minSkew;
         float skewScale = (getHeight() - vertPadding - vertPadding) / skewRange;
-        
+
         Iterator<Float> gcIter = gcData.iterator();
         Iterator<Float> skewIter = skewData.iterator();
 
@@ -120,9 +122,14 @@ public class SeqPropertyPanel extends PanelBase {
 
         g2.setColor(Color.RED);
         g2.draw(gcContent);
-        
+
         g2.setColor(Color.BLUE);
         g2.draw(gcSkew);
+    }
+
+    @Override
+    public String getToolTipText(MouseEvent m) {
+        return "<html>Red: GC content<br>Blue: GC skew</html>";
     }
 
     @Override
