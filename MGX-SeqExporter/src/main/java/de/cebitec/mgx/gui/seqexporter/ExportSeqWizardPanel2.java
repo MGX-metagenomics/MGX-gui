@@ -30,6 +30,7 @@ public class ExportSeqWizardPanel2<U> implements WizardDescriptor.Panel<WizardDe
         return component;
     }
 
+    @SuppressWarnings("unchecked")
     public void setGroup(GroupI<U> vg) {
         getComponent().setVisualizationGroup(vg);
     }
