@@ -13,6 +13,10 @@
     <prerequisites>
         <maven>3.0.5</maven>
     </prerequisites>
+    
+    <scm>
+        <url>https://github.com/mgx-metagenomics/mgx-gui</url>
+    </scm>
 
 
     <dependencyManagement>
@@ -20,7 +24,7 @@
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
-                <version>4.12</version>
+                <version>4.13</version>
                 <scope>test</scope>
             </dependency>
             
@@ -143,38 +147,6 @@
                 <groupId>org.netbeans.api</groupId>
                 <version>${netbeans.version}</version>
             </dependency>
-            <!-- 
-            <dependency>
-                <groupId>org.netbeans.external</groupId>
-                <artifactId>xerces-2.8.0</artifactId>
-                <version>RELEASE721</version>
-            </dependency> 
-            <dependency>
-                <groupId>org.netbeans.external</groupId>
-                <artifactId>swing-worker-1.1</artifactId>
-                <version>RELEASE701</version>
-            </dependency>
-            <dependency>
-                <groupId>org.netbeans.external</groupId>
-                <artifactId>jtidy-r8-20060801</artifactId>
-                <version>RELEASE71</version>
-            </dependency>
-            <dependency>
-                <groupId>org.netbeans.external</groupId>
-                <artifactId>rome-0.9</artifactId>
-                <version>RELEASE67</version>
-            </dependency>
-            <dependency>
-                <groupId>org.netbeans.external</groupId>
-                <artifactId>json-2</artifactId>
-                <version>RELEASE65</version>
-            </dependency>
-            <dependency>
-                <groupId>org.netbeans.external</groupId>
-                <artifactId>jdom-1.0</artifactId>
-                <version>RELEASE712</version>
-            </dependency>
-            -->
             <dependency>
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
@@ -214,11 +186,6 @@
                 <groupId>org.apache.xmlgraphics</groupId>
                 <artifactId>batik-swing</artifactId>
                 <version>1.12</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.protobuf</groupId>
-                <artifactId>protobuf-java</artifactId>
-                <version>3.11.0</version>
             </dependency>
             <dependency>
                 <groupId>com.h2database</groupId>
@@ -383,6 +350,11 @@
             <dependency>
                 <groupId>de.cebitec.mgx</groupId>
                 <artifactId>JFreeSVG-OSGi</artifactId>
+                <version>2.0</version>
+            </dependency>
+            <dependency>
+                <groupId>de.cebitec.mgx</groupId>
+                <artifactId>DNAUtils</artifactId>
                 <version>2.0</version>
             </dependency>
             <dependency>
@@ -629,14 +601,10 @@
     
     <distributionManagement>
         <repository>
-            <id>artifactory</id>
-            <name>local-libs-release</name>
-            <url>http://${artifactory.host}/artifactory/libs-release-local</url>
+            <id>github</id>
+            <name>GitHub mgx-metagenomics Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/mgx-metagenomics/mgx-gui</url>
         </repository>
-        <snapshotRepository>
-            <id>artifactory</id>
-            <name>local-libs-snapshot</name>
-            <url>http://${artifactory.host}/artifactory/libs-snapshot-local</url>
-        </snapshotRepository>
     </distributionManagement>
+    
 </project>
