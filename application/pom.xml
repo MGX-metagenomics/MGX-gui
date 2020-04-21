@@ -27,6 +27,20 @@
             <artifactId>platform</artifactId>
             <version>${netbeans.version}</version>
             <type>pom</type>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.netbeans.external</groupId>
+                    <artifactId>org-apache-commons-codec</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.netbeans.external</groupId>
+                    <artifactId>org-apache-commons-io</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.netbeans.external</groupId>
+                    <artifactId>org-apache-commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -65,12 +79,6 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>MGX-Login</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>jakarta.annotation</groupId>
-                    <artifactId>jakarta.annotation-api</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <artifactId>org-netbeans-modules-queries</artifactId>
