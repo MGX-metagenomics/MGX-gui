@@ -6,7 +6,6 @@
 package de.cebitec.mgx.gui.binexplorer.internal;
 
 import de.cebitec.mgx.api.exception.MGXException;
-import de.cebitec.mgx.api.model.SequenceI;
 import de.cebitec.mgx.api.model.assembly.ContigI;
 import de.cebitec.mgx.api.model.assembly.GeneI;
 import de.cebitec.mgx.pevents.ParallelPropertyChangeSupport;
