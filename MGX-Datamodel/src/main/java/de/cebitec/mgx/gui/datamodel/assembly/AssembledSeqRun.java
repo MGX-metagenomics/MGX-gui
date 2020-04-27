@@ -42,7 +42,7 @@ public class AssembledSeqRun extends AssembledSeqRunI {
 
     @Override
     public String toString() {
-        return getName();
+        return "AssembledSeqRun{" + getName() + '}';
     }
 
 }
