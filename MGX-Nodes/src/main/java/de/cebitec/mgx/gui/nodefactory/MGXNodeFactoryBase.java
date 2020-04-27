@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.nodefactory;
 
 import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.exception.MGXLoggedoutException;
 import de.cebitec.mgx.api.model.MGXDataModelBaseI;
 import de.cebitec.mgx.api.model.ModelBaseI;
 import de.cebitec.mgx.gui.nodes.MGXNodeBase;
@@ -39,16 +40,18 @@ public abstract class MGXNodeFactoryBase<T extends MGXDataModelBaseI<T>, U exten
 
     @Override
     protected final synchronized boolean createKeys(List<U> toPopulate) {
-//        if (!toPopulate.isEmpty()) {
-//            System.err.println("createKeys on non-empty list for " + getClass().getSimpleName());
-//        }
         if (getMaster() != null && getMaster().isDeleted()) {
             toPopulate.clear();
             return true;
         } else {
-            boolean ret = addKeys(toPopulate);
-            Collections.sort(toPopulate);
-            return ret;
+            try {
+                boolean ret = addKeys(toPopulate);
+                Collections.sort(toPopulate);
+                return ret;
+            } catch (MGXLoggedoutException mle) {
+                toPopulate.clear();
+            }
+            return true;
         }
     }
 
@@ -75,7 +78,7 @@ public abstract class MGXNodeFactoryBase<T extends MGXDataModelBaseI<T>, U exten
                 break;
             case ModelBaseI.OBJECT_DELETED:
                 if (src instanceof ModelBaseI) {
-                    System.err.println("MGXNodeFactoryBase: got " + evt.toString() + " in " + getClass().getName() + " from "+ src);
+                    //System.err.println("MGXNodeFactoryBase: got " + evt.toString() + " in " + getClass().getName() + " from "+ src);
                     ModelBaseI modelObj = (ModelBaseI) src;
                     modelObj.removePropertyChangeListener(this);
 
@@ -112,27 +115,4 @@ public abstract class MGXNodeFactoryBase<T extends MGXDataModelBaseI<T>, U exten
                 break;
         }
     }
-
-//    @Override
-//    public void childrenAdded(NodeMemberEvent ev) {
-////        System.err.println("childrenAdded");
-//    }
-//
-//    @Override
-//    public void childrenRemoved(NodeMemberEvent ev) {
-////        System.err.println("childrenRemoved");
-//
-//    }
-//
-//    @Override
-//    public void childrenReordered(NodeReorderEvent ev) {
-//        System.err.println("childrenReordered");
-//
-//    }
-//
-//    @Override
-//    public void nodeDestroyed(NodeEvent ev) {
-//        System.err.println("nodeDestroyed " + ev.getNode());
-//        ev.getNode().removeNodeListener(this);
-//    }
 }
