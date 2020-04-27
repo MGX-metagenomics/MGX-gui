@@ -91,4 +91,9 @@ public class Bin extends BinI {
         }
         return name.compareTo(o.getName());
     }
+
+    @Override
+    public String toString() {
+        return "Bin{" + "name=" + name + '}';
+    }
 }
