@@ -13,7 +13,7 @@ import de.cebitec.mgx.api.model.assembly.AssemblyI;
  * @author sj
  */
 public class Assembly extends AssemblyI {
-    
+
     private final String name;
     private final long jobId;
     private final long reads_assembled;
@@ -53,4 +53,8 @@ public class Assembly extends AssemblyI {
         return this.name.compareTo(o.getName());
     }
 
+    @Override
+    public String toString() {
+        return "Assembly{" + "name=" + name + '}';
+    }
 }
