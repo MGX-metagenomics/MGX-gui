@@ -135,6 +135,9 @@ public class Job extends JobI {
     
     @Override
     public int compareTo(JobI o) {
-        return this.startDate.compareTo(o.getStartDate());
+        // avoid NPE here
+        Date myDate = this.startDate != null ? this.startDate : new Date();
+        Date otherDate = o.getStartDate() != null ? o.getStartDate() : new Date();
+        return myDate.compareTo(otherDate);
     }
 }
