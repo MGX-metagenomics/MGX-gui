@@ -130,14 +130,7 @@ public class SeqRun extends SeqRunI {
 
     @Override
     public String toString() {
-        return name;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash = (int) (31 * hash + this.id);
-        return hash;
+        return "SeqRun{" + "name=" + name + '}';
     }
 
     @Override
