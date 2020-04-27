@@ -1,6 +1,5 @@
 package de.cebitec.mgx.gui.datamodel.assembly;
 
-import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.assembly.GeneObservationI;
 
 /**
@@ -14,8 +13,8 @@ public class GeneObservation extends GeneObservationI {
     private String attributeName;
     private String attributeTypeName;
 
-    public GeneObservation(MGXMasterI master) {
-        super(master);
+    public GeneObservation() {
+        super();
     }
 
     @Override

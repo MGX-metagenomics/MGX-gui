@@ -1,6 +1,5 @@
 package de.cebitec.mgx.gui.datamodel;
 
-import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.ObservationI;
 
 /**
@@ -14,8 +13,8 @@ public class Observation extends ObservationI {
     private String attributeName;
     private String attributeTypeName;
 
-    public Observation(MGXMasterI master) {
-        super(master);
+    public Observation() {
+        super();
     }
 
     @Override

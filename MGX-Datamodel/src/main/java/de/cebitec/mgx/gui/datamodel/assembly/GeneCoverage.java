@@ -5,7 +5,6 @@
  */
 package de.cebitec.mgx.gui.datamodel.assembly;
 
-import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.assembly.GeneCoverageI;
 
 /**
@@ -18,8 +17,8 @@ public class GeneCoverage extends GeneCoverageI {
     private final long runId;
     private final int coverage;
 
-    public GeneCoverage(MGXMasterI m, long geneId, long runId, int coverage) {
-        super(m);
+    public GeneCoverage(long geneId, long runId, int coverage) {
+        super();
         this.geneId = geneId;
         this.runId = runId;
         this.coverage = coverage;
