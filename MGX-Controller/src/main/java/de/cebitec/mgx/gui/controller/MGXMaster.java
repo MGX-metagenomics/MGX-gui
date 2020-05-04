@@ -154,7 +154,7 @@ public class MGXMaster extends MGXMasterI implements PropertyChangeListener {
         return toolAccess;
     }
 
-@Override
+    @Override
         public JobAccessI Job() throws MGXException {
         return new JobAccess(this, dtomaster);
     }
@@ -240,6 +240,11 @@ public class MGXMaster extends MGXMasterI implements PropertyChangeListener {
         return getProject().compareTo(o.getProject());
     }
 
+    @Override
+    public String toString() {
+        return "MGXMaster{" + "projectName=" + projectName + '}';
+    }
+        
     @Override
         public int hashCode() {
         int hash = 3;
