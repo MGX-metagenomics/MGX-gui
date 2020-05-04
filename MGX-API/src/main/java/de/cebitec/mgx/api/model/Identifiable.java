@@ -40,7 +40,9 @@ public abstract class Identifiable<T extends MGXDataModelBase<T>> extends MGXDat
                 return false;
             }
 
-            return this.getId() == other.getId() && this.getMaster().equals(other.getMaster());
+            return this.getId() == other.getId() 
+                    && ((this.getMaster() == null && other.getMaster() == null)
+                    || (this.getMaster() != null && this.getMaster().equals(other.getMaster())));
         }
         return false;
     }
