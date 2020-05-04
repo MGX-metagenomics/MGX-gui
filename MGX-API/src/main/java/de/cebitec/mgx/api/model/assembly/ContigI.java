@@ -32,4 +32,10 @@ public abstract class ContigI extends Identifiable<ContigI> {
     public abstract int getCoverage();
 
     public abstract int getPredictedCDS();
+
+    @Override
+    public String toString() {
+        return "ContigI{" + getName() + '}';
+    }
+
 }
