@@ -43,7 +43,7 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
         -1 * FRAME_VOFFSET * 1,
         -1 * FRAME_VOFFSET * 2,
         -1 * FRAME_VOFFSET * 3};
-    private final List<Arrow> regs = new ArrayList<>();
+    private final List<Arrow<GeneI>> regs = new ArrayList<>();
     private final static Color lighterGray = new Color(210, 210, 210);
     private GeneI selectedGene = null;
 
@@ -159,11 +159,14 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
 
     @Override
     public boolean update() {
-        // fetch features
-        List<Arrow> newData = new ArrayList<>();
-        int midY = getHeight() / 2;
-        for (GeneI r : vc.getRegions()) {
-            newData.add(r2a(r, midY));
+
+        List<Arrow<GeneI>> newData = new ArrayList<>();
+        if (!vc.isClosed()) {
+            // fetch features
+            int midY = getHeight() / 2;
+            for (GeneI r : vc.getRegions()) {
+                newData.add(r2a(r, midY));
+            }
         }
 
         synchronized (regs) {
@@ -175,9 +178,13 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
         return true;
     }
 
-    private Arrow r2a(final GeneI r, int midY) {
+    private Arrow<GeneI> r2a(final GeneI r, int midY) {
         float pos0 = bp2px(r.getStart() - 1);
         float pos1 = bp2px(r.getStop() - 1);
+
+        if (vc.isClosed()) {
+            return null;
+        }
 
         String framePrefix = r.getFrame() > 0 ? "+" : "";
         NumberFormat nf = NumberFormat.getInstance(Locale.US);
@@ -191,10 +198,10 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
 
         if (r.getFrame() < 0) {
             int frameOffset = frameOffsets[r.getFrame() + 3];
-            return new Arrow(r, toolTip, pos1, midY + frameOffset - Arrow.HALF_HEIGHT, pos0 - pos1);
+            return new Arrow<>(r, toolTip, pos1, midY + frameOffset - Arrow.HALF_HEIGHT, pos0 - pos1);
         } else {
             int frameOffset = frameOffsets[r.getFrame() + 2];
-            return new Arrow(r, toolTip, pos0, midY + frameOffset - Arrow.HALF_HEIGHT, pos1 - pos0);
+            return new Arrow<>(r, toolTip, pos0, midY + frameOffset - Arrow.HALF_HEIGHT, pos1 - pos0);
         }
 
     }
@@ -203,7 +210,7 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
     public String getToolTipText(MouseEvent m) {
         Point loc = m.getPoint();
         if (regs != null) {
-            for (ShapeBase a : regs) {
+            for (Arrow<GeneI> a : regs) {
                 if (a.getBounds().contains(loc)) {
                     return a.getToolTipText();
                 }
@@ -224,9 +231,9 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
     public void mouseClicked(MouseEvent e) {
         Point loc = e.getPoint();
         if (regs != null) {
-            for (Arrow a : regs) {
+            for (Arrow<GeneI> a : regs) {
                 if (a.getBounds().contains(loc)) {
-                    selectedGene = (GeneI) a.getObject();
+                    selectedGene = a.getObject();
                     vc.selectGene(selectedGene);
                     repaint();
                 }
@@ -274,19 +281,4 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
     public void mouseMoved(MouseEvent e) {
         // nop
     }
-
-//    public void process(SortedSet<MappedSequenceI> mapped) {
-//        // fetch features
-//        Set<ShapeBase> newData = new HashSet<>();
-//        int midY = getHeight() / 2;
-//        for (LocationI r : vc.getRegions()) {
-//            newData.add(r2a(r, midY));
-//        }
-//
-//        synchronized (regs) {
-//            regs.clear();
-//            regs.addAll(newData);
-//        }
-//        repaint();
-//    }
 }

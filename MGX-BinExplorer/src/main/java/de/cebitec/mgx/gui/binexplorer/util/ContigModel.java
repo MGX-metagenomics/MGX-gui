@@ -30,11 +30,11 @@ public class ContigModel extends BaseModel<ContigI> {
 
     @Override
     public synchronized void update() {
+        dispose();
         if (bin == null) {
             clear();
             return;
         }
-        clear();
 
         List<ContigI> tmp = new ArrayList<>();
         if (!bin.isDeleted()) {
@@ -62,5 +62,12 @@ public class ContigModel extends BaseModel<ContigI> {
             setSelectedItem(tmp.get(0));
         }
         fireContentsChanged();
+    }
+    
+    public void dispose() {
+        for (ContigI ctg : getAll()) {
+            ctg.deleted();
+        }
+        clear();
     }
 }

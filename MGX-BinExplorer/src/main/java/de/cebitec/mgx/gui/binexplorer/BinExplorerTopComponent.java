@@ -133,8 +133,6 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
         contigList.setRenderer(new ContigRenderer());
         contigList.addItemListener(this);
 
-        vc.addPropertyChangeListener(this);
-
         jXTable1.setHighlighters(new Highlighter[]{HighlighterFactory.createAlternateStriping()});
         jXTable1.getColumn(0).setWidth(130);
         jXTable1.getColumn(2).setMaxWidth(60);
@@ -278,15 +276,6 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
 
             }
         });
-    }
-
-    private static BinExplorerTopComponent instance = null;
-
-    public static BinExplorerTopComponent getDefault() {
-        if (instance == null) {
-            instance = new BinExplorerTopComponent();
-        }
-        return instance;
     }
 
     @Override
@@ -527,6 +516,7 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
     // End of variables declaration//GEN-END:variables
     @Override
     public void componentOpened() {
+        vc.addPropertyChangeListener(this);
         result.addLookupListener(this);
         resultChanged(null);
     }
@@ -534,6 +524,22 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
     @Override
     public void componentClosed() {
         result.removeLookupListener(this);
+        vc.removePropertyChangeListener(this);
+        if (featurePanel != null) {
+            featurePanel.dispose();
+            featurePanel = null;
+        }
+        if (seqPropPanel != null) {
+            seqPropPanel.dispose();
+            seqPropPanel = null;
+        }
+        if (selectedFeature != null) {
+            selectedFeature.deleted();
+            selectedFeature = null;
+        }
+        tableModel.clear();
+        contigListModel.dispose();
+        //vc.close();
     }
 
     @Override
@@ -567,6 +573,7 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
                 vc.setContig(contig);
                 if (featurePanel != null) {
                     contentPanel.remove(featurePanel);
+                    featurePanel.dispose();
                 }
                 featurePanel = new FeaturePanel(vc);
                 contentPanel.add(featurePanel, BorderLayout.CENTER);
@@ -574,6 +581,7 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
 
                 if (seqPropPanel != null) {
                     seqpropHolder.remove(seqPropPanel);
+                    seqPropPanel.dispose();
                 }
                 seqPropPanel = new SeqPropertyPanel(vc);
                 seqpropHolder.add(seqPropPanel, BorderLayout.CENTER);
@@ -604,9 +612,11 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
             if (seqPropPanel != null) {
                 seqPropPanel.clear();
             }
-            contigListModel.clear();
-            contigList.repaint();
             tableModel.clear();
+            jXTable1.repaint();
+
+            contigListModel.dispose();
+            contigList.repaint();
 
             geneCovPanel.removeAll();
             if (currentBin != null) {
@@ -631,6 +641,7 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
                     tableModel.update(null);
                     contigListModel.setBin(currentBin);
                     contigListModel.update();
+                    contigList.setEnabled(true);
                 }
             });
 
@@ -650,6 +661,8 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
                 currentBin.removePropertyChangeListener(this);
                 currentBin = null;
                 contigListModel.clear();
+                contigList.setSelectedItem(null);
+                contigList.setEnabled(false);
                 binName.setText("");
                 dnaseq.setEnabled(false);
                 aaseq.setEnabled(false);
@@ -665,6 +678,9 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
                 coverageDataset.clear();
                 featurePanel.clear();
                 seqPropPanel.clear();
+
+                tableModel.clear();
+                contigListModel.dispose();
 
                 repaint();
                 return;
@@ -797,5 +813,6 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
 
     void readProperties(java.util.Properties p) {
         String version = p.getProperty("version");
+        //this.close();
     }
 }

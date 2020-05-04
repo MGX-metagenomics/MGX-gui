@@ -85,6 +85,10 @@ public abstract class PanelBase extends JComponent implements PropertyChangeList
         refLength = vc.getReferenceLength();
 
     }
+    
+    public void dispose() {
+        vc.removePropertyChangeListener(this);
+    }
 
     private VolatileImage vimage = null;
 

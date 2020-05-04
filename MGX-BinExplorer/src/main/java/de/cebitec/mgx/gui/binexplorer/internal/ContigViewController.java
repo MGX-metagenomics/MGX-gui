@@ -29,7 +29,7 @@ public class ContigViewController implements PropertyChangeListener {
     //public final static String VIEWCONTROLLER_CLOSED = "viewControllerClosed";
     //
     private final ParallelPropertyChangeSupport pcs;
-    private ContigI contig;
+    private volatile ContigI contig;
     private final List<GeneI> genes = new ArrayList<>();
     private int[] curBounds;
     private int[] newBounds;
@@ -41,6 +41,12 @@ public class ContigViewController implements PropertyChangeListener {
     }
 
     public void setContig(ContigI contig) {
+        
+        if (contig != null && contig.equals(this.contig)) {
+            // no change
+            return;
+        }
+        
         if (this.contig != null) {
             this.contig.removePropertyChangeListener(this);
             this.contig = null;
@@ -130,7 +136,7 @@ public class ContigViewController implements PropertyChangeListener {
     }
 
     public String getReferenceName() {
-        return contig.getName();
+        return contig != null ? contig.getName() : null;
     }
 
     public String getSequence() {
@@ -144,16 +150,22 @@ public class ContigViewController implements PropertyChangeListener {
         return sequence;
     }
 
-    public void close(int i) {
+    public void close() {
+        contig = null;
         pcs.close();
     }
 
     public boolean isClosed() {
-        return contig.isDeleted();
+        return contig == null;
     }
 
     void selectGene(GeneI selectedGene) {
         pcs.firePropertyChange(FEATURE_SELECTED, null, selectedGene);
+    }
+
+    @Override
+    public String toString() {
+        return "ContigViewController{" + "contig=" + contig + '}';
     }
 
 }

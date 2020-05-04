@@ -57,7 +57,7 @@ public final class BinExplorerAction extends AbstractAction implements ContextAw
 
     @Override
     public void actionPerformed(ActionEvent ev) {
-        TopComponent tc = BinExplorerTopComponent.getDefault();
+        TopComponent tc = new BinExplorerTopComponent();
 
         if (!tc.isOpened()) {
             Mode m = WindowManager.getDefault().findMode("editor");
