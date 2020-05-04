@@ -36,6 +36,6 @@ public class GeneCoverageDTOFactory extends DTOConversionBase<GeneCoverageI, Gen
 
     @Override
     public GeneCoverageI toModel(MGXMasterI m, GeneCoverageDTO dto) {
-        return new GeneCoverage(m, dto.getGeneId(), dto.getRunId(), dto.getCoverage());
+        return new GeneCoverage(dto.getGeneId(), dto.getRunId(), dto.getCoverage());
     }
 }

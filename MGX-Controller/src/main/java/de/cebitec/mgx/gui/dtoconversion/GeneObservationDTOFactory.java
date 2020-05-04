@@ -35,7 +35,7 @@ public class GeneObservationDTOFactory extends DTOConversionBase<GeneObservation
 
     @Override
     public GeneObservationI toModel(MGXMasterI m, GeneObservationDTO dto) {
-        GeneObservationI o = new GeneObservation(m);
+        GeneObservationI o = new GeneObservation();
         o.setStart(dto.getStart());
         o.setStop(dto.getStop());
         o.setAttributeName(dto.getAttributeName());

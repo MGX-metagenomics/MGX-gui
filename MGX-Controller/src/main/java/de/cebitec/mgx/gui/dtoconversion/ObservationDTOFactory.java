@@ -35,7 +35,7 @@ public class ObservationDTOFactory extends DTOConversionBase<ObservationI, Obser
 
     @Override
     public ObservationI toModel(MGXMasterI m, ObservationDTO dto) {
-        ObservationI o = new Observation(m);
+        ObservationI o = new Observation();
         o.setStart(dto.getStart());
         o.setStop(dto.getStop());
         o.setAttributeName(dto.getAttributeName());
