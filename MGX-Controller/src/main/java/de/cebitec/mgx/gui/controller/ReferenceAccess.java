@@ -6,12 +6,12 @@ import de.cebitec.mgx.api.access.datatransfer.UploadBaseI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.exception.MGXLoggedoutException;
 import de.cebitec.mgx.api.misc.TaskI;
-import de.cebitec.mgx.api.model.Identifiable;
 import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.api.model.RegionI;
 import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.client.datatransfer.ReferenceUploader;
 import de.cebitec.mgx.client.datatransfer.TransferBase;
+import de.cebitec.mgx.client.exception.MGXClientLoggedOutException;
 import de.cebitec.mgx.client.exception.MGXDTOException;
 import de.cebitec.mgx.dto.dto.ReferenceDTO;
 import de.cebitec.mgx.dto.dto.RegionDTO;
@@ -29,19 +29,12 @@ import java.util.UUID;
  *
  * @author belmann
  */
-public class ReferenceAccess implements ReferenceAccessI {
-
-    private final MGXDTOMaster dtomaster;
-    private final MGXMasterI master;
+public class ReferenceAccess extends MasterHolder implements ReferenceAccessI {
 
     public ReferenceAccess(MGXDTOMaster dtomaster, MGXMasterI master) throws MGXException {
-        this.dtomaster = dtomaster;
-        this.master = master;
-        if (master.isDeleted()) {
-            throw new MGXLoggedoutException("You are disconnected.");
-        }
+        super(master, dtomaster);
     }
-
+    
 //    @Override
 //    public MGXReferenceI create(MGXReferenceI obj) throws MGXException {
 //        ReferenceDTO dto = ReferenceDTOFactory.getInstance().toDTO(obj);
@@ -59,11 +52,12 @@ public class ReferenceAccess implements ReferenceAccessI {
     public MGXReferenceI fetch(long id) throws MGXException {
         ReferenceDTO dto = null;
         try {
-            dto = dtomaster.Reference().fetch(id);
+            dto = getDTOmaster().Reference().fetch(id);      } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
-        MGXReferenceI ret = ReferenceDTOFactory.getInstance().toModel(master, dto);
+        MGXReferenceI ret = ReferenceDTOFactory.getInstance().toModel(getMaster(), dto);
         return ret;
     }
 
@@ -72,7 +66,7 @@ public class ReferenceAccess implements ReferenceAccessI {
         try {
 
             return new Iterator<MGXReferenceI>() {
-                final Iterator<ReferenceDTO> iter = dtomaster.Reference().fetchall();
+                final Iterator<ReferenceDTO> iter = getDTOmaster().Reference().fetchall();
 
                 @Override
                 public boolean hasNext() {
@@ -81,7 +75,7 @@ public class ReferenceAccess implements ReferenceAccessI {
 
                 @Override
                 public MGXReferenceI next() {
-                    MGXReferenceI ret = ReferenceDTOFactory.getInstance().toModel(master, iter.next());
+                    MGXReferenceI ret = ReferenceDTOFactory.getInstance().toModel(getMaster(), iter.next());
                     return ret;
                 }
 
@@ -89,7 +83,9 @@ public class ReferenceAccess implements ReferenceAccessI {
                 public void remove() {
                     throw new UnsupportedOperationException("Not supported.");
                 }
-            };
+            };      
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -99,7 +95,8 @@ public class ReferenceAccess implements ReferenceAccessI {
     public void update(MGXReferenceI obj) throws MGXException {
         ReferenceDTO dto = ReferenceDTOFactory.getInstance().toDTO(obj);
         try {
-            dtomaster.Reference().update(dto);
+            getDTOmaster().Reference().update(dto);      } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -110,14 +107,15 @@ public class ReferenceAccess implements ReferenceAccessI {
     public Iterator<RegionI> byReferenceInterval(MGXReferenceI ref, int from, int to) throws MGXException {
         Iterator<RegionDTO> fetchall;
         try {
-            fetchall = dtomaster.Reference().byReferenceInterval(ref.getId(), from, to);
+            fetchall = getDTOmaster().Reference().byReferenceInterval(ref.getId(), from, to);
             return new BaseIterator<RegionDTO, RegionI>(fetchall) {
                 @Override
                 public RegionI next() {
-                    RegionI s = RegionDTOFactory.getInstance().toModel(master, iter.next());
+                    RegionI s = RegionDTOFactory.getInstance().toModel(getMaster(), iter.next());
                     return s;
                 }
-            };
+            };      } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -129,7 +127,8 @@ public class ReferenceAccess implements ReferenceAccessI {
             if (from < 0 || to < 0 || from > ref.getLength() - 1 || to > ref.getLength() - 1) {
                 throw new IllegalArgumentException("Coordinates outside of reference sequence: requested " + from + "-" + to + ", reference length is " + ref.getLength());
             }
-            return dtomaster.Reference().getSequence(ref.getId(), from, to);
+            return getDTOmaster().Reference().getSequence(ref.getId(), from, to);      } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -139,14 +138,15 @@ public class ReferenceAccess implements ReferenceAccessI {
     public Iterator<MGXReferenceI> listGlobalReferences() throws MGXException {
         Iterator<ReferenceDTO> iter;
         try {
-            iter = dtomaster.Reference().listGlobalReferences();
+            iter = getDTOmaster().Reference().listGlobalReferences();
             return new BaseIterator<ReferenceDTO, MGXReferenceI>(iter) {
                 @Override
                 public MGXReferenceI next() {
-                    MGXReferenceI reference = ReferenceDTOFactory.getInstance().toModel(master, iter.next());
+                    MGXReferenceI reference = ReferenceDTOFactory.getInstance().toModel(getMaster(), iter.next());
                     return reference;
                 }
-            };
+            };      } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -155,8 +155,10 @@ public class ReferenceAccess implements ReferenceAccessI {
     @Override
     public TaskI<MGXReferenceI> installGlobalReference(MGXReferenceI obj) throws MGXException {
         try {
-            UUID uuid = dtomaster.Reference().installGlobalReference(obj.getId());
-            return master.<MGXReferenceI>Task().get(obj, uuid, Task.TaskType.MODIFY);
+            UUID uuid = getDTOmaster().Reference().installGlobalReference(obj.getId());
+            return getMaster().<MGXReferenceI>Task().get(obj, uuid, Task.TaskType.MODIFY);      
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -165,8 +167,10 @@ public class ReferenceAccess implements ReferenceAccessI {
     @Override
     public TaskI<MGXReferenceI> delete(MGXReferenceI obj) throws MGXException {
         try {
-            UUID uuid = dtomaster.Reference().delete(obj.getId());
-            return master.<MGXReferenceI>Task().get(obj, uuid, Task.TaskType.DELETE);
+            UUID uuid = getDTOmaster().Reference().delete(obj.getId());
+            return getMaster().<MGXReferenceI>Task().get(obj, uuid, Task.TaskType.DELETE);      
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -176,7 +180,9 @@ public class ReferenceAccess implements ReferenceAccessI {
     public UploadBaseI createUploader(File localFile) throws MGXException {
         ReferenceUploader ru;
         try {
-            ru = dtomaster.Reference().createUploader(localFile);
+            ru = getDTOmaster().Reference().createUploader(localFile);  
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }

@@ -12,6 +12,7 @@ import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.misc.Point;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.client.MGXDTOMaster;
+import de.cebitec.mgx.client.exception.MGXClientLoggedOutException;
 import de.cebitec.mgx.client.exception.MGXDTOException;
 import de.cebitec.mgx.dto.dto.MGXDoubleList;
 import de.cebitec.mgx.dto.dto.MGXMatrixDTO;
@@ -36,29 +37,25 @@ import java.util.UUID;
  *
  * @author sj
  */
-public class StatisticsAccess implements StatisticsAccessI {
+public class StatisticsAccess extends MasterHolder implements StatisticsAccessI {
 
-    private final MGXMasterI master;
-    private final MGXDTOMaster dtomaster;
 
     public StatisticsAccess(MGXMasterI master, MGXDTOMaster dtomaster) throws MGXException {
-        this.master = master;
-        this.dtomaster = dtomaster;
-        if (master.isDeleted()) {
-            throw new MGXLoggedoutException("You are disconnected.");
-        }
+        super(master, dtomaster);
     }
 
     @Override
     public Iterator<Point> Rarefaction(DistributionI<Long> dist) throws MGXException {
         try {
-            Iterator<PointDTO> fetchall = dtomaster.Statistics().Rarefaction(dist.values());
+            Iterator<PointDTO> fetchall = getDTOmaster().Statistics().Rarefaction(dist.values());
             return new BaseIterator<PointDTO, Point>(fetchall) {
                 @Override
                 public Point next() {
-                    return PointDTOFactory.getInstance().toModel(master, iter.next());
+                    return PointDTOFactory.getInstance().toModel(getMaster(), iter.next());
                 }
             };
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }
@@ -69,7 +66,7 @@ public class StatisticsAccess implements StatisticsAccessI {
         MGXMatrixDTO matrix = buildMatrix(dists, false);
 
         try {
-            String nwk = dtomaster.Statistics().Clustering(matrix, distanceMethod, agglomeration);
+            String nwk = getDTOmaster().Statistics().Clustering(matrix, distanceMethod, agglomeration);
 
             for (Pair<GroupI, DistributionI<Double>> pair : dists) {
                 GroupI vGrp = pair.getFirst();
@@ -78,6 +75,8 @@ public class StatisticsAccess implements StatisticsAccessI {
 
             //NodeI newickRoot = NewickParser.parse(nwk);
             return nwk;
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }
@@ -89,8 +88,8 @@ public class StatisticsAccess implements StatisticsAccessI {
         MGXMatrixDTO matrix = buildMatrix(groups, true);
 
         try {
-            PCAResultDTO ret = dtomaster.Statistics().PCA(matrix, pc1.getValue(), pc2.getValue());
-            PCAResultI pca = PCAResultDTOFactory.getInstance().toModel(master, ret);
+            PCAResultDTO ret = getDTOmaster().Statistics().PCA(matrix, pc1.getValue(), pc2.getValue());
+            PCAResultI pca = PCAResultDTOFactory.getInstance().toModel(getMaster(), ret);
 
             // replace group uuids by group names
             for (Point p : pca.getDatapoints()) {
@@ -102,6 +101,8 @@ public class StatisticsAccess implements StatisticsAccessI {
                 }
             }
             return pca;
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }
@@ -114,9 +115,9 @@ public class StatisticsAccess implements StatisticsAccessI {
 
         List<Point> pcoa = new LinkedList<>();
         try {
-            PointDTOList ret = dtomaster.Statistics().NMDS(matrix);
+            PointDTOList ret = getDTOmaster().Statistics().NMDS(matrix);
             for (PointDTO pdto : ret.getPointList()) {
-                Point p = PointDTOFactory.getInstance().toModel(master, pdto);
+                Point p = PointDTOFactory.getInstance().toModel(getMaster(), pdto);
 
                 // replace group uuids by group names
                 for (Pair<GroupI, DistributionI<Double>> pair : groups) {
@@ -128,6 +129,8 @@ public class StatisticsAccess implements StatisticsAccessI {
                 pcoa.add(p);
             }
             return pcoa;
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }
@@ -136,7 +139,9 @@ public class StatisticsAccess implements StatisticsAccessI {
     @Override
     public double[] toCLR(double[] counts) throws MGXException {
         try {
-            return dtomaster.Statistics().toCLR(counts);
+            return getDTOmaster().Statistics().toCLR(counts);
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }
@@ -144,8 +149,10 @@ public class StatisticsAccess implements StatisticsAccessI {
 
     @Override
     public double aitchisonDistance(double[] d1, double[] d2) throws MGXException {
-         try {
-            return dtomaster.Statistics().aitchisonDistance(d1, d2);
+        try {
+            return getDTOmaster().Statistics().aitchisonDistance(d1, d2);
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }

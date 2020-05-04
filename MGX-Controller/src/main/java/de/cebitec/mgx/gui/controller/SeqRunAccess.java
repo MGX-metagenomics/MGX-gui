@@ -3,6 +3,7 @@ package de.cebitec.mgx.gui.controller;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.SeqRunAccessI;
 import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.exception.MGXLoggedoutException;
 import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.misc.TaskI.TaskType;
 import de.cebitec.mgx.api.model.AttributeTypeI;
@@ -15,6 +16,7 @@ import de.cebitec.mgx.api.model.assembly.AssembledSeqRunI;
 import de.cebitec.mgx.api.model.assembly.AssemblyI;
 import de.cebitec.mgx.api.model.qc.QCResultI;
 import de.cebitec.mgx.client.MGXDTOMaster;
+import de.cebitec.mgx.client.exception.MGXClientLoggedOutException;
 import de.cebitec.mgx.client.exception.MGXDTOException;
 import de.cebitec.mgx.dto.dto.AttributeTypeDTO;
 import de.cebitec.mgx.dto.dto.JobAndAttributeTypes;
@@ -61,6 +63,8 @@ public class SeqRunAccess extends AccessBase<SeqRunI> implements SeqRunAccessI {
         long id = Identifiable.INVALID_IDENTIFIER;
         try {
             id = getDTOmaster().SeqRun().create(dto);
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -85,6 +89,8 @@ public class SeqRunAccess extends AccessBase<SeqRunI> implements SeqRunAccessI {
         SeqRunDTO dto = null;
         try {
             dto = getDTOmaster().SeqRun().fetch(id);
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -103,6 +109,8 @@ public class SeqRunAccess extends AccessBase<SeqRunI> implements SeqRunAccessI {
                     return sr;
                 }
             };
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -113,6 +121,8 @@ public class SeqRunAccess extends AccessBase<SeqRunI> implements SeqRunAccessI {
         SeqRunDTO dto = SeqRunDTOFactory.getInstance().toDTO(obj);
         try {
             getDTOmaster().SeqRun().update(dto);
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -124,6 +134,8 @@ public class SeqRunAccess extends AccessBase<SeqRunI> implements SeqRunAccessI {
         try {
             UUID uuid = getDTOmaster().SeqRun().delete(obj.getId());
             return getMaster().<SeqRunI>Task().get(obj, uuid, TaskType.DELETE);
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -140,6 +152,8 @@ public class SeqRunAccess extends AccessBase<SeqRunI> implements SeqRunAccessI {
                     return sr;
                 }
             };
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -156,6 +170,8 @@ public class SeqRunAccess extends AccessBase<SeqRunI> implements SeqRunAccessI {
                     return sr;
                 }
             };
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -172,6 +188,8 @@ public class SeqRunAccess extends AccessBase<SeqRunI> implements SeqRunAccessI {
                     return new AssembledSeqRun(getMaster(), assembly, sr);
                 }
             };
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -196,6 +214,8 @@ public class SeqRunAccess extends AccessBase<SeqRunI> implements SeqRunAccessI {
 
                 ret.put(job, all);
             }
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -220,6 +240,8 @@ public class SeqRunAccess extends AccessBase<SeqRunI> implements SeqRunAccessI {
 
                 ret.put(job, all);
             }
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -235,6 +257,8 @@ public class SeqRunAccess extends AccessBase<SeqRunI> implements SeqRunAccessI {
             for (QCResultDTO dto : qc) {
                 ret.add(QCResultDTOFactory.getInstance().toModel(getMaster(), dto));
             }
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -245,6 +269,8 @@ public class SeqRunAccess extends AccessBase<SeqRunI> implements SeqRunAccessI {
     public boolean hasQuality(SeqRunI run) throws MGXException {
         try {
             return getDTOmaster().SeqRun().hasQuality(run.getId());
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }

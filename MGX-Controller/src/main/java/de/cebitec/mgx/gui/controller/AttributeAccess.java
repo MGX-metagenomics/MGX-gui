@@ -14,6 +14,7 @@ import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.SequenceI;
 import de.cebitec.mgx.api.model.tree.TreeI;
 import de.cebitec.mgx.client.MGXDTOMaster;
+import de.cebitec.mgx.client.exception.MGXClientLoggedOutException;
 import de.cebitec.mgx.client.exception.MGXDTOException;
 import de.cebitec.mgx.dto.dto.AttributeCorrelation;
 import de.cebitec.mgx.dto.dto.AttributeCount;
@@ -45,17 +46,10 @@ import java.util.logging.Logger;
  *
  * @author sjaenick
  */
-public class AttributeAccess implements AttributeAccessI {
-
-    private final MGXDTOMaster dtomaster;
-    private final MGXMasterI master;
+public class AttributeAccess extends MasterHolder implements AttributeAccessI {
 
     public AttributeAccess(MGXDTOMaster dtomaster, MGXMasterI master) throws MGXException {
-        this.dtomaster = dtomaster;
-        this.master = master;
-        if (master.isDeleted()) {
-            throw new MGXLoggedoutException("You are disconnected.");
-        }
+        super(master, dtomaster);
     }
 
     @Override
@@ -69,7 +63,8 @@ public class AttributeAccess implements AttributeAccessI {
                     return AttributeDTOFactory.getInstance().toModel(getMaster(), iter.next());
                 }
             };
-
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             Logger.getLogger(AttributeAccess.class.getName()).log(Level.SEVERE, null, ex);
             throw new MGXException(ex);
@@ -84,10 +79,11 @@ public class AttributeAccess implements AttributeAccessI {
             return new BaseIterator<AttributeDTO, AttributeI>(BySeqRun) {
                 @Override
                 public AttributeI next() {
-                    return AttributeDTOFactory.getInstance().toModel(master, iter.next());
+                    return AttributeDTOFactory.getInstance().toModel(getMaster(), iter.next());
                 }
             };
-
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             Logger.getLogger(AttributeAccess.class.getName()).log(Level.SEVERE, null, ex);
             throw new MGXException(ex);
@@ -99,40 +95,42 @@ public class AttributeAccess implements AttributeAccessI {
         Map<AttributeI, Long> res;
         long total = 0;
         try {
-            AttributeDistribution distribution = dtomaster.Attribute().getDistribution(attrType.getId(), job.getId(), run.getId());
+            AttributeDistribution distribution = getDTOmaster().Attribute().getDistribution(attrType.getId(), job.getId(), run.getId());
             res = new HashMap<>(distribution.getAttributeCountsCount());
 
             // convert and save types first
             TLongObjectMap<AttributeTypeI> types = new TLongObjectHashMap<>(distribution.getAttributeTypeCount());
             //Map<Long, AttributeTypeI> types = new HashMap<>(distribution.getAttributeTypeCount());
             for (AttributeTypeDTO at : distribution.getAttributeTypeList()) {
-                types.put(at.getId(), AttributeTypeDTOFactory.getInstance().toModel(master, at));
+                types.put(at.getId(), AttributeTypeDTOFactory.getInstance().toModel(getMaster(), at));
             }
 
             // convert attribute and fill in the attributetypes
             for (AttributeCount ac : distribution.getAttributeCountsList()) {
-                AttributeI attr = AttributeDTOFactory.getInstance().toModel(master, ac.getAttribute());
+                AttributeI attr = AttributeDTOFactory.getInstance().toModel(getMaster(), ac.getAttribute());
                 attr.setAttributeType(types.get(ac.getAttribute().getAttributeTypeId()));
                 total += ac.getCount();
                 if (res.containsKey(attr)) {
-                    throw new MGXException("Duplicate key: "+ attr.getValue());
+                    throw new MGXException("Duplicate key: " + attr.getValue());
                 }
                 res.put(attr, ac.getCount());
             }
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             Logger.getLogger(AttributeAccess.class.getName()).log(Level.SEVERE, null, ex);
             throw new MGXException(ex);
         }
-        return new Distribution(master, res, total);
+        return new Distribution(getMaster(), res, total);
     }
 
     @Override
     public AttributeI create(JobI job, AttributeTypeI attrType, String attrValue, AttributeI parent) throws MGXException {
 
-        if (!master.equals(job.getMaster()) || !master.equals(attrType.getMaster())) {
+        if (!getMaster().equals(job.getMaster()) || !getMaster().equals(attrType.getMaster())) {
             throw new MGXException("MGX master instances need to be equal.");
         }
-        if (parent != null && !master.equals(parent.getAttributeType().getMaster())) {
+        if (parent != null && !getMaster().equals(parent.getAttributeType().getMaster())) {
             throw new MGXException("MGX master instances need to be equal.");
         }
 
@@ -147,8 +145,10 @@ public class AttributeAccess implements AttributeAccessI {
 
         try {
             AttributeDTO dto = AttributeDTOFactory.getInstance().toDTO(attr);
-            long objId = dtomaster.Attribute().create(dto);
+            long objId = getDTOmaster().Attribute().create(dto);
             attr.setId(objId);
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -159,10 +159,12 @@ public class AttributeAccess implements AttributeAccessI {
     public AttributeI fetch(long id) throws MGXException {
         AttributeI ret = null;
         try {
-            AttributeDTO dto = dtomaster.Attribute().fetch(id);
-            ret = AttributeDTOFactory.getInstance().toModel(master, dto);
-            AttributeTypeDTO aType = dtomaster.AttributeType().fetch(dto.getAttributeTypeId());
-            ret.setAttributeType(AttributeTypeDTOFactory.getInstance().toModel(master, aType));
+            AttributeDTO dto = getDTOmaster().Attribute().fetch(id);
+            ret = AttributeDTOFactory.getInstance().toModel(getMaster(), dto);
+            AttributeTypeDTO aType = getDTOmaster().AttributeType().fetch(dto.getAttributeTypeId());
+            ret.setAttributeType(AttributeTypeDTOFactory.getInstance().toModel(getMaster(), aType));
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -176,8 +178,10 @@ public class AttributeAccess implements AttributeAccessI {
 
     public Matrix getCorrelation(AttributeTypeI attributeType1, JobI job1, AttributeTypeI attributeType2, JobI job2) throws MGXException {
         try {
-            AttributeCorrelation corr = dtomaster.Attribute().getCorrelation(attributeType1.getId(), job1.getId(), attributeType2.getId(), job2.getId());
-            return MatrixDTOFactory.getInstance().toModel(master, corr);
+            AttributeCorrelation corr = getDTOmaster().Attribute().getCorrelation(attributeType1.getId(), job1.getId(), attributeType2.getId(), job2.getId());
+            return MatrixDTOFactory.getInstance().toModel(getMaster(), corr);
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -187,7 +191,7 @@ public class AttributeAccess implements AttributeAccessI {
     public TreeI<Long> getHierarchy(AttributeTypeI attrType, JobI job, SeqRunI run) throws MGXException {
         Map<AttributeI, Long> res;
         try {
-            AttributeDistribution distribution = dtomaster.Attribute().getHierarchy(attrType.getId(), job.getId(), run.getId());
+            AttributeDistribution distribution = getDTOmaster().Attribute().getHierarchy(attrType.getId(), job.getId(), run.getId());
 
             res = new HashMap<>(distribution.getAttributeTypeCount());
 
@@ -195,17 +199,18 @@ public class AttributeAccess implements AttributeAccessI {
             TLongObjectMap<AttributeTypeI> types = new TLongObjectHashMap<>(distribution.getAttributeTypeCount());
             //Map<Long, AttributeTypeI> types = new HashMap<>();
             for (AttributeTypeDTO at : distribution.getAttributeTypeList()) {
-                types.put(at.getId(), AttributeTypeDTOFactory.getInstance().toModel(master, at));
+                types.put(at.getId(), AttributeTypeDTOFactory.getInstance().toModel(getMaster(), at));
             }
 
             // convert attribute and fill in the attributetypes
             for (AttributeCount ac : distribution.getAttributeCountsList()) {
-                AttributeI attr = AttributeDTOFactory.getInstance().toModel(master, ac.getAttribute());
+                AttributeI attr = AttributeDTOFactory.getInstance().toModel(getMaster(), ac.getAttribute());
                 attr.setAttributeType(types.get(ac.getAttribute().getAttributeTypeId()));
                 //assert !res.containsKey(attr); // no duplicates allowed
                 res.put(attr, ac.getCount());
             }
-
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             Logger.getLogger(AttributeAccess.class.getName()).log(Level.SEVERE, null, ex);
             throw new MGXException(ex);
@@ -239,7 +244,9 @@ public class AttributeAccess implements AttributeAccessI {
         sr.setTerm(term);
         sr.setRun(run);
         try {
-            return dtomaster.Attribute().find(SearchRequestDTOFactory.getInstance().toDTO(sr));
+            return getDTOmaster().Attribute().find(SearchRequestDTOFactory.getInstance().toDTO(sr));
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -255,7 +262,9 @@ public class AttributeAccess implements AttributeAccessI {
 
         Iterator<SequenceDTO> searchResult = null;
         try {
-            searchResult = dtomaster.Attribute().search(reqdto);
+            searchResult = getDTOmaster().Attribute().search(reqdto);
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -263,7 +272,7 @@ public class AttributeAccess implements AttributeAccessI {
         return new BaseIterator<SequenceDTO, SequenceI>(searchResult) {
             @Override
             public SequenceI next() {
-                SequenceI h = SequenceDTOFactory.getInstance().toModel(master, iter.next());
+                SequenceI h = SequenceDTOFactory.getInstance().toModel(getMaster(), iter.next());
                 return h;
             }
         };
@@ -276,14 +285,6 @@ public class AttributeAccess implements AttributeAccessI {
 //        }
 //
 //        return ret;
-    }
-
-    private MGXDTOMaster getDTOmaster() {
-        return dtomaster;
-    }
-
-    private MGXMasterI getMaster() {
-        return master;
     }
 
 //    private boolean checkHasValue(Set<Attribute> set, String value) {

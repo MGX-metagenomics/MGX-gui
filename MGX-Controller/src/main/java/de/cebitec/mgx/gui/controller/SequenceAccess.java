@@ -14,6 +14,7 @@ import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.client.datatransfer.SeqByAttributeDownloader;
 import de.cebitec.mgx.client.datatransfer.SeqDownloader;
 import de.cebitec.mgx.client.datatransfer.SeqUploader;
+import de.cebitec.mgx.client.exception.MGXClientLoggedOutException;
 import de.cebitec.mgx.client.exception.MGXDTOException;
 import de.cebitec.mgx.client.exception.MGXDTOTimeoutException;
 import de.cebitec.mgx.dto.dto.AttributeDTOList;
@@ -37,26 +38,10 @@ import java.util.Set;
  *
  * @author sjaenick
  */
-public class SequenceAccess implements SequenceAccessI { //extends AccessBase<SequenceI> implements SequenceAccessI {
-
-    private final MGXDTOMaster dtomaster;
-    private final MGXMasterI master;
+public class SequenceAccess extends MasterHolder implements SequenceAccessI {
 
     public SequenceAccess(MGXMasterI master, MGXDTOMaster dtomaster) throws MGXException {
-//        super(master, dtomaster);
-        this.dtomaster = dtomaster;
-        this.master = master;
-        if (master.isDeleted()) {
-            throw new MGXLoggedoutException("You are disconnected.");
-        }
-    }
-
-    private MGXDTOMaster getDTOmaster() {
-        return dtomaster;
-    }
-
-    private MGXMasterI getMaster() {
-        return master;
+        super(master, dtomaster);
     }
 
     @Override
@@ -64,6 +49,8 @@ public class SequenceAccess implements SequenceAccessI { //extends AccessBase<Se
         try {
             Iterator<Long> ret = getDTOmaster().Sequence().fetchSequenceIDs(attr.getId());
             return ret;
+                  } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOTimeoutException tex) {
             throw new MGXTimeoutException(tex.getMessage());
         } catch (MGXDTOException ex) {
@@ -74,7 +61,8 @@ public class SequenceAccess implements SequenceAccessI { //extends AccessBase<Se
     @Override
     public void sendSequences(SeqRunI seqrun, SeqReaderI<? extends DNASequenceI> reader) throws MGXException {
         try {
-            getDTOmaster().Sequence().sendSequences(seqrun.getId(), reader);
+            getDTOmaster().Sequence().sendSequences(seqrun.getId(), reader);      } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -84,7 +72,8 @@ public class SequenceAccess implements SequenceAccessI { //extends AccessBase<Se
     public UploadBaseI createUploader(SeqRunI seqrun, SeqReaderI<? extends DNASequenceI> reader) throws MGXException {
         try {
             final SeqUploader su = getDTOmaster().Sequence().createUploader(seqrun.getId(), reader);
-            return new ServerSeqRunUploader(seqrun, su);
+            return new ServerSeqRunUploader(seqrun, su);      } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -96,7 +85,8 @@ public class SequenceAccess implements SequenceAccessI { //extends AccessBase<Se
             final SeqDownloader sd = getDTOmaster().Sequence().createDownloader(seqrun.getId(), writer, closeWriter);
             ServerSeqRunDownloader ret = new ServerSeqRunDownloader(sd);
             seqrun.addPropertyChangeListener(ret);
-            return ret;
+            return ret;      } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -117,7 +107,8 @@ public class SequenceAccess implements SequenceAccessI { //extends AccessBase<Se
         }
         final SeqByAttributeDownloader dl;
         try {
-            dl = getDTOmaster().Sequence().createDownloaderByAttributes(b.build(), writer, closeWriter);
+            dl = getDTOmaster().Sequence().createDownloaderByAttributes(b.build(), writer, closeWriter);      } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -131,7 +122,8 @@ public class SequenceAccess implements SequenceAccessI { //extends AccessBase<Se
             for (AttributeI a : attrs) {
                 b.addAttribute(AttributeDTOFactory.getInstance().toDTO(a));
             }
-            getDTOmaster().Sequence().fetchAnnotatedReads(b.build(), writer, closeWriter);
+            getDTOmaster().Sequence().fetchAnnotatedReads(b.build(), writer, closeWriter);      } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -146,7 +138,8 @@ public class SequenceAccess implements SequenceAccessI { //extends AccessBase<Se
     public SequenceI fetch(long id) throws MGXException {
         SequenceDTO dto = null;
         try {
-            dto = getDTOmaster().Sequence().fetch(id);
+            dto = getDTOmaster().Sequence().fetch(id);      } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -166,7 +159,8 @@ public class SequenceAccess implements SequenceAccessI { //extends AccessBase<Se
                     return fact.toModel(null, iter.next());
                 }
             };
-
+      } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -176,7 +170,9 @@ public class SequenceAccess implements SequenceAccessI { //extends AccessBase<Se
     public SequenceI fetch(SeqRunI seqrun, String seqName) throws MGXException {
         SequenceDTO dto = null;
         try {
-            dto = getDTOmaster().Sequence().byName(seqrun.getId(), seqName);
+            dto = getDTOmaster().Sequence().byName(seqrun.getId(), seqName);      
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -213,7 +209,8 @@ public class SequenceAccess implements SequenceAccessI { //extends AccessBase<Se
                 if (!sdto.getSequence().isEmpty()) {
                     s.setSequence(sdto.getSequence());
                 }
-            }
+            }      } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         } finally {

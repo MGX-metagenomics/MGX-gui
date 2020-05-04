@@ -13,6 +13,7 @@ import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.JobParameterI;
 import de.cebitec.mgx.api.model.ToolI;
 import de.cebitec.mgx.client.MGXDTOMaster;
+import de.cebitec.mgx.client.exception.MGXClientLoggedOutException;
 import de.cebitec.mgx.client.exception.MGXDTOException;
 import de.cebitec.mgx.dto.dto.JobParameterDTO;
 import de.cebitec.mgx.dto.dto.ToolDTO;
@@ -31,19 +32,12 @@ import java.util.concurrent.TimeUnit;
  *
  * @author sjaenick
  */
-public class ToolAccess implements ToolAccessI {
-
-    private final MGXMasterI master;
-    private final MGXDTOMaster dtomaster;
+public class ToolAccess extends MasterHolder implements ToolAccessI {
 
     private Cache<JobI, ToolI> toolCache = null;
 
     public ToolAccess(MGXMasterI master, MGXDTOMaster dtomaster) throws MGXException {
-        this.master = master;
-        this.dtomaster = dtomaster;
-        if (master.isDeleted()) {
-            throw new MGXLoggedoutException("You are disconnected.");
-        }
+        super(master, dtomaster);
 
         toolCache = CacheBuilder.newBuilder()
                 .maximumSize(1000)
@@ -51,19 +45,13 @@ public class ToolAccess implements ToolAccessI {
                 .build();
     }
 
-    protected MGXDTOMaster getDTOmaster() {
-        return dtomaster;
-    }
-
-    protected MGXMasterI getMaster() {
-        return master;
-    }
-
     @Override
     public Iterator<ToolI> listGlobalTools() throws MGXException {
         Iterator<ToolDTO> listGlobalTools;
         try {
             listGlobalTools = getDTOmaster().Tool().listGlobalTools();
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }
@@ -80,6 +68,8 @@ public class ToolAccess implements ToolAccessI {
         assert global_id != Identifiable.INVALID_IDENTIFIER;
         try {
             return getDTOmaster().Tool().installGlobalTool(global_id);
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }
@@ -92,6 +82,8 @@ public class ToolAccess implements ToolAccessI {
             for (JobParameterDTO dtoParameter : getDTOmaster().Tool().getAvailableParameters(toolXml)) {
                 ret.add(JobParameterDTOFactory.getInstance().toModel(getMaster(), dtoParameter));
             }
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }
@@ -106,7 +98,8 @@ public class ToolAccess implements ToolAccessI {
             for (JobParameterDTO dto : getDTOmaster().Tool().getAvailableParameters(toolId, isGlobal)) {
                 ret.add(JobParameterDTOFactory.getInstance().toModel(getMaster(), dto));
             }
-
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }
@@ -126,6 +119,8 @@ public class ToolAccess implements ToolAccessI {
         long id = Identifiable.INVALID_IDENTIFIER;
         try {
             id = getDTOmaster().Tool().create(dto);
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }
@@ -139,6 +134,8 @@ public class ToolAccess implements ToolAccessI {
         try {
             ToolDTO dto = getDTOmaster().Tool().fetch(id);
             t = ToolDTOFactory.getInstance().toModel(getMaster(), dto);
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }
@@ -156,6 +153,8 @@ public class ToolAccess implements ToolAccessI {
                     return tool;
                 }
             };
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }
@@ -166,6 +165,8 @@ public class ToolAccess implements ToolAccessI {
         try {
             UUID uuid = getDTOmaster().Tool().delete(obj.getId());
             return getMaster().<ToolI>Task().get(obj, uuid, TaskType.DELETE);
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }
@@ -188,6 +189,8 @@ public class ToolAccess implements ToolAccessI {
             ToolDTO dto = getDTOmaster().Tool().byJob(job.getId());
             t = ToolDTOFactory.getInstance().toModel(getMaster(), dto);
             job.setTool(t);
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }
@@ -204,6 +207,8 @@ public class ToolAccess implements ToolAccessI {
         String toolDefinition;
         try {
             toolDefinition = getDTOmaster().Tool().getDefinition(tool.getId());
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }

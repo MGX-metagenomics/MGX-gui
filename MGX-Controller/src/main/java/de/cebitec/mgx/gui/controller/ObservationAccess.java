@@ -10,6 +10,7 @@ import de.cebitec.mgx.api.model.Identifiable;
 import de.cebitec.mgx.api.model.ObservationI;
 import de.cebitec.mgx.api.model.SequenceI;
 import de.cebitec.mgx.client.MGXDTOMaster;
+import de.cebitec.mgx.client.exception.MGXClientLoggedOutException;
 import de.cebitec.mgx.client.exception.MGXDTOException;
 import de.cebitec.mgx.dto.dto.BulkObservationDTOList;
 import de.cebitec.mgx.dto.dto.ObservationDTO;
@@ -25,17 +26,11 @@ import java.util.List;
  *
  * @author sj
  */
-public class ObservationAccess implements ObservationAccessI {
+public class ObservationAccess extends MasterHolder implements ObservationAccessI {
 
-    private final MGXDTOMaster dtomaster;
-    private final MGXMasterI master;
 
     public ObservationAccess(MGXMasterI master, MGXDTOMaster dtomaster) throws MGXException {
-        this.dtomaster = dtomaster;
-        this.master = master;
-        if (master.isDeleted()) {
-            throw new MGXLoggedoutException("You are disconnected.");
-        }
+        super(master, dtomaster);
     }
 
     @Override
@@ -47,6 +42,8 @@ public class ObservationAccess implements ObservationAccessI {
                 ObservationI obs = ObservationDTOFactory.getInstance().toModel(getMaster(), iter.next());
                 ret.add(obs);
             }
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -67,7 +64,7 @@ public class ObservationAccess implements ObservationAccessI {
             throw new MGXException("Invalid attribute");
         }
 
-        ObservationI obj = new Observation(getMaster());
+        ObservationI obj = new Observation();
         obj.setAttributeName(attr.getValue());
         obj.setAttributeTypeName(attr.getAttributeType().getName());
         obj.setStart(start);
@@ -76,6 +73,8 @@ public class ObservationAccess implements ObservationAccessI {
         ObservationDTO dto = ObservationDTOFactory.getInstance().toDTO(obj);
         try {
             getDTOmaster().Observation().create(seq.getId(), attr.getId(), dto);
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -87,6 +86,8 @@ public class ObservationAccess implements ObservationAccessI {
         try {
             BulkObservationDTOList bol = BulkObservationDTOFactory.getInstance().toDTOList(obsList);
             getDTOmaster().Observation().createBulk(bol);
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -96,16 +97,10 @@ public class ObservationAccess implements ObservationAccessI {
     public void delete(SequenceI seq, AttributeI attr, int start, int stop) throws MGXException {
         try {
             getDTOmaster().Observation().delete(seq.getId(), attr.getId(), start, stop);
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
-    }
-
-    private MGXDTOMaster getDTOmaster() {
-        return dtomaster;
-    }
-
-    private MGXMasterI getMaster() {
-        return master;
     }
 }

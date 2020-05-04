@@ -7,12 +7,14 @@ package de.cebitec.mgx.gui.controller.assembly;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.exception.MGXLoggedoutException;
 import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.model.SequenceI;
 import de.cebitec.mgx.api.model.assembly.BinI;
 import de.cebitec.mgx.api.model.assembly.ContigI;
 import de.cebitec.mgx.api.model.assembly.access.ContigAccessI;
 import de.cebitec.mgx.client.MGXDTOMaster;
+import de.cebitec.mgx.client.exception.MGXClientLoggedOutException;
 import de.cebitec.mgx.client.exception.MGXDTOException;
 import de.cebitec.mgx.dto.dto.ContigDTO;
 import de.cebitec.mgx.dto.dto.SequenceDTO;
@@ -37,6 +39,8 @@ public class ContigAccess extends AccessBase<ContigI> implements ContigAccessI {
         ContigDTO dto = null;
         try {
             dto = getDTOmaster().Contig().fetch(id);
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -48,6 +52,8 @@ public class ContigAccess extends AccessBase<ContigI> implements ContigAccessI {
         Iterator<ContigDTO> it;
         try {
             it = getDTOmaster().Contig().fetchall();
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -64,6 +70,8 @@ public class ContigAccess extends AccessBase<ContigI> implements ContigAccessI {
         Iterator<ContigDTO> it;
         try {
             it = getDTOmaster().Contig().byBin(bin.getId());
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -80,6 +88,8 @@ public class ContigAccess extends AccessBase<ContigI> implements ContigAccessI {
         try {
             SequenceDTO dto = getDTOmaster().Contig().getDNASequence(contig.getId());
             return SequenceDTOFactory.getInstance().toModel(getMaster(), dto);
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }

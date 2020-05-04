@@ -3,12 +3,14 @@ package de.cebitec.mgx.gui.controller;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.SampleAccessI;
 import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.exception.MGXLoggedoutException;
 import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.misc.TaskI.TaskType;
 import de.cebitec.mgx.api.model.HabitatI;
 import de.cebitec.mgx.api.model.Identifiable;
 import de.cebitec.mgx.api.model.SampleI;
 import de.cebitec.mgx.client.MGXDTOMaster;
+import de.cebitec.mgx.client.exception.MGXClientLoggedOutException;
 import de.cebitec.mgx.client.exception.MGXDTOException;
 import de.cebitec.mgx.dto.dto.SampleDTO;
 import de.cebitec.mgx.gui.datamodel.Sample;
@@ -41,6 +43,8 @@ public class SampleAccess extends AccessBase<SampleI> implements SampleAccessI {
         long id = Identifiable.INVALID_IDENTIFIER;
         try {
             id = getDTOmaster().Sample().create(dto);
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -60,12 +64,13 @@ public class SampleAccess extends AccessBase<SampleI> implements SampleAccessI {
 //        obj.setId(id);
 //        return obj;
 //    }
-
     @Override
     public SampleI fetch(long id) throws MGXException {
         SampleDTO dto = null;
         try {
             dto = getDTOmaster().Sample().fetch(id);
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -84,7 +89,8 @@ public class SampleAccess extends AccessBase<SampleI> implements SampleAccessI {
                     return s;
                 }
             };
-
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -95,6 +101,8 @@ public class SampleAccess extends AccessBase<SampleI> implements SampleAccessI {
         SampleDTO dto = SampleDTOFactory.getInstance().toDTO(obj);
         try {
             getDTOmaster().Sample().update(dto);
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -107,6 +115,8 @@ public class SampleAccess extends AccessBase<SampleI> implements SampleAccessI {
         try {
             UUID uuid = getDTOmaster().Sample().delete(obj.getId());
             ret = getMaster().<SampleI>Task().get(obj, uuid, TaskType.DELETE);
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -124,7 +134,8 @@ public class SampleAccess extends AccessBase<SampleI> implements SampleAccessI {
                     return s;
                 }
             };
-
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }

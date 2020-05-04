@@ -3,10 +3,12 @@ package de.cebitec.mgx.gui.controller;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.HabitatAccessI;
 import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.exception.MGXLoggedoutException;
 import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.model.HabitatI;
 import de.cebitec.mgx.api.model.Identifiable;
 import de.cebitec.mgx.client.MGXDTOMaster;
+import de.cebitec.mgx.client.exception.MGXClientLoggedOutException;
 import de.cebitec.mgx.client.exception.MGXDTOException;
 import de.cebitec.mgx.dto.dto.HabitatDTO;
 import de.cebitec.mgx.gui.datamodel.Habitat;
@@ -38,6 +40,8 @@ public class HabitatAccess extends AccessBase<HabitatI> implements HabitatAccess
         long id = Identifiable.INVALID_IDENTIFIER;
         try {
             id = getDTOmaster().Habitat().create(dto);
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -57,12 +61,13 @@ public class HabitatAccess extends AccessBase<HabitatI> implements HabitatAccess
 //        obj.setId(id);
 //        return obj;
 //    }
-
     @Override
     public HabitatI fetch(long id) throws MGXException {
         HabitatDTO h = null;
         try {
             h = getDTOmaster().Habitat().fetch(id);
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -82,6 +87,8 @@ public class HabitatAccess extends AccessBase<HabitatI> implements HabitatAccess
                 }
             };
 
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -92,6 +99,8 @@ public class HabitatAccess extends AccessBase<HabitatI> implements HabitatAccess
         HabitatDTO dto = HabitatDTOFactory.getInstance().toDTO(obj);
         try {
             getDTOmaster().Habitat().update(dto);
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -103,6 +112,8 @@ public class HabitatAccess extends AccessBase<HabitatI> implements HabitatAccess
         try {
             UUID uuid = getDTOmaster().Habitat().delete(obj.getId());
             return getMaster().<HabitatI>Task().get(obj, uuid, Task.TaskType.DELETE);
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }

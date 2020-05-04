@@ -9,6 +9,7 @@ import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.Identifiable;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.client.MGXDTOMaster;
+import de.cebitec.mgx.client.exception.MGXClientLoggedOutException;
 import de.cebitec.mgx.client.exception.MGXDTOException;
 import de.cebitec.mgx.dto.dto.AttributeTypeDTO;
 import de.cebitec.mgx.gui.datamodel.AttributeType;
@@ -21,17 +22,10 @@ import java.util.Iterator;
  *
  * @author sjaenick
  */
-public class AttributeTypeAccess implements AttributeTypeAccessI {
-
-    private final MGXDTOMaster dtomaster;
-    private final MGXMasterI master;
+public class AttributeTypeAccess extends MasterHolder implements AttributeTypeAccessI {
 
     public AttributeTypeAccess(MGXMasterI master, MGXDTOMaster dtomaster) throws MGXException {
-        this.dtomaster = dtomaster;
-        this.master = master;
-        if (master.isDeleted()) {
-            throw new MGXLoggedoutException("You are disconnected.");
-        }
+        super(master, dtomaster);
     }
 
     @Override
@@ -48,6 +42,8 @@ public class AttributeTypeAccess implements AttributeTypeAccessI {
             AttributeTypeDTO dto = AttributeTypeDTOFactory.getInstance().toDTO(attrType);
             long objId = getDTOmaster().AttributeType().create(dto);
             attrType.setId(objId);
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -59,6 +55,8 @@ public class AttributeTypeAccess implements AttributeTypeAccessI {
         AttributeTypeDTO h = null;
         try {
             h = getDTOmaster().AttributeType().fetch(id);
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -70,6 +68,8 @@ public class AttributeTypeAccess implements AttributeTypeAccessI {
         Iterator<AttributeTypeDTO> it;
         try {
             it = getDTOmaster().AttributeType().fetchall();
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -87,6 +87,8 @@ public class AttributeTypeAccess implements AttributeTypeAccessI {
         Iterator<AttributeTypeDTO> it;
         try {
             it = getDTOmaster().AttributeType().byJob(job.getId());
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -114,6 +116,8 @@ public class AttributeTypeAccess implements AttributeTypeAccessI {
                     return attr;
                 }
             };
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -129,17 +133,11 @@ public class AttributeTypeAccess implements AttributeTypeAccessI {
                     return attr;
                 }
             };
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
-    }
-
-    private MGXDTOMaster getDTOmaster() {
-        return dtomaster;
-    }
-
-    private MGXMasterI getMaster() {
-        return master;
     }
 
 }

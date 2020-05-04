@@ -9,6 +9,7 @@ import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.datatransfer.DownloadBaseI;
 import static de.cebitec.mgx.api.access.datatransfer.TransferBaseI.TRANSFER_FAILED;
 import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.exception.MGXLoggedoutException;
 import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.SequenceI;
@@ -18,6 +19,7 @@ import de.cebitec.mgx.api.model.assembly.access.GeneAccessI;
 import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.client.datatransfer.GeneByAttributeDownloader;
 import de.cebitec.mgx.client.datatransfer.SeqDownloader;
+import de.cebitec.mgx.client.exception.MGXClientLoggedOutException;
 import de.cebitec.mgx.client.exception.MGXDTOException;
 import de.cebitec.mgx.dto.dto;
 import de.cebitec.mgx.dto.dto.AttributeDTOList;
@@ -49,7 +51,8 @@ public class GeneAccess extends AccessBase<GeneI> implements GeneAccessI {
     public GeneI fetch(long id) throws MGXException {
         GeneDTO dto = null;
         try {
-            dto = getDTOmaster().Gene().fetch(id);
+            dto = getDTOmaster().Gene().fetch(id);} catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -60,7 +63,8 @@ public class GeneAccess extends AccessBase<GeneI> implements GeneAccessI {
     public Iterator<GeneI> fetchall() throws MGXException {
         Iterator<GeneDTO> it;
         try {
-            it = getDTOmaster().Gene().fetchall();
+            it = getDTOmaster().Gene().fetchall();} catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -76,7 +80,8 @@ public class GeneAccess extends AccessBase<GeneI> implements GeneAccessI {
     public Iterator<GeneI> ByContig(ContigI c) throws MGXException {
         Iterator<GeneDTO> it;
         try {
-            it = getDTOmaster().Gene().byContig(c.getId());
+            it = getDTOmaster().Gene().byContig(c.getId());} catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -92,7 +97,8 @@ public class GeneAccess extends AccessBase<GeneI> implements GeneAccessI {
     public SequenceI getDNASequence(GeneI gene) throws MGXException {
         try {
             SequenceDTO dto = getDTOmaster().Gene().getDNASequence(gene.getId());
-            return SequenceDTOFactory.getInstance().toModel(getMaster(), dto);
+            return SequenceDTOFactory.getInstance().toModel(getMaster(), dto);} catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -107,6 +113,8 @@ public class GeneAccess extends AccessBase<GeneI> implements GeneAccessI {
         final GeneByAttributeDownloader dl;
         try {
             dl = getDTOmaster().Gene().createDownloaderByAttributes(b.build(), writer, closeWriter, seenGeneNames);
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }

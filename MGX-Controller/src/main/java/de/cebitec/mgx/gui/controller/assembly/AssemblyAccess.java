@@ -7,11 +7,13 @@ package de.cebitec.mgx.gui.controller.assembly;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.exception.MGXLoggedoutException;
 import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.misc.TaskI.TaskType;
 import de.cebitec.mgx.api.model.assembly.AssemblyI;
 import de.cebitec.mgx.api.model.assembly.access.AssemblyAccessI;
 import de.cebitec.mgx.client.MGXDTOMaster;
+import de.cebitec.mgx.client.exception.MGXClientLoggedOutException;
 import de.cebitec.mgx.client.exception.MGXDTOException;
 import de.cebitec.mgx.dto.dto.AssemblyDTO;
 import de.cebitec.mgx.gui.controller.AccessBase;
@@ -35,6 +37,8 @@ public class AssemblyAccess extends AccessBase<AssemblyI> implements AssemblyAcc
         AssemblyDTO dto = null;
         try {
             dto = getDTOmaster().Assembly().fetch(id);
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -46,6 +50,8 @@ public class AssemblyAccess extends AccessBase<AssemblyI> implements AssemblyAcc
         Iterator<AssemblyDTO> it;
         try {
             it = getDTOmaster().Assembly().fetchall();
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -68,6 +74,8 @@ public class AssemblyAccess extends AccessBase<AssemblyI> implements AssemblyAcc
         try {
             UUID uuid = getDTOmaster().Assembly().delete(obj.getId());
             ret = getMaster().<AssemblyI>Task().get(obj, uuid, TaskType.DELETE);
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }

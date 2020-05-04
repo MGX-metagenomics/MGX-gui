@@ -3,12 +3,14 @@ package de.cebitec.mgx.gui.controller;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.DNAExtractAccessI;
 import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.exception.MGXLoggedoutException;
 import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.misc.TaskI.TaskType;
 import de.cebitec.mgx.api.model.DNAExtractI;
 import de.cebitec.mgx.api.model.Identifiable;
 import de.cebitec.mgx.api.model.SampleI;
 import de.cebitec.mgx.client.MGXDTOMaster;
+import de.cebitec.mgx.client.exception.MGXClientLoggedOutException;
 import de.cebitec.mgx.client.exception.MGXDTOException;
 import de.cebitec.mgx.dto.dto.DNAExtractDTO;
 import de.cebitec.mgx.gui.datamodel.DNAExtract;
@@ -42,6 +44,8 @@ public class DNAExtractAccess extends AccessBase<DNAExtractI> implements DNAExtr
         long id = Identifiable.INVALID_IDENTIFIER;
         try {
             id = getDTOmaster().DNAExtract().create(dto);
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -61,12 +65,13 @@ public class DNAExtractAccess extends AccessBase<DNAExtractI> implements DNAExtr
 //        obj.setId(id);
 //        return obj;
 //    }
-
     @Override
     public DNAExtractI fetch(long id) throws MGXException {
         DNAExtractDTO dto = null;
         try {
             dto = getDTOmaster().DNAExtract().fetch(id);
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -97,6 +102,8 @@ public class DNAExtractAccess extends AccessBase<DNAExtractI> implements DNAExtr
                     throw new UnsupportedOperationException("Not supported.");
                 }
             };
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -107,6 +114,8 @@ public class DNAExtractAccess extends AccessBase<DNAExtractI> implements DNAExtr
         DNAExtractDTO dto = DNAExtractDTOFactory.getInstance().toDTO(obj);
         try {
             getDTOmaster().DNAExtract().update(dto);
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -119,6 +128,8 @@ public class DNAExtractAccess extends AccessBase<DNAExtractI> implements DNAExtr
         try {
             UUID uuid = getDTOmaster().DNAExtract().delete(obj.getId());
             ret = getMaster().<DNAExtractI>Task().get(obj, uuid, TaskType.DELETE);
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -148,6 +159,8 @@ public class DNAExtractAccess extends AccessBase<DNAExtractI> implements DNAExtr
                     throw new UnsupportedOperationException("Not supported.");
                 }
             };
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }

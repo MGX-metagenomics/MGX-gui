@@ -7,11 +7,13 @@ package de.cebitec.mgx.gui.controller.assembly;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.exception.MGXLoggedoutException;
 import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.model.assembly.AssemblyI;
 import de.cebitec.mgx.api.model.assembly.BinI;
 import de.cebitec.mgx.api.model.assembly.access.BinAccessI;
 import de.cebitec.mgx.client.MGXDTOMaster;
+import de.cebitec.mgx.client.exception.MGXClientLoggedOutException;
 import de.cebitec.mgx.client.exception.MGXDTOException;
 import de.cebitec.mgx.dto.dto.BinDTO;
 import de.cebitec.mgx.gui.controller.AccessBase;
@@ -34,6 +36,8 @@ public class BinAccess extends AccessBase<BinI> implements BinAccessI {
         BinDTO dto = null;
         try {
             dto = getDTOmaster().Bin().fetch(id);
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -45,6 +49,8 @@ public class BinAccess extends AccessBase<BinI> implements BinAccessI {
         Iterator<BinDTO> it;
         try {
             it = getDTOmaster().Bin().fetchall();
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
@@ -61,6 +67,8 @@ public class BinAccess extends AccessBase<BinI> implements BinAccessI {
         Iterator<BinDTO> it;
         try {
             it = getDTOmaster().Bin().byAssembly(a.getId());
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }

@@ -14,6 +14,7 @@ import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.ToolI;
 import de.cebitec.mgx.api.model.assembly.AssemblyI;
 import de.cebitec.mgx.client.MGXDTOMaster;
+import de.cebitec.mgx.client.exception.MGXClientLoggedOutException;
 import de.cebitec.mgx.client.exception.MGXDTOException;
 import de.cebitec.mgx.common.JobState;
 import de.cebitec.mgx.dto.dto.JobDTO;
@@ -32,25 +33,11 @@ import java.util.UUID;
  *
  * @author sjaenick
  */
-public class JobAccess implements JobAccessI {
+public class JobAccess extends MasterHolder implements JobAccessI {
 
-    private final MGXDTOMaster dtomaster;
-    private final MGXMasterI master;
 
     public JobAccess(MGXMasterI master, MGXDTOMaster dtomaster) throws MGXException {
-        this.dtomaster = dtomaster;
-        this.master = master;
-        if (master.isDeleted()) {
-            throw new MGXLoggedoutException("You are disconnected.");
-        }
-    }
-
-    protected MGXDTOMaster getDTOmaster() {
-        return dtomaster;
-    }
-
-    protected MGXMasterI getMaster() {
-        return master;
+        super(master, dtomaster);
     }
 
     @Override
@@ -59,6 +46,8 @@ public class JobAccess implements JobAccessI {
         boolean ret;
         try {
             ret = getDTOmaster().Job().verify(obj.getId());
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }
@@ -72,6 +61,8 @@ public class JobAccess implements JobAccessI {
         boolean ret;
         try {
             ret = getDTOmaster().Job().execute(obj.getId());
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }
@@ -99,6 +90,8 @@ public class JobAccess implements JobAccessI {
             if (!job.isDeleted()) {
                 job.modified();
             }
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }
@@ -111,6 +104,8 @@ public class JobAccess implements JobAccessI {
         boolean ret;
         try {
             ret = getDTOmaster().Job().cancel(obj.getId());
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }
@@ -141,6 +136,8 @@ public class JobAccess implements JobAccessI {
             id = getDTOmaster().Job().create(dto);
             job.setId(id);
             job.modified();
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }
@@ -169,6 +166,8 @@ public class JobAccess implements JobAccessI {
             id = getDTOmaster().Job().create(dto);
             job.setId(id);
             job.modified();
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }
@@ -181,6 +180,8 @@ public class JobAccess implements JobAccessI {
         JobDTO h = null;
         try {
             h = getDTOmaster().Job().fetch(id);
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }
@@ -199,7 +200,8 @@ public class JobAccess implements JobAccessI {
                     return j;
                 }
             };
-
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }
@@ -215,6 +217,8 @@ public class JobAccess implements JobAccessI {
         JobDTO dto = JobDTOFactory.getInstance().toDTO(obj);
         try {
             getDTOmaster().Job().update(dto);
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }
@@ -226,6 +230,8 @@ public class JobAccess implements JobAccessI {
         try {
             UUID uuid = getDTOmaster().Job().delete(obj.getId());
             return getMaster().<JobI>Task().get(obj, uuid, TaskType.DELETE);
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }
@@ -244,7 +250,7 @@ public class JobAccess implements JobAccessI {
                     if (sr.getId() == run.getId()) {
                         tmp.add(run);
                     } else {
-                        SeqRunI s = SeqRunDTOFactory.getInstance().toModel(master, sr);
+                        SeqRunI s = SeqRunDTOFactory.getInstance().toModel(getMaster(), sr);
                         tmp.add(s);
                     }
 
@@ -252,6 +258,8 @@ public class JobAccess implements JobAccessI {
                 j.setSeqruns(tmp.toArray(new SeqRunI[]{}));
                 all.add(j);
             }
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }
@@ -271,7 +279,7 @@ public class JobAccess implements JobAccessI {
                     if (sr.getId() == run.getId()) {
                         tmp.add(run);
                     } else {
-                        SeqRunI s = SeqRunDTOFactory.getInstance().toModel(master, sr);
+                        SeqRunI s = SeqRunDTOFactory.getInstance().toModel(getMaster(), sr);
                         tmp.add(s);
                     }
 
@@ -280,6 +288,8 @@ public class JobAccess implements JobAccessI {
                 j.setAssembly(null);
                 all.add(j);
             }
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }
@@ -296,6 +306,8 @@ public class JobAccess implements JobAccessI {
                 j.setSeqruns(null);
                 all.add(j);
             }
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }
@@ -307,6 +319,8 @@ public class JobAccess implements JobAccessI {
         try {
             MGXString err = getDTOmaster().Job().getError(job.getId());
             return err.getValue();
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }
@@ -316,6 +330,8 @@ public class JobAccess implements JobAccessI {
     public void runDefaultTools(SeqRunI seqrun) throws MGXException {
         try {
             getDTOmaster().Job().runDefaultTools(seqrun.getId());
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }
