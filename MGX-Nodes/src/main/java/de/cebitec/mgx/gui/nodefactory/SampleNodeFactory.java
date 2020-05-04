@@ -1,5 +1,7 @@
 package de.cebitec.mgx.gui.nodefactory;
 
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.access.SampleAccessI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.HabitatI;
 import de.cebitec.mgx.api.model.SampleI;
@@ -25,7 +27,10 @@ public class SampleNodeFactory extends MGXNodeFactoryBase<HabitatI, SampleI> {
     @Override
     protected boolean addKeys(List<SampleI> toPopulate) {
         try {
-            Iterator<SampleI> iter = getContent().getMaster().Sample().ByHabitat(getContent());
+            HabitatI content = getContent();
+            MGXMasterI master = content.getMaster();
+            SampleAccessI sac = master.Sample();
+            Iterator<SampleI> iter = sac.ByHabitat(content);
             while (iter != null && iter.hasNext()) {
                 if (Thread.interrupted()) {
                     getContent().getMaster().log(Level.INFO, "interrupted in NF");

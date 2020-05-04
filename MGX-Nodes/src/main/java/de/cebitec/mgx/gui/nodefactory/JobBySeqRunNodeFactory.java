@@ -55,10 +55,9 @@ public class JobBySeqRunNodeFactory extends JobNodeFactory {
     protected boolean addKeys(List<JobI> toPopulate) {
         Collection<JobI> jobs = null;
         try {
-            jobs = processRuns(content);
-        } catch (MGXLoggedoutException ex) {
-            toPopulate.clear();
-            return true;
+            synchronized (content) {
+                jobs = processRuns(content);
+            }
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);
         }
@@ -71,7 +70,6 @@ public class JobBySeqRunNodeFactory extends JobNodeFactory {
     public void destroy() {
         synchronized (content) {
             for (final SeqRunI run : content) {
-                //System.err.println("destroy(): removing listener " + stateListener + " from run " + run.getName());
                 run.removePropertyChangeListener(stateListener);
             }
             content.clear();

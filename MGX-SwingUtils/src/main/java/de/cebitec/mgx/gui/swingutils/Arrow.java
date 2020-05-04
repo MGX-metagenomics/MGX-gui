@@ -19,7 +19,7 @@ import java.awt.geom.Rectangle2D;
  *
  * @author sj
  */
-public final class Arrow implements ShapeBase {
+public final class Arrow<T extends LocationI> implements ShapeBase {
 
     public final static int FORWARD = 1;
     public final static int REVERSE = 2;
@@ -46,14 +46,14 @@ public final class Arrow implements ShapeBase {
      */
     private final Shape shape;
     private final String toolTip;
-    private final LocationI obj;
+    private final T obj;
     private final static int TRIANGLE_WIDTH = 8;
     private final static int TRIANGLE_HEIGHT = 12;
     private final static int RECT_HEIGHT = 6;
     public final static int HEIGHT = TRIANGLE_HEIGHT;
     public final static float HALF_HEIGHT = HEIGHT / 2;
 
-    public Arrow(final LocationI r, String toolTip, float x, float y, float length) {
+    public Arrow(final T r, String toolTip, float x, float y, float length) {
 
         this.obj = r;
         this.toolTip = toolTip;
@@ -105,7 +105,7 @@ public final class Arrow implements ShapeBase {
 
     }
     
-    public LocationI getObject() {
+    public T getObject() {
         return obj;
     }
 

@@ -20,24 +20,24 @@ import java.util.UUID;
  *
  * @author sj
  */
-public abstract class MappingAccessI implements AccessBaseI<MappingI> {
+public interface MappingAccessI extends AccessBaseI<MappingI> {
 
-    public abstract Iterator<MappedSequenceI> byReferenceInterval(UUID uuid, int from, int to) throws MGXException;
+    public Iterator<MappedSequenceI> byReferenceInterval(UUID uuid, int from, int to) throws MGXException;
 
-    public abstract UUID openMapping(long id) throws MGXException;
+    public UUID openMapping(long id) throws MGXException;
 
-    public abstract void closeMapping(UUID uuid) throws MGXException;
+    public void closeMapping(UUID uuid) throws MGXException;
 
-    public abstract Iterator<MappingI> ByReference(MGXReferenceI reference) throws MGXException;
+    public Iterator<MappingI> ByReference(MGXReferenceI reference) throws MGXException;
 
-    public abstract Iterator<MappingI> BySeqRun(SeqRunI run) throws MGXException;
+    public Iterator<MappingI> BySeqRun(SeqRunI run) throws MGXException;
 
-    public abstract Iterator<MappingI> ByJob(JobI job) throws MGXException;
+    public Iterator<MappingI> ByJob(JobI job) throws MGXException;
 
-    public abstract long getMaxCoverage(UUID sessionUUID) throws MGXException;
+    public long getMaxCoverage(UUID sessionUUID) throws MGXException;
 
-    public abstract DownloadBaseI createDownloader(MappingI mapping, OutputStream writer) throws MGXException;
+    public DownloadBaseI createDownloader(MappingI mapping, OutputStream writer) throws MGXException;
 
-    public abstract long getGenomicCoverage(UUID sessionUUID) throws MGXException;
+    public long getGenomicCoverage(UUID sessionUUID) throws MGXException;
 
 }

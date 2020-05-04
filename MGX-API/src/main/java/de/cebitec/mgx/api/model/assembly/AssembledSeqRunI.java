@@ -32,9 +32,18 @@ public abstract class AssembledSeqRunI extends Identifiable<AssembledSeqRunI> {
     public abstract String getName();
 
     public abstract SeqRunI getSeqRun();
-    
+
     public abstract AssemblyI getAssembly();
-    
+
+    @Override
+    public synchronized void deleted() {
+        if (!isDeleted()) {
+            assembly.removePropertyChangeListener(this);
+            run.removePropertyChangeListener(this);
+            super.deleted();
+        }
+    }
+
     @Override
     public abstract String toString();
 

@@ -9,7 +9,7 @@ package de.cebitec.mgx.api.exception;
  *
  * @author sj
  */
-public class MGXLoggedoutException extends MGXException {
+public class MGXLoggedoutException extends RuntimeException {
 
     public MGXLoggedoutException(String message) {
         super(message);

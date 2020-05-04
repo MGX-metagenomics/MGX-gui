@@ -23,7 +23,7 @@ public abstract class MGXDataModelBase<T extends MGXDataModelBaseI<T>> implement
     private final MGXMasterI master;
     private final DataFlavor dataflavor;
     private ParallelPropertyChangeSupport pcs;
-    private String managedState = OBJECT_MANAGED;
+    private volatile String managedState = OBJECT_MANAGED;
 
     public MGXDataModelBase(MGXMasterI master, DataFlavor dataFlavor) {
         this.master = master;
@@ -82,8 +82,9 @@ public abstract class MGXDataModelBase<T extends MGXDataModelBaseI<T>> implement
     }
 
     @Override
-    public final void deleted() {
+    public synchronized void deleted() {
         if (managedState.equals(OBJECT_DELETED)) {
+            //return;
             throw new RuntimeException("Invalid object state for " + getClass().getSimpleName() + ", cannot delete deleted object.");
         }
         if (master != null) {
@@ -91,11 +92,11 @@ public abstract class MGXDataModelBase<T extends MGXDataModelBaseI<T>> implement
 //            master.removePropertyChangeListener(stateListener);
         }
         firePropertyChange(OBJECT_DELETED, 0, 1);
-        managedState = OBJECT_DELETED;
         if (pcs != null) {
             pcs.close();
             pcs = null;
         }
+        managedState = OBJECT_DELETED;
         //System.err.println("instance "+getClass().getSimpleName()+" marked as deleted.");
     }
 
@@ -135,7 +136,7 @@ public abstract class MGXDataModelBase<T extends MGXDataModelBaseI<T>> implement
 
     @Override
     public void firePropertyChange(String propertyName, int oldValue, int newValue) {
-        if (pcs != null) {
+        if (pcs != null && !managedState.equals(OBJECT_DELETED)) {
             PropertyChangeEvent evt = new PropertyChangeEvent(this, propertyName, oldValue, newValue);
             pcs.firePropertyChange(evt);
         }

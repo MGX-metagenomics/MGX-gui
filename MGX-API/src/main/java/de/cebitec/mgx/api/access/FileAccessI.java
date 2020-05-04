@@ -21,8 +21,6 @@ import java.util.Iterator;
  */
 public interface FileAccessI {
 
-    public MGXMasterI getMaster();
-
     public Iterator<MGXFileI> fetchall() throws MGXException;
 
     public Iterator<MGXFileI> fetchall(MGXFileI parent) throws MGXException;

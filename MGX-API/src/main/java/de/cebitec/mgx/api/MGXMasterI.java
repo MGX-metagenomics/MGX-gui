@@ -107,7 +107,7 @@ public abstract class MGXMasterI implements MGXDataModelBaseI<MGXMasterI> {
     public abstract GeneAccessI Gene() throws MGXException;
 
     public abstract GeneCoverageAccessI GeneCoverage() throws MGXException;
-    
+
     public abstract GeneObservationAccessI GeneObservation() throws MGXException;
 
     @Override
@@ -131,9 +131,9 @@ public abstract class MGXMasterI implements MGXDataModelBaseI<MGXMasterI> {
         if (managedState.equals(OBJECT_DELETED)) {
             throw new RuntimeException("Invalid object state, cannot delete deleted object.");
         }
-        System.err.println("sending deleted event to " + pcs.getPropertyChangeListeners().length + " listeners");
+        log(Level.INFO, "sending deleted event from " + toString() + " to " + pcs.getPropertyChangeListeners().length + " listeners");
         for (PropertyChangeListener pcl : pcs.getPropertyChangeListeners()) {
-            System.err.println("    target: " + pcl);
+            log(Level.INFO, "    target: " + pcl);
         }
         firePropertyChange(ModelBaseI.OBJECT_DELETED, 0, 1);
         managedState = OBJECT_DELETED;
@@ -197,13 +197,11 @@ public abstract class MGXMasterI implements MGXDataModelBaseI<MGXMasterI> {
             throw new UnsupportedFlavorException(flavor);
         }
     }
-
+    
     @Override
     public abstract int hashCode();
 
     @Override
     public abstract boolean equals(Object o);
-
-
 
 }

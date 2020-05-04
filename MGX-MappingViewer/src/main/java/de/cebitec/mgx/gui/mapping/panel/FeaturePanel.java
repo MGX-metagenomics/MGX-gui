@@ -208,10 +208,10 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
             case "CDS":
                 if (r.getFrame() < 0) {
                     int frameOffset = frameOffsets[r.getFrame() + 3];
-                    return new Arrow(r, toolTip, pos1, midY + frameOffset - Arrow.HALF_HEIGHT, pos0 - pos1);
+                    return new Arrow<>(r, toolTip, pos1, midY + frameOffset - Arrow.HALF_HEIGHT, pos0 - pos1);
                 } else {
                     int frameOffset = frameOffsets[r.getFrame() + 2];
-                    return new Arrow(r, toolTip, pos0, midY + frameOffset - Arrow.HALF_HEIGHT, pos1 - pos0);
+                    return new Arrow<>(r, toolTip, pos0, midY + frameOffset - Arrow.HALF_HEIGHT, pos1 - pos0);
                 }
             case "rRNA":
             case "tRNA":
