@@ -5,27 +5,32 @@
  */
 package de.cebitec.mgx.api.model.assembly;
 
-import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.Identifiable;
-import java.awt.datatransfer.DataFlavor;
 
 /**
  *
  * @author sj
  */
-public abstract class GeneCoverageI extends Identifiable<GeneCoverageI> {
+public abstract class GeneCoverageI implements Comparable<GeneCoverageI> {
 
-    public static final DataFlavor DATA_FLAVOR = new DataFlavor(GeneCoverageI.class, "GeneCoverageI");
+    //public static final DataFlavor DATA_FLAVOR = new DataFlavor(GeneCoverageI.class, "GeneCoverageI");
+    protected long id = Identifiable.INVALID_IDENTIFIER;
 
-    public GeneCoverageI(MGXMasterI m) {
-        super(m, DATA_FLAVOR);
+    public GeneCoverageI() {
+    }
+
+    public final void setId(long id) {
+        this.id = id;
+    }
+
+    public final long getId() {
+        return id;
     }
 
     public abstract long getGeneId();
 
     public abstract int getCoverage();
-    
-    public abstract long getRunId();
 
+    public abstract long getRunId();
 
 }

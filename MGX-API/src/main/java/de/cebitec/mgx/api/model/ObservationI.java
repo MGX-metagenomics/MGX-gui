@@ -6,19 +6,16 @@
 
 package de.cebitec.mgx.api.model;
 
-import de.cebitec.mgx.api.MGXMasterI;
-import java.awt.datatransfer.DataFlavor;
-
 /**
  *
  * @author sjaenick
  */
-public abstract class ObservationI extends MGXDataModelBase<ObservationI> implements Comparable<ObservationI> {
+public abstract class ObservationI implements Comparable<ObservationI> {
     //
-    public static final DataFlavor DATA_FLAVOR = new DataFlavor(ObservationI.class, "ObservationI");
+    //public static final DataFlavor DATA_FLAVOR = new DataFlavor(ObservationI.class, "ObservationI");
 
-    public ObservationI(MGXMasterI master) {
-        super(master, DATA_FLAVOR);
+    public ObservationI() {
+        super();
     }
 
     public abstract int getStart();
