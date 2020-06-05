@@ -189,6 +189,11 @@ public class AttributeAccess extends MasterHolder implements AttributeAccessI {
 
     @Override
     public TreeI<Long> getHierarchy(AttributeTypeI attrType, JobI job, SeqRunI run) throws MGXException {
+
+        if (attrType.getStructure() != AttributeTypeI.STRUCTURE_HIERARCHICAL) {
+            throw new MGXException("Attribute type " + attrType.getName() + " is not an hierarchical attribute.");
+        }
+
         Map<AttributeI, Long> res;
         try {
             AttributeDistribution distribution = getDTOmaster().Attribute().getHierarchy(attrType.getId(), job.getId(), run.getId());
