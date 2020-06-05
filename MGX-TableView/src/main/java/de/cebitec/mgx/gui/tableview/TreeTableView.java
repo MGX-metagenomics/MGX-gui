@@ -184,7 +184,7 @@ public class TreeTableView extends AbstractViewer<TreeI<Long>> implements ImageE
         Object[] rowData = new Object[1 + aTypes.length];
         int pos = 0;
 
-        // add the nodes content in first column
+        // add the nodes content (i.e. sequence count) to the first column
         rowData[pos++] = node.getContent();
 
         NodeI<Long>[] path = node.getPath();
