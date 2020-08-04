@@ -280,7 +280,7 @@ public class AssembleRuns extends NodeAction implements LookupListener {
                         selectedTool = master.Tool().fetch(toolId);
                         break;
                     case USER_PROVIDED:
-                        selectedTool = master.Tool().create(toolName, toolDesc, toolAuthor, toolUri, toolVersion, toolXML);
+                        selectedTool = master.Tool().create(ToolScope.ASSEMBLY, toolName, toolDesc, toolAuthor, toolUri, toolVersion, toolXML);
                         break;
                     default:
                         assert false;

@@ -8,6 +8,7 @@ import de.cebitec.mgx.api.model.JobParameterI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.ToolI;
 import de.cebitec.mgx.common.JobState;
+import de.cebitec.mgx.common.ToolScope;
 import de.cebitec.mgx.gui.goldstandard.util.MGSAttribute;
 import de.cebitec.mgx.gui.goldstandard.util.MGSEntry;
 import de.cebitec.mgx.gui.goldstandard.util.MGSReader;
@@ -226,6 +227,6 @@ public final class AddGoldstandard extends NodeAction implements LookupListener 
                 return tool;
             }
         }
-        return master.Tool().create(name, desc, author, web, version, xml);
+        return master.Tool().create(ToolScope.READ, name, desc, author, web, version, xml);
     }
 }

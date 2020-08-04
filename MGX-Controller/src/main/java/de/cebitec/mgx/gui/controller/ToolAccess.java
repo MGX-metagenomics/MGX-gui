@@ -15,6 +15,7 @@ import de.cebitec.mgx.api.model.ToolI;
 import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.client.exception.MGXClientLoggedOutException;
 import de.cebitec.mgx.client.exception.MGXDTOException;
+import de.cebitec.mgx.common.ToolScope;
 import de.cebitec.mgx.dto.dto.JobParameterDTO;
 import de.cebitec.mgx.dto.dto.ToolDTO;
 import de.cebitec.mgx.gui.datamodel.Tool;
@@ -107,8 +108,9 @@ public class ToolAccess extends MasterHolder implements ToolAccessI {
     }
 
     @Override
-    public ToolI create(String name, String description, String author, String webSite, float version, String toolDefinition) throws MGXException {
+    public ToolI create(ToolScope scope, String name, String description, String author, String webSite, float version, String toolDefinition) throws MGXException {
         ToolI obj = new Tool(getMaster());
+        obj.setScope(scope);
         obj.setName(name);
         obj.setDescription(description);
         obj.setAuthor(author);

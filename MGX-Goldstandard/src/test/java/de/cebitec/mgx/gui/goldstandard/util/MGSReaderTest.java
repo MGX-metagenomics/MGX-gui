@@ -7,6 +7,7 @@ import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.ToolI;
+import de.cebitec.mgx.common.ToolScope;
 import de.cebitec.mgx.gui.goldstandard.actions.AddGoldstandard;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -49,7 +50,7 @@ public class MGSReaderTest {
             }
         }
         if (tool == null) {
-            tool = master.Tool().create(AddGoldstandard.TOOL_NAME, AddGoldstandard.TOOL_LONG_DESCRIPTION, AddGoldstandard.TOOL_AUTHOR, AddGoldstandard.TOOL_WEBSITE, AddGoldstandard.TOOL_VERSION, AddGoldstandard.TOOL_WEBSITE);
+            tool = master.Tool().create(ToolScope.READ, AddGoldstandard.TOOL_NAME, AddGoldstandard.TOOL_LONG_DESCRIPTION, AddGoldstandard.TOOL_AUTHOR, AddGoldstandard.TOOL_WEBSITE, AddGoldstandard.TOOL_VERSION, AddGoldstandard.TOOL_WEBSITE);
         }
         seqrun = master.SeqRun().fetchall().next();
     }

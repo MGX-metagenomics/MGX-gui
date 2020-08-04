@@ -11,6 +11,7 @@ import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.misc.TaskI.State;
 import de.cebitec.mgx.api.model.JobParameterI;
 import de.cebitec.mgx.api.model.ToolI;
+import de.cebitec.mgx.common.ToolScope;
 import de.cebitec.mgx.gui.util.TestInput;
 import de.cebitec.mgx.gui.util.TestMaster;
 import java.io.BufferedReader;
@@ -99,7 +100,7 @@ public class ToolAccessTest {
         MGXMasterI master = TestMaster.getRW();
         ToolI tool = null;
         try {
-            tool = master.Tool().create("Tool Name", "Tool description", "Tool author", "http://", 1.0f, "<xml>");
+            tool = master.Tool().create(ToolScope.READ, "Tool Name", "Tool description", "Tool author", "http://", 1.0f, "<xml>");
         } catch (MGXException ex) {
             fail(ex.getMessage());
         } finally {
@@ -127,7 +128,7 @@ public class ToolAccessTest {
         MGXMasterI master = TestMaster.getRW();
         ToolI tool1 = null;
         try {
-            tool1 = master.Tool().create("Tool Name", "Tool description", "Tool author", "http://", 1.0f, "<xml>");
+            tool1 = master.Tool().create(ToolScope.READ, "Tool Name", "Tool description", "Tool author", "http://", 1.0f, "<xml>");
         } catch (MGXException ex) {
             fail(ex.getMessage());
         }
@@ -135,7 +136,7 @@ public class ToolAccessTest {
 
         ToolI tool2 = null;
         try {
-            tool2 = master.Tool().create("Tool Name", "Tool description", "Tool author", "http://", 1.0f, "<xml>");
+            tool2 = master.Tool().create(ToolScope.READ, "Tool Name", "Tool description", "Tool author", "http://", 1.0f, "<xml>");
         } catch (MGXException ex) {
             if (ex.getMessage() != null && ex.getMessage().contains("duplicate")) {
                 // expected exception
@@ -184,14 +185,14 @@ public class ToolAccessTest {
 
         try {
             try {
-                tool1 = master.Tool().create("Tool Name", "Tool description", "Tool author", "http://", 1.0f, "<xml>");
+                tool1 = master.Tool().create(ToolScope.READ, "Tool Name", "Tool description", "Tool author", "http://", 1.0f, "<xml>");
             } catch (MGXException ex) {
                 fail(ex.getMessage());
             }
             tool1Created = tool1 != null;
 
             try {
-                tool2 = master.Tool().create("Tool Name", "Tool description", "Tool author", "http://", 1.1f, "<xml>");
+                tool2 = master.Tool().create(ToolScope.READ, "Tool Name", "Tool description", "Tool author", "http://", 1.1f, "<xml>");
             } catch (MGXException ex) {
                 fail(ex.getMessage());
             }

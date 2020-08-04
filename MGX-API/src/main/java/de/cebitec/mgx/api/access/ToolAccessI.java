@@ -10,6 +10,7 @@ import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.JobParameterI;
 import de.cebitec.mgx.api.model.ToolI;
+import de.cebitec.mgx.common.ToolScope;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -23,7 +24,7 @@ public interface ToolAccessI {
 
     public Iterator<ToolI> listGlobalTools() throws MGXException;
 
-    public ToolI create(String name, String description, String author, String webSite, float version, String xmlData) throws MGXException;
+    public ToolI create(ToolScope scope, String name, String description, String author, String webSite, float version, String xmlData) throws MGXException;
 
     public long installTool(long id) throws MGXException;
 

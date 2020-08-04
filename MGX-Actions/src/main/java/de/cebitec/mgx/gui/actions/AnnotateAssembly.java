@@ -287,7 +287,7 @@ public class AnnotateAssembly extends NodeAction implements LookupListener {
                         selectedTool = master.Tool().fetch(toolId);
                         break;
                     case USER_PROVIDED:
-                        selectedTool = master.Tool().create(toolName, toolDesc, toolAuthor, toolUri, toolVersion, toolXML);
+                        selectedTool = master.Tool().create(ToolScope.GENE_ANNOTATION, toolName, toolDesc, toolAuthor, toolUri, toolVersion, toolXML);
                         break;
                     default:
                         assert false;
