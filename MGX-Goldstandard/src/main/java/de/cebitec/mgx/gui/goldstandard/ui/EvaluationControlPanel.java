@@ -212,19 +212,6 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Action
     @Override
     @SuppressWarnings("unchecked")
     public void actionPerformed(ActionEvent e) {
-//        if (e.getSource() == comparisonTypeList) {
-//            currentComparisonType = compListModel.getSelectedItem();
-//            visListModel.update();
-//        } else if (e.getSource() == visualizationTypeList) {
-//            if (currentViewer != null) {
-//                currentViewer.dispose();
-//            }
-//            currentViewer = visListModel.getSelectedItem();
-//            if (currentViewer != null) {
-//                controlSplitPane.setBottomComponent(currentViewer.getCustomizer());
-//            }
-//            topComponent.setVisualization(null);
-//        } else if (e.getSource() == updateButton) {
         //disable upstream and self
         comparisonTypeList.setEnabled(false);
         visualizationTypeList.setEnabled(false);
@@ -251,20 +238,8 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Action
                 }
             }
         });
-//        } else {
-//            assert false;
-//        }
     }
 
-//    public final void dispose() {
-//        if (currentViewer != null) {
-//            currentViewer.dispose();
-//        }
-//        res.removeLookupListener(this);
-//        updateButton.removeActionListener(this);
-//        comparisonTypeList.removeActionListener(this);
-//        visualizationTypeList.removeActionListener(this);
-//    }
     synchronized void update() {
         Collection<? extends SeqRunI> seqruns = Utilities.actionsGlobalContext().lookupAll(SeqRunI.class);
 
@@ -358,9 +333,6 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Action
                 return;
             }
 
-//            if (currentViewer != null) {
-//                currentViewer.dispose();
-//            }
             currentComparisonType = compListModel.getSelectedItem();
 
             controlSplitPane.setBottomComponent(null);
@@ -423,9 +395,6 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Action
                 return;
             }
 
-//            if (currentViewer != null) {
-//                currentViewer.dispose();
-//            }
             currentViewer = visListModel.getSelectedItem();
 
             controlSplitPane.setBottomComponent(currentViewer.getCustomizer());
