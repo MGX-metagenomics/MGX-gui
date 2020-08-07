@@ -46,6 +46,8 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Action
     private SeqRunI currentSeqrun = null;
     private boolean haveGoldStandard = false;
     private int numFinishedJobs = 0;
+    //
+    private volatile boolean busy = false;
 
     //
     /**
@@ -218,6 +220,7 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Action
         updateButton.setEnabled(false);
 
         // busy
+        busy = true;
         topComponent.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
         topComponent.setVisualization(null);
@@ -235,12 +238,18 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Action
                     visualizationTypeList.setEnabled(true);
                     updateButton.setEnabled(true);
                     topComponent.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                    busy = false;
                 }
             }
         });
     }
 
     synchronized void update() {
+        
+        if (busy) {
+            return;
+        }
+        
         Collection<? extends SeqRunI> seqruns = Utilities.actionsGlobalContext().lookupAll(SeqRunI.class);
 
         // we're only interested in single-selection

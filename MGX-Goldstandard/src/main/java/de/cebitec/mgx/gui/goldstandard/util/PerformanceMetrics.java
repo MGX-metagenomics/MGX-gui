@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.goldstandard.util;
 
+import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.model.AttributeI;
@@ -12,19 +13,19 @@ import gnu.trove.procedure.TLongProcedure;
 import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 import org.apache.commons.math3.util.FastMath;
+import org.netbeans.api.progress.ProgressHandle;
 
 /**
  *
  * @author pblumenk
  */
 public class PerformanceMetrics {
-
+    
     private long fp, fn, tp, tn;
     private final TLongObjectMap<String> goldstandard;
-
+    
     public PerformanceMetrics(TLongObjectMap<String> goldstandard) {
         this.fp = 0;
         this.fn = 0;
@@ -32,27 +33,35 @@ public class PerformanceMetrics {
         this.tn = 0;
         this.goldstandard = goldstandard;
     }
+    
+    public void compute(ProgressHandle p, final JobI job, AttributeTypeI attrType, SeqRunI run) throws MGXException {
+        
+        p.progress("Evaluating " + job.getTool().getName());
+        
+        final MGXMasterI master = job.getMaster();
+        DistributionI<Long> dist = master.Attribute().getDistribution(attrType, job, run);
 
-    public void compute(final JobI job, AttributeTypeI attrType, SeqRunI run) throws MGXException {
-        DistributionI<Long> dist = job.getMaster().Attribute().getDistribution(attrType, job, run);
-        final TLongObjectMap<String> jobAttr = new TLongObjectHashMap<>(); //seqid to attr value
-        for (Map.Entry<AttributeI, Long> entry : dist.entrySet()) {
-            String jobAssignment = entry.getKey().getValue();
-            Iterator<Long> it = dist.getMaster().Sequence().fetchSequenceIDs(entry.getKey());
+        //
+        // fetch sequence ID to attribute mappings for this job
+        //
+        final TLongObjectMap<String> jobAttr = new TLongObjectHashMap<>();
+        for (AttributeI attr : dist.keySet()) {
+            String jobAssignment = attr.getValue();
+            p.progress(job.getTool().getName() + ": " + jobAssignment);
+            Iterator<Long> it = master.Sequence().fetchSequenceIDs(attr);
             while (it.hasNext()) {
                 Long seqId = it.next();
                 jobAttr.put(seqId, jobAssignment);
             }
         }
-
-//        final TLongCollection falseNegatives = new TLongArrayList();
+        
         // collect all seq ids
         TLongSet allIds = new TLongHashSet();
         allIds.addAll(goldstandard.keySet());
         allIds.addAll(jobAttr.keySet());
-
+        
         final AtomicLong shouldntBeClassified = new AtomicLong(0);
-
+        
         allIds.forEach(new TLongProcedure() {
             @Override
             public boolean execute(long seqId) {
@@ -60,7 +69,7 @@ public class PerformanceMetrics {
                 // used for all selected jobs
                 String gsAssignment = goldstandard.get(seqId);
                 String jobAssignment = jobAttr.remove(seqId);
-
+                
                 if (gsAssignment != null) {
                     if (jobAssignment != null) {
                         if (gsAssignment.equals(jobAssignment)) {
@@ -73,56 +82,32 @@ public class PerformanceMetrics {
                     } else {
                         // not assigned by job, but by GS
                         fn++;
-//                        falseNegatives.add(seqId);
                     }
                 } else {
                     // assigned by job, but not by goldstandard
                     fp++;
                     shouldntBeClassified.incrementAndGet();
                 }
-
+                
                 return true;
             }
         });
-
-        long numSeqs = 0;
-        numSeqs += run.getNumSequences();
-        tn = numSeqs - goldstandard.size() - shouldntBeClassified.longValue();
-
-//        try {
-//            final BufferedWriter writer = new BufferedWriter(new FileWriter("/tmp/fn_" + job.getId() + ".fas"));
-//            Iterator<SequenceI> fetchByIds = job.getMaster().Sequence().fetchByIds(falseNegatives.toArray());
-//            while (fetchByIds.hasNext()) {
-//                SequenceI seq = fetchByIds.next();
-//                writer.write(">"+ seq.getName());
-//                writer.newLine();
-//                writer.write(seq.getSequence());
-//                writer.newLine();
-//            }
-//            writer.close();
-//        } catch (IOException ex) {
-//            Exceptions.printStackTrace(ex);
-//        }
+        
+        tn = run.getNumSequences() - goldstandard.size() - shouldntBeClassified.longValue();
     }
-
-//    public void add(long falsePositive, long falseNegative, long truePositive, long trueNegative) {
-//        this.fp += falsePositive;
-//        this.fn += falseNegative;
-//        this.tp += truePositive;
-//        this.tn += trueNegative;
-//    }
+    
     public long getFP() {
         return fp;
     }
-
+    
     public long getFN() {
         return fn;
     }
-
+    
     public long getTP() {
         return tp;
     }
-
+    
     public long getTN() {
         return tn;
     }
@@ -236,5 +221,5 @@ public class PerformanceMetrics {
     public double getMarkedness() {
         return getPrecision() + getNegativePredictiveValue() - 1;
     }
-
+    
 }

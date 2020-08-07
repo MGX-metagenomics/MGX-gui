@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.ReentrantLock;
 import javax.swing.JComponent;
 import javax.swing.table.TableColumn;
 import org.jdesktop.swingx.JXTable;
@@ -42,7 +43,7 @@ public class GSCPerformanceMetricsViewer extends EvaluationViewerI implements GS
 
     private JXTable table;
 
-    private GSCPerformanceMetricsViewCustomizer cust = null;
+    private final GSCPerformanceMetricsViewCustomizer cust = new GSCPerformanceMetricsViewCustomizer();
 
     private JobI gsJob;
     private AttributeTypeI attrType;
@@ -100,9 +101,6 @@ public class GSCPerformanceMetricsViewer extends EvaluationViewerI implements GS
 
     @Override
     public JComponent getCustomizer() {
-        if (cust == null) {
-            cust = new GSCPerformanceMetricsViewCustomizer();
-        }
         return cust;
     }
 
@@ -135,7 +133,6 @@ public class GSCPerformanceMetricsViewer extends EvaluationViewerI implements GS
     private void tidyUp() {
         if (cust != null) {
             cust.dispose();
-            cust = null;
         }
         table = null;
         currentJobs = null;
@@ -150,33 +147,67 @@ public class GSCPerformanceMetricsViewer extends EvaluationViewerI implements GS
 
         DistributionI<Long> gsDist = gsJob.getMaster().Attribute().getDistribution(attributeType, gsJob, run);
 
+        //
         // seqId to attribute value
+        // trove isn't thread-safe, so we need a lock to protect the map
+        //
         final TLongObjectMap<String> goldstandard = new TLongObjectHashMap<>(jobs.size());
+        final ReentrantLock lock = new ReentrantLock();
+
+        final Semaphore rateLimit = new Semaphore(10);
+        final CountDownLatch goldStandardLatch = new CountDownLatch(gsDist.size());
+
         for (AttributeI attr : gsDist.keySet()) {
-            p.progress("Processing " + attr.getValue());
-            Iterator<Long> it = gsDist.getMaster().Sequence().fetchSequenceIDs(attr);
-            while (it.hasNext()) {
-                goldstandard.put(it.next(), attr.getValue());
-            }
+
+            MGXPool.getInstance().submit(new Runnable() {
+                @Override
+                public void run() {
+                    p.progress("Processing " + attr.getValue());
+                    try {
+                        rateLimit.acquireUninterruptibly();
+                        Iterator<Long> it = gsDist.getMaster().Sequence().fetchSequenceIDs(attr);
+                        lock.lock();
+                        while (it.hasNext()) {
+                            goldstandard.put(it.next(), attr.getValue());
+                        }
+                    } catch (MGXException ex) {
+                        Exceptions.printStackTrace(ex);
+                    } finally {
+                        lock.unlock();
+                        rateLimit.release();
+                        goldStandardLatch.countDown();
+                    }
+
+                }
+
+            });
         }
 
-        p.progress(progress++);
+        try {
+            goldStandardLatch.await();
+        } catch (InterruptedException ex) {
+            Exceptions.printStackTrace(ex);
+            return null;
+        }
 
+        p.progress("Goldstandard data complete.", progress++);
+
+        int idx = 0;
         PerformanceMetrics[] performanceMetrics = new PerformanceMetrics[jobs.size()];
+
         final AtomicBoolean hasError = new AtomicBoolean(false);
         final CountDownLatch allDone = new CountDownLatch(jobs.size());
-        final Semaphore rateLimit = new Semaphore(3);
-        int i = 0;
+
         for (final JobI job : jobs) {
             final PerformanceMetrics pm = new PerformanceMetrics(goldstandard);
-            performanceMetrics[i++] = pm;
+            performanceMetrics[idx++] = pm;
 
             MGXPool.getInstance().submit(new Runnable() {
                 @Override
                 public void run() {
                     try {
                         rateLimit.acquireUninterruptibly();
-                        pm.compute(job, attributeType, run);
+                        pm.compute(p, job, attributeType, run);
                     } catch (MGXException ex) {
                         p.finish();
                         hasError.set(true);
@@ -191,7 +222,7 @@ public class GSCPerformanceMetricsViewer extends EvaluationViewerI implements GS
             p.progress(progress++);
         }
 
-        // await task completion
+        // await completion of all tasks
         try {
             allDone.await();
         } catch (InterruptedException ex) {
@@ -202,11 +233,12 @@ public class GSCPerformanceMetricsViewer extends EvaluationViewerI implements GS
         if (hasError.get()) {
             return null;
         }
+
         // table header
         String[] columns = new String[jobs.size() + 1];
         columns[0] = attributeType.getName(); //"";
-        for (i = 1; i < jobs.size() + 1; i++) {
-            columns[i] = JobUtils.jobToString(jobs.get(i - 1));
+        for (idx = 1; idx < jobs.size() + 1; idx++) {
+            columns[idx] = JobUtils.jobToString(jobs.get(idx - 1));
         }
 
         return new GSCPerformanceMetricsTableModel(columns, performanceMetrics);
