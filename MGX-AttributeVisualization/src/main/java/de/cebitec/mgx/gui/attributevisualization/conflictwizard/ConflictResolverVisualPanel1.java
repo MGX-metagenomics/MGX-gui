@@ -62,11 +62,11 @@ public final class ConflictResolverVisualPanel1 extends JPanel implements ListSe
         if (group.getContentClass().equals(SeqRunI.class)) {
             SeqRunI sr = (SeqRunI) run;
             projName = (sr.getMaster()).getProject();
-            seqRunLabel.setText(projName + ": " + run.toString());
+            seqRunLabel.setText(projName + ": " + sr.getName());
         } else if (group.getContentClass().equals(AssembledSeqRunI.class)) {
             AssembledSeqRunI asr = (AssembledSeqRunI) run;
             projName = (asr.getMaster()).getProject();
-            seqRunLabel.setText(projName + ": " + run.toString());
+            seqRunLabel.setText(projName + ": " + asr.getName());
         } else {
             throw new RuntimeException("Unhandled: " + run.getClass());
         }
@@ -78,7 +78,19 @@ public final class ConflictResolverVisualPanel1 extends JPanel implements ListSe
 
     @Override
     public String getName() {
-        return vg == null ? super.getName() : vg.getDisplayName() + " " + run.toString();
+        if (vg == null) {
+            return super.getName();
+        }
+        
+        if (vg.getContentClass().equals(SeqRunI.class)) {
+            SeqRunI sr = (SeqRunI) run;
+            return vg.getDisplayName() + ": " + sr.getName();
+        } else if (vg.getContentClass().equals(AssembledSeqRunI.class)) {
+            AssembledSeqRunI asr = (AssembledSeqRunI) run;
+            return vg.getDisplayName() + ": " + asr.getName();
+        } else {
+            throw new RuntimeException("Unhandled: " + run.getClass());
+        }
     }
 
     protected static String joinParameters(List<JobParameterI> pColl, String separator) {
