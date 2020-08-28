@@ -78,6 +78,7 @@ public final class SeqRunVisualPanel1 extends JPanel implements DocumentListener
 
     public void setPlatform(TermI p) {
         platform.setSelectedItem(p);
+        platform.getModel().setSelectedItem(p);
     }
 
     public TermI getMethod() {
@@ -86,6 +87,7 @@ public final class SeqRunVisualPanel1 extends JPanel implements DocumentListener
 
     public void setMethod(TermI m) {
         method.setSelectedItem(m);
+        method.getModel().setSelectedItem(m);
     }
 
     public boolean runDefaultTools() {
