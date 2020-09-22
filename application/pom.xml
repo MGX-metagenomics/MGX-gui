@@ -181,6 +181,11 @@
             <artifactId>MGX-BinExplorer</artifactId>
             <version>${project.version}</version>
         </dependency>
+         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>MGX-Report</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

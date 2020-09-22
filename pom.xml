@@ -472,6 +472,11 @@
                 <artifactId>MGX-GenBankExporter</artifactId>
                 <version>${project.version}</version>
             </dependency>
+             <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>MGX-Report</artifactId>
+                <version>${project.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -574,6 +579,7 @@
         <module>MGX-Blobogram</module>
         <module>MGX-BinExplorer</module>
         <module>MGX-GenBankExporter</module>
+        <module>MGX-Report</module>
     </modules>
     
     <properties>
