@@ -21,6 +21,7 @@ public class Installer extends ModuleInstall {
             @Override
             public void run() {
                 final ProgressHandle ph = ProgressHandle.createHandle("Fetching/Validating KEGG data");
+                ph.start();
                 String cacheDir = Places.getUserDirectory().getAbsolutePath() + File.separator + "kegg" + File.separator;
                 keggLoaded = copyDB(cacheDir);
                 ph.finish();
