@@ -727,7 +727,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
 
                         //Taxonomie
                         try {
-                            List<Map> taxonomie = getTaxonomie(seqr);
+                            List<Map<String, Integer>> taxonomie = getTaxonomie(seqr);
                             createPieCharts(taxonomie);
                         } catch (MGXException | InterruptedException | NoSuchElementException e) {
                             Exceptions.printStackTrace(e);
@@ -735,7 +735,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
                         }
 
                         try {
-                            Map<String, Map> functional = getFunctional(seqr);
+                            Map<String, Map<String, Long>> functional = getFunctional(seqr);
                             createBarChart(functional); 
                         } catch (MGXException | InterruptedException| NoSuchElementException e) {
                             Exceptions.printStackTrace(e);
@@ -752,7 +752,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
 
     }
 
-    private List<Map> getTaxonomie(SeqRunI seqr) throws MGXException {
+    private List<Map<String, Integer>> getTaxonomie(SeqRunI seqr) throws MGXException {
         Map<String, Integer> kingdomfreq = new HashMap<>();
         Map<String, Integer> phylumfreq = new HashMap<>();
         Map<String, Integer> classfreq = new HashMap<>();
@@ -760,7 +760,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         Map<String, Integer> familyfreq = new HashMap<>();
         Map<String, Integer> genusfreq = new HashMap<>();
         Map<String, Integer> organismfreq = new HashMap<>();
-        List<Map> taxoall = new LinkedList();
+        List<Map<String, Integer>> taxoall = new LinkedList<>();
         List<JobI> joblist = seqr.getMaster().Job().BySeqRun(seqr);
         //if (!job.getTool().getName().isEmpty() && job.getStatus().getValue() == 5 && job.getTool().getName().equals("MGX taxonomic classification")) {
 
@@ -770,8 +770,8 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
                 Iterator<AttributeTypeI> attributeit = seqr.getMaster().AttributeType().byJob(job);
                 if (!seqr.getMaster().Attribute().getHierarchy(attributeit.next(), job, seqr).isEmpty()) {
                     
-                    TreeI tmptree = seqr.getMaster().Attribute().getHierarchy(attributeit.next(), job, seqr);
-                    Collection<de.cebitec.mgx.api.model.tree.NodeI> children = tmptree.getLeaves();
+                    TreeI<Long> tmptree = seqr.getMaster().Attribute().getHierarchy(attributeit.next(), job, seqr);
+                    Collection<NodeI<Long>> children = tmptree.getLeaves();
 
                     for (NodeI activeNode : children) {
                         String genus, family, order, oclass, phylum, kingdom, organism;
@@ -879,7 +879,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         return piecolors;
     }
 
-    private void createPieCharts(List<Map> taxonomie) throws MGXException, InterruptedException, NoSuchElementException  {
+    private void createPieCharts(List<Map<String, Integer>> taxonomie) throws MGXException, InterruptedException, NoSuchElementException  {
 
         Color tooltipcolor = new Color(120, 85, 137);
         Font sumFont = new java.awt.Font("Avenir Next Condensed", 1, 12);
@@ -1067,7 +1067,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         return cogcolor;
     }
 
-    private void createBarChart(Map<String, Map> cogdata)  throws MGXException, InterruptedException, NoSuchElementException {
+    private void createBarChart(Map<String, Map<String, Long>> cogdata)  throws MGXException, InterruptedException, NoSuchElementException {
         if(cogdata.isEmpty()){
             cogpanel.setVisible(false);
             funcpanel.setVisible(false);
@@ -1141,8 +1141,8 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
 
     }
 
-    private Map<String, Map> getFunctional(SeqRunI seqr) throws MGXException {
-        Map<String, Map> cog = new HashMap<>();
+    private Map<String, Map<String, Long>> getFunctional(SeqRunI seqr) throws MGXException {
+        Map<String, Map<String, Long>> cog = new HashMap<>();
 
         List<JobI> joblist = seqr.getMaster().Job().BySeqRun(seqr);
         for (JobI job : joblist) {
@@ -1154,6 +1154,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
                     Set<AttributeI> names = new HashSet<>();
                     List<Long> nvalues = new ArrayList<>();
                     String name = tmp.getName();
+                    
                     names = tmp.getMaster().Attribute().getDistribution(tmp, job, seqr).keySet();
                     nvalues = (List<Long>) tmp.getMaster().Attribute().getDistribution(tmp, job, seqr).values();
                     Object[] tmpn = names.toArray();
