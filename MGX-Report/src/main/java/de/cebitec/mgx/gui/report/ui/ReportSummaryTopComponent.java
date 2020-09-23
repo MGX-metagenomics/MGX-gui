@@ -32,7 +32,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.text.NumberFormat;
 import java.util.Arrays;
@@ -41,7 +40,6 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.DoubleStream;
-import javax.swing.SwingWorker;
 import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import org.knowm.xchart.CategoryChart;
@@ -628,42 +626,22 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         }
         currentSeqRun.addPropertyChangeListener(this);
 
-        SwingWorker<List<SeqRunI>, Void> worker;
-        worker = new SwingWorker<List<SeqRunI>, Void>() {
-            List<DistributionI> attypes;
-
-            @Override
-            protected List<SeqRunI> doInBackground() throws Exception {
-                List<SeqRunI> seqlist = new ArrayList<>();
-                seqlist.add(currentSeqRun);
-                return seqlist;
-            }
-
-            @Override
-            protected void done() {
-                List<SeqRunI> seq = null;
-                try {
-                    seq = get();
-                } catch (InterruptedException | ExecutionException ex) {
-                    Exceptions.printStackTrace(ex);
-                }
-                if (seq == null || seq.isEmpty()) {
-                    System.out.println("closing all");
+        if (currentSeqRun == null) {
                     jPanel1.removeAll();
                 } else {
                     // Overview
-                    for (SeqRunI seqr : seq) {
-                        nameseq.setText(seqr.getName());
-                        seqid.setText("" + seqr.getExtractId());
-                        seqcount.setText("" + NumberFormat.getNumberInstance(Locale.US).format(seqr.getNumSequences()));
-                        seqmeth.setText("" + seqr.getSequencingMethod());
-                        seqtech.setText("" + seqr.getSequencingTechnology());
-                        paired.setText("" + seqr.isPaired());
+                    
+                        nameseq.setText(currentSeqRun.getName());
+                        seqid.setText("" + currentSeqRun.getExtractId());
+                        seqcount.setText("" + NumberFormat.getNumberInstance(Locale.US).format(currentSeqRun.getNumSequences()));
+                        seqmeth.setText("" + currentSeqRun.getSequencingMethod());
+                        seqtech.setText("" + currentSeqRun.getSequencingTechnology());
+                        paired.setText("" + currentSeqRun.isPaired());
 
                         //QC Print
                         try {
                             qccontroll.removeAll();
-                            for (QCResultI t : seqr.getMaster().SeqRun().getQC(seqr)) {
+                            for (QCResultI t : currentSeqRun.getMaster().SeqRun().getQC(currentSeqRun)) {
 
                                 qccontroll.addTab(t.getName(), QCTopComponent.createChart(t));
                             }
@@ -673,7 +651,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
 
                         //Taxonomie
                         try {
-                            List<Map<String, Long>> taxonomie = getTaxonomie(seqr);
+                            List<Map<String, Long>> taxonomie = getTaxonomie(currentSeqRun);
                             createPieCharts(taxonomie);
                         } catch (MGXException | InterruptedException | NoSuchElementException e) {
                             Exceptions.printStackTrace(e);
@@ -681,20 +659,15 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
                         }
 
                         try {
-                            Map<String, Map<String, Long>> functional = getFunctional(seqr);
+                            Map<String, Map<String, Long>> functional = getFunctional(currentSeqRun);
                             createBarChart(functional); 
                         } catch (MGXException | InterruptedException| NoSuchElementException e) {
                             Exceptions.printStackTrace(e);
                         }
 
-                    }
 
                 }
-                super.done();
-            }
 
-        };
-        worker.execute();
 
     }
 
