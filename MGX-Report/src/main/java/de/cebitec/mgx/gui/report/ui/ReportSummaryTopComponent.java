@@ -15,6 +15,7 @@ import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.qc.QCResultI;
 import de.cebitec.mgx.api.model.tree.NodeI;
 import de.cebitec.mgx.api.model.tree.TreeI;
+import de.cebitec.mgx.common.JobState;
 import de.cebitec.mgx.gui.qcmon.QCTopComponent;
 import java.awt.Color;
 import java.awt.FlowLayout;
@@ -35,7 +36,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.text.NumberFormat;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -727,7 +727,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
 
                         //Taxonomie
                         try {
-                            List<Map<String, Integer>> taxonomie = getTaxonomie(seqr);
+                            List<Map<String, Long>> taxonomie = getTaxonomie(seqr);
                             createPieCharts(taxonomie);
                         } catch (MGXException | InterruptedException | NoSuchElementException e) {
                             Exceptions.printStackTrace(e);
@@ -752,20 +752,19 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
 
     }
 
-    private List<Map<String, Integer>> getTaxonomie(SeqRunI seqr) throws MGXException {
-        Map<String, Integer> kingdomfreq = new HashMap<>();
-        Map<String, Integer> phylumfreq = new HashMap<>();
-        Map<String, Integer> classfreq = new HashMap<>();
-        Map<String, Integer> orderfreq = new HashMap<>();
-        Map<String, Integer> familyfreq = new HashMap<>();
-        Map<String, Integer> genusfreq = new HashMap<>();
-        Map<String, Integer> organismfreq = new HashMap<>();
-        List<Map<String, Integer>> taxoall = new LinkedList<>();
+    private List<Map<String, Long>> getTaxonomie(SeqRunI seqr) throws MGXException {
+        Map<String, Long> kingdomfreq = new HashMap<>();
+        Map<String, Long> phylumfreq = new HashMap<>();
+        Map<String, Long> classfreq = new HashMap<>();
+        Map<String, Long> orderfreq = new HashMap<>();
+        Map<String, Long> familyfreq = new HashMap<>();
+        Map<String, Long> genusfreq = new HashMap<>();
+        Map<String, Long> organismfreq = new HashMap<>();
+        List<Map<String, Long>> taxoall = new LinkedList<>();
         List<JobI> joblist = seqr.getMaster().Job().BySeqRun(seqr);
-        //if (!job.getTool().getName().isEmpty() && job.getStatus().getValue() == 5 && job.getTool().getName().equals("MGX taxonomic classification")) {
 
         for (JobI job : joblist) {
-            if ((job.getStatus().getValue() == 5 && seqr.getMaster().Tool().ByJob(job).getName().equals("MGX taxonomic classification")) || seqr.getMaster().Tool().ByJob(job).getName().equals("Kraken 2")) {
+            if ((job.getStatus() == JobState.FINISHED && seqr.getMaster().Tool().ByJob(job).getName().equals("MGX taxonomic classification")) || seqr.getMaster().Tool().ByJob(job).getName().equals("Kraken 2")) {
 
                 Iterator<AttributeTypeI> attributeit = seqr.getMaster().AttributeType().byJob(job);
                 if (!seqr.getMaster().Attribute().getHierarchy(attributeit.next(), job, seqr).isEmpty()) {
@@ -773,39 +772,39 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
                     TreeI<Long> tmptree = seqr.getMaster().Attribute().getHierarchy(attributeit.next(), job, seqr);
                     Collection<NodeI<Long>> children = tmptree.getLeaves();
 
-                    for (NodeI activeNode : children) {
+                    for (NodeI<Long> activeNode : children) {
                         String genus, family, order, oclass, phylum, kingdom, organism;
                         genus = family = order = oclass = phylum = kingdom = organism = "None";
-                        int ocount, gcount, fcount, orcount, ccount, pcount, scount;
+                        long ocount, gcount, fcount, orcount, ccount, pcount, scount;
                         ocount = gcount = fcount = orcount = ccount = pcount = scount = 0;
                         while (activeNode.getParent() != null) {
                             String atttype = activeNode.getAttribute().getAttributeType().toString();
                             switch (atttype) {
                                 case "NCBI_SPECIES":
                                     organism = activeNode.getAttribute().toString();
-                                    ocount = Integer.parseInt(activeNode.getContent().toString());
+                                    ocount = activeNode.getContent();
                                 case "NCBI_GENUS":
                                     genus = activeNode.getAttribute().toString();
-                                    gcount = Integer.parseInt(activeNode.getContent().toString());
+                                    gcount = activeNode.getContent();
                                     break;
                                 case "NCBI_FAMILY":
                                     family = activeNode.getAttribute().toString();
-                                    fcount = Integer.parseInt(activeNode.getContent().toString());
+                                    fcount = activeNode.getContent();
                                     break;
                                 case "NCBI_ORDER":
                                     order = activeNode.getAttribute().toString();
-                                    orcount = Integer.parseInt(activeNode.getContent().toString());
+                                    orcount = activeNode.getContent();
                                     break;
                                 case "NCBI_CLASS":
                                     oclass = activeNode.getAttribute().toString();
-                                    ccount = Integer.parseInt(activeNode.getContent().toString());
+                                    ccount = activeNode.getContent();
                                 case "NCBI_PHYLUM":
                                     phylum = activeNode.getAttribute().toString();
-                                    pcount = Integer.parseInt(activeNode.getContent().toString());
+                                    pcount = activeNode.getContent();
                                     break;
                                 case "NCBI_SUPERKINGDOM":
                                     kingdom = activeNode.getAttribute().toString();
-                                    scount = Integer.parseInt(activeNode.getContent().toString());
+                                    scount = activeNode.getContent();
                                     break;
                                 default:
                                     break;
@@ -879,7 +878,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         return piecolors;
     }
 
-    private void createPieCharts(List<Map<String, Integer>> taxonomie) throws MGXException, InterruptedException, NoSuchElementException  {
+    private void createPieCharts(List<Map<String, Long>> taxonomie) throws MGXException, InterruptedException, NoSuchElementException  {
 
         Color tooltipcolor = new Color(120, 85, 137);
         Font sumFont = new java.awt.Font("Avenir Next Condensed", 1, 12);
@@ -892,7 +891,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         Color[] kingdomcolor = colorPie(taxonomie.get(0).size());
 
         System.out.println(kingdomcolor.length);
-        Map<String, Integer> kingdom = getTopTen(taxonomie.get(0));
+        Map<String, Long> kingdom = getTopTen(taxonomie.get(0));
         kingdomchart.getStyler().setAnnotationType(PieStyler.AnnotationType.Value);
         kingdomchart.getStyler().setAnnotationDistance(1.1);
         kingdomchart.getStyler().setPlotContentSize(.8);
@@ -909,7 +908,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
             phylumchart.getSeriesMap().clear();
         }
 
-        Map<String, Integer> phylum = getTopTen(taxonomie.get(1));
+        Map<String, Long> phylum = getTopTen(taxonomie.get(1));
         Color[] color = colorPie(11);
 
         phylumchart.getStyler().setAnnotationType(PieStyler.AnnotationType.Value);
@@ -927,7 +926,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         if (classchart.getSeriesMap().size() > 0) {
             classchart.getSeriesMap().clear();
         }
-        Map<String, Integer> tclass = getTopTen(taxonomie.get(2));
+        Map<String, Long> tclass = getTopTen(taxonomie.get(2));
         classchart.getStyler().setAnnotationType(AnnotationType.Value);
         classchart.getStyler().setAnnotationDistance(1.1);
         classchart.getStyler().setPlotContentSize(.8);
@@ -943,7 +942,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         if (orderchart.getSeriesMap().size() > 0) {
             orderchart.getSeriesMap().clear();
         }
-        Map<String, Integer> order = getTopTen(taxonomie.get(3));
+        Map<String, Long> order = getTopTen(taxonomie.get(3));
         orderchart.getStyler().setAnnotationType(AnnotationType.Value);
         orderchart.getStyler().setAnnotationDistance(1.1);
         orderchart.getStyler().setPlotContentSize(.8);
@@ -959,7 +958,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         if (familychart.getSeriesMap().size() > 0) {
             familychart.getSeriesMap().clear();
         }
-        Map<String, Integer> family = getTopTen(taxonomie.get(4));
+        Map<String, Long> family = getTopTen(taxonomie.get(4));
         familychart.getStyler().setAnnotationType(AnnotationType.Value);
         familychart.getStyler().setAnnotationDistance(1.1);
         familychart.getStyler().setPlotContentSize(.8);
@@ -975,7 +974,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         if (genuschart.getSeriesMap().size() > 0) {
             genuschart.getSeriesMap().clear();
         }
-        Map<String, Integer> genus = getTopTen(taxonomie.get(5));
+        Map<String, Long> genus = getTopTen(taxonomie.get(5));
         genuschart.getStyler().setAnnotationType(AnnotationType.Value);
         genuschart.getStyler().setAnnotationDistance(1.1);
         genuschart.getStyler().setPlotContentSize(.8);
@@ -992,8 +991,8 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
             organismchart.getSeriesMap().clear();
         }
         int totalogra = taxonomie.get(6).size();
-        Map<String, Integer> organism = getTopTen(taxonomie.get(6));
-        int sum = organism.values().stream().reduce(0, Integer::sum);
+        Map<String, Long> organism = getTopTen(taxonomie.get(6));
+        long sum = organism.values().stream().reduce(0l, Long::sum);
         organism.remove("Others");
         organismchart.setTitle("Top Ten Organism from Organism " + totalogra + " with overall (" + sum + ")");
         organismchart.getStyler().setAnnotationType(AnnotationType.Value);
@@ -1010,12 +1009,12 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
 
     }
 
-    private Map<String, Integer> getTopTen(Map<String, Integer> rank) {
+    private Map<String, Long> getTopTen(Map<String, Long> rank) {
         if (rank.containsKey("None")) {
             rank.remove("None");
         }
-        Map<String, Integer> tmp = rank;
-        Map<String, Integer> topTen;
+        Map<String, Long> tmp = rank;
+        Map<String, Long> topTen;
         if (tmp.size() > 10) {
             topTen
                     = tmp.entrySet()
@@ -1027,7 +1026,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
             topTen.keySet().stream().filter((key) -> (rank.containsKey(key))).forEachOrdered((key) -> {
                 rank.remove(key);
             });
-            int sum = rank.values().stream().reduce(0, Integer::sum);
+            long sum = rank.values().stream().reduce(0l, Long::sum);
             topTen.put("Others", sum);
             //System.out.println(topTen.size());
         } else {
@@ -1146,17 +1145,15 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
 
         List<JobI> joblist = seqr.getMaster().Job().BySeqRun(seqr);
         for (JobI job : joblist) {
-            if (seqr.getMaster().Tool().ByJob(job).getName().equals("COG") && job.getStatus().getValue()==5) {
+            if (seqr.getMaster().Tool().ByJob(job).getName().equals("COG") && job.getStatus() == JobState.FINISHED) {
                 Iterator<AttributeTypeI> attributeit = seqr.getMaster().AttributeType().byJob(job);
                 while (attributeit.hasNext()) {
                     Map<String, Long> cog_tmp = new HashMap<>();
                     AttributeTypeI tmp = attributeit.next();
-                    Set<AttributeI> names = new HashSet<>();
-                    List<Long> nvalues = new ArrayList<>();
                     String name = tmp.getName();
-                    
-                    names = tmp.getMaster().Attribute().getDistribution(tmp, job, seqr).keySet();
-                    nvalues = (List<Long>) tmp.getMaster().Attribute().getDistribution(tmp, job, seqr).values();
+                    DistributionI<Long> dist = tmp.getMaster().Attribute().getDistribution(tmp, job, seqr);
+                    Set<AttributeI> names = dist.keySet();
+                    List<Long> nvalues = (List<Long>) dist.values();
                     Object[] tmpn = names.toArray();
                     for (int i = 0; i < tmpn.length; i++) {
                         cog_tmp.put(tmpn[i].toString(), nvalues.get(i));
