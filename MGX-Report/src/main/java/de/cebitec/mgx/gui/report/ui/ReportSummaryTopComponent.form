@@ -258,9 +258,6 @@
                       <Border info="null"/>
                     </Property>
                   </Properties>
-                  <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="nameseqActionPerformed"/>
-                  </Events>
                 </Component>
                 <Component class="javax.swing.JLabel" name="z1">
                   <Properties>
@@ -287,9 +284,6 @@
                       <Border info="null"/>
                     </Property>
                   </Properties>
-                  <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="seqidActionPerformed"/>
-                  </Events>
                 </Component>
                 <Component class="javax.swing.Box$Filler" name="filler1">
                   <Properties>
@@ -327,9 +321,6 @@
                       <Border info="null"/>
                     </Property>
                   </Properties>
-                  <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="seqcountActionPerformed"/>
-                  </Events>
                 </Component>
                 <Component class="javax.swing.JLabel" name="z3">
                   <Properties>
@@ -357,9 +348,6 @@
                       <Border info="null"/>
                     </Property>
                   </Properties>
-                  <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="seqmethActionPerformed"/>
-                  </Events>
                 </Component>
                 <Component class="javax.swing.JLabel" name="z4">
                   <Properties>
@@ -387,9 +375,6 @@
                       <Border info="null"/>
                     </Property>
                   </Properties>
-                  <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="seqtechActionPerformed"/>
-                  </Events>
                 </Component>
                 <Component class="javax.swing.JLabel" name="z5">
                   <Properties>
@@ -417,9 +402,6 @@
                       <Border info="null"/>
                     </Property>
                   </Properties>
-                  <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="pairedActionPerformed"/>
-                  </Events>
                 </Component>
                 <Container class="javax.swing.JTabbedPane" name="qccontroll">
 
@@ -476,25 +458,25 @@
                               <Group type="102" attributes="0">
                                   <EmptySpace min="-2" pref="36" max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="1" attributes="0">
-                                      <Component id="classpanel" pref="747" max="32767" attributes="0"/>
+                                      <Component id="classpanel" pref="732" max="32767" attributes="0"/>
                                       <Component id="kingdompanel" max="32767" attributes="0"/>
                                       <Component id="familypanel" alignment="1" max="32767" attributes="0"/>
                                   </Group>
                                   <EmptySpace min="-2" pref="26" max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="1" attributes="0">
-                                      <Component id="phylumpanel" pref="747" max="32767" attributes="0"/>
-                                      <Component id="orderpanel" pref="747" max="32767" attributes="0"/>
-                                      <Component id="genuspanel" pref="747" max="32767" attributes="0"/>
+                                      <Component id="phylumpanel" pref="732" max="32767" attributes="0"/>
+                                      <Component id="orderpanel" pref="732" max="32767" attributes="0"/>
+                                      <Component id="genuspanel" max="32767" attributes="0"/>
                                   </Group>
                               </Group>
                               <Group type="102" alignment="0" attributes="0">
                                   <EmptySpace min="-2" pref="574" max="-2" attributes="0"/>
-                                  <Component id="jobLabel" pref="441" max="32767" attributes="0"/>
+                                  <Component id="jobLabel" max="32767" attributes="0"/>
                                   <EmptySpace min="541" pref="541" max="-2" attributes="0"/>
                               </Group>
                               <Group type="102" alignment="0" attributes="0">
                                   <EmptySpace min="-2" pref="402" max="-2" attributes="0"/>
-                                  <Component id="organismpanel" pref="794" max="32767" attributes="0"/>
+                                  <Component id="organismpanel" max="32767" attributes="0"/>
                                   <EmptySpace min="360" pref="360" max="-2" attributes="0"/>
                               </Group>
                           </Group>

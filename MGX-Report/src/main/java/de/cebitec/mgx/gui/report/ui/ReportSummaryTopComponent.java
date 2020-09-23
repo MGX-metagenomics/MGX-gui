@@ -227,11 +227,6 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         nameseq.setText(org.openide.util.NbBundle.getMessage(ReportSummaryTopComponent.class, "ReportSummaryTopComponent.nameseq.text")); // NOI18N
         nameseq.setToolTipText(org.openide.util.NbBundle.getMessage(ReportSummaryTopComponent.class, "ReportSummaryTopComponent.nameseq.toolTipText")); // NOI18N
         nameseq.setBorder(null);
-        nameseq.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                nameseqActionPerformed(evt);
-            }
-        });
 
         z1.setFont(new java.awt.Font("Avenir Next Condensed", 1, 18)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(z1, org.openide.util.NbBundle.getMessage(ReportSummaryTopComponent.class, "ReportSummaryTopComponent.z1.text")); // NOI18N
@@ -240,11 +235,6 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         seqid.setText(org.openide.util.NbBundle.getMessage(ReportSummaryTopComponent.class, "ReportSummaryTopComponent.seqid.text")); // NOI18N
         seqid.setToolTipText(org.openide.util.NbBundle.getMessage(ReportSummaryTopComponent.class, "ReportSummaryTopComponent.seqid.toolTipText")); // NOI18N
         seqid.setBorder(null);
-        seqid.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                seqidActionPerformed(evt);
-            }
-        });
 
         z2.setFont(new java.awt.Font("Avenir Next Condensed", 1, 18)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(z2, org.openide.util.NbBundle.getMessage(ReportSummaryTopComponent.class, "ReportSummaryTopComponent.z2.text")); // NOI18N
@@ -254,11 +244,6 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         seqcount.setText(org.openide.util.NbBundle.getMessage(ReportSummaryTopComponent.class, "ReportSummaryTopComponent.seqcount.text")); // NOI18N
         seqcount.setToolTipText(org.openide.util.NbBundle.getMessage(ReportSummaryTopComponent.class, "ReportSummaryTopComponent.seqcount.toolTipText")); // NOI18N
         seqcount.setBorder(null);
-        seqcount.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                seqcountActionPerformed(evt);
-            }
-        });
 
         z3.setFont(new java.awt.Font("Avenir Next Condensed", 1, 18)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(z3, org.openide.util.NbBundle.getMessage(ReportSummaryTopComponent.class, "ReportSummaryTopComponent.z3.text")); // NOI18N
@@ -268,11 +253,6 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         seqmeth.setText(org.openide.util.NbBundle.getMessage(ReportSummaryTopComponent.class, "ReportSummaryTopComponent.seqmeth.text")); // NOI18N
         seqmeth.setToolTipText(org.openide.util.NbBundle.getMessage(ReportSummaryTopComponent.class, "ReportSummaryTopComponent.seqmeth.toolTipText")); // NOI18N
         seqmeth.setBorder(null);
-        seqmeth.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                seqmethActionPerformed(evt);
-            }
-        });
 
         z4.setFont(new java.awt.Font("Avenir Next Condensed", 1, 18)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(z4, org.openide.util.NbBundle.getMessage(ReportSummaryTopComponent.class, "ReportSummaryTopComponent.z4.text")); // NOI18N
@@ -282,11 +262,6 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         seqtech.setText(org.openide.util.NbBundle.getMessage(ReportSummaryTopComponent.class, "ReportSummaryTopComponent.seqtech.text")); // NOI18N
         seqtech.setToolTipText(org.openide.util.NbBundle.getMessage(ReportSummaryTopComponent.class, "ReportSummaryTopComponent.seqtech.toolTipText")); // NOI18N
         seqtech.setBorder(null);
-        seqtech.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                seqtechActionPerformed(evt);
-            }
-        });
 
         z5.setFont(new java.awt.Font("Avenir Next Condensed", 1, 18)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(z5, org.openide.util.NbBundle.getMessage(ReportSummaryTopComponent.class, "ReportSummaryTopComponent.z5.text")); // NOI18N
@@ -296,11 +271,6 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         paired.setText(org.openide.util.NbBundle.getMessage(ReportSummaryTopComponent.class, "ReportSummaryTopComponent.paired.text")); // NOI18N
         paired.setToolTipText(org.openide.util.NbBundle.getMessage(ReportSummaryTopComponent.class, "ReportSummaryTopComponent.paired.toolTipText")); // NOI18N
         paired.setBorder(null);
-        paired.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                pairedActionPerformed(evt);
-            }
-        });
 
         jLabel1.setFont(new java.awt.Font("Avenir Next Condensed", 1, 24)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(ReportSummaryTopComponent.class, "ReportSummaryTopComponent.jLabel1.text")); // NOI18N
@@ -470,21 +440,21 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(36, 36, 36)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(classpanel, javax.swing.GroupLayout.DEFAULT_SIZE, 747, Short.MAX_VALUE)
+                            .addComponent(classpanel, javax.swing.GroupLayout.DEFAULT_SIZE, 732, Short.MAX_VALUE)
                             .addComponent(kingdompanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(familypanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(26, 26, 26)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(phylumpanel, javax.swing.GroupLayout.DEFAULT_SIZE, 747, Short.MAX_VALUE)
-                            .addComponent(orderpanel, javax.swing.GroupLayout.DEFAULT_SIZE, 747, Short.MAX_VALUE)
-                            .addComponent(genuspanel, javax.swing.GroupLayout.DEFAULT_SIZE, 747, Short.MAX_VALUE)))
+                            .addComponent(phylumpanel, javax.swing.GroupLayout.DEFAULT_SIZE, 732, Short.MAX_VALUE)
+                            .addComponent(orderpanel, javax.swing.GroupLayout.DEFAULT_SIZE, 732, Short.MAX_VALUE)
+                            .addComponent(genuspanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(574, 574, 574)
-                        .addComponent(jobLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 441, Short.MAX_VALUE)
+                        .addComponent(jobLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGap(541, 541, 541))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(402, 402, 402)
-                        .addComponent(organismpanel, javax.swing.GroupLayout.DEFAULT_SIZE, 794, Short.MAX_VALUE)
+                        .addComponent(organismpanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGap(360, 360, 360)))
                 .addGap(28, 28, 28))
         );
@@ -572,30 +542,6 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
             .addComponent(jScrollPane1)
         );
     }// </editor-fold>//GEN-END:initComponents
-
-    private void nameseqActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nameseqActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_nameseqActionPerformed
-
-    private void seqidActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_seqidActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_seqidActionPerformed
-
-    private void seqcountActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_seqcountActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_seqcountActionPerformed
-
-    private void seqmethActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_seqmethActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_seqmethActionPerformed
-
-    private void seqtechActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_seqtechActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_seqtechActionPerformed
-
-    private void pairedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pairedActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_pairedActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel classpanel;
