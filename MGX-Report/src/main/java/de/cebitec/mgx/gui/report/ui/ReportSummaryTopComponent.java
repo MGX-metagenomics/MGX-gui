@@ -12,6 +12,7 @@ import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.ModelBaseI;
 import de.cebitec.mgx.api.model.SeqRunI;
+import de.cebitec.mgx.api.model.ToolI;
 import de.cebitec.mgx.api.model.qc.QCResultI;
 import de.cebitec.mgx.api.model.tree.NodeI;
 import de.cebitec.mgx.api.model.tree.TreeI;
@@ -29,7 +30,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -96,7 +96,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
 
     public ReportSummaryTopComponent() {
         initComponents();
-        super.setName("ShowReport");
+        super.setName("Show Report");
         super.setToolTipText("Show Report");
 
         lookup = new AbstractLookup(content);
@@ -200,15 +200,6 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
 
         org.openide.awt.Mnemonics.setLocalizedText(jLabel2, org.openide.util.NbBundle.getMessage(ReportSummaryTopComponent.class, "ReportSummaryTopComponent.jLabel2.text")); // NOI18N
 
-        try
-        {
-            UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName() );
-            UIManager.setLookAndFeel( "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel" );
-        }
-        catch ( Exception e )
-        {
-            e.printStackTrace();
-        }
         tabbedpane.setPreferredSize(new java.awt.Dimension(1400, 2300));
 
         jPanel1.setLayout(new FlowLayout());
@@ -627,51 +618,49 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         currentSeqRun.addPropertyChangeListener(this);
 
         if (currentSeqRun == null) {
-                    jPanel1.removeAll();
-                } else {
-                    // Overview
-                    
-                        nameseq.setText(currentSeqRun.getName());
-                        seqid.setText("" + currentSeqRun.getExtractId());
-                        seqcount.setText("" + NumberFormat.getNumberInstance(Locale.US).format(currentSeqRun.getNumSequences()));
-                        seqmeth.setText("" + currentSeqRun.getSequencingMethod());
-                        seqtech.setText("" + currentSeqRun.getSequencingTechnology());
-                        paired.setText("" + currentSeqRun.isPaired());
+            jPanel1.removeAll();
+        } else {
+            // Overview
+            nameseq.setText(currentSeqRun.getName());
+            seqid.setText("" + currentSeqRun.getExtractId());
+            seqcount.setText("" + NumberFormat.getNumberInstance(Locale.US).format(currentSeqRun.getNumSequences()));
+            seqmeth.setText("" + currentSeqRun.getSequencingMethod());
+            seqtech.setText("" + currentSeqRun.getSequencingTechnology());
+            paired.setText("" + currentSeqRun.isPaired());
 
-                        //QC Print
-                        try {
-                            qccontroll.removeAll();
-                            for (QCResultI t : currentSeqRun.getMaster().SeqRun().getQC(currentSeqRun)) {
-
-                                qccontroll.addTab(t.getName(), QCTopComponent.createChart(t));
-                            }
-                        } catch (MGXException e) {
-                            Exceptions.printStackTrace(e);
-                        }
-
-                        //Taxonomie
-                        try {
-                            List<Map<String, Long>> taxonomie = getTaxonomie(currentSeqRun);
-                            createPieCharts(taxonomie);
-                        } catch (MGXException | InterruptedException | NoSuchElementException e) {
-                            Exceptions.printStackTrace(e);
-
-                        }
-
-                        try {
-                            Map<String, Map<String, Long>> functional = getFunctional(currentSeqRun);
-                            createBarChart(functional); 
-                        } catch (MGXException | InterruptedException| NoSuchElementException e) {
-                            Exceptions.printStackTrace(e);
-                        }
-
-
+            //QC Print
+            try {
+                qccontroll.removeAll();
+                for (QCResultI t : currentSeqRun.getMaster().SeqRun().getQC(currentSeqRun)) {
+                    // TODO - refactor createChart() method outside of QCTopComponent
+                    qccontroll.addTab(t.getName(), QCTopComponent.createChart(t));
                 }
+            } catch (MGXException e) {
+                Exceptions.printStackTrace(e);
+            }
+
+            //Taxonomy
+            try {
+                List<Map<String, Long>> taxonomie = getTaxonomy(currentSeqRun);
+                createPieCharts(taxonomie);
+            } catch (MGXException | InterruptedException | NoSuchElementException e) {
+                Exceptions.printStackTrace(e);
+
+            }
+
+            try {
+                Map<String, Map<String, Long>> functional = getFunctional(currentSeqRun);
+                createBarChart(functional);
+            } catch (MGXException | InterruptedException | NoSuchElementException e) {
+                Exceptions.printStackTrace(e);
+            }
+
+        }
 
 
     }
 
-    private List<Map<String, Long>> getTaxonomie(SeqRunI seqr) throws MGXException {
+    private List<Map<String, Long>> getTaxonomy(SeqRunI seqr) throws MGXException {
         Map<String, Long> kingdomfreq = new HashMap<>();
         Map<String, Long> phylumfreq = new HashMap<>();
         Map<String, Long> classfreq = new HashMap<>();
@@ -679,14 +668,18 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         Map<String, Long> familyfreq = new HashMap<>();
         Map<String, Long> genusfreq = new HashMap<>();
         Map<String, Long> organismfreq = new HashMap<>();
-        List<Map<String, Long>> taxoall = new LinkedList<>();
+        List<Map<String, Long>> taxoall = new ArrayList<>();
+        
         List<JobI> joblist = seqr.getMaster().Job().BySeqRun(seqr);
 
         for (JobI job : joblist) {
-            if ((job.getStatus() == JobState.FINISHED && seqr.getMaster().Tool().ByJob(job).getName().equals("MGX taxonomic classification")) || seqr.getMaster().Tool().ByJob(job).getName().equals("Kraken 2")) {
+            ToolI tool = seqr.getMaster().Tool().ByJob(job);
+            if ((job.getStatus() == JobState.FINISHED && tool.getName().equals("MGX taxonomic classification")) || tool.getName().equals("Kraken 2")) {
 
                 Iterator<AttributeTypeI> attributeit = seqr.getMaster().AttributeType().byJob(job);
-                if (!seqr.getMaster().Attribute().getHierarchy(attributeit.next(), job, seqr).isEmpty()) {
+                
+                TreeI<Long> hierarchy = seqr.getMaster().Attribute().getHierarchy(attributeit.next(), job, seqr);
+                if (!hierarchy.isEmpty()) {
                     
                     TreeI<Long> tmptree = seqr.getMaster().Attribute().getHierarchy(attributeit.next(), job, seqr);
                     Collection<NodeI<Long>> children = tmptree.getLeaves();
@@ -697,32 +690,31 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
                         long ocount, gcount, fcount, orcount, ccount, pcount, scount;
                         ocount = gcount = fcount = orcount = ccount = pcount = scount = 0;
                         while (activeNode.getParent() != null) {
-                            String atttype = activeNode.getAttribute().getAttributeType().toString();
-                            switch (atttype) {
+                            switch (activeNode.getAttribute().getAttributeType().getName()) {
                                 case "NCBI_SPECIES":
-                                    organism = activeNode.getAttribute().toString();
+                                    organism = activeNode.getAttribute().getValue();
                                     ocount = activeNode.getContent();
                                 case "NCBI_GENUS":
-                                    genus = activeNode.getAttribute().toString();
+                                    genus = activeNode.getAttribute().getValue();
                                     gcount = activeNode.getContent();
                                     break;
                                 case "NCBI_FAMILY":
-                                    family = activeNode.getAttribute().toString();
+                                    family = activeNode.getAttribute().getValue();
                                     fcount = activeNode.getContent();
                                     break;
                                 case "NCBI_ORDER":
-                                    order = activeNode.getAttribute().toString();
+                                    order = activeNode.getAttribute().getValue();
                                     orcount = activeNode.getContent();
                                     break;
                                 case "NCBI_CLASS":
-                                    oclass = activeNode.getAttribute().toString();
+                                    oclass = activeNode.getAttribute().getValue();
                                     ccount = activeNode.getContent();
                                 case "NCBI_PHYLUM":
-                                    phylum = activeNode.getAttribute().toString();
+                                    phylum = activeNode.getAttribute().getValue();
                                     pcount = activeNode.getContent();
                                     break;
                                 case "NCBI_SUPERKINGDOM":
-                                    kingdom = activeNode.getAttribute().toString();
+                                    kingdom = activeNode.getAttribute().getValue();
                                     scount = activeNode.getContent();
                                     break;
                                 default:
@@ -774,28 +766,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         return taxoall;
     }
 
-    private static Color[] colorPie(int value) {
-        Color[] piecolors = new Color[value];
-        int red = 108;
-        int green = 158;
-        int blue = 177;
-        for (int i = 0; i < value; i++) {
-            final Color color = new Color(red, green, blue);
-            piecolors[i] = color;
-            red = red + 14;
-            green = green - 10;
-            if (i % 2 == 0) {
-                blue = blue - 5;
-            } else {
-                blue = blue - 6;
-            }
-            if (i == 10) {
-                piecolors[10] = new Color(177, 108, 123);
-            }
 
-        }
-        return piecolors;
-    }
 
     private void createPieCharts(List<Map<String, Long>> taxonomie) throws MGXException, InterruptedException, NoSuchElementException  {
 
@@ -807,7 +778,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         }
         
         
-        Color[] kingdomcolor = colorPie(taxonomie.get(0).size());
+        Color[] kingdomcolor = generatePalette(taxonomie.get(0).size());
 
         System.out.println(kingdomcolor.length);
         Map<String, Long> kingdom = getTopTen(taxonomie.get(0));
@@ -828,7 +799,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         }
 
         Map<String, Long> phylum = getTopTen(taxonomie.get(1));
-        Color[] color = colorPie(11);
+        Color[] color = generatePalette(11);
 
         phylumchart.getStyler().setAnnotationType(PieStyler.AnnotationType.Value);
         phylumchart.getStyler().setAnnotationDistance(1.1);
@@ -928,62 +899,9 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
 
     }
 
-    private Map<String, Long> getTopTen(Map<String, Long> rank) {
-        if (rank.containsKey("None")) {
-            rank.remove("None");
-        }
-        Map<String, Long> tmp = rank;
-        Map<String, Long> topTen;
-        if (tmp.size() > 10) {
-            topTen
-                    = tmp.entrySet()
-                            .stream()
-                            .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-                            .limit(10)
-                            .collect(Collectors.toMap(
-                                    Map.Entry::getKey, Map.Entry::getValue, (entry1, entry2) -> entry1, LinkedHashMap::new));
-            topTen.keySet().stream().filter((key) -> (rank.containsKey(key))).forEachOrdered((key) -> {
-                rank.remove(key);
-            });
-            long sum = rank.values().stream().reduce(0l, Long::sum);
-            topTen.put("Others", sum);
-            //System.out.println(topTen.size());
-        } else {
-            topTen = rank;
 
-        }
 
-        return topTen;
-    }
 
-    private static Color[] colorCOG() {
-        Color[] cogcolor = new Color[23];
-        cogcolor[0] = new Color(194, 175, 88); //A
-        cogcolor[1] = new Color(255, 198, 0); //B
-        cogcolor[2] = new Color(153, 0, 255); //C
-        cogcolor[3] = new Color(153, 255, 0); //D
-        cogcolor[4] = new Color(255, 0, 255); //E
-        cogcolor[5] = new Color(153, 51, 77); //F
-        cogcolor[6] = new Color(128, 86, 66); //G
-        cogcolor[7] = new Color(114, 125, 204); //H
-        cogcolor[8] = new Color(92, 90, 27); //I
-        cogcolor[9] = new Color(255, 0, 0); // J
-        cogcolor[10] = new Color(255, 153, 0); // K
-        cogcolor[11] = new Color(255, 255, 0); //L
-        cogcolor[12] = new Color(158, 201, 40); //M
-        cogcolor[13] = new Color(0, 102, 51); //N
-        cogcolor[14] = new Color(0, 255, 255); //O
-        cogcolor[15] = new Color(0, 153, 255); //P
-        cogcolor[16] = new Color(255, 204, 153); //Q
-        cogcolor[17] = new Color(255, 153, 153); // R
-        cogcolor[18] = new Color(214, 170, 223); //S
-        cogcolor[19] = new Color(0, 0, 255); //T
-        cogcolor[20] = new Color(51, 204, 153); //U
-        cogcolor[21] = new Color(255, 0, 138); //V
-        cogcolor[22] = new Color(102, 0, 153); // Z
-
-        return cogcolor;
-    }
 
     private void createBarChart(Map<String, Map<String, Long>> cogdata)  throws MGXException, InterruptedException, NoSuchElementException {
         if(cogdata.isEmpty()){
@@ -1002,7 +920,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         Font sumFont = new java.awt.Font("Avenir Next Condensed", 1, 12);
         cogpanel.setVisible(true);
         funcpanel.setVisible(true);
-        Color[] color = colorPie(11);
+        Color[] color = generatePalette(11);
         Map<String, Long> cogtop = getTopTenCOG(cog);
         cogchart.getStyler().setPlotContentSize(.8);
         cogchart.getStyler().setYAxisDecimalPattern("##.###");
@@ -1025,7 +943,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         System.out.println(keys);
 
         for (int i = 0; i < 10; i++) {
-            double[] val = temporäreSeries(cogval.get(i),i, keys.size());
+            double[] val = generateSeries(cogval.get(i),i, keys.size());
             ArrayList<Double> vals = DoubleStream.of( val ).boxed().collect(
             Collectors.toCollection(() -> ( new ArrayList<>() )) );
             cogchart.addSeries(cogkeys.get(i), keys, vals);
@@ -1033,7 +951,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         cogpanel.revalidate();
         cogpanel.repaint();
 
-        Color[] colorcog = colorCOG();
+        Color[] colorcog = generateCOGFuncCatPalette();
         funcchart.getStyler().setYAxisDecimalPattern("##.###");
         funcchart.getStyler().setSeriesColors(colorcog);
         funcchart.getStyler().setToolTipsEnabled(true);
@@ -1048,7 +966,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
 
         List<String> vtmp = Arrays.asList("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "Z");
         for (int i = 0; i < 23; i++) {
-            double[] t = temporäreSeries(funcval.get(i), i, 23);
+            double[] t = generateSeries(funcval.get(i), i, 23);
             ArrayList<Double> v = DoubleStream.of( t ).boxed().collect(
             Collectors.toCollection(() -> ( new ArrayList<>() )) );
             funcchart.addSeries(funckeys.get(i), vtmp, v);
@@ -1059,7 +977,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
 
     }
 
-    private Map<String, Map<String, Long>> getFunctional(SeqRunI seqr) throws MGXException {
+    private static Map<String, Map<String, Long>> getFunctional(SeqRunI seqr) throws MGXException {
         Map<String, Map<String, Long>> cog = new HashMap<>();
 
         List<JobI> joblist = seqr.getMaster().Job().BySeqRun(seqr);
@@ -1086,15 +1004,42 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         return cog;
     }
 
-    private double[] temporäreSeries(long data, int idx, int value) {
+    private static double[] generateSeries(long data, int idx, int value) {
         double[] tmp = new double[value];
         Arrays.fill(tmp, 0);
         tmp[idx] = (double) data;
         return tmp;
     }
    
+    private static Map<String, Long> getTopTen(Map<String, Long> rank) {
+        if (rank.containsKey("None")) {
+            rank.remove("None");
+        }
+        Map<String, Long> tmp = rank;
+        Map<String, Long> topTen;
+        if (tmp.size() > 10) {
+            topTen
+                    = tmp.entrySet()
+                            .stream()
+                            .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                            .limit(10)
+                            .collect(Collectors.toMap(
+                                    Map.Entry::getKey, Map.Entry::getValue, (entry1, entry2) -> entry1, LinkedHashMap::new));
+            topTen.keySet().stream().filter((key) -> (rank.containsKey(key))).forEachOrdered((key) -> {
+                rank.remove(key);
+            });
+            long sum = rank.values().stream().reduce(0l, Long::sum);
+            topTen.put("Others", sum);
+            //System.out.println(topTen.size());
+        } else {
+            topTen = rank;
 
-    private Map<String, Long> getTopTenCOG(Map<String, Long> cog) {
+        }
+
+        return topTen;
+    }
+    
+    private static Map<String, Long> getTopTenCOG(Map<String, Long> cog) {
         Map<String, Long> tmp = cog;
         Map<String, Long> topTen = null;
         if (tmp.size() > 10) {
@@ -1127,5 +1072,57 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
     @Override
     public void resultChanged(LookupEvent le) {
         update();
+    }
+    
+    
+    private static Color[] generatePalette(int size) {
+        Color[] piecolors = new Color[size];
+        int red = 108;
+        int green = 158;
+        int blue = 177;
+        for (int i = 0; i < size; i++) {
+            final Color color = new Color(red, green, blue);
+            piecolors[i] = color;
+            red = red + 14;
+            green = green - 10;
+            if (i % 2 == 0) {
+                blue = blue - 5;
+            } else {
+                blue = blue - 6;
+            }
+            if (i == 10) {
+                piecolors[10] = new Color(177, 108, 123);
+            }
+
+        }
+        return piecolors;
+    }
+    
+    private static Color[] generateCOGFuncCatPalette() {
+        Color[] cogcolor = new Color[23];
+        cogcolor[0] = new Color(194, 175, 88); //A
+        cogcolor[1] = new Color(255, 198, 0); //B
+        cogcolor[2] = new Color(153, 0, 255); //C
+        cogcolor[3] = new Color(153, 255, 0); //D
+        cogcolor[4] = new Color(255, 0, 255); //E
+        cogcolor[5] = new Color(153, 51, 77); //F
+        cogcolor[6] = new Color(128, 86, 66); //G
+        cogcolor[7] = new Color(114, 125, 204); //H
+        cogcolor[8] = new Color(92, 90, 27); //I
+        cogcolor[9] = new Color(255, 0, 0); // J
+        cogcolor[10] = new Color(255, 153, 0); // K
+        cogcolor[11] = new Color(255, 255, 0); //L
+        cogcolor[12] = new Color(158, 201, 40); //M
+        cogcolor[13] = new Color(0, 102, 51); //N
+        cogcolor[14] = new Color(0, 255, 255); //O
+        cogcolor[15] = new Color(0, 153, 255); //P
+        cogcolor[16] = new Color(255, 204, 153); //Q
+        cogcolor[17] = new Color(255, 153, 153); // R
+        cogcolor[18] = new Color(214, 170, 223); //S
+        cogcolor[19] = new Color(0, 0, 255); //T
+        cogcolor[20] = new Color(51, 204, 153); //U
+        cogcolor[21] = new Color(255, 0, 138); //V
+        cogcolor[22] = new Color(102, 0, 153); // Z
+        return cogcolor;
     }
 }

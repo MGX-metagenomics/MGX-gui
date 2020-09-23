@@ -88,9 +88,6 @@
               <Dimension value="[1400, 2300]"/>
             </Property>
           </Properties>
-          <AuxValues>
-            <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="try&#xa;    {&#xa;      UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName() );&#xa;      UIManager.setLookAndFeel( &quot;com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel&quot; );&#xa;    }&#xa;    catch ( Exception e )&#xa;    {&#xa;      e.printStackTrace();&#xa;    }"/>
-          </AuxValues>
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
           <SubComponents>
