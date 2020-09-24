@@ -179,10 +179,10 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         jPanel3 = new javax.swing.JPanel();
         jobLabel1 = new javax.swing.JLabel();
         cogchart = new CategoryChartBuilder().width(1300).height(800).theme(ChartTheme.GGPlot2).build();
-        cogchart.setTitle("TopTen COG-Gruppen");
+        cogchart.setTitle("TopTen COG-Groups");
         cogpanel = new XChartPanel<>(cogchart);
         funcchart = new CategoryChartBuilder().width(1300).height(1100).theme(ChartTheme.GGPlot2).build();
-        funcchart.setTitle("Functional");
+        funcchart.setTitle("COG functional categories");
         funcpanel = new XChartPanel<>(funcchart);
 
         jTextField1.setText(org.openide.util.NbBundle.getMessage(ReportSummaryTopComponent.class, "ReportSummaryTopComponent.jTextField1.text")); // NOI18N
@@ -294,7 +294,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
                                     .addComponent(z5, javax.swing.GroupLayout.PREFERRED_SIZE, 340, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(z4, javax.swing.GroupLayout.PREFERRED_SIZE, 340, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(z3, javax.swing.GroupLayout.PREFERRED_SIZE, 340, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(135, 135, 135)
+                                .addGap(117, 117, 117)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(seqmeth)
                                     .addComponent(seqtech)
@@ -318,12 +318,12 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(35, 35, 35)
-                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 26, Short.MAX_VALUE)
+                        .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, 44, Short.MAX_VALUE)
                         .addGap(33, 33, 33)
                         .addComponent(nameseq))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addGap(94, 94, 94)
-                        .addComponent(z, javax.swing.GroupLayout.DEFAULT_SIZE, 37, Short.MAX_VALUE)))
+                        .addComponent(z, javax.swing.GroupLayout.DEFAULT_SIZE, 44, Short.MAX_VALUE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(seqid)
@@ -345,9 +345,9 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
                     .addComponent(paired)
                     .addComponent(z5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(48, 48, 48)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 26, Short.MAX_VALUE)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 27, Short.MAX_VALUE)
                 .addGap(47, 47, 47)
-                .addComponent(qccontroll, javax.swing.GroupLayout.DEFAULT_SIZE, 391, Short.MAX_VALUE)
+                .addComponent(qccontroll, javax.swing.GroupLayout.DEFAULT_SIZE, 392, Short.MAX_VALUE)
                 .addGap(732, 732, 732)
                 .addComponent(filler1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(732, 732, 732))
@@ -429,13 +429,13 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(36, 36, 36)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(classpanel, javax.swing.GroupLayout.DEFAULT_SIZE, 732, Short.MAX_VALUE)
+                            .addComponent(classpanel, javax.swing.GroupLayout.DEFAULT_SIZE, 747, Short.MAX_VALUE)
                             .addComponent(kingdompanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(familypanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(26, 26, 26)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(phylumpanel, javax.swing.GroupLayout.DEFAULT_SIZE, 732, Short.MAX_VALUE)
-                            .addComponent(orderpanel, javax.swing.GroupLayout.DEFAULT_SIZE, 732, Short.MAX_VALUE)
+                            .addComponent(phylumpanel, javax.swing.GroupLayout.DEFAULT_SIZE, 747, Short.MAX_VALUE)
+                            .addComponent(orderpanel, javax.swing.GroupLayout.DEFAULT_SIZE, 747, Short.MAX_VALUE)
                             .addComponent(genuspanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(574, 574, 574)
@@ -534,16 +534,16 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel classpanel;
-    PieChart classchart;
+    private PieChart classchart;
     private javax.swing.JPanel cogpanel;
-    CategoryChart cogchart;
+    private CategoryChart cogchart;
     private javax.swing.JPanel familypanel;
-    PieChart familychart;
+    private PieChart familychart;
     private javax.swing.Box.Filler filler1;
     private javax.swing.JPanel funcpanel;
-    CategoryChart funcchart;
+    private CategoryChart funcchart;
     private javax.swing.JPanel genuspanel;
-    PieChart genuschart;
+    private PieChart genuschart;
     private javax.swing.JFrame jFrame1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -556,15 +556,15 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
     private javax.swing.JLabel jobLabel;
     private javax.swing.JLabel jobLabel1;
     private javax.swing.JPanel kingdompanel;
-    PieChart kingdomchart;
+    private PieChart kingdomchart;
     private javax.swing.JTextField nameseq;
     private javax.swing.JPanel orderpanel;
-    PieChart orderchart;
+    private PieChart orderchart;
     private javax.swing.JPanel organismpanel;
-    PieChart organismchart;
+    private PieChart organismchart;
     private javax.swing.JTextField paired;
     private javax.swing.JPanel phylumpanel;
-    PieChart phylumchart;
+    private PieChart phylumchart;
     private javax.swing.JTabbedPane qccontroll;
     private javax.swing.JTextField seqcount;
     private javax.swing.JTextField seqid;
@@ -789,6 +789,8 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         kingdomchart.getStyler().setToolTipsEnabled(true);
         kingdomchart.getStyler().setToolTipHighlightColor(tooltipcolor);
         kingdomchart.getStyler().setSumFont(sumFont);
+        kingdomchart.getStyler().setChartTitleFont(sumFont);
+        kingdomchart.getStyler().setLegendFont(sumFont);
         kingdomchart.getStyler().setSumVisible(true);
         kingdom.forEach((k, v) -> kingdomchart.addSeries(k, v));
         kingdompanel.revalidate();
@@ -806,8 +808,10 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         phylumchart.getStyler().setPlotContentSize(.8);
         phylumchart.getStyler().setSeriesColors(color);
         phylumchart.getStyler().setToolTipsEnabled(true);
+        phylumchart.getStyler().setChartTitleFont(sumFont);
         phylumchart.getStyler().setToolTipHighlightColor(tooltipcolor);
         phylumchart.getStyler().setSumFont(sumFont);
+        phylumchart.getStyler().setLegendFont(sumFont);
         phylumchart.getStyler().setSumVisible(true);
         phylum.forEach((k, v) -> phylumchart.addSeries(k, v));
         phylumpanel.revalidate();
@@ -821,8 +825,10 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         classchart.getStyler().setAnnotationDistance(1.1);
         classchart.getStyler().setPlotContentSize(.8);
         classchart.getStyler().setSeriesColors(color);
+        classchart.getStyler().setChartTitleFont(sumFont);
         classchart.getStyler().setToolTipsEnabled(true);
         classchart.getStyler().setToolTipHighlightColor(tooltipcolor);
+        classchart.getStyler().setLegendFont(sumFont);
         classchart.getStyler().setSumFont(sumFont);
         classchart.getStyler().setSumVisible(true);
         tclass.forEach((k, v) -> classchart.addSeries(k, v));
@@ -837,9 +843,11 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         orderchart.getStyler().setAnnotationDistance(1.1);
         orderchart.getStyler().setPlotContentSize(.8);
         orderchart.getStyler().setSeriesColors(color);
+        orderchart.getStyler().setChartTitleFont(sumFont);
         orderchart.getStyler().setToolTipsEnabled(true);
         orderchart.getStyler().setToolTipHighlightColor(tooltipcolor);
         orderchart.getStyler().setSumFont(sumFont);
+        orderchart.getStyler().setLegendFont(sumFont);
         orderchart.getStyler().setSumVisible(true);
         order.forEach((k, v) -> orderchart.addSeries(k, v));
         orderpanel.revalidate();
@@ -855,7 +863,9 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         familychart.getStyler().setSeriesColors(color);
         familychart.getStyler().setToolTipsEnabled(true);
         familychart.getStyler().setToolTipHighlightColor(tooltipcolor);
+        familychart.getStyler().setChartTitleFont(sumFont);
         familychart.getStyler().setSumFont(sumFont);
+        familychart.getStyler().setLegendFont(sumFont);
         familychart.getStyler().setSumVisible(true);
         family.forEach((k, v) -> familychart.addSeries(k, v));
         familypanel.revalidate();
@@ -871,6 +881,8 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         genuschart.getStyler().setSeriesColors(color);
         genuschart.getStyler().setToolTipsEnabled(true);
         genuschart.getStyler().setToolTipHighlightColor(tooltipcolor);
+        genuschart.getStyler().setLegendFont(sumFont);
+        genuschart.getStyler().setChartTitleFont(sumFont);
         genuschart.getStyler().setSumFont(sumFont);
         genuschart.getStyler().setSumVisible(true);
         genus.forEach((k, v) -> genuschart.addSeries(k, v));
@@ -891,6 +903,8 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         organismchart.getStyler().setSeriesColors(color);
         organismchart.getStyler().setToolTipsEnabled(true);
         organismchart.getStyler().setToolTipHighlightColor(tooltipcolor);
+        organismchart.getStyler().setLegendFont(sumFont);
+        organismchart.getStyler().setChartTitleFont(sumFont);
         organismchart.getStyler().setSumFont(sumFont);
         organismchart.getStyler().setSumVisible(true);
         organism.forEach((k, v) -> organismchart.addSeries(k, v));
@@ -928,6 +942,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         cogchart.getStyler().setToolTipsEnabled(true);
         cogchart.getStyler().setToolTipHighlightColor(tooltipcolor);
         cogchart.getStyler().setLegendFont(sumFont);
+        cogchart.getStyler().setChartTitleFont(sumFont);
         cogchart.getStyler().setPlotGridLinesVisible(false);
         cogchart.getStyler().setOverlapped(false);
         cogchart.getStyler().setStacked(true);
@@ -957,6 +972,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         funcchart.getStyler().setToolTipsEnabled(true);
         funcchart.getStyler().setToolTipHighlightColor(tooltipcolor);
         funcchart.getStyler().setLegendFont(sumFont);
+        funcchart.getStyler().setChartTitleFont(sumFont);
         funcchart.getStyler().setPlotGridLinesVisible(false);
         funcchart.getStyler().setOverlapped(false);
         funcchart.getStyler().setStacked(true);
@@ -1030,7 +1046,6 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
             });
             long sum = rank.values().stream().reduce(0l, Long::sum);
             topTen.put("Others", sum);
-            //System.out.println(topTen.size());
         } else {
             topTen = rank;
 
