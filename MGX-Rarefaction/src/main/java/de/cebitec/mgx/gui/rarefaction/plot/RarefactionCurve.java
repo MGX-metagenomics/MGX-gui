@@ -24,9 +24,11 @@ import de.cebitec.mgx.gui.viewer.api.ViewerI;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
@@ -74,6 +76,8 @@ public class RarefactionCurve extends AbstractViewer<DistributionI<Long>> implem
         data = dists;
 
         cPanel = new DelayedPlot();
+        
+        getCustomizer().setData(null);
 
         SwingWorker<JComponent, Void> worker = new SwingWorker<JComponent, Void>() {
 
@@ -152,6 +156,8 @@ public class RarefactionCurve extends AbstractViewer<DistributionI<Long>> implem
         final int numDataPoints = getCustomizer().getNumberOfPoints();
         final XYSeriesCollection dataset = new XYSeriesCollection();
         final AtomicBoolean error = new AtomicBoolean(false);
+        
+        Map<String, List<Point>> allDataPoints = new HashMap<>();
 
         final CountDownLatch allDone = new CountDownLatch(in.size());
 
@@ -163,6 +169,7 @@ public class RarefactionCurve extends AbstractViewer<DistributionI<Long>> implem
                 public void run() {
                     final DistributionI<Long> dist = groupDistribution.getSecond();
                     Iterator<Point> iter = null;
+                    List<Point> dataPoints = new ArrayList<>();
                     try {
                         iter = LocalRarefaction.rarefy(dist, numRepetitions, numDataPoints);
                     } catch (MGXException ex) {
@@ -182,9 +189,11 @@ public class RarefactionCurve extends AbstractViewer<DistributionI<Long>> implem
                             while (iter != null && iter.hasNext()) {
                                 Point p = iter.next();
                                 series.add(p.getX(), p.getY());
+                                dataPoints.add(p);
                             }
                             dataset.addSeries(series);
                         }
+                        allDataPoints.put(groupDistribution.getFirst().getDisplayName(), dataPoints);
                         allDone.countDown();
                     }
                 }
@@ -197,7 +206,12 @@ public class RarefactionCurve extends AbstractViewer<DistributionI<Long>> implem
         } catch (InterruptedException ex) {
             Exceptions.printStackTrace(ex);
         }
-        return error.get() ? null : dataset;
+        
+        if (!error.get()) {
+            getCustomizer().setData(allDataPoints);
+            return dataset;
+        }
+        return null;
     }
 
     @Override
