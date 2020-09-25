@@ -5,11 +5,26 @@
  */
 package de.cebitec.mgx.gui.rarefaction.plot;
 
+import de.cebitec.mgx.api.groups.FileType;
+import de.cebitec.mgx.api.misc.Point;
+import de.cebitec.mgx.gui.swingutils.util.FileChooserUtils;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import org.openide.DialogDisplayer;
+import org.openide.NotifyDescriptor;
+
 /**
  *
  * @author sj
  */
 public class RarefactionCustomizer extends javax.swing.JPanel {
+
+    private Map<String, List<Point>> data = null;
 
     /**
      * Creates new form RarefactionCustomizer
@@ -42,9 +57,14 @@ public class RarefactionCustomizer extends javax.swing.JPanel {
     boolean hideLegend() {
         return hideLegend.isSelected();
     }
-    
+
     int getLineThickness() {
         return lineThickness.getValue();
+    }
+
+    void setData(Map<String, List<Point>> allDataPoints) {
+        exportTSV.setEnabled(allDataPoints != null && !allDataPoints.isEmpty());
+        data = allDataPoints;
     }
 
     /**
@@ -64,6 +84,7 @@ public class RarefactionCustomizer extends javax.swing.JPanel {
         hideLegend = new javax.swing.JCheckBox();
         lineThickness = new javax.swing.JSlider();
         jLabel3 = new javax.swing.JLabel();
+        exportTSV = new javax.swing.JButton();
 
         numPoints.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         numPoints.setMajorTickSpacing(50);
@@ -106,6 +127,15 @@ public class RarefactionCustomizer extends javax.swing.JPanel {
         jLabel3.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(jLabel3, org.openide.util.NbBundle.getMessage(RarefactionCustomizer.class, "RarefactionCustomizer.jLabel3.text")); // NOI18N
 
+        exportTSV.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(exportTSV, org.openide.util.NbBundle.getMessage(RarefactionCustomizer.class, "RarefactionCustomizer.exportTSV.text")); // NOI18N
+        exportTSV.setEnabled(false);
+        exportTSV.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                exportTSVActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -114,20 +144,21 @@ public class RarefactionCustomizer extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(numPoints, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addComponent(lineThickness, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(hideTitle)
                             .addComponent(jLabel1)
                             .addComponent(jLabel2)
+                            .addComponent(jLabel3)
                             .addComponent(hideLegend)
-                            .addComponent(jLabel3))
-                        .addGap(0, 65, Short.MAX_VALUE))
-                    .addComponent(lineThickness, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                            .addComponent(exportTSV))
+                        .addGap(0, 92, Short.MAX_VALUE)))
                 .addContainerGap())
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addContainerGap()
-                    .addComponent(numIterations, javax.swing.GroupLayout.DEFAULT_SIZE, 169, Short.MAX_VALUE)
+                    .addComponent(numIterations, javax.swing.GroupLayout.DEFAULT_SIZE, 196, Short.MAX_VALUE)
                     .addContainerGap()))
         );
         layout.setVerticalGroup(
@@ -143,10 +174,12 @@ public class RarefactionCustomizer extends javax.swing.JPanel {
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lineThickness, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 75, Short.MAX_VALUE)
-                .addComponent(hideTitle)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(hideTitle)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(hideLegend)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 44, Short.MAX_VALUE)
+                .addComponent(exportTSV)
                 .addContainerGap())
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
@@ -156,8 +189,79 @@ public class RarefactionCustomizer extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    private void exportTSVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportTSVActionPerformed
+        if (data == null || data.isEmpty()) {
+            return;
+        }
+        String fname = FileChooserUtils.selectNewFilename(new FileType[]{FileType.TSV}, "MGX_rarefaction");
+        if (fname == null) {
+            return;
+        }
+
+        List<String> names = new ArrayList<>(data.keySet());
+        Collections.sort(names);
+
+        int maxLen = -1;
+        for (List<Point> pts : data.values()) {
+            if (pts.size() > maxLen) {
+                maxLen = pts.size();
+            }
+        }
+
+        try (BufferedWriter w = new BufferedWriter(new FileWriter(fname))) {
+
+            // write header
+            for (int col = 0; col < names.size() - 1; col++) {
+                w.write(names.get(col));
+                w.write("\t\t");
+            }
+            w.write(names.get(names.size() - 1));
+            w.newLine();
+            w.newLine();
+
+            for (int idx = 0; idx < maxLen; idx++) {
+
+                // write column data for all but last column
+                for (int col = 0; col < names.size() - 1; col++) {
+
+                    List<Point> pts = data.get(names.get(col));
+
+                    if (pts.size() > idx) {
+                        Point p = pts.get(idx);
+                        w.write(Double.toString(p.getX()));
+                        w.write("\t");
+                        w.write(Double.toString(p.getY()));
+                        w.write("\t");
+                    } else {
+                        w.write("\t\t");
+                    }
+                }
+
+                // last column
+                List<Point> pts = data.get(names.get(names.size() - 1));
+                if (pts.size() > idx) {
+                    Point p = pts.get(idx);
+                    w.write(Double.toString(p.getX()));
+                    w.write("\t");
+                    w.write(Double.toString(p.getY()));
+                }
+                w.newLine();
+            }
+            // report success
+            NotifyDescriptor nd = new NotifyDescriptor.Message("Data exported to " + fname);
+            DialogDisplayer.getDefault().notify(nd);
+
+        } catch (IOException ex) {
+            NotifyDescriptor nd = new NotifyDescriptor("Export failed: " + ex.getMessage(), "Error",
+                    NotifyDescriptor.DEFAULT_OPTION, NotifyDescriptor.ERROR_MESSAGE, null, null);
+            DialogDisplayer.getDefault().notify(nd);
+        }
+
+    }//GEN-LAST:event_exportTSVActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton exportTSV;
     private javax.swing.JCheckBox hideLegend;
     private javax.swing.JCheckBox hideTitle;
     private javax.swing.JLabel jLabel1;
@@ -167,4 +271,5 @@ public class RarefactionCustomizer extends javax.swing.JPanel {
     private javax.swing.JSlider numIterations;
     private javax.swing.JSlider numPoints;
     // End of variables declaration//GEN-END:variables
+
 }
