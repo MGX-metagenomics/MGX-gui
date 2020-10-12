@@ -43,7 +43,7 @@ class TableViewCustomizer extends javax.swing.JPanel implements VisFilterI<Distr
             fractions.setEnabled(enabled);
             treeFilter1.setEnabled(enabled);
             filterField.setEnabled(enabled);
-            export.setEnabled(enabled);
+            export.setEnabled(model != null);
         }
     }
 
@@ -78,6 +78,7 @@ class TableViewCustomizer extends javax.swing.JPanel implements VisFilterI<Distr
             return;
         }
         at = aType;
+        model = null;
         treeFilter1.setAttributeType(at);
     }
 
