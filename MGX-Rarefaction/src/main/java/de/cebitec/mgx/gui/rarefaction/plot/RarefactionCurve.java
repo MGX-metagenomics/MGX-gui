@@ -1,6 +1,5 @@
 package de.cebitec.mgx.gui.rarefaction.plot;
 
-import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.groups.FileType;
 import de.cebitec.mgx.api.groups.ImageExporterI;
 import de.cebitec.mgx.api.groups.SequenceExporterI;
@@ -15,10 +14,8 @@ import de.cebitec.mgx.gui.common.visualization.AbstractViewer;
 import de.cebitec.mgx.gui.common.visualization.CustomizableI;
 import de.cebitec.mgx.gui.common.visualization.ViewerI;
 import de.cebitec.mgx.gui.rarefaction.LocalRarefaction;
-import de.cebitec.mgx.gui.rarefaction.Rarefaction;
 import de.cebitec.mgx.gui.seqexporter.SeqExporter;
 import de.cebitec.mgx.gui.swingutils.DelayedPlot;
-import de.cebitec.mgx.gui.swingutils.NonEDT;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.util.ArrayList;
@@ -159,48 +156,50 @@ public class RarefactionCurve extends AbstractViewer<DistributionI<Long>> implem
 
         for (final Pair<VisualizationGroupI, DistributionI<Long>> groupDistribution : in) {
 
-            NonEDT.invoke(new Runnable() {
+            SwingWorker<Iterator<Point>, Void> worker = new SwingWorker<Iterator<Point>, Void>() {
+                @Override
+                protected Iterator<Point> doInBackground() throws Exception {
+                    final DistributionI<Long> dist = groupDistribution.getSecond();
+                    return LocalRarefaction.rarefy(dist, numRepetitions, numDataPoints);
+                }
 
                 @Override
-                public void run() {
-                    final DistributionI<Long> dist = groupDistribution.getSecond();
-                    Iterator<Point> iter = null;
-                    List<Point> dataPoints = new ArrayList<>();
-                    try {
-                        iter = LocalRarefaction.rarefy(dist, numRepetitions, numDataPoints);
-                    } catch (MGXException ex) {
-                        Exceptions.printStackTrace(ex);
-                        //
-                        // local computational failed, retry on mgx server
-                        //
-                        try {
-                            iter = Rarefaction.rarefy(dist);
-                        } catch (MGXException ex1) {
-                            Exceptions.printStackTrace(ex1);
-                            error.set(true);
-                        }
-                    } finally {
-                        if (!error.get()) {
-                            XYSeries series = new XYSeries(groupDistribution.getFirst().getDisplayName());
-                            while (iter != null && iter.hasNext()) {
-                                Point p = iter.next();
-                                series.add(p.getX(), p.getY());
-                                dataPoints.add(p);
-                            }
-                            dataset.addSeries(series);
-                        }
-                        allDataPoints.put(groupDistribution.getFirst().getDisplayName(), dataPoints);
-                        allDone.countDown();
-                    }
-                }
-            });
+                protected void done() {
+                    super.done();
 
+                    Iterator<Point> iter = null;
+                    try {
+                        iter = get();
+                    } catch (InterruptedException | ExecutionException ex) {
+                        Exceptions.printStackTrace(ex);
+                        error.set(true);
+                    }
+
+                    List<Point> dataPoints = new ArrayList<>();
+                    XYSeries series = new XYSeries(groupDistribution.getFirst().getDisplayName());
+                    while (iter != null && iter.hasNext()) {
+                        Point p = iter.next();
+                        series.add(p.getX(), p.getY());
+                        dataPoints.add(p);
+                    }
+
+                    synchronized (allDataPoints) {
+                        dataset.addSeries(series);
+                        allDataPoints.put(groupDistribution.getFirst().getDisplayName(), dataPoints);
+                    }
+
+                    allDone.countDown();
+                }
+
+            };
+            worker.execute();
         }
 
         try {
             allDone.await();
         } catch (InterruptedException ex) {
             Exceptions.printStackTrace(ex);
+            error.set(true);
         }
 
         if (!error.get()) {
