@@ -41,7 +41,33 @@ public class TreeFactory {
     }
 
     public static <T> TreeI<T> createTree(final Map<AttributeI, T> map) {
+        
+        //
+        //  HOTFIX - remove NCBI_CLADE entries; clade rank might occur 
+        // multiple times within a single lineage, and also between
+        // arbitrary other ranks
+        //
+        
+        TLongObjectMap<AttributeI> attrByID = new TLongObjectHashMap<>(map.size());
+        for (AttributeI attr: map.keySet()) {
+            attrByID.put(attr.getId(), attr);
+        }
+        
+        for (AttributeI attr: map.keySet()) {
+            if (attr.getParentID() != Identifiable.INVALID_IDENTIFIER) {
+                AttributeI parent = attrByID.get(attr.getParentID());
+                while (parent.getAttributeType().getName().equals("NCBI_CLADE")) {
+                    parent = attrByID.get(parent.getParentID());
+                }
+                if (attr.getParentID() != parent.getId()) {
+                   //System.err.println("reassigning "+ attr.getId() + " to " + parent.getId());
+                   attr.setParentID(parent.getId());
+                }
+            }
+        }
 
+
+        
         //Checker.sanityCheck(map.keySet());
         TLongObjectMap<NodeI<T>> idMap = new TLongObjectHashMap<>(map.size());
         //Map<Long, NodeI<T>> idmap = new HashMap<>(map.size()); // attr id to node
@@ -50,15 +76,17 @@ public class TreeFactory {
         TreeI<T> tree = new Tree<>();
         for (Entry<AttributeI, T> entry : map.entrySet()) {
             AttributeI attr = entry.getKey();
-            if (attr.getParentID() == Identifiable.INVALID_IDENTIFIER) {
-                NodeI<T> root = tree.createRootNode(attr, entry.getValue());
-                idMap.put(attr.getId(), root);
-            } else if (idMap.containsKey(attr.getParentID())) {
-                NodeI<T> parent = idMap.get(attr.getParentID());
-                NodeI<T> child = parent.addChild(attr, entry.getValue());
-                idMap.put(child.getAttribute().getId(), child);
-            } else {
-                disconnected.put(attr, entry.getValue());
+            if (!attr.getAttributeType().getName().equals("NCBI_CLADE")) {
+                if (attr.getParentID() == Identifiable.INVALID_IDENTIFIER) {
+                    NodeI<T> root = tree.createRootNode(attr, entry.getValue());
+                    idMap.put(attr.getId(), root);
+                } else if (idMap.containsKey(attr.getParentID())) {
+                    NodeI<T> parent = idMap.get(attr.getParentID());
+                    NodeI<T> child = parent.addChild(attr, entry.getValue());
+                    idMap.put(child.getAttribute().getId(), child);
+                } else {
+                    disconnected.put(attr, entry.getValue());
+                }
             }
         }
 
@@ -75,14 +103,14 @@ public class TreeFactory {
                 }
             }
         }
-
-        assert map.keySet().size() == idMap.size();
-        assert tree.size() == map.size();
+        
+        //assert map.keySet().size() == idMap.size();
+        //assert tree.size() == map.size();
 
         //Checker.checkTree(tree);
         return tree;
     }
-
+    
     public static TreeI<Long> mergeTrees(Collection<Future<TreeI<Long>>> trees) throws InterruptedException, ExecutionException {
         TreeI<Long> consensus = new Tree<>();
         DataMerger<Long, Long> adder = new Adder();
@@ -153,6 +181,9 @@ public class TreeFactory {
             Long numPathsEndingHere = node.getContent();
             if (!node.isLeaf()) {
                 numPathsEndingHere = numPathsEndingHere - nodeSum(node.getChildren());
+            }
+            if (numPathsEndingHere < 0) {
+                throw new RuntimeException("Encountered unexpected negative assignment count for " + node.getAttribute().getValue());
             }
             newContent.put(node.getAttribute(), numPathsEndingHere);
         }
