@@ -27,6 +27,7 @@ import de.cebitec.mgx.gui.viewer.api.CustomizableI;
 import de.cebitec.mgx.gui.viewer.api.ViewerI;
 import de.cebitec.mgx.gui.visgroups.VGroupManager;
 import java.awt.Cursor;
+import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -38,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import javax.swing.JComponent;
 import javax.swing.SwingWorker;
@@ -246,19 +248,30 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
 
         @Override
         public void update() {
-            // disable all downstream elements, including self
-            clear();
-            attributeTypeList.setEnabled(false);
-            visualizationTypeList.setEnabled(false);
-            if (currentCustomizer != null) {
-                currentCustomizer.setEnabled(false);
-            }
-            updateButton.setEnabled(false);
+            
+            // UI update - needs to be on EDT
+            final CountDownLatch uiUpdated = new CountDownLatch(1);
+            EventQueue.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    // disable all downstream elements, including self
+                    clear();
+                    attributeTypeList.setEnabled(false);
+                    visualizationTypeList.setEnabled(false);
+                    if (currentCustomizer != null) {
+                        currentCustomizer.setEnabled(false);
+                    }
+                    updateButton.setEnabled(false);
+                    uiUpdated.countDown();
+                }
+            });
+            
 
             SwingWorker<Collection<AttributeTypeI>, Void> worker = new SwingWorker<Collection<AttributeTypeI>, Void>() {
                 @Override
                 protected Collection<AttributeTypeI> doInBackground() throws Exception {
                     Collection<AttributeTypeI> types = vgmgr.getAttributeTypes();
+                    uiUpdated.await();
                     return types;
                 }
 
