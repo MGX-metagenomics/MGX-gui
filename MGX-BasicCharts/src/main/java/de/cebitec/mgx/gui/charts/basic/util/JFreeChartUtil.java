@@ -1,5 +1,7 @@
 package de.cebitec.mgx.gui.charts.basic.util;
 
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.groups.FileType;
 import de.cebitec.mgx.api.groups.ImageExporterI;
 import de.cebitec.mgx.api.groups.ReplicateGroupI;
@@ -8,6 +10,10 @@ import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.misc.Triple;
 import de.cebitec.mgx.api.model.AttributeI;
+import de.cebitec.mgx.api.model.AttributeTypeI;
+import de.cebitec.mgx.api.model.JobI;
+import de.cebitec.mgx.api.model.tree.NodeI;
+import de.cebitec.mgx.api.model.tree.TreeI;
 import de.cebitec.mgx.gui.vizfilter.SortOrder.SortByValue;
 import gnu.trove.map.TObjectDoubleMap;
 import gnu.trove.map.hash.TObjectDoubleHashMap;
@@ -19,10 +25,13 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.LegendItem;
@@ -37,6 +46,7 @@ import org.jfree.data.xy.TableXYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.graphics2d.svg.SVGGraphics2D;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -87,6 +97,8 @@ public class JFreeChartUtil {
                 }
             }
         }
+        
+        // sort by value
         List<AttributeI> sortList = new ArrayList<>();
         sortList.addAll(summary.keySet());
         Collections.sort(sortList, new SortByValue(summary));
@@ -96,20 +108,101 @@ public class JFreeChartUtil {
 
         FastCategoryDataset dataset = new FastCategoryDataset();
         dataset.setNotify(false);
+        
+        
+        //
+        // especially the NCBI taxonomy contains duplicate entries, e.g.
+        // Bacillus. avoid duplicates by adding the parent to its name
+        // as a suffix
+        //
+        // TODO - move this to a more central location since it affects
+        // all visualization types
+        //
+        
+        Set<String> seen = new HashSet<>();
+        Map<AttributeI, String> displayNames = new HashMap<>();
+        TreeI<Long> tree = null;
+        for (AttributeI attr : sortList) {
+            if (seen.contains(attr.getValue())) {
+        
+                // we can only resolve conflicts for hierarchical data
+                if (attr.getAttributeType().getStructure() == AttributeTypeI.STRUCTURE_HIERARCHICAL) {
+                    
+                    try {
+
+                        if (tree == null) {
+                            MGXMasterI m = attr.getAttributeType().getMaster();
+                            JobI job = m.Job().fetch(attr.getJobId());
+                            tree = m.Attribute().getHierarchy(attr.getAttributeType(), job);
+                        }
+                    
+                        // find the conflicting entry
+                        AttributeI conflict = null;
+                        for (AttributeI a : displayNames.keySet()) {
+                            if (a.getValue().equals(attr.getValue())) {
+                                conflict = a;
+                            }
+                        }
+                        
+                        // always true, otherwise we wouldn't have a conflict at all
+                        if (conflict != null) {
+                            // create new display names for both attributes
+                        
+                            NodeI<Long> attrNode = getNode(tree, attr);
+                            NodeI<Long> conflictNode = getNode(tree, conflict);
+                        
+                            String attrName = attr.getValue() + " (" + attrNode.getParent().getAttribute().getValue() + ")";
+                            String conflictName = conflict.getValue() + " (" + conflictNode.getParent().getAttribute().getValue() + ")";
+                        
+                            displayNames.put(attr, attrName);
+                            displayNames.put(conflict, conflictName);
+                        
+                            // DO NOT seen.remove(attr.getValue()) so we never end up
+                            // with "FOO" and "FOO (BAR)", but always "FOO (SOMETHING)"
+                            // and "FOO (SOMETHINGELSE)" for all conflicting attributes
+                            seen.add(attrName);
+                            seen.add(conflictName);
+                        }
+                        
+                    } catch (MGXException ex) {
+                        Exceptions.printStackTrace(ex);
+                        return null;
+                    }
+                } else {
+                    displayNames.put(attr, attr.getValue());
+                    seen.add(attr.getValue());
+                }
+            } else {
+                displayNames.put(attr, attr.getValue());
+                seen.add(attr.getValue());
+            }
+        }
+        
 
         for (AttributeI attr : sortList) {
             for (Pair<VisualizationGroupI, DistributionI<T>> groupDistribution : in) {
                 final String displayName = groupDistribution.getFirst().getDisplayName();
                 final DistributionI<T> d = groupDistribution.getSecond();
-                dataset.addValue(d.get(attr), displayName, attr.getValue());
+                dataset.addValue(d.get(attr), displayName, displayNames.get(attr));
             }
         }
+        
+        dataset.setNotify(true);
 
         if (dataset.getColumnCount() > 25) {
             return new SlidingCategoryDataset(dataset, 25);
         } else {
             return dataset;
         }
+    }
+    
+    private static NodeI<Long> getNode(TreeI<Long> t, AttributeI attr) {
+        for (NodeI<Long> n : t.getNodes()) {
+            if (n.getAttribute().getId() == attr.getId()) {
+                return n;
+            }
+        }
+        return null; //not reached
     }
 
     public static StatisticalCategoryDataset createStatisticalCategoryDataset(List<Triple<ReplicateGroupI, DistributionI<Double>, DistributionI<Double>>> groups) {
