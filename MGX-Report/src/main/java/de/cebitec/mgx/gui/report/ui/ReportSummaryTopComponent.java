@@ -23,7 +23,9 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -31,16 +33,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.text.NumberFormat;
-import java.util.Arrays;
 import java.util.Locale;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
-import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import org.knowm.xchart.CategoryChart;
 import org.knowm.xchart.CategoryChartBuilder;
@@ -94,9 +93,10 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
     private final Lookup lookup;
     private int tabIdx = -1;
 
-    final private Color[] color = generatePaletteCBFriendly();
-    
+    final private Color[] color;
+
     public ReportSummaryTopComponent() {
+        this.color = generatePaletteCBFriendly();
         initComponents();
         super.setName("Show Report");
         super.setToolTipText("Show Report");
@@ -659,7 +659,6 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
 
         }
 
-
     }
 
     private List<Map<String, Long>> getTaxonomy(SeqRunI seqr) throws MGXException {
@@ -671,7 +670,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         Map<String, Long> genusfreq = new HashMap<>();
         Map<String, Long> organismfreq = new HashMap<>();
         List<Map<String, Long>> taxoall = new ArrayList<>();
-        
+
         List<JobI> joblist = seqr.getMaster().Job().BySeqRun(seqr);
 
         for (JobI job : joblist) {
@@ -679,10 +678,10 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
             if ((job.getStatus() == JobState.FINISHED && tool.getName().equals("MGX taxonomic classification")) || tool.getName().equals("Kraken 2")) {
 
                 Iterator<AttributeTypeI> attributeit = seqr.getMaster().AttributeType().byJob(job);
-                
+
                 TreeI<Long> hierarchy = seqr.getMaster().Attribute().getHierarchy(attributeit.next(), job, seqr);
                 if (!hierarchy.isEmpty()) {
-                    
+
                     TreeI<Long> tmptree = seqr.getMaster().Attribute().getHierarchy(attributeit.next(), job, seqr);
                     Collection<NodeI<Long>> children = tmptree.getLeaves();
 
@@ -768,9 +767,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         return taxoall;
     }
 
-
-
-    private void createPieCharts(List<Map<String, Long>> taxonomie) throws MGXException, InterruptedException, NoSuchElementException  {
+    private void createPieCharts(List<Map<String, Long>> taxonomie) throws MGXException, InterruptedException, NoSuchElementException {
 
         Color tooltipcolor = new Color(120, 85, 137);
         Font sumFont = new java.awt.Font("Avenir Next Condensed", 1, 12);
@@ -778,11 +775,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         if (kingdomchart.getSeriesMap().size() > 0) {
             kingdomchart.getSeriesMap().clear();
         }
-        
-        
-        //Color[] kingdomcolor = generatePaletteCBFriendly(taxonomie.get(0).size());
 
-        System.out.println(color.length);
         Map<String, Long> kingdom = getTopTen(taxonomie.get(0));
         kingdomchart.getStyler().setAnnotationType(PieStyler.AnnotationType.Value);
         kingdomchart.getStyler().setAnnotationDistance(1.1);
@@ -803,7 +796,6 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         }
 
         Map<String, Long> phylum = getTopTen(taxonomie.get(1));
-        //Color[] color = generatePaletteCBFriendly(11);
 
         phylumchart.getStyler().setAnnotationType(PieStyler.AnnotationType.Value);
         phylumchart.getStyler().setAnnotationDistance(1.1);
@@ -826,7 +818,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         classchart.getStyler().setAnnotationType(AnnotationType.Value);
         classchart.getStyler().setAnnotationDistance(1.1);
         classchart.getStyler().setPlotContentSize(.8);
-        classchart.getStyler().setSeriesColors(color);
+        classchart.getStyler().setSeriesColors(this.color);
         classchart.getStyler().setChartTitleFont(sumFont);
         classchart.getStyler().setToolTipsEnabled(true);
         classchart.getStyler().setToolTipHighlightColor(tooltipcolor);
@@ -844,7 +836,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         orderchart.getStyler().setAnnotationType(AnnotationType.Value);
         orderchart.getStyler().setAnnotationDistance(1.1);
         orderchart.getStyler().setPlotContentSize(.8);
-        orderchart.getStyler().setSeriesColors(color);
+        orderchart.getStyler().setSeriesColors(this.color);
         orderchart.getStyler().setChartTitleFont(sumFont);
         orderchart.getStyler().setToolTipsEnabled(true);
         orderchart.getStyler().setToolTipHighlightColor(tooltipcolor);
@@ -862,7 +854,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         familychart.getStyler().setAnnotationType(AnnotationType.Value);
         familychart.getStyler().setAnnotationDistance(1.1);
         familychart.getStyler().setPlotContentSize(.8);
-        familychart.getStyler().setSeriesColors(color);
+        familychart.getStyler().setSeriesColors(this.color);
         familychart.getStyler().setToolTipsEnabled(true);
         familychart.getStyler().setToolTipHighlightColor(tooltipcolor);
         familychart.getStyler().setChartTitleFont(sumFont);
@@ -880,7 +872,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         genuschart.getStyler().setAnnotationType(AnnotationType.Value);
         genuschart.getStyler().setAnnotationDistance(1.1);
         genuschart.getStyler().setPlotContentSize(.8);
-        genuschart.getStyler().setSeriesColors(color);
+        genuschart.getStyler().setSeriesColors(this.color);
         genuschart.getStyler().setToolTipsEnabled(true);
         genuschart.getStyler().setToolTipHighlightColor(tooltipcolor);
         genuschart.getStyler().setLegendFont(sumFont);
@@ -902,7 +894,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         organismchart.getStyler().setAnnotationType(AnnotationType.Value);
         organismchart.getStyler().setAnnotationDistance(1.1);
         organismchart.getStyler().setPlotContentSize(.8);
-        organismchart.getStyler().setSeriesColors(color);
+        organismchart.getStyler().setSeriesColors(this.color);
         organismchart.getStyler().setToolTipsEnabled(true);
         organismchart.getStyler().setToolTipHighlightColor(tooltipcolor);
         organismchart.getStyler().setLegendFont(sumFont);
@@ -915,12 +907,8 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
 
     }
 
-
-
-
-
-    private void createBarChart(Map<String, Map<String, Long>> cogdata)  throws MGXException, InterruptedException, NoSuchElementException {
-        if(cogdata.isEmpty()){
+    private void createBarChart(Map<String, Map<String, Long>> cogdata) throws MGXException, InterruptedException, NoSuchElementException {
+        if (cogdata.isEmpty()) {
             cogpanel.setVisible(false);
             funcpanel.setVisible(false);
             return;
@@ -940,7 +928,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         Map<String, Long> cogtop = getTopTenCOG(cog);
         cogchart.getStyler().setPlotContentSize(.8);
         cogchart.getStyler().setYAxisDecimalPattern("##.###");
-        cogchart.getStyler().setSeriesColors(color);
+        cogchart.getStyler().setSeriesColors(this.color);
         cogchart.getStyler().setToolTipsEnabled(true);
         cogchart.getStyler().setToolTipHighlightColor(tooltipcolor);
         cogchart.getStyler().setLegendFont(sumFont);
@@ -960,9 +948,9 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         System.out.println(keys);
 
         for (int i = 0; i < 10; i++) {
-            double[] val = generateSeries(cogval.get(i),i, keys.size());
-            ArrayList<Double> vals = DoubleStream.of( val ).boxed().collect(
-            Collectors.toCollection(() -> ( new ArrayList<>() )) );
+            double[] val = generateSeries(cogval.get(i), i, keys.size());
+            ArrayList<Double> vals = DoubleStream.of(val).boxed().collect(
+                    Collectors.toCollection(() -> (new ArrayList<>())));
             cogchart.addSeries(cogkeys.get(i), keys, vals);
         }
         cogpanel.revalidate();
@@ -985,13 +973,12 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         List<String> vtmp = Arrays.asList("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "Z");
         for (int i = 0; i < 23; i++) {
             double[] t = generateSeries(funcval.get(i), i, 23);
-            ArrayList<Double> v = DoubleStream.of( t ).boxed().collect(
-            Collectors.toCollection(() -> ( new ArrayList<>() )) );
+            ArrayList<Double> v = DoubleStream.of(t).boxed().collect(
+                    Collectors.toCollection(() -> (new ArrayList<>())));
             funcchart.addSeries(funckeys.get(i), vtmp, v);
         }
         funcpanel.revalidate();
         funcpanel.repaint();
-        
 
     }
 
@@ -1028,7 +1015,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         tmp[idx] = (double) data;
         return tmp;
     }
-   
+
     private static Map<String, Long> getTopTen(Map<String, Long> rank) {
         if (rank.containsKey("None")) {
             rank.remove("None");
@@ -1055,7 +1042,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
 
         return topTen;
     }
-    
+
     private static Map<String, Long> getTopTenCOG(Map<String, Long> cog) {
         Map<String, Long> tmp = cog;
         Map<String, Long> topTen = null;
@@ -1090,24 +1077,23 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
     public void resultChanged(LookupEvent le) {
         update();
     }
-    
-    
-    private static Color[] generatePaletteCBFriendly(){
+
+    private static Color[] generatePaletteCBFriendly() {
         Color[] palette = new Color[11];
-        palette[0] = new Color(166, 206, 227); 
-        palette[1] = new Color(178, 223, 138); 
-        palette[2] = new Color(31, 120, 180); 
-        palette[3] = new Color(51, 160, 44); 
-        palette[4] = new Color(251, 154, 153); 
-        palette[5] = new Color(227, 26, 28); 
-        palette[6] = new Color(253, 191, 111); 
-        palette[7] = new Color(255, 127, 0); 
-        palette[8] = new Color(202, 178, 214); 
-        palette[9] = new Color(106, 61, 154); 
+        palette[0] = new Color(166, 206, 227);
+        palette[1] = new Color(178, 223, 138);
+        palette[2] = new Color(31, 120, 180);
+        palette[3] = new Color(51, 160, 44);
+        palette[4] = new Color(251, 154, 153);
+        palette[5] = new Color(227, 26, 28);
+        palette[6] = new Color(253, 191, 111);
+        palette[7] = new Color(255, 127, 0);
+        palette[8] = new Color(202, 178, 214);
+        palette[9] = new Color(106, 61, 154);
         palette[10] = new Color(255, 255, 153);
         return palette;
     }
-    
+
     private static Color[] generatePaletteGradient(int size) {
         Color[] piecolors = new Color[size];
         int red = 108;
@@ -1130,7 +1116,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         }
         return piecolors;
     }
-    
+
     private static Color[] generateCOGFuncCatPalette() {
         Color[] cogcolor = new Color[23];
         cogcolor[0] = new Color(194, 175, 88); //A
