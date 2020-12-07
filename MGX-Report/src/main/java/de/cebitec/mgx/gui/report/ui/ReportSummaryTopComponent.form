@@ -455,14 +455,14 @@
                               <Group type="102" attributes="0">
                                   <EmptySpace min="-2" pref="36" max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="1" attributes="0">
-                                      <Component id="classpanel" pref="747" max="32767" attributes="0"/>
+                                      <Component id="classpanel" pref="700" max="32767" attributes="0"/>
                                       <Component id="kingdompanel" max="32767" attributes="0"/>
                                       <Component id="familypanel" alignment="1" max="32767" attributes="0"/>
                                   </Group>
                                   <EmptySpace min="-2" pref="26" max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="1" attributes="0">
-                                      <Component id="phylumpanel" pref="747" max="32767" attributes="0"/>
-                                      <Component id="orderpanel" pref="747" max="32767" attributes="0"/>
+                                      <Component id="phylumpanel" pref="700" max="32767" attributes="0"/>
+                                      <Component id="orderpanel" pref="700" max="32767" attributes="0"/>
                                       <Component id="genuspanel" max="32767" attributes="0"/>
                                   </Group>
                               </Group>

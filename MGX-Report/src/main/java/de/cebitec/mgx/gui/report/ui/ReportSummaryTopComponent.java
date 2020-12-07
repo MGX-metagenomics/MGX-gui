@@ -94,6 +94,8 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
     private final Lookup lookup;
     private int tabIdx = -1;
 
+    final private Color[] color = generatePaletteCBFriendly();
+    
     public ReportSummaryTopComponent() {
         initComponents();
         super.setName("Show Report");
@@ -778,14 +780,14 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         }
         
         
-        Color[] kingdomcolor = generatePalette(taxonomie.get(0).size());
+        //Color[] kingdomcolor = generatePaletteCBFriendly(taxonomie.get(0).size());
 
-        System.out.println(kingdomcolor.length);
+        System.out.println(color.length);
         Map<String, Long> kingdom = getTopTen(taxonomie.get(0));
         kingdomchart.getStyler().setAnnotationType(PieStyler.AnnotationType.Value);
         kingdomchart.getStyler().setAnnotationDistance(1.1);
         kingdomchart.getStyler().setPlotContentSize(.8);
-        kingdomchart.getStyler().setSeriesColors(kingdomcolor);
+        kingdomchart.getStyler().setSeriesColors(this.color);
         kingdomchart.getStyler().setToolTipsEnabled(true);
         kingdomchart.getStyler().setToolTipHighlightColor(tooltipcolor);
         kingdomchart.getStyler().setSumFont(sumFont);
@@ -801,12 +803,12 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         }
 
         Map<String, Long> phylum = getTopTen(taxonomie.get(1));
-        Color[] color = generatePalette(11);
+        //Color[] color = generatePaletteCBFriendly(11);
 
         phylumchart.getStyler().setAnnotationType(PieStyler.AnnotationType.Value);
         phylumchart.getStyler().setAnnotationDistance(1.1);
         phylumchart.getStyler().setPlotContentSize(.8);
-        phylumchart.getStyler().setSeriesColors(color);
+        phylumchart.getStyler().setSeriesColors(this.color);
         phylumchart.getStyler().setToolTipsEnabled(true);
         phylumchart.getStyler().setChartTitleFont(sumFont);
         phylumchart.getStyler().setToolTipHighlightColor(tooltipcolor);
@@ -934,7 +936,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         Font sumFont = new java.awt.Font("Avenir Next Condensed", 1, 12);
         cogpanel.setVisible(true);
         funcpanel.setVisible(true);
-        Color[] color = generatePalette(11);
+
         Map<String, Long> cogtop = getTopTenCOG(cog);
         cogchart.getStyler().setPlotContentSize(.8);
         cogchart.getStyler().setYAxisDecimalPattern("##.###");
@@ -1090,7 +1092,23 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
     }
     
     
-    private static Color[] generatePalette(int size) {
+    private static Color[] generatePaletteCBFriendly(){
+        Color[] palette = new Color[11];
+        palette[0] = new Color(166, 206, 227); 
+        palette[1] = new Color(178, 223, 138); 
+        palette[2] = new Color(31, 120, 180); 
+        palette[3] = new Color(51, 160, 44); 
+        palette[4] = new Color(251, 154, 153); 
+        palette[5] = new Color(227, 26, 28); 
+        palette[6] = new Color(253, 191, 111); 
+        palette[7] = new Color(255, 127, 0); 
+        palette[8] = new Color(202, 178, 214); 
+        palette[9] = new Color(106, 61, 154); 
+        palette[10] = new Color(255, 255, 153);
+        return palette;
+    }
+    
+    private static Color[] generatePaletteGradient(int size) {
         Color[] piecolors = new Color[size];
         int red = 108;
         int green = 158;
