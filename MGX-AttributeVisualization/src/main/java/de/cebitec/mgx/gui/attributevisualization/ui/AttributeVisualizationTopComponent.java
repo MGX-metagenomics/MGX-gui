@@ -6,6 +6,8 @@ import de.cebitec.mgx.gui.viewer.api.ViewerI;
 import java.awt.Image;
 import java.util.Collections;
 import javax.swing.JComponent;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -63,6 +65,7 @@ public final class AttributeVisualizationTopComponent extends TopComponent {
         jSplitPane1.setRightComponent(controlPanel1);
         //
         chartpane.getVerticalScrollBar().setUnitIncrement(16);
+        setNimbusLookAndFeel();
     }
 
     @Override
@@ -172,6 +175,14 @@ public final class AttributeVisualizationTopComponent extends TopComponent {
         if (!vgtc.isOpened()) {
             vgtc.open();
         }
+    }
+
+    private void setNimbusLookAndFeel() {
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | UnsupportedLookAndFeelException e) {
+        }
+
     }
 
 }
