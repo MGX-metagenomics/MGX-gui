@@ -9,12 +9,20 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
+import javax.swing.DefaultListModel;
 import javax.swing.JPanel;
+import javax.swing.ListModel;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 public final class ExportSeqVisualPanel1<T extends Number> extends JPanel implements PropertyChangeListener {
 
     private final JCheckBoxList<AttributeI> list = new JCheckBoxList<>();
     private boolean all_selected = true;
+    ListModel<AttributeI> orgmodel = (DefaultListModel<AttributeI>) list.getModel();
+   
 
     /**
      * Creates new form ExportSeqVisualPanel1
@@ -56,6 +64,7 @@ public final class ExportSeqVisualPanel1<T extends Number> extends JPanel implem
         jLabel1 = new javax.swing.JLabel();
         scrollpane = new javax.swing.JScrollPane();
         jButton1 = new javax.swing.JButton();
+        searchfield = new javax.swing.JTextField();
 
         jLabel1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(ExportSeqVisualPanel1.class, "ExportSeqVisualPanel1.jLabel1.text")); // NOI18N
@@ -65,6 +74,19 @@ public final class ExportSeqVisualPanel1<T extends Number> extends JPanel implem
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
+            }
+        });
+
+        searchfield.setForeground(new java.awt.Color(102, 102, 102));
+        searchfield.setText(org.openide.util.NbBundle.getMessage(ExportSeqVisualPanel1.class, "ExportSeqVisualPanel1.searchfield.text")); // NOI18N
+        searchfield.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                searchfieldMouseClicked(evt);
+            }
+        });
+        searchfield.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                searchfieldKeyReleased(evt);
             }
         });
 
@@ -79,6 +101,8 @@ public final class ExportSeqVisualPanel1<T extends Number> extends JPanel implem
                     .addComponent(scrollpane)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jButton1)
+                        .addGap(48, 48, 48)
+                        .addComponent(searchfield, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -90,7 +114,9 @@ public final class ExportSeqVisualPanel1<T extends Number> extends JPanel implem
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(scrollpane, javax.swing.GroupLayout.DEFAULT_SIZE, 263, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton1)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton1)
+                    .addComponent(searchfield, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(6, 6, 6))
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -108,11 +134,69 @@ public final class ExportSeqVisualPanel1<T extends Number> extends JPanel implem
         validateInput();
         repaint();
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void searchfieldMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_searchfieldMouseClicked
+        if (searchfield.getText().equals("Search")) {
+            searchfield.setText("");
+            searchfield.setForeground(new java.awt.Color(0, 0, 0));
+        }    
+        validateInput();
+        repaint();
+    }//GEN-LAST:event_searchfieldMouseClicked
+
+    private void searchfieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_searchfieldKeyReleased
+        
+        searchfield.getDocument().addDocumentListener(new DocumentListener() {
+            
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                filter();
+               
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                filter();
+              
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                filter();
+                
+            }
+
+            private void filter() {
+                String filter = searchfield.getText();
+                filterModel(orgmodel, filter);
+                list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+            }
+        });
+    }//GEN-LAST:event_searchfieldKeyReleased
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane scrollpane;
+    private javax.swing.JTextField searchfield;
     // End of variables declaration//GEN-END:variables
+
+    public void filterModel(ListModel<AttributeI> model, String filter) {
+        DefaultListModel<AttributeI> filtered = new DefaultListModel<>();
+        List<AttributeI> tmp = new ArrayList<>();
+        for (int i = 0; i < model.getSize(); i++) {
+            tmp.add(model.getElementAt(i));
+        }
+
+        tmp.stream().forEach((AttributeI ele) -> {
+            if (ele.getValue().contains(filter)) {
+                filtered.addElement(ele);
+            }
+        });
+        
+        list.setModel(filtered);
+        list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+    }
 
     private void validateInput() {
         firePropertyChange("REVALIDATE", 0, 1);
