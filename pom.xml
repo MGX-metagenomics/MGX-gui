@@ -583,7 +583,7 @@
     </modules>
     
     <properties>
-        <netbeans.version>RELEASE113</netbeans.version>
+        <netbeans.version>RELEASE122</netbeans.version>
         <java.src.version>1.8</java.src.version>
         <java.target.version>1.8</java.target.version>
         <brandingToken>mgx_gui</brandingToken>
