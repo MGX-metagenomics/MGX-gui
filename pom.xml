@@ -10,10 +10,6 @@
 
     <name>MGX-gui - NB App Parent</name>
     
-    <prerequisites>
-        <maven>3.0.5</maven>
-    </prerequisites>
-    
     <scm>
         <url>https://github.com/mgx-metagenomics/mgx-gui</url>
     </scm>
