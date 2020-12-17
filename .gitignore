@@ -1,9 +1,11 @@
 */target/
-
+application/all-*.dat
+application/package-attrs.dat
+application/netigso-bundles
+application/localeVariants
+application/netigso/
+application/catalogcache/
+application/lastModified/
 .idea/
-
 *.iml
-
-MGX-Report/.DS_Store
-
 .DS_Store
