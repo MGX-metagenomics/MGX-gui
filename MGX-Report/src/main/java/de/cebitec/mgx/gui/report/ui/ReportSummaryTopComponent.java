@@ -945,7 +945,6 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         cogkeys.stream().map((i) -> i.split(" ")[0]).forEachOrdered((tmp) -> {
             keys.add(tmp);
         });
-        System.out.println(keys);
 
         for (int i = 0; i < 10; i++) {
             double[] val = generateSeries(cogval.get(i), i, keys.size());
