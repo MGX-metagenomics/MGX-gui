@@ -39,6 +39,7 @@ public class RarefactionCustomizer extends javax.swing.JPanel {
         numPoints.setEnabled(enabled);
         numIterations.setEnabled(enabled);
         hideTitle.setEnabled(enabled);
+        percentageView.setEnabled(enabled);
     }
 
     int getNumberRepetitions() {
@@ -58,6 +59,10 @@ public class RarefactionCustomizer extends javax.swing.JPanel {
         return hideLegend.isSelected();
     }
 
+    boolean percentageView(){
+        return percentageView.isSelected();
+    }
+    
     int getLineThickness() {
         return lineThickness.getValue();
     }
@@ -85,6 +90,7 @@ public class RarefactionCustomizer extends javax.swing.JPanel {
         lineThickness = new javax.swing.JSlider();
         jLabel3 = new javax.swing.JLabel();
         exportTSV = new javax.swing.JButton();
+        percentageView = new javax.swing.JCheckBox();
 
         numPoints.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         numPoints.setMajorTickSpacing(50);
@@ -136,6 +142,14 @@ public class RarefactionCustomizer extends javax.swing.JPanel {
             }
         });
 
+        percentageView.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(percentageView, org.openide.util.NbBundle.getMessage(RarefactionCustomizer.class, "RarefactionCustomizer.percentageView.text")); // NOI18N
+        percentageView.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                percentageViewActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -152,7 +166,8 @@ public class RarefactionCustomizer extends javax.swing.JPanel {
                             .addComponent(jLabel2)
                             .addComponent(jLabel3)
                             .addComponent(hideLegend)
-                            .addComponent(exportTSV))
+                            .addComponent(exportTSV)
+                            .addComponent(percentageView))
                         .addGap(0, 92, Short.MAX_VALUE)))
                 .addContainerGap())
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -178,7 +193,9 @@ public class RarefactionCustomizer extends javax.swing.JPanel {
                 .addComponent(hideTitle)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(hideLegend)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 44, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(percentageView)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 24, Short.MAX_VALUE)
                 .addComponent(exportTSV)
                 .addContainerGap())
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -259,6 +276,10 @@ public class RarefactionCustomizer extends javax.swing.JPanel {
 
     }//GEN-LAST:event_exportTSVActionPerformed
 
+    private void percentageViewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_percentageViewActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_percentageViewActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton exportTSV;
@@ -270,6 +291,7 @@ public class RarefactionCustomizer extends javax.swing.JPanel {
     private javax.swing.JSlider lineThickness;
     private javax.swing.JSlider numIterations;
     private javax.swing.JSlider numPoints;
+    private javax.swing.JCheckBox percentageView;
     // End of variables declaration//GEN-END:variables
 
 }

@@ -21,15 +21,19 @@ import de.cebitec.mgx.gui.viewer.api.ViewerI;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 import javax.swing.JComponent;
 import javax.swing.SwingWorker;
 import org.jfree.chart.ChartFactory;
@@ -89,7 +93,9 @@ public class RarefactionCurve extends AbstractViewer<DistributionI<Long>> implem
 
                 String xAxisLabel = "Size";
                 String yAxisLabel = "Richness";
-
+                if(getCustomizer().percentageView()){
+                    xAxisLabel=xAxisLabel+" in %";
+                }
                 String title = getCustomizer().hideTitle() ? null : getTitle();
                 chart = ChartFactory.createXYLineChart(title, xAxisLabel, yAxisLabel, dataset,
                         PlotOrientation.VERTICAL, !getCustomizer().hideLegend(), true, false);
@@ -160,7 +166,8 @@ public class RarefactionCurve extends AbstractViewer<DistributionI<Long>> implem
 
         for (final Pair<GroupI, DistributionI<Long>> groupDistribution : in) {
 
-            SwingWorker<Iterator<Point>, Void> worker = new SwingWorker<Iterator<Point>, Void>() {
+            SwingWorker<Iterator<Point>, Void> worker;
+            worker = new SwingWorker<Iterator<Point>, Void>() {
                 @Override
                 protected Iterator<Point> doInBackground() throws Exception {
                     final DistributionI<Long> dist = groupDistribution.getSecond();
@@ -183,12 +190,29 @@ public class RarefactionCurve extends AbstractViewer<DistributionI<Long>> implem
                     XYSeries series = new XYSeries(groupDistribution.getFirst().getDisplayName());
                     while (iter != null && iter.hasNext()) {
                         Point p = iter.next();
-                        series.add(p.getX(), p.getY());
+                        double tmp = p.getX();
+                        series.add(tmp, p.getY());
                         dataPoints.add(p);
+                    }
+                    double maxX = series.getMaxX();
+                    XYSeries perc_series = new XYSeries(groupDistribution.getFirst().getDisplayName());
+                    if (getCustomizer().percentageView()) {
+                        for (int i = 0; i < series.getItems().size(); i++) {
+                            double tmpX = series.getX(i).doubleValue();
+                            tmpX = (tmpX / maxX) * 100;
+                            perc_series.add(tmpX, series.getY(i).doubleValue());
+
+                        }
                     }
 
                     synchronized (allDataPoints) {
-                        dataset.addSeries(series);
+                        if (getCustomizer().percentageView()) {
+                            dataset.addSeries(perc_series);
+                            
+                            
+                        } else {
+                            dataset.addSeries(series);
+                        }
                         allDataPoints.put(groupDistribution.getFirst().getDisplayName(), dataPoints);
                     }
 
