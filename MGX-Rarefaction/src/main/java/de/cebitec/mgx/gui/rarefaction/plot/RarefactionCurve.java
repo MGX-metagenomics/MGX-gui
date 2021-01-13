@@ -21,19 +21,15 @@ import de.cebitec.mgx.gui.viewer.api.ViewerI;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 import javax.swing.JComponent;
 import javax.swing.SwingWorker;
 import org.jfree.chart.ChartFactory;
@@ -93,8 +89,8 @@ public class RarefactionCurve extends AbstractViewer<DistributionI<Long>> implem
 
                 String xAxisLabel = "Size";
                 String yAxisLabel = "Richness";
-                if(getCustomizer().percentageView()){
-                    xAxisLabel=xAxisLabel+" in %";
+                if (getCustomizer().percentageView()) {
+                    xAxisLabel = xAxisLabel + " in %";
                 }
                 String title = getCustomizer().hideTitle() ? null : getTitle();
                 chart = ChartFactory.createXYLineChart(title, xAxisLabel, yAxisLabel, dataset,
@@ -208,8 +204,7 @@ public class RarefactionCurve extends AbstractViewer<DistributionI<Long>> implem
                     synchronized (allDataPoints) {
                         if (getCustomizer().percentageView()) {
                             dataset.addSeries(perc_series);
-                            
-                            
+
                         } else {
                             dataset.addSeries(series);
                         }
