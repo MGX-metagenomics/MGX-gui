@@ -23,7 +23,7 @@ public class Point implements Comparable<Point> {
     public double getX() {
         return x;
     }
-
+    
     public double getY() {
         return y;
     }
@@ -35,6 +35,7 @@ public class Point implements Comparable<Point> {
     public String getName() {
         return name;
     }
+
     
     public double getLength() {
         return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
