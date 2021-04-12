@@ -200,7 +200,7 @@ public class SequenceAccess extends MasterHolder implements SequenceAccessI {
                     s.setLength(sdto.getLength());
                 }
                 if (!sdto.getSequence().isEmpty()) {
-                    s.setSequence(sdto.getSequence());
+                    s.setSequence(new String(sdto.getSequence().toByteArray()));
                 }
             }      
         } catch (MGXClientLoggedOutException mcle) {

@@ -1,10 +1,12 @@
 package de.cebitec.mgx.gui.dtoconversion;
 
+import com.google.protobuf.ByteString;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.Identifiable;
 import de.cebitec.mgx.api.model.SequenceI;
 import de.cebitec.mgx.dto.dto.SequenceDTO;
 import de.cebitec.mgx.gui.datamodel.Sequence;
+import de.cebitec.mgx.seqcompression.FourBitEncoder;
 
 /**
  *
@@ -35,7 +37,8 @@ public class SequenceDTOFactory extends DTOConversionBase<SequenceI, SequenceDTO
             b.setLength(a.getLength());
         }
         if (a.getSequence() != null) {
-            b.setSequence(a.getSequence());
+            byte[] enc = FourBitEncoder.encode(a.getSequence().getBytes());
+            b.setSequence(ByteString.copyFrom(enc));
         }
         return b.build();
     }
@@ -51,7 +54,8 @@ public class SequenceDTOFactory extends DTOConversionBase<SequenceI, SequenceDTO
             s.setLength(dto.getLength());
         }
         if (!dto.getSequence().isEmpty()) {
-            s.setSequence(dto.getSequence());
+            byte[] dec = FourBitEncoder.decode(dto.getSequence().toByteArray());
+            s.setSequence(new String(dec));
         }
 
         return s;

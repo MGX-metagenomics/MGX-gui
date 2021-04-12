@@ -9,12 +9,12 @@ import de.cebitec.mgx.gui.swingutils.NonEDT;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
 import de.cebitec.mgx.gui.swingutils.util.SuffixFilter;
+import de.cebitec.mgx.seqcompression.SequenceException;
 import de.cebitec.mgx.seqstorage.FASTQWriter;
 import de.cebitec.mgx.seqstorage.FastaWriter;
 import de.cebitec.mgx.seqstorage.PairedEndFASTQWriter;
 import de.cebitec.mgx.seqstorage.QualityEncoding;
 import de.cebitec.mgx.sequence.DNASequenceI;
-import de.cebitec.mgx.sequence.SeqStoreException;
 import de.cebitec.mgx.sequence.SeqWriterI;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
@@ -190,7 +190,7 @@ public class DownloadSeqRun extends AbstractAction {
                     TaskManager.getInstance().addTask(run);
                 }
             });
-        } catch (SeqStoreException | MGXException ex) {
+        } catch (SequenceException | MGXException ex) {
             Exceptions.printStackTrace(ex);
         }
     }
