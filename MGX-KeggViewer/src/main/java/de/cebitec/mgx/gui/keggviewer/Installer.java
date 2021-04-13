@@ -32,7 +32,7 @@ public class Installer extends ModuleInstall {
     }
 
     private boolean copyDB(String targetDir) {
-        String target = targetDir + File.separator + "kegg.mv.db";
+        String target = targetDir + File.separator + "kegg.db";
         if (new File(target).exists()) {
             new File(target).delete();
         }
@@ -41,7 +41,7 @@ public class Installer extends ModuleInstall {
             new File(targetDir).mkdirs();
         }
 
-        try (InputStream is = getClass().getClassLoader().getResourceAsStream("de/cebitec/mgx/gui/keggviewer/kegg.mv.db")) {
+        try (InputStream is = getClass().getClassLoader().getResourceAsStream("de/cebitec/mgx/gui/keggviewer/kegg.db")) {
             try (FileOutputStream rOut = new FileOutputStream(target)) {
 
                 byte[] buffer = new byte[4096];
