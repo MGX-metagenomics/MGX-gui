@@ -68,10 +68,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <artifactId>h2</artifactId>
-            <groupId>com.h2database</groupId>
-        </dependency>
-        <dependency>
             <artifactId>MGX-API</artifactId>
             <groupId>de.cebitec.mgx.gui</groupId>
         </dependency>
