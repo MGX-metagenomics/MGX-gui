@@ -69,14 +69,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <artifactId>jersey-client</artifactId>
-            <groupId>com.sun.jersey</groupId>
-        </dependency>
-        <dependency>
-            <artifactId>jersey-core</artifactId>
-            <groupId>com.sun.jersey</groupId>
-        </dependency>
-        <dependency>
             <artifactId>MGX-API</artifactId>
             <groupId>de.cebitec.mgx.gui</groupId>
         </dependency>
@@ -122,7 +114,7 @@
                 </configuration>
             </plugin>-->
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
+                <groupId>org.apache.netbeans.utilities</groupId>
                 <artifactId>nbm-maven-plugin</artifactId>
                 <extensions>true</extensions>
                 <configuration>
