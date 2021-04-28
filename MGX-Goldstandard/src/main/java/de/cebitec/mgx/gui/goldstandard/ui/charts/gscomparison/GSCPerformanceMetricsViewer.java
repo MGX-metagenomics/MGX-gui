@@ -15,11 +15,14 @@ import de.cebitec.mgx.gui.pool.MGXPool;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import java.awt.Dialog;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 import javax.swing.JComponent;
 import javax.swing.table.TableColumn;
@@ -141,11 +144,20 @@ public class GSCPerformanceMetricsViewer extends EvaluationViewerI implements GS
     }
 
     public static GSCPerformanceMetricsTableModel calcPerformanceMetrics(List<JobI> jobs, JobI gsJob, SeqRunI run, final AttributeTypeI attributeType, final ProgressHandle p) throws MGXException {
-        int progress = 0;
-        p.start(jobs.size() + 2);
-        p.progress(progress++);
+
+        int totalNumAttrs = 0;
+        for (JobI j : jobs) {
+            Iterator<AttributeI> iter = j.getMaster().Attribute().ByJob(j);
+            while (iter.hasNext()) {
+                iter.next();
+                totalNumAttrs++;
+            }
+            //DistributionI<Long> jDist = j.getMaster().Attribute().getDistribution(attributeType, j, run);
+            //totalNumAttrs += jDist.size();
+        }
 
         DistributionI<Long> gsDist = gsJob.getMaster().Attribute().getDistribution(attributeType, gsJob, run);
+        totalNumAttrs += gsDist.size();
 
         //
         // seqId to attribute value
@@ -154,24 +166,37 @@ public class GSCPerformanceMetricsViewer extends EvaluationViewerI implements GS
         final TLongObjectMap<String> goldstandard = new TLongObjectHashMap<>(jobs.size());
         final ReentrantLock lock = new ReentrantLock();
 
-        final Semaphore rateLimit = new Semaphore(10);
+        final Semaphore rateLimit = new Semaphore(6); // was: 10
         final CountDownLatch goldStandardLatch = new CountDownLatch(gsDist.size());
 
-        for (AttributeI attr : gsDist.keySet()) {
+        p.start(totalNumAttrs);
+        final AtomicInteger progress = new AtomicInteger(0);
+
+        List<AttributeI> sorted = new ArrayList<>(gsDist.keySet());
+        Collections.sort(sorted);
+
+        for (AttributeI attr : sorted) {
 
             MGXPool.getInstance().submit(new Runnable() {
                 @Override
                 public void run() {
+
+                    long duration = 0;
                     p.progress("Processing " + attr.getValue());
                     try {
                         rateLimit.acquireUninterruptibly();
+                        duration = System.currentTimeMillis();
                         Iterator<Long> it = gsDist.getMaster().Sequence().fetchSequenceIDs(attr);
                         lock.lock();
                         while (it.hasNext()) {
                             goldstandard.put(it.next(), attr.getValue());
                         }
+                        p.progress(progress.incrementAndGet());
                     } catch (MGXException ex) {
+                        duration = System.currentTimeMillis() - duration;
+                        System.err.println("error for attribute " + attr.getValue() + " after ms: " + duration);
                         Exceptions.printStackTrace(ex);
+                        p.finish();
                     } finally {
                         lock.unlock();
                         rateLimit.release();
@@ -190,7 +215,7 @@ public class GSCPerformanceMetricsViewer extends EvaluationViewerI implements GS
             return null;
         }
 
-        p.progress("Goldstandard data complete.", progress++);
+        p.progress("Goldstandard data complete.");
 
         int idx = 0;
         PerformanceMetrics[] performanceMetrics = new PerformanceMetrics[jobs.size()];
@@ -207,7 +232,7 @@ public class GSCPerformanceMetricsViewer extends EvaluationViewerI implements GS
                 public void run() {
                     try {
                         rateLimit.acquireUninterruptibly();
-                        pm.compute(p, job, attributeType, run);
+                        pm.compute(p, progress, job, attributeType, run);
                     } catch (MGXException ex) {
                         p.finish();
                         hasError.set(true);
@@ -219,7 +244,7 @@ public class GSCPerformanceMetricsViewer extends EvaluationViewerI implements GS
                 }
             });
 
-            p.progress(progress++);
+            //p.progress(progress++);
         }
 
         // await completion of all tasks

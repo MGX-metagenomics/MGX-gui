@@ -6,7 +6,6 @@
 package de.cebitec.mgx.gui.wizard.configurations.data.impl;
 
 import java.util.Comparator;
-import java.util.logging.Logger;
 
 /**
  * Ein ConfigItem repräsentiert ein Feld, in dem ein Benutzer eine Auswahl

@@ -27,6 +27,8 @@ public abstract class MGXGroupNodeBase<T extends GroupI> extends AbstractNode im
         super(children, lookup);
         content = data;
         content.addPropertyChangeListener(this);
+        
+        getSheet();
     }
 
     public final T getContent() {

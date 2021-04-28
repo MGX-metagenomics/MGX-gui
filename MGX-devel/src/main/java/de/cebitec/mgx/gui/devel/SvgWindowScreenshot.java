@@ -72,7 +72,7 @@ public final class SvgWindowScreenshot implements ActionListener {
         SwingWorker<Void, Void> w = new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
-                Thread.sleep(30000);
+                Thread.sleep(5000);
                 return null;
             }
 

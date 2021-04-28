@@ -26,6 +26,8 @@ public abstract class MGXNodeBase<T extends ModelBaseI<T>> extends AbstractNode 
         super(children, lookup);
         content = data;
         content.addPropertyChangeListener(this);
+        
+        getSheet();
     }
 
     public final T getContent() {

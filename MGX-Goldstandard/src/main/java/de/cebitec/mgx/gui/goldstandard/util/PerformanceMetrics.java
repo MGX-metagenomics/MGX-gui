@@ -13,6 +13,7 @@ import gnu.trove.procedure.TLongProcedure;
 import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
 import java.util.Iterator;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import org.apache.commons.math3.util.FastMath;
 import org.netbeans.api.progress.ProgressHandle;
@@ -22,10 +23,10 @@ import org.netbeans.api.progress.ProgressHandle;
  * @author pblumenk
  */
 public class PerformanceMetrics {
-    
+
     private long fp, fn, tp, tn;
     private final TLongObjectMap<String> goldstandard;
-    
+
     public PerformanceMetrics(TLongObjectMap<String> goldstandard) {
         this.fp = 0;
         this.fn = 0;
@@ -33,13 +34,15 @@ public class PerformanceMetrics {
         this.tn = 0;
         this.goldstandard = goldstandard;
     }
-    
-    public void compute(ProgressHandle p, final JobI job, AttributeTypeI attrType, SeqRunI run) throws MGXException {
-        
+
+    public void compute(ProgressHandle p, AtomicInteger progress, final JobI job, AttributeTypeI attrType, SeqRunI run) throws MGXException {
+
         p.progress("Evaluating " + job.getTool().getName());
-        
+
         final MGXMasterI master = job.getMaster();
         DistributionI<Long> dist = master.Attribute().getDistribution(attrType, job, run);
+        long expectedTotal = dist.getTotalClassifiedElements();
+        long total = 0;
 
         //
         // fetch sequence ID to attribute mappings for this job
@@ -52,16 +55,22 @@ public class PerformanceMetrics {
             while (it.hasNext()) {
                 Long seqId = it.next();
                 jobAttr.put(seqId, jobAssignment);
+                total++;
             }
+            p.progress(progress.incrementAndGet());
         }
-        
+
+        if (total != expectedTotal) {
+            throw new MGXException("Expected " + expectedTotal + " IDs, but got " + total);
+        }
+
         // collect all seq ids
         TLongSet allIds = new TLongHashSet();
         allIds.addAll(goldstandard.keySet());
         allIds.addAll(jobAttr.keySet());
-        
+
         final AtomicLong shouldntBeClassified = new AtomicLong(0);
-        
+
         allIds.forEach(new TLongProcedure() {
             @Override
             public boolean execute(long seqId) {
@@ -69,7 +78,7 @@ public class PerformanceMetrics {
                 // used for all selected jobs
                 String gsAssignment = goldstandard.get(seqId);
                 String jobAssignment = jobAttr.remove(seqId);
-                
+
                 if (gsAssignment != null) {
                     if (jobAssignment != null) {
                         if (gsAssignment.equals(jobAssignment)) {
@@ -88,26 +97,26 @@ public class PerformanceMetrics {
                     fp++;
                     shouldntBeClassified.incrementAndGet();
                 }
-                
+
                 return true;
             }
         });
-        
+
         tn = run.getNumSequences() - goldstandard.size() - shouldntBeClassified.longValue();
     }
-    
+
     public long getFP() {
         return fp;
     }
-    
+
     public long getFN() {
         return fn;
     }
-    
+
     public long getTP() {
         return tp;
     }
-    
+
     public long getTN() {
         return tn;
     }
@@ -221,5 +230,5 @@ public class PerformanceMetrics {
     public double getMarkedness() {
         return getPrecision() + getNegativePredictiveValue() - 1;
     }
-    
+
 }
