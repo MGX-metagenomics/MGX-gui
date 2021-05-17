@@ -6,7 +6,6 @@
 package de.cebitec.mgx.gui.vizfilter;
 
 import de.cebitec.mgx.api.groups.GroupI;
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.AttributeI;
