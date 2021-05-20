@@ -173,10 +173,12 @@
                             de.cebitec.mgx.api.model.assembly.access,
                             de.cebitec.mgx.common,
                             de.cebitec.mgx.sequence,
+                            de.cebitec.mgx.seqcompression,
                             de.cebitec.mgx.gui.datafactories,
                             gnu.trove.map,
                             gnu.trove.map.hash,
-                            com.google.common.cache
+                            com.google.common.cache,
+                            com.google.protobuf
                         </Import-Package>
                     </instructions>
                 </configuration>
