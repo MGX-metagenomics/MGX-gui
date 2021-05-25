@@ -125,6 +125,40 @@ public class AttributeAccess extends MasterHolder implements AttributeAccessI {
     }
 
     @Override
+    public DistributionI<Long> getFilteredDistribution(AttributeI filterAttribute, AttributeTypeI attrType, JobI job) throws MGXException {
+        Map<AttributeI, Long> res;
+        long total = 0;
+        try {
+            AttributeDistribution distribution = getDTOmaster().Attribute().getFilteredDistribution(filterAttribute.getId(), attrType.getId(), job.getId());
+            res = new HashMap<>(distribution.getAttributeCountsCount());
+
+            // convert and save types first
+            TLongObjectMap<AttributeTypeI> types = new TLongObjectHashMap<>(distribution.getAttributeTypeCount());
+            //Map<Long, AttributeTypeI> types = new HashMap<>(distribution.getAttributeTypeCount());
+            for (AttributeTypeDTO at : distribution.getAttributeTypeList()) {
+                types.put(at.getId(), AttributeTypeDTOFactory.getInstance().toModel(getMaster(), at));
+            }
+
+            // convert attribute and fill in the attributetypes
+            for (AttributeCount ac : distribution.getAttributeCountsList()) {
+                AttributeI attr = AttributeDTOFactory.getInstance().toModel(getMaster(), ac.getAttribute());
+                attr.setAttributeType(types.get(ac.getAttribute().getAttributeTypeId()));
+                total += ac.getCount();
+                if (res.containsKey(attr)) {
+                    throw new MGXException("Duplicate key: " + attr.getValue());
+                }
+                res.put(attr, ac.getCount());
+            }
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
+        } catch (MGXDTOException ex) {
+            Logger.getLogger(AttributeAccess.class.getName()).log(Level.SEVERE, null, ex);
+            throw new MGXException(ex);
+        }
+        return new Distribution(getMaster(), res, total);
+    }
+
+    @Override
     public AttributeI create(JobI job, AttributeTypeI attrType, String attrValue, AttributeI parent) throws MGXException {
 
         if (!getMaster().equals(job.getMaster()) || !getMaster().equals(attrType.getMaster())) {

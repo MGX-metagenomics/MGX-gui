@@ -18,6 +18,7 @@ import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.ModelBaseI;
+import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.tree.TreeI;
 import de.cebitec.mgx.api.visualization.ConflictResolver;
 import de.cebitec.mgx.gui.datafactories.DistributionFactory;
@@ -161,6 +162,22 @@ public class ReplicateGroup implements ReplicateGroupI {
             }
         }
         return numSeq;
+    }
+
+    @Override
+    public int getNumberOfSeqRuns() {
+        int numRuns = 0;
+        for (ReplicateI replicate : groups) {
+            if (replicate.isActive()) {
+                numRuns += replicate.getNumberOfSeqRuns();
+            }
+        }
+        return numRuns;
+    }
+
+    @Override
+    public List<ReplicateI> getSeqRuns() {
+        throw new UnsupportedOperationException("Not supported.");
     }
 
     @Override

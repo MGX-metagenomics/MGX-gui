@@ -183,6 +183,17 @@ public class AssemblyGroup implements AssemblyGroupI {
     }
 
     @Override
+    public int getNumberOfSeqRuns() {
+        return getContent().size();
+    }
+
+    @Override
+    public List<AssembledSeqRunI> getSeqRuns() {
+        // TODO convert to immutable list
+        return List.copyOf(getContent());
+    }
+
+    @Override
     public final Set<AssembledSeqRunI> getContent() {
         return Collections.unmodifiableSet(attributeTypes.keySet());
     }

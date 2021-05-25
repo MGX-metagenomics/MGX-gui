@@ -113,7 +113,7 @@ public class VisualizationGroup implements VisualizationGroupI {
     public Class<SeqRunI> getContentClass() {
         return SeqRunI.class;
     }
-    
+
     @Override
     public final int getId() {
         return id;
@@ -178,6 +178,17 @@ public class VisualizationGroup implements VisualizationGroupI {
             ret += sr.getNumSequences();
         }
         return ret;
+    }
+
+    @Override
+    public int getNumberOfSeqRuns() {
+        return getContent().size();
+    }
+
+    @Override
+    public List<SeqRunI> getSeqRuns() {
+        // TODO convert to immutable list
+        return List.copyOf(getContent());
     }
 
     @Override

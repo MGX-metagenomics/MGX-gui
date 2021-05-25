@@ -655,6 +655,17 @@ public class Replicate implements ReplicateI {
     }
 
     @Override
+    public int getNumberOfSeqRuns() {
+        return getContent().size();
+    }
+    
+    @Override
+    public List<SeqRunI> getSeqRuns() {
+        // TODO convert to immutable list
+        return List.copyOf(getContent());
+    }
+
+    @Override
     public synchronized void close() {
         for (SeqRunI sr : attributeTypes.keySet()) {
             sr.removePropertyChangeListener(this);

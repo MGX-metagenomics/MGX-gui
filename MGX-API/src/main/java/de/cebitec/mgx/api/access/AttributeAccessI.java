@@ -40,4 +40,7 @@ public interface AttributeAccessI {
     public Iterator<String> find(String term, SeqRunI run) throws MGXException;
 
     public Iterator<SequenceI> search(String term, boolean exact, SeqRunI run) throws MGXException;
+
+    // as getDistribution(), but only for sequences annotated with filterAttribute
+    public DistributionI<Long> getFilteredDistribution(AttributeI filterAttribute, AttributeTypeI first, JobI second) throws MGXException;
 }

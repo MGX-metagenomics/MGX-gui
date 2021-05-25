@@ -56,6 +56,16 @@ public class JFreeChartUtil {
         return ret;
     }
 
+    public static <T extends Number> LegendItemCollection createSingleLegend(GroupI grp, DistributionI<T> dist) {
+        LegendItemCollection ret = new LegendItemCollection();
+        DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.US);
+        LegendItem li = new LegendItem(grp.getDisplayName());
+        li.setFillPaint(grp.getColor());
+        li.setToolTipText("Classified sequences in " + grp.getDisplayName() + ": " + formatter.format(dist.getTotalClassifiedElements()));
+        ret.add(li);
+        return ret;
+    }
+
     public static LegendItemCollection createReplicateLegend(List<Triple<ReplicateGroupI, DistributionI<Double>, DistributionI<Double>>> in) {
         LegendItemCollection ret = new LegendItemCollection();
         DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.US);
@@ -67,7 +77,7 @@ public class JFreeChartUtil {
         }
         return ret;
     }
-    
+
     public static <T extends Number> CategoryDataset createCategoryDataset(List<Pair<GroupI, DistributionI<T>>> in) {
         return createCategoryDataset(in, false);
     }
@@ -96,7 +106,7 @@ public class JFreeChartUtil {
 
         FastCategoryDataset dataset = new FastCategoryDataset();
         dataset.setNotify(false);
-        
+
         for (AttributeI attr : sortList) {
             for (Pair<GroupI, DistributionI<T>> groupDistribution : in) {
                 final String displayName = groupDistribution.getFirst().getDisplayName();
@@ -104,7 +114,7 @@ public class JFreeChartUtil {
                 dataset.addValue(d.get(attr), displayName, attr.getValue());
             }
         }
-        
+
 //        for (Pair<GroupI, DistributionI<T>> groupDistribution : in) {
 //            final String displayName = groupDistribution.getFirst().getDisplayName();
 //            final DistributionI<T> d = groupDistribution.getSecond();
@@ -113,6 +123,36 @@ public class JFreeChartUtil {
 //                dataset.addValue(entry.getValue(), displayName, entry.getKey().getValue());
 //            }
 //        }
+        if (dataset.getColumnCount() > 25) {
+            return new SlidingCategoryDataset(dataset, 25);
+        } else {
+            return dataset;
+        }
+    }
+
+    public static <T extends Number> CategoryDataset createSingleCategoryDataset(GroupI grp, DistributionI<T> dist, boolean ascending) {
+
+        // summary distribution for sorting
+        TObjectDoubleMap<AttributeI> summary = new TObjectDoubleHashMap<>();
+        for (Entry<AttributeI, T> p : dist.entrySet()) {
+            summary.put(p.getKey(), p.getValue().doubleValue());
+        }
+
+        List<AttributeI> sortList = new ArrayList<>();
+        sortList.addAll(dist.keySet());
+
+        Collections.sort(sortList, new SortByValue(summary));
+        if (ascending) {
+            Collections.reverse(sortList);
+        }
+
+        FastCategoryDataset dataset = new FastCategoryDataset();
+        dataset.setNotify(false);
+
+        for (AttributeI attr : sortList) {
+            final String displayName = grp.getDisplayName();
+            dataset.addValue(dist.get(attr), displayName, attr.getValue());
+        }
 
         if (dataset.getColumnCount() > 25) {
             return new SlidingCategoryDataset(dataset, 25);
