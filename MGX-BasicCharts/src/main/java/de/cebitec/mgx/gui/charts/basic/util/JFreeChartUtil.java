@@ -66,6 +66,16 @@ public class JFreeChartUtil {
         return ret;
     }
 
+    public static <T extends Number> LegendItemCollection createSingleLegend(VisualizationGroupI grp, DistributionI<T> dist) {
+        LegendItemCollection ret = new LegendItemCollection();
+        DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.US);
+        LegendItem li = new LegendItem(grp.getDisplayName());
+        li.setFillPaint(grp.getColor());
+        li.setToolTipText("Classified sequences in " + grp.getDisplayName() + ": " + formatter.format(dist.getTotalClassifiedElements()));
+        ret.add(li);
+        return ret;
+    }
+
     public static LegendItemCollection createReplicateLegend(List<Triple<ReplicateGroupI, DistributionI<Double>, DistributionI<Double>>> in) {
         LegendItemCollection ret = new LegendItemCollection();
         DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.US);
@@ -97,7 +107,7 @@ public class JFreeChartUtil {
                 }
             }
         }
-        
+
         // sort by value
         List<AttributeI> sortList = new ArrayList<>();
         sortList.addAll(summary.keySet());
@@ -108,8 +118,7 @@ public class JFreeChartUtil {
 
         FastCategoryDataset dataset = new FastCategoryDataset();
         dataset.setNotify(false);
-        
-        
+
         //
         // especially the NCBI taxonomy contains duplicate entries, e.g.
         // Bacillus. avoid duplicates by adding the parent to its name
@@ -118,16 +127,15 @@ public class JFreeChartUtil {
         // TODO - move this to a more central location since it affects
         // all visualization types
         //
-        
         Set<String> seen = new HashSet<>();
         Map<AttributeI, String> displayNames = new HashMap<>();
         TreeI<Long> tree = null;
         for (AttributeI attr : sortList) {
             if (seen.contains(attr.getValue())) {
-        
+
                 // we can only resolve conflicts for hierarchical data
                 if (attr.getAttributeType().getStructure() == AttributeTypeI.STRUCTURE_HIERARCHICAL) {
-                    
+
                     try {
 
                         if (tree == null) {
@@ -135,7 +143,7 @@ public class JFreeChartUtil {
                             JobI job = m.Job().fetch(attr.getJobId());
                             tree = m.Attribute().getHierarchy(attr.getAttributeType(), job);
                         }
-                    
+
                         // find the conflicting entry
                         AttributeI conflict = null;
                         for (AttributeI a : displayNames.keySet()) {
@@ -143,27 +151,27 @@ public class JFreeChartUtil {
                                 conflict = a;
                             }
                         }
-                        
+
                         // always true, otherwise we wouldn't have a conflict at all
                         if (conflict != null) {
                             // create new display names for both attributes
-                        
+
                             NodeI<Long> attrNode = getNode(tree, attr);
                             NodeI<Long> conflictNode = getNode(tree, conflict);
-                        
+
                             String attrName = attr.getValue() + " (" + attrNode.getParent().getAttribute().getValue() + ")";
                             String conflictName = conflict.getValue() + " (" + conflictNode.getParent().getAttribute().getValue() + ")";
-                        
+
                             displayNames.put(attr, attrName);
                             displayNames.put(conflict, conflictName);
-                        
+
                             // DO NOT seen.remove(attr.getValue()) so we never end up
                             // with "FOO" and "FOO (BAR)", but always "FOO (SOMETHING)"
                             // and "FOO (SOMETHINGELSE)" for all conflicting attributes
                             seen.add(attrName);
                             seen.add(conflictName);
                         }
-                        
+
                     } catch (MGXException ex) {
                         Exceptions.printStackTrace(ex);
                         return null;
@@ -177,7 +185,6 @@ public class JFreeChartUtil {
                 seen.add(attr.getValue());
             }
         }
-        
 
         for (AttributeI attr : sortList) {
             for (Pair<VisualizationGroupI, DistributionI<T>> groupDistribution : in) {
@@ -186,7 +193,7 @@ public class JFreeChartUtil {
                 dataset.addValue(d.get(attr), displayName, displayNames.get(attr));
             }
         }
-        
+
         dataset.setNotify(true);
 
         if (dataset.getColumnCount() > 25) {
@@ -195,7 +202,38 @@ public class JFreeChartUtil {
             return dataset;
         }
     }
-    
+
+    public static <T extends Number> CategoryDataset createSingleCategoryDataset(VisualizationGroupI grp, DistributionI<T> dist, boolean ascending) {
+
+        // summary distribution for sorting
+        TObjectDoubleMap<AttributeI> summary = new TObjectDoubleHashMap<>();
+        for (Entry<AttributeI, T> p : dist.entrySet()) {
+            summary.put(p.getKey(), p.getValue().doubleValue());
+        }
+
+        List<AttributeI> sortList = new ArrayList<>();
+        sortList.addAll(dist.keySet());
+
+        Collections.sort(sortList, new SortByValue(summary));
+        if (ascending) {
+            Collections.reverse(sortList);
+        }
+
+        FastCategoryDataset dataset = new FastCategoryDataset();
+        dataset.setNotify(false);
+
+        for (AttributeI attr : sortList) {
+            final String displayName = grp.getDisplayName();
+            dataset.addValue(dist.get(attr), displayName, attr.getValue());
+        }
+
+        if (dataset.getColumnCount() > 25) {
+            return new SlidingCategoryDataset(dataset, 25);
+        } else {
+            return dataset;
+        }
+    }
+
     private static NodeI<Long> getNode(TreeI<Long> t, AttributeI attr) {
         for (NodeI<Long> n : t.getNodes()) {
             if (n.getAttribute().getId() == attr.getId()) {
@@ -327,7 +365,7 @@ public class JFreeChartUtil {
                         SVGGraphics2D g2 = new SVGGraphics2D(1280, 768);
                         chart.draw(g2, new Rectangle(0, 0, 1280, 768));
                         String svgElement = g2.getSVGElement();
-                        try (BufferedWriter bw = new BufferedWriter(new FileWriter(fName))) {
+                        try ( BufferedWriter bw = new BufferedWriter(new FileWriter(fName))) {
                             bw.write(svgElement);
                         }
                         return Result.SUCCESS;

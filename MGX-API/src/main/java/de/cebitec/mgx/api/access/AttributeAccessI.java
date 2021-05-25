@@ -35,6 +35,9 @@ public interface AttributeAccessI {
     public DistributionI<Long> getDistribution(AttributeTypeI attrType, JobI job) throws MGXException;
 
     public TreeI<Long> getHierarchy(AttributeTypeI attrType, JobI job) throws MGXException;
+    
+    // as getDistribution(), but only for sequences annotated with filterAttribute
+    public DistributionI<Long> getFilteredDistribution(AttributeI filterAttribute, AttributeTypeI first, JobI second) throws MGXException;
 
     //public Iterator<SequenceI> search(String term, boolean exact, SeqRunI[] targets) throws MGXException;
     public Iterator<String> find(String term, SeqRunI run) throws MGXException;

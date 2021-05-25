@@ -585,6 +585,7 @@
         <module>MGX-SeqExporter</module>
         <module>MGX-NewickWriter</module>
         <module>MGX-devel</module>
+        <module>MGX-SubdistributionViewer</module>
     </modules>
     
     <properties>

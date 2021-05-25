@@ -16,7 +16,7 @@ import java.awt.dnd.DnDConstants;
 import java.beans.PropertyChangeEvent;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Set;
+import java.util.List;
 import javax.swing.Action;
 import org.openide.nodes.Node;
 import org.openide.nodes.NodeTransfer;
@@ -50,7 +50,7 @@ public class ReplicateNode extends MGXNodeBase<VisualizationGroupI> {
             final Collection<? extends SeqRunI> seqruns = dropNode.getLookup().lookupAll(SeqRunI.class);
 
             // reject, if any run is already present
-            Set<SeqRunI> oldRuns = replicate.getSeqRuns();
+            List<SeqRunI> oldRuns = replicate.getSeqRuns();
             for (SeqRunI newRun : seqruns) {
                 if (oldRuns.contains(newRun)) {
                     return MGXPasteTypes.REJECT;

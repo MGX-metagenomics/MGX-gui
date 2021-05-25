@@ -154,7 +154,7 @@ public class VGroupManager implements VGroupManagerI {
                 Iterator<AttributeTypeI> it = vg.getAttributeTypes();
                 while (it.hasNext()) {
                     AttributeTypeI at = it.next();
-                    if (!ret.contains(at)) {
+                    if (!ret.contains(at) && !at.getName().equals("NCBI_CLADE")) {
                         ret.add(at);
                     }
                 }

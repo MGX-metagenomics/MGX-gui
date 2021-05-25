@@ -37,5 +37,14 @@ public class LongToDouble implements VisFilterI<DistributionI<Long>, Distributio
         }
         return ret;
     }
+    
+    public DistributionI<Double> filterDist(DistributionI<Long> d) {
+        Map<AttributeI, Double> tmp = new HashMap<>();
+        for (Map.Entry<AttributeI, Long> e : d.entrySet()) {
+            tmp.put(e.getKey(), e.getValue().doubleValue());
+        }
+        DistributionI<Double> converted = new NormalizedDistribution(d.getMaster(), tmp, d.getTotalClassifiedElements());
+        return converted;
+    }
 
 }

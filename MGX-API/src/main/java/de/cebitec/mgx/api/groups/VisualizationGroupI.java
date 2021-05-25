@@ -74,7 +74,7 @@ public interface VisualizationGroupI extends ModelBaseI<VisualizationGroupI>, Pr
 
     public String getSelectedAttributeType();
 
-    public Set<SeqRunI> getSeqRuns();
+    public List<SeqRunI> getSeqRuns();
 
     public boolean isActive();
 
@@ -105,5 +105,7 @@ public interface VisualizationGroupI extends ModelBaseI<VisualizationGroupI>, Pr
     public void setColor(Color color);
 
     public abstract void setName(String name);
+
+    public int getNumberOfSeqRuns();
 
 }

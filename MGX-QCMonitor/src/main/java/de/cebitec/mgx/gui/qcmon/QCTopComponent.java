@@ -17,14 +17,17 @@ import java.awt.Color;
 import java.awt.Component;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.text.NumberFormat;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 import javax.swing.SwingWorker;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.labels.XYToolTipGenerator;
 import org.jfree.chart.plot.IntervalMarker;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
@@ -32,6 +35,7 @@ import org.jfree.chart.renderer.xy.XYErrorRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.Range;
 import org.jfree.data.xy.DefaultTableXYDataset;
+import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.YIntervalSeries;
 import org.jfree.data.xy.YIntervalSeriesCollection;
@@ -274,6 +278,8 @@ public final class QCTopComponent extends TopComponent implements LookupListener
 
             return cPanel;
         } else {
+            long totalBp = 0;
+
             DefaultTableXYDataset dataset = new DefaultTableXYDataset();
             for (DataRowI dr : qcr.getData()) {
                 XYSeries series = new XYSeries(dr.getName(), true, false);
@@ -291,6 +297,15 @@ public final class QCTopComponent extends TopComponent implements LookupListener
                 }
 
                 dataset.addSeries(series);
+
+                // sum up to compute total dataset size in bp
+                if ("Read length".equals(dr.getName())) {
+                    x = 1;
+                    for (float f : dr.getData()) {
+                        totalBp += x * f;
+                        x++;
+                    }
+                }
             }
 
             boolean showLegend = qcr.getData().length > 1;
@@ -306,7 +321,20 @@ public final class QCTopComponent extends TopComponent implements LookupListener
             switch (qcr.getName()) {
                 case "Read length":
                     plot.getRenderer().setSeriesPaint(0, Color.decode("#1d72aa"));
+                    final XYToolTipGenerator ttGen = plot.getRenderer().getBaseToolTipGenerator();
+                    final long bp = totalBp;
+                    plot.getRenderer().setBaseToolTipGenerator(new XYToolTipGenerator() {
+                        @Override
+                        public String generateToolTip(XYDataset arg0, int arg1, int arg2) {
+                            String ret = ttGen.generateToolTip(arg0, arg1, arg2);
+                            if (ret == null || "".equals(ret)) {
+                                return NumberFormat.getInstance(Locale.US).format(bp) + " bp";
+                            }
+                            return ret;
+                        }
+                    });
                     break;
+
                 case "GC":
                     plot.getRenderer().setSeriesPaint(0, Color.decode("#8cbb4e"));
                     break;

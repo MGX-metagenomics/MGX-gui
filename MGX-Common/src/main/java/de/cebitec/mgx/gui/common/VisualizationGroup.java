@@ -169,10 +169,17 @@ public class VisualizationGroup implements VisualizationGroupI {
     }
 
     @Override
-    public final Set<SeqRunI> getSeqRuns() {
-        return Collections.unmodifiableSet(attributeTypes.keySet());
+    public final List<SeqRunI> getSeqRuns() {
+        List<SeqRunI> ret = new ArrayList<>();
+        ret.addAll(attributeTypes.keySet());
+        return ret;
     }
 
+    @Override
+    public int getNumberOfSeqRuns() {
+        return attributeTypes.size();
+    }
+    
     @Override
     public final String getSelectedAttributeType() {
         return selectedAttributeType;
