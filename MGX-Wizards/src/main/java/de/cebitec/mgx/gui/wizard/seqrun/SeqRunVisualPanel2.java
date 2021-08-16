@@ -68,7 +68,7 @@ public final class SeqRunVisualPanel2 extends JPanel {
                     }
                 }
 
-                if (fchooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+                if (fchooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
                     if (!fchooser.getSelectedFile().equals(file1)) {
                         file2 = fchooser.getSelectedFile();
                         second.setText(file2.getAbsolutePath());
