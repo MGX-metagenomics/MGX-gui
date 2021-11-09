@@ -34,4 +34,6 @@ public interface StatisticsAccessI {
 
     public double aitchisonDistance(double[] d1, double[] d2) throws MGXException;
 
+    public String newickToSVG(String newick) throws MGXException;
+
 }

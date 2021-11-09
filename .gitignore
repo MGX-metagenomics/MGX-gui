@@ -9,3 +9,17 @@ application/lastModified/
 .idea/
 *.iml
 .DS_Store
+
+application/Rplots.pdf
+
+MGX-AttributeVisualization/nb-configuration.xml
+
+MGX-AttributeVisualization/nbactions.xml
+
+MGX-Statistics/.RData
+
+nb-configuration.xml
+
+nbactions.xml
+
+Rplots.pdf
