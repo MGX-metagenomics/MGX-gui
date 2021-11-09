@@ -178,18 +178,6 @@ public class HClustPlot2 extends AbstractViewer<DistributionI<Long>> implements 
                     return Result.SUCCESS;
                     case SVG:
                         try {
-                        /*String parser = XMLResourceDescriptor.getXMLParserClassName();
-                        SAXSVGDocumentFactory factory = new SAXSVGDocumentFactory(parser);
-                        SVGDocument document = factory.createSVGDocument(fName, new ByteArrayInputStream(svgString.getBytes("UTF-8")));
-                       
-                        TranscoderInput input_svg = new TranscoderInput(document);
-                        OutputStream SVGOutputStream = new FileOutputStream(fName);
-                        TranscoderOutput outSVG = new TranscoderOutput(SVGOutputStream);
-                        SVGTranscoder svgConv = new SVGTranscoder();
-                        
-                        svgConv.transcode(input_svg, outSVG);
-                        SVGOutputStream.flush();
-                        SVGOutputStream.close();*/
                         FileOutputStream outputStream = new FileOutputStream(fName);
                         byte[] byteSvgString = svgString.getBytes();
                         outputStream.write(byteSvgString);
