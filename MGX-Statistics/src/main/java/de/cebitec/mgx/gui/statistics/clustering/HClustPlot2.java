@@ -12,34 +12,41 @@ import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.assembly.AssembledSeqRunI;
 import de.cebitec.mgx.gui.seqexporter.SeqExporter;
-import de.cebitec.mgx.gui.statistics.clustering.dendro.Dendrogram;
 import de.cebitec.mgx.gui.swingutils.DelayedPlot;
 import de.cebitec.mgx.gui.viewer.api.AbstractViewer;
 import de.cebitec.mgx.gui.viewer.api.CustomizableI;
 import de.cebitec.mgx.gui.viewer.api.ViewerI;
 import de.cebitec.mgx.gui.visgroups.VGroupManager;
 import de.cebitec.mgx.gui.vizfilter.LongToDouble;
-import de.cebitec.mgx.newick.NewickParser;
-import de.cebitec.mgx.newick.NodeI;
-import de.cebitec.mgx.newick.ParserException;
-import java.awt.Graphics;
-import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
+import java.io.ByteArrayInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
-import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 import javax.swing.SwingWorker;
-import org.jfree.graphics2d.svg.SVGGraphics2D;
+import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
+import org.apache.batik.swing.JSVGCanvas;
+import org.apache.batik.transcoder.TranscoderInput;
+import org.apache.batik.transcoder.TranscoderOutput;
+import org.apache.batik.transcoder.image.JPEGTranscoder;
+import org.apache.batik.transcoder.image.PNGTranscoder;
+import org.apache.batik.transcoder.svg2svg.SVGTranscoder;
+import org.apache.batik.util.XMLResourceDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
+import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
+import org.w3c.dom.svg.SVGDocument;
 
 /**
  *
@@ -50,8 +57,8 @@ public class HClustPlot2 extends AbstractViewer<DistributionI<Long>> implements 
 
     private DelayedPlot cPanel = null;
     private final HClustCustomizer customizer = new HClustCustomizer();
-    private Dendrogram display;
     private String newickString = null;
+    private String svgString = null;
     private List<Pair<GroupI, DistributionI<Double>>> data;
 
     @Override
@@ -70,25 +77,36 @@ public class HClustPlot2 extends AbstractViewer<DistributionI<Long>> implements 
         cPanel = new DelayedPlot();
         data = new LongToDouble().filter(dists);
 
-        SwingWorker<String, Void> worker = new SwingWorker<String, Void>() {
+        SwingWorker<Pair<String, String>, Void> worker = new SwingWorker<Pair<String, String>, Void>() {
             @Override
-            protected String doInBackground() throws Exception {
+            protected Pair<String, String> doInBackground() throws Exception {
                 MGXMasterI m = dists.get(0).getSecond().getMaster();
-                return m.Statistics().Clustering(data, customizer.getDistanceMethod(), customizer.getAgglomeration());
+                String newick = m.Statistics().Clustering(data, customizer.getDistanceMethod(), customizer.getAgglomeration());
+                System.out.println(newick);
+                String svg = m.Statistics().newickToSVG(newick);
+                Pair<String,String> clustPair = new Pair<>(newick, svg);
+                return clustPair;
             }
 
             @Override
             protected void done() {
                 try {
                     DelayedPlot wp = HClustPlot2.this.cPanel;
-                    newickString = get();
-                    NodeI root = NewickParser.parse(newickString);
-                    display = new Dendrogram();
-                    display.showTree(root, 20);
-                    wp.setTarget(display, getImageExporter());
+                    Pair<String, String> result = get();
+                    newickString = result.getFirst();
+                    svgString = result.getSecond();
+                    System.out.println(svgString);
+                    JSVGCanvas jsvg = new JSVGCanvas();
+                    String parser = XMLResourceDescriptor.getXMLParserClassName();
+                    SAXSVGDocumentFactory factory = new SAXSVGDocumentFactory(parser);
+                    SVGDocument document = factory.createSVGDocument("", new ByteArrayInputStream(svgString.getBytes("UTF-8")));
+                    jsvg.setSVGDocument(document);
+                    wp.getParent().add(jsvg);
+                    wp.setTarget(null, getImageExporter());
                     wp.repaint();
+
                     customizer.setNewickString(newickString);
-                } catch (InterruptedException | ExecutionException | ParserException ex) {
+                } catch (InterruptedException | ExecutionException ex) {
                     HClustPlot2.this.cPanel.setTarget(null, null);
                     String message = ex.getMessage();
                     if (message.contains(":")) {
@@ -96,9 +114,14 @@ public class HClustPlot2 extends AbstractViewer<DistributionI<Long>> implements 
                     }
                     NotifyDescriptor nd = new NotifyDescriptor.Message("Clustering failed: " + message, NotifyDescriptor.ERROR_MESSAGE);
                     DialogDisplayer.getDefault().notify(nd);
+                } catch (UnsupportedEncodingException ex) {
+                    Exceptions.printStackTrace(ex);
+                } catch (IOException ex) {
+                    Exceptions.printStackTrace(ex);
                 }
                 super.done();
             }
+
         };
         worker.execute();
     }
@@ -126,36 +149,45 @@ public class HClustPlot2 extends AbstractViewer<DistributionI<Long>> implements 
             public Result export(FileType type, String fName) throws Exception {
                 switch (type) {
                     case PNG:
-                        BufferedImage bi = new BufferedImage(display.getSize().width, display.getSize().height, BufferedImage.TYPE_INT_ARGB);
-                        Graphics g = bi.createGraphics();
-                        display.print(g);
-                        g.dispose();
-                        try {
-                            ImageIO.write(bi, "png", new File(fName));
-                        } catch (IOException e) {
-                            return Result.ERROR;
-                        }
-                        return Result.SUCCESS;
+                        
+                        try {      
+                        TranscoderInput input_svg = new TranscoderInput(new ByteArrayInputStream(svgString.getBytes("UTF-8")));
+                        OutputStream PNGOutStream = new FileOutputStream(fName);
+                        TranscoderOutput outPNG = new TranscoderOutput(PNGOutStream);
+                        PNGTranscoder pngConv = new PNGTranscoder();
+                        pngConv.transcode(input_svg, outPNG);
+                        PNGOutStream.flush();
+                        PNGOutStream.close();
+                    } catch (IOException e) {
+                        return Result.ERROR;
+                    }
+                    return Result.SUCCESS;
 
                     case JPEG:
-                        BufferedImage bi2 = new BufferedImage(display.getSize().width, display.getSize().height, BufferedImage.TYPE_INT_ARGB);
-                        Graphics g2 = bi2.createGraphics();
-                        display.print(g2);
-                        g2.dispose();
                         try {
-                            ImageIO.write(bi2, "jpg", new File(fName));
-                        } catch (IOException e) {
-                            return Result.ERROR;
-                        }
-                        return Result.SUCCESS;
+                        TranscoderInput input_svg = new TranscoderInput(new ByteArrayInputStream(svgString.getBytes("UTF-8")));
+                        OutputStream JPEGOutStream = new FileOutputStream(fName);
+                        TranscoderOutput outJPEG = new TranscoderOutput(JPEGOutStream);
+                        JPEGTranscoder jpegConv = new JPEGTranscoder();
+                        jpegConv.transcode(input_svg, outJPEG);
+                        JPEGOutStream.flush();
+                        JPEGOutStream.close();
+                    } catch (IOException e) {
+                        return Result.ERROR;
+                    }
+                    return Result.SUCCESS;
                     case SVG:
-                        SVGGraphics2D svg = new SVGGraphics2D(display.getWidth(), display.getHeight());
-                        display.print(svg);
-                        String svgElement = svg.getSVGElement();
-                        try (BufferedWriter bw = new BufferedWriter(new FileWriter(fName))) {
-                            bw.write(svgElement);
-                        }
-                        return Result.SUCCESS;
+                        try {
+                        FileOutputStream outputStream = new FileOutputStream(fName);
+                        byte[] byteSvgString = svgString.getBytes();
+                        outputStream.write(byteSvgString);
+                        outputStream.flush();
+                        outputStream.close();
+                        
+                    } catch (IOException e) {
+                        return Result.ERROR;
+                    }
+                    return Result.SUCCESS;
                     default:
                         return Result.ABORT;
                 }
