@@ -18,15 +18,12 @@ import de.cebitec.mgx.gui.viewer.api.CustomizableI;
 import de.cebitec.mgx.gui.viewer.api.ViewerI;
 import de.cebitec.mgx.gui.visgroups.VGroupManager;
 import de.cebitec.mgx.gui.vizfilter.LongToDouble;
-import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -40,7 +37,6 @@ import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.batik.transcoder.image.JPEGTranscoder;
 import org.apache.batik.transcoder.image.PNGTranscoder;
-import org.apache.batik.transcoder.svg2svg.SVGTranscoder;
 import org.apache.batik.util.XMLResourceDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
@@ -82,10 +78,8 @@ public class HClustPlot2 extends AbstractViewer<DistributionI<Long>> implements 
             protected Pair<String, String> doInBackground() throws Exception {
                 MGXMasterI m = dists.get(0).getSecond().getMaster();
                 String newick = m.Statistics().Clustering(data, customizer.getDistanceMethod(), customizer.getAgglomeration());
-                System.out.println(newick);
                 String svg = m.Statistics().newickToSVG(newick);
-                Pair<String,String> clustPair = new Pair<>(newick, svg);
-                return clustPair;
+                return new Pair<>(newick, svg);
             }
 
             @Override
@@ -95,7 +89,6 @@ public class HClustPlot2 extends AbstractViewer<DistributionI<Long>> implements 
                     Pair<String, String> result = get();
                     newickString = result.getFirst();
                     svgString = result.getSecond();
-                    System.out.println(svgString);
                     JSVGCanvas jsvg = new JSVGCanvas();
                     String parser = XMLResourceDescriptor.getXMLParserClassName();
                     SAXSVGDocumentFactory factory = new SAXSVGDocumentFactory(parser);
@@ -106,6 +99,7 @@ public class HClustPlot2 extends AbstractViewer<DistributionI<Long>> implements 
                     wp.repaint();
 
                     customizer.setNewickString(newickString);
+                    
                 } catch (InterruptedException | ExecutionException ex) {
                     HClustPlot2.this.cPanel.setTarget(null, null);
                     String message = ex.getMessage();
@@ -149,45 +143,35 @@ public class HClustPlot2 extends AbstractViewer<DistributionI<Long>> implements 
             public Result export(FileType type, String fName) throws Exception {
                 switch (type) {
                     case PNG:
-                        
-                        try {      
-                        TranscoderInput input_svg = new TranscoderInput(new ByteArrayInputStream(svgString.getBytes("UTF-8")));
-                        OutputStream PNGOutStream = new FileOutputStream(fName);
-                        TranscoderOutput outPNG = new TranscoderOutput(PNGOutStream);
-                        PNGTranscoder pngConv = new PNGTranscoder();
-                        pngConv.transcode(input_svg, outPNG);
-                        PNGOutStream.flush();
-                        PNGOutStream.close();
-                    } catch (IOException e) {
-                        return Result.ERROR;
-                    }
-                    return Result.SUCCESS;
+                        TranscoderInput ti = new TranscoderInput(new ByteArrayInputStream(svgString.getBytes("UTF-8")));
+                        try (OutputStream PNGOutStream = new FileOutputStream(fName)) {
+                            TranscoderOutput outPNG = new TranscoderOutput(PNGOutStream);
+                            PNGTranscoder pngConv = new PNGTranscoder();
+                            pngConv.transcode(ti, outPNG);
+                            PNGOutStream.flush();
+                        } catch (IOException e) {
+                            return Result.ERROR;
+                        }
+                        return Result.SUCCESS;
 
                     case JPEG:
-                        try {
                         TranscoderInput input_svg = new TranscoderInput(new ByteArrayInputStream(svgString.getBytes("UTF-8")));
-                        OutputStream JPEGOutStream = new FileOutputStream(fName);
-                        TranscoderOutput outJPEG = new TranscoderOutput(JPEGOutStream);
-                        JPEGTranscoder jpegConv = new JPEGTranscoder();
-                        jpegConv.transcode(input_svg, outJPEG);
-                        JPEGOutStream.flush();
-                        JPEGOutStream.close();
-                    } catch (IOException e) {
-                        return Result.ERROR;
-                    }
-                    return Result.SUCCESS;
+                        try (OutputStream JPEGOutStream = new FileOutputStream(fName)) {
+                            TranscoderOutput outJPEG = new TranscoderOutput(JPEGOutStream);
+                            JPEGTranscoder jpegConv = new JPEGTranscoder();
+                            jpegConv.transcode(input_svg, outJPEG);
+                            JPEGOutStream.flush();
+                        } catch (IOException e) {
+                            return Result.ERROR;
+                        }
+                        return Result.SUCCESS;
                     case SVG:
-                        try {
-                        FileOutputStream outputStream = new FileOutputStream(fName);
-                        byte[] byteSvgString = svgString.getBytes();
-                        outputStream.write(byteSvgString);
-                        outputStream.flush();
-                        outputStream.close();
-                        
-                    } catch (IOException e) {
-                        return Result.ERROR;
-                    }
-                    return Result.SUCCESS;
+                        try (FileWriter fw = new FileWriter(fName)) {
+                            fw.write(svgString);
+                        } catch (IOException e) {
+                            return Result.ERROR;
+                        }
+                        return Result.SUCCESS;
                     default:
                         return Result.ABORT;
                 }
