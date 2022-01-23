@@ -81,6 +81,18 @@ public class StatisticsAccess extends MasterHolder implements StatisticsAccessI 
             throw new MGXException(ex.getMessage());
         }
     }
+    
+    @Override
+    public String newickToSVG(String newick) throws MGXException {
+        try {
+            String svg = getDTOmaster().Statistics().newickToSVG(newick);
+            return svg;
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
+        } catch (MGXDTOException ex) {
+            throw new MGXException(ex.getMessage());
+        }
+    }
 
     @Override
     public PCAResultI PCA(Collection<Pair<GroupI, DistributionI<Double>>> groups, PrincipalComponent pc1, PrincipalComponent pc2) throws MGXException {
