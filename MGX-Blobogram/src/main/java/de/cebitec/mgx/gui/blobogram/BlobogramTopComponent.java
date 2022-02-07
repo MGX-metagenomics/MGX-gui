@@ -39,7 +39,6 @@ import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.netbeans.api.progress.ProgressHandle;
-import org.netbeans.api.progress.ProgressHandleFactory;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
@@ -177,7 +176,7 @@ public final class BlobogramTopComponent extends TopComponent implements LookupL
                     series.setNotify(false);
                     dataset.addSeries(series);
                     ContigFetcher fetcher = new ContigFetcher(master, b, series, allProcessed);
-                    ProgressHandle ph = ProgressHandleFactory.createHandle("Fetching contigs for " + b.getName(), fetcher, null);
+                    ProgressHandle ph = ProgressHandle.createHandle("Fetching contigs for " + b.getName(), fetcher, null);
                     fetcher.setProgressHandle(ph);
 
                     MGXPool.getInstance().submit(fetcher);
