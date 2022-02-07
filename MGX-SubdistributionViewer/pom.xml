@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    
     <parent>
         <groupId>de.cebitec.mgx.gui</groupId>
         <artifactId>MGX-gui</artifactId>
         <version>2.0</version>
     </parent>
+    
     <artifactId>MGX-SubdistributionViewer</artifactId>
+    
     <packaging>nbm</packaging>
+    
     <build>
         <plugins>
             <plugin>
@@ -37,20 +41,14 @@
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-util-lookup</artifactId>
-            <version>RELEASE123</version>
-            <type>jar</type>
         </dependency>
         <dependency>
             <groupId>de.cebitec.mgx.gui</groupId>
             <artifactId>MGX-Viewer-API</artifactId>
-            <version>2.0</version>
-            <type>jar</type>
         </dependency>
         <dependency>
             <groupId>de.cebitec.mgx.gui</groupId>
             <artifactId>MGX-VisualizationGroups</artifactId>
-            <version>2.0</version>
-            <type>jar</type>
         </dependency>
         <dependency>
             <groupId>de.cebitec.mgx.gui</groupId>
@@ -60,24 +58,18 @@
         <dependency>
             <groupId>de.cebitec.mgx.gui</groupId>
             <artifactId>MGX-VizFilter</artifactId>
-            <version>2.0</version>
-            <type>jar</type>
         </dependency>
         <dependency>
             <groupId>de.cebitec.mgx</groupId>
             <artifactId>JFreeChart-OSGi</artifactId>
-            <version>2.0</version>
         </dependency>
         <dependency>
             <groupId>de.cebitec.mgx.gui</groupId>
             <artifactId>MGX-BasicCharts</artifactId>
-            <version>2.0</version>
-            <type>jar</type>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-math3</artifactId>
-            <version>3.6.1</version>
         </dependency>
     </dependencies>
     <properties>
