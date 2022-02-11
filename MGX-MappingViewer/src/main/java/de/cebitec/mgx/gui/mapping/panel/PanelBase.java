@@ -5,8 +5,8 @@
  */
 package de.cebitec.mgx.gui.mapping.panel;
 
-import de.cebitec.mgx.gui.mapping.ViewController;
-import de.cebitec.mgx.gui.mapping.ViewControllerI;
+import de.cebitec.mgx.gui.mapping.impl.ViewController;
+import de.cebitec.mgx.gui.mapping.impl.ViewControllerI;
 import de.cebitec.mgx.gui.pool.MGXPool;
 import java.awt.Color;
 import java.awt.Font;
@@ -34,7 +34,7 @@ import org.apache.commons.math3.util.FastMath;
  */
 public abstract class PanelBase extends JComponent implements PropertyChangeListener, MouseWheelListener {
 
-    protected final ViewController vc;
+    protected final ViewControllerI vc;
     protected volatile int[] bounds;
     private int maxCoverage = 0;
     private int refLength;
@@ -46,7 +46,7 @@ public abstract class PanelBase extends JComponent implements PropertyChangeList
     private final GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
     private final GraphicsConfiguration gc = ge.getDefaultScreenDevice().getDefaultConfiguration();
 
-    public PanelBase(final ViewController vc, boolean antiAlias) {
+    public PanelBase(final ViewControllerI vc, boolean antiAlias) {
         super();
         super.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
         //super.setDoubleBuffered(true);

@@ -11,7 +11,7 @@ package de.cebitec.mgx.gui.mapping.viewer;
  */
 public class SwitchToRecruitment extends SwitchModeBase {
 
-    public SwitchToRecruitment(TopComponentViewer tc) {
+    public SwitchToRecruitment(MappingViewerTopComponent tc) {
         super(tc, "Fragment recruitment");
     }
     

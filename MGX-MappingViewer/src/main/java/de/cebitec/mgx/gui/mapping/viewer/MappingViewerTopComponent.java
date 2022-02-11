@@ -4,14 +4,16 @@
  */
 package de.cebitec.mgx.gui.mapping.viewer;
 
+import de.cebitec.mgx.gui.mapping.impl.BAMDownloader;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.access.datatransfer.DownloadBaseI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.groups.FileType;
 import de.cebitec.mgx.api.groups.ImageExporterI;
 import de.cebitec.mgx.api.model.ModelBaseI;
-import de.cebitec.mgx.gui.mapping.MappingCtx;
-import de.cebitec.mgx.gui.mapping.ViewController;
+import de.cebitec.mgx.gui.mapping.impl.MappingCtx;
+import de.cebitec.mgx.gui.mapping.impl.ViewController;
+import de.cebitec.mgx.gui.mapping.impl.ViewControllerI;
 import de.cebitec.mgx.gui.mapping.panel.FeaturePanel;
 import de.cebitec.mgx.gui.mapping.panel.MappingPanel;
 import de.cebitec.mgx.gui.mapping.panel.NavigationPanel;
@@ -53,10 +55,12 @@ import org.openide.util.NbBundle.Messages;
 import org.openide.util.NbPreferences;
 import org.openide.util.lookup.AbstractLookup;
 import org.openide.util.lookup.InstanceContent;
+import org.openide.windows.Mode;
 import org.openide.windows.TopComponent;
+import org.openide.windows.WindowManager;
 
 @TopComponent.Description(
-        preferredID = "TopComponentViewer",
+        preferredID = "MappingViewerTopComponent",
         persistenceType = TopComponent.PERSISTENCE_NEVER)
 @TopComponent.Registration(mode = "editor", openAtStartup = false)
 @ActionID(category = "Window", id = "de.cebitec.mgx.gui.mapping.viewer")
@@ -64,7 +68,7 @@ import org.openide.windows.TopComponent;
 @Messages({
     "CTL_MappingAction=ReferenceView",
     "CTL_TopComponentViewer=Mapping Window",})
-public final class TopComponentViewer extends TopComponent implements PropertyChangeListener {
+public final class MappingViewerTopComponent extends TopComponent implements PropertyChangeListener {
 
     private final InstanceContent content = new InstanceContent();
     private final Lookup lookup;
@@ -81,13 +85,18 @@ public final class TopComponentViewer extends TopComponent implements PropertyCh
     private RecruitmentIdentityPanel rip;
     private RecruitmentPanel rp;
     private JPanel bottom;
-    private final ViewController vc;
+    private final ViewControllerI vc;
+    private final SaveView save = new SaveView();
+    //
+    private final IdentityHistogramTopComponent identityHistogram;
 
-    public TopComponentViewer(MappingCtx ctx) {
+    public MappingViewerTopComponent(MappingCtx ctx) {
         lookup = new AbstractLookup(content);
         associateLookup(lookup);
-        content.add(new SaveView());
+        content.add(save);
         vc = new ViewController(ctx);
+        content.add(vc);
+
         String[] elems = new String[ctx.getRuns().length];
         for (int i = 0; i < elems.length; i++) {
             elems[i] = ctx.getRuns()[i].getName();
@@ -95,6 +104,13 @@ public final class TopComponentViewer extends TopComponent implements PropertyCh
 
         setName(String.join(", ", elems) + " vs. " + ctx.getReference().getName());
         createView();
+        
+        identityHistogram = new IdentityHistogramTopComponent();
+        
+        // IdentityHistogramTopComponent doesnt initially correctly obtain
+        // the controller instance via lookup; so set this manually for
+        // now
+        identityHistogram.setController(vc);
     }
 
     private void createView() {
@@ -165,7 +181,7 @@ public final class TopComponentViewer extends TopComponent implements PropertyCh
                 elems[i] = vc.getSeqRuns()[i].getName();
             }
 
-            bamName = String.join("_", elems) + "_vs_" + vc.getReference().getName() + ".bam";
+            bamName = String.join("_", elems) + "_vs_" + vc.getReferenceName() + ".bam";
 
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);
@@ -255,10 +271,30 @@ public final class TopComponentViewer extends TopComponent implements PropertyCh
     @Override
     public void componentOpened() {
         //createView(ctx);
+
+        if (!identityHistogram.isVisible()) {
+            identityHistogram.setVisible(true);
+        }
+
+        Mode m = WindowManager.getDefault().findMode("satellite");
+        if (m != null) {
+            m.dockInto(identityHistogram);
+        }
+        if (!identityHistogram.isOpened()) {
+            identityHistogram.open();
+        }
     }
 
     @Override
     public void componentClosed() {
+
+        if (identityHistogram.isVisible()) {
+            identityHistogram.setVisible(false);
+        }
+        if (identityHistogram.isOpened()) {
+            identityHistogram.close();
+        }
+
         removeAll();
 
         NonEDT.invoke(new Runnable() {
@@ -413,10 +449,10 @@ public final class TopComponentViewer extends TopComponent implements PropertyCh
                         return Result.ERROR;
                     }
                 case SVG:
-                    try (FileWriter fw = new FileWriter(fName)) {
-                        fw.write(((SVGGraphics2D) g2).getSVGDocument());
-                    }
-                    return Result.SUCCESS;
+                    try ( FileWriter fw = new FileWriter(fName)) {
+                    fw.write(((SVGGraphics2D) g2).getSVGDocument());
+                }
+                return Result.SUCCESS;
                 default:
                     return Result.ERROR;
             }

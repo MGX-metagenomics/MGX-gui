@@ -17,9 +17,9 @@ import javax.swing.JPopupMenu;
  */
 public abstract class SwitchModeBase extends JPopupMenu implements ActionListener {
 
-    private final TopComponentViewer tc;
+    private final MappingViewerTopComponent tc;
 
-    protected SwitchModeBase(TopComponentViewer tc, String target) {
+    protected SwitchModeBase(MappingViewerTopComponent tc, String target) {
         super();
         this.tc = tc;
         JMenuItem item = new JMenuItem("Switch to " + target);

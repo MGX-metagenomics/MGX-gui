@@ -7,7 +7,7 @@ package de.cebitec.mgx.gui.mapping.panel;
 
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.gui.cache.IntIterator;
-import de.cebitec.mgx.gui.mapping.ViewController;
+import de.cebitec.mgx.gui.mapping.impl.ViewControllerI;
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -63,7 +63,7 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
     /**
      * Creates new form NavigationPanel
      */
-    public NavigationPanel(final ViewController vc) {
+    public NavigationPanel(final ViewControllerI vc) {
         super(vc, true);
         super.setPreferredSize(new Dimension(5000, 35));
         super.setMaximumSize(new Dimension(5000, 35));
@@ -503,8 +503,8 @@ public class NavigationPanel extends PanelBase implements MouseListener, MouseMo
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);
         }
-        
-           // draw box indicating current scope
+
+        // draw box indicating current scope
         if (bounds != null) {
             Composite oldcomp = g2.getComposite();
             AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.4f);

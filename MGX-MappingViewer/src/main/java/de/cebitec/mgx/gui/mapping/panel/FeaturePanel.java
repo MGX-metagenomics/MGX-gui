@@ -8,7 +8,8 @@ package de.cebitec.mgx.gui.mapping.panel;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.MappedSequenceI;
 import de.cebitec.mgx.api.model.RegionI;
-import de.cebitec.mgx.gui.mapping.ViewController;
+import de.cebitec.mgx.gui.mapping.impl.ViewController;
+import de.cebitec.mgx.gui.mapping.impl.ViewControllerI;
 import de.cebitec.mgx.gui.swingutils.Arrow;
 import de.cebitec.mgx.gui.swingutils.Rectangle;
 import de.cebitec.mgx.gui.swingutils.ShapeBase;
@@ -58,7 +59,7 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
     /**
      * Creates new form FeaturePanel
      */
-    public FeaturePanel(ViewController vc) {
+    public FeaturePanel(ViewControllerI vc) {
         super(vc, true);
         super.setMinimumSize(new Dimension(500, 175));
         super.setPreferredSize(new Dimension(5000, 175));

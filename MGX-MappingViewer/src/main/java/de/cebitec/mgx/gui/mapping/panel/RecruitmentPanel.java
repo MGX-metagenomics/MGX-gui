@@ -7,7 +7,7 @@ package de.cebitec.mgx.gui.mapping.panel;
 
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.MappedSequenceI;
-import de.cebitec.mgx.gui.mapping.ViewController;
+import de.cebitec.mgx.gui.mapping.impl.ViewControllerI;
 import de.cebitec.mgx.gui.mapping.viewer.SwitchModeBase;
 import java.awt.AlphaComposite;
 import java.awt.Color;
@@ -40,7 +40,7 @@ public class RecruitmentPanel extends PanelBase {
     /**
      * Creates new form
      */
-    public RecruitmentPanel(final ViewController vc, SwitchModeBase sm) {
+    public RecruitmentPanel(final ViewControllerI vc, SwitchModeBase sm) {
         super(vc, false);
         initComponents();
         ToolTipManager.sharedInstance().registerComponent(this);
@@ -140,7 +140,7 @@ public class RecruitmentPanel extends PanelBase {
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {
-            case ViewController.MAX_COV_CHANGE:
+            case ViewControllerI.MAX_COV_CHANGE:
                 return;
         }
         super.propertyChange(evt);

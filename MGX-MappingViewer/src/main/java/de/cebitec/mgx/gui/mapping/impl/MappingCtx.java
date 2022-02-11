@@ -1,4 +1,4 @@
-package de.cebitec.mgx.gui.mapping;
+package de.cebitec.mgx.gui.mapping.impl;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;

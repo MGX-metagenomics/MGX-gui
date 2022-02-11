@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.cebitec.mgx.gui.mapping;
+package de.cebitec.mgx.gui.mapping.impl;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
@@ -37,9 +37,7 @@ public class ViewController implements ViewControllerI {
     private final int[] newBounds;
     private final ParallelPropertyChangeSupport pcs;
     private int minIdentity = 0;
-    public static final String MAX_COV_CHANGE = "maxCoverageChange";
-    public static final String PREVIEWBOUNDS_CHANGE = "previewBoundsChange";
-    public static final String MIN_IDENTITY_CHANGE = "minIdentityChange";
+
 
     public ViewController(MappingCtx ctx) {
         this.ctx = ctx;
@@ -55,6 +53,7 @@ public class ViewController implements ViewControllerI {
         return ctx.getMaster();
     }
 
+    @Override
     public MappingI getMapping() throws MGXException {
         if (isClosed()) {
             throw new MGXLoggedoutException("ViewController is closed");
@@ -79,6 +78,7 @@ public class ViewController implements ViewControllerI {
         return ctx.getReference().getLength();
     }
    
+    @Override
     public SeqRunI[] getSeqRuns() throws MGXException {
         if (isClosed()) {
             throw new MGXLoggedoutException("ViewController is closed");
@@ -86,6 +86,7 @@ public class ViewController implements ViewControllerI {
         return ctx.getRuns();
     }
 
+    @Override
     public ToolI getTool() throws MGXException {
         if (isClosed()) {
             throw new MGXLoggedoutException("ViewController is closed");
@@ -93,6 +94,7 @@ public class ViewController implements ViewControllerI {
         return ctx.getTool();
     }
 
+    @Override
     public long getMaxCoverage() throws MGXException {
         if (isClosed()) {
             throw new MGXLoggedoutException("ViewController is closed");
@@ -101,6 +103,7 @@ public class ViewController implements ViewControllerI {
     }
 
     // number of bp covered of the reference sequenc e
+    @Override
     public long getGenomicCoverage() throws MGXException {
         if (isClosed()) {
             throw new MGXLoggedoutException("ViewController is closed");
@@ -143,11 +146,13 @@ public class ViewController implements ViewControllerI {
         }
     }
 
+    @Override
     public void setMinIdentity(int ident) {
         minIdentity = ident;
         pcs.firePropertyChange(MIN_IDENTITY_CHANGE, -1, minIdentity);
     }
 
+    @Override
     public int getMinIdentity() {
         return minIdentity;
     }
@@ -168,6 +173,7 @@ public class ViewController implements ViewControllerI {
         }
     }
 
+    @Override
     public Set<RegionI> getRegions() throws MGXException {
         if (isClosed()) {
             throw new MGXLoggedoutException("ViewController is closed");
@@ -182,6 +188,7 @@ public class ViewController implements ViewControllerI {
         return ctx.getRegions(from, to);
     }
 
+    @Override
     public final List<MappedSequenceI> getMappings() throws MGXException {
         if (isClosed()) {
             throw new MGXLoggedoutException("ViewController is closed");
@@ -189,6 +196,7 @@ public class ViewController implements ViewControllerI {
         return ctx.getMappings(curBounds[0], curBounds[1], minIdentity);
     }
 
+    @Override
     public final List<MappedSequenceI> getMappings(int from, int to) throws MGXException {
         if (isClosed()) {
             throw new MGXLoggedoutException("ViewController is closed");
@@ -196,6 +204,7 @@ public class ViewController implements ViewControllerI {
         return ctx.getMappings(from, to, minIdentity);
     }
 
+    @Override
     public final List<MappedSequenceI> getMappings(int from, int to, int minIdent) throws MGXException {
         if (isClosed()) {
             throw new MGXLoggedoutException("ViewController is closed");
@@ -203,6 +212,7 @@ public class ViewController implements ViewControllerI {
         return ctx.getMappings(from, to, minIdent);
     }
 
+    @Override
     public void getCoverage(int from, int to, int[] dest) throws MGXException {
         if (isClosed()) {
             throw new MGXLoggedoutException("ViewController is closed");
@@ -210,6 +220,7 @@ public class ViewController implements ViewControllerI {
         ctx.getCoverage(from, to, dest);
     }
 
+    @Override
     public final IntIterator getCoverageIterator() throws MGXException {
         if (isClosed()) {
             throw new MGXLoggedoutException("ViewController is closed");

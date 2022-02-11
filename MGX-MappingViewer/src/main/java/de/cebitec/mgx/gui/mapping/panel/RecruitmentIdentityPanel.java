@@ -8,7 +8,7 @@ package de.cebitec.mgx.gui.mapping.panel;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.exception.MGXLoggedoutException;
 import de.cebitec.mgx.api.model.MappedSequenceI;
-import de.cebitec.mgx.gui.mapping.ViewController;
+import de.cebitec.mgx.gui.mapping.impl.ViewControllerI;
 import de.cebitec.mgx.gui.mapping.shapes.ColoredRectangle;
 import de.cebitec.mgx.gui.mapping.viewer.SwitchModeBase;
 import java.awt.Color;
@@ -36,7 +36,7 @@ public class RecruitmentIdentityPanel extends PanelBase {
     private final int topBorderPx = 3;
     private final int bottomBorderPx = 5;
 
-    public RecruitmentIdentityPanel(ViewController vc, SwitchModeBase sm) {
+    public RecruitmentIdentityPanel(ViewControllerI vc, SwitchModeBase sm) {
         super(vc, true);
         super.setComponentPopupMenu(sm);
         super.setPreferredSize(new Dimension(5000, 50));
@@ -195,7 +195,7 @@ public class RecruitmentIdentityPanel extends PanelBase {
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {
-            case ViewController.MAX_COV_CHANGE:
+            case ViewControllerI.MAX_COV_CHANGE:
                 return;
         }
         super.propertyChange(evt);

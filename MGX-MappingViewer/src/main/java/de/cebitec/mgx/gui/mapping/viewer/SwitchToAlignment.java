@@ -11,7 +11,7 @@ package de.cebitec.mgx.gui.mapping.viewer;
  */
 public class SwitchToAlignment extends SwitchModeBase {
 
-    public SwitchToAlignment(TopComponentViewer tc) {
+    public SwitchToAlignment(MappingViewerTopComponent tc) {
         super(tc, "Alignment View");
     }
 }

@@ -8,7 +8,7 @@ package de.cebitec.mgx.gui.mapping.panel;
 import de.cebitec.mgx.api.misc.Point;
 import de.cebitec.mgx.gui.cache.Interval;
 import de.cebitec.mgx.gui.cache.IntervalFactory;
-import de.cebitec.mgx.gui.mapping.ViewController;
+import de.cebitec.mgx.gui.mapping.impl.ViewController;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
