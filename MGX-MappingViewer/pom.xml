@@ -102,11 +102,24 @@
 <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-awt</artifactId>
-        </dependency> -->
+        </dependency> 
         <dependency>
             <groupId>de.cebitec.mgx</groupId>
             <artifactId>xchart-OSGi</artifactId>
             <version>2.0</version>
+        </dependency>-->
+        
+        <dependency>
+            <groupId>org.knowm.xchart</groupId>
+            <artifactId>xchart</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>fontbox</artifactId>
         </dependency>
     </dependencies>
 
