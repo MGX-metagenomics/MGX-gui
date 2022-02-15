@@ -5,6 +5,7 @@
  */
 package de.cebitec.mgx.gui.mapping.impl;
 
+import de.cebitec.mgx.gui.mapping.MappingCtx;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.exception.MGXLoggedoutException;

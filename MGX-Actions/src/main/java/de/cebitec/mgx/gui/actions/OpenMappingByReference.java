@@ -12,7 +12,7 @@ import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.api.model.MappingI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.mapping.MappingCtx;
-import de.cebitec.mgx.gui.mapping.viewer.TopComponentViewer;
+import de.cebitec.mgx.gui.mapping.viewer.MappingViewerTopComponent;
 import de.cebitec.mgx.gui.pool.MGXPool;
 import de.cebitec.mgx.gui.wizard.mapping.MappingWizardWizardAction;
 import java.awt.event.ActionEvent;
@@ -124,7 +124,7 @@ public class OpenMappingByReference extends OpenMappingBase {
         }
 
         if (selectedMapping != null) {
-            TopComponentViewer component = new TopComponentViewer(selectedMapping);
+            MappingViewerTopComponent component = new MappingViewerTopComponent(selectedMapping);
             component.open();
         }
 

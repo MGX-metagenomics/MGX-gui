@@ -8,7 +8,7 @@ package de.cebitec.mgx.gui.mapping.panel;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.exception.MGXTimeoutException;
 import de.cebitec.mgx.api.model.MappedSequenceI;
-import de.cebitec.mgx.gui.mapping.ViewController;
+import de.cebitec.mgx.gui.mapping.impl.ViewControllerI;
 import static de.cebitec.mgx.gui.mapping.panel.PanelBase.antiAlias;
 import de.cebitec.mgx.gui.mapping.shapes.MappedRead2D;
 import de.cebitec.mgx.gui.mapping.tracks.TrackFactory;
@@ -52,7 +52,7 @@ public class MappingPanel extends PanelBase {
     /**
      * Creates new form MappingPanel
      */
-    public MappingPanel(final ViewController vc, SwitchModeBase sm) {
+    public MappingPanel(final ViewControllerI vc, SwitchModeBase sm) {
         super(vc, false);
         initComponents();
         ToolTipManager.sharedInstance().registerComponent(this);
@@ -95,7 +95,7 @@ public class MappingPanel extends PanelBase {
                 elems[i] = vc.getSeqRuns()[i].getName();
             }
 
-            name = String.join(", ", elems) + " vs. " + vc.getReference().getName();
+            name = String.join(", ", elems) + " vs. " + vc.getReferenceName();
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);
         }
@@ -223,7 +223,7 @@ public class MappingPanel extends PanelBase {
         int requiredHeight = TRACKHEIGHT * tracks.size();
         int maxVisibleTracks = height / TRACKHEIGHT;
 
-        System.err.println(tracks.size() + " tracks");
+        //System.err.println(tracks.size() + " tracks");
 
         if (requiredHeight > height) {
             scrollBar.setEnabled(true);
@@ -232,7 +232,7 @@ public class MappingPanel extends PanelBase {
             scrollBar.setMaximum(tracks.size() + 5);
             scrollBar.setVisibleAmount(maxVisibleTracks);
         } else {
-            System.err.println(tracks.size() + " tracks, no scrollbar needed");
+            //System.err.println(tracks.size() + " tracks, no scrollbar needed");
             scrollBar.setEnabled(false);
         }
 
@@ -271,7 +271,7 @@ public class MappingPanel extends PanelBase {
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {
-            case ViewController.MAX_COV_CHANGE:
+            case ViewControllerI.MAX_COV_CHANGE:
                 return;
         }
         super.propertyChange(evt);

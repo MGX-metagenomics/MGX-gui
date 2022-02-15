@@ -11,7 +11,7 @@ import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.groups.FileType;
 import de.cebitec.mgx.api.groups.ImageExporterI;
 import de.cebitec.mgx.api.model.ModelBaseI;
-import de.cebitec.mgx.gui.mapping.impl.MappingCtx;
+import de.cebitec.mgx.gui.mapping.MappingCtx;
 import de.cebitec.mgx.gui.mapping.impl.ViewController;
 import de.cebitec.mgx.gui.mapping.impl.ViewControllerI;
 import de.cebitec.mgx.gui.mapping.panel.FeaturePanel;
