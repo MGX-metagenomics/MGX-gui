@@ -39,6 +39,10 @@ public class MappedSequenceCache extends CoverageInfoCache<Set<MappedSequenceI>>
             throw new IllegalArgumentException();
         }
         final Iterator<Interval> iter = getIntervals(from, to);
+        
+        // a set is needed here to avoid duplicate mapped sequences, since a
+        // sequence can be present in two intervals when e.g. the alignment
+        // spans across the interval boundary
         final Set<MappedSequenceI> mappedSequences = new TreeSet<>();
         try {
             while (iter.hasNext()) {
