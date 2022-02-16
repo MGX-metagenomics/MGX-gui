@@ -110,11 +110,14 @@ public class MappingPanel extends PanelBase {
 //        g2.setColor(getBackground());
 //        g2.fillRect(0, 0, getWidth(), getHeight());
 
-        Color col = Color.BLACK;
+
+        Color currentColor = Color.BLACK;
         synchronized (coverage) {
             for (MappedRead2D mr2d : coverage) {
-                if (!col.equals(mr2d.getColor())) {
-                    g2.setColor(mr2d.getColor());
+                Color newColor = mr2d.getColor();
+                if (!currentColor.equals(newColor)) {
+                    g2.setColor(newColor);
+                    currentColor = newColor;
                 }
                 g2.fill(mr2d);
             }
