@@ -37,7 +37,6 @@ public abstract class Cache<T> implements PropertyChangeListener {
     @Override
     public final void propertyChange(PropertyChangeEvent evt) {
         if (evt.getSource().equals(ref) && ModelBaseI.OBJECT_DELETED.equals(evt.getPropertyName())) {
-            ref.removePropertyChangeListener(this);
             close();
         }
     }
@@ -55,6 +54,7 @@ public abstract class Cache<T> implements PropertyChangeListener {
     }
 
     public void close() {
+        ref.removePropertyChangeListener(this);
         isClosed = true;
         lcache.cleanUp();
     }
