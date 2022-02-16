@@ -67,10 +67,6 @@
             <artifactId>MGX-VisualizationGroups</artifactId>
         </dependency>
         <dependency>
-            <groupId>de.cebitec.mgx</groupId>
-            <artifactId>JFreeSVG-OSGi</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.apache.xmlgraphics</groupId>
             <artifactId>batik-all</artifactId>
         </dependency>
