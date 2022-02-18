@@ -4,7 +4,6 @@
  * and open the template in the editor.
  */
 package de.cebitec.mgx.gui.report.ui;
-
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.model.AttributeI;
@@ -46,8 +45,7 @@ import org.knowm.xchart.CategoryChartBuilder;
 import org.knowm.xchart.PieChart;
 import org.knowm.xchart.PieChartBuilder;
 import org.knowm.xchart.XChartPanel;
-import org.knowm.xchart.style.PieStyler;
-import org.knowm.xchart.style.PieStyler.AnnotationType;
+import org.knowm.xchart.style.PieStyler.LabelType;
 import org.knowm.xchart.style.Styler.ChartTheme;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
@@ -77,7 +75,7 @@ import org.openide.windows.TopComponent;
 @TopComponent.Registration(mode = "editor", openAtStartup = false)
 @ActionID(category = "Window", id = "de.cebitec.mgx.gui.mgx_report.ReportSummaryTopComponent")
 @ActionReferences({
-    @ActionReference(path = "Menu/Window", position = 550)
+        @ActionReference(path = "Menu/Window", position = 550)
 })
 @TopComponent.OpenActionRegistration(
         displayName = "Show Report",
@@ -96,7 +94,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
     final private Color[] color;
 
     public ReportSummaryTopComponent() {
-        this.color = generatePaletteCBFriendly();
+        this.color = generatePaletteCBFriendlyLight();
         initComponents();
         super.setName("Show Report");
         super.setToolTipText("Show Report");
@@ -192,12 +190,12 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         javax.swing.GroupLayout jFrame1Layout = new javax.swing.GroupLayout(jFrame1.getContentPane());
         jFrame1.getContentPane().setLayout(jFrame1Layout);
         jFrame1Layout.setHorizontalGroup(
-            jFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+                jFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 400, Short.MAX_VALUE)
         );
         jFrame1Layout.setVerticalGroup(
-            jFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+                jFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 300, Short.MAX_VALUE)
         );
 
         org.openide.awt.Mnemonics.setLocalizedText(jLabel2, org.openide.util.NbBundle.getMessage(ReportSummaryTopComponent.class, "ReportSummaryTopComponent.jLabel2.text")); // NOI18N
@@ -272,87 +270,87 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(23, 23, 23)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGap(246, 246, 246)
-                                .addComponent(filler1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(qccontroll)
-                                .addGap(94, 94, 94))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGap(452, 452, 452)
-                                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGap(711, 711, 711))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
+                jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(z, javax.swing.GroupLayout.PREFERRED_SIZE, 340, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(z1, javax.swing.GroupLayout.PREFERRED_SIZE, 340, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(z2, javax.swing.GroupLayout.PREFERRED_SIZE, 340, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(z5, javax.swing.GroupLayout.PREFERRED_SIZE, 340, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(z4, javax.swing.GroupLayout.PREFERRED_SIZE, 340, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(z3, javax.swing.GroupLayout.PREFERRED_SIZE, 340, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(117, 117, 117)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(seqmeth)
-                                    .addComponent(seqtech)
-                                    .addComponent(seqcount)
-                                    .addComponent(nameseq)
-                                    .addComponent(seqid)
-                                    .addComponent(paired))
-                                .addGap(528, 528, 528))))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(474, 474, 474)
-                        .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(800, 800, 800)))
-                .addGap(218, 218, 218))
+                                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                                .addGap(23, 23, 23)
+                                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                                                .addGap(246, 246, 246)
+                                                                .addComponent(filler1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                                                .addComponent(qccontroll)
+                                                                .addGap(94, 94, 94))
+                                                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                                                .addGap(452, 452, 452)
+                                                                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                                .addGap(711, 711, 711))
+                                                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                                        .addComponent(z, javax.swing.GroupLayout.PREFERRED_SIZE, 340, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                        .addComponent(z1, javax.swing.GroupLayout.PREFERRED_SIZE, 340, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                        .addComponent(z2, javax.swing.GroupLayout.PREFERRED_SIZE, 340, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                        .addComponent(z5, javax.swing.GroupLayout.PREFERRED_SIZE, 340, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                        .addComponent(z4, javax.swing.GroupLayout.PREFERRED_SIZE, 340, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                        .addComponent(z3, javax.swing.GroupLayout.PREFERRED_SIZE, 340, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                                .addGap(117, 117, 117)
+                                                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                                        .addComponent(seqmeth)
+                                                                        .addComponent(seqtech)
+                                                                        .addComponent(seqcount)
+                                                                        .addComponent(nameseq)
+                                                                        .addComponent(seqid)
+                                                                        .addComponent(paired))
+                                                                .addGap(528, 528, 528))))
+                                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                                .addGap(474, 474, 474)
+                                                .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addGap(800, 800, 800)))
+                                .addGap(218, 218, 218))
         );
 
-        jPanel1Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {z, z1, z2, z3, z4, z5});
+        jPanel1Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[]{z, z1, z2, z3, z4, z5});
 
         jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(35, 35, 35)
-                        .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, 44, Short.MAX_VALUE)
-                        .addGap(33, 33, 33)
-                        .addComponent(nameseq))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addGap(94, 94, 94)
-                        .addComponent(z, javax.swing.GroupLayout.DEFAULT_SIZE, 44, Short.MAX_VALUE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(seqid)
-                    .addComponent(z1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(seqcount)
-                    .addComponent(z2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(seqmeth)
-                    .addComponent(z3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(6, 6, 6)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(seqtech)
-                    .addComponent(z4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(paired)
-                    .addComponent(z5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(48, 48, 48)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 27, Short.MAX_VALUE)
-                .addGap(47, 47, 47)
-                .addComponent(qccontroll, javax.swing.GroupLayout.DEFAULT_SIZE, 392, Short.MAX_VALUE)
-                .addGap(732, 732, 732)
-                .addComponent(filler1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(732, 732, 732))
+                jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                                .addGap(35, 35, 35)
+                                                .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, 44, Short.MAX_VALUE)
+                                                .addGap(33, 33, 33)
+                                                .addComponent(nameseq))
+                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                                .addGap(94, 94, 94)
+                                                .addComponent(z, javax.swing.GroupLayout.DEFAULT_SIZE, 44, Short.MAX_VALUE)))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(seqid)
+                                        .addComponent(z1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(seqcount)
+                                        .addComponent(z2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(seqmeth)
+                                        .addComponent(z3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGap(6, 6, 6)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(seqtech)
+                                        .addComponent(z4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(paired)
+                                        .addComponent(z5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGap(48, 48, 48)
+                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 27, Short.MAX_VALUE)
+                                .addGap(47, 47, 47)
+                                .addComponent(qccontroll, javax.swing.GroupLayout.DEFAULT_SIZE, 392, Short.MAX_VALUE)
+                                .addGap(732, 732, 732)
+                                .addComponent(filler1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(732, 732, 732))
         );
 
         tabbedpane.addTab(org.openide.util.NbBundle.getMessage(ReportSummaryTopComponent.class, "ReportSummaryTopComponent.jPanel1.TabConstraints.tabTitle"), jPanel1); // NOI18N
@@ -373,12 +371,12 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         javax.swing.GroupLayout phylumpanelLayout = new javax.swing.GroupLayout(phylumpanel);
         phylumpanel.setLayout(phylumpanelLayout);
         phylumpanelLayout.setHorizontalGroup(
-            phylumpanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+                phylumpanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 0, Short.MAX_VALUE)
         );
         phylumpanelLayout.setVerticalGroup(
-            phylumpanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+                phylumpanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 0, Short.MAX_VALUE)
         );
 
         classpanel.setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -387,12 +385,12 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         javax.swing.GroupLayout classpanelLayout = new javax.swing.GroupLayout(classpanel);
         classpanel.setLayout(classpanelLayout);
         classpanelLayout.setHorizontalGroup(
-            classpanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+                classpanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 0, Short.MAX_VALUE)
         );
         classpanelLayout.setVerticalGroup(
-            classpanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 481, Short.MAX_VALUE)
+                classpanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 481, Short.MAX_VALUE)
         );
 
         kingdompanel.setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -405,12 +403,12 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         javax.swing.GroupLayout orderpanelLayout = new javax.swing.GroupLayout(orderpanel);
         orderpanel.setLayout(orderpanelLayout);
         orderpanelLayout.setHorizontalGroup(
-            orderpanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+                orderpanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 0, Short.MAX_VALUE)
         );
         orderpanelLayout.setVerticalGroup(
-            orderpanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+                orderpanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 0, Short.MAX_VALUE)
         );
 
         familypanel.setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -425,50 +423,50 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(36, 36, 36)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(classpanel, javax.swing.GroupLayout.DEFAULT_SIZE, 747, Short.MAX_VALUE)
-                            .addComponent(kingdompanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(familypanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(26, 26, 26)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(phylumpanel, javax.swing.GroupLayout.DEFAULT_SIZE, 747, Short.MAX_VALUE)
-                            .addComponent(orderpanel, javax.swing.GroupLayout.DEFAULT_SIZE, 747, Short.MAX_VALUE)
-                            .addComponent(genuspanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(574, 574, 574)
-                        .addComponent(jobLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(541, 541, 541))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(402, 402, 402)
-                        .addComponent(organismpanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(360, 360, 360)))
-                .addGap(28, 28, 28))
+                jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(jPanel2Layout.createSequentialGroup()
+                                                .addGap(36, 36, 36)
+                                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                                        .addComponent(classpanel, javax.swing.GroupLayout.DEFAULT_SIZE, 747, Short.MAX_VALUE)
+                                                        .addComponent(kingdompanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                        .addComponent(familypanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                                .addGap(26, 26, 26)
+                                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                                        .addComponent(phylumpanel, javax.swing.GroupLayout.DEFAULT_SIZE, 747, Short.MAX_VALUE)
+                                                        .addComponent(orderpanel, javax.swing.GroupLayout.DEFAULT_SIZE, 747, Short.MAX_VALUE)
+                                                        .addComponent(genuspanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                        .addGroup(jPanel2Layout.createSequentialGroup()
+                                                .addGap(574, 574, 574)
+                                                .addComponent(jobLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addGap(541, 541, 541))
+                                        .addGroup(jPanel2Layout.createSequentialGroup()
+                                                .addGap(402, 402, 402)
+                                                .addComponent(organismpanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addGap(360, 360, 360)))
+                                .addGap(28, 28, 28))
         );
         jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(45, 45, 45)
-                .addComponent(jobLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 52, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(kingdompanel, javax.swing.GroupLayout.DEFAULT_SIZE, 492, Short.MAX_VALUE)
-                    .addComponent(phylumpanel, javax.swing.GroupLayout.DEFAULT_SIZE, 492, Short.MAX_VALUE))
-                .addGap(29, 29, 29)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(classpanel, javax.swing.GroupLayout.DEFAULT_SIZE, 481, Short.MAX_VALUE)
-                    .addComponent(orderpanel, javax.swing.GroupLayout.DEFAULT_SIZE, 481, Short.MAX_VALUE))
-                .addGap(26, 26, 26)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(familypanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(genuspanel, javax.swing.GroupLayout.DEFAULT_SIZE, 492, Short.MAX_VALUE))
-                .addGap(18, 18, 18)
-                .addComponent(organismpanel, javax.swing.GroupLayout.DEFAULT_SIZE, 492, Short.MAX_VALUE)
-                .addGap(132, 132, 132))
+                jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGap(45, 45, 45)
+                                .addComponent(jobLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 52, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(kingdompanel, javax.swing.GroupLayout.DEFAULT_SIZE, 492, Short.MAX_VALUE)
+                                        .addComponent(phylumpanel, javax.swing.GroupLayout.DEFAULT_SIZE, 492, Short.MAX_VALUE))
+                                .addGap(29, 29, 29)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addComponent(classpanel, javax.swing.GroupLayout.DEFAULT_SIZE, 481, Short.MAX_VALUE)
+                                        .addComponent(orderpanel, javax.swing.GroupLayout.DEFAULT_SIZE, 481, Short.MAX_VALUE))
+                                .addGap(26, 26, 26)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(familypanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(genuspanel, javax.swing.GroupLayout.DEFAULT_SIZE, 492, Short.MAX_VALUE))
+                                .addGap(18, 18, 18)
+                                .addComponent(organismpanel, javax.swing.GroupLayout.DEFAULT_SIZE, 492, Short.MAX_VALUE)
+                                .addGap(132, 132, 132))
         );
 
         jobLabel.getAccessibleContext().setAccessibleName(org.openide.util.NbBundle.getMessage(ReportSummaryTopComponent.class, "ReportSummaryTopComponent.jobLabel.AccessibleContext.accessibleName")); // NOI18N
@@ -494,28 +492,28 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(514, 514, 514)
-                .addComponent(jobLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(629, 629, 629))
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(47, 47, 47)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(funcpanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(cogpanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(143, 143, 143))
+                jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addGap(514, 514, 514)
+                                .addComponent(jobLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(629, 629, 629))
+                        .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addGap(47, 47, 47)
+                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addComponent(funcpanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(cogpanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGap(143, 143, 143))
         );
         jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(37, 37, 37)
-                .addComponent(jobLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(cogpanel, javax.swing.GroupLayout.DEFAULT_SIZE, 437, Short.MAX_VALUE)
-                .addGap(138, 138, 138)
-                .addComponent(funcpanel, javax.swing.GroupLayout.DEFAULT_SIZE, 878, Short.MAX_VALUE)
-                .addGap(750, 750, 750))
+                jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addGap(37, 37, 37)
+                                .addComponent(jobLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(cogpanel, javax.swing.GroupLayout.DEFAULT_SIZE, 437, Short.MAX_VALUE)
+                                .addGap(138, 138, 138)
+                                .addComponent(funcpanel, javax.swing.GroupLayout.DEFAULT_SIZE, 878, Short.MAX_VALUE)
+                                .addGap(750, 750, 750))
         );
 
         tabbedpane.addTab(org.openide.util.NbBundle.getMessage(ReportSummaryTopComponent.class, "ReportSummaryTopComponent.jPanel3.TabConstraints.tabTitle"), jPanel3); // NOI18N
@@ -525,12 +523,12 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1496, Short.MAX_VALUE)
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1496, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1)
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jScrollPane1)
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -579,6 +577,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
     private javax.swing.JLabel z3;
     private javax.swing.JLabel z4;
     private javax.swing.JLabel z5;
+
     // End of variables declaration//GEN-END:variables
     @Override
     public void componentOpened() {
@@ -726,25 +725,25 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
 
                         }
 
-                        if (kingdomfreq.containsKey(kingdom) == false) {
+                        if (!kingdomfreq.containsKey(kingdom)) {
                             kingdomfreq.put(kingdom, scount);
                         }
-                        if (phylumfreq.containsKey(phylum) == false) {
+                        if (!phylumfreq.containsKey(phylum)) {
                             phylumfreq.put(phylum, pcount);
                         }
-                        if (classfreq.containsKey(oclass) == false) {
+                        if (!classfreq.containsKey(oclass)) {
                             classfreq.put(oclass, ccount);
                         }
-                        if (orderfreq.containsKey(order) == false) {
+                        if (!orderfreq.containsKey(order)) {
                             orderfreq.put(order, orcount);
                         }
-                        if (familyfreq.containsKey(family) == false) {
+                        if (!familyfreq.containsKey(family)) {
                             familyfreq.put(family, fcount);
                         }
-                        if (genusfreq.containsKey(genus) == false) {
+                        if (!genusfreq.containsKey(genus)) {
                             genusfreq.put(genus, gcount);
                         }
-                        if (organismfreq.containsKey(organism) == false) {
+                        if (!organismfreq.containsKey(organism)) {
                             organismfreq.put(organism, ocount);
                         }
 
@@ -770,24 +769,16 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
     private void createPieCharts(List<Map<String, Long>> taxonomie) throws MGXException, InterruptedException, NoSuchElementException {
 
         Color tooltipcolor = new Color(120, 85, 137);
-        Font sumFont = new java.awt.Font("Avenir Next Condensed", 1, 12);
+        Font sumFont = new java.awt.Font("Avenir Next Condensed", Font.BOLD, 12);
 
         if (kingdomchart.getSeriesMap().size() > 0) {
             kingdomchart.getSeriesMap().clear();
         }
 
         Map<String, Long> kingdom = getTopTen(taxonomie.get(0));
-        kingdomchart.getStyler().setAnnotationType(PieStyler.AnnotationType.Value);
-        kingdomchart.getStyler().setAnnotationDistance(1.1);
-        kingdomchart.getStyler().setPlotContentSize(.8);
-        kingdomchart.getStyler().setSeriesColors(this.color);
-        kingdomchart.getStyler().setToolTipsEnabled(true);
-        kingdomchart.getStyler().setToolTipHighlightColor(tooltipcolor);
-        kingdomchart.getStyler().setSumFont(sumFont);
-        kingdomchart.getStyler().setChartTitleFont(sumFont);
-        kingdomchart.getStyler().setLegendFont(sumFont);
-        kingdomchart.getStyler().setSumVisible(true);
+        paintPiecharts(kingdomchart, tooltipcolor, sumFont);
         kingdom.forEach((k, v) -> kingdomchart.addSeries(k, v));
+        kingdomchart.getStyler().setAnnotationTextPanelFontColor(Color.BLACK);
         kingdompanel.revalidate();
         kingdompanel.repaint();
 
@@ -796,17 +787,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         }
 
         Map<String, Long> phylum = getTopTen(taxonomie.get(1));
-
-        phylumchart.getStyler().setAnnotationType(PieStyler.AnnotationType.Value);
-        phylumchart.getStyler().setAnnotationDistance(1.1);
-        phylumchart.getStyler().setPlotContentSize(.8);
-        phylumchart.getStyler().setSeriesColors(this.color);
-        phylumchart.getStyler().setToolTipsEnabled(true);
-        phylumchart.getStyler().setChartTitleFont(sumFont);
-        phylumchart.getStyler().setToolTipHighlightColor(tooltipcolor);
-        phylumchart.getStyler().setSumFont(sumFont);
-        phylumchart.getStyler().setLegendFont(sumFont);
-        phylumchart.getStyler().setSumVisible(true);
+        paintPiecharts(phylumchart, tooltipcolor, sumFont);
         phylum.forEach((k, v) -> phylumchart.addSeries(k, v));
         phylumpanel.revalidate();
         phylumpanel.repaint();
@@ -815,16 +796,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
             classchart.getSeriesMap().clear();
         }
         Map<String, Long> tclass = getTopTen(taxonomie.get(2));
-        classchart.getStyler().setAnnotationType(AnnotationType.Value);
-        classchart.getStyler().setAnnotationDistance(1.1);
-        classchart.getStyler().setPlotContentSize(.8);
-        classchart.getStyler().setSeriesColors(this.color);
-        classchart.getStyler().setChartTitleFont(sumFont);
-        classchart.getStyler().setToolTipsEnabled(true);
-        classchart.getStyler().setToolTipHighlightColor(tooltipcolor);
-        classchart.getStyler().setLegendFont(sumFont);
-        classchart.getStyler().setSumFont(sumFont);
-        classchart.getStyler().setSumVisible(true);
+        paintPiecharts(classchart, tooltipcolor, sumFont);
         tclass.forEach((k, v) -> classchart.addSeries(k, v));
         classpanel.revalidate();
         classpanel.repaint();
@@ -833,16 +805,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
             orderchart.getSeriesMap().clear();
         }
         Map<String, Long> order = getTopTen(taxonomie.get(3));
-        orderchart.getStyler().setAnnotationType(AnnotationType.Value);
-        orderchart.getStyler().setAnnotationDistance(1.1);
-        orderchart.getStyler().setPlotContentSize(.8);
-        orderchart.getStyler().setSeriesColors(this.color);
-        orderchart.getStyler().setChartTitleFont(sumFont);
-        orderchart.getStyler().setToolTipsEnabled(true);
-        orderchart.getStyler().setToolTipHighlightColor(tooltipcolor);
-        orderchart.getStyler().setSumFont(sumFont);
-        orderchart.getStyler().setLegendFont(sumFont);
-        orderchart.getStyler().setSumVisible(true);
+        paintPiecharts(orderchart, tooltipcolor, sumFont);
         order.forEach((k, v) -> orderchart.addSeries(k, v));
         orderpanel.revalidate();
         orderpanel.repaint();
@@ -851,16 +814,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
             familychart.getSeriesMap().clear();
         }
         Map<String, Long> family = getTopTen(taxonomie.get(4));
-        familychart.getStyler().setAnnotationType(AnnotationType.Value);
-        familychart.getStyler().setAnnotationDistance(1.1);
-        familychart.getStyler().setPlotContentSize(.8);
-        familychart.getStyler().setSeriesColors(this.color);
-        familychart.getStyler().setToolTipsEnabled(true);
-        familychart.getStyler().setToolTipHighlightColor(tooltipcolor);
-        familychart.getStyler().setChartTitleFont(sumFont);
-        familychart.getStyler().setSumFont(sumFont);
-        familychart.getStyler().setLegendFont(sumFont);
-        familychart.getStyler().setSumVisible(true);
+        paintPiecharts(familychart, tooltipcolor, sumFont);
         family.forEach((k, v) -> familychart.addSeries(k, v));
         familypanel.revalidate();
         familypanel.repaint();
@@ -869,16 +823,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
             genuschart.getSeriesMap().clear();
         }
         Map<String, Long> genus = getTopTen(taxonomie.get(5));
-        genuschart.getStyler().setAnnotationType(AnnotationType.Value);
-        genuschart.getStyler().setAnnotationDistance(1.1);
-        genuschart.getStyler().setPlotContentSize(.8);
-        genuschart.getStyler().setSeriesColors(this.color);
-        genuschart.getStyler().setToolTipsEnabled(true);
-        genuschart.getStyler().setToolTipHighlightColor(tooltipcolor);
-        genuschart.getStyler().setLegendFont(sumFont);
-        genuschart.getStyler().setChartTitleFont(sumFont);
-        genuschart.getStyler().setSumFont(sumFont);
-        genuschart.getStyler().setSumVisible(true);
+        paintPiecharts(genuschart, tooltipcolor, sumFont);
         genus.forEach((k, v) -> genuschart.addSeries(k, v));
         genuspanel.revalidate();
         genuspanel.repaint();
@@ -888,23 +833,29 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         }
         int totalogra = taxonomie.get(6).size();
         Map<String, Long> organism = getTopTen(taxonomie.get(6));
-        long sum = organism.values().stream().reduce(0l, Long::sum);
+        long sum = organism.values().stream().reduce(0L, Long::sum);
         organism.remove("Others");
         organismchart.setTitle("Top Ten Organism from Organism " + totalogra + " with overall (" + sum + ")");
-        organismchart.getStyler().setAnnotationType(AnnotationType.Value);
-        organismchart.getStyler().setAnnotationDistance(1.1);
-        organismchart.getStyler().setPlotContentSize(.8);
-        organismchart.getStyler().setSeriesColors(this.color);
-        organismchart.getStyler().setToolTipsEnabled(true);
-        organismchart.getStyler().setToolTipHighlightColor(tooltipcolor);
-        organismchart.getStyler().setLegendFont(sumFont);
-        organismchart.getStyler().setChartTitleFont(sumFont);
-        organismchart.getStyler().setSumFont(sumFont);
-        organismchart.getStyler().setSumVisible(true);
+        paintPiecharts(organismchart, tooltipcolor, sumFont);
         organism.forEach((k, v) -> organismchart.addSeries(k, v));
         organismpanel.revalidate();
         organismpanel.repaint();
 
+    }
+
+    private void paintPiecharts(PieChart chart, Color tooltipcolor, Font sumFont) {
+        chart.getStyler().setLabelType(LabelType.Value);
+        chart.getStyler().setLabelsFontColor(Color.blue);
+        chart.getStyler().setForceAllLabelsVisible(true);
+        chart.getStyler().setLabelsDistance(1.1);
+        chart.getStyler().setPlotContentSize(.8);
+        chart.getStyler().setSeriesColors(this.color);
+        chart.getStyler().setToolTipsEnabled(true);
+        chart.getStyler().setToolTipHighlightColor(tooltipcolor);
+        chart.getStyler().setSumFont(sumFont);
+        chart.getStyler().setChartTitleFont(sumFont);
+        chart.getStyler().setLegendFont(sumFont);
+        chart.getStyler().setSumVisible(true);
     }
 
     private void createBarChart(Map<String, Map<String, Long>> cogdata) throws MGXException, InterruptedException, NoSuchElementException {
@@ -921,7 +872,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         Map<String, Long> cog = cogdata.get("COG");
         Map<String, Long> cogfunc = new TreeMap<>(cogdata.get("COG_funccat"));
         Color tooltipcolor = new Color(120, 85, 137);
-        Font sumFont = new java.awt.Font("Avenir Next Condensed", 1, 12);
+        Font sumFont = new java.awt.Font("Avenir Next Condensed", Font.BOLD, 12);
         cogpanel.setVisible(true);
         funcpanel.setVisible(true);
 
@@ -942,14 +893,12 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
 
         List<Long> cogval = new ArrayList<>(cogtop.values());
         List<String> keys = new ArrayList<>();
-        cogkeys.stream().map((i) -> i.split(" ")[0]).forEachOrdered((tmp) -> {
-            keys.add(tmp);
-        });
+        cogkeys.stream().map((i) -> i.split(" ")[0]).forEachOrdered(keys::add);
 
         for (int i = 0; i < 10; i++) {
             double[] val = generateSeries(cogval.get(i), i, keys.size());
             ArrayList<Double> vals = DoubleStream.of(val).boxed().collect(
-                    Collectors.toCollection(() -> (new ArrayList<>())));
+                    Collectors.toCollection(ArrayList::new));
             cogchart.addSeries(cogkeys.get(i), keys, vals);
         }
         cogpanel.revalidate();
@@ -969,12 +918,25 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         List<String> funckeys = new ArrayList<>(cogfunc.keySet());
         List<Long> funcval = new ArrayList<>(cogfunc.values());
 
-        List<String> vtmp = Arrays.asList("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "Z");
-        for (int i = 0; i < 23; i++) {
-            double[] t = generateSeries(funcval.get(i), i, 23);
-            ArrayList<Double> v = DoubleStream.of(t).boxed().collect(
-                    Collectors.toCollection(() -> (new ArrayList<>())));
-            funcchart.addSeries(funckeys.get(i), vtmp, v);
+        List<String> funcLabels = new ArrayList<>(Arrays.asList("A RNA processing and modification", "B Chromatin structure and dynamics", "C Energy production and conversion", "D Cell cycle control, cell division, chromosome partitioning", "E Amino acid transport and metabolism",
+                "F Nucleotide transport and metabolism", "G Carbohydrate transport and metabolism", "H Coenzyme transport and metabolism", "I Lipid transport and metabolism", "J Translation, ribosomal structure and biogenesis", "K Transcription", "L Replication, recombination and repair",
+                "M Cell wall/membrane/envelope biogenesis", "N Cell motility", "O Posttranslational modification, protein turnover, chaperones", "P Inorganic ion transport and metabolism", "Q Secondary metabolites biosynthesis, transport and catabolism", "R General function prediction only",
+                "S Function unknown", "T Signal transduction mechanisms", "U Intracellular trafficking, secretion, and vesicular transport", "V Defense mechanisms", "Y Nuclear structure", "Z Cytoskeleton"));
+        List<String> vtmp = Arrays.asList("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "Y", "Z");
+        for (int i = 0; i < 24; i++) {
+            String currentLabel = funcLabels.get(i);
+            if (funckeys.contains(currentLabel)) {
+                int idx = funckeys.indexOf(currentLabel);
+                double[] t = generateSeries(funcval.get(idx), i, 24);
+                ArrayList<Double> v = DoubleStream.of(t).boxed().collect(
+                        Collectors.toCollection(ArrayList::new));
+                funcchart.addSeries(funcLabels.get(i), vtmp, v);
+            } else {
+                double[] t = generateSeries(0, i, 24);
+                ArrayList<Double> v = DoubleStream.of(t).boxed().collect(
+                        Collectors.toCollection(ArrayList::new));
+                funcchart.addSeries(funcLabels.get(i), vtmp, v);
+            }
         }
         funcpanel.revalidate();
         funcpanel.repaint();
@@ -1024,15 +986,15 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         if (tmp.size() > 10) {
             topTen
                     = tmp.entrySet()
-                            .stream()
-                            .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-                            .limit(10)
-                            .collect(Collectors.toMap(
-                                    Map.Entry::getKey, Map.Entry::getValue, (entry1, entry2) -> entry1, LinkedHashMap::new));
+                    .stream()
+                    .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                    .limit(10)
+                    .collect(Collectors.toMap(
+                            Map.Entry::getKey, Map.Entry::getValue, (entry1, entry2) -> entry1, LinkedHashMap::new));
             topTen.keySet().stream().filter((key) -> (rank.containsKey(key))).forEachOrdered((key) -> {
                 rank.remove(key);
             });
-            long sum = rank.values().stream().reduce(0l, Long::sum);
+            long sum = rank.values().stream().reduce(0L, Long::sum);
             topTen.put("Others", sum);
         } else {
             topTen = rank;
@@ -1048,11 +1010,11 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         if (tmp.size() > 10) {
             topTen
                     = tmp.entrySet()
-                            .stream()
-                            .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-                            .limit(10)
-                            .collect(Collectors.toMap(
-                                    Map.Entry::getKey, Map.Entry::getValue, (entry1, entry2) -> entry1, LinkedHashMap::new));
+                    .stream()
+                    .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                    .limit(10)
+                    .collect(Collectors.toMap(
+                            Map.Entry::getKey, Map.Entry::getValue, (entry1, entry2) -> entry1, LinkedHashMap::new));
             topTen.keySet().stream().filter((key) -> (cog.containsKey(key))).forEachOrdered((key) -> {
                 cog.remove(key);
             });
@@ -1081,17 +1043,34 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         Color[] palette = new Color[11];
         palette[0] = new Color(166, 206, 227);
         palette[1] = new Color(178, 223, 138);
-        palette[2] = new Color(31, 120, 180);
-        palette[3] = new Color(51, 160, 44);
+        palette[2] = new Color(31, 120, 180);//white Label
+        palette[3] = new Color(51, 160, 44); //white Label
         palette[4] = new Color(251, 154, 153);
-        palette[5] = new Color(227, 26, 28);
+        palette[5] = new Color(227, 26, 28);//white Label
         palette[6] = new Color(253, 191, 111);
         palette[7] = new Color(255, 127, 0);
         palette[8] = new Color(202, 178, 214);
-        palette[9] = new Color(106, 61, 154);
+        palette[9] = new Color(106, 61, 154); //white Label
         palette[10] = new Color(255, 255, 153);
         return palette;
     }
+
+    private static Color[] generatePaletteCBFriendlyLight() {
+        Color[] palette = new Color[11];
+        palette[0] = new Color(166, 206, 227);
+        palette[1] = new Color(178, 223, 138);
+        palette[2] = new Color(240, 228, 66);
+        palette[3] = new Color(68, 170, 153);
+        palette[4] = new Color(251, 154, 153);
+        palette[5] = new Color(255, 109, 182);
+        palette[6] = new Color(253, 191, 111);
+        palette[7] = new Color(255, 127, 0);
+        palette[8] = new Color(202, 178, 214);
+        palette[9] = new Color(100, 143, 255);
+        palette[10] = new Color(255, 255, 153);
+        return palette;
+    }
+
 
     private static Color[] generatePaletteGradient(int size) {
         Color[] piecolors = new Color[size];
@@ -1117,7 +1096,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
     }
 
     private static Color[] generateCOGFuncCatPalette() {
-        Color[] cogcolor = new Color[23];
+        Color[] cogcolor = new Color[24];
         cogcolor[0] = new Color(194, 175, 88); //A
         cogcolor[1] = new Color(255, 198, 0); //B
         cogcolor[2] = new Color(153, 0, 255); //C
@@ -1140,7 +1119,8 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         cogcolor[19] = new Color(0, 0, 255); //T
         cogcolor[20] = new Color(51, 204, 153); //U
         cogcolor[21] = new Color(255, 0, 138); //V
-        cogcolor[22] = new Color(102, 0, 153); // Z
+        cogcolor[22] = new Color(73, 49, 38); // Y
+        cogcolor[23] = new Color(102, 0, 153); // Z
         return cogcolor;
     }
 }

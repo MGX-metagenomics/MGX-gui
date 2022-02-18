@@ -31,7 +31,7 @@ import org.openide.windows.WindowManager;
 )
 @ActionReferences({
     //@ActionReference(path = "Menu/File", position = 1712),
-    @ActionReference(path = "Toolbars/UndoRedo", position = 300)
+    @ActionReference(path = "Toolbars/UndoRedo", position = 400)
 })
 //@Messages("CTL_ReportAction=Report")
 public final class ReportAction implements ActionListener {
