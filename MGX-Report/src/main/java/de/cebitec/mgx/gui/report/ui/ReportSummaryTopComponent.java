@@ -1018,6 +1018,9 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
             topTen.keySet().stream().filter((key) -> (cog.containsKey(key))).forEachOrdered((key) -> {
                 cog.remove(key);
             });
+        }else {
+            topTen = cog;
+
         }
         return topTen;
     }
