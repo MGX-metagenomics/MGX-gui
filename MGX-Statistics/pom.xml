@@ -67,10 +67,6 @@
             <artifactId>MGX-VisualizationGroups</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.xmlgraphics</groupId>
-            <artifactId>batik-all</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>osgi.core</artifactId>
             <version>8.0.0</version>
@@ -87,6 +83,22 @@
         <dependency>
             <groupId>org.apache.xmlgraphics</groupId>
             <artifactId>xmlgraphics-commons</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>batik-util</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>batik-transcoder</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>batik-swing</artifactId>
         </dependency>
     </dependencies>
 
