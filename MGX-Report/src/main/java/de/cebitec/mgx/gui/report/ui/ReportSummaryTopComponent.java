@@ -782,7 +782,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         kingdompanel.revalidate();
         kingdompanel.repaint();
 
-        if (phylumchart.getSeriesMap().size() > 0) {
+        if (!phylumchart.getSeriesMap().isEmpty()) {
             phylumchart.getSeriesMap().clear();
         }
 
@@ -792,7 +792,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         phylumpanel.revalidate();
         phylumpanel.repaint();
 
-        if (classchart.getSeriesMap().size() > 0) {
+        if (!classchart.getSeriesMap().isEmpty()) {
             classchart.getSeriesMap().clear();
         }
         Map<String, Long> tclass = getTopTen(taxonomie.get(2));
@@ -801,7 +801,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         classpanel.revalidate();
         classpanel.repaint();
 
-        if (orderchart.getSeriesMap().size() > 0) {
+        if (!orderchart.getSeriesMap().isEmpty()) {
             orderchart.getSeriesMap().clear();
         }
         Map<String, Long> order = getTopTen(taxonomie.get(3));
@@ -810,7 +810,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         orderpanel.revalidate();
         orderpanel.repaint();
 
-        if (familychart.getSeriesMap().size() > 0) {
+        if (!familychart.getSeriesMap().isEmpty()) {
             familychart.getSeriesMap().clear();
         }
         Map<String, Long> family = getTopTen(taxonomie.get(4));
@@ -819,7 +819,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         familypanel.revalidate();
         familypanel.repaint();
 
-        if (genuschart.getSeriesMap().size() > 0) {
+        if (!genuschart.getSeriesMap().isEmpty()) {
             genuschart.getSeriesMap().clear();
         }
         Map<String, Long> genus = getTopTen(taxonomie.get(5));
@@ -828,7 +828,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         genuspanel.revalidate();
         genuspanel.repaint();
 
-        if (organismchart.getSeriesMap().size() > 0) {
+        if (!organismchart.getSeriesMap().isEmpty()) {
             organismchart.getSeriesMap().clear();
         }
         int totalogra = taxonomie.get(6).size();
@@ -864,7 +864,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
             funcpanel.setVisible(false);
             return;
         }
-        if (cogchart.getSeriesMap().size() > 0 && funcchart.getSeriesMap().size() > 0) {
+        if (!cogchart.getSeriesMap().isEmpty() && !funcchart.getSeriesMap().isEmpty()) {
             cogchart.getSeriesMap().clear();
             funcchart.getSeriesMap().clear();
         }
