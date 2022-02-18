@@ -99,9 +99,9 @@
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="searchLocationActionPerformed"/>
       </Events>
     </Component>
-    <Component class="org.jdesktop.swingx.JXMapKit" name="jXMapKit1">
+    <Component class="org.jxmapviewer.JXMapKit" name="jXMapKit1">
       <Properties>
-        <Property name="defaultProvider" type="org.jdesktop.swingx.JXMapKit$DefaultProviders" editor="org.netbeans.modules.form.editors.EnumEditor">
+        <Property name="defaultProvider" type="org.jxmapviewer.JXMapKit$DefaultProviders" editor="org.netbeans.modules.form.editors.EnumEditor">
           <Value id="OpenStreetMaps"/>
         </Property>
       </Properties>

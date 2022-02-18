@@ -21,14 +21,14 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-import org.jdesktop.swingx.JXMapKit;
-import org.jdesktop.swingx.JXMapKit.DefaultProviders;
-import org.jdesktop.swingx.mapviewer.DefaultTileFactory;
-import org.jdesktop.swingx.mapviewer.GeoPosition;
-import org.jdesktop.swingx.mapviewer.TileFactory;
-import org.jdesktop.swingx.mapviewer.TileFactoryInfo;
-import org.jdesktop.swingx.mapviewer.Waypoint;
-import org.jdesktop.swingx.mapviewer.WaypointPainter;
+import org.jxmapviewer.JXMapKit;
+import org.jxmapviewer.JXMapKit.DefaultProviders;
+import org.jxmapviewer.viewer.DefaultTileFactory;
+import org.jxmapviewer.viewer.GeoPosition;
+import org.jxmapviewer.viewer.TileFactory;
+import org.jxmapviewer.viewer.TileFactoryInfo;
+import org.jxmapviewer.viewer.Waypoint;
+import org.jxmapviewer.viewer.WaypointPainter;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
@@ -74,7 +74,7 @@ public final class HabitatVisualPanel1 extends JPanel implements DocumentListene
     private void initComponents() {
 
         searchLocation = new javax.swing.JTextField();
-        jXMapKit1 = new org.jdesktop.swingx.JXMapKit();
+        jXMapKit1 = new org.jxmapviewer.JXMapKit();
         jScrollPane2 = new javax.swing.JScrollPane();
         foundLocationList = new javax.swing.JList<String>();
         jButton_searchLoc = new javax.swing.JButton();
@@ -93,7 +93,7 @@ public final class HabitatVisualPanel1 extends JPanel implements DocumentListene
             }
         });
 
-        jXMapKit1.setDefaultProvider(org.jdesktop.swingx.JXMapKit.DefaultProviders.OpenStreetMaps);
+        jXMapKit1.setDefaultProvider(org.jxmapviewer.JXMapKit.DefaultProviders.OpenStreetMaps);
         jXMapKit1.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
             public void propertyChange(java.beans.PropertyChangeEvent evt) {
                 jXMapKit1PropertyChange(evt);
@@ -196,7 +196,7 @@ public final class HabitatVisualPanel1 extends JPanel implements DocumentListene
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel_foundLocations;
     private javax.swing.JScrollPane jScrollPane2;
-    private org.jdesktop.swingx.JXMapKit jXMapKit1;
+    private org.jxmapviewer.JXMapKit jXMapKit1;
     private javax.swing.JTextField searchLocation;
     // End of variables declaration//GEN-END:variables
 

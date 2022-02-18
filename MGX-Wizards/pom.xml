@@ -41,6 +41,11 @@
             <artifactId>org-openide-awt</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-util-ui</artifactId>
+        </dependency>
+        
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>MGX-SwingUtils</artifactId>
         </dependency>
@@ -48,15 +53,17 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>MGX-MappingViewer</artifactId>
         </dependency>
+        
         <dependency>
-            <groupId>org.jdesktop.swingx</groupId>
-            <artifactId>jxmapviewer2</artifactId>
-        </dependency>
-        <!-- <dependency>
             <groupId>org.jxmapviewer</groupId>
             <artifactId>jxmapviewer2</artifactId>
-            <version>2.0</version>
-        </dependency> -->
+            <version>2.6</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+        </dependency>
+        
         <dependency>
             <groupId>de.cebitec.mgx</groupId>
             <artifactId>SwingX-OSGi</artifactId>
@@ -65,10 +72,7 @@
             <artifactId>MGX-API</artifactId>
             <groupId>de.cebitec.mgx.gui</groupId>
         </dependency>
-        <dependency>
-            <groupId>org.netbeans.api</groupId>
-            <artifactId>org-openide-util-ui</artifactId>
-        </dependency>
+
     </dependencies>
 
     <build>

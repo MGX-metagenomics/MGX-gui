@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.wizard.habitat;
 
-import org.jdesktop.swingx.mapviewer.GeoPosition;
+import org.jxmapviewer.viewer.GeoPosition;
+
 
 /**
  *
@@ -24,23 +25,10 @@ public class Location {
     }
 
     /**
-     * @param geoLoc the geoLoc to set
-     */
-    public void setGeoLoc(GeoPosition geoLoc) {
-        this.geoLoc = geoLoc;
-    }
-
-    /**
      * @return the name
      */
     public String getName() {
         return name;
     }
 
-    /**
-     * @param name the name to set
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
 }
