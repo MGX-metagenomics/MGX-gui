@@ -57,7 +57,7 @@ public class PolarChart extends NumericalViewerI<Long> implements ImageExporterI
     @Override
     public void show(List<Pair<GroupI, DistributionI<Long>>> in) {
 
-        SortOrder<Long> sorter = new SortOrder<>(getAttributeType(), SortOrder.DESCENDING);
+        SortOrder<Long> sorter = new SortOrder<>(SortOrder.DESCENDING);
         dists = sorter.filter(in);
         XYSeriesCollection dataset = JFreeChartUtil.createXYSeries(dists);
 
