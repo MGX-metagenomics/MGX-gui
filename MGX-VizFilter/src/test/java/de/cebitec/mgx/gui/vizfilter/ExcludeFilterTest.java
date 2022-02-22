@@ -38,7 +38,7 @@ public class ExcludeFilterTest {
         AttributeI a2 = new Attribute();
         a2.setValue("BAR");
         map.put(a2, Long.valueOf(5));
-        DistributionI<Long> dist = new Distribution(null, map);
+        DistributionI<Long> dist = new Distribution(null, null, map);
         assertEquals(2, dist.size());
 
         Set<AttributeI> blacklist = new HashSet<>();

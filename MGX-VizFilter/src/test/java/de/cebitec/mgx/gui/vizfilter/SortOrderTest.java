@@ -33,8 +33,7 @@ public class SortOrderTest {
     @Test
     public void testFilter() {
         System.out.println("filter");
-        AttributeTypeI at = new AttributeType(null, 42, "TestAttrType", AttributeTypeI.VALUE_DISCRETE, AttributeTypeI.STRUCTURE_BASIC);
-        SortOrder<Long> filter = new SortOrder<>(at, SortOrder.DESCENDING);
+        SortOrder<Long> filter = new SortOrder<>(SortOrder.DESCENDING);
 
         List<Pair<GroupI, DistributionI<Long>>> dists = new ArrayList<>();
         List<Pair<GroupI, DistributionI<Long>>> result = filter.filter(dists);
@@ -56,7 +55,7 @@ public class SortOrderTest {
         AttributeI a2 = new Attribute();
         a2.setValue("BAR");
         map.put(a2, Long.valueOf(4));
-        DistributionI<Long> dist1 = new Distribution(null, map);
+        DistributionI<Long> dist1 = new Distribution(null, null, map);
 
         Map<AttributeI, Long> map2 = new HashMap<>();
         AttributeI a3 = new Attribute();
@@ -65,15 +64,14 @@ public class SortOrderTest {
         AttributeI a4 = new Attribute();
         a4.setValue("BAZ");
         map2.put(a4, Long.valueOf(2));
-        DistributionI<Long> dist2 = new Distribution(null, map2);
+        DistributionI<Long> dist2 = new Distribution(null, null, map2);
 
         List<Pair<GroupI, DistributionI<Long>>> in = new ArrayList<>();
         VisualizationGroupI dummyVG = null;
         in.add(new Pair<>(dummyVG, dist1));
         in.add(new Pair<>(dummyVG, dist2));
 
-        AttributeTypeI at = new AttributeType(null, 42, "TestAttrType", AttributeTypeI.VALUE_DISCRETE, AttributeTypeI.STRUCTURE_BASIC);
-        SortOrder<Long> so = new SortOrder<>(at, SortOrder.DESCENDING);
+        SortOrder<Long> so = new SortOrder<>(SortOrder.DESCENDING);
 
         List<Pair<GroupI, DistributionI<Long>>> result = so.filter(in);
         assertNotNull(result);

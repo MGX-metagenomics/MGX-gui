@@ -4,6 +4,8 @@
  * and open the template in the editor.
  */
 package de.cebitec.mgx.gui.report.ui;
+
+import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.model.AttributeI;
@@ -11,12 +13,15 @@ import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.ModelBaseI;
 import de.cebitec.mgx.api.model.SeqRunI;
-import de.cebitec.mgx.api.model.ToolI;
 import de.cebitec.mgx.api.model.qc.QCResultI;
-import de.cebitec.mgx.api.model.tree.NodeI;
 import de.cebitec.mgx.api.model.tree.TreeI;
 import de.cebitec.mgx.common.JobState;
-import de.cebitec.mgx.gui.qcmon.QCTopComponent;
+import de.cebitec.mgx.gui.datafactories.DistributionFactory;
+import de.cebitec.mgx.gui.qcmon.QCChartGenerator;
+import de.cebitec.mgx.gui.vizfilter.LimitFilter;
+import de.cebitec.mgx.gui.vizfilter.LimitFilter.LIMITS;
+import de.cebitec.mgx.gui.vizfilter.SortOrder;
+import de.cebitec.mgx.gui.vizfilter.SortOrder.Order;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -25,20 +30,15 @@ import java.beans.PropertyChangeListener;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.NoSuchElementException;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.stream.Collectors;
-import java.util.stream.DoubleStream;
+import javax.swing.JPanel;
 import javax.swing.event.ChangeEvent;
 import org.knowm.xchart.CategoryChart;
 import org.knowm.xchart.CategoryChartBuilder;
@@ -75,7 +75,7 @@ import org.openide.windows.TopComponent;
 @TopComponent.Registration(mode = "editor", openAtStartup = false)
 @ActionID(category = "Window", id = "de.cebitec.mgx.gui.mgx_report.ReportSummaryTopComponent")
 @ActionReferences({
-        @ActionReference(path = "Menu/Window", position = 550)
+    @ActionReference(path = "Menu/Window", position = 550)
 })
 @TopComponent.OpenActionRegistration(
         displayName = "Show Report",
@@ -90,11 +90,20 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
     private final InstanceContent content = new InstanceContent();
     private final Lookup lookup;
     private int tabIdx = -1;
+    //
+    private final static Color tooltipcolor = new Color(120, 85, 137);
+    private final static Font sumFont = new Font("Avenir Next Condensed", Font.BOLD, 12);
+    //
+    private final static List<String> funcLabels = Arrays.asList("A RNA processing and modification", "B Chromatin structure and dynamics", "C Energy production and conversion", "D Cell cycle control, cell division, chromosome partitioning", "E Amino acid transport and metabolism",
+            "F Nucleotide transport and metabolism", "G Carbohydrate transport and metabolism", "H Coenzyme transport and metabolism", "I Lipid transport and metabolism", "J Translation, ribosomal structure and biogenesis", "K Transcription", "L Replication, recombination and repair",
+            "M Cell wall/membrane/envelope biogenesis", "N Cell motility", "O Posttranslational modification, protein turnover, chaperones", "P Inorganic ion transport and metabolism", "Q Secondary metabolites biosynthesis, transport and catabolism", "R General function prediction only",
+            "S Function unknown", "T Signal transduction mechanisms", "U Intracellular trafficking, secretion, and vesicular transport", "V Defense mechanisms", "Y Nuclear structure", "Z Cytoskeleton");
+    private final static List<String> vtmp = Arrays.asList("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "Y", "Z");
 
-    final private Color[] color;
+    final private Color[] colorPalette;
 
     public ReportSummaryTopComponent() {
-        this.color = generatePaletteCBFriendlyLight();
+        this.colorPalette = generatePaletteCBFriendlyLight();
         initComponents();
         super.setName("Show Report");
         super.setToolTipText("Show Report");
@@ -609,7 +618,12 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
             }
         }
 
-        if (currentSeqRun == null || currentSeqRun.equals(prevRun)) {
+        if (currentSeqRun == null) {
+            jPanel1.removeAll();
+            return;
+        }
+
+        if (currentSeqRun.equals(prevRun)) {
             return;
         }
 
@@ -618,411 +632,216 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         }
         currentSeqRun.addPropertyChangeListener(this);
 
-        if (currentSeqRun == null) {
-            jPanel1.removeAll();
-        } else {
-            // Overview
-            nameseq.setText(currentSeqRun.getName());
-            seqid.setText("" + currentSeqRun.getExtractId());
-            seqcount.setText("" + NumberFormat.getNumberInstance(Locale.US).format(currentSeqRun.getNumSequences()));
-            seqmeth.setText("" + currentSeqRun.getSequencingMethod());
-            seqtech.setText("" + currentSeqRun.getSequencingTechnology());
-            paired.setText("" + currentSeqRun.isPaired());
+        // Overview
+        nameseq.setText(currentSeqRun.getName());
+        seqid.setText(String.format("%s", currentSeqRun.getId()));
+        seqcount.setText(NumberFormat.getNumberInstance(Locale.US).format(currentSeqRun.getNumSequences()));
+        seqmeth.setText(currentSeqRun.getSequencingMethod().getName());
+        seqtech.setText(currentSeqRun.getSequencingTechnology().getName());
+        paired.setText(currentSeqRun.isPaired() ? "yes" : "no");
 
+        try {
             //QC Print
-            try {
-                qccontroll.removeAll();
-                for (QCResultI t : currentSeqRun.getMaster().SeqRun().getQC(currentSeqRun)) {
-                    // TODO - refactor createChart() method outside of QCTopComponent
-                    qccontroll.addTab(t.getName(), QCTopComponent.createChart(t));
-                }
-            } catch (MGXException e) {
-                Exceptions.printStackTrace(e);
+            qccontroll.removeAll();
+            for (QCResultI t : currentSeqRun.getMaster().SeqRun().getQC(currentSeqRun)) {
+                qccontroll.addTab(t.getName(), QCChartGenerator.createChart(t));
             }
+        } catch (MGXException e) {
+            Exceptions.printStackTrace(e);
+            return;
+        }
 
-            //Taxonomy
-            try {
-                List<Map<String, Long>> taxonomie = getTaxonomy(currentSeqRun);
-                createPieCharts(taxonomie);
-            } catch (MGXException | InterruptedException | NoSuchElementException e) {
-                Exceptions.printStackTrace(e);
+        try {
+            // taxonomy
+            Map<String, DistributionI<Long>> taxonomie = getTaxonomy(currentSeqRun);
+            createPieCharts(taxonomie);
 
-            }
-
-            try {
-                Map<String, Map<String, Long>> functional = getFunctional(currentSeqRun);
-                createBarChart(functional);
-            } catch (MGXException | InterruptedException | NoSuchElementException e) {
-                Exceptions.printStackTrace(e);
-            }
+            // COG functional profile
+            Map<String, DistributionI<Long>> functional = getFunctional(currentSeqRun);
+            createBarChart(functional);
+        } catch (MGXException | InterruptedException | NoSuchElementException e) {
+            Exceptions.printStackTrace(e);
 
         }
 
     }
 
-    private List<Map<String, Long>> getTaxonomy(SeqRunI seqr) throws MGXException {
-        Map<String, Long> kingdomfreq = new HashMap<>();
-        Map<String, Long> phylumfreq = new HashMap<>();
-        Map<String, Long> classfreq = new HashMap<>();
-        Map<String, Long> orderfreq = new HashMap<>();
-        Map<String, Long> familyfreq = new HashMap<>();
-        Map<String, Long> genusfreq = new HashMap<>();
-        Map<String, Long> organismfreq = new HashMap<>();
-        List<Map<String, Long>> taxoall = new ArrayList<>();
+    private static Map<String, DistributionI<Long>> getTaxonomy(SeqRunI seqr) throws MGXException {
 
-        List<JobI> joblist = seqr.getMaster().Job().BySeqRun(seqr);
+        Map<String, DistributionI<Long>> ret = new HashMap<>();
+        final MGXMasterI master = seqr.getMaster();
 
-        for (JobI job : joblist) {
-            ToolI tool = seqr.getMaster().Tool().ByJob(job);
-            if ((job.getStatus() == JobState.FINISHED && tool.getName().equals("MGX taxonomic classification")) || tool.getName().equals("Kraken 2")) {
+        for (JobI job : master.Job().BySeqRun(seqr)) {
 
-                Iterator<AttributeTypeI> attributeit = seqr.getMaster().AttributeType().byJob(job);
+            String toolName = master.Tool().ByJob(job).getName();
+            if (job.getStatus() == JobState.FINISHED && (toolName.equals("MGX taxonomic classification")) || toolName.equals("Kraken 2")) {
 
-                TreeI<Long> hierarchy = seqr.getMaster().Attribute().getHierarchy(attributeit.next(), job, seqr);
-                if (!hierarchy.isEmpty()) {
+                Iterator<AttributeTypeI> attributeit = master.AttributeType().byJob(job);
 
-                    TreeI<Long> tmptree = seqr.getMaster().Attribute().getHierarchy(attributeit.next(), job, seqr);
-                    Collection<NodeI<Long>> children = tmptree.getLeaves();
+                TreeI<Long> tree = null;
+                while (attributeit.hasNext()) {
+                    AttributeTypeI attrType = attributeit.next();
 
-                    for (NodeI<Long> activeNode : children) {
-                        String genus, family, order, oclass, phylum, kingdom, organism;
-                        genus = family = order = oclass = phylum = kingdom = organism = "None";
-                        long ocount, gcount, fcount, orcount, ccount, pcount, scount;
-                        ocount = gcount = fcount = orcount = ccount = pcount = scount = 0;
-                        while (activeNode.getParent() != null) {
-                            switch (activeNode.getAttribute().getAttributeType().getName()) {
-                                case "NCBI_SPECIES":
-                                    organism = activeNode.getAttribute().getValue();
-                                    ocount = activeNode.getContent();
-                                case "NCBI_GENUS":
-                                    genus = activeNode.getAttribute().getValue();
-                                    gcount = activeNode.getContent();
-                                    break;
-                                case "NCBI_FAMILY":
-                                    family = activeNode.getAttribute().getValue();
-                                    fcount = activeNode.getContent();
-                                    break;
-                                case "NCBI_ORDER":
-                                    order = activeNode.getAttribute().getValue();
-                                    orcount = activeNode.getContent();
-                                    break;
-                                case "NCBI_CLASS":
-                                    oclass = activeNode.getAttribute().getValue();
-                                    ccount = activeNode.getContent();
-                                case "NCBI_PHYLUM":
-                                    phylum = activeNode.getAttribute().getValue();
-                                    pcount = activeNode.getContent();
-                                    break;
-                                case "NCBI_SUPERKINGDOM":
-                                    kingdom = activeNode.getAttribute().getValue();
-                                    scount = activeNode.getContent();
-                                    break;
-                                default:
-                                    break;
-                            }
-
-                            activeNode = activeNode.getParent();
-
-                        }
-
-                        if (!kingdomfreq.containsKey(kingdom)) {
-                            kingdomfreq.put(kingdom, scount);
-                        }
-                        if (!phylumfreq.containsKey(phylum)) {
-                            phylumfreq.put(phylum, pcount);
-                        }
-                        if (!classfreq.containsKey(oclass)) {
-                            classfreq.put(oclass, ccount);
-                        }
-                        if (!orderfreq.containsKey(order)) {
-                            orderfreq.put(order, orcount);
-                        }
-                        if (!familyfreq.containsKey(family)) {
-                            familyfreq.put(family, fcount);
-                        }
-                        if (!genusfreq.containsKey(genus)) {
-                            genusfreq.put(genus, gcount);
-                        }
-                        if (!organismfreq.containsKey(organism)) {
-                            organismfreq.put(organism, ocount);
-                        }
-
+                    // fetch tree, if needed
+                    if (tree == null) {
+                        tree = master.Attribute().getHierarchy(attrType, job, seqr);
                     }
 
+                    DistributionI<Long> dist = DistributionFactory.fromTree(tree, attrType);
+                    ret.put(attrType.getName(), dist);
                 }
-
             }
-
         }
 
-        taxoall.add(kingdomfreq);
-        taxoall.add(phylumfreq);
-        taxoall.add(classfreq);
-        taxoall.add(orderfreq);
-        taxoall.add(familyfreq);
-        taxoall.add(genusfreq);
-        taxoall.add(organismfreq);
-
-        return taxoall;
+        return ret;
     }
 
-    private void createPieCharts(List<Map<String, Long>> taxonomie) throws MGXException, InterruptedException, NoSuchElementException {
-
-        Color tooltipcolor = new Color(120, 85, 137);
-        Font sumFont = new java.awt.Font("Avenir Next Condensed", Font.BOLD, 12);
-
-        if (kingdomchart.getSeriesMap().size() > 0) {
-            kingdomchart.getSeriesMap().clear();
-        }
-
-        Map<String, Long> kingdom = getTopTen(taxonomie.get(0));
-        paintPiecharts(kingdomchart, tooltipcolor, sumFont);
-        kingdom.forEach((k, v) -> kingdomchart.addSeries(k, v));
-        kingdomchart.getStyler().setAnnotationTextPanelFontColor(Color.BLACK);
-        kingdompanel.revalidate();
-        kingdompanel.repaint();
-
-        if (!phylumchart.getSeriesMap().isEmpty()) {
-            phylumchart.getSeriesMap().clear();
-        }
-
-        Map<String, Long> phylum = getTopTen(taxonomie.get(1));
-        paintPiecharts(phylumchart, tooltipcolor, sumFont);
-        phylum.forEach((k, v) -> phylumchart.addSeries(k, v));
-        phylumpanel.revalidate();
-        phylumpanel.repaint();
-
-        if (!classchart.getSeriesMap().isEmpty()) {
-            classchart.getSeriesMap().clear();
-        }
-        Map<String, Long> tclass = getTopTen(taxonomie.get(2));
-        paintPiecharts(classchart, tooltipcolor, sumFont);
-        tclass.forEach((k, v) -> classchart.addSeries(k, v));
-        classpanel.revalidate();
-        classpanel.repaint();
-
-        if (!orderchart.getSeriesMap().isEmpty()) {
-            orderchart.getSeriesMap().clear();
-        }
-        Map<String, Long> order = getTopTen(taxonomie.get(3));
-        paintPiecharts(orderchart, tooltipcolor, sumFont);
-        order.forEach((k, v) -> orderchart.addSeries(k, v));
-        orderpanel.revalidate();
-        orderpanel.repaint();
-
-        if (!familychart.getSeriesMap().isEmpty()) {
-            familychart.getSeriesMap().clear();
-        }
-        Map<String, Long> family = getTopTen(taxonomie.get(4));
-        paintPiecharts(familychart, tooltipcolor, sumFont);
-        family.forEach((k, v) -> familychart.addSeries(k, v));
-        familypanel.revalidate();
-        familypanel.repaint();
-
-        if (!genuschart.getSeriesMap().isEmpty()) {
-            genuschart.getSeriesMap().clear();
-        }
-        Map<String, Long> genus = getTopTen(taxonomie.get(5));
-        paintPiecharts(genuschart, tooltipcolor, sumFont);
-        genus.forEach((k, v) -> genuschart.addSeries(k, v));
-        genuspanel.revalidate();
-        genuspanel.repaint();
-
-        if (!organismchart.getSeriesMap().isEmpty()) {
-            organismchart.getSeriesMap().clear();
-        }
-        int totalogra = taxonomie.get(6).size();
-        Map<String, Long> organism = getTopTen(taxonomie.get(6));
-        long sum = organism.values().stream().reduce(0L, Long::sum);
-        organism.remove("Others");
-        organismchart.setTitle("Top Ten Organism from Organism " + totalogra + " with overall (" + sum + ")");
-        paintPiecharts(organismchart, tooltipcolor, sumFont);
-        organism.forEach((k, v) -> organismchart.addSeries(k, v));
-        organismpanel.revalidate();
-        organismpanel.repaint();
-
+    private void createPieCharts(Map<String, DistributionI<Long>> taxData) throws MGXException, InterruptedException, NoSuchElementException {
+        createPiechart(kingdomchart, kingdompanel, taxData.get("NCBI_SUPERKINGDOM"));
+        createPiechart(phylumchart, phylumpanel, taxData.get("NCBI_PHYLUM"));
+        createPiechart(classchart, classpanel, taxData.get("NCBI_CLASS"));
+        createPiechart(orderchart, orderpanel, taxData.get("NCBI_ORDER"));
+        createPiechart(familychart, familypanel, taxData.get("NCBI_FAMILY"));
+        createPiechart(genuschart, genuspanel, taxData.get("NCBI_GENUS"));
+        createPiechart(organismchart, organismpanel, taxData.get("NCBI_SPECIES"));
     }
 
-    private void paintPiecharts(PieChart chart, Color tooltipcolor, Font sumFont) {
+    private void createPiechart(PieChart chart, JPanel chartPanel, DistributionI<Long> dist) {
+
+        chart.getSeriesMap().clear();
+
+        if (dist != null) {
+            SortOrder<Long> sort = new SortOrder<>(Order.DESCENDING);
+            LimitFilter<Long> limit = new LimitFilter<>(LIMITS.TOP10);
+            DistributionI<Long> topten = limit.filterDist(sort.filterDist(dist));
+            topten.forEach((k, v) -> chart.addSeries(k.getValue(), v));
+        }
+
         chart.getStyler().setLabelType(LabelType.Value);
         chart.getStyler().setLabelsFontColor(Color.blue);
         chart.getStyler().setForceAllLabelsVisible(true);
         chart.getStyler().setLabelsDistance(1.1);
         chart.getStyler().setPlotContentSize(.8);
-        chart.getStyler().setSeriesColors(this.color);
+        chart.getStyler().setSeriesColors(colorPalette);
         chart.getStyler().setToolTipsEnabled(true);
         chart.getStyler().setToolTipHighlightColor(tooltipcolor);
         chart.getStyler().setSumFont(sumFont);
         chart.getStyler().setChartTitleFont(sumFont);
         chart.getStyler().setLegendFont(sumFont);
         chart.getStyler().setSumVisible(true);
+        chart.getStyler().setAnnotationTextPanelFontColor(Color.BLACK);
+
+        chartPanel.revalidate();
+        chartPanel.repaint();
     }
 
-    private void createBarChart(Map<String, Map<String, Long>> cogdata) throws MGXException, InterruptedException, NoSuchElementException {
-        if (cogdata.isEmpty()) {
-            cogpanel.setVisible(false);
-            funcpanel.setVisible(false);
-            return;
-        }
-        if (!cogchart.getSeriesMap().isEmpty() && !funcchart.getSeriesMap().isEmpty()) {
-            cogchart.getSeriesMap().clear();
-            funcchart.getSeriesMap().clear();
-        }
+    private void createBarChart(Map<String, DistributionI<Long>> cogdata) throws MGXException, InterruptedException, NoSuchElementException {
+//        if (cogdata.isEmpty()) {
+//            cogpanel.setVisible(false);
+//            funcpanel.setVisible(false);
+//            return;
+//        }
 
-        Map<String, Long> cog = cogdata.get("COG");
-        Map<String, Long> cogfunc = new TreeMap<>(cogdata.get("COG_funccat"));
-        Color tooltipcolor = new Color(120, 85, 137);
-        Font sumFont = new java.awt.Font("Avenir Next Condensed", Font.BOLD, 12);
-        cogpanel.setVisible(true);
-        funcpanel.setVisible(true);
+        cogchart.getSeriesMap().clear();
 
-        Map<String, Long> cogtop = getTopTenCOG(cog);
-        cogchart.getStyler().setPlotContentSize(.8);
-        cogchart.getStyler().setYAxisDecimalPattern("##.###");
-        cogchart.getStyler().setSeriesColors(this.color);
-        cogchart.getStyler().setToolTipsEnabled(true);
-        cogchart.getStyler().setToolTipHighlightColor(tooltipcolor);
-        cogchart.getStyler().setLegendFont(sumFont);
-        cogchart.getStyler().setChartTitleFont(sumFont);
-        cogchart.getStyler().setPlotGridLinesVisible(false);
-        cogchart.getStyler().setOverlapped(false);
-        cogchart.getStyler().setStacked(true);
-        cogchart.getStyler().setXAxisLabelRotation(45);
-        cogchart.getStyler().setAvailableSpaceFill(0.7);
-        List<String> cogkeys = new ArrayList<>(cogtop.keySet());
+        DistributionI<Long> cog = cogdata.get("COG");
+        DistributionI<Long> cogtop = null;
+        if (cog != null) {
+            SortOrder<Long> sort = new SortOrder<>(Order.DESCENDING);
+            LimitFilter<Long> limit = new LimitFilter<>(LIMITS.TOP10);
+            cogtop = limit.filterDist(sort.filterDist(cog));
 
-        List<Long> cogval = new ArrayList<>(cogtop.values());
-        List<String> keys = new ArrayList<>();
-        cogkeys.stream().map((i) -> i.split(" ")[0]).forEachOrdered(keys::add);
+            cogchart.getStyler().setPlotContentSize(.8);
+            cogchart.getStyler().setYAxisDecimalPattern("##.###");
+            cogchart.getStyler().setSeriesColors(this.colorPalette);
+            cogchart.getStyler().setToolTipsEnabled(true);
+            cogchart.getStyler().setToolTipHighlightColor(tooltipcolor);
+            cogchart.getStyler().setLegendFont(sumFont);
+            cogchart.getStyler().setChartTitleFont(sumFont);
+            cogchart.getStyler().setPlotGridLinesVisible(false);
+            cogchart.getStyler().setOverlapped(false);
+            cogchart.getStyler().setStacked(true);
+            cogchart.getStyler().setXAxisLabelRotation(45);
+            cogchart.getStyler().setAvailableSpaceFill(0.7);
 
-        for (int i = 0; i < 10; i++) {
-            double[] val = generateSeries(cogval.get(i), i, keys.size());
-            ArrayList<Double> vals = DoubleStream.of(val).boxed().collect(
-                    Collectors.toCollection(ArrayList::new));
-            cogchart.addSeries(cogkeys.get(i), keys, vals);
+            List<AttributeI> cogkeys = new ArrayList<>(cogtop.keySet());
+            List<Long> cogval = new ArrayList<>(cogtop.values());
+            List<String> keys = new ArrayList<>();
+            cogtop.keySet().stream().map((i) -> i.getValue().split(" ")[0]).forEachOrdered(keys::add);
+
+            for (int i = 0; i < 10; i++) {
+                List<Double> val = generateSeries(cogval.get(i), i, keys.size());
+                cogchart.addSeries(cogkeys.get(i).getValue(), keys, val);
+            }
+            cogpanel.setVisible(true);
         }
         cogpanel.revalidate();
         cogpanel.repaint();
 
-        Color[] colorcog = generateCOGFuncCatPalette();
-        funcchart.getStyler().setYAxisDecimalPattern("##.###");
-        funcchart.getStyler().setSeriesColors(colorcog);
-        funcchart.getStyler().setToolTipsEnabled(true);
-        funcchart.getStyler().setToolTipHighlightColor(tooltipcolor);
-        funcchart.getStyler().setLegendFont(sumFont);
-        funcchart.getStyler().setChartTitleFont(sumFont);
-        funcchart.getStyler().setPlotGridLinesVisible(false);
-        funcchart.getStyler().setOverlapped(false);
-        funcchart.getStyler().setStacked(true);
-        funcchart.getStyler().setAvailableSpaceFill(0.7);
-        List<String> funckeys = new ArrayList<>(cogfunc.keySet());
-        List<Long> funcval = new ArrayList<>(cogfunc.values());
+        funcchart.getSeriesMap().clear();
 
-        List<String> funcLabels = new ArrayList<>(Arrays.asList("A RNA processing and modification", "B Chromatin structure and dynamics", "C Energy production and conversion", "D Cell cycle control, cell division, chromosome partitioning", "E Amino acid transport and metabolism",
-                "F Nucleotide transport and metabolism", "G Carbohydrate transport and metabolism", "H Coenzyme transport and metabolism", "I Lipid transport and metabolism", "J Translation, ribosomal structure and biogenesis", "K Transcription", "L Replication, recombination and repair",
-                "M Cell wall/membrane/envelope biogenesis", "N Cell motility", "O Posttranslational modification, protein turnover, chaperones", "P Inorganic ion transport and metabolism", "Q Secondary metabolites biosynthesis, transport and catabolism", "R General function prediction only",
-                "S Function unknown", "T Signal transduction mechanisms", "U Intracellular trafficking, secretion, and vesicular transport", "V Defense mechanisms", "Y Nuclear structure", "Z Cytoskeleton"));
-        List<String> vtmp = Arrays.asList("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "Y", "Z");
-        for (int i = 0; i < 24; i++) {
-            String currentLabel = funcLabels.get(i);
-            if (funckeys.contains(currentLabel)) {
-                int idx = funckeys.indexOf(currentLabel);
-                double[] t = generateSeries(funcval.get(idx), i, 24);
-                ArrayList<Double> v = DoubleStream.of(t).boxed().collect(
-                        Collectors.toCollection(ArrayList::new));
-                funcchart.addSeries(funcLabels.get(i), vtmp, v);
-            } else {
-                double[] t = generateSeries(0, i, 24);
-                ArrayList<Double> v = DoubleStream.of(t).boxed().collect(
-                        Collectors.toCollection(ArrayList::new));
-                funcchart.addSeries(funcLabels.get(i), vtmp, v);
+        DistributionI<Long> COG_funccat = cogdata.get("COG_funccat");
+        if (!COG_funccat.isEmpty()) {
+            Color[] colorcog = generateCOGFuncCatPalette();
+            funcchart.getStyler().setYAxisDecimalPattern("##.###");
+            funcchart.getStyler().setSeriesColors(colorcog);
+            funcchart.getStyler().setToolTipsEnabled(true);
+            funcchart.getStyler().setToolTipHighlightColor(tooltipcolor);
+            funcchart.getStyler().setLegendFont(sumFont);
+            funcchart.getStyler().setChartTitleFont(sumFont);
+            funcchart.getStyler().setPlotGridLinesVisible(false);
+            funcchart.getStyler().setOverlapped(false);
+            funcchart.getStyler().setStacked(true);
+            funcchart.getStyler().setAvailableSpaceFill(0.7);
+
+            List<String> funckeys = new ArrayList<>();
+            List<Long> funcval = new ArrayList<>();
+            for (Entry<AttributeI, Long> e : COG_funccat.entrySet()) {
+                funckeys.add(e.getKey().getValue());
+                funcval.add(e.getValue());
+            }
+
+            for (int i = 0; i < 24; i++) {
+                String currentLabel = funcLabels.get(i);
+                if (funckeys.contains(currentLabel)) {
+                    int idx = funckeys.indexOf(currentLabel);
+                    List<Double> t = generateSeries(funcval.get(idx), i, 24);
+                    funcchart.addSeries(funcLabels.get(i), vtmp, t);
+                } else {
+                    List<Double> t = generateSeries(0, i, 24);
+                    funcchart.addSeries(funcLabels.get(i), vtmp, t);
+                }
             }
         }
+
+        funcpanel.setVisible(true);
         funcpanel.revalidate();
         funcpanel.repaint();
-
     }
 
-    private static Map<String, Map<String, Long>> getFunctional(SeqRunI seqr) throws MGXException {
-        Map<String, Map<String, Long>> cog = new HashMap<>();
+    private static Map<String, DistributionI<Long>> getFunctional(final SeqRunI seqr) throws MGXException {
+        Map<String, DistributionI<Long>> cog = new HashMap<>(2);
 
-        List<JobI> joblist = seqr.getMaster().Job().BySeqRun(seqr);
-        for (JobI job : joblist) {
-            if (seqr.getMaster().Tool().ByJob(job).getName().equals("COG") && job.getStatus() == JobState.FINISHED) {
-                Iterator<AttributeTypeI> attributeit = seqr.getMaster().AttributeType().byJob(job);
+        final MGXMasterI master = seqr.getMaster();
+
+        for (JobI job : master.Job().BySeqRun(seqr)) {
+            if (job.getStatus() == JobState.FINISHED && master.Tool().ByJob(job).getName().equals("COG")) {
+                Iterator<AttributeTypeI> attributeit = master.AttributeType().byJob(job);
                 while (attributeit.hasNext()) {
-                    Map<String, Long> cog_tmp = new HashMap<>();
-                    AttributeTypeI tmp = attributeit.next();
-                    String name = tmp.getName();
-                    DistributionI<Long> dist = tmp.getMaster().Attribute().getDistribution(tmp, job, seqr);
-                    Set<AttributeI> names = dist.keySet();
-                    List<Long> nvalues = (List<Long>) dist.values();
-                    Object[] tmpn = names.toArray();
-                    for (int i = 0; i < tmpn.length; i++) {
-                        cog_tmp.put(tmpn[i].toString(), nvalues.get(i));
-                    }
-                    cog.put(name, cog_tmp);
+                    AttributeTypeI attrType = attributeit.next();
+                    DistributionI<Long> dist = master.Attribute().getDistribution(attrType, job, seqr);
+                    cog.put(attrType.getName(), dist);
                 }
-
             }
-
         }
         return cog;
     }
 
-    private static double[] generateSeries(long data, int idx, int value) {
-        double[] tmp = new double[value];
-        Arrays.fill(tmp, 0);
-        tmp[idx] = (double) data;
-        return tmp;
-    }
-
-    private static Map<String, Long> getTopTen(Map<String, Long> rank) {
-        if (rank.containsKey("None")) {
-            rank.remove("None");
-        }
-        Map<String, Long> tmp = rank;
-        Map<String, Long> topTen;
-        if (tmp.size() > 10) {
-            topTen
-                    = tmp.entrySet()
-                    .stream()
-                    .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-                    .limit(10)
-                    .collect(Collectors.toMap(
-                            Map.Entry::getKey, Map.Entry::getValue, (entry1, entry2) -> entry1, LinkedHashMap::new));
-            topTen.keySet().stream().filter((key) -> (rank.containsKey(key))).forEachOrdered((key) -> {
-                rank.remove(key);
-            });
-            long sum = rank.values().stream().reduce(0L, Long::sum);
-            topTen.put("Others", sum);
-        } else {
-            topTen = rank;
-
-        }
-
-        return topTen;
-    }
-
-    private static Map<String, Long> getTopTenCOG(Map<String, Long> cog) {
-        Map<String, Long> tmp = cog;
-        Map<String, Long> topTen = null;
-        if (tmp.size() > 10) {
-            topTen
-                    = tmp.entrySet()
-                    .stream()
-                    .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-                    .limit(10)
-                    .collect(Collectors.toMap(
-                            Map.Entry::getKey, Map.Entry::getValue, (entry1, entry2) -> entry1, LinkedHashMap::new));
-            topTen.keySet().stream().filter((key) -> (cog.containsKey(key))).forEachOrdered((key) -> {
-                cog.remove(key);
-            });
-        }else {
-            topTen = cog;
-
-        }
-        return topTen;
+    private static List<Double> generateSeries(long data, int idx, int value) {
+        Double[] tmp = new Double[value];
+        Arrays.fill(tmp, 0D);
+        tmp[idx] = Double.valueOf(data);
+        return Arrays.asList(tmp);
     }
 
     @Override
@@ -1073,7 +892,6 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         palette[10] = new Color(255, 255, 153);
         return palette;
     }
-
 
     private static Color[] generatePaletteGradient(int size) {
         Color[] piecolors = new Color[size];

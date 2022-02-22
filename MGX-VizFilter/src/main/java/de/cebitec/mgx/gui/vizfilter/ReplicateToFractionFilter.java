@@ -28,7 +28,7 @@ public class ReplicateToFractionFilter implements ReplicateVisFilterI<Distributi
         }
         return ret;
     }
-    
+
     public Pair<DistributionI<Double>, DistributionI<Double>> filterDist(DistributionI<Double> mean, DistributionI<Double> stdv) {
         // sum up
         double total = 0;
@@ -38,7 +38,7 @@ public class ReplicateToFractionFilter implements ReplicateVisFilterI<Distributi
         //long total = dist.getTotalClassifiedElements();
         Map<AttributeI, Double> meanRet = new HashMap<>(mean.size());
         Map<AttributeI, Double> stdvRet = new HashMap<>(stdv.size());
-        
+
         for (Entry<AttributeI, Double> e : mean.entrySet()) {
             //e.setValue((double)e.getValue().longValue() / total);
             meanRet.put(e.getKey(), e.getValue() / total);
@@ -47,9 +47,9 @@ public class ReplicateToFractionFilter implements ReplicateVisFilterI<Distributi
             //e.setValue((double)e.getValue().longValue() / total);
             stdvRet.put(e.getKey(), e.getValue() / total);
         }
-        
+
         return new Pair<>(
-                (DistributionI<Double>) new NormalizedDistribution(mean.getMaster(), meanRet, mean.keySet(), mean.getTotalClassifiedElements()), 
-                (DistributionI<Double>) new NormalizedDistribution(stdv.getMaster(), stdvRet, stdv.keySet(), stdv.getTotalClassifiedElements()));
+                new NormalizedDistribution(mean.getMaster(), mean.getAttributeType(), meanRet, mean.keySet(), mean.getTotalClassifiedElements()),
+                new NormalizedDistribution(stdv.getMaster(), stdv.getAttributeType(), stdvRet, stdv.keySet(), stdv.getTotalClassifiedElements()));
     }
 }

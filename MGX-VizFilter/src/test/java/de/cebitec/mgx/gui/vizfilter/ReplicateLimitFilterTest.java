@@ -37,11 +37,11 @@ public class ReplicateLimitFilterTest {
         AttributeI a2 = new Attribute();
         a2.setValue("BAR");
         mean.put(a2, 3.5);
-        DistributionI<Double> meanDist = new NormalizedDistribution(null, mean, 2);
+        DistributionI<Double> meanDist = new NormalizedDistribution(null, null, mean, 2);
         Map<AttributeI, Double> stdv = new HashMap<>();
         stdv.put(a1, 1.0);
         stdv.put(a2, 0.5);
-        DistributionI<Double> stdvDist = new NormalizedDistribution(null, stdv, 2);
+        DistributionI<Double> stdvDist = new NormalizedDistribution(null, null, stdv, 2);
         List<Triple<ReplicateGroupI, DistributionI<Double>, DistributionI<Double>>> list = new ArrayList<>();
         ReplicateGroupI rg = null;
         list.add(new Triple<>(rg, meanDist, stdvDist));
@@ -68,8 +68,8 @@ public class ReplicateLimitFilterTest {
             stdv.put(a1, 0.1 * i);
         }
 
-        DistributionI<Double> meanDist = new NormalizedDistribution(null, mean, 50);
-        DistributionI<Double> stdvDist = new NormalizedDistribution(null, stdv, 50);
+        DistributionI<Double> meanDist = new NormalizedDistribution(null, null, mean, 50);
+        DistributionI<Double> stdvDist = new NormalizedDistribution(null, null, stdv, 50);
         List<Triple<ReplicateGroupI, DistributionI<Double>, DistributionI<Double>>> list = new ArrayList<>();
         ReplicateGroupI rg = null;
         list.add(new Triple<>(rg, meanDist, stdvDist));

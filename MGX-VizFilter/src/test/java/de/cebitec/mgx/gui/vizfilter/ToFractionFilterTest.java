@@ -46,7 +46,7 @@ public class ToFractionFilterTest {
         AttributeI a2 = new Attribute();
         a2.setValue("BAR");
         map.put(a2, Long.valueOf(5));
-        DistributionI<Long> dist = new Distribution(null, map, 10);
+        DistributionI<Long> dist = new Distribution(null, null, map, 10);
         assertEquals(2, dist.size());
         assertEquals(10, dist.getTotalClassifiedElements());
 

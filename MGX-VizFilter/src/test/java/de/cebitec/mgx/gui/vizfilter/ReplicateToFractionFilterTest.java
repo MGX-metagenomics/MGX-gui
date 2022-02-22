@@ -42,13 +42,13 @@ public class ReplicateToFractionFilterTest {
         AttributeI a2 = new Attribute();
         a2.setValue("BAR");
         mean.put(a2, 2.5);
-        DistributionI<Double> meanDist = new NormalizedDistribution(null, mean, 10);
+        DistributionI<Double> meanDist = new NormalizedDistribution(null, null, mean, 10);
         assertEquals(2, meanDist.size());
         assertEquals(10, meanDist.getTotalClassifiedElements());
         Map<AttributeI, Double> stdv = new HashMap<>();
         stdv.put(a1, 1.0);
         stdv.put(a2, 0.5);
-        DistributionI<Double> stdvDist = new NormalizedDistribution(null, stdv, 10);
+        DistributionI<Double> stdvDist = new NormalizedDistribution(null, null, stdv, 10);
         assertEquals(2, stdvDist.size());
         assertEquals(10, stdvDist.getTotalClassifiedElements());
         

@@ -41,6 +41,6 @@ public class ToFractionFilter implements VisFilterI<DistributionI<Long>, Distrib
             map.put(e.getKey(), (double)e.getValue() / total);
         }
         
-        return new NormalizedDistribution(dist.getMaster(), map, dist.keySet(), dist.getTotalClassifiedElements());
+        return new NormalizedDistribution(dist.getMaster(), dist.getAttributeType(), map, dist.keySet(), dist.getTotalClassifiedElements());
     }
 }

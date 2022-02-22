@@ -33,15 +33,9 @@ public class SortOrder<T extends Number> implements VisFilterI<DistributionI<T>,
     public final static Order ASCENDING = Order.ASCENDING;
     public final static Order DESCENDING = Order.DESCENDING;
 
-    private final int currentCriteria;
     private final Order order;
 
-    public SortOrder(AttributeTypeI aType, Order order) {
-        if (aType == null) {
-            throw new IllegalArgumentException("null AttributeTypeI supplied, but value is required");
-        }
-        currentCriteria = aType.getValueType() == AttributeTypeI.VALUE_NUMERIC
-                ? SortOrder.BY_TYPE : SortOrder.BY_VALUE;
+    public SortOrder(Order order) {
         this.order = order;
     }
 
@@ -50,11 +44,13 @@ public class SortOrder<T extends Number> implements VisFilterI<DistributionI<T>,
     public List<Pair<GroupI, DistributionI<T>>> filter(List<Pair<GroupI, DistributionI<T>>> dists) {
 
         List<Pair<GroupI, DistributionI<T>>> ret = new ArrayList<>();
+        AttributeTypeI attrType = null;
 
         // summary distribution over all groups
         TObjectDoubleMap<AttributeI> summary = new TObjectDoubleHashMap<>();
         for (Pair<GroupI, DistributionI<T>> pair : dists) {
             DistributionI<T> dist = pair.getSecond();
+            attrType = dist.getAttributeType();
             for (Entry<AttributeI, T> p : dist.entrySet()) {
                 if (summary.containsKey(p.getKey())) {
                     Double old = summary.get(p.getKey());
@@ -66,6 +62,9 @@ public class SortOrder<T extends Number> implements VisFilterI<DistributionI<T>,
         }
 
         List<AttributeI> sortList = new ArrayList<>();
+        
+        int currentCriteria = attrType.getValueType() == AttributeTypeI.VALUE_NUMERIC
+                ? SortOrder.BY_TYPE : SortOrder.BY_VALUE;
 
         // sort by selected criteria
         switch (currentCriteria) {
@@ -94,10 +93,10 @@ public class SortOrder<T extends Number> implements VisFilterI<DistributionI<T>,
             DistributionI<T> sortedDist = null;
             if (d.getEntryType().equals(Long.class)) {
                 Map<AttributeI, Long> tmp = (Map<AttributeI, Long>) d;
-                sortedDist = (DistributionI<T>) new Distribution(d.getMaster(), tmp, sortList, d.getTotalClassifiedElements());
+                sortedDist = (DistributionI<T>) new Distribution(d.getMaster(), d.getAttributeType(), tmp, sortList, d.getTotalClassifiedElements());
             } else if (d.getEntryType().equals(Double.class)) {
                 Map<AttributeI, Double> tmp = (Map<AttributeI, Double>) d;
-                sortedDist = (DistributionI<T>) new NormalizedDistribution(d.getMaster(), tmp, sortList, d.getTotalClassifiedElements());
+                sortedDist = (DistributionI<T>) new NormalizedDistribution(d.getMaster(), d.getAttributeType(), tmp, sortList, d.getTotalClassifiedElements());
             }
 
             ret.add(new Pair<>(p.getFirst(), sortedDist));
@@ -119,6 +118,10 @@ public class SortOrder<T extends Number> implements VisFilterI<DistributionI<T>,
         }
 
         List<AttributeI> sortList = new ArrayList<>();
+        
+        int currentCriteria = d.getAttributeType().getValueType() == AttributeTypeI.VALUE_NUMERIC
+                ? SortOrder.BY_TYPE : SortOrder.BY_VALUE;
+        
         // sort by selected criteria
         switch (currentCriteria) {
             case BY_VALUE:
@@ -143,10 +146,10 @@ public class SortOrder<T extends Number> implements VisFilterI<DistributionI<T>,
         DistributionI<T> sortedDist = null;
         if (d.getEntryType().equals(Long.class)) {
             Map<AttributeI, Long> tmp = (Map<AttributeI, Long>) d;
-            sortedDist = (DistributionI<T>) new Distribution(d.getMaster(), tmp, sortList, d.getTotalClassifiedElements());
+            sortedDist = (DistributionI<T>) new Distribution(d.getMaster(), d.getAttributeType(), tmp, sortList, d.getTotalClassifiedElements());
         } else if (d.getEntryType().equals(Double.class)) {
             Map<AttributeI, Double> tmp = (Map<AttributeI, Double>) d;
-            sortedDist = (DistributionI<T>) new NormalizedDistribution(d.getMaster(), tmp, sortList, d.getTotalClassifiedElements());
+            sortedDist = (DistributionI<T>) new NormalizedDistribution(d.getMaster(), d.getAttributeType(), tmp, sortList, d.getTotalClassifiedElements());
         }
         return sortedDist;
     }

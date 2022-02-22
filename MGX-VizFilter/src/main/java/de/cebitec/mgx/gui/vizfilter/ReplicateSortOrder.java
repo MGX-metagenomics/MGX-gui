@@ -94,9 +94,8 @@ public class ReplicateSortOrder implements ReplicateVisFilterI<DistributionI<Dou
 
             Map<AttributeI, Double> tmpMean = (Map<AttributeI, Double>) mean;
             Map<AttributeI, Double> tmpStdv = (Map<AttributeI, Double>) stdv;
-            DistributionI<Double> sortedMean = (DistributionI<Double>) new NormalizedDistribution(mean.getMaster(), tmpMean, sortList, mean.getTotalClassifiedElements());
-            DistributionI<Double> sortedStdv = (DistributionI<Double>) new NormalizedDistribution(stdv.getMaster(), tmpStdv, sortList, stdv.getTotalClassifiedElements());
-            
+            DistributionI<Double> sortedMean = (DistributionI<Double>) new NormalizedDistribution(mean.getMaster(), mean.getAttributeType(), tmpMean, sortList, mean.getTotalClassifiedElements());
+            DistributionI<Double> sortedStdv = (DistributionI<Double>) new NormalizedDistribution(stdv.getMaster(), stdv.getAttributeType(), tmpStdv, sortList, stdv.getTotalClassifiedElements());
 
             ret.add(new Triple<>(t.getFirst(), sortedMean, sortedStdv));
         }
@@ -139,7 +138,7 @@ public class ReplicateSortOrder implements ReplicateVisFilterI<DistributionI<Dou
         }
 
         Map<AttributeI, Double> tmp = (Map<AttributeI, Double>) d;
-        DistributionI<Double> sortedDist = (DistributionI<Double>) new NormalizedDistribution(d.getMaster(), tmp, sortList, d.getTotalClassifiedElements());
+        DistributionI<Double> sortedDist = (DistributionI<Double>) new NormalizedDistribution(d.getMaster(), d.getAttributeType(), tmp, sortList, d.getTotalClassifiedElements());
         return sortedDist;
     }
 

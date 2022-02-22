@@ -121,7 +121,7 @@ public class AttributeAccess extends MasterHolder implements AttributeAccessI {
             Logger.getLogger(AttributeAccess.class.getName()).log(Level.SEVERE, null, ex);
             throw new MGXException(ex);
         }
-        return new Distribution(getMaster(), res, total);
+        return new Distribution(getMaster(), attrType, res, total);
     }
 
     @Override
@@ -155,7 +155,7 @@ public class AttributeAccess extends MasterHolder implements AttributeAccessI {
             Logger.getLogger(AttributeAccess.class.getName()).log(Level.SEVERE, null, ex);
             throw new MGXException(ex);
         }
-        return new Distribution(getMaster(), res, total);
+        return new Distribution(getMaster(), attrType, res, total);
     }
 
     @Override

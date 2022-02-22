@@ -101,7 +101,7 @@ public class TableViewer extends AbstractViewer<DistributionI<Long>> implements 
             allAttrs.addAll(p.getSecond().keySet());
         }
 
-        SortOrder<Double> order = new SortOrder<>(getAttributeType(), SortOrder.DESCENDING);
+        SortOrder<Double> order = new SortOrder<>(SortOrder.DESCENDING);
         dists = order.filter(dists);
 
         final boolean useFractions = getCust().useFractions();

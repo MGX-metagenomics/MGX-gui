@@ -10,7 +10,9 @@ import de.cebitec.mgx.gui.datamodel.misc.NormalizedDistribution;
 import gnu.trove.map.TObjectDoubleMap;
 import gnu.trove.map.hash.TObjectDoubleHashMap;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -95,15 +97,39 @@ public class LimitFilter<T extends Number> implements VisFilterI<DistributionI<T
             DistributionI<T> filteredDist = null;
             if (dist.getEntryType().equals(Long.class)) {
                 Map<AttributeI, Long> tmp = (Map<AttributeI, Long>) dist;
-                filteredDist = (DistributionI<T>) new Distribution(dist.getMaster(), tmp, toKeep, dist.getTotalClassifiedElements());
+                filteredDist = (DistributionI<T>) new Distribution(dist.getMaster(), dist.getAttributeType(), tmp, toKeep, dist.getTotalClassifiedElements());
             } else if (dist.getEntryType().equals(Double.class)) {
                 Map<AttributeI, Double> tmp = (Map<AttributeI, Double>) dist;
-                filteredDist = (DistributionI<T>) new NormalizedDistribution(dist.getMaster(), tmp, toKeep, dist.getTotalClassifiedElements());
+                filteredDist = (DistributionI<T>) new NormalizedDistribution(dist.getMaster(), dist.getAttributeType(), tmp, toKeep, dist.getTotalClassifiedElements());
             }
 
             ret.add(new Pair<>(p.getFirst(), filteredDist));
         }
 
         return ret;
+    }
+
+    @SuppressWarnings("unchecked")
+    public DistributionI<T> filterDist(DistributionI<T> dist) {
+        DistributionI<T> filteredDist = null;
+
+        Collection<AttributeI> toKeep = new ArrayList<>(limit == LIMITS.ALL ? dist.size() : limit.getValue());
+
+        Iterator<AttributeI> iter = dist.keySet().iterator();
+        int num = 0;
+        while (iter.hasNext() && num < limit.getValue()) {
+            toKeep.add(iter.next());
+            num++;
+        }
+
+        if (dist.getEntryType().equals(Long.class)) {
+            Map<AttributeI, Long> tmp = (Map<AttributeI, Long>) dist;
+            filteredDist = (DistributionI<T>) new Distribution(dist.getMaster(), dist.getAttributeType(), tmp, toKeep, dist.getTotalClassifiedElements());
+        } else if (dist.getEntryType().equals(Double.class)) {
+            Map<AttributeI, Double> tmp = (Map<AttributeI, Double>) dist;
+            filteredDist = (DistributionI<T>) new NormalizedDistribution(dist.getMaster(), dist.getAttributeType(), tmp, toKeep, dist.getTotalClassifiedElements());
+        }
+
+        return filteredDist;
     }
 }

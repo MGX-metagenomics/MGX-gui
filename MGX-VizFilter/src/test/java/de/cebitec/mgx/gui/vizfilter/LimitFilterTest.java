@@ -38,7 +38,7 @@ public class LimitFilterTest {
         AttributeI a2 = new Attribute();
         a2.setValue("BAR");
         map.put(a2, Long.valueOf(5));
-        DistributionI<Long> dist = new Distribution(null, map);
+        DistributionI<Long> dist = new Distribution(null, null, map);
         List<Pair<GroupI, DistributionI<Long>>> list = new ArrayList<>();
         VisualizationGroupI vg = null;
         list.add(new Pair<>(vg, dist));
@@ -62,7 +62,7 @@ public class LimitFilterTest {
             map.put(a1, 10 * i);
         }
 
-        DistributionI<Long> dist = new Distribution(null, map);
+        DistributionI<Long> dist = new Distribution(null, null, map);
         List<Pair<GroupI, DistributionI<Long>>> list = new ArrayList<>();
         VisualizationGroupI vg = null;
         list.add(new Pair<>(vg, dist));

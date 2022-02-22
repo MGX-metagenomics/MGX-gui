@@ -89,7 +89,7 @@ public class SpiderWebChartCustomizer extends javax.swing.JPanel implements VisF
             ret = new LongToDouble().filter(dists);
         }
 
-        SortOrder<Double> sorter = new SortOrder<>(at, SortOrder.DESCENDING);
+        SortOrder<Double> sorter = new SortOrder<>(SortOrder.DESCENDING);
         ret = sorter.filter(ret);
 
         return ret;

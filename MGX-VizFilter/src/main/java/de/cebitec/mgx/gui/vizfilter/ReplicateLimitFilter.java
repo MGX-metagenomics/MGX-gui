@@ -1,14 +1,10 @@
 package de.cebitec.mgx.gui.vizfilter;
 
 import de.cebitec.mgx.api.groups.ReplicateGroupI;
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
-import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.misc.Triple;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.visualization.filter.ReplicateVisFilterI;
-import de.cebitec.mgx.api.visualization.filter.VisFilterI;
-import de.cebitec.mgx.gui.datamodel.misc.Distribution;
 import de.cebitec.mgx.gui.datamodel.misc.NormalizedDistribution;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -97,8 +93,8 @@ public class ReplicateLimitFilter implements ReplicateVisFilterI<DistributionI<D
 
             Map<AttributeI, Double> tmpMean = (Map<AttributeI, Double>) mean;
             Map<AttributeI, Double> tmpStdv = (Map<AttributeI, Double>) stdv;
-            DistributionI<Double> sortedMean = (DistributionI<Double>) new NormalizedDistribution(mean.getMaster(), tmpMean, toKeep, mean.getTotalClassifiedElements());
-            DistributionI<Double> sortedStdv = (DistributionI<Double>) new NormalizedDistribution(stdv.getMaster(), tmpStdv, toKeep, stdv.getTotalClassifiedElements());
+            DistributionI<Double> sortedMean = (DistributionI<Double>) new NormalizedDistribution(mean.getMaster(), mean.getAttributeType(), tmpMean, toKeep, mean.getTotalClassifiedElements());
+            DistributionI<Double> sortedStdv = (DistributionI<Double>) new NormalizedDistribution(stdv.getMaster(), stdv.getAttributeType(), tmpStdv, toKeep, stdv.getTotalClassifiedElements());
             
 
             ret.add(new Triple<>(t.getFirst(), sortedMean, sortedStdv));

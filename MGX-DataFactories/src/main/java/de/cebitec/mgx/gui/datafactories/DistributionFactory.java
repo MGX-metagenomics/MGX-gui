@@ -27,6 +27,7 @@ public class DistributionFactory {
         Map<AttributeI, Long> summary = new HashMap<>();
         long total = 0;
         MGXMasterI anyMaster = null;
+        AttributeTypeI attrType = null;
 
         for (Future<Pair<T, DistributionI<Long>>> f : dists) {
             Pair<T, DistributionI<Long>> p = f.get();
@@ -34,6 +35,7 @@ public class DistributionFactory {
             DistributionI<Long> d = p.getSecond();
 
             anyMaster = d.getMaster();
+            attrType = d.getAttributeType();
             total += d.getTotalClassifiedElements();
             for (Entry<AttributeI, Long> e : d.entrySet()) {
                 AttributeI attr = e.getKey();
@@ -45,7 +47,7 @@ public class DistributionFactory {
             }
         }
 
-        return new Distribution(anyMaster, summary, total);
+        return new Distribution(anyMaster, attrType, summary, total);
     }
     
     public static Pair<DistributionI<Double>, DistributionI<Double>> statisticalMerge(final Iterable<DistributionI<Long>> dists) throws InterruptedException, ExecutionException {
@@ -55,9 +57,11 @@ public class DistributionFactory {
         long total = 0;
         long iterableSize=0;
         MGXMasterI anyMaster = null;
+        AttributeTypeI attrType = null;
 
         for (DistributionI<Long> d : dists) {                        
             anyMaster = d.getMaster();
+            attrType = d.getAttributeType();
             total += d.getTotalClassifiedElements();
             iterableSize++;
             for (Entry<AttributeI, Long> e : d.entrySet()) {
@@ -77,7 +81,7 @@ public class DistributionFactory {
             stdv.put(entry.getKey(), entry.getValue().getStdv());
         }        
 
-        return new Pair<DistributionI<Double>, DistributionI<Double>>(new NormalizedDistribution(anyMaster, mean, total), new NormalizedDistribution(anyMaster, stdv, total));
+        return new Pair<>(new NormalizedDistribution(anyMaster, attrType, mean, total), new NormalizedDistribution(anyMaster, attrType, stdv, total));
     }
 
     public static <T extends Long> DistributionI<Long> fromTree(TreeI<T> tree, AttributeTypeI aType) {
@@ -91,7 +95,7 @@ public class DistributionFactory {
                 total += node.getContent();
             }
         }
-        return new Distribution(master, summary, total);
+        return new Distribution(master, aType, summary, total);
     }
     
     private static class StatisticsCalculator {

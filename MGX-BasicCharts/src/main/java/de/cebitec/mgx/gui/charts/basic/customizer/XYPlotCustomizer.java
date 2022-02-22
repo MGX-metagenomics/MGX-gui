@@ -166,7 +166,7 @@ public class XYPlotCustomizer extends javax.swing.JPanel implements VisFilterI<D
             ret = new LongToDouble().filter(dists);
         }
 
-        SortOrder<Double> sorter = new SortOrder<>(at, sortAscending.isSelected() ? SortOrder.ASCENDING : SortOrder.DESCENDING);
+        SortOrder<Double> sorter = new SortOrder<>(sortAscending.isSelected() ? SortOrder.ASCENDING : SortOrder.DESCENDING);
         List<Pair<GroupI, DistributionI<Double>>> filter = sorter.filter(ret);
         return filter;
     }

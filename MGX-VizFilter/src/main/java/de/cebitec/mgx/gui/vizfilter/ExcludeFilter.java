@@ -51,10 +51,10 @@ public class ExcludeFilter<T extends Number> implements VisFilterI<DistributionI
         
         if (Double.class.equals(dist.getEntryType())) {
             Map<AttributeI, Double> tmp = (Map<AttributeI, Double>) data;
-            return (DistributionI<T>) new NormalizedDistribution(dist.getMaster(), tmp, dist.getTotalClassifiedElements());
+            return (DistributionI<T>) new NormalizedDistribution(dist.getMaster(), dist.getAttributeType(), tmp, dist.getTotalClassifiedElements());
         } else if (Long.class.equals(dist.getEntryType())) {
             Map<AttributeI, Long> tmp = (Map<AttributeI, Long>) data;
-            return (DistributionI<T>) new Distribution(dist.getMaster(), tmp, dist.getTotalClassifiedElements());
+            return (DistributionI<T>) new Distribution(dist.getMaster(), dist.getAttributeType(), tmp, dist.getTotalClassifiedElements());
         } else {
             // not reached
             return null;

@@ -33,11 +33,11 @@ public class ReplicateExcludeFilterTest {
         AttributeI a2 = new Attribute();
         a2.setValue("BAR");
         mean.put(a2, 3.5);
-        DistributionI<Double> meanDist = new NormalizedDistribution(null, mean, 2);
+        DistributionI<Double> meanDist = new NormalizedDistribution(null, null, mean, 2);
         Map<AttributeI, Double> stdv = new HashMap<>();
         stdv.put(a1, 1.0);
         stdv.put(a2, 0.5);
-        DistributionI<Double> stdvDist = new NormalizedDistribution(null, stdv, 2);
+        DistributionI<Double> stdvDist = new NormalizedDistribution(null, null, stdv, 2);
          assertEquals(2, meanDist.size());
          assertEquals(2, stdvDist.size());
         

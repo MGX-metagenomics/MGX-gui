@@ -8,6 +8,7 @@ package de.cebitec.mgx.gui.datamodel.misc;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.model.AttributeI;
+import de.cebitec.mgx.api.model.AttributeTypeI;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,14 +25,16 @@ import java.util.Set;
 public abstract class DistributionBase<T extends Number> implements DistributionI<T> {
 
     private final MGXMasterI master;
+    private final AttributeTypeI attrType;
     
     // we cant derive this from the sum of values; normalization, filtering..
     private final long totalClassifiedSeqs;
     private final Set<AttributeI> keys = new LinkedHashSet<>();
     private final Map<AttributeI, T> _data = new HashMap<>();
 
-    protected DistributionBase(MGXMasterI master, Map<AttributeI, T> data, Collection<AttributeI> order, long total) {
+    protected DistributionBase(MGXMasterI master, AttributeTypeI aType, Map<AttributeI, T> data, Collection<AttributeI> order, long total) {
         this.master = master;
+        this.attrType = aType;
         this.totalClassifiedSeqs = total;
 
         for (AttributeI attr : order) {
@@ -46,6 +49,11 @@ public abstract class DistributionBase<T extends Number> implements Distribution
     @Override
     public final MGXMasterI getMaster() {
         return master;
+    }
+    
+    @Override
+    public AttributeTypeI getAttributeType() {
+        return attrType;
     }
 
     @Override

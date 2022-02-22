@@ -52,10 +52,10 @@ public class ReplicateExcludeFilter<T extends Number> implements ReplicateVisFil
         DistributionI<T> ret = null;
         if (dist.getEntryType().equals(Long.class)) {
             Map<AttributeI, Long> tmp = (Map<AttributeI, Long>) data;
-            ret = (DistributionI<T>) new Distribution(dist.getMaster(), tmp);
+            ret = (DistributionI<T>) new Distribution(dist.getMaster(), dist.getAttributeType(), tmp);
         } else if (dist.getEntryType().equals(Double.class)) {
               Map<AttributeI, Double> tmp = (Map<AttributeI, Double>) data;
-            ret =  (DistributionI<T>) new NormalizedDistribution(dist.getMaster(), tmp, dist.getTotalClassifiedElements());
+            ret =  (DistributionI<T>) new NormalizedDistribution(dist.getMaster(), dist.getAttributeType(), tmp, dist.getTotalClassifiedElements());
         }
         return ret;
     }

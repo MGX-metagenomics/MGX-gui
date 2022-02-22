@@ -50,11 +50,11 @@ public class ReplicateSortOrderTest {
         AttributeI a2 = new Attribute();
         a2.setValue("BAR");
         mean1.put(a2, 3.5);
-        DistributionI<Double> meanDist1 = new NormalizedDistribution(null, mean1, 2);
+        DistributionI<Double> meanDist1 = new NormalizedDistribution(null, null, mean1, 2);
         Map<AttributeI, Double> stdv1 = new HashMap<>();
         stdv1.put(a1, 1.0);
         stdv1.put(a2, 0.5);
-        DistributionI<Double> stdvDist1 = new NormalizedDistribution(null, stdv1, 2);
+        DistributionI<Double> stdvDist1 = new NormalizedDistribution(null, null, stdv1, 2);
         
         Map<AttributeI, Double> mean2 = new HashMap<>();
         AttributeI a3 = new Attribute();
@@ -63,11 +63,11 @@ public class ReplicateSortOrderTest {
         AttributeI a4 = new Attribute();
         a4.setValue("BAZ");
         mean2.put(a4, 2.0);
-        DistributionI<Double> meanDist2 = new NormalizedDistribution(null, mean2, 2);
+        DistributionI<Double> meanDist2 = new NormalizedDistribution(null, null, mean2, 2);
         Map<AttributeI, Double> stdv2 = new HashMap<>();
         stdv2.put(a1, 2.0);
         stdv2.put(a3, 1.5);
-        DistributionI<Double> stdvDist2 = new NormalizedDistribution(null, stdv2, 2);
+        DistributionI<Double> stdvDist2 = new NormalizedDistribution(null, null, stdv2, 2);
 
         List<Triple<ReplicateGroupI, DistributionI<Double>, DistributionI<Double>>> in = new ArrayList<>();
         ReplicateGroupI dummyRG = null;

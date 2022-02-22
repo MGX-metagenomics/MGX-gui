@@ -7,6 +7,7 @@ package de.cebitec.mgx.api.misc;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.AttributeI;
+import de.cebitec.mgx.api.model.AttributeTypeI;
 import java.util.Map;
 
 /**
@@ -16,6 +17,8 @@ import java.util.Map;
 public interface DistributionI<T extends Number> extends Map<AttributeI, T> , Visualizable {
 
     public MGXMasterI getMaster();
+    
+    public AttributeTypeI getAttributeType();
 
     public long getTotalClassifiedElements();
     

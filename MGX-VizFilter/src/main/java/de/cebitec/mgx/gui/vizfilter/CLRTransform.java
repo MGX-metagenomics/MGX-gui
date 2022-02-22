@@ -60,6 +60,6 @@ public class CLRTransform implements VisFilterI<DistributionI<Double>, Distribut
             map.put(attrs[i], clr[i]);
         }
 
-        return new NormalizedDistribution(dist.getMaster(), map, dist.keySet(), dist.getTotalClassifiedElements());
+        return new NormalizedDistribution(dist.getMaster(), dist.getAttributeType(), map, dist.keySet(), dist.getTotalClassifiedElements());
     }
 }
