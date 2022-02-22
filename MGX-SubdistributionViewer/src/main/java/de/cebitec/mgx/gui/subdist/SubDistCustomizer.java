@@ -6,6 +6,7 @@
 package de.cebitec.mgx.gui.subdist;
 
 import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.groups.ConflictingJobsException;
 import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
@@ -45,6 +46,7 @@ public class SubDistCustomizer extends javax.swing.JPanel implements ItemListene
     /**
      * Creates new form SubDistCustomizer
      */
+    @SuppressWarnings("unchecked")
     public SubDistCustomizer() {
         initComponents();
         baseDistribution.setRenderer(new DefaultListCellRenderer() {
@@ -57,7 +59,6 @@ public class SubDistCustomizer extends javax.swing.JPanel implements ItemListene
         });
         baseDistribution.addItemListener(this);
 
-        
         selectBox.setRenderer(new DefaultListCellRenderer() {
             @Override
             public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
@@ -65,13 +66,13 @@ public class SubDistCustomizer extends javax.swing.JPanel implements ItemListene
                     return super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                 }
                 Pair<AttributeTypeI, JobI> p = (Pair<AttributeTypeI, JobI>) value;
-                String displayName = p.getFirst().getName() 
+                String displayName = p.getFirst().getName()
                         + " ("
                         + p.getSecond().getTool().getName()
                         + ")";
                 return super.getListCellRendererComponent(list, displayName, index, isSelected, cellHasFocus);
             }
-            
+
         });
     }
 
@@ -93,23 +94,23 @@ public class SubDistCustomizer extends javax.swing.JPanel implements ItemListene
             Logger.getLogger(SubDistCustomizer.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     public AttributeI getFilterAttribute() {
         return baseModel.getElementAt(baseDistribution.getSelectedIndex());
     }
-    
+
     public Pair<AttributeTypeI, JobI> getSelectedCriteria() {
         return selectModel.getElementAt(selectBox.getSelectedIndex());
     }
-    
+
     public SeqRunI getSeqRun() {
         return currentRun;
     }
-    
+
     public GroupI<SeqRunI> getGroup() {
         return currentGroup;
     }
-    
+
     public boolean useFractions() {
         return fractionsBox.isSelected();
     }
@@ -117,26 +118,26 @@ public class SubDistCustomizer extends javax.swing.JPanel implements ItemListene
     @Override
     public void itemStateChanged(ItemEvent ie) {
         if (ie.getStateChange() == ItemEvent.SELECTED) {
-            
+
             selectModel.removeAllElements();
-            
+
             Pair<GroupI, DistributionI<Long>> p;
             try {
                 p = VGroupManager.getInstance().getDistributions().get(0);
                 GroupI group = p.getFirst();
                 assert group.getNumberOfSeqRuns() == 1;
-                
+
                 if (group.getContentClass() == SeqRunI.class) {
                     currentGroup = group;
                     currentRun = currentGroup.getSeqRuns().get(0);
                     MGXMasterI master = currentRun.getMaster();
-                    
+
                     List<Pair<AttributeTypeI, JobI>> newData = new ArrayList<>();
                     Map<JobI, Set<AttributeTypeI>> map = master.SeqRun().getJobsAndAttributeTypes(currentRun);
                     for (Map.Entry<JobI, Set<AttributeTypeI>> me : map.entrySet()) {
                         JobI job = me.getKey();
                         master.Tool().ByJob(job); // trigger tool fetch
-                        
+
                         for (AttributeTypeI atype : me.getValue()) {
                             if (currentAttrType == null || !currentAttrType.getName().equals(atype.getName())) {
                                 Pair<AttributeTypeI, JobI> newPair = new Pair<>(atype, job);
@@ -144,9 +145,9 @@ public class SubDistCustomizer extends javax.swing.JPanel implements ItemListene
                             }
                         }
                     }
-                    
+
                     Collections.sort(newData, new Comparator<Pair<AttributeTypeI, JobI>>() {
-                        
+
                         @Override
                         public int compare(Pair<AttributeTypeI, JobI> p1, Pair<AttributeTypeI, JobI> p2) {
                             int ret = p1.getFirst().getName().compareTo(p2.getFirst().getName());
@@ -155,12 +156,12 @@ public class SubDistCustomizer extends javax.swing.JPanel implements ItemListene
                             }
                             return p1.getSecond().getTool().getName().compareTo(p2.getSecond().getTool().getName());
                         }
-                        
+
                     });
                     selectModel.addAll(newData);
                     selectBox.setSelectedIndex(0);
                 }
-            } catch (Exception ex) {
+            } catch (MGXException | ConflictingJobsException ex) {
                 Logger.getLogger(SubDistCustomizer.class.getName()).log(Level.SEVERE, null, ex);
             }
 
