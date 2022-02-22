@@ -91,8 +91,8 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
     private final Lookup lookup;
     private int tabIdx = -1;
     //
-    private final static Color tooltipcolor = new Color(120, 85, 137);
-    private final static Font sumFont = new Font("Avenir Next Condensed", Font.BOLD, 12);
+    private final static Color TOOLTIP_COLOR = new Color(120, 85, 137);
+    private final static Font CHART_FONT = new Font("Avenir Next Condensed", Font.BOLD, 12);
     //
     private final static List<String> funcLabels = Arrays.asList("A RNA processing and modification", "B Chromatin structure and dynamics", "C Energy production and conversion", "D Cell cycle control, cell division, chromosome partitioning", "E Amino acid transport and metabolism",
             "F Nucleotide transport and metabolism", "G Carbohydrate transport and metabolism", "H Coenzyme transport and metabolism", "I Lipid transport and metabolism", "J Translation, ribosomal structure and biogenesis", "K Transcription", "L Replication, recombination and repair",
@@ -724,10 +724,10 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         chart.getStyler().setPlotContentSize(.8);
         chart.getStyler().setSeriesColors(colorPalette);
         chart.getStyler().setToolTipsEnabled(true);
-        chart.getStyler().setToolTipHighlightColor(tooltipcolor);
-        chart.getStyler().setSumFont(sumFont);
-        chart.getStyler().setChartTitleFont(sumFont);
-        chart.getStyler().setLegendFont(sumFont);
+        chart.getStyler().setToolTipHighlightColor(TOOLTIP_COLOR);
+        chart.getStyler().setSumFont(CHART_FONT);
+        chart.getStyler().setChartTitleFont(CHART_FONT);
+        chart.getStyler().setLegendFont(CHART_FONT);
         chart.getStyler().setSumVisible(true);
         chart.getStyler().setAnnotationTextPanelFontColor(Color.BLACK);
 
@@ -755,9 +755,9 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
             cogchart.getStyler().setYAxisDecimalPattern("##.###");
             cogchart.getStyler().setSeriesColors(this.colorPalette);
             cogchart.getStyler().setToolTipsEnabled(true);
-            cogchart.getStyler().setToolTipHighlightColor(tooltipcolor);
-            cogchart.getStyler().setLegendFont(sumFont);
-            cogchart.getStyler().setChartTitleFont(sumFont);
+            cogchart.getStyler().setToolTipHighlightColor(TOOLTIP_COLOR);
+            cogchart.getStyler().setLegendFont(CHART_FONT);
+            cogchart.getStyler().setChartTitleFont(CHART_FONT);
             cogchart.getStyler().setPlotGridLinesVisible(false);
             cogchart.getStyler().setOverlapped(false);
             cogchart.getStyler().setStacked(true);
@@ -781,14 +781,14 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         funcchart.getSeriesMap().clear();
 
         DistributionI<Long> COG_funccat = cogdata.get("COG_funccat");
-        if (!COG_funccat.isEmpty()) {
+        if (COG_funccat != null && !COG_funccat.isEmpty()) {
             Color[] colorcog = generateCOGFuncCatPalette();
             funcchart.getStyler().setYAxisDecimalPattern("##.###");
             funcchart.getStyler().setSeriesColors(colorcog);
             funcchart.getStyler().setToolTipsEnabled(true);
-            funcchart.getStyler().setToolTipHighlightColor(tooltipcolor);
-            funcchart.getStyler().setLegendFont(sumFont);
-            funcchart.getStyler().setChartTitleFont(sumFont);
+            funcchart.getStyler().setToolTipHighlightColor(TOOLTIP_COLOR);
+            funcchart.getStyler().setLegendFont(CHART_FONT);
+            funcchart.getStyler().setChartTitleFont(CHART_FONT);
             funcchart.getStyler().setPlotGridLinesVisible(false);
             funcchart.getStyler().setOverlapped(false);
             funcchart.getStyler().setStacked(true);
