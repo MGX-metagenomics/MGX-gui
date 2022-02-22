@@ -736,20 +736,14 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
     }
 
     private void createBarChart(Map<String, DistributionI<Long>> cogdata) throws MGXException, InterruptedException, NoSuchElementException {
-//        if (cogdata.isEmpty()) {
-//            cogpanel.setVisible(false);
-//            funcpanel.setVisible(false);
-//            return;
-//        }
 
         cogchart.getSeriesMap().clear();
 
         DistributionI<Long> cog = cogdata.get("COG");
-        DistributionI<Long> cogtop = null;
-        if (cog != null) {
+        if (cog != null && !cog.isEmpty()) {
             SortOrder<Long> sort = new SortOrder<>(Order.DESCENDING);
             LimitFilter<Long> limit = new LimitFilter<>(LIMITS.TOP10);
-            cogtop = limit.filterDist(sort.filterDist(cog));
+            DistributionI<Long> cogtop = limit.filterDist(sort.filterDist(cog));
 
             cogchart.getStyler().setPlotContentSize(.8);
             cogchart.getStyler().setYAxisDecimalPattern("##.###");
