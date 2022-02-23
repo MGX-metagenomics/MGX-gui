@@ -743,7 +743,7 @@
                   </Properties>
                   <AuxValues>
                     <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new XChartPanel&lt;&gt;(cogchart)"/>
-                    <AuxValue name="JavaCodeGenerator_CreateCodePre" type="java.lang.String" value="cogchart = new CategoryChartBuilder().width(1300).height(800).theme(ChartTheme.GGPlot2).build();&#xa;cogchart.setTitle(&quot;TopTen COG-Groups&quot;);"/>
+                    <AuxValue name="JavaCodeGenerator_CreateCodePre" type="java.lang.String" value="cogchart = new CategoryChartBuilder().width(1300).height(800).theme(ChartTheme.GGPlot2).build();&#xa;cogchart.setTitle(&quot;Top 10 COG Groups&quot;);"/>
                     <AuxValue name="JavaCodeGenerator_DeclarationPost" type="java.lang.String" value="private CategoryChart cogchart;"/>
                     <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="cogpanel.setLayout(new FlowLayout(FlowLayout.LEFT));"/>
                   </AuxValues>

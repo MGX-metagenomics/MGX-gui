@@ -189,7 +189,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         jPanel3 = new javax.swing.JPanel();
         jobLabel1 = new javax.swing.JLabel();
         cogchart = new CategoryChartBuilder().width(1300).height(800).theme(ChartTheme.GGPlot2).build();
-        cogchart.setTitle("TopTen COG-Groups");
+        cogchart.setTitle("Top 10 COG Groups");
         cogpanel = new XChartPanel<>(cogchart);
         funcchart = new CategoryChartBuilder().width(1300).height(1100).theme(ChartTheme.GGPlot2).build();
         funcchart.setTitle("COG functional categories");
