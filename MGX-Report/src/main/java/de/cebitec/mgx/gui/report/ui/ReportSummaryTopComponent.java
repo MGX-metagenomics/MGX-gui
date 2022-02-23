@@ -23,6 +23,7 @@ import de.cebitec.mgx.gui.vizfilter.LimitFilter.LIMITS;
 import de.cebitec.mgx.gui.vizfilter.SortOrder;
 import de.cebitec.mgx.gui.vizfilter.SortOrder.Order;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.beans.PropertyChangeEvent;
@@ -632,6 +633,8 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         }
         currentSeqRun.addPropertyChangeListener(this);
 
+        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+
         // Overview
         nameseq.setText(currentSeqRun.getName());
         seqid.setText(String.format("%s", currentSeqRun.getId()));
@@ -646,12 +649,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
             for (QCResultI t : currentSeqRun.getMaster().SeqRun().getQC(currentSeqRun)) {
                 qccontroll.addTab(t.getName(), QCChartGenerator.createChart(t));
             }
-        } catch (MGXException e) {
-            Exceptions.printStackTrace(e);
-            return;
-        }
 
-        try {
             // taxonomy
             Map<String, DistributionI<Long>> taxonomie = getTaxonomy(currentSeqRun);
             createPieCharts(taxonomie);
@@ -661,9 +659,8 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
             createBarChart(functional);
         } catch (MGXException | InterruptedException | NoSuchElementException e) {
             Exceptions.printStackTrace(e);
-
         }
-
+        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
     }
 
     private static Map<String, DistributionI<Long>> getTaxonomy(SeqRunI seqr) throws MGXException {
