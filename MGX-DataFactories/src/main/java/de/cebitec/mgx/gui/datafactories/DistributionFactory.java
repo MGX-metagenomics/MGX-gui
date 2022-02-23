@@ -16,7 +16,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import org.apache.commons.math3.util.FastMath;
 
-
 /**
  *
  * @author sjaenick
@@ -49,17 +48,17 @@ public class DistributionFactory {
 
         return new Distribution(anyMaster, attrType, summary, total);
     }
-    
+
     public static Pair<DistributionI<Double>, DistributionI<Double>> statisticalMerge(final Iterable<DistributionI<Long>> dists) throws InterruptedException, ExecutionException {
         Map<AttributeI, StatisticsCalculator> summary = new HashMap<>();
         Map<AttributeI, Double> mean = new HashMap<>();
         Map<AttributeI, Double> stdv = new HashMap<>();
         long total = 0;
-        long iterableSize=0;
+        long iterableSize = 0;
         MGXMasterI anyMaster = null;
         AttributeTypeI attrType = null;
 
-        for (DistributionI<Long> d : dists) {                        
+        for (DistributionI<Long> d : dists) {
             anyMaster = d.getMaster();
             attrType = d.getAttributeType();
             total += d.getTotalClassifiedElements();
@@ -72,14 +71,15 @@ public class DistributionFactory {
                 }
                 summary.get(attr).add(count);
             }
-        }        
-        for (Entry<AttributeI, StatisticsCalculator> entry : summary.entrySet()){
-            for (long i = entry.getValue().count(); i < iterableSize; i++)
+        }
+        for (Entry<AttributeI, StatisticsCalculator> entry : summary.entrySet()) {
+            for (long i = entry.getValue().count(); i < iterableSize; i++) {
                 entry.getValue().add(0);
-            
+            }
+
             mean.put(entry.getKey(), entry.getValue().getMean());
             stdv.put(entry.getKey(), entry.getValue().getStdv());
-        }        
+        }
 
         return new Pair<>(new NormalizedDistribution(anyMaster, attrType, mean, total), new NormalizedDistribution(anyMaster, attrType, stdv, total));
     }
@@ -97,41 +97,67 @@ public class DistributionFactory {
         }
         return new Distribution(master, aType, summary, total);
     }
-    
+
+    public static <T extends Long> Map<String, DistributionI<Long>> splitTree(TreeI<T> tree) {
+        Map<String, DistributionI<Long>> ret = new HashMap<>();
+        Map<AttributeTypeI, Map<AttributeI, Long>> temp = new HashMap<>();
+        
+        for (NodeI<T> node : tree.getNodes()) {
+            AttributeI attr = node.getAttribute();
+            AttributeTypeI aType = attr.getAttributeType();
+            T count = node.getContent();
+            if (!temp.containsKey(aType)) {
+                temp.put(aType, new HashMap<>());
+            }
+            temp.get(aType).put(attr, count);
+        }
+        
+        for (Entry<AttributeTypeI, Map<AttributeI, Long>> e : temp.entrySet()) {
+            AttributeTypeI aType = e.getKey();
+            long total = 0;
+            for (Long l : e.getValue().values()) {
+                total += l;
+            }
+            ret.put(aType.getName(), new Distribution(aType.getMaster(), aType, e.getValue(), total));
+        }
+        return ret;
+    }
+
     private static class StatisticsCalculator {
 
         private long n;
         private double mean, m2;
-        
+
         public StatisticsCalculator() {
             n = 0;
             mean = 0;
             m2 = 0;
         }
-        
-        public void add(double value){
+
+        public void add(double value) {
             n++;
             double delta = value - mean;
             mean += delta / n;
-            m2 += delta * (value - mean); 
+            m2 += delta * (value - mean);
         }
-        
-        public double getMean(){
+
+        public double getMean() {
             return mean;
         }
-        
-        public double getStdv(){
-            if (n<2)
+
+        public double getStdv() {
+            if (n < 2) {
                 return Double.NaN;
-            else
-                return FastMath.sqrt(m2 / (n-1));
+            } else {
+                return FastMath.sqrt(m2 / (n - 1));
+            }
         }
-        
-        public long count(){
+
+        public long count() {
             return n;
         }
-        
-        public long getCount(){
+
+        public long getCount() {
             return n;
         }
     }

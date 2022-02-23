@@ -668,7 +668,6 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
 
     private static Map<String, DistributionI<Long>> getTaxonomy(SeqRunI seqr) throws MGXException {
 
-        Map<String, DistributionI<Long>> ret = new HashMap<>();
         final MGXMasterI master = seqr.getMaster();
 
         for (JobI job : master.Job().BySeqRun(seqr)) {
@@ -678,22 +677,15 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
 
                 Iterator<AttributeTypeI> attributeit = master.AttributeType().byJob(job);
 
-                TreeI<Long> tree = null;
-                while (attributeit.hasNext()) {
+                if (attributeit.hasNext()) {
                     AttributeTypeI attrType = attributeit.next();
-
-                    // fetch tree, if needed
-                    if (tree == null) {
-                        tree = master.Attribute().getHierarchy(attrType, job, seqr);
-                    }
-
-                    DistributionI<Long> dist = DistributionFactory.fromTree(tree, attrType);
-                    ret.put(attrType.getName(), dist);
+                    TreeI<Long> tree = master.Attribute().getHierarchy(attrType, job, seqr);
+                    return DistributionFactory.splitTree(tree);
                 }
             }
         }
 
-        return ret;
+        return null;
     }
 
     private void createPieCharts(Map<String, DistributionI<Long>> taxData) throws MGXException, InterruptedException, NoSuchElementException {
