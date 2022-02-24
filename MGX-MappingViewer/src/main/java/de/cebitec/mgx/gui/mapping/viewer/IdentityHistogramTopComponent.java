@@ -42,7 +42,7 @@ import org.openide.util.Utilities;
 )
 @TopComponent.Registration(mode = "satellite", openAtStartup = false)
 @ActionID(category = "Window", id = "de.cebitec.mgx.gui.mapping.viewer.IdentityHistogramTopComponent")
-@ActionReference(path = "Menu/Window" /*, position = 333 */)
+//@ActionReference(path = "Menu/Window", position = 350)
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_IdentityHistogramAction",
         preferredID = "IdentityHistogramTopComponent"
