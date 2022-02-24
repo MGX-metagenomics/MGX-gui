@@ -116,6 +116,7 @@ public class SubDistCustomizer extends javax.swing.JPanel implements ItemListene
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void itemStateChanged(ItemEvent ie) {
         if (ie.getStateChange() == ItemEvent.SELECTED) {
 
