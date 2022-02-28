@@ -8,7 +8,6 @@ package de.cebitec.mgx.gui.controller.assembly;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.exception.MGXLoggedoutException;
-import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.model.assembly.GeneCoverageI;
 import de.cebitec.mgx.api.model.assembly.GeneI;
 import de.cebitec.mgx.api.model.assembly.access.GeneCoverageAccessI;
