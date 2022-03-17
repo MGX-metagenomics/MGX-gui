@@ -42,7 +42,7 @@ import org.openide.util.Exceptions;
  *
  * @author sjaenick
  */
-public class MappingPanel extends PanelBase {
+public class MappingPanel extends PanelBase<ViewControllerI> {
 
     private final SortedSet<MappedRead2D> coverage = new TreeSet<>();
     private final List<TrackI> tracks = new ArrayList<>();

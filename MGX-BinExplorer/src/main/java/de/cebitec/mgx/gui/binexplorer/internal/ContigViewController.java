@@ -6,8 +6,9 @@
 package de.cebitec.mgx.gui.binexplorer.internal;
 
 import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.misc.SequenceViewControllerI;
+import de.cebitec.mgx.api.model.assembly.AssembledRegionI;
 import de.cebitec.mgx.api.model.assembly.ContigI;
-import de.cebitec.mgx.api.model.assembly.GeneI;
 import de.cebitec.mgx.pevents.ParallelPropertyChangeSupport;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -21,16 +22,13 @@ import org.openide.util.Exceptions;
  *
  * @author sj
  */
-public class ContigViewController implements PropertyChangeListener {
+public class ContigViewController implements PropertyChangeListener, SequenceViewControllerI<AssembledRegionI> {
 
-    public final static String CONTIG_CHANGE = "contigChange";
-    public final static String BOUNDS_CHANGE = "boundsChange";
-    public final static String FEATURE_SELECTED = "featureSelected";
     //public final static String VIEWCONTROLLER_CLOSED = "viewControllerClosed";
     //
     private final ParallelPropertyChangeSupport pcs;
     private volatile ContigI contig;
-    private final List<GeneI> genes = new ArrayList<>();
+    private final List<AssembledRegionI> regions = new ArrayList<>();
     private int[] curBounds;
     private int[] newBounds;
     private int intervalLen;
@@ -41,18 +39,18 @@ public class ContigViewController implements PropertyChangeListener {
     }
 
     public void setContig(ContigI contig) {
-        
+
         if (contig != null && contig.equals(this.contig)) {
             // no change
             return;
         }
-        
+
         if (this.contig != null) {
             this.contig.removePropertyChangeListener(this);
             this.contig = null;
         }
 
-        genes.clear();
+        regions.clear();
         sequence = null;
 
         if (contig != null) {
@@ -70,19 +68,23 @@ public class ContigViewController implements PropertyChangeListener {
         pcs.firePropertyChange(BOUNDS_CHANGE, 0, getBounds());
     }
 
+    @Override
     public int[] getBounds() {
         return curBounds; //Arrays.copyOf(curBounds, 2);
     }
 
+    @Override
     public int getIntervalLength() {
         return intervalLen;
     }
 
+    @Override
     public int getReferenceLength() {
         return contig.getLength();
     }
 
-    void setBounds(int i, int j) {
+    @Override
+    public void setBounds(int i, int j) {
         newBounds[0] = FastMath.max(0, i);
         newBounds[1] = FastMath.min(contig.getLength(), j);
 
@@ -108,37 +110,42 @@ public class ContigViewController implements PropertyChangeListener {
         }
     }
 
+    @Override
     public final void addPropertyChangeListener(PropertyChangeListener listener) {
         listener.propertyChange(new PropertyChangeEvent(this, BOUNDS_CHANGE, 0, curBounds));
         pcs.addPropertyChangeListener(listener);
     }
 
+    @Override
     public final void removePropertyChangeListener(PropertyChangeListener listener) {
         pcs.removePropertyChangeListener(listener);
     }
 
-    synchronized Iterable<GeneI> getRegions() {
-        if (genes.isEmpty()) {
-            Iterator<GeneI> iter;
+    @Override
+    public synchronized Iterable<AssembledRegionI> getRegions() {
+        if (regions.isEmpty()) {
+            Iterator<AssembledRegionI> iter;
             try {
-                iter = contig.getMaster().Gene().ByContig(contig);
+                iter = contig.getMaster().AssembledRegion().ByContig(contig);
                 while (iter != null && iter.hasNext()) {
-                    genes.add(iter.next());
+                    regions.add(iter.next());
                 }
             } catch (MGXException ex) {
                 Exceptions.printStackTrace(ex);
-                genes.clear();
+                regions.clear();
             }
         }
 
-        return genes;
+        return regions;
 
     }
 
+    @Override
     public String getReferenceName() {
         return contig != null ? contig.getName() : null;
     }
 
+    @Override
     public String getSequence() {
         if (sequence == null) {
             try {
@@ -155,17 +162,25 @@ public class ContigViewController implements PropertyChangeListener {
         pcs.close();
     }
 
+    @Override
     public boolean isClosed() {
         return contig == null;
     }
 
-    void selectGene(GeneI selectedGene) {
+    @Override
+    public void selectRegion(AssembledRegionI selectedGene) {
         pcs.firePropertyChange(FEATURE_SELECTED, null, selectedGene);
     }
 
     @Override
     public String toString() {
         return "ContigViewController{" + "contig=" + contig + '}';
+    }
+
+    @Override
+    public String getSequence(int from, int to) {
+        String fullSeq = getSequence();
+        return fullSeq.substring(from, to - from + 1);
     }
 
 }

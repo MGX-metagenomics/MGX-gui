@@ -31,7 +31,8 @@ public class ContigNode extends MGXNodeBase<ContigI> {
                 .append(String.format(Locale.US, "%.2f", h.getGC()))
                 .append("%<br>Coverage: ")
                 .append(NumberFormat.getInstance(Locale.US).format(h.getCoverage()))
-                .append(h.getPredictedCDS())
+                .append("<br>Predicted features: ")
+                .append(h.getPredictedSubregions())
                 .append("</html>").toString();
     }
 

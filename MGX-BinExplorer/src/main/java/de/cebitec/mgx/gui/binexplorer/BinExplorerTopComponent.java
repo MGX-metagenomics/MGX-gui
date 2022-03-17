@@ -9,12 +9,13 @@ import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.groups.FileType;
 import de.cebitec.mgx.api.model.ModelBaseI;
+import de.cebitec.mgx.api.model.RegionI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.SequenceI;
+import de.cebitec.mgx.api.model.assembly.AssembledRegionI;
 import de.cebitec.mgx.api.model.assembly.BinI;
 import de.cebitec.mgx.api.model.assembly.ContigI;
 import de.cebitec.mgx.api.model.assembly.GeneCoverageI;
-import de.cebitec.mgx.api.model.assembly.GeneI;
 import de.cebitec.mgx.dnautils.DNAUtils;
 import de.cebitec.mgx.gui.binexplorer.internal.ContigViewController;
 import de.cebitec.mgx.gui.binexplorer.internal.FeaturePanel;
@@ -115,7 +116,7 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
     private BinI currentBin = null;
     private boolean isActivated = false;
     private final ContigViewController vc = new ContigViewController();
-    private GeneI selectedFeature = null;
+    private AssembledRegionI selectedFeature = null;
     private MGXMasterI currentMaster = null;
     private final FastCategoryDataset coverageDataset = new FastCategoryDataset();
     private JFreeChart coverageChart = null;
@@ -152,7 +153,7 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
                     protected SequenceI doInBackground() throws Exception {
                         if (selectedFeature != null) {
                             final MGXMasterI master = selectedFeature.getMaster();
-                            return master.Gene().getDNASequence(selectedFeature);
+                            return master.AssembledRegion().getDNASequence(selectedFeature);
                         }
                         return null;
                     }
@@ -695,7 +696,7 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
             }
 
             tableModel.update(null);
-            selectedFeature = (GeneI) evt.getNewValue();
+            selectedFeature = (AssembledRegionI) evt.getNewValue();
 
             MGXMasterI master = selectedFeature.getMaster();
             if (!master.equals(currentMaster)) {
@@ -711,7 +712,12 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
             } else {
                 geneFrame.setText(String.valueOf(selectedFeature.getFrame()));
             }
-            geneLength.setText(NumberFormat.getInstance(Locale.US).format(selectedFeature.getAALength()) + " aa");
+
+            if (selectedFeature.getType().equals("CDS")) {
+                geneLength.setText(NumberFormat.getInstance(Locale.US).format(selectedFeature.getLength() / 3) + " aa");
+            } else {
+                geneLength.setText("n/a");
+            }
 
             //
             //  update observation display
@@ -763,7 +769,7 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
         }
     }
 
-    public GeneI getSelectedFeature() {
+    public RegionI getSelectedFeature() {
         return selectedFeature;
     }
 

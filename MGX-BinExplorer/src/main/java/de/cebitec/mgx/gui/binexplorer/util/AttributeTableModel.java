@@ -7,7 +7,7 @@ package de.cebitec.mgx.gui.binexplorer.util;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
-import de.cebitec.mgx.api.model.assembly.GeneI;
+import de.cebitec.mgx.api.model.RegionI;
 import de.cebitec.mgx.api.model.assembly.GeneObservationI;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -48,7 +48,7 @@ public class AttributeTableModel extends DefaultTableModel {
         }
     };
 
-    public synchronized void update(GeneI gene) {
+    public synchronized void update(RegionI gene) {
         gobsList.clear();
         if (gene == null) {
             super.setRowCount(0);

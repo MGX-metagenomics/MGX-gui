@@ -5,6 +5,7 @@
  */
 package de.cebitec.mgx.gui.binexplorer.internal;
 
+import de.cebitec.mgx.api.misc.SequenceViewControllerI;
 import de.cebitec.mgx.gui.pool.MGXPool;
 import java.awt.Color;
 import java.awt.Font;
@@ -30,12 +31,11 @@ import org.apache.commons.math3.util.FastMath;
  *
  * @author sj
  */
-public abstract class PanelBase extends JComponent implements PropertyChangeListener, MouseWheelListener {
+public abstract class PanelBase<T extends SequenceViewControllerI> extends JComponent implements PropertyChangeListener, MouseWheelListener {
 
-    protected final ContigViewController vc;
+    protected final T vc;
     protected volatile int[] bounds;
-    private int maxCoverage = 0;
-    private final int refLength;
+    //private int maxCoverage = 0;
     private float scale;
     //
     protected static final RenderingHints antiAlias = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -44,7 +44,7 @@ public abstract class PanelBase extends JComponent implements PropertyChangeList
     private final GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
     private final GraphicsConfiguration gc = ge.getDefaultScreenDevice().getDefaultConfiguration();
 
-    public PanelBase(final ContigViewController vc, boolean antiAlias) {
+    public PanelBase(final T vc, boolean antiAlias) {
         super();
         super.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
         //super.setDoubleBuffered(true);
@@ -81,8 +81,6 @@ public abstract class PanelBase extends JComponent implements PropertyChangeList
             }
         });
         super.addMouseWheelListener(this);
-
-        refLength = vc.getReferenceLength();
 
     }
     
@@ -210,13 +208,13 @@ public abstract class PanelBase extends JComponent implements PropertyChangeList
 
     }
 
-    protected int getMaxCoverage() {
-        return maxCoverage;
-    }
+//    protected int getMaxCoverage() {
+//        return maxCoverage;
+//    }
 
-    protected int getReferenceLength() {
-        return refLength;
-    }
+//    protected int getReferenceLength() {
+//        return refLength;
+//    }
 
     protected float bp2px(int i) {
         //assert bounds != null;
@@ -252,7 +250,7 @@ public abstract class PanelBase extends JComponent implements PropertyChangeList
 
         // limit max zoom level
         if (newBounds[1] - newBounds[0] + 1 > 100) {
-            vc.setBounds(FastMath.max(newBounds[0], 0), FastMath.min(newBounds[1], refLength - 1));
+            vc.setBounds(FastMath.max(newBounds[0], 0), FastMath.min(newBounds[1], vc.getReferenceLength() - 1));
         }
         e.consume();
     }

@@ -39,7 +39,7 @@ import org.openide.util.Exceptions;
  *
  * @author sjaenick
  */
-public class NavigationPanel extends PanelBase implements MouseListener, MouseMotionListener {
+public class NavigationPanel extends PanelBase<ViewControllerI> implements MouseListener, MouseMotionListener {
 
     private final static int CAPTURE_DIST = 3; // px
     private float scaleFactor;

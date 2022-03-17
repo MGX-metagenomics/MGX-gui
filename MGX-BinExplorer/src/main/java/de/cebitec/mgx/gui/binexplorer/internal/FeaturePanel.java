@@ -5,7 +5,7 @@
  */
 package de.cebitec.mgx.gui.binexplorer.internal;
 
-import de.cebitec.mgx.api.model.assembly.GeneI;
+import de.cebitec.mgx.api.model.assembly.AssembledRegionI;
 import de.cebitec.mgx.gui.swingutils.Arrow;
 import de.cebitec.mgx.gui.swingutils.ShapeBase;
 import java.awt.AlphaComposite;
@@ -33,7 +33,7 @@ import org.apache.commons.math3.util.FastMath;
  *
  * @author sjaenick
  */
-public class FeaturePanel extends PanelBase implements MouseListener, MouseMotionListener {
+public class FeaturePanel extends PanelBase<ContigViewController> implements MouseListener, MouseMotionListener {
 
     private final static int FRAME_VOFFSET = 20;
     private final static int[] frameOffsets = new int[]{
@@ -43,9 +43,9 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
         -1 * FRAME_VOFFSET * 1,
         -1 * FRAME_VOFFSET * 2,
         -1 * FRAME_VOFFSET * 3};
-    private final List<Arrow<GeneI>> regs = new ArrayList<>();
+    private final List<Arrow<AssembledRegionI>> regs = new ArrayList<>();
     private final static Color lighterGray = new Color(210, 210, 210);
-    private GeneI selectedGene = null;
+    private AssembledRegionI selectedGene = null;
 
     /**
      * Creates new form FeaturePanel
@@ -160,11 +160,11 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
     @Override
     public boolean update() {
 
-        List<Arrow<GeneI>> newData = new ArrayList<>();
+        List<Arrow<AssembledRegionI>> newData = new ArrayList<>();
         if (!vc.isClosed()) {
             // fetch features
             int midY = getHeight() / 2;
-            for (GeneI r : vc.getRegions()) {
+            for (AssembledRegionI r : vc.getRegions()) {
                 newData.add(r2a(r, midY));
             }
         }
@@ -178,7 +178,7 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
         return true;
     }
 
-    private Arrow<GeneI> r2a(final GeneI r, int midY) {
+    private Arrow<AssembledRegionI> r2a(final AssembledRegionI r, int midY) {
         float pos0 = bp2px(r.getStart() - 1);
         float pos1 = bp2px(r.getStop() - 1);
 
@@ -193,8 +193,9 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
                 + "<br>Location: " + nf.format(r.getStart()) + "-"
                 + nf.format(r.getStop()) + "<br>"
                 + "Frame: " + framePrefix + r.getFrame() + "<br>"
-                + "Length: " + r.getAALength() + " aa<br>"
-                + "</html>";
+                + "Length: " + r.getLength() + " nt<br>";
+
+        toolTip = toolTip + "</html>";
 
         if (r.getFrame() < 0) {
             int frameOffset = frameOffsets[r.getFrame() + 3];
@@ -210,7 +211,7 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
     public String getToolTipText(MouseEvent m) {
         Point loc = m.getPoint();
         if (regs != null) {
-            for (Arrow<GeneI> a : regs) {
+            for (Arrow<AssembledRegionI> a : regs) {
                 if (a.getBounds().contains(loc)) {
                     return a.getToolTipText();
                 }
@@ -218,7 +219,7 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
         }
         DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.US);
         String seqLen;
-        seqLen = formatter.format(getReferenceLength());
+        seqLen = formatter.format(vc.getReferenceLength());
         return "<html><b>" + vc.getReferenceName() + "</b><hr>"
                 + seqLen + " bp</html>";
 
@@ -231,10 +232,10 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
     public void mouseClicked(MouseEvent e) {
         Point loc = e.getPoint();
         if (regs != null) {
-            for (Arrow<GeneI> a : regs) {
+            for (Arrow<AssembledRegionI> a : regs) {
                 if (a.getBounds().contains(loc)) {
                     selectedGene = a.getObject();
-                    vc.selectGene(selectedGene);
+                    vc.selectRegion(selectedGene);
                     repaint();
                 }
             }
@@ -273,7 +274,7 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
             int posInRef = px2bp(e.getX());
             int offset = posInRef - dragStart + 10;
             dragStart = posInRef;
-            vc.setBounds(FastMath.max(0, bounds[0] - offset), FastMath.min(getReferenceLength() - 1, bounds[1] - offset));
+            vc.setBounds(FastMath.max(0, bounds[0] - offset), FastMath.min(vc.getReferenceLength() - 1, bounds[1] - offset));
         }
     }
 

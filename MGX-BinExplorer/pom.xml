@@ -110,6 +110,10 @@
             <groupId>de.cebitec.mgx</groupId>
             <artifactId>SwingX-OSGi</artifactId>
         </dependency>
+        <dependency>
+            <groupId>de.cebitec.mgx</groupId>
+            <artifactId>MGX-common</artifactId>
+        </dependency>
     </dependencies>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

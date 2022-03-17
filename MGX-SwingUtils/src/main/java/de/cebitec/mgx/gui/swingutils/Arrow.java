@@ -65,7 +65,7 @@ public final class Arrow<T extends LocationI> implements ShapeBase {
             length = 1;
         }
 
-        if (r.isFwdStrand()) {
+        if (r.getStart() < r.getStop()) {
             GeneralPath triangle = new GeneralPath();
             if (length < TRIANGLE_WIDTH) {
                 triangle.moveTo(x, mid - HALF_HEIGHT - 1);   // 3

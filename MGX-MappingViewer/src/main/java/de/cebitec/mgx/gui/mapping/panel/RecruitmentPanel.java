@@ -28,7 +28,7 @@ import org.openide.util.Exceptions;
  *
  * @author sjaenick
  */
-public class RecruitmentPanel extends PanelBase {
+public class RecruitmentPanel extends PanelBase<ViewControllerI> {
 
     private final static int MIN_MAPPING_WIDTH = 1;
     private final int[] offsets = new int[101];

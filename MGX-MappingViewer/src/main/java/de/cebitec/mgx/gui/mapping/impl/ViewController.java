@@ -12,7 +12,7 @@ import de.cebitec.mgx.api.exception.MGXLoggedoutException;
 import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.api.model.MappedSequenceI;
 import de.cebitec.mgx.api.model.MappingI;
-import de.cebitec.mgx.api.model.RegionI;
+import de.cebitec.mgx.api.model.ReferenceRegionI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.ToolI;
 import de.cebitec.mgx.gui.cache.IntIterator;
@@ -38,7 +38,6 @@ public class ViewController implements ViewControllerI {
     private final int[] newBounds;
     private final ParallelPropertyChangeSupport pcs;
     private int minIdentity = 0;
-
 
     public ViewController(MappingCtx ctx) {
         this.ctx = ctx;
@@ -78,7 +77,7 @@ public class ViewController implements ViewControllerI {
     public int getReferenceLength() {
         return ctx.getReference().getLength();
     }
-   
+
     @Override
     public SeqRunI[] getSeqRuns() throws MGXException {
         if (isClosed()) {
@@ -175,14 +174,24 @@ public class ViewController implements ViewControllerI {
     }
 
     @Override
-    public Set<RegionI> getRegions() throws MGXException {
+    public String getSequence() {
+        return getSequence(0, getReferenceLength() - 1);
+    }
+
+    @Override
+    public void selectRegion(ReferenceRegionI selectedRegion) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public Set<ReferenceRegionI> getRegions() throws MGXException {
         if (isClosed()) {
             throw new MGXLoggedoutException("ViewController is closed");
         }
         return ctx.getRegions(curBounds[0], curBounds[1]);
     }
 
-    public final Set<RegionI> getRegions(int from, int to) throws MGXException {
+    public final Set<ReferenceRegionI> getRegions(int from, int to) throws MGXException {
         if (isClosed()) {
             throw new MGXLoggedoutException("ViewController is closed");
         }
@@ -264,4 +273,5 @@ public class ViewController implements ViewControllerI {
         ctx.close();
         pcs.close();
     }
+
 }

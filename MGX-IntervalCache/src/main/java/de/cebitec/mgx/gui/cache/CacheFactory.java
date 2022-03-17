@@ -7,7 +7,7 @@ import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.api.model.MappedSequenceI;
-import de.cebitec.mgx.api.model.RegionI;
+import de.cebitec.mgx.api.model.ReferenceRegionI;
 import de.cebitec.mgx.gui.cache.internal.MappedSequenceCache;
 import de.cebitec.mgx.gui.cache.internal.RegionCache;
 import de.cebitec.mgx.gui.cache.internal.SequenceCache;
@@ -39,15 +39,15 @@ public class CacheFactory {
         return new SequenceCache(ref, lcache);
     }
 
-    public static Cache<Set<RegionI>> createRegionCache(final MGXMasterI master, final MGXReferenceI ref) {
+    public static Cache<Set<ReferenceRegionI>> createRegionCache(final MGXMasterI master, final MGXReferenceI ref) {
 
         final int refLength = ref.getLength() - 1;
 
-        CacheLoader<Interval, Set<RegionI>> loader = new CacheLoader<Interval, Set<RegionI>>() {
+        CacheLoader<Interval, Set<ReferenceRegionI>> loader = new CacheLoader<Interval, Set<ReferenceRegionI>>() {
             @Override
-            public Set<RegionI> load(Interval k) throws MGXException {
-                Iterator<RegionI> iter = master.Reference().byReferenceInterval(ref, k.getFrom(), FastMath.min(k.getTo(), refLength));
-                Set<RegionI> ret = new HashSet<>();
+            public Set<ReferenceRegionI> load(Interval k) throws MGXException {
+                Iterator<ReferenceRegionI> iter = master.ReferenceRegion().byReferenceInterval(ref, k.getFrom(), FastMath.min(k.getTo(), refLength));
+                Set<ReferenceRegionI> ret = new HashSet<>();
                 while (iter.hasNext()) {
                     ret.add(iter.next());
                 }
@@ -55,7 +55,7 @@ public class CacheFactory {
             }
         };
 
-        LoadingCache<Interval, Set<RegionI>> lcache = CacheBuilder.newBuilder()
+        LoadingCache<Interval, Set<ReferenceRegionI>> lcache = CacheBuilder.newBuilder()
                 .expireAfterAccess(30, TimeUnit.SECONDS)
                 .build(loader);
         return new RegionCache(ref, lcache);

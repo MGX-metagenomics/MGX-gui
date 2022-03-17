@@ -121,6 +121,10 @@
             <groupId>org.apache.pdfbox</groupId>
             <artifactId>fontbox</artifactId>
         </dependency>
+        <dependency>
+            <groupId>de.cebitec.mgx</groupId>
+            <artifactId>MGX-common</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

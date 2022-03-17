@@ -9,6 +9,7 @@ import de.cebitec.mgx.api.misc.Point;
 import de.cebitec.mgx.gui.cache.Interval;
 import de.cebitec.mgx.gui.cache.IntervalFactory;
 import de.cebitec.mgx.gui.mapping.impl.ViewController;
+import de.cebitec.mgx.gui.mapping.impl.ViewControllerI;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -23,7 +24,7 @@ import org.apache.commons.math3.util.FastMath;
  *
  * @author sjaenick
  */
-public class SeqPropertyPanel extends PanelBase {
+public class SeqPropertyPanel extends PanelBase<ViewControllerI> {
 
     public SeqPropertyPanel(ViewController vc, boolean antiAlias) {
         super(vc, antiAlias);

@@ -123,7 +123,7 @@ public final class SeqExporter<T extends Number, U> implements SequenceExporterI
                             // several assembled runs from the same assembly may refer to a gene 
                             // multiple times, so we need to filter for duplicates
 
-                            DownloadBaseI downloader = master.Gene().createDownloaderByAttributes(e.getValue(), writer, false, seenGeneNames);
+                            DownloadBaseI downloader = master.AssembledRegion().createDownloaderByAttributes(e.getValue(), writer, false, seenGeneNames);
                             downloaders.add(downloader);
                         }
 

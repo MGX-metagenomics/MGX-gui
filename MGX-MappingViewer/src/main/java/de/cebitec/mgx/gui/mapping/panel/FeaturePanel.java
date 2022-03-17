@@ -7,7 +7,7 @@ package de.cebitec.mgx.gui.mapping.panel;
 
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.MappedSequenceI;
-import de.cebitec.mgx.api.model.RegionI;
+import de.cebitec.mgx.api.model.ReferenceRegionI;
 import de.cebitec.mgx.gui.mapping.impl.ViewController;
 import de.cebitec.mgx.gui.mapping.impl.ViewControllerI;
 import de.cebitec.mgx.gui.swingutils.Arrow;
@@ -43,7 +43,7 @@ import org.openide.util.Exceptions;
  *
  * @author sjaenick
  */
-public class FeaturePanel extends PanelBase implements MouseListener, MouseMotionListener {
+public class FeaturePanel extends PanelBase<ViewControllerI> implements MouseListener, MouseMotionListener {
 
     private final static int FRAME_VOFFSET = 20;
     private final static int[] frameOffsets = new int[]{
@@ -168,7 +168,7 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
         List<ShapeBase> newData = new ArrayList<>();
         try {
             int midY = getHeight() / 2;
-            for (RegionI r : vc.getRegions()) {
+            for (ReferenceRegionI r : vc.getRegions()) {
                 newData.add(r2a(r, midY));
             }
         } catch (MGXException ex) {
@@ -188,7 +188,7 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
         return true;
     }
 
-    private ShapeBase r2a(final RegionI r, int midY) {
+    private ShapeBase r2a(final ReferenceRegionI r, int midY) {
         //int midY = getHeight() / 2;
         float pos0 = bp2px(r.getStart() - 1);
         float pos1 = bp2px(r.getStop() - 1);
@@ -206,7 +206,7 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
                 + r.getDescription() + "</html>";
 
         switch (r.getType()) {
-            case "CDS":
+            case CDS:
                 if (r.getFrame() < 0) {
                     int frameOffset = frameOffsets[r.getFrame() + 3];
                     return new Arrow<>(r, toolTip, pos1, midY + frameOffset - Arrow.HALF_HEIGHT, pos0 - pos1);
@@ -214,8 +214,8 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
                     int frameOffset = frameOffsets[r.getFrame() + 2];
                     return new Arrow<>(r, toolTip, pos0, midY + frameOffset - Arrow.HALF_HEIGHT, pos1 - pos0);
                 }
-            case "rRNA":
-            case "tRNA":
+            case RRNA:
+            case TRNA:
                 if (r.getFrame() < 0) {
                     int frameOffset = frameOffsets[r.getFrame() + 3];
                     Rectangle rect = new Rectangle(toolTip, pos1, midY + frameOffset - Rectangle.HALF_HEIGHT, pos0 - pos1);
@@ -316,7 +316,7 @@ public class FeaturePanel extends PanelBase implements MouseListener, MouseMotio
         Set<ShapeBase> newData = new HashSet<>();
         try {
             int midY = getHeight() / 2;
-            for (RegionI r : vc.getRegions()) {
+            for (ReferenceRegionI r : vc.getRegions()) {
                 newData.add(r2a(r, midY));
             }
         } catch (MGXException ex) {

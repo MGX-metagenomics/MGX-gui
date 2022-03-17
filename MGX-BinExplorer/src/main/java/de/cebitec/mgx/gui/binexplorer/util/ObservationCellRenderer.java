@@ -5,7 +5,7 @@
  */
 package de.cebitec.mgx.gui.binexplorer.util;
 
-import de.cebitec.mgx.api.model.assembly.GeneI;
+import de.cebitec.mgx.api.model.RegionI;
 import de.cebitec.mgx.api.model.assembly.GeneObservationI;
 import de.cebitec.mgx.gui.binexplorer.BinExplorerTopComponent;
 import java.awt.Color;
@@ -34,7 +34,7 @@ public class ObservationCellRenderer extends DefaultTableCellRenderer {
     @Override
     public Component getTableCellRendererComponent(JTable table, Object obj, boolean isSelected, boolean hasFocus, int row, int column) {
         if (column == 4 && obj instanceof GeneObservationI) {
-            GeneI gene = tc.getSelectedFeature();
+            RegionI gene = tc.getSelectedFeature();
             GeneObservationI obs = (GeneObservationI) obj;
 
             display.setGene(gene);
@@ -53,13 +53,13 @@ public class ObservationCellRenderer extends DefaultTableCellRenderer {
 
     private static class ObservationDisplay extends JPanel {
 
-        private GeneI gene;
+        private RegionI gene;
         private GeneObservationI observation;
 
         public ObservationDisplay() {
         }
 
-        public void setGene(GeneI gene) {
+        public void setGene(RegionI gene) {
             this.gene = gene;
         }
 

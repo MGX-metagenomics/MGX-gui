@@ -7,8 +7,8 @@ package de.cebitec.mgx.gui.genbankexporter;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.SequenceI;
+import de.cebitec.mgx.api.model.assembly.AssembledRegionI;
 import de.cebitec.mgx.api.model.assembly.ContigI;
-import de.cebitec.mgx.api.model.assembly.GeneI;
 import de.cebitec.mgx.api.model.assembly.GeneObservationI;
 import de.cebitec.mgx.dnautils.DNAUtils;
 import de.cebitec.mgx.gui.genbankexporter.impl.CDSFeature;
@@ -78,9 +78,9 @@ public class GBKExporter {
         }
         ctg.addFeature(1, contig.getLength(), sourceFeat);
 
-        Iterator<GeneI> geneIter = master.Gene().ByContig(contig);
+        Iterator<AssembledRegionI> geneIter = master.AssembledRegion().ByContig(contig);
         while (geneIter != null && geneIter.hasNext()) {
-            GeneI gene = geneIter.next();
+            AssembledRegionI gene = geneIter.next();
 
             GeneFeature geneFeat = new GeneFeature(contig.getName() + "_" + gene.getId());
             CDSFeature cdsFeat = new CDSFeature(contig.getName() + "_" + gene.getId());
@@ -121,7 +121,7 @@ public class GBKExporter {
                 cdsFeat.addQualifier(tagName, new Qualifier(tagName, tagValue, true));
             }
 
-            SequenceI dnaSequence1 = master.Gene().getDNASequence(gene);
+            SequenceI dnaSequence1 = master.AssembledRegion().getDNASequence(gene);
             String aaSeq = DNAUtils.translate(dnaSequence1.getSequence());
             cdsFeat.addQualifier("translation", new Qualifier("translation", aaSeq, true));
 

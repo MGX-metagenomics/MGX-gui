@@ -7,22 +7,22 @@ package de.cebitec.mgx.gui.mapping.impl;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.misc.SequenceViewControllerI;
 import de.cebitec.mgx.api.model.MappedSequenceI;
 import de.cebitec.mgx.api.model.MappingI;
-import de.cebitec.mgx.api.model.RegionI;
+import de.cebitec.mgx.api.model.ReferenceRegionI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.ToolI;
 import de.cebitec.mgx.gui.cache.IntIterator;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
-import java.util.Set;
 
 /**
  *
  * @author sj
  */
-public interface ViewControllerI extends PropertyChangeListener {
+public interface ViewControllerI extends SequenceViewControllerI<ReferenceRegionI>, PropertyChangeListener {
 
     public static final String BOUNDS_CHANGE = "boundsChange";
     //
@@ -32,27 +32,15 @@ public interface ViewControllerI extends PropertyChangeListener {
     public static final String PREVIEWBOUNDS_CHANGE = "previewBoundsChange";
     public static final String MIN_IDENTITY_CHANGE = "minIdentityChange";
 
-    void addPropertyChangeListener(PropertyChangeListener listener);
-
     void close();
 
-    int[] getBounds();
-    
     public ToolI getTool() throws MGXException;
     
     public SeqRunI[] getSeqRuns() throws MGXException;
     
     public MappingI getMapping() throws MGXException;
 
-    String getReferenceName();
-
-    int getReferenceLength();
-
-    int getIntervalLength();
-
-    public String getSequence(int from, int to);
-
-    public Set<RegionI> getRegions() throws MGXException;
+    //public Set<RegionI> getRegions() throws MGXException;
 
     public void setMinIdentity(int ident);
 
@@ -74,13 +62,7 @@ public interface ViewControllerI extends PropertyChangeListener {
 
     MGXMasterI getMaster();
 
-    boolean isClosed();
-
     @Override
     void propertyChange(PropertyChangeEvent evt);
-
-    void removePropertyChangeListener(PropertyChangeListener listener);
-
-    void setBounds(int i, int j);
 
 }

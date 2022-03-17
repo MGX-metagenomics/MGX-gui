@@ -8,7 +8,7 @@ import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.api.model.MappedSequenceI;
 import de.cebitec.mgx.api.model.MappingI;
-import de.cebitec.mgx.api.model.RegionI;
+import de.cebitec.mgx.api.model.ReferenceRegionI;
 import de.cebitec.mgx.gui.controller.MGXMaster;
 import de.cebitec.mgx.restgpms.GPMSClient;
 import java.io.File;
@@ -114,9 +114,9 @@ public class CacheTest {
         System.out.println("getRegions");
         MGXMasterI master = get();
         MGXReferenceI ref = master.Reference().fetch(4);
-        Cache<Set<RegionI>> cache = CacheFactory.createRegionCache(master, ref);
+        Cache<Set<ReferenceRegionI>> cache = CacheFactory.createRegionCache(master, ref);
         assertNotNull(cache);
-        Set<RegionI> data = cache.get(100, 2850);
+        Set<ReferenceRegionI> data = cache.get(100, 2850);
         assertEquals(2, data.size());
     }
 
@@ -125,9 +125,9 @@ public class CacheTest {
         System.out.println("getRegions2");
         MGXMasterI master = get();
         MGXReferenceI ref = master.Reference().fetch(4);
-        Cache<Set<RegionI>> cache = CacheFactory.createRegionCache(master, ref);
+        Cache<Set<ReferenceRegionI>> cache = CacheFactory.createRegionCache(master, ref);
         assertNotNull(cache);
-        Set<RegionI> data = cache.get(0, ref.getLength() - 1);
+        Set<ReferenceRegionI> data = cache.get(0, ref.getLength() - 1);
         assertEquals(8750, data.size());
     }
 

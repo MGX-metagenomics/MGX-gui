@@ -25,7 +25,7 @@ import org.openide.util.Exceptions;
  *
  * @author sjaenick
  */
-public class RecruitmentIdentityPanel extends PanelBase {
+public class RecruitmentIdentityPanel extends PanelBase<ViewControllerI> {
 
     private int BIN_SIZE = 10_000;
     //

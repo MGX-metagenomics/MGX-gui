@@ -21,7 +21,7 @@ import org.apache.commons.math3.util.FastMath;
  *
  * @author sjaenick
  */
-public class SeqPropertyPanel extends PanelBase {
+public class SeqPropertyPanel extends PanelBase<ContigViewController> {
 
     /**
      * Creates new form FeaturePanel

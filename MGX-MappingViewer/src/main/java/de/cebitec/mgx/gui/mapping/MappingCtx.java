@@ -7,7 +7,7 @@ import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.api.model.MappedSequenceI;
 import de.cebitec.mgx.api.model.MappingI;
 import de.cebitec.mgx.api.model.ModelBaseI;
-import de.cebitec.mgx.api.model.RegionI;
+import de.cebitec.mgx.api.model.ReferenceRegionI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.ToolI;
 import de.cebitec.mgx.gui.cache.Cache;
@@ -36,7 +36,7 @@ public class MappingCtx implements PropertyChangeListener, AutoCloseable {
     private final MGXReferenceI ref;
     private final JobI job;
     private Cache<String> seqCache = null;
-    private Cache<Set<RegionI>> regCache = null;
+    private Cache<Set<ReferenceRegionI>> regCache = null;
     private CoverageInfoCache<Set<MappedSequenceI>> mapCache = null;
     private UUID sessionUUID = null;
     private long maxCoverage = -1;
@@ -94,7 +94,7 @@ public class MappingCtx implements PropertyChangeListener, AutoCloseable {
     public final ToolI getTool() {
         return job.getTool();
     }
-    
+
     public final JobI getJob() {
         return job;
     }
@@ -110,7 +110,7 @@ public class MappingCtx implements PropertyChangeListener, AutoCloseable {
         return seqCache.get(from, to);
     }
 
-    public final Set<RegionI> getRegions(int from, int to) throws MGXException {
+    public final Set<ReferenceRegionI> getRegions(int from, int to) throws MGXException {
 //        if (regCache == null) {
 //            synchronized (this) {
 //                if (regCache == null) {
