@@ -24,10 +24,6 @@ import java.util.List;
  */
 public interface ViewControllerI extends SequenceViewControllerI<ReferenceRegionI>, PropertyChangeListener {
 
-    public static final String BOUNDS_CHANGE = "boundsChange";
-    //
-    public static final String VIEWCONTROLLER_CLOSED = "viewControllerClosed";
-
     public static final String MAX_COV_CHANGE = "maxCoverageChange";
     public static final String PREVIEWBOUNDS_CHANGE = "previewBoundsChange";
     public static final String MIN_IDENTITY_CHANGE = "minIdentityChange";

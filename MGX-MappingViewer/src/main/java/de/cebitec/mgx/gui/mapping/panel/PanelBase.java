@@ -6,7 +6,6 @@
 package de.cebitec.mgx.gui.mapping.panel;
 
 import de.cebitec.mgx.api.misc.SequenceViewControllerI;
-import de.cebitec.mgx.gui.mapping.impl.ViewController;
 import de.cebitec.mgx.gui.mapping.impl.ViewControllerI;
 import de.cebitec.mgx.gui.pool.MGXPool;
 import java.awt.Color;
@@ -182,11 +181,11 @@ public abstract class PanelBase<T extends SequenceViewControllerI> extends JComp
         }
 
         switch (evt.getPropertyName()) {
-            case ViewControllerI.VIEWCONTROLLER_CLOSED:
+            case SequenceViewControllerI.VIEWCONTROLLER_CLOSED:
                 vc.removePropertyChangeListener(this);
                 removeAll();
                 break;
-            case ViewControllerI.BOUNDS_CHANGE:
+            case SequenceViewControllerI.BOUNDS_CHANGE:
                 bounds = (int[]) evt.getNewValue();
                 scale = 1f / (1f * vc.getIntervalLength() / getWidth());
                 if (getHeight() > 0) {
@@ -200,14 +199,14 @@ public abstract class PanelBase<T extends SequenceViewControllerI> extends JComp
                     }
                 }
                 break;
-            case ViewController.MIN_IDENTITY_CHANGE:
+            case ViewControllerI.MIN_IDENTITY_CHANGE:
                 if (getHeight() > 0) {
                     if (update()) {
                         repaint();
                     }
                 }
                 break;
-            case ViewController.MAX_COV_CHANGE:
+            case ViewControllerI.MAX_COV_CHANGE:
                 maxCoverage = (int) evt.getNewValue();
                 if (update()) {
                     repaint();
@@ -266,6 +265,6 @@ public abstract class PanelBase<T extends SequenceViewControllerI> extends JComp
     @Override
     public void setEnabled(boolean enable) {
         super.setEnabled(enable);
-        propertyChange(new PropertyChangeEvent(vc, ViewController.BOUNDS_CHANGE, 0, vc.getBounds()));
+        propertyChange(new PropertyChangeEvent(vc, SequenceViewControllerI.BOUNDS_CHANGE, 0, vc.getBounds()));
     }
 }

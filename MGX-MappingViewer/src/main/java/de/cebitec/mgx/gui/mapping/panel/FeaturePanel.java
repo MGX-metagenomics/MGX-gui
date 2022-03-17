@@ -55,6 +55,8 @@ public class FeaturePanel extends PanelBase<ViewControllerI> implements MouseLis
         -1 * FRAME_VOFFSET * 3};
     private final List<ShapeBase> regs = new ArrayList<>();
     private final static Color lighterGray = new Color(210, 210, 210);
+    //
+    private final static NumberFormat nf = NumberFormat.getInstance(Locale.US);
 
     /**
      * Creates new form FeaturePanel
@@ -192,13 +194,11 @@ public class FeaturePanel extends PanelBase<ViewControllerI> implements MouseLis
         //int midY = getHeight() / 2;
         float pos0 = bp2px(r.getStart() - 1);
         float pos1 = bp2px(r.getStop() - 1);
-        
-        
+
         String type = r.getType() != null
-                ? r.getType() + ": "
+                ? r.getType().toString() + ": "
                 : "";
         String framePrefix = r.getFrame() > 0 ? "+" : "";
-        NumberFormat nf = NumberFormat.getInstance(Locale.US);
         String toolTip = "<html><b>" + type + r.getName() + "</b><hr>"
                 + "Location: " + nf.format(r.getStart()) + "-"
                 + nf.format(r.getStop()) + "<br>"
@@ -222,11 +222,11 @@ public class FeaturePanel extends PanelBase<ViewControllerI> implements MouseLis
                     return rect;
                 } else {
                     int frameOffset = frameOffsets[r.getFrame() + 2];
-                    Rectangle rect =  new Rectangle(toolTip, pos0, midY + frameOffset - Rectangle.HALF_HEIGHT, pos1 - pos0);
+                    Rectangle rect = new Rectangle(toolTip, pos0, midY + frameOffset - Rectangle.HALF_HEIGHT, pos1 - pos0);
                     return rect;
                 }
             default:
-                System.err.println("Unhandled region type " + r.getType() + ", using default shape");
+                System.err.println("Unhandled region type " + r.getType().toString() + ", using default shape");
                 if (r.getFrame() < 0) {
                     int frameOffset = frameOffsets[r.getFrame() + 3];
                     Rectangle rect = new Rectangle(toolTip, pos1, midY + frameOffset - Rectangle.HALF_HEIGHT, pos0 - pos1);
