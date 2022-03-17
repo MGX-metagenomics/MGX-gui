@@ -12,7 +12,7 @@ import java.awt.datatransfer.DataFlavor;
  *
  * @author sj
  */
-public abstract class MappedSequenceI extends LocationBase<MappedSequenceI> implements Comparable<MappedSequenceI> {
+public abstract class MappedSequenceI extends LocationBase implements Comparable<MappedSequenceI> {
 
     public static final DataFlavor DATA_FLAVOR = new DataFlavor(MappedSequenceI.class, "MappedSequenceI");
 

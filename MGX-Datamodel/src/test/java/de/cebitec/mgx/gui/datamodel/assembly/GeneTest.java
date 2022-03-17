@@ -5,7 +5,7 @@
  */
 package de.cebitec.mgx.gui.datamodel.assembly;
 
-import de.cebitec.mgx.api.model.assembly.GeneI;
+import de.cebitec.mgx.gui.datamodel.ReferenceRegion;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -46,7 +46,7 @@ public class GeneTest {
     @Test
     public void testGetFrame() {
         System.out.println("getFrame");
-        Gene g = new Gene(null, 1, 1, 42, 0, 0);
+        ReferenceRegion g = new ReferenceRegion(null, -1, -1, 1, 42, "noname");
         assertEquals(-3, g.getFrame());
     }
 

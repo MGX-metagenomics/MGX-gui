@@ -31,7 +31,7 @@ public abstract class ContigI extends Identifiable<ContigI> {
 
     public abstract int getCoverage();
 
-    public abstract int getPredictedCDS();
+    public abstract int getPredictedSubregions();
 
     @Override
     public String toString() {

@@ -8,8 +8,8 @@ package de.cebitec.mgx.gui.controller.assembly;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.exception.MGXLoggedoutException;
+import de.cebitec.mgx.api.model.RegionI;
 import de.cebitec.mgx.api.model.assembly.GeneCoverageI;
-import de.cebitec.mgx.api.model.assembly.GeneI;
 import de.cebitec.mgx.api.model.assembly.access.GeneCoverageAccessI;
 import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.client.exception.MGXClientLoggedOutException;
@@ -31,7 +31,7 @@ public class GeneCoverageAccess extends MasterHolder implements GeneCoverageAcce
     }
 
     @Override
-    public Iterator<GeneCoverageI> ByGene(GeneI g) throws MGXException {
+    public Iterator<GeneCoverageI> ByGene(RegionI g) throws MGXException {
         Iterator<GeneCoverageDTO> it;
         try {
             it = getDTOmaster().GeneCoverage().byGene(g.getId());

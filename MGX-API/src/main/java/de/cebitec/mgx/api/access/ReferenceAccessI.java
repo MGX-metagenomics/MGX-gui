@@ -9,7 +9,7 @@ import de.cebitec.mgx.api.access.datatransfer.UploadBaseI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.model.MGXReferenceI;
-import de.cebitec.mgx.api.model.RegionI;
+import de.cebitec.mgx.api.model.ReferenceRegionI;
 import java.io.File;
 import java.util.Iterator;
 
@@ -21,7 +21,7 @@ public interface ReferenceAccessI extends AccessBaseI<MGXReferenceI> {
 
     public String getSequence(final MGXReferenceI ref, int from, int to) throws MGXException;
 
-    public Iterator<RegionI> byReferenceInterval(MGXReferenceI ref, int from, int to) throws MGXException;
+    //public Iterator<ReferenceRegionI> byReferenceInterval(MGXReferenceI ref, int from, int to) throws MGXException;
 
     public Iterator<MGXReferenceI> listGlobalReferences() throws MGXException;
     

@@ -27,7 +27,7 @@ public abstract class GeneCoverageI implements Comparable<GeneCoverageI> {
         return id;
     }
 
-    public abstract long getGeneId();
+    public abstract long getRegionId();
 
     public abstract int getCoverage();
 

@@ -11,6 +11,7 @@ import de.cebitec.mgx.api.access.JobAccessI;
 import de.cebitec.mgx.api.access.MappingAccessI;
 import de.cebitec.mgx.api.access.ObservationAccessI;
 import de.cebitec.mgx.api.access.ReferenceAccessI;
+import de.cebitec.mgx.api.access.ReferenceRegionAccessI;
 import de.cebitec.mgx.api.access.SeqRunAccessI;
 import de.cebitec.mgx.api.access.SequenceAccessI;
 import de.cebitec.mgx.api.access.TaskAccessI;
@@ -18,17 +19,17 @@ import de.cebitec.mgx.api.access.ToolAccessI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.MGXDataModelBaseI;
 import de.cebitec.mgx.api.model.ModelBaseI;
+import de.cebitec.mgx.api.model.assembly.access.AssembledRegionAccessI;
 import de.cebitec.mgx.api.model.assembly.access.AssemblyAccessI;
 import de.cebitec.mgx.api.model.assembly.access.BinAccessI;
 import de.cebitec.mgx.api.model.assembly.access.ContigAccessI;
-import de.cebitec.mgx.api.model.assembly.access.GeneAccessI;
 import de.cebitec.mgx.api.model.assembly.access.GeneCoverageAccessI;
 import de.cebitec.mgx.api.model.assembly.access.GeneObservationAccessI;
 import de.cebitec.mgx.client.MGXDTOMaster;
+import de.cebitec.mgx.gui.controller.assembly.AssembledRegionAccess;
 import de.cebitec.mgx.gui.controller.assembly.AssemblyAccess;
 import de.cebitec.mgx.gui.controller.assembly.BinAccess;
 import de.cebitec.mgx.gui.controller.assembly.ContigAccess;
-import de.cebitec.mgx.gui.controller.assembly.GeneAccess;
 import de.cebitec.mgx.gui.controller.assembly.GeneCoverageAccess;
 import de.cebitec.mgx.gui.controller.assembly.GeneObservationAccess;
 import java.beans.PropertyChangeEvent;
@@ -130,6 +131,11 @@ public class MGXMaster extends MGXMasterI implements PropertyChangeListener {
     }
 
     @Override
+    public ReferenceRegionAccessI ReferenceRegion() throws MGXException {
+        return new ReferenceRegionAccess(dtomaster, this);
+    }
+
+    @Override
     public MappingAccessI Mapping() throws MGXException {
         return new MappingAccess(dtomaster, this);
     }
@@ -155,67 +161,67 @@ public class MGXMaster extends MGXMasterI implements PropertyChangeListener {
     }
 
     @Override
-        public JobAccessI Job() throws MGXException {
+    public JobAccessI Job() throws MGXException {
         return new JobAccess(this, dtomaster);
     }
 
     @Override
-        public FileAccessI File() throws MGXException {
+    public FileAccessI File() throws MGXException {
         return new FileAccess(this, dtomaster);
     }
 
     @Override
-        public TermAccess Term() throws MGXException {
+    public TermAccess Term() throws MGXException {
         return new TermAccess(this, dtomaster);
     }
 
     @Override
-        public <T extends MGXDataModelBaseI<T>> TaskAccessI<T> Task() throws MGXException {
+    public <T extends MGXDataModelBaseI<T>> TaskAccessI<T> Task() throws MGXException {
         return new TaskAccess<>(this, dtomaster);
     }
 
     @Override
-        public StatisticsAccess Statistics() throws MGXException {
+    public StatisticsAccess Statistics() throws MGXException {
         return new StatisticsAccess(this, dtomaster);
     }
 
     @Override
-        public AssemblyAccessI Assembly() throws MGXException {
+    public AssemblyAccessI Assembly() throws MGXException {
         return new AssemblyAccess(getMaster(), dtomaster);
     }
 
     @Override
-        public BinAccessI Bin() throws MGXException {
+    public BinAccessI Bin() throws MGXException {
         return new BinAccess(getMaster(), dtomaster);
     }
 
     @Override
-        public ContigAccessI Contig() throws MGXException {
+    public ContigAccessI Contig() throws MGXException {
         return new ContigAccess(getMaster(), dtomaster);
     }
 
     @Override
-        public GeneAccessI Gene() throws MGXException {
-        return new GeneAccess(getMaster(), dtomaster);
+    public AssembledRegionAccessI AssembledRegion() throws MGXException {
+        return new AssembledRegionAccess(getMaster(), dtomaster);
     }
 
     @Override
-        public GeneCoverageAccessI GeneCoverage() throws MGXException {
+    public GeneCoverageAccessI GeneCoverage() throws MGXException {
         return new GeneCoverageAccess(getMaster(), dtomaster);
     }
 
     @Override
-        public GeneObservationAccessI GeneObservation() throws MGXException {
+    public GeneObservationAccessI GeneObservation() throws MGXException {
         return new GeneObservationAccess(getMaster(), dtomaster);
     }
 
     @Override
-        public void log(Level lvl, String msg) {
+    public void log(Level lvl, String msg) {
         logger.log(lvl, msg);
     }
 
     @Override
-        public void propertyChange(PropertyChangeEvent evt) {
+    public void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {
             case ModelBaseI.OBJECT_DELETED:
                 dtomaster.removePropertyChangeListener(this);
@@ -236,7 +242,7 @@ public class MGXMaster extends MGXMasterI implements PropertyChangeListener {
     }
 
     @Override
-        public int compareTo(MGXMasterI o) {
+    public int compareTo(MGXMasterI o) {
         return getProject().compareTo(o.getProject());
     }
 
@@ -244,16 +250,16 @@ public class MGXMaster extends MGXMasterI implements PropertyChangeListener {
     public String toString() {
         return "MGXMaster{" + "projectName=" + projectName + '}';
     }
-        
+
     @Override
-        public int hashCode() {
+    public int hashCode() {
         int hash = 3;
         hash = 59 * hash + Objects.hashCode(this.dtomaster);
         return hash;
     }
 
     @Override
-        public boolean equals(Object obj) {
+    public boolean equals(Object obj) {
         if (this == obj) {
             return true;
         }

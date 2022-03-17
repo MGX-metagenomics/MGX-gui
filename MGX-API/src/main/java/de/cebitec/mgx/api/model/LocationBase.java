@@ -9,7 +9,7 @@ package de.cebitec.mgx.api.model;
  *
  * @author sjaenick
  */
-public abstract class LocationBase<T extends LocationBase<T>> implements LocationI {
+public abstract class LocationBase implements LocationI {
 
     private final int start;
     private final int stop;
@@ -42,6 +42,23 @@ public abstract class LocationBase<T extends LocationBase<T>> implements Locatio
     @Override
     public final int getMin() {
         return min;
+    }
+
+    @Override
+    public final int getLength() {
+        return start < stop ? getStop() - getStart() + 1 : getStart() - getStop() + 1;
+    }
+
+    @Override
+    public final int getFrame() {
+        int frame;
+
+        if (start < stop) {
+            frame = (getStart() - 1) % 3 + 1;
+        } else {
+            frame = (getStop() - 1) % 3 - 3;
+        }
+        return frame;
     }
 
     private static int min(final int a, final int b) {

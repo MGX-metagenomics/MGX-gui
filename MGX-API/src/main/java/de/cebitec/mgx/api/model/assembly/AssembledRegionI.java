@@ -6,23 +6,19 @@
 package de.cebitec.mgx.api.model.assembly;
 
 import de.cebitec.mgx.api.MGXMasterI;
-import de.cebitec.mgx.api.model.Identifiable;
-import de.cebitec.mgx.api.model.LocationI;
-import java.awt.datatransfer.DataFlavor;
+import de.cebitec.mgx.api.model.RegionI;
 
 /**
  *
  * @author sj
  */
-public abstract class GeneI extends Identifiable<GeneI> implements LocationI {
+public abstract class AssembledRegionI extends RegionI {
 
-    public static final DataFlavor DATA_FLAVOR = new DataFlavor(GeneI.class, "GeneI");
+    //public static final DataFlavor DATA_FLAVOR = new DataFlavor(GeneI.class, "GeneI");
 
-    public GeneI(MGXMasterI m) {
-        super(m, DATA_FLAVOR);
+    public AssembledRegionI(MGXMasterI master, long id, long parentId, int start, int stop) {
+        super(master, id, parentId, start, stop);
     }
-
-    public abstract long getContigId();
 
     public abstract int getCoverage();
 

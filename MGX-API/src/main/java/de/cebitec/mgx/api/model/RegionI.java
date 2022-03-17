@@ -5,43 +5,110 @@
  */
 package de.cebitec.mgx.api.model;
 
+import de.cebitec.mgx.api.MGXMasterI;
+import de.cebitec.mgx.common.RegionType;
+import de.cebitec.mgx.pevents.ParallelPropertyChangeSupport;
 import java.awt.datatransfer.DataFlavor;
+import java.beans.PropertyChangeListener;
 
 /**
  *
  * @author sj
  */
-public abstract class RegionI extends LocationBase<RegionI> {
+public abstract class RegionI extends Identifiable<RegionI> implements ModelBaseI<RegionI>, PropertyChangeListener, LocationI {
 
     public static final DataFlavor DATA_FLAVOR = new DataFlavor(RegionI.class, "RegionI");
 
-    public RegionI(int start, int stop) {
-        super(start, stop);
+    private final int start;
+    private final int stop;
+    private final int min;
+    private final int max;
+    //
+    private final long parent;
+    //
+    private String name;
+    private RegionType type;
+    //
+    private ParallelPropertyChangeSupport pcs;
+    //
+
+    public RegionI(MGXMasterI master, long id, long parent, int start, int stop) {
+        super(master, DATA_FLAVOR);
+        super.setId(id);
+        this.parent = parent;
+        this.start = start;
+        this.stop = stop;
+        this.min = min(start, stop);
+        this.max = max(start, stop);
     }
 
-    public abstract long getReferenceId();
+    public final long getParentId() {
+        return parent;
+    }
 
-    public abstract void setReference(long reference_id);
+    public final String getName() {
+        return name;
+    }
 
-    public abstract String getName();
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    public abstract void setName(String name);
+    public final RegionType getType() {
+        return type;
+    }
 
-    public abstract String getDescription();
+    public void setType(RegionType type) {
+        this.type = type;
+    }
 
-    public abstract void setDescription(String description);
+    @Override
+    public final int getStart() {
+        return start;
+    }
 
-    public abstract String getType();
+    @Override
+    public final int getStop() {
+        return stop;
+    }
 
-    public abstract void setType(String type);
+    @Override
+    public final int getMax() {
+        return max;
+    }
 
-    public abstract int getLength();
+    @Override
+    public final int getMin() {
+        return min;
+    }
 
-    /**
-     * @return 1, 2, 3, -1, -2, -3 depending on the reading frame of the feature
-     */
-    public abstract int getFrame();
+    @Override
+    public final int getLength() {
+        return start < stop ? getStop() - getStart() + 1 : getStart() - getStop() + 1;
+    }
 
-//    @Override
-//    public abstract int compareTo(RegionI o);
+    @Override
+    public final int getFrame() {
+        int frame;
+
+        if (start < stop) {
+            frame = (getStart() - 1) % 3 + 1;
+        } else {
+            frame = (getStop() - 1) % 3 - 3;
+        }
+        return frame;
+    }
+
+    private static int min(final int a, final int b) {
+        return (a <= b) ? a : b;
+    }
+
+    private static int max(final int a, final int b) {
+        return (a <= b) ? b : a;
+    }
+    
+    @Override
+    public int compareTo(RegionI o) {
+        return name.compareTo(o.getName());
+    }
 }

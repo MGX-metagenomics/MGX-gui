@@ -11,15 +11,15 @@ package de.cebitec.mgx.api.model;
  */
 public interface LocationI {
 
-    int getMax();
+    public int getMax();
 
-    int getMin();
+    public int getMin();
 
-    int getStart();
+    public int getStart();
 
-    int getStop();
+    public int getStop();
 
-    public boolean isFwdStrand();
+    public int getLength();
 
     /**
      * @return 1, 2, 3, -1, -2, -3 depending on the reading frame of the feature

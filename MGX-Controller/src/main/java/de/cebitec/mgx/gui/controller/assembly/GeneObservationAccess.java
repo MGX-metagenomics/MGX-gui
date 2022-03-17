@@ -8,7 +8,7 @@ package de.cebitec.mgx.gui.controller.assembly;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.exception.MGXLoggedoutException;
-import de.cebitec.mgx.api.model.assembly.GeneI;
+import de.cebitec.mgx.api.model.RegionI;
 import de.cebitec.mgx.api.model.assembly.GeneObservationI;
 import de.cebitec.mgx.api.model.assembly.access.GeneObservationAccessI;
 import de.cebitec.mgx.client.MGXDTOMaster;
@@ -31,7 +31,7 @@ public class GeneObservationAccess extends MasterHolder implements GeneObservati
     }
 
     @Override
-    public Iterator<GeneObservationI> ByGene(GeneI c) throws MGXException {
+    public Iterator<GeneObservationI> ByGene(RegionI c) throws MGXException {
         Iterator<GeneObservationDTO> it;
         try {
             it = getDTOmaster().GeneObservation().byGene(c.getId());

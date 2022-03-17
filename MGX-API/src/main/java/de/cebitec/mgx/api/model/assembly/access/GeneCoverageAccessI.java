@@ -6,8 +6,8 @@
 package de.cebitec.mgx.api.model.assembly.access;
 
 import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.model.RegionI;
 import de.cebitec.mgx.api.model.assembly.GeneCoverageI;
-import de.cebitec.mgx.api.model.assembly.GeneI;
 import java.util.Iterator;
 
 /**
@@ -16,6 +16,6 @@ import java.util.Iterator;
  */
 public interface GeneCoverageAccessI {
 
-    public Iterator<GeneCoverageI> ByGene(GeneI a) throws MGXException;
+    public Iterator<GeneCoverageI> ByGene(RegionI a) throws MGXException;
 
 }

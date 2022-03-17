@@ -10,24 +10,22 @@ import de.cebitec.mgx.api.access.datatransfer.DownloadBaseI;
 import static de.cebitec.mgx.api.access.datatransfer.TransferBaseI.TRANSFER_FAILED;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.exception.MGXLoggedoutException;
-import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.SequenceI;
+import de.cebitec.mgx.api.model.assembly.AssembledRegionI;
 import de.cebitec.mgx.api.model.assembly.ContigI;
-import de.cebitec.mgx.api.model.assembly.GeneI;
-import de.cebitec.mgx.api.model.assembly.access.GeneAccessI;
+import de.cebitec.mgx.api.model.assembly.access.AssembledRegionAccessI;
 import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.client.datatransfer.GeneByAttributeDownloader;
 import de.cebitec.mgx.client.datatransfer.SeqDownloader;
 import de.cebitec.mgx.client.exception.MGXClientLoggedOutException;
 import de.cebitec.mgx.client.exception.MGXDTOException;
-import de.cebitec.mgx.dto.dto;
+import de.cebitec.mgx.dto.dto.AssembledRegionDTO;
 import de.cebitec.mgx.dto.dto.AttributeDTOList;
-import de.cebitec.mgx.dto.dto.GeneDTO;
 import de.cebitec.mgx.dto.dto.SequenceDTO;
-import de.cebitec.mgx.gui.controller.AccessBase;
+import de.cebitec.mgx.gui.controller.MasterHolder;
+import de.cebitec.mgx.gui.dtoconversion.AssembledRegionDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.AttributeDTOFactory;
-import de.cebitec.mgx.gui.dtoconversion.GeneDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.SequenceDTOFactory;
 import de.cebitec.mgx.gui.util.BaseIterator;
 import de.cebitec.mgx.sequence.DNASequenceI;
@@ -41,62 +39,65 @@ import java.util.Set;
  *
  * @author sj
  */
-public class GeneAccess extends AccessBase<GeneI> implements GeneAccessI {
+public class AssembledRegionAccess extends MasterHolder implements AssembledRegionAccessI {
 
-    public GeneAccess(MGXMasterI master, MGXDTOMaster dtomaster) throws MGXException {
+    public AssembledRegionAccess(MGXMasterI master, MGXDTOMaster dtomaster) throws MGXException {
         super(master, dtomaster);
     }
 
-    @Override
-    public GeneI fetch(long id) throws MGXException {
-        GeneDTO dto = null;
-        try {
-            dto = getDTOmaster().Gene().fetch(id);} catch (MGXClientLoggedOutException mcle) {
-            throw new MGXLoggedoutException(mcle);
-        } catch (MGXDTOException ex) {
-            throw new MGXException(ex);
-        }
-        return GeneDTOFactory.getInstance().toModel(getMaster(), dto);
-    }
+//    @Override
+//    public AssembledRegionI fetch(long id) throws MGXException {
+//        AssembledRegionDTO dto = null;
+//        try {
+//            dto = getDTOmaster().AssembledRegion().fetch(id);
+//        } catch (MGXClientLoggedOutException mcle) {
+//            throw new MGXLoggedoutException(mcle);
+//        } catch (MGXDTOException ex) {
+//            throw new MGXException(ex);
+//        }
+//        return AssembledRegionDTOFactory.getInstance().toModel(getMaster(), dto);
+//    }
+
+//    @Override
+//    public Iterator<AssembledRegionI> fetchall() throws MGXException {
+//        Iterator<AssembledRegionDTO> it;
+//        try {
+//            it = getDTOmaster().AssembledRegion().fetchall();
+//        } catch (MGXClientLoggedOutException mcle) {
+//            throw new MGXLoggedoutException(mcle);
+//        } catch (MGXDTOException ex) {
+//            throw new MGXException(ex);
+//        }
+//        return new BaseIterator<AssembledRegionDTO, AssembledRegionI>(it) {
+//            @Override
+//            public AssembledRegionI next() {
+//                return AssembledRegionDTOFactory.getInstance().toModel(getMaster(), iter.next());
+//            }
+//        };
+//    }
 
     @Override
-    public Iterator<GeneI> fetchall() throws MGXException {
-        Iterator<GeneDTO> it;
+    public Iterator<AssembledRegionI> ByContig(ContigI c) throws MGXException {
+        Iterator<AssembledRegionDTO> it;
         try {
-            it = getDTOmaster().Gene().fetchall();} catch (MGXClientLoggedOutException mcle) {
+            it = getDTOmaster().AssembledRegion().byAssembledContig(c.getId());
+        } catch (MGXClientLoggedOutException mcle) {
             throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
-        return new BaseIterator<GeneDTO, GeneI>(it) {
+        return new BaseIterator<AssembledRegionDTO, AssembledRegionI>(it) {
             @Override
-            public GeneI next() {
-                return GeneDTOFactory.getInstance().toModel(getMaster(), iter.next());
+            public AssembledRegionI next() {
+                return AssembledRegionDTOFactory.getInstance().toModel(getMaster(), iter.next());
             }
         };
     }
 
     @Override
-    public Iterator<GeneI> ByContig(ContigI c) throws MGXException {
-        Iterator<GeneDTO> it;
+    public SequenceI getDNASequence(AssembledRegionI gene) throws MGXException {
         try {
-            it = getDTOmaster().Gene().byContig(c.getId());} catch (MGXClientLoggedOutException mcle) {
-            throw new MGXLoggedoutException(mcle);
-        } catch (MGXDTOException ex) {
-            throw new MGXException(ex);
-        }
-        return new BaseIterator<GeneDTO, GeneI>(it) {
-            @Override
-            public GeneI next() {
-                return GeneDTOFactory.getInstance().toModel(getMaster(), iter.next());
-            }
-        };
-    }
-
-    @Override
-    public SequenceI getDNASequence(GeneI gene) throws MGXException {
-        try {
-            SequenceDTO dto = getDTOmaster().Gene().getDNASequence(gene.getId());
+            SequenceDTO dto = getDTOmaster().AssembledRegion().getDNASequence(gene.getId());
             return SequenceDTOFactory.getInstance().toModel(getMaster(), dto);} catch (MGXClientLoggedOutException mcle) {
             throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
@@ -106,29 +107,19 @@ public class GeneAccess extends AccessBase<GeneI> implements GeneAccessI {
 
     @Override
     public DownloadBaseI createDownloaderByAttributes(Set<AttributeI> attrs, SeqWriterI<DNASequenceI> writer, boolean closeWriter, Set<String> seenGeneNames) throws MGXException {
-        AttributeDTOList.Builder b = dto.AttributeDTOList.newBuilder();
+        AttributeDTOList.Builder b = AttributeDTOList.newBuilder();
         for (AttributeI a : attrs) {
             b.addAttribute(AttributeDTOFactory.getInstance().toDTO(a));
         }
         final GeneByAttributeDownloader dl;
         try {
-            dl = getDTOmaster().Gene().createDownloaderByAttributes(b.build(), writer, closeWriter, seenGeneNames);
+            dl = getDTOmaster().AssembledRegion().createDownloaderByAttributes(b.build(), writer, closeWriter, seenGeneNames);
         } catch (MGXClientLoggedOutException mcle) {
             throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
         return new ServerGeneDownloader(dl);
-    }
-
-    @Override
-    public void update(GeneI obj) throws MGXException {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    @Override
-    public TaskI<GeneI> delete(GeneI obj) throws MGXException {
-        throw new UnsupportedOperationException("Not supported.");
     }
 
     private static class ServerGeneDownloader extends DownloadBaseI implements PropertyChangeListener {

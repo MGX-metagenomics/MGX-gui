@@ -28,26 +28,6 @@ public class MappedSequence extends MappedSequenceI {
     }
 
     @Override
-    public boolean isFwdStrand() {
-        return getStop() > getStart();
-    }
-    
-    /**
-     * @return 1, 2, 3, -1, -2, -3 depending on the reading frame of the feature
-     */
-    @Override
-    public int getFrame() {
-        int frame;
-
-        if (getStop() > getStart()) { // forward strand
-            frame = (getStart() - 1) % 3 + 1;
-        } else {
-            frame = (getStop() - 1) % 3 - 3;
-        }
-        return frame;
-    }
-
-    @Override
     public boolean equals(Object obj) {
         if (obj == null) {
             return false;

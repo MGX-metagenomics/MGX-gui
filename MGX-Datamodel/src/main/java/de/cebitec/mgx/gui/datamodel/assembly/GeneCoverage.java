@@ -25,7 +25,7 @@ public class GeneCoverage extends GeneCoverageI {
     }
 
     @Override
-    public long getGeneId() {
+    public long getRegionId() {
         return geneId;
     }
 

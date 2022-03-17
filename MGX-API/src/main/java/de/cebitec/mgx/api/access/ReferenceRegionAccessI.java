@@ -3,19 +3,19 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.cebitec.mgx.api.model.assembly.access;
+package de.cebitec.mgx.api.access;
 
 import de.cebitec.mgx.api.exception.MGXException;
-import de.cebitec.mgx.api.model.RegionI;
-import de.cebitec.mgx.api.model.assembly.GeneObservationI;
+import de.cebitec.mgx.api.model.MGXReferenceI;
+import de.cebitec.mgx.api.model.ReferenceRegionI;
 import java.util.Iterator;
 
 /**
  *
  * @author sj
  */
-public interface GeneObservationAccessI {
+public interface ReferenceRegionAccessI {
 
-    public Iterator<GeneObservationI> ByGene(RegionI gene) throws MGXException;
+    public Iterator<ReferenceRegionI> byReferenceInterval(MGXReferenceI ref, int from, int to) throws MGXException;
 
 }
