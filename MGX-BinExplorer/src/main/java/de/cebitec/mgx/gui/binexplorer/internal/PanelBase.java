@@ -181,13 +181,13 @@ public abstract class PanelBase<T extends SequenceViewControllerI> extends JComp
         }
 
         switch (evt.getPropertyName()) {
-            case ContigViewController.FEATURE_SELECTED:
+            case SequenceViewControllerI.FEATURE_SELECTED:
                 // ignore
                 break;
-            case ContigViewController.CONTIG_CHANGE:
+            case SequenceViewControllerI.CONTIG_CHANGE:
                 removeAll();
                 break;
-            case ContigViewController.BOUNDS_CHANGE:
+            case SequenceViewControllerI.BOUNDS_CHANGE:
                 bounds = (int[]) evt.getNewValue();
                 scale = 1f / (1f * vc.getIntervalLength() / getWidth());
                 if (getHeight() > 0) {
