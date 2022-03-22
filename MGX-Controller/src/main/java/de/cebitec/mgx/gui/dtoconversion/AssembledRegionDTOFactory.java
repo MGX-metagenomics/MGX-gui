@@ -41,8 +41,8 @@ public class AssembledRegionDTOFactory extends DTOConversionBase<AssembledRegion
 
     @Override
     public AssembledRegionI toModel(MGXMasterI m, AssembledRegionDTO dto) {
-        AssembledRegionI ret = new AssembledRegion(m, dto.getId(), dto.getContigId(), dto.getStart(), dto.getStop(), dto.getCoverage());
-        ret.setType(RegionType.values()[dto.getType().ordinal()]);
+        AssembledRegionI ret = new AssembledRegion(m, dto.getId(), dto.getContigId(), dto.getStart(), dto.getStop(), 
+                RegionType.values()[dto.getType().ordinal()], dto.getCoverage());
         return ret;
     }
 }

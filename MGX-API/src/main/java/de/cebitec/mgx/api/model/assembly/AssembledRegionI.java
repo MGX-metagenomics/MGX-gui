@@ -7,6 +7,7 @@ package de.cebitec.mgx.api.model.assembly;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.RegionI;
+import de.cebitec.mgx.common.RegionType;
 
 /**
  *
@@ -15,22 +16,24 @@ import de.cebitec.mgx.api.model.RegionI;
 public abstract class AssembledRegionI extends RegionI {
 
     //public static final DataFlavor DATA_FLAVOR = new DataFlavor(GeneI.class, "GeneI");
-
-    public AssembledRegionI(MGXMasterI master, long id, long parentId, int start, int stop) {
-        super(master, id, parentId, start, stop);
+    public AssembledRegionI(MGXMasterI master, long id, long parentId, int start, int stop, RegionType type) {
+        super(master, id, parentId, start, stop, type);
     }
 
     public abstract int getCoverage();
 
     public final int getAALength() {
-        int nuclLen;
-        if (getStart() < getStop()) {
-            nuclLen = getStop() - getStart() + 1;
-        } else {
-            nuclLen = getStart() - getStop() + 1;
+        if (getType() == RegionType.CDS) {
+            int nuclLen;
+            if (getStart() < getStop()) {
+                nuclLen = getStop() - getStart() + 1;
+            } else {
+                nuclLen = getStart() - getStop() + 1;
 
+            }
+            return nuclLen / 3;
         }
-        return nuclLen / 3;
+        return -1;
     }
 
 }

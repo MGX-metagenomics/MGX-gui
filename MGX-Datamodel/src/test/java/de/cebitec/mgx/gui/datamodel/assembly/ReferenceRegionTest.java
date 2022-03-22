@@ -5,11 +5,8 @@
  */
 package de.cebitec.mgx.gui.datamodel.assembly;
 
+import de.cebitec.mgx.common.RegionType;
 import de.cebitec.mgx.gui.datamodel.ReferenceRegion;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -22,28 +19,28 @@ public class ReferenceRegionTest {
     @Test
     public void testGetFrame() {
         System.out.println("getFrame");
-        ReferenceRegion g = new ReferenceRegion(null, -1, -1, 1, 42, "noname");
+        ReferenceRegion g = new ReferenceRegion(null, -1, -1, 1, 42, RegionType.CDS, "noname");
         assertEquals(2, g.getFrame());
     }
 
     @Test
     public void testGetLength() {
         System.out.println("getLength");
-        ReferenceRegion g = new ReferenceRegion(null, -1, -1, 1, 42, "noname");
+        ReferenceRegion g = new ReferenceRegion(null, -1, -1, 1, 42, RegionType.CDS, "noname");
         assertEquals(42, g.getLength());
     }
 
     @Test
     public void testGetFrameReverse() {
         System.out.println("testGetFrameReverse");
-        ReferenceRegion g = new ReferenceRegion(null, -1, -1, 230, 0, "noname");
+        ReferenceRegion g = new ReferenceRegion(null, -1, -1, 230, 0, RegionType.CDS, "noname");
         assertEquals(-3, g.getFrame());
     }
 
     @Test
     public void testGetLengthReverse() {
         System.out.println("testGetLengthReverse");
-        ReferenceRegion g = new ReferenceRegion(null, -1, -1, 230, 0, "noname");
+        ReferenceRegion g = new ReferenceRegion(null, -1, -1, 230, 0, RegionType.CDS, "noname");
         assertEquals(231, g.getLength());
     }
 }

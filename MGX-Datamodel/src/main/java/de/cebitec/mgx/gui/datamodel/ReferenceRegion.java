@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.datamodel;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.ReferenceRegionI;
+import de.cebitec.mgx.common.RegionType;
 
 /**
  *
@@ -9,8 +10,8 @@ import de.cebitec.mgx.api.model.ReferenceRegionI;
  */
 public class ReferenceRegion extends ReferenceRegionI {
 
-    public ReferenceRegion(MGXMasterI master, long id, long parentId, int start, int stop, String desc) {
-        super(master, id, parentId, start, stop, desc);
+    public ReferenceRegion(MGXMasterI master, long id, long parentId, int start, int stop, RegionType type, String desc) {
+        super(master, id, parentId, start, stop, type, desc);
     }
 
 }

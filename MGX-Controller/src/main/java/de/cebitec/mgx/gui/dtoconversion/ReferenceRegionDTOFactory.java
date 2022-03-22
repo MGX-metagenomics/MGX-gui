@@ -47,10 +47,9 @@ public class ReferenceRegionDTOFactory extends DTOConversionBase<ReferenceRegion
 
     @Override
     public ReferenceRegionI toModel(MGXMasterI m, ReferenceRegionDTO dto) {
-        ReferenceRegionI d = new ReferenceRegion(m, dto.getId(), dto.getParentId(), dto.getStart(), dto.getStop(), dto.getDescription());
+        ReferenceRegionI d = new ReferenceRegion(m, dto.getId(), dto.getParentId(), dto.getStart(), dto.getStop(), 
+                RegionType.values()[dto.getType().ordinal()], dto.getDescription());
         d.setName(dto.getName());
-        d.setType(RegionType.values()[dto.getType().ordinal()]);
-//        d.setId(dto.getId());
         return d;
     }
 

@@ -7,6 +7,7 @@ package de.cebitec.mgx.gui.datamodel.assembly;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.assembly.AssembledRegionI;
+import de.cebitec.mgx.common.RegionType;
 
 /**
  *
@@ -16,8 +17,8 @@ public class AssembledRegion extends AssembledRegionI {
 
     private final int coverage;
 
-    public AssembledRegion(MGXMasterI m, long id, long ctgId, int start, int stop, int coverage) {
-        super(m, id, ctgId, start, stop);
+    public AssembledRegion(MGXMasterI m, long id, long ctgId, int start, int stop, RegionType type, int coverage) {
+        super(m, id, ctgId, start, stop, type);
         this.coverage = coverage;
     }
 

@@ -24,20 +24,21 @@ public abstract class RegionI extends Identifiable<RegionI> implements ModelBase
     private final int min;
     private final int max;
     //
+    private final RegionType type;
     private final long parent;
     //
     private String name;
-    private RegionType type;
     //
     private ParallelPropertyChangeSupport pcs;
     //
 
-    public RegionI(MGXMasterI master, long id, long parent, int start, int stop) {
+    public RegionI(MGXMasterI master, long id, long parent, int start, int stop, RegionType type) {
         super(master, DATA_FLAVOR);
         super.setId(id);
         this.parent = parent;
         this.start = start;
         this.stop = stop;
+        this.type = type;
         this.min = min(start, stop);
         this.max = max(start, stop);
     }
@@ -56,10 +57,6 @@ public abstract class RegionI extends Identifiable<RegionI> implements ModelBase
 
     public final RegionType getType() {
         return type;
-    }
-
-    public void setType(RegionType type) {
-        this.type = type;
     }
 
     @Override
