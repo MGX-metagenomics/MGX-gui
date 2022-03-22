@@ -21,8 +21,8 @@ import java.awt.geom.Rectangle2D;
  */
 public final class Arrow<T extends LocationI> implements ShapeBase {
 
-    public final static int FORWARD = 1;
-    public final static int REVERSE = 2;
+//    public final static int FORWARD = 1;
+//    public final static int REVERSE = 2;
 
     /*
      *                  3
