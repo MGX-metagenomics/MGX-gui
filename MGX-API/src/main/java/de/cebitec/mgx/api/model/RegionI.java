@@ -92,10 +92,11 @@ public abstract class RegionI extends Identifiable<RegionI> implements ModelBase
         int frame;
 
         if (start < stop) {
-            frame = (getStart() - 1) % 3 + 1;
+            frame = start % 3 + 1;
         } else {
-            frame = (getStop() - 1) % 3 - 3;
+            frame = -1 * (start % 3) - 1;
         }
+
         return frame;
     }
 
@@ -106,7 +107,7 @@ public abstract class RegionI extends Identifiable<RegionI> implements ModelBase
     private static int max(final int a, final int b) {
         return (a <= b) ? b : a;
     }
-    
+
     @Override
     public int compareTo(RegionI o) {
         return name.compareTo(o.getName());

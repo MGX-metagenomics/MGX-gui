@@ -54,10 +54,11 @@ public abstract class LocationBase implements LocationI {
         int frame;
 
         if (start < stop) {
-            frame = (getStart() - 1) % 3 + 1;
+            frame = start % 3 + 1;
         } else {
-            frame = (getStop() - 1) % 3 - 3;
+            frame = -1 * (start % 3) - 1;
         }
+
         return frame;
     }
 
