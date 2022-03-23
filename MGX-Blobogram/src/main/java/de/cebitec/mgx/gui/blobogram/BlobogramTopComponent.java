@@ -12,6 +12,7 @@ import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.assembly.AssemblyI;
 import de.cebitec.mgx.api.model.assembly.BinI;
 import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
+import de.cebitec.mgx.gui.charts.basic.util.LogAxis;
 import de.cebitec.mgx.gui.charts.basic.util.SVGChartPanel;
 import de.cebitec.mgx.gui.pool.MGXPool;
 import de.cebitec.mgx.gui.swingutils.util.ColorPalette;
@@ -27,9 +28,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.LogarithmicAxis;
+import org.jfree.chart.axis.TickUnitSource;
 import org.jfree.chart.labels.XYToolTipGenerator;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
@@ -239,6 +243,13 @@ public final class BlobogramTopComponent extends TopComponent implements LookupL
                 XYPlot plot = (XYPlot) chart.getPlot();
                 plot.setBackgroundPaint(Color.WHITE);
                 plot.setRenderer(renderer);
+
+                // coverage axis in log scale
+                LogarithmicAxis rangeAxis = new LogarithmicAxis("log(Coverage)");
+                rangeAxis.setStrictValuesFlag(false);
+                TickUnitSource tus = LogAxis.createLogTickUnits(Locale.US);
+                rangeAxis.setStandardTickUnits(tus);
+                plot.setRangeAxis(rangeAxis);
 
                 chart.getRenderingHints().put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
