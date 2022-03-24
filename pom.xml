@@ -670,7 +670,7 @@
     </modules>
     
     <properties>
-        <netbeans.version>RELEASE126</netbeans.version>
+        <netbeans.version>RELEASE130</netbeans.version>
         <java.src.version>1.8</java.src.version>
         <java.target.version>1.8</java.target.version>
         <brandingToken>mgx_gui</brandingToken>
