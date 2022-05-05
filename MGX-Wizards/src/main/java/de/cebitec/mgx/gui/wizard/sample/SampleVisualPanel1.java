@@ -77,8 +77,7 @@ public final class SampleVisualPanel1 extends JPanel  {
         dateSettings.setVisibleNextMonthButton(true);
         panel = new CalendarPanel(dateSettings);
         panel.setSelectedDate(today);
-        panel.requestFocus();
-        panel.setToolTipText("TEST");
+        panel.setToolTipText("Select Date");
         dateSettings.setDateRangeLimits(date, today);
         org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(SampleVisualPanel1.class, "SampleVisualPanel1.jLabel1.text")); // NOI18N
 
