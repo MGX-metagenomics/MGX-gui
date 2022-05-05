@@ -1,4 +1,4 @@
-<?xml version="1.1" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 
 <Form version="1.5" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JPanelFormInfo">
   <AuxValues>
@@ -16,40 +16,29 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" attributes="0">
+          <Group type="102" alignment="0" attributes="0">
+              <EmptySpace min="44" pref="44" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace min="-2" pref="42" max="-2" attributes="0"/>
-                      <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
-                  </Group>
-                  <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace min="-2" pref="53" max="-2" attributes="0"/>
-                      <Component id="jXMonthView1" min="-2" max="-2" attributes="0"/>
-                  </Group>
+                  <Component id="panel" min="-2" pref="147" max="-2" attributes="0"/>
+                  <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace pref="65" max="32767" attributes="0"/>
+              <EmptySpace min="-2" pref="122" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" alignment="0" attributes="0">
-              <EmptySpace min="-2" pref="19" max="-2" attributes="0"/>
+          <Group type="102" attributes="0">
+              <EmptySpace min="42" pref="42" max="-2" attributes="0"/>
               <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
-              <EmptySpace type="separate" max="-2" attributes="0"/>
-              <Component id="jXMonthView1" min="-2" max="-2" attributes="0"/>
-              <EmptySpace pref="51" max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="panel" min="-2" pref="79" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
   </Layout>
   <SubComponents>
-    <Component class="org.jdesktop.swingx.JXMonthView" name="jXMonthView1">
-      <Properties>
-        <Property name="preferredColumnCount" type="int" value="2"/>
-        <Property name="traversable" type="boolean" value="true"/>
-      </Properties>
-    </Component>
     <Component class="javax.swing.JLabel" name="jLabel1">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
@@ -57,5 +46,14 @@
         </Property>
       </Properties>
     </Component>
+    <Container class="javax.swing.JPanel" name="panel">
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new CalendarPanel(dateSettings)"/>
+        <AuxValue name="JavaCodeGenerator_CreateCodePre" type="java.lang.String" value="final LocalDate today = LocalDate.now();&#xa;Locale locale = new Locale(&quot;en&quot;);&#xa;DatePickerSettings dateSettings = new DatePickerSettings(locale);&#xa;dateSettings.setFirstDayOfWeek(DayOfWeek.MONDAY);&#xa;dateSettings.setFormatForDatesCommonEra(&quot;dd-MM-yyyy&quot;);&#xa;dateSettings.setFormatForDatesBeforeCommonEra(&quot;uuuu-MM-dd&quot;);&#xa;dateSettings.setAllowKeyboardEditing(false);&#xa;dateSettings.setVisibleClearButton(false);&#xa;dateSettings.setVisibleNextMonthButton(true);&#xa;dateSettings.setDateRangeLimits(today.minusDays(20), today);"/>
+        <AuxValue name="JavaCodeGenerator_SerializeTo" type="java.lang.String" value="SampleVisualPanel1_panel"/>
+      </AuxValues>
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout"/>
+    </Container>
   </SubComponents>
 </Form>
