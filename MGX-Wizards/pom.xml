@@ -63,15 +63,16 @@
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
         </dependency>
-        
-        <dependency>
-            <groupId>de.cebitec.mgx</groupId>
-            <artifactId>SwingX-OSGi</artifactId>
-        </dependency>
         <dependency>
             <artifactId>MGX-API</artifactId>
             <groupId>de.cebitec.mgx.gui</groupId>
         </dependency>
+        <dependency>
+            <groupId>com.github.lgooddatepicker</groupId>
+            <artifactId>LGoodDatePicker</artifactId>
+            <version>11.2.1</version>
+        </dependency>
+
 
     </dependencies>
 
