@@ -19,6 +19,7 @@ import java.awt.Component;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -86,10 +87,17 @@ public class SubDistCustomizer extends javax.swing.JPanel implements ItemListene
             List<AttributeI> sorted = new ArrayList<>(dist.keySet());
             Collections.sort(sorted);
 
-            baseModel.addAll(sorted);
+            addAll(baseModel, sorted);
             baseDistribution.setSelectedIndex(0);
         } catch (ConflictingJobsException ex) {
             Logger.getLogger(SubDistCustomizer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    // DefaultComboBoxModel#allAll is not available in JDK8
+    private static <T> void addAll(DefaultComboBoxModel<T> model, Collection<T> coll) {
+        for (T elem : coll) {
+            model.addElement(elem);
         }
     }
 
@@ -155,7 +163,7 @@ public class SubDistCustomizer extends javax.swing.JPanel implements ItemListene
                     }
 
                 });
-                selectModel.addAll(newData);
+                addAll(selectModel, newData);
                 selectBox.setSelectedIndex(0);
             } catch (Exception ex) {
                 Logger.getLogger(SubDistCustomizer.class.getName()).log(Level.SEVERE, null, ex);

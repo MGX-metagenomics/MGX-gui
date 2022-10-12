@@ -1,1 +1,6 @@
 */target/
+application/netigso/
+application/netigso-bundles
+application/localeVariants
+application/lastModified/
+application/package-attrs.dat
