@@ -17,7 +17,7 @@ import java.util.List;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.panel.Overlay;
-import org.jfree.graphics2d.svg.SVGGraphics2D;
+import org.jfree.svg.SVGGraphics2D;
 
 /**
  *

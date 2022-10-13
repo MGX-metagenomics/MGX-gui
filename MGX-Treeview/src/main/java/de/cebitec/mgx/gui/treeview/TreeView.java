@@ -35,7 +35,7 @@ import javax.swing.AbstractAction;
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
-import org.jfree.graphics2d.svg.SVGGraphics2D;
+import org.jfree.svg.SVGGraphics2D;
 import org.openide.util.lookup.ServiceProvider;
 import prefuse.Constants;
 import prefuse.Display;

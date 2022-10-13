@@ -35,6 +35,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.JComponent;
 import javax.swing.SwingWorker;
+import org.openide.DialogDisplayer;
+import org.openide.NotifyDescriptor;
 import org.openide.modules.Places;
 import org.openide.util.Exceptions;
 import org.openide.util.RequestProcessor;
@@ -80,6 +82,10 @@ public class KeggViewer extends CategoricalViewerI<Long> implements Customizable
 
             @Override
             public Result export(FileType type, String fName) throws Exception {
+                NotifyDescriptor nd = new NotifyDescriptor.Message("Publication of a KEGG pathway map requires "
+                        + "permission from KEGG, which can be requested at https://www.kegg.jp/feedback/copyright.html.");
+                DialogDisplayer.getDefault().notify(nd);
+
                 switch (type) {
                     case PNG:
                         panel.savePNG(new File(fName));
