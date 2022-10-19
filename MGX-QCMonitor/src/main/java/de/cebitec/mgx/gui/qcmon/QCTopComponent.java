@@ -16,8 +16,12 @@ import java.awt.Image;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.SwingWorker;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -52,14 +56,23 @@ import org.openide.util.lookup.InstanceContent;
         preferredID = "QCTopComponent"
 )
 public final class QCTopComponent extends TopComponent implements LookupListener, PropertyChangeListener {
-
+    
     private final Lookup.Result<SeqRunI> resultSeqRun;
     private SeqRunI currentSeqRun = null;
-
+    
     private final InstanceContent content = new InstanceContent();
     private final Lookup lookup;
     private int tabIdx = -1;
-
+    private static final Logger LOG = Logger.getLogger(QCTopComponent.class.getName());
+    
+    private final static String[] QC_ORDER = {
+        "Nucleotide distribution",
+        "Read length",
+        "GC",
+        "Forward read quality",
+        "Reverse read quality"
+    };
+    
     private QCTopComponent() {
         initComponents();
         super.setName("Quality Control");
@@ -85,16 +98,16 @@ public final class QCTopComponent extends TopComponent implements LookupListener
             }
         });
     }
-
+    
     private static QCTopComponent instance = null;
-
+    
     public static QCTopComponent getDefault() {
         if (instance == null) {
             instance = new QCTopComponent();
         }
         return instance;
     }
-
+    
     @Override
     public Image getIcon() {
         Image image = super.getIcon();
@@ -132,51 +145,51 @@ public final class QCTopComponent extends TopComponent implements LookupListener
         resultSeqRun.addLookupListener(this);
         update();
     }
-
+    
     @Override
     public void componentClosed() {
         resultSeqRun.removeLookupListener(this);
     }
-
+    
     void writeProperties(java.util.Properties p) {
         p.setProperty("version", "1.0");
     }
-
+    
     void readProperties(java.util.Properties p) {
         String version = p.getProperty("version");
     }
-
+    
     @Override
     public void resultChanged(LookupEvent le) {
         update();
     }
-
+    
     private void update() {
         SeqRunI prevRun = currentSeqRun;
-
+        
         for (SeqRunI run : resultSeqRun.allInstances()) {
             if (currentSeqRun == null || !run.equals(currentSeqRun)) {
                 currentSeqRun = run;
                 break;
             }
         }
-
+        
         if (currentSeqRun == null || currentSeqRun.equals(prevRun)) {
             return; // no update needed
         }
-
+        
         if (prevRun != null) {
             prevRun.removePropertyChangeListener(this);
         }
         currentSeqRun.addPropertyChangeListener(this);
-
+        
         SwingWorker<List<QCResultI>, Void> sw = new SwingWorker<List<QCResultI>, Void>() {
-
+            
             @Override
             protected List<QCResultI> doInBackground() throws Exception {
                 return currentSeqRun.getMaster().SeqRun().getQC(currentSeqRun);
             }
-
+            
             @Override
             protected void done() {
                 List<QCResultI> qc = null;
@@ -191,11 +204,30 @@ public final class QCTopComponent extends TopComponent implements LookupListener
                     int idx = tabbedPane.getSelectedIndex();
                     tabbedPane.removeAll();
                     int cnt = 0;
+                    
+                    Map<String, QCResultI> data = new HashMap<>();
                     for (QCResultI qcr : qc) {
+                        data.put(qcr.getName(), qcr);
+                    }
+
+                    // generate QC charts in order
+                    for (String qcName : QC_ORDER) {
+                        if (data.containsKey(qcName)) {
+                            QCResultI qcr = data.remove(qcName);
+                            SVGChartPanel chart = QCChartGenerator.createChart(qcr);
+                            tabbedPane.add(qcr.getName(), chart);
+                            tabbedPane.setToolTipTextAt(cnt++, qcr.getDescription());
+                        }
+                    }
+
+                    // append remaining QC metrics
+                    for (QCResultI qcr : data.values()) {
+                        LOG.log(Level.INFO, "QC result for \"{0}\" not handled in QC_ORDER", qcr.getName());
                         SVGChartPanel chart = QCChartGenerator.createChart(qcr);
                         tabbedPane.add(qcr.getName(), chart);
                         tabbedPane.setToolTipTextAt(cnt++, qcr.getDescription());
                     }
+
                     // restore tab selection
                     if (idx != -1 && tabbedPane.getTabCount() > idx) {
                         tabbedPane.setSelectedIndex(idx);
@@ -206,7 +238,7 @@ public final class QCTopComponent extends TopComponent implements LookupListener
         };
         sw.execute();
     }
-
+    
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         if (evt.getSource() instanceof SeqRunI && currentSeqRun != null && currentSeqRun.equals(evt.getSource())) {
