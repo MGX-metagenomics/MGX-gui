@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.mapping;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.exception.MGXTimeoutException;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.api.model.MappedSequenceI;
@@ -241,7 +242,11 @@ public class MappingCtx implements PropertyChangeListener, AutoCloseable {
             try {
                 MGXMasterI master = ref.getMaster();
                 if (!master.isDeleted() && !mapping.isDeleted()) {
-                    master.Mapping().closeMapping(sessionUUID);
+                    try {
+                        master.Mapping().closeMapping(sessionUUID);
+                    } catch (MGXTimeoutException mte) {
+                        // session already closed on server, silently ignore
+                    }
                 }
             } catch (MGXException ex) {
                 Exceptions.printStackTrace(ex);
