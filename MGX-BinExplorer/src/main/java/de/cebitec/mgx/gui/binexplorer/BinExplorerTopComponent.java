@@ -16,6 +16,7 @@ import de.cebitec.mgx.api.model.assembly.AssembledRegionI;
 import de.cebitec.mgx.api.model.assembly.BinI;
 import de.cebitec.mgx.api.model.assembly.ContigI;
 import de.cebitec.mgx.api.model.assembly.GeneCoverageI;
+import de.cebitec.mgx.common.RegionType;
 import de.cebitec.mgx.dnautils.DNAUtils;
 import de.cebitec.mgx.gui.binexplorer.internal.ContigViewController;
 import de.cebitec.mgx.gui.binexplorer.internal.FeaturePanel;
@@ -83,6 +84,8 @@ import org.openide.windows.TopComponent;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.NbPreferences;
 import org.openide.util.Utilities;
+import org.openide.util.lookup.AbstractLookup;
+import org.openide.util.lookup.InstanceContent;
 
 /**
  * Top component which displays something.
@@ -117,12 +120,15 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
     private boolean isActivated = false;
     private final ContigViewController vc = new ContigViewController();
     private AssembledRegionI selectedFeature = null;
-    private MGXMasterI currentMaster = null;
+    //private MGXMasterI currentMaster = null;
     private final FastCategoryDataset coverageDataset = new FastCategoryDataset();
     private JFreeChart coverageChart = null;
     private final TLongObjectMap<String> runNames = new TLongObjectHashMap<>();
     private FeaturePanel featurePanel = null;
     private SeqPropertyPanel seqPropPanel = null;
+    //
+    private final InstanceContent content = new InstanceContent();
+    private final Lookup lookup;
 
     public BinExplorerTopComponent() {
         initComponents();
@@ -133,6 +139,9 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
         contigList.setModel(contigListModel);
         contigList.setRenderer(new ContigRenderer());
         contigList.addItemListener(this);
+
+        lookup = new AbstractLookup(content);
+        associateLookup(lookup);
 
         jXTable1.setHighlighters(new Highlighter[]{HighlighterFactory.createAlternateStriping()});
         jXTable1.getColumn(0).setWidth(130);
@@ -590,6 +599,8 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
 
                 geneCovPanel.removeAll();
 
+                updateLookup();
+
                 repaint();
             }
         }
@@ -643,6 +654,7 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
                     contigListModel.setBin(currentBin);
                     contigListModel.update();
                     contigList.setEnabled(true);
+                    updateLookup();
                 }
             });
 
@@ -683,24 +695,30 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
                 tableModel.clear();
                 contigListModel.dispose();
 
+                updateLookup();
+
                 repaint();
                 return;
             }
         }
         if (evt.getSource() instanceof ContigViewController && evt.getPropertyName().equals(ContigViewController.FEATURE_SELECTED)) {
             dnaseq.setEnabled(true);
-            aaseq.setEnabled(true);
 
-            if (evt.getNewValue() == selectedFeature) {
+            // only enable amino acid sequence display for CDS features
+            AssembledRegionI newFeat = (AssembledRegionI) evt.getNewValue();
+            if (newFeat.getType() == RegionType.CDS) {
+                aaseq.setEnabled(true);
+            }
+
+            if (newFeat == selectedFeature) {
                 return;
             }
 
             tableModel.update(null);
-            selectedFeature = (AssembledRegionI) evt.getNewValue();
+            selectedFeature = newFeat;
 
             MGXMasterI master = selectedFeature.getMaster();
-            if (!master.equals(currentMaster)) {
-                currentMaster = master;
+            if (!master.equals(currentBin.getMaster())) {
                 runNames.clear();
             }
 
@@ -734,7 +752,7 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
             //
             List<GeneCoverageI> all = new ArrayList<>();
             try {
-                Iterator<GeneCoverageI> iter = currentMaster.GeneCoverage().ByGene(selectedFeature);
+                Iterator<GeneCoverageI> iter = selectedFeature.getMaster().GeneCoverage().ByGene(selectedFeature);
                 while (iter != null && iter.hasNext()) {
                     all.add(iter.next());
                 }
@@ -743,7 +761,7 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
                 coverageDataset.clear();
                 for (GeneCoverageI geneCov : all) {
                     if (!runNames.containsKey(geneCov.getRunId())) {
-                        SeqRunI run = currentMaster.SeqRun().fetch(geneCov.getRunId());
+                        SeqRunI run = selectedFeature.getMaster().SeqRun().fetch(geneCov.getRunId());
                         runNames.put(geneCov.getRunId(), run.getName());
                         run.deleted();
                     }
@@ -766,11 +784,17 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
             geneCovPanel.removeAll();
             geneCovPanel.setLayout(new BorderLayout());
             geneCovPanel.add(svgChartPanel, BorderLayout.CENTER);
+
+            updateLookup();
         }
     }
 
     public RegionI getSelectedFeature() {
         return selectedFeature;
+    }
+
+    private ContigI getCurrentContig() {
+        return contigListModel.getSelectedItem();
     }
 
     private void setupCoverageChart() {
@@ -804,6 +828,20 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
         br.setItemMargin(0);
         br.setMaximumBarWidth(.2); // set maximum width to 20% of chart
 
+    }
+
+    private void updateLookup() {
+        content.set(Collections.emptyList(), null);
+        if (currentBin != null) {
+            content.add(currentBin.getMaster());
+            content.add(currentBin);
+        }
+        if (getCurrentContig() != null) {
+            content.add(getCurrentContig());
+        }
+        if (selectedFeature != null) {
+            content.add(selectedFeature);
+        }
     }
 
     private String cleanupName(String name) {
