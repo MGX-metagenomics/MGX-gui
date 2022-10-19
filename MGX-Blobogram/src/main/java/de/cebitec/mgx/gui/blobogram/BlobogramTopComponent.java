@@ -247,6 +247,7 @@ public final class BlobogramTopComponent extends TopComponent implements LookupL
                 // coverage axis in log scale
                 LogarithmicAxis rangeAxis = new LogarithmicAxis("log(Coverage)");
                 rangeAxis.setStrictValuesFlag(false);
+                rangeAxis.setLabelFont(plot.getDomainAxis().getLabelFont());
                 TickUnitSource tus = LogAxis.createLogTickUnits(Locale.US);
                 rangeAxis.setStandardTickUnits(tus);
                 plot.setRangeAxis(rangeAxis);
