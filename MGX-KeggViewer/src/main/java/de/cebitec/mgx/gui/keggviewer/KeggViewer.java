@@ -53,6 +53,8 @@ public class KeggViewer extends CategoricalViewerI<Long> implements Customizable
     private KEGGMaster master;
     private KeggCustomizer customizer;
     private List<Pair<GroupI, DistributionI<Long>>> data;
+    //
+    private static boolean messageShown = false;
 
     public KeggViewer() {
         File userDir = Places.getUserDirectory() != null ? Places.getUserDirectory() : new File(System.getProperty("java.io.tmpdir"));
@@ -82,9 +84,12 @@ public class KeggViewer extends CategoricalViewerI<Long> implements Customizable
 
             @Override
             public Result export(FileType type, String fName) throws Exception {
-                NotifyDescriptor nd = new NotifyDescriptor.Message("Publication of a KEGG pathway map requires "
-                        + "permission from KEGG, which can be requested at https://www.kegg.jp/feedback/copyright.html.");
-                DialogDisplayer.getDefault().notify(nd);
+                if (!messageShown) {
+                    NotifyDescriptor nd = new NotifyDescriptor.Message("Publication of a KEGG pathway map requires "
+                            + "permission from KEGG, which can be requested at https://www.kegg.jp/feedback/copyright.html.");
+                    DialogDisplayer.getDefault().notify(nd);
+                    messageShown = true;
+                }
 
                 switch (type) {
                     case PNG:
