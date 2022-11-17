@@ -5,7 +5,7 @@
  */
 package de.cebitec.mgx.gui.blobogram.internal;
 
-import de.cebitec.mgx.api.MGXMasterI;
+import com.google.common.cache.Cache;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.assembly.BinI;
 import de.cebitec.mgx.api.model.assembly.ContigI;
@@ -13,65 +13,63 @@ import java.util.Iterator;
 import java.util.concurrent.CountDownLatch;
 import org.jfree.data.xy.XYDataItem;
 import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
 import org.netbeans.api.progress.ProgressHandle;
-import org.openide.util.Cancellable;
 import org.openide.util.Exceptions;
 
 /**
  *
  * @author sj
  */
-public class ContigFetcher implements Runnable, Cancellable {
+public class ContigFetcher implements Runnable {
 
-    private final MGXMasterI master;
     private final BinI bin;
-    private final XYSeries series;
+    private final XYSeriesCollection dataset;
     private final CountDownLatch done;
-    private ProgressHandle ph;
-    private volatile boolean cancelled = false;
+    private final ProgressHandle ph;
+    //
+    private final Cache<BinI, XYSeries> cache;
 
-    public ContigFetcher(MGXMasterI master, BinI bin, XYSeries series, CountDownLatch cdl) {
-        this.master = master;
+    public ContigFetcher(BinI bin, XYSeriesCollection dataset, ProgressHandle ph, Cache<BinI, XYSeries> cache, CountDownLatch cdl) {
         this.bin = bin;
-        this.series = series;
-        this.done = cdl;
-    }
-
-    public void setProgressHandle(ProgressHandle ph) {
+        this.dataset = dataset;
         this.ph = ph;
+        this.cache = cache;
+        this.done = cdl;
     }
 
     @Override
     public void run() {
         ph.start();
         ph.switchToIndeterminate();
-        Iterator<ContigI> contigIter = null;
+
+        XYSeries series = new XYSeries(bin.getName());
+        series.setNotify(false);
+
+        Iterator<ContigI> contigIter;
         try {
-            contigIter = master.Contig().ByBin(bin);
+            contigIter = bin.getMaster().Contig().ByBin(bin);
         } catch (MGXException ex) {
             Exceptions.printStackTrace(ex);
+            ph.finish();
+            cache.invalidate(bin);
+            return;
         }
-        while (!cancelled && contigIter != null && contigIter.hasNext()) {
+
+        while (contigIter.hasNext()) {
             ContigI c = contigIter.next();
             XYDataItem item = new ContigItem(bin, c);
             series.add(item, false);
         }
         series.setNotify(true);
-        if (cancelled) {
-            series.clear();
+        cache.put(bin, series);
+
+        synchronized (dataset) {
+            dataset.addSeries(series);
         }
-        done.countDown();
+
         ph.finish();
-    }
-
-    @Override
-    public boolean cancel() {
-        cancelled = true;
-        return true;
-    }
-
-    public boolean isCancelled() {
-        return cancelled;
+        done.countDown();
     }
 
 }

@@ -6,6 +6,7 @@
 package de.cebitec.mgx.gui.blobogram;
 
 import de.cebitec.mgx.api.model.assembly.BinI;
+import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.util.Collection;
 import javax.swing.AbstractAction;
@@ -74,7 +75,15 @@ public final class BlobogramAction extends AbstractAction implements ContextAwar
 
     @Override
     public synchronized void resultChanged(LookupEvent le) {
-        Collection<? extends BinI> allBins = result.allInstances();
-        super.setEnabled(!allBins.isEmpty());
+
+        EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                Collection<? extends BinI> allBins = result.allInstances();
+                BlobogramAction.this.setEnabled(!allBins.isEmpty());
+            }
+
+        });
+
     }
 }

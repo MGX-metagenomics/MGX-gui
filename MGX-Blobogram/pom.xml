@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    
     <modelVersion>4.0.0</modelVersion>
+    
     <parent>
         <groupId>de.cebitec.mgx.gui</groupId>
         <artifactId>MGX-gui</artifactId>
         <version>2.0</version>
     </parent>
+    
     <artifactId>MGX-Blobogram</artifactId>
     <packaging>nbm</packaging>
+    
     <build>
         <plugins>
             <plugin>
@@ -29,11 +33,8 @@
             </plugin>
         </plugins>
     </build>
+    
     <dependencies>
-        <dependency>
-            <groupId>org.netbeans.api</groupId>
-            <artifactId>org-netbeans-api-annotations-common</artifactId>
-        </dependency>
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-windows</artifactId>
@@ -49,14 +50,6 @@
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-util-lookup</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.netbeans.api</groupId>
-            <artifactId>org-openide-awt</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.netbeans.api</groupId>
-            <artifactId>org-netbeans-modules-settings</artifactId>
         </dependency>
         <dependency>
             <groupId>de.cebitec.mgx.gui</groupId>
@@ -90,7 +83,12 @@
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-dialogs</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
     </dependencies>
+    
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>

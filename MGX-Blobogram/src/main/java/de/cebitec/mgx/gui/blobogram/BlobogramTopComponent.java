@@ -5,11 +5,11 @@
  */
 package de.cebitec.mgx.gui.blobogram;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import de.cebitec.mgx.gui.blobogram.internal.ContigItem;
 import de.cebitec.mgx.gui.blobogram.internal.ContigFetcher;
 import de.cebitec.mgx.api.MGXMasterI;
-import de.cebitec.mgx.api.exception.MGXException;
-import de.cebitec.mgx.api.model.assembly.AssemblyI;
 import de.cebitec.mgx.api.model.assembly.BinI;
 import de.cebitec.mgx.gui.charts.basic.util.JFreeChartUtil;
 import de.cebitec.mgx.gui.charts.basic.util.LogAxis;
@@ -19,17 +19,19 @@ import de.cebitec.mgx.gui.swingutils.util.ColorPalette;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.EventQueue;
 import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.LogarithmicAxis;
@@ -80,11 +82,18 @@ public final class BlobogramTopComponent extends TopComponent implements LookupL
 
     private final InstanceContent content = new InstanceContent();
     private final Lookup lookup;
-    private final Lookup.Result<AssemblyI> resultAssembly;
     private final Lookup.Result<BinI> resultBin;
+    private boolean isActivated = false;
+    //
+    private final Semaphore updateLock = new Semaphore(1);
+    //
+    private static Cache<BinI, XYSeries> cache;
     //
     private SVGChartPanel currentPanel = null;
-    private final XYSeriesCollection dataset = new XYSeriesCollection();
+    private final XYToolTipGenerator tooltipGenerator;
+    private final XYLineAndShapeRenderer renderer;
+    private final XYSeriesCollection dataset;
+    private final LogarithmicAxis rangeAxis;
 
     public BlobogramTopComponent() {
         initComponents();
@@ -92,9 +101,47 @@ public final class BlobogramTopComponent extends TopComponent implements LookupL
         super.setToolTipText("Blob Plot");
         lookup = new AbstractLookup(content);
         associateLookup(lookup);
-        resultAssembly = Utilities.actionsGlobalContext().lookupResult(AssemblyI.class);
         resultBin = Utilities.actionsGlobalContext().lookupResult(BinI.class);
-        update();
+
+        cache = CacheBuilder.newBuilder()
+                .expireAfterAccess(5, TimeUnit.MINUTES)
+                .build();
+
+        dataset = new XYSeriesCollection();
+
+        tooltipGenerator = new XYToolTipGenerator() {
+
+            @Override
+            public String generateToolTip(XYDataset xyd, int series, int item) {
+                XYSeriesCollection dataset = (XYSeriesCollection) xyd;
+                XYDataItem dataItem = dataset.getSeries(series).getDataItem(item);
+                ContigItem ci = (ContigItem) dataItem;
+                return ci.getTooltip();
+            }
+        };
+
+        renderer = new XYLineAndShapeRenderer(false, true) {
+
+            private final Ellipse2D.Float circle = new Ellipse2D.Float();
+
+            @Override
+            public Shape getItemShape(int row, int column) {
+                XYSeries series = dataset.getSeries(row);
+                ContigItem item = (ContigItem) series.getDataItem(column);
+                int length_bp = item.getContig().getLength();
+                float size = (float) (Math.log10(length_bp));
+                circle.height = 0.1f + size * size * size * size * size / 160;
+                circle.width = circle.height;
+                return circle;
+            }
+
+        };
+        renderer.setBaseToolTipGenerator(tooltipGenerator);
+
+        rangeAxis = new LogarithmicAxis("Coverage");
+        rangeAxis.setStrictValuesFlag(false);
+        TickUnitSource tus = LogAxis.createLogTickUnits(Locale.US);
+        rangeAxis.setStandardTickUnits(tus);
     }
 
     private static BlobogramTopComponent instance = null;
@@ -113,129 +160,108 @@ public final class BlobogramTopComponent extends TopComponent implements LookupL
         return scaledInstance;
     }
 
-    private void update() {
+    private synchronized void update() {
+
+        // avoid update when component itself is activated, because we're
+        // just getting the contents of our own lookup
+        if (isActivated) {
+            return;
+        }
 
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         if (currentPanel != null) {
-            currentPanel.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+            this.remove(currentPanel);
+            currentPanel = null;
+            this.repaint();
         }
-        MGXMasterI master = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
 
-        Collection<? extends AssemblyI> assemblies = resultAssembly.allInstances();
-        Collection<BinI> bins = new ArrayList<>();
+        Collection<BinI> bins = new HashSet<>();
+        bins.addAll(resultBin.allInstances());
+
+        if (bins.isEmpty()) {
+            this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            return;
+        }
+
+        //
+        // make sure all bins belong to the same assembly
+        // for this, check assembly id (for different assemblies
+        // within one project) and equality of master instances
+        // (for assemblies with same ids but in different projects)
+        //
+        long asmId = -1;
+        MGXMasterI m = null;
+        boolean allBinsBelongToSameAssembly = true;
+        for (BinI b : bins) {
+            if (asmId == -1) {
+                asmId = b.getAssemblyId();
+                m = b.getMaster();
+            } else {
+                if (asmId != b.getAssemblyId() || !m.equals(b.getMaster())) {
+                    allBinsBelongToSameAssembly = false;
+                }
+            }
+        }
+        if (!allBinsBelongToSameAssembly) {
+            NotifyDescriptor nd = new NotifyDescriptor("Selected bins belong to different assemblies.", "Error",
+                    NotifyDescriptor.DEFAULT_OPTION, NotifyDescriptor.ERROR_MESSAGE, null, null);
+            DialogDisplayer.getDefault().notify(nd);
+            this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            return;
+        }
+
+        //
+        // we're running on the EDT here, so acquiring the lock is kind of dangerous;
+        // however, we need to leave the EDT or otherwise our task progress handles
+        // won't become visible at all
+        //
+        try {
+            updateLock.acquire();
+        } catch (InterruptedException ex) {
+            Exceptions.printStackTrace(ex);
+            this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            return;
+        }
 
         MGXPool.getInstance().submit(new Runnable() {
             @Override
             public void run() {
-                if (!assemblies.isEmpty()) {
-                    AssemblyI assembly = assemblies.toArray(new AssemblyI[]{})[0];
-                    Iterator<BinI> asmIter = null;
-                    try {
-                        asmIter = master.Bin().ByAssembly(assembly);
-                    } catch (MGXException ex) {
-                        Exceptions.printStackTrace(ex);
-                    }
-                    while (asmIter != null && asmIter.hasNext()) {
-                        bins.add(asmIter.next());
-                    }
-                } else if (!resultBin.allInstances().isEmpty()) {
-                    bins.addAll(resultBin.allInstances());
-                }
 
-                if (bins.isEmpty()) {
-                    return;
-                }
-
-                // make sure all bins belong to the same assembly
-                // for this, check assembly id (for different assemblies
-                // within one project) and equality of master instances
-                // (for assemblies with same ids but in different projects)
-                long asmId = -1;
-                MGXMasterI m = null;
-                boolean allBinsBelongToSameAssembly = true;
-                for (BinI b : bins) {
-                    if (asmId == -1) {
-                        asmId = b.getAssemblyId();
-                        m = b.getMaster();
-                    } else {
-                        if (asmId != b.getAssemblyId() || !m.equals(b.getMaster())) {
-                            allBinsBelongToSameAssembly = false;
-                        }
-                    }
-                }
-                if (!allBinsBelongToSameAssembly) {
-                    NotifyDescriptor nd = new NotifyDescriptor("Selected bins belong to different assemblies.", "Error",
-                            NotifyDescriptor.DEFAULT_OPTION, NotifyDescriptor.ERROR_MESSAGE, null, null);
-                    DialogDisplayer.getDefault().notify(nd);
-                    return;
-                }
-
-                dataset.setNotify(false);
                 dataset.removeAllSeries();
+                dataset.setNotify(false);
 
                 CountDownLatch allProcessed = new CountDownLatch(bins.size());
 
                 for (BinI b : bins) {
-                    XYSeries series = new XYSeries(b.getName());
-                    series.setNotify(false);
-                    dataset.addSeries(series);
-                    ContigFetcher fetcher = new ContigFetcher(master, b, series, allProcessed);
-                    ProgressHandle ph = ProgressHandle.createHandle("Fetching contigs for " + b.getName(), fetcher, null);
-                    fetcher.setProgressHandle(ph);
-
-                    MGXPool.getInstance().submit(fetcher);
+                    XYSeries series = cache.getIfPresent(b);
+                    if (series != null) {
+                        dataset.addSeries(series);
+                        allProcessed.countDown();
+                    } else {
+                        ProgressHandle ph = ProgressHandle.createHandle("Fetching contigs for " + b.getName(), null, null);
+                        ContigFetcher fetcher = new ContigFetcher(b, dataset, ph, cache, allProcessed);
+                        MGXPool.getInstance().submit(fetcher);
+                    }
                 }
 
+                // await completion of all tasks
                 try {
                     allProcessed.await();
                 } catch (InterruptedException ex) {
                     Exceptions.printStackTrace(ex);
+                    updateLock.release();
                     return;
                 }
 
                 dataset.setNotify(true);
 
-                XYToolTipGenerator tooltipGenerator = new XYToolTipGenerator() {
-
-                    @Override
-                    public String generateToolTip(XYDataset xyd, int series, int item) {
-                        XYSeriesCollection dataset = (XYSeriesCollection) xyd;
-                        XYDataItem dataItem = dataset.getSeries(series).getDataItem(item);
-                        ContigItem ci = (ContigItem) dataItem;
-                        return ci.getTooltip();
-                    }
-                };
-
                 JFreeChart chart = ChartFactory.createScatterPlot(null, "GC content", "Coverage", dataset, PlotOrientation.VERTICAL, false, true, false);
                 chart.setBorderPaint(Color.WHITE);
                 chart.setBackgroundPaint(Color.WHITE);
 
-                XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer(false, true) {
-
-                    private final Ellipse2D.Float circle = new Ellipse2D.Float();
-
-                    @Override
-                    public Shape getItemShape(int row, int column) {
-                        XYSeries series = dataset.getSeries(row);
-                        ContigItem item = (ContigItem) series.getDataItem(column);
-                        int length_bp = item.getContig().getLength();
-                        float size = (float) (Math.log10(length_bp));
-                        circle.height = 0.1f + size * size * size * size * size / 160;
-                        circle.width = circle.height;
-                        return circle;
-                    }
-
-                };
-                renderer.setBaseToolTipGenerator(tooltipGenerator);
-
                 List<Color> palette = ColorPalette.pick(bins.size());
                 for (int i = 0; i < bins.size(); i++) {
                     renderer.setSeriesPaint(i, palette.get(i));
-                }
-
-                if (currentPanel != null) {
-                    BlobogramTopComponent.this.remove(currentPanel);
-                    content.set(Collections.emptyList(), null);
                 }
 
                 currentPanel = new SVGChartPanel(chart);
@@ -245,22 +271,24 @@ public final class BlobogramTopComponent extends TopComponent implements LookupL
                 plot.setRenderer(renderer);
 
                 // coverage axis in log scale
-                LogarithmicAxis rangeAxis = new LogarithmicAxis("log(Coverage)");
-                rangeAxis.setStrictValuesFlag(false);
                 rangeAxis.setLabelFont(plot.getDomainAxis().getLabelFont());
-                TickUnitSource tus = LogAxis.createLogTickUnits(Locale.US);
-                rangeAxis.setStandardTickUnits(tus);
                 plot.setRangeAxis(rangeAxis);
 
                 chart.getRenderingHints().put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-                BlobogramTopComponent.this.add(currentPanel, BorderLayout.CENTER);
+                content.set(Collections.emptyList(), null);
                 content.add(JFreeChartUtil.getImageExporter(chart));
 
-                if (currentPanel != null) {
-                    currentPanel.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-                }
-                setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                EventQueue.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        BlobogramTopComponent.this.add(currentPanel, BorderLayout.CENTER);
+                        BlobogramTopComponent.this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                        BlobogramTopComponent.this.revalidate();
+                        BlobogramTopComponent.this.repaint();
+                        updateLock.release();
+                    }
+                });
 
             }
         });
@@ -275,6 +303,7 @@ public final class BlobogramTopComponent extends TopComponent implements LookupL
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        setBackground(java.awt.Color.white);
         setLayout(new java.awt.BorderLayout());
     }// </editor-fold>//GEN-END:initComponents
 
@@ -282,15 +311,25 @@ public final class BlobogramTopComponent extends TopComponent implements LookupL
     // End of variables declaration//GEN-END:variables
     @Override
     public void componentOpened() {
-        resultAssembly.addLookupListener(this);
         resultBin.addLookupListener(this);
         update();
     }
 
     @Override
     public void componentClosed() {
-        resultAssembly.removeLookupListener(this);
         resultBin.removeLookupListener(this);
+    }
+
+    @Override
+    protected void componentDeactivated() {
+        super.componentDeactivated();
+        isActivated = false;
+    }
+
+    @Override
+    protected void componentActivated() {
+        super.componentActivated();
+        isActivated = true;
     }
 
     void writeProperties(java.util.Properties p) {
