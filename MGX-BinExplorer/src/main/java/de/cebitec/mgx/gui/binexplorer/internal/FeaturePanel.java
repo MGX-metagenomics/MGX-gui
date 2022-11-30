@@ -196,7 +196,7 @@ public class FeaturePanel extends PanelBase<ContigViewController> implements Mou
                 + "<br>Location: " + nf.format(r.getStart()) + "-"
                 + nf.format(r.getStop()) + "<br>"
                 + "Frame: " + framePrefix + frame + "<br>"
-                + "Length: " + r.getLength() + " nt<br></html>";
+                + "Length: " + nf.format(r.getLength()) + " nt<br></html>";
 
         // FIXME: handle region types other than CDS here
         if (r.getType() != RegionType.CDS) {
