@@ -731,7 +731,7 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
                 geneFrame.setText(String.valueOf(selectedFeature.getFrame()));
             }
 
-            if (selectedFeature.getType().equals("CDS")) {
+            if (selectedFeature.getType() == RegionType.CDS) {
                 geneLength.setText(NumberFormat.getInstance(Locale.US).format(selectedFeature.getLength() / 3) + " aa");
             } else {
                 geneLength.setText("n/a");
