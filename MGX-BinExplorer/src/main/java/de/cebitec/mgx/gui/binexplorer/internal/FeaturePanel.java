@@ -25,7 +25,6 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import javax.swing.ToolTipManager;
 import org.apache.commons.math3.util.FastMath;
 
@@ -47,13 +46,14 @@ public class FeaturePanel extends PanelBase<ContigViewController> implements Mou
     private final static Color lighterGray = new Color(210, 210, 210);
     private AssembledRegionI selectedGene = null;
     //
-    private final static NumberFormat nf = NumberFormat.getInstance(Locale.US);
+    private final NumberFormat nf;
 
     /**
      * Creates new form FeaturePanel
      */
-    public FeaturePanel(ContigViewController vc) {
+    public FeaturePanel(ContigViewController vc, NumberFormat numberFormat) {
         super(vc, true);
+        nf = numberFormat;
         super.setMinimumSize(new Dimension(500, 175));
         super.setPreferredSize(new Dimension(5000, 175));
         //setMaximumSize(new Dimension(5000, 80));
@@ -174,7 +174,8 @@ public class FeaturePanel extends PanelBase<ContigViewController> implements Mou
         synchronized (regs) {
             regs.clear();
             regs.addAll(newData);
-            // sort by color to avoid color switching in draw()
+            // presort by color to avoid color switching in draw() since 
+            // color switching seems to be somewhat slow
             Collections.sort(regs);
         }
 

@@ -16,6 +16,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
+import org.apache.commons.math3.util.FastMath;
 
 /**
  *
@@ -99,7 +100,7 @@ public class ObservationCellRenderer extends DefaultTableCellRenderer {
 
             g2.setColor(Color.BLUE);
 
-            int minX = Math.min(observation.getStart(), observation.getStop());
+            int minX = FastMath.min(observation.getStart(), observation.getStop());
             minX = (int) (border + minX / scaleFact);
 
             int width = (int) (obsLen / scaleFact);

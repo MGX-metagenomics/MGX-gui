@@ -7,9 +7,7 @@ package de.cebitec.mgx.gui.binexplorer.util;
 
 import de.cebitec.mgx.api.model.assembly.ContigI;
 import java.awt.Component;
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.Locale;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
@@ -21,11 +19,12 @@ import javax.swing.UIManager;
  */
 public class ContigRenderer extends JLabel implements ListCellRenderer<ContigI> {
 
-    private final static DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.US);
+    private final NumberFormat formatter;
 
-    public ContigRenderer() {
+    public ContigRenderer(NumberFormat numberFormat) {
         super();
         super.setOpaque(true);
+        formatter = numberFormat;
     }
 
     @Override

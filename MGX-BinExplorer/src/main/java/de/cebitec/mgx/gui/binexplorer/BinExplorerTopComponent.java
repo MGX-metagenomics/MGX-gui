@@ -129,6 +129,8 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
     //
     private final InstanceContent content = new InstanceContent();
     private final Lookup lookup;
+    //
+    private final static NumberFormat nf = NumberFormat.getInstance(Locale.US);
 
     public BinExplorerTopComponent() {
         initComponents();
@@ -137,7 +139,7 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
 
         result = Utilities.actionsGlobalContext().lookupResult(BinI.class);
         contigList.setModel(contigListModel);
-        contigList.setRenderer(new ContigRenderer());
+        contigList.setRenderer(new ContigRenderer(nf));
         contigList.addItemListener(this);
 
         lookup = new AbstractLookup(content);
@@ -585,7 +587,7 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
                     contentPanel.remove(featurePanel);
                     featurePanel.dispose();
                 }
-                featurePanel = new FeaturePanel(vc);
+                featurePanel = new FeaturePanel(vc, nf);
                 contentPanel.add(featurePanel, BorderLayout.CENTER);
                 contentPanel.doLayout();
 
@@ -723,8 +725,8 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
             }
 
             geneName.setText(contigListModel.getSelectedItem().getName() + "_" + selectedFeature.getId());
-            geneStart.setText(NumberFormat.getInstance(Locale.US).format(selectedFeature.getStart()));
-            geneStop.setText(NumberFormat.getInstance(Locale.US).format(selectedFeature.getStop()));
+            geneStart.setText(nf.format(selectedFeature.getStart()));
+            geneStop.setText(nf.format(selectedFeature.getStop()));
             if (selectedFeature.getFrame() > 0) {
                 geneFrame.setText("+" + String.valueOf(selectedFeature.getFrame()));
             } else {
@@ -732,9 +734,9 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
             }
 
             if (selectedFeature.getType() == RegionType.CDS) {
-                geneLength.setText(NumberFormat.getInstance(Locale.US).format(selectedFeature.getLength() / 3) + " aa");
+                geneLength.setText(nf.format(selectedFeature.getLength() / 3) + " aa");
             } else {
-                geneLength.setText("n/a");
+                geneLength.setText(nf.format(selectedFeature.getLength()) + " nt");
             }
 
             //
@@ -824,7 +826,7 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
 
         BarRenderer br = (BarRenderer) plot.getRenderer();
 
-        br.setBaseToolTipGenerator(new StandardCategoryToolTipGenerator("<html>Sequencing run: {1}<br>Mapped reads: {2}</html>", NumberFormat.getInstance(Locale.US)));
+        br.setBaseToolTipGenerator(new StandardCategoryToolTipGenerator("<html>Sequencing run: {1}<br>Mapped reads: {2}</html>", nf));
         br.setItemMargin(0);
         br.setMaximumBarWidth(.2); // set maximum width to 20% of chart
 
@@ -844,7 +846,7 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
         }
     }
 
-    private String cleanupName(String name) {
+    private static String cleanupName(String name) {
         if (name.contains(File.separator)) {
             name = name.replace(File.separator, "_");
         }

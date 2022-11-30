@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import javax.swing.table.DefaultTableModel;
+import org.apache.commons.math3.util.FastMath;
 import org.openide.util.Exceptions;
 
 /**
@@ -85,8 +86,8 @@ public class AttributeTableModel extends DefaultTableModel {
 
                     // for equal attribute types, sort by query range
                     if (ret == 0) {
-                        int min1 = Math.min(t1.getStart(), t1.getStop());
-                        int min2 = Math.min(t2.getStart(), t2.getStop());
+                        int min1 = FastMath.min(t1.getStart(), t1.getStop());
+                        int min2 = FastMath.min(t2.getStart(), t2.getStop());
                         return Integer.compare(min1, min2);
                     }
 
