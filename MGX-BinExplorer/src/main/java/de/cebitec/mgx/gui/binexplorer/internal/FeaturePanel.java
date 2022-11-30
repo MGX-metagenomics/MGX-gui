@@ -6,6 +6,7 @@
 package de.cebitec.mgx.gui.binexplorer.internal;
 
 import de.cebitec.mgx.api.model.assembly.AssembledRegionI;
+import de.cebitec.mgx.common.RegionType;
 import de.cebitec.mgx.gui.swingutils.Arrow;
 import de.cebitec.mgx.gui.swingutils.ShapeBase;
 import java.awt.AlphaComposite;
@@ -20,7 +21,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.AffineTransform;
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -46,6 +46,8 @@ public class FeaturePanel extends PanelBase<ContigViewController> implements Mou
     private final List<Arrow<AssembledRegionI>> regs = new ArrayList<>();
     private final static Color lighterGray = new Color(210, 210, 210);
     private AssembledRegionI selectedGene = null;
+    //
+    private final static NumberFormat nf = NumberFormat.getInstance(Locale.US);
 
     /**
      * Creates new form FeaturePanel
@@ -172,6 +174,7 @@ public class FeaturePanel extends PanelBase<ContigViewController> implements Mou
         synchronized (regs) {
             regs.clear();
             regs.addAll(newData);
+            // sort by color to avoid color switching in draw()
             Collections.sort(regs);
         }
 
@@ -186,22 +189,25 @@ public class FeaturePanel extends PanelBase<ContigViewController> implements Mou
             return null;
         }
 
-        String framePrefix = r.getFrame() > 0 ? "+" : "";
-        NumberFormat nf = NumberFormat.getInstance(Locale.US);
+        int frame = r.getFrame();
+        String framePrefix = frame > 0 ? "+" : "";
         String toolTip = "<html>"
                 + "Gene: " + vc.getReferenceName() + "_" + r.getId()
                 + "<br>Location: " + nf.format(r.getStart()) + "-"
                 + nf.format(r.getStop()) + "<br>"
-                + "Frame: " + framePrefix + r.getFrame() + "<br>"
-                + "Length: " + r.getLength() + " nt<br>";
+                + "Frame: " + framePrefix + frame + "<br>"
+                + "Length: " + r.getLength() + " nt<br></html>";
 
-        toolTip = toolTip + "</html>";
+        // FIXME: handle region types other than CDS here
+        if (r.getType() != RegionType.CDS) {
+            throw new RuntimeException("Unhandled region type " + r.getType());
+        }
 
-        if (r.getFrame() < 0) {
-            int frameOffset = frameOffsets[r.getFrame() + 3];
+        if (frame < 0) {
+            int frameOffset = frameOffsets[frame + 3];
             return new Arrow<>(r, toolTip, pos1, midY + frameOffset - Arrow.HALF_HEIGHT, pos0 - pos1);
         } else {
-            int frameOffset = frameOffsets[r.getFrame() + 2];
+            int frameOffset = frameOffsets[frame + 2];
             return new Arrow<>(r, toolTip, pos0, midY + frameOffset - Arrow.HALF_HEIGHT, pos1 - pos0);
         }
 
@@ -217,11 +223,8 @@ public class FeaturePanel extends PanelBase<ContigViewController> implements Mou
                 }
             }
         }
-        DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.US);
-        String seqLen;
-        seqLen = formatter.format(vc.getReferenceLength());
         return "<html><b>" + vc.getReferenceName() + "</b><hr>"
-                + seqLen + " bp</html>";
+                + nf.format(vc.getReferenceLength()) + " bp</html>";
 
     }
 
