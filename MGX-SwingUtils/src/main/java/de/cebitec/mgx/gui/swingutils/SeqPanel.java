@@ -6,6 +6,7 @@
 package de.cebitec.mgx.gui.swingutils;
 
 import de.cebitec.mgx.api.model.SequenceI;
+import java.awt.datatransfer.StringSelection;
 
 /**
  *
@@ -27,6 +28,14 @@ public class SeqPanel extends javax.swing.JPanel {
                 .append(seq.getSequence().toUpperCase())
                 .toString();
         jTextArea1.setText(s);
+    }
+    
+    public StringSelection getSelection() {
+        String text = jTextArea1.getSelectedText();
+        if (text == null) {
+            text = jTextArea1.getText();
+        }
+        return new StringSelection(text);
     }
 
     /**

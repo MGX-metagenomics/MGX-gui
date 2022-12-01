@@ -36,6 +36,7 @@ import gnu.trove.map.hash.TLongObjectHashMap;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -72,6 +73,7 @@ import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.ui.TextAnchor;
 import org.netbeans.api.progress.ProgressHandle;
 import org.netbeans.api.settings.ConvertAsProperties;
+import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.awt.ActionID;
@@ -178,21 +180,30 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
                                 String title = e.getSource() == dnaseq
                                         ? "DNA sequence for " + seq.getName()
                                         : "Amino acid sequence for " + seq.getName();
-                                NotifyDescriptor d = new NotifyDescriptor(
-                                        "Text",
-                                        title,
-                                        NotifyDescriptor.DEFAULT_OPTION,
-                                        NotifyDescriptor.PLAIN_MESSAGE,
-                                        opts,
-                                        opts[0]
-                                );
-                                SeqPanel sp = new SeqPanel();
+                                final SeqPanel sp = new SeqPanel();
                                 if (e.getSource() == aaseq) {
                                     String translation = DNAUtils.translate(seq.getSequence());
                                     seq.setSequence(translation);
                                 }
                                 sp.show(seq);
+
+                                DialogDescriptor d = new DialogDescriptor(sp, title, true, DialogDescriptor.DEFAULT_OPTION, opts[0], null);
+                                d.setOptions(opts);
+                                d.setClosingOptions(opts);
+                                d.setAdditionalOptions(new Object[]{"Copy to clipboard"});
                                 d.setMessage(sp);
+                                d.addPropertyChangeListener(new PropertyChangeListener() {
+                                    @Override
+                                    public void propertyChange(PropertyChangeEvent evt) {
+                                        if (evt.getPropertyName().equals(DialogDescriptor.PROP_VALUE) && evt.getNewValue().equals("Copy to clipboard")) {
+                                            Toolkit.getDefaultToolkit()
+                                                    .getSystemClipboard()
+                                                    .setContents(sp.getSelection(), null);
+                                        }
+
+                                    }
+
+                                });
                                 DialogDisplayer.getDefault().notify(d);
                             }
                         } catch (InterruptedException | ExecutionException ex) {
