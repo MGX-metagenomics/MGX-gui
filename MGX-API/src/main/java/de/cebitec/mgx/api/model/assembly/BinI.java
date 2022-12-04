@@ -28,14 +28,39 @@ public abstract class BinI extends Identifiable<BinI> {
     public abstract float getCompleteness();
 
     public abstract float getContamination();
-    
+
     public abstract long getTotalSize();
-    
+
     public abstract int getNumContigs();
 
     public abstract long getN50();
 
     public abstract String getTaxonomy();
-    
+
     public abstract int getPredictedCDS();
+    
+    @Override
+    public boolean equals(Object o) {
+        if (o != null && o instanceof BinI) {
+            BinI other = (BinI) o;
+
+            if ((this.id == INVALID_IDENTIFIER && other.getId() != INVALID_IDENTIFIER) || (this.id != INVALID_IDENTIFIER && this.id != other.getId())) {
+                return false;
+            }
+
+            return this.getId() == other.getId()
+                    && this.getAssemblyId() == other.getAssemblyId()
+                    && ((this.getMaster() == null && other.getMaster() == null)
+                    || (this.getMaster() != null && this.getMaster().equals(other.getMaster())));
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = (int) (31 * hash + this.id);
+        hash = (int) (31 * hash + this.getAssemblyId());
+        return hash;
+    }
 }
