@@ -43,8 +43,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import javax.swing.JComponent;
 import javax.swing.SwingWorker;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 import org.openide.DialogDisplayer;
 import org.openide.WizardDescriptor;
 import org.openide.util.Exceptions;
@@ -98,7 +96,6 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
                 }
             }
         });
-        setNimbusLookAndFeel();
     }
 
     public final void setTopComponent(AttributeVisualizationTopComponent tc) {
@@ -430,13 +427,6 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
         vgmgr.removePropertyChangeListener(this);
     }
 
-    private void setNimbusLookAndFeel() {
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | UnsupportedLookAndFeelException e) {
-        }
-
-    }
     private final class UpdateButtonHandler implements ActionListener {
 
         @Override

@@ -9,8 +9,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 import java.net.Authenticator;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.explorer.ExplorerManager;
@@ -55,7 +53,6 @@ public final class ProjectExplorerTopComponent extends TopComponent implements E
         associateLookup(ExplorerUtils.createLookup(exmngr, getActionMap()));
         getActionMap().put("delete", ExplorerUtils.actionDelete(exmngr, true));
         setUp();
-        setNimbusLookAndFeel();
     }
 
     @Override
@@ -136,14 +133,6 @@ public final class ProjectExplorerTopComponent extends TopComponent implements E
 
         public InvisibleRoot(Children children) {
             super(children);
-        }
-
-    }
-    
-        private void setNimbusLookAndFeel() {
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | UnsupportedLookAndFeelException e) {
         }
 
     }

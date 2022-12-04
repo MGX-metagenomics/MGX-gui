@@ -22,8 +22,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import javax.swing.ActionMap;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.actions.DeleteAction;
 import org.openide.awt.ActionID;
@@ -118,7 +116,6 @@ public final class VisualizationGroupTopComponent extends TopComponent implement
 
         // set the panel as a drop target for one or multiple sequencing runs
         setDropTarget();
-        setNimbusLookAndFeel();
     }
 
     private void setDropTarget() {
@@ -291,11 +288,4 @@ public final class VisualizationGroupTopComponent extends TopComponent implement
         return exmngr;
     }
     
-    private void setNimbusLookAndFeel() {
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | UnsupportedLookAndFeelException e) {
-        }
-
-    }
 }

@@ -22,14 +22,10 @@ import java.beans.PropertyChangeEvent;
 import javax.swing.JColorChooser;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
-import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import org.openide.explorer.view.BeanTreeView;
-import org.openide.util.Exceptions;
 
 /**
  *
@@ -48,12 +44,6 @@ public class AssemblyGroupFrame extends GroupFrameBase<AssemblyGroupI, Assembled
         color.setForeground(vGroup.getColor());
         color.validate();
 
-        try {
-            UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-            SwingUtilities.updateComponentTreeUI(this);
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
-            Exceptions.printStackTrace(ex);
-        }
         //
         // add listeners _after_ setting initial values
         //
