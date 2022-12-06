@@ -51,6 +51,7 @@ public class SeqPanel extends javax.swing.JPanel {
         jTextArea1 = new javax.swing.JTextArea();
 
         jTextArea1.setEditable(false);
+        jTextArea1.setBackground(new java.awt.Color(255, 255, 255));
         jTextArea1.setColumns(20);
         jTextArea1.setFont(new java.awt.Font("Courier New", 0, 12)); // NOI18N
         jTextArea1.setLineWrap(true);
