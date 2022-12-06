@@ -10,6 +10,7 @@ import de.cebitec.mgx.gui.search.util.TermModel;
 import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -24,6 +25,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import org.netbeans.api.settings.ConvertAsProperties;
+import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.awt.ActionID;
@@ -168,17 +170,27 @@ public final class SearchTopComponent extends TopComponent implements LookupList
                             SequenceI seq = get();
                             if (seq != null) {
                                 String[] opts = new String[]{"Close"};
-                                NotifyDescriptor d = new NotifyDescriptor(
-                                        "Text",
-                                        "DNA sequence for " + seq.getName(),
-                                        NotifyDescriptor.DEFAULT_OPTION,
-                                        NotifyDescriptor.PLAIN_MESSAGE,
-                                        opts,
-                                        opts[0]
-                                );
-                                SeqPanel sp = new SeqPanel();
+
+                                final SeqPanel sp = new SeqPanel();
                                 sp.show(seq);
+
+                                DialogDescriptor d = new DialogDescriptor(sp, "DNA sequence for " + seq.getName(), true, DialogDescriptor.DEFAULT_OPTION, opts[0], null);
+                                d.setOptions(opts);
+                                d.setClosingOptions(opts);
+                                d.setAdditionalOptions(new Object[]{"Copy to clipboard"});
                                 d.setMessage(sp);
+                                d.addPropertyChangeListener(new PropertyChangeListener() {
+                                    @Override
+                                    public void propertyChange(PropertyChangeEvent evt) {
+                                        if (evt.getPropertyName().equals(DialogDescriptor.PROP_VALUE) && evt.getNewValue().equals("Copy to clipboard")) {
+                                            Toolkit.getDefaultToolkit()
+                                                    .getSystemClipboard()
+                                                    .setContents(sp.getSelection(), null);
+                                        }
+
+                                    }
+
+                                });
                                 DialogDisplayer.getDefault().notify(d);
                             }
                         } catch (InterruptedException | ExecutionException ex) {
