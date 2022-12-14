@@ -5,6 +5,7 @@ import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import java.io.File;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -38,14 +39,31 @@ public final class ExportSeqVisualPanel2 extends JPanel implements DocumentListe
                 f = c.getDeclaredField("filenameTextField");
             } catch (NoSuchFieldException | SecurityException x) {
             }
-            if (f == null) {
-                f = c.getDeclaredField("fileNameTextField");
+
+            try {
+                if (f == null) {
+                    f = c.getDeclaredField("fileNameTextField");
+                }
+            } catch (NoSuchFieldException | SecurityException x) {
             }
-            f.setAccessible(true);
-            fileNameField = (JTextField) f.get(ui2);
-            fileNameField.setEditable(true);
-            fileNameField.getDocument().addDocumentListener(this);
-        } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException x) {
+
+            try {
+                if (f == null) {
+                    // for FlatLaF, FlatFileChooserUI inherits from MetalFileChooserUI,
+                    // which contains the "fileNameTextField"
+                    c = c.getSuperclass();
+                    f = c.getDeclaredField("fileNameTextField");
+                }
+            } catch (NoSuchFieldException | SecurityException x) {
+            }
+
+            if (f != null) {
+                f.setAccessible(true);
+                fileNameField = (JTextField) f.get(ui2);
+                fileNameField.setEditable(true);
+                fileNameField.getDocument().addDocumentListener(this);
+            }
+        } catch (SecurityException | IllegalArgumentException | IllegalAccessException x) {
             Exceptions.printStackTrace(x);
         }
     }
