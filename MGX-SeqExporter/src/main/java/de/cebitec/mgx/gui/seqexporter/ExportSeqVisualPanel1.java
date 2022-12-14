@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Consumer;
 import javax.swing.DefaultListModel;
 import javax.swing.JPanel;
 import javax.swing.ListModel;
