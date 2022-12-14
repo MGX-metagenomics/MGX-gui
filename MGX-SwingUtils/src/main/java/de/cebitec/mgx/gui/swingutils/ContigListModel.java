@@ -3,12 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.cebitec.mgx.gui.binexplorer.util;
+package de.cebitec.mgx.gui.swingutils;
 
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.assembly.BinI;
 import de.cebitec.mgx.api.model.assembly.ContigI;
-import de.cebitec.mgx.gui.swingutils.BaseModel;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -20,7 +19,7 @@ import org.openide.util.Exceptions;
  *
  * @author sjaenick
  */
-public class ContigModel extends BaseModel<ContigI> {
+public class ContigListModel extends BaseModel<ContigI> {
 
     private BinI bin;
 

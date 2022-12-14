@@ -38,8 +38,7 @@ public class ObservationCellRenderer extends DefaultTableCellRenderer {
             RegionI gene = tc.getSelectedFeature();
             GeneObservationI obs = (GeneObservationI) obj;
 
-            display.setGene(gene);
-            display.setObservation(obs);
+            display.setData(gene, obs);
             display.setSize(table.getColumnModel().getColumn(column).getWidth(), getHeight());
 
             return display;
@@ -60,11 +59,8 @@ public class ObservationCellRenderer extends DefaultTableCellRenderer {
         public ObservationDisplay() {
         }
 
-        public void setGene(RegionI gene) {
+        public void setData(RegionI gene, GeneObservationI observation) {
             this.gene = gene;
-        }
-
-        public void setObservation(GeneObservationI observation) {
             this.observation = observation;
         }
 
@@ -73,7 +69,7 @@ public class ObservationCellRenderer extends DefaultTableCellRenderer {
         @Override
         public void paint(Graphics g) {
             super.paint(g);
-            
+
             if (gene == null || observation == null) {
                 return;
             }

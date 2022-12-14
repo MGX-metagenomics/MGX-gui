@@ -22,7 +22,7 @@ import de.cebitec.mgx.gui.binexplorer.internal.ContigViewController;
 import de.cebitec.mgx.gui.binexplorer.internal.FeaturePanel;
 import de.cebitec.mgx.gui.binexplorer.internal.SeqPropertyPanel;
 import de.cebitec.mgx.gui.binexplorer.util.AttributeTableModel;
-import de.cebitec.mgx.gui.binexplorer.util.ContigModel;
+import de.cebitec.mgx.gui.swingutils.ContigListModel;
 import de.cebitec.mgx.gui.binexplorer.util.ContigRenderer;
 import de.cebitec.mgx.gui.binexplorer.util.ObservationCellRenderer;
 import de.cebitec.mgx.gui.charts.basic.util.FastCategoryDataset;
@@ -35,6 +35,7 @@ import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.EventQueue;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -116,7 +117,7 @@ import org.openide.util.lookup.InstanceContent;
 public final class BinExplorerTopComponent extends TopComponent implements LookupListener, PropertyChangeListener, ItemListener {
 
     private final Lookup.Result<BinI> result;
-    private final ContigModel contigListModel = new ContigModel();
+    private final ContigListModel contigListModel = new ContigListModel();
     private final AttributeTableModel tableModel = new AttributeTableModel();
     private BinI currentBin = null;
     private boolean isActivated = false;
@@ -124,7 +125,8 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
     private AssembledRegionI selectedFeature = null;
     //private MGXMasterI currentMaster = null;
     private final FastCategoryDataset coverageDataset = new FastCategoryDataset();
-    private JFreeChart coverageChart = null;
+    private final JFreeChart coverageChart;
+    private final SVGChartPanel svgChartPanel;
     private final TLongObjectMap<String> runNames = new TLongObjectHashMap<>();
     private FeaturePanel featurePanel = null;
     private SeqPropertyPanel seqPropPanel = null;
@@ -140,12 +142,12 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
         setToolTipText(Bundle.HINT_BinExplorerTopComponent());
 
         result = Utilities.actionsGlobalContext().lookupResult(BinI.class);
+        lookup = new AbstractLookup(content);
+        associateLookup(lookup);
+
         contigList.setModel(contigListModel);
         contigList.setRenderer(new ContigRenderer(nf));
         contigList.addItemListener(this);
-
-        lookup = new AbstractLookup(content);
-        associateLookup(lookup);
 
         jXTable1.setHighlighters(new Highlighter[]{HighlighterFactory.createAlternateStriping()});
         jXTable1.getColumn(0).setWidth(130);
@@ -153,7 +155,15 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
         jXTable1.getColumn(3).setMaxWidth(60);
         jXTable1.setDefaultRenderer(Object.class, new ObservationCellRenderer(this));
 
+        ChartFactory.setChartTheme(StandardChartTheme.createLegacyTheme());
+        BarRenderer.setDefaultShadowsVisible(false);
+        XYBarRenderer.setDefaultShadowsVisible(false);
+        coverageChart = ChartFactory.createBarChart("", "", "", coverageDataset, PlotOrientation.HORIZONTAL, false, true, false);
         setupCoverageChart();
+
+        svgChartPanel = new SVGChartPanel(coverageChart);
+        svgChartPanel.setPopupMenu(null);
+        geneCovPanel.add(svgChartPanel, BorderLayout.CENTER);
 
         ActionListener buttonListener = new ActionListener() {
 
@@ -209,7 +219,6 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
                         } catch (InterruptedException | ExecutionException ex) {
                             Exceptions.printStackTrace(ex);
                         }
-                        super.done();
                     }
 
                 };
@@ -356,17 +365,7 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
         geneCovPanel.setMaximumSize(new java.awt.Dimension(100, 100));
         geneCovPanel.setMinimumSize(new java.awt.Dimension(100, 100));
         geneCovPanel.setPreferredSize(new java.awt.Dimension(500, 40));
-
-        javax.swing.GroupLayout geneCovPanelLayout = new javax.swing.GroupLayout(geneCovPanel);
-        geneCovPanel.setLayout(geneCovPanelLayout);
-        geneCovPanelLayout.setHorizontalGroup(
-            geneCovPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 490, Short.MAX_VALUE)
-        );
-        geneCovPanelLayout.setVerticalGroup(
-            geneCovPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 212, Short.MAX_VALUE)
-        );
+        geneCovPanel.setLayout(new java.awt.BorderLayout());
 
         dnaseq.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(dnaseq, org.openide.util.NbBundle.getMessage(BinExplorerTopComponent.class, "BinExplorerTopComponent.dnaseq.text")); // NOI18N
@@ -562,7 +561,7 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
         }
         tableModel.clear();
         contigListModel.dispose();
-        //vc.close();
+        coverageDataset.clear();
     }
 
     @Override
@@ -592,7 +591,7 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
                 geneFrame.setText("");
                 geneLength.setText("");
                 selectedFeature = null;
-                tableModel.update(null);
+                tableModel.clear();
                 vc.setContig(contig);
                 if (featurePanel != null) {
                     contentPanel.remove(featurePanel);
@@ -610,7 +609,7 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
                 seqpropHolder.add(seqPropPanel, BorderLayout.CENTER);
                 seqpropHolder.doLayout();
 
-                geneCovPanel.removeAll();
+                coverageDataset.clear();
 
                 updateLookup();
 
@@ -643,7 +642,10 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
             contigListModel.dispose();
             contigList.repaint();
 
-            geneCovPanel.removeAll();
+            coverageDataset.clear();
+            
+            runNames.clear();
+
             if (currentBin != null) {
                 currentBin.removePropertyChangeListener(this);
             }
@@ -663,7 +665,7 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
             MGXPool.getInstance().submit(new Runnable() {
                 @Override
                 public void run() {
-                    tableModel.update(null);
+                    tableModel.clear();
                     contigListModel.setBin(currentBin);
                     contigListModel.update();
                     contigList.setEnabled(true);
@@ -717,20 +719,19 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
         if (evt.getSource() instanceof ContigViewController && evt.getPropertyName().equals(ContigViewController.FEATURE_SELECTED)) {
             dnaseq.setEnabled(true);
 
-            // only enable amino acid sequence display for CDS features
             AssembledRegionI newFeat = (AssembledRegionI) evt.getNewValue();
-            if (newFeat.getType() == RegionType.CDS) {
-                aaseq.setEnabled(true);
-            }
+
+            // only enable amino acid sequence display for CDS features
+            aaseq.setEnabled(newFeat.getType() == RegionType.CDS);
 
             if (newFeat == selectedFeature) {
                 return;
             }
 
-            tableModel.update(null);
+            tableModel.clear();
             selectedFeature = newFeat;
 
-            MGXMasterI master = selectedFeature.getMaster();
+            final MGXMasterI master = selectedFeature.getMaster();
             if (!master.equals(currentBin.getMaster())) {
                 runNames.clear();
             }
@@ -763,40 +764,50 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
             //
             // update coverage chart
             //
-            List<GeneCoverageI> all = new ArrayList<>();
-            try {
-                Iterator<GeneCoverageI> iter = selectedFeature.getMaster().GeneCoverage().ByGene(selectedFeature);
-                while (iter != null && iter.hasNext()) {
-                    all.add(iter.next());
-                }
-                Collections.sort(all);
+            MGXPool.getInstance().submit(new Runnable() {
+                @Override
+                public void run() {
 
-                coverageDataset.clear();
-                for (GeneCoverageI geneCov : all) {
-                    if (!runNames.containsKey(geneCov.getRunId())) {
-                        SeqRunI run = selectedFeature.getMaster().SeqRun().fetch(geneCov.getRunId());
-                        runNames.put(geneCov.getRunId(), run.getName());
-                        run.deleted();
+                    try {
+                        List<GeneCoverageI> geneCov = new ArrayList<>();
+                        Iterator<GeneCoverageI> iter = master.GeneCoverage().ByGene(selectedFeature);
+                        while (iter != null && iter.hasNext()) {
+                            geneCov.add(iter.next());
+                        }
+                        Collections.sort(geneCov);
+
+                        CategoryPlot plot = coverageChart.getCategoryPlot();
+                        CategoryItemRenderer br = plot.getRenderer();
+                        for (int i = 0; i < geneCov.size(); i++) {
+                            br.setSeriesPaint(i, Color.BLUE);
+                        }
+
+                        coverageDataset.clear();
+                        for (GeneCoverageI gc : geneCov) {
+                            if (!runNames.containsKey(gc.getRunId())) {
+                                SeqRunI run = master.SeqRun().fetch(gc.getRunId());
+                                runNames.put(gc.getRunId(), run.getName());
+                                run.deleted();
+                            }
+                            coverageDataset.addValue(gc.getCoverage(), "", runNames.get(gc.getRunId()));
+                        }
+                    } catch (MGXException ex) {
+                        Exceptions.printStackTrace(ex);
+                        coverageDataset.clear();
+                        return;
                     }
-                    coverageDataset.addValue(geneCov.getCoverage(), "", runNames.get(geneCov.getRunId()));
+
+                    EventQueue.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            geneCovPanel.revalidate();
+                            geneCovPanel.repaint();
+                        }
+
+                    });
+
                 }
-            } catch (MGXException ex) {
-                Exceptions.printStackTrace(ex);
-                geneCovPanel.removeAll();
-                return;
-            }
-
-            CategoryPlot plot = coverageChart.getCategoryPlot();
-            BarRenderer br = (BarRenderer) plot.getRenderer();
-            for (int i = 0; i < all.size(); i++) {
-                br.setSeriesPaint(i, Color.BLUE);
-            }
-            SVGChartPanel svgChartPanel = new SVGChartPanel(coverageChart);
-            svgChartPanel.setPopupMenu(null);
-
-            geneCovPanel.removeAll();
-            geneCovPanel.setLayout(new BorderLayout());
-            geneCovPanel.add(svgChartPanel, BorderLayout.CENTER);
+            });
 
             updateLookup();
         }
@@ -811,12 +822,6 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
     }
 
     private void setupCoverageChart() {
-
-        ChartFactory.setChartTheme(StandardChartTheme.createLegacyTheme());
-        BarRenderer.setDefaultShadowsVisible(false);
-        XYBarRenderer.setDefaultShadowsVisible(false);
-
-        coverageChart = ChartFactory.createBarChart("", "", "", coverageDataset, PlotOrientation.HORIZONTAL, false, true, false);
 
         coverageChart.setBorderPaint(Color.WHITE);
         coverageChart.setBackgroundPaint(Color.WHITE);

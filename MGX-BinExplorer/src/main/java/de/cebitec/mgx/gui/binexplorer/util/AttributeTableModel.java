@@ -48,7 +48,7 @@ public class AttributeTableModel extends DefaultTableModel {
             add("NCBI_SPECIES");
         }
     };
-
+    
     public synchronized void update(RegionI gene) {
         gobsList.clear();
         if (gene == null) {
