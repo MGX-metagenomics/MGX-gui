@@ -58,16 +58,29 @@ public class FileChooserUtils {
                     FileChooserUI ui2 = chooser.getUI();
                     Class c = ui2.getClass();
                     Field f = null;
+
                     try {
                         f = c.getDeclaredField("filenameTextField");
                     } catch (NoSuchFieldException | SecurityException ex) {
                     }
+
                     if (f == null) {
                         try {
                             f = c.getDeclaredField("fileNameTextField");
                         } catch (NoSuchFieldException | SecurityException ex) {
                         }
                     }
+
+                    try {
+                        if (f == null) {
+                            // for FlatLaF, FlatFileChooserUI inherits from MetalFileChooserUI,
+                            // which contains the "fileNameTextField"
+                            c = c.getSuperclass();
+                            f = c.getDeclaredField("fileNameTextField");
+                        }
+                    } catch (NoSuchFieldException | SecurityException x) {
+                    }
+
                     if (f != null) {
                         f.setAccessible(true);
                         JTextField fileNameField = (JTextField) f.get(ui2);
