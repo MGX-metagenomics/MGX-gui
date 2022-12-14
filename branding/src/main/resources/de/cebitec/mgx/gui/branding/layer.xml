@@ -42,4 +42,7 @@
             <file name="DocumentsAction.shadow_hidden"/>
         </folder>
     </folder>
+    <folder name="Editors">
+      <attr name="currentFontColorProfile" stringvalue="FlatLaf Light" />
+    </folder>
 </filesystem>
