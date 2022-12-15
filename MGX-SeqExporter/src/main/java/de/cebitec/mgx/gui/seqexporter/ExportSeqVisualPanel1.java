@@ -7,37 +7,79 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import javax.swing.JPanel;
+import javax.swing.SwingWorker;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import org.openide.util.Exceptions;
 
 public final class ExportSeqVisualPanel1<T extends Number> extends JPanel implements PropertyChangeListener {
 
-    private final JCheckBoxList<AttributeI> list = new JCheckBoxList<>();
+    private final JCheckBoxList<AttributeI> checkboxList = new JCheckBoxList<>();
     private boolean all_selected = true;
+    private final Map<AttributeI, Boolean> selection = new HashMap<>();
 
     /**
      * Creates new form ExportSeqVisualPanel1
      */
     public ExportSeqVisualPanel1() {
         initComponents();
-        scrollpane.setViewportView(list);
-        list.addPropertyChangeListener(this);
+        scrollpane.setViewportView(checkboxList);
+        checkboxList.addPropertyChangeListener(this);
+
+        searchfield.getDocument().addDocumentListener(new DocumentListener() {
+
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                filterModel();
+
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                filterModel();
+
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                filterModel();
+
+            }
+
+        });
     }
 
     public void setDistribution(DistributionI<T> d) {
         List<AttributeI> elements = new ArrayList<>();
         elements.addAll(d.keySet());
         Collections.sort(elements);
-        list.clear();
+
+        checkboxList.clear();
+        selection.clear();
+
         for (AttributeI attr : elements) {
-            list.addElement(attr);
+            checkboxList.addElement(attr);
+            selection.put(attr, true);
         }
-        jButton1ActionPerformed(null);
+        jButton1ActionPerformed(null); //WHY?
     }
 
     public Set<AttributeI> getSelectedAttributes() {
-        return list.getSelectedEntries();
+        Set<AttributeI> ret = new HashSet<>();
+        for (Map.Entry<AttributeI, Boolean> me : selection.entrySet()) {
+            if (me.getValue()) {
+                ret.add(me.getKey());
+            }
+        }
+        return ret;
     }
 
     @Override
@@ -56,6 +98,7 @@ public final class ExportSeqVisualPanel1<T extends Number> extends JPanel implem
         jLabel1 = new javax.swing.JLabel();
         scrollpane = new javax.swing.JScrollPane();
         jButton1 = new javax.swing.JButton();
+        searchfield = new javax.swing.JTextField();
 
         jLabel1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(ExportSeqVisualPanel1.class, "ExportSeqVisualPanel1.jLabel1.text")); // NOI18N
@@ -65,6 +108,14 @@ public final class ExportSeqVisualPanel1<T extends Number> extends JPanel implem
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
+            }
+        });
+
+        searchfield.setForeground(new java.awt.Color(102, 102, 102));
+        searchfield.setText(org.openide.util.NbBundle.getMessage(ExportSeqVisualPanel1.class, "ExportSeqVisualPanel1.searchfield.text")); // NOI18N
+        searchfield.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                searchfieldMouseClicked(evt);
             }
         });
 
@@ -79,6 +130,8 @@ public final class ExportSeqVisualPanel1<T extends Number> extends JPanel implem
                     .addComponent(scrollpane)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jButton1)
+                        .addGap(48, 48, 48)
+                        .addComponent(searchfield, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -90,29 +143,87 @@ public final class ExportSeqVisualPanel1<T extends Number> extends JPanel implem
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(scrollpane, javax.swing.GroupLayout.DEFAULT_SIZE, 263, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton1)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton1)
+                    .addComponent(searchfield, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(6, 6, 6))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         if (all_selected) {
-            list.deselectAll();
+            checkboxList.deselectAll();
             all_selected = false;
             jButton1.setText("Select all");
         } else {
-            list.selectAll();
+            checkboxList.selectAll();
             all_selected = true;
             jButton1.setText("Deselect all");
         }
         validateInput();
         repaint();
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void searchfieldMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_searchfieldMouseClicked
+        if (searchfield.getText().equals("Search")) {
+            searchfield.setText("");
+            searchfield.setForeground(new java.awt.Color(0, 0, 0));
+        }
+        //validateInput();
+        repaint();
+    }//GEN-LAST:event_searchfieldMouseClicked
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane scrollpane;
+    private javax.swing.JTextField searchfield;
     // End of variables declaration//GEN-END:variables
+
+    public void filterModel() {
+        String filterText = searchfield.getText();
+
+        SwingWorker<List<Map.Entry<AttributeI, Boolean>>, Void> sw = new SwingWorker<List<Map.Entry<AttributeI, Boolean>>, Void>() {
+            @Override
+            protected List<Map.Entry<AttributeI, Boolean>> doInBackground() throws Exception {
+                List<Map.Entry<AttributeI, Boolean>> tmp = new ArrayList<>();
+                for (Map.Entry<AttributeI, Boolean> me : selection.entrySet()) {
+                    AttributeI attr = me.getKey();
+                    if (attr.getValue().contains(filterText)) {
+                        tmp.add(me);
+                    }
+                }
+
+                Collections.sort(tmp, new Comparator<Map.Entry<AttributeI, Boolean>>() {
+                    @Override
+                    public int compare(Map.Entry<AttributeI, Boolean> o1, Map.Entry<AttributeI, Boolean> o2) {
+                        return o1.getKey().compareTo(o2.getKey());
+                    }
+
+                });
+
+                return tmp;
+            }
+
+            @Override
+            protected void done() {
+                List<Map.Entry<AttributeI, Boolean>> get;
+                try {
+                    get = get();
+                } catch (InterruptedException | ExecutionException ex) {
+                    Exceptions.printStackTrace(ex);
+                    return;
+                }
+                checkboxList.clear();
+                for (Map.Entry<AttributeI, Boolean> me : get) {
+                    checkboxList.addElement(me.getKey(), me.getValue());
+                }
+
+                super.done();
+            }
+        };
+        sw.execute();
+    }
 
     private void validateInput() {
         firePropertyChange("REVALIDATE", 0, 1);
@@ -120,6 +231,11 @@ public final class ExportSeqVisualPanel1<T extends Number> extends JPanel implem
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        validateInput();
+        if (evt.getPropertyName().equals(JCheckBoxList.selectionChange)) {
+            AttributeI attr = (AttributeI) evt.getOldValue();
+            Boolean selected = (Boolean) evt.getNewValue();
+            selection.put(attr, selected);
+            firePropertyChange("REVALIDATE", 0, 1);
+        }
     }
 }
