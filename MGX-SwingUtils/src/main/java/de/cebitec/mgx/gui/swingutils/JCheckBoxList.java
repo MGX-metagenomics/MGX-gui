@@ -125,12 +125,12 @@ public class JCheckBoxList<T> extends JList<T> {
             box.setText(value.toString());
 
             if (isSelected) {
-                // checkbox.setBorderPainted(true);
-                // checkbox.setForeground(UIManager.getColor("List.selectionForeground"));
-                // checkbox.setBackground(UIManager.getColor("List.selectionBackground"));
+                box.setBorderPainted(true);
+                box.setForeground(UIManager.getColor("List.selectionForeground"));
+                box.setBackground(UIManager.getColor("List.selectionBackground"));
             } else {
-                // checkbox.setBorderPainted(false);
-                // checkbox.setForeground(UIManager.getColor("List.foreground"));
+                box.setBorderPainted(false);
+                box.setForeground(UIManager.getColor("List.foreground"));
                 box.setBackground(UIManager.getColor("List.background"));
             }
             return box;
