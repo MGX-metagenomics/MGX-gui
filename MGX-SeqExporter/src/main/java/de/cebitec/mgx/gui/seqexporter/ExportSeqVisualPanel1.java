@@ -7,44 +7,79 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
-import javax.swing.DefaultListModel;
+import java.util.concurrent.ExecutionException;
 import javax.swing.JPanel;
-import javax.swing.ListModel;
-import javax.swing.ListSelectionModel;
+import javax.swing.SwingWorker;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import org.openide.util.Exceptions;
 
 public final class ExportSeqVisualPanel1<T extends Number> extends JPanel implements PropertyChangeListener {
 
-    private final JCheckBoxList<AttributeI> list = new JCheckBoxList<>();
+    private final JCheckBoxList<AttributeI> checkboxList = new JCheckBoxList<>();
     private boolean all_selected = true;
-    ListModel<AttributeI> orgmodel = (DefaultListModel<AttributeI>) list.getModel();
-   
+    private final Map<AttributeI, Boolean> selection = new HashMap<>();
 
     /**
      * Creates new form ExportSeqVisualPanel1
      */
     public ExportSeqVisualPanel1() {
         initComponents();
-        scrollpane.setViewportView(list);
-        list.addPropertyChangeListener(this);
+        scrollpane.setViewportView(checkboxList);
+        checkboxList.addPropertyChangeListener(this);
+
+        searchfield.getDocument().addDocumentListener(new DocumentListener() {
+
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                filterModel();
+
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                filterModel();
+
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                filterModel();
+
+            }
+
+        });
     }
 
     public void setDistribution(DistributionI<T> d) {
         List<AttributeI> elements = new ArrayList<>();
         elements.addAll(d.keySet());
         Collections.sort(elements);
-        list.clear();
+
+        checkboxList.clear();
+        selection.clear();
+
         for (AttributeI attr : elements) {
-            list.addElement(attr);
+            checkboxList.addElement(attr);
+            selection.put(attr, true);
         }
-        jButton1ActionPerformed(null);
+        jButton1ActionPerformed(null); //WHY?
     }
 
     public Set<AttributeI> getSelectedAttributes() {
-        return list.getSelectedEntries();
+        Set<AttributeI> ret = new HashSet<>();
+        for (Map.Entry<AttributeI, Boolean> me : selection.entrySet()) {
+            if (me.getValue()) {
+                ret.add(me.getKey());
+            }
+        }
+        return ret;
     }
 
     @Override
@@ -83,11 +118,6 @@ public final class ExportSeqVisualPanel1<T extends Number> extends JPanel implem
                 searchfieldMouseClicked(evt);
             }
         });
-        searchfield.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                searchfieldKeyReleased(evt);
-            }
-        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -122,11 +152,11 @@ public final class ExportSeqVisualPanel1<T extends Number> extends JPanel implem
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         if (all_selected) {
-            list.deselectAll();
+            checkboxList.deselectAll();
             all_selected = false;
             jButton1.setText("Select all");
         } else {
-            list.selectAll();
+            checkboxList.selectAll();
             all_selected = true;
             jButton1.setText("Deselect all");
         }
@@ -138,40 +168,10 @@ public final class ExportSeqVisualPanel1<T extends Number> extends JPanel implem
         if (searchfield.getText().equals("Search")) {
             searchfield.setText("");
             searchfield.setForeground(new java.awt.Color(0, 0, 0));
-        }    
-        validateInput();
+        }
+        //validateInput();
         repaint();
     }//GEN-LAST:event_searchfieldMouseClicked
-
-    private void searchfieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_searchfieldKeyReleased
-        
-        searchfield.getDocument().addDocumentListener(new DocumentListener() {
-            
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                filter();
-               
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                filter();
-              
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                filter();
-                
-            }
-
-            private void filter() {
-                String filter = searchfield.getText();
-                filterModel(orgmodel, filter);
-                list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-            }
-        });
-    }//GEN-LAST:event_searchfieldKeyReleased
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
@@ -180,21 +180,49 @@ public final class ExportSeqVisualPanel1<T extends Number> extends JPanel implem
     private javax.swing.JTextField searchfield;
     // End of variables declaration//GEN-END:variables
 
-    public void filterModel(ListModel<AttributeI> model, String filter) {
-        DefaultListModel<AttributeI> filtered = new DefaultListModel<>();
-        List<AttributeI> tmp = new ArrayList<>();
-        for (int i = 0; i < model.getSize(); i++) {
-            tmp.add(model.getElementAt(i));
-        }
+    public void filterModel() {
+        String filterText = searchfield.getText();
 
-        tmp.stream().forEach((AttributeI ele) -> {
-            if (ele.getValue().contains(filter)) {
-                filtered.addElement(ele);
+        SwingWorker<List<Map.Entry<AttributeI, Boolean>>, Void> sw = new SwingWorker<List<Map.Entry<AttributeI, Boolean>>, Void>() {
+            @Override
+            protected List<Map.Entry<AttributeI, Boolean>> doInBackground() throws Exception {
+                List<Map.Entry<AttributeI, Boolean>> tmp = new ArrayList<>();
+                for (Map.Entry<AttributeI, Boolean> me : selection.entrySet()) {
+                    AttributeI attr = me.getKey();
+                    if (attr.getValue().contains(filterText)) {
+                        tmp.add(me);
+                    }
+                }
+
+                Collections.sort(tmp, new Comparator<Map.Entry<AttributeI, Boolean>>() {
+                    @Override
+                    public int compare(Map.Entry<AttributeI, Boolean> o1, Map.Entry<AttributeI, Boolean> o2) {
+                        return o1.getKey().compareTo(o2.getKey());
+                    }
+
+                });
+
+                return tmp;
             }
-        });
-        
-        list.setModel(filtered);
-        list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+
+            @Override
+            protected void done() {
+                List<Map.Entry<AttributeI, Boolean>> get;
+                try {
+                    get = get();
+                } catch (InterruptedException | ExecutionException ex) {
+                    Exceptions.printStackTrace(ex);
+                    return;
+                }
+                checkboxList.clear();
+                for (Map.Entry<AttributeI, Boolean> me : get) {
+                    checkboxList.addElement(me.getKey(), me.getValue());
+                }
+
+                super.done();
+            }
+        };
+        sw.execute();
     }
 
     private void validateInput() {
@@ -203,6 +231,11 @@ public final class ExportSeqVisualPanel1<T extends Number> extends JPanel implem
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        validateInput();
+        if (evt.getPropertyName().equals(JCheckBoxList.selectionChange)) {
+            AttributeI attr = (AttributeI) evt.getOldValue();
+            Boolean selected = (Boolean) evt.getNewValue();
+            selection.put(attr, selected);
+            firePropertyChange("REVALIDATE", 0, 1);
+        }
     }
 }
