@@ -13,6 +13,7 @@ public interface SequenceViewControllerI<T extends RegionI> {
     public final static String CONTIG_CHANGE = "contigChange";
     public final static String BOUNDS_CHANGE = "boundsChange";
     public final static String FEATURE_SELECTED = "featureSelected";
+    public final static String NAVIGATE_TO_REGION = "navigateRegion";
     public static final String VIEWCONTROLLER_CLOSED = "viewControllerClosed";
 
     public boolean isClosed();
@@ -32,6 +33,10 @@ public interface SequenceViewControllerI<T extends RegionI> {
     public Iterable<T> getRegions() throws MGXException;
 
     public void selectRegion(T selectedRegion);
+    
+    public T getSelectedRegion();
+
+    public void navigateToRegion(long regionId);
 
     public void setBounds(int i, int j);
 

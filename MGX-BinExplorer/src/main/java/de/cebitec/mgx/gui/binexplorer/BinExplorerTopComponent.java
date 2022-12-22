@@ -14,6 +14,7 @@ import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.SequenceI;
 import de.cebitec.mgx.api.model.assembly.AssembledRegionI;
 import de.cebitec.mgx.api.model.assembly.BinI;
+import de.cebitec.mgx.api.model.assembly.BinSearchResultI;
 import de.cebitec.mgx.api.model.assembly.ContigI;
 import de.cebitec.mgx.api.model.assembly.GeneCoverageI;
 import de.cebitec.mgx.common.RegionType;
@@ -116,7 +117,8 @@ import org.openide.util.lookup.InstanceContent;
 })
 public final class BinExplorerTopComponent extends TopComponent implements LookupListener, PropertyChangeListener, ItemListener {
 
-    private final Lookup.Result<BinI> result;
+    private final Lookup.Result<BinI> binResult;
+    private final Lookup.Result<BinSearchResultI> binSearchResult;
     private final ContigListModel contigListModel = new ContigListModel();
     private final AttributeTableModel tableModel = new AttributeTableModel();
     private BinI currentBin = null;
@@ -135,13 +137,19 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
     private final Lookup lookup;
     //
     private final static NumberFormat nf = NumberFormat.getInstance(Locale.US);
+    //
+    //
+    private static BinExplorerTopComponent instance;
 
     public BinExplorerTopComponent() {
         initComponents();
         setName(Bundle.CTL_BinExplorerTopComponent());
         setToolTipText(Bundle.HINT_BinExplorerTopComponent());
 
-        result = Utilities.actionsGlobalContext().lookupResult(BinI.class);
+        binResult = Utilities.actionsGlobalContext().lookupResult(BinI.class);
+        binSearchResult = Utilities.actionsGlobalContext().lookupResult(BinSearchResultI.class);
+        binSearchResult.addLookupListener(new BinSearchHandler());
+
         lookup = new AbstractLookup(content);
         associateLookup(lookup);
 
@@ -310,6 +318,13 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
         });
     }
 
+    public synchronized static BinExplorerTopComponent getDefault() {
+        if (instance == null) {
+            instance = new BinExplorerTopComponent();
+        }
+        return instance;
+    }
+
     @Override
     public Image getIcon() {
         Image image = super.getIcon();
@@ -461,7 +476,7 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel2)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(binName, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(binName, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
                                 .addComponent(jLabel10)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -485,25 +500,22 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
                                 .addContainerGap()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jLabel4)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                            .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.LEADING))
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(geneStop))
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(geneStart, javax.swing.GroupLayout.Alignment.TRAILING)
+                                            .addComponent(geneStop, javax.swing.GroupLayout.Alignment.TRAILING)
+                                            .addComponent(geneFrame, javax.swing.GroupLayout.Alignment.TRAILING)
+                                            .addComponent(geneLength, javax.swing.GroupLayout.Alignment.TRAILING)))
                                     .addGroup(layout.createSequentialGroup()
                                         .addComponent(jLabel3)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(geneStart))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jLabel7)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(geneName))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jLabel5)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(geneFrame))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jLabel6)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(geneLength)))))
+                                        .addComponent(geneName)))
+                                .addGap(10, 10, 10)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 480, Short.MAX_VALUE)))
                 .addContainerGap())
@@ -516,10 +528,9 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(binName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(taxonomy, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(taxonomy, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel8)
                     .addComponent(completeness, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(contamination, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -538,24 +549,24 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel3)
-                            .addComponent(geneStart))
+                            .addComponent(geneName))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel4)
-                            .addComponent(geneStop))
+                            .addComponent(geneStart))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel5)
-                            .addComponent(geneFrame))
+                            .addComponent(geneStop))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel6)
-                            .addComponent(geneLength))
+                            .addComponent(geneFrame))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel7)
-                            .addComponent(geneName))
-                        .addGap(29, 29, 29)
+                            .addComponent(geneLength))
+                        .addGap(60, 60, 60)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(dnaseq)
                             .addComponent(aaseq))
@@ -599,13 +610,13 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
     @Override
     public void componentOpened() {
         vc.addPropertyChangeListener(this);
-        result.addLookupListener(this);
+        binResult.addLookupListener(this);
         resultChanged(null);
     }
 
     @Override
     public void componentClosed() {
-        result.removeLookupListener(this);
+        binResult.removeLookupListener(this);
         vc.removePropertyChangeListener(this);
         if (featurePanel != null) {
             featurePanel.dispose();
@@ -686,7 +697,7 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
         }
 
         BinI newBin = null;
-        for (BinI bin : result.allInstances()) {
+        for (BinI bin : binResult.allInstances()) {
             newBin = bin;
         }
         if (newBin != null && !newBin.equals(currentBin)) {
@@ -703,7 +714,7 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
             contigList.repaint();
 
             coverageDataset.clear();
-            
+
             runNames.clear();
 
             if (currentBin != null) {
@@ -779,7 +790,8 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
                 return;
             }
         }
-        if (evt.getSource() instanceof ContigViewController && evt.getPropertyName().equals(ContigViewController.FEATURE_SELECTED)) {
+        if (evt.getSource() instanceof ContigViewController 
+                && (evt.getPropertyName().equals(ContigViewController.FEATURE_SELECTED) || evt.getPropertyName().equals(ContigViewController.NAVIGATE_TO_REGION))) {
             dnaseq.setEnabled(true);
 
             AssembledRegionI newFeat = (AssembledRegionI) evt.getNewValue();
@@ -939,5 +951,28 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
     void readProperties(java.util.Properties p) {
         String version = p.getProperty("version");
         //this.close();
+    }
+
+    private class BinSearchHandler implements LookupListener {
+
+        public BinSearchHandler() {
+        }
+
+        @Override
+        public void resultChanged(LookupEvent le) {
+            BinSearchResultI sr = null;
+            for (BinSearchResultI bsr : binSearchResult.allInstances()) {
+                sr = bsr;
+            }
+            if (sr != null) {
+                long contigId = sr.getContigId();
+
+                int contigIdx = contigListModel.findIndexByID(contigId);
+                contigList.setSelectedIndex(contigIdx);
+                
+                vc.navigateToRegion(sr.getRegionId());
+            }
+        }
+
     }
 }

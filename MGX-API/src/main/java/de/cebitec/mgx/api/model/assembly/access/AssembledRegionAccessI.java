@@ -10,6 +10,8 @@ import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.SequenceI;
 import de.cebitec.mgx.api.model.assembly.AssembledRegionI;
+import de.cebitec.mgx.api.model.assembly.BinI;
+import de.cebitec.mgx.api.model.assembly.BinSearchResultI;
 import de.cebitec.mgx.api.model.assembly.ContigI;
 import de.cebitec.mgx.sequence.DNASequenceI;
 import de.cebitec.mgx.sequence.SeqWriterI;
@@ -27,5 +29,7 @@ public interface AssembledRegionAccessI {
     public SequenceI getDNASequence(AssembledRegionI gene) throws MGXException;
 
     public DownloadBaseI createDownloaderByAttributes(Set<AttributeI> value, SeqWriterI<DNASequenceI> writer, boolean closeWriter, Set<String> seenGeneNames) throws MGXException;
+    
+    public Iterator<BinSearchResultI> search(BinI bin, String term) throws MGXException;
 
 }

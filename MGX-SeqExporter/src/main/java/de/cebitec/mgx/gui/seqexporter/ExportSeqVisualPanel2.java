@@ -6,7 +6,6 @@ import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.assembly.AssembledSeqRunI;
 import java.io.File;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JTextField;

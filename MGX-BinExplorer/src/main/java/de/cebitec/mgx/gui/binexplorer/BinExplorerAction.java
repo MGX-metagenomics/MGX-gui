@@ -22,7 +22,6 @@ import org.openide.util.LookupListener;
 import org.openide.util.Utilities;
 import org.openide.util.WeakListeners;
 import org.openide.windows.Mode;
-import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
 
 @ActionID(
@@ -57,20 +56,33 @@ public final class BinExplorerAction extends AbstractAction implements ContextAw
 
     @Override
     public void actionPerformed(ActionEvent ev) {
-        TopComponent tc = new BinExplorerTopComponent();
+        BinExplorerTopComponent explorer = BinExplorerTopComponent.getDefault();
 
-        if (!tc.isOpened()) {
+        if (!explorer.isOpened()) {
             Mode m = WindowManager.getDefault().findMode("editor");
             if (m != null) {
-                m.dockInto(tc);
+                m.dockInto(explorer);
             }
-            tc.open();
+            explorer.open();
         }
-        if (!tc.isVisible()) {
-            tc.setVisible(true);
+        if (!explorer.isVisible()) {
+            explorer.setVisible(true);
         }
-        tc.toFront();
-        tc.requestActive();
+        explorer.toFront();
+        explorer.requestActive();
+
+        BinSearchTopComponent search = BinSearchTopComponent.getDefault();
+        if (!search.isOpened()) {
+            Mode m = WindowManager.getDefault().findMode("satellite");
+            if (m != null) {
+                m.dockInto(search);
+            }
+            search.open();
+        }
+        if (!search.isVisible()) {
+            search.setVisible(true);
+        }
+        search.toFront();
     }
 
     @Override

@@ -2,7 +2,6 @@ package de.cebitec.mgx.gui.swingutils;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import javax.swing.AbstractListModel;
 import javax.swing.ComboBoxModel;
@@ -14,7 +13,7 @@ import javax.swing.event.ListDataEvent;
  */
 public abstract class BaseModel<T> extends AbstractListModel<T> implements ComboBoxModel<T> {
 
-    private final List<T> content = new ArrayList<>();
+    protected final List<T> content = new ArrayList<>();
     // index of selected entry
     int index = -1;
 
@@ -84,8 +83,8 @@ public abstract class BaseModel<T> extends AbstractListModel<T> implements Combo
         }
     }
 
-    public Collection<T> getAll() {
-        return Collections.unmodifiableCollection(content);
+    public List<T> getAll() {
+        return List.copyOf(content);
     }
 
     protected void fireContentsChanged() {

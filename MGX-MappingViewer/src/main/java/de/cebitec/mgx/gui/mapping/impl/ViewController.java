@@ -184,6 +184,16 @@ public class ViewController implements ViewControllerI {
     }
 
     @Override
+    public ReferenceRegionI getSelectedRegion() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void navigateToRegion(long regionId) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
     public Set<ReferenceRegionI> getRegions() throws MGXException {
         if (isClosed()) {
             throw new MGXLoggedoutException("ViewController is closed");

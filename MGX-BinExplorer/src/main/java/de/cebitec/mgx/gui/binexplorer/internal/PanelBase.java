@@ -6,6 +6,7 @@
 package de.cebitec.mgx.gui.binexplorer.internal;
 
 import de.cebitec.mgx.api.misc.SequenceViewControllerI;
+import de.cebitec.mgx.api.model.assembly.AssembledRegionI;
 import de.cebitec.mgx.gui.pool.MGXPool;
 import java.awt.Color;
 import java.awt.Font;
@@ -55,7 +56,7 @@ public abstract class PanelBase<T extends SequenceViewControllerI> extends JComp
         vc.addPropertyChangeListener(this);
         super.setBackground(Color.WHITE);
         super.setForeground(Color.DARK_GRAY);
-        
+
         super.addComponentListener(new ComponentAdapter() {
 
             @Override
@@ -83,7 +84,7 @@ public abstract class PanelBase<T extends SequenceViewControllerI> extends JComp
         super.addMouseWheelListener(this);
 
     }
-    
+
     public void dispose() {
         vc.removePropertyChangeListener(this);
     }
@@ -182,7 +183,19 @@ public abstract class PanelBase<T extends SequenceViewControllerI> extends JComp
 
         switch (evt.getPropertyName()) {
             case SequenceViewControllerI.FEATURE_SELECTED:
-                // ignore
+                // caused by interactively clicking on a feature; nothing to do here
+                break;
+            case SequenceViewControllerI.NAVIGATE_TO_REGION:
+                // via the search window, we received a request from the view
+                // controller to display a specific region
+                //
+                // keep the current scale, but adjust bounds so that the selected
+                // feature appears in the middle of the display
+                AssembledRegionI target = (AssembledRegionI) evt.getNewValue();
+                int mid = target.getMin() + ((target.getMax() - target.getMin()) / 2);
+                int tmp = vc.getIntervalLength() / 2;
+                vc.setBounds(mid - tmp, mid + tmp);
+                repaint();
                 break;
             case SequenceViewControllerI.CONTIG_CHANGE:
                 removeAll();
@@ -211,11 +224,9 @@ public abstract class PanelBase<T extends SequenceViewControllerI> extends JComp
 //    protected int getMaxCoverage() {
 //        return maxCoverage;
 //    }
-
 //    protected int getReferenceLength() {
 //        return refLength;
 //    }
-
     protected float bp2px(int i) {
         //assert bounds != null;
         return scale * (i - bounds[0]);
@@ -238,7 +249,7 @@ public abstract class PanelBase<T extends SequenceViewControllerI> extends JComp
         int[] newBounds = Arrays.copyOf(bounds, 2);
         int len = vc.getIntervalLength();
         int adjust = FastMath.max(50, len / 25);
-        
+
         if (notches < 0) {
             // zoom in
             newBounds[0] += adjust;

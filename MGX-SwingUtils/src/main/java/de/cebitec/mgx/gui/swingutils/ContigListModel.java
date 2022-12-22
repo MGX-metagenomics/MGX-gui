@@ -63,8 +63,17 @@ public class ContigListModel extends BaseModel<ContigI> {
         fireContentsChanged();
     }
     
+    public int findIndexByID(long id) {
+        for (ContigI c : content) {
+            if (c.getId() == id) {
+                return content.indexOf(c);
+            }
+        }
+        return -1;
+    }
+    
     public void dispose() {
-        for (ContigI ctg : getAll()) {
+        for (ContigI ctg : content) {
             ctg.deleted();
         }
         clear();

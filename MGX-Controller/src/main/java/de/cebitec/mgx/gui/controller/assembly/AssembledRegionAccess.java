@@ -13,6 +13,8 @@ import de.cebitec.mgx.api.exception.MGXLoggedoutException;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.SequenceI;
 import de.cebitec.mgx.api.model.assembly.AssembledRegionI;
+import de.cebitec.mgx.api.model.assembly.BinI;
+import de.cebitec.mgx.api.model.assembly.BinSearchResultI;
 import de.cebitec.mgx.api.model.assembly.ContigI;
 import de.cebitec.mgx.api.model.assembly.access.AssembledRegionAccessI;
 import de.cebitec.mgx.client.MGXDTOMaster;
@@ -22,10 +24,12 @@ import de.cebitec.mgx.client.exception.MGXClientLoggedOutException;
 import de.cebitec.mgx.client.exception.MGXDTOException;
 import de.cebitec.mgx.dto.dto.AssembledRegionDTO;
 import de.cebitec.mgx.dto.dto.AttributeDTOList;
+import de.cebitec.mgx.dto.dto.BinSearchResultDTO;
 import de.cebitec.mgx.dto.dto.SequenceDTO;
 import de.cebitec.mgx.gui.controller.MasterHolder;
 import de.cebitec.mgx.gui.dtoconversion.AssembledRegionDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.AttributeDTOFactory;
+import de.cebitec.mgx.gui.dtoconversion.BinSearchResultDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.SequenceDTOFactory;
 import de.cebitec.mgx.gui.util.BaseIterator;
 import de.cebitec.mgx.sequence.DNASequenceI;
@@ -104,6 +108,27 @@ public class AssembledRegionAccess extends MasterHolder implements AssembledRegi
             throw new MGXException(ex);
         }
     }
+
+    @Override
+    public Iterator<BinSearchResultI> search(BinI bin, String term) throws MGXException {
+        Iterator<BinSearchResultDTO> it;
+        try {
+            it = getDTOmaster().AssembledRegion().search(bin.getId(), term);
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
+        } catch (MGXDTOException ex) {
+            throw new MGXException(ex);
+        }
+        
+         return new BaseIterator<BinSearchResultDTO, BinSearchResultI>(it) {
+            @Override
+            public BinSearchResultI next() {
+                return BinSearchResultDTOFactory.getInstance().toModel(getMaster(), iter.next());
+            }
+        };
+    }
+    
+    
 
     @Override
     public DownloadBaseI createDownloaderByAttributes(Set<AttributeI> attrs, SeqWriterI<DNASequenceI> writer, boolean closeWriter, Set<String> seenGeneNames) throws MGXException {

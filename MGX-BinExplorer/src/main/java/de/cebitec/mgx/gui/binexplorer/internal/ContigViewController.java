@@ -33,6 +33,7 @@ public class ContigViewController implements PropertyChangeListener, SequenceVie
     private int[] newBounds;
     private int intervalLen;
     private String sequence;
+    private AssembledRegionI selectedRegion = null;
 
     public ContigViewController() {
         pcs = new ParallelPropertyChangeSupport(this, true);
@@ -169,7 +170,34 @@ public class ContigViewController implements PropertyChangeListener, SequenceVie
 
     @Override
     public void selectRegion(AssembledRegionI selectedGene) {
+        selectedRegion = selectedGene;
         pcs.firePropertyChange(FEATURE_SELECTED, null, selectedGene);
+    }
+
+    @Override
+    public AssembledRegionI getSelectedRegion() {
+        return selectedRegion;
+    }
+
+    @Override
+    public void navigateToRegion(long regionId) {
+        AssembledRegionI target = null;
+        for (AssembledRegionI r : getRegions()) {
+            if (r.getId() == regionId) {
+                target = r;
+                break;
+            }
+        }
+
+        if (target != null) {
+            if (target == selectedRegion) {
+                return;
+            }
+            selectedRegion = target;
+            pcs.firePropertyChange(NAVIGATE_TO_REGION, null, target);
+        } else {
+            System.err.println("Region not found!");
+        }
     }
 
     @Override

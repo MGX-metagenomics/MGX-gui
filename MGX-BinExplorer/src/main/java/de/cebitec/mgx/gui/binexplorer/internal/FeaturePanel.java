@@ -5,6 +5,7 @@
  */
 package de.cebitec.mgx.gui.binexplorer.internal;
 
+import de.cebitec.mgx.api.misc.SequenceViewControllerI;
 import de.cebitec.mgx.api.model.assembly.AssembledRegionI;
 import de.cebitec.mgx.common.RegionType;
 import de.cebitec.mgx.gui.swingutils.Arrow;
@@ -21,6 +22,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.AffineTransform;
+import java.beans.PropertyChangeEvent;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,7 +46,6 @@ public class FeaturePanel extends PanelBase<ContigViewController> implements Mou
         -1 * FRAME_VOFFSET * 3};
     private final List<Arrow<AssembledRegionI>> regs = new ArrayList<>();
     private final static Color lighterGray = new Color(210, 210, 210);
-    private AssembledRegionI selectedGene = null;
     //
     private final NumberFormat nf;
 
@@ -137,6 +138,8 @@ public class FeaturePanel extends PanelBase<ContigViewController> implements Mou
             // draw arrows (and borders)
             Color curColor = Color.RED;
             g2.setColor(curColor);
+            
+            AssembledRegionI selectedGene = vc.getSelectedRegion();
 
             // draw the region shapes
             for (Arrow r : regs) {
@@ -238,8 +241,7 @@ public class FeaturePanel extends PanelBase<ContigViewController> implements Mou
         if (regs != null) {
             for (Arrow<AssembledRegionI> a : regs) {
                 if (a.getBounds().contains(loc)) {
-                    selectedGene = a.getObject();
-                    vc.selectRegion(selectedGene);
+                    vc.selectRegion(a.getObject());
                     repaint();
                 }
             }
