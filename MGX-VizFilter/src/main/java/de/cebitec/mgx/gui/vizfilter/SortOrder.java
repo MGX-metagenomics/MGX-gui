@@ -62,9 +62,15 @@ public class SortOrder<T extends Number> implements VisFilterI<DistributionI<T>,
         }
 
         List<AttributeI> sortList = new ArrayList<>();
-        
-        int currentCriteria = attrType.getValueType() == AttributeTypeI.VALUE_NUMERIC
-                ? SortOrder.BY_TYPE : SortOrder.BY_VALUE;
+
+        // if all distributions are empty, we have no attribute type
+        int currentCriteria;
+        if (attrType == null) {
+            currentCriteria = SortOrder.BY_VALUE;
+        } else {
+            currentCriteria = attrType.getValueType() == AttributeTypeI.VALUE_NUMERIC
+                    ? SortOrder.BY_TYPE : SortOrder.BY_VALUE;
+        }
 
         // sort by selected criteria
         switch (currentCriteria) {
@@ -118,10 +124,10 @@ public class SortOrder<T extends Number> implements VisFilterI<DistributionI<T>,
         }
 
         List<AttributeI> sortList = new ArrayList<>();
-        
+
         int currentCriteria = d.getAttributeType().getValueType() == AttributeTypeI.VALUE_NUMERIC
                 ? SortOrder.BY_TYPE : SortOrder.BY_VALUE;
-        
+
         // sort by selected criteria
         switch (currentCriteria) {
             case BY_VALUE:
