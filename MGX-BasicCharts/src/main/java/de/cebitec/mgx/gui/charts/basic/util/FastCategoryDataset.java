@@ -11,21 +11,21 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import org.jfree.chart.util.ParamChecks;
+import org.jfree.chart.util.Args;
+import org.jfree.chart.util.CloneUtils;
+import org.jfree.chart.util.PublicCloneable;
 import org.jfree.data.DefaultKeyedValues;
 import org.jfree.data.KeyedValues2D;
 import org.jfree.data.UnknownKeyException;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.general.AbstractDataset;
 import org.jfree.data.general.DatasetChangeEvent;
-import org.jfree.util.ObjectUtilities;
-import org.jfree.util.PublicCloneable;
 
 /**
  *
  * @author sj
  */
-public class FastCategoryDataset extends AbstractDataset
+public class FastCategoryDataset<T extends Comparable<T>> extends AbstractDataset
         implements CategoryDataset, PublicCloneable, Serializable {
 
     /**
@@ -36,13 +36,13 @@ public class FastCategoryDataset extends AbstractDataset
     /**
      * A storage structure for the data.
      */
-    private FastKeyedValues2D data;
+    private FastKeyedValues2D<T> data;
 
     /**
      * Creates a new (empty) dataset.
      */
     public FastCategoryDataset() {
-        this.data = new FastKeyedValues2D();
+        this.data = new FastKeyedValues2D<>();
     }
 
     /**
@@ -197,7 +197,7 @@ public class FastCategoryDataset extends AbstractDataset
      * @see #removeValue(Comparable, Comparable)
      */
     public void addValue(Number value, Comparable rowKey,
-            Comparable columnKey) {
+            T columnKey) {
         this.data.addValue(value, rowKey, columnKey);
         fireDatasetChanged();
     }
@@ -211,9 +211,13 @@ public class FastCategoryDataset extends AbstractDataset
      *
      * @see #getValue(Comparable, Comparable)
      */
+    @SuppressWarnings("unchecked")
     public void addValue(double value, Comparable rowKey,
             Comparable columnKey) {
-        addValue(Double.valueOf(value), rowKey, columnKey);
+        //addValue(Double.valueOf(value), rowKey, columnKey);
+        
+        this.data.addValue(value, rowKey, (T)columnKey);
+        fireDatasetChanged();
     }
 
     /**
@@ -227,7 +231,7 @@ public class FastCategoryDataset extends AbstractDataset
      * @see #getValue(Comparable, Comparable)
      */
     public void setValue(Number value, Comparable rowKey,
-            Comparable columnKey) {
+            T columnKey) {
         this.data.setValue(value, rowKey, columnKey);
         fireDatasetChanged();
     }
@@ -277,7 +281,7 @@ public class FastCategoryDataset extends AbstractDataset
      *
      * @see #addValue(Number, Comparable, Comparable)
      */
-    public void removeValue(Comparable rowKey, Comparable columnKey) {
+    public void removeValue(Comparable rowKey, T columnKey) {
         this.data.removeValue(rowKey, columnKey);
         fireDatasetChanged();
     }
@@ -332,7 +336,7 @@ public class FastCategoryDataset extends AbstractDataset
      * @throws UnknownKeyException if <code>columnKey</code> is not defined in
      * the dataset.
      */
-    public void removeColumn(Comparable columnKey) {
+    public void removeColumn(T columnKey) {
         this.data.removeColumn(columnKey);
         fireDatasetChanged();
     }
@@ -405,13 +409,14 @@ public class FastCategoryDataset extends AbstractDataset
      * dataset.
      */
     @Override
+    @SuppressWarnings("unchecked")
     public Object clone() throws CloneNotSupportedException {
-        FastCategoryDataset clone = (FastCategoryDataset) super.clone();
-        clone.data = (FastKeyedValues2D) this.data.clone();
+        FastCategoryDataset<T> clone = (FastCategoryDataset<T>) super.clone();
+        clone.data = (FastKeyedValues2D<T>) this.data.clone();
         return clone;
     }
 
-    private static class FastKeyedValues2D
+    private static class FastKeyedValues2D<T extends Comparable<T>>
             implements KeyedValues2D, PublicCloneable,
             Cloneable, Serializable {
 
@@ -428,7 +433,7 @@ public class FastCategoryDataset extends AbstractDataset
         /**
          * The column keys.
          */
-        private List<Comparable> columnKeys;
+        private List<T> columnKeys;
 
         /**
          * The row key index map
@@ -443,7 +448,7 @@ public class FastCategoryDataset extends AbstractDataset
         /**
          * The row data.
          */
-        private List<DefaultKeyedValues> rows;
+        private List<DefaultKeyedValues<T>> rows;
 
         /**
          * If the row keys should be sorted by their comparable order.
@@ -508,9 +513,9 @@ public class FastCategoryDataset extends AbstractDataset
         @Override
         public Number getValue(int row, int column) {
             Number result = null;
-            DefaultKeyedValues rowData = this.rows.get(row);
+            DefaultKeyedValues<T> rowData = this.rows.get(row);
             if (rowData != null) {
-                Comparable columnKey = this.columnKeys.get(column);
+                T columnKey = this.columnKeys.get(column);
                 // the row may not have an entry for this key, in which case the
                 // return value is null
                 int index = rowData.getIndex(columnKey);
@@ -550,7 +555,7 @@ public class FastCategoryDataset extends AbstractDataset
         @Override
         @SuppressWarnings("unchecked")
         public int getRowIndex(Comparable key) {
-            ParamChecks.nullNotPermitted(key, "key");
+            Args.nullNotPermitted(key, "key");
             if (this.sortRowKeys) {
                 List x = rowKeys;
                 return Collections.binarySearch(x, key);
@@ -586,7 +591,7 @@ public class FastCategoryDataset extends AbstractDataset
          * @see #getRowKey(int)
          */
         @Override
-        public Comparable getColumnKey(int column) {
+        public T getColumnKey(int column) {
             return this.columnKeys.get(column);
         }
 
@@ -602,7 +607,7 @@ public class FastCategoryDataset extends AbstractDataset
          */
         @Override
         public int getColumnIndex(Comparable key) {
-            ParamChecks.nullNotPermitted(key, "key");
+            Args.nullNotPermitted(key, "key");
             if (!this.columnKeyIndexMap.containsKey(key)) {
                 return -1;
             }
@@ -617,7 +622,7 @@ public class FastCategoryDataset extends AbstractDataset
          * @see #getRowKeys()
          */
         @Override
-        public List getColumnKeys() {
+        public List<T> getColumnKeys() {
             return Collections.unmodifiableList(this.columnKeys);
         }
 
@@ -636,11 +641,14 @@ public class FastCategoryDataset extends AbstractDataset
          */
         @Override
         public Number getValue(Comparable rowKey, Comparable columnKey) {
-            ParamChecks.nullNotPermitted(rowKey, "rowKey");
-            ParamChecks.nullNotPermitted(columnKey, "columnKey");
+            Args.nullNotPermitted(rowKey, "rowKey");
+            Args.nullNotPermitted(columnKey, "columnKey");
+
+            @SuppressWarnings("unchecked")
+            T colKey = (T) columnKey;
 
             // check that the column key is defined in the 2D structure
-            if (!(this.columnKeys.contains(columnKey))) {
+            if (!(this.columnKeys.contains(colKey))) {
                 throw new UnknownKeyException("Unrecognised columnKey: "
                         + columnKey);
             }
@@ -650,9 +658,9 @@ public class FastCategoryDataset extends AbstractDataset
             // have already checked that the key is valid for the 2D structure
             int row = getRowIndex(rowKey);
             if (row >= 0) {
-                DefaultKeyedValues rowData
+                DefaultKeyedValues<T> rowData
                         = this.rows.get(row);
-                int col = rowData.getIndex(columnKey);
+                int col = rowData.getIndex(colKey);
                 return (col >= 0 ? rowData.getValue(col) : null);
             } else {
                 throw new UnknownKeyException("Unrecognised rowKey: " + rowKey);
@@ -671,7 +679,7 @@ public class FastCategoryDataset extends AbstractDataset
          * @see #removeValue(Comparable, Comparable)
          */
         public void addValue(Number value, Comparable rowKey,
-                Comparable columnKey) {
+                T columnKey) {
             // defer argument checking
             setValue(value, rowKey, columnKey);
         }
@@ -687,15 +695,15 @@ public class FastCategoryDataset extends AbstractDataset
          * @see #removeValue(Comparable, Comparable)
          */
         public void setValue(Number value, Comparable rowKey,
-                Comparable columnKey) {
+                T columnKey) {
 
-            DefaultKeyedValues row;
+            DefaultKeyedValues<T> row;
             int rowIndex = getRowIndex(rowKey);
 
             if (rowIndex >= 0) {
                 row = this.rows.get(rowIndex);
             } else {
-                row = new DefaultKeyedValues();
+                row = new DefaultKeyedValues<>();
                 if (this.sortRowKeys) {
                     rowIndex = -rowIndex - 1;
                     this.rowKeys.add(rowIndex, rowKey);
@@ -725,13 +733,13 @@ public class FastCategoryDataset extends AbstractDataset
          *
          * @see #addValue(Number, Comparable, Comparable)
          */
-        public void removeValue(Comparable rowKey, Comparable columnKey) {
+        public void removeValue(Comparable rowKey, T columnKey) {
             setValue(null, rowKey, columnKey);
 
             // 1. check whether the row is now empty.
             boolean allNull = true;
             int rowIndex = getRowIndex(rowKey);
-            DefaultKeyedValues row = this.rows.get(rowIndex);
+            DefaultKeyedValues<T> row = this.rows.get(rowIndex);
 
             for (int item = 0, itemCount = row.getItemCount(); item < itemCount;
                     item++) {
@@ -801,7 +809,7 @@ public class FastCategoryDataset extends AbstractDataset
          * the table.
          */
         public void removeRow(Comparable rowKey) {
-            ParamChecks.nullNotPermitted(rowKey, "rowKey");
+            Args.nullNotPermitted(rowKey, "rowKey");
             int index = getRowIndex(rowKey);
             if (index >= 0) {
                 removeRow(index);
@@ -819,7 +827,7 @@ public class FastCategoryDataset extends AbstractDataset
          * @see #removeRow(int)
          */
         public void removeColumn(int columnIndex) {
-            Comparable columnKey = getColumnKey(columnIndex);
+            T columnKey = getColumnKey(columnIndex);
             removeColumn(columnKey);
         }
 
@@ -836,14 +844,14 @@ public class FastCategoryDataset extends AbstractDataset
          * @see #removeColumn(int)
          * @see #removeRow(Comparable)
          */
-        public void removeColumn(Comparable columnKey) {
-            ParamChecks.nullNotPermitted(columnKey, "columnKey");
+        public void removeColumn(T columnKey) {
+            Args.nullNotPermitted(columnKey, "columnKey");
             if (!this.columnKeys.contains(columnKey)) {
                 throw new UnknownKeyException("Unknown key: " + columnKey);
             }
-            Iterator<DefaultKeyedValues> iterator = this.rows.iterator();
+            Iterator<DefaultKeyedValues<T>> iterator = this.rows.iterator();
             while (iterator.hasNext()) {
-                DefaultKeyedValues rowData = iterator.next();
+                DefaultKeyedValues<T> rowData = iterator.next();
                 int index = rowData.getIndex(columnKey);
                 if (index >= 0) {
                     rowData.removeValue(columnKey);
@@ -954,7 +962,7 @@ public class FastCategoryDataset extends AbstractDataset
             clone.rowKeyIndexMap
                     = new TObjectIntHashMap<>(this.rowKeyIndexMap);
             // but the row data requires a deep copy
-            clone.rows = (List) ObjectUtilities.deepClone(this.rows);
+            clone.rows = (List<DefaultKeyedValues>) CloneUtils.cloneList(this.rows);
             return clone;
         }
     }

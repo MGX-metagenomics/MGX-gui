@@ -136,7 +136,7 @@ public final class BlobogramTopComponent extends TopComponent implements LookupL
             }
 
         };
-        renderer.setBaseToolTipGenerator(tooltipGenerator);
+        renderer.setDefaultToolTipGenerator(tooltipGenerator);
 
         rangeAxis = new LogarithmicAxis("Coverage");
         rangeAxis.setStrictValuesFlag(false);

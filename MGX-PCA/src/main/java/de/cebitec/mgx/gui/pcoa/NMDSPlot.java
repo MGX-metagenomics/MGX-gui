@@ -167,7 +167,7 @@ public class NMDSPlot extends AbstractViewer<DistributionI<Long>> implements Cus
 
         // renderer for data points
         final XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
-        renderer.setBaseLinesVisible(false);
+        renderer.setDefaultLinesVisible(false);
         XYItemLabelGenerator labelGen = new XYItemLabelGenerator() {
 
             @Override

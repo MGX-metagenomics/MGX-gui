@@ -72,7 +72,9 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.CategoryItemRenderer;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
-import org.jfree.ui.TextAnchor;
+import org.jfree.chart.ui.TextAnchor;
+import org.jfree.data.category.CategoryDataset;
+import org.jfree.data.category.DefaultCategoryDataset;
 import org.netbeans.api.progress.ProgressHandle;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.DialogDescriptor;
@@ -790,7 +792,7 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
                 return;
             }
         }
-        if (evt.getSource() instanceof ContigViewController 
+        if (evt.getSource() instanceof ContigViewController
                 && (evt.getPropertyName().equals(ContigViewController.FEATURE_SELECTED) || evt.getPropertyName().equals(ContigViewController.NAVIGATE_TO_REGION))) {
             dnaseq.setEnabled(true);
 
@@ -908,16 +910,16 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
         domainAxis.setCategoryLabelPositions(CategoryLabelPositions.STANDARD);
 
         CategoryItemRenderer renderer = plot.getRenderer();
-        renderer.setBaseItemLabelGenerator(new StandardCategoryItemLabelGenerator());
-        renderer.setBaseItemLabelPaint(Color.WHITE);
+        renderer.setDefaultItemLabelGenerator(new StandardCategoryItemLabelGenerator());
+        renderer.setDefaultItemLabelPaint(Color.WHITE);
         ItemLabelPosition position = new ItemLabelPosition(ItemLabelAnchor.CENTER,
                 TextAnchor.CENTER_LEFT);
-        renderer.setBasePositiveItemLabelPosition(position);
-        renderer.setBaseItemLabelsVisible(true);
+        renderer.setDefaultPositiveItemLabelPosition(position);
+        renderer.setDefaultItemLabelsVisible(true);
 
         BarRenderer br = (BarRenderer) plot.getRenderer();
 
-        br.setBaseToolTipGenerator(new StandardCategoryToolTipGenerator("<html>Sequencing run: {1}<br>Mapped reads: {2}</html>", nf));
+        br.setDefaultToolTipGenerator(new StandardCategoryToolTipGenerator("<html>Sequencing run: {1}<br>Mapped reads: {2}</html>", nf));
         br.setItemMargin(0);
         br.setMaximumBarWidth(.2); // set maximum width to 20% of chart
 
@@ -969,7 +971,7 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
 
                 int contigIdx = contigListModel.findIndexByID(contigId);
                 contigList.setSelectedIndex(contigIdx);
-                
+
                 vc.navigateToRegion(sr.getRegionId());
             }
         }

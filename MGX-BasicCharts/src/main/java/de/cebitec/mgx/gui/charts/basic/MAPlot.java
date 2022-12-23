@@ -45,12 +45,12 @@ import org.jfree.chart.plot.CombinedDomainXYPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.chart.ui.RectangleEdge;
+import org.jfree.chart.ui.TextAnchor;
 import org.jfree.data.xy.XYDataItem;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
-import org.jfree.ui.RectangleEdge;
-import org.jfree.ui.TextAnchor;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -193,9 +193,9 @@ public class MAPlot extends NumericalViewerI<Long> implements ImageExporterI.Pro
             XYSeriesCollection posInf, XYSeriesCollection negInf, String xAxisLabel, String yAxisLabel, XYToolTipGenerator toolTip) {
 
         final XYLineAndShapeRenderer r = new XYLineAndShapeRenderer();
-        r.setBaseLinesVisible(false);
+        r.setDefaultLinesVisible(false);
         r.setSeriesShape(0, new Ellipse2D.Double(0, 0, 5, 5));
-        r.setBaseToolTipGenerator(toolTip);
+        r.setDefaultToolTipGenerator(toolTip);
 
         NumberAxis xAxis = new NumberAxis(xAxisLabel);
         xAxis.setInverted(false);

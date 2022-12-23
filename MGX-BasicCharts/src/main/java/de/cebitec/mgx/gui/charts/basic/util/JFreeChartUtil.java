@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
-import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.LegendItem;
 import org.jfree.chart.LegendItemCollection;
@@ -104,7 +104,7 @@ public class JFreeChartUtil {
             Collections.reverse(sortList);
         }
 
-        FastCategoryDataset dataset = new FastCategoryDataset();
+        FastCategoryDataset<String> dataset = new FastCategoryDataset<>();
         dataset.setNotify(false);
 
         for (AttributeI attr : sortList) {
@@ -146,7 +146,7 @@ public class JFreeChartUtil {
             Collections.reverse(sortList);
         }
 
-        FastCategoryDataset dataset = new FastCategoryDataset();
+        FastCategoryDataset<String> dataset = new FastCategoryDataset<>();
         dataset.setNotify(false);
 
         for (AttributeI attr : sortList) {
@@ -323,10 +323,10 @@ public class JFreeChartUtil {
             public Result export(FileType type, String fName) throws Exception {
                 switch (type) {
                     case PNG:
-                        ChartUtilities.saveChartAsPNG(new File(fName), chart, 1280, 1024);
+                        ChartUtils.saveChartAsPNG(new File(fName), chart, 1280, 1024);
                         return Result.SUCCESS;
                     case JPEG:
-                        ChartUtilities.saveChartAsJPEG(new File(fName), chart, 1280, 1024);
+                        ChartUtils.saveChartAsJPEG(new File(fName), chart, 1280, 1024);
                         return Result.SUCCESS;
                     case SVG:
                         SVGGraphics2D g2 = new SVGGraphics2D(1280, 768);

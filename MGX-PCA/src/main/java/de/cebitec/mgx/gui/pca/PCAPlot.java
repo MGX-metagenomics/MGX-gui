@@ -200,7 +200,7 @@ public class PCAPlot extends AbstractViewer<DistributionI<Long>> implements Cust
 
         // renderer for data points
         final XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
-        renderer.setBaseLinesVisible(false);
+        renderer.setDefaultLinesVisible(false);
         XYItemLabelGenerator labelGen = new XYItemLabelGenerator() {
 
             @Override
