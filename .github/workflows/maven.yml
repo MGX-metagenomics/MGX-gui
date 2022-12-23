@@ -3,9 +3,9 @@ name: Java CI with Maven
 
 on:
   push:
-    branches: [ "MGX_client_2_0" ]
+    branches: [ "MGX_gui_2_0" ]
   pull_request:
-    branches: [ "MGX_client_2_0" ]
+    branches: [ "MGX_gui_2_0" ]
 
 jobs:
   build:
