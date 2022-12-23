@@ -1,0 +1,54 @@
+
+name: Java CI with Maven
+
+on:
+  push:
+    branches: [ "MGX_client_2_0" ]
+  pull_request:
+    branches: [ "MGX_client_2_0" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up JDK 11
+      uses: actions/setup-java@v3
+      with:
+        java-version: '11'
+        distribution: 'temurin'
+        cache: maven
+    - name: Install protoc
+      run: sudo apt-get install -qq protobuf-compiler
+    - name: Create protoc-3 symlink
+      run: sudo ln -s /usr/bin/protoc /usr/bin/protoc-3
+    - name: Setup mvn cache
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-mgx-cache
+    - name: Build 'utilities'
+      run: |
+        git clone -b utilities_2_0 https://github.com/MGX-metagenomics/utilities.git
+        cd utilities
+        mvn clean install -DskipTests=true
+        cd ..
+        rm -rf utilities
+    - name: Build 'gpms'
+      run: |
+        git clone -b GPMS_2_0 https://github.com/MGX-metagenomics/GPMS.git
+        cd GPMS
+        mvn clean install -DskipTests=true
+        cd ..
+        rm -rf GPMS
+    - name: Build 'MGX-client'
+      run: |
+        git clone -b MGX_client_2_0 https://github.com/MGX-metagenomics/MGX-client.git
+        cd MGX-client
+        mvn clean install -DskipTests=true
+        cd ..
+        rm -rf GPMS
+    - name: Build with Maven
+      run: mvn -B package --file pom.xml
