@@ -22,12 +22,14 @@ public class TestMaster {
 
     private static MGXMasterI masterRO = null;
 
+    private final static String SERVER = "https://mgx-test.computational.bio.uni-giessen.de/MGX-maven-web/webresources/";
+
     public static MGXMasterI getRO() {
         if (masterRO != null) {
             return masterRO;
         }
 
-        String serverURI = "https://mgx.cebitec.uni-bielefeld.de/MGX-maven-web/webresources/";
+        String serverURI = SERVER;
 
         String config = System.getProperty("user.home") + "/.m2/mgx.junit";
         File f = new File(config);
@@ -59,7 +61,7 @@ public class TestMaster {
 
         while (mbr.hasNext()) {
             MembershipI m = mbr.next();
-            if ("MGX".equals(m.getProject().getProjectClass().getName()) && ("MGX_Unittest".equals(m.getProject().getName()))) {
+            if ("MGX".equals(m.getProject().getProjectClass().getName()) && ("MGX2_Unittest".equals(m.getProject().getName()))) {
                 try {
                     masterRO = new MGXMaster(gpms.createMaster(m));
                 } catch (GPMSException ex) {
@@ -76,7 +78,7 @@ public class TestMaster {
     public static MGXMasterI getRW() {
         MGXMasterI master = null;
 
-        String serverURI = "https://mgx.cebitec.uni-bielefeld.de/MGX-maven-web/webresources/";
+        String serverURI = SERVER;
 
         Properties p = new Properties();
         String config = System.getProperty("user.home") + "/.m2/mgx.junit";
@@ -107,7 +109,7 @@ public class TestMaster {
 
         while (mbr.hasNext()) {
             MembershipI m = mbr.next();
-            if ("MGX".equals(m.getProject().getProjectClass().getName()) && ("MGX_Unittest".equals(m.getProject().getName()))) {
+            if ("MGX-2".equals(m.getProject().getProjectClass().getName()) && ("MGX2_Unittest".equals(m.getProject().getName()))) {
                 try {
                     master = new MGXMaster(gpms.createMaster(m));
                 } catch (GPMSException ex) {
@@ -123,7 +125,7 @@ public class TestMaster {
     public static MGXMasterI getPrivate(String targetProject) {
         MGXMasterI master = null;
 
-        String serverURI = "https://mgx.cebitec.uni-bielefeld.de/MGX-maven-web/webresources/";
+        String serverURI = SERVER;
 
         Properties p = new Properties();
         String config = System.getProperty("user.home") + "/.m2/mgx.private";
@@ -154,7 +156,7 @@ public class TestMaster {
 
         while (mbr.hasNext()) {
             MembershipI m = mbr.next();
-            if ("MGX".equals(m.getProject().getProjectClass().getName()) && (targetProject.equals(m.getProject().getName()))) {
+            if ("MGX-2".equals(m.getProject().getProjectClass().getName()) && (targetProject.equals(m.getProject().getName()))) {
                 try {
                     master = new MGXMaster(gpms.createMaster(m));
                 } catch (GPMSException ex) {
