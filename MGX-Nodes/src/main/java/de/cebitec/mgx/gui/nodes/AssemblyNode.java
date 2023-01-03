@@ -3,6 +3,8 @@ package de.cebitec.mgx.gui.nodes;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.assembly.AssemblyI;
 import de.cebitec.mgx.gui.nodefactory.AssemblyStructureNodeFactory;
+import java.text.NumberFormat;
+import java.util.Locale;
 import javax.swing.Action;
 import static org.apache.commons.text.StringEscapeUtils.escapeHtml4;
 import org.openide.filesystems.FileUtil;
@@ -30,7 +32,11 @@ public class AssemblyNode extends MGXNodeBase<AssemblyI> {
         return new StringBuilder("<html>").append("<b>Assembly: </b>")
                 .append(escapeHtml4(h.getName()))
                 .append("<br><hr><br>")
-                .append("</html>").toString();
+                .append("Assembled reads: ")
+                .append(NumberFormat.getInstance(Locale.US).format(h.getReadsAssembled()))
+                .append("<br>N50: ")
+                .append(NumberFormat.getInstance(Locale.US).format(h.getN50()))
+                .append(" bp</html>").toString();
     }
 
     @Override
