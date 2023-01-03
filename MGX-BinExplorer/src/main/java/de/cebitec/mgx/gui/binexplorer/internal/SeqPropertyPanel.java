@@ -80,6 +80,7 @@ public class SeqPropertyPanel extends PanelBase<ContigViewController> {
         gcSkew.moveTo(0, midY);
         float minSkew = 1000;
         float maxSkew = -1000;
+        // TODO: convert to TFloatArrayList ?
         List<Float> gcData = new LinkedList<>();
         List<Float> skewData = new LinkedList<>();
 
@@ -120,10 +121,10 @@ public class SeqPropertyPanel extends PanelBase<ContigViewController> {
             gcSkew.lineTo(posX, getHeight() - vertPadding - skewPosY);
         }
 
-        g2.setColor(Color.RED);
+        g2.setColor(new Color(196, 31, 20)); // red, but a little darker
         g2.draw(gcContent);
 
-        g2.setColor(Color.BLUE);
+        g2.setColor(new Color(61, 13, 184)); // dark blue
         g2.draw(gcSkew);
     }
 
