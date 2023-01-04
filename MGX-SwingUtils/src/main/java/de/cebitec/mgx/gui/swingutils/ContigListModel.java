@@ -5,7 +5,6 @@
  */
 package de.cebitec.mgx.gui.swingutils;
 
-import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.assembly.BinI;
 import de.cebitec.mgx.api.model.assembly.ContigI;
 import java.util.ArrayList;
@@ -13,6 +12,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import javax.swing.SwingWorker;
 import org.openide.util.Exceptions;
 
 /**
@@ -29,40 +30,55 @@ public class ContigListModel extends BaseModel<ContigI> {
 
     @Override
     public synchronized void update() {
-        dispose();
-        if (bin == null) {
+        if (bin == null || bin.isDeleted()) {
             clear();
             return;
         }
 
-        List<ContigI> tmp = new ArrayList<>();
-        if (!bin.isDeleted()) {
-            Iterator<ContigI> iter = null;
-            try {
-                iter = bin.getMaster().Contig().ByBin(bin);
-            } catch (MGXException ex) {
-                Exceptions.printStackTrace(ex);
-            }
-            while (iter != null && iter.hasNext()) {
-                tmp.add(iter.next());
-            }
-        }
-        
-        // sort by contig length, descending
-        Collections.sort(tmp, new Comparator<ContigI>() {
+        SwingWorker<List<ContigI>, Void> sw = new SwingWorker<List<ContigI>, Void>() {
             @Override
-            public int compare(ContigI t1, ContigI t2) {
-                return Integer.compare(t2.getLength(), t1.getLength());
+            protected List<ContigI> doInBackground() throws Exception {
+                List<ContigI> tmp = new ArrayList<>();
+
+                Iterator<ContigI> iter = bin.getMaster().Contig().ByBin(bin);
+                while (iter != null && iter.hasNext()) {
+                    tmp.add(iter.next());
+                }
+
+                // sort by contig length, descending
+                Collections.sort(tmp, new Comparator<ContigI>() {
+                    @Override
+                    public int compare(ContigI t1, ContigI t2) {
+                        return Integer.compare(t2.getLength(), t1.getLength());
+                    }
+
+                });
+
+                return tmp;
             }
 
-        });
-        addAll(tmp);
-        if (!tmp.isEmpty()) {
-            setSelectedItem(tmp.get(0));
-        }
-        fireContentsChanged();
+            @Override
+            protected void done() {
+                List<ContigI> data;
+                try {
+                    data = get();
+                } catch (InterruptedException | ExecutionException ex) {
+                    Exceptions.printStackTrace(ex);
+                    return;
+                }
+                addAll(data);
+                if (!data.isEmpty()) {
+                    setSelectedItem(data.get(0));
+                }
+                fireContentsChanged();
+            }
+
+        };
+
+        sw.execute();
+
     }
-    
+
     public int findIndexByID(long id) {
         for (ContigI c : content) {
             if (c.getId() == id) {
@@ -70,12 +86,5 @@ public class ContigListModel extends BaseModel<ContigI> {
             }
         }
         return -1;
-    }
-    
-    public void dispose() {
-        for (ContigI ctg : content) {
-            ctg.deleted();
-        }
-        clear();
     }
 }
