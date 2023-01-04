@@ -7,55 +7,41 @@ package de.cebitec.mgx.gui.binexplorer;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
-import de.cebitec.mgx.api.groups.FileType;
-import de.cebitec.mgx.api.model.ModelBaseI;
-import de.cebitec.mgx.api.model.RegionI;
 import de.cebitec.mgx.api.model.SeqRunI;
-import de.cebitec.mgx.api.model.SequenceI;
 import de.cebitec.mgx.api.model.assembly.AssembledRegionI;
 import de.cebitec.mgx.api.model.assembly.BinI;
 import de.cebitec.mgx.api.model.assembly.BinSearchResultI;
 import de.cebitec.mgx.api.model.assembly.ContigI;
 import de.cebitec.mgx.api.model.assembly.GeneCoverageI;
 import de.cebitec.mgx.common.RegionType;
-import de.cebitec.mgx.dnautils.DNAUtils;
 import de.cebitec.mgx.gui.binexplorer.internal.ContigViewController;
 import de.cebitec.mgx.gui.binexplorer.internal.FeaturePanel;
 import de.cebitec.mgx.gui.binexplorer.internal.SeqPropertyPanel;
 import de.cebitec.mgx.gui.binexplorer.util.AttributeTableModel;
 import de.cebitec.mgx.gui.swingutils.ContigListModel;
 import de.cebitec.mgx.gui.binexplorer.util.ContigRenderer;
+import de.cebitec.mgx.gui.binexplorer.util.GenBankExportAction;
 import de.cebitec.mgx.gui.binexplorer.util.ObservationCellRenderer;
+import de.cebitec.mgx.gui.binexplorer.util.SequenceDisplayAction;
 import de.cebitec.mgx.gui.charts.basic.util.FastCategoryDataset;
 import de.cebitec.mgx.gui.charts.basic.util.SVGChartPanel;
-import de.cebitec.mgx.gui.genbankexporter.GBKExporter;
 import de.cebitec.mgx.gui.pool.MGXPool;
-import de.cebitec.mgx.gui.swingutils.SeqPanel;
-import de.cebitec.mgx.gui.swingutils.util.SuffixFilter;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Image;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.File;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.ExecutionException;
-import javax.swing.JFileChooser;
-import javax.swing.SwingWorker;
-import javax.swing.filechooser.FileFilter;
 import org.jdesktop.swingx.decorator.Highlighter;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
 import org.jfree.chart.ChartFactory;
@@ -73,13 +59,7 @@ import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.CategoryItemRenderer;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.chart.ui.TextAnchor;
-import org.jfree.data.category.CategoryDataset;
-import org.jfree.data.category.DefaultCategoryDataset;
-import org.netbeans.api.progress.ProgressHandle;
 import org.netbeans.api.settings.ConvertAsProperties;
-import org.openide.DialogDescriptor;
-import org.openide.DialogDisplayer;
-import org.openide.NotifyDescriptor;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.util.Exceptions;
@@ -88,7 +68,6 @@ import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
 import org.openide.windows.TopComponent;
 import org.openide.util.NbBundle.Messages;
-import org.openide.util.NbPreferences;
 import org.openide.util.Utilities;
 import org.openide.util.lookup.AbstractLookup;
 import org.openide.util.lookup.InstanceContent;
@@ -121,27 +100,24 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
 
     private final Lookup.Result<BinI> binResult;
     private final Lookup.Result<BinSearchResultI> binSearchResult;
-    private final ContigListModel contigListModel = new ContigListModel();
-    private final AttributeTableModel tableModel = new AttributeTableModel();
-    private BinI currentBin = null;
-    private boolean isActivated = false;
+    //
     private final ContigViewController vc = new ContigViewController();
-    private AssembledRegionI selectedFeature = null;
-    //private MGXMasterI currentMaster = null;
+    private final static NumberFormat nf = NumberFormat.getInstance(Locale.US);
+    //
+    private final ContigListModel contigListModel = new ContigListModel();
+    private final AttributeTableModel attrTableModel = new AttributeTableModel(vc, nf);
+    //
+    private boolean isActivated = false;
+    //
     private final FastCategoryDataset coverageDataset = new FastCategoryDataset();
     private final JFreeChart coverageChart;
     private final SVGChartPanel svgChartPanel;
     private final TLongObjectMap<String> runNames = new TLongObjectHashMap<>();
-    private FeaturePanel featurePanel = null;
-    private SeqPropertyPanel seqPropPanel = null;
+    private final FeaturePanel featurePanel;
+    private final SeqPropertyPanel seqPropPanel;
     //
     private final InstanceContent content = new InstanceContent();
-    private final Lookup lookup;
     //
-    private final static NumberFormat nf = NumberFormat.getInstance(Locale.US);
-    //
-    //
-    private static BinExplorerTopComponent instance;
 
     public BinExplorerTopComponent() {
         initComponents();
@@ -152,18 +128,25 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
         binSearchResult = Utilities.actionsGlobalContext().lookupResult(BinSearchResultI.class);
         binSearchResult.addLookupListener(new BinSearchHandler());
 
-        lookup = new AbstractLookup(content);
+        Lookup lookup = new AbstractLookup(content);
         associateLookup(lookup);
 
         contigList.setModel(contigListModel);
         contigList.setRenderer(new ContigRenderer(nf));
         contigList.addItemListener(this);
 
+        featurePanel = new FeaturePanel(vc, nf);
+        contentPanel.add(featurePanel, BorderLayout.CENTER);
+
+        seqPropPanel = new SeqPropertyPanel(vc);
+        seqpropHolder.add(seqPropPanel, BorderLayout.CENTER);
+
         jXTable1.setHighlighters(new Highlighter[]{HighlighterFactory.createAlternateStriping()});
-        jXTable1.getColumn(0).setWidth(130);
+        jXTable1.getColumn(0).setWidth(90);
+        jXTable1.getColumn(1).setWidth(130);
         jXTable1.getColumn(2).setMaxWidth(60);
         jXTable1.getColumn(3).setMaxWidth(60);
-        jXTable1.setDefaultRenderer(Object.class, new ObservationCellRenderer(this));
+        jXTable1.setDefaultRenderer(Object.class, new ObservationCellRenderer(vc));
 
         ChartFactory.setChartTheme(StandardChartTheme.createLegacyTheme());
         BarRenderer.setDefaultShadowsVisible(false);
@@ -175,156 +158,17 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
         svgChartPanel.setPopupMenu(null);
         geneCovPanel.add(svgChartPanel, BorderLayout.CENTER);
 
-        ActionListener buttonListener = new ActionListener() {
+        dnaseq.addActionListener(new SequenceDisplayAction(vc, false));
+        aaseq.addActionListener(new SequenceDisplayAction(vc, true));
+        exportGBK.addActionListener(new GenBankExportAction(vc));
 
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-                SwingWorker<SequenceI, Void> sw = new SwingWorker<SequenceI, Void>() {
-
-                    @Override
-                    protected SequenceI doInBackground() throws Exception {
-                        if (selectedFeature != null) {
-                            final MGXMasterI master = selectedFeature.getMaster();
-                            return master.AssembledRegion().getDNASequence(selectedFeature);
-                        }
-                        return null;
-                    }
-
-                    @Override
-                    protected void done() {
-                        try {
-                            SequenceI seq = get();
-                            if (seq != null) {
-                                String[] opts = new String[]{"Close"};
-                                String title = e.getSource() == dnaseq
-                                        ? "DNA sequence for " + seq.getName()
-                                        : "Amino acid sequence for " + seq.getName();
-                                final SeqPanel sp = new SeqPanel();
-                                if (e.getSource() == aaseq) {
-                                    String translation = DNAUtils.translate(seq.getSequence());
-                                    seq.setSequence(translation);
-                                }
-                                sp.show(seq);
-
-                                DialogDescriptor d = new DialogDescriptor(sp, title, true, DialogDescriptor.DEFAULT_OPTION, opts[0], null);
-                                d.setOptions(opts);
-                                d.setClosingOptions(opts);
-                                d.setAdditionalOptions(new Object[]{"Copy to clipboard"});
-                                d.setMessage(sp);
-                                d.addPropertyChangeListener(new PropertyChangeListener() {
-                                    @Override
-                                    public void propertyChange(PropertyChangeEvent evt) {
-                                        if (evt.getPropertyName().equals(DialogDescriptor.PROP_VALUE) && evt.getNewValue().equals("Copy to clipboard")) {
-                                            Toolkit.getDefaultToolkit()
-                                                    .getSystemClipboard()
-                                                    .setContents(sp.getSelection(), null);
-                                        }
-
-                                    }
-
-                                });
-                                DialogDisplayer.getDefault().notify(d);
-                            }
-                        } catch (InterruptedException | ExecutionException ex) {
-                            Exceptions.printStackTrace(ex);
-                        }
-                    }
-
-                };
-                sw.execute();
-            }
-        };
-
-        dnaseq.addActionListener(buttonListener);
-        aaseq.addActionListener(buttonListener);
-
-        exportGBK.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                final ContigI contig = contigListModel.getSelectedItem();
-                final String taxAssignment = currentBin.getTaxonomy();
-                JFileChooser fchooser = new JFileChooser();
-                fchooser.setDialogType(JFileChooser.SAVE_DIALOG);
-
-                // try to restore last directory selection
-                String last = NbPreferences.forModule(JFileChooser.class).get("lastDirectory", null);
-                if (last != null) {
-                    File f = new File(last);
-                    if (f.exists() && f.isDirectory() && f.canWrite()) {
-                        fchooser.setCurrentDirectory(f);
-                    }
-                }
-
-                // suggest a file name
-                String suffix = ".gbk";
-                File suggestedName = new File(fchooser.getCurrentDirectory(), cleanupName(contig.getName()) + suffix);
-                int cnt = 1;
-                while (suggestedName.exists()) {
-                    String newName = new StringBuilder(cleanupName(contig.getName()))
-                            .append(" (")
-                            .append(cnt++)
-                            .append(")")
-                            .append(suffix)
-                            .toString();
-                    suggestedName = new File(fchooser.getCurrentDirectory(), newName);
-                }
-                fchooser.setSelectedFile(suggestedName);
-                FileFilter ff = new SuffixFilter(FileType.EMBLGENBANK);
-                fchooser.addChoosableFileFilter(ff);
-                fchooser.setFileFilter(ff);
-
-                if (fchooser.showSaveDialog(null) != JFileChooser.APPROVE_OPTION) {
-                    return;
-                }
-
-                NbPreferences.forModule(JFileChooser.class).put("lastDirectory", fchooser.getCurrentDirectory().getAbsolutePath());
-
-                final File target = fchooser.getSelectedFile();
-                if (target.exists()) {
-                    // ask if file should be overwritten, else return
-                    String msg = new StringBuilder("A file named ")
-                            .append(target.getName())
-                            .append(" already exists. Should this ")
-                            .append("file be overwritten?")
-                            .toString();
-                    NotifyDescriptor nd = new NotifyDescriptor(msg,
-                            "Overwrite file?",
-                            NotifyDescriptor.OK_CANCEL_OPTION,
-                            NotifyDescriptor.WARNING_MESSAGE,
-                            null, null);
-                    Object ret = DialogDisplayer.getDefault().notify(nd);
-                    if (!NotifyDescriptor.OK_OPTION.equals(ret)) {
-                        return;
-                    }
-                }
-
-                ProgressHandle handle = ProgressHandle.createHandle("Export to " + target.getName());
-                handle.start();
-                handle.switchToIndeterminate();
-
-                MGXPool.getInstance().submit(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            GBKExporter.exportContig(target, contig, taxAssignment);
-                        } catch (Exception ex) {
-                            Exceptions.printStackTrace(ex);
-                        }
-
-                        handle.finish();
-                    }
-                });
-
-            }
-        });
-    }
-
-    public synchronized static BinExplorerTopComponent getDefault() {
-        if (instance == null) {
-            instance = new BinExplorerTopComponent();
-        }
-        return instance;
+        geneName.setText("");
+        geneStart.setText("");
+        geneStop.setText("");
+        geneFrame.setText("");
+        geneLength.setText("");
+        dnaseq.setEnabled(false);
+        aaseq.setEnabled(false);
     }
 
     @Override
@@ -402,7 +246,7 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
         aaseq.setToolTipText(org.openide.util.NbBundle.getMessage(BinExplorerTopComponent.class, "BinExplorerTopComponent.aaseq.toolTipText")); // NOI18N
         aaseq.setEnabled(false);
 
-        jXTable1.setModel(tableModel);
+        jXTable1.setModel(attrTableModel);
         jXTable1.getTableHeader().setReorderingAllowed(false);
         jScrollPane1.setViewportView(jXTable1);
 
@@ -620,21 +464,6 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
     public void componentClosed() {
         binResult.removeLookupListener(this);
         vc.removePropertyChangeListener(this);
-        if (featurePanel != null) {
-            featurePanel.dispose();
-            featurePanel = null;
-        }
-        if (seqPropPanel != null) {
-            seqPropPanel.dispose();
-            seqPropPanel = null;
-        }
-        if (selectedFeature != null) {
-            selectedFeature.deleted();
-            selectedFeature = null;
-        }
-        tableModel.clear();
-        contigListModel.dispose();
-        coverageDataset.clear();
     }
 
     @Override
@@ -655,38 +484,10 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
             Object item = event.getItem();
             if (item instanceof ContigI) {
                 ContigI contig = (ContigI) item;
-                dnaseq.setEnabled(false);
-                aaseq.setEnabled(false);
-                exportGBK.setEnabled(true);
-                geneName.setText("");
-                geneStart.setText("");
-                geneStop.setText("");
-                geneFrame.setText("");
-                geneLength.setText("");
-                selectedFeature = null;
-                tableModel.clear();
                 vc.setContig(contig);
-                if (featurePanel != null) {
-                    contentPanel.remove(featurePanel);
-                    featurePanel.dispose();
-                }
-                featurePanel = new FeaturePanel(vc, nf);
-                contentPanel.add(featurePanel, BorderLayout.CENTER);
-                contentPanel.doLayout();
-
-                if (seqPropPanel != null) {
-                    seqpropHolder.remove(seqPropPanel);
-                    seqPropPanel.dispose();
-                }
-                seqPropPanel = new SeqPropertyPanel(vc);
-                seqpropHolder.add(seqPropPanel, BorderLayout.CENTER);
-                seqpropHolder.doLayout();
-
-                coverageDataset.clear();
-
+                repaint();
                 updateLookup();
 
-                repaint();
             }
         }
     }
@@ -694,7 +495,7 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
     @Override
     public void resultChanged(LookupEvent le) {
         // avoid update when component is activated
-        if (isActivated && currentBin != null) {
+        if (isActivated && vc.getSelectedBin() != null) {
             return;
         }
 
@@ -702,141 +503,78 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
         for (BinI bin : binResult.allInstances()) {
             newBin = bin;
         }
-        if (newBin != null && !newBin.equals(currentBin)) {
-            if (featurePanel != null) {
-                featurePanel.clear();
-            }
-            if (seqPropPanel != null) {
-                seqPropPanel.clear();
-            }
-            tableModel.clear();
-            jXTable1.repaint();
-
-            contigListModel.dispose();
-            contigList.repaint();
-
-            coverageDataset.clear();
-
-            runNames.clear();
-
-            if (currentBin != null) {
-                currentBin.removePropertyChangeListener(this);
-            }
-            currentBin = newBin;
-            currentBin.addPropertyChangeListener(this);
-            binName.setText(currentBin.getName());
-            taxonomy.setText(currentBin.getTaxonomy());
-            completeness.setText(currentBin.getCompleteness() + "%");
-            contamination.setText(currentBin.getContamination() + "%");
-            dnaseq.setEnabled(false);
-            aaseq.setEnabled(false);
-            exportGBK.setEnabled(false);
-            geneName.setText("");
-            geneStart.setText("");
-            geneStop.setText("");
-            geneFrame.setText("");
-            geneLength.setText("");
-            selectedFeature = null;
-
-            MGXPool.getInstance().submit(new Runnable() {
-                @Override
-                public void run() {
-                    tableModel.clear();
-                    contigListModel.setBin(currentBin);
-                    contigListModel.update();
-                    contigList.setEnabled(true);
-                    updateLookup();
-                }
-            });
-
+        if (newBin != null && !newBin.equals(vc.getSelectedBin())) {
+            vc.selectBin(newBin);
         }
-
-        if (currentBin == null) {
-            contigListModel.clear();
-        }
-
     }
 
     @Override
     public synchronized void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getSource() instanceof BinI && evt.getPropertyName().equals(ModelBaseI.OBJECT_DELETED)) {
-            BinI bin = (BinI) evt.getSource();
-            if (currentBin.equals(bin)) {
-                currentBin.removePropertyChangeListener(this);
-                currentBin = null;
-                contigListModel.clear();
-                contigList.setSelectedItem(null);
-                contigList.setEnabled(false);
-                binName.setText("");
-                dnaseq.setEnabled(false);
-                aaseq.setEnabled(false);
-                exportGBK.setEnabled(false);
+
+        if (evt.getPropertyName().equals(ContigViewController.BIN_SELECTED)) {
+            BinI bin = vc.getSelectedBin();
+            contigListModel.setBin(bin);
+            contigListModel.update();
+
+            if (bin != null) {
+                binName.setText(bin.getName());
+                taxonomy.setText(bin.getTaxonomy());
+                completeness.setText(bin.getCompleteness() + "%");
+                contamination.setText(bin.getContamination() + "%");
+            } else {
+                binName.setText("-");
+                taxonomy.setText("");
+                completeness.setText("N/A");
+                contamination.setText("N/A");
+            }
+        }
+
+        if (evt.getPropertyName().equals(ContigViewController.CONTIG_CHANGE)) {
+            ContigI contig = vc.getContig();
+            exportGBK.setEnabled(contig != null);
+        }
+
+        if (evt.getPropertyName().equals(ContigViewController.FEATURE_SELECTED) || evt.getPropertyName().equals(ContigViewController.NAVIGATE_TO_REGION)) {
+
+            AssembledRegionI region = vc.getSelectedRegion();
+
+            final MGXMasterI master = region != null ? region.getMaster() : null;
+            if (master != null && !master.equals(vc.getSelectedBin().getMaster())) {
+                runNames.clear();
+            }
+
+            if (region != null) {
+
+                ContigI contig = vc.getContig();
+                geneName.setText(contig.getName() + "_" + region.getId());
+                geneStart.setText(nf.format(region.getStart()));
+                geneStop.setText(nf.format(region.getStop()));
+                if (region.getFrame() > 0) {
+                    geneFrame.setText("+" + String.valueOf(region.getFrame()));
+                } else {
+                    geneFrame.setText(String.valueOf(region.getFrame()));
+                }
+
+                if (region.getType() == RegionType.CDS) {
+                    geneLength.setText(nf.format(region.getLength() / 3) + " aa");
+                } else {
+                    geneLength.setText(nf.format(region.getLength()) + " nt");
+                }
+
+                dnaseq.setEnabled(true);
+
+                // only enable amino acid sequence display for CDS features
+                aaseq.setEnabled(region.getType() == RegionType.CDS);
+
+            } else {
                 geneName.setText("");
                 geneStart.setText("");
                 geneStop.setText("");
                 geneFrame.setText("");
                 geneLength.setText("");
-                tableModel.update(null);
-                selectedFeature = null;
-
-                coverageDataset.clear();
-                featurePanel.clear();
-                seqPropPanel.clear();
-
-                tableModel.clear();
-                contigListModel.dispose();
-
-                updateLookup();
-
-                repaint();
-                return;
+                dnaseq.setEnabled(false);
+                aaseq.setEnabled(false);
             }
-        }
-        if (evt.getSource() instanceof ContigViewController
-                && (evt.getPropertyName().equals(ContigViewController.FEATURE_SELECTED) || evt.getPropertyName().equals(ContigViewController.NAVIGATE_TO_REGION))) {
-            dnaseq.setEnabled(true);
-
-            AssembledRegionI newFeat = (AssembledRegionI) evt.getNewValue();
-
-            // only enable amino acid sequence display for CDS features
-            aaseq.setEnabled(newFeat.getType() == RegionType.CDS);
-
-            if (newFeat == selectedFeature) {
-                return;
-            }
-
-            tableModel.clear();
-            selectedFeature = newFeat;
-
-            final MGXMasterI master = selectedFeature.getMaster();
-            if (!master.equals(currentBin.getMaster())) {
-                runNames.clear();
-            }
-
-            geneName.setText(contigListModel.getSelectedItem().getName() + "_" + selectedFeature.getId());
-            geneStart.setText(nf.format(selectedFeature.getStart()));
-            geneStop.setText(nf.format(selectedFeature.getStop()));
-            if (selectedFeature.getFrame() > 0) {
-                geneFrame.setText("+" + String.valueOf(selectedFeature.getFrame()));
-            } else {
-                geneFrame.setText(String.valueOf(selectedFeature.getFrame()));
-            }
-
-            if (selectedFeature.getType() == RegionType.CDS) {
-                geneLength.setText(nf.format(selectedFeature.getLength() / 3) + " aa");
-            } else {
-                geneLength.setText(nf.format(selectedFeature.getLength()) + " nt");
-            }
-
-            //
-            //  update observation display
-            //
-            MGXPool.getInstance().submit(new Runnable() {
-                @Override
-                public void run() {
-                    tableModel.update(selectedFeature);
-                }
-            });
 
             //
             // update coverage chart
@@ -847,16 +585,20 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
 
                     try {
                         List<GeneCoverageI> geneCov = new ArrayList<>();
-                        Iterator<GeneCoverageI> iter = master.GeneCoverage().ByGene(selectedFeature);
-                        while (iter != null && iter.hasNext()) {
-                            geneCov.add(iter.next());
-                        }
-                        Collections.sort(geneCov);
 
+                        if (region != null) {
+                            Iterator<GeneCoverageI> iter = region.getMaster().GeneCoverage().ByGene(region);
+                            while (iter != null && iter.hasNext()) {
+                                geneCov.add(iter.next());
+                            }
+                            Collections.sort(geneCov);
+                        }
+
+                        Color purple = new Color(156, 17, 130);
                         CategoryPlot plot = coverageChart.getCategoryPlot();
                         CategoryItemRenderer br = plot.getRenderer();
                         for (int i = 0; i < geneCov.size(); i++) {
-                            br.setSeriesPaint(i, Color.BLUE);
+                            br.setSeriesPaint(i, purple);
                         }
 
                         coverageDataset.clear();
@@ -890,14 +632,6 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
         }
     }
 
-    public RegionI getSelectedFeature() {
-        return selectedFeature;
-    }
-
-    private ContigI getCurrentContig() {
-        return contigListModel.getSelectedItem();
-    }
-
     private void setupCoverageChart() {
 
         coverageChart.setBorderPaint(Color.WHITE);
@@ -927,23 +661,22 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
 
     private void updateLookup() {
         content.set(Collections.emptyList(), null);
-        if (currentBin != null) {
-            content.add(currentBin.getMaster());
-            content.add(currentBin);
-        }
-        if (getCurrentContig() != null) {
-            content.add(getCurrentContig());
-        }
-        if (selectedFeature != null) {
-            content.add(selectedFeature);
-        }
-    }
 
-    private static String cleanupName(String name) {
-        if (name.contains(File.separator)) {
-            name = name.replace(File.separator, "_");
+        BinI bin = vc.getSelectedBin();
+        if (bin != null) {
+            content.add(bin.getMaster());
+            content.add(bin);
         }
-        return name;
+
+        ContigI contig = vc.getContig();
+        if (contig != null) {
+            content.add(contig);
+        }
+
+        AssembledRegionI region = vc.getSelectedRegion();
+        if (region != null) {
+            content.add(region);
+        }
     }
 
     void writeProperties(java.util.Properties p) {
@@ -970,7 +703,13 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
                 long contigId = sr.getContigId();
 
                 int contigIdx = contigListModel.findIndexByID(contigId);
+                if (contigIdx == -1) {
+                    System.err.println("BinSearchHandler unable to find contig with ID " + contigId + " in list model with size " + contigListModel.getSize());
+                    return;
+                }
                 contigList.setSelectedIndex(contigIdx);
+                ContigI contig = contigListModel.getElementAt(contigIdx);
+                vc.setContig(contig);
 
                 vc.navigateToRegion(sr.getRegionId());
             }

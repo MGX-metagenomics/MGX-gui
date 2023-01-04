@@ -5,7 +5,6 @@
  */
 package de.cebitec.mgx.gui.binexplorer.internal;
 
-import de.cebitec.mgx.api.misc.SequenceViewControllerI;
 import de.cebitec.mgx.api.model.assembly.AssembledRegionI;
 import de.cebitec.mgx.common.RegionType;
 import de.cebitec.mgx.gui.swingutils.Arrow;
@@ -138,7 +137,7 @@ public class FeaturePanel extends PanelBase<ContigViewController> implements Mou
             // draw arrows (and borders)
             Color curColor = Color.RED;
             g2.setColor(curColor);
-            
+
             AssembledRegionI selectedGene = vc.getSelectedRegion();
 
             // draw the region shapes
@@ -288,4 +287,16 @@ public class FeaturePanel extends PanelBase<ContigViewController> implements Mou
     public void mouseMoved(MouseEvent e) {
         // nop
     }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        switch (evt.getPropertyName()) {
+            case ContigViewController.BIN_SELECTED:
+                // ignore
+                break;
+            default:
+                super.propertyChange(evt);
+        }
+    }
+
 }

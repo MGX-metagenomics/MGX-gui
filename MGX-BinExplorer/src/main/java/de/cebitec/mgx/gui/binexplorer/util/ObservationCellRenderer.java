@@ -8,6 +8,7 @@ package de.cebitec.mgx.gui.binexplorer.util;
 import de.cebitec.mgx.api.model.RegionI;
 import de.cebitec.mgx.api.model.assembly.GeneObservationI;
 import de.cebitec.mgx.gui.binexplorer.BinExplorerTopComponent;
+import de.cebitec.mgx.gui.binexplorer.internal.ContigViewController;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
@@ -24,18 +25,18 @@ import org.apache.commons.math3.util.FastMath;
  */
 public class ObservationCellRenderer extends DefaultTableCellRenderer {
 
-    private final BinExplorerTopComponent tc;
+    private final ContigViewController vc;
     private final ObservationDisplay display = new ObservationDisplay();
 
-    public ObservationCellRenderer(BinExplorerTopComponent tc) {
+    public ObservationCellRenderer(ContigViewController vc) {
         super();
-        this.tc = tc;
+        this.vc = vc;
     }
 
     @Override
     public Component getTableCellRendererComponent(JTable table, Object obj, boolean isSelected, boolean hasFocus, int row, int column) {
         if (column == 4 && obj instanceof GeneObservationI) {
-            RegionI gene = tc.getSelectedFeature();
+            RegionI gene = vc.getSelectedRegion();
             GeneObservationI obs = (GeneObservationI) obj;
 
             display.setData(gene, obs);

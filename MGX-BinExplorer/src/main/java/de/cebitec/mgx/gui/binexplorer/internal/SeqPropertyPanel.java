@@ -5,12 +5,14 @@
  */
 package de.cebitec.mgx.gui.binexplorer.internal;
 
+import de.cebitec.mgx.api.model.assembly.ContigI;
 import de.cebitec.mgx.gui.binexplorer.util.GC;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.geom.GeneralPath;
+import java.beans.PropertyChangeEvent;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -84,7 +86,14 @@ public class SeqPropertyPanel extends PanelBase<ContigViewController> {
         List<Float> gcData = new LinkedList<>();
         List<Float> skewData = new LinkedList<>();
 
+        ContigI contig = vc.getContig();
+        if (contig == null) {
+            return;
+        }
         String dnaSequence = vc.getSequence();
+
+        assert contig.getLength() == dnaSequence.length();
+
         int seqLen = dnaSequence.length();
         for (int i = bounds[0]; i < bounds[1]; i += winShift) {
             String subseq = dnaSequence.substring(i, FastMath.min(i + winSize, seqLen - 1));
@@ -136,5 +145,16 @@ public class SeqPropertyPanel extends PanelBase<ContigViewController> {
     @Override
     public boolean update() {
         return true;
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        switch (evt.getPropertyName()) {
+            case ContigViewController.BIN_SELECTED:
+                // ignore
+                break;
+            default:
+                super.propertyChange(evt);
+        }
     }
 }

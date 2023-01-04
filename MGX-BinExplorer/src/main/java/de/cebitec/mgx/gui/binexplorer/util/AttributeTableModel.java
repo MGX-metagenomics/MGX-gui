@@ -8,14 +8,17 @@ package de.cebitec.mgx.gui.binexplorer.util;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.RegionI;
+import de.cebitec.mgx.api.model.assembly.AssembledRegionI;
 import de.cebitec.mgx.api.model.assembly.GeneObservationI;
+import de.cebitec.mgx.gui.binexplorer.internal.ContigViewController;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import javax.swing.table.DefaultTableModel;
 import org.apache.commons.math3.util.FastMath;
 import org.openide.util.Exceptions;
@@ -24,11 +27,26 @@ import org.openide.util.Exceptions;
  *
  * @author sj
  */
-public class AttributeTableModel extends DefaultTableModel {
+public class AttributeTableModel extends DefaultTableModel implements PropertyChangeListener {
 
+    private final ContigViewController vc;
     private final List<GeneObservationI> gobsList = new ArrayList<>();
+    //
+    private final NumberFormat nf;
 
-    public AttributeTableModel() {
+    public AttributeTableModel(ContigViewController vc, NumberFormat nf) {
+        vc.addPropertyChangeListener(this);
+        this.vc = vc;
+        this.nf = nf;
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (evt.getPropertyName().equals(ContigViewController.FEATURE_SELECTED)
+                || evt.getPropertyName().equals(ContigViewController.NAVIGATE_TO_REGION)) {
+            AssembledRegionI region = vc.getSelectedRegion();
+            update(region);
+        }
     }
 
     public void clear() {
@@ -48,8 +66,8 @@ public class AttributeTableModel extends DefaultTableModel {
             add("NCBI_SPECIES");
         }
     };
-    
-    public synchronized void update(RegionI gene) {
+
+    private synchronized void update(RegionI gene) {
         gobsList.clear();
         if (gene == null) {
             super.setRowCount(0);
@@ -105,6 +123,9 @@ public class AttributeTableModel extends DefaultTableModel {
 
     @Override
     public Object getValueAt(int row, int column) {
+        if (row >= gobsList.size()) {
+            return null;
+        }
         GeneObservationI gobs = gobsList.get(row);
         switch (column) {
             case 0:
@@ -112,9 +133,9 @@ public class AttributeTableModel extends DefaultTableModel {
             case 1:
                 return gobs.getAttributeName();
             case 2:
-                return NumberFormat.getInstance(Locale.US).format(gobs.getStart());
+                return nf.format(gobs.getStart());
             case 3:
-                return NumberFormat.getInstance(Locale.US).format(gobs.getStop());
+                return nf.format(gobs.getStop());
             case 4:
                 return gobs;
         }

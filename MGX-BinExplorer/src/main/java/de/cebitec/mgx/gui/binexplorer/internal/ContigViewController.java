@@ -8,6 +8,7 @@ package de.cebitec.mgx.gui.binexplorer.internal;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.misc.SequenceViewControllerI;
 import de.cebitec.mgx.api.model.assembly.AssembledRegionI;
+import de.cebitec.mgx.api.model.assembly.BinI;
 import de.cebitec.mgx.api.model.assembly.ContigI;
 import de.cebitec.mgx.pevents.ParallelPropertyChangeSupport;
 import java.beans.PropertyChangeEvent;
@@ -24,22 +25,42 @@ import org.openide.util.Exceptions;
  */
 public class ContigViewController implements PropertyChangeListener, SequenceViewControllerI<AssembledRegionI> {
 
-    //public final static String VIEWCONTROLLER_CLOSED = "viewControllerClosed";
+    public final static String BIN_SELECTED = "binSelected";
     //
     private final ParallelPropertyChangeSupport pcs;
-    private volatile ContigI contig;
+    //
+    private volatile BinI bin = null;
+    private volatile ContigI contig = null;
+    private volatile AssembledRegionI selectedRegion = null;
+    //
     private final List<AssembledRegionI> regions = new ArrayList<>();
     private int[] curBounds;
     private int[] newBounds;
     private int intervalLen;
-    private String sequence;
-    private AssembledRegionI selectedRegion = null;
+    private String contigDNASequence = null;
 
     public ContigViewController() {
         pcs = new ParallelPropertyChangeSupport(this, true);
     }
 
+    public void selectBin(BinI b) {
+        BinI prev = bin;
+        this.bin = b;
+
+        if (prev != bin) {
+            pcs.firePropertyChange(BIN_SELECTED, prev, bin);
+        }
+
+        setContig(null);
+    }
+
+    public BinI getSelectedBin() {
+        return bin;
+    }
+
     public void setContig(ContigI contig) {
+
+        ContigI prev = this.contig;
 
         if (contig != null && contig.equals(this.contig)) {
             // no change
@@ -52,7 +73,7 @@ public class ContigViewController implements PropertyChangeListener, SequenceVie
         }
 
         regions.clear();
-        sequence = null;
+        contigDNASequence = null;
 
         if (contig != null) {
             this.contig = contig;
@@ -61,12 +82,24 @@ public class ContigViewController implements PropertyChangeListener, SequenceVie
             curBounds = new int[]{0, FastMath.min(15000, contig.getLength() - 1)};
             newBounds = new int[]{0, FastMath.min(15000, contig.getLength() - 1)};
             intervalLen = curBounds[1] - curBounds[0] + 1;
+
+            if (prev != this.contig) {
+                pcs.firePropertyChange(CONTIG_CHANGE, prev, this.contig);
+            }
         } else {
+            this.contig = null;
             curBounds = new int[]{0, 0};
             newBounds = new int[]{0, 0};
+            if (prev != null) {
+                pcs.firePropertyChange(CONTIG_CHANGE, prev, null);
+            }
         }
-        pcs.firePropertyChange(CONTIG_CHANGE, null, contig);
         pcs.firePropertyChange(BOUNDS_CHANGE, 0, getBounds());
+        selectRegion(null);
+    }
+
+    public ContigI getContig() {
+        return contig;
     }
 
     @Override
@@ -86,6 +119,9 @@ public class ContigViewController implements PropertyChangeListener, SequenceVie
 
     @Override
     public void setBounds(int i, int j) {
+        if (i > j) {
+            throw new RuntimeException("Invalid bounds: " + i + "-" + j);
+        }
         newBounds[0] = FastMath.max(0, i);
         newBounds[1] = FastMath.min(contig.getLength(), j);
 
@@ -148,18 +184,22 @@ public class ContigViewController implements PropertyChangeListener, SequenceVie
 
     @Override
     public String getSequence() {
-        if (sequence == null) {
+        if (contig == null) {
+            return null;
+        }
+        
+        if (contigDNASequence == null) {
             try {
-                sequence = contig.getMaster().Contig().getDNASequence(contig).getSequence().toUpperCase();
+                contigDNASequence = contig.getMaster().Contig().getDNASequence(contig).getSequence().toUpperCase();
             } catch (MGXException ex) {
                 Exceptions.printStackTrace(ex);
             }
         }
-        return sequence;
+        return contigDNASequence;
     }
 
     public void close() {
-        contig = null;
+        selectBin(null);
         pcs.close();
     }
 
@@ -170,8 +210,11 @@ public class ContigViewController implements PropertyChangeListener, SequenceVie
 
     @Override
     public void selectRegion(AssembledRegionI selectedGene) {
+        AssembledRegionI prev = selectedRegion;
         selectedRegion = selectedGene;
-        pcs.firePropertyChange(FEATURE_SELECTED, null, selectedGene);
+        if (prev != selectedRegion) {
+            pcs.firePropertyChange(FEATURE_SELECTED, prev, selectedRegion);
+        }
     }
 
     @Override
@@ -193,10 +236,15 @@ public class ContigViewController implements PropertyChangeListener, SequenceVie
             if (target == selectedRegion) {
                 return;
             }
-            selectedRegion = target;
+            selectRegion(target);
             pcs.firePropertyChange(NAVIGATE_TO_REGION, null, target);
         } else {
             System.err.println("Region not found!");
+            regions.clear();
+            selectRegion(null);
+            contigDNASequence = null;
+            curBounds[0] = 0;
+            curBounds[1] = 0;
         }
     }
 

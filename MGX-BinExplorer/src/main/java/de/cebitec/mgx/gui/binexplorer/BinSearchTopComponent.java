@@ -44,7 +44,7 @@ import org.openide.util.lookup.InstanceContent;
 )
 @TopComponent.Registration(mode = "satellite", openAtStartup = false)
 @ActionID(category = "Window", id = "de.cebitec.mgx.gui.binexplorer.BinSearchTopComponent")
-@ActionReference(path = "Menu/Window" /*, position = 333 */)
+@ActionReference(path = "Menu/Window", position = 341)
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_BinSearchAction",
         preferredID = "BinSearchTopComponent"
@@ -62,9 +62,6 @@ public final class BinSearchTopComponent extends TopComponent implements LookupL
     private final BinSearchTableModel tableModel = new BinSearchTableModel();
     //
     private final InstanceContent content = new InstanceContent();
-    private final Lookup lookup;
-    //
-    private static BinSearchTopComponent instance;
 
     public BinSearchTopComponent() {
         initComponents();
@@ -73,7 +70,7 @@ public final class BinSearchTopComponent extends TopComponent implements LookupL
 
         binResult = Utilities.actionsGlobalContext().lookupResult(BinI.class);
 
-        lookup = new AbstractLookup(content);
+        Lookup lookup = new AbstractLookup(content);
         associateLookup(lookup);
 
         searchField.getDocument().addDocumentListener(new DocumentListener() {
@@ -96,10 +93,17 @@ public final class BinSearchTopComponent extends TopComponent implements LookupL
                 String searchText = searchField.getText();
                 if (searchText.length() >= 2) {
                     tableModel.update(currentBin, searchText);
+                } else {
+                    tableModel.clear();
                 }
             }
 
         });
+
+        jXTable1.getColumn(0).setPreferredWidth(90);
+        jXTable1.getColumn(1).setPreferredWidth(90);
+        jXTable1.getColumn(2).setPreferredWidth(90);
+        jXTable1.getColumn(3).setPreferredWidth(140);
 
         jXTable1.setHighlighters(new Highlighter[]{HighlighterFactory.createAlternateStriping()});
         jXTable1.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -121,16 +125,6 @@ public final class BinSearchTopComponent extends TopComponent implements LookupL
                 }
             }
         });
-
-        instance = this;
-
-    }
-
-    public static BinSearchTopComponent getDefault() {
-        if (instance == null) {
-            instance = new BinSearchTopComponent();
-        }
-        return instance;
     }
 
     /**
@@ -229,6 +223,14 @@ public final class BinSearchTopComponent extends TopComponent implements LookupL
             currentBin.addPropertyChangeListener(this);
 
             tableModel.clear();
+
+            // repeat search for new bin
+            String searchText = searchField.getText();
+            if (searchText.length() >= 2) {
+                tableModel.update(currentBin, searchText);
+            }
+            
+            repaint();
         }
 
     }

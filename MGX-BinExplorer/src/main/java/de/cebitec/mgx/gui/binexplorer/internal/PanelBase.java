@@ -195,6 +195,8 @@ public abstract class PanelBase<T extends SequenceViewControllerI> extends JComp
                 int mid = target.getMin() + ((target.getMax() - target.getMin()) / 2);
                 int tmp = vc.getIntervalLength() / 2;
                 vc.setBounds(mid - tmp, mid + tmp);
+                bounds = vc.getBounds();
+                update();
                 repaint();
                 break;
             case SequenceViewControllerI.CONTIG_CHANGE:
