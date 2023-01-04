@@ -31,7 +31,6 @@ import java.beans.PropertyChangeListener;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -57,8 +56,6 @@ import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
 import org.openide.util.Utilities;
-import org.openide.util.lookup.AbstractLookup;
-import org.openide.util.lookup.InstanceContent;
 import org.openide.windows.TopComponent;
 
 /**
@@ -88,8 +85,8 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
     private final Lookup.Result<SeqRunI> resultSeqRun;
     private SeqRunI currentSeqRun = null;
 
-    private final InstanceContent content = new InstanceContent();
-    private final Lookup lookup;
+    //private final InstanceContent content = new InstanceContent();
+    //private final Lookup lookup;
     private int tabIdx = -1;
     //
     private final static Color TOOLTIP_COLOR = new Color(120, 85, 137);
@@ -109,14 +106,14 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         super.setName("Show Report");
         super.setToolTipText("Show Report");
 
-        lookup = new AbstractLookup(content);
-        associateLookup(lookup);
+        //lookup = new AbstractLookup(content);
+        //associateLookup(lookup);
         resultSeqRun = Utilities.actionsGlobalContext().lookupResult(SeqRunI.class);
         update();
         tabbedpane.addChangeListener((ChangeEvent e) -> {
             int newIdx = tabbedpane.getSelectedIndex();
             if (newIdx != tabIdx) {
-                content.set(Collections.emptyList(), null);
+                //content.set(Collections.emptyList(), null);
                 tabbedpane.getSelectedComponent();
                 tabIdx = newIdx;
             }
