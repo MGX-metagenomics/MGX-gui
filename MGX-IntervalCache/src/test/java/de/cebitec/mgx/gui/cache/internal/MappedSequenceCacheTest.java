@@ -12,7 +12,6 @@ import de.cebitec.mgx.api.model.MappedSequenceI;
 import de.cebitec.mgx.api.model.MappingI;
 import de.cebitec.mgx.gui.cache.CacheFactory;
 import de.cebitec.mgx.gui.cache.CoverageInfoCache;
-import de.cebitec.mgx.gui.datamodel.MappedSequence;
 import de.cebitec.mgx.testutils.TestMaster;
 import java.util.Iterator;
 import java.util.Set;
@@ -120,7 +119,7 @@ public class MappedSequenceCacheTest {
     public void testOverlaps() {
         System.err.println("testOverlaps");
         // 6391-6796 outside of 0-49999
-        MappedSequenceI ms = new MappedSequence(1, 6391, 6796, 1);
+        MappedSequenceI ms = new MockMappedSequence(1, 6391, 6796, 1);
         boolean overlaps = MappedSequenceCache.overlaps(ms, 0, 49999);
         assertTrue(overlaps);
     }

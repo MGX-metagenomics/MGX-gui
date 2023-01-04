@@ -40,11 +40,6 @@
             <artifactId>MGX-TestUtils</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>de.cebitec.mgx.gui</groupId>
-            <artifactId>MGX-Datamodel</artifactId>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <build>
