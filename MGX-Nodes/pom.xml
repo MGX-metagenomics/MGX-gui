@@ -50,10 +50,6 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>MGX-Controller</artifactId>
-        </dependency> 
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>MGX-Wizards</artifactId>
         </dependency>
         <dependency>

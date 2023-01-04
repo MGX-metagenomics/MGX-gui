@@ -49,10 +49,6 @@
             <groupId>de.cebitec.mgx.gui</groupId>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>MGX-Controller</artifactId>
-        </dependency>
-        <dependency>
             <artifactId>MGX-SwingUtils</artifactId>
             <groupId>de.cebitec.mgx.gui</groupId>
         </dependency>
@@ -96,7 +92,6 @@
         <dependency>
             <groupId>de.cebitec.mgx</groupId>
             <artifactId>MGX-common</artifactId>
-            <version>2.0</version>
         </dependency>
         <dependency>
             <groupId>de.cebitec.mgx.gui</groupId>
