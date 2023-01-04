@@ -181,7 +181,7 @@
             <artifactId>MGX-BinExplorer</artifactId>
             <version>${project.version}</version>
         </dependency>
-         <dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>MGX-Report</artifactId>
             <version>${project.version}</version>
@@ -202,6 +202,7 @@
                     <useOSGiDependencies>true</useOSGiDependencies>
                     <etcConfFile>src/main/resources/mgxgui.conf</etcConfFile>
                     <installerOsSolaris>false</installerOsSolaris>
+                    <installerLicenseFile>../LICENSE</installerLicenseFile>
                 </configuration>
             </plugin>
             <plugin>
