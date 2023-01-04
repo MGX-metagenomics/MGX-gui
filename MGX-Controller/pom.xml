@@ -107,12 +107,21 @@
         <dependency>
             <groupId>de.cebitec.mgx</groupId>
             <artifactId>MGX-common</artifactId>
-            <version>2.0</version>
         </dependency>
         <dependency>
             <groupId>de.cebitec.mgx.gui</groupId>
             <artifactId>MGX-DataFactories</artifactId>
-            <version>2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>de.cebitec.mgx.gui</groupId>
+            <artifactId>MGX-TestUtils</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>osgi.core</artifactId>
+            <version>8.0.0</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies> 
 
@@ -136,6 +145,7 @@
                             de.cebitec.mgx.gui.util
                         </Export-Package>
                         <Import-Package>
+                            org.osgi.framework,
                             de.cebitec.gpms.core,
                             de.cebitec.gpms.rest,
                             de.cebitec.mgx.dto,
@@ -168,6 +178,7 @@
                             com.google.common.cache,
                             com.google.protobuf
                         </Import-Package>
+                        <Bundle-Activator>de.cebitec.mgx.gui.controller.Activator</Bundle-Activator>
                     </instructions>
                 </configuration>
             </plugin>

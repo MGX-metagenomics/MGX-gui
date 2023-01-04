@@ -50,7 +50,7 @@ public class MGXMaster extends MGXMasterI implements PropertyChangeListener {
     private static final Logger logger = Logger.getLogger("MGX");
     //
 
-    public MGXMaster(RESTMasterI restMaster) {
+    MGXMaster(RESTMasterI restMaster) {
         this(new MGXDTOMaster(restMaster));
     }
 
