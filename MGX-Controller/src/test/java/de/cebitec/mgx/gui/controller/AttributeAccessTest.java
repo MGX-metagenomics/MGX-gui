@@ -13,7 +13,7 @@ import de.cebitec.mgx.api.model.tree.NodeI;
 import de.cebitec.mgx.api.model.tree.TreeI;
 import de.cebitec.mgx.gui.datafactories.DistributionFactory;
 import de.cebitec.mgx.gui.datafactories.TreeFactory;
-import de.cebitec.mgx.gui.util.TestMaster;
+import de.cebitec.mgx.testutils.TestMaster;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;

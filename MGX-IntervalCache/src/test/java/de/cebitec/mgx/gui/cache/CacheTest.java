@@ -1,21 +1,13 @@
 package de.cebitec.mgx.gui.cache;
 
-import de.cebitec.gpms.core.GPMSException;
-import de.cebitec.gpms.core.MembershipI;
-import de.cebitec.gpms.rest.GPMSClientI;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.api.model.MappedSequenceI;
 import de.cebitec.mgx.api.model.MappingI;
 import de.cebitec.mgx.api.model.ReferenceRegionI;
-import de.cebitec.mgx.gui.controller.MGXMaster;
-import de.cebitec.mgx.restgpms.GPMSClient;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import de.cebitec.mgx.testutils.TestMaster;
 import java.util.Iterator;
-import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
 import org.junit.After;
@@ -24,7 +16,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -57,7 +48,7 @@ public class CacheTest {
     @Test
     public void testGetSequenceRegression() throws Exception {
         System.out.println("testGetSequenceRegression");
-        MGXMasterI master = get();
+        MGXMasterI master = TestMaster.getRO();
         MGXReferenceI ref = master.Reference().fetch(4);
         Cache<String> cache = CacheFactory.createSequenceCache(master, ref);
         String seq = cache.get(1049908, 1050000);
@@ -67,7 +58,7 @@ public class CacheTest {
     @Test
     public void testGetSequence() throws Exception {
         System.out.println("getSequence");
-        MGXMasterI master = get();
+        MGXMasterI master = TestMaster.getRO();
         MGXReferenceI ref = master.Reference().fetch(4);
         Cache<String> cache = CacheFactory.createSequenceCache(master, ref);
         assertNotNull(cache);
@@ -81,7 +72,7 @@ public class CacheTest {
     @Test
     public void testGetMappedSeqs() throws Exception {
         System.out.println("getMappedSeqs");
-        MGXMasterI master = get();
+        MGXMasterI master = TestMaster.getRO();
         MGXReferenceI ref = master.Reference().fetch(8);
         assertNotNull(ref);
         MappingI m = master.Mapping().fetch(30);
@@ -101,7 +92,7 @@ public class CacheTest {
     @Test
     public void testGetFullSequence() throws Exception {
         System.out.println("getFullSequence");
-        MGXMasterI master = get();
+        MGXMasterI master = TestMaster.getRO();
         MGXReferenceI ref = master.Reference().fetch(4);
         Cache<String> cache = CacheFactory.createSequenceCache(master, ref);
         assertNotNull(cache);
@@ -112,7 +103,7 @@ public class CacheTest {
     @Test
     public void testGetRegions() throws Exception {
         System.out.println("getRegions");
-        MGXMasterI master = get();
+        MGXMasterI master = TestMaster.getRO();
         MGXReferenceI ref = master.Reference().fetch(4);
         Cache<Set<ReferenceRegionI>> cache = CacheFactory.createRegionCache(master, ref);
         assertNotNull(cache);
@@ -123,7 +114,7 @@ public class CacheTest {
     @Test
     public void testGetRegions2() throws Exception {
         System.out.println("getRegions2");
-        MGXMasterI master = get();
+        MGXMasterI master = TestMaster.getRO();
         MGXReferenceI ref = master.Reference().fetch(4);
         Cache<Set<ReferenceRegionI>> cache = CacheFactory.createRegionCache(master, ref);
         assertNotNull(cache);
@@ -134,7 +125,7 @@ public class CacheTest {
     @Test
     public void testGetOneInterval() throws MGXException {
         System.out.println("getOneInterval");
-        MGXMasterI master = get();
+        MGXMasterI master = TestMaster.getRO();
         MGXReferenceI ref = master.Reference().fetch(4);
         Cache<String> cache = CacheFactory.createSequenceCache(master, ref);
         assertNotNull(cache);
@@ -151,7 +142,7 @@ public class CacheTest {
     @Test
     public void testGetIntervals() throws MGXException {
         System.out.println("getIntervals");
-        MGXMasterI master = get();
+        MGXMasterI master = TestMaster.getRO();
         MGXReferenceI ref = master.Reference().fetch(4);
         Cache<String> cache = CacheFactory.createSequenceCache(master, ref);
         assertNotNull(cache);
@@ -177,7 +168,7 @@ public class CacheTest {
     @Test
     public void testShortInterval() throws MGXException {
         System.out.println("getShortintervals");
-        MGXMasterI master = get();
+        MGXMasterI master = TestMaster.getRO();
         MGXReferenceI ref = master.Reference().fetch(4);
         Cache<String> cache = CacheFactory.createSequenceCache(master, ref);
         assertNotNull(cache);
@@ -199,7 +190,7 @@ public class CacheTest {
     @Test
     public void testIntervalAlignment() throws MGXException {
         System.out.println("IntervalAlignment");
-        MGXMasterI master = get();
+        MGXMasterI master = TestMaster.getRO();
         MGXReferenceI ref = master.Reference().fetch(4);
         Cache<String> cache = CacheFactory.createSequenceCache(master, ref);
         assertNotNull(cache);
@@ -217,7 +208,7 @@ public class CacheTest {
     @Test
     public void testIntervalAlignment2() throws MGXException {
         System.out.println("IntervalAlignment2");
-        MGXMasterI master = get();
+        MGXMasterI master = TestMaster.getRO();
         MGXReferenceI ref = master.Reference().fetch(4);
         Cache<String> cache = CacheFactory.createSequenceCache(master, ref);
         assertNotNull(cache);
@@ -256,7 +247,7 @@ public class CacheTest {
     @Test
     public void testCacheing() throws MGXException {
         System.out.println("Cacheing");
-        MGXMasterI master = get();
+        MGXMasterI master = TestMaster.getRO();
         MGXReferenceI ref = master.Reference().fetch(4);
         Cache<String> cache = CacheFactory.createSequenceCache(master, ref);
         assertNotNull(cache);
@@ -282,7 +273,7 @@ public class CacheTest {
     @Test
     public void testIterator() throws Exception {
         System.out.println("getCovIterator");
-        MGXMasterI master = get();
+        MGXMasterI master = TestMaster.getRO();
         MGXReferenceI ref = master.Reference().fetch(8);
         assertNotNull(ref);
         UUID uuid = master.Mapping().openMapping(30);
@@ -302,7 +293,7 @@ public class CacheTest {
     @Test
     public void testMaxCoverage() throws Exception {
         System.out.println("maxCoverage");
-        MGXMasterI master = get();
+        MGXMasterI master = TestMaster.getRO();
         MGXReferenceI ref = master.Reference().fetch(8);
         assertNotNull(ref);
         UUID uuid = master.Mapping().openMapping(30);
@@ -353,49 +344,4 @@ public class CacheTest {
         }
         return false;
     }
-
-    public static MGXMasterI get() {
-        MGXMasterI master = null;
-
-        String serverURI = "https://mgx.cebitec.uni-bielefeld.de/MGX-maven-web/webresources/";
-
-        String config = System.getProperty("user.home") + "/.m2/mgx.junit";
-        File f = new File(config);
-        if (f.exists() && f.canRead()) {
-            Properties p = new Properties();
-            try {
-                p.load(new FileInputStream(f));
-                serverURI = p.getProperty("testserver");
-            } catch (IOException ex) {
-                System.out.println(ex.getMessage());
-            }
-        }
-        GPMSClientI gpms = new GPMSClient("MyServer", serverURI);
-        try {
-            gpms.login("mgx_unittestRO", "gut-isM5iNt");
-        } catch (GPMSException ex) {
-            fail(ex.getMessage());
-        }
-        Iterator<MembershipI> mIter = null;
-        try {
-            mIter = gpms.getMemberships();
-        } catch (GPMSException ex) {
-            fail(ex.getMessage());
-        }
-        while (mIter.hasNext()) {
-            MembershipI m = mIter.next();
-            if ("MGX".equals(m.getProject().getProjectClass().getName()) && ("MGX_Unittest".equals(m.getProject().getName()))) {
-                try {
-                    master = new MGXMaster(gpms.createMaster(m));
-                } catch (GPMSException ex) {
-                    fail(ex.getMessage());
-                }
-                break;
-            }
-        }
-
-        assert master != null;
-        return master;
-    }
-
 }

@@ -9,6 +9,7 @@ import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.ToolI;
 import de.cebitec.mgx.common.ToolScope;
 import de.cebitec.mgx.gui.goldstandard.actions.AddGoldstandard;
+import de.cebitec.mgx.testutils.TestMaster;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;

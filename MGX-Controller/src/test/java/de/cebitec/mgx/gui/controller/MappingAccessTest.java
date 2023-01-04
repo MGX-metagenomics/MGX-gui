@@ -11,7 +11,7 @@ import de.cebitec.mgx.api.exception.MGXTimeoutException;
 import de.cebitec.mgx.api.model.MappedSequenceI;
 import de.cebitec.mgx.api.model.MappingI;
 import de.cebitec.mgx.api.model.SeqRunI;
-import de.cebitec.mgx.gui.util.TestMaster;
+import de.cebitec.mgx.testutils.TestMaster;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;

@@ -10,6 +10,7 @@ import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.api.model.MappedSequenceI;
 import de.cebitec.mgx.api.model.MappingI;
+import de.cebitec.mgx.testutils.TestMaster;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.UUID;

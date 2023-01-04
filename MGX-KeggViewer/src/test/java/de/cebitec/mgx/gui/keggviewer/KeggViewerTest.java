@@ -11,6 +11,7 @@ import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.visualization.ConflictResolver;
 import de.cebitec.mgx.gui.visgroups.VGroupManager;
 import de.cebitec.mgx.kegg.pathways.KEGGException;
+import de.cebitec.mgx.testutils.TestMaster;
 import java.util.Iterator;
 import java.util.List;
 import org.junit.After;

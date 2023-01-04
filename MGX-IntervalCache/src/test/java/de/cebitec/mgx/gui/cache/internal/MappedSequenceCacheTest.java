@@ -11,10 +11,9 @@ import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.api.model.MappedSequenceI;
 import de.cebitec.mgx.api.model.MappingI;
 import de.cebitec.mgx.gui.cache.CacheFactory;
-import static de.cebitec.mgx.gui.cache.CacheTest.get;
 import de.cebitec.mgx.gui.cache.CoverageInfoCache;
-import de.cebitec.mgx.gui.cache.TestMaster;
 import de.cebitec.mgx.gui.datamodel.MappedSequence;
+import de.cebitec.mgx.testutils.TestMaster;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.UUID;
@@ -54,7 +53,7 @@ public class MappedSequenceCacheTest {
     @Test
     public void testCoveragePriv() throws MGXException {
         System.err.println("testCoveragePriv");
-        MGXMasterI master = TestMaster.getPrivate();
+        MGXMasterI master = TestMaster.getPrivate("FIXME");
         Assume.assumeNotNull(master);
         Iterator<MappingI> iter = master.Mapping().fetchall();
         MappingI mapping = null;
@@ -77,7 +76,7 @@ public class MappedSequenceCacheTest {
     @Test
     public void testMappingsPriv() throws MGXException {
         System.err.println("testMappingsPriv");
-        MGXMasterI master = TestMaster.getPrivate();
+        MGXMasterI master = TestMaster.getPrivate("FIXME");
         Assume.assumeNotNull(master);
         Iterator<MappingI> iter = master.Mapping().fetchall();
         MappingI mapping = null;
@@ -98,7 +97,7 @@ public class MappedSequenceCacheTest {
     @Test
     public void testCoverageMaxPriv() throws MGXException {
         System.err.println("testCoverageMaxPriv");
-        MGXMasterI master = TestMaster.getPrivate();
+        MGXMasterI master = TestMaster.getPrivate("FIXME");
         Assume.assumeNotNull(master);
         Iterator<MappingI> iter = master.Mapping().fetchall();
         MappingI mapping = null;
@@ -129,7 +128,7 @@ public class MappedSequenceCacheTest {
     @Test
     public void testMappedSeqs() throws Exception {
         System.out.println("testMappedSeqs");
-        MGXMasterI master = get();
+        MGXMasterI master = TestMaster.getRO();
         MGXReferenceI ref = master.Reference().fetch(8);
         UUID uuid = master.Mapping().openMapping(30);
         assertNotNull(uuid);

@@ -7,6 +7,7 @@ import de.cebitec.mgx.api.model.SequenceI;
 import de.cebitec.mgx.sequence.DNASequenceI;
 import de.cebitec.mgx.sequence.SeqStoreException;
 import de.cebitec.mgx.sequence.SeqWriterI;
+import de.cebitec.mgx.testutils.TestMaster;
 import java.util.HashSet;
 import java.util.Set;
 import org.junit.After;

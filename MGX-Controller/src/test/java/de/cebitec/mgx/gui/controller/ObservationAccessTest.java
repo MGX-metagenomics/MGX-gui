@@ -11,7 +11,7 @@ import de.cebitec.mgx.api.misc.BulkObservation;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.SequenceI;
-import de.cebitec.mgx.gui.util.TestMaster;
+import de.cebitec.mgx.testutils.TestMaster;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.After;

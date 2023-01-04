@@ -10,7 +10,7 @@ import de.cebitec.mgx.api.access.datatransfer.UploadBaseI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.model.MGXReferenceI;
-import de.cebitec.mgx.gui.util.TestMaster;
+import de.cebitec.mgx.testutils.TestMaster;
 import java.io.File;
 import java.util.Iterator;
 import org.junit.Test;

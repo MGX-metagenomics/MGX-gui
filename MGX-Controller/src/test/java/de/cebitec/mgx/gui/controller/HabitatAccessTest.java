@@ -7,7 +7,7 @@ package de.cebitec.mgx.gui.controller;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.HabitatI;
-import de.cebitec.mgx.gui.util.TestMaster;
+import de.cebitec.mgx.testutils.TestMaster;
 import java.util.Iterator;
 import org.junit.After;
 import org.junit.AfterClass;

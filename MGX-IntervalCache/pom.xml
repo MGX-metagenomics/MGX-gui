@@ -32,13 +32,18 @@
             <artifactId>MGX-API</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-math3</artifactId>
+        </dependency>
+        <dependency>
             <groupId>de.cebitec.mgx.gui</groupId>
-            <artifactId>MGX-Controller</artifactId>
+            <artifactId>MGX-TestUtils</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-math3</artifactId>
+            <groupId>de.cebitec.mgx.gui</groupId>
+            <artifactId>MGX-Datamodel</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

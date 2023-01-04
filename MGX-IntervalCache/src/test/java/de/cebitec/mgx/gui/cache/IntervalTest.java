@@ -5,19 +5,10 @@
  */
 package de.cebitec.mgx.gui.cache;
 
-import de.cebitec.gpms.core.GPMSException;
-import de.cebitec.gpms.core.MembershipI;
-import de.cebitec.gpms.rest.GPMSClientI;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.MGXReferenceI;
-import de.cebitec.mgx.gui.controller.MGXMaster;
-import de.cebitec.mgx.restgpms.GPMSClient;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.Properties;
+import de.cebitec.mgx.testutils.TestMaster;
 import org.junit.After;
 import org.junit.AfterClass;
 import static org.junit.Assert.*;
@@ -53,7 +44,7 @@ public class IntervalTest {
     @Test
     public void testEquals() throws MGXException {
         System.out.println("equals");
-        MGXMasterI master = get();
+        MGXMasterI master = TestMaster.getRO();
         MGXReferenceI ref = master.Reference().fetch(4);
         Cache<String> cache = CacheFactory.createSequenceCache(master, ref);
         assertNotNull(cache);
@@ -68,7 +59,7 @@ public class IntervalTest {
     @Test
     public void testHashCode() throws MGXException {
         System.out.println("hashCode");
-        MGXMasterI master = get();
+        MGXMasterI master = TestMaster.getRO();
         MGXReferenceI ref = master.Reference().fetch(4);
         Cache<String> cache = CacheFactory.createSequenceCache(master, ref);
         assertNotNull(cache);
@@ -80,47 +71,4 @@ public class IntervalTest {
         assertNotEquals(i1.hashCode(), i3.hashCode());
     }
 
-    public static MGXMasterI get() {
-        MGXMasterI master = null;
-
-        String serverURI = "https://mgx.cebitec.uni-bielefeld.de/MGX-maven-web/webresources/";
-
-        String config = System.getProperty("user.home") + "/.m2/mgx.junit";
-        File f = new File(config);
-        if (f.exists() && f.canRead()) {
-            Properties p = new Properties();
-            try {
-                p.load(new FileInputStream(f));
-                serverURI = p.getProperty("testserver");
-            } catch (IOException ex) {
-                System.out.println(ex.getMessage());
-            }
-        }
-        GPMSClientI gpms = new GPMSClient("MyServer", serverURI);
-        try {
-            gpms.login("mgx_unittestRO", "gut-isM5iNt");
-        } catch (GPMSException ex) {
-            fail(ex.getMessage());
-        }
-        Iterator<MembershipI> mIter = null;
-        try {
-            mIter = gpms.getMemberships();
-        } catch (GPMSException ex) {
-            fail(ex.getMessage());
-        }
-        while (mIter.hasNext()) {
-            MembershipI m = mIter.next();
-            if ("MGX".equals(m.getProject().getProjectClass().getName()) && ("MGX_Unittest".equals(m.getProject().getName()))) {
-                try {
-                    master = new MGXMaster(gpms.createMaster(m));
-                } catch (GPMSException ex) {
-                    fail(ex.getMessage());
-                }
-                break;
-            }
-        }
-
-        assert master != null;
-        return master;
-    }
 }

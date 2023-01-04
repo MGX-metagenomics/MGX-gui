@@ -23,6 +23,7 @@ import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.tree.TreeI;
 import de.cebitec.mgx.api.visualization.ConflictResolver;
 import de.cebitec.mgx.common.JobState;
+import de.cebitec.mgx.testutils.TestMaster;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
