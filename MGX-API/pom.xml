@@ -48,6 +48,17 @@
             <groupId>de.cebitec.mgx</groupId>
             <artifactId>MGX-common</artifactId>
         </dependency>
+        <dependency>
+            <groupId>de.cebitec.gpms</groupId>
+            <artifactId>GPMS-rest-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>osgi.core</artifactId>
+            <version>8.0.0</version>
+            <scope>provided</scope>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -56,6 +67,7 @@
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <extensions>true</extensions>
+                <!--
                 <executions>
                     <execution>
                         <goals>
@@ -63,6 +75,7 @@
                         </goals>
                     </execution>
                 </executions>
+                                -->
                 <configuration>
                     <instructions>
                         <Export-Package>
@@ -82,11 +95,13 @@
                             de.cebitec.mgx.api.visualization.filter
                         </Export-Package>
                         <Import-Package>
+                            org.osgi.framework,
                             javax.swing,
                             de.cebitec.mgx.pevents,
                             de.cebitec.mgx.common,
                             de.cebitec.mgx.sequence
                         </Import-Package>
+                        <Bundle-Activator>de.cebitec.mgx.api.OSGiContext</Bundle-Activator>
                     </instructions>
                 </configuration>
             </plugin>
