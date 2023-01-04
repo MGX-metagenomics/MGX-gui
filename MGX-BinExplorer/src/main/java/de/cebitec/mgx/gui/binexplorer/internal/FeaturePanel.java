@@ -195,8 +195,10 @@ public class FeaturePanel extends PanelBase<ContigViewController> implements Mou
         int frame = r.getFrame();
         String framePrefix = frame > 0 ? "+" : "";
         String toolTip = "<html>"
-                + "Gene: " + vc.getReferenceName() + "_" + r.getId()
-                + "<br>Location: " + nf.format(r.getStart()) + "-"
+                + "<b>Gene: </b>" + vc.getReferenceName() + "_" + r.getId()
+                + "<br><hr><br>" 
+                + "Type: " + r.getType().toString() + "<br>"
+                + "Location: " + nf.format(r.getStart()) + "-"
                 + nf.format(r.getStop()) + "<br>"
                 + "Frame: " + framePrefix + frame + "<br>"
                 + "Length: " + nf.format(r.getLength()) + " nt<br></html>";
@@ -226,7 +228,8 @@ public class FeaturePanel extends PanelBase<ContigViewController> implements Mou
                 }
             }
         }
-        return "<html><b>" + vc.getReferenceName() + "</b><hr>"
+        return "<html><b>Contig: </b>" + vc.getReferenceName() + "<br><hr><br>"
+                + "Length: "
                 + nf.format(vc.getReferenceLength()) + " bp</html>";
 
     }
