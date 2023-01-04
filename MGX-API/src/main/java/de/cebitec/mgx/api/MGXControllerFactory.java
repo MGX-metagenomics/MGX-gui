@@ -30,7 +30,7 @@ public class MGXControllerFactory {
             // fallback to serviceloader
             ControllerCreatorI fac = get();
             if (fac == null) {
-                throw new MGXException("No ControllerCreatorI found.");
+                throw new MGXException("No ControllerCreatorI implementation found.");
             }
             return fac.createController(gpmsClient);
         } else {
