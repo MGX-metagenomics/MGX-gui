@@ -3,12 +3,11 @@ package de.cebitec.mgx.gui.mapping.tracks;
 import de.cebitec.mgx.api.model.MappedSequenceI;
 import de.cebitec.mgx.gui.datamodel.MappedSequence;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
-import static org.junit.Assert.*;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
 
 /**
  *

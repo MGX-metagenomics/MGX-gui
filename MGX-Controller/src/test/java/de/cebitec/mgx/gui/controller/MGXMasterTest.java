@@ -5,10 +5,6 @@
  */
 package de.cebitec.mgx.gui.controller;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 
 /**
  *
@@ -17,22 +13,6 @@ import org.junit.BeforeClass;
 public class MGXMasterTest {
 
     public MGXMasterTest() {
-    }
-
-    @BeforeClass
-    public static void setUpClass() {
-    }
-
-    @AfterClass
-    public static void tearDownClass() {
-    }
-
-    @Before
-    public void setUp() {
-    }
-
-    @After
-    public void tearDown() {
     }
 
     /**

@@ -9,8 +9,10 @@ import de.cebitec.mgx.api.groups.VGroupManagerI;
 import de.cebitec.mgx.gui.nodes.VgMgrNode;
 import de.cebitec.mgx.gui.nodes.VizGroupNode;
 import de.cebitec.mgx.gui.visgroups.VGroupManager;
-import static org.junit.Assert.*;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
 import org.openide.nodes.Node;
 
 /**

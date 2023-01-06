@@ -12,12 +12,10 @@ import de.cebitec.mgx.api.model.SequenceI;
 import de.cebitec.mgx.testutils.TestMaster;
 import java.util.Arrays;
 import java.util.Iterator;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -26,22 +24,6 @@ import static org.junit.Assert.*;
 public class SequenceAccessTest {
 
     public SequenceAccessTest() {
-    }
-
-    @BeforeClass
-    public static void setUpClass() {
-    }
-
-    @AfterClass
-    public static void tearDownClass() {
-    }
-
-    @Before
-    public void setUp() {
-    }
-
-    @After
-    public void tearDown() {
     }
 
     @Test

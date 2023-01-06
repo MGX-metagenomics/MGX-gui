@@ -12,8 +12,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Properties;
-import org.junit.Assert;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  *
@@ -58,7 +58,7 @@ public class TestMaster {
         } catch (GPMSException ex) {
             fail(ex.getMessage());
         }
-        Assert.assertNotNull(mbr);
+        assertNotNull(mbr);
 
         while (mbr.hasNext()) {
             MembershipI m = mbr.next();
@@ -106,7 +106,7 @@ public class TestMaster {
         } catch (GPMSException ex) {
             fail(ex.getMessage());
         }
-        Assert.assertNotNull(mbr);
+        assertNotNull(mbr);
 
         while (mbr.hasNext()) {
             MembershipI m = mbr.next();
@@ -153,7 +153,7 @@ public class TestMaster {
         } catch (GPMSException ex) {
             fail(ex.getMessage());
         }
-        Assert.assertNotNull(mbr);
+        assertNotNull(mbr);
 
         while (mbr.hasNext()) {
             MembershipI m = mbr.next();

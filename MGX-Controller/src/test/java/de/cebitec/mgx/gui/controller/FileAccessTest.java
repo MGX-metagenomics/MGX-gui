@@ -25,12 +25,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.util.Iterator;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.openide.util.Exceptions;
 
 /**
@@ -42,7 +42,7 @@ public class FileAccessTest {
     public FileAccessTest() {
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpClass() {
         //
         // testUpload sometimes fails due to ceph latency issues; perform
@@ -71,18 +71,6 @@ public class FileAccessTest {
 
         } catch (MGXException | InterruptedException ex) {
         }
-    }
-
-    @AfterClass
-    public static void tearDownClass() {
-    }
-
-    @Before
-    public void setUp() {
-    }
-
-    @After
-    public void tearDown() {
     }
 
     @Test
@@ -212,7 +200,7 @@ public class FileAccessTest {
             up.addPropertyChangeListener(pc);
 
             boolean success = up.upload();
-            assertTrue(up.getErrorMessage(), success);
+            assertTrue(success, up.getErrorMessage());
             up.removePropertyChangeListener(pc);
 
             if (!success) {

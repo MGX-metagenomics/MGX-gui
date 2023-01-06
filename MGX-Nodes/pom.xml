@@ -81,11 +81,6 @@
             <artifactId>org-openide-util-ui</artifactId>
         </dependency>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>de.cebitec.mgx</groupId>
             <artifactId>MGX-parallelPropChange</artifactId>
         </dependency>

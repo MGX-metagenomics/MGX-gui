@@ -5,13 +5,16 @@
  */
 package de.cebitec.mgx.gui.visgroups;
 
-import de.cebitec.mgx.gui.visgroups.VGroupManager;
 import de.cebitec.mgx.api.groups.ReplicateGroupI;
 import de.cebitec.mgx.api.groups.ReplicateI;
 import de.cebitec.mgx.api.groups.VGroupManagerI;
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -132,7 +135,7 @@ public class VGroupManagerTest {
         //
         //mgr.removeReplicateGroup(rGroup);
         rGroup.close();
-        assertEquals("Replicate group must not contain any replicates after group has been removed", 0, rGroup.getReplicates().size());
+        assertEquals(0, rGroup.getReplicates().size(), "Replicate group must not contain any replicates after group has been removed");
         //
         //
         // removing a replicate group should also remove all replicates contained in it 

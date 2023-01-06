@@ -6,7 +6,6 @@
 package de.cebitec.mgx.gui.datamodel;
 
 import de.cebitec.mgx.api.model.MappedSequenceI;
-import de.cebitec.mgx.api.model.comparator.MappedSequenceComparator;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -14,12 +13,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -28,22 +23,6 @@ import static org.junit.Assert.*;
 public class MappedSequenceTest {
 
     public MappedSequenceTest() {
-    }
-
-    @BeforeClass
-    public static void setUpClass() {
-    }
-
-    @AfterClass
-    public static void tearDownClass() {
-    }
-
-    @Before
-    public void setUp() {
-    }
-
-    @After
-    public void tearDown() {
     }
 
     @Test

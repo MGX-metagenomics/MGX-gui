@@ -7,8 +7,8 @@ package de.cebitec.mgx.gui.datamodel.assembly;
 
 import de.cebitec.mgx.common.RegionType;
 import de.cebitec.mgx.gui.datamodel.ReferenceRegion;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
 
 /**
  *

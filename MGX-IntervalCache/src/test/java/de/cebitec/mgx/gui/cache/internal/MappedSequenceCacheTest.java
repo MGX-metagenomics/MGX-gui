@@ -16,13 +16,11 @@ import de.cebitec.mgx.testutils.TestMaster;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.UUID;
-import org.junit.After;
-import org.junit.AfterClass;
-import static org.junit.Assert.*;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -33,27 +31,11 @@ public class MappedSequenceCacheTest {
     public MappedSequenceCacheTest() {
     }
 
-    @BeforeClass
-    public static void setUpClass() {
-    }
-
-    @AfterClass
-    public static void tearDownClass() {
-    }
-
-    @Before
-    public void setUp() {
-    }
-
-    @After
-    public void tearDown() {
-    }
-
     @Test
     public void testCoveragePriv() throws MGXException {
         System.err.println("testCoveragePriv");
         MGXMasterI master = TestMaster.getPrivate("FIXME");
-        Assume.assumeNotNull(master);
+        assumeTrue(master != null);
         Iterator<MappingI> iter = master.Mapping().fetchall();
         MappingI mapping = null;
         while (iter.hasNext()) {
@@ -76,7 +58,7 @@ public class MappedSequenceCacheTest {
     public void testMappingsPriv() throws MGXException {
         System.err.println("testMappingsPriv");
         MGXMasterI master = TestMaster.getPrivate("FIXME");
-        Assume.assumeNotNull(master);
+        assumeTrue(master != null);
         Iterator<MappingI> iter = master.Mapping().fetchall();
         MappingI mapping = null;
         while (iter.hasNext()) {
@@ -97,7 +79,7 @@ public class MappedSequenceCacheTest {
     public void testCoverageMaxPriv() throws MGXException {
         System.err.println("testCoverageMaxPriv");
         MGXMasterI master = TestMaster.getPrivate("FIXME");
-        Assume.assumeNotNull(master);
+        assumeTrue(master != null);
         Iterator<MappingI> iter = master.Mapping().fetchall();
         MappingI mapping = null;
         while (iter.hasNext()) {
@@ -147,7 +129,7 @@ public class MappedSequenceCacheTest {
                     present = true;
                 }
             }
-            assertTrue("expected seqid " + l + " not in result", present);
+            assertTrue(present, "expected seqid " + l + " not in result");
         }
     }
 }

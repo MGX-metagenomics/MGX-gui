@@ -2,9 +2,9 @@ package de.cebitec.mgx.gui.attributevisualization.filter;
 
 import de.cebitec.mgx.api.model.tree.NodeI;
 import de.cebitec.mgx.api.model.tree.TreeI;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  *
@@ -130,7 +130,7 @@ public class ExcludeFilterTest {
             }
         }
         if (!nodeFound) {
-            assertEquals("Node not found for " + name, 0L, content.longValue());
+            assertEquals(0L, content.longValue(), "Node not found for " + name);
         }
     }
 

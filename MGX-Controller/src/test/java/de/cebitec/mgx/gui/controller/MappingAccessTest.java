@@ -18,8 +18,12 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.UUID;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -112,7 +116,7 @@ public class MappingAccessTest {
                     present = true;
                 }
             }
-            assertTrue("expected seqid " + l + " not in result", present);
+            assertTrue(present, "expected seqid " + l + " not in result");
         }
     }
 }

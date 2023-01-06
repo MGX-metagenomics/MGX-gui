@@ -13,9 +13,12 @@ import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.testutils.TestMaster;
 import java.io.File;
 import java.util.Iterator;
-import org.junit.Test;
-import static org.junit.Assert.*;
-import org.junit.Assume;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import org.junit.jupiter.api.Test;
 import org.openide.util.Exceptions;
 
 /**
@@ -28,10 +31,10 @@ public class ReferenceAccessTest {
     public void testCreateUploader() throws MGXException {
         System.out.println("createUploader");
         MGXMasterI master = TestMaster.getPrivate("MGX_Mammoth");
-        Assume.assumeNotNull(master);
+        assumeTrue(master != null);
 
         File f = new File("/vol/biodb/ncbi_genomes/Bacteria/Variovorax_paradoxus_B4_uid218005/NC_022234.gbk");
-        Assume.assumeTrue(f.exists());
+        assumeTrue(f.exists());
 
         UploadBaseI up = master.Reference().createUploader(f);
         boolean success = up.upload();

@@ -28,9 +28,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.junit.Test;
-import static org.junit.Assert.*;
-import static org.junit.Assume.assumeNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import org.junit.jupiter.api.Test;
 import org.openide.util.Exceptions;
 
 /**
@@ -124,15 +128,15 @@ public class SeqRunAccessTest {
         System.out.println("testRegressionEquality");
         MGXMasterI m1 = TestMaster.getPrivate("MGX_deNBI1");
         MGXMasterI m2 = TestMaster.getPrivate("MGX_deNBI4");
-        assumeNotNull(m1);
-        assumeNotNull(m2);
+        assumeTrue(m1 != null);
+        assumeTrue(m2 != null);
         SeqRunI run1 = m1.SeqRun().fetch(2);
         SeqRunI run2 = m2.SeqRun().fetch(2);
         assertNotNull(run1);
         assertNotNull(run2);
         assertEquals(run1.getName(), run2.getName());
         assertNotEquals(run1.getMaster(), run2.getMaster());
-        assertNotEquals("runs from different projects should not be equal", run1, run2);
+        assertNotEquals(run1, run2, "runs from different projects should not be equal");
     }
 
     @Test

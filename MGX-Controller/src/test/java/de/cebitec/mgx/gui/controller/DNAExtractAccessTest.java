@@ -10,8 +10,12 @@ import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.DNAExtractI;
 import de.cebitec.mgx.testutils.TestMaster;
 import java.util.Iterator;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
+import org.junit.jupiter.api.Test;
 
 /**
  *

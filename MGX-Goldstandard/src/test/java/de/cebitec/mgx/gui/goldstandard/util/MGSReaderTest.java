@@ -16,13 +16,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
-import org.junit.Assume;
+import org.junit.jupiter.api.AfterEach;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -38,10 +36,10 @@ public class MGSReaderTest {
     public MGSReaderTest() {
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpClass() throws MGXException {
         master = TestMaster.getPrivate("MGX_EvalModule");
-        Assume.assumeNotNull(master);
+        assumeTrue(master != null);
         Iterator<ToolI> toolIt = master.Tool().fetchall();
         while (toolIt.hasNext()) {
             ToolI t = toolIt.next();
@@ -56,56 +54,48 @@ public class MGSReaderTest {
         seqrun = master.SeqRun().fetchall().next();
     }
 
-    @AfterClass
-    public static void tearDownClass() {
-    }
-
-    @Before
-    public void setUp() {
-    }
-
-    @After
+    @AfterEach
     public void tearDown() throws MGXException {
-        Assume.assumeNotNull(master);
+        assumeTrue(master != null);
         Iterator<AttributeI> it = master.Attribute().ByJob(job);
         int i = 0;
-        while (it.hasNext()){
+        while (it.hasNext()) {
             TaskI<AttributeI> delete = master.Attribute().delete(it.next());
-            if (delete.getState() != TaskI.State.FINISHED){
+            if (delete.getState() != TaskI.State.FINISHED) {
                 i++;
             }
         }
         master.Job().delete(job);
-        assertEquals("Couldn't delete " + i + " attributes.", 0, i);
+        assertEquals(0, i, "Couldn't delete " + i + " attributes.");
     }
 
     @Test
-    public void testMGSReader() throws MGXException, FileNotFoundException, IOException{
-        Assume.assumeNotNull(master);
+    public void testMGSReader() throws MGXException, FileNotFoundException, IOException {
+        assumeTrue(master != null);
         String mgsPath = getClass().getClassLoader().getResource("example.mgs").getPath();
         job = master.Job().create(tool, new ArrayList<>(1), seqrun);
         MGSReader reader = new MGSReader(mgsPath, master, job);
         List<MGSEntry> results = new LinkedList<>();
-        while (reader.hasNext()){
+        while (reader.hasNext()) {
             results.add(reader.next());
         }
-        assertEquals("Results size isn't correct", 10, results.size());
-        for (MGSAttribute attr : results.get(0).getAttributes()){
-            if (attr.getAttribute().getAttributeType().getName().equals("NCBI_SPECIES")){
-                assertEquals("Wrong attribute value in entry 0", "Escherichia coli", attr.getAttribute().getValue());
-                assertEquals("Wrong start value in entry 0", 0, attr.getStart());
-                assertEquals("Wrong stop value in entry 0", 249, attr.getStop());                
-            } else if (attr.getAttribute().getAttributeType().getName().equals("GC")){
-                assertEquals("Wrong GC content in entry 0", 52.8, Double.parseDouble(attr.getAttribute().getValue()), 0.01);
+        assertEquals(10, results.size(), "Results size isn't correct");
+        for (MGSAttribute attr : results.get(0).getAttributes()) {
+            if (attr.getAttribute().getAttributeType().getName().equals("NCBI_SPECIES")) {
+                assertEquals("Escherichia coli", attr.getAttribute().getValue(), "Wrong attribute value in entry 0");
+                assertEquals(0, attr.getStart(), "Wrong start value in entry 0");
+                assertEquals(249, attr.getStop(), "Wrong stop value in entry 0");
+            } else if (attr.getAttribute().getAttributeType().getName().equals("GC")) {
+                assertEquals(52.8, Double.parseDouble(attr.getAttribute().getValue()), 0.01, "Wrong GC content in entry 0");
             }
         }
-        for (MGSAttribute attr : results.get(9).getAttributes()){
-            if (attr.getAttribute().getAttributeType().getName().equals("NCBI_SPECIES")){
-                assertEquals("Wrong attribute value in entry 0", "Escherichia coli", attr.getAttribute().getValue());
-                assertEquals("Wrong start value in entry 0", 0, attr.getStart());
-                assertEquals("Wrong stop value in entry 0", 249, attr.getStop());                
-            } else if (attr.getAttribute().getAttributeType().getName().equals("GC")){
-                assertEquals("Wrong GC content in entry 0", 55.2, Double.parseDouble(attr.getAttribute().getValue()), 0.01);
+        for (MGSAttribute attr : results.get(9).getAttributes()) {
+            if (attr.getAttribute().getAttributeType().getName().equals("NCBI_SPECIES")) {
+                assertEquals("Escherichia coli", attr.getAttribute().getValue(), "Wrong attribute value in entry 0");
+                assertEquals(0, attr.getStart(), "Wrong start value in entry 0");
+                assertEquals(249, attr.getStop(), "Wrong stop value in entry 0");
+            } else if (attr.getAttribute().getAttributeType().getName().equals("GC")) {
+                assertEquals(55.2, Double.parseDouble(attr.getAttribute().getValue()), 0.01, "Wrong GC content in entry 0");
             }
         }
     }

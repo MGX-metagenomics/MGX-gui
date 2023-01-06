@@ -42,11 +42,6 @@
             <artifactId>org-openide-dialogs</artifactId>
         </dependency>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <artifactId>MGX-DTO</artifactId>
             <groupId>de.cebitec.mgx</groupId>
         </dependency>

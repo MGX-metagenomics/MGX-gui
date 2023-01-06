@@ -7,14 +7,15 @@ package de.cebitec.mgx.gui.attributevisualization.ui;
 
 import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.groups.VGroupManagerI;
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.gui.nodes.VgMgrNode;
 import de.cebitec.mgx.gui.nodes.VizGroupNode;
 import de.cebitec.mgx.gui.visgroups.VGroupManager;
 import java.awt.GraphicsEnvironment;
-import org.junit.Test;
-import static org.junit.Assert.*;
-import org.junit.Assume;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
+import org.junit.jupiter.api.Test;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.Node;
 
@@ -28,7 +29,7 @@ public class VisualizationGroupTopComponentTest {
     @Test
     public void testExplorerManagerRootContext() {
         System.out.println("testExplorerManagerRootContext");
-        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
+        assumeFalse(GraphicsEnvironment.isHeadless());
         VisualizationGroupTopComponent tc = new VisualizationGroupTopComponent();
         ExplorerManager em = tc.getExplorerManager();
         assertNotNull(em);
@@ -40,7 +41,7 @@ public class VisualizationGroupTopComponentTest {
     @Test
     public void testExplorerManagerContent() {
         System.out.println("testExplorerManagerContent");
-        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
+        assumeFalse(GraphicsEnvironment.isHeadless());
         VGroupManagerI vgmgr = VGroupManager.getInstance();
         for (GroupI vGrp : vgmgr.getActiveGroups()) {
             //vgmgr.removeVisualizationGroup(vGrp);
@@ -51,7 +52,7 @@ public class VisualizationGroupTopComponentTest {
         Node rootContext = em.getRootContext();
         Node[] nodes = rootContext.getChildren().getNodes();
         assertNotNull(nodes);
-        assertEquals("A single visualization group should have been created automatically", 1, nodes.length);
+        assertEquals(1, nodes.length, "A single visualization group should have been created automatically");
         Node grpNode = nodes[0];
         assertTrue(grpNode.getParentNode() == rootContext);
         assertTrue(grpNode instanceof VizGroupNode);

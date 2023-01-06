@@ -51,11 +51,6 @@
             <artifactId>MGX-Explorer</artifactId>
         </dependency>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <artifactId>MGX-parallelPropChange</artifactId>
             <groupId>de.cebitec.mgx</groupId>
         </dependency>

@@ -23,16 +23,12 @@ import java.io.InputStreamReader;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
-import org.junit.After;
-import org.junit.AfterClass;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.fail;
+import org.junit.jupiter.api.Test;
 import org.openide.util.Exceptions;
 
 /**
@@ -42,22 +38,6 @@ import org.openide.util.Exceptions;
 public class ToolAccessTest {
 
     public ToolAccessTest() {
-    }
-
-    @BeforeClass
-    public static void setUpClass() {
-    }
-
-    @AfterClass
-    public static void tearDownClass() {
-    }
-
-    @Before
-    public void setUp() {
-    }
-
-    @After
-    public void tearDown() {
     }
 
     @Test
@@ -91,7 +71,7 @@ public class ToolAccessTest {
             assertNotNull(tool);
             cnt++;
         }
-        assertEquals("Unit test project contains 18 tools", 18, cnt);
+        assertEquals(18, cnt, "Unit test project contains 18 tools");
     }
 
     @Test
@@ -172,7 +152,7 @@ public class ToolAccessTest {
                 Exceptions.printStackTrace(ex);
             }
         }
-        assertFalse("Creation of duplicate tool should not be possible", tool2Created);
+        assertFalse(tool2Created, "Creation of duplicate tool should not be possible");
     }
 
     @Test
@@ -223,7 +203,7 @@ public class ToolAccessTest {
         }
 
         assertTrue(tool1Created);
-        assertTrue("Failed to create tool with newer version", tool2Created);
+        assertTrue(tool2Created, "Failed to create tool with newer version");
     }
 
     /**

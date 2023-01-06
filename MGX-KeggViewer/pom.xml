@@ -47,11 +47,6 @@
             <groupId>org.netbeans.api</groupId>
         </dependency>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <artifactId>MGX-API</artifactId>
             <groupId>de.cebitec.mgx.gui</groupId>
         </dependency>
