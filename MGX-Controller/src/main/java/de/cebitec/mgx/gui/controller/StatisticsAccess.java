@@ -24,10 +24,8 @@ import de.cebitec.mgx.dto.dto.PointDTOList;
 import de.cebitec.mgx.dto.dto.ProfileDTO;
 import de.cebitec.mgx.gui.dtoconversion.PCAResultDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.PointDTOFactory;
-import de.cebitec.mgx.gui.util.BaseIterator;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -42,23 +40,6 @@ public class StatisticsAccess extends MasterHolder implements StatisticsAccessI 
 
     public StatisticsAccess(MGXMasterI master, MGXDTOMaster dtomaster) throws MGXException {
         super(master, dtomaster);
-    }
-
-    @Override
-    public Iterator<Point> Rarefaction(DistributionI<Long> dist) throws MGXException {
-        try {
-            Iterator<PointDTO> fetchall = getDTOmaster().Statistics().Rarefaction(dist.values());
-            return new BaseIterator<PointDTO, Point>(fetchall) {
-                @Override
-                public Point next() {
-                    return PointDTOFactory.getInstance().toModel(getMaster(), iter.next());
-                }
-            };
-        } catch (MGXClientLoggedOutException mcle) {
-            throw new MGXLoggedoutException(mcle);
-        } catch (MGXDTOException ex) {
-            throw new MGXException(ex.getMessage());
-        }
     }
 
     @Override

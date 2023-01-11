@@ -13,15 +13,12 @@ import de.cebitec.mgx.api.misc.PCAResultI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.misc.Point;
 import java.util.Collection;
-import java.util.Iterator;
 
 /**
  *
  * @author sj
  */
 public interface StatisticsAccessI {
-
-    public Iterator<Point> Rarefaction(DistributionI<Long> dist) throws MGXException;
 
     public PCAResultI PCA(Collection<Pair<GroupI, DistributionI<Double>>> groups, PrincipalComponent pc1, PrincipalComponent pc2) throws MGXException;
 
