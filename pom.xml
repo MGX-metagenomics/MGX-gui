@@ -687,8 +687,7 @@
         <module>MGX-UpdateCenter</module>
         <module>MGX-VizFilter</module>
         <module>MGX-Wizards</module>
-        <module>MGX-Goldstandard</module>        
-        <!-- <module>MGX-JSCharts</module> -->
+        <module>MGX-Goldstandard</module>
         <module>MGX-RBAC</module>
         <module>MGX-SeqExporter</module>
         <module>MGX-NewickWriter</module>
