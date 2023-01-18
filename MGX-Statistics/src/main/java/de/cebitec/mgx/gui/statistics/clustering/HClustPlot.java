@@ -49,7 +49,7 @@ import org.w3c.dom.svg.SVGDocument;
  * @author sjaenick
  */
 @ServiceProvider(service = ViewerI.class)
-public class HClustPlot2 extends AbstractViewer<DistributionI<Long>> implements CustomizableI, ImageExporterI.Provider, SequenceExporterI.Provider {
+public class HClustPlot extends AbstractViewer<DistributionI<Long>> implements CustomizableI, ImageExporterI.Provider, SequenceExporterI.Provider {
 
     private DelayedPlot cPanel = null;
     private final HClustCustomizer customizer = new HClustCustomizer();
@@ -85,7 +85,7 @@ public class HClustPlot2 extends AbstractViewer<DistributionI<Long>> implements 
             @Override
             protected void done() {
                 try {
-                    DelayedPlot wp = HClustPlot2.this.cPanel;
+                    DelayedPlot wp = HClustPlot.this.cPanel;
                     Pair<String, String> result = get();
                     newickString = result.getFirst();
                     svgString = result.getSecond();
@@ -101,7 +101,7 @@ public class HClustPlot2 extends AbstractViewer<DistributionI<Long>> implements 
                     customizer.setNewickString(newickString);
                     
                 } catch (InterruptedException | ExecutionException ex) {
-                    HClustPlot2.this.cPanel.setTarget(null, null);
+                    HClustPlot.this.cPanel.setTarget(null, null);
                     String message = ex.getMessage();
                     if (message.contains(":")) {
                         message = message.substring(message.lastIndexOf(":") + 1);
