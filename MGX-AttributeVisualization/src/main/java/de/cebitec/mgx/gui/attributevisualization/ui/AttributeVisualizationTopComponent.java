@@ -135,7 +135,13 @@ public final class AttributeVisualizationTopComponent extends TopComponent {
 
     public void setVisualization(ViewerI viewer) {
         JComponent c = viewer.getComponent();
-        //c.setPreferredSize(chartpane.getViewport().getSize());
+        
+        // 
+        // set a preferred size for the chart (#149)
+        //
+        c.setPreferredSize(chartpane.getViewport().getSize());
+        
+        
         chartpane.setViewportView(c);
 
         // clear lookup
