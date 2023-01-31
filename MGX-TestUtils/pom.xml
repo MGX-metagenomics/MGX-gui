@@ -112,6 +112,14 @@
             <artifactId>MGX-API</artifactId>
         </dependency>
         
+        <!-- we need a controller implementation for tests -->
+        <dependency>
+            <artifactId>MGX-Controller</artifactId>
+            <groupId>${project.groupId}</groupId>
+            <version>${project.version}</version>
+            <!-- <scope>test</scope> -->
+        </dependency>
+        
         <!-- junit 5 -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
