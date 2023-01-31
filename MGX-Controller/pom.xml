@@ -111,13 +111,6 @@
             <groupId>de.cebitec.mgx.gui</groupId>
             <artifactId>MGX-TestUtils</artifactId>
             <scope>test</scope>
-            <!-- exclude ourselves to avoid a circular dependency -->
-            <exclusions>
-                <exclusion>
-                    <groupId>de.cebitec.mgx.gui</groupId>
-                    <artifactId>MGX-Controller</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
