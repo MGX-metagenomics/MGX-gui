@@ -71,6 +71,11 @@
             <artifactId>MGX-TestUtils</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <artifactId>MGX-Controller</artifactId>
+            <groupId>${project.groupId}</groupId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
