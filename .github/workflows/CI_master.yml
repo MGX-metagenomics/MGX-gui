@@ -1,0 +1,63 @@
+
+name: MGX 1.x GUI CI 
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up JDK 8 
+      uses: actions/setup-java@v3
+      with:
+        java-version: '8'
+        distribution: 'temurin'
+        cache: maven
+    - name: Install protoc 2.x
+      run: |
+        sudo apt-get install -qq build-essential
+        wget -q https://github.com/protocolbuffers/protobuf/releases/download/v2.6.1/protobuf-2.6.1.tar.gz
+        tar xzf protobuf-2.6.1.tar.gz
+        cd protobuf-2.6.1
+        ./configure --prefix=/usr
+        make -j `nproc`
+        sudo make install
+        cd ..
+        rm -rf protobuf-2.6.1.tar.gz protobuf-2.6.1
+    - name: Create protoc-2 symlink
+      run: sudo ln -s /usr/bin/protoc /usr/bin/protoc-2
+    - name: Setup mvn cache
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-mgx1-cache
+    - name: Build 'utilities'
+      run: |
+        git clone -b master https://github.com/MGX-metagenomics/utilities.git
+        cd utilities
+        mvn clean install -DskipTests=true
+        cd ..
+        rm -rf utilities
+    - name: Build 'gpms'
+      run: |
+        git clone -b master https://github.com/MGX-metagenomics/GPMS.git
+        cd GPMS
+        mvn clean install -DskipTests=true
+        cd ..
+        rm -rf GPMS
+    - name: Build 'MGX-client'
+      run: |
+        git clone -b master https://github.com/MGX-metagenomics/MGX-client.git
+        cd MGX-client
+        mvn clean install -DskipTests=true
+        cd ..
+        rm -rf GPMS
+    - name: Build with Maven
+      run: mvn -B package --file pom.xml
