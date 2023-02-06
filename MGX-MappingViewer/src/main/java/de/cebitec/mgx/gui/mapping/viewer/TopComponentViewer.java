@@ -41,7 +41,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import org.apache.commons.math3.util.FastMath;
-import org.jfree.svg.SVGGraphics2D;
+import org.jfree.graphics2d.svg.SVGGraphics2D;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;

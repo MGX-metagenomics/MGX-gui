@@ -28,7 +28,7 @@ import static java.lang.System.getProperty;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.SwingWorker;
-import org.jfree.svg.SVGGraphics2D;
+import org.jfree.graphics2d.svg.SVGGraphics2D;
 import org.netbeans.api.progress.ProgressHandle;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;

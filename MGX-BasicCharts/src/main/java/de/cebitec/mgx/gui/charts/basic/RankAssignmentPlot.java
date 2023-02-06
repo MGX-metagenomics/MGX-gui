@@ -34,7 +34,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
-import org.jfree.svg.SVGGraphics2D;
+import org.jfree.graphics2d.svg.SVGGraphics2D;
 import org.openide.util.lookup.ServiceProvider;
 
 /**

@@ -26,7 +26,7 @@ import javax.swing.table.TableColumn;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.decorator.Highlighter;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
-import org.jfree.svg.SVGGraphics2D;
+import org.jfree.graphics2d.svg.SVGGraphics2D;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
