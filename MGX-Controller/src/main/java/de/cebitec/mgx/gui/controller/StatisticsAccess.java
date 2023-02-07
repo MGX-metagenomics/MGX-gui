@@ -50,21 +50,6 @@ public class StatisticsAccess implements StatisticsAccessI {
     }
 
     @Override
-    public Iterator<Point> Rarefaction(DistributionI<Long> dist) throws MGXException {
-        try {
-            Iterator<PointDTO> fetchall = dtomaster.Statistics().Rarefaction(dist.values());
-            return new BaseIterator<PointDTO, Point>(fetchall) {
-                @Override
-                public Point next() {
-                    return PointDTOFactory.getInstance().toModel(master, iter.next());
-                }
-            };
-        } catch (MGXDTOException ex) {
-            throw new MGXException(ex.getMessage());
-        }
-    }
-
-    @Override
     public String Clustering(Collection<Pair<VisualizationGroupI, DistributionI<Double>>> dists, String distanceMethod, String agglomeration) throws MGXException {
         MGXMatrixDTO matrix = buildMatrix(dists, false);
 

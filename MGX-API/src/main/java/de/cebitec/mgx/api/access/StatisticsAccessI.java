@@ -21,8 +21,6 @@ import java.util.Iterator;
  */
 public interface StatisticsAccessI {
 
-    public Iterator<Point> Rarefaction(DistributionI<Long> dist) throws MGXException;
-
     public PCAResultI PCA(Collection<Pair<VisualizationGroupI, DistributionI<Double>>> groups, PrincipalComponent pc1, PrincipalComponent pc2) throws MGXException;
 
     public Collection<Point> NMDS(Collection<Pair<VisualizationGroupI, DistributionI<Double>>> groups) throws MGXException;
