@@ -26,7 +26,7 @@ public class TestMaster {
             return masterRO;
         }
 
-        String serverURI = "https://mgx.cebitec.uni-bielefeld.de/MGX-maven-web/webresources/";
+        String serverURI = "https://mgx.computational.bio.uni-giessen.de/MGX-maven-web/webresources/";
 
         String config = System.getProperty("user.home") + "/.m2/mgx.junit";
         File f = new File(config);
@@ -70,7 +70,7 @@ public class TestMaster {
     public static MGXMasterI getRW() {
         MGXMaster master = null;
 
-        String serverURI = "https://mgx.cebitec.uni-bielefeld.de/MGX-maven-web/webresources/";
+        String serverURI = "https://mgx.computational.bio.uni-giessen.de/MGX-maven-web/webresources/";
 
         Properties p = new Properties();
         String config = System.getProperty("user.home") + "/.m2/mgx.private";

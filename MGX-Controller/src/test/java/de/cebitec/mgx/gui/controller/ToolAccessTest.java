@@ -265,9 +265,10 @@ public class ToolAccessTest {
         assertNotNull(dbParam);
         assertNotNull(dbParam.getChoices());
         Map<String, String> choices = dbParam.getChoices();
-        assertTrue(choices.containsKey("SILVA"));
-        assertTrue(choices.containsKey("Greengenes"));
-        assertEquals(2, choices.size());
+        
+        // the server no longer offers a qiime workflow or its databases,
+        // so no choices should be offered
+        assertEquals(0, choices.size());
     }
 
     private static String readFile(String path) throws IOException {

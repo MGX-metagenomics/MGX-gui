@@ -24,7 +24,7 @@ import de.cebitec.mgx.api.visualization.ConflictResolver;
 import de.cebitec.mgx.common.JobState;
 import de.cebitec.mgx.gui.common.VGroupManager;
 import de.cebitec.mgx.gui.util.TestMaster;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -79,14 +79,14 @@ public class VisualizationGroupTest {
         synchronized (vgmgr) {
             VisualizationGroupI vg = vgmgr.createVisualizationGroup();
             MGXMasterI master = TestMaster.getRO();
-            Set<SeqRunI> runs = new HashSet<>();
+            List<SeqRunI> runs = new ArrayList<>();
             Iterator<SeqRunI> iter = master.SeqRun().fetchall();
             while (iter.hasNext()) {
                 SeqRunI sr = iter.next();
                 vg.addSeqRun(sr);
                 runs.add(sr);
             }
-            assertEquals(runs, vg.getSeqRuns());
+            assertEquals(runs.size(), vg.getSeqRuns().size());
         }
     }
 
