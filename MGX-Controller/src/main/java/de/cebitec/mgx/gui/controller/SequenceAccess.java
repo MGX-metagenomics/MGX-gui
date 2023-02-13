@@ -61,7 +61,7 @@ public class SequenceAccess extends MasterHolder implements SequenceAccessI {
     @Override
     public void sendSequences(SeqRunI seqrun, SeqReaderI<? extends DNASequenceI> reader) throws MGXException {
         try {
-            getDTOmaster().Sequence().sendSequences(seqrun.getId(), reader);      
+            getDTOmaster().Sequence().sendSequences(seqrun.getId(), seqrun.isPaired(), reader);      
         } catch (MGXClientLoggedOutException mcle) {
             throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
@@ -72,7 +72,7 @@ public class SequenceAccess extends MasterHolder implements SequenceAccessI {
     @Override
     public UploadBaseI createUploader(SeqRunI seqrun, SeqReaderI<? extends DNASequenceI> reader) throws MGXException {
         try {
-            final SeqUploader su = getDTOmaster().Sequence().createUploader(seqrun.getId(), reader);
+            final SeqUploader su = getDTOmaster().Sequence().createUploader(seqrun.getId(), seqrun.isPaired(), reader);
             return new ServerSeqRunUploader(seqrun, su);      
         } catch (MGXClientLoggedOutException mcle) {
             throw new MGXLoggedoutException(mcle);
