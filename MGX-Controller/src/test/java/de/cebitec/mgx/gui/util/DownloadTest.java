@@ -27,7 +27,7 @@ public class DownloadTest {
     public void testDownloadSequencesForAttribute() throws MGXException {
         System.out.println("testDownloadSequencesForAttribute");
         MGXMasterI master = TestMaster.getRO();
-        
+
         // Firmicutes
         AttributeI attr = master.Attribute().fetch(9230);
         assertNotNull(attr);
@@ -36,7 +36,7 @@ public class DownloadTest {
 
         final AtomicInteger cnt = new AtomicInteger(0);
         final AtomicBoolean closed = new AtomicBoolean(false);
-        
+
         SeqWriterI<DNASequenceI> dummy = new SeqWriterI<DNASequenceI>() {
             @Override
             public void addSequence(DNASequenceI seq) throws SeqStoreException {
@@ -49,7 +49,7 @@ public class DownloadTest {
             }
         };
         master.Sequence().downloadSequencesForAttributes(set, dummy, true);
-        assertEquals(220, cnt.get());
+        assertEquals(10794, cnt.get());
         assertTrue(closed.get());
     }
 
@@ -84,18 +84,5 @@ public class DownloadTest {
         assertEquals("FI5LW4G01DZDXZ", seq.getName());
         assertEquals("TTTGCCATCGGCGCAGTCCTACTTATGAAGTTTGCAGAATAGCGTCAAGGCACTACCAAGGGG", seq.getSequence());
         assertEquals(63, seq.getLength());
-    }
-
-    private static class Holder<T> {
-
-        T val = null;
-
-        public void set(T newVal) {
-            val = newVal;
-        }
-
-        public T get() {
-            return val;
-        }
     }
 }

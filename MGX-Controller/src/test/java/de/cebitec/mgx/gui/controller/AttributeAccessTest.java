@@ -57,7 +57,7 @@ public class AttributeAccessTest {
         assertNotNull(attr);
         assertNotNull(attr.getAttributeType());
         assertEquals("Firmicutes", attr.getValue());
-        assertEquals("GC", attr.getAttributeType().getName());
+        assertEquals("NCBI_PHYLUM", attr.getAttributeType().getName());
     }
 
     @Test
@@ -103,20 +103,20 @@ public class AttributeAccessTest {
 
         NodeI<Long> n = null;
         for (NodeI<Long> x : tree.getNodes()) {
-            if (x.getAttribute().getValue().equals("Bacteroidetes")) {
+            if (x.getAttribute().getValue().equals("Bacteria")) {
                 n = x;
                 break;
             }
         }
         assertNotNull(n);
-        assertEquals(2, n.getDepth());
+        assertEquals(1, n.getDepth());
 
         Set<AttributeI> exclude = new HashSet<>();
         exclude.add(n.getAttribute());
 
         tree = TreeFactory.filter(tree, exclude);
         assertNotNull(tree);
-        assertEquals(25, tree.getNodes().size());
+        assertEquals(192, tree.getNodes().size());
         assertNotNull(tree.getRoot());
     }
 

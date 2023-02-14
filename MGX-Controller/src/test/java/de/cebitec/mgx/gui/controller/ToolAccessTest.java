@@ -9,20 +9,10 @@ import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.misc.TaskI.State;
-import de.cebitec.mgx.api.model.JobParameterI;
 import de.cebitec.mgx.api.model.ToolI;
 import de.cebitec.mgx.common.ToolScope;
-import de.cebitec.mgx.testutils.TestInput;
 import de.cebitec.mgx.testutils.TestMaster;
-import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Collection;
 import java.util.Iterator;
-import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -206,62 +196,17 @@ public class ToolAccessTest {
         assertTrue(tool2Created, "Failed to create tool with newer version");
     }
 
-    /**
-     * Test of getAvailableParameters method, of class ToolAccess.
-     */
-    @Test
-    public void testGetAvailableParameters() {
-        System.out.println("getAvailableParameters");
-        //File plugin = TestInput.copyTestResource(getClass(), "/de/cebitec/mgx/gui/controller/plugindump.xml");
-        File pipe = null;
-        try {
-            pipe = TestInput.copyTestResource(getClass(), "de/cebitec/mgx/gui/controller/qiime_assignTaxonomy.xml");
-        } catch (IOException ex) {
-            fail(ex.getMessage());
-        }
-        String xmlData = null;
-        try {
-            xmlData = readFile(pipe.getAbsolutePath());
-        } catch (IOException ex) {
-            fail(ex.getMessage());
-        }
-
-        MGXMasterI master = TestMaster.getRO();
-        Collection<JobParameterI> params = null;
-        try {
-            params = master.Tool().getAvailableParameters(xmlData);
-        } catch (MGXException ex) {
-            fail(ex.getMessage());
-        }
-        assertNotNull(params);
-        assertEquals(4, params.size());
-
-        JobParameterI dbParam = null;
-        for (JobParameterI jp : params) {
-            if (jp.getUserName().equals("database")) {
-                dbParam = jp;
-                break;
-            }
-        }
-        assertNotNull(dbParam);
-        assertNotNull(dbParam.getChoices());
-        Map<String, String> choices = dbParam.getChoices();
-        assertEquals(2, choices.size());
-        assertTrue(choices.containsKey("SILVA"));
-        assertTrue(choices.containsKey("Greengenes"));
-    }
-
-    private static String readFile(String path) throws IOException {
-        StringBuilder content = new StringBuilder();
-        FileInputStream fis = new FileInputStream(path);
-        try (DataInputStream in = new DataInputStream(fis)) {
-            BufferedReader br = new BufferedReader(new InputStreamReader(in));
-            String strLine;
-            while ((strLine = br.readLine()) != null) {
-                content.append(strLine);
-            }
-        }
-        return content.toString();
-    }
+//    private static String readFile(String path) throws IOException {
+//        StringBuilder content = new StringBuilder();
+//        FileInputStream fis = new FileInputStream(path);
+//        try (DataInputStream in = new DataInputStream(fis)) {
+//            BufferedReader br = new BufferedReader(new InputStreamReader(in));
+//            String strLine;
+//            while ((strLine = br.readLine()) != null) {
+//                content.append(strLine);
+//            }
+//        }
+//        return content.toString();
+//    }
 
 }

@@ -54,7 +54,7 @@ public class AttributeTypeAccessTest {
                 }
             }
         }
-        assertEquals(2, numCorrect);
+        assertEquals(1, numCorrect);
 
     }
 }

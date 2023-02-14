@@ -38,7 +38,7 @@ public class ObservationAccessTest {
         try {
             run = master.SeqRun().fetch(49);
             assertNotNull(run);
-            attr = master.Attribute().fetch(1);
+            attr = master.Attribute().fetch(9230);
             assertNotNull(attr);
         } catch (MGXException ex) {
             fail(ex.getMessage());
@@ -64,7 +64,7 @@ public class ObservationAccessTest {
         try {
             run = master.SeqRun().fetch(49);
             assertNotNull(run);
-            attr = master.Attribute().fetch(1);
+            attr = master.Attribute().fetch(9230);
             assertNotNull(attr);
         } catch (MGXException ex) {
             fail(ex.getMessage());
@@ -90,7 +90,7 @@ public class ObservationAccessTest {
         try {
             run = master.SeqRun().fetch(49);
             assertNotNull(run);
-            attr = master.Attribute().fetch(1);
+            attr = master.Attribute().fetch(9230);
             assertNotNull(attr);
         } catch (MGXException ex) {
             fail(ex.getMessage());

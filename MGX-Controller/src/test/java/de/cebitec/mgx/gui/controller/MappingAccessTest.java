@@ -56,7 +56,7 @@ public class MappingAccessTest {
             // ok
             return;
         } catch (MGXException ex) {
-           fail(ex.getMessage());
+            fail(ex.getMessage());
         }
         fail("Closing a non-existing session should indicate a possible timeout.");
     }
@@ -88,7 +88,7 @@ public class MappingAccessTest {
         UUID uuid = master.Mapping().openMapping(1);
         int numMappedReads = 0;
         assertNotNull(uuid);
-        Iterator<MappedSequenceI> iter = master.Mapping().byReferenceInterval(uuid, 566470, 566480);
+        Iterator<MappedSequenceI> iter = master.Mapping().byReferenceInterval(uuid, 466020, 566480);
         assertNotNull(iter);
 
         SortedSet<MappedSequenceI> set = new TreeSet<>();
@@ -98,7 +98,7 @@ public class MappingAccessTest {
             assertNotNull(ms);
             //System.err.println("got "+ms);
             assertFalse(set.contains(ms));
-            //System.err.println("adding "+ms);
+            System.err.println("adding " + ms);
             set.add(ms);
             assertTrue(set.contains(ms));
             numMappedReads++;
@@ -106,10 +106,10 @@ public class MappingAccessTest {
 
         master.Mapping().closeMapping(uuid);
 
-        assertEquals(3, numMappedReads);
-        assertEquals(3, set.size());
+        assertEquals(17, numMappedReads);
+        assertEquals(17, set.size());
 
-        for (long l : new long[]{53748, 3436, 26467}) {
+        for (long l : new long[]{2148727, 2150896, 2113340}) {
             boolean present = false;
             for (MappedSequenceI ms : set) {
                 if (ms.getSeqId() == l) {
