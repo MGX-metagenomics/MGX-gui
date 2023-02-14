@@ -37,14 +37,14 @@ public class JobAccessTest {
     public void testFetch() throws Exception {
         System.out.println("fetch");
         MGXMasterI master = TestMaster.getRO();
-        JobI job = master.Job().fetch(1);
+        JobI job = master.Job().fetch(9);
         assertNotNull(job);
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 
-        assertEquals("2013-06-20T13:19:18Z", sdf.format(job.getStartDate()));
-        assertEquals("2013-06-20T13:20:01Z", sdf.format(job.getFinishDate()));
+        assertEquals("2023-02-10T10:13:32Z", sdf.format(job.getStartDate()));
+        assertEquals("2023-02-10T10:21:33Z", sdf.format(job.getFinishDate()));
     }
 
     @Test
@@ -59,7 +59,7 @@ public class JobAccessTest {
             assertNotNull(next);
             cnt++;
         }
-        assertEquals(15, cnt);
+        assertEquals(6, cnt);
     }
 
     @Test
@@ -67,28 +67,17 @@ public class JobAccessTest {
         System.out.println("BySeqRun");
         MGXMasterI master = TestMaster.getRO();
 
-        SeqRunI run = master.SeqRun().fetch(1);
+        SeqRunI run = master.SeqRun().fetch(49);
         List<JobI> jobs = master.Job().BySeqRun(run);
-        assertEquals(10, jobs.size());
-    }
-
-    @Test
-    public void testBySeqRun_mgx2() throws Exception {
-        System.out.println("BySeqRun");
-        MGXMasterI master = TestMaster.getPrivate("MGX2_devel");
-        assertNotNull(master);
-        SeqRunI run = master.SeqRun().fetch(1);
-        assertNotNull(run);
-        List<JobI> jobs = master.Job().BySeqRun(run);
-        assertEquals(2, jobs.size());
+        assertEquals(4, jobs.size());
     }
 
     @Test
     public void testDeletion() throws Exception {
         System.out.println("deletion");
         MGXMasterI master = TestMaster.getRW();
-        ToolI tool = master.Tool().fetch(1);
-        SeqRunI run = master.SeqRun().fetch(1);
+        ToolI tool = master.Tool().fetch(17);
+        SeqRunI run = master.SeqRun().fetch(49);
 
         JobI job = master.Job().create(tool, new ArrayList<>(), run);
         assertNotNull(job);
@@ -112,9 +101,9 @@ public class JobAccessTest {
     public void testEquals() throws Exception {
         System.out.println("testEquals");
         MGXMasterI master = TestMaster.getRO();
-        JobI j1 = master.Job().fetch(1);
-        JobI j2 = master.Job().fetch(1);
-        JobI j3 = master.Job().fetch(2);
+        JobI j1 = master.Job().fetch(7);
+        JobI j2 = master.Job().fetch(7);
+        JobI j3 = master.Job().fetch(8);
         //assertNotSame(j1, j2);
         assertEquals(j1, j2);
         assertNotEquals(j1, j3);
