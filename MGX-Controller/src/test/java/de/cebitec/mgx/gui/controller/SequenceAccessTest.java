@@ -30,7 +30,7 @@ public class SequenceAccessTest {
     public void testFetch_SeqRunI_String() throws Exception {
         System.out.println("testFetch_SeqRunI_String");
         MGXMasterI master = TestMaster.getRO();
-        SeqRunI seqrun = master.SeqRun().fetch(1);
+        SeqRunI seqrun = master.SeqRun().fetch(49);
         assertNotNull(seqrun);
         long start = System.currentTimeMillis();
         for (int i = 0; i < 100; i++) {

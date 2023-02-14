@@ -45,7 +45,7 @@ public class SampleAccessTest {
     public void testByHabitat() throws MGXException {
         System.out.println("ByHabitat");
         MGXMasterI master = TestMaster.getRO();
-        HabitatI h = master.Habitat().fetch(1);
+        HabitatI h = master.Habitat().fetch(2);
         assertNotNull(h);
         Iterator<SampleI> iter = master.Sample().ByHabitat(h);
         int cnt = 0;

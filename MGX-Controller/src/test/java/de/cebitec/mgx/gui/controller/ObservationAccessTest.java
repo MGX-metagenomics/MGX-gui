@@ -36,12 +36,12 @@ public class ObservationAccessTest {
         SeqRunI run = null;
         AttributeI attr = null;
         try {
-            run = master.SeqRun().fetch(1);
+            run = master.SeqRun().fetch(49);
             assertNotNull(run);
             attr = master.Attribute().fetch(1);
             assertNotNull(attr);
         } catch (MGXException ex) {
-            Exceptions.printStackTrace(ex);
+            fail(ex.getMessage());
         }
         obsList.add(new BulkObservation(run.getId(), "xx", attr.getId(), 0, 5));
         try {
@@ -62,12 +62,12 @@ public class ObservationAccessTest {
         SeqRunI run = null;
         AttributeI attr = null;
         try {
-            run = master.SeqRun().fetch(1);
+            run = master.SeqRun().fetch(49);
             assertNotNull(run);
             attr = master.Attribute().fetch(1);
             assertNotNull(attr);
         } catch (MGXException ex) {
-            Exceptions.printStackTrace(ex);
+            fail(ex.getMessage());
         }
         obsList.add(new BulkObservation(run.getId(), "xx", attr.getId(), 0, 5));
         try {
@@ -88,12 +88,12 @@ public class ObservationAccessTest {
         SeqRunI run = null;
         AttributeI attr = null;
         try {
-            run = master.SeqRun().fetch(1);
+            run = master.SeqRun().fetch(49);
             assertNotNull(run);
             attr = master.Attribute().fetch(1);
             assertNotNull(attr);
         } catch (MGXException ex) {
-            Exceptions.printStackTrace(ex);
+            fail(ex.getMessage());
         }
         obsList.add(new BulkObservation(run.getId(), "FI5LW4G01DZDXZ", attr.getId(), 0, 5));
         try {

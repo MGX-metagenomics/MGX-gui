@@ -10,6 +10,8 @@ import de.cebitec.mgx.sequence.SeqWriterI;
 import de.cebitec.mgx.testutils.TestMaster;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -26,21 +28,19 @@ public class DownloadTest {
         System.out.println("testDownloadSequencesForAttribute");
         MGXMasterI master = TestMaster.getRO();
         
-        // GC, 50.8 
-        AttributeI attr = master.Attribute().fetch(1);
+        // Firmicutes
+        AttributeI attr = master.Attribute().fetch(9230);
         assertNotNull(attr);
         Set<AttributeI> set = new HashSet<>();
         set.add(attr);
 
-        final Holder<Integer> cnt = new Holder<>();
-        cnt.set(0);
-        final Holder<Boolean> closed = new Holder<>();
-        closed.set(Boolean.FALSE);
+        final AtomicInteger cnt = new AtomicInteger(0);
+        final AtomicBoolean closed = new AtomicBoolean(false);
         
         SeqWriterI<DNASequenceI> dummy = new SeqWriterI<DNASequenceI>() {
             @Override
             public void addSequence(DNASequenceI seq) throws SeqStoreException {
-                cnt.set(cnt.get() + 1);
+                cnt.incrementAndGet();
             }
 
             @Override
@@ -49,7 +49,7 @@ public class DownloadTest {
             }
         };
         master.Sequence().downloadSequencesForAttributes(set, dummy, true);
-        assertEquals(220, cnt.get().intValue());
+        assertEquals(220, cnt.get());
         assertTrue(closed.get());
     }
 
@@ -80,7 +80,7 @@ public class DownloadTest {
     public void testFetchSequence() throws MGXException {
         System.out.println("testFetchSequence");
         MGXMasterI master = TestMaster.getRO();
-        SequenceI seq = master.Sequence().fetch(1);
+        SequenceI seq = master.Sequence().fetch(2109905);
         assertEquals("FI5LW4G01DZDXZ", seq.getName());
         assertEquals("TTTGCCATCGGCGCAGTCCTACTTATGAAGTTTGCAGAATAGCGTCAAGGCACTACCAAGGGG", seq.getSequence());
         assertEquals(63, seq.getLength());

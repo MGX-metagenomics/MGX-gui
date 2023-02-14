@@ -41,22 +41,22 @@ public class AttributeAccessTest {
     public void testGetDistribution() throws MGXException {
         System.out.println("getDistribution");
         MGXMasterI master = TestMaster.getRO();
-        DistributionI dist = master.Attribute().getDistribution(master.AttributeType().fetch(6),
-                master.Job().fetch(3),
-                master.SeqRun().fetch(5)
+        DistributionI dist = master.Attribute().getDistribution(master.AttributeType().fetch(3),
+                master.Job().fetch(7),
+                master.SeqRun().fetch(49)
         );
         assertNotNull(dist);
-        assertEquals(5, dist.size());
-        assertEquals(24, dist.getTotalClassifiedElements());
+        assertEquals(54, dist.size());
+        assertEquals(20302, dist.getTotalClassifiedElements());
     }
 
     @Test
     public void testFetch() throws MGXException {
         System.out.println("fetch");
-        AttributeI attr = TestMaster.getRO().Attribute().fetch(1);
+        AttributeI attr = TestMaster.getRO().Attribute().fetch(9230);
         assertNotNull(attr);
         assertNotNull(attr.getAttributeType());
-        assertEquals("50.8", attr.getValue());
+        assertEquals("Firmicutes", attr.getValue());
         assertEquals("GC", attr.getAttributeType().getName());
     }
 
@@ -64,42 +64,41 @@ public class AttributeAccessTest {
     public void testGetHierarchy() throws MGXException {
         System.out.println("getHierarchy");
         MGXMasterI master = TestMaster.getRO();
-        TreeI<Long> tree = master.Attribute().getHierarchy(master.AttributeType().fetch(6),
-                master.Job().fetch(3),
-                master.SeqRun().fetch(5)
+        TreeI<Long> tree = master.Attribute().getHierarchy(master.AttributeType().fetch(3),
+                master.Job().fetch(7),
+                master.SeqRun().fetch(49)
         );
         assertNotNull(tree);
-        assertEquals(30, tree.getNodes().size());
+        assertEquals(3256, tree.getNodes().size());
         assertNotNull(tree.getRoot());
 
         NodeI<Long> n = null;
         for (NodeI<Long> x : tree.getNodes()) {
-            if (x.getAttribute().getValue().equals("Bacteroidetes")) {
+            if (x.getAttribute().getValue().equals("Bacteria")) {
                 n = x;
                 break;
             }
         }
         assertNotNull(n);
-        assertEquals(2, n.getDepth());
+        assertEquals(1, n.getDepth());
 
         // check the path
         NodeI<Long>[] path = n.getPath();
-        assertEquals(3, path.length);
+        assertEquals(2, path.length);
         assertEquals(path[0], tree.getRoot());
-        assertNotNull(path[1]);
-        assertEquals(path[2], n);
+        assertEquals(path[1], n);
     }
 
     @Test
     public void testFilterTree() throws MGXException {
         System.out.println("filterTree");
         MGXMasterI master = TestMaster.getRO();
-        TreeI<Long> tree = master.Attribute().getHierarchy(master.AttributeType().fetch(6),
-                master.Job().fetch(3),
-                master.SeqRun().fetch(5)
+        TreeI<Long> tree = master.Attribute().getHierarchy(master.AttributeType().fetch(3),
+                master.Job().fetch(7),
+                master.SeqRun().fetch(49)
         );
         assertNotNull(tree);
-        assertEquals(30, tree.getNodes().size());
+        assertEquals(3256, tree.getNodes().size());
         assertNotNull(tree.getRoot());
 
         NodeI<Long> n = null;
@@ -125,12 +124,12 @@ public class AttributeAccessTest {
     public void testCloneTree() throws MGXException {
         System.out.println("cloneTree");
         MGXMasterI master = TestMaster.getRO();
-        TreeI<Long> tree = master.Attribute().getHierarchy(master.AttributeType().fetch(6),
-                master.Job().fetch(3),
-                master.SeqRun().fetch(5)
+        TreeI<Long> tree = master.Attribute().getHierarchy(master.AttributeType().fetch(3),
+                master.Job().fetch(7),
+                master.SeqRun().fetch(49)
         );
         assertNotNull(tree);
-        assertEquals(30, tree.getNodes().size());
+        assertEquals(3256, tree.getNodes().size());
         assertNotNull(tree.getRoot());
 
         TreeI<Long> tree2 = TreeFactory.clone(tree);
@@ -143,7 +142,7 @@ public class AttributeAccessTest {
     public void testFind() throws MGXException {
         System.out.println("testFind");
         MGXMasterI m = TestMaster.getRO();
-        SeqRunI run = m.SeqRun().fetch(1);
+        SeqRunI run = m.SeqRun().fetch(49);
         Iterator<String> iter = m.Attribute().find("ALCOHOL", run);
         assertNotNull(iter);
         int cnt = 0;
@@ -152,7 +151,7 @@ public class AttributeAccessTest {
             System.err.println(res);
             cnt++;
         }
-        assertEquals(8, cnt);
+        assertEquals(10, cnt);
     }
 
 //    @Test
@@ -272,9 +271,9 @@ public class AttributeAccessTest {
     public void verifyTreeStructure() throws MGXException {
         System.out.println("verifyTreeStructure");
         MGXMasterI master = TestMaster.getRO();
-        TreeI<Long> tree = master.Attribute().getHierarchy(master.AttributeType().fetch(6),
-                master.Job().fetch(3),
-                master.SeqRun().fetch(5)
+        TreeI<Long> tree = master.Attribute().getHierarchy(master.AttributeType().fetch(3),
+                master.Job().fetch(7),
+                master.SeqRun().fetch(49)
         );
         assertNotNull(tree);
 
@@ -305,16 +304,19 @@ public class AttributeAccessTest {
     public void testDistFromTree() throws MGXException {
         System.out.println("distFromTree");
         MGXMasterI master = TestMaster.getRO();
-        DistributionI<Long> dist = master.Attribute().getDistribution(master.AttributeType().fetch(6), master.Job().fetch(3), master.SeqRun().fetch(5));
+        DistributionI<Long> dist = master.Attribute().getDistribution(master.AttributeType().fetch(3), master.Job().fetch(7), master.SeqRun().fetch(49));
         assertNotNull(dist);
-        assertEquals(5, dist.size());
-        assertEquals(24, dist.getTotalClassifiedElements());
+        assertEquals(54, dist.size());
+        assertEquals(20302, dist.getTotalClassifiedElements());
 
         AttributeTypeI aType = dist.keySet().toArray(new AttributeI[]{})[0].getAttributeType();
         assertNotNull(aType);
-        assertEquals("Bergey_class", aType.getName());
+        assertEquals("NCBI_PHYLUM", aType.getName());
 
-        TreeI<Long> tree = TestMaster.getRO().Attribute().getHierarchy(master.AttributeType().fetch(6), master.Job().fetch(3), master.SeqRun().fetch(5));
+        TreeI<Long> tree = master.Attribute().getHierarchy(master.AttributeType().fetch(3),
+                master.Job().fetch(7),
+                master.SeqRun().fetch(49)
+        );
         assertNotNull(tree);
 
         // count manually
@@ -324,12 +326,12 @@ public class AttributeAccessTest {
                 i++;
             }
         }
-        assertEquals(5, i);
+        assertEquals(54, i);
 
         DistributionI fromTree = DistributionFactory.fromTree(tree, aType);
         assertNotNull(fromTree);
-        assertEquals(5, fromTree.size());
-        assertEquals(24, fromTree.getTotalClassifiedElements());
+        assertEquals(54, fromTree.size());
+        assertEquals(20302, fromTree.getTotalClassifiedElements());
     }
 
     @Test
@@ -337,16 +339,16 @@ public class AttributeAccessTest {
         System.out.println("mergeDistributions");
         MGXMasterI master = TestMaster.getRO();
 
-        JobI job = master.Job().fetch(3);
+        JobI job = master.Job().fetch(7);
         assertNotNull(job);
         Iterator<SeqRunI> iter = master.SeqRun().ByJob(job);
         assertNotNull(iter);
         assertEquals(true, iter.hasNext());
         SeqRunI run = iter.next();
-        DistributionI<Long> dist = master.Attribute().getDistribution(master.AttributeType().fetch(6), job, run);
+        DistributionI<Long> dist = master.Attribute().getDistribution(master.AttributeType().fetch(3), job, run);
         assertNotNull(dist);
-        assertEquals(5, dist.size());
-        assertEquals(24, dist.getTotalClassifiedElements());
+        assertEquals(54, dist.size());
+        assertEquals(20302, dist.getTotalClassifiedElements());
         List<Future<Pair<SeqRunI, DistributionI<Long>>>> twoTimes = new ArrayList<>();
         twoTimes.add(new NoFuture<>(new Pair<>(run, dist)));
         twoTimes.add(new NoFuture<>(new Pair<>(run, dist)));
@@ -355,21 +357,8 @@ public class AttributeAccessTest {
 
         DistributionI<Long> merged = DistributionFactory.merge(twoTimes, m);
         assertNotNull(merged);
-        assertEquals(5, merged.size());
-        assertEquals(48, merged.getTotalClassifiedElements());
-
-        // bergey_order
-        DistributionI<Long> dist2 = TestMaster.getRO().Attribute().getDistribution(master.AttributeType().fetch(7), master.Job().fetch(3), run);
-        assertNotNull(dist2);
-        assertEquals(4, dist2.size());
-        assertEquals(21, dist2.getTotalClassifiedElements());
-        List<Future<Pair<SeqRunI, DistributionI<Long>>>> twoDists = new ArrayList<>();
-        twoDists.add(new NoFuture<>(new Pair<>(run, dist)));
-        twoDists.add(new NoFuture<>(new Pair<>(run, dist2)));
-        DistributionI twoDifferent = DistributionFactory.merge(twoDists, m);
-        assertNotNull(twoDifferent);
-        assertEquals(9, twoDifferent.size());
-        assertEquals(45, twoDifferent.getTotalClassifiedElements());
+        assertEquals(54, merged.size());
+        assertEquals(40604, merged.getTotalClassifiedElements());
     }
 
     private void checkNode(TreeI<Long> tree, String name, Long content) {

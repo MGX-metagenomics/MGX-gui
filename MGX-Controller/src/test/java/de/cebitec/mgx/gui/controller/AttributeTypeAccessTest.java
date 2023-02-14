@@ -30,18 +30,18 @@ public class AttributeTypeAccessTest {
         MGXMasterI master = TestMaster.getRO();
         AttributeTypeI aType = master.AttributeType().fetch(6);
         assertNotNull(aType);
-        assertEquals("Bergey_class", aType.getName());
+        assertEquals("NCBI_FAMILY", aType.getName());
     }
 
     @Test
     public void testByRun() throws MGXException {
         System.out.println("testByRun");
         MGXMasterI master = TestMaster.getRO();
-        SeqRunI run = master.SeqRun().fetch(1);
+        SeqRunI run = master.SeqRun().fetch(49);
         assertEquals("dataset1", run.getName());
         Map<JobI, Set<AttributeTypeI>> map = master.SeqRun().getJobsAndAttributeTypes(run);
         assertNotNull(map);
-        assertEquals(10, map.size());
+        assertEquals(3, map.size());
 
         int numCorrect = 0;
         for (JobI j : map.keySet()) {

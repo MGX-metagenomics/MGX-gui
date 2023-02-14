@@ -35,7 +35,7 @@ public class MappingAccessTest {
     public void testBySeqRun() throws Exception {
         System.out.println("BySeqRun");
         MGXMasterI master = TestMaster.getRO();
-        SeqRunI run = master.SeqRun().fetch(1);
+        SeqRunI run = master.SeqRun().fetch(49);
         assertNotNull(run);
         Iterator<MappingI> it = master.Mapping().BySeqRun(run);
         assertNotNull(it);
@@ -65,7 +65,7 @@ public class MappingAccessTest {
     public void testMappedSeqs() throws Exception {
         System.out.println("testMappedSeqs");
         MGXMasterI master = TestMaster.getRO();
-        UUID uuid = master.Mapping().openMapping(30);
+        UUID uuid = master.Mapping().openMapping(1);
         assertNotNull(uuid);
         int numMappedReads = 0;
         Iterator<MappedSequenceI> iter = master.Mapping().byReferenceInterval(uuid, 566470, 566480);
@@ -85,7 +85,7 @@ public class MappingAccessTest {
     public void testMappedSeqs2() throws Exception {
         System.out.println("testMappedSeqs2");
         MGXMasterI master = TestMaster.getRO();
-        UUID uuid = master.Mapping().openMapping(30);
+        UUID uuid = master.Mapping().openMapping(1);
         int numMappedReads = 0;
         assertNotNull(uuid);
         Iterator<MappedSequenceI> iter = master.Mapping().byReferenceInterval(uuid, 566470, 566480);

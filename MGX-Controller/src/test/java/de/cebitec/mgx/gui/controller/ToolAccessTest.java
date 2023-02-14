@@ -46,12 +46,12 @@ public class ToolAccessTest {
         MGXMasterI master = TestMaster.getRO();
         ToolI tool = null;
         try {
-            tool = master.Tool().fetch(1);
+            tool = master.Tool().fetch(17);
         } catch (MGXException ex) {
             fail(ex.getMessage());
         }
         assertNotNull(tool);
-        assertEquals("GC content", tool.getName());
+        assertEquals("COG", tool.getName());
     }
 
     @Test
@@ -71,7 +71,7 @@ public class ToolAccessTest {
             assertNotNull(tool);
             cnt++;
         }
-        assertEquals(18, cnt, "Unit test project contains 18 tools");
+        assertEquals(4, cnt, "Unit test project contains 4 tools");
     }
 
     @Test
@@ -246,9 +246,9 @@ public class ToolAccessTest {
         assertNotNull(dbParam);
         assertNotNull(dbParam.getChoices());
         Map<String, String> choices = dbParam.getChoices();
+        assertEquals(2, choices.size());
         assertTrue(choices.containsKey("SILVA"));
         assertTrue(choices.containsKey("Greengenes"));
-        assertEquals(2, choices.size());
     }
 
     private static String readFile(String path) throws IOException {
