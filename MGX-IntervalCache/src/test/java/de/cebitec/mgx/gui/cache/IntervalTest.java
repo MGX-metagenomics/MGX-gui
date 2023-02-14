@@ -27,7 +27,7 @@ public class IntervalTest {
     public void testEquals() throws MGXException {
         System.out.println("equals");
         MGXMasterI master = TestMaster.getRO();
-        MGXReferenceI ref = master.Reference().fetch(4);
+        MGXReferenceI ref = master.Reference().fetch(65);
         Cache<String> cache = CacheFactory.createSequenceCache(master, ref);
         assertNotNull(cache);
 
@@ -42,7 +42,7 @@ public class IntervalTest {
     public void testHashCode() throws MGXException {
         System.out.println("hashCode");
         MGXMasterI master = TestMaster.getRO();
-        MGXReferenceI ref = master.Reference().fetch(4);
+        MGXReferenceI ref = master.Reference().fetch(65);
         Cache<String> cache = CacheFactory.createSequenceCache(master, ref);
         assertNotNull(cache);
 

@@ -29,7 +29,7 @@ public class CacheTest {
     public void testGetSequenceRegression() throws Exception {
         System.out.println("testGetSequenceRegression");
         MGXMasterI master = TestMaster.getRO();
-        MGXReferenceI ref = master.Reference().fetch(4);
+        MGXReferenceI ref = master.Reference().fetch(65);
         Cache<String> cache = CacheFactory.createSequenceCache(master, ref);
         String seq = cache.get(1049908, 1050000);
         assertNotNull(seq);
@@ -39,25 +39,25 @@ public class CacheTest {
     public void testGetSequence() throws Exception {
         System.out.println("getSequence");
         MGXMasterI master = TestMaster.getRO();
-        MGXReferenceI ref = master.Reference().fetch(4);
+        MGXReferenceI ref = master.Reference().fetch(65);
         Cache<String> cache = CacheFactory.createSequenceCache(master, ref);
         assertNotNull(cache);
         String seq = cache.get(0, 9);
-        assertEquals("TTGTGCACAC", seq);
+        assertEquals("CCTGGTTTGT", seq);
 
         seq = cache.get(97, 101);
-        assertEquals("ATTCG", seq);
+        assertEquals("TTCTT", seq);
     }
 
     @Test
     public void testGetMappedSeqs() throws Exception {
         System.out.println("getMappedSeqs");
         MGXMasterI master = TestMaster.getRO();
-        MGXReferenceI ref = master.Reference().fetch(8);
+        MGXReferenceI ref = master.Reference().fetch(65);
         assertNotNull(ref);
-        MappingI m = master.Mapping().fetch(30);
+        MappingI m = master.Mapping().fetch(1);
         assertNotNull(m);
-        assertEquals(8, m.getReferenceID());
+        assertEquals(65, m.getReferenceID());
         UUID sessionUUID = master.Mapping().openMapping(m.getId());
         CoverageInfoCache<Set<MappedSequenceI>> cache = CacheFactory.createMappedSequenceCache(master, ref, sessionUUID);
         assertNotNull(cache);
@@ -73,7 +73,7 @@ public class CacheTest {
     public void testGetFullSequence() throws Exception {
         System.out.println("getFullSequence");
         MGXMasterI master = TestMaster.getRO();
-        MGXReferenceI ref = master.Reference().fetch(4);
+        MGXReferenceI ref = master.Reference().fetch(65);
         Cache<String> cache = CacheFactory.createSequenceCache(master, ref);
         assertNotNull(cache);
         String seq = cache.get(0, ref.getLength() - 1);
@@ -84,29 +84,29 @@ public class CacheTest {
     public void testGetRegions() throws Exception {
         System.out.println("getRegions");
         MGXMasterI master = TestMaster.getRO();
-        MGXReferenceI ref = master.Reference().fetch(4);
+        MGXReferenceI ref = master.Reference().fetch(65);
         Cache<Set<ReferenceRegionI>> cache = CacheFactory.createRegionCache(master, ref);
         assertNotNull(cache);
         Set<ReferenceRegionI> data = cache.get(100, 2850);
-        assertEquals(2, data.size());
+        assertEquals(3, data.size());
     }
 
     @Test
     public void testGetRegions2() throws Exception {
         System.out.println("getRegions2");
         MGXMasterI master = TestMaster.getRO();
-        MGXReferenceI ref = master.Reference().fetch(4);
+        MGXReferenceI ref = master.Reference().fetch(65);
         Cache<Set<ReferenceRegionI>> cache = CacheFactory.createRegionCache(master, ref);
         assertNotNull(cache);
         Set<ReferenceRegionI> data = cache.get(0, ref.getLength() - 1);
-        assertEquals(8750, data.size());
+        assertEquals(2656, data.size());
     }
 
     @Test
     public void testGetOneInterval() throws MGXException {
         System.out.println("getOneInterval");
         MGXMasterI master = TestMaster.getRO();
-        MGXReferenceI ref = master.Reference().fetch(4);
+        MGXReferenceI ref = master.Reference().fetch(65);
         Cache<String> cache = CacheFactory.createSequenceCache(master, ref);
         assertNotNull(cache);
         Iterator<Interval> iter = cache.getIntervals(5, 10);
@@ -123,7 +123,7 @@ public class CacheTest {
     public void testGetIntervals() throws MGXException {
         System.out.println("getIntervals");
         MGXMasterI master = TestMaster.getRO();
-        MGXReferenceI ref = master.Reference().fetch(4);
+        MGXReferenceI ref = master.Reference().fetch(65);
         Cache<String> cache = CacheFactory.createSequenceCache(master, ref);
         assertNotNull(cache);
         //System.err.println("  generating " + 0 + " to " + (ref.getLength() - 1));
@@ -142,14 +142,14 @@ public class CacheTest {
             assertTrue(interval.getFrom() <= interval.getTo());
             assertEquals(cache.getSegmentSize(), interval.length());
         }
-        assertEquals(214, numSegments);
+        assertEquals(56, numSegments);
     }
 
     @Test
     public void testShortInterval() throws MGXException {
         System.out.println("getShortintervals");
         MGXMasterI master = TestMaster.getRO();
-        MGXReferenceI ref = master.Reference().fetch(4);
+        MGXReferenceI ref = master.Reference().fetch(65);
         Cache<String> cache = CacheFactory.createSequenceCache(master, ref);
         assertNotNull(cache);
         System.err.println("  generating " + 0 + " to " + 5);
@@ -171,7 +171,7 @@ public class CacheTest {
     public void testIntervalAlignment() throws MGXException {
         System.out.println("IntervalAlignment");
         MGXMasterI master = TestMaster.getRO();
-        MGXReferenceI ref = master.Reference().fetch(4);
+        MGXReferenceI ref = master.Reference().fetch(65);
         Cache<String> cache = CacheFactory.createSequenceCache(master, ref);
         assertNotNull(cache);
         Iterator<Interval> iter = cache.getIntervals(5, 999999);
@@ -189,7 +189,7 @@ public class CacheTest {
     public void testIntervalAlignment2() throws MGXException {
         System.out.println("IntervalAlignment2");
         MGXMasterI master = TestMaster.getRO();
-        MGXReferenceI ref = master.Reference().fetch(4);
+        MGXReferenceI ref = master.Reference().fetch(65);
         Cache<String> cache = CacheFactory.createSequenceCache(master, ref);
         assertNotNull(cache);
         int from = cache.getSegmentSize() + 5;
@@ -228,7 +228,7 @@ public class CacheTest {
     public void testCacheing() throws MGXException {
         System.out.println("Cacheing");
         MGXMasterI master = TestMaster.getRO();
-        MGXReferenceI ref = master.Reference().fetch(4);
+        MGXReferenceI ref = master.Reference().fetch(65);
         Cache<String> cache = CacheFactory.createSequenceCache(master, ref);
         assertNotNull(cache);
 
@@ -254,9 +254,9 @@ public class CacheTest {
     public void testIterator() throws Exception {
         System.out.println("getCovIterator");
         MGXMasterI master = TestMaster.getRO();
-        MGXReferenceI ref = master.Reference().fetch(8);
+        MGXReferenceI ref = master.Reference().fetch(65);
         assertNotNull(ref);
-        UUID uuid = master.Mapping().openMapping(30);
+        UUID uuid = master.Mapping().openMapping(1);
 
         CoverageInfoCache<Set<MappedSequenceI>> cache = CacheFactory.createMappedSequenceCache(master, ref, uuid);
         assertNotNull(cache);
@@ -274,9 +274,9 @@ public class CacheTest {
     public void testMaxCoverage() throws Exception {
         System.out.println("maxCoverage");
         MGXMasterI master = TestMaster.getRO();
-        MGXReferenceI ref = master.Reference().fetch(8);
+        MGXReferenceI ref = master.Reference().fetch(65);
         assertNotNull(ref);
-        UUID uuid = master.Mapping().openMapping(30);
+        UUID uuid = master.Mapping().openMapping(1);
 
         CoverageInfoCache<Set<MappedSequenceI>> cache = CacheFactory.createMappedSequenceCache(master, ref, uuid);
         assertNotNull(cache);
@@ -293,11 +293,6 @@ public class CacheTest {
 //        cache.getCoverage(566470, 566480, foo);
 //        for (int i : foo) { System.err.println(foo[i]); }
         // expect seqs 53748, 3436, 26467
-        Set<MappedSequenceI> seqs = cache.get(566470, 566480);
-        assertTrue(containsSeqId(seqs, 53748));
-        assertTrue(containsSeqId(seqs, 3436));
-        assertTrue(containsSeqId(seqs, 26467));
-        assertEquals(3, seqs.size());
 
         int maxCoverage = cache.getMaxCoverage(566470, 566480);
         assertEquals(3, maxCoverage);

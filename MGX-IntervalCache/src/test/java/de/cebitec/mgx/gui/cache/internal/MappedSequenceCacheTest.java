@@ -110,8 +110,9 @@ public class MappedSequenceCacheTest {
     public void testMappedSeqs() throws Exception {
         System.out.println("testMappedSeqs");
         MGXMasterI master = TestMaster.getRO();
-        MGXReferenceI ref = master.Reference().fetch(8);
-        UUID uuid = master.Mapping().openMapping(30);
+        MGXReferenceI ref = master.Reference().fetch(65);
+        assertNotNull(ref);
+        UUID uuid = master.Mapping().openMapping(1);
         assertNotNull(uuid);
 
         CoverageInfoCache<Set<MappedSequenceI>> cache = CacheFactory.createMappedSequenceCache(master, ref, uuid);
@@ -122,9 +123,10 @@ public class MappedSequenceCacheTest {
         master.Mapping().closeMapping(uuid);
         //assertEquals(3, set.size());
 
-        for (long l : new long[]{53748, 3436, 26467}) {
+        for (long l : new long[]{2163652, 2136371, 2113340}) {
             boolean present = false;
             for (MappedSequenceI ms : set) {
+                System.out.println(ms.getSeqId());
                 if (ms.getSeqId() == l) {
                     present = true;
                 }

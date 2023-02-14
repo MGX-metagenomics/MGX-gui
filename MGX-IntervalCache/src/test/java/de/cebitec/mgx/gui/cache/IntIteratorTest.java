@@ -66,7 +66,7 @@ public class IntIteratorTest {
         }
         assertEquals(1, cnt);
         assertNotNull(mapping);
-        assertEquals(30, mapping.getId());
+        assertEquals(1, mapping.getId());
         MGXReferenceI ref = master.Reference().fetch(mapping.getReferenceID());
         UUID uuid = master.Mapping().openMapping(mapping.getId());
         CoverageInfoCache<Set<MappedSequenceI>> cache = CacheFactory.createMappedSequenceCache(master, ref, uuid);

@@ -12,7 +12,6 @@ import de.cebitec.mgx.api.visualization.ConflictResolver;
 import de.cebitec.mgx.gui.visgroups.VGroupManager;
 import de.cebitec.mgx.kegg.pathways.KEGGException;
 import de.cebitec.mgx.testutils.TestMaster;
-import java.util.Iterator;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -38,13 +37,9 @@ public class KeggViewerTest {
         MGXMasterI master = TestMaster.getRO();
 
         // add first run
-        Iterator<SeqRunI> iter = master.SeqRun().fetchall();
-        while (iter.hasNext()) {
-            SeqRunI sr = iter.next();
-            if (sr.getName().equals("dataset1")) {
-                vg.add(sr);
-            }
-        }
+        SeqRunI run1 = master.SeqRun().fetch(49);
+        assertEquals(run1.getName(), "dataset1");
+        vg.add(run1);
 
         mgr.registerResolver(new ConflictResolver() {
             @Override
@@ -53,32 +48,29 @@ public class KeggViewerTest {
             }
         });
 
-        // select ec_number attribute type
+        // select ec_number attribute type via manager which forwards the
+        // selection to all groups
         boolean ok = mgr.selectAttributeType(AttributeRank.PRIMARY, "EC_number");
         assertTrue(ok);
 
-        String attrType = mgr.getSelectedAttributeType();
+        String attrType = vg.getSelectedAttributeType();
         assertNotNull(attrType);
         assertEquals("EC_number", attrType);
 
+        // add second run
+        SeqRunI run2 = master.SeqRun().fetch(50);
+        assertEquals(run2.getName(), "dataset2");
+        vg.add(run2);
+        
         attrType = vg.getSelectedAttributeType();
         assertNotNull(attrType);
         assertEquals("EC_number", attrType);
 
+        long start = System.currentTimeMillis();
+
         KeggViewer kv = new KeggViewer();
         kv.getCustomizer();
         
-        // add second run
-        iter = master.SeqRun().fetchall();
-        while (iter.hasNext()) {
-            SeqRunI sr = iter.next();
-            if (sr.getName().equals("dataset2")) {
-                vg.add(sr);
-            }
-        }
-
-        long start = System.currentTimeMillis();
-
         try {
             kv.selectPathways();
         } catch (ConflictingJobsException | KEGGException ex) {
