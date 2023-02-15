@@ -32,8 +32,8 @@ public class DNAExtractNode extends MGXNodeBase<DNAExtractI> {
         return new StringBuilder("<html><b>DNA extract: </b>")
                 .append(escapeHtml4(d.getName()))
                 .append("<br><hr><br>")
-                .append("type: ").append(escapeHtml4(d.getMethod())).append("<br>")
-                .append("protocol: ").append(d.getProtocol() != null ? escapeHtml4(d.getProtocol()) : "")
+                .append("Type: ").append(escapeHtml4(d.getMethod())).append("<br>")
+                .append("Protocol: ").append(d.getProtocol() != null ? escapeHtml4(d.getProtocol()) : "")
                 .append("</html>").toString();
     }
 

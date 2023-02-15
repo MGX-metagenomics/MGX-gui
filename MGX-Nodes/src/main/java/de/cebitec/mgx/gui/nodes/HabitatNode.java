@@ -31,11 +31,11 @@ public class HabitatNode extends MGXNodeBase<HabitatI> {
         return new StringBuilder("<html>").append("<b>Habitat: </b>")
                 .append(escapeHtml4(h.getName()))
                 .append("<br><hr><br>")
-                .append("biome: ").append(escapeHtml4(h.getBiome())).append("<br>")
-                .append("location: ").append(Double.toString(h.getLatitude()))
+                .append("Biome: ").append(escapeHtml4(h.getBiome())).append("<br>")
+                .append("Location: ").append(Double.toString(h.getLatitude()))
                 .append(" / ").append(Double.toString(h.getLongitude()))
                 .append("<br>")
-                .append("altitude: ").append(Integer.toString(h.getAltitude()))
+                .append("Altitude: ").append(Integer.toString(h.getAltitude()))
                 .append("</html>").toString();
     }
 
