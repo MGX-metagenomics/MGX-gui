@@ -5,6 +5,7 @@ import de.cebitec.mgx.api.groups.FileType;
 import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.groups.ImageExporterI;
 import de.cebitec.mgx.api.groups.SequenceExporterI;
+import de.cebitec.mgx.api.groups.VGroupManagerI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.AttributeI;
@@ -53,6 +54,7 @@ public class KeggViewer extends CategoricalViewerI<Long> implements Customizable
     private KEGGMaster master;
     private KeggCustomizer customizer;
     private List<Pair<GroupI, DistributionI<Long>>> data;
+    private VGroupManagerI vmgr = null;
     //
     private static boolean messageShown = false;
 
@@ -172,7 +174,12 @@ public class KeggViewer extends CategoricalViewerI<Long> implements Customizable
     private final static RequestProcessor reqProcessor = new RequestProcessor("KEGG-Viewer", 35, true);
 
     public Set<PathwayI> selectPathways() throws ConflictingJobsException, KEGGException {
-        return customizer.selectPathways(master, VGroupManager.getInstance(), reqProcessor);
+
+        if (vmgr == null) {
+            vmgr = VGroupManager.getInstance();
+        }
+
+        return customizer.selectPathways(master, vmgr, reqProcessor);
     }
 //        final Set<ECNumberI> ecNumbers = new HashSet<>();
 //        for (Pair<VisualizationGroupI, DistributionI> p : VGroupManager.getInstance().getDistributions()) {
@@ -206,10 +213,15 @@ public class KeggViewer extends CategoricalViewerI<Long> implements Customizable
 
     @Override
     public KeggCustomizer getCustomizer() {
+
+        if (vmgr == null) {
+            vmgr = VGroupManager.getInstance();
+        }
+
         SwingWorker<Set<PathwayI>, Void> sw = new SwingWorker<Set<PathwayI>, Void>() {
             @Override
             protected Set<PathwayI> doInBackground() throws Exception {
-                return customizer.selectPathways(master, VGroupManager.getInstance(), reqProcessor);
+                return customizer.selectPathways(master, vmgr, reqProcessor);
             }
 
             @Override
@@ -237,5 +249,10 @@ public class KeggViewer extends CategoricalViewerI<Long> implements Customizable
     public void dispose() {
         reqProcessor.shutdownNow();
         super.dispose();
+    }
+
+    // required to implant VGroupManager test instance during unit tests
+    void setVGroupManager(VGroupManagerI mgr) {
+        this.vmgr = mgr;
     }
 }

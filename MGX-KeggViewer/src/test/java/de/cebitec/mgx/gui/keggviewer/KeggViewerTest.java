@@ -57,20 +57,32 @@ public class KeggViewerTest {
         assertNotNull(attrType);
         assertEquals("EC_number", attrType);
 
+        attrType = mgr.getSelectedAttributeType();
+        assertNotNull(attrType);
+        assertEquals("EC_number", attrType);
+
         // add second run
         SeqRunI run2 = master.SeqRun().fetch(50);
         assertEquals(run2.getName(), "dataset2");
         vg.add(run2);
-        
+
         attrType = vg.getSelectedAttributeType();
+        assertNotNull(attrType);
+        assertEquals("EC_number", attrType);
+
+        attrType = mgr.getSelectedAttributeType();
         assertNotNull(attrType);
         assertEquals("EC_number", attrType);
 
         long start = System.currentTimeMillis();
 
         KeggViewer kv = new KeggViewer();
-        kv.getCustomizer();
         
+        // manually set vmgr to test instance
+        kv.setVGroupManager(mgr);
+        
+        kv.getCustomizer();
+
         try {
             kv.selectPathways();
         } catch (ConflictingJobsException | KEGGException ex) {
