@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.nodes;
 
 import de.cebitec.mgx.api.model.ModelBaseI;
+import java.awt.Image;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DnDConstants;
 import java.beans.PropertyChangeEvent;
@@ -26,12 +27,17 @@ public abstract class MGXNodeBase<T extends ModelBaseI<T>> extends AbstractNode 
         super(children, lookup);
         content = data;
         content.addPropertyChangeListener(this);
-        
+
         getSheet();
     }
 
     public final T getContent() {
         return content;
+    }
+
+    @Override
+    public Image getOpenedIcon(int type) {
+        return getIcon(type);
     }
 
     @Override

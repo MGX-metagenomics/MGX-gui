@@ -3,6 +3,7 @@ package de.cebitec.mgx.gui.nodes;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.assembly.AssemblyI;
 import de.cebitec.mgx.gui.nodefactory.AssemblyStructureNodeFactory;
+import java.awt.Image;
 import java.text.NumberFormat;
 import java.util.Locale;
 import javax.swing.Action;
@@ -24,9 +25,18 @@ public class AssemblyNode extends MGXNodeBase<AssemblyI> {
     private AssemblyNode(AssemblyI a, AssemblyStructureNodeFactory snf) {
         super(Children.create(snf, true), Lookups.fixed(a.getMaster(), a), a);
         super.setDisplayName(a.getName());
-        //super.setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/Habitat.png");
+        super.setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/Assembly.png");
         super.setShortDescription(getToolTipText(a));
     }
+
+    @Override
+    public Image getIcon(int type) {
+        Image image = super.getIcon(type);
+        Image scaledInstance = image.getScaledInstance(16, 16, Image.SCALE_SMOOTH);
+        return scaledInstance;
+    }
+
+
 
     private String getToolTipText(AssemblyI h) {
         return new StringBuilder("<html>").append("<b>Assembly: </b>")
@@ -49,7 +59,7 @@ public class AssemblyNode extends MGXNodeBase<AssemblyI> {
     @Override
     public void updateModified() {
         setDisplayName(getContent().getName());
-        setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/Habitat.png");
+        setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/Assembly.png");
         setShortDescription(getToolTipText(getContent()));
     }
 }
