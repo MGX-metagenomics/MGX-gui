@@ -703,6 +703,7 @@
         <module>MGX-GenBankExporter</module>
         <module>MGX-Report</module>
         <module>MGX-SubdistributionViewer</module>
+        <module>MGX-BinTable</module>
     </modules>
     
 

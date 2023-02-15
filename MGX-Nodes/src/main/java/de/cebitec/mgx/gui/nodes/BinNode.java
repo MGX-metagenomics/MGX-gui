@@ -45,8 +45,9 @@ public class BinNode extends MGXNodeBase<BinI> {
 
     @Override
     public Action[] getActions(boolean context) {
+        Action binTable = FileUtil.getConfigObject("Actions/File/de-cebitec-mgx-gui-bintable-BinTableAction.instance", Action.class);
         Action exportGBK = FileUtil.getConfigObject("Actions/Edit/de-cebitec-mgx-gui-actions-ExportBin.instance", Action.class);
-        return new Action[]{exportGBK};
+        return new Action[]{binTable, exportGBK};
     }
 
     @Override
