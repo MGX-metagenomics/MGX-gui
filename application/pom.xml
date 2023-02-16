@@ -102,6 +102,11 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>MGX-Controller</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>MGX-AttributeVisualization</artifactId>
         </dependency>
         <dependency>

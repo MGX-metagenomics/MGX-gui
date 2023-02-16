@@ -70,11 +70,6 @@
             <groupId>de.cebitec.gpms</groupId>
             <artifactId>GPMS-Nodes</artifactId>
         </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>MGX-Controller</artifactId>
-            <version>${project.version}</version>
-        </dependency>
     </dependencies>
 
     <build>
