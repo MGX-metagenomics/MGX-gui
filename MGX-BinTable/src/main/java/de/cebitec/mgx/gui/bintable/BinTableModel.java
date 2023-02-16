@@ -20,7 +20,11 @@ public class BinTableModel extends DefaultTableModel {
     }
 
     public void addAll(Collection<? extends BinI> coll) {
-        data.addAll(coll);
+        for (BinI b : coll) {
+            if (!data.contains(b)) {
+                data.add(b);
+            }
+        }
         super.setRowCount(data.size());
     }
 
