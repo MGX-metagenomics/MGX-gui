@@ -1,0 +1,1 @@
+Nbm-Maven-Plugin-Autoload: false
