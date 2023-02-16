@@ -13,7 +13,6 @@ import de.cebitec.mgx.api.model.assembly.GeneObservationI;
 import de.cebitec.mgx.gui.binexplorer.internal.ContigViewController;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -31,13 +30,10 @@ public class AttributeTableModel extends DefaultTableModel implements PropertyCh
 
     private final ContigViewController vc;
     private final List<GeneObservationI> gobsList = new ArrayList<>();
-    //
-    private final NumberFormat nf;
 
-    public AttributeTableModel(ContigViewController vc, NumberFormat nf) {
+    public AttributeTableModel(ContigViewController vc) {
         vc.addPropertyChangeListener(this);
         this.vc = vc;
-        this.nf = nf;
     }
 
     @Override
@@ -133,9 +129,9 @@ public class AttributeTableModel extends DefaultTableModel implements PropertyCh
             case 1:
                 return gobs.getAttributeName();
             case 2:
-                return nf.format(gobs.getStart());
+                return gobs.getStart();
             case 3:
-                return nf.format(gobs.getStop());
+                return gobs.getStop();
             case 4:
                 return gobs;
         }
@@ -170,11 +166,16 @@ public class AttributeTableModel extends DefaultTableModel implements PropertyCh
     }
 
     @Override
-    public Class<?> getColumnClass(int columnIndex) {
-        if (columnIndex == 4) {
-            return GeneObservationI.class;
+    public Class<?> getColumnClass(int column) {
+        switch (column) {
+            case 2:
+            case 3:
+                return Integer.class;
+            case 4:
+                return GeneObservationI.class;
         }
-        return super.getColumnClass(columnIndex);
+
+        return super.getColumnClass(column);
     }
 
 }

@@ -105,7 +105,7 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
     private final static NumberFormat nf = NumberFormat.getInstance(Locale.US);
     //
     private final ContigListModel contigListModel = new ContigListModel();
-    private final AttributeTableModel attrTableModel = new AttributeTableModel(vc, nf);
+    private final AttributeTableModel attrTableModel = new AttributeTableModel(vc);
     //
     private boolean isActivated = false;
     //
