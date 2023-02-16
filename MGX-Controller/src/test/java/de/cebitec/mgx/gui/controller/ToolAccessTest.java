@@ -19,7 +19,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.Test;
-import org.openide.util.Exceptions;
 
 /**
  *
@@ -125,7 +124,7 @@ public class ToolAccessTest {
                 }
                 assertEquals(State.FINISHED, task.getState());
             } catch (MGXException ex) {
-                Exceptions.printStackTrace(ex);
+                fail(ex.getMessage());
             }
         }
         assertTrue(tool1Created);
@@ -139,7 +138,7 @@ public class ToolAccessTest {
                 }
                 assertEquals(State.FINISHED, task.getState());
             } catch (MGXException ex) {
-                Exceptions.printStackTrace(ex);
+                fail(ex.getMessage());
             }
         }
         assertFalse(tool2Created, "Creation of duplicate tool should not be possible");
@@ -176,7 +175,7 @@ public class ToolAccessTest {
                     }
                     assertEquals(State.FINISHED, task.getState());
                 } catch (MGXException ex) {
-                    Exceptions.printStackTrace(ex);
+                    fail(ex.getMessage());
                 }
                 if (tool2 != null) {
                     try {
@@ -186,7 +185,7 @@ public class ToolAccessTest {
                         }
                         assertEquals(State.FINISHED, task.getState());
                     } catch (MGXException ex) {
-                        Exceptions.printStackTrace(ex);
+                        fail(ex.getMessage());
                     }
                 }
             }
@@ -208,5 +207,4 @@ public class ToolAccessTest {
 //        }
 //        return content.toString();
 //    }
-
 }

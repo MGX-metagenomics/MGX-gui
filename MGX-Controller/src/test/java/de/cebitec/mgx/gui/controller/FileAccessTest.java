@@ -31,7 +31,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.openide.util.Exceptions;
 
 /**
  *
@@ -121,7 +120,7 @@ public class FileAccessTest {
             try {
                 Thread.sleep(20);
             } catch (InterruptedException ex) {
-                Exceptions.printStackTrace(ex);
+                fail(ex.getMessage());
             }
         }
         assertTrue(delTask.done());

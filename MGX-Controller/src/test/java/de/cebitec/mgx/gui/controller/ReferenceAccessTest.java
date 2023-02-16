@@ -19,7 +19,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import org.junit.jupiter.api.Test;
-import org.openide.util.Exceptions;
 
 /**
  *
@@ -62,7 +61,7 @@ public class ReferenceAccessTest {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException ex) {
-                Exceptions.printStackTrace(ex);
+                fail(ex.getMessage());
             }
             if ((task.getState() == TaskI.State.FINISHED) || (task.getState() == TaskI.State.FAILED)) {
                 break;

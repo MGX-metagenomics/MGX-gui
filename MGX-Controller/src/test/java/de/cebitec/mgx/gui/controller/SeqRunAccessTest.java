@@ -35,7 +35,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import org.junit.jupiter.api.Test;
-import org.openide.util.Exceptions;
 
 /**
  *
@@ -221,7 +220,7 @@ public class SeqRunAccessTest {
                 m.<SeqRunI>Task().refresh(delTask);
             }
         } catch (MGXException ex) {
-            Exceptions.printStackTrace(ex);
+            fail(ex.getMessage());
         }
 
         assertEquals(2, numSeqs);

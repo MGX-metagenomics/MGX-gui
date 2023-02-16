@@ -17,7 +17,6 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.Test;
-import org.openide.util.Exceptions;
 
 /**
  *
@@ -103,10 +102,10 @@ public class ObservationAccessTest {
         } finally {
             SequenceI seq;
             try {
-                seq = master.Sequence().fetch(1);
+                seq = master.Sequence().fetch(2109905);
                 master.Observation().delete(seq, attr, 0, 5);
             } catch (MGXException ex) {
-                Exceptions.printStackTrace(ex);
+                fail(ex.getMessage());
             }
         }
     }
