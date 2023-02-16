@@ -2,7 +2,11 @@ package de.cebitec.mgx.gui.util;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
+import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.model.AttributeI;
+import de.cebitec.mgx.api.model.AttributeTypeI;
+import de.cebitec.mgx.api.model.JobI;
+import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.SequenceI;
 import de.cebitec.mgx.sequence.DNASequenceI;
 import de.cebitec.mgx.sequence.SeqStoreException;
@@ -15,6 +19,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -33,6 +38,15 @@ public class DownloadTest {
         assertNotNull(attr);
         Set<AttributeI> set = new HashSet<>();
         set.add(attr);
+        
+        SeqRunI run = master.SeqRun().fetch(49);
+        AttributeTypeI atype = master.AttributeType().fetch(3);
+        JobI job = master.Job().fetch(7);
+        
+        DistributionI<Long> dist = master.Attribute().getDistribution(atype, job, run);
+        Long firmicutes = dist.get(attr);
+        assertNotNull(firmicutes);
+        assertEquals(10793, firmicutes);
 
         final AtomicInteger cnt = new AtomicInteger(0);
         final AtomicBoolean closed = new AtomicBoolean(false);
@@ -49,7 +63,7 @@ public class DownloadTest {
             }
         };
         master.Sequence().downloadSequencesForAttributes(set, dummy, true);
-        assertEquals(10794, cnt.get());
+        assertEquals(10793, cnt.get());
         assertTrue(closed.get());
     }
 
