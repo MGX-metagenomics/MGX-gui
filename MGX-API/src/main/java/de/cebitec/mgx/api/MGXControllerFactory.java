@@ -36,6 +36,9 @@ public class MGXControllerFactory {
         } else {
             BundleContext context = FrameworkUtil.getBundle(MGXControllerFactory.class).getBundleContext();
             ServiceReference<ControllerCreatorI> serviceReference = (ServiceReference<ControllerCreatorI>) context.getServiceReference(ControllerCreatorI.class.getName());
+            if (serviceReference == null) {
+                throw new MGXException("No ControllerCreatorI implementation found.");
+            }
             ControllerCreatorI service = context.<ControllerCreatorI>getService(serviceReference);
             return service.createController(gpmsClient);
         }
