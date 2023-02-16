@@ -22,26 +22,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.netbeans.api</groupId>
-            <artifactId>org-netbeans-api-annotations-common</artifactId>
-        </dependency>
-        <dependency>
-            <artifactId>org-openide-util</artifactId>
-            <groupId>org.netbeans.api</groupId>
-        </dependency>
-        <dependency>
-            <artifactId>org-openide-util-ui</artifactId>
-            <groupId>org.netbeans.api</groupId>
-        </dependency>
-        <dependency>
-            <artifactId>org-openide-util-lookup</artifactId>
-            <groupId>org.netbeans.api</groupId>
-        </dependency>
-        <dependency>
-            <groupId>org.netbeans.api</groupId>
-            <artifactId>org-openide-dialogs</artifactId>
-        </dependency>
-        <dependency>
             <artifactId>MGX-DTO</artifactId>
             <groupId>de.cebitec.mgx</groupId>
         </dependency>
@@ -72,11 +52,6 @@
         <dependency>
             <groupId>de.cebitec.gpms</groupId>
             <artifactId>GPMS-rest-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>de.cebitec.mgx.gui</groupId>
-            <artifactId>MGX-VizFilter</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>de.cebitec.mgx</groupId>
@@ -110,6 +85,11 @@
         <dependency>
             <groupId>de.cebitec.mgx.gui</groupId>
             <artifactId>MGX-TestUtils</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>de.cebitec.mgx.gui</groupId>
+            <artifactId>MGX-VizFilter</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
