@@ -16,8 +16,8 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.Test;
-import org.openide.util.Exceptions;
 
 /**
  *
@@ -86,7 +86,7 @@ public class KeggViewerTest {
         try {
             kv.selectPathways();
         } catch (ConflictingJobsException | KEGGException ex) {
-            Exceptions.printStackTrace(ex);
+            fail(ex.getMessage());
         }
         long duration = System.currentTimeMillis() - start;
         System.err.println("duration was " + duration + "ms");
