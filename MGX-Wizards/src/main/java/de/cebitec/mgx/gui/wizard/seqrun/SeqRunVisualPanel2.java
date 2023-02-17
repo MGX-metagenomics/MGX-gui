@@ -102,7 +102,7 @@ public final class SeqRunVisualPanel2 extends JPanel {
         } else {
             second.setText("");
             second.setEnabled(true);
-            jButton1.setEnabled(true);
+            jButton2.setEnabled(true);
         }
     }
 
