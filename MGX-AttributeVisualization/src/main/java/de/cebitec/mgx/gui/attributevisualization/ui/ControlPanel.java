@@ -313,6 +313,9 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
                 return;
             }
 
+            // on selection change, clear lookup contents #155
+            topComponent.clearLookup();
+
             currentAttributeType = getSelectedItem();
             if (currentAttributeType == null) {
                 return;
@@ -398,6 +401,9 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
             if (e.getStateChange() != ItemEvent.SELECTED) {
                 return;
             }
+            
+            // on selection change, clear lookup contents #155
+            topComponent.clearLookup();
 
             if (currentViewer != null) {
                 currentViewer.dispose();
