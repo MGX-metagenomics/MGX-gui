@@ -12,6 +12,7 @@ import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
 import de.cebitec.mgx.gui.wizard.reference.InstallReferenceDescriptor;
 import java.awt.Dialog;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -31,11 +32,23 @@ public class ProjectReferencesNode extends AbstractNode {
     public ProjectReferencesNode(final MGXMasterI m) {
         this(new ReferenceNodeFactory(m), m);
         super.setDisplayName("Reference sequences");
-        super.setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/ProjectFiles.png");
+        setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/files.svg");
     }
 
     private ProjectReferencesNode(ReferenceNodeFactory rnf, MGXMasterI m) {
         super(Children.create(rnf, true), Lookups.fixed(m));
+    }
+
+    @Override
+    public Image getIcon(int type) {
+        Image image = super.getIcon(type);
+        Image scaledInstance = image.getScaledInstance(16, 16, Image.SCALE_SMOOTH);
+        return scaledInstance;
+    }
+
+    @Override
+    public Image getOpenedIcon(int type) {
+        return getIcon(type);
     }
 
     @Override
@@ -52,7 +65,6 @@ public class ProjectReferencesNode extends AbstractNode {
 //    public void updateModified() {
 //        //
 //    }
-
     private static class AddGlobalReference extends AbstractAction {
 
         public AddGlobalReference() {
@@ -69,7 +81,6 @@ public class ProjectReferencesNode extends AbstractNode {
             if (!cancelled) {
                 final MGXReferenceI ref = wd.getSelectedReference();
                 final MGXMasterI master = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
-
 
                 final MGXTask run = new MGXTask("Install " + ref.getName()) {
                     private String err = null;
