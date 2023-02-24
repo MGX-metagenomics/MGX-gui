@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.NotificationLineSupport;
@@ -38,6 +40,7 @@ public class LoginHandler implements ActionListener {
     private NotificationLineSupport nline = null;
     //
     private PingMaster pingMaster = null;
+    private static final Logger LOG = Logger.getLogger(LoginHandler.class.getName());
 
     private LoginHandler() {
         panel = new LoginPanel(this);
@@ -111,6 +114,11 @@ public class LoginHandler implements ActionListener {
                 } catch (GPMSException ex) {
                     loggedIn = false;
                     errorMsg = ex.getMessage();
+                    while (errorMsg.contains("Exception:")) {
+                        errorMsg = errorMsg.substring(errorMsg.indexOf("Exception:") + 11);
+                    }
+                    LOG.log(Level.SEVERE, null, ex);
+
                 }
                 if (loggedIn) {
                     dialog.setClosingOptions(new Object[]{DialogDescriptor.CANCEL_OPTION, DialogDescriptor.OK_OPTION});
