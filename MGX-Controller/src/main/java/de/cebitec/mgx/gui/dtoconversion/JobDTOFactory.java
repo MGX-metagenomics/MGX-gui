@@ -63,9 +63,8 @@ public class JobDTOFactory extends DTOConversionBase<JobI, JobDTO> {
     @Override
     public final JobI toModel(MGXMasterI m, JobDTO dto) {
 
-        JobI job = new Job(m)
+        JobI job = new Job(m, dto.getCreator())
                 .setStatus(JobState.values()[dto.getState().ordinal()])
-                .setCreator(dto.getCreator())
                 .setStartDate(toDate(dto.getStartDate()))
                 .setFinishDate(toDate(dto.getFinishDate()));
 

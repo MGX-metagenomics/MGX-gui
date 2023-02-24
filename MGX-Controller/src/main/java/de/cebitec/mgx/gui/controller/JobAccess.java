@@ -123,8 +123,7 @@ public class JobAccess extends MasterHolder implements JobAccessI {
             throw new MGXException("Cannot create job for zero sequencing runs.");
         }
 
-        JobI job = new Job(tool.getMaster());
-        job.setCreator(tool.getMaster().getLogin());
+        JobI job = new Job(tool.getMaster(), tool.getMaster().getLogin());
         job.setTool(tool);
         job.setStatus(JobState.CREATED);
         job.setSeqruns(seqruns);
@@ -152,8 +151,7 @@ public class JobAccess extends MasterHolder implements JobAccessI {
             throw new MGXException("Cannot create job for no assembly.");
         }
 
-        JobI job = new Job(tool.getMaster());
-        job.setCreator(tool.getMaster().getLogin());
+        JobI job = new Job(tool.getMaster(), tool.getMaster().getLogin());
         job.setTool(tool);
         job.setStatus(JobState.CREATED);
         job.setAssembly(assembly);

@@ -29,8 +29,9 @@ public class Job extends JobI {
     protected List<JobParameterI> parameters = null;
     private int jobstate = JobState.CREATED.getValue();
 
-    public Job(MGXMasterI m) {
+    public Job(MGXMasterI m, String creator) {
         super(m);
+        this.created_by = creator;
     }
 
     @Override
@@ -126,12 +127,6 @@ public class Job extends JobI {
     @Override
     public String getCreator() {
         return created_by;
-    }
-
-    @Override
-    public Job setCreator(String created_by) {
-        this.created_by = created_by;
-        return this;
     }
 
     @Override

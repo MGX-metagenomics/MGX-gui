@@ -55,8 +55,6 @@ public abstract class JobI extends Identifiable<JobI> {
 
     public abstract String getCreator();
 
-    public abstract JobI setCreator(String created_by);
-
     @Override
     public abstract boolean equals(Object object);
 
