@@ -34,8 +34,6 @@ public class HabitatNode extends MGXNodeBase<HabitatI> {
                 .append("Biome: ").append(escapeHtml4(h.getBiome())).append("<br>")
                 .append("Location: ").append(Double.toString(h.getLatitude()))
                 .append(" / ").append(Double.toString(h.getLongitude()))
-                .append("<br>")
-                .append("Altitude: ").append(Integer.toString(h.getAltitude()))
                 .append("</html>").toString();
     }
 

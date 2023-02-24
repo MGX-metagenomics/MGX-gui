@@ -89,7 +89,6 @@ public class HabitatWizardPanel1 implements WizardDescriptor.Panel<WizardDescrip
         if (model.getProperty(HabitatVisualPanel1.PROP_LATITUDE) != null) {
             c.setGPSLatitude((Double)model.getProperty(HabitatVisualPanel1.PROP_LATITUDE));
             c.setGPSLongitude((Double)model.getProperty(HabitatVisualPanel1.PROP_LONGITUDE));
-            c.setGPSAltitude((Integer)model.getProperty(HabitatVisualPanel1.PROP_ALTITUDE));
         }
     }
 
@@ -101,7 +100,6 @@ public class HabitatWizardPanel1 implements WizardDescriptor.Panel<WizardDescrip
         model.putProperty(HabitatVisualPanel1.PROP_BIOME, c.getBiome());
         model.putProperty(HabitatVisualPanel1.PROP_LATITUDE, c.getGPSLatitude());
         model.putProperty(HabitatVisualPanel1.PROP_LONGITUDE, c.getGPSLongitude());
-        model.putProperty(HabitatVisualPanel1.PROP_ALTITUDE, c.getGPSAltitude());
     }
 
     @Override

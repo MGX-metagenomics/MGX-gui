@@ -71,7 +71,7 @@ public class ProjectDataNode extends AbstractNode { //MGXNodeBase<MGXMasterI> {
                     @Override
                     protected HabitatI doInBackground() throws Exception {
                         
-                        return m.Habitat().create(hwd.getHabitatName(), hwd.getHabitatLatitude(), hwd.getHabitatLongitude(), hwd.getHabitatAltitude(), hwd.getHabitatBiome(), hwd.getHabitatDescription());
+                        return m.Habitat().create(hwd.getHabitatName(), hwd.getHabitatLatitude(), hwd.getHabitatLongitude(), hwd.getHabitatBiome(), hwd.getHabitatDescription());
                     }
 
                     @Override

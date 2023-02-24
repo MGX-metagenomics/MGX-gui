@@ -32,7 +32,6 @@ public class HabitatDTOFactory extends DTOConversionBase<HabitatI, HabitatDTO> {
         return b.setName(h.getName())
                 .setGpsLatitude(h.getLatitude())
                 .setGpsLongitude(h.getLongitude())
-                .setAltitude(h.getAltitude())
                 .setBiome(h.getBiome())
                 .setDescription(h.getDescription())
                 .build();
@@ -44,7 +43,6 @@ public class HabitatDTOFactory extends DTOConversionBase<HabitatI, HabitatDTO> {
                 .setName(dto.getName())
                 .setLatitude(dto.getGpsLatitude())
                 .setLongitude(dto.getGpsLongitude())
-                .setAltitude(dto.getAltitude())
                 .setBiome(dto.getBiome());
 
         if (!dto.getDescription().isEmpty()) {

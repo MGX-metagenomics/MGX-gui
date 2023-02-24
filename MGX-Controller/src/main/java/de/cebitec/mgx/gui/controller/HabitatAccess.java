@@ -29,7 +29,7 @@ public class HabitatAccess extends AccessBase<HabitatI> implements HabitatAccess
     }
 
     @Override
-    public HabitatI create(String name, double latitude, double longitude, int altitude, String biome, String description) throws MGXException {
+    public HabitatI create(String name, double latitude, double longitude, String biome, String description) throws MGXException {
         Habitat obj = new Habitat(getMaster())
                 .setName(name)
                 .setLatitude(latitude)

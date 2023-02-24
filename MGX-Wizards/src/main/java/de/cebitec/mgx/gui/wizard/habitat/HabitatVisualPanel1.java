@@ -39,7 +39,6 @@ public final class HabitatVisualPanel1 extends JPanel implements DocumentListene
     public static final String PROP_BIOME = "biome";
     public static final String PROP_LATITUDE = "latitude";
     public static final String PROP_LONGITUDE = "longitude";
-    public static final String PROP_ALTITUDE = "altitude";
     private static final int MAX_LOCATION_RESULTS = 10;
     private Location[] foundLocations;
     private Set<Waypoint> waypoints;
@@ -232,17 +231,6 @@ public final class HabitatVisualPanel1 extends JPanel implements DocumentListene
 
     public Double getGPSLatitude() {
         return latitude;
-    }
-
-    public int getGPSAltitude() {
-        //
-        // FIXME: find elevation, use http://www.earthtools.org/webservices.htm#height ?
-        //
-        return 42;
-    }
-
-    public void setGPSAltitude(int altitude) {
-        // FIXME
     }
 
     private void initMapKit() {
