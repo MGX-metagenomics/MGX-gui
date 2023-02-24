@@ -21,6 +21,7 @@ import java.util.TimeZone;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
@@ -45,6 +46,9 @@ public class JobAccessTest {
 
         assertEquals("2023-02-10T10:13:32Z", sdf.format(job.getStartDate()));
         assertEquals("2023-02-10T10:21:33Z", sdf.format(job.getFinishDate()));
+        
+        assertNotNull(job.getSeqruns());
+        assertEquals(1, job.getSeqruns().length);
     }
 
     @Test
@@ -55,8 +59,15 @@ public class JobAccessTest {
         assertNotNull(iter);
         int cnt = 0;
         while (iter.hasNext()) {
-            JobI next = iter.next();
-            assertNotNull(next);
+            JobI job = iter.next();
+            assertNotNull(job);
+            
+            if (job.getAssembly() != null) {
+                assertNull(job.getSeqruns());
+            }
+            if (job.getSeqruns() != null) {
+                assertNull(job.getAssembly());
+            }
             cnt++;
         }
         assertEquals(6, cnt);

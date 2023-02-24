@@ -17,10 +17,12 @@ import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.client.exception.MGXClientLoggedOutException;
 import de.cebitec.mgx.client.exception.MGXDTOException;
 import de.cebitec.mgx.common.JobState;
+import de.cebitec.mgx.dto.dto.AssemblyDTO;
 import de.cebitec.mgx.dto.dto.JobDTO;
 import de.cebitec.mgx.dto.dto.MGXString;
 import de.cebitec.mgx.dto.dto.SeqRunDTO;
 import de.cebitec.mgx.gui.datamodel.Job;
+import de.cebitec.mgx.gui.dtoconversion.AssemblyDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.JobDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.SeqRunDTOFactory;
 import de.cebitec.mgx.gui.util.BaseIterator;
@@ -34,7 +36,6 @@ import java.util.UUID;
  * @author sjaenick
  */
 public class JobAccess extends MasterHolder implements JobAccessI {
-
 
     public JobAccess(MGXMasterI master, MGXDTOMaster dtomaster) throws MGXException {
         super(master, dtomaster);
@@ -126,7 +127,6 @@ public class JobAccess extends MasterHolder implements JobAccessI {
         job.setCreator(tool.getMaster().getLogin());
         job.setTool(tool);
         job.setStatus(JobState.CREATED);
-        job.setAssembly(null);
         job.setSeqruns(seqruns);
         job.setParameters(params);
 
@@ -157,7 +157,6 @@ public class JobAccess extends MasterHolder implements JobAccessI {
         job.setTool(tool);
         job.setStatus(JobState.CREATED);
         job.setAssembly(assembly);
-        job.setSeqruns(null);
         job.setParameters(params);
 
         JobDTO dto = JobDTOFactory.getInstance().toDTO(job);
@@ -177,26 +176,70 @@ public class JobAccess extends MasterHolder implements JobAccessI {
 
     @Override
     public JobI fetch(long id) throws MGXException {
-        JobDTO h = null;
         try {
-            h = getDTOmaster().Job().fetch(id);
+            JobDTO jobdto = getDTOmaster().Job().fetch(id);
+            JobI j = JobDTOFactory.getInstance().toModel(getMaster(), jobdto);
+
+            if (jobdto.getAssemblyId() > 0) {
+                AssemblyDTO asmdto = getDTOmaster().Assembly().fetch(jobdto.getAssemblyId());
+                AssemblyI asm = AssemblyDTOFactory.getInstance().toModel(getMaster(), asmdto);
+                j.setAssembly(asm);
+            }
+
+            if (jobdto.getSeqrunCount() > 0) {
+                SeqRunI[] runs = new SeqRunI[jobdto.getSeqrunCount()];
+                int i = 0;
+                Iterator<SeqRunI> runIter = getMaster().SeqRun().ByJob(j);
+                while (runIter.hasNext()) {
+                    runs[i++] = runIter.next();
+                }
+                j.setSeqruns(runs);
+            }
+            return j;
         } catch (MGXClientLoggedOutException mcle) {
             throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex.getMessage());
         }
-        JobI j = JobDTOFactory.getInstance().toModel(getMaster(), h);
-        return j;
+
     }
 
     @Override
     public Iterator<JobI> fetchall() throws MGXException {
         try {
             Iterator<JobDTO> fetchall = getDTOmaster().Job().fetchall();
+
             return new BaseIterator<JobDTO, JobI>(fetchall) {
                 @Override
                 public JobI next() {
-                    JobI j = JobDTOFactory.getInstance().toModel(getMaster(), iter.next());
+                    JobDTO jobdto = iter.next();
+                    JobI j = JobDTOFactory.getInstance().toModel(getMaster(), jobdto);
+
+                    if (jobdto.getAssemblyId() > 0) {
+                        try {
+                            AssemblyDTO asmdto = getDTOmaster().Assembly().fetch(jobdto.getAssemblyId());
+                            AssemblyI asm = AssemblyDTOFactory.getInstance().toModel(getMaster(), asmdto);
+                            j.setAssembly(asm);
+                        } catch (MGXDTOException ex) {
+                            throw new RuntimeException(ex);
+                        }
+
+                    }
+
+                    if (jobdto.getSeqrunCount() > 0) {
+                        SeqRunI[] runs = new SeqRunI[jobdto.getSeqrunCount()];
+                        int i = 0;
+                        try {
+                            Iterator<SeqRunI> runIter = getMaster().SeqRun().ByJob(j);
+                            while (runIter.hasNext()) {
+                                runs[i++] = runIter.next();
+                            }
+                            j.setSeqruns(runs);
+                        } catch (MGXException ex) {
+                            throw new RuntimeException(ex);
+                        }
+
+                    }
                     return j;
                 }
             };
@@ -272,6 +315,7 @@ public class JobAccess extends MasterHolder implements JobAccessI {
         try {
             for (JobDTO dto : getDTOmaster().Job().bySeqRun(run.getId())) {
                 JobI j = JobDTOFactory.getInstance().toModel(getMaster(), dto);
+
                 Iterator<SeqRunDTO> runs = getDTOmaster().SeqRun().byJob(j.getId());
                 List<SeqRunI> tmp = new ArrayList<>(1);
                 while (runs.hasNext()) {
@@ -285,7 +329,6 @@ public class JobAccess extends MasterHolder implements JobAccessI {
 
                 }
                 j.setSeqruns(tmp.toArray(new SeqRunI[]{}));
-                j.setAssembly(null);
                 all.add(j);
             }
         } catch (MGXClientLoggedOutException mcle) {
@@ -303,7 +346,6 @@ public class JobAccess extends MasterHolder implements JobAccessI {
             for (JobDTO dto : getDTOmaster().Job().byAssembly(ass.getId())) {
                 JobI j = JobDTOFactory.getInstance().toModel(getMaster(), dto);
                 j.setAssembly(ass);
-                j.setSeqruns(null);
                 all.add(j);
             }
         } catch (MGXClientLoggedOutException mcle) {

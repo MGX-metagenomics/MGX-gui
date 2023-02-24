@@ -20,6 +20,7 @@ import de.cebitec.mgx.client.exception.MGXClientLoggedOutException;
 import de.cebitec.mgx.client.exception.MGXDTOException;
 import de.cebitec.mgx.dto.dto.AttributeTypeDTO;
 import de.cebitec.mgx.dto.dto.JobAndAttributeTypes;
+import de.cebitec.mgx.dto.dto.JobDTO;
 import de.cebitec.mgx.dto.dto.QCResultDTO;
 import de.cebitec.mgx.dto.dto.SeqRunDTO;
 import de.cebitec.mgx.gui.datamodel.SeqRun;
@@ -201,10 +202,21 @@ public class SeqRunAccess extends AccessBase<SeqRunI> implements SeqRunAccessI {
 
         try {
             for (JobAndAttributeTypes jat : getDTOmaster().SeqRun().getJobsAndAttributeTypes(run.getId())) {
-                JobI job = JobDTOFactory.getInstance().toModel(getMaster(), jat.getJob());
-                if (job.getSeqruns() == null) {
-                    job.setSeqruns(new SeqRunI[]{run});
+                JobDTO jobdto = jat.getJob();
+                JobI job = JobDTOFactory.getInstance().toModel(getMaster(), jobdto);
+
+                List<SeqRunI> seqruns = new ArrayList<>();
+                Iterator<SeqRunDTO> byJob = getDTOmaster().SeqRun().byJob(jobdto.getId());
+                while (byJob.hasNext()) {
+                    SeqRunDTO sr = byJob.next();
+                    if (run.getId() == sr.getId()) {
+                        seqruns.add(run);
+                    } else {
+                        seqruns.add(SeqRunDTOFactory.getInstance().toModel(getMaster(), sr));
+                    }
                 }
+
+                job.setSeqruns(seqruns.toArray(new SeqRunI[]{}));
 
                 Set<AttributeTypeI> all = new HashSet<>();
                 for (AttributeTypeDTO atDTO : jat.getAttributeTypes().getAttributeTypeList()) {
@@ -229,7 +241,9 @@ public class SeqRunAccess extends AccessBase<SeqRunI> implements SeqRunAccessI {
 
         try {
             for (JobAndAttributeTypes jat : getDTOmaster().SeqRun().getJobsAndAttributeTypes(run.getId(), run.getAssembly().getId())) {
-                JobI job = JobDTOFactory.getInstance().toModel(getMaster(), jat.getJob());
+                JobDTO jobdto = jat.getJob();
+                JobI job = JobDTOFactory.getInstance().toModel(getMaster(), jobdto);
+
                 job.setAssembly(run.getAssembly());
 
                 Set<AttributeTypeI> all = new HashSet<>();
