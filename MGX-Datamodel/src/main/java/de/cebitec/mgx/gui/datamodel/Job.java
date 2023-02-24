@@ -16,8 +16,8 @@ import java.util.List;
  */
 public class Job extends JobI {
 
-    protected SeqRunI[] seqruns;
-    protected AssemblyI assembly;
+    protected SeqRunI[] seqruns = null;
+    protected AssemblyI assembly = null;
     //
     protected ToolI tool;
     protected String created_by;
@@ -95,6 +95,12 @@ public class Job extends JobI {
 
     @Override
     public JobI setSeqruns(SeqRunI[] runs) {
+        if (assembly != null) {
+            throw new RuntimeException("Cannot set seqruns for an assembly job.");
+        }
+        if (this.seqruns != null) {
+            throw new RuntimeException("SeqRuns are already set for this job");
+        }
         this.seqruns = runs;
         return this;
     }
@@ -106,6 +112,13 @@ public class Job extends JobI {
 
     @Override
     public JobI setAssembly(AssemblyI asm) {
+        if (seqruns != null && seqruns.length > 0) {
+            throw new RuntimeException("Cannot set assembly for a seqrun job.");
+        }
+        if (this.assembly != null) {
+            throw new RuntimeException("Assembly is already set for this job.");
+
+        }
         this.assembly = asm;
         return this;
     }
@@ -130,9 +143,9 @@ public class Job extends JobI {
         if ((this.id == INVALID_IDENTIFIER && other.getId() != INVALID_IDENTIFIER) || (this.id != INVALID_IDENTIFIER && this.id != other.getId())) {
             return false;
         }
-        return getStatus() == other.getStatus() && getMaster().getProject().equals(other.getMaster().getProject()) ;
+        return getStatus() == other.getStatus() && getMaster().getProject().equals(other.getMaster().getProject());
     }
-    
+
     @Override
     public int compareTo(JobI o) {
         // avoid NPE here
