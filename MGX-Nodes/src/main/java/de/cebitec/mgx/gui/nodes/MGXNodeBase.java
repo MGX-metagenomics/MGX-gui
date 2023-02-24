@@ -36,7 +36,7 @@ public abstract class MGXNodeBase<T extends ModelBaseI<T>> extends AbstractNode 
     }
 
     @Override
-    public Image getOpenedIcon(int type) {
+    public final Image getOpenedIcon(int type) {
         return getIcon(type);
     }
 

@@ -21,8 +21,6 @@ public abstract class HabitatI extends Identifiable<HabitatI> {
         super(m, DATA_FLAVOR);
     }
 
-    public abstract int getAltitude();
-
     public abstract String getBiome();
 
     public abstract String getDescription();
@@ -32,8 +30,6 @@ public abstract class HabitatI extends Identifiable<HabitatI> {
     public abstract double getLongitude();
 
     public abstract String getName();
-
-    public abstract HabitatI setAltitude(int altitude);
 
     public abstract HabitatI setBiome(String biome);
 

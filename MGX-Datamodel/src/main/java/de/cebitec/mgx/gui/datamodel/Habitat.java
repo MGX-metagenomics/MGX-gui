@@ -16,7 +16,6 @@ public class Habitat extends HabitatI {
     protected double latitude;
     protected double longitude;
     protected String description;
-    protected int altitude;
     protected String biome;
 
     public Habitat(MGXMasterI m) {
@@ -53,17 +52,6 @@ public class Habitat extends HabitatI {
     @Override
     public Habitat setLongitude(double longitude) {
         this.longitude = longitude;
-        return this;
-    }
-
-    @Override
-    public int getAltitude() {
-        return altitude;
-    }
-
-    @Override
-    public Habitat setAltitude(int altitude) {
-        this.altitude = altitude;
         return this;
     }
 
