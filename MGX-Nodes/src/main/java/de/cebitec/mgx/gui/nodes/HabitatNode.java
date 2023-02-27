@@ -5,6 +5,7 @@ import de.cebitec.mgx.gui.actions.DeleteHabitat;
 import de.cebitec.mgx.gui.actions.EditHabitat;
 import de.cebitec.mgx.api.model.HabitatI;
 import de.cebitec.mgx.gui.nodefactory.SampleNodeFactory;
+import java.awt.Image;
 import javax.swing.Action;
 import static org.apache.commons.text.StringEscapeUtils.escapeHtml4;
 import org.openide.nodes.Children;
@@ -23,8 +24,15 @@ public class HabitatNode extends MGXNodeBase<HabitatI> {
     private HabitatNode(HabitatI h, SampleNodeFactory snf) {
         super(Children.create(snf, true), Lookups.fixed(h.getMaster(), h), h);
         super.setDisplayName(h.getName());
-        super.setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/Habitat.png");
+        super.setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/Habitat.svg");
         super.setShortDescription(getToolTipText(h));
+    }
+
+    @Override
+    public Image getIcon(int type) {
+        Image image = super.getIcon(type);
+        Image scaledInstance = image.getScaledInstance(16, 16, Image.SCALE_SMOOTH);
+        return scaledInstance;
     }
 
     private String getToolTipText(HabitatI h) {
