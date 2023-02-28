@@ -30,10 +30,10 @@ import org.openide.windows.WindowManager;
         id = "de.cebitec.mgx.gui.bintable.BinTableAction"
 )
 @ActionRegistration(displayName = "Open bin table", lazy = true)
-@ActionReferences({
-    //@ActionReference(path = "Menu/File", position = 1712),
-    @ActionReference(path = "Toolbars/UndoRedo", position = 645)
-})
+//@ActionReferences({
+//    //@ActionReference(path = "Menu/File", position = 1712),
+//    @ActionReference(path = "Toolbars/UndoRedo", position = 645)
+//})
 public final class BinTableAction extends AbstractAction implements ContextAwareAction, LookupListener {
 
     private final Lookup context;

@@ -25,6 +25,7 @@ import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
@@ -43,12 +44,17 @@ import org.openide.util.Utilities;
 )
 @TopComponent.Description(
         preferredID = "BinTableTopComponent",
-        //iconBase="SET/PATH/TO/ICON/HERE",
+        iconBase="de/cebitec/mgx/gui/bintable/bintable.svg",
         persistenceType = TopComponent.PERSISTENCE_NEVER
 )
 @TopComponent.Registration(mode = "editor", openAtStartup = false)
 @ActionID(category = "Window", id = "de.cebitec.mgx.gui.bintable.BinTableTopComponent")
-@ActionReference(path = "Menu/Window" /*, position = 333 */)
+
+@ActionReferences({
+    //@ActionReference(path = "Menu/File", position = 1712),
+    @ActionReference(path = "Menu/Window" /*, position = 333 */),
+    @ActionReference(path = "Toolbars/UndoRedo", position = 645)
+})
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_BinTableAction",
         preferredID = "BinTableTopComponent"
