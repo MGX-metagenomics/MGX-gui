@@ -19,7 +19,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -58,7 +57,7 @@ public class DownloadTest {
             }
 
             @Override
-            public void close() throws Exception {
+            public void close() {
                 closed.set(Boolean.TRUE);
             }
         };
