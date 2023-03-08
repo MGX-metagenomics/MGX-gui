@@ -31,7 +31,6 @@ import org.openide.windows.WindowManager;
 )
 @ActionRegistration(displayName = "not-used", lazy = false)
 @ActionReferences({
-    //@ActionReference(path = "Menu/File", position = 1712),
     @ActionReference(path = "Toolbars/UndoRedo", position = 635)
 })
 public final class BlobogramAction extends AbstractAction implements ContextAwareAction, LookupListener {
@@ -52,7 +51,10 @@ public final class BlobogramAction extends AbstractAction implements ContextAwar
 
     @Override
     public Action createContextAwareInstance(Lookup lkp) {
-        return new BlobogramAction(lkp);
+        Action a =  new BlobogramAction(lkp);
+        Collection<? extends BinI> allBins = result.allInstances();
+        a.setEnabled(!allBins.isEmpty());
+        return a;
     }
 
     @Override
