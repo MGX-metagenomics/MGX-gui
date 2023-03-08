@@ -4,6 +4,7 @@ import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.assembly.AssemblyI;
 import de.cebitec.mgx.api.model.assembly.BinI;
+import java.awt.Image;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.BufferedWriter;
@@ -44,25 +45,23 @@ import org.openide.util.Utilities;
 )
 @TopComponent.Description(
         preferredID = "BinTableTopComponent",
-        iconBase="de/cebitec/mgx/gui/bintable/bintable.svg",
+        iconBase = "de/cebitec/mgx/gui/bintable/bintable.svg",
         persistenceType = TopComponent.PERSISTENCE_NEVER
 )
 @TopComponent.Registration(mode = "editor", openAtStartup = false)
 @ActionID(category = "Window", id = "de.cebitec.mgx.gui.bintable.BinTableTopComponent")
 
 @ActionReferences({
-    //@ActionReference(path = "Menu/File", position = 1712),
-    @ActionReference(path = "Menu/Window" /*, position = 333 */),
-    @ActionReference(path = "Toolbars/UndoRedo", position = 645)
+    @ActionReference(path = "Menu/Window", position = 341)
 })
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_BinTableAction",
         preferredID = "BinTableTopComponent"
 )
 @Messages({
-    "CTL_BinTableAction=Bin table",
-    "CTL_BinTableTopComponent=Bin table",
-    "HINT_BinTableTopComponent=Bin table"
+    "CTL_BinTableAction=Bin Table",
+    "CTL_BinTableTopComponent=Bin Table",
+    "HINT_BinTableTopComponent=Bin Table"
 })
 public final class BinTableTopComponent extends TopComponent implements LookupListener {
 
@@ -81,7 +80,7 @@ public final class BinTableTopComponent extends TopComponent implements LookupLi
 
         binResult = Utilities.actionsGlobalContext().lookupResult(BinI.class);
         asmResult = Utilities.actionsGlobalContext().lookupResult(AssemblyI.class);
-        
+
         jXTable1.setModel(model);
         jXTable1.setHighlighters(new Highlighter[]{HighlighterFactory.createAlternateStriping()});
 
@@ -97,6 +96,13 @@ public final class BinTableTopComponent extends TopComponent implements LookupLi
     }
 
     @Override
+    public Image getIcon() {
+        Image image = super.getIcon();
+        Image scaledInstance = image.getScaledInstance(16, 16, Image.SCALE_SMOOTH);
+        return scaledInstance;
+    }
+
+    @Override
     public void resultChanged(LookupEvent le) {
         // no update when component itself is activate
         if (isActivated) {
@@ -105,7 +111,7 @@ public final class BinTableTopComponent extends TopComponent implements LookupLi
 
         model.clear();
         model.addAll(binResult.allInstances());
-        
+
         for (AssemblyI asm : asmResult.allInstances()) {
             List<BinI> additional = new ArrayList<>();
             MGXMasterI master = asm.getMaster();
@@ -126,7 +132,7 @@ public final class BinTableTopComponent extends TopComponent implements LookupLi
                 public int compare(BinI o1, BinI o2) {
                     return Long.compare(o1.getId(), o2.getId());
                 }
-                
+
             });
             model.addAll(additional);
         }

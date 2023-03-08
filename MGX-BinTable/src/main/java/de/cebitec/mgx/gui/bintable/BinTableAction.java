@@ -21,6 +21,7 @@ import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
 import org.openide.util.Utilities;
+import org.openide.util.WeakListeners;
 import org.openide.windows.Mode;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
@@ -29,14 +30,12 @@ import org.openide.windows.WindowManager;
         category = "File",
         id = "de.cebitec.mgx.gui.bintable.BinTableAction"
 )
-@ActionRegistration(displayName = "Open bin table", lazy = true)
-//@ActionReferences({
-//    //@ActionReference(path = "Menu/File", position = 1712),
-//    @ActionReference(path = "Toolbars/UndoRedo", position = 645)
-//})
+@ActionRegistration(displayName = "Bin Table", lazy = false)
+@ActionReferences({
+    @ActionReference(path = "Toolbars/UndoRedo", position = 646)
+})
 public final class BinTableAction extends AbstractAction implements ContextAwareAction, LookupListener {
 
-    private final Lookup context;
     private Lookup.Result<BinI> binResult;
     private Lookup.Result<AssemblyI> asmResult;
 
@@ -44,29 +43,34 @@ public final class BinTableAction extends AbstractAction implements ContextAware
         this(Utilities.actionsGlobalContext());
     }
 
-    private BinTableAction(Lookup context) {
-        super();
-        putValue(NAME, "Open bin table");
-        //super.putValue("iconBase", "de/cebitec/mgx/gui/binexplorer/binexplorer.png");
-        this.context = context;
-        init();
-    }
+    private BinTableAction(Lookup lkp) {
+        super("Bin Table");
 
-    private void init() {
-        if (binResult != null && asmResult != null) {
-            return;
-        }
-        binResult = context.lookupResult(BinI.class);
-        binResult.addLookupListener(this);
+        binResult = lkp.lookupResult(BinI.class);
+        binResult.addLookupListener(WeakListeners.create(LookupListener.class, this, lkp));
 
-        asmResult = context.lookupResult(AssemblyI.class);
-        asmResult.addLookupListener(this);
-        resultChanged(null);
+        asmResult = lkp.lookupResult(AssemblyI.class);
+        asmResult.addLookupListener(WeakListeners.create(LookupListener.class, this, lkp));
+
+        super.putValue("iconBase", "de/cebitec/mgx/gui/bintable/bintable.svg");
+
+        Collection<? extends BinI> allBins = binResult.allInstances();
+        Collection<? extends AssemblyI> allAsms = asmResult.allInstances();
+
+        boolean disableAction = allBins.isEmpty() && allAsms.isEmpty();
+        super.setEnabled(false);
+
     }
 
     @Override
     public Action createContextAwareInstance(Lookup lkp) {
-        return new BinTableAction(lkp);
+        Action a =  new BinTableAction(lkp);
+        Collection<? extends BinI> allBins = binResult.allInstances();
+        Collection<? extends AssemblyI> allAsms = asmResult.allInstances();
+
+        boolean disableAction = allBins.isEmpty() && allAsms.isEmpty();
+        a.setEnabled(!disableAction);
+        return a;
     }
 
     @Override
@@ -95,9 +99,9 @@ public final class BinTableAction extends AbstractAction implements ContextAware
     public synchronized void resultChanged(LookupEvent le) {
         Collection<? extends BinI> allBins = binResult.allInstances();
         Collection<? extends AssemblyI> allAsms = asmResult.allInstances();
-        
+
         boolean disableAction = allBins.isEmpty() && allAsms.isEmpty();
-        
+
         if (!EventQueue.isDispatchThread()) {
             EventQueue.invokeLater(new Runnable() {
                 @Override
