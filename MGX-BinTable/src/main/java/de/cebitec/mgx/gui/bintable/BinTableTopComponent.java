@@ -60,7 +60,7 @@ import org.openide.util.Utilities;
         preferredID = "BinTableTopComponent"
 )
 @Messages({
-    "CTL_BinTableAction=BinTable",
+    "CTL_BinTableAction=Bin table",
     "CTL_BinTableTopComponent=Bin table",
     "HINT_BinTableTopComponent=Bin table"
 })
