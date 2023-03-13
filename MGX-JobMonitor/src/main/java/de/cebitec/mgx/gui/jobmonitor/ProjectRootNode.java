@@ -25,8 +25,8 @@ import org.openide.util.lookup.Lookups;
  */
 class ProjectRootNode extends AbstractNode implements PropertyChangeListener {
 
-    private Collection<SeqRunI> runs = new HashSet<>();
-    private Collection<AssemblyI> assemblies = new HashSet<>();
+    private final Collection<SeqRunI> runs = new HashSet<>();
+    private final Collection<AssemblyI> assemblies = new HashSet<>();
     private JobNodeFactory jnf;
 
     public ProjectRootNode(MGXMasterI master) {
@@ -120,7 +120,6 @@ class ProjectRootNode extends AbstractNode implements PropertyChangeListener {
                 run.removePropertyChangeListener(this);
             }
             runs.clear();
-            runs = null;
         }
     }
 
