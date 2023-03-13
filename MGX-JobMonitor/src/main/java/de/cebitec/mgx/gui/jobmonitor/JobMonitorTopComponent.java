@@ -192,13 +192,13 @@ public final class JobMonitorTopComponent extends TopComponent implements Lookup
         }
         currentAssemblies.clear();
 
-        if (runs.size() > 0) {
+        if (!runs.isEmpty()) {
             currentMode = MODE.SEQRUN;
             currentSeqRuns.addAll(runs);
-        } else if (assemblies.size() > 0) {
+        } else if (!assemblies.isEmpty()) {
             currentMode = MODE.ASSEMBLY;
             currentAssemblies.addAll(assemblies);
-        } else if (masters.size() > 0) {
+        } else if (!masters.isEmpty()) {
             currentMode = MODE.MASTER;
 
             for (MGXMasterI newMaster : masters) {
