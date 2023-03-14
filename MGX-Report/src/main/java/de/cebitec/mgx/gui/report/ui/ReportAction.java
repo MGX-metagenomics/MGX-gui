@@ -64,7 +64,7 @@ public final class ReportAction extends AbstractAction implements ContextAwareAc
 
     @Override
     public void actionPerformed(ActionEvent ev) {
-        TopComponent tc = ReportSummaryTopComponent.getDefault();
+        TopComponent tc = new ReportSummaryTopComponent();
 
         if (!tc.isOpened()) {
             Mode m = WindowManager.getDefault().findMode("editor");
