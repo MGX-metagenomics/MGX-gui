@@ -99,8 +99,8 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
     public ReportSummaryTopComponent() {
         this.colorPalette = generatePaletteCBFriendlyLight();
         initComponents();
-        super.setName("Show Report");
-        super.setToolTipText("Show Report");
+        super.setName("Data Report");
+        super.setToolTipText("Data Report");
 
         //lookup = new AbstractLookup(content);
         //associateLookup(lookup);
