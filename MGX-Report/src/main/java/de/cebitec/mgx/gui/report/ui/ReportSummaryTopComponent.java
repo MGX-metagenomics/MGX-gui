@@ -88,10 +88,30 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
     private final static Color TOOLTIP_COLOR = new Color(120, 85, 137);
     private final static Font CHART_FONT = new Font("Avenir Next Condensed", Font.BOLD, 12);
     //
-    private final static List<String> funcLabels = Arrays.asList("A RNA processing and modification", "B Chromatin structure and dynamics", "C Energy production and conversion", "D Cell cycle control, cell division, chromosome partitioning", "E Amino acid transport and metabolism",
-            "F Nucleotide transport and metabolism", "G Carbohydrate transport and metabolism", "H Coenzyme transport and metabolism", "I Lipid transport and metabolism", "J Translation, ribosomal structure and biogenesis", "K Transcription", "L Replication, recombination and repair",
-            "M Cell wall/membrane/envelope biogenesis", "N Cell motility", "O Posttranslational modification, protein turnover, chaperones", "P Inorganic ion transport and metabolism", "Q Secondary metabolites biosynthesis, transport and catabolism", "R General function prediction only",
-            "S Function unknown", "T Signal transduction mechanisms", "U Intracellular trafficking, secretion, and vesicular transport", "V Defense mechanisms", "Y Nuclear structure", "Z Cytoskeleton");
+    private final static List<String> funcLabels
+            = Arrays.asList("A RNA processing and modification",
+                    "B Chromatin structure and dynamics",
+                    "C Energy production and conversion",
+                    "D Cell cycle control, cell division, chromosome partitioning",
+                    "E Amino acid transport and metabolism",
+                    "F Nucleotide transport and metabolism",
+                    "G Carbohydrate transport and metabolism",
+                    "H Coenzyme transport and metabolism",
+                    "I Lipid transport and metabolism", "J Translation, ribosomal structure and biogenesis",
+                    "K Transcription",
+                    "L Replication, recombination and repair",
+                    "M Cell wall/membrane/envelope biogenesis",
+                    "N Cell motility",
+                    "O Posttranslational modification, protein turnover, chaperones",
+                    "P Inorganic ion transport and metabolism",
+                    "Q Secondary metabolites biosynthesis, transport and catabolism",
+                    "R General function prediction only",
+                    "S Function unknown",
+                    "T Signal transduction mechanisms",
+                    "U Intracellular trafficking, secretion, and vesicular transport",
+                    "V Defense mechanisms",
+                    "Y Nuclear structure",
+                    "Z Cytoskeleton");
     private final static List<String> vtmp = Arrays.asList("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "Y", "Z");
 
     final private Color[] colorPalette;
