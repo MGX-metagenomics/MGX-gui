@@ -6,12 +6,22 @@
 package de.cebitec.mgx.gui.report.ui;
 
 import de.cebitec.mgx.api.model.SeqRunI;
+import de.cebitec.mgx.api.model.assembly.BinI;
+import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.util.Collection;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
+import org.openide.util.ContextAwareAction;
+import org.openide.util.Lookup;
+import org.openide.util.LookupEvent;
+import org.openide.util.LookupListener;
+import org.openide.util.Utilities;
+import org.openide.util.WeakListeners;
 import org.openide.windows.Mode;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
@@ -24,21 +34,32 @@ import org.openide.windows.WindowManager;
         category = "File",
         id = "de.cebitec.mgx.gui.reportcom.ReportAction"
 )
-@ActionRegistration(
-        iconBase="de/cebitec/mgx/gui/reportcom/report.svg",
-        displayName = "Show Report"
-)
+@ActionRegistration(displayName = "not-used", lazy = false)
 @ActionReferences({
-    //@ActionReference(path = "Menu/File", position = 1712),
     @ActionReference(path = "Toolbars/UndoRedo", position = 400)
 })
-//@Messages("CTL_ReportAction=Report")
-public final class ReportAction implements ActionListener {
+public final class ReportAction extends AbstractAction implements ContextAwareAction, LookupListener {
 
-    private final SeqRunI context;
+    private final Lookup.Result<SeqRunI> result;
 
-    public ReportAction(SeqRunI context) {
-        this.context = context;
+    public ReportAction() {
+        this(Utilities.actionsGlobalContext());
+    }
+
+    private ReportAction(Lookup lkp) {
+        super("Show report");
+        result = lkp.lookupResult(SeqRunI.class);
+        result.addLookupListener(WeakListeners.create(LookupListener.class, this, result));
+        super.putValue("iconBase", "de/cebitec/mgx/gui/reportcom/report.png");
+        super.setEnabled(false);
+    }
+
+    @Override
+    public Action createContextAwareInstance(Lookup lkp) {
+        Action a = new ReportAction(lkp);
+        Collection<? extends SeqRunI> all = result.allInstances();
+        a.setEnabled(!all.isEmpty());
+        return a;
     }
 
     @Override
@@ -57,5 +78,19 @@ public final class ReportAction implements ActionListener {
         }
         tc.toFront();
         tc.requestActive();
+    }
+
+    @Override
+    public synchronized void resultChanged(LookupEvent le) {
+
+        EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                Collection<? extends SeqRunI> all = result.allInstances();
+                ReportAction.this.setEnabled(!all.isEmpty());
+            }
+
+        });
+
     }
 }

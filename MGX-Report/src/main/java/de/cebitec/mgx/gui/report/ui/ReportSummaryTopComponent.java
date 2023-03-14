@@ -76,11 +76,6 @@ import org.openide.windows.TopComponent;
 @ActionReferences({
     @ActionReference(path = "Menu/Window", position = 550)
 })
-@TopComponent.OpenActionRegistration(
-        displayName = "Show Report",
-        preferredID = "ReportSummaryTopComponent"
-)
-
 public final class ReportSummaryTopComponent extends TopComponent implements LookupListener, PropertyChangeListener {
 
     private final Lookup.Result<SeqRunI> resultSeqRun;
