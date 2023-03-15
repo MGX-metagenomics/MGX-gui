@@ -534,10 +534,7 @@
                     </Property>
                   </Properties>
                   <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new XChartPanel&lt;&gt;(phylumchart)"/>
-                    <AuxValue name="JavaCodeGenerator_CreateCodePre" type="java.lang.String" value="phylumchart = new PieChartBuilder().width(700).height(500).theme(ChartTheme.GGPlot2).build();&#xa;phylumchart.setTitle(&quot;Phylum&quot;);"/>
-                    <AuxValue name="JavaCodeGenerator_DeclarationPost" type="java.lang.String" value="private PieChart phylumchart;"/>
-                    <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="phylumpanel.setLayout(new FlowLayout(FlowLayout.LEFT));"/>
+                    <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new JPanel();"/>
                   </AuxValues>
 
                   <Layout>
@@ -560,10 +557,7 @@
                     </Property>
                   </Properties>
                   <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new XChartPanel&lt;&gt;(classchart)"/>
-                    <AuxValue name="JavaCodeGenerator_CreateCodePre" type="java.lang.String" value="classchart = new PieChartBuilder().width(700).height(500).theme(ChartTheme.GGPlot2).build();&#xa;classchart.setTitle(&quot;Class&quot;);"/>
-                    <AuxValue name="JavaCodeGenerator_DeclarationPost" type="java.lang.String" value="private PieChart classchart;"/>
-                    <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="classpanel.setLayout(new FlowLayout(FlowLayout.LEFT));"/>
+                    <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new JPanel();"/>
                   </AuxValues>
 
                   <Layout>
@@ -587,10 +581,7 @@
                     <Property name="requestFocusEnabled" type="boolean" value="false"/>
                   </Properties>
                   <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new XChartPanel&lt;&gt;(kingdomchart)"/>
-                    <AuxValue name="JavaCodeGenerator_CreateCodePre" type="java.lang.String" value="kingdomchart = new PieChartBuilder().width(700).height(500).theme(ChartTheme.GGPlot2).build();&#xa;kingdomchart.setTitle(&quot;Kingdom&quot;);"/>
-                    <AuxValue name="JavaCodeGenerator_DeclarationPost" type="java.lang.String" value="private PieChart kingdomchart;"/>
-                    <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="kingdompanel.setLayout(new FlowLayout(FlowLayout.LEFT));"/>
+                    <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new JPanel();"/>
                   </AuxValues>
 
                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
@@ -602,10 +593,7 @@
                     </Property>
                   </Properties>
                   <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new XChartPanel&lt;&gt;(orderchart)"/>
-                    <AuxValue name="JavaCodeGenerator_CreateCodePre" type="java.lang.String" value="orderchart = new PieChartBuilder().width(700).height(500).theme(ChartTheme.GGPlot2).build();&#xa;orderchart.setTitle(&quot;Order&quot;);"/>
-                    <AuxValue name="JavaCodeGenerator_DeclarationPost" type="java.lang.String" value="private PieChart orderchart;"/>
-                    <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="orderpanel.setLayout(new FlowLayout(FlowLayout.LEFT));"/>
+                    <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new JPanel();"/>
                   </AuxValues>
 
                   <Layout>
@@ -628,10 +616,7 @@
                     </Property>
                   </Properties>
                   <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new XChartPanel&lt;&gt;(familychart)"/>
-                    <AuxValue name="JavaCodeGenerator_CreateCodePre" type="java.lang.String" value="familychart = new PieChartBuilder().width(700).height(500).theme(ChartTheme.GGPlot2).build();&#xa;familychart.setTitle(&quot;Family&quot;);"/>
-                    <AuxValue name="JavaCodeGenerator_DeclarationPost" type="java.lang.String" value="private PieChart familychart;"/>
-                    <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="familypanel.setLayout(new FlowLayout(FlowLayout.LEFT));"/>
+                    <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new JPanel();"/>
                   </AuxValues>
 
                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
@@ -643,10 +628,7 @@
                     </Property>
                   </Properties>
                   <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new XChartPanel&lt;&gt;(genuschart)"/>
-                    <AuxValue name="JavaCodeGenerator_CreateCodePre" type="java.lang.String" value="genuschart = new PieChartBuilder().width(700).height(500).theme(ChartTheme.GGPlot2).build();&#xa;genuschart.setTitle(&quot;Genus&quot;);"/>
-                    <AuxValue name="JavaCodeGenerator_DeclarationPost" type="java.lang.String" value="private PieChart genuschart;"/>
-                    <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="genuspanel.setLayout(new FlowLayout(FlowLayout.LEFT));"/>
+                    <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new JPanel();"/>
                   </AuxValues>
 
                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
@@ -658,10 +640,7 @@
                     </Property>
                   </Properties>
                   <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new XChartPanel&lt;&gt;(organismchart)"/>
-                    <AuxValue name="JavaCodeGenerator_CreateCodePre" type="java.lang.String" value="organismchart = new PieChartBuilder().width(700).height(500).theme(ChartTheme.GGPlot2).build();&#xa;organismchart.setTitle(&quot;Organism&quot;);"/>
-                    <AuxValue name="JavaCodeGenerator_DeclarationPost" type="java.lang.String" value="private PieChart organismchart;"/>
-                    <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="organismpanel.setLayout(new FlowLayout(FlowLayout.LEFT));"/>
+                    <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new JPanel();"/>
                   </AuxValues>
 
                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
@@ -742,10 +721,7 @@
                     <Property name="requestFocusEnabled" type="boolean" value="false"/>
                   </Properties>
                   <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new XChartPanel&lt;&gt;(cogchart)"/>
-                    <AuxValue name="JavaCodeGenerator_CreateCodePre" type="java.lang.String" value="cogchart = new CategoryChartBuilder().width(1300).height(800).theme(ChartTheme.GGPlot2).build();&#xa;cogchart.setTitle(&quot;Top 10 COG Groups&quot;);"/>
-                    <AuxValue name="JavaCodeGenerator_DeclarationPost" type="java.lang.String" value="private CategoryChart cogchart;"/>
-                    <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="cogpanel.setLayout(new FlowLayout(FlowLayout.LEFT));"/>
+                    <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new JPanel();"/>
                   </AuxValues>
 
                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
@@ -758,10 +734,7 @@
                     <Property name="requestFocusEnabled" type="boolean" value="false"/>
                   </Properties>
                   <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new XChartPanel&lt;&gt;(funcchart)"/>
-                    <AuxValue name="JavaCodeGenerator_CreateCodePre" type="java.lang.String" value="funcchart = new CategoryChartBuilder().width(1300).height(1100).theme(ChartTheme.GGPlot2).build();&#xa;funcchart.setTitle(&quot;COG functional categories&quot;);"/>
-                    <AuxValue name="JavaCodeGenerator_DeclarationPost" type="java.lang.String" value="private CategoryChart funcchart;"/>
-                    <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="funcpanel.setLayout(new FlowLayout(FlowLayout.LEFT));"/>
+                    <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new JPanel();"/>
                   </AuxValues>
 
                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
