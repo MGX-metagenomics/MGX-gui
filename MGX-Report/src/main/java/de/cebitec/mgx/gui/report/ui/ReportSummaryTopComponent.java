@@ -501,10 +501,10 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
                 .addGap(37, 37, 37)
                 .addComponent(jobLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(cogpanel, javax.swing.GroupLayout.DEFAULT_SIZE, 437, Short.MAX_VALUE)
-                .addGap(138, 138, 138)
-                .addComponent(funcpanel, javax.swing.GroupLayout.DEFAULT_SIZE, 878, Short.MAX_VALUE)
-                .addGap(750, 750, 750))
+                .addComponent(cogpanel, javax.swing.GroupLayout.PREFERRED_SIZE, 811, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(30, 30, 30)
+                .addComponent(funcpanel, javax.swing.GroupLayout.PREFERRED_SIZE, 1122, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(264, 264, 264))
         );
 
         tabbedpane.addTab(org.openide.util.NbBundle.getMessage(ReportSummaryTopComponent.class, "ReportSummaryTopComponent.jPanel3.TabConstraints.tabTitle"), jPanel3); // NOI18N
