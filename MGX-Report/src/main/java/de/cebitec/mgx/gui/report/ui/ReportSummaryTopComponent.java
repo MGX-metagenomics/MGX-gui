@@ -725,6 +725,9 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
         } else {
             JLabel noData = new JLabel("No data.");
             noData.setFont(CHART_FONT);
+            noData.setHorizontalAlignment(JLabel.CENTER);
+            noData.setVerticalAlignment(JLabel.CENTER);
+
             container.setLayout(new BorderLayout());
             container.add(noData, BorderLayout.CENTER);
         }
@@ -781,6 +784,9 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
             } else {
                 JLabel noData = new JLabel("No data.");
                 noData.setFont(CHART_FONT);
+                noData.setHorizontalAlignment(JLabel.CENTER);
+                noData.setVerticalAlignment(JLabel.CENTER);
+
                 cogpanel.setLayout(new BorderLayout());
                 cogpanel.add(noData, BorderLayout.CENTER);
             }
@@ -829,6 +835,9 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
             } else {
                 JLabel noData = new JLabel("No data.");
                 noData.setFont(CHART_FONT);
+                noData.setHorizontalAlignment(JLabel.CENTER);
+                noData.setVerticalAlignment(JLabel.CENTER);
+
                 funcpanel.setLayout(new BorderLayout());
                 funcpanel.add(noData, BorderLayout.CENTER);
             }
@@ -836,11 +845,17 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
             // no data
             JLabel noData = new JLabel("No data.");
             noData.setFont(CHART_FONT);
+            noData.setHorizontalAlignment(JLabel.CENTER);
+            noData.setVerticalAlignment(JLabel.CENTER);
+
             cogpanel.setLayout(new BorderLayout());
             cogpanel.add(noData, BorderLayout.CENTER);
 
             JLabel noData2 = new JLabel("No data.");
             noData2.setFont(CHART_FONT);
+            noData2.setHorizontalAlignment(JLabel.CENTER);
+            noData2.setVerticalAlignment(JLabel.CENTER);
+
             funcpanel.setLayout(new BorderLayout());
             funcpanel.add(noData2, BorderLayout.CENTER);
         }
