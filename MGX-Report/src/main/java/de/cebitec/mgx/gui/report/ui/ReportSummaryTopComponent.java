@@ -724,6 +724,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
             container.add(chartPanel);
         } else {
             JLabel noData = new JLabel("No data.");
+            noData.setFont(CHART_FONT);
             container.setLayout(new BorderLayout());
             container.add(noData, BorderLayout.CENTER);
         }
@@ -779,6 +780,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
 
             } else {
                 JLabel noData = new JLabel("No data.");
+                noData.setFont(CHART_FONT);
                 cogpanel.setLayout(new BorderLayout());
                 cogpanel.add(noData, BorderLayout.CENTER);
             }
@@ -826,16 +828,19 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
                 funcpanel.add(xcp);
             } else {
                 JLabel noData = new JLabel("No data.");
+                noData.setFont(CHART_FONT);
                 funcpanel.setLayout(new BorderLayout());
                 funcpanel.add(noData, BorderLayout.CENTER);
             }
         } else {
             // no data
             JLabel noData = new JLabel("No data.");
+            noData.setFont(CHART_FONT);
             cogpanel.setLayout(new BorderLayout());
             cogpanel.add(noData, BorderLayout.CENTER);
 
             JLabel noData2 = new JLabel("No data.");
+            noData2.setFont(CHART_FONT);
             funcpanel.setLayout(new BorderLayout());
             funcpanel.add(noData2, BorderLayout.CENTER);
         }
