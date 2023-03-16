@@ -698,12 +698,6 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
 
             PieChart pieChart = new PieChartBuilder().width(700).height(500).theme(ChartTheme.GGPlot2).build();
             pieChart.setTitle(chartTitle);
-            XChartPanel chartPanel = new XChartPanel<>(pieChart);
-
-            SortOrder<Long> sort = new SortOrder<>(Order.DESCENDING);
-            LimitFilter<Long> limit = new LimitFilter<>(LIMITS.TOP10);
-            DistributionI<Long> topten = limit.filterDist(sort.filterDist(dist));
-            topten.forEach((k, v) -> pieChart.addSeries(k.getValue(), v));
 
             pieChart.getStyler().setLabelType(LabelType.Value);
             pieChart.getStyler().setLabelsFontColor(Color.blue);
@@ -711,13 +705,20 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
             pieChart.getStyler().setLabelsDistance(1.1);
             pieChart.getStyler().setPlotContentSize(.8);
             pieChart.getStyler().setSeriesColors(colorPalette);
-            pieChart.getStyler().setToolTipsEnabled(false);
+            pieChart.getStyler().setToolTipsEnabled(true);
             pieChart.getStyler().setToolTipHighlightColor(TOOLTIP_COLOR);
             pieChart.getStyler().setSumFont(CHART_FONT);
             pieChart.getStyler().setChartTitleFont(CHART_FONT);
             pieChart.getStyler().setLegendFont(CHART_FONT);
             pieChart.getStyler().setSumVisible(true);
             pieChart.getStyler().setAnnotationTextPanelFontColor(Color.BLACK);
+
+            XChartPanel chartPanel = new XChartPanel<>(pieChart);
+
+            SortOrder<Long> sort = new SortOrder<>(Order.DESCENDING);
+            LimitFilter<Long> limit = new LimitFilter<>(LIMITS.TOP10);
+            DistributionI<Long> topten = limit.filterDist(sort.filterDist(dist));
+            topten.forEach((k, v) -> pieChart.addSeries(k.getValue(), v));
 
             container.setLayout(new FlowLayout(FlowLayout.LEFT));
             container.add(chartPanel);
@@ -743,16 +744,11 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
 
                 CategoryChart cogchart = new CategoryChartBuilder().width(1300).height(800).theme(ChartTheme.GGPlot2).build();
                 cogchart.setTitle("Top 10 COG Groups");
-                XChartPanel xcp = new XChartPanel<>(cogchart);
-
-                SortOrder<Long> sort = new SortOrder<>(Order.DESCENDING);
-                LimitFilter<Long> limit = new LimitFilter<>(LIMITS.TOP10);
-                DistributionI<Long> cogtop = limit.filterDist(sort.filterDist(cog));
 
                 cogchart.getStyler().setPlotContentSize(.8);
                 cogchart.getStyler().setYAxisDecimalPattern("##.###");
                 cogchart.getStyler().setSeriesColors(this.colorPalette);
-                cogchart.getStyler().setToolTipsEnabled(false);
+                cogchart.getStyler().setToolTipsEnabled(true);
                 cogchart.getStyler().setToolTipHighlightColor(TOOLTIP_COLOR);
                 cogchart.getStyler().setLegendFont(CHART_FONT);
                 cogchart.getStyler().setChartTitleFont(CHART_FONT);
@@ -761,6 +757,12 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
                 cogchart.getStyler().setStacked(true);
                 cogchart.getStyler().setXAxisLabelRotation(45);
                 cogchart.getStyler().setAvailableSpaceFill(0.7);
+
+                XChartPanel xcp = new XChartPanel<>(cogchart);
+
+                SortOrder<Long> sort = new SortOrder<>(Order.DESCENDING);
+                LimitFilter<Long> limit = new LimitFilter<>(LIMITS.TOP10);
+                DistributionI<Long> cogtop = limit.filterDist(sort.filterDist(cog));
 
                 List<AttributeI> cogkeys = new ArrayList<>(cogtop.keySet());
                 List<Long> cogval = new ArrayList<>(cogtop.values());
@@ -786,12 +788,11 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
 
                 CategoryChart funcchart = new CategoryChartBuilder().width(1300).height(1100).theme(ChartTheme.GGPlot2).build();
                 funcchart.setTitle("COG functional categories");
-                XChartPanel xcp = new XChartPanel<>(funcchart);
 
                 Color[] colorcog = generateCOGFuncCatPalette();
                 funcchart.getStyler().setYAxisDecimalPattern("##.###");
                 funcchart.getStyler().setSeriesColors(colorcog);
-                funcchart.getStyler().setToolTipsEnabled(false);
+                funcchart.getStyler().setToolTipsEnabled(true);
                 funcchart.getStyler().setToolTipHighlightColor(TOOLTIP_COLOR);
                 funcchart.getStyler().setLegendFont(CHART_FONT);
                 funcchart.getStyler().setChartTitleFont(CHART_FONT);
@@ -799,6 +800,8 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
                 funcchart.getStyler().setOverlapped(false);
                 funcchart.getStyler().setStacked(true);
                 funcchart.getStyler().setAvailableSpaceFill(0.7);
+
+                XChartPanel xcp = new XChartPanel<>(funcchart);
 
                 List<String> funckeys = new ArrayList<>();
                 List<Long> funcval = new ArrayList<>();
