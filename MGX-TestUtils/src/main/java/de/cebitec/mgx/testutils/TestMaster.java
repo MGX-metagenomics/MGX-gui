@@ -23,7 +23,7 @@ public class TestMaster {
 
     private static MGXMasterI masterRO = null;
 
-    private final static String SERVER = "https://mgx-test.computational.bio.uni-giessen.de/MGX-maven-web/webresources/";
+    private final static String SERVER = "https://mgx-test.computational.bio.uni-giessen.de/MGX-rest/webresources/";
 
     public static MGXMasterI getRO() {
         if (masterRO != null) {
