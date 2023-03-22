@@ -25,7 +25,7 @@
         </dependency>
         <dependency>
             <groupId>de.cebitec.mgx</groupId>
-            <artifactId>BioJava5-OSGi</artifactId>
+            <artifactId>BioJava-OSGi</artifactId>
             <version>2.0</version>
         </dependency>
         <dependency>
