@@ -28,7 +28,7 @@ public interface AssembledRegionAccessI {
 
     public SequenceI getDNASequence(AssembledRegionI gene) throws MGXException;
 
-    public DownloadBaseI createDownloaderByAttributes(Set<AttributeI> value, SeqWriterI<DNASequenceI> writer, boolean closeWriter, Set<String> seenGeneNames) throws MGXException;
+    public DownloadBaseI createDownloaderByAttributes(Set<AttributeI> value, SeqWriterI<? extends DNASequenceI> writer, boolean closeWriter, Set<String> seenGeneNames) throws MGXException;
     
     public Iterator<BinSearchResultI> search(BinI bin, String term) throws MGXException;
 
