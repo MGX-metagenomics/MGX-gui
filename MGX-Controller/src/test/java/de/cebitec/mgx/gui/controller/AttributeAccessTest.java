@@ -41,7 +41,7 @@ public class AttributeAccessTest {
     public void testGetDistribution() throws MGXException {
         System.out.println("getDistribution");
         MGXMasterI master = TestMaster.getRO();
-        DistributionI dist = master.Attribute().getDistribution(master.AttributeType().fetch(3),
+        DistributionI<?> dist = master.Attribute().getDistribution(master.AttributeType().fetch(3),
                 master.Job().fetch(7),
                 master.SeqRun().fetch(49)
         );
@@ -328,7 +328,7 @@ public class AttributeAccessTest {
         }
         assertEquals(54, i);
 
-        DistributionI fromTree = DistributionFactory.fromTree(tree, aType);
+        DistributionI<?> fromTree = DistributionFactory.fromTree(tree, aType);
         assertNotNull(fromTree);
         assertEquals(54, fromTree.size());
         assertEquals(20302, fromTree.getTotalClassifiedElements());
