@@ -44,7 +44,7 @@ public abstract class SequenceI implements Comparable<SequenceI> { //extends Ide
     @Override
     public boolean equals(Object o) {
         if (o != null && o instanceof Identifiable) {
-            Identifiable other = (Identifiable) o;
+            Identifiable<?> other = (Identifiable) o;
 
             if ((this.id == INVALID_IDENTIFIER && other.getId() != INVALID_IDENTIFIER) || (this.id != INVALID_IDENTIFIER && this.id != other.getId())) {
                 return false;
