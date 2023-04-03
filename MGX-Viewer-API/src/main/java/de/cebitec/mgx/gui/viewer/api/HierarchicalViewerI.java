@@ -15,7 +15,7 @@ public abstract class HierarchicalViewerI extends AbstractViewer<TreeI<Long>> {
     }
 
     @Override
-    public Class getInputType() {
+    public Class<?> getInputType() {
         return TreeI.class;
     }
 //    @Override

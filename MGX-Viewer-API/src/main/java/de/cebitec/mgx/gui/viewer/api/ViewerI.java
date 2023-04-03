@@ -38,7 +38,7 @@ public interface ViewerI<T extends Visualizable> extends Comparable<ViewerI<T>> 
      * @return the expected class of data to be displayed; either
      * DistributionI.class or TreeI.class
      */
-    public Class getInputType();
+    public Class<?> getInputType();
 
     /**
      * @param dists distributions to be displayed
