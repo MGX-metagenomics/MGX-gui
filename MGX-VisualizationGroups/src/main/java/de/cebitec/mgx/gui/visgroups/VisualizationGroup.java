@@ -305,7 +305,6 @@ public class VisualizationGroup implements VisualizationGroupI {
     }
 
     @Override
-    @SafeVarargs
     public final void add(final SeqRunI... runs) {
         if (!isActive() || runs.length == 0) {
             return;

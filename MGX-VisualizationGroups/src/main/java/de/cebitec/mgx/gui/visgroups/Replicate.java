@@ -477,7 +477,6 @@ public class Replicate implements ReplicateI {
     }
 
     @Override
-    @SafeVarargs
     public final void add(final SeqRunI... runs) {
         if (!isActive() || runs.length == 0) {
             return;

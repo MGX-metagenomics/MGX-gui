@@ -318,7 +318,6 @@ public class AssemblyGroup implements AssemblyGroupI {
     }
 
     @Override
-    @SafeVarargs
     public final void add(final AssembledSeqRunI... runs) {
         if (!isActive() || runs.length == 0) {
             return;
