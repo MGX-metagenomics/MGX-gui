@@ -7,6 +7,7 @@ package de.cebitec.mgx.gui.blobogram.internal;
 
 import de.cebitec.mgx.api.model.assembly.BinI;
 import de.cebitec.mgx.api.model.assembly.ContigI;
+import java.io.Serial;
 import java.text.NumberFormat;
 import java.util.Locale;
 import org.jfree.data.xy.XYDataItem;
@@ -16,6 +17,9 @@ import org.jfree.data.xy.XYDataItem;
  * @author sj
  */
 public class ContigItem extends XYDataItem {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private static final NumberFormat nf = NumberFormat.getInstance(Locale.US);
     private final ContigI contig;

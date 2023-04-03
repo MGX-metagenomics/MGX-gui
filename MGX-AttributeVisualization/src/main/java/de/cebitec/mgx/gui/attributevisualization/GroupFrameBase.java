@@ -17,6 +17,7 @@ import java.awt.Graphics;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
+import java.io.Serial;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,6 +33,9 @@ import org.openide.util.Exceptions;
  */
 public abstract class GroupFrameBase<T extends GroupI<U>, U> extends javax.swing.JInternalFrame implements ExplorerManager.Provider, NodeProviderI, NodeSelectionProvider, PropertyChangeListener {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     private final transient ExplorerManager exmngr = new ExplorerManager();
     private final T group;
     private final Node groupNode;
@@ -79,8 +83,8 @@ public abstract class GroupFrameBase<T extends GroupI<U>, U> extends javax.swing
             case ModelBaseI.OBJECT_DELETED:
                 if (evt.getOldValue().equals(getContent())) {
                     dispose();
-                    return;
                 }
+                break;
             case VGroupManagerI.VISGROUP_ADDED:
             case VGroupManagerI.REPLGROUP_ADDED:
             case VGroupManagerI.ASMGROUP_ADDED:
@@ -174,7 +178,7 @@ public abstract class GroupFrameBase<T extends GroupI<U>, U> extends javax.swing
             vgmgr.removePropertyChangeListener(this);
             group.removePropertyChangeListener(this);
             if (group instanceof GroupI) {
-                GroupI vgrp = (GroupI) group;
+                GroupI<?> vgrp = (GroupI) group;
                 vgrp.close();
             }
             super.dispose();

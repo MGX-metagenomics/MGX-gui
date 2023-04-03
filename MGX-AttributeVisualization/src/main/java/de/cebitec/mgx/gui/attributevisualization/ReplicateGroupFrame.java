@@ -19,6 +19,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
+import java.io.Serial;
 import javax.swing.JColorChooser;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -34,6 +35,9 @@ import org.openide.util.Exceptions;
  * @author sj
  */
 public class ReplicateGroupFrame extends GroupFrameBase<ReplicateGroupI, ReplicateI> {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     public ReplicateGroupFrame(final ReplicateGroupI rgroup) {
         super(rgroup.getManager(), rgroup, new ReplicateGroupNode(rgroup));
@@ -140,7 +144,6 @@ public class ReplicateGroupFrame extends GroupFrameBase<ReplicateGroupI, Replica
 //        VGroupManager.getInstance().removeReplicateGroup(getContent());
 //        super.dispose();
 //    }
-
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -244,11 +247,11 @@ public class ReplicateGroupFrame extends GroupFrameBase<ReplicateGroupI, Replica
                 break;
             case VGroupManagerI.REPLICATEGROUP_SELECTION_CHANGED:
                 try {
-                    setSelected(getContent() == evt.getNewValue());
-                } catch (PropertyVetoException ex) {
-                    Exceptions.printStackTrace(ex);
-                }
-                break;
+                setSelected(getContent() == evt.getNewValue());
+            } catch (PropertyVetoException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+            break;
             case VisualizationGroupI.OBJECT_MODIFIED:
                 repaint();
                 break;

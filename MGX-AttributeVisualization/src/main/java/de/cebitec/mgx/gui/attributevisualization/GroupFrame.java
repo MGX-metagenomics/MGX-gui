@@ -19,6 +19,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
+import java.io.Serial;
 import javax.swing.JColorChooser;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -32,6 +33,9 @@ import org.openide.explorer.view.BeanTreeView;
  * @author sj
  */
 public class GroupFrame extends GroupFrameBase<VisualizationGroupI, SeqRunI> {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     public GroupFrame(final VisualizationGroupI vGroup) {
         super(vGroup.getManager(), vGroup, new VizGroupNode(vGroup));
