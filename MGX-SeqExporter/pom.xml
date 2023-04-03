@@ -77,6 +77,11 @@
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-awt</artifactId>
         </dependency>
+        <dependency>
+            <groupId>de.cebitec.mgx</groupId>
+            <artifactId>MGX-seqcompression</artifactId>
+            <version>2.0</version>
+        </dependency>
     </dependencies>
     
     <properties>
