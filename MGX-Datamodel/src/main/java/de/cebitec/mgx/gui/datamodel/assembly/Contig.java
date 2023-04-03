@@ -47,6 +47,31 @@ public class Contig extends ContigI {
         return gc;
     }
 
+//    @Override
+//    public float getPurine() {
+//        try {
+//            SequenceI dnaSequence = getMaster().Contig().getDNASequence(this);
+//            String seq = dnaSequence.getSequence();
+//            float purine = 0;
+//            float pyrimidine = 0;
+//            for (int i = 0; i< seq.length(); i++) {
+//                char c = seq.charAt(i);
+//                switch (c) {
+//                    case 'A':
+//                    case 'G':
+//                        purine++;
+//                        break;
+//                    default:
+//                        pyrimidine++;
+//                }
+//            }
+//            return purine / pyrimidine;
+//        } catch (MGXException ex) {
+//            Logger.getLogger(Contig.class.getName()).log(Level.SEVERE, null, ex);
+//            return 0;
+//        }
+//    }
+
     @Override
     public int getLength() {
         return length_bp;
