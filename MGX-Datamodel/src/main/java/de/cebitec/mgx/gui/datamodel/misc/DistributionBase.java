@@ -167,7 +167,7 @@ public abstract class DistributionBase<T extends Number> implements Distribution
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final DistributionBase other = (DistributionBase) obj;
+        final DistributionBase<?> other = (DistributionBase) obj;
         if (!Objects.equals(this.getEntryType(), other.getEntryType())) {
             return false;
         }
