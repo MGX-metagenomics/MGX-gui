@@ -2,6 +2,7 @@ package de.cebitec.mgx.api.groups;
 
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.api.model.assembly.AssembledSeqRunI;
+import java.io.Serial;
 import java.util.Map;
 import java.util.Set;
 
@@ -11,9 +12,12 @@ import java.util.Set;
  */
 public final class ConflictingJobsForAssembledSeqRunException extends ConflictingJobsException {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     private final Map<AssembledSeqRunI, Set<JobI>> conflicts;
 
-    public ConflictingJobsForAssembledSeqRunException(GroupI group, Map<AssembledSeqRunI, Set<JobI>> data) {
+    public ConflictingJobsForAssembledSeqRunException(GroupI<?> group, Map<AssembledSeqRunI, Set<JobI>> data) {
         super(group);
         this.conflicts = data;
     }
@@ -32,7 +36,7 @@ public final class ConflictingJobsForAssembledSeqRunException extends Conflictin
     }
 
     @Override
-    public Class getSourceClass() {
+    public Class<?> getSourceClass() {
         return AssembledSeqRunI.class;
     }
 

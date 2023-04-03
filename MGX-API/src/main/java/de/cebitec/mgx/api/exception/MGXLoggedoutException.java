@@ -5,12 +5,17 @@
  */
 package de.cebitec.mgx.api.exception;
 
+import java.io.Serial;
+
 /**
  *
  * @author sj
  */
 public class MGXLoggedoutException extends RuntimeException {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     public MGXLoggedoutException(String message) {
         super(message);
     }

@@ -5,12 +5,17 @@
  */
 package de.cebitec.mgx.api.exception;
 
+import java.io.Serial;
+
 /**
  *
  * @author sjaenick
  */
 public class MGXTimeoutException extends MGXException {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     public MGXTimeoutException(String message) {
         super(message);
     }
